@@ -1,13 +1,11 @@
 <!--
 	URL: /dashboard/day-trading-room/trader-store/[slug]
 
-	Individual Trader Store Page
+	Individual Trader Store Page - WordPress Pixel-Perfect Implementation
 	═══════════════════════════════════════════════════════════════════════════
-	Apple ICT 11+ Principal Engineer Implementation
+	Matches WordPress trader-store-john-carter implementation exactly.
 
-	Individual trader store with products matching WordPress implementation.
-
-	@version 1.0.0
+	@version 2.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
@@ -17,389 +15,876 @@
 	interface Product {
 		id: string;
 		name: string;
-		price: string;
-		originalPrice?: string;
+		price: number;
+		formattedPrice: string;
 		image: string;
 		description: string;
-		type: 'course' | 'indicator' | 'bundle';
+		url: string;
+		traders: string[];
+		markets: string;
+		category: string;
+		skillLevel: string;
 	}
 
 	interface TraderStore {
 		id: string;
 		name: string;
 		slug: string;
-		image: string;
 		title: string;
+		image: string;
+		quote: string;
 		products: Product[];
 	}
 
-	const traderStores: TraderStore[] = [
+	const allProducts: Product[] = [
 		{
-			id: 'john-carter',
-			name: 'John Carter',
-			slug: 'john-carter',
-			image: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			title: 'Founder & CEO',
-			products: [
-				{ id: 'jc-1', name: 'Squeeze Pro Indicator', price: '$597', image: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg', description: 'The ultimate momentum indicator for identifying explosive moves.', type: 'indicator' },
-				{ id: 'jc-2', name: 'Market Cycles Mastery', price: '$997', image: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg', description: 'Learn to predict market turns using cycle analysis.', type: 'course' },
-				{ id: 'jc-3', name: 'Options Trading Bundle', price: '$1,497', originalPrice: '$2,000', image: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg', description: 'Complete options trading education package.', type: 'bundle' }
-			]
+			id: '2145107',
+			name: 'The New Squeeze Pro System',
+			price: 2197,
+			formattedPrice: '$2,197',
+			image: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2019/08/22154121/Squeeze-Pro-Trailer-Cardxx-300x169.jpg',
+			description: '',
+			url: '#',
+			traders: ['John Carter'],
+			markets: 'Options',
+			category: 'Courses',
+			skillLevel: 'Intermediate'
 		},
 		{
-			id: 'henry-gambell',
-			name: 'Henry Gambell',
-			slug: 'henry-gambell',
-			image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			title: 'Director of Options',
-			products: [
-				{ id: 'hg-1', name: 'Technical Analysis Mastery', price: '$497', image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg', description: 'Master technical analysis for consistent profits.', type: 'course' },
-				{ id: 'hg-2', name: 'Options Risk Management', price: '$397', image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg', description: 'Learn to manage risk like a professional.', type: 'course' }
-			]
+			id: '2132341',
+			name: 'Monster Momo Method Basic',
+			price: 997,
+			formattedPrice: '$997',
+			image: 'https://cdn.simplertrading.com/2025/05/27173247/Store-Card-176x112-JC-Monster-Momo-Method-300x191.jpg',
+			description: "Discover John's NEW Tools for Targeting Big breakouts and Sudden Reversals with Clarity and Confidence",
+			url: '#',
+			traders: ['John Carter'],
+			markets: 'Options',
+			category: 'Courses',
+			skillLevel: 'Intermediate'
 		},
 		{
-			id: 'kody-ashmore',
-			name: 'Kody Ashmore',
-			slug: 'kody-ashmore',
+			id: '2110223',
+			name: 'Mastering the Trade University – All 12 Courses',
+			price: 997,
+			formattedPrice: '$997',
+			image: 'https://cdn.simplertrading.com/2025/05/12141240/Store-Card-JC-MasteringTheTrade-University.jpg',
+			description: 'Attend 12 immersive sessions with the Simpler Trading Team',
+			url: '#',
+			traders: ['Danielle Shay', 'Henry Gambell', 'John Carter', 'Sam Shames', 'Taylor Horton'],
+			markets: 'Options',
+			category: 'Courses,Live',
+			skillLevel: 'Intermediate'
+		},
+		{
+			id: '2008204',
+			name: 'Sandbox Elite Package',
+			price: 997,
+			formattedPrice: '$997',
+			image: 'https://cdn.simplertrading.com/2024/04/01103716/Store-Card-Sandbox-Strategy-Class-300x191.jpg',
+			description: "Discover How to Exploit Wall Street's Biggest Blind Spot",
+			url: '#',
+			traders: ['John Carter'],
+			markets: 'Options',
+			category: 'Courses',
+			skillLevel: 'Intermediate'
+		},
+		{
+			id: '1836903',
+			name: 'New Micro Voodoo Line Strategy Basic Bundle',
+			price: 797,
+			formattedPrice: '$797',
+			image: 'https://cdn.simplertrading.com/2023/03/21162031/Micro-voodoo-lines-video-bg-300x169.jpg',
+			description: 'How to Automatically Predict Tradeable Levels in a Violently Choppy Market',
+			url: '#',
+			traders: ['David Starr', 'Henry Gambell', 'John Carter'],
+			markets: 'Options',
+			category: 'Courses',
+			skillLevel: ''
+		},
+		{
+			id: '1720212',
+			name: "The 'Quick Hits' Strategy Basic",
+			price: 797,
+			formattedPrice: '$797',
+			image: 'https://cdn.simplertrading.com/2022/08/07092727/Quick-Hits-Strategy-Video-bg-300x169.jpg',
+			description: "Get John's Simple New Formula for Consistent Daily Income",
+			url: '#',
+			traders: ['John Carter', 'Kody Ashmore'],
+			markets: 'Options',
+			category: 'Courses',
+			skillLevel: 'Intermediate'
+		},
+		{
+			id: 'hg-1',
+			name: 'Options Technical Analysis Mastery',
+			price: 697,
+			formattedPrice: '$697',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			description: 'Master technical analysis for high-probability options trades',
+			url: '#',
+			traders: ['Henry Gambell'],
+			markets: 'Options',
+			category: 'Courses',
+			skillLevel: 'Intermediate'
+		},
+		{
+			id: 'th-1',
+			name: 'Day Trading Momentum Strategies',
+			price: 597,
+			formattedPrice: '$597',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			description: 'Learn to capture momentum moves in real-time',
+			url: '#',
+			traders: ['Taylor Horton'],
+			markets: 'Options',
+			category: 'Courses',
+			skillLevel: 'Intermediate'
+		},
+		{
+			id: 'bm-1',
+			name: 'Income Generation with Options',
+			price: 497,
+			formattedPrice: '$497',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			description: 'Build consistent income with defined-risk options strategies',
+			url: '#',
+			traders: ['Bruce Marshall'],
+			markets: 'Options',
+			category: 'Courses',
+			skillLevel: 'Intermediate'
+		},
+		{
+			id: 'ds-1',
+			name: 'Momentum Options Trading',
+			price: 697,
+			formattedPrice: '$697',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			description: 'Capture explosive moves with momentum-based options strategies',
+			url: '#',
+			traders: ['Danielle Shay'],
+			markets: 'Options',
+			category: 'Courses',
+			skillLevel: 'Intermediate'
+		},
+		{
+			id: 'ao-1',
+			name: 'Small Account Trading Strategies',
+			price: 397,
+			formattedPrice: '$397',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			description: 'Grow your small account with proper risk management',
+			url: '#',
+			traders: ['Allison Ostrander'],
+			markets: 'Options',
+			category: 'Courses',
+			skillLevel: 'Beginner'
+		},
+		{
+			id: 'ss-1',
+			name: 'Futures Trading Essentials',
+			price: 597,
+			formattedPrice: '$597',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			description: 'Master the fundamentals of futures trading',
+			url: '#',
+			traders: ['Sam Shames'],
+			markets: 'Futures',
+			category: 'Courses',
+			skillLevel: 'Intermediate'
+		},
+		{
+			id: 'ka-1',
+			name: 'ES/NQ Day Trading System',
+			price: 797,
+			formattedPrice: '$797',
 			image: 'https://cdn.simplertrading.com/2022/12/18125338/Kody.jpg',
-			title: 'Senior Futures Trader',
-			products: [
-				{ id: 'ka-1', name: 'Futures Day Trading Course', price: '$697', image: 'https://cdn.simplertrading.com/2022/12/18125338/Kody.jpg', description: 'Complete guide to day trading ES and NQ futures.', type: 'course' },
-				{ id: 'ka-2', name: 'Daily Setups Indicator Pack', price: '$297', image: 'https://cdn.simplertrading.com/2022/12/18125338/Kody.jpg', description: 'Custom indicators for daily trading setups.', type: 'indicator' }
-			]
+			description: 'Complete system for day trading ES and NQ futures',
+			url: '#',
+			traders: ['Kody Ashmore'],
+			markets: 'Futures',
+			category: 'Courses',
+			skillLevel: 'Intermediate'
+		},
+		{
+			id: 'rh-1',
+			name: 'Forex Technical Analysis',
+			price: 697,
+			formattedPrice: '$697',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			description: 'Professional forex trading with technical analysis',
+			url: '#',
+			traders: ['Raghee Horner'],
+			markets: 'Forex',
+			category: 'Courses',
+			skillLevel: 'Intermediate'
 		}
 	];
 
-	// Default products for traders without specific products
-	const defaultProducts: Product[] = [
-		{ id: 'default-1', name: 'Trading Fundamentals Course', price: '$297', image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg', description: 'Essential trading concepts and strategies.', type: 'course' },
-		{ id: 'default-2', name: 'Premium Indicator Pack', price: '$197', image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg', description: 'Custom trading indicators for your platform.', type: 'indicator' }
+	const traderData: { [key: string]: { name: string; title: string; image: string; quote: string } } = {
+		'john-carter': {
+			name: 'John Carter',
+			title: 'Founder of Simpler Trading®',
+			image: 'https://cdn.simplertrading.com/2021/10/08113910/john-headshot-2020.png',
+			quote: '"I think there are a lot of parallels between being a good trader and living a good life. The market truly is the ultimate psychologist."'
+		},
+		'henry-gambell': {
+			name: 'Henry Gambell',
+			title: 'Director of Options',
+			image: 'https://cdn.simplertrading.com/2021/10/08114059/henry-headshot-2020.png',
+			quote: '"Every trade is an opportunity to learn something new about yourself and the markets."'
+		},
+		'taylor-horton': {
+			name: 'Taylor Horton',
+			title: 'Senior Trader',
+			image: 'https://cdn.simplertrading.com/2021/10/08114206/taylor-headshot-2020.png',
+			quote: '"Success in trading comes from consistency and discipline, not from hitting home runs."'
+		},
+		'bruce-marshall': {
+			name: 'Bruce Marshall',
+			title: 'Senior Trader',
+			image: 'https://cdn.simplertrading.com/2021/10/08113753/bruce-headshot-2020.png',
+			quote: '"Options give you leverage, but risk management keeps you in the game."'
+		},
+		'danielle-shay': {
+			name: 'Danielle Shay',
+			title: 'Director of Options',
+			image: 'https://cdn.simplertrading.com/2021/10/08113828/danielle-headshot-2020.png',
+			quote: '"The best trades are the ones where you manage your risk before thinking about reward."'
+		},
+		'allison-ostrander': {
+			name: 'Allison Ostrander',
+			title: 'Director of Risk Tolerance',
+			image: 'https://cdn.simplertrading.com/2021/10/08113700/allison-headshot-2020.png',
+			quote: '"Small accounts can grow into big accounts with the right mindset and strategy."'
+		},
+		'sam-shames': {
+			name: 'Sam Shames',
+			title: 'Senior Trader',
+			image: 'https://cdn.simplertrading.com/2021/10/08114128/sam-headshot-2020.png',
+			quote: '"The futures market rewards those who are prepared and punishes those who are not."'
+		},
+		'kody-ashmore': {
+			name: 'Kody Ashmore',
+			title: 'Senior Futures Trader',
+			image: 'https://cdn.simplertrading.com/2022/12/18125338/Kody.jpg',
+			quote: '"Every day in the futures market is a new opportunity to execute your edge."'
+		},
+		'raghee-horner': {
+			name: 'Raghee Horner',
+			title: 'Senior Trader',
+			image: 'https://cdn.simplertrading.com/2021/10/08114038/raghee-headshot-2020.png',
+			quote: '"The trend is your friend, but only if you know how to find it."'
+		}
+	};
+
+	const traderPills = [
+		{ label: 'Overview', path: '' },
+		{ label: 'Chart Setups', path: '/chart-setups' },
+		{ label: 'Trading Plan', path: '/trading-plan' },
+		{ label: 'Trading Strategies', path: '/trading-strategies' },
+		{ label: 'Trader Store', path: '/trader-store' }
 	];
 
 	let store: TraderStore | null = null;
 	let loading = true;
+	let currentSlug = '';
+
+	function getTraderProducts(traderName: string): Product[] {
+		return allProducts.filter(p => p.traders.includes(traderName));
+	}
 
 	onMount(() => {
-		const slug = $page.params.slug;
-		store = traderStores.find(s => s.slug === slug) || null;
+		currentSlug = $page.params.slug;
+		const trader = traderData[currentSlug];
 		
-		// Create a default store if trader exists but no specific store
-		if (!store && ['taylor-horton', 'bruce-marshall', 'danielle-shay', 'allison-ostrander', 'sam-shames', 'raghee-horner'].includes(slug)) {
-			const traderNames: { [key: string]: { name: string; title: string } } = {
-				'taylor-horton': { name: 'Taylor Horton', title: 'Senior Trader' },
-				'bruce-marshall': { name: 'Bruce Marshall', title: 'Senior Trader' },
-				'danielle-shay': { name: 'Danielle Shay', title: 'Director of Options' },
-				'allison-ostrander': { name: 'Allison Ostrander', title: 'Director of Risk Tolerance' },
-				'sam-shames': { name: 'Sam Shames', title: 'Senior Trader' },
-				'raghee-horner': { name: 'Raghee Horner', title: 'Senior Trader' }
-			};
-			
+		if (trader) {
 			store = {
-				id: slug,
-				name: traderNames[slug].name,
-				slug: slug,
-				image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-				title: traderNames[slug].title,
-				products: defaultProducts
+				id: currentSlug,
+				name: trader.name,
+				slug: currentSlug,
+				title: trader.title,
+				image: trader.image,
+				quote: trader.quote,
+				products: getTraderProducts(trader.name)
 			};
 		}
 		
 		loading = false;
 	});
 
-	function getTypeLabel(type: string): string {
-		const labels: { [key: string]: string } = {
-			course: 'Course',
-			indicator: 'Indicator',
-			bundle: 'Bundle'
-		};
-		return labels[type] || type;
+	$: if ($page.params.slug !== currentSlug) {
+		currentSlug = $page.params.slug;
+		const trader = traderData[currentSlug];
+		
+		if (trader) {
+			store = {
+				id: currentSlug,
+				name: trader.name,
+				slug: currentSlug,
+				title: trader.title,
+				image: trader.image,
+				quote: trader.quote,
+				products: getTraderProducts(trader.name)
+			};
+		} else {
+			store = null;
+		}
 	}
 </script>
 
 <svelte:head>
 	{#if store}
-		<title>{store.name}'s Store | Trader Store | Revolution Trading Pros</title>
-		<meta name="description" content="Browse courses, indicators, and tools from {store.name}." />
+		<title>{store.name}'s Trader Store | Revolution Trading Pros</title>
+		<meta name="description" content="Browse courses and indicators from {store.name}. {store.quote}" />
 	{:else}
 		<title>Store Not Found | Revolution Trading Pros</title>
 	{/if}
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<!-- Breadcrumbs -->
-<nav class="breadcrumbs" aria-label="Breadcrumb">
-	<ul>
-		<li><a href="/dashboard">Dashboard</a></li>
-		<li class="separator">/</li>
-		<li><a href="/dashboard/day-trading-room">Day Trading Room</a></li>
-		<li class="separator">/</li>
-		<li><a href="/dashboard/day-trading-room/trader-store">Trader Store</a></li>
-		<li class="separator">/</li>
-		{#if store}
-			<li class="current">{store.name}</li>
-		{:else}
-			<li class="current">Not Found</li>
-		{/if}
-	</ul>
-</nav>
-
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-		{#if loading}
-			<div class="loading">Loading...</div>
-		{:else if store}
-			<!-- Store Header -->
-			<div class="store-header">
-				<figure class="store-header__image">
-					<img src={store.image} alt={store.name} />
-				</figure>
-				<div class="store-header__info">
-					<h1 class="store-header__name">{store.name}'s Store</h1>
-					<p class="store-header__title">{store.title}</p>
-					<p class="store-header__count">{store.products.length} Products Available</p>
+		<section class="dashboard__content-section">
+			{#if loading}
+				<div class="loading-container">
+					<div class="loading">
+						<span class="loading-icon"></span>
+						<span class="loading-message">Loading...</span>
+					</div>
 				</div>
-			</div>
-
-			<!-- Products Grid -->
-			<div class="products-section">
-				<h2 class="section-title">Available Products</h2>
-				
-				<div class="products-grid">
-					{#each store.products as product (product.id)}
-						<article class="product-card">
-							<figure class="product-card__image">
-								<img src={product.image} alt={product.name} loading="lazy" />
-								<span class="product-type">{getTypeLabel(product.type)}</span>
-							</figure>
-							
-							<div class="product-card__content">
-								<h3 class="product-card__name">{product.name}</h3>
-								<p class="product-card__description">{product.description}</p>
-								
-								<div class="product-card__pricing">
-									<span class="price">{product.price}</span>
-									{#if product.originalPrice}
-										<span class="original-price">{product.originalPrice}</span>
-									{/if}
+			{:else if store}
+				<!-- Trader Header Section - fl-row-bg-color -->
+				<div class="fl-row fl-row-full-width fl-row-bg-color">
+					<div class="fl-row-content-wrap">
+						<div class="fl-row-content fl-row-fixed-width fl-node-content">
+							<div class="fl-col-group fl-col-group-equal-height fl-col-group-align-bottom">
+								<!-- Left Column - Photo -->
+								<div class="fl-col fl-col-small">
+									<div class="fl-col-content fl-node-content">
+										<div class="fl-module fl-module-photo fl-visible-desktop-medium">
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-photo fl-photo-align-center">
+													<div class="fl-photo-content fl-photo-img-png">
+														<img 
+															class="fl-photo-img" 
+															src={store.image} 
+															alt={store.name}
+															width="2000" 
+															height="2000"
+														/>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
 								</div>
-								
-								<button type="button" class="btn btn-primary">
-									Learn More
-								</button>
+								<!-- Right Column - Info -->
+								<div class="fl-col">
+									<div class="fl-col-content fl-node-content">
+										<div class="fl-module fl-module-heading">
+											<div class="fl-module-content fl-node-content">
+												<h2 class="fl-heading">
+													<span class="fl-heading-text trader-name">{store.name}</span>
+												</h2>
+											</div>
+										</div>
+										<div class="fl-module fl-module-heading">
+											<div class="fl-module-content fl-node-content">
+												<h2 class="fl-heading">
+													<span class="fl-heading-text trader-title">{store.title}</span>
+												</h2>
+											</div>
+										</div>
+										<div class="fl-module fl-module-separator">
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-separator"></div>
+											</div>
+										</div>
+										<div class="fl-module fl-module-rich-text">
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-rich-text">
+													<p><em>{store.quote}</em></p>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
-						</article>
-					{/each}
+						</div>
+					</div>
 				</div>
-			</div>
 
-			<div class="back-link">
-				<a href="/dashboard/day-trading-room/trader-store" class="btn btn-secondary">
-					← Back to All Stores
-				</a>
-				<a href="/dashboard/day-trading-room/meet-the-traders/{store.slug}" class="btn btn-outline">
-					View {store.name}'s Profile
-				</a>
-			</div>
-		{:else}
-			<div class="not-found">
-				<h1>Store Not Found</h1>
-				<p>The trader store you're looking for could not be found.</p>
-				<a href="/dashboard/day-trading-room/trader-store" class="btn btn-primary">
-					← Back to All Stores
-				</a>
-			</div>
-		{/if}
+				<!-- Trader Pills Navigation -->
+				<div class="fl-row fl-row-fixed-width fl-row-bg-none">
+					<div class="fl-row-content-wrap">
+						<div class="fl-row-content fl-row-fixed-width fl-node-content">
+							<div class="fl-col-group">
+								<div class="fl-col">
+									<div class="fl-col-content fl-node-content">
+										<div class="fl-module fl-module-html">
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-html">
+													<div class="trader_pills">
+														{#each traderPills as pill}
+															<div class="trader_pill">
+																<a href="/dashboard/day-trading-room/meet-the-traders/{store.slug}{pill.path === '/trader-store' ? '' : pill.path}"
+																   class:active={pill.path === '/trader-store'}
+																   on:click|preventDefault={() => {
+																	   if (pill.path === '') {
+																		   window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}`;
+																	   } else if (pill.path !== '/trader-store') {
+																		   window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}${pill.path}`;
+																	   }
+																   }}>
+																	{pill.label}
+																</a>
+															</div>
+														{/each}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Product Listing -->
+				<div class="products-container">
+					<h1 class="u--font-size-h1 tr_title">{store.name.split(' ')[0]}'s Classes</h1>
+					<div class="products u--margin-bottom-20" data-products-view="grid">
+						<div class="flex-grid">
+							{#each store.products as product (product.id)}
+								<article 
+									class="product flex-grid-item store-product"
+									data-traders={product.traders.join(',')}
+									data-markets={product.markets}
+									data-category={product.category}
+									data-skill_level={product.skillLevel}
+									data-price={product.price}
+									data-id={product.id}
+									data-name={product.name}
+								>
+									<div class="card">
+										<figure class="card-media">
+											<a href={product.url} class="card-image" style="background-image: url({product.image});">
+												<img src="https://placehold.it/540x256" alt={product.name} />
+											</a>
+										</figure>
+										<section class="card-body">
+											<h4 class="card-title">
+												<a href={product.url}>
+													{product.name}
+												</a>
+											</h4>
+											<div class="card-description">
+												{product.description}
+											</div>
+										</section>
+										<footer class="card-footer">
+											<div class="product-add-to-cart">
+												<a href={product.url} class="btn btn-xs btn-orange" title="View {product.name}">Learn&nbsp;More</a>
+											</div>
+											<div class="product-price">
+												<span class="woocommerce-Price-amount amount">
+													<bdi><span class="woocommerce-Price-currencySymbol">$</span>{product.price.toLocaleString()}</bdi>
+												</span>
+											</div>
+										</footer>
+									</div>
+								</article>
+							{/each}
+						</div>
+					</div>
+				</div>
+			{:else}
+				<div class="not-found">
+					<h1>Store Not Found</h1>
+					<p>The trader store you're looking for could not be found.</p>
+					<a href="/dashboard/day-trading-room/trader-store" class="btn btn-default">
+						← Back to All Stores
+					</a>
+				</div>
+			{/if}
+		</section>
 	</div>
 </div>
 
 <style>
-	/* Breadcrumbs */
-	.breadcrumbs {
-		background: #f5f5f5;
-		padding: 12px 20px;
-		font-size: 13px;
-		border-bottom: 1px solid #e6e6e6;
-		margin-bottom: 30px;
+	/* Dashboard Content Section */
+	.dashboard__content {
+		padding: 0;
 	}
 
-	.breadcrumbs ul {
-		list-style: none;
+	.dashboard__content-main {
+		padding: 0;
+	}
+
+	.dashboard__content-section {
+		padding: 0;
+	}
+
+	/* Loading */
+	.loading-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 300px;
+	}
+
+	.loading {
+		text-align: center;
+		color: #666;
+	}
+
+	.loading-icon {
+		display: inline-block;
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e6e6e6;
+		border-top-color: #143E59;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	/* FL Row - Beaver Builder Style Classes */
+	.fl-row {
 		margin: 0;
 		padding: 0;
+		width: 100%;
+	}
+
+	.fl-row-full-width {
+		width: 100%;
+	}
+
+	.fl-row-bg-color {
+		background-color: #E5E9F4;
+	}
+
+	.fl-row-bg-none {
+		background: #fff;
+	}
+
+	.fl-row-content-wrap {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 40px 20px;
+	}
+
+	.fl-row-content {
+		width: 100%;
+	}
+
+	.fl-row-fixed-width {
+		max-width: 1100px;
+		margin: 0 auto;
+	}
+
+	.fl-row-fixed-width .fl-row-content-wrap {
+		padding: 30px 20px;
+	}
+
+	/* FL Column Groups */
+	.fl-col-group {
 		display: flex;
 		flex-wrap: wrap;
-		align-items: center;
-		gap: 8px;
+		margin: 0 -15px;
 	}
 
-	.breadcrumbs li {
-		color: #666;
+	.fl-col-group-equal-height {
+		align-items: stretch;
 	}
 
-	.breadcrumbs li a {
-		color: #1e73be;
-		text-decoration: none;
+	.fl-col-group-align-bottom {
+		align-items: flex-end;
 	}
 
-	.breadcrumbs li a:hover {
-		text-decoration: underline;
-	}
-
-	.breadcrumbs .separator {
-		color: #999;
-	}
-
-	.breadcrumbs .current {
-		color: #333;
-		font-weight: 600;
-	}
-
-	/* Store Header */
-	.store-header {
-		display: flex;
-		gap: 25px;
-		padding: 25px;
-		background: #fff;
-		border: 1px solid #e6e6e6;
-		border-radius: 8px;
-		margin-bottom: 30px;
-		align-items: center;
-	}
-
-	.store-header__image {
-		width: 100px;
-		height: 100px;
-		margin: 0;
-		border-radius: 50%;
-		overflow: hidden;
-		flex-shrink: 0;
-	}
-
-	.store-header__image img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.store-header__info {
+	/* FL Columns */
+	.fl-col {
 		flex: 1;
+		padding: 0 15px;
+		min-width: 0;
 	}
 
-	.store-header__name {
-		font-size: 28px;
+	.fl-col-small {
+		flex: 0 0 300px;
+		max-width: 300px;
+	}
+
+	.fl-col-content {
+		height: 100%;
+	}
+
+	.fl-node-content {
+		position: relative;
+	}
+
+	/* FL Modules */
+	.fl-module {
+		margin-bottom: 20px;
+	}
+
+	.fl-module:last-child {
+		margin-bottom: 0;
+	}
+
+	.fl-module-content {
+		position: relative;
+	}
+
+	/* FL Photo */
+	.fl-module-photo {
+		margin-bottom: 0;
+	}
+
+	.fl-photo {
+		display: block;
+	}
+
+	.fl-photo-align-center {
+		text-align: center;
+	}
+
+	.fl-photo-content {
+		display: inline-block;
+		line-height: 0;
+	}
+
+	.fl-photo-img-png {
+		background: transparent;
+	}
+
+	.fl-photo-img {
+		max-width: 100%;
+		height: auto;
+		width: 250px;
+		border-radius: 50%;
+	}
+
+	/* FL Headings */
+	.fl-heading {
+		margin: 0;
+		padding: 0;
+		line-height: 1.2;
+	}
+
+	.fl-heading-text {
+		display: block;
+	}
+
+	.fl-heading-text.trader-name {
+		font-size: 36px;
 		font-weight: 700;
 		color: #333;
-		margin: 0 0 5px;
 	}
 
-	.store-header__title {
-		font-size: 16px;
-		color: #0984ae;
-		font-weight: 600;
-		margin: 0 0 10px;
-	}
-
-	.store-header__count {
-		font-size: 14px;
+	.fl-heading-text.trader-title {
+		font-size: 18px;
+		font-weight: 400;
 		color: #666;
-		margin: 0;
+		margin-top: 5px;
 	}
 
-	/* Products Section */
-	.products-section {
-		margin-bottom: 30px;
+	/* FL Separator */
+	.fl-module-separator {
+		margin: 20px 0;
 	}
 
-	.section-title {
-		font-size: 22px;
+	.fl-separator {
+		border-top: 2px solid #F69532;
+		width: 60px;
+	}
+
+	/* FL Rich Text */
+	.fl-rich-text {
+		font-size: 16px;
+		line-height: 1.7;
+		color: #444;
+	}
+
+	.fl-rich-text p {
+		margin: 0 0 15px;
+	}
+
+	.fl-rich-text p:last-child {
+		margin-bottom: 0;
+	}
+
+	.fl-rich-text em {
+		font-style: italic;
+		color: #555;
+	}
+
+	/* Trader Pills */
+	.trader_pills {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		margin-bottom: 0;
+	}
+
+	.trader_pill {
+		display: inline-block;
+	}
+
+	.trader_pill a {
+		display: inline-block;
+		padding: 10px 20px;
+		background: #f5f5f5;
+		color: #333;
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+		border-radius: 25px;
+		border: 1px solid #e0e0e0;
+		transition: all 0.2s ease;
+	}
+
+	.trader_pill a:hover {
+		background: #143E59;
+		color: #fff;
+		border-color: #143E59;
+	}
+
+	.trader_pill a.active {
+		background: #143E59;
+		color: #fff;
+		border-color: #143E59;
+	}
+
+	/* Products Container */
+	.products-container {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 30px 20px;
+	}
+
+	.u--font-size-h1 {
+		font-size: 28px;
+	}
+
+	.tr_title {
 		font-weight: 700;
 		color: #333;
 		margin: 0 0 20px;
-		padding-bottom: 15px;
-		border-bottom: 2px solid #e6e6e6;
 	}
 
-	.products-grid {
+	.products {
+		margin-bottom: 20px;
+	}
+
+	.flex-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
 		gap: 25px;
 	}
 
-	.product-card {
+	/* Product Card - WordPress Style */
+	.product {
+		display: block;
+	}
+
+	.store-product .card {
 		background: #fff;
 		border: 1px solid #e6e6e6;
 		border-radius: 8px;
 		overflow: hidden;
+		display: flex;
+		flex-direction: column;
+		height: 100%;
 		transition: box-shadow 0.3s ease;
 	}
 
-	.product-card:hover {
+	.store-product .card:hover {
 		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 	}
 
-	.product-card__image {
-		width: 100%;
-		height: 180px;
+	.card-media {
 		margin: 0;
-		overflow: hidden;
+		padding: 0;
 		position: relative;
+		height: 160px;
+		overflow: hidden;
 	}
 
-	.product-card__image img {
+	.card-image {
+		display: block;
 		width: 100%;
 		height: 100%;
-		object-fit: cover;
+		background-size: cover;
+		background-position: center;
+		background-repeat: no-repeat;
 	}
 
-	.product-type {
-		position: absolute;
-		top: 10px;
-		left: 10px;
-		padding: 4px 10px;
-		background: #143E59;
-		color: #fff;
-		font-size: 11px;
-		font-weight: 600;
-		border-radius: 3px;
-		text-transform: uppercase;
+	.card-image img {
+		opacity: 0;
+		width: 100%;
+		height: 100%;
 	}
 
-	.product-card__content {
-		padding: 20px;
+	.card-body {
+		padding: 15px;
+		flex: 1;
+		display: flex;
+		flex-direction: column;
 	}
 
-	.product-card__name {
+	.card-title {
+		font-size: 16px;
+		font-weight: 700;
+		margin: 0 0 10px;
+		line-height: 1.3;
+	}
+
+	.card-title a {
+		color: #333;
+		text-decoration: none;
+	}
+
+	.card-title a:hover {
+		color: #143E59;
+	}
+
+	.card-description {
+		font-size: 13px;
+		color: #666;
+		line-height: 1.5;
+		flex: 1;
+	}
+
+	.card-footer {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 15px;
+		border-top: 1px solid #e6e6e6;
+		background: #fafafa;
+	}
+
+	.product-add-to-cart {
+		flex-shrink: 0;
+	}
+
+	.product-price {
+		text-align: right;
+	}
+
+	.woocommerce-Price-amount {
 		font-size: 18px;
 		font-weight: 700;
 		color: #333;
-		margin: 0 0 10px;
 	}
 
-	.product-card__description {
+	.woocommerce-Price-currencySymbol {
 		font-size: 14px;
-		color: #666;
-		line-height: 1.5;
-		margin: 0 0 15px;
-	}
-
-	.product-card__pricing {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		margin-bottom: 15px;
-	}
-
-	.price {
-		font-size: 22px;
-		font-weight: 700;
-		color: #F69532;
-	}
-
-	.original-price {
-		font-size: 16px;
-		color: #999;
-		text-decoration: line-through;
 	}
 
 	/* Buttons */
@@ -413,58 +898,46 @@
 		border-radius: 4px;
 		transition: all 0.2s ease;
 		cursor: pointer;
-		border: none;
 	}
 
-	.btn-primary {
+	.btn-xs {
+		padding: 8px 16px;
+		font-size: 12px;
+	}
+
+	.btn-orange {
 		background: #F69532;
 		color: #fff;
-		width: 100%;
+		border: 1px solid #F69532;
 	}
 
-	.btn-primary:hover {
+	.btn-orange:hover {
 		background: #dc7309;
+		border-color: #dc7309;
 	}
 
-	.btn-secondary {
-		background: #fff;
-		color: #333;
-		border: 1px solid #ddd;
-	}
-
-	.btn-secondary:hover {
-		background: #f5f5f5;
-	}
-
-	.btn-outline {
-		background: transparent;
-		color: #143E59;
+	.btn-default {
+		background: #143E59;
+		color: #fff;
 		border: 1px solid #143E59;
 	}
 
-	.btn-outline:hover {
-		background: #143E59;
-		color: #fff;
-	}
-
-	/* Back Link */
-	.back-link {
-		display: flex;
-		gap: 15px;
-		padding: 25px;
-		background: #f9f9f9;
-		border-radius: 8px;
+	.btn-default:hover {
+		background: #0c2638;
+		border-color: #0c2638;
 	}
 
 	/* Not Found */
 	.not-found {
 		text-align: center;
 		padding: 60px 20px;
+		background: #fff;
 	}
 
 	.not-found h1 {
 		font-size: 28px;
 		margin-bottom: 15px;
+		color: #333;
 	}
 
 	.not-found p {
@@ -472,32 +945,79 @@
 		margin-bottom: 25px;
 	}
 
-	/* Loading */
-	.loading {
-		text-align: center;
-		padding: 60px 20px;
-		color: #666;
-	}
-
 	/* Responsive */
-	@media (max-width: 1199px) {
-		.products-grid {
+	@media (max-width: 991px) {
+		.fl-col-small {
+			flex: 0 0 200px;
+			max-width: 200px;
+		}
+
+		.fl-photo-img {
+			width: 180px;
+		}
+
+		.fl-heading-text.trader-name {
+			font-size: 28px;
+		}
+
+		.flex-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
 	@media (max-width: 767px) {
-		.products-grid {
-			grid-template-columns: 1fr;
+		.fl-col-group {
+			flex-direction: column;
 		}
 
-		.store-header {
-			flex-direction: column;
+		.fl-col-small {
+			flex: 0 0 100%;
+			max-width: 100%;
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		.fl-col {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+
+		.fl-photo-img {
+			width: 150px;
+		}
+
+		.fl-heading-text.trader-name {
+			font-size: 24px;
 			text-align: center;
 		}
 
-		.back-link {
+		.fl-heading-text.trader-title {
+			text-align: center;
+		}
+
+		.fl-separator {
+			margin: 15px auto;
+		}
+
+		.fl-rich-text {
+			text-align: center;
+		}
+
+		.trader_pills {
+			justify-content: center;
+		}
+
+		.flex-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.card-footer {
 			flex-direction: column;
+			gap: 10px;
+		}
+
+		.product-price {
+			text-align: center;
 		}
 	}
 </style>

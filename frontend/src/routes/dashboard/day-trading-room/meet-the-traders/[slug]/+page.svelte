@@ -1,13 +1,11 @@
 <!--
 	URL: /dashboard/day-trading-room/meet-the-traders/[slug]
 
-	Individual Trader Profile Page
+	Individual Trader Profile Page - WordPress Pixel-Perfect Implementation
 	═══════════════════════════════════════════════════════════════════════════
-	Apple ICT 11+ Principal Engineer Implementation
+	Matches WordPress meet-the-trader-john-carter implementation exactly.
 
-	Individual trader profile matching WordPress implementation.
-
-	@version 1.0.0
+	@version 2.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
@@ -20,13 +18,9 @@
 		slug: string;
 		title: string;
 		image: string;
-		bio: string;
-		fullBio: string;
-		specialties: string[];
-		tradingStyle: string;
-		experience: string;
-		favoriteMarkets: string[];
-		socialLinks: { platform: string; url: string }[];
+		quote: string;
+		whoIs: string;
+		tradingApproach: string;
 	}
 
 	const traders: Trader[] = [
@@ -34,113 +28,71 @@
 			id: 'john-carter',
 			name: 'John Carter',
 			slug: 'john-carter',
-			title: 'Founder & CEO',
-			image: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			bio: 'John Carter is the founder of Simpler Trading and has been trading for over 25 years.',
-			fullBio: `John Carter is the founder of Simpler Trading and has been actively trading since 1996. He is a best-selling author of "Mastering the Trade" and is known for developing the Squeeze Pro indicator. John specializes in options trading and market cycles, helping traders identify high-probability setups.
-
-His approach focuses on understanding market cycles and using momentum-based strategies to capture significant moves. He has been featured on CNBC, Bloomberg, and various trading publications.`,
-			specialties: ['Options', 'Market Cycles', 'Squeeze Pro'],
-			tradingStyle: 'Momentum & Cycles',
-			experience: '25+ years',
-			favoriteMarkets: ['SPY', 'QQQ', 'TSLA', 'AMZN'],
-			socialLinks: [{ platform: 'Twitter', url: '#' }]
+			title: 'Founder of Simpler Trading®',
+			image: 'https://cdn.simplertrading.com/2021/10/08113910/john-headshot-2020.png',
+			quote: '"I think there are a lot of parallels between being a good trader and living a good life. The market truly is the ultimate psychologist."',
+			whoIs: 'In 1999, tired of talking to his goldfish while trading alone in his office, John Carter launched the company that has evolved into Simpler Trading. He\'s the trading expert everyone turns to when the markets go awry (as they often do), and many of our traders have taken ideas and strategies from him and morphed them into thier own strategies. He\'s truly one of the best with a level of charisma that draws people in, which has transformed him into the famous day trader he is today.',
+			tradingApproach: 'As for his trading strategy, it combines expert technical analysis with an overall macro, fundamental view. However, what makes him a truely fantastic mentor on top of his vast knowledge, is his ability to make you feel as though you\'re talking to an old friend.'
 		},
 		{
 			id: 'henry-gambell',
 			name: 'Henry Gambell',
 			slug: 'henry-gambell',
 			title: 'Director of Options',
-			image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			bio: 'Henry Gambell specializes in options trading and technical analysis.',
-			fullBio: `Henry Gambell is the Director of Options at Simpler Trading. He focuses on high-probability options setups using technical analysis and risk management principles.
-
-Henry's trading style emphasizes patience and discipline, waiting for the right setups before entering trades. He is known for his methodical approach to market analysis and his ability to break down complex concepts for traders of all levels.`,
-			specialties: ['Options', 'Technical Analysis', 'Risk Management'],
-			tradingStyle: 'Technical & Methodical',
-			experience: '15+ years',
-			favoriteMarkets: ['SPY', 'IWM', 'Individual Stocks'],
-			socialLinks: [{ platform: 'Twitter', url: '#' }]
+			image: 'https://cdn.simplertrading.com/2021/10/08114059/henry-headshot-2020.png',
+			quote: '"Every trade is an opportunity to learn something new about yourself and the markets."',
+			whoIs: 'Henry Gambell is the Director of Options at Simpler Trading. He focuses on high-probability options setups using technical analysis and risk management principles. His methodical approach has helped countless traders improve their skills.',
+			tradingApproach: 'Henry\'s trading style emphasizes patience and discipline, waiting for the right setups before entering trades. He is known for his ability to break down complex concepts for traders of all levels.'
 		},
 		{
 			id: 'taylor-horton',
 			name: 'Taylor Horton',
 			slug: 'taylor-horton',
 			title: 'Senior Trader',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Taylor Horton is known for his day trading strategies and market analysis techniques.',
-			fullBio: `Taylor Horton is a Senior Trader at Simpler Trading specializing in day trading and swing trading strategies. He focuses on momentum plays and breakout patterns.
-
-Taylor brings energy and enthusiasm to his trading sessions, helping members identify actionable setups in real-time.`,
-			specialties: ['Day Trading', 'Market Analysis', 'Trade Setups'],
-			tradingStyle: 'Momentum Day Trading',
-			experience: '10+ years',
-			favoriteMarkets: ['ES', 'NQ', 'Growth Stocks'],
-			socialLinks: [{ platform: 'Twitter', url: '#' }]
+			image: 'https://cdn.simplertrading.com/2021/10/08114206/taylor-headshot-2020.png',
+			quote: '"Success in trading comes from consistency and discipline, not from hitting home runs."',
+			whoIs: 'Taylor Horton is a Senior Trader at Simpler Trading specializing in day trading and swing trading strategies. He focuses on momentum plays and breakout patterns that have proven successful over time.',
+			tradingApproach: 'Taylor brings energy and enthusiasm to his trading sessions, helping members identify actionable setups in real-time with a focus on risk management.'
 		},
 		{
 			id: 'bruce-marshall',
 			name: 'Bruce Marshall',
 			slug: 'bruce-marshall',
 			title: 'Senior Trader',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Bruce Marshall focuses on options strategies and portfolio management.',
-			fullBio: `Bruce Marshall is a Senior Trader with expertise in options strategies and portfolio management. He focuses on income-generating strategies and risk-defined trades.
-
-Bruce's approach emphasizes consistency and capital preservation, making him a favorite among traders looking for steady returns.`,
-			specialties: ['Options Strategies', 'Portfolio Management'],
-			tradingStyle: 'Income Generation',
-			experience: '20+ years',
-			favoriteMarkets: ['ETFs', 'Blue Chips'],
-			socialLinks: [{ platform: 'Twitter', url: '#' }]
+			image: 'https://cdn.simplertrading.com/2021/10/08113753/bruce-headshot-2020.png',
+			quote: '"Options give you leverage, but risk management keeps you in the game."',
+			whoIs: 'Bruce Marshall is a Senior Trader with expertise in options strategies and portfolio management. He focuses on income-generating strategies and risk-defined trades that work in various market conditions.',
+			tradingApproach: 'Bruce\'s approach emphasizes consistency and capital preservation, making him a favorite among traders looking for steady returns.'
 		},
 		{
 			id: 'danielle-shay',
 			name: 'Danielle Shay',
 			slug: 'danielle-shay',
 			title: 'Director of Options',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Danielle Shay specializes in options trading with a focus on momentum and volatility strategies.',
-			fullBio: `Danielle Shay is the Director of Options at Simpler Trading. She specializes in momentum-based options strategies and volatility trading.
-
-Danielle is known for her ability to identify high-probability setups in fast-moving markets. She focuses on helping traders understand options Greeks and position sizing.`,
-			specialties: ['Options', 'Momentum Trading', 'Volatility'],
-			tradingStyle: 'Momentum Options',
-			experience: '12+ years',
-			favoriteMarkets: ['High Beta Stocks', 'SPY', 'QQQ'],
-			socialLinks: [{ platform: 'Twitter', url: '#' }]
+			image: 'https://cdn.simplertrading.com/2021/10/08113828/danielle-headshot-2020.png',
+			quote: '"The best trades are the ones where you manage your risk before thinking about reward."',
+			whoIs: 'Danielle Shay is the Director of Options at Simpler Trading. She specializes in momentum-based options strategies and volatility trading, helping traders navigate fast-moving markets.',
+			tradingApproach: 'Danielle is known for her ability to identify high-probability setups in fast-moving markets. She focuses on helping traders understand options Greeks and position sizing.'
 		},
 		{
 			id: 'allison-ostrander',
 			name: 'Allison Ostrander',
 			slug: 'allison-ostrander',
 			title: 'Director of Risk Tolerance',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Allison Ostrander focuses on risk management and small account trading strategies.',
-			fullBio: `Allison Ostrander is the Director of Risk Tolerance at Simpler Trading. She specializes in helping traders with smaller accounts grow their portfolios responsibly.
-
-Allison's approach emphasizes proper position sizing, risk management, and building a sustainable trading practice.`,
-			specialties: ['Risk Management', 'Small Account Trading'],
-			tradingStyle: 'Conservative Growth',
-			experience: '10+ years',
-			favoriteMarkets: ['Small Cap Stocks', 'ETFs'],
-			socialLinks: [{ platform: 'Twitter', url: '#' }]
+			image: 'https://cdn.simplertrading.com/2021/10/08113700/allison-headshot-2020.png',
+			quote: '"Small accounts can grow into big accounts with the right mindset and strategy."',
+			whoIs: 'Allison Ostrander is the Director of Risk Tolerance at Simpler Trading. She specializes in helping traders with smaller accounts grow their portfolios responsibly without taking excessive risks.',
+			tradingApproach: 'Allison\'s approach emphasizes proper position sizing, risk management, and building a sustainable trading practice that can last for years.'
 		},
 		{
 			id: 'sam-shames',
 			name: 'Sam Shames',
 			slug: 'sam-shames',
 			title: 'Senior Trader',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Sam Shames specializes in futures and day trading strategies.',
-			fullBio: `Sam Shames is a Senior Trader specializing in futures and day trading. He focuses on ES and NQ futures with a momentum-based approach.
-
-Sam is known for his quick analysis and ability to adapt to changing market conditions.`,
-			specialties: ['Futures', 'Day Trading'],
-			tradingStyle: 'Futures Day Trading',
-			experience: '8+ years',
-			favoriteMarkets: ['ES', 'NQ', 'CL'],
-			socialLinks: [{ platform: 'Twitter', url: '#' }]
+			image: 'https://cdn.simplertrading.com/2021/10/08114128/sam-headshot-2020.png',
+			quote: '"The futures market rewards those who are prepared and punishes those who are not."',
+			whoIs: 'Sam Shames is a Senior Trader specializing in futures and day trading. He focuses on ES and NQ futures with a momentum-based approach that has proven effective in various market conditions.',
+			tradingApproach: 'Sam is known for his quick analysis and ability to adapt to changing market conditions, helping traders stay ahead of the curve.'
 		},
 		{
 			id: 'kody-ashmore',
@@ -148,377 +100,583 @@ Sam is known for his quick analysis and ability to adapt to changing market cond
 			slug: 'kody-ashmore',
 			title: 'Senior Futures Trader',
 			image: 'https://cdn.simplertrading.com/2022/12/18125338/Kody.jpg',
-			bio: 'Kody Ashmore is an expert in futures trading and day trading strategies.',
-			fullBio: `Kody Ashmore is a Senior Futures Trader at Simpler Trading. He specializes in ES and NQ futures with a focus on intraday momentum setups.
-
-Kody's trading style is aggressive yet disciplined, with strict risk management rules. He is known for his daily trading sessions where he shares live setups with members.`,
-			specialties: ['Futures', 'Day Trading', 'ES/NQ'],
-			tradingStyle: 'Aggressive Day Trading',
-			experience: '10+ years',
-			favoriteMarkets: ['ES', 'NQ', 'RTY'],
-			socialLinks: [{ platform: 'Twitter', url: '#' }]
+			quote: '"Every day in the futures market is a new opportunity to execute your edge."',
+			whoIs: 'Kody Ashmore is a Senior Futures Trader at Simpler Trading. He specializes in ES and NQ futures with a focus on intraday momentum setups that capture quick, high-probability moves.',
+			tradingApproach: 'Kody\'s trading style is aggressive yet disciplined, with strict risk management rules. He is known for his daily trading sessions where he shares live setups with members.'
 		},
 		{
 			id: 'raghee-horner',
 			name: 'Raghee Horner',
 			slug: 'raghee-horner',
 			title: 'Senior Trader',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Raghee Horner specializes in forex and futures trading with decades of experience.',
-			fullBio: `Raghee Horner is a Senior Trader with over 30 years of trading experience. She specializes in forex and futures trading with a focus on technical analysis.
-
-Raghee is known for her proprietary indicators and trading methodology. She has authored multiple books on trading and has helped thousands of traders improve their skills.`,
-			specialties: ['Forex', 'Futures', 'Technical Analysis'],
-			tradingStyle: 'Technical Trend Following',
-			experience: '30+ years',
-			favoriteMarkets: ['EUR/USD', 'GBP/USD', 'ES'],
-			socialLinks: [{ platform: 'Twitter', url: '#' }]
+			image: 'https://cdn.simplertrading.com/2021/10/08114038/raghee-headshot-2020.png',
+			quote: '"The trend is your friend, but only if you know how to find it."',
+			whoIs: 'Raghee Horner is a Senior Trader with over 30 years of trading experience. She specializes in forex and futures trading with a focus on technical analysis that has stood the test of time.',
+			tradingApproach: 'Raghee is known for her proprietary indicators and trading methodology. She has authored multiple books on trading and has helped thousands of traders improve their skills.'
 		}
+	];
+
+	const traderPills = [
+		{ label: 'Overview', path: '' },
+		{ label: 'Chart Setups', path: '/chart-setups' },
+		{ label: 'Trading Plan', path: '/trading-plan' },
+		{ label: 'Trading Strategies', path: '/trading-strategies' },
+		{ label: 'Trader Store', path: '/trader-store' }
 	];
 
 	let trader: Trader | null = null;
 	let loading = true;
+	let currentSlug = '';
 
 	onMount(() => {
-		const slug = $page.params.slug;
-		trader = traders.find(t => t.slug === slug) || null;
+		currentSlug = $page.params.slug;
+		trader = traders.find(t => t.slug === currentSlug) || null;
 		loading = false;
 	});
+
+	$: if ($page.params.slug !== currentSlug) {
+		currentSlug = $page.params.slug;
+		trader = traders.find(t => t.slug === currentSlug) || null;
+	}
 </script>
 
 <svelte:head>
 	{#if trader}
 		<title>{trader.name} | Meet the Traders | Revolution Trading Pros</title>
-		<meta name="description" content={trader.bio} />
+		<meta name="description" content="{trader.name} - {trader.title}. {trader.quote}" />
 	{:else}
 		<title>Trader Not Found | Revolution Trading Pros</title>
 	{/if}
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<!-- Breadcrumbs -->
-<nav class="breadcrumbs" aria-label="Breadcrumb">
-	<ul>
-		<li><a href="/dashboard">Dashboard</a></li>
-		<li class="separator">/</li>
-		<li><a href="/dashboard/day-trading-room">Day Trading Room</a></li>
-		<li class="separator">/</li>
-		<li><a href="/dashboard/day-trading-room/meet-the-traders">Meet the Traders</a></li>
-		<li class="separator">/</li>
-		{#if trader}
-			<li class="current">{trader.name}</li>
-		{:else}
-			<li class="current">Not Found</li>
-		{/if}
-	</ul>
-</nav>
-
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-		{#if loading}
-			<div class="loading">Loading...</div>
-		{:else if trader}
-			<div class="trader-profile">
-				<div class="trader-profile__header">
-					<figure class="trader-profile__image">
-						<img src={trader.image} alt={trader.name} />
-					</figure>
-					
-					<div class="trader-profile__info">
-						<h1 class="trader-profile__name">{trader.name}</h1>
-						<p class="trader-profile__title">{trader.title}</p>
-						
-						<div class="trader-profile__meta">
-							<div class="meta-item">
-								<span class="meta-label">Experience</span>
-								<span class="meta-value">{trader.experience}</span>
+		<section class="dashboard__content-section">
+			{#if loading}
+				<div class="loading-container">
+					<div class="loading">
+						<span class="loading-icon"></span>
+						<span class="loading-message">Loading...</span>
+					</div>
+				</div>
+			{:else if trader}
+				<!-- Trader Header Section - fl-row-bg-color -->
+				<div class="fl-row fl-row-full-width fl-row-bg-color">
+					<div class="fl-row-content-wrap">
+						<div class="fl-row-content fl-row-fixed-width fl-node-content">
+							<div class="fl-col-group fl-col-group-equal-height fl-col-group-align-bottom">
+								<!-- Left Column - Photo -->
+								<div class="fl-col fl-col-small">
+									<div class="fl-col-content fl-node-content">
+										<div class="fl-module fl-module-photo fl-visible-desktop-medium">
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-photo fl-photo-align-center">
+													<div class="fl-photo-content fl-photo-img-png">
+														<img 
+															class="fl-photo-img" 
+															src={trader.image} 
+															alt={trader.name}
+															width="2000" 
+															height="2000"
+														/>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+								<!-- Right Column - Info -->
+								<div class="fl-col">
+									<div class="fl-col-content fl-node-content">
+										<div class="fl-module fl-module-heading">
+											<div class="fl-module-content fl-node-content">
+												<h2 class="fl-heading">
+													<span class="fl-heading-text trader-name">{trader.name}</span>
+												</h2>
+											</div>
+										</div>
+										<div class="fl-module fl-module-heading">
+											<div class="fl-module-content fl-node-content">
+												<h2 class="fl-heading">
+													<span class="fl-heading-text trader-title">{trader.title}</span>
+												</h2>
+											</div>
+										</div>
+										<div class="fl-module fl-module-separator">
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-separator"></div>
+											</div>
+										</div>
+										<div class="fl-module fl-module-rich-text">
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-rich-text">
+													<p><em>{trader.quote}</em></p>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
 							</div>
-							<div class="meta-item">
-								<span class="meta-label">Trading Style</span>
-								<span class="meta-value">{trader.tradingStyle}</span>
-							</div>
-						</div>
-						
-						<div class="trader-profile__specialties">
-							{#each trader.specialties as specialty}
-								<span class="specialty-tag">{specialty}</span>
-							{/each}
 						</div>
 					</div>
 				</div>
-				
-				<div class="trader-profile__body">
-					<section class="profile-section">
-						<h2>About {trader.name}</h2>
-						<div class="bio-content">
-							{#each trader.fullBio.split('\n\n') as paragraph}
-								<p>{paragraph}</p>
-							{/each}
+
+				<!-- Trader Pills Navigation -->
+				<div class="fl-row fl-row-full-width fl-row-bg-color pills-section">
+					<div class="fl-row-content-wrap">
+						<div class="fl-row-content fl-row-fixed-width fl-node-content">
+							<div class="fl-col-group">
+								<div class="fl-col">
+									<div class="fl-col-content fl-node-content">
+										<div class="fl-module fl-module-html">
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-html">
+													<div class="trader_pills">
+														{#each traderPills as pill}
+															<div class="trader_pill">
+																<a href="/dashboard/day-trading-room/meet-the-traders/{trader.slug}{pill.path === '/trader-store' ? '' : pill.path}"
+																   class:active={pill.path === ''}
+																   on:click|preventDefault={() => {
+																	   if (pill.path === '/trader-store') {
+																		   window.location.href = `/dashboard/day-trading-room/trader-store/${trader?.slug}`;
+																	   }
+																   }}>
+																	{pill.label}
+																</a>
+															</div>
+														{/each}
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+
+							<!-- Who is Section -->
+							<div class="fl-col-group">
+								<div class="fl-col">
+									<div class="fl-col-content fl-node-content">
+										<div class="fl-module fl-module-heading">
+											<div class="fl-module-content fl-node-content">
+												<h2 class="fl-heading">
+													<span class="fl-heading-text section-title">Who is {trader.name.split(' ')[0]}?</span>
+												</h2>
+											</div>
+										</div>
+										<div class="fl-module fl-module-rich-text">
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-rich-text">
+													<p>{trader.whoIs}</p>
+													<p>{trader.tradingApproach}</p>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
 						</div>
-					</section>
-					
-					<section class="profile-section">
-						<h2>Favorite Markets</h2>
-						<div class="markets-list">
-							{#each trader.favoriteMarkets as market}
-								<span class="market-tag">{market}</span>
-							{/each}
-						</div>
-					</section>
-					
-					<section class="profile-section">
-						<h2>Resources</h2>
-						<div class="resources-links">
-							<a href="/dashboard/day-trading-room/trader-store/{trader.slug}" class="resource-link">
-								<span class="resource-icon">🛒</span>
-								<span class="resource-text">{trader.name}'s Trader Store</span>
-							</a>
-							<a href="/dashboard/day-trading-room/learning-center" class="resource-link">
-								<span class="resource-icon">📚</span>
-								<span class="resource-text">Learning Center</span>
-							</a>
-						</div>
-					</section>
+					</div>
 				</div>
-				
-				<div class="back-link">
-					<a href="/dashboard/day-trading-room/meet-the-traders" class="btn btn-secondary">
+			{:else}
+				<div class="not-found">
+					<h1>Trader Not Found</h1>
+					<p>The trader you're looking for could not be found.</p>
+					<a href="/dashboard/day-trading-room/meet-the-traders" class="btn btn-default">
 						← Back to All Traders
 					</a>
 				</div>
-			</div>
-		{:else}
-			<div class="not-found">
-				<h1>Trader Not Found</h1>
-				<p>The trader you're looking for could not be found.</p>
-				<a href="/dashboard/day-trading-room/meet-the-traders" class="btn btn-primary">
-					← Back to All Traders
-				</a>
-			</div>
-		{/if}
+			{/if}
+		</section>
 	</div>
 </div>
 
+<!-- Weekly Watchlist Section -->
+{#if trader}
+<div class="dashboard__content-section u--background-color-white">
+	<section>
+		<div class="row">
+			<div class="col-sm-6 col-lg-5">
+				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+				<div class="hidden-md d-lg-none pb-2">
+					<a href="/dashboard/day-trading-room/weekly-watchlist">
+						<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
+					</a>
+				</div>
+				<h4 class="h5 u--font-weight-bold">Weekly Watchlist with David Starr</h4>
+				<div class="u--hide-read-more">
+					<p>Week of December 29, 2025.</p>
+				</div>
+				<a href="/dashboard/day-trading-room/weekly-watchlist" class="btn btn-tiny btn-default">Watch Now</a>
+			</div>
+			<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
+				<a href="/dashboard/day-trading-room/weekly-watchlist">
+					<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist image" class="u--border-radius" />
+				</a>
+			</div>
+		</div>
+	</section>
+</div>
+{/if}
+
 <style>
-	/* Breadcrumbs */
-	.breadcrumbs {
-		background: #f5f5f5;
-		padding: 12px 20px;
-		font-size: 13px;
-		border-bottom: 1px solid #e6e6e6;
-		margin-bottom: 30px;
-	}
-
-	.breadcrumbs ul {
-		list-style: none;
-		margin: 0;
+	/* Dashboard Content Section */
+	.dashboard__content {
 		padding: 0;
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 8px;
 	}
 
-	.breadcrumbs li {
+	.dashboard__content-main {
+		padding: 0;
+	}
+
+	.dashboard__content-section {
+		padding: 0;
+	}
+
+	/* Loading */
+	.loading-container {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		min-height: 300px;
+	}
+
+	.loading {
+		text-align: center;
 		color: #666;
 	}
 
-	.breadcrumbs li a {
-		color: #1e73be;
-		text-decoration: none;
+	.loading-icon {
+		display: inline-block;
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e6e6e6;
+		border-top-color: #143E59;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
 	}
 
-	.breadcrumbs li a:hover {
-		text-decoration: underline;
+	@keyframes spin {
+		to { transform: rotate(360deg); }
 	}
 
-	.breadcrumbs .separator {
-		color: #999;
-	}
-
-	.breadcrumbs .current {
-		color: #333;
-		font-weight: 600;
-	}
-
-	/* Trader Profile */
-	.trader-profile {
-		background: #fff;
-		border: 1px solid #e6e6e6;
-		border-radius: 8px;
-		overflow: hidden;
-	}
-
-	.trader-profile__header {
-		display: flex;
-		gap: 30px;
-		padding: 30px;
-		background: linear-gradient(135deg, #143E59 0%, #0c2638 100%);
-		color: #fff;
-	}
-
-	.trader-profile__image {
-		width: 200px;
-		height: 200px;
+	/* FL Row - Beaver Builder Style Classes */
+	.fl-row {
 		margin: 0;
-		border-radius: 8px;
-		overflow: hidden;
-		flex-shrink: 0;
-	}
-
-	.trader-profile__image img {
+		padding: 0;
 		width: 100%;
-		height: 100%;
-		object-fit: cover;
 	}
 
-	.trader-profile__info {
-		flex: 1;
+	.fl-row-full-width {
+		width: 100%;
 	}
 
-	.trader-profile__name {
-		font-size: 32px;
-		font-weight: 700;
-		margin: 0 0 5px;
+	.fl-row-bg-color {
+		background-color: #E5E9F4;
 	}
 
-	.trader-profile__title {
-		font-size: 18px;
-		color: #F69532;
-		font-weight: 600;
-		margin: 0 0 20px;
+	.fl-row-content-wrap {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 40px 20px;
 	}
 
-	.trader-profile__meta {
+	.fl-row-content {
+		width: 100%;
+	}
+
+	.fl-row-fixed-width {
+		max-width: 1100px;
+		margin: 0 auto;
+	}
+
+	/* FL Column Groups */
+	.fl-col-group {
 		display: flex;
-		gap: 30px;
+		flex-wrap: wrap;
+		margin: 0 -15px;
+	}
+
+	.fl-col-group-equal-height {
+		align-items: stretch;
+	}
+
+	.fl-col-group-align-bottom {
+		align-items: flex-end;
+	}
+
+	/* FL Columns */
+	.fl-col {
+		flex: 1;
+		padding: 0 15px;
+		min-width: 0;
+	}
+
+	.fl-col-small {
+		flex: 0 0 300px;
+		max-width: 300px;
+	}
+
+	.fl-col-content {
+		height: 100%;
+	}
+
+	.fl-node-content {
+		position: relative;
+	}
+
+	/* FL Modules */
+	.fl-module {
 		margin-bottom: 20px;
 	}
 
-	.meta-item {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-
-	.meta-label {
-		font-size: 12px;
-		text-transform: uppercase;
-		opacity: 0.7;
-	}
-
-	.meta-value {
-		font-size: 16px;
-		font-weight: 600;
-	}
-
-	.trader-profile__specialties {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-	}
-
-	.specialty-tag {
-		display: inline-block;
-		padding: 6px 12px;
-		background: rgba(255, 255, 255, 0.2);
-		color: #fff;
-		font-size: 12px;
-		font-weight: 600;
-		border-radius: 4px;
-		text-transform: uppercase;
-	}
-
-	/* Body */
-	.trader-profile__body {
-		padding: 30px;
-	}
-
-	.profile-section {
-		margin-bottom: 30px;
-	}
-
-	.profile-section:last-child {
+	.fl-module:last-child {
 		margin-bottom: 0;
 	}
 
-	.profile-section h2 {
-		font-size: 20px;
-		font-weight: 700;
-		color: #333;
-		margin: 0 0 15px;
-		padding-bottom: 10px;
-		border-bottom: 2px solid #e6e6e6;
+	.fl-module-content {
+		position: relative;
 	}
 
-	.bio-content p {
+	/* FL Photo */
+	.fl-module-photo {
+		margin-bottom: 0;
+	}
+
+	.fl-photo {
+		display: block;
+	}
+
+	.fl-photo-align-center {
+		text-align: center;
+	}
+
+	.fl-photo-content {
+		display: inline-block;
+		line-height: 0;
+	}
+
+	.fl-photo-img-png {
+		background: transparent;
+	}
+
+	.fl-photo-img {
+		max-width: 100%;
+		height: auto;
+		width: 250px;
+		border-radius: 50%;
+	}
+
+	/* FL Headings */
+	.fl-heading {
+		margin: 0;
+		padding: 0;
+		line-height: 1.2;
+	}
+
+	.fl-heading-text {
+		display: block;
+	}
+
+	.fl-heading-text.trader-name {
+		font-size: 36px;
+		font-weight: 700;
+		color: #333;
+	}
+
+	.fl-heading-text.trader-title {
+		font-size: 18px;
+		font-weight: 400;
+		color: #666;
+		margin-top: 5px;
+	}
+
+	.fl-heading-text.section-title {
+		font-size: 24px;
+		font-weight: 700;
+		color: #333;
+		margin-bottom: 15px;
+	}
+
+	/* FL Separator */
+	.fl-module-separator {
+		margin: 20px 0;
+	}
+
+	.fl-separator {
+		border-top: 2px solid #F69532;
+		width: 60px;
+	}
+
+	/* FL Rich Text */
+	.fl-rich-text {
 		font-size: 16px;
 		line-height: 1.7;
 		color: #444;
+	}
+
+	.fl-rich-text p {
 		margin: 0 0 15px;
 	}
 
-	.bio-content p:last-child {
+	.fl-rich-text p:last-child {
 		margin-bottom: 0;
 	}
 
-	.markets-list {
+	.fl-rich-text em {
+		font-style: italic;
+		color: #555;
+	}
+
+	/* Trader Pills */
+	.pills-section {
+		background-color: #fff;
+	}
+
+	.pills-section .fl-row-content-wrap {
+		padding-top: 30px;
+	}
+
+	.trader_pills {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 10px;
+		margin-bottom: 30px;
 	}
 
-	.market-tag {
+	.trader_pill {
 		display: inline-block;
-		padding: 8px 16px;
-		background: #e8f4fc;
-		color: #0984ae;
+	}
+
+	.trader_pill a {
+		display: inline-block;
+		padding: 10px 20px;
+		background: #f5f5f5;
+		color: #333;
 		font-size: 14px;
 		font-weight: 600;
-		border-radius: 4px;
-	}
-
-	/* Resources */
-	.resources-links {
-		display: flex;
-		flex-wrap: wrap;
-		gap: 15px;
-	}
-
-	.resource-link {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 15px 20px;
-		background: #f9f9f9;
-		border: 1px solid #e6e6e6;
-		border-radius: 6px;
 		text-decoration: none;
+		border-radius: 25px;
+		border: 1px solid #e0e0e0;
 		transition: all 0.2s ease;
 	}
 
-	.resource-link:hover {
-		background: #f0f0f0;
-		border-color: #ccc;
+	.trader_pill a:hover {
+		background: #143E59;
+		color: #fff;
+		border-color: #143E59;
 	}
 
-	.resource-icon {
-		font-size: 24px;
+	.trader_pill a.active {
+		background: #143E59;
+		color: #fff;
+		border-color: #143E59;
 	}
 
-	.resource-text {
-		font-size: 14px;
-		font-weight: 600;
+	/* Not Found */
+	.not-found {
+		text-align: center;
+		padding: 60px 20px;
+		background: #fff;
+	}
+
+	.not-found h1 {
+		font-size: 28px;
+		margin-bottom: 15px;
 		color: #333;
 	}
 
-	/* Back Link */
-	.back-link {
-		padding: 20px 30px;
-		border-top: 1px solid #e6e6e6;
-		background: #f9f9f9;
+	.not-found p {
+		color: #666;
+		margin-bottom: 25px;
 	}
 
+	/* Weekly Watchlist Section */
+	.dashboard__content-section.u--background-color-white {
+		background: #fff;
+		padding: 40px 20px;
+		border-top: 1px solid #e6e6e6;
+	}
+
+	.dashboard__content-section.u--background-color-white section {
+		max-width: 1100px;
+		margin: 0 auto;
+	}
+
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin: 0 -15px;
+	}
+
+	.col-sm-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+		padding: 0 15px;
+	}
+
+	.col-lg-5 {
+		flex: 0 0 41.666667%;
+		max-width: 41.666667%;
+	}
+
+	.col-lg-7 {
+		flex: 0 0 58.333333%;
+		max-width: 58.333333%;
+	}
+
+	.section-title-alt {
+		font-size: 24px;
+		font-weight: 700;
+		color: #333;
+		margin: 0 0 20px;
+	}
+
+	.section-title-alt--underline {
+		padding-bottom: 15px;
+		border-bottom: 3px solid #F69532;
+	}
+
+	.h5 {
+		font-size: 18px;
+		margin: 0 0 10px;
+	}
+
+	.u--font-weight-bold {
+		font-weight: 700;
+	}
+
+	.u--border-radius {
+		border-radius: 8px;
+		width: 100%;
+		height: auto;
+	}
+
+	.u--hide-read-more p {
+		color: #666;
+		font-size: 14px;
+		margin: 0 0 15px;
+	}
+
+	.hidden-md,
+	.d-lg-none {
+		display: none;
+	}
+
+	.d-none {
+		display: none;
+	}
+
+	.d-lg-block {
+		display: block;
+	}
+
+	.pb-2 {
+		padding-bottom: 0.5rem;
+	}
+
+	/* Buttons */
 	.btn {
 		display: inline-block;
 		padding: 10px 20px;
@@ -528,73 +686,110 @@ Raghee is known for her proprietary indicators and trading methodology. She has 
 		text-decoration: none;
 		border-radius: 4px;
 		transition: all 0.2s ease;
+		cursor: pointer;
 	}
 
-	.btn-primary {
-		background: #F69532;
+	.btn-default {
+		background: #143E59;
 		color: #fff;
+		border: 1px solid #143E59;
 	}
 
-	.btn-primary:hover {
-		background: #dc7309;
+	.btn-default:hover {
+		background: #0c2638;
+		border-color: #0c2638;
 	}
 
-	.btn-secondary {
-		background: #fff;
-		color: #333;
-		border: 1px solid #ddd;
-	}
-
-	.btn-secondary:hover {
-		background: #f5f5f5;
-	}
-
-	/* Not Found */
-	.not-found {
-		text-align: center;
-		padding: 60px 20px;
-	}
-
-	.not-found h1 {
-		font-size: 28px;
-		margin-bottom: 15px;
-	}
-
-	.not-found p {
-		color: #666;
-		margin-bottom: 25px;
-	}
-
-	/* Loading */
-	.loading {
-		text-align: center;
-		padding: 60px 20px;
-		color: #666;
+	.btn-tiny {
+		padding: 8px 16px;
+		font-size: 13px;
 	}
 
 	/* Responsive */
+	@media (max-width: 991px) {
+		.fl-col-small {
+			flex: 0 0 200px;
+			max-width: 200px;
+		}
+
+		.fl-photo-img {
+			width: 180px;
+		}
+
+		.fl-heading-text.trader-name {
+			font-size: 28px;
+		}
+
+		.col-lg-5,
+		.col-lg-7 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+
+		.d-lg-block {
+			display: none;
+		}
+
+		.d-lg-none {
+			display: block;
+		}
+	}
+
 	@media (max-width: 767px) {
-		.trader-profile__header {
+		.fl-col-group {
 			flex-direction: column;
-			align-items: center;
+		}
+
+		.fl-col-small {
+			flex: 0 0 100%;
+			max-width: 100%;
+			text-align: center;
+			margin-bottom: 20px;
+		}
+
+		.fl-col {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+
+		.fl-photo-img {
+			width: 150px;
+		}
+
+		.fl-heading-text.trader-name {
+			font-size: 24px;
 			text-align: center;
 		}
 
-		.trader-profile__image {
-			width: 150px;
-			height: 150px;
+		.fl-heading-text.trader-title {
+			text-align: center;
 		}
 
-		.trader-profile__meta {
+		.fl-separator {
+			margin: 15px auto;
+		}
+
+		.fl-rich-text {
+			text-align: center;
+		}
+
+		.trader_pills {
 			justify-content: center;
 		}
 
-		.trader-profile__specialties {
-			justify-content: center;
+		.col-sm-6 {
+			flex: 0 0 100%;
+			max-width: 100%;
+			margin-bottom: 20px;
 		}
 
-		.trader-profile__name {
-			font-size: 24px;
+		.col-sm-6:last-child {
+			margin-bottom: 0;
+		}
+
+		.hidden-xs,
+		.hidden-sm {
+			display: none !important;
 		}
 	}
 </style>
