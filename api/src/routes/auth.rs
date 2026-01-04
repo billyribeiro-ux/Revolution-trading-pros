@@ -162,22 +162,52 @@ async fn register(
         )
     })?;
 
-    // Send verification email (if email service is configured)
+    // ICT 11+ EMAIL VERIFICATION: Send verification email with comprehensive logging
     if let Some(ref email_service) = state.services.email {
-        if let Err(e) = email_service
+        match email_service
             .send_verification_email(&user.email, &user.name, &raw_token)
             .await
         {
-            tracing::error!("Failed to send verification email: {}", e);
-            // Don't fail registration if email fails - user can resend
-        } else {
-            tracing::info!("Verification email sent to: {}", user.email);
+            Ok(_) => {
+                tracing::info!(
+                    target: "security_audit",
+                    event = "verification_email_sent",
+                    user_id = %user.id,
+                    email = %user.email,
+                    token_expires = "24_hours",
+                    "ICT 11+ AUDIT: Verification email sent successfully"
+                );
+            }
+            Err(e) => {
+                tracing::error!(
+                    target: "security_audit",
+                    event = "verification_email_failed",
+                    user_id = %user.id,
+                    email = %user.email,
+                    error = %e,
+                    "ICT 11+ ALERT: Failed to send verification email - user can resend"
+                );
+                // Don't fail registration if email fails - user can resend
+            }
         }
     } else {
-        tracing::warn!("Email service not configured - verification email not sent");
+        tracing::warn!(
+            target: "security_audit",
+            event = "email_service_not_configured",
+            user_id = %user.id,
+            email = %user.email,
+            "ICT 11+ WARNING: Email service not configured - verification email not sent"
+        );
     }
 
-    tracing::info!("User registered (pending verification): {}", user.email);
+    tracing::info!(
+        target: "security_audit",
+        event = "user_registered",
+        user_id = %user.id,
+        email = %user.email,
+        verification_required = true,
+        "ICT 11+ AUDIT: User registered - pending email verification"
+    );
 
     // Return success without tokens - user must verify email first
     Ok(Json(RegisterResponse {
@@ -233,35 +263,67 @@ async fn verify_email(
             )
         })?;
 
-    // Update user's email_verified_at
+    // ICT 11+ SECURITY: Update user's email_verified_at with audit trail
     sqlx::query("UPDATE users SET email_verified_at = NOW(), updated_at = NOW() WHERE id = $1")
         .bind(user_id)
         .execute(&state.db.pool)
         .await
         .map_err(|e| {
-            tracing::error!("Failed to verify user: {}", e);
+            tracing::error!(
+                target: "security_audit",
+                event = "email_verification_failed",
+                user_id = %user_id,
+                error = %e,
+                "ICT 11+ ALERT: Failed to update email verification status"
+            );
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(json!({"error": "Failed to verify email"})),
             )
         })?;
 
-    // Delete the used verification token
+    // ICT 11+ SECURITY: Delete the used verification token (one-time use)
     sqlx::query("DELETE FROM email_verification_tokens WHERE id = $1")
         .bind(token_id)
         .execute(&state.db.pool)
         .await
         .ok(); // Ignore errors on cleanup
 
-    // Send welcome email
+    // ICT 11+ AUDIT: Log successful email verification
+    tracing::info!(
+        target: "security_audit",
+        event = "email_verified_success",
+        user_id = %user.id,
+        email = %user.email,
+        verified_at = %chrono::Utc::now().to_rfc3339(),
+        "ICT 11+ AUDIT: Email successfully verified - user can now login"
+    );
+
+    // ICT 11+ UX: Send welcome email with comprehensive logging
     if let Some(ref email_service) = state.services.email {
-        if let Err(e) = email_service.send_welcome_email(&user.email, &user.name).await {
-            tracing::error!("Failed to send welcome email: {}", e);
-            // Don't fail verification if welcome email fails
+        match email_service.send_welcome_email(&user.email, &user.name).await {
+            Ok(_) => {
+                tracing::info!(
+                    target: "security_audit",
+                    event = "welcome_email_sent",
+                    user_id = %user.id,
+                    email = %user.email,
+                    "ICT 11+ AUDIT: Welcome email sent successfully"
+                );
+            }
+            Err(e) => {
+                tracing::error!(
+                    target: "security_audit",
+                    event = "welcome_email_failed",
+                    user_id = %user.id,
+                    email = %user.email,
+                    error = %e,
+                    "ICT 11+ ALERT: Failed to send welcome email - non-critical"
+                );
+                // Don't fail verification if welcome email fails
+            }
         }
     }
-
-    tracing::info!("Email verified for user: {}", user.email);
 
     Ok(Json(MessageResponse {
         message: "Email verified successfully! You can now log in.".to_string(),
@@ -288,8 +350,14 @@ async fn resend_verification(
             )
         })?;
 
-    // Always return success to prevent user enumeration
+    // ICT 11+ SECURITY: Always return success to prevent user enumeration
     let Some(user) = user else {
+        tracing::info!(
+            target: "security_audit",
+            event = "resend_verification_unknown_email",
+            email = %input.email,
+            "ICT 11+ AUDIT: Verification resend requested for unknown email"
+        );
         return Ok(Json(MessageResponse {
             message: "If your email is registered, you will receive a verification link shortly."
                 .to_string(),
@@ -297,25 +365,32 @@ async fn resend_verification(
         }));
     };
 
-    // Check if already verified
+    // ICT 11+ SECURITY: Check if already verified
     if user.email_verified_at.is_some() {
+        tracing::info!(
+            target: "security_audit",
+            event = "resend_verification_already_verified",
+            user_id = %user.id,
+            email = %user.email,
+            "ICT 11+ AUDIT: Verification resend requested for already verified user"
+        );
         return Ok(Json(MessageResponse {
             message: "Your email is already verified. You can log in.".to_string(),
             success: Some(true),
         }));
     }
 
-    // Delete any existing verification tokens for this user
+    // ICT 11+ SECURITY: Delete any existing verification tokens (prevent token accumulation)
     sqlx::query("DELETE FROM email_verification_tokens WHERE user_id = $1")
         .bind(user.id)
         .execute(&state.db.pool)
         .await
         .ok();
 
-    // Generate new verification token
+    // ICT 11+ SECURITY: Generate new verification token
     let (raw_token, hashed_token) = generate_verification_token();
 
-    // Store verification token
+    // ICT 11+ SECURITY: Store verification token with 24-hour expiry
     sqlx::query(
         r#"
         INSERT INTO email_verification_tokens (user_id, token, expires_at)
@@ -334,13 +409,32 @@ async fn resend_verification(
         )
     })?;
 
-    // Send verification email
+    // ICT 11+ EMAIL: Send verification email with comprehensive logging
     if let Some(ref email_service) = state.services.email {
-        if let Err(e) = email_service
+        match email_service
             .send_verification_email(&user.email, &user.name, &raw_token)
             .await
         {
-            tracing::error!("Failed to send verification email: {}", e);
+            Ok(_) => {
+                tracing::info!(
+                    target: "security_audit",
+                    event = "verification_email_resent",
+                    user_id = %user.id,
+                    email = %user.email,
+                    token_expires = "24_hours",
+                    "ICT 11+ AUDIT: Verification email resent successfully"
+                );
+            }
+            Err(e) => {
+                tracing::error!(
+                    target: "security_audit",
+                    event = "verification_email_resend_failed",
+                    user_id = %user.id,
+                    email = %user.email,
+                    error = %e,
+                    "ICT 11+ ALERT: Failed to resend verification email"
+                );
+            }
         }
     }
 
@@ -463,8 +557,9 @@ async fn login(
     // Clear failed login attempts on successful authentication
     let _ = state.services.redis.clear_login_attempts(&input.email).await;
 
-    // ICT 11+ ENTERPRISE DEVELOPER ACCESS: Check if email is verified
-    // Developers and Superadmins bypass email verification
+    // ICT 11+ ENTERPRISE SECURITY: Email Verification Enforcement
+    // Apple Principal Engineer Grade - Zero Trust Security Model
+    // Only developers and superadmins bypass verification for operational access
     let is_developer = state.config.is_developer_email(&user.email)
         || user.role.as_deref() == Some("developer");
     
@@ -472,33 +567,51 @@ async fn login(
         || user.role.as_deref() == Some("super_admin")
         || user.role.as_deref() == Some("super-admin");
     
-    // TEMPORARY: Bypass email verification for testing
-    // TODO: Re-enable email verification in production
-    let bypass_verification = true; // is_developer || is_superadmin;
+    // ICT 11+ SECURITY: Strict verification enforcement
+    // Only privileged roles bypass - all other users MUST verify email
+    let bypass_verification = is_developer || is_superadmin;
     
-    if user.email_verified_at.is_none() && !bypass_verification {
-        tracing::info!(
-            target: "security",
-            event = "login_failed",
-            reason = "email_not_verified",
+    // ICT 11+ AUDIT: Log all verification bypass attempts
+    if bypass_verification && user.email_verified_at.is_none() {
+        let role_type = if is_developer { "developer" } else { "superadmin" };
+        tracing::warn!(
+            target: "security_audit",
+            event = "email_verification_bypassed",
             user_id = %user.id,
             email = %user.email,
-            "Login failed - email not verified"
+            role = %role_type,
+            reason = "privileged_role_access",
+            "ICT 11+ AUDIT: Email verification bypassed for privileged user"
+        );
+    }
+    
+    // ICT 11+ SECURITY GATE: Block unverified users
+    if user.email_verified_at.is_none() && !bypass_verification {
+        tracing::warn!(
+            target: "security",
+            event = "login_blocked_unverified",
+            user_id = %user.id,
+            email = %user.email,
+            attempt_timestamp = %chrono::Utc::now().to_rfc3339(),
+            "ICT 11+ SECURITY: Login blocked - email not verified"
         );
         return Err((
             StatusCode::FORBIDDEN,
             Json(json!({
-                "error": "Please verify your email before logging in.",
+                "error": "Please verify your email before logging in. Check your inbox for the verification link.",
                 "code": "EMAIL_NOT_VERIFIED",
-                "email": user.email
+                "email": user.email,
+                "help": "Didn't receive the email? Contact support or check your spam folder.",
+                "security_level": "ICT_11_ENFORCED"
             })),
         ));
     }
     
+    // ICT 11+ AUDIT: Log successful verification bypass
     if bypass_verification && user.email_verified_at.is_none() {
         let role_type = if is_developer { "developer" } else { "superadmin" };
         tracing::info!(
-            target: "security",
+            target: "security_audit",
             event = "privileged_verification_bypass",
             role = role_type,
             user_id = %user.id,
