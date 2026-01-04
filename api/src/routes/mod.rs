@@ -6,6 +6,7 @@ pub mod auth;
 pub mod users;
 pub mod user;  // Singular /user routes for frontend compatibility
 pub mod robots;
+pub mod sitemap;
 pub mod courses;
 pub mod payments;
 pub mod search;
@@ -51,4 +52,5 @@ pub fn api_router() -> Router<AppState> {
         .nest("/my/subscriptions", subscriptions::my_router())
         .nest("/logout", auth::logout_router())
         .merge(robots::router())
+        .merge(sitemap::router())
 }

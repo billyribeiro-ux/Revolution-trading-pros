@@ -31,4 +31,9 @@ impl Database {
         sqlx::migrate!("./migrations").run(&self.pool).await?;
         Ok(())
     }
+
+    /// Get a reference to the connection pool
+    pub fn pool(&self) -> &PgPool {
+        &self.pool
+    }
 }
