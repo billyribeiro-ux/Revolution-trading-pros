@@ -498,7 +498,15 @@
 				style:--type-color={ct.color}
 				onclick={() => { selectedContentType = ct.value; currentPage = 1; }}
 			>
-				<svelte:component this={getContentTypeIcon(ct.value)} size={18} />
+				{#if ct.value === 'daily_video'}
+					<IconVideo size={18} />
+				{:else if ct.value === 'weekly_watchlist'}
+					<IconListCheck size={18} />
+				{:else if ct.value === 'learning_center'}
+					<IconSchool size={18} />
+				{:else if ct.value === 'room_archive'}
+					<IconArchive size={18} />
+				{/if}
 				{ct.label}
 				<span class="tab-count">{stats.by_type[ct.value as keyof typeof stats.by_type] || 0}</span>
 			</button>
@@ -621,7 +629,15 @@
 							</td>
 							<td>
 								<span class="content-type-badge" style:--type-color={getContentTypeColor(video.content_type)}>
-									<svelte:component this={getContentTypeIcon(video.content_type)} size={14} />
+									{#if video.content_type === 'daily_video'}
+										<IconVideo size={14} />
+									{:else if video.content_type === 'weekly_watchlist'}
+										<IconListCheck size={14} />
+									{:else if video.content_type === 'learning_center'}
+										<IconSchool size={14} />
+									{:else if video.content_type === 'room_archive'}
+										<IconArchive size={14} />
+									{/if}
 									{getContentTypeLabel(video.content_type)}
 								</span>
 							</td>
@@ -684,16 +700,17 @@
 
 <!-- Upload/Edit Modal -->
 {#if showUploadModal || showEditModal}
+	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
 	<div 
 		class="modal-overlay" 
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="modal-title"
-		tabindex="-1"
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
 		onclick={closeModals}
 		onkeydown={(e) => e.key === 'Escape' && closeModals()}
 	>
-		<div class="modal modal-large" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+		<!-- svelte-ignore a11y-no-static-element-interactions -->
+		<div class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 			<div class="modal-header">
 				<h2 id="modal-title">{showEditModal ? 'Edit Video' : 'Add New Video'}</h2>
 				<button class="modal-close" onclick={closeModals}>&times;</button>
@@ -704,17 +721,25 @@
 					<span class="form-label">Content Type</span>
 					<div class="content-type-selector">
 						{#each CONTENT_TYPES as ct}
-							<button
-								type="button"
-								class="type-option"
-								class:selected={formData.content_type === ct.value}
-								style:--type-color={ct.color}
-								onclick={() => formData.content_type = ct.value}
-							>
-								<svelte:component this={getContentTypeIcon(ct.value)} size={20} />
-								{ct.label}
-							</button>
-						{/each}
+						<button
+							type="button"
+							class="type-option"
+							class:selected={formData.content_type === ct.value}
+							style:--type-color={ct.color}
+							onclick={() => formData.content_type = ct.value}
+						>
+							{#if ct.value === 'daily_video'}
+								<IconVideo size={20} />
+							{:else if ct.value === 'weekly_watchlist'}
+								<IconListCheck size={20} />
+							{:else if ct.value === 'learning_center'}
+								<IconSchool size={20} />
+							{:else if ct.value === 'room_archive'}
+								<IconArchive size={20} />
+							{/if}
+							{ct.label}
+						</button>
+					{/each}
 					</div>
 				</div>
 
