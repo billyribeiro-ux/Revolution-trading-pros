@@ -28,6 +28,12 @@
 	let activeFilter = 'all';
 	let filteredResources: LearningResource[] = [];
 
+	// Pagination state
+	let currentPage = 1;
+	const itemsPerPage = 9;
+	let totalPages = 1;
+	let paginatedResources: LearningResource[] = [];
+
 	// Category options matching WordPress
 	const categories = [
 		{ id: 'all', label: 'All' },
@@ -125,11 +131,64 @@
 
 	function filterResources(categoryId: string) {
 		activeFilter = categoryId;
+		currentPage = 1; // Reset to first page when filter changes
 		if (categoryId === 'all') {
 			filteredResources = allResources;
 		} else {
 			filteredResources = allResources.filter(r => r.categories.includes(categoryId));
 		}
+		updatePagination();
+	}
+
+	function updatePagination() {
+		totalPages = Math.ceil(filteredResources.length / itemsPerPage);
+		const startIndex = (currentPage - 1) * itemsPerPage;
+		const endIndex = startIndex + itemsPerPage;
+		paginatedResources = filteredResources.slice(startIndex, endIndex);
+	}
+
+	function goToPage(page: number) {
+		if (page >= 1 && page <= totalPages) {
+			currentPage = page;
+			updatePagination();
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+	}
+
+	function getPaginationRange(): (number | string)[] {
+		const range: (number | string)[] = [];
+		const delta = 1;
+
+		if (totalPages <= 7) {
+			for (let i = 1; i <= totalPages; i++) {
+				range.push(i);
+			}
+		} else {
+			// Always show first page
+			range.push(1);
+
+			if (currentPage > 3) {
+				range.push('...');
+			}
+
+			// Pages around current
+			for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+				if (!range.includes(i)) {
+					range.push(i);
+				}
+			}
+
+			if (currentPage < totalPages - 2) {
+				range.push('...');
+			}
+
+			// Always show last page
+			if (!range.includes(totalPages)) {
+				range.push(totalPages);
+			}
+		}
+
+		return range;
 	}
 
 	function getCategoryLabel(categoryId: string): string {
@@ -139,6 +198,7 @@
 
 	onMount(() => {
 		filterResources('all');
+		updatePagination();
 	});
 </script>
 
@@ -177,7 +237,7 @@
 
 		<!-- Learning Resources Grid -->
 		<div class="lc-grid row">
-			{#each filteredResources as resource (resource.id)}
+			{#each paginatedResources as resource (resource.id)}
 				<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 					<article class="article-card">
 						<figure 
@@ -216,6 +276,58 @@
 				</div>
 			{/each}
 		</div>
+
+		<!-- Pagination -->
+		{#if totalPages > 1}
+			<div class="fl-builder-pagination">
+				<ul class="page-numbers">
+					{#if currentPage > 1}
+						<li>
+							<button 
+								class="page-numbers" 
+								on:click={() => goToPage(currentPage - 1)}
+								type="button"
+								aria-label="Previous page"
+							>
+								&laquo;
+							</button>
+						</li>
+					{/if}
+					
+					{#each getPaginationRange() as pageNum}
+						<li>
+							{#if pageNum === '...'}
+								<span class="page-numbers dots">…</span>
+							{:else if pageNum === currentPage}
+								<span class="page-numbers current" aria-current="page">{pageNum}</span>
+							{:else}
+								<button 
+									class="page-numbers" 
+									on:click={() => goToPage(Number(pageNum))}
+									type="button"
+									aria-label="Go to page {pageNum}"
+								>
+									{pageNum}
+								</button>
+							{/if}
+						</li>
+					{/each}
+					
+					{#if currentPage < totalPages}
+						<li>
+							<button 
+								class="page-numbers" 
+								on:click={() => goToPage(currentPage + 1)}
+								type="button"
+								aria-label="Next page"
+							>
+								&raquo;
+							</button>
+						</li>
+					{/if}
+				</ul>
+			</div>
+		{/if}
 	</div>
 </div>
 
@@ -412,6 +524,67 @@
 	.btn-default:hover {
 		background: #dc7309;
 		color: #fff;
+	}
+
+	/* Pagination */
+	.fl-builder-pagination {
+		margin-top: 40px;
+		padding: 20px;
+		background: #f9f9f9;
+		border-radius: 4px;
+		text-align: center;
+	}
+
+	.fl-builder-pagination ul.page-numbers {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: inline-flex;
+		flex-wrap: wrap;
+		gap: 0;
+	}
+
+	.fl-builder-pagination li {
+		display: inline-block;
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+
+	.fl-builder-pagination li button.page-numbers,
+	.fl-builder-pagination li span.page-numbers {
+		border: 1px solid #e6e6e6;
+		display: inline-block;
+		padding: 10px 16px;
+		margin: 0;
+		min-width: 45px;
+		text-align: center;
+		text-decoration: none;
+		color: #1e73be;
+		background: #fff;
+		transition: all 0.2s ease;
+		cursor: pointer;
+		font-family: inherit;
+		font-size: 16px;
+		font-weight: 400;
+	}
+
+	.fl-builder-pagination li button.page-numbers:hover {
+		background: #f5f5f5;
+		border-color: #ccc;
+	}
+
+	.fl-builder-pagination li span.current {
+		background: #1e73be;
+		color: #fff;
+		border-color: #1e73be;
+		font-weight: 600;
+	}
+
+	.fl-builder-pagination li span.dots {
+		background: #fff;
+		cursor: default;
+		color: #333;
 	}
 
 	/* Responsive Grid */
