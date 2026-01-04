@@ -23,8 +23,6 @@ pub struct Tag {
     pub id: i64,
     pub name: String,
     pub slug: String,
-    pub color: Option<String>,
-    pub is_visible: Option<bool>,
     pub created_at: Option<DateTime<Utc>>,
     pub updated_at: Option<DateTime<Utc>>,
 }
@@ -32,7 +30,6 @@ pub struct Tag {
 #[derive(Debug, Deserialize)]
 pub struct TagQuery {
     pub search: Option<String>,
-    pub is_visible: Option<bool>,
     pub sort_by: Option<String>,
     pub sort_dir: Option<String>,
     pub per_page: Option<i64>,
@@ -44,16 +41,12 @@ pub struct TagQuery {
 pub struct CreateTag {
     pub name: String,
     pub slug: String,
-    pub color: String,
-    pub is_visible: Option<bool>,
 }
 
 #[derive(Debug, Deserialize)]
 pub struct UpdateTag {
     pub name: Option<String>,
     pub slug: Option<String>,
-    pub color: Option<String>,
-    pub is_visible: Option<bool>,
 }
 
 /// GET /admin/tags - List all tags
@@ -62,7 +55,7 @@ pub async fn index(
     State(state): State<AppState>,
     Query(params): Query<TagQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let mut query = String::from("SELECT id, name, slug, color, is_visible, created_at, updated_at FROM tags WHERE 1=1");
+    let mut query = String::from("SELECT id, name, slug, created_at, updated_at FROM tags WHERE 1=1");
     let mut conditions = Vec::new();
 
     // Search
@@ -72,11 +65,6 @@ pub async fn index(
             search.replace('\'', "''"),
             search.replace('\'', "''")
         ));
-    }
-
-    // Filter by visibility
-    if let Some(is_visible) = params.is_visible {
-        conditions.push(format!("is_visible = {}", is_visible));
     }
 
     if !conditions.is_empty() {
@@ -154,11 +142,6 @@ pub async fn store(
         return Err(ApiError::validation_error("Slug must contain only lowercase letters, numbers, and hyphens"));
     }
 
-    // Validate color format
-    if !payload.color.starts_with('#') || payload.color.len() != 7 {
-        return Err(ApiError::validation_error("Color must be in #RRGGBB format"));
-    }
-
     // Check if slug already exists
     let exists: bool = sqlx::query_scalar(
         "SELECT EXISTS(SELECT 1 FROM tags WHERE slug = $1)"
@@ -173,14 +156,12 @@ pub async fn store(
     }
 
     let tag: Tag = sqlx::query_as(
-        "INSERT INTO tags (name, slug, color, is_visible, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, NOW(), NOW())
-         RETURNING id, name, slug, color, is_visible, created_at, updated_at"
+        "INSERT INTO tags (name, slug, created_at, updated_at)
+         VALUES ($1, $2, NOW(), NOW())
+         RETURNING id, name, slug, created_at, updated_at"
     )
     .bind(&payload.name)
     .bind(&payload.slug)
-    .bind(&payload.color)
-    .bind(payload.is_visible.unwrap_or(true))
     .fetch_one(state.db.pool())
     .await
     .map_err(|e| ApiError::database_error(&e.to_string()))?;
@@ -228,26 +209,17 @@ pub async fn update(
         }
     }
 
-    // Validate color if provided
-    if let Some(color) = &payload.color {
-        if !color.starts_with('#') || color.len() != 7 {
-            return Err(ApiError::validation_error("Color must be in #RRGGBB format"));
-        }
-    }
-
     // Build dynamic update query
     let mut updates = Vec::new();
     let mut param_count = 1;
 
     if payload.name.is_some() { updates.push(format!("name = ${}", param_count)); param_count += 1; }
     if payload.slug.is_some() { updates.push(format!("slug = ${}", param_count)); param_count += 1; }
-    if payload.color.is_some() { updates.push(format!("color = ${}", param_count)); param_count += 1; }
-    if payload.is_visible.is_some() { updates.push(format!("is_visible = ${}", param_count)); param_count += 1; }
 
     updates.push(format!("updated_at = ${}", param_count));
 
     let query_str = format!(
-        "UPDATE tags SET {} WHERE id = ${} RETURNING id, name, slug, color, is_visible, created_at, updated_at",
+        "UPDATE tags SET {} WHERE id = ${} RETURNING id, name, slug, created_at, updated_at",
         updates.join(", "),
         param_count + 1
     );
@@ -256,8 +228,6 @@ pub async fn update(
 
     if let Some(name) = payload.name { query = query.bind(name); }
     if let Some(slug) = payload.slug { query = query.bind(slug); }
-    if let Some(color) = payload.color { query = query.bind(color); }
-    if let Some(is_visible) = payload.is_visible { query = query.bind(is_visible); }
 
     query = query.bind(Utc::now());
     query = query.bind(id);
