@@ -78,9 +78,24 @@ impl ApiError {
     }
 
     /// Add request ID for tracking
-    pub fn with_request_id(mut self, id: impl Into<String>) -> Self {
-        self.request_id = Some(id.into());
+    pub fn with_request_id(mut self, request_id: impl Into<String>) -> Self {
+        self.request_id = Some(request_id.into());
         self
+    }
+
+    /// Create a database error
+    pub fn database_error(message: &str) -> Self {
+        Self::new(StatusCode::INTERNAL_SERVER_ERROR, message)
+    }
+
+    /// Create a not found error
+    pub fn not_found(message: &str) -> Self {
+        Self::new(StatusCode::NOT_FOUND, message)
+    }
+
+    /// Create a validation error
+    pub fn validation_error(message: &str) -> Self {
+        Self::new(StatusCode::BAD_REQUEST, message)
     }
 
     /// Convert to Axum response tuple
