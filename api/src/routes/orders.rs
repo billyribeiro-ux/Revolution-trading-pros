@@ -13,10 +13,8 @@ use serde::Serialize;
 use uuid::Uuid;
 
 use crate::{
-    middleware::auth::AuthUser,
-    models::{MessageResponse, OrderSummary as ModelOrderSummary, OrderWithItems as ModelOrderWithItems},
+    models::User,
     services::order_service::OrderService,
-    db::Database,
     AppState,
 };
 
@@ -60,10 +58,11 @@ pub struct OrderItemResponse {
 #[tracing::instrument(skip(state))]
 pub async fn index(
     State(state): State<AppState>,
-    auth_user: AuthUser,
+    user: User,
 ) -> Result<Json<serde_json::Value>, (axum::http::StatusCode, Json<serde_json::Value>)> {
     let order_service = OrderService::new(&state.db.pool);
-    let orders = order_service.get_user_orders(auth_user.user_id).await
+    let user_uuid = uuid::Uuid::from_u128(user.id as u128);
+    let orders = order_service.get_user_orders(user_uuid).await
         .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.message}))))?;
 
     let response: Vec<OrderResponse> = orders
@@ -89,12 +88,13 @@ pub async fn index(
 #[tracing::instrument(skip(state))]
 pub async fn show(
     State(state): State<AppState>,
-    auth_user: AuthUser,
+    user: User,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (axum::http::StatusCode, Json<serde_json::Value>)> {
     let order_service = OrderService::new(&state.db.pool);
+    let user_uuid = uuid::Uuid::from_u128(user.id as u128);
     let order = order_service
-        .get_user_order(auth_user.user_id, id)
+        .get_user_order(user_uuid, id)
         .await
         .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.message}))))?
         .ok_or((axum::http::StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "Order not found"}))))?;

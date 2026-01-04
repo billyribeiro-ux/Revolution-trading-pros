@@ -20,3 +20,5 @@ pub use membership::*;
 pub use job::*;
 pub use product::*;
 pub use order_service_types::*;
+pub use subscription::*;
+pub use order::*;
