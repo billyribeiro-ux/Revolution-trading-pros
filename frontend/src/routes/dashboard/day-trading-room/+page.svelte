@@ -18,6 +18,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS - Svelte 5 / TypeScript Best Practice
@@ -339,6 +340,9 @@
 			</div>
 		</section>
 	</div>
+
+	<!-- Trading Room Sidebar - Schedule + Quick Links -->
+	<TradingRoomSidebar />
 </div>
 
 <style>
