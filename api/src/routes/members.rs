@@ -10,7 +10,7 @@ use axum::{
 };
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use chrono::{DateTime, Utc};
+use chrono::NaiveDateTime;
 
 use crate::{
     utils::errors::ApiError,
@@ -24,8 +24,8 @@ pub struct Member {
     pub email: String,
     pub first_name: Option<String>,
     pub last_name: Option<String>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<NaiveDateTime>,
+    pub updated_at: Option<NaiveDateTime>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -248,7 +248,7 @@ pub async fn show(
     match member {
         Some(m) => {
             // Get subscription info
-            let subscriptions: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, Option<f64>, Option<String>, Option<DateTime<Utc>>)>(
+            let subscriptions: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, Option<f64>, Option<String>, Option<NaiveDateTime>)>(
                 "SELECT id, status, price, billing_period, created_at 
                  FROM user_subscriptions WHERE user_id = $1 ORDER BY created_at DESC"
             )
