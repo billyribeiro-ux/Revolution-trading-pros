@@ -573,20 +573,22 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			startDate: new Date().toISOString(),
 			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
 			price: 0,
-			interval: 'monthly'
+			interval: 'monthly',
+			accessUrl: 'https://live.simplertrading.com/spx-profit-pulse'
 		},
 		{
-			id: 'explosive-swing',
-			name: 'Explosive Swing',
+			id: 'explosive-swings',
+			name: 'Explosive Swings',
 			type: 'alert-service',
-			slug: 'explosive-swing',
+			slug: 'explosive-swings',
 			status: 'active',
 			membershipType: 'complimentary',
 			icon: 'rocket',
 			startDate: new Date().toISOString(),
 			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
 			price: 0,
-			interval: 'monthly'
+			interval: 'monthly',
+			accessUrl: 'https://live.simplertrading.com/explosive-swings'
 		},
 		// ═══════════════════════════════════════════════════════════════════════════
 		// COURSES / MENTORSHIP (1)
