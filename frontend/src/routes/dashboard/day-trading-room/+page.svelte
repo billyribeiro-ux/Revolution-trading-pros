@@ -668,22 +668,6 @@
 		margin: 0;
 	}
 
-	.room-sched h4 {
-		font-size: 14px;
-		font-weight: 600;
-		color: #333;
-		margin: 0 0 8px 0;
-		font-family: 'Open Sans', sans-serif;
-	}
-
-	.room-sched span {
-		display: block;
-		font-size: 13px;
-		color: #666;
-		margin-bottom: 20px;
-		line-height: 1.4;
-	}
-
 	.link-list {
 		list-style: none;
 		margin: 0;
