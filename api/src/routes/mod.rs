@@ -30,6 +30,7 @@ pub mod coupons;
 pub mod security;
 pub mod orders;
 pub mod schedules;
+pub mod migrate;
 
 use axum::Router;
 use crate::AppState;
@@ -57,6 +58,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/security", security::router())
         .nest("/schedules", schedules::router())
         .nest("/admin/schedules", schedules::admin_router())
+        .nest("/migrate", migrate::router())
         .nest("/my/orders", orders::router())
         .nest("/my/subscriptions", subscriptions::my_router())
         .nest("/logout", auth::logout_router())
