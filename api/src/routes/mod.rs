@@ -10,6 +10,7 @@ pub mod sitemap;
 pub mod categories;
 pub mod tags;
 pub mod redirects;
+pub mod settings;
 pub mod courses;
 pub mod payments;
 pub mod search;
@@ -59,4 +60,5 @@ pub fn api_router() -> Router<AppState> {
         .merge(categories::router())
         .merge(tags::router())
         .merge(redirects::router())
+        .merge(settings::router())
 }

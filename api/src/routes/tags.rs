@@ -90,10 +90,11 @@ pub async fn index(
     let sort_by = params.sort_by.as_deref().unwrap_or("order");
     let sort_dir = params.sort_dir.as_deref().unwrap_or("asc");
 
+    // Quote "order" as it's a SQL reserved word
     let sort_column = if allowed_columns.contains(&sort_by) {
-        sort_by
+        if sort_by == "order" { "\"order\"" } else { sort_by }
     } else {
-        "order"
+        "\"order\""
     };
 
     let sort_direction = if sort_dir.eq_ignore_ascii_case("desc") {
