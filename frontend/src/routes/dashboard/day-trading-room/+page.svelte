@@ -191,6 +191,12 @@
 <svelte:window onclick={handleClickOutside} onkeydown={handleKeydown} />
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
+	 DASHBOARD LAYOUT - Sidebar at Far Right
+	 ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="dashboard__layout">
+	<div class="dashboard__main-content">
+
+<!-- ═══════════════════════════════════════════════════════════════════════════
 	 DASHBOARD HEADER - Mobile-First Responsive Design
 	 ═══════════════════════════════════════════════════════════════════════════ -->
 <header class="dashboard__header">
@@ -264,7 +270,6 @@
 	 DASHBOARD CONTENT
 	 ═══════════════════════════════════════════════════════════════════════════ -->
 <div class="dashboard__content">
-	<div class="dashboard__content-main">
 		
 		<!-- Welcome Video Section -->
 		<section class="dashboard__content-section-member">
@@ -341,6 +346,8 @@
 		</section>
 	</div>
 
+	</div>
+
 	<!-- Trading Room Sidebar - Schedule + Quick Links -->
 	<TradingRoomSidebar planSlug="day-trading-room" />
 </div>
@@ -348,10 +355,31 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * DAY TRADING ROOM DASHBOARD STYLES
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-		/* ═══════════════════════════════════════════════════════════════════════════
-		 * DASHBOARD HEADER - Mobile-First Responsive Design
-		 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* Dashboard Layout - Sidebar at Far Right */
+	.dashboard__layout {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+	}
+
+	@media (min-width: 992px) {
+		.dashboard__layout {
+			flex-direction: row;
+			gap: 24px;
+			align-items: flex-start;
+		}
+	}
+
+	.dashboard__main-content {
+		flex: 1;
+		min-width: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DASHBOARD HEADER - Mobile-First Responsive Design
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 		.dashboard__header {
 			margin-bottom: 30px;
@@ -643,11 +671,6 @@
 			max-width: 1700px;
 		}
 
-		.dashboard__content-main {
-			flex: 1;
-			min-width: 0;
-		}
-
 		.dashboard__content-section {
 			margin-bottom: 40px;
 		}
@@ -779,10 +802,6 @@
 		max-width: 1700px;
 	}
 
-	.dashboard__content-main {
-		flex: 1;
-		min-width: 0;
-	}
 
 	.dashboard__content-section {
 		margin-bottom: 40px;
