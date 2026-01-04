@@ -243,6 +243,19 @@
 		resetForm();
 	}
 
+	function handleOverlayClick(e: MouseEvent) {
+		// Only close if clicking directly on overlay, not on modal content
+		if (e.target === e.currentTarget) {
+			closeModal();
+		}
+	}
+
+	function handleOverlayKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') {
+			closeModal();
+		}
+	}
+
 	function resetForm() {
 		formData = {
 			plan_id: selectedRoom?.id || 0,
@@ -422,8 +435,17 @@
 
 <!-- Modal -->
 {#if showModal}
-	<div class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1" onclick={closeModal} onkeydown={(e) => e.key === 'Escape' && closeModal()}>
-		<div class="modal" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<div 
+		class="modal-overlay" 
+		role="dialog" 
+		aria-modal="true" 
+		aria-labelledby="modal-title" 
+		tabindex="-1"
+		onclick={handleOverlayClick}
+		onkeydown={handleOverlayKeydown}
+	>
+		<div class="modal" role="document">
 			<div class="modal-header">
 				<h3 id="modal-title">{editingSchedule ? 'Edit Schedule Event' : 'Create Schedule Event'}</h3>
 				<button class="modal-close" onclick={closeModal}>×</button>
