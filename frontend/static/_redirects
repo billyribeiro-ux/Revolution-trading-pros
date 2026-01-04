@@ -1,5 +1,6 @@
 # Cloudflare Pages Redirects - ICT 11+ Configuration
 # Proxy all API calls to Fly.io backend
 # This maintains cookies and authentication across domains
+# Note: Don't double the /api prefix - frontend already includes it
 
-/api/*  https://revolution-trading-pros-api.fly.dev/api/:splat  200
+/api/*  https://revolution-trading-pros-api.fly.dev/:splat  200

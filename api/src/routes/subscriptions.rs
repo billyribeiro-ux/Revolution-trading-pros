@@ -103,7 +103,7 @@ async fn get_plan(
 async fn get_my_subscriptions(
     State(state): State<AppState>,
     user: User,
-) -> Result<Json<Vec<UserSubscriptionRow>>, (StatusCode, Json<serde_json::Value>)> {
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let subscriptions: Vec<UserSubscriptionRow> = sqlx::query_as(
         "SELECT * FROM user_memberships WHERE user_id = $1 ORDER BY created_at DESC"
     )
@@ -112,7 +112,21 @@ async fn get_my_subscriptions(
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-    Ok(Json(subscriptions))
+    // Map to frontend format: { id, status, startDate, nextPayment, total, items }
+    let mapped: Vec<serde_json::Value> = subscriptions.into_iter().map(|sub| {
+        json!({
+            "id": sub.id,
+            "status": sub.status,
+            "startDate": sub.starts_at.format("%Y-%m-%d").to_string(),
+            "nextPayment": sub.current_period_end.map(|d| d.format("%Y-%m-%d").to_string()).unwrap_or_default(),
+            "total": "$0.00", // TODO: Calculate from plan price
+            "items": [] // TODO: Get plan details
+        })
+    }).collect();
+
+    Ok(Json(json!({
+        "subscriptions": mapped
+    })))
 }
 
 /// Get active subscription
