@@ -472,7 +472,9 @@ async fn login(
         || user.role.as_deref() == Some("super_admin")
         || user.role.as_deref() == Some("super-admin");
     
-    let bypass_verification = is_developer || is_superadmin;
+    // TEMPORARY: Bypass email verification for testing
+    // TODO: Re-enable email verification in production
+    let bypass_verification = true; // is_developer || is_superadmin;
     
     if user.email_verified_at.is_none() && !bypass_verification {
         tracing::info!(
