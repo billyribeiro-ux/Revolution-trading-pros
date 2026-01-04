@@ -23,11 +23,10 @@ pub struct Tag {
     pub id: i64,
     pub name: String,
     pub slug: String,
-    pub color: String,
-    pub is_visible: bool,
-    pub order: i32,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub color: Option<String>,
+    pub is_visible: Option<bool>,
+    pub created_at: Option<DateTime<Utc>>,
+    pub updated_at: Option<DateTime<Utc>>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -55,7 +54,6 @@ pub struct UpdateTag {
     pub slug: Option<String>,
     pub color: Option<String>,
     pub is_visible: Option<bool>,
-    pub order: Option<i32>,
 }
 
 /// GET /admin/tags - List all tags
@@ -64,7 +62,7 @@ pub async fn index(
     State(state): State<AppState>,
     Query(params): Query<TagQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let mut query = String::from("SELECT * FROM tags WHERE 1=1");
+    let mut query = String::from("SELECT id, name, slug, color, is_visible, created_at, updated_at FROM tags WHERE 1=1");
     let mut conditions = Vec::new();
 
     // Search
@@ -85,16 +83,15 @@ pub async fn index(
         query.push_str(&format!(" AND {}", conditions.join(" AND ")));
     }
 
-    // Sort
-    let allowed_columns = ["order", "name", "slug", "created_at", "updated_at", "id"];
-    let sort_by = params.sort_by.as_deref().unwrap_or("order");
+    // Sort - default to id since "order" column may not exist in all schemas
+    let allowed_columns = ["name", "slug", "created_at", "updated_at", "id"];
+    let sort_by = params.sort_by.as_deref().unwrap_or("id");
     let sort_dir = params.sort_dir.as_deref().unwrap_or("asc");
 
-    // Quote "order" as it's a SQL reserved word
     let sort_column = if allowed_columns.contains(&sort_by) {
-        if sort_by == "order" { "\"order\"" } else { sort_by }
+        sort_by
     } else {
-        "\"order\""
+        "id"
     };
 
     let sort_direction = if sort_dir.eq_ignore_ascii_case("desc") {
@@ -175,26 +172,15 @@ pub async fn store(
         return Err(ApiError::validation_error("Slug already exists"));
     }
 
-    // Get max order for new tag
-    let max_order: Option<i32> = sqlx::query_scalar(
-        "SELECT MAX(\"order\") FROM tags"
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    let new_order = max_order.unwrap_or(0) + 1;
-
     let tag: Tag = sqlx::query_as(
-        "INSERT INTO tags (name, slug, color, is_visible, \"order\", created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, NOW(), NOW())
-         RETURNING *"
+        "INSERT INTO tags (name, slug, color, is_visible, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, NOW(), NOW())
+         RETURNING id, name, slug, color, is_visible, created_at, updated_at"
     )
     .bind(&payload.name)
     .bind(&payload.slug)
     .bind(&payload.color)
     .bind(payload.is_visible.unwrap_or(true))
-    .bind(new_order)
     .fetch_one(state.db.pool())
     .await
     .map_err(|e| ApiError::database_error(&e.to_string()))?;
@@ -257,12 +243,11 @@ pub async fn update(
     if payload.slug.is_some() { updates.push(format!("slug = ${}", param_count)); param_count += 1; }
     if payload.color.is_some() { updates.push(format!("color = ${}", param_count)); param_count += 1; }
     if payload.is_visible.is_some() { updates.push(format!("is_visible = ${}", param_count)); param_count += 1; }
-    if payload.order.is_some() { updates.push(format!("\"order\" = ${}", param_count)); param_count += 1; }
 
     updates.push(format!("updated_at = ${}", param_count));
 
     let query_str = format!(
-        "UPDATE tags SET {} WHERE id = ${} RETURNING *",
+        "UPDATE tags SET {} WHERE id = ${} RETURNING id, name, slug, color, is_visible, created_at, updated_at",
         updates.join(", "),
         param_count + 1
     );
@@ -273,7 +258,6 @@ pub async fn update(
     if let Some(slug) = payload.slug { query = query.bind(slug); }
     if let Some(color) = payload.color { query = query.bind(color); }
     if let Some(is_visible) = payload.is_visible { query = query.bind(is_visible); }
-    if let Some(order) = payload.order { query = query.bind(order); }
 
     query = query.bind(Utc::now());
     query = query.bind(id);
