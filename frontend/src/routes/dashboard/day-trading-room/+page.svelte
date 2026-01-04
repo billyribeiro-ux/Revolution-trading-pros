@@ -9,6 +9,8 @@
 	 * @version 2.0.0
 	 */
 	import { onMount } from 'svelte';
+	// DEACTIVATED: Sidebar commented out for layout optimization
+	// import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
 
 	// Article data - matches WordPress structure
 	const articles = [
@@ -227,6 +229,10 @@
 			</ul>
 		</section>
 	</aside>
+
+	<!-- DEACTIVATED: New TradingRoomSidebar component - Commented out for layout optimization
+	<TradingRoomSidebar planSlug="day-trading-room" />
+	-->
 </div>
 
 <style>
