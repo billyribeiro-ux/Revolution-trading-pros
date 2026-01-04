@@ -3,7 +3,8 @@
 	Pixel-perfect extraction from WordPress DASHMAIN
 	
 	ICT 11+ Apple Principal Engineer Implementation:
-	- Google Calendar API integration (exact same as WordPress)
+	- Backend API integration (database-backed schedules)
+	- Per-room schedule support (Day Trading, Swing Trading, Small Account Mentorship)
 	- Exponential backoff retry logic (3 attempts)
 	- Circuit breaker pattern (prevents API abuse)
 	- localStorage caching with 5-minute TTL
@@ -14,7 +15,7 @@
 	- Error boundary with user-friendly messages
 	- Accessibility improvements (ARIA live regions)
 	
-	@version 2.0.0 - ICT 11+ Enterprise Grade
+	@version 3.0.0 - ICT 11+ Backend Integration
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
@@ -26,8 +27,19 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	interface ScheduleEvent {
-		summary: string;
-		startDateTime: string;
+		id: number;
+		title: string;
+		trader_name: string | null;
+		event_date: string;
+		start_time: string;
+		end_time: string;
+		date_time: string;
+		timezone: string;
+		is_cancelled: boolean;
+	}
+
+	interface Props {
+		planSlug?: string;
 	}
 
 	interface CacheEntry {
@@ -56,16 +68,19 @@
 	let lastFetchTime = $state<number>(0);
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// PROPS - Per-room schedule support
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	let { planSlug = 'day-trading-room' }: Props = $props();
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// CONFIGURATION - ICT 11+ Enterprise Settings
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Google Calendar API configuration (exact same as WordPress)
-	const CALENDAR_CONFIG = {
-		CLIENT_ID: '656301048421-g2s2jvb2pe772mnj8j8it67eirh4jq1f.apps.googleusercontent.com',
-		API_KEY: 'AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw',
-		CALENDAR_ID: 'simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com',
-		DISCOVERY_DOCS: ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'],
-		SCOPES: 'https://www.googleapis.com/auth/calendar.readonly'
+	// Backend API configuration
+	const API_CONFIG = {
+		baseUrl: '/api/schedules',
+		daysAhead: 7
 	};
 
 	// ICT 11+ Retry configuration
@@ -233,37 +248,22 @@
 		return Math.min(delay, RETRY_CONFIG.maxDelay);
 	}
 
-	async function fetchCalendarWithRetry(attempt: number = 0): Promise<ScheduleEvent[]> {
+	async function fetchScheduleWithRetry(attempt: number = 0): Promise<ScheduleEvent[]> {
 		const startTime = Date.now();
 
 		try {
-			// Load Google API
-			await loadGoogleAPI();
-			
-			// Initialize gapi client
-			await (window as any).gapi.client.init({
-				apiKey: CALENDAR_CONFIG.API_KEY,
-				clientId: CALENDAR_CONFIG.CLIENT_ID,
-				discoveryDocs: CALENDAR_CONFIG.DISCOVERY_DOCS,
-				scope: CALENDAR_CONFIG.SCOPES
-			});
+			// Fetch from backend API
+			const response = await fetch(
+				`${API_CONFIG.baseUrl}/${planSlug}/upcoming?days=${API_CONFIG.daysAhead}`,
+				{ credentials: 'include' }
+			);
 
-			// Fetch calendar events (exact same as WordPress)
-			const response = await (window as any).gapi.client.calendar.events.list({
-				calendarId: CALENDAR_CONFIG.CALENDAR_ID,
-				timeMin: new Date().toISOString(),
-				showDeleted: false,
-				singleEvents: true,
-				maxResults: 10,
-				orderBy: 'startTime',
-				fields: 'items(summary,start/dateTime)'
-			});
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+			}
 
-			const items = response.result.items || [];
-			const events = items.map((item: any) => ({
-				summary: item.summary,
-				startDateTime: item.start.dateTime
-			}));
+			const data = await response.json();
+			const events: ScheduleEvent[] = data.events || [];
 
 			const duration = Date.now() - startTime;
 			logCalendarAPI({
@@ -292,7 +292,7 @@
 			if (attempt < RETRY_CONFIG.maxAttempts - 1) {
 				const backoffDelay = calculateBackoff(attempt);
 				await sleep(backoffDelay);
-				return fetchCalendarWithRetry(attempt + 1);
+				return fetchScheduleWithRetry(attempt + 1);
 			}
 
 			recordFailure();
@@ -332,7 +332,7 @@
 
 		try {
 			// Fetch with retry logic
-			const events = await fetchCalendarWithRetry();
+			const events = await fetchScheduleWithRetry();
 			
 			// Update state
 			scheduleEvents = events;
@@ -354,24 +354,6 @@
 			}
 			scheduleLoading = false;
 		}
-	}
-
-	// Load Google API script
-	function loadGoogleAPI(): Promise<void> {
-		return new Promise((resolve, reject) => {
-			if ((window as any).gapi) {
-				resolve();
-				return;
-			}
-
-			const script = document.createElement('script');
-			script.src = 'https://apis.google.com/js/api.js';
-			script.onload = () => {
-				(window as any).gapi.load('client', () => resolve());
-			};
-			script.onerror = reject;
-			document.head.appendChild(script);
-		});
 	}
 
 	// Format date for display
@@ -417,8 +399,11 @@
 					{/if}
 					{#each scheduleEvents as event}
 						<div class="schedule-event">
-							<h4>{event.summary}</h4>
-							<span>{formatEventDate(event.startDateTime)}</span>
+							<h4>{event.title}</h4>
+							<span>{formatEventDate(event.date_time)}</span>
+							{#if event.trader_name}
+								<span class="event-trader">with {event.trader_name}</span>
+							{/if}
 						</div>
 					{/each}
 				{/if}
@@ -549,6 +534,13 @@
 		font-family: 'Montserrat', var(--font-body), sans-serif;
 		display: block;
 		line-height: 1.5;
+	}
+
+	.schedule-event .event-trader {
+		font-size: 11px;
+		color: #888;
+		font-style: italic;
+		margin-top: 2px;
 	}
 
 	/* Schedule states */

@@ -29,6 +29,7 @@ pub mod contacts;
 pub mod coupons;
 pub mod security;
 pub mod orders;
+pub mod schedules;
 
 use axum::Router;
 use crate::AppState;
@@ -54,6 +55,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/contacts", contacts::router())
         .nest("/coupons", coupons::router())
         .nest("/security", security::router())
+        .nest("/schedules", schedules::router())
+        .nest("/admin/schedules", schedules::admin_router())
         .nest("/my/orders", orders::router())
         .nest("/my/subscriptions", subscriptions::my_router())
         .nest("/logout", auth::logout_router())

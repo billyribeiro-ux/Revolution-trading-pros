@@ -342,7 +342,7 @@
 	</div>
 
 	<!-- Trading Room Sidebar - Schedule + Quick Links -->
-	<TradingRoomSidebar />
+	<TradingRoomSidebar planSlug="day-trading-room" />
 </div>
 
 <style>
