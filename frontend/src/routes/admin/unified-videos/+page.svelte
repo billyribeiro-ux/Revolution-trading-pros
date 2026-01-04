@@ -700,7 +700,7 @@
 
 <!-- Upload/Edit Modal -->
 {#if showUploadModal || showEditModal}
-	<!-- svelte-ignore a11y-no-noninteractive-element-interactions -->
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div 
 		class="modal-overlay" 
 		role="button"
@@ -709,8 +709,8 @@
 		onclick={closeModals}
 		onkeydown={(e) => e.key === 'Escape' && closeModals()}
 	>
-		<!-- svelte-ignore a11y-no-static-element-interactions -->
-		<div class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="modal-title" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+		<!-- svelte-ignore a11y_no_static_element_interactions -->
+		<div class="modal modal-large" role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 			<div class="modal-header">
 				<h2 id="modal-title">{showEditModal ? 'Edit Video' : 'Add New Video'}</h2>
 				<button class="modal-close" onclick={closeModals}>&times;</button>
