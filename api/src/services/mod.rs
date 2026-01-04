@@ -5,6 +5,8 @@ pub mod storage;
 pub mod email;
 pub mod stripe;
 pub mod search;
+pub mod order_service;
+pub mod subscription_service;
 
 use anyhow::Result;
 use crate::config::Config;
