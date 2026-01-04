@@ -894,3 +894,9 @@ pub fn router() -> Router<AppState> {
         .route("/verify-email", get(verify_email))
         .route("/resend-verification", post(resend_verification))
 }
+
+/// Router for /logout at top level (frontend compatibility)
+pub fn logout_router() -> Router<AppState> {
+    Router::new()
+        .route("/", post(logout))
+}

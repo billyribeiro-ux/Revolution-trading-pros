@@ -47,4 +47,6 @@ pub fn api_router() -> Router<AppState> {
         .nest("/coupons", coupons::router())
         .nest("/security", security::router())
         .nest("/my/orders", orders::router())
+        .nest("/my/subscriptions", subscriptions::my_router())
+        .nest("/logout", auth::logout_router())
 }

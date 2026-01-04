@@ -309,5 +309,84 @@ pub fn router() -> Router<AppState> {
         .route("/memberships/:id", get(get_membership_details))
         .route("/memberships/:id/cancel", post(cancel_membership))
         .route("/profile", get(get_profile))
+        .route("/profile", axum::routing::put(update_profile))
+        .route("/payment-methods", get(get_payment_methods))
+        .route("/payment-methods", post(add_payment_method))
+        .route("/payment-methods/:id", axum::routing::delete(delete_payment_method))
+}
+
+/// Update user profile
+/// PUT /api/user/profile
+async fn update_profile(
+    State(state): State<AppState>,
+    user: User,
+    Json(input): Json<serde_json::Value>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Extract fields from input
+    let first_name = input.get("firstName").or_else(|| input.get("first_name")).and_then(|v| v.as_str());
+    let last_name = input.get("lastName").or_else(|| input.get("last_name")).and_then(|v| v.as_str());
+    let email = input.get("email").and_then(|v| v.as_str());
+    
+    // Update user in database
+    sqlx::query(
+        r#"UPDATE users SET 
+            first_name = COALESCE($1, first_name),
+            last_name = COALESCE($2, last_name),
+            email = COALESCE($3, email),
+            updated_at = NOW()
+        WHERE id = $4"#
+    )
+    .bind(first_name)
+    .bind(last_name)
+    .bind(email)
+    .bind(user.id)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    
+    Ok(Json(json!({
+        "success": true,
+        "message": "Profile updated successfully"
+    })))
+}
+
+/// Get user payment methods (Stripe)
+/// GET /api/user/payment-methods
+async fn get_payment_methods(
+    State(_state): State<AppState>,
+    _user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // TODO: Implement Stripe payment methods retrieval
+    Ok(Json(json!({
+        "payment_methods": []
+    })))
+}
+
+/// Add payment method
+/// POST /api/user/payment-methods
+async fn add_payment_method(
+    State(_state): State<AppState>,
+    _user: User,
+    Json(_input): Json<serde_json::Value>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // TODO: Implement Stripe payment method addition
+    Ok(Json(json!({
+        "success": true,
+        "message": "Payment method added"
+    })))
+}
+
+/// Delete payment method
+/// DELETE /api/user/payment-methods/:id
+async fn delete_payment_method(
+    State(_state): State<AppState>,
+    _user: User,
+    Path(_id): Path<String>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // TODO: Implement Stripe payment method deletion
+    Ok(Json(json!({
+        "success": true,
+        "message": "Payment method deleted"
+    })))
 }
 

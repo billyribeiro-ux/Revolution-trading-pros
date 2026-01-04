@@ -480,6 +480,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/validate", post(validate_coupon))
         .route("/my", get(get_user_coupons))
+        .route("/user/available", get(get_user_coupons))  // Frontend compatibility
         .route("/", get(list_coupons))
         .route("/", post(create_coupon))
         .route("/:id", axum::routing::put(update_coupon))

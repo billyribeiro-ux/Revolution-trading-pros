@@ -279,3 +279,29 @@ pub fn router() -> Router<AppState> {
         .route("/:id/cancel", post(cancel_subscription))
         .route("/metrics", get(get_metrics))
 }
+
+/// Router for /my/subscriptions path (frontend compatibility)
+pub fn my_router() -> Router<AppState> {
+    Router::new()
+        .route("/", get(get_my_subscriptions))
+        .route("/:id", get(get_subscription_by_id))
+}
+
+/// Get single subscription by ID
+async fn get_subscription_by_id(
+    State(state): State<AppState>,
+    user: User,
+    Path(id): Path<i64>,
+) -> Result<Json<UserSubscriptionRow>, (StatusCode, Json<serde_json::Value>)> {
+    let subscription: UserSubscriptionRow = sqlx::query_as(
+        "SELECT * FROM user_memberships WHERE id = $1 AND user_id = $2"
+    )
+    .bind(id)
+    .bind(user.id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Subscription not found"}))))?;
+
+    Ok(Json(subscription))
+}
