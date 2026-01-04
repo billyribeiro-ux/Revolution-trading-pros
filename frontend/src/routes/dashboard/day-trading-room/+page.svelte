@@ -191,10 +191,9 @@
 <svelte:window onclick={handleClickOutside} onkeydown={handleKeydown} />
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
-	 DASHBOARD LAYOUT - Sidebar at Far Right
+	 DASHBOARD LAYOUT - Mobile First Responsive
+	 SIDEBAR DEACTIVATED: Commented out for layout optimization purposes
 	 ═══════════════════════════════════════════════════════════════════════════ -->
-<div class="dashboard__layout">
-	<div class="dashboard__main-content">
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
 	 DASHBOARD HEADER - Mobile-First Responsive Design
@@ -343,69 +342,48 @@
 				</div>
 			</div>
 		</section>
-	</div>
-	<!-- End dashboard__content -->
-
 </div>
-<!-- End dashboard__main-content -->
+<!-- End dashboard__content -->
 
-<!-- Trading Room Sidebar - Schedule + Quick Links -->
+<!-- ═══════════════════════════════════════════════════════════════════════════
+	 TRADING ROOM SIDEBAR - DEACTIVATED FOR LAYOUT OPTIMIZATION
+	 Temporarily commented out to fix layout issues and ensure mobile-first design
+	 ═══════════════════════════════════════════════════════════════════════════
 <TradingRoomSidebar planSlug="day-trading-room" />
-
-</div>
-<!-- End dashboard__layout -->
+-->
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DAY TRADING ROOM DASHBOARD STYLES
+	 * DAY TRADING ROOM DASHBOARD STYLES - MOBILE FIRST RESPONSIVE
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	/* Dashboard Layout - Sidebar at Far Right */
-	.dashboard__layout {
-		display: flex;
-		flex-direction: column;
-		gap: 0;
-	}
-
-	@media (min-width: 992px) {
-		.dashboard__layout {
-			flex-direction: row;
-			gap: 24px;
-			align-items: flex-start;
-		}
-	}
-
-	.dashboard__main-content {
-		flex: 1;
-		min-width: 0;
-	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * DASHBOARD HEADER - Mobile-First Responsive Design
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	.dashboard__header {
+		margin-bottom: 20px;
+		padding: 15px;
+	}
+
+	@media (min-width: 768px) {
 		.dashboard__header {
 			margin-bottom: 30px;
-			padding: 15px;
+			padding: 20px;
 		}
+	}
 
-		@media (min-width: 768px) {
-			.dashboard__header {
-				padding: 20px;
-			}
+	@media (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
 		}
+	}
 
-		@media (min-width: 1280px) {
-			.dashboard__header {
-				padding: 30px;
-			}
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
 		}
-
-		@media (min-width: 1440px) {
-			.dashboard__header {
-				padding: 30px 40px;
-			}
-		}
+	}
 
 		/* Title Row - Mobile: stacked, Desktop: inline */
 		.dashboard__header-title-row {
@@ -663,28 +641,52 @@
 			color: #143E59;
 		}
 
-		/* ═══════════════════════════════════════════════════════════════════════════
-		 * DASHBOARD CONTENT LAYOUT - WordPress Exact Match
-		 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DASHBOARD CONTENT LAYOUT - Mobile First Responsive
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	.dashboard__content {
+		display: flex;
+		flex-direction: column;
+		gap: 0;
+		padding: 15px;
+	}
+
+	@media (min-width: 768px) {
 		.dashboard__content {
-			display: flex;
-			flex-direction: column;
-			gap: 0;
+			padding: 20px;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.dashboard__content {
 			padding: 30px;
 		}
+	}
 
+	.dashboard__content-section {
+		margin-bottom: 30px;
+	}
+
+	@media (min-width: 768px) {
 		.dashboard__content-section {
 			margin-bottom: 40px;
 		}
+	}
 
+	.section-title {
+		font-size: 20px;
+		font-weight: 700;
+		color: #333;
+		margin: 0 0 16px 0;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	@media (min-width: 768px) {
 		.section-title {
 			font-size: 24px;
-			font-weight: 700;
-			color: #333;
-			margin: 0 0 16px 0;
-			font-family: var(--font-heading), 'Montserrat', sans-serif;
 		}
+	}
 
 	/* Welcome Video Section */
 	.dashboard__content-section-member {
