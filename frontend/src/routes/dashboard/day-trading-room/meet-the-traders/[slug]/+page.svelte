@@ -235,11 +235,13 @@
 													<div class="trader_pills">
 														{#each traderPills as pill}
 															<div class="trader_pill">
-																<a href="/dashboard/day-trading-room/meet-the-traders/{trader.slug}{pill.path === '/trader-store' ? '' : pill.path}"
+																<a href="/dashboard/day-trading-room/meet-the-traders/{trader.slug}{pill.path}"
 																   class:active={pill.path === ''}
 																   on:click|preventDefault={() => {
 																	   if (pill.path === '/trader-store') {
 																		   window.location.href = `/dashboard/day-trading-room/trader-store/${trader?.slug}`;
+																	   } else {
+																		   window.location.href = `/dashboard/day-trading-room/meet-the-traders/${trader?.slug}${pill.path}`;
 																	   }
 																   }}>
 																	{pill.label}
