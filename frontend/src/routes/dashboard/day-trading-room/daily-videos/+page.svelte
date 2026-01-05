@@ -191,7 +191,6 @@
 						oninput={handleSearch}
 						aria-label="Search premium daily videos"
 						autocomplete="off"
-						style="width: 200px;"
 					/>
 					<button 
 						type="button" 
@@ -345,8 +344,8 @@
 		border: 1px solid #ddd;
 		border-left: none;
 		border-radius: 0 4px 4px 0;
-		background: #fff;
-		color: #666;
+		background: #F69532;
+		color: #fff;
 		cursor: pointer;
 		transition: all 0.2s ease;
 		font-family: 'Montserrat', sans-serif;
@@ -356,8 +355,8 @@
 	}
 
 	.facetwp-autocomplete-update:hover {
-		background: #f5f5f5;
-		color: #333;
+		background: #dc7309;
+		color: #fff;
 	}
 
 	.facetwp-counts {
@@ -567,14 +566,9 @@
 		display: inline-block;
 	}
 
-	/* Search Button Override */
+	/* Search Button SVG */
 	.facetwp-autocomplete-update svg {
 		display: block;
-	}
-
-	.facetwp-autocomplete-update:hover {
-		background: #dc7309;
-		color: #fff;
 	}
 
 	/* Responsive Grid - Mobile First */
