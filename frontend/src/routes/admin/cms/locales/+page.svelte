@@ -16,7 +16,6 @@
 		IconEdit,
 		IconTrash,
 		IconLanguage,
-		IconGlobe,
 		IconChevronRight,
 		IconSearch,
 		IconRefresh
@@ -202,7 +201,7 @@
 				</div>
 			{:else if locales.length === 0}
 				<div class="empty-state small">
-					<IconGlobe size={32} />
+					<IconWorld size={32} />
 					<p>No languages configured</p>
 				</div>
 			{:else}
@@ -314,7 +313,7 @@
 				{/if}
 			{:else}
 				<div class="no-selection">
-					<IconGlobe size={48} />
+					<IconWorld size={48} />
 					<h3>Select a language</h3>
 					<p>Choose a language from the list to view and manage translations</p>
 				</div>
@@ -324,7 +323,15 @@
 
 	<!-- Add Locale Modal -->
 	{#if showAddLocale}
-		<div class="modal-overlay" onclick={() => showAddLocale = false} transition:fade={{ duration: 200 }}></div>
+		<div 
+			class="modal-overlay" 
+			onclick={() => showAddLocale = false}
+			onkeydown={(e) => { if (e.key === 'Escape') showAddLocale = false; }}
+			role="button"
+			tabindex="-1"
+			aria-label="Close modal"
+			transition:fade={{ duration: 200 }}
+		></div>
 		<div class="modal" in:fly={{ y: 50, duration: 400 }}>
 			<div class="modal-header">
 				<h2>Add Language</h2>
