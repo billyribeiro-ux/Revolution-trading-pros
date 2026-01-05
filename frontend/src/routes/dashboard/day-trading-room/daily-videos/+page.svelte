@@ -603,8 +603,8 @@
 		}
 	}
 
-	/* Large devices (lg: 992px and up) */
-	@media (min-width: 992px) {
+	/* Large devices (lg: 900px and up) - Adjusted for 14" laptops */
+	@media (min-width: 900px) {
 		.col-lg-4 {
 			width: 33.333333%;
 		}
