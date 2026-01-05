@@ -29,7 +29,12 @@
 			poster: 'https://cdn.simplertrading.com/2025/03/09130833/Melissa-WeeklyWatchlist.jpg',
 			videoUrl: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-MB-01032026.mp4',
 			spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml',
-			isLatest: true
+			isLatest: true,
+			watchlistDates: [
+				{ date: '1/3/2026', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' },
+				{ date: '5/28/2025', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' },
+				{ date: '3/9/2025', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' }
+			]
 		},
 		{
 			slug: '12292025-david-starr',
@@ -58,6 +63,8 @@
 	let currentEntry = $state<typeof watchlistEntries[0] | null>(null);
 	let previousEntry = $state<typeof watchlistEntries[0] | null>(null);
 	let nextEntry = $state<typeof watchlistEntries[0] | null>(null);
+	let selectedDateIndex = $state(0);
+	let currentSpreadsheetUrl = $state('');
 
 	// Get current slug from URL
 	const slug = $derived($page.params.slug);
@@ -93,6 +100,22 @@
 	function setTab(tab: 'rundown' | 'watchlist') {
 		activeTab = tab;
 	}
+
+	function selectDate(index: number) {
+		selectedDateIndex = index;
+		if (currentEntry?.watchlistDates?.[index]) {
+			currentSpreadsheetUrl = currentEntry.watchlistDates[index].spreadsheetUrl;
+		}
+	}
+
+	// Initialize spreadsheet URL when entry changes
+	$effect(() => {
+		if (currentEntry?.watchlistDates?.[selectedDateIndex]) {
+			currentSpreadsheetUrl = currentEntry.watchlistDates[selectedDateIndex].spreadsheetUrl;
+		} else if (currentEntry?.spreadsheetUrl) {
+			currentSpreadsheetUrl = currentEntry.spreadsheetUrl;
+		}
+	});
 </script>
 
 <svelte:head>
@@ -188,15 +211,34 @@
 
 				<!-- Watchlist Tab Content -->
 				<div class="tab-content" class:active={activeTab === 'watchlist'}>
-					{#if currentEntry?.spreadsheetUrl}
+					{#if currentSpreadsheetUrl}
 						<div class="ww-spreadsheet">
 							<iframe 
-								src={currentEntry.spreadsheetUrl} 
+								src={currentSpreadsheetUrl} 
 								width="100%" 
 								height="700"
 								title="Weekly Watchlist Spreadsheet"
 							></iframe>
 						</div>
+
+						<!-- Date Switcher -->
+						{#if currentEntry?.watchlistDates && currentEntry.watchlistDates.length > 1}
+							<table class="switcherTable">
+								<tbody>
+									<tr>
+										{#each currentEntry.watchlistDates as dateOption, index}
+											<td 
+												class:switcherItemActive={selectedDateIndex === index}
+												class:switcherItem={selectedDateIndex !== index}
+												onclick={() => selectDate(index)}
+											>
+												{dateOption.date}
+											</td>
+										{/each}
+									</tr>
+								</tbody>
+							</table>
+						{/if}
 					{/if}
 				</div>
 			</div>
@@ -398,6 +440,46 @@
 	.ww-spreadsheet iframe {
 		display: block;
 		border: none;
+	}
+
+	/* Date Switcher */
+	.switcherTable {
+		width: 100%;
+		margin-top: 20px;
+		border-collapse: collapse;
+	}
+
+	.switcherTable tbody tr {
+		display: flex;
+		justify-content: center;
+		gap: 10px;
+	}
+
+	.switcherTable td {
+		padding: 10px 20px;
+		font-size: 14px;
+		font-weight: 600;
+		cursor: pointer;
+		border-radius: 5px;
+		transition: all 0.2s ease;
+		font-family: 'Open Sans', sans-serif;
+	}
+
+	.switcherItem {
+		background: #f5f5f5;
+		color: #666;
+		border: 1px solid #e5e5e5;
+	}
+
+	.switcherItem:hover {
+		background: #e8e8e8;
+		color: #333;
+	}
+
+	.switcherItemActive {
+		background: #143E59;
+		color: #fff;
+		border: 1px solid #143E59;
 	}
 
 	/* Responsive */
