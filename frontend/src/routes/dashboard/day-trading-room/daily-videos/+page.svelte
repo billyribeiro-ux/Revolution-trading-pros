@@ -577,6 +577,11 @@
 	}
 
 	/* Responsive Grid */
+	/* Column Widths - WordPress Grid System */
+	.col-lg-4 {
+		width: 33.333333%;
+	}
+
 	@media (max-width: 991px) {
 		.col-md-6 {
 			width: 50%;
