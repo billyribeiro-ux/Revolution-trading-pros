@@ -210,12 +210,15 @@
 					{#each locales as locale, i}
 						{@const info = getLocaleInfo(locale.code)}
 						{@const completion = getCompletionRate(locale)}
-						<button
+						<div
 							class="locale-item"
 							class:selected={selectedLocale?.id === locale.id}
 							class:inactive={!locale.is_active}
 							in:fly={{ x: -20, duration: 300, delay: i * 50 }}
 							onclick={() => selectLocale(locale)}
+							role="button"
+							tabindex="0"
+							onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') selectLocale(locale); }}
 						>
 							<span class="locale-flag">{info.flag}</span>
 							<div class="locale-info">
@@ -242,7 +245,7 @@
 								</button>
 							</div>
 							<IconChevronRight size={16} class="chevron" />
-						</button>
+						</div>
 					{/each}
 				</div>
 			{/if}
