@@ -345,8 +345,9 @@
 				</div>
 
 				<div class="form-group">
-					<label id="events-label">Events</label>
-					<div class="events-grid" role="group" aria-labelledby="events-label">
+					<fieldset>
+						<legend id="events-label">Events</legend>
+						<div class="events-grid" role="group" aria-labelledby="events-label">
 						{#each availableEvents as event}
 							<button
 								type="button"
@@ -360,7 +361,8 @@
 								{event}
 							</button>
 						{/each}
-					</div>
+						</div>
+					</fieldset>
 				</div>
 
 				<div class="form-group toggle-group">
