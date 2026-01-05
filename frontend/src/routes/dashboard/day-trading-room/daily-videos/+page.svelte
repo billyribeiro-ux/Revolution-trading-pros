@@ -185,12 +185,20 @@
 				<div class="dashboard-filters__search">
 					<input 
 						type="text" 
-						class="facetwp-search" 
+						class="facetwp-autocomplete" 
 						placeholder="Search" 
 						value={searchQuery}
 						oninput={handleSearch}
 						aria-label="Search premium daily videos"
+						autocomplete="off"
 					/>
+					<button 
+						type="button" 
+						class="facetwp-autocomplete-update"
+						aria-label="Search"
+					>
+						🔍
+					</button>
 				</div>
 			</div>
 			<div id="products-list" class="facetwp-template">
@@ -243,52 +251,33 @@
 				</div>
 				<div class="facetwp-pagination">
 					<div class="facetwp-pager">
-			<ul class="page-numbers">
-				{#if currentPage > 1}
-					<li>
-						<button 
-							class="page-numbers" 
-							onclick={() => goToPage(currentPage - 1)}
-							type="button"
-							aria-label="Previous page"
-						>
-							&laquo;
-						</button>
-					</li>
-				{/if}
-				
-				{#each getPaginationRange() as pageNum}
-					<li>
-						{#if pageNum === '...'}
-							<span class="page-numbers dots">…</span>
-						{:else if pageNum === currentPage}
-							<span class="page-numbers current" aria-current="page">{pageNum}</span>
-						{:else}
-							<button 
-								class="page-numbers" 
-								onclick={() => goToPage(Number(pageNum))}
-								type="button"
-								aria-label="Go to page {pageNum}"
-							>
-								{pageNum}
-							</button>
-						{/if}
-					</li>
-				{/each}
-				
-				{#if currentPage < totalPages}
-					<li>
-						<button 
-							class="page-numbers" 
-							onclick={() => goToPage(currentPage + 1)}
-							type="button"
-							aria-label="Next page"
-						>
-							&raquo;
-						</button>
-					</li>
-				{/if}
-					</ul>
+						{#each getPaginationRange() as pageNum}
+							{#if pageNum === currentPage}
+								<a class="facetwp-page active" data-page="{pageNum}" aria-current="page">{pageNum}</a>
+							{:else if pageNum === totalPages && pageNum !== currentPage}
+								<a 
+									class="facetwp-page last-page" 
+									data-page="{pageNum}"
+									onclick={() => goToPage(Number(pageNum))}
+									role="button"
+									tabindex="0"
+									onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') goToPage(Number(pageNum)); }}
+								>
+									<span class="fa fa-angle-double-right"></span>
+								</a>
+							{:else if pageNum !== '...'}
+								<a 
+									class="facetwp-page" 
+									data-page="{pageNum}"
+									onclick={() => goToPage(Number(pageNum))}
+									role="button"
+									tabindex="0"
+									onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') goToPage(Number(pageNum)); }}
+								>
+									{pageNum}
+								</a>
+							{/if}
+						{/each}
 					</div>
 				</div>
 			</div>
@@ -322,28 +311,47 @@
 		flex: 0 0 auto;
 		min-width: 300px;
 		max-width: 400px;
+		display: flex;
+		gap: 5px;
 	}
 	
-	.facetwp-search {
-		width: 100%;
+	.facetwp-autocomplete {
+		flex: 1;
 		padding: 10px 15px;
 		font-size: 14px;
 		border: 1px solid #ddd;
-		border-radius: 4px;
+		border-radius: 4px 0 0 4px;
 		background: #fff;
 		color: #333;
 		font-family: inherit;
 		transition: border-color 0.2s ease;
 	}
 	
-	.facetwp-search:focus {
+	.facetwp-autocomplete:focus {
 		outline: none;
 		border-color: #F69532;
 		box-shadow: 0 0 0 2px rgba(246, 149, 50, 0.1);
 	}
 	
-	.facetwp-search::placeholder {
+	.facetwp-autocomplete::placeholder {
 		color: #999;
+	}
+
+	.facetwp-autocomplete-update {
+		padding: 10px 15px;
+		font-size: 16px;
+		border: 1px solid #ddd;
+		border-left: none;
+		border-radius: 0 4px 4px 0;
+		background: #fff;
+		color: #666;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.facetwp-autocomplete-update:hover {
+		background: #f5f5f5;
+		color: #333;
 	}
 
 	.facetwp-counts {
@@ -506,60 +514,65 @@
 	/* Pagination */
 	.facetwp-pagination {
 		padding: 40px 0;
-	}
-
-	.facetwp-pagination ul.page-numbers {
-		list-style: none;
-		margin: 0;
-		padding: 0;
 		text-align: center;
-		display: flex;
-		justify-content: center;
-		align-items: center;
+	}
+
+	.facetwp-pager {
+		display: inline-flex;
 		gap: 5px;
-		flex-wrap: wrap;
+		align-items: center;
 	}
 
-	.facetwp-pagination li {
-		display: inline-block;
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.facetwp-pagination li button.page-numbers,
-	.facetwp-pagination li span.page-numbers {
-		border: 1px solid #e6e6e6;
+	.facetwp-page {
 		display: inline-block;
 		padding: 8px 12px;
-		margin: 0;
-		min-width: 40px;
-		text-align: center;
-		text-decoration: none;
-		color: #333;
+		border: 1px solid #e6e6e6;
 		background: #fff;
-		transition: all 0.2s ease;
+		color: #666;
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 400;
+		border-radius: 4px;
 		cursor: pointer;
-		font-family: inherit;
-		font-size: inherit;
+		transition: all 0.2s ease;
 	}
 
-	.facetwp-pagination li button.page-numbers:hover {
+	.facetwp-page:hover {
 		background: #f5f5f5;
-		border-color: #ccc;
+		border-color: #ddd;
 	}
 
-	.facetwp-pagination li span.current {
+	.facetwp-page.active {
 		background: #F69532;
 		color: #fff;
 		border-color: #F69532;
-		font-weight: 600;
+		cursor: default;
+		pointer-events: none;
 	}
 
-	.facetwp-pagination li span.dots {
+	.facetwp-page.last-page {
+		font-size: 16px;
+	}
+
+	.facetwp-page.last-page .fa {
+		display: inline-block;
+	}
+
+	/* Search Button */
+	.facetwp-autocomplete-update {
+		background: #F69532;
+		color: #fff;
 		border: none;
-		background: transparent;
-		cursor: default;
+		padding: 10px 20px;
+		font-size: 16px;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.facetwp-autocomplete-update:hover {
+		background: #dc7309;
+		color: #fff;
 	}
 
 	/* Responsive Grid */
@@ -576,6 +589,11 @@
 		.dashboard-filters__search {
 			width: 100%;
 			max-width: 100%;
+		}
+
+		.facetwp-pager {
+			flex-wrap: wrap;
+			justify-content: center;
 		}
 	}
 
