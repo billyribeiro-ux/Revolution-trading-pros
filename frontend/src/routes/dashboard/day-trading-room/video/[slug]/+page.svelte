@@ -10,30 +10,15 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	// import { page } from '$app/stores'; // TODO: Will be used when fetching video data by slug
-	// Secondary nav now handled by DashboardSidebar in +layout.svelte
+	import type { PageData } from './+page.server';
 
-	// Mock video data - will be replaced with API call
-	// TODO: Fetch video data based on slug from API
-	// const slug = $page.params.slug;
-	
-	const video = {
-		title: 'Market Analysis: SPX 0DTE Strategy',
-		author: 'Lead Trader',
-		date: 'January 2, 2026',
-		videoUrl: 'https://simpler-options.s3.amazonaws.com/nightlyvids/2025/dec29DSG.mp4',
-		posterUrl: 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg',
-		description: '<p>Deep dive into today\'s SPX levels and key gamma zones for optimal 0DTE entries. Learn how to identify high-probability setups and manage risk effectively in fast-moving markets.</p>',
-		previousVideo: {
-			title: 'Trading Psychology: Managing Emotions',
-			slug: 'trading-psychology-managing-emotions'
-		},
-		nextVideo: {
-			title: 'Advanced Order Flow Analysis',
-			slug: 'advanced-order-flow-analysis'
-		}
-	};
+	// Server-loaded data with Previous/Next navigation
+	export let data: PageData;
 
+	// Reactive video data from server
+	$: video = data.video;
+
+	// Related videos (could also be fetched from server in the future)
 	const relatedVideos = [
 		{
 			title: 'A Cautious Entry Into 2026',
@@ -99,7 +84,7 @@
 		<div class="dv-content-block cpost-content-block w-desc">
 			<div class="current-vid">
 				<div class="video-container current">
-					<video id="dv-player" controls width="100%" poster={video.posterUrl} style="aspect-ratio: 16/9;">
+					<video id="dv-player" controls width="100%" poster={video.thumbnailUrl} style="aspect-ratio: 16/9;">
 						<source src={video.videoUrl} type="video/mp4">
 						Your browser does not support the video tag.
 					</video>

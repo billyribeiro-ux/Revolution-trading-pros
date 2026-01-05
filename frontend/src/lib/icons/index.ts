@@ -268,6 +268,7 @@ import IconRotateClockwise from '@tabler/icons-svelte/icons/rotate-clockwise';
 
 // Diff Icons
 import IconFileDiff from '@tabler/icons-svelte/icons/file-diff';
+import IconGitBranch from '@tabler/icons-svelte/icons/git-branch';
 import IconQuote from '@tabler/icons-svelte/icons/quote';
 
 // Receipt Icons
@@ -606,6 +607,7 @@ export {
 	IconRotateClockwise,
 	// Diff Icons
 	IconFileDiff,
+	IconGitBranch,
 	IconQuote,
 	// Receipt Icons
 	IconReceipt,

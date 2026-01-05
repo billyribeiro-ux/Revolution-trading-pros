@@ -55,6 +55,7 @@ fn public_routes() -> Router<AppState> {
         // Videos (public)
         .route("/videos", get(handlers::videos::index))
         .route("/videos/:id", get(handlers::videos::show))
+        .route("/videos/by-slug/:slug", get(handlers::videos::show_by_global_slug))
         // Newsletter
         .route("/newsletter/subscribe", post(handlers::newsletter::subscribe))
         .route("/newsletter/confirm", get(handlers::newsletter::confirm))
@@ -136,6 +137,7 @@ fn protected_routes(state: AppState) -> Router<AppState> {
         .route("/trading-rooms", get(handlers::trading_rooms::index))
         .route("/trading-rooms/:slug", get(handlers::trading_rooms::show))
         .route("/trading-rooms/:slug/videos", get(handlers::trading_rooms::videos))
+        .route("/trading-rooms/:room_slug/videos/:video_slug", get(handlers::videos::show_by_slug))
         .route("/trading-rooms/:slug/sso", post(handlers::trading_rooms::generate_sso))
         // Logout
         .route("/logout", post(handlers::auth::logout))

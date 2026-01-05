@@ -3,6 +3,8 @@
 //! ICT 11+ Principal Engineer Grade
 //! Database access layer
 
-pub mod user_repository;
+mod user_repository;
+mod video_repository;
 
 pub use user_repository::*;
+pub use video_repository::*;

@@ -2,9 +2,10 @@
  * Premium Daily Videos Page Load
  * ═══════════════════════════════════════════════════════════════════════════
  * 
- * Client-side only page - no server data needed
+ * SSR enabled - data loaded from server
  * 
- * @version 1.0.0
+ * @version 2.0.0 - January 2026 - SSR with backend API
  */
 
-export const ssr = false;
+export const ssr = true;
+export const prerender = false;

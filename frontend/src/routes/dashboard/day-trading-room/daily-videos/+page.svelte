@@ -12,119 +12,43 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import type { DailyVideo, PageData } from './+page.server';
 
-	interface DailyVideo {
-		id: number;
-		title: string;
-		date: string;
-		trader: string;
-		excerpt: string;
-		slug: string;
-		thumbnail: string;
-		isVideo: boolean;
-	}
+	// Server-loaded data
+	export let data: PageData;
 
-	// Pagination state
-	let currentPage = 1;
-	let totalPages = 63;
-	let itemsPerPage = 12;
-	let totalItems = 750;
-	let displayedVideos: DailyVideo[] = [];
-	
+	// Reactive state from server data
+	$: displayedVideos = data.videos || [];
+	$: currentPage = data.pagination?.page || 1;
+	$: totalPages = data.pagination?.totalPages || 1;
+	$: itemsPerPage = data.pagination?.perPage || 12;
+	$: totalItems = data.pagination?.total || 0;
+
 	// Search state
 	let searchQuery = '';
-	let filteredVideos: DailyVideo[] = [];
 
-	// Sample data - matches WordPress structure
-	const allVideos: DailyVideo[] = [
-		{
-			id: 1,
-			title: 'How to use Bookmap to make more informed trades',
-			date: 'January 02, 2026',
-			trader: 'Kody Ashmore',
-			excerpt: "You asked for it, you got it. Here are Kody's Bookmap tools and how he uses them to make better informed trades.",
-			slug: 'bookmap',
-			thumbnail: 'https://cdn.simplertrading.com/2025/02/07135413/SimplerCentral_KA.jpg',
-			isVideo: true
-		},
-		{
-			id: 2,
-			title: 'Cautious entry into 2026',
-			date: 'December 31, 2025',
-			trader: 'Henry Gambell',
-			excerpt: 'As we head into the new year, here are some key considerations for your trading strategy.',
-			slug: 'cautious-entry-into-2026',
-			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			isVideo: true
-		},
-		{
-			id: 3,
-			title: 'Market Analysis & Trading Strategies',
-			date: 'December 23, 2025',
-			trader: 'HG',
-			excerpt: "Things can always change, but given how the market closed on Tuesday, it looks like Santa's on his way.",
-			slug: 'market-analysis',
-			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			isVideo: true
-		},
-		// Add more sample videos to demonstrate pagination
-		...Array.from({ length: 9 }, (_, i) => ({
-			id: i + 4,
-			title: `Daily Market Update ${i + 4}`,
-			date: `December ${20 - i}, 2025`,
-			trader: i % 2 === 0 ? 'Kody Ashmore' : 'Henry Gambell',
-			excerpt: 'Expert analysis and trading insights for today\'s market conditions.',
-			slug: `daily-update-${i + 4}`,
-			thumbnail: i % 2 === 0 
-				? 'https://cdn.simplertrading.com/2025/02/07135413/SimplerCentral_KA.jpg'
-				: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			isVideo: true
-		}))
-	];
-
-	function filterVideos() {
-		if (!searchQuery.trim()) {
-			filteredVideos = allVideos;
-		} else {
-			const query = searchQuery.toLowerCase();
-			filteredVideos = allVideos.filter(video => 
-				video.title.toLowerCase().includes(query) ||
-				video.trader.toLowerCase().includes(query) ||
-				video.excerpt.toLowerCase().includes(query)
-			);
-		}
-		
-		// Update total items and pages based on filtered results
-		totalItems = filteredVideos.length;
-		totalPages = Math.ceil(totalItems / itemsPerPage);
-		
-		// Reset to page 1 when search changes
-		if (currentPage > totalPages) {
-			currentPage = 1;
-		}
-		
-		updateDisplayedVideos();
-	}
-	
-	function updateDisplayedVideos() {
-		const startIndex = (currentPage - 1) * itemsPerPage;
-		const endIndex = startIndex + itemsPerPage;
-		displayedVideos = filteredVideos.slice(startIndex, endIndex);
-	}
-	
 	function handleSearch(event: Event) {
 		const target = event.target as HTMLInputElement;
 		searchQuery = target.value;
-		filterVideos();
+	}
+
+	function submitSearch() {
+		const url = new URL(window.location.href);
+		if (searchQuery) {
+			url.searchParams.set('search', searchQuery);
+		} else {
+			url.searchParams.delete('search');
+		}
+		url.searchParams.set('page', '1');
+		goto(url.toString(), { invalidateAll: true });
 	}
 
 	function goToPage(pageNum: number) {
 		if (pageNum >= 1 && pageNum <= totalPages) {
-			currentPage = pageNum;
-			updateDisplayedVideos();
+			const url = new URL(window.location.href);
+			url.searchParams.set('page', pageNum.toString());
+			goto(url.toString(), { invalidateAll: true });
 			// Scroll to top
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
@@ -158,13 +82,6 @@
 		
 		return range;
 	}
-
-	onMount(() => {
-		filteredVideos = allVideos;
-		totalItems = filteredVideos.length;
-		totalPages = Math.ceil(totalItems / itemsPerPage);
-		updateDisplayedVideos();
-	});
 </script>
 
 <svelte:head>
@@ -212,7 +129,7 @@
 					<div class="card flex-grid-panel">
 						<figure class="card-media card-media--video">
 							<a 
-								href="/daily/day-trading-room/{video.slug}" 
+								href="/dashboard/day-trading-room/video/{video.slug}" 
 								class="card-image" 
 								style="background-image: url({video.thumbnail});"
 							>
@@ -228,7 +145,7 @@
 						
 						<section class="card-body">
 							<h4 class="h5 card-title">
-								<a href="/daily/day-trading-room/{video.slug}">
+								<a href="/dashboard/day-trading-room/video/{video.slug}">
 									{video.title}
 								</a>
 							</h4>
@@ -244,7 +161,7 @@
 						</section>
 						
 						<footer class="card-footer">
-							<a class="btn btn-tiny btn-default" href="/daily/day-trading-room/{video.slug}">
+							<a class="btn btn-tiny btn-default" href="/dashboard/day-trading-room/video/{video.slug}">
 								Watch Now
 							</a>
 						</footer>
