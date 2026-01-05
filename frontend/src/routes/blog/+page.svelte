@@ -5,7 +5,7 @@
 	 * Features: BlurHash images, Link prefetching, $state/$derived/$effect runes
 	 */
 	import { preloadData } from '$app/navigation';
-	import { untrack } from 'svelte';
+	import { untrack, onMount } from 'svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
@@ -186,21 +186,20 @@
 	}
 
 	// ============================================================================
-	// Lifecycle - Svelte 5 $effect
+	// Lifecycle - Use onMount for one-time data loading (prevents infinite loops)
 	// ============================================================================
 
-	// ICT11+ Fix: Use untrack to prevent abortController state from causing re-runs
-	$effect(() => {
-		// Run loadPosts only once on mount
+	// ICT11+ Fix: Use onMount instead of $effect to prevent effect_update_depth_exceeded
+	// $effect tracks reactive state changes and can cause infinite loops when async
+	// functions modify state. onMount runs once and doesn't re-trigger on state changes.
+	onMount(() => {
 		loadPosts();
 
 		return () => {
-			// Cleanup: abort any pending requests (untracked to prevent loops)
-			untrack(() => {
-				if (abortController) {
-					abortController.abort();
-				}
-			});
+			// Cleanup: abort any pending requests on unmount
+			if (abortController) {
+				abortController.abort();
+			}
 		};
 	});
 

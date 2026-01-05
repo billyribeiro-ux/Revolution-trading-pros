@@ -453,15 +453,19 @@
 		<nav class="dashboard__nav-secondary" aria-label="{secondarySidebarTitle} navigation">
 			<ul>
 				{#each secondaryNavItems as item}
-					<li class:has-submenu={item.submenu && item.submenu.length > 0}>
+					<li 
+						class:has-submenu={item.submenu && item.submenu.length > 0}
+						onmouseenter={() => item.submenu && item.submenu.length > 0 && !expandedSubmenus.has(item.text) && toggleSubmenu(item.text)}
+						onmouseleave={() => item.submenu && item.submenu.length > 0 && expandedSubmenus.has(item.text) && toggleSubmenu(item.text)}
+					>
 						{#if item.submenu && item.submenu.length > 0}
-							<!-- Item with submenu -->
-						<button
-							type="button"
+							<!-- Item with submenu - opens on HOVER -->
+						<span
 							class="dashboard__nav-secondary-item"
 							class:is-active={hasActiveSubmenuItem(item.submenu)}
 							class:is-expanded={expandedSubmenus.has(item.text)}
-							onclick={() => toggleSubmenu(item.text)}
+							role="button"
+							tabindex="0"
 							aria-expanded={expandedSubmenus.has(item.text)}
 						>
 							{#if item.icon}
@@ -471,7 +475,7 @@
 							{/if}
 							<span class="dashboard__nav-secondary-text">{item.text}</span>
 							<span class="dashboard__nav-secondary-chevron">›</span>
-						</button>
+						</span>
 
 							{#if expandedSubmenus.has(item.text)}
 								<ul class="dashboard__nav-submenu">
@@ -1196,14 +1200,21 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SUBMENU STYLES
+	 * SUBMENU STYLES - WordPress Match: White panel TO THE RIGHT
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__nav-submenu {
+		position: absolute;
+		left: 100%;
+		top: 0;
+		min-width: 280px;
 		list-style: none;
 		margin: 0;
-		padding: 4px 0 8px;
-		background-color: rgba(0, 0, 0, 0.15);
+		padding: 20px 0;
+		background-color: #ffffff;
+		box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
+		border-radius: 0 4px 4px 0;
+		z-index: 1000;
 	}
 
 	.dashboard__nav-submenu li {
@@ -1213,10 +1224,10 @@
 
 	.dashboard__nav-submenu a {
 		display: block;
-		padding: 10px 24px 10px 56px;
-		color: rgba(255, 255, 255, 0.65);
+		padding: 12px 30px;
+		color: #666;
 		text-decoration: none;
-		font-size: 13px;
+		font-size: 16px;
 		font-weight: 400;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		transition: all 0.2s ease;
@@ -1224,25 +1235,19 @@
 	}
 
 	.dashboard__nav-submenu a:hover {
-		background-color: rgba(255, 255, 255, 0.05);
-		color: rgba(255, 255, 255, 0.9);
+		background-color: #f5f5f5;
+		color: #333;
 	}
 
 	.dashboard__nav-submenu li.is-active a {
-		color: #ffffff;
+		color: #333;
 		font-weight: 600;
+		background-color: #f0f0f0;
 	}
 
-	.dashboard__nav-submenu li.is-active a::before {
-		content: '';
-		position: absolute;
-		left: 40px;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 6px;
-		height: 6px;
-		border-radius: 50%;
-		background-color: #f7931e;
+	/* Parent item needs relative positioning for absolute submenu */
+	.has-submenu {
+		position: relative;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

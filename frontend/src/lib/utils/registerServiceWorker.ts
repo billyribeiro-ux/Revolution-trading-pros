@@ -1,63 +1,58 @@
 /**
- * Service Worker Registration - Google L11+ Pattern
+ * Service Worker Registration - Apple ICT 11+ Pattern
  * ══════════════════════════════════════════════════════════════════════════════
- * Registers service worker for offline support and instant subsequent loads
- * Non-blocking registration that doesn't impact initial page load
+ * SvelteKit handles service worker registration automatically when
+ * serviceWorker: { register: true } is set in svelte.config.js
+ * 
+ * This module provides utilities for manual control when needed
  * ══════════════════════════════════════════════════════════════════════════════
  */
 
 export async function registerServiceWorker(): Promise<void> {
-	// Only register in production and if service workers are supported
-	if (
-		typeof window === 'undefined' ||
-		!('serviceWorker' in navigator) ||
-		import.meta.env.DEV
-	) {
+	// SvelteKit handles registration automatically via svelte.config.js
+	// This function is kept for backward compatibility but is now a no-op
+	// The service worker is registered from src/service-worker.ts
+	
+	if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+		return;
+	}
+
+	// Listen for service worker updates and prompt user to refresh
+	navigator.serviceWorker.addEventListener('controllerchange', () => {
+		console.log('[SW] New service worker activated');
+	});
+}
+
+/**
+ * Force update the service worker (useful after deployment)
+ */
+export async function updateServiceWorker(): Promise<void> {
+	if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
 		return;
 	}
 
 	try {
-		// Register after page load to not block initial render
-		if (document.readyState === 'complete') {
-			await register();
-		} else {
-			window.addEventListener('load', register);
+		const registration = await navigator.serviceWorker.getRegistration();
+		if (registration) {
+			await registration.update();
+			console.log('[SW] Service worker update triggered');
 		}
 	} catch (error) {
-		console.error('Service worker registration failed:', error);
+		console.error('[SW] Update failed:', error);
 	}
 }
 
-async function register(): Promise<void> {
-	try {
-		const registration = await navigator.serviceWorker.register('/sw.js', {
-			scope: '/',
-			// Update service worker in background without blocking
-			updateViaCache: 'none'
-		});
+/**
+ * Skip waiting and activate new service worker immediately
+ */
+export async function skipWaiting(): Promise<void> {
+	if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
+		return;
+	}
 
-		console.log('Service worker registered:', registration.scope);
-
-		// Check for updates periodically (every hour)
-		setInterval(() => {
-			registration.update();
-		}, 60 * 60 * 1000);
-
-		// Listen for updates
-		registration.addEventListener('updatefound', () => {
-			const newWorker = registration.installing;
-			if (!newWorker) return;
-
-			newWorker.addEventListener('statechange', () => {
-				if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-					// New service worker available, notify user
-					console.log('New version available! Refresh to update.');
-					// You can show a toast notification here
-				}
-			});
-		});
-	} catch (error) {
-		console.error('Service worker registration failed:', error);
+	const registration = await navigator.serviceWorker.getRegistration();
+	if (registration?.waiting) {
+		registration.waiting.postMessage({ type: 'SKIP_WAITING' });
 	}
 }
 

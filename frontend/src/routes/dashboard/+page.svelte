@@ -48,7 +48,7 @@
 	// Render cards from actual API data instead of hardcoded slugs
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Trading rooms for the dropdown button (from trading rooms + alert services)
+	// Trading rooms for the dropdown button (from trading rooms + alert services + courses with room access)
 	const tradingRooms = $derived.by(() => {
 		const rooms: { name: string; href: string }[] = [];
 
@@ -59,6 +59,28 @@
 				rooms.push({
 					name: room.name,
 					href: room.accessUrl ?? `/live-trading-rooms/${room.slug}`
+				});
+			}
+		}
+
+		// Add alert services with trading room access (SPX Profit Pulse, Explosive Swings)
+		const alertServiceData = membershipsData?.alertServices ?? [];
+		for (const service of alertServiceData) {
+			if (service.status === 'active' && service.accessUrl) {
+				rooms.push({
+					name: service.name,
+					href: service.accessUrl
+				});
+			}
+		}
+
+		// Add courses with trading room access (Small Account Mentorship)
+		const courseData = membershipsData?.courses ?? [];
+		for (const course of courseData) {
+			if (course.status === 'active' && course.accessUrl) {
+				rooms.push({
+					name: course.name,
+					href: course.accessUrl
 				});
 			}
 		}
@@ -543,6 +565,7 @@
 		max-width: 100%;
 		padding-left: 15px;
 		padding-right: 15px;
+		text-align: center;
 	}
 
 	.watchlist-col-right {
@@ -553,6 +576,7 @@
 		.watchlist-col-left {
 			flex: 0 0 50%;
 			max-width: 50%;
+			text-align: left;
 		}
 
 		.watchlist-col-right {
@@ -564,6 +588,7 @@
 		.watchlist-col-left {
 			flex: 0 0 41.666667%;
 			max-width: 41.666667%;
+			text-align: left;
 		}
 
 		.watchlist-col-right {

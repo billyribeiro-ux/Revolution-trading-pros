@@ -18,6 +18,11 @@ import { ALL_ROOM_IDS } from '$lib/config/rooms';
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════
 
+export interface WatchlistDate {
+	date: string;
+	spreadsheetUrl: string;
+}
+
 export interface WatchlistItem {
 	id: number;
 	slug: string;
@@ -35,6 +40,7 @@ export interface WatchlistItem {
 	spreadsheet: {
 		src: string;
 	};
+	watchlistDates?: WatchlistDate[]; // NEW: Multiple date versions
 	description: string;
 	status: 'published' | 'draft' | 'archived';
 	rooms: string[]; // Room targeting
@@ -49,6 +55,57 @@ export interface WatchlistItem {
 const mockWatchlistItems: WatchlistItem[] = [
 	{
 		id: 1,
+		slug: '01032026-melissa-beegle',
+		title: 'Weekly Watchlist with Melissa Beegle',
+		subtitle: 'Week of January 3, 2026',
+		trader: 'Melissa Beegle',
+		traderImage: 'https://cdn.simplertrading.com/2025/03/09130833/Melissa-WeeklyWatchlist.jpg',
+		datePosted: 'January 3, 2026',
+		weekOf: '2026-01-03',
+		video: {
+			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-MB-01032026.mp4',
+			poster: 'https://cdn.simplertrading.com/2025/03/09130833/Melissa-WeeklyWatchlist.jpg',
+			title: 'Weekly Watchlist with Melissa Beegle'
+		},
+		spreadsheet: {
+			src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
+		},
+		watchlistDates: [
+			{ date: '1/3/2026', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' },
+			{ date: '5/28/2025', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' },
+			{ date: '3/9/2025', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' }
+		],
+		description: 'Week starting on January 3, 2026.',
+		status: 'published',
+		rooms: ALL_ROOM_IDS,
+		createdAt: '2026-01-03T09:00:00Z',
+		updatedAt: '2026-01-03T09:00:00Z'
+	},
+	{
+		id: 2,
+		slug: '12292025-david-starr',
+		title: 'Weekly Watchlist with David Starr',
+		subtitle: 'Week of December 29, 2025',
+		trader: 'David Starr',
+		traderImage: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
+		datePosted: 'December 29, 2025',
+		weekOf: '2025-12-29',
+		video: {
+			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-DS-12292025.mp4',
+			poster: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
+			title: 'Weekly Watchlist with David Starr'
+		},
+		spreadsheet: {
+			src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSsdQCEUZLymwpLK8j35e5B6qjdRPz1k2tX8U2yL0z30EsEv06i-74m7V-cPgCyxZe528DA_3gdMUKy/pubhtml'
+		},
+		description: 'Week of December 29, 2025.',
+		status: 'published',
+		rooms: ALL_ROOM_IDS,
+		createdAt: '2025-12-29T09:00:00Z',
+		updatedAt: '2025-12-29T09:00:00Z'
+	},
+	{
+		id: 3,
 		slug: '12222025-tg-watkins',
 		title: 'Weekly Watchlist with TG Watkins',
 		subtitle: 'Week of December 22, 2025',
@@ -280,6 +337,7 @@ export const POST: RequestHandler = async ({ request }) => {
 		spreadsheet: {
 			src: body.spreadsheetSrc || ''
 		},
+		watchlistDates: body.watchlistDates || undefined,
 		description: body.description || `Week of ${dateStr}.`,
 		status: body.status || 'draft',
 		rooms: rooms,

@@ -181,9 +181,9 @@
 					icon: 'users',
 					text: 'Meet the Traders',
 					submenu: [
-						{ href: '/dashboard/day-trading-room/traders/lead-trader', icon: '', text: 'Lead Trader' },
-						{ href: '/dashboard/day-trading-room/traders/senior-analyst', icon: '', text: 'Senior Analyst' },
-						{ href: '/dashboard/day-trading-room/traders/head-moderator', icon: '', text: 'Head Moderator' }
+						{ href: '/dashboard/day-trading-room/meet-the-traders/billy-ribeiro', icon: '', text: 'Billy Ribeiro' },
+						{ href: '/dashboard/day-trading-room/meet-the-traders/freddie-ferber', icon: '', text: 'Freddie Ferber' },
+						{ href: '/dashboard/day-trading-room/meet-the-traders/shao-wan', icon: '', text: 'Shao Wan' }
 					]
 				},
 				{
@@ -191,9 +191,9 @@
 					icon: 'shopping-cart',
 					text: 'Trader Store',
 					submenu: [
-						{ href: '/dashboard/day-trading-room/store/indicators', icon: '', text: 'Indicators' },
-						{ href: '/dashboard/day-trading-room/store/courses', icon: '', text: 'Advanced Courses' },
-						{ href: '/dashboard/day-trading-room/store/tools', icon: '', text: 'Trading Tools' }
+						{ href: '/dashboard/day-trading-room/meet-the-traders/billy-ribeiro/trader-store', icon: '', text: 'Billy Ribeiro' },
+						{ href: '/dashboard/day-trading-room/meet-the-traders/freddie-ferber/trader-store', icon: '', text: 'Freddie Ferber' },
+						{ href: '/dashboard/day-trading-room/meet-the-traders/shao-wan/trader-store', icon: '', text: 'Shao Wan' }
 					]
 				}
 			]
