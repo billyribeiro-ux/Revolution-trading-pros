@@ -17,7 +17,6 @@
 	import { cubicOut, elasticOut, backOut } from 'svelte/easing';
 	import {
 		IconHistory,
-		IconGitBranch,
 		IconWebhook,
 		IconCalendarEvent,
 		IconWorld,
@@ -27,19 +26,17 @@
 		IconArrowUpRight,
 		IconActivity,
 		IconBell,
-		IconCheckCircle2,
+		IconCheck,
 		IconClock,
 		IconAlertTriangle,
 		IconUsers,
 		IconFileText,
 		IconSettings,
-		IconPlug,
+		IconPlugConnected,
 		IconLanguage,
 		IconCalendar,
 		IconSend,
-		IconSparkles,
-		IconLayers,
-		IconZap,
+		IconBolt,
 		IconShield,
 		IconDatabase,
 		IconCloud
@@ -191,8 +188,8 @@
 	function getEventIcon(type: string) {
 		if (type.startsWith('content.created')) return { icon: IconFileText, color: 'emerald' };
 		if (type.startsWith('content.updated')) return { icon: IconHistory, color: 'blue' };
-		if (type.startsWith('content.published')) return { icon: IconZap, color: 'purple' };
-		if (type.startsWith('workflow')) return { icon: IconGitBranch, color: 'amber' };
+		if (type.startsWith('content.published')) return { icon: IconBolt, color: 'purple' };
+		if (type.startsWith('workflow')) return { icon: IconActivity, color: 'amber' };
 		return { icon: IconBell, color: 'pink' };
 	}
 
@@ -475,7 +472,7 @@
 		<div class="actions-grid">
 			{#each [
 				{ href: '/admin/cms/versions', icon: IconHistory, label: 'Version History', desc: 'Browse & rollback versions', color: 'indigo' },
-				{ href: '/admin/cms/workflows', icon: IconGitBranch, label: 'Workflow Manager', desc: 'Manage approval workflows', color: 'amber' },
+				{ href: '/admin/cms/workflows', icon: IconActivity, label: 'Workflow Manager', desc: 'Manage approval workflows', color: 'amber' },
 				{ href: '/admin/cms/webhooks', icon: IconSend, label: 'Webhooks', desc: 'Configure integrations', color: 'violet' },
 				{ href: '/admin/cms/scheduled', icon: IconCalendar, label: 'Scheduler', desc: 'Schedule publications', color: 'cyan' },
 				{ href: '/admin/cms/locales', icon: IconLanguage, label: 'Localization', desc: 'Manage translations', color: 'emerald' },
