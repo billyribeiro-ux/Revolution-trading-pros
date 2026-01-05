@@ -32,6 +32,7 @@ pub mod orders;
 pub mod schedules;
 pub mod migrate;
 pub mod unified_videos;
+pub mod watchlist;
 
 use axum::Router;
 use crate::AppState;
@@ -64,6 +65,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/my/orders", orders::router())
         .nest("/my/subscriptions", subscriptions::my_router())
         .nest("/logout", auth::logout_router())
+        .merge(watchlist::router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())
