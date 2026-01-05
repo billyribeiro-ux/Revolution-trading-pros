@@ -538,7 +538,7 @@
 		margin-top: 5px;
 	}
 
-	.dropdown-menu.show {
+	.dropdown-menu:global(.show) {
 		display: block;
 	}
 
