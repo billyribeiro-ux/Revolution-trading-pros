@@ -139,7 +139,7 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
-			<h2 class="section-title">Mastering the Trade Premium Daily Videos</h2>
+			<h2 class="section-title">Day Trading Room Premium Daily Videos</h2>
 			<p></p>
 			<div class="dashboard-filters">
 				<div class="dashboard-filters__count">
