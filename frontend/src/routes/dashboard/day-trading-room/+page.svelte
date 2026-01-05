@@ -646,9 +646,9 @@
 	}
 
 	.btn-default {
-		background: #f5f5f5;
-		color: #333;
-		border: 1px solid #ddd;
+		background-color: #143E59;
+		color: #fff;
+		border: 1px solid #143E59;
 		box-shadow: none;
 		display: inline-block;
 		text-decoration: none;
@@ -660,8 +660,8 @@
 	}
 
 	.btn-default:hover {
-		background: #e8e8e8;
-		border-color: #ccc;
+		background-color: #0f2d41;
+		border-color: #0f2d41;
 		box-shadow: none;
 	}
 
