@@ -309,6 +309,7 @@
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.key === 'Enter' && e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			tabindex="0"
@@ -323,7 +324,7 @@
 					Delete
 				</button>
 			</div>
-		</button>
+		</div>
 	</div>
 {/if}
 
