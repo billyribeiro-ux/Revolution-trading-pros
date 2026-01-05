@@ -288,7 +288,15 @@
 
 	<!-- Create/Edit Modal -->
 	{#if showCreateModal}
-		<div class="modal-overlay" onclick={closeModal} transition:fade={{ duration: 200 }}></div>
+		<div 
+			class="modal-overlay" 
+			onclick={closeModal}
+			onkeydown={(e) => { if (e.key === 'Escape') closeModal(); }}
+			role="button"
+			tabindex="-1"
+			aria-label="Close modal"
+			transition:fade={{ duration: 200 }}
+		></div>
 		<div class="modal" in:fly={{ y: 50, duration: 400 }}>
 			<div class="modal-header">
 				<h2>{editingWebhook ? 'Edit Webhook' : 'Create Webhook'}</h2>
