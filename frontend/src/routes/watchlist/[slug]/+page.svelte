@@ -108,6 +108,18 @@
 		}
 	}
 
+	function nextDate() {
+		if (currentEntry?.watchlistDates && selectedDateIndex < currentEntry.watchlistDates.length - 1) {
+			selectDate(selectedDateIndex + 1);
+		}
+	}
+
+	function previousDate() {
+		if (selectedDateIndex > 0) {
+			selectDate(selectedDateIndex - 1);
+		}
+	}
+
 	// Initialize spreadsheet URL when entry changes
 	$effect(() => {
 		if (currentEntry?.watchlistDates?.[selectedDateIndex]) {
@@ -223,21 +235,42 @@
 
 						<!-- Date Switcher -->
 						{#if currentEntry?.watchlistDates && currentEntry.watchlistDates.length > 1}
-							<table class="switcherTable">
-								<tbody>
-									<tr>
-										{#each currentEntry.watchlistDates as dateOption, index}
-											<td 
-												class:switcherItemActive={selectedDateIndex === index}
-												class:switcherItem={selectedDateIndex !== index}
-												onclick={() => selectDate(index)}
-											>
-												{dateOption.date}
-											</td>
-										{/each}
-									</tr>
-								</tbody>
-							</table>
+							<div class="switcherContainer">
+								<table class="switcherTable">
+									<tbody>
+										<tr>
+											{#each currentEntry.watchlistDates as dateOption, index}
+												<td 
+													class:switcherItemActive={selectedDateIndex === index}
+													class:switcherItem={selectedDateIndex !== index}
+													onclick={() => selectDate(index)}
+												>
+													{dateOption.date}
+												</td>
+											{/each}
+										</tr>
+									</tbody>
+								</table>
+								
+								<div class="switcherArrows">
+									<button 
+										class="switcherArrow" 
+										disabled={selectedDateIndex >= (currentEntry.watchlistDates.length - 1)}
+										onclick={nextDate}
+										aria-label="Next date"
+									>
+										<b>&gt;</b>
+									</button>
+									<button 
+										class="switcherArrow" 
+										disabled={selectedDateIndex <= 0}
+										onclick={previousDate}
+										aria-label="Previous date"
+									>
+										<b>&lt;</b>
+									</button>
+								</div>
+							</div>
 						{/if}
 					{/if}
 				</div>
@@ -443,9 +476,15 @@
 	}
 
 	/* Date Switcher */
-	.switcherTable {
-		width: 100%;
+	.switcherContainer {
 		margin-top: 20px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 20px;
+	}
+
+	.switcherTable {
 		border-collapse: collapse;
 	}
 
@@ -480,6 +519,42 @@
 		background: #143E59;
 		color: #fff;
 		border: 1px solid #143E59;
+	}
+
+	.switcherArrows {
+		display: flex;
+		gap: 8px;
+	}
+
+	.switcherArrow {
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #143E59;
+		color: #fff;
+		border: none;
+		border-radius: 5px;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		font-size: 18px;
+		padding: 0;
+	}
+
+	.switcherArrow:hover:not(:disabled) {
+		background: #0f2d41;
+	}
+
+	.switcherArrow:disabled {
+		background: #e5e5e5;
+		color: #999;
+		cursor: not-allowed;
+		opacity: 0.5;
+	}
+
+	.switcherArrow b {
+		font-weight: 700;
 	}
 
 	/* Responsive */
