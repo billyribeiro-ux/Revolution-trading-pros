@@ -586,27 +586,31 @@
 
 	/* Mobile First - Default (xs: 0-575px) */
 	.col-xs-12 {
-		width: 100%;
+		flex: 0 0 100%;
+		max-width: 100%;
 	}
 
 	/* Small devices (sm: 576px and up) */
 	@media (min-width: 576px) {
 		.col-sm-6 {
-			width: 50%;
+			flex: 0 0 50%;
+			max-width: 50%;
 		}
 	}
 
 	/* Medium devices (md: 768px and up) */
 	@media (min-width: 768px) {
 		.col-md-6 {
-			width: 50%;
+			flex: 0 0 50%;
+			max-width: 50%;
 		}
 	}
 
 	/* Large devices (lg: 900px and up) - Adjusted for 14" laptops */
 	@media (min-width: 900px) {
 		.col-lg-4 {
-			width: 33.333333%;
+			flex: 0 0 33.333333%;
+			max-width: 33.333333%;
 		}
 	}
 
@@ -672,9 +676,4 @@
 		justify-content: center;
 	}
 
-	@media (min-width: 1200px) {
-		.col-lg-4 {
-			width: 33.333%;
-		}
-	}
 </style>
