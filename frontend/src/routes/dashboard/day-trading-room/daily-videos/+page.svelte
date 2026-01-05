@@ -409,9 +409,24 @@
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		width: 60px;
-		height: 60px;
-		background: rgba(0, 0, 0, 0.7);
+		width: 0;
+		height: 0;
+		border-style: solid;
+		border-width: 20px 0 20px 35px;
+		border-color: transparent transparent transparent rgba(255, 255, 255, 0.95);
+		pointer-events: none;
+		filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+	}
+
+	.card-media--video::before {
+		content: '';
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 70px;
+		height: 70px;
+		background: rgba(0, 0, 0, 0.6);
 		border-radius: 50%;
 		pointer-events: none;
 	}
