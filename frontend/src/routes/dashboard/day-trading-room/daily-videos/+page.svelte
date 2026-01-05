@@ -576,55 +576,100 @@
 		color: #fff;
 	}
 
-	/* Responsive Grid */
-	/* Column Widths - WordPress Grid System */
-	.col-lg-4 {
-		width: 33.333333%;
+	/* Responsive Grid - Mobile First */
+	/* WordPress Breakpoints:
+	 * xs: 0-575px (mobile)
+	 * sm: 576px-767px (small tablets)
+	 * md: 768px-991px (tablets)
+	 * lg: 992px+ (desktop)
+	 */
+
+	/* Mobile First - Default (xs: 0-575px) */
+	.col-xs-12 {
+		width: 100%;
 	}
 
-	@media (max-width: 991px) {
-		.col-md-6 {
-			width: 50%;
-		}
-		
-		.dashboard-filters {
-			flex-direction: column;
-			align-items: flex-start;
-		}
-		
-		.dashboard-filters__search {
-			width: 100%;
-			max-width: 100%;
-		}
-
-		.facetwp-pager {
-			flex-wrap: wrap;
-			justify-content: center;
-		}
-	}
-
-	@media (max-width: 767px) {
+	/* Small devices (sm: 576px and up) */
+	@media (min-width: 576px) {
 		.col-sm-6 {
 			width: 50%;
 		}
-		
-		.card-title {
-			font-size: 16px;
+	}
+
+	/* Medium devices (md: 768px and up) */
+	@media (min-width: 768px) {
+		.col-md-6 {
+			width: 50%;
 		}
 	}
 
-	@media (max-width: 575px) {
-		.col-xs-12 {
-			width: 100%;
+	/* Large devices (lg: 992px and up) */
+	@media (min-width: 992px) {
+		.col-lg-4 {
+			width: 33.333333%;
 		}
-		
+	}
+
+	/* Mobile: Stack filters vertically */
+	.dashboard-filters {
+		flex-direction: column;
+		align-items: flex-start;
+	}
+
+	.dashboard-filters__search {
+		width: 100%;
+		max-width: 100%;
+	}
+
+	/* Tablet and up: Horizontal filters */
+	@media (min-width: 768px) {
+		.dashboard-filters {
+			flex-direction: row;
+			align-items: center;
+		}
+
+		.dashboard-filters__search {
+			min-width: 300px;
+			max-width: 400px;
+		}
+	}
+
+	/* Mobile: Smaller card grid margins */
+	.card-grid {
+		margin: 0 -10px;
+	}
+
+	.card-grid-spacer {
+		padding: 0 10px 20px;
+	}
+
+	/* Tablet and up: Larger margins */
+	@media (min-width: 768px) {
 		.card-grid {
-			margin: 0 -10px;
+			margin: 0 -15px;
 		}
-		
+
 		.card-grid-spacer {
-			padding: 0 10px 20px;
+			padding: 0 15px 30px;
 		}
+	}
+
+	/* Mobile: Smaller card title */
+	.card-title {
+		font-size: 16px;
+	}
+
+	/* Tablet and up: Larger card title */
+	@media (min-width: 768px) {
+		.card-title {
+			font-size: 18px;
+		}
+	}
+
+	/* Mobile: Wrap pagination */
+	.facetwp-pager {
+		flex-wrap: wrap;
+		justify-content: center;
 	}
 
 	@media (min-width: 1200px) {
