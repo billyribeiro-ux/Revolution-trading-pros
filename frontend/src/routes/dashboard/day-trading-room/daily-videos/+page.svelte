@@ -191,13 +191,17 @@
 						oninput={handleSearch}
 						aria-label="Search premium daily videos"
 						autocomplete="off"
+						style="width: 200px;"
 					/>
 					<button 
 						type="button" 
 						class="facetwp-autocomplete-update"
 						aria-label="Search"
 					>
-						🔍
+						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<circle cx="11" cy="11" r="8"></circle>
+							<path d="m21 21-4.35-4.35"></path>
+						</svg>
 					</button>
 				</div>
 			</div>
@@ -307,16 +311,16 @@
 
 	.dashboard-filters__search {
 		flex: 0 0 auto;
-		min-width: 300px;
-		max-width: 400px;
+		min-width: 250px;
+		max-width: 320px;
 		display: flex;
-		gap: 5px;
+		gap: 0;
 	}
 	
 	.facetwp-autocomplete {
 		flex: 1;
-		padding: 10px 15px;
-		font-size: 14px;
+		padding: 8px 12px;
+		font-size: 13px;
 		border: 1px solid #ddd;
 		border-radius: 4px 0 0 4px;
 		background: #fff;
@@ -336,8 +340,8 @@
 	}
 
 	.facetwp-autocomplete-update {
-		padding: 10px 15px;
-		font-size: 16px;
+		padding: 8px 12px;
+		font-size: 14px;
 		border: 1px solid #ddd;
 		border-left: none;
 		border-radius: 0 4px 4px 0;
@@ -346,6 +350,9 @@
 		cursor: pointer;
 		transition: all 0.2s ease;
 		font-family: 'Montserrat', sans-serif;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.facetwp-autocomplete-update:hover {
@@ -473,6 +480,7 @@
 	.card-footer {
 		padding: 15px 20px;
 		border-top: 1px solid #e6e6e6;
+		text-align: center;
 	}
 
 	/* Buttons */
@@ -559,16 +567,9 @@
 		display: inline-block;
 	}
 
-	/* Search Button */
-	.facetwp-autocomplete-update {
-		background: #F69532;
-		color: #fff;
-		border: none;
-		padding: 10px 20px;
-		font-size: 16px;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: all 0.2s ease;
+	/* Search Button Override */
+	.facetwp-autocomplete-update svg {
+		display: block;
 	}
 
 	.facetwp-autocomplete-update:hover {
@@ -633,8 +634,8 @@
 		}
 
 		.dashboard-filters__search {
-			min-width: 300px;
-			max-width: 400px;
+			min-width: 250px;
+			max-width: 320px;
 		}
 	}
 
