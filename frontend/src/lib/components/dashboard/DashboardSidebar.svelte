@@ -670,14 +670,16 @@
 		font-size: 16px;
 		background-color: #0f2d41;
 		overflow-y: auto;
-		overflow-x: hidden;
+		overflow-x: visible;
 		transition: width 0.3s ease-in-out;
+		overflow: visible;
 	}
 
 	.dashboard__nav-primary > ul {
 		list-style: none;
 		margin: 0;
 		padding: 0;
+		overflow: visible;
 	}
 
 	.dashboard__nav-primary > ul > li {
@@ -1067,6 +1069,7 @@
 		padding-top: 30px;
 		opacity: 1;
 		visibility: visible;
+		overflow: visible;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1084,6 +1087,7 @@
 			opacity: 0;
 			visibility: hidden;
 			z-index: 100010;
+			overflow: visible;
 		}
 
 		/* Show on hover when collapsed (mobile/tablet) */
@@ -1099,6 +1103,7 @@
 		list-style: none;
 		margin: 0;
 		padding: 20px 15px;
+		overflow: visible;
 	}
 
 	@media screen and (min-width: 1440px) {
@@ -1137,6 +1142,7 @@
 		font-size: 14px;
 		font-weight: 600;
 		transition: all 0.2s ease;
+		overflow: visible;
 	}
 
 	@media screen and (min-width: 1440px) {
@@ -1215,6 +1221,7 @@
 		box-shadow: 2px 0 8px rgba(0, 0, 0, 0.15);
 		border-radius: 0 4px 4px 0;
 		z-index: 1000;
+		overflow: visible;
 	}
 
 	.dashboard__nav-submenu li {
@@ -1248,6 +1255,7 @@
 	/* Parent item needs relative positioning for absolute submenu */
 	.has-submenu {
 		position: relative;
+		overflow: visible;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

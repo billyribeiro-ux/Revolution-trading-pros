@@ -180,13 +180,13 @@
 			<p></p>
 			<div class="dashboard-filters">
 				<div class="dashboard-filters__count">
-					Showing <div class="facetwp-counts">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}</div>
+					Showing <span class="facetwp-counts">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}</span>
 				</div>
 				<div class="dashboard-filters__search">
 					<input 
 						type="text" 
 						class="facetwp-search" 
-						placeholder="Search videos..." 
+						placeholder="Search" 
 						value={searchQuery}
 						oninput={handleSearch}
 						aria-label="Search premium daily videos"
@@ -303,6 +303,10 @@
 		padding: 20px;
 		background: #f5f5f5;
 		border-radius: 4px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 20px;
 	}
 
 	.dashboard-filters__count {
@@ -311,10 +315,13 @@
 		display: flex;
 		align-items: center;
 		gap: 5px;
+		flex-shrink: 0;
 	}
 
 	.dashboard-filters__search {
-		margin-top: 15px;
+		flex: 0 0 auto;
+		min-width: 300px;
+		max-width: 400px;
 	}
 	
 	.facetwp-search {
@@ -559,6 +566,16 @@
 	@media (max-width: 991px) {
 		.col-md-6 {
 			width: 50%;
+		}
+		
+		.dashboard-filters {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		
+		.dashboard-filters__search {
+			width: 100%;
+			max-width: 100%;
 		}
 	}
 
