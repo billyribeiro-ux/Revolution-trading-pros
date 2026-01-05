@@ -253,26 +253,24 @@
 					<div class="facetwp-pager">
 						{#each getPaginationRange() as pageNum}
 							{#if pageNum === currentPage}
-								<a class="facetwp-page active" data-page="{pageNum}" aria-current="page">{pageNum}</a>
+								<span class="facetwp-page active" data-page="{pageNum}" aria-current="page">{pageNum}</span>
 							{:else if pageNum === totalPages && pageNum !== currentPage}
 								<a 
+									href="#page-{pageNum}"
 									class="facetwp-page last-page" 
 									data-page="{pageNum}"
-									onclick={() => goToPage(Number(pageNum))}
-									role="button"
-									tabindex="0"
-									onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') goToPage(Number(pageNum)); }}
+									onclick={(e) => { e.preventDefault(); goToPage(Number(pageNum)); }}
+									aria-label="Go to last page {pageNum}"
 								>
 									<span class="fa fa-angle-double-right"></span>
 								</a>
 							{:else if pageNum !== '...'}
 								<a 
+									href="#page-{pageNum}"
 									class="facetwp-page" 
 									data-page="{pageNum}"
-									onclick={() => goToPage(Number(pageNum))}
-									role="button"
-									tabindex="0"
-									onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') goToPage(Number(pageNum)); }}
+									onclick={(e) => { e.preventDefault(); goToPage(Number(pageNum)); }}
+									aria-label="Go to page {pageNum}"
 								>
 									{pageNum}
 								</a>
