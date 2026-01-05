@@ -321,7 +321,7 @@
 		border-radius: 4px 0 0 4px;
 		background: #fff;
 		color: #333;
-		font-family: inherit;
+		font-family: 'Montserrat', sans-serif;
 		transition: border-color 0.2s ease;
 	}
 	
@@ -345,6 +345,7 @@
 		color: #666;
 		cursor: pointer;
 		transition: all 0.2s ease;
+		font-family: 'Montserrat', sans-serif;
 	}
 
 	.facetwp-autocomplete-update:hover {
@@ -355,6 +356,7 @@
 	.facetwp-counts {
 		font-weight: 600;
 		color: #333;
+		font-family: 'Montserrat', sans-serif;
 	}
 
 	/* Card Grid */
@@ -533,6 +535,7 @@
 		border-radius: 4px;
 		cursor: pointer;
 		transition: all 0.2s ease;
+		font-family: 'Montserrat', sans-serif;
 	}
 
 	.facetwp-page:hover {
