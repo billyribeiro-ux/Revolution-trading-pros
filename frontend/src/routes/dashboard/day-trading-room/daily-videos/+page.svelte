@@ -33,6 +33,10 @@
 	let itemsPerPage = 12;
 	let totalItems = 750;
 	let displayedVideos: DailyVideo[] = [];
+	
+	// Search state
+	let searchQuery = '';
+	let filteredVideos: DailyVideo[] = [];
 
 	// Sample data - matches WordPress structure
 	const allVideos: DailyVideo[] = [
@@ -81,10 +85,40 @@
 		}))
 	];
 
+	function filterVideos() {
+		if (!searchQuery.trim()) {
+			filteredVideos = allVideos;
+		} else {
+			const query = searchQuery.toLowerCase();
+			filteredVideos = allVideos.filter(video => 
+				video.title.toLowerCase().includes(query) ||
+				video.trader.toLowerCase().includes(query) ||
+				video.excerpt.toLowerCase().includes(query)
+			);
+		}
+		
+		// Update total items and pages based on filtered results
+		totalItems = filteredVideos.length;
+		totalPages = Math.ceil(totalItems / itemsPerPage);
+		
+		// Reset to page 1 when search changes
+		if (currentPage > totalPages) {
+			currentPage = 1;
+		}
+		
+		updateDisplayedVideos();
+	}
+	
 	function updateDisplayedVideos() {
 		const startIndex = (currentPage - 1) * itemsPerPage;
 		const endIndex = startIndex + itemsPerPage;
-		displayedVideos = allVideos.slice(startIndex, endIndex);
+		displayedVideos = filteredVideos.slice(startIndex, endIndex);
+	}
+	
+	function handleSearch(event: Event) {
+		const target = event.target as HTMLInputElement;
+		searchQuery = target.value;
+		filterVideos();
 	}
 
 	function goToPage(pageNum: number) {
@@ -126,6 +160,9 @@
 	}
 
 	onMount(() => {
+		filteredVideos = allVideos;
+		totalItems = filteredVideos.length;
+		totalPages = Math.ceil(totalItems / itemsPerPage);
 		updateDisplayedVideos();
 	});
 </script>
@@ -146,7 +183,14 @@
 					Showing <div class="facetwp-counts">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}</div>
 				</div>
 				<div class="dashboard-filters__search">
-					<div class="facetwp-facet facetwp-facet-better_search facetwp-type-autocomplete" data-name="better_search" data-type="autocomplete"></div>
+					<input 
+						type="text" 
+						class="facetwp-search" 
+						placeholder="Search videos..." 
+						value={searchQuery}
+						oninput={handleSearch}
+						aria-label="Search premium daily videos"
+					/>
 				</div>
 			</div>
 			<div id="products-list" class="facetwp-template">
@@ -204,7 +248,7 @@
 					<li>
 						<button 
 							class="page-numbers" 
-							on:click={() => goToPage(currentPage - 1)}
+							onclick={() => goToPage(currentPage - 1)}
 							type="button"
 							aria-label="Previous page"
 						>
@@ -222,7 +266,7 @@
 						{:else}
 							<button 
 								class="page-numbers" 
-								on:click={() => goToPage(Number(pageNum))}
+								onclick={() => goToPage(Number(pageNum))}
 								type="button"
 								aria-label="Go to page {pageNum}"
 							>
@@ -236,7 +280,7 @@
 					<li>
 						<button 
 							class="page-numbers" 
-							on:click={() => goToPage(currentPage + 1)}
+							onclick={() => goToPage(currentPage + 1)}
 							type="button"
 							aria-label="Next page"
 						>
@@ -271,6 +315,28 @@
 
 	.dashboard-filters__search {
 		margin-top: 15px;
+	}
+	
+	.facetwp-search {
+		width: 100%;
+		padding: 10px 15px;
+		font-size: 14px;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		background: #fff;
+		color: #333;
+		font-family: inherit;
+		transition: border-color 0.2s ease;
+	}
+	
+	.facetwp-search:focus {
+		outline: none;
+		border-color: #F69532;
+		box-shadow: 0 0 0 2px rgba(246, 149, 50, 0.1);
+	}
+	
+	.facetwp-search::placeholder {
+		color: #999;
 	}
 
 	.facetwp-counts {
