@@ -226,8 +226,20 @@ export async function apiFetch<T>(
 	// Use provided fetch or fall back to global fetch
 	const fetchFn = options.fetch || (typeof window !== 'undefined' ? window.fetch : fetch);
 
-	// Build URL with params
-	let url = `${API_BASE_URL}${endpoint}`;
+	// Build URL with params - handle both absolute and relative endpoints
+	// If endpoint already starts with http, use it as-is
+	// If endpoint starts with /api, prepend API_BASE_URL
+	// Otherwise, prepend API_BASE_URL and /api
+	let url: string;
+	if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+		url = endpoint;
+	} else if (endpoint.startsWith('/api/')) {
+		url = `${API_BASE_URL}${endpoint}`;
+	} else if (endpoint.startsWith('/')) {
+		url = `${API_BASE_URL}/api${endpoint}`;
+	} else {
+		url = `${API_BASE_URL}/api/${endpoint}`;
+	}
 
 	if (options.params) {
 		const queryString = new URLSearchParams(options.params).toString();

@@ -15,6 +15,11 @@ import { ALL_ROOM_IDS } from '$lib/config/rooms';
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════
 
+export interface WatchlistDate {
+	date: string;
+	spreadsheetUrl: string;
+}
+
 export interface WatchlistItem {
 	id: number;
 	slug: string;
@@ -32,6 +37,7 @@ export interface WatchlistItem {
 	spreadsheet: {
 		src: string;
 	};
+	watchlistDates?: WatchlistDate[];
 	description: string;
 	status: 'published' | 'draft' | 'archived';
 	// Room targeting - which rooms/services can see this watchlist
@@ -78,6 +84,7 @@ export interface CreateWatchlistData {
 	videoSrc?: string;
 	videoPoster?: string;
 	spreadsheetSrc?: string;
+	watchlistDates?: WatchlistDate[];
 	status?: 'published' | 'draft' | 'archived';
 	rooms?: string[]; // Target rooms (defaults to all)
 }

@@ -460,12 +460,12 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SIDEBAR SECTIONS
+	 * SIDEBAR SECTIONS - Platform Tutorials Match
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.content-sidebar__section {
-		padding: 24px;
-		border-bottom: 1px solid #e5e5e5;
+		padding: 0;
+		border-bottom: none;
 	}
 
 	.content-sidebar__section:last-child {
@@ -473,17 +473,21 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SECTION HEADINGS
+	 * SECTION HEADINGS - Platform Tutorials Style with Background
+	 * Background: #143E59 (dark teal/navy) - matches new dashboard color scheme
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.content-sidebar__heading {
-		font-size: 18px;
+		font-size: 14px;
 		font-weight: 700;
-		color: #333;
-		margin: 0 0 16px 0;
+		color: #ffffff;
+		margin: 0;
+		padding: 12px 20px;
 		font-family: 'Montserrat', var(--font-heading), sans-serif;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
+		background-color: #143E59;
+		border-bottom: 2px solid #0e2433;
 	}
 
 	.pssubject {
@@ -496,11 +500,12 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * TRADING ROOM SCHEDULE
+	 * TRADING ROOM SCHEDULE - Platform Tutorials Match
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.script-container {
-		margin-top: 12px;
+		padding: 20px;
+		background: #ffffff;
 	}
 
 	.room-sched {
@@ -511,7 +516,7 @@
 
 	.schedule-event {
 		padding-bottom: 16px;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid #e5e5e5;
 	}
 
 	.schedule-event:last-child {
@@ -577,17 +582,18 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * QUICK LINKS
+	 * QUICK LINKS - Platform Tutorials Match
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.link-list {
 		list-style: none;
+		padding: 20px;
 		margin: 0;
-		padding: 0;
+		background: #ffffff;
 	}
 
 	.link-list li {
-		margin: 0 0 12px 0;
+		margin-bottom: 12px;
 	}
 
 	.link-list li:last-child {
@@ -595,18 +601,17 @@
 	}
 
 	.link-list a {
-		display: block;
-		font-size: 14px;
-		font-weight: 600;
 		color: #143E59;
 		text-decoration: none;
-		font-family: 'Montserrat', var(--font-heading), sans-serif;
-		transition: color 0.15s ease-in-out;
-		padding: 8px 0;
+		font-size: 14px;
+		font-family: 'Montserrat', var(--font-body), sans-serif;
+		transition: color 0.2s ease;
+		display: block;
+		line-height: 1.6;
 	}
 
 	.link-list a:hover {
-		color: #0984ae;
+		color: #0e2433;
 		text-decoration: underline;
 	}
 

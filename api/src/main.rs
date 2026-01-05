@@ -70,7 +70,7 @@ async fn main() -> anyhow::Result<()> {
         tracing::info!("Skipping migrations (SKIP_MIGRATIONS=true)");
     } else {
         match db.migrate().await {
-            Ok(_) => tracing::info!("Migrations completed"),
+            Ok(_) => tracing::info!("✅ Migrations completed successfully"),
             Err(e) => {
                 tracing::warn!("Migration error (may be expected with existing schema): {}", e);
                 tracing::info!("Continuing without migrations - using existing schema");

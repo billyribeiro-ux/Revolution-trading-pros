@@ -59,6 +59,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/security", security::router())
         .nest("/schedules", schedules::router())
         .nest("/admin/schedules", schedules::admin_router())
+        // .nest("/admin/unified-videos", unified_videos::router()) // TODO: Fix compilation errors
+        .nest("/migrate", migrate::router())
         .nest("/my/orders", orders::router())
         .nest("/my/subscriptions", subscriptions::my_router())
         .nest("/logout", auth::logout_router())
