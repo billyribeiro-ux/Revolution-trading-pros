@@ -170,7 +170,7 @@
 				</div>
 				
 				<div class="form-group">
-					<label>Auto-Generated Slug</label>
+					<div class="label-text">Auto-Generated Slug</div>
 					<div class="slug-preview">
 						<code>{slug() || 'Will be generated...'}</code>
 					</div>
@@ -178,7 +178,7 @@
 				</div>
 				
 				<div class="form-group">
-					<label>Auto-Generated Title</label>
+					<div class="label-text">Auto-Generated Title</div>
 					<div class="slug-preview">
 						{title() || 'Will be generated...'}
 					</div>
@@ -417,7 +417,8 @@
 		margin-bottom: 20px;
 	}
 
-	.form-group label {
+	.form-group label,
+	.form-group .label-text {
 		display: block;
 		font-weight: 600;
 		color: #333;
