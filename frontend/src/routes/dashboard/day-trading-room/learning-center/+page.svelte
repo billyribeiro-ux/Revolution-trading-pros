@@ -236,14 +236,53 @@
 
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">Learning Center</h1>
+		<h1 class="dashboard__page-title">Mastering the Trade Dashboard</h1>
+		<a href="/dashboard/mastering-the-trade/start-here" class="btn btn-xs btn-default start-here-btn">
+			New? Start Here
+		</a>
+	</div>
+	<div class="dashboard__header-right">
+		<ul class="trading-room-rules">
+			<li>
+				<a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="btn btn-xs btn-link rules-link">
+					Trading Room Rules
+				</a>
+			</li>
+			<li class="rules-disclaimer">
+				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+			</li>
+		</ul>
+		<div class="dropdown">
+			<button class="btn btn-xs btn-orange dropdown-toggle" type="button" onclick={(e) => e.currentTarget.nextElementSibling?.classList.toggle('show')}>
+				<strong>Enter a Trading Room</strong>
+				<svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
+					<path d="M2 4l4 4 4-4"/>
+				</svg>
+			</button>
+			<nav class="dropdown-menu">
+				<ul>
+					<li>
+						<a href="/dashboard/mastering-the-trade/trading-room" target="_blank">
+							<span class="room-icon">📈</span>
+							Mastering The Trade Room
+						</a>
+					</li>
+					<li>
+						<a href="/dashboard/simpler-showcase/trading-room" target="_blank">
+							<span class="room-icon">🎯</span>
+							Simpler Showcase Room
+						</a>
+					</li>
+				</ul>
+			</nav>
+		</div>
 	</div>
 </header>
 
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<!-- Category Filter Form - matches WordPress exactly -->
-		<form class="term-filter" on:submit|preventDefault>
+		<form class="term-filter" onsubmit={(e) => e.preventDefault()}>
 			<!-- Reset Filter Button -->
 			<div class="reset-filter">
 				<input 
@@ -252,7 +291,7 @@
 					value="all" 
 					name="categoryfilter"
 					checked={activeFilter === 'all'}
-					on:change={() => filterResources('all')}
+					onchange={() => filterResources('all')}
 				/>
 				<label for="filter-reset" title="Reset Filter">
 					<svg aria-hidden="true" focusable="false" class="reset-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
@@ -270,12 +309,17 @@
 						value={category.id} 
 						name="categoryfilter"
 						checked={activeFilter === category.id}
-						on:change={() => filterResources(category.id)}
+						onchange={() => filterResources(category.id)}
 					/>
 					<label for="filter-{category.id}">{category.label}</label>
 				</div>
 			{/each}
 		</form>
+
+		<!-- Section Title - matches WordPress exactly -->
+		<section class="dashboard__content-section">
+			<h2 class="section-title">Mastering the Trade Learning Center<span> | </span><span>Overview</span></h2>
+		</section>
 
 		<!-- Results Count -->
 		<div class="lc-results-count">
@@ -332,7 +376,7 @@
 						<li>
 							<button 
 								class="page-numbers" 
-								on:click={() => goToPage(currentPage - 1)}
+								onclick={() => goToPage(currentPage - 1)}
 								type="button"
 								aria-label="Previous page"
 							>
@@ -350,7 +394,7 @@
 							{:else}
 								<button 
 									class="page-numbers" 
-									on:click={() => goToPage(Number(pageNum))}
+									onclick={() => goToPage(Number(pageNum))}
 									type="button"
 									aria-label="Go to page {pageNum}"
 								>
@@ -364,7 +408,7 @@
 						<li>
 							<button 
 								class="page-numbers" 
-								on:click={() => goToPage(currentPage + 1)}
+								onclick={() => goToPage(currentPage + 1)}
 								type="button"
 								aria-label="Next page"
 							>
@@ -379,6 +423,168 @@
 </div>
 
 <style>
+	/* Dashboard Header - matches WordPress exactly */
+	.dashboard__header {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		padding: 20px 0;
+		flex-wrap: wrap;
+		gap: 20px;
+	}
+
+	.dashboard__header-left {
+		display: flex;
+		align-items: center;
+		gap: 15px;
+		flex-wrap: wrap;
+	}
+
+	.dashboard__page-title {
+		font-family: 'Open Sans Condensed', 'Open Sans', sans-serif;
+		font-size: 28px;
+		font-weight: 700;
+		color: #333;
+		margin: 0;
+	}
+
+	.start-here-btn {
+		padding: 6px 12px;
+		font-size: 12px;
+		background: #6c757d;
+		color: #fff;
+		border-radius: 4px;
+		text-decoration: none;
+		font-weight: 600;
+	}
+
+	.start-here-btn:hover {
+		background: #5a6268;
+	}
+
+	.dashboard__header-right {
+		display: flex;
+		align-items: center;
+		gap: 20px;
+		flex-wrap: wrap;
+	}
+
+	/* Trading Room Rules */
+	.trading-room-rules {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		flex-wrap: wrap;
+	}
+
+	.rules-link {
+		font-size: 12px;
+		font-weight: 700;
+		color: #1e73be;
+		text-decoration: none;
+	}
+
+	.rules-link:hover {
+		text-decoration: underline;
+	}
+
+	.rules-disclaimer {
+		font-size: 11px;
+		color: #666;
+		max-width: 300px;
+	}
+
+	/* Dropdown */
+	.dropdown {
+		position: relative;
+		display: inline-block;
+	}
+
+	.btn-orange {
+		background: #F69532;
+		color: #fff;
+		border: none;
+		padding: 10px 16px;
+		border-radius: 4px;
+		font-size: 13px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.btn-orange:hover {
+		background: #dc7309;
+	}
+
+	.dropdown-arrow {
+		transition: transform 0.2s ease;
+	}
+
+	.dropdown-menu {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		min-width: 250px;
+		background: #fff;
+		border: 1px solid #e6e6e6;
+		border-radius: 4px;
+		box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+		z-index: 1000;
+		display: none;
+		margin-top: 5px;
+	}
+
+	.dropdown-menu.show {
+		display: block;
+	}
+
+	.dropdown-menu ul {
+		list-style: none;
+		margin: 0;
+		padding: 10px 0;
+	}
+
+	.dropdown-menu li a {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 10px 20px;
+		color: #333;
+		text-decoration: none;
+		font-size: 14px;
+		transition: background 0.2s ease;
+	}
+
+	.dropdown-menu li a:hover {
+		background: #f5f5f5;
+	}
+
+	.room-icon {
+		font-size: 18px;
+	}
+
+	/* Section Title */
+	.dashboard__content-section {
+		margin-bottom: 20px;
+	}
+
+	.section-title {
+		font-family: 'Open Sans Condensed', 'Open Sans', sans-serif;
+		font-size: 24px;
+		font-weight: 700;
+		color: #333;
+		margin: 0 0 10px;
+	}
+
+	.section-title span {
+		color: #666;
+		font-weight: 400;
+	}
+
 	/* Term Filter Form - matches WordPress exactly */
 	.term-filter {
 		display: flex;
