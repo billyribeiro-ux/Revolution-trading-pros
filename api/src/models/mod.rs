@@ -13,6 +13,7 @@ pub mod order;
 pub mod newsletter;
 pub mod order_service_types;
 pub mod video;
+pub mod watchlist;
 
 pub use user::*;
 pub use course::*;
