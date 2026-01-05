@@ -502,7 +502,7 @@
 		display: inline-block;
 		padding: 8px 16px;
 		font-size: 14px;
-		font-weight: 600;
+		font-weight: 700;
 		text-align: center;
 		text-decoration: none;
 		border-radius: 4px;
@@ -512,6 +512,7 @@
 	.btn-tiny {
 		padding: 6px 12px;
 		font-size: 12px;
+		font-weight: 700;
 	}
 
 	.btn-default {
