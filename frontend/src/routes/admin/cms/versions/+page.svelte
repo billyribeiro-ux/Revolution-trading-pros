@@ -10,7 +10,7 @@
 	import {
 		IconHistory,
 		IconArrowLeft,
-		IconRotateCcw,
+		IconRefresh,
 		IconEye,
 		IconSearch,
 		IconFilter,
@@ -207,14 +207,14 @@
 								<IconEye size={16} />
 							</button>
 							<button class="action-btn" title="Compare">
-								<IconDiff size={16} />
+								<IconFileText size={16} />
 							</button>
 							<button
 								class="action-btn rollback"
 								title="Rollback"
 								onclick={(e) => { e.stopPropagation(); rollbackVersion(version.id); }}
 							>
-								<IconRotateCcw size={16} />
+								<IconRefresh size={16} />
 							</button>
 						</div>
 					</div>
@@ -241,7 +241,7 @@
 
 				<div class="detail-actions">
 					<button class="btn-primary" onclick={() => rollbackVersion(selectedVersion.id)}>
-						<IconRotateCcw size={16} />
+						<IconRefresh size={16} />
 						Rollback to This Version
 					</button>
 				</div>
