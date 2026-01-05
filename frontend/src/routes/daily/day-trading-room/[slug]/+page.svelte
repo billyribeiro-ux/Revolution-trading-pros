@@ -37,6 +37,12 @@
 	let previousVideo: DailyVideo | null = null;
 	let nextVideo: DailyVideo | null = null;
 	let loading = true;
+	let videoElement: HTMLVideoElement;
+
+	// Video ended redirect handler
+	function handleVideoEnded() {
+		window.location.href = 'https://lp.simplertrading.com/shortcut';
+	}
 
 	// Sample data - matches WordPress structure
 	const allVideos: DailyVideo[] = [
@@ -127,6 +133,27 @@
 		<a href="/dashboard/day-trading-room/daily-videos" class="btn btn-default">Back to Videos</a>
 	</div>
 {:else}
+	<!-- Breadcrumbs Navigation -->
+	<nav id="breadcrumbs" class="breadcrumbs">
+		<div class="container-fluid">
+			<ul>
+				<li class="item-home">
+					<a class="breadcrumb-link breadcrumb-home" href="/" title="Home">Home</a>
+				</li>
+				<li class="separator separator-home"> / </li>
+				<li class="item-cat item-custom-post-type-daily">
+					<a class="breadcrumb-cat breadcrumb-custom-post-type-daily" href="/dashboard/day-trading-room/daily-videos" title="Daily Videos">Daily Videos</a>
+				</li>
+				<li class="separator"> / </li>
+				<li class="item-cat"></li>
+				<li class="separator"> / </li>
+				<li class="item-current item-{currentVideo.id}">
+					<strong class="breadcrumb-current breadcrumb-{currentVideo.id}" title="{currentVideo.title}">{currentVideo.title}</strong>
+				</li>
+			</ul>
+		</div>
+	</nav>
+
 	<!-- Title Section with Previous/Next Navigation -->
 	<section id="dv-title" class="dv-section cpost-title-section cpost-section">
 		<div class="section-inner">
@@ -157,10 +184,12 @@
 					<div class="video-container current">
 						<video 
 							id="dv-player" 
+							bind:this={videoElement}
 							controls 
 							width="100%" 
 							poster={currentVideo.thumbnail}
 							style="aspect-ratio: 16/9;"
+							onended={handleVideoEnded}
 						>
 							<source src={currentVideo.videoUrl} type="video/mp4" />
 							Your browser does not support the video tag.
@@ -177,7 +206,7 @@
 	<!-- Recent Videos Section -->
 	<section id="dv-recent" class="dv-section cpost-recent-section cpost-section">
 		<div class="section-inner">
-			<h2>Recent Day Trading Room Daily Videos</h2>
+			<h2>Recent Mastering the Trade Daily Videos</h2>
 			
 			<div class="card-grid flex-grid row">
 				{#each relatedVideos as video (video.id)}
@@ -220,6 +249,57 @@
 {/if}
 
 <style>
+	/* Breadcrumbs */
+	.breadcrumbs {
+		z-index: 1;
+		background: #f5f5f5;
+		border-bottom: 1px solid #e6e6e6;
+		padding: 15px 0;
+	}
+
+	.container-fluid {
+		max-width: 1200px;
+		margin: 0 auto;
+		padding: 0 20px;
+	}
+
+	.breadcrumbs ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+		gap: 5px;
+	}
+
+	.breadcrumbs li {
+		display: inline;
+		font-size: 14px;
+	}
+
+	.breadcrumb-link,
+	.breadcrumb-cat {
+		color: #666;
+		text-decoration: none;
+		transition: color 0.2s ease;
+	}
+
+	.breadcrumb-link:hover,
+	.breadcrumb-cat:hover {
+		color: #F69532;
+	}
+
+	.separator {
+		color: #999;
+		margin: 0 5px;
+	}
+
+	.breadcrumb-current {
+		color: #333;
+		font-weight: 600;
+	}
+
 	/* Loading State */
 	.loading-container {
 		display: flex;
