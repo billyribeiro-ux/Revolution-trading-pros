@@ -10,10 +10,8 @@
 	import {
 		IconHistory,
 		IconArrowLeft,
-		IconGitCommit,
 		IconRotateCcw,
 		IconEye,
-		IconDiff,
 		IconSearch,
 		IconFilter,
 		IconChevronDown,
