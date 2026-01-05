@@ -323,7 +323,7 @@
 					Delete
 				</button>
 			</div>
-		</div>
+		</button>
 	</div>
 {/if}
 

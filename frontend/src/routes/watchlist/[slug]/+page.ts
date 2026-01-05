@@ -8,10 +8,9 @@
  * @version 1.0.0
  */
 
-import type { PageLoad } from './$types';
 import type { WatchlistItem } from '$lib/api/watchlist';
 
-export const load: PageLoad = async ({ params, fetch }) => {
+export const load = async ({ params, fetch }: { params: { slug: string }, fetch: typeof globalThis.fetch }) => {
 	try {
 		// Fetch all watchlist entries
 		const response = await fetch('/api/watchlist?status=published');
