@@ -704,6 +704,21 @@
 		font-weight: 700 !important;
 	}
 
+	/* Weekly Watchlist Text Colors - Match Dashboard */
+	.u--background-color-white h4.h5 {
+		font-size: 18px;
+		font-weight: 800;
+		color: #333;
+		margin: 0 0 10px;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	.u--background-color-white .u--hide-read-more p {
+		font-size: 14px;
+		color: #666;
+		margin: 0 0 15px;
+	}
+
 	.hidden-md {
 		display: block;
 	}
