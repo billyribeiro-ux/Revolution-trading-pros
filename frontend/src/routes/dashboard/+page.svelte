@@ -565,6 +565,7 @@
 		max-width: 100%;
 		padding-left: 15px;
 		padding-right: 15px;
+		text-align: center;
 	}
 
 	.watchlist-col-right {
@@ -575,6 +576,7 @@
 		.watchlist-col-left {
 			flex: 0 0 50%;
 			max-width: 50%;
+			text-align: left;
 		}
 
 		.watchlist-col-right {
@@ -586,6 +588,7 @@
 		.watchlist-col-left {
 			flex: 0 0 41.666667%;
 			max-width: 41.666667%;
+			text-align: left;
 		}
 
 		.watchlist-col-right {
