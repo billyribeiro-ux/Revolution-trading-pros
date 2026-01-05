@@ -170,6 +170,10 @@
 						in:fly={{ x: -20, duration: 400, delay: i * 50 }}
 						class:selected={selectedVersion?.id === version.id}
 						onclick={() => selectedVersion = selectedVersion?.id === version.id ? null : version}
+						onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectedVersion = selectedVersion?.id === version.id ? null : version; }}}
+						role="button"
+						tabindex="0"
+						aria-label="View version {version.version_number} details"
 					>
 						<div class="version-timeline-dot {getChangeTypeColor(version.change_type)}"></div>
 
