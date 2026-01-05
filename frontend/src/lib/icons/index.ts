@@ -261,6 +261,13 @@ import IconProgress from '@tabler/icons-svelte/icons/progress';
 // Qr/Question Icons
 import IconQrcode from '@tabler/icons-svelte/icons/qrcode';
 import IconQuestionMark from '@tabler/icons-svelte/icons/question-mark';
+
+// Rotate Icons
+import IconRotate from '@tabler/icons-svelte/icons/rotate';
+import IconRotateClockwise from '@tabler/icons-svelte/icons/rotate-clockwise';
+
+// Diff Icons
+import IconFileDiff from '@tabler/icons-svelte/icons/file-diff';
 import IconQuote from '@tabler/icons-svelte/icons/quote';
 
 // Receipt Icons
@@ -594,6 +601,11 @@ export {
 	// Qr/Question Icons
 	IconQrcode,
 	IconQuestionMark,
+	// Rotate Icons
+	IconRotate,
+	IconRotateClockwise,
+	// Diff Icons
+	IconFileDiff,
 	IconQuote,
 	// Receipt Icons
 	IconReceipt,
