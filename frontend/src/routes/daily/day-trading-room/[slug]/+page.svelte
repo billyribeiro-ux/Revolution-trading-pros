@@ -206,7 +206,7 @@
 	<!-- Recent Videos Section -->
 	<section id="dv-recent" class="dv-section cpost-recent-section cpost-section">
 		<div class="section-inner">
-			<h2>Recent Mastering the Trade Daily Videos</h2>
+			<h2>Recent Day Trading Room Daily Videos</h2>
 			
 			<div class="card-grid flex-grid row">
 				{#each relatedVideos as video (video.id)}
