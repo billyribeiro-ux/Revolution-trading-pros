@@ -8,7 +8,7 @@
 	import { fly, scale, fade } from 'svelte/transition';
 	import { cubicOut, backOut } from 'svelte/easing';
 	import {
-		IconGitBranch,
+		IconActivity,
 		IconArrowLeft,
 		IconCheck,
 		IconX,
@@ -117,7 +117,7 @@
 			</a>
 			<div class="header-title">
 				<div class="header-icon">
-					<IconGitBranch size={24} />
+					<IconActivity size={24} />
 				</div>
 				<div>
 					<h1>Workflow Manager</h1>
@@ -174,7 +174,7 @@
 		{:else if workflows.length === 0}
 			<div class="empty-state" in:scale={{ duration: 400 }}>
 				<div class="empty-icon">
-					<IconGitBranch size={48} />
+					<IconActivity size={48} />
 				</div>
 				<h3>No workflows found</h3>
 				<p>Content awaiting review will appear here</p>
