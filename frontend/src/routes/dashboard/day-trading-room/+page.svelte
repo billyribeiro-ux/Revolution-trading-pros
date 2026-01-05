@@ -638,11 +638,15 @@
 
 	.article-card .btn {
 		margin: 0 20px 20px;
+		display: block;
+		width: calc(100% - 40px);
+		text-align: center;
 	}
 
 	.btn-tiny {
-		padding: 8px 16px;
+		padding: 10px 24px;
 		font-size: 13px;
+		min-width: 120px;
 	}
 
 	.btn-default {
