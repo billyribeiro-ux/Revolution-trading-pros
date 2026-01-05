@@ -453,15 +453,19 @@
 		<nav class="dashboard__nav-secondary" aria-label="{secondarySidebarTitle} navigation">
 			<ul>
 				{#each secondaryNavItems as item}
-					<li class:has-submenu={item.submenu && item.submenu.length > 0}>
+					<li 
+						class:has-submenu={item.submenu && item.submenu.length > 0}
+						onmouseenter={() => item.submenu && item.submenu.length > 0 && !expandedSubmenus.has(item.text) && toggleSubmenu(item.text)}
+						onmouseleave={() => item.submenu && item.submenu.length > 0 && expandedSubmenus.has(item.text) && toggleSubmenu(item.text)}
+					>
 						{#if item.submenu && item.submenu.length > 0}
-							<!-- Item with submenu -->
-						<button
-							type="button"
+							<!-- Item with submenu - opens on HOVER -->
+						<span
 							class="dashboard__nav-secondary-item"
 							class:is-active={hasActiveSubmenuItem(item.submenu)}
 							class:is-expanded={expandedSubmenus.has(item.text)}
-							onclick={() => toggleSubmenu(item.text)}
+							role="button"
+							tabindex="0"
 							aria-expanded={expandedSubmenus.has(item.text)}
 						>
 							{#if item.icon}
@@ -471,7 +475,7 @@
 							{/if}
 							<span class="dashboard__nav-secondary-text">{item.text}</span>
 							<span class="dashboard__nav-secondary-chevron">›</span>
-						</button>
+						</span>
 
 							{#if expandedSubmenus.has(item.text)}
 								<ul class="dashboard__nav-submenu">
