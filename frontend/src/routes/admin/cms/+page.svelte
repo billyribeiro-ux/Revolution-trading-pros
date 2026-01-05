@@ -218,9 +218,9 @@
 	<header class="hero-header" in:fly={{ y: -30, duration: 600, easing: cubicOut }}>
 		<div class="hero-content">
 			<div class="hero-badge" in:scale={{ duration: 400, delay: 200 }}>
-				<IconSparkles size={14} />
-				<span>Enterprise CMS</span>
-			</div>
+			<IconBolt size={14} />
+			<span>Enterprise CMS</span>
+		</div>
 			<h1 class="hero-title">Content Management</h1>
 			<p class="hero-subtitle">
 				{formatDate(currentTime)} · {formatTime(currentTime)}
@@ -266,7 +266,7 @@
 				},
 				{
 					href: '/admin/cms/workflows',
-					icon: IconGitBranch,
+					icon: IconActivity,
 					value: stats.workflows.pending,
 					label: 'Pending Reviews',
 					sublabel: `${stats.workflows.approved_today || 0} approved today`,
@@ -362,7 +362,7 @@
 				{#if myAssignments.length === 0}
 					<div class="empty-state" in:scale={{ duration: 400 }}>
 						<div class="empty-icon">
-							<IconCheckCircle2 size={40} />
+							<IconCheck size={40} />
 						</div>
 						<h3>All caught up!</h3>
 						<p>No pending assignments</p>
