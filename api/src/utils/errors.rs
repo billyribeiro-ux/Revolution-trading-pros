@@ -98,6 +98,11 @@ impl ApiError {
         Self::new(StatusCode::BAD_REQUEST, message)
     }
 
+    /// Create an internal server error
+    pub fn internal_error(message: &str) -> Self {
+        Self::new(StatusCode::INTERNAL_SERVER_ERROR, message)
+    }
+
     /// Convert to Axum response tuple
     pub fn into_response_tuple(self) -> (StatusCode, Json<Self>) {
         let status = StatusCode::from_u16(self.status.parse().unwrap_or(500))

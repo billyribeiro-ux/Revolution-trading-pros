@@ -438,8 +438,7 @@ pub async fn presigned_upload(
     let file_key = format!("{}/{}.{}", folder, Uuid::new_v4(), extension);
 
     // Get presigned URL from storage service
-    let storage = state.storage.as_ref()
-        .ok_or_else(|| ApiError::internal_error("Storage service not configured"))?;
+    let storage = &state.services.storage;
 
     let expires_in = 3600u64; // 1 hour
     let upload_url = storage.presigned_upload_url(&file_key, &payload.content_type, expires_in)
@@ -538,8 +537,7 @@ pub async fn direct_upload(
     State(state): State<AppState>,
     mut multipart: Multipart,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let storage = state.storage.as_ref()
-        .ok_or_else(|| ApiError::internal_error("Storage service not configured"))?;
+    let storage = &state.services.storage;
 
     let mut uploaded_files: Vec<Media> = Vec::new();
 
