@@ -136,23 +136,22 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<header class="dashboard__header">
-	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">Premium Daily Videos</h1>
-	</div>
-</header>
-
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-		<!-- Filter Bar -->
-		<div class="dashboard-filters">
-			<div class="dashboard-filters__results">
-				Showing <span class="facetwp-counts">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}</span>
+		<section class="dashboard__content-section">
+			<h2 class="section-title">Mastering the Trade Premium Daily Videos</h2>
+			<p></p>
+			<div class="dashboard-filters">
+				<div class="dashboard-filters__count">
+					Showing <div class="facetwp-counts">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}</div>
+				</div>
+				<div class="dashboard-filters__search">
+					<div class="facetwp-facet facetwp-facet-better_search facetwp-type-autocomplete" data-name="better_search" data-type="autocomplete"></div>
+				</div>
 			</div>
-		</div>
+			<div id="products-list" class="facetwp-template">
 
-		<!-- Video Grid -->
-		<div class="card-grid flex-grid row">
+				<div class="card-grid flex-grid row">
 			{#each displayedVideos as video (video.id)}
 				<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
 					<div class="card flex-grid-panel">
@@ -197,10 +196,9 @@
 					</div>
 				</article>
 			{/each}
-		</div>
-
-		<!-- Pagination -->
-		<div class="fl-builder-pagination">
+				</div>
+				<div class="facetwp-pagination">
+					<div class="facetwp-pager">
 			<ul class="page-numbers">
 				{#if currentPage > 1}
 					<li>
@@ -246,8 +244,11 @@
 						</button>
 					</li>
 				{/if}
-			</ul>
-		</div>
+					</ul>
+					</div>
+				</div>
+			</div>
+		</section>
 	</div>
 </div>
 
@@ -260,9 +261,16 @@
 		border-radius: 4px;
 	}
 
-	.dashboard-filters__results {
+	.dashboard-filters__count {
 		font-size: 14px;
 		color: #666;
+		display: flex;
+		align-items: center;
+		gap: 5px;
+	}
+
+	.dashboard-filters__search {
+		margin-top: 15px;
 	}
 
 	.facetwp-counts {
@@ -414,12 +422,20 @@
 		color: #fff;
 	}
 
+	/* Section Title */
+	.section-title {
+		font-size: 28px;
+		font-weight: 700;
+		margin: 0 0 20px;
+		color: #333;
+	}
+
 	/* Pagination */
-	.fl-builder-pagination {
+	.facetwp-pagination {
 		padding: 40px 0;
 	}
 
-	.fl-builder-pagination ul.page-numbers {
+	.facetwp-pagination ul.page-numbers {
 		list-style: none;
 		margin: 0;
 		padding: 0;
@@ -431,15 +447,15 @@
 		flex-wrap: wrap;
 	}
 
-	.fl-builder-pagination li {
+	.facetwp-pagination li {
 		display: inline-block;
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
 
-	.fl-builder-pagination li button.page-numbers,
-	.fl-builder-pagination li span.page-numbers {
+	.facetwp-pagination li button.page-numbers,
+	.facetwp-pagination li span.page-numbers {
 		border: 1px solid #e6e6e6;
 		display: inline-block;
 		padding: 8px 12px;
@@ -455,19 +471,19 @@
 		font-size: inherit;
 	}
 
-	.fl-builder-pagination li button.page-numbers:hover {
+	.facetwp-pagination li button.page-numbers:hover {
 		background: #f5f5f5;
 		border-color: #ccc;
 	}
 
-	.fl-builder-pagination li span.current {
+	.facetwp-pagination li span.current {
 		background: #F69532;
 		color: #fff;
 		border-color: #F69532;
 		font-weight: 600;
 	}
 
-	.fl-builder-pagination li span.dots {
+	.facetwp-pagination li span.dots {
 		border: none;
 		background: transparent;
 		cursor: default;
