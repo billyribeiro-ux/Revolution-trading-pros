@@ -337,8 +337,8 @@
 				</div>
 
 				<div class="form-group">
-					<label>Events</label>
-					<div class="events-grid">
+					<label id="events-label">Events</label>
+					<div class="events-grid" role="group" aria-labelledby="events-label">
 						{#each availableEvents as event}
 							<button
 								type="button"
@@ -358,10 +358,13 @@
 				<div class="form-group toggle-group">
 					<label for="active">Active</label>
 					<button
+						id="active"
 						type="button"
 						class="toggle-switch"
 						class:active={formData.is_active}
 						onclick={() => formData.is_active = !formData.is_active}
+						aria-label="Toggle webhook active status"
+						aria-pressed={formData.is_active}
 					>
 						<span class="toggle-knob"></span>
 					</button>

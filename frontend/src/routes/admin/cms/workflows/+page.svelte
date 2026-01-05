@@ -187,6 +187,10 @@
 						class="workflow-card"
 						in:fly={{ y: 20, duration: 400, delay: i * 50 }}
 						onclick={() => selectedWorkflow = workflow}
+						onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectedWorkflow = workflow; }}}
+						role="button"
+						tabindex="0"
+						aria-label="View workflow for {workflow.content_type} #{workflow.content_id}"
 					>
 						<div class="card-header">
 							<span class="stage-badge {stageInfo.color}">{stageInfo.label}</span>
@@ -261,7 +265,15 @@
 
 	<!-- Detail Panel -->
 	{#if selectedWorkflow}
-		<div class="overlay" onclick={() => selectedWorkflow = null} transition:fade={{ duration: 200 }}></div>
+		<div 
+			class="overlay" 
+			onclick={() => selectedWorkflow = null}
+			onkeydown={(e) => { if (e.key === 'Escape') selectedWorkflow = null; }}
+			role="button"
+			tabindex="-1"
+			aria-label="Close workflow details"
+			transition:fade={{ duration: 200 }}
+		></div>
 		<aside class="detail-panel" in:fly={{ x: 300, duration: 400 }}>
 			<div class="panel-header">
 				<h2>Workflow Details</h2>

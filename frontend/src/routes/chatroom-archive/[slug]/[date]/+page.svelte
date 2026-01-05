@@ -128,7 +128,7 @@
 					</a>
 				</div>
 				<h2 class="cpost-subtitle">
-					<a href="#" target="_blank" rel="nofollow">View Chat Log</a>
+					<a href="/chatroom-archive/{slug}/{date}/log" target="_blank" rel="nofollow">View Chat Log</a>
 				</h2>
 			</div>
 		</section>
