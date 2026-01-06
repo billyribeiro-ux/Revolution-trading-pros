@@ -372,6 +372,12 @@
 </div>
 
 <style>
+	/* Dashboard Content Main - Padding for cards */
+	.dashboard__content-main {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
 	/* Section Title */
 	.dashboard__content-section {
 		margin-bottom: 20px;
