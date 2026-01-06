@@ -6,34 +6,30 @@
 	Apple ICT 11+ Principal Engineer Implementation
 
 	Educational resources and training materials for Day Trading Room members.
-	Matches WordPress Learning Center implementation exactly.
+	Fetches data from unified videos API with server-side rendering.
 
-	@version 2.0.0
+	@version 3.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import type { PageData } from './$types';
 
-	interface LearningResource {
-		id: number;
-		title: string;
-		trader: string;
-		excerpt: string;
-		slug: string;
-		thumbnail: string;
-		categories: string[];
-	}
+	// Server-side data
+	let { data }: { data: PageData } = $props();
 
-	// Filter state
-	let activeFilter = $state('all');
-	let filteredResources: LearningResource[] = $state([]);
+	// Reactive state from server data
+	let videos = $derived(data.videos || []);
+	let meta = $derived(data.meta || { current_page: 1, per_page: 9, total: 0, last_page: 1 });
+	let activeFilter = $derived(data.activeFilter || 'all');
+	let error = $derived(data.error);
 
-	// Pagination state
-	let currentPage = $state(1);
-	const itemsPerPage = 9;
-	let totalPages = $state(1);
-	let paginatedResources: LearningResource[] = $state([]);
+	// Pagination derived values
+	let currentPage = $derived(meta.current_page);
+	let totalPages = $derived(meta.last_page);
+	let totalItems = $derived(meta.total);
 
 	// Category options matching WordPress exactly - using WordPress category IDs
 	const categories = [
@@ -71,113 +67,28 @@
 		{ id: '2930', label: 'Earnings & Options Expiration' }
 	];
 
-	// Learning resources data - matches WordPress structure
-	const allResources: LearningResource[] = [
-		{
-			id: 1,
-			title: 'Q3 Market Outlook July 2025',
-			trader: 'John Carter',
-			excerpt: "Using the economic cycle, John Carter will share insights on what's next in the stock market, commodities, Treasury yields, bonds, and more.",
-			slug: 'market-outlook-jul2025-john-carter',
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			categories: ['trade-setups']
-		},
-		{
-			id: 2,
-			title: "Intro to Kody Ashmore's Daily Sessions (and My Results!)",
-			trader: 'Kody Ashmore',
-			excerpt: "Intro to Kody Ashmore's Daily Sessions (and My Results!)",
-			slug: 'kody-ashmore-daily-sessions-results',
-			thumbnail: 'https://cdn.simplertrading.com/2022/12/18125338/Kody.jpg',
-			categories: ['methodology']
-		},
-		{
-			id: 3,
-			title: 'The 15:50 Trade (How Buybacks Matter the Last 10 Minutes Every Day)',
-			trader: 'Chris Brecher',
-			excerpt: 'The 15:50 Trade (How Buybacks Matter the Last 10 Minutes Every Day)',
-			slug: '15-50-trade',
-			thumbnail: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			categories: ['member-webinar', 'trade-management']
-		},
-		{
-			id: 4,
-			title: 'How Mike Teeto Builds His Watchlist',
-			trader: 'Mike Teeto',
-			excerpt: 'How Mike Teeto Builds His Watchlist',
-			slug: 'mike-teeto-watchlist',
-			thumbnail: 'https://cdn.simplertrading.com/2024/10/18134533/LearningCenter_MT.jpg',
-			categories: ['member-webinar']
-		},
-		{
-			id: 5,
-			title: 'Understanding Market Structure',
-			trader: 'Henry Gambell',
-			excerpt: 'Learn how to identify key market structure levels and use them in your trading.',
-			slug: 'understanding-market-structure',
-			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			categories: ['methodology', 'trade-setups']
-		},
-		{
-			id: 6,
-			title: 'Options Trading Fundamentals',
-			trader: 'John Carter',
-			excerpt: 'Master the basics of options trading with this comprehensive guide.',
-			slug: 'options-trading-fundamentals',
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			categories: ['methodology']
-		},
-		{
-			id: 7,
-			title: 'Using Squeeze Pro Indicator',
-			trader: 'John Carter',
-			excerpt: 'Learn how to use the Squeeze Pro indicator to identify high-probability trade setups.',
-			slug: 'squeeze-pro-indicator',
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			categories: ['indicators']
-		},
-		{
-			id: 8,
-			title: 'Risk Management Essentials',
-			trader: 'Chris Brecher',
-			excerpt: 'Protect your capital with proven risk management strategies.',
-			slug: 'risk-management-essentials',
-			thumbnail: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			categories: ['trade-management']
-		},
-		{
-			id: 9,
-			title: 'Futures Trading 101',
-			trader: 'Kody Ashmore',
-			excerpt: 'Get started with futures trading - from basics to advanced strategies.',
-			slug: 'futures-trading-101',
-			thumbnail: 'https://cdn.simplertrading.com/2022/12/18125338/Kody.jpg',
-			categories: ['methodology', 'trade-setups']
-		}
-	];
-
+	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {
-		activeFilter = categoryId;
-		currentPage = 1; // Reset to first page when filter changes
-		if (categoryId === 'all') {
-			filteredResources = allResources;
+		const url = new URL($page.url);
+		if (categoryId === 'all' || categoryId === '0') {
+			url.searchParams.delete('category');
 		} else {
-			filteredResources = allResources.filter(r => r.categories.includes(categoryId));
+			url.searchParams.set('category', categoryId);
 		}
-		updatePagination();
+		url.searchParams.delete('page'); // Reset to page 1
+		goto(url.toString(), { replaceState: true });
 	}
 
-	function updatePagination() {
-		totalPages = Math.ceil(filteredResources.length / itemsPerPage);
-		const startIndex = (currentPage - 1) * itemsPerPage;
-		const endIndex = startIndex + itemsPerPage;
-		paginatedResources = filteredResources.slice(startIndex, endIndex);
-	}
-
-	function goToPage(page: number) {
-		if (page >= 1 && page <= totalPages) {
-			currentPage = page;
-			updatePagination();
+	// Navigate to page
+	function goToPage(pageNum: number) {
+		if (pageNum >= 1 && pageNum <= totalPages) {
+			const url = new URL($page.url);
+			if (pageNum === 1) {
+				url.searchParams.delete('page');
+			} else {
+				url.searchParams.set('page', pageNum.toString());
+			}
+			goto(url.toString(), { replaceState: true });
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
@@ -222,11 +133,6 @@
 		const category = categories.find(c => c.id === categoryId);
 		return category?.label || categoryId;
 	}
-
-	onMount(() => {
-		filterResources('all');
-		updatePagination();
-	});
 </script>
 
 <svelte:head>
@@ -273,48 +179,65 @@
 			<p></p>
 		</section>
 
+		<!-- Error State -->
+		{#if error}
+			<div class="error-message">
+				<p>Unable to load videos. Please try again later.</p>
+				<p class="error-detail">{error}</p>
+			</div>
+		{/if}
+
 		<!-- Learning Resources Grid -->
 		<div id="response">
+			{#if videos.length === 0 && !error}
+				<div class="empty-state">
+					<h3>No videos found</h3>
+					<p>Try adjusting your filter or check back later for new content.</p>
+				</div>
+			{:else}
 			<div class="article-cards row flex-grid">
-			{#each paginatedResources as resource (resource.id)}
+			{#each videos as video (video.id)}
 				<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 					<article class="article-card">
 						<figure 
 							class="article-card__image" 
-							style="background-image: url({resource.thumbnail});"
+							style="background-image: url({video.thumbnail_url || 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'});"
 						>
 							<img 
 								src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" 
-								alt={resource.title}
+								alt={video.title}
 								loading="lazy"
 							/>
 						</figure>
 						
 						<div class="article-card__type">
-							{#each resource.categories as cat}
-								<span class="label label--info">{getCategoryLabel(cat)}</span>
+							{#each video.tag_details as tag}
+								<span class="label label--info" style="background-color: {tag.color}">{tag.name}</span>
 							{/each}
 						</div>
 						
 						<h4 class="h5 article-card__title">
-							<a href="/learning-center/{resource.slug}">{resource.title}</a>
+							<a href="/learning-center/{video.slug}">{video.title}</a>
 						</h4>
 						
 						<div class="u--margin-top-0">
-							<span class="trader_name"><i>With {resource.trader}</i></span>
+							{#if video.trader}
+								<span class="trader_name"><i>With {video.trader.name}</i></span>
+							{/if}
 						</div>
 						
 						<div class="article-card__excerpt u--hide-read-more">
-							<p>{resource.excerpt}</p>
+							<p>{video.description || ''}</p>
 						</div>
 						
-						<a href="/learning-center/{resource.slug}" class="btn btn-tiny btn-default watch-now-btn">
+						<a href="/learning-center/{video.slug}" class="btn btn-tiny btn-default watch-now-btn">
 							Watch Now
 						</a>
 					</article>
 				</div>
 			{/each}
 			</div>
+			{/if}
 		</div>
 
 		<!-- Pagination -->
@@ -470,6 +393,38 @@
 		display: block;
 		margin-bottom: 0;
 		font-family: 'Montserrat', sans-serif;
+	}
+
+	/* Error and Empty States */
+	.error-message {
+		background: #fef2f2;
+		border: 1px solid #fecaca;
+		border-radius: 8px;
+		padding: 20px;
+		margin-bottom: 20px;
+		text-align: center;
+	}
+
+	.error-message p {
+		margin: 0;
+		color: #dc2626;
+	}
+
+	.error-detail {
+		font-size: 12px;
+		color: #6b7280;
+		margin-top: 8px !important;
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 60px 20px;
+		color: #666;
+	}
+
+	.empty-state h3 {
+		margin: 0 0 10px;
+		font-size: 18px;
 	}
 
 	/* Grid Layout */
