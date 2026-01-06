@@ -264,7 +264,7 @@
 <!-- Dashboard Header -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">Member Dashboard</h1>
+		<h1 class="dashboard__page-title">Day Trading Room Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
 		{#if tradingRooms.length > 0}
@@ -276,7 +276,7 @@
 					aria-haspopup="true"
 					type="button"
 				>
-					<strong>Day Trading Room Dashboard</strong>
+					<strong>Enter the Trading Room</strong>
 					<span class="dropdown-arrow">
 						<RtpIcon name="chevron-right" size={14} />
 					</span>
