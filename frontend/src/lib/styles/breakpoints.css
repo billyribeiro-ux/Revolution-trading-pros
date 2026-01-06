@@ -1,0 +1,42 @@
+/**
+ * Breakpoints - Single Source of Truth (SSOT)
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * Apple ICT 11+ Principal Engineer Grade - January 2026
+ * 
+ * Mobile-first responsive breakpoints aligned with Tailwind CSS defaults
+ * Use these CSS custom properties throughout the application for consistency
+ * 
+ * @version 1.0.0
+ */
+
+:root {
+	/* Breakpoint Values - Mobile First */
+	--bp-mobile: 375px;      /* iPhone SE/mini baseline */
+	--bp-mobile-lg: 428px;   /* iPhone Plus/Pro Max */
+	--bp-sm: 640px;          /* Tailwind sm - Small devices */
+	--bp-md: 768px;          /* Tailwind md - Tablets portrait */
+	--bp-lg: 1024px;         /* Tailwind lg - Tablets landscape / Small laptops */
+	--bp-xl: 1280px;         /* Tailwind xl - Desktops */
+	--bp-2xl: 1536px;        /* Tailwind 2xl - Large monitors */
+	--bp-ultrawide: 1920px;  /* Full HD+ displays */
+}
+
+/* Media Query Mixins as CSS Comments for Reference */
+/*
+Mobile First Approach:
+
+@media (min-width: 640px)  { ... } // sm: tablets and up
+@media (min-width: 768px)  { ... } // md: tablets portrait and up
+@media (min-width: 1024px) { ... } // lg: tablets landscape and up
+@media (min-width: 1280px) { ... } // xl: desktops and up
+@media (min-width: 1536px) { ... } // 2xl: large monitors and up
+
+Desktop First (when needed):
+
+@media (max-width: 639px)  { ... } // below sm
+@media (max-width: 767px)  { ... } // below md
+@media (max-width: 1023px) { ... } // below lg
+@media (max-width: 1279px) { ... } // below xl
+@media (max-width: 1535px) { ... } // below 2xl
+*/

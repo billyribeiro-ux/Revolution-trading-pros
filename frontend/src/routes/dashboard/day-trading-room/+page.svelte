@@ -330,6 +330,7 @@
 		display: flex;
 	}
 
+	/* Grid System - SSOT Breakpoints (Mobile First) */
 	.col-xs-12 {
 		width: 100%;
 		padding: 0 10px;
@@ -337,34 +338,28 @@
 		margin-bottom: 20px;
 	}
 
-	.col-sm-6 {
-		flex: 0 0 50%;
-		max-width: 50%;
-	}
-
-	.col-md-6 {
-		flex: 0 0 50%;
-		max-width: 50%;
-	}
-
+	/* Mobile: 1 card per row (default) */
+	.col-sm-6,
+	.col-md-6,
 	.col-xl-4 {
-		flex: 0 0 33.333%;
-		max-width: 33.333%;
+		flex: 0 0 100%;
+		max-width: 100%;
 	}
 
-	@media (max-width: 992px) {
+	/* md (768px+): 2 cards per row on tablets */
+	@media (min-width: 768px) {
+		.col-md-6,
 		.col-xl-4 {
 			flex: 0 0 50%;
 			max-width: 50%;
 		}
 	}
 
-	@media (max-width: 641px) {
-		.col-sm-6,
-		.col-md-6,
+	/* lg (1024px+): 3 cards per row on larger devices */
+	@media (min-width: 1024px) {
 		.col-xl-4 {
-			flex: 0 0 100%;
-			max-width: 100%;
+			flex: 0 0 33.333%;
+			max-width: 33.333%;
 		}
 	}
 
