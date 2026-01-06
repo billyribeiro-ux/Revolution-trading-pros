@@ -601,8 +601,16 @@
 		align-items: center;
 		justify-content: center;
 		gap: 8px;
+		padding: 10px 20px;
 		background-color: #f69532;
 		color: #fff;
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.btn-orange:hover {
@@ -615,6 +623,8 @@
 
 	.btn-tradingroom {
 		text-transform: none;
+		width: 280px;
+		padding: 12px 18px;
 	}
 
 	.dropdown-toggle {

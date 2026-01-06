@@ -418,7 +418,6 @@
 		color: #fff;
 		font-size: 14px;
 		font-weight: 600;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		text-decoration: none;
 		border: none;
 		border-radius: 4px;
