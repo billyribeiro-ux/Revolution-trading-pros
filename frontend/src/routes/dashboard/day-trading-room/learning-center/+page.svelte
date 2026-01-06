@@ -13,6 +13,62 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+
+	// Dropdown state
+	let isDropdownOpen = $state(false);
+
+	// Trading rooms for dropdown
+	const tradingRooms = [
+		{
+			name: 'Day Trading Room',
+			href: '#', // TODO: Provide URL
+			icon: 'chart-line'
+		},
+		{
+			name: 'Swing Trading Room',
+			href: '#', // TODO: Provide URL
+			icon: 'trending-up'
+		},
+		{
+			name: 'Small Accounts Mentorship',
+			href: '#', // TODO: Provide URL
+			icon: 'dollar-sign'
+		}
+	];
+
+	function toggleDropdown(event: Event): void {
+		event.stopPropagation();
+		isDropdownOpen = !isDropdownOpen;
+	}
+
+	function closeDropdown(): void {
+		isDropdownOpen = false;
+	}
+
+	// Close dropdown when clicking outside
+	$effect(() => {
+		if (isDropdownOpen && typeof window !== 'undefined') {
+			const handleClickOutside = (e: MouseEvent) => {
+				const target = e.target as HTMLElement;
+				if (!target.closest('.dropdown')) {
+					closeDropdown();
+				}
+			};
+			const handleEscape = (e: KeyboardEvent) => {
+				if (e.key === 'Escape') {
+					closeDropdown();
+				}
+			};
+			document.addEventListener('click', handleClickOutside);
+			document.addEventListener('keydown', handleEscape);
+			return () => {
+				document.removeEventListener('click', handleClickOutside);
+				document.removeEventListener('keydown', handleEscape);
+			};
+		}
+		return undefined;
+	});
 
 	interface LearningResource {
 		id: number;
@@ -25,14 +81,14 @@
 	}
 
 	// Filter state
-	let activeFilter = 'all';
-	let filteredResources: LearningResource[] = [];
+	let activeFilter = $state('all');
+	let filteredResources: LearningResource[] = $state([]);
 
 	// Pagination state
-	let currentPage = 1;
+	let currentPage = $state(1);
 	const itemsPerPage = 9;
-	let totalPages = 1;
-	let paginatedResources: LearningResource[] = [];
+	let totalPages = $state(1);
+	let paginatedResources: LearningResource[] = $state([]);
 
 	// Category options matching WordPress exactly
 	const categories = [
@@ -234,47 +290,57 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
+<!-- Dashboard Header -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">Mastering the Trade Dashboard</h1>
-		<a href="/dashboard/mastering-the-trade/start-here" class="btn btn-xs btn-default start-here-btn">
+		<h1 class="dashboard__page-title">Day Trading Room Dashboard</h1>
+		<a href="/dashboard/day-trading-room/start-here" class="btn btn-xs btn-default">
 			New? Start Here
 		</a>
 	</div>
 	<div class="dashboard__header-right">
-		<ul class="trading-room-rules">
-			<li>
-				<a href="https://cdn.simplertrading.com/2024/02/07192341/Simpler-Tradings-Rules-of-the-Room.pdf" target="_blank" class="btn btn-xs btn-link rules-link">
+		<!-- Trading Room Rules - Legal Compliance -->
+		<ul class="trading-room-rules-list">
+			<li class="trading-room-rules-item">
+				<a href="/trading-room-rules.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-xs btn-link trading-room-rules__link">
 					Trading Room Rules
 				</a>
 			</li>
-			<li class="rules-disclaimer">
+			<li class="trading-room-rules-disclaimer">
 				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
 			</li>
 		</ul>
-		<div class="dropdown">
-			<button class="btn btn-xs btn-orange dropdown-toggle" type="button" onclick={(e) => e.currentTarget.nextElementSibling?.classList.toggle('show')}>
+
+		<div class="dropdown" class:is-open={isDropdownOpen}>
+			<button
+				class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
+				onclick={toggleDropdown}
+				aria-expanded={isDropdownOpen}
+				aria-haspopup="true"
+				type="button"
+			>
 				<strong>Enter a Trading Room</strong>
-				<svg class="dropdown-arrow" width="12" height="12" viewBox="0 0 12 12" fill="currentColor">
-					<path d="M2 4l4 4 4-4"/>
-				</svg>
 			</button>
-			<nav class="dropdown-menu">
-				<ul>
-					<li>
-						<a href="/dashboard/mastering-the-trade/trading-room" target="_blank">
-							<span class="room-icon">📈</span>
-							Mastering The Trade Room
-						</a>
-					</li>
-					<li>
-						<a href="/dashboard/simpler-showcase/trading-room" target="_blank">
-							<span class="room-icon">🎯</span>
-							Simpler Showcase Room
-						</a>
-					</li>
-				</ul>
-			</nav>
+
+			{#if isDropdownOpen}
+				<div class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
+					<ul class="dropdown-menu__menu">
+						{#each tradingRooms as room}
+							<li>
+								<a 
+									href={room.href} 
+									onclick={closeDropdown}
+								>
+									<span class="st-icon icon icon--md">
+										<RtpIcon name={room.icon} size={20} />
+									</span>
+									{room.name}
+								</a>
+							</li>
+						{/each}
+					</ul>
+				</div>
+			{/if}
 		</div>
 	</div>
 </header>
@@ -423,148 +489,236 @@
 </div>
 
 <style>
-	/* Dashboard Header - matches WordPress exactly */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DASHBOARD HEADER - WordPress Exact Match
+	 * Source: frontend/Implementation/learning-center
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.dashboard__header {
 		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		padding: 20px 0;
 		flex-wrap: wrap;
-		gap: 20px;
+		align-items: center;
+		background-color: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		border-right: 1px solid #dbdbdb;
+		padding: 20px;
+	}
+    
+	@media (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
 	}
 
 	.dashboard__header-left {
 		display: flex;
 		align-items: center;
+		justify-content: flex-start;
+		flex: 1;
 		gap: 15px;
-		flex-wrap: wrap;
 	}
 
 	.dashboard__page-title {
-		font-family: 'Open Sans Condensed', 'Open Sans', sans-serif;
-		font-size: 28px;
-		font-weight: 700;
-		color: #333;
 		margin: 0;
-	}
-
-	.start-here-btn {
-		padding: 6px 12px;
-		font-size: 12px;
-		background: #6c757d;
-		color: #fff;
-		border-radius: 4px;
-		text-decoration: none;
-		font-weight: 600;
-	}
-
-	.start-here-btn:hover {
-		background: #5a6268;
+		color: #333;
+		font-size: 36px;
+		font-weight: 400;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 
 	.dashboard__header-right {
 		display: flex;
-		align-items: center;
-		gap: 20px;
-		flex-wrap: wrap;
+		flex-direction: column;
+		align-items: flex-end;
+		margin-top: 10px;
 	}
 
-	/* Trading Room Rules */
-	.trading-room-rules {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		flex-wrap: wrap;
+	@media (min-width: 820px) {
+		.dashboard__header-right {
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 0;
+			margin-top: 0;
+		}
 	}
 
-	.rules-link {
-		font-size: 12px;
-		font-weight: 700;
-		color: #1e73be;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * BUTTONS - WordPress Exact Match
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.btn {
+		display: inline-block;
+		padding: 10px 20px;
+		font-size: 14px;
+		font-weight: 600;
+		text-align: center;
 		text-decoration: none;
+		border-radius: 4px;
+		transition: all 0.15s ease-in-out;
+		cursor: pointer;
+		border: none;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 
-	.rules-link:hover {
+	.btn-xs {
+		padding: 6px 12px;
+		font-size: 12px;
+	}
+
+	.btn-default {
+		background-color: #143E59;
+		color: #fff;
+		border: 1px solid #143E59;
+	}
+
+	.btn-default:hover {
+		background-color: #0f2d41;
+		border-color: #0f2d41;
+	}
+
+	.btn-link {
+		background: transparent;
+		color: #1e73be;
+		font-weight: 700 !important;
+		padding: 0;
+	}
+
+	.btn-link:hover {
+		color: #0984ae;
 		text-decoration: underline;
 	}
 
-	.rules-disclaimer {
-		font-size: 11px;
-		color: #666;
-		max-width: 300px;
-	}
-
-	/* Dropdown */
-	.dropdown {
-		position: relative;
-		display: inline-block;
-	}
-
 	.btn-orange {
-		background: #F69532;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		background-color: #f69532;
 		color: #fff;
-		border: none;
-		padding: 10px 16px;
-		border-radius: 4px;
-		font-size: 13px;
-		cursor: pointer;
-		display: flex;
+	}
+
+	.btn-orange:hover {
+		background-color: #dc7309;
+	}
+
+	.btn-orange strong {
+		font-weight: 700;
+	}
+
+	.btn-tradingroom {
+		text-transform: none;
+	}
+
+	.dropdown-toggle {
+		display: inline-flex;
 		align-items: center;
 		gap: 8px;
 	}
 
-	.btn-orange:hover {
-		background: #dc7309;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DROPDOWN MENU - WordPress Exact Match
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dropdown-arrow {
-		transition: transform 0.2s ease;
+	.dropdown {
+		position: relative;
+		display: inline-block;
 	}
 
 	.dropdown-menu {
 		position: absolute;
 		top: 100%;
 		right: 0;
-		min-width: 250px;
-		background: #fff;
-		border: 1px solid #e6e6e6;
-		border-radius: 4px;
-		box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+		padding: 15px;
+		min-width: 260px;
+		margin: 5px 0 0;
+		font-size: 14px;
+		background-color: #ffffff;
+		border: none;
+		border-radius: 5px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		z-index: 1000;
-		display: none;
-		margin-top: 5px;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		transition: all 0.15s ease-in-out;
 	}
 
-	.dropdown-menu:global(.show) {
-		display: block;
+	.dropdown-menu--full-width {
+		min-width: 200px;
 	}
 
-	.dropdown-menu ul {
+	.dropdown:not(.is-open) .dropdown-menu {
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(-5px);
+		pointer-events: none;
+	}
+
+	.dropdown-menu__menu {
 		list-style: none;
 		margin: 0;
-		padding: 10px 0;
+		padding: 0;
 	}
 
-	.dropdown-menu li a {
+	.dropdown-menu__menu li a {
 		display: flex;
 		align-items: center;
 		gap: 10px;
-		padding: 10px 20px;
-		color: #333;
-		text-decoration: none;
+		padding: 12px 15px;
+		color: #666;
 		font-size: 14px;
-		transition: background 0.2s ease;
+		font-weight: 400;
+		text-decoration: none;
+		transition: background-color 0.15s ease-in-out;
+		border-radius: 5px;
+		white-space: nowrap;
 	}
 
-	.dropdown-menu li a:hover {
-		background: #f5f5f5;
+	.dropdown-menu__menu li a:hover {
+		background-color: #f4f4f4;
 	}
 
-	.room-icon {
-		font-size: 18px;
+	.st-icon.icon.icon--md {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		color: #143E59;
+	}
+
+	/* Trading Room Rules - Legal Compliance */
+	.trading-room-rules-list {
+		list-style: none;
+		text-align: right;
+		margin: 0 0 10px 0;
+		padding: 0;
+	}
+
+	.trading-room-rules-item {
+		margin-bottom: 5px;
+	}
+
+	.trading-room-rules__link {
+		font-weight: 700 !important;
+		color: #1e73be;
+		text-decoration: none;
+	}
+
+	.trading-room-rules__link:hover {
+		color: #0984ae;
+		text-decoration: underline;
+	}
+
+	.trading-room-rules-disclaimer {
+		font-size: 11px;
+		color: #666;
+		margin: 0;
 	}
 
 	/* Section Title */
