@@ -11,14 +11,70 @@
 -->
 <script lang="ts">
 	import type { PageData } from './+page.server';
+	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	// Server-loaded data with Previous/Next navigation
-	export let data: PageData;
+	let { data }: { data: PageData } = $props();
 
 	// Reactive video data from server
-	$: video = data.video;
-	$: roomSlug = data.roomSlug;
-	$: roomName = data.roomName;
+	const video = $derived(data.video);
+	const roomSlug = $derived(data.roomSlug);
+	const roomName = $derived(data.roomName);
+
+	// Dropdown state
+	let isDropdownOpen = $state(false);
+
+	// Trading rooms for dropdown
+	const tradingRooms = [
+		{
+			name: 'Day Trading Room',
+			href: '#', // TODO: Provide URL
+			icon: 'chart-line'
+		},
+		{
+			name: 'Swing Trading Room',
+			href: '#', // TODO: Provide URL
+			icon: 'trending-up'
+		},
+		{
+			name: 'Small Accounts Mentorship',
+			href: '#', // TODO: Provide URL
+			icon: 'dollar-sign'
+		}
+	];
+
+	function toggleDropdown(event: Event): void {
+		event.stopPropagation();
+		isDropdownOpen = !isDropdownOpen;
+	}
+
+	function closeDropdown(): void {
+		isDropdownOpen = false;
+	}
+
+	// Close dropdown when clicking outside
+	$effect(() => {
+		if (isDropdownOpen && typeof window !== 'undefined') {
+			const handleClickOutside = (e: MouseEvent) => {
+				const target = e.target as HTMLElement;
+				if (!target.closest('.dropdown')) {
+					closeDropdown();
+				}
+			};
+			const handleEscape = (e: KeyboardEvent) => {
+				if (e.key === 'Escape') {
+					closeDropdown();
+				}
+			};
+			document.addEventListener('click', handleClickOutside);
+			document.addEventListener('keydown', handleEscape);
+			return () => {
+				document.removeEventListener('click', handleClickOutside);
+				document.removeEventListener('keydown', handleEscape);
+			};
+		}
+		return undefined;
+	});
 
 	// Related videos (could also be fetched from server in the future)
 	const relatedVideos = [
@@ -59,6 +115,40 @@
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">{roomName} Dashboard</h1>
+	</div>
+	<div class="dashboard__header-right">
+		<div class="dropdown" class:is-open={isDropdownOpen}>
+			<button
+				class="btn btn-orange btn-tradingroom"
+				onclick={toggleDropdown}
+				aria-expanded={isDropdownOpen}
+				aria-haspopup="true"
+				type="button"
+			>
+				<strong>Enter the Trading Room</strong>
+				<span class="dropdown-arrow">
+					<RtpIcon name="chevron-down" size={14} />
+				</span>
+			</button>
+
+			{#if isDropdownOpen}
+				<div class="dropdown-menu" role="menu">
+					{#each tradingRooms as room}
+						<a 
+							href={room.href} 
+							class="dropdown-item" 
+							onclick={closeDropdown}
+							role="menuitem"
+						>
+							<span class="dropdown-item__icon">
+								<RtpIcon name={room.icon} size={20} />
+							</span>
+							<span class="dropdown-item__text">{room.name}</span>
+						</a>
+					{/each}
+				</div>
+			{/if}
+		</div>
 	</div>
 </header>
 
