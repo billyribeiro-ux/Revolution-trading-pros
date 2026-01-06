@@ -416,6 +416,7 @@
 
 	#term_filter .reset_filter :global(svg) {
 		min-width: 20px;
+		color: #666;
 	}
 
 	#term_filter .reset_filter label {
@@ -430,6 +431,8 @@
 		-webkit-align-items: center;
 		-ms-flex-align: center;
 		align-items: center;
+		font-family: 'Montserrat', sans-serif;
+		color: #666;
 	}
 
 	#term_filter .reset_filter input {
@@ -460,6 +463,7 @@
 		color: #666;
 		display: block;
 		margin-bottom: 0;
+		font-family: 'Montserrat', sans-serif;
 	}
 
 	/* Grid Layout */
