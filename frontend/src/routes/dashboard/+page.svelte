@@ -62,7 +62,7 @@
 				icon: 'trending-up'
 			},
 			{
-				name: 'Small Accounts',
+				name: 'Small Accounts Mentorship',
 				href: '#', // TODO: Provide URL
 				icon: 'dollar-sign'
 			}
