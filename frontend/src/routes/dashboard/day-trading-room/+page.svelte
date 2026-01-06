@@ -9,6 +9,62 @@
 	 * @version 2.0.0
 	 */
 	import { onMount } from 'svelte';
+	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+
+	// Dropdown state
+	let isDropdownOpen = $state(false);
+
+	// Trading rooms for dropdown
+	const tradingRooms = [
+		{
+			name: 'Day Trading Room',
+			href: '#', // TODO: Provide URL
+			icon: 'chart-line'
+		},
+		{
+			name: 'Swing Trading Room',
+			href: '#', // TODO: Provide URL
+			icon: 'trending-up'
+		},
+		{
+			name: 'Small Accounts Mentorship',
+			href: '#', // TODO: Provide URL
+			icon: 'dollar-sign'
+		}
+	];
+
+	function toggleDropdown(event: Event): void {
+		event.stopPropagation();
+		isDropdownOpen = !isDropdownOpen;
+	}
+
+	function closeDropdown(): void {
+		isDropdownOpen = false;
+	}
+
+	// Close dropdown when clicking outside
+	$effect(() => {
+		if (isDropdownOpen && typeof window !== 'undefined') {
+			const handleClickOutside = (e: MouseEvent) => {
+				const target = e.target as HTMLElement;
+				if (!target.closest('.dropdown')) {
+					closeDropdown();
+				}
+			};
+			const handleEscape = (e: KeyboardEvent) => {
+				if (e.key === 'Escape') {
+					closeDropdown();
+				}
+			};
+			document.addEventListener('click', handleClickOutside);
+			document.addEventListener('keydown', handleEscape);
+			return () => {
+				document.removeEventListener('click', handleClickOutside);
+				document.removeEventListener('keydown', handleEscape);
+			};
+		}
+		return undefined;
+	});
 	// DEACTIVATED: Sidebar commented out for layout optimization
 	// import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
 
@@ -142,17 +198,41 @@
 <!-- Dashboard Header - Matching Member Dashboard -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">Day Trading Room</h1>
+		<h1 class="dashboard__page-title">Day Trading Room Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
-		<a
-			href="https://live.simplertrading.com/day-trading-room"
-			target="_blank"
-			rel="noopener noreferrer"
-			class="btn btn-orange btn-tradingroom"
-		>
-			<strong>Enter Trading Room</strong>
-		</a>
+		<div class="dropdown" class:is-open={isDropdownOpen}>
+			<button
+				class="btn btn-orange btn-tradingroom"
+				onclick={toggleDropdown}
+				aria-expanded={isDropdownOpen}
+				aria-haspopup="true"
+				type="button"
+			>
+				<strong>Enter the Trading Room</strong>
+				<span class="dropdown-arrow">
+					<RtpIcon name="chevron-down" size={14} />
+				</span>
+			</button>
+
+			{#if isDropdownOpen}
+				<div class="dropdown-menu" role="menu">
+					{#each tradingRooms as room}
+						<a 
+							href={room.href} 
+							class="dropdown-item" 
+							onclick={closeDropdown}
+							role="menuitem"
+						>
+							<span class="dropdown-item__icon">
+								<RtpIcon name={room.icon} size={20} />
+							</span>
+							<span class="dropdown-item__text">{room.name}</span>
+						</a>
+					{/each}
+				</div>
+			{/if}
+		</div>
 
 		<!-- Trading Room Rules - Legal Compliance -->
 		<div class="trading-room-rules">
@@ -328,9 +408,10 @@
 	.btn-orange {
 		display: inline-flex;
 		align-items: center;
+		justify-content: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background-color: #dc7309;
+		background-color: #f69532;
 		color: #fff;
 		font-size: 14px;
 		font-weight: 600;
@@ -343,15 +424,94 @@
 	}
 
 	.btn-orange:hover {
-		background-color: #c56508;
+		background-color: #dc7309;
 	}
 
 	.btn-orange strong {
-		font-weight: 600;
+		font-weight: 700;
 	}
 
 	.btn-tradingroom {
 		text-transform: none;
+		width: 280px;
+		padding: 12px 18px;
+	}
+
+	.dropdown-arrow {
+		font-size: 10px;
+		transition: transform 0.15s ease-in-out;
+		display: flex;
+		align-items: center;
+	}
+
+	.dropdown.is-open .dropdown-arrow {
+		transform: rotate(180deg);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DROPDOWN MENU - WordPress Exact Match
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dropdown {
+		position: relative;
+		display: inline-block;
+	}
+
+	.dropdown-menu {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		padding: 15px;
+		min-width: 260px;
+		max-width: 280px;
+		margin: 5px 0 0;
+		font-size: 14px;
+		background-color: #ffffff;
+		border: none;
+		border-radius: 5px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		z-index: 1000;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dropdown:not(.is-open) .dropdown-menu {
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(-5px);
+		pointer-events: none;
+	}
+
+	.dropdown-item {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		padding: 15px 20px;
+		color: #666;
+		font-size: 14px;
+		font-weight: 400;
+		text-decoration: none;
+		transition: background-color 0.15s ease-in-out;
+		border-radius: 5px;
+		white-space: nowrap;
+	}
+
+	.dropdown-item:hover {
+		background-color: #f4f4f4;
+	}
+
+	.dropdown-item__icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		color: #143E59;
+	}
+
+	.dropdown-item__text {
+		flex: 1;
 	}
 
 	/* Trading Room Rules - Legal Compliance */
