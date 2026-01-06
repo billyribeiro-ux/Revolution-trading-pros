@@ -1,13 +1,16 @@
 <!--
-	URL: /dashboard/day-trading-room/trading-room-archive
+	URL: /dashboard/[room_slug]/trading-room-archive
 	
-	Day Trading Room Archive Page
+	Dynamic Trading Room Archive Page
 	═══════════════════════════════════════════════════════════════════════════
 	Apple ICT 11+ Principal Engineer Implementation - Svelte 5
 	
-	Uses reusable TradingRoomArchive component.
+	Uses reusable TradingRoomArchive component for all trading rooms:
+	- Day Trading Room
+	- Swing Trading Room
+	- Small Account Mentorship
 	
-	@version 5.0.0
+	@version 1.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
@@ -20,20 +23,20 @@
 </script>
 
 <svelte:head>
-	<title>Trading Room Archives | Day Trading Room | Revolution Trading Pros</title>
-	<meta name="description" content="Access recordings of past live trading sessions and chat logs." />
+	<title>Trading Room Archives | {data.roomName} | Revolution Trading Pros</title>
+	<meta name="description" content="Access recordings of past live trading sessions and chat logs from {data.roomName}." />
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <TradingRoomHeader 
-	roomName="Day Trading Room" 
+	roomName={data.roomName}
 	pageTitle="Trading Room Archives"
-	startHereUrl="/dashboard/day-trading-room/start-here" 
+	startHereUrl={data.startHereUrl}
 />
 
 <TradingRoomArchive 
-	roomSlug="day-trading-room"
-	roomName="Day Trading Room"
+	roomSlug={data.roomSlug}
+	roomName={data.roomName}
 	videos={data.videos || []}
 	meta={data.meta || { current_page: 1, per_page: 50, total: 0, last_page: 1 }}
 	search={data.search}
