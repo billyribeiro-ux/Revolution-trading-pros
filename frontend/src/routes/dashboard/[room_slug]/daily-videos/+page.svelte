@@ -51,7 +51,7 @@
 	];
 
 	// Search state
-	let searchQuery = '';
+	let searchQuery = $state('');
 
 	function toggleDropdown(event: Event): void {
 		event.stopPropagation();
