@@ -116,7 +116,7 @@
 			<p>Try adjusting your filter or check back later for new content.</p>
 		</div>
 	{:else}
-		<div class="article-cards row flex-grid">
+		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 			{#each videos as video (video.id)}
 				<VideoCard {video} {basePath} {showDate} {showDuration} />
 			{/each}
@@ -188,12 +188,8 @@
 		font-size: 18px;
 	}
 
-	/* Grid Layout */
-	.article-cards {
-		display: flex;
-		flex-wrap: wrap;
-		margin: 0 -15px;
-	}
+	/* Grid Layout - Using Tailwind */
+	/* Grid classes in HTML: grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 */
 
 	/* Pagination */
 	.fl-builder-pagination {

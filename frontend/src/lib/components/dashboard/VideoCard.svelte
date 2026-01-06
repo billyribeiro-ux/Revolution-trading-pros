@@ -59,8 +59,7 @@
 	const defaultThumbnail = 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg';
 </script>
 
-<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
-	<article class="article-card">
+<article class="article-card">
 		<figure 
 			class="article-card__image" 
 			style="background-image: url({video.thumbnail_url || defaultThumbnail});"
@@ -101,14 +100,10 @@
 		<a href="{basePath}/{video.slug}" class="btn btn-tiny btn-default watch-now-btn">
 			Watch Now
 		</a>
-	</article>
-</div>
+</article>
 
 <style>
-	.flex-grid-item {
-		padding: 0 15px 30px;
-		display: flex;
-	}
+	/* Grid layout handled by parent component using Tailwind */
 
 	.article-card {
 		display: flex;
