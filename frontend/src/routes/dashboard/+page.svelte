@@ -246,6 +246,9 @@
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
+		<a href="/dashboard/start-here" class="btn btn-xs btn-default">
+			New? Start Here
+		</a>
 	</div>
 	<div class="dashboard__header-right">
 		{#if tradingRooms.length > 0}
@@ -469,6 +472,7 @@
 		align-items: center;
 		justify-content: flex-start;
 		flex: 1;
+		gap: 15px;
 	}
 
 	.dashboard__page-title {
@@ -477,6 +481,26 @@
 		font-size: 36px;
 		font-weight: 400;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	/* Button Styles */
+	.btn {
+		display: inline-block;
+		padding: 10px 20px;
+		font-size: 14px;
+		font-weight: 600;
+		text-align: center;
+		text-decoration: none;
+		border-radius: 4px;
+		transition: all 0.15s ease-in-out;
+		cursor: pointer;
+		border: none;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	.btn-xs {
+		padding: 6px 12px;
+		font-size: 12px;
 	}
 
 	.dashboard__header-right {
