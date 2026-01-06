@@ -97,42 +97,97 @@ async fn list_posts(
     let offset = (page - 1) * per_page;
 
     let status = query.status.unwrap_or_else(|| "published".to_string());
+    
+    // Build query with parameterized bindings for security (ICT 11+ SQL injection prevention)
+    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s.replace('%', "\\%").replace('_', "\\_")));
 
-    let mut conditions = vec![format!("status = '{}'", status)];
-
-    if let Some(author_id) = query.author_id {
-        conditions.push(format!("author_id = {}", author_id));
-    }
-
-    if let Some(ref search) = query.search {
-        conditions.push(format!("(title ILIKE '%{}%' OR excerpt ILIKE '%{}%')", search, search));
-    }
-
-    let where_clause = conditions.join(" AND ");
-
-    let sql = format!(
-        "SELECT * FROM posts WHERE {} ORDER BY published_at DESC NULLS LAST, created_at DESC LIMIT {} OFFSET {}",
-        where_clause, per_page, offset
-    );
-    let count_sql = format!("SELECT COUNT(*) FROM posts WHERE {}", where_clause);
-
-    let posts: Vec<PostRow> = sqlx::query_as(&sql)
+    // Fetch posts with proper parameterized query
+    let posts: Vec<PostRow> = if let Some(ref pattern) = search_pattern {
+        if let Some(author_id) = query.author_id {
+            sqlx::query_as(
+                "SELECT * FROM posts WHERE status = $1 AND author_id = $2 AND (title ILIKE $3 OR excerpt ILIKE $3) ORDER BY published_at DESC NULLS LAST, created_at DESC LIMIT $4 OFFSET $5"
+            )
+            .bind(&status)
+            .bind(author_id)
+            .bind(pattern)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(&state.db.pool)
+            .await
+        } else {
+            sqlx::query_as(
+                "SELECT * FROM posts WHERE status = $1 AND (title ILIKE $2 OR excerpt ILIKE $2) ORDER BY published_at DESC NULLS LAST, created_at DESC LIMIT $3 OFFSET $4"
+            )
+            .bind(&status)
+            .bind(pattern)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(&state.db.pool)
+            .await
+        }
+    } else if let Some(author_id) = query.author_id {
+        sqlx::query_as(
+            "SELECT * FROM posts WHERE status = $1 AND author_id = $2 ORDER BY published_at DESC NULLS LAST, created_at DESC LIMIT $3 OFFSET $4"
+        )
+        .bind(&status)
+        .bind(author_id)
+        .bind(per_page)
+        .bind(offset)
         .fetch_all(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
-
-    let total: (i64,) = sqlx::query_as(&count_sql)
-        .fetch_one(&state.db.pool)
+    } else {
+        sqlx::query_as(
+            "SELECT * FROM posts WHERE status = $1 ORDER BY published_at DESC NULLS LAST, created_at DESC LIMIT $2 OFFSET $3"
+        )
+        .bind(&status)
+        .bind(per_page)
+        .bind(offset)
+        .fetch_all(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    }.map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    // Count total with same filters
+    let total: (i64,) = if let Some(ref pattern) = search_pattern {
+        if let Some(author_id) = query.author_id {
+            sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = $1 AND author_id = $2 AND (title ILIKE $3 OR excerpt ILIKE $3)")
+                .bind(&status)
+                .bind(author_id)
+                .bind(pattern)
+                .fetch_one(&state.db.pool)
+                .await
+        } else {
+            sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = $1 AND (title ILIKE $2 OR excerpt ILIKE $2)")
+                .bind(&status)
+                .bind(pattern)
+                .fetch_one(&state.db.pool)
+                .await
+        }
+    } else if let Some(author_id) = query.author_id {
+        sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = $1 AND author_id = $2")
+            .bind(&status)
+            .bind(author_id)
+            .fetch_one(&state.db.pool)
+            .await
+    } else {
+        sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = $1")
+            .bind(&status)
+            .fetch_one(&state.db.pool)
+            .await
+    }.map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    let last_page = (total.0 as f64 / per_page as f64).ceil() as i64;
 
     Ok(Json(json!({
         "data": posts,
-        "meta": {
-            "current_page": page,
-            "per_page": per_page,
-            "total": total.0,
-            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
+        "current_page": page,
+        "last_page": last_page,
+        "per_page": per_page,
+        "total": total.0,
+        "links": {
+            "first": null,
+            "last": null,
+            "prev": if page > 1 { Some(format!("/api/posts?page={}", page - 1)) } else { None::<String> },
+            "next": if page < last_page { Some(format!("/api/posts?page={}", page + 1)) } else { None::<String> }
         }
     })))
 }
@@ -190,7 +245,7 @@ async fn create_post(
     Ok(Json(post))
 }
 
-/// Update post (admin only)
+/// Update post (admin only) - ICT 11+ SQL injection safe
 async fn update_post(
     State(state): State<AppState>,
     user: User,
@@ -199,35 +254,50 @@ async fn update_post(
 ) -> Result<Json<PostRow>, (StatusCode, Json<serde_json::Value>)> {
     let _ = &user; // TODO: Role check
 
-    let mut set_clauses = Vec::new();
-    
-    if let Some(ref title) = input.title {
-        set_clauses.push(format!("title = '{}'", title.replace("'", "''")));
-        set_clauses.push(format!("slug = '{}'", slug::slugify(title)));
-    }
-    if let Some(ref excerpt) = input.excerpt {
-        set_clauses.push(format!("excerpt = '{}'", excerpt.replace("'", "''")));
-    }
-    if let Some(ref status) = input.status {
-        set_clauses.push(format!("status = '{}'", status));
-    }
-    // ICT 11+ Fix: Use if let instead of is_some() + unwrap()
-    if let Some(indexable) = input.indexable {
-        set_clauses.push(format!("indexable = {}", indexable));
-    }
-
-    set_clauses.push("updated_at = NOW()".to_string());
-
-    let sql = format!(
-        "UPDATE posts SET {} WHERE id = $1 RETURNING *",
-        set_clauses.join(", ")
-    );
-
-    let post: PostRow = sqlx::query_as(&sql)
+    // Get current post first
+    let current: PostRow = sqlx::query_as("SELECT * FROM posts WHERE id = $1")
         .bind(id)
-        .fetch_one(&state.db.pool)
+        .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Post not found"}))))?;
+
+    // Build update with parameterized query (ICT 11+ secure)
+    let title = input.title.unwrap_or(current.title);
+    let new_slug = slug::slugify(&title);
+    let excerpt = input.excerpt.or(current.excerpt);
+    let status = input.status.unwrap_or(current.status);
+    let indexable = input.indexable.unwrap_or(current.indexable);
+    let content_blocks = input.content_blocks.or(current.content_blocks);
+    let featured_image = input.featured_image.or(current.featured_image);
+    let meta_title = input.meta_title.or(current.meta_title);
+    let meta_description = input.meta_description.or(current.meta_description);
+    let canonical_url = input.canonical_url.or(current.canonical_url);
+    let schema_markup = input.schema_markup.or(current.schema_markup);
+
+    let post: PostRow = sqlx::query_as(
+        r#"UPDATE posts SET 
+            title = $1, slug = $2, excerpt = $3, status = $4, indexable = $5,
+            content_blocks = $6, featured_image = $7, meta_title = $8, 
+            meta_description = $9, canonical_url = $10, schema_markup = $11,
+            updated_at = NOW()
+        WHERE id = $12 RETURNING *"#
+    )
+    .bind(&title)
+    .bind(&new_slug)
+    .bind(&excerpt)
+    .bind(&status)
+    .bind(indexable)
+    .bind(&content_blocks)
+    .bind(&featured_image)
+    .bind(&meta_title)
+    .bind(&meta_description)
+    .bind(&canonical_url)
+    .bind(&schema_markup)
+    .bind(id)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     Ok(Json(post))
 }
