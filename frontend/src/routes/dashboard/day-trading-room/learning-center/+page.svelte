@@ -584,18 +584,6 @@
 		border-color: #0f2d41;
 	}
 
-	.btn-link {
-		background: transparent;
-		color: #1e73be;
-		font-weight: 700 !important;
-		padding: 0;
-	}
-
-	.btn-link:hover {
-		color: #0984ae;
-		text-decoration: underline;
-	}
-
 	.btn-orange {
 		display: inline-flex;
 		align-items: center;
@@ -627,10 +615,15 @@
 		padding: 12px 18px;
 	}
 
-	.dropdown-toggle {
-		display: inline-flex;
+	.dropdown-arrow {
+		font-size: 10px;
+		transition: transform 0.15s ease-in-out;
+		display: flex;
 		align-items: center;
-		gap: 8px;
+	}
+
+	.dropdown.is-open .dropdown-arrow {
+		transform: rotate(180deg);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -648,6 +641,7 @@
 		right: 0;
 		padding: 15px;
 		min-width: 260px;
+		max-width: 280px;
 		margin: 5px 0 0;
 		font-size: 14px;
 		background-color: #ffffff;
@@ -661,10 +655,6 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	.dropdown-menu--full-width {
-		min-width: 200px;
-	}
-
 	.dropdown:not(.is-open) .dropdown-menu {
 		opacity: 0;
 		visibility: hidden;
@@ -672,17 +662,11 @@
 		pointer-events: none;
 	}
 
-	.dropdown-menu__menu {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.dropdown-menu__menu li a {
+	.dropdown-item {
 		display: flex;
 		align-items: center;
-		gap: 10px;
-		padding: 12px 15px;
+		gap: 6px;
+		padding: 15px 20px;
 		color: #666;
 		font-size: 14px;
 		font-weight: 400;
@@ -692,11 +676,11 @@
 		white-space: nowrap;
 	}
 
-	.dropdown-menu__menu li a:hover {
+	.dropdown-item:hover {
 		background-color: #f4f4f4;
 	}
 
-	.st-icon.icon.icon--md {
+	.dropdown-item__icon {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -704,22 +688,30 @@
 		color: #143E59;
 	}
 
-	/* Trading Room Rules - Legal Compliance */
-	.trading-room-rules-list {
-		list-style: none;
-		text-align: right;
-		margin: 0 0 10px 0;
-		padding: 0;
+	.dropdown-item__text {
+		flex: 1;
 	}
 
-	.trading-room-rules-item {
-		margin-bottom: 5px;
+	/* Trading Room Rules - Legal Compliance */
+	.trading-room-rules {
+		text-align: center;
+		margin-top: 10px;
+		width: 100%;
+		max-width: 300px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	.trading-room-rules__link {
-		font-weight: 700 !important;
+		display: block;
+		margin-bottom: 8px;
+		font-size: 18px;
+		font-weight: 700;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #1e73be;
 		text-decoration: none;
+		transition: color 0.15s ease-in-out;
+		text-align: center;
 	}
 
 	.trading-room-rules__link:hover {
@@ -727,10 +719,14 @@
 		text-decoration: underline;
 	}
 
-	.trading-room-rules-disclaimer {
-		font-size: 11px;
-		color: #666;
+	.trading-room-rules__disclaimer {
 		margin: 0;
+		font-size: 13px;
+		font-weight: 400;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		color: #666;
+		line-height: 1.4;
+		text-align: center;
 	}
 
 	/* Section Title */
