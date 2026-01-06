@@ -435,6 +435,7 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		height: 100%;
 		background: #fff;
 		border: 1px solid #e6e6e6;
 		border-radius: 5px;
@@ -522,13 +523,18 @@
 
 	.article-card__excerpt {
 		padding: 10px 20px;
-		flex: 1;
+		flex-grow: 1;
 	}
 
 	.article-card__excerpt p {
 		margin: 0;
 		font-size: 14px;
 		color: #666;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 		line-height: 1.5;
 	}
 

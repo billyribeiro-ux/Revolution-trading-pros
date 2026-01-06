@@ -323,6 +323,7 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		height: 100%;
 	}
 
 	.article-card:hover {
@@ -400,10 +401,16 @@
 		color: #666;
 		font-size: 14px;
 		line-height: 1.6;
+		flex-grow: 1;
 	}
 
 	.article-card__excerpt p {
 		margin: 0;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 	}
 
 	.u--hide-read-more {

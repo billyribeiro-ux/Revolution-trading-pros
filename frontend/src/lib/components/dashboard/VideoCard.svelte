@@ -109,6 +109,7 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		height: 100%;
 		background: #fff;
 		border: 1px solid #e6e6e6;
 		border-radius: 5px;
