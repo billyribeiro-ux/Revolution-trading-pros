@@ -18,9 +18,13 @@
 	interface Props {
 		roomName: string;
 		startHereUrl: string;
+		pageTitle?: string; // Optional custom page title (defaults to "{roomName} Dashboard")
 	}
 
-	let { roomName, startHereUrl }: Props = $props();
+	let { roomName, startHereUrl, pageTitle }: Props = $props();
+	
+	// Use custom pageTitle if provided, otherwise default to "{roomName} Dashboard"
+	const displayTitle = pageTitle || `${roomName} Dashboard`;
 
 	// Dropdown state
 	let isDropdownOpen = $state(false);
@@ -81,7 +85,7 @@
 <!-- Dashboard Header - Matching Member Dashboard -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">{roomName} Dashboard</h1>
+		<h1 class="dashboard__page-title">{displayTitle}</h1>
 		<a href={startHereUrl} class="btn btn-xs btn-default">
 			New? Start Here
 		</a>

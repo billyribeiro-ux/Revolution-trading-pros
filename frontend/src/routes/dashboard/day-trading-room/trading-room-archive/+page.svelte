@@ -22,6 +22,7 @@
 
 <TradingRoomHeader 
 	roomName="Day Trading Room" 
+	pageTitle="Trading Room Archives"
 	startHereUrl="/dashboard/day-trading-room/start-here" 
 />
 
