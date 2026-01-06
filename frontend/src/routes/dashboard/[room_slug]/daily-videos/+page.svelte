@@ -179,13 +179,13 @@
 							{:else if pageNum === currentPage}
 								<span class="facetwp-page active">{pageNum}</span>
 							{:else}
-								<a 
-									href="javascript:void(0)" 
+								<button 
+									type="button"
 									class="facetwp-page" 
 									onclick={() => goToPage(Number(pageNum))}
 								>
 									{pageNum}
-								</a>
+								</button>
 							{/if}
 						{/each}
 					</div>
@@ -405,6 +405,7 @@
 	.u--squash {
 		display: -webkit-box;
 		-webkit-line-clamp: 3;
+		line-clamp: 3;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}

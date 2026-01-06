@@ -9,9 +9,9 @@
  */
 
 import { redirect } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestEvent } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({ url }) => {
+export const GET = async ({ url }: RequestEvent) => {
 	// Preserve query parameters (page, search, etc.)
 	const searchParams = url.searchParams.toString();
 	const newUrl = `/dashboard/day-trading-room/daily-videos${searchParams ? '?' + searchParams : ''}`;

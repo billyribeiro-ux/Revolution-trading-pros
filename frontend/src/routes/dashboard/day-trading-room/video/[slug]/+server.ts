@@ -9,9 +9,9 @@
  */
 
 import { redirect } from '@sveltejs/kit';
-import type { RequestHandler } from './$types';
+import type { RequestEvent } from '@sveltejs/kit';
 
-export const GET: RequestHandler = async ({ params }) => {
+export const GET = async ({ params }: RequestEvent) => {
 	const { slug } = params;
 	throw redirect(301, `/dashboard/day-trading-room/video/${slug}`);
 };
