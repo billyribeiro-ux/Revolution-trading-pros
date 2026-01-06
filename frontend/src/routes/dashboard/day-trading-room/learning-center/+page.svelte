@@ -35,40 +35,40 @@
 	let totalPages = $state(1);
 	let paginatedResources: LearningResource[] = $state([]);
 
-	// Category options matching WordPress exactly
+	// Category options matching WordPress exactly - using WordPress category IDs
 	const categories = [
-		{ id: 'trade-setups', label: 'Trade Setups & Strategies' },
-		{ id: 'methodology', label: 'Methodology' },
-		{ id: 'member-webinar', label: 'Member Webinar' },
-		{ id: 'trade-management', label: 'Trade & Money Management/Trading Plan' },
-		{ id: 'indicators', label: 'Indicators' },
-		{ id: 'options', label: 'Options' },
-		{ id: 'foundation', label: 'Foundation' },
-		{ id: 'fundamentals', label: 'Fundamentals' },
-		{ id: 'simpler-tech', label: 'Simpler Tech' },
-		{ id: 'charting-indicators-tools', label: 'Charting/Indicators/Tools' },
-		{ id: 'charting', label: 'Charting' },
-		{ id: 'drama-free-daytrades', label: 'Drama Free Daytrades' },
-		{ id: 'quick-hits-daytrades', label: 'Quick Hits Daytrades' },
-		{ id: 'psychology', label: 'Psychology' },
-		{ id: 'trading-platform', label: 'Trading Platform' },
-		{ id: 'calls', label: 'Calls' },
-		{ id: 'thinkorswim', label: 'ThinkorSwim' },
-		{ id: 'tradestation', label: 'TradeStation' },
-		{ id: 'charting-software', label: 'Charting Software' },
-		{ id: 'trading-computer', label: 'Trading Computer' },
-		{ id: 'calls-puts-credit-spreads', label: 'Calls Puts Credit Spreads' },
-		{ id: 'puts', label: 'Puts' },
-		{ id: 'profit-recycling', label: 'Profit Recycling' },
-		{ id: 'trade-strategies', label: 'Trade Strategies' },
-		{ id: 'website-support', label: 'Website Support' },
-		{ id: 'options-strategies', label: 'Options Strategies (Level 2 & 3)' },
-		{ id: 'crypto', label: 'Crypto' },
-		{ id: 'fibonacci-options', label: 'Fibonacci & Options Trading' },
-		{ id: 'pricing-volatility', label: 'Pricing/Volatility' },
-		{ id: 'crypto-indicators', label: 'Crypto Indicators & Trading' },
-		{ id: 'browser-support', label: 'Browser Support' },
-		{ id: 'earnings-expiration', label: 'Earnings & Options Expiration' }
+		{ id: '529', label: 'Trade Setups & Strategies' },
+		{ id: '528', label: 'Methodology' },
+		{ id: '329', label: 'Member Webinar' },
+		{ id: '2932', label: 'Trade & Money Management/Trading Plan' },
+		{ id: '531', label: 'Indicators' },
+		{ id: '3260', label: 'Options' },
+		{ id: '469', label: 'foundation' },
+		{ id: '527', label: 'Fundamentals' },
+		{ id: '522', label: 'Simpler Tech' },
+		{ id: '2929', label: 'Charting/Indicators/Tools' },
+		{ id: '530', label: 'Charting' },
+		{ id: '3515', label: 'Drama Free Daytrades' },
+		{ id: '3516', label: 'Quick Hits Daytrades' },
+		{ id: '537', label: 'Psychology' },
+		{ id: '775', label: 'Trading Platform' },
+		{ id: '3055', label: 'Calls' },
+		{ id: '447', label: 'ThinkorSwim' },
+		{ id: '446', label: 'TradeStation' },
+		{ id: '776', label: 'Charting Software' },
+		{ id: '772', label: 'Trading Computer' },
+		{ id: '3057', label: 'Calls Puts Credit Spreads' },
+		{ id: '3056', label: 'Puts' },
+		{ id: '3514', label: 'Profit Recycling' },
+		{ id: '791', label: 'Trade Strategies' },
+		{ id: '774', label: 'Website Support' },
+		{ id: '2927', label: 'Options Strategies (Level 2 & 3)' },
+		{ id: '457', label: 'Crypto' },
+		{ id: '2931', label: 'Fibonacci & Options Trading' },
+		{ id: '2928', label: 'Pricing/Volatility' },
+		{ id: '459', label: 'Crypto Indicators & Trading' },
+		{ id: '771', label: 'Browser Support' },
+		{ id: '2930', label: 'Earnings & Options Expiration' }
 	];
 
 	// Learning resources data - matches WordPress structure
@@ -243,38 +243,28 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<!-- Category Filter Form - matches WordPress exactly -->
-		<form action="#" method="POST" id="term_filter" onsubmit={(e) => e.preventDefault()}>
-			<!-- Reset Filter Button -->
+		<form action="https://www.simplertrading.com/cms/wp-admin/admin-ajax.php" method="POST" id="term_filter">
 			<div class="reset_filter">
 				<input 
 					type="radio" 
-					id="filter-reset" 
-					value="all" 
+					id="0" 
+					value="0" 
 					name="categoryfilter"
 					checked={activeFilter === 'all'}
 					onchange={() => filterResources('all')}
 				/>
-				<label for="filter-reset" title="Reset Filter">
-					<svg aria-hidden="true" focusable="false" class="reset-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+				<label for="0">
+					<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="undo" class="svg-inline--fa fa-undo fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 						<path fill="currentColor" d="M212.333 224.333H12c-6.627 0-12-5.373-12-12V12C0 5.373 5.373 0 12 0h48c6.627 0 12 5.373 12 12v78.112C117.773 39.279 184.26 7.47 258.175 8.007c136.906.994 246.448 111.623 246.157 248.532C504.041 393.258 393.12 504 256.333 504c-64.089 0-122.496-24.313-166.51-64.215-5.099-4.622-5.334-12.554-.467-17.42l33.967-33.967c4.474-4.474 11.662-4.717 16.401-.525C170.76 415.336 211.58 432 256.333 432c97.268 0 176-78.716 176-176 0-97.267-78.716-176-176-176-58.496 0-110.28 28.476-142.274 72.333h98.274c6.627 0 12 5.373 12 12v48c0 6.627-5.373 12-12 12z"></path>
 					</svg>
 				</label>
 			</div>
-
-			<!-- Category Filter Buttons -->
-			{#each categories as category}
-				<div class="filter_btn" class:active={activeFilter === category.id}>
-					<input 
-						type="radio" 
-						id="filter-{category.id}" 
-						value={category.id} 
-						name="categoryfilter"
-						checked={activeFilter === category.id}
-						onchange={() => filterResources(category.id)}
-					/>
-					<label for="filter-{category.id}">{category.label}</label>
-				</div>
-			{/each}
+			<div class="filter_btn"><input type="radio" id="529" value="529" name="categoryfilter" onchange={() => filterResources('529')}><label for="529">Trade Setups &amp; Strategies</label></div><div class="filter_btn"><input type="radio" id="528" value="528" name="categoryfilter" onchange={() => filterResources('528')}><label for="528">Methodology</label></div><div class="filter_btn"><input type="radio" id="329" value="329" name="categoryfilter" onchange={() => filterResources('329')}><label for="329">Member Webinar</label></div><div class="filter_btn"><input type="radio" id="2932" value="2932" name="categoryfilter" onchange={() => filterResources('2932')}><label for="2932">Trade &amp; Money Management/Trading Plan</label></div><div class="filter_btn"><input type="radio" id="531" value="531" name="categoryfilter" onchange={() => filterResources('531')}><label for="531">Indicators</label></div><div class="filter_btn"><input type="radio" id="3260" value="3260" name="categoryfilter" onchange={() => filterResources('3260')}><label for="3260">Options</label></div><div class="filter_btn"><input type="radio" id="469" value="469" name="categoryfilter" onchange={() => filterResources('469')}><label for="469">foundation</label></div><div class="filter_btn"><input type="radio" id="527" value="527" name="categoryfilter" onchange={() => filterResources('527')}><label for="527">Fundamentals</label></div><div class="filter_btn"><input type="radio" id="522" value="522" name="categoryfilter" onchange={() => filterResources('522')}><label for="522">Simpler Tech</label></div><div class="filter_btn"><input type="radio" id="2929" value="2929" name="categoryfilter" onchange={() => filterResources('2929')}><label for="2929">Charting/Indicators/Tools</label></div><div class="filter_btn"><input type="radio" id="530" value="530" name="categoryfilter" onchange={() => filterResources('530')}><label for="530">Charting</label></div><div class="filter_btn"><input type="radio" id="3515" value="3515" name="categoryfilter" onchange={() => filterResources('3515')}><label for="3515">Drama Free Daytrades</label></div><div class="filter_btn"><input type="radio" id="3516" value="3516" name="categoryfilter" onchange={() => filterResources('3516')}><label for="3516">Quick Hits Daytrades</label></div><div class="filter_btn"><input type="radio" id="537" value="537" name="categoryfilter" onchange={() => filterResources('537')}><label for="537">Psychology</label></div><div class="filter_btn"><input type="radio" id="775" value="775" name="categoryfilter" onchange={() => filterResources('775')}><label for="775">Trading Platform</label></div><div class="filter_btn"><input type="radio" id="3055" value="3055" name="categoryfilter" onchange={() => filterResources('3055')}><label for="3055">Calls</label></div><div class="filter_btn"><input type="radio" id="447" value="447" name="categoryfilter" onchange={() => filterResources('447')}><label for="447">ThinkorSwim</label></div><div class="filter_btn"><input type="radio" id="446" value="446" name="categoryfilter" onchange={() => filterResources('446')}><label for="446">TradeStation</label></div><div class="filter_btn"><input type="radio" id="776" value="776" name="categoryfilter" onchange={() => filterResources('776')}><label for="776">Charting Software</label></div><div class="filter_btn"><input type="radio" id="772" value="772" name="categoryfilter" onchange={() => filterResources('772')}><label for="772">Trading Computer</label></div><div class="filter_btn"><input type="radio" id="3057" value="3057" name="categoryfilter" onchange={() => filterResources('3057')}><label for="3057">Calls Puts Credit Spreads</label></div><div class="filter_btn"><input type="radio" id="3056" value="3056" name="categoryfilter" onchange={() => filterResources('3056')}><label for="3056">Puts</label></div><div class="filter_btn"><input type="radio" id="3514" value="3514" name="categoryfilter" onchange={() => filterResources('3514')}><label for="3514">Profit Recycling</label></div><div class="filter_btn"><input type="radio" id="791" value="791" name="categoryfilter" onchange={() => filterResources('791')}><label for="791">Trade Strategies</label></div><div class="filter_btn"><input type="radio" id="774" value="774" name="categoryfilter" onchange={() => filterResources('774')}><label for="774">Website Support</label></div><div class="filter_btn"><input type="radio" id="2927" value="2927" name="categoryfilter" onchange={() => filterResources('2927')}><label for="2927">Options Strategies (Level 2 &amp; 3)</label></div><div class="filter_btn"><input type="radio" id="457" value="457" name="categoryfilter" onchange={() => filterResources('457')}><label for="457">Crypto</label></div><div class="filter_btn"><input type="radio" id="2931" value="2931" name="categoryfilter" onchange={() => filterResources('2931')}><label for="2931">Fibonacci &amp; Options Trading</label></div><div class="filter_btn"><input type="radio" id="2928" value="2928" name="categoryfilter" onchange={() => filterResources('2928')}><label for="2928">Pricing/Volatility</label></div><div class="filter_btn"><input type="radio" id="459" value="459" name="categoryfilter" onchange={() => filterResources('459')}><label for="459">Crypto Indicators &amp; Trading</label></div><div class="filter_btn"><input type="radio" id="771" value="771" name="categoryfilter" onchange={() => filterResources('771')}><label for="771">Browser Support</label></div><div class="filter_btn"><input type="radio" id="2930" value="2930" name="categoryfilter" onchange={() => filterResources('2930')}><label for="2930">Earnings &amp; Options Expiration</label></div>
+			<input type="hidden" name="page_id" value="402087">
+			<input type="hidden" name="pagination_base" value="https://www.simplertrading.com/dashboard/mastering-the-trade/learning-center/page/%#%">
+			
+			<button class="apply_filter">Apply filter</button>
+			<input type="hidden" name="action" value="myfilter">
 		</form>
 
 		<!-- Section Title - matches WordPress exactly -->
@@ -446,7 +436,7 @@
 		border-color: #143E59;
 	}
 
-	.reset-icon {
+	.reset_filter label :global(svg) {
 		width: 14px;
 		height: 14px;
 	}
@@ -478,11 +468,15 @@
 		border-color: #ccc;
 	}
 
-	.filter_btn input[type="radio"]:checked + label,
-	.filter_btn.active label {
+	.filter_btn input[type="radio"]:checked + label {
 		background: #143E59;
 		color: #fff;
 		border-color: #143E59;
+	}
+
+	/* Apply Filter Button */
+	.apply_filter {
+		display: none;
 	}
 
 	/* Grid Layout */
