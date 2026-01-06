@@ -7,11 +7,11 @@
 	
 	Archive of past live trading sessions and recordings.
 	
-	@version 1.0.0
+	@version 2.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
+	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 </script>
 
 <svelte:head>
@@ -20,14 +20,10 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<header class="dashboard__header">
-	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">Trading Room Archives</h1>
-	</div>
-	<div class="dashboard__header-right">
-		<TradingRoomDropdown />
-	</div>
-</header>
+<TradingRoomHeader 
+	roomName="Day Trading Room" 
+	startHereUrl="/dashboard/day-trading-room/start-here" 
+/>
 
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
