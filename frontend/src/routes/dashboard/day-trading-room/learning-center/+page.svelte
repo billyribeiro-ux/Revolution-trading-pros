@@ -195,9 +195,9 @@
 					<p>Try adjusting your filter or check back later for new content.</p>
 				</div>
 			{:else}
-			<div class="article-cards row flex-grid">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
 			{#each videos as video (video.id)}
-				<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
+				<div>
 					<article class="article-card">
 						<figure 
 							class="article-card__image" 
@@ -427,43 +427,8 @@
 		font-size: 18px;
 	}
 
-	/* Grid Layout - SSOT Breakpoints */
-	.article-cards {
-		display: flex;
-		flex-wrap: wrap;
-		margin: 0 -15px;
-	}
-
-	.flex-grid-item {
-		padding: 0 15px 30px;
-		display: flex;
-	}
-
-	/* Mobile: 1 card per row (default) */
-	.col-xs-12,
-	.col-sm-6,
-	.col-md-6,
-	.col-xl-4 {
-		flex: 0 0 100%;
-		max-width: 100%;
-	}
-
-	/* md (768px+): 2 cards per row on tablets */
-	@media (min-width: 768px) {
-		.col-md-6,
-		.col-xl-4 {
-			flex: 0 0 50%;
-			max-width: 50%;
-		}
-	}
-
-	/* lg (1024px+): 3 cards per row on larger devices */
-	@media (min-width: 1024px) {
-		.col-xl-4 {
-			flex: 0 0 33.333%;
-			max-width: 33.333%;
-		}
-	}
+	/* Grid Layout - Using Tailwind */
+	/* Grid classes in HTML: grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 */
 
 	/* Article Card */
 	.article-card {
@@ -670,14 +635,6 @@
 	@media (max-width: 767px) {
 		.section-title {
 			font-size: 20px;
-		}
-		
-		.article-cards {
-			margin: 0 -10px;
-		}
-		
-		.flex-grid-item {
-			padding: 0 10px 20px;
 		}
 	}
 </style>

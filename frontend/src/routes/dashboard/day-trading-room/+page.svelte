@@ -160,9 +160,9 @@
 		<!-- LATEST UPDATES SECTION -->
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Latest Updates</h2>
-			<div class="article-cards row flex-grid">
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 				{#each articles as article (article.id)}
-					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
+					<div>
 						<article class="article-card">
 							<figure class="article-card__image" style="background-image: url({article.image});">
 								<img src={article.image} alt={article.title} />
@@ -311,57 +311,8 @@
 		line-height: 1.2;
 	}
 
-	/* Article Cards */
-	.article-cards {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	.article-cards.row {
-		margin: 0 -10px;
-	}
-
-	.flex-grid {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	.flex-grid-item {
-		display: flex;
-	}
-
-	/* Grid System - SSOT Breakpoints (Mobile First) */
-	.col-xs-12 {
-		width: 100%;
-		padding: 0 10px;
-		box-sizing: border-box;
-		margin-bottom: 20px;
-	}
-
-	/* Mobile: 1 card per row (default) */
-	.col-sm-6,
-	.col-md-6,
-	.col-xl-4 {
-		flex: 0 0 100%;
-		max-width: 100%;
-	}
-
-	/* md (768px+): 2 cards per row on tablets */
-	@media (min-width: 768px) {
-		.col-md-6,
-		.col-xl-4 {
-			flex: 0 0 50%;
-			max-width: 50%;
-		}
-	}
-
-	/* lg (1024px+): 3 cards per row on larger devices */
-	@media (min-width: 1024px) {
-		.col-xl-4 {
-			flex: 0 0 33.333%;
-			max-width: 33.333%;
-		}
-	}
+	/* Article Cards - Using Tailwind Grid */
+	/* Grid classes applied in HTML: grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 */
 
 	.article-card {
 		background: #fff;
