@@ -228,13 +228,37 @@
 	// DROPDOWN HANDLERS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function toggleDropdown(): void {
+	function toggleDropdown(event: Event): void {
+		event.stopPropagation();
 		isDropdownOpen = !isDropdownOpen;
 	}
 
 	function closeDropdown(): void {
 		isDropdownOpen = false;
 	}
+
+	// Close dropdown when clicking outside
+	$effect(() => {
+		if (isDropdownOpen && typeof window !== 'undefined') {
+			const handleClickOutside = (e: MouseEvent) => {
+				const target = e.target as HTMLElement;
+				if (!target.closest('.dropdown')) {
+					closeDropdown();
+				}
+			};
+			const handleEscape = (e: KeyboardEvent) => {
+				if (e.key === 'Escape') {
+					closeDropdown();
+				}
+			};
+			document.addEventListener('click', handleClickOutside);
+			document.addEventListener('keydown', handleEscape);
+			return () => {
+				document.removeEventListener('click', handleClickOutside);
+				document.removeEventListener('keydown', handleEscape);
+			};
+		}
+	});
 </script>
 
 <!-- Dashboard Header -->
@@ -250,6 +274,7 @@
 					onclick={toggleDropdown}
 					aria-expanded={isDropdownOpen}
 					aria-haspopup="true"
+					type="button"
 				>
 					<strong>Day Trading Room Dashboard</strong>
 					<span class="dropdown-arrow">
@@ -258,9 +283,14 @@
 				</button>
 
 				{#if isDropdownOpen}
-					<div class="dropdown-menu">
+					<div class="dropdown-menu" role="menu">
 						{#each tradingRooms as room}
-							<a href={room.href} class="dropdown-item" onclick={closeDropdown}>
+							<a 
+								href={room.href} 
+								class="dropdown-item" 
+								onclick={closeDropdown}
+								role="menuitem"
+							>
 								<span class="dropdown-item__icon">
 									<RtpIcon name={room.icon} size={20} />
 								</span>
@@ -268,15 +298,6 @@
 							</a>
 						{/each}
 					</div>
-					<!-- Backdrop to close dropdown -->
-					<div
-						class="dropdown-backdrop"
-						onclick={closeDropdown}
-						onkeydown={(e) => e.key === 'Escape' && closeDropdown()}
-						role="button"
-						tabindex="-1"
-						aria-label="Close dropdown"
-					></div>
 				{/if}
 			</div>
 
@@ -771,6 +792,17 @@
 		border-radius: 5px;
 		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
 		z-index: 1000;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dropdown:not(.is-open) .dropdown-menu {
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(-5px);
+		pointer-events: none;
 	}
 
 	.dropdown-menu__heading {
@@ -814,14 +846,6 @@
 		flex: 1;
 	}
 
-	.dropdown-backdrop {
-		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
-		z-index: 999;
-	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * DASHBOARD CONTENT SECTION
