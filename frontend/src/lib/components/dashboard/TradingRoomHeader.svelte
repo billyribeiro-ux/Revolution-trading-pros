@@ -24,7 +24,7 @@
 	let { roomName, startHereUrl, pageTitle }: Props = $props();
 	
 	// Use custom pageTitle if provided, otherwise default to "{roomName} Dashboard"
-	const displayTitle = pageTitle || `${roomName} Dashboard`;
+	let displayTitle = $derived(pageTitle || `${roomName} Dashboard`);
 
 	// Dropdown state
 	let isDropdownOpen = $state(false);
