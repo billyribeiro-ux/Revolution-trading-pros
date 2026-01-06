@@ -19,7 +19,7 @@
 		tag_details?: Array<{ slug: string; name: string; color: string }>;
 		trader?: { id: number; name: string; slug: string } | null;
 		formatted_date?: string;
-		duration?: number;
+		duration?: number | null;
 		formatted_duration?: string;
 		[key: string]: unknown;
 	}
@@ -209,6 +209,7 @@
 		margin: 0 0 15px;
 		display: -webkit-box;
 		-webkit-line-clamp: 3;
+		line-clamp: 3;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}

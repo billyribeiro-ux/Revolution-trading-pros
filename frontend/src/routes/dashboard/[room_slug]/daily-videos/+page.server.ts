@@ -150,7 +150,7 @@ function getMockData(roomSlug: string, page: number, perPage: number, search: st
 	// Mock video data for development when backend is unavailable
 	const allVideos: DailyVideo[] = [
 		{
-			id: '1',
+			id: 1,
 			title: 'How to use Bookmap to make more informed trades',
 			slug: 'bookmap',
 			date: 'January 2, 2026',
@@ -160,7 +160,7 @@ function getMockData(roomSlug: string, page: number, perPage: number, search: st
 			isVideo: true,
 		},
 		{
-			id: '2',
+			id: 2,
 			title: 'Cautious entry into 2026',
 			slug: 'cautious-entry-into-2026',
 			date: 'December 31, 2025',
@@ -170,7 +170,7 @@ function getMockData(roomSlug: string, page: number, perPage: number, search: st
 			isVideo: true,
 		},
 		{
-			id: '3',
+			id: 3,
 			title: 'SPX Snoozefest',
 			slug: 'spx-snoozefest',
 			date: 'December 30, 2025',

@@ -23,7 +23,7 @@
 		tag_details?: Array<{ slug: string; name: string; color: string }>;
 		trader?: { id: number; name: string; slug: string } | null;
 		formatted_date?: string;
-		duration?: number;
+		duration?: number | null;
 		formatted_duration?: string;
 		[key: string]: unknown; // Allow additional properties
 	}
