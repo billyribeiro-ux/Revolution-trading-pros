@@ -46,6 +46,7 @@ export interface VideoResponse {
 	trader: { id: number; name: string; slug: string } | null;
 	rooms: Array<{ id: number; name: string; slug: string }>;
 	created_at: string;
+	[key: string]: unknown; // Index signature for compatibility with VideoData
 }
 
 export interface ApiResponse {

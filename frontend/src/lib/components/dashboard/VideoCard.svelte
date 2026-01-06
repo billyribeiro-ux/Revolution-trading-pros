@@ -11,9 +11,12 @@
 -->
 <script lang="ts">
 	interface VideoData {
+		// Core required properties
 		id: number | string;
 		title: string;
 		slug: string;
+		
+		// Optional display properties
 		description?: string | null;
 		thumbnail_url?: string | null;
 		tag_details?: Array<{ slug: string; name: string; color: string }>;
@@ -21,6 +24,21 @@
 		formatted_date?: string;
 		duration?: number | null;
 		formatted_duration?: string;
+		
+		// Allow any additional properties from API responses
+		video_url?: string;
+		embed_url?: string;
+		video_platform?: string;
+		content_type?: string;
+		video_date?: string;
+		is_published?: boolean;
+		is_featured?: boolean;
+		tags?: string[];
+		views_count?: number;
+		rooms?: Array<{ id: number; name: string; slug: string }>;
+		created_at?: string;
+		
+		// Catch-all for any other properties
 		[key: string]: unknown;
 	}
 
