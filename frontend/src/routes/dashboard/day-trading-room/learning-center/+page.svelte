@@ -348,9 +348,9 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<!-- Category Filter Form - matches WordPress exactly -->
-		<form class="term-filter" onsubmit={(e) => e.preventDefault()}>
+		<form action="#" method="POST" id="term_filter" onsubmit={(e) => e.preventDefault()}>
 			<!-- Reset Filter Button -->
-			<div class="reset-filter">
+			<div class="reset_filter">
 				<input 
 					type="radio" 
 					id="filter-reset" 
@@ -368,7 +368,7 @@
 
 			<!-- Category Filter Buttons -->
 			{#each categories as category}
-				<div class="filter-btn" class:active={activeFilter === category.id}>
+				<div class="filter_btn" class:active={activeFilter === category.id}>
 					<input 
 						type="radio" 
 						id="filter-{category.id}" 
@@ -384,16 +384,13 @@
 
 		<!-- Section Title - matches WordPress exactly -->
 		<section class="dashboard__content-section">
-			<h2 class="section-title">Mastering the Trade Learning Center<span> | </span><span>Overview</span></h2>
+			<h2 class="section-title">Day Trading Room Learning Center<span> | </span><span>Overview</span></h2>
+			<p></p>
 		</section>
 
-		<!-- Results Count -->
-		<div class="lc-results-count">
-			Showing <strong>{filteredResources.length}</strong> {filteredResources.length === 1 ? 'resource' : 'resources'}
-		</div>
-
 		<!-- Learning Resources Grid -->
-		<div class="lc-grid row">
+		<div id="response">
+			<div class="article-cards row flex-grid">
 			{#each paginatedResources as resource (resource.id)}
 				<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 					<article class="article-card">
@@ -426,12 +423,13 @@
 							<p>{resource.excerpt}</p>
 						</div>
 						
-						<a href="/learning-center/{resource.slug}" class="btn btn-tiny btn-default">
+						<a href="/learning-center/{resource.slug}" class="btn btn-tiny btn-default watch-now-btn">
 							Watch Now
 						</a>
 					</article>
 				</div>
 			{/each}
+			</div>
 		</div>
 
 		<!-- Pagination -->
@@ -740,7 +738,7 @@
 	}
 
 	/* Term Filter Form - matches WordPress exactly */
-	.term-filter {
+	#term_filter {
 		display: flex;
 		flex-wrap: wrap;
 		gap: 8px;
@@ -752,15 +750,15 @@
 	}
 
 	/* Reset Filter Button */
-	.reset-filter {
+	.reset_filter {
 		display: inline-flex;
 	}
 
-	.reset-filter input[type="radio"] {
+	.reset_filter input[type="radio"] {
 		display: none;
 	}
 
-	.reset-filter label {
+	.reset_filter label {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
@@ -774,12 +772,12 @@
 		color: #666;
 	}
 
-	.reset-filter label:hover {
+	.reset_filter label:hover {
 		background: #e9e9e9;
 		border-color: #ccc;
 	}
 
-	.reset-filter input[type="radio"]:checked + label {
+	.reset_filter input[type="radio"]:checked + label {
 		background: #143E59;
 		color: #fff;
 		border-color: #143E59;
@@ -791,15 +789,15 @@
 	}
 
 	/* Filter Buttons */
-	.filter-btn {
+	.filter_btn {
 		display: inline-flex;
 	}
 
-	.filter-btn input[type="radio"] {
+	.filter_btn input[type="radio"] {
 		display: none;
 	}
 
-	.filter-btn label {
+	.filter_btn label {
 		padding: 8px 14px;
 		border: 1px solid #ddd;
 		background: #fff;
@@ -812,27 +810,20 @@
 		white-space: nowrap;
 	}
 
-	.filter-btn label:hover {
+	.filter_btn label:hover {
 		background: #e9e9e9;
 		border-color: #ccc;
 	}
 
-	.filter-btn input[type="radio"]:checked + label,
-	.filter-btn.active label {
+	.filter_btn input[type="radio"]:checked + label,
+	.filter_btn.active label {
 		background: #143E59;
 		color: #fff;
 		border-color: #143E59;
 	}
 
-	/* Results Count */
-	.lc-results-count {
-		margin-bottom: 20px;
-		font-size: 14px;
-		color: #666;
-	}
-
 	/* Grid Layout */
-	.lc-grid {
+	.article-cards {
 		display: flex;
 		flex-wrap: wrap;
 		margin: 0 -15px;
@@ -1052,21 +1043,17 @@
 	}
 
 	@media (max-width: 767px) {
-		.col-sm-6 {
-			width: 50%;
-		}
-		
-		.term-filter {
+		#term_filter {
 			padding: 15px;
 			gap: 6px;
 		}
 		
-		.filter-btn label {
+		.filter_btn label {
 			padding: 6px 10px;
 			font-size: 11px;
 		}
 
-		.reset-filter label {
+		.reset_filter label {
 			width: 32px;
 			height: 32px;
 		}
@@ -1077,7 +1064,7 @@
 			width: 100%;
 		}
 		
-		.lc-grid {
+		.article-cards {
 			margin: 0 -10px;
 		}
 		
