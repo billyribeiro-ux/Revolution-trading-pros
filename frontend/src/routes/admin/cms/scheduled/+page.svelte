@@ -17,8 +17,8 @@
 		IconEdit,
 		IconCheck,
 		IconX,
-		IconPlay,
-		IconPause,
+		IconPlayerPlay,
+		IconPlayerPause,
 		IconChevronLeft,
 		IconChevronRight
 	} from '$lib/icons';
@@ -300,7 +300,7 @@
 										title="Publish Now"
 										onclick={() => publishNow(item.id)}
 									>
-										<IconPlay size={14} />
+										<IconPlayerPlay size={14} />
 									</button>
 									<button
 										class="action-btn cancel"

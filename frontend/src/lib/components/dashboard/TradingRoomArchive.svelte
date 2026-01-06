@@ -96,6 +96,16 @@
 		searchQuery = search || '';
 	});
 
+	// Format date to slug (MMDDYYYY)
+	function dateToSlug(dateStr: string): string {
+		if (!dateStr) return '';
+		const date = new Date(dateStr);
+		const month = String(date.getMonth() + 1).padStart(2, '0');
+		const day = String(date.getDate()).padStart(2, '0');
+		const year = date.getFullYear();
+		return `${month}${day}${year}`;
+	}
+
 	// Transform API videos to sessions
 	let allSessions = $derived<ArchiveSession[]>(
 		(videos || []).map(video => ({
@@ -103,7 +113,7 @@
 			title: video.title,
 			trader: video.trader?.name || '',
 			date: video.video_date?.split('T')[0] || '',
-			href: `/chatroom-archive/${roomSlug}/${video.slug}`
+			href: `/chatroom-archive/${roomSlug}/${dateToSlug(video.video_date || '')}`
 		}))
 	);
 
