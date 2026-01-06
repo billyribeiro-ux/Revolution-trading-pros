@@ -11,6 +11,8 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
+
 	interface Trader {
 		id: string;
 		name: string;
@@ -115,6 +117,9 @@
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">Meet the Traders</h1>
+	</div>
+	<div class="dashboard__header-right">
+		<TradingRoomDropdown />
 	</div>
 </header>
 

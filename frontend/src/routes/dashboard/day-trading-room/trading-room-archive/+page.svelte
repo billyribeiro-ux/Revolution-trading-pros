@@ -11,7 +11,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	// Secondary nav now handled by DashboardSidebar in +layout.svelte
+	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
 </script>
 
 <svelte:head>
@@ -23,6 +23,9 @@
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">Trading Room Archives</h1>
+	</div>
+	<div class="dashboard__header-right">
+		<TradingRoomDropdown />
 	</div>
 </header>
 
