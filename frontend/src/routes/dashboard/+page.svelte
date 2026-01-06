@@ -238,6 +238,7 @@
 				document.removeEventListener('keydown', handleEscape);
 			};
 		}
+		return undefined;
 	});
 </script>
 
