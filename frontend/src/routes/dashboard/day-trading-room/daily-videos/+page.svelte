@@ -155,48 +155,52 @@
 		</a>
 	</div>
 	<div class="dashboard__header-right">
-		<!-- Trading Room Rules - Legal Compliance -->
-		<ul class="trading-room-rules-list">
-			<li class="trading-room-rules-item">
-				<a href="/trading-room-rules.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-xs btn-link trading-room-rules__link">
-					Trading Room Rules
-				</a>
-			</li>
-			<li class="trading-room-rules-disclaimer">
-				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
-			</li>
-		</ul>
-
 		<div class="dropdown" class:is-open={isDropdownOpen}>
 			<button
-				class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
+				class="btn btn-orange btn-tradingroom"
 				onclick={toggleDropdown}
 				aria-expanded={isDropdownOpen}
 				aria-haspopup="true"
 				type="button"
 			>
-				<strong>Enter a Trading Room</strong>
+				<strong>Enter the Trading Room</strong>
+				<span class="dropdown-arrow">
+					<RtpIcon name="chevron-down" size={14} />
+				</span>
 			</button>
 
 			{#if isDropdownOpen}
-				<div class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
-					<ul class="dropdown-menu__menu">
-						{#each tradingRooms as room}
-							<li>
-								<a 
-									href={room.href} 
-									onclick={closeDropdown}
-								>
-									<span class="st-icon icon icon--md">
-										<RtpIcon name={room.icon} size={20} />
-									</span>
-									{room.name}
-								</a>
-							</li>
-						{/each}
-					</ul>
+				<div class="dropdown-menu" role="menu">
+					{#each tradingRooms as room}
+						<a 
+							href={room.href} 
+							class="dropdown-item" 
+							onclick={closeDropdown}
+							role="menuitem"
+						>
+							<span class="dropdown-item__icon">
+								<RtpIcon name={room.icon} size={20} />
+							</span>
+							<span class="dropdown-item__text">{room.name}</span>
+						</a>
+					{/each}
 				</div>
 			{/if}
+		</div>
+
+		<!-- Trading Room Rules - Legal Compliance -->
+		<div class="trading-room-rules">
+			<a
+				href="/trading-room-rules.pdf"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="trading-room-rules__link"
+			>
+				Trading Room Rules
+			</a>
+			<p class="trading-room-rules__disclaimer">
+				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+			</p>
 		</div>
 	</div>
 </header>

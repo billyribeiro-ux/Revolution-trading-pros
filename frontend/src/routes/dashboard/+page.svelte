@@ -246,7 +246,7 @@
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
-		<a href="/dashboard/start-here" class="btn btn-xs btn-default">
+		<a href="https://www.simplertrading.com/dashboard/start-here" class="btn btn-xs btn-default">
 			New? Start Here
 		</a>
 	</div>

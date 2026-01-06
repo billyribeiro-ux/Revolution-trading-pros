@@ -204,48 +204,52 @@
 		</a>
 	</div>
 	<div class="dashboard__header-right">
-		<!-- Trading Room Rules - Legal Compliance -->
-		<ul class="trading-room-rules-list">
-			<li class="trading-room-rules-item">
-				<a href="/trading-room-rules.pdf" target="_blank" rel="noopener noreferrer" class="btn btn-xs btn-link trading-room-rules__link">
-					Trading Room Rules
-				</a>
-			</li>
-			<li class="trading-room-rules-disclaimer">
-				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
-			</li>
-		</ul>
-
 		<div class="dropdown" class:is-open={isDropdownOpen}>
 			<button
-				class="btn btn-xs btn-orange btn-tradingroom dropdown-toggle"
+				class="btn btn-orange btn-tradingroom"
 				onclick={toggleDropdown}
 				aria-expanded={isDropdownOpen}
 				aria-haspopup="true"
 				type="button"
 			>
-				<strong>Enter a Trading Room</strong>
+				<strong>Enter the Trading Room</strong>
+				<span class="dropdown-arrow">
+					<RtpIcon name="chevron-down" size={14} />
+				</span>
 			</button>
 
 			{#if isDropdownOpen}
-				<div class="dropdown-menu dropdown-menu--full-width" aria-labelledby="dLabel">
-					<ul class="dropdown-menu__menu">
-						{#each tradingRooms as room}
-							<li>
-								<a 
-									href={room.href} 
-									onclick={closeDropdown}
-								>
-									<span class="st-icon icon icon--md">
-										<RtpIcon name={room.icon} size={20} />
-									</span>
-									{room.name}
-								</a>
-							</li>
-						{/each}
-					</ul>
+				<div class="dropdown-menu" role="menu">
+					{#each tradingRooms as room}
+						<a 
+							href={room.href} 
+							class="dropdown-item" 
+							onclick={closeDropdown}
+							role="menuitem"
+						>
+							<span class="dropdown-item__icon">
+								<RtpIcon name={room.icon} size={20} />
+							</span>
+							<span class="dropdown-item__text">{room.name}</span>
+						</a>
+					{/each}
 				</div>
 			{/if}
+		</div>
+
+		<!-- Trading Room Rules - Legal Compliance -->
+		<div class="trading-room-rules">
+			<a
+				href="/trading-room-rules.pdf"
+				target="_blank"
+				rel="noopener noreferrer"
+				class="trading-room-rules__link"
+			>
+				Trading Room Rules
+			</a>
+			<p class="trading-room-rules__disclaimer">
+				By logging into any of our Live Trading Rooms, You are agreeing to our Rules of the Room.
+			</p>
 		</div>
 	</div>
 </header>
@@ -432,12 +436,19 @@
 
 	.btn-tradingroom {
 		text-transform: none;
+		width: 280px;
+		padding: 12px 18px;
 	}
 
-	.dropdown-toggle {
-		display: inline-flex;
+	.dropdown-arrow {
+		font-size: 10px;
+		transition: transform 0.15s ease-in-out;
+		display: flex;
 		align-items: center;
-		gap: 8px;
+	}
+
+	.dropdown.is-open .dropdown-arrow {
+		transform: rotate(180deg);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -455,6 +466,7 @@
 		right: 0;
 		padding: 15px;
 		min-width: 260px;
+		max-width: 280px;
 		margin: 5px 0 0;
 		font-size: 14px;
 		background-color: #ffffff;
@@ -468,10 +480,6 @@
 		transition: all 0.15s ease-in-out;
 	}
 
-	.dropdown-menu--full-width {
-		min-width: 200px;
-	}
-
 	.dropdown:not(.is-open) .dropdown-menu {
 		opacity: 0;
 		visibility: hidden;
@@ -479,17 +487,11 @@
 		pointer-events: none;
 	}
 
-	.dropdown-menu__menu {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.dropdown-menu__menu li a {
+	.dropdown-item {
 		display: flex;
 		align-items: center;
-		gap: 10px;
-		padding: 12px 15px;
+		gap: 6px;
+		padding: 15px 20px;
 		color: #666;
 		font-size: 14px;
 		font-weight: 400;
@@ -499,11 +501,11 @@
 		white-space: nowrap;
 	}
 
-	.dropdown-menu__menu li a:hover {
+	.dropdown-item:hover {
 		background-color: #f4f4f4;
 	}
 
-	.st-icon.icon.icon--md {
+	.dropdown-item__icon {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -511,22 +513,30 @@
 		color: #143E59;
 	}
 
-	/* Trading Room Rules - Legal Compliance */
-	.trading-room-rules-list {
-		list-style: none;
-		text-align: right;
-		margin: 0 0 10px 0;
-		padding: 0;
+	.dropdown-item__text {
+		flex: 1;
 	}
 
-	.trading-room-rules-item {
-		margin-bottom: 5px;
+	/* Trading Room Rules - Legal Compliance */
+	.trading-room-rules {
+		text-align: center;
+		margin-top: 10px;
+		width: 100%;
+		max-width: 300px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	.trading-room-rules__link {
-		font-weight: 700 !important;
+		display: block;
+		margin-bottom: 8px;
+		font-size: 18px;
+		font-weight: 700;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		color: #1e73be;
 		text-decoration: none;
+		transition: color 0.15s ease-in-out;
+		text-align: center;
 	}
 
 	.trading-room-rules__link:hover {
@@ -534,10 +544,14 @@
 		text-decoration: underline;
 	}
 
-	.trading-room-rules-disclaimer {
-		font-size: 11px;
-		color: #666;
+	.trading-room-rules__disclaimer {
 		margin: 0;
+		font-size: 13px;
+		font-weight: 400;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		color: #666;
+		line-height: 1.4;
+		text-align: center;
 	}
 
 	@media (max-width: 768px) {
