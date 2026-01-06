@@ -623,9 +623,14 @@
 		line-height: 1.6;
 	}
 
-	@media (max-width: 1079px) {
+	/* Mobile-first: sidebar hidden by default, shown on lg (1024px+) */
+	.dashboard__content-sidebar {
+		display: none;
+	}
+
+	@media (min-width: 1080px) {
 		.dashboard__content-sidebar {
-			display: none;
+			display: block;
 		}
 	}
 
@@ -685,10 +690,10 @@
 		text-decoration: underline;
 	}
 
-	/* Responsive */
-	@media (max-width: 992px) {
+	/* Mobile-first: content stacked by default, row on lg+ */
+	@media (min-width: 993px) {
 		.dashboard__content {
-			flex-direction: column;
+			flex-direction: row;
 		}
 	}
 </style>

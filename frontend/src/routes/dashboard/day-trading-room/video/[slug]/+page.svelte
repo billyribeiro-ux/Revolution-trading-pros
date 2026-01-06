@@ -353,10 +353,14 @@
 		padding: 0 20px 20px;
 	}
 
-	/* Responsive */
-	@media (max-width: 768px) {
+	/* Mobile-first: smaller title by default, larger on md+ */
+	.cpost-title {
+		font-size: 1.8rem;
+	}
+
+	@media (min-width: 769px) {
 		.cpost-title {
-			font-size: 1.8rem;
+			font-size: 2.5rem;
 		}
 
 		.cpost-subtitle {

@@ -185,8 +185,12 @@
 
 	.empty-state { text-align: center; padding: 60px 20px; color: #666; }
 
-	@media (max-width: 767px) {
-		.card-header { flex-direction: column; gap: 10px; text-align: center; }
-		.strategy-meta { flex-direction: column; gap: 15px; }
+	/* Mobile-first: stacked by default, row on md+ */
+	.card-header { flex-direction: column; gap: 10px; text-align: center; }
+	.strategy-meta { flex-direction: column; gap: 15px; }
+
+	@media (min-width: 768px) {
+		.card-header { flex-direction: row; gap: 20px; text-align: left; }
+		.strategy-meta { flex-direction: row; gap: 30px; }
 	}
 </style>

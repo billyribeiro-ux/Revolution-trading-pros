@@ -188,9 +188,14 @@
 		text-decoration: underline;
 	}
 
-	@media (max-width: 768px) {
+	/* Mobile-first: smaller title by default, larger on md+ */
+	.start-here-title {
+		font-size: 1.9rem;
+	}
+
+	@media (min-width: 769px) {
 		.start-here-title {
-			font-size: 1.9rem;
+			font-size: 2.5rem;
 		}
 
 		.start-here-intro {

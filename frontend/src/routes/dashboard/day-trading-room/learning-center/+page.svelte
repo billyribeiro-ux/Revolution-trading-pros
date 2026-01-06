@@ -637,10 +637,14 @@
 		color: #333;
 	}
 
-	/* Responsive adjustments */
-	@media (max-width: 767px) {
+	/* Mobile-first: smaller title by default, larger on md+ */
+	.section-title {
+		font-size: 20px;
+	}
+
+	@media (min-width: 768px) {
 		.section-title {
-			font-size: 20px;
+			font-size: 24px;
 		}
 	}
 </style>

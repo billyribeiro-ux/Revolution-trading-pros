@@ -166,11 +166,14 @@
 
 	.empty-state { text-align: center; padding: 60px 20px; color: #666; }
 
-	@media (max-width: 991px) {
+	/* Mobile-first: 1 column by default, 2 on md+, 3 on lg+ */
+	.products-grid { grid-template-columns: 1fr; }
+
+	@media (min-width: 768px) {
 		.products-grid { grid-template-columns: repeat(2, 1fr); }
 	}
 
-	@media (max-width: 767px) {
-		.products-grid { grid-template-columns: 1fr; }
+	@media (min-width: 992px) {
+		.products-grid { grid-template-columns: repeat(3, 1fr); }
 	}
 </style>
