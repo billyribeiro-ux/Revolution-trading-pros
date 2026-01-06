@@ -79,10 +79,16 @@
 
 	// Google Calendar integration
 	onMount(() => {
-		// Load Google Calendar API
+		// Load Google Calendar API with error handling
 		const script = document.createElement('script');
 		script.src = 'https://apis.google.com/js/api.js';
-		script.onload = initCalendar;
+		script.onload = () => {
+			// Wait for gapi to be fully loaded
+			setTimeout(initCalendar, 100);
+		};
+		script.onerror = () => {
+			console.warn('Failed to load Google Calendar API');
+		};
 		document.head.appendChild(script);
 	});
 
@@ -93,44 +99,54 @@
 		const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
 
 		// @ts-ignore - gapi is loaded from external script
-		if (typeof gapi !== 'undefined') {
+		if (typeof gapi === 'undefined' || !gapi.client) {
+			console.warn('Google API not loaded yet');
+			return;
+		}
+
+		try {
 			// @ts-ignore
-			gapi.client.init({
-				apiKey: API_KEY,
-				clientId: CLIENT_ID,
-				discoveryDocs: DISCOVERY_DOCS,
-				scope: SCOPES
-			}).then(() => {
+			gapi.load('client', () => {
 				// @ts-ignore
-				return gapi.client.calendar.events.list({
-					'calendarId': 'simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com',
-					'timeMin': (new Date()).toISOString(),
-					'showDeleted': false,
-					'singleEvents': true,
-					'maxResults': 10,
-					'orderBy': 'startTime',
-					'fields': 'items(summary,start/dateTime)'
-				});
-			}).then((response: any) => {
-				const dateOptions: Intl.DateTimeFormatOptions = {
-					month: 'short',
-					day: 'numeric',
-					year: 'numeric',
-					hour: 'numeric',
-					minute: 'numeric',
-					timeZoneName: 'short'
-				};
-				const container = document.querySelector('.room-sched');
-				if (container && response.result.items) {
-					for (let i = 0; i < response.result.items.length; i++) {
-						const eventStart = new Date(response.result.items[i].start.dateTime);
-						const eventHtml = `<h4>${response.result.items[i].summary}</h4><span>${eventStart.toLocaleString('en-US', dateOptions)}</span>`;
-						container.innerHTML += eventHtml;
+				gapi.client.init({
+					apiKey: API_KEY,
+					clientId: CLIENT_ID,
+					discoveryDocs: DISCOVERY_DOCS,
+					scope: SCOPES
+				}).then(() => {
+					// @ts-ignore
+					return gapi.client.calendar.events.list({
+						'calendarId': 'simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com',
+						'timeMin': (new Date()).toISOString(),
+						'showDeleted': false,
+						'singleEvents': true,
+						'maxResults': 10,
+						'orderBy': 'startTime',
+						'fields': 'items(summary,start/dateTime)'
+					});
+				}).then((response: any) => {
+					const dateOptions: Intl.DateTimeFormatOptions = {
+						month: 'short',
+						day: 'numeric',
+						year: 'numeric',
+						hour: 'numeric',
+						minute: 'numeric',
+						timeZoneName: 'short'
+					};
+					const container = document.querySelector('.room-sched');
+					if (container && response.result.items) {
+						for (let i = 0; i < response.result.items.length; i++) {
+							const eventStart = new Date(response.result.items[i].start.dateTime);
+							const eventHtml = `<h4>${response.result.items[i].summary}</h4><span>${eventStart.toLocaleString('en-US', dateOptions)}</span>`;
+							container.innerHTML += eventHtml;
+						}
 					}
-				}
-			}).catch((error: any) => {
-				console.log('Calendar Error:', error);
+				}).catch((error: any) => {
+					console.warn('Calendar Error:', error);
+				});
 			});
+		} catch (error) {
+			console.warn('Failed to initialize Google Calendar:', error);
 		}
 	}
 </script>
