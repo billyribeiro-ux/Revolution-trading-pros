@@ -55,6 +55,13 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
+<!-- Dashboard Header -->
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">{roomName} Dashboard</h1>
+	</div>
+</header>
+
 <!-- Video Title Section -->
 <section id="dv-title" class="dv-section cpost-title-section cpost-section">
 	<div class="section-inner">

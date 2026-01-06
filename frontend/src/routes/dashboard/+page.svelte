@@ -245,7 +245,7 @@
 <!-- Dashboard Header -->
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">Day Trading Room Dashboard</h1>
+		<h1 class="dashboard__page-title">Member Dashboard</h1>
 	</div>
 	<div class="dashboard__header-right">
 		{#if tradingRooms.length > 0}

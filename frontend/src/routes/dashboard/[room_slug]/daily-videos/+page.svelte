@@ -92,6 +92,13 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
+<!-- Dashboard Header -->
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">{roomName} Dashboard</h1>
+	</div>
+</header>
+
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
