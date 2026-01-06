@@ -293,6 +293,181 @@
 </div>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DASHBOARD HEADER - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dashboard__header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		background-color: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		border-right: 1px solid #dbdbdb;
+		padding: 20px;
+	}
+    
+	@media (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
+	}
+
+	.dashboard__header-left {
+		display: flex;
+		align-items: center;
+		justify-content: flex-start;
+		flex: 1;
+	}
+
+	.dashboard__page-title {
+		margin: 0;
+		color: #333;
+		font-size: 36px;
+		font-weight: 400;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+	}
+
+	.dashboard__header-right {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		margin-top: 10px;
+	}
+
+	@media (min-width: 820px) {
+		.dashboard__header-right {
+			flex-direction: column;
+			align-items: flex-end;
+			gap: 0;
+			margin-top: 0;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * BUTTONS - WordPress Exact Match
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.btn-orange {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 10px 20px;
+		background-color: #f69532;
+		color: #fff;
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		transition: all 0.15s ease-in-out;
+	}
+
+	.btn-orange:hover {
+		background-color: #dc7309;
+	}
+
+	.btn-orange strong {
+		font-weight: 700;
+	}
+
+	.btn-tradingroom {
+		text-transform: none;
+		width: 280px;
+		padding: 12px 18px;
+	}
+
+	.dropdown-arrow {
+		font-size: 10px;
+		transition: transform 0.15s ease-in-out;
+		display: flex;
+		align-items: center;
+	}
+
+	.dropdown.is-open .dropdown-arrow {
+		transform: rotate(180deg);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DROPDOWN MENU - WordPress Exact Match
+	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.dropdown {
+		position: relative;
+		display: inline-block;
+	}
+
+	.dropdown-menu {
+		position: absolute;
+		top: 100%;
+		right: 0;
+		padding: 15px;
+		min-width: 260px;
+		max-width: 280px;
+		margin: 5px 0 0;
+		font-size: 14px;
+		background-color: #ffffff;
+		border: none;
+		border-radius: 5px;
+		box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+		z-index: 1000;
+		opacity: 1;
+		visibility: visible;
+		transform: translateY(0);
+		transition: all 0.15s ease-in-out;
+	}
+
+	.dropdown:not(.is-open) .dropdown-menu {
+		opacity: 0;
+		visibility: hidden;
+		transform: translateY(-5px);
+		pointer-events: none;
+	}
+
+	.dropdown-item {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		padding: 15px 20px;
+		color: #666;
+		font-size: 14px;
+		font-weight: 400;
+		text-decoration: none;
+		transition: background-color 0.15s ease-in-out;
+		border-radius: 5px;
+		white-space: nowrap;
+	}
+
+	.dropdown-item:hover {
+		background-color: #f4f4f4;
+	}
+
+	.dropdown-item__icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		color: #143E59;
+	}
+
+	.dropdown-item__text {
+		flex: 1;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DASHBOARD CONTENT SECTION
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	/* Dashboard Content */
 	.dashboard__content {
 		flex: 1;
