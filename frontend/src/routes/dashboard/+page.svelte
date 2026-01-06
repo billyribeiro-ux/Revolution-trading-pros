@@ -713,11 +713,10 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background-color: #dc7309;
+		background-color: #f69532;
 		color: #fff;
 		font-size: 14px;
 		font-weight: 600;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		text-decoration: none;
 		border: none;
 		border-radius: 4px;
@@ -726,11 +725,11 @@
 	}
 
 	.btn-orange:hover {
-		background-color: #c56508;
+		background-color: #dc7309;
 	}
 
 	.btn-orange strong {
-		font-weight: 600;
+		font-weight: 700;
 	}
 
 	.btn-tradingroom {
@@ -762,7 +761,7 @@
 		position: absolute;
 		top: 100%;
 		right: 0;
-		padding: 20px;
+		padding: 15px;
 		min-width: 260px;
 		max-width: 280px;
 		margin: 5px 0 0;
@@ -788,15 +787,15 @@
 	.dropdown-item {
 		display: flex;
 		align-items: center;
-		gap: 12px;
-		padding: 10px 15px;
+		gap: 6px;
+		padding: 15px 20px;
 		color: #666;
 		font-size: 14px;
 		font-weight: 400;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		text-decoration: none;
 		transition: background-color 0.15s ease-in-out;
-		border-radius: 4px;
+		border-radius: 5px;
+		white-space: nowrap;
 	}
 
 	.dropdown-item:hover {
