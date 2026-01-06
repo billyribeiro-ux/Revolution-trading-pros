@@ -445,7 +445,6 @@
 		display: none;
 	}
 
-	#term_filter .filter_btn.checked label,
 	#term_filter .filter_btn input:checked + label {
 		background: #333;
 		color: #fff;
