@@ -50,7 +50,7 @@
 
 	// Trading rooms for the dropdown button (from trading rooms + alert services + courses with room access)
 	const tradingRooms = $derived.by(() => {
-		const rooms: { name: string; href: string }[] = [];
+		const rooms: { name: string; href: string; icon: string }[] = [];
 
 		// Add trading rooms
 		const tradingRoomData = membershipsData?.tradingRooms ?? [];
@@ -58,7 +58,8 @@
 			if (room.status === 'active') {
 				rooms.push({
 					name: room.name,
-					href: room.accessUrl ?? `/live-trading-rooms/${room.slug}`
+					href: room.accessUrl ?? `/live-trading-rooms/${room.slug}`,
+					icon: room.icon ?? 'chart-line'
 				});
 			}
 		}
@@ -69,7 +70,8 @@
 			if (service.status === 'active' && service.accessUrl) {
 				rooms.push({
 					name: service.name,
-					href: service.accessUrl
+					href: service.accessUrl,
+					icon: service.icon ?? 'bell'
 				});
 			}
 		}
@@ -80,7 +82,8 @@
 			if (course.status === 'active' && course.accessUrl) {
 				rooms.push({
 					name: course.name,
-					href: course.accessUrl
+					href: course.accessUrl,
+					icon: course.icon ?? 'book'
 				});
 			}
 		}
@@ -248,9 +251,9 @@
 					aria-expanded={isDropdownOpen}
 					aria-haspopup="true"
 				>
-					<strong>Enter a Trading Room</strong>
+					<strong>Day Trading Room Dashboard</strong>
 					<span class="dropdown-arrow">
-						<RtpIcon name="chevron-down" size={14} />
+						<RtpIcon name="chevron-right" size={14} />
 					</span>
 				</button>
 
@@ -258,7 +261,10 @@
 					<div class="dropdown-menu">
 						{#each tradingRooms as room}
 							<a href={room.href} class="dropdown-item" onclick={closeDropdown}>
-								{room.name}
+								<span class="dropdown-item__icon">
+									<RtpIcon name={room.icon} size={20} />
+								</span>
+								<span class="dropdown-item__text">{room.name}</span>
 							</a>
 						{/each}
 					</div>
@@ -734,10 +740,12 @@
 	.dropdown-arrow {
 		font-size: 10px;
 		transition: transform 0.15s ease-in-out;
+		display: flex;
+		align-items: center;
 	}
 
 	.dropdown.is-open .dropdown-arrow {
-		transform: rotate(180deg);
+		transform: rotate(90deg);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -778,7 +786,9 @@
 	}
 
 	.dropdown-item {
-		display: block;
+		display: flex;
+		align-items: center;
+		gap: 12px;
 		padding: 10px 15px;
 		color: #666;
 		font-size: 14px;
@@ -786,10 +796,23 @@
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		text-decoration: none;
 		transition: background-color 0.15s ease-in-out;
+		border-radius: 4px;
 	}
 
 	.dropdown-item:hover {
 		background-color: #f4f4f4;
+	}
+
+	.dropdown-item__icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		flex-shrink: 0;
+		color: #143E59;
+	}
+
+	.dropdown-item__text {
+		flex: 1;
 	}
 
 	.dropdown-backdrop {
