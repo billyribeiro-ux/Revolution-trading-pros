@@ -5,11 +5,11 @@
  * 
  * Fetches room archive videos from unified videos API
  * 
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 import { env } from '$env/dynamic/private';
-import type { PageServerLoad } from './$types';
+import type { ServerLoadEvent } from '@sveltejs/kit';
 
 // Video response from API
 interface VideoResponse {
@@ -51,7 +51,20 @@ interface ApiResponse {
 	};
 }
 
-export const load: PageServerLoad = async ({ url, fetch }) => {
+// Page data type export for +page.svelte
+export interface ArchivePageData {
+	videos: VideoResponse[];
+	meta: {
+		current_page: number;
+		per_page: number;
+		total: number;
+		last_page: number;
+	};
+	search: string;
+	error: string | null;
+}
+
+export const load = async ({ url, fetch }: ServerLoadEvent): Promise<ArchivePageData> => {
 	const API_URL = env.API_URL || 'https://api.revolutiontradingpros.com';
 	
 	// Get query params

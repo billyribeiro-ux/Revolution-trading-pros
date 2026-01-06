@@ -10,16 +10,20 @@
 	- Swing Trading Room
 	- Small Account Mentorship
 	
-	@version 1.0.0
+	@version 2.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import TradingRoomArchive from '$lib/components/dashboard/TradingRoomArchive.svelte';
-	import type { PageData } from './$types';
+	import type { DynamicArchivePageData } from './+page.server';
 
-	// Server data
-	let { data }: { data: PageData } = $props();
+	// Server data - extends parent layout data
+	interface Props {
+		data: DynamicArchivePageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <svelte:head>

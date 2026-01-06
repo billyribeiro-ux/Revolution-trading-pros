@@ -6,11 +6,11 @@
  * Fetches room archive videos from unified videos API for any trading room.
  * Supports: day-trading-room, swing-trading-room, small-account-mentorship
  * 
- * @version 1.0.0
+ * @version 2.0.0
  */
 
 import { env } from '$env/dynamic/private';
-import type { PageServerLoad } from './$types';
+import type { ServerLoadEvent } from '@sveltejs/kit';
 
 // Room configuration
 const ROOM_CONFIG: Record<string, { name: string; startHereUrl: string }> = {
@@ -68,7 +68,23 @@ interface ApiResponse {
 	};
 }
 
-export const load: PageServerLoad = async ({ url, fetch, params }) => {
+// Page data type export for +page.svelte
+export interface DynamicArchivePageData {
+	roomSlug: string;
+	roomName: string;
+	startHereUrl: string;
+	videos: VideoResponse[];
+	meta: {
+		current_page: number;
+		per_page: number;
+		total: number;
+		last_page: number;
+	};
+	search: string;
+	error: string | null;
+}
+
+export const load = async ({ url, fetch, params }: ServerLoadEvent): Promise<DynamicArchivePageData> => {
 	const API_URL = env.API_URL || 'https://api.revolutiontradingpros.com';
 	const roomSlug = params.room_slug;
 	

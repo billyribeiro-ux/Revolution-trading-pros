@@ -13,10 +13,14 @@
 <script lang="ts">
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import TradingRoomArchive from '$lib/components/dashboard/TradingRoomArchive.svelte';
-	import type { PageData } from './$types';
+	import type { ArchivePageData } from './+page.server';
 
-	// Server data
-	let { data }: { data: PageData } = $props();
+	// Server data - extends parent layout data
+	interface Props {
+		data: ArchivePageData;
+	}
+
+	let { data }: Props = $props();
 </script>
 
 <svelte:head>

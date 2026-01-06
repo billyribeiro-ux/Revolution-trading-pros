@@ -85,11 +85,16 @@
 		sessions: ArchiveSession[];
 	}
 
-	// Local search state
-	let searchQuery = $state(search || '');
+	// Local search state - synced with prop via $effect
+	let searchQuery = $state('');
 	let currentPage = $derived(meta?.current_page || 1);
 	let totalPages = $derived(meta?.last_page || 1);
 	let totalItems = $derived(meta?.total || 0);
+
+	// Sync searchQuery with search prop when it changes
+	$effect(() => {
+		searchQuery = search || '';
+	});
 
 	// Transform API videos to sessions
 	let allSessions = $derived<ArchiveSession[]>(
@@ -102,9 +107,10 @@
 		}))
 	);
 
-	// Client-side filtering
+	// Client-side filtering - compare against prop for server-side match
+	let serverSearch = $derived(search || '');
 	let filteredSessions = $derived(
-		searchQuery.trim() === '' || searchQuery === search
+		searchQuery.trim() === '' || searchQuery === serverSearch
 			? allSessions
 			: allSessions.filter(session => 
 				session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -259,8 +265,8 @@
 								class="search-input"
 							/>
 							{#if searchQuery}
-								<button type="button" class="clear-btn" onclick={clearSearch}>
-									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<button type="button" class="clear-btn" onclick={clearSearch} aria-label="Clear search">
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
 										<path d="M18 6 6 18"></path>
 										<path d="m6 6 12 12"></path>
 									</svg>
