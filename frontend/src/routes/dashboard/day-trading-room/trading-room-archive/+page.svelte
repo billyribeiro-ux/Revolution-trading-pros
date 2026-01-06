@@ -7,14 +7,21 @@
 	
 	Archive of past live trading sessions and recordings.
 	Includes search, date-grouped grid, and pagination.
+	Connected to unified videos API with content_type=room_archive.
 	
-	@version 3.0.0
+	@version 4.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import type { PageData } from './$types';
 
-	// Archive session type
+	// Server data
+	let { data }: { data: PageData } = $props();
+
+	// Archive session type (transformed from API)
 	interface ArchiveSession {
 		id: string;
 		title: string;
@@ -30,47 +37,26 @@
 		sessions: ArchiveSession[];
 	}
 
-	// Search state
-	let searchQuery = $state('');
-	let currentPage = $state(1);
-	const itemsPerPage = 20;
+	// Local search state (for client-side filtering)
+	let searchQuery = $state(data.search || '');
+	let currentPage = $derived(data.meta?.current_page || 1);
+	let totalPages = $derived(data.meta?.last_page || 1);
+	let totalItems = $derived(data.meta?.total || 0);
 
-	// Sample archive data (will be replaced with API call)
-	const allSessions: ArchiveSession[] = [
-		// January 2, 2026
-		{ id: '1', title: 'Nail the Open', trader: 'Kody Ashmore', date: '2026-01-02', href: '/chatroom-archive/day-trading-room/01022026' },
-		{ id: '2', title: 'Mastery Live Trading', trader: 'Kody Ashmore', date: '2026-01-02', href: '/chatroom-archive/day-trading-room/01022026' },
-		{ id: '3', title: 'Macro Moves', trader: 'Sam Shames', date: '2026-01-02', href: '/chatroom-archive/day-trading-room/01022026' },
-		{ id: '4', title: 'Day Trading Options', trader: 'Jonathan McKeever', date: '2026-01-02', href: '/chatroom-archive/day-trading-room/01022026' },
-		{ id: '5', title: 'Heather Vanek', trader: '', date: '2026-01-02', href: '/chatroom-archive/day-trading-room/01022026' },
-		{ id: '6', title: 'Cash In On The Close', trader: 'Allison Ostrander', date: '2026-01-02', href: '/chatroom-archive/day-trading-room/01022026' },
-		// December 30, 2025
-		{ id: '7', title: 'Nail the Open', trader: 'Henry Gambell', date: '2025-12-30', href: '/chatroom-archive/day-trading-room/12302025' },
-		{ id: '8', title: 'Futures Set Ups', trader: 'Raghee Horner', date: '2025-12-30', href: '/chatroom-archive/day-trading-room/12302025' },
-		{ id: '9', title: 'Elliott Wave', trader: 'David Starr', date: '2025-12-30', href: '/chatroom-archive/day-trading-room/12302025' },
-		{ id: '10', title: 'Swing Trading Options', trader: 'Taylor Horton', date: '2025-12-30', href: '/chatroom-archive/day-trading-room/12302025' },
-		{ id: '11', title: 'Cash In On The Close', trader: 'Bruce Marshall', date: '2025-12-30', href: '/chatroom-archive/day-trading-room/12302025' },
-		// December 29, 2025
-		{ id: '12', title: 'Nail the Open', trader: 'John F. Carter', date: '2025-12-29', href: '/chatroom-archive/day-trading-room/12292025' },
-		{ id: '13', title: 'Futures Set Ups', trader: 'Neil Yeager', date: '2025-12-29', href: '/chatroom-archive/day-trading-room/12292025' },
-		{ id: '14', title: 'BIAS Trading Session', trader: 'Bruce Marshall', date: '2025-12-29', href: '/chatroom-archive/day-trading-room/12292025' },
-		{ id: '15', title: 'Cash In On The Close', trader: 'Henry Gambell', date: '2025-12-29', href: '/chatroom-archive/day-trading-room/12292025' },
-		// December 26, 2025
-		{ id: '16', title: 'Nail the Open', trader: 'Kody Ashmore', date: '2025-12-26', href: '/chatroom-archive/day-trading-room/12262025' },
-		{ id: '17', title: 'Macro Moves', trader: 'Sam Shames', date: '2025-12-26', href: '/chatroom-archive/day-trading-room/12262025' },
-		{ id: '18', title: 'Day Trading Options', trader: 'Jonathan McKeever', date: '2025-12-26', href: '/chatroom-archive/day-trading-room/12262025' },
-		{ id: '19', title: 'BIAS Trading Session', trader: 'Bruce Marshall', date: '2025-12-26', href: '/chatroom-archive/day-trading-room/12262025' },
-		{ id: '20', title: 'Cash In On The Close', trader: 'Danielle Shay', date: '2025-12-26', href: '/chatroom-archive/day-trading-room/12262025' },
-		// December 23, 2025
-		{ id: '21', title: 'Nail the Open', trader: 'Henry Gambell', date: '2025-12-23', href: '/chatroom-archive/day-trading-room/12232025' },
-		{ id: '22', title: 'Futures Set Ups', trader: 'Raghee Horner', date: '2025-12-23', href: '/chatroom-archive/day-trading-room/12232025' },
-		{ id: '23', title: 'Day Trading Options', trader: 'Jonathan McKeever', date: '2025-12-23', href: '/chatroom-archive/day-trading-room/12232025' },
-		{ id: '24', title: 'Cash In On The Close', trader: 'Bruce Marshall', date: '2025-12-23', href: '/chatroom-archive/day-trading-room/12232025' },
-	];
+	// Transform API videos to sessions
+	let allSessions = $derived<ArchiveSession[]>(
+		(data.videos || []).map(video => ({
+			id: String(video.id),
+			title: video.title,
+			trader: video.trader?.name || '',
+			date: video.video_date?.split('T')[0] || '',
+			href: `/chatroom-archive/day-trading-room/${video.slug}`
+		}))
+	);
 
-	// Filter sessions based on search
+	// Client-side filtering (when user types in search)
 	let filteredSessions = $derived(
-		searchQuery.trim() === ''
+		searchQuery.trim() === '' || searchQuery === data.search
 			? allSessions
 			: allSessions.filter(session => 
 				session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -114,24 +100,36 @@
 		return groups;
 	});
 
-	// Pagination
-	let totalItems = $derived(filteredSessions.length);
-	let totalPages = $derived(Math.ceil(totalItems / itemsPerPage));
-	
-	// Paginated groups (simplified - shows all groups for now)
+	// Paginated groups
 	let paginatedGroups = $derived(groupedSessions());
 
-	// Handle search input
+	// Handle search - navigate to update URL params
+	let searchTimeout: ReturnType<typeof setTimeout>;
 	function handleSearch(event: Event) {
 		const target = event.target as HTMLInputElement;
 		searchQuery = target.value;
-		currentPage = 1; // Reset to first page on search
+		
+		// Debounce search to avoid too many navigations
+		clearTimeout(searchTimeout);
+		searchTimeout = setTimeout(() => {
+			const params = new URLSearchParams();
+			if (searchQuery.trim()) {
+				params.set('search', searchQuery.trim());
+			}
+			params.set('page', '1');
+			goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
+		}, 300);
 	}
 
-	// Handle page change
-	function goToPage(page: number) {
-		if (page >= 1 && page <= totalPages) {
-			currentPage = page;
+	// Handle page change - navigate to update URL params
+	function goToPage(pageNum: number) {
+		if (pageNum >= 1 && pageNum <= totalPages) {
+			const params = new URLSearchParams();
+			if (searchQuery.trim()) {
+				params.set('search', searchQuery.trim());
+			}
+			params.set('page', String(pageNum));
+			goto(`?${params.toString()}`);
 		}
 	}
 
@@ -186,7 +184,7 @@
 			<!-- Filters -->
 			<div class="dashboard-filters">
 				<div class="dashboard-filters__count">
-					Showing <strong>{filteredSessions.length}</strong> sessions
+					Showing <strong>{totalItems}</strong> sessions
 				</div>
 				<div class="dashboard-filters__search">
 					<input 
