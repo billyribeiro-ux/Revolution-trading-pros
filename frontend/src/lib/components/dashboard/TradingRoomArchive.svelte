@@ -154,20 +154,35 @@
 
 	// Handle search - navigate to update URL params
 	let searchTimeout: ReturnType<typeof setTimeout>;
-	function handleSearch(event: Event) {
-		const target = event.target as HTMLInputElement;
-		searchQuery = target.value;
-		
+	function handleSearch() {
 		// Debounce search
 		clearTimeout(searchTimeout);
 		searchTimeout = setTimeout(() => {
-			const params = new URLSearchParams();
-			if (searchQuery.trim()) {
-				params.set('search', searchQuery.trim());
-			}
-			params.set('page', '1');
-			goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
-		}, 300);
+			navigateWithSearch();
+		}, 500);
+	}
+
+	// Handle form submit
+	function handleSearchSubmit(event: Event) {
+		event.preventDefault();
+		clearTimeout(searchTimeout);
+		navigateWithSearch();
+	}
+
+	// Clear search
+	function clearSearch() {
+		searchQuery = '';
+		navigateWithSearch();
+	}
+
+	// Navigate with search params
+	function navigateWithSearch() {
+		const params = new URLSearchParams();
+		if (searchQuery.trim()) {
+			params.set('search', searchQuery.trim());
+		}
+		params.set('page', '1');
+		goto(`?${params.toString()}`, { replaceState: true, noScroll: true });
 	}
 
 	// Handle page change
@@ -230,13 +245,29 @@
 					Showing <strong>{totalItems}</strong> sessions
 				</div>
 				<div class="dashboard-filters__search">
-					<input 
-						type="text" 
-						placeholder="Search archives..." 
-						value={searchQuery}
-						oninput={handleSearch}
-						class="search-input"
-					/>
+					<form onsubmit={handleSearchSubmit} class="search-form">
+						<div class="search-input-wrapper">
+							<svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+								<circle cx="11" cy="11" r="8"></circle>
+								<path d="m21 21-4.3-4.3"></path>
+							</svg>
+							<input 
+								type="text" 
+								placeholder="Search archives..." 
+								bind:value={searchQuery}
+								oninput={handleSearch}
+								class="search-input"
+							/>
+							{#if searchQuery}
+								<button type="button" class="clear-btn" onclick={clearSearch}>
+									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+										<path d="M18 6 6 18"></path>
+										<path d="m6 6 12 12"></path>
+									</svg>
+								</button>
+							{/if}
+						</div>
+					</form>
 				</div>
 			</div>
 
@@ -390,23 +421,61 @@
 		}
 	}
 
+	.search-form {
+		width: 100%;
+	}
+
+	.search-input-wrapper {
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+
+	.search-icon {
+		position: absolute;
+		left: 12px;
+		color: #999;
+		pointer-events: none;
+	}
+
 	.search-input {
 		width: 100%;
-		padding: 10px 15px;
+		padding: 10px 40px 10px 40px;
 		border: 1px solid #e6e6e6;
 		border-radius: 4px;
 		font-size: 14px;
 		font-family: 'Open Sans', sans-serif;
-		transition: border-color 0.2s ease;
+		transition: border-color 0.2s ease, box-shadow 0.2s ease;
 	}
 
 	.search-input:focus {
 		outline: none;
 		border-color: #0984ae;
+		box-shadow: 0 0 0 3px rgba(9, 132, 174, 0.1);
 	}
 
 	.search-input::placeholder {
 		color: #999;
+	}
+
+	.clear-btn {
+		position: absolute;
+		right: 10px;
+		background: none;
+		border: none;
+		padding: 4px;
+		cursor: pointer;
+		color: #999;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 50%;
+		transition: all 0.2s ease;
+	}
+
+	.clear-btn:hover {
+		color: #666;
+		background: #f0f0f0;
 	}
 
 	/* Date Heading */
