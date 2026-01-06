@@ -390,93 +390,77 @@
 		font-weight: 400;
 	}
 
-	/* Term Filter Form - matches WordPress exactly */
+	/* Term Filter Form - Exact WordPress CSS from dashboard.8f78208b.css */
 	#term_filter {
+		display: -webkit-flex;
+		display: -ms-flexbox;
 		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		margin-bottom: 25px;
-		padding: 20px;
-		background: #f5f5f5;
-		border-radius: 4px;
+		overflow-x: scroll;
+		-webkit-align-items: center;
+		-ms-flex-align: center;
 		align-items: center;
+		background: #fff;
+		padding: 20px;
+		-webkit-box-shadow: 0 3px 6px #00000029;
+		box-shadow: 0 3px 6px #00000029;
+	}
+
+	#term_filter .apply_filter {
+		display: none;
 	}
 
 	/* Reset Filter Button */
-	.reset_filter {
-		display: inline-flex;
+	#term_filter .reset_filter {
+		margin-right: 10px;
 	}
 
-	.reset_filter input[type="radio"] {
-		display: none;
+	#term_filter .reset_filter :global(svg) {
+		min-width: 20px;
 	}
 
-	.reset_filter label {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		background: #fff;
-		border: 1px solid #ddd;
-		border-radius: 4px;
+	#term_filter .reset_filter label {
+		border-radius: 25px;
 		cursor: pointer;
-		transition: all 0.2s ease;
-		color: #666;
+		padding: 13px 32px;
+		border: 2px solid;
+		display: -webkit-flex;
+		display: -ms-flexbox;
+		display: flex;
+		margin-bottom: 0;
+		-webkit-align-items: center;
+		-ms-flex-align: center;
+		align-items: center;
 	}
 
-	.reset_filter label:hover {
-		background: #e9e9e9;
-		border-color: #ccc;
-	}
-
-	.reset_filter input[type="radio"]:checked + label {
-		background: #143E59;
-		color: #fff;
-		border-color: #143E59;
-	}
-
-	.reset_filter label :global(svg) {
-		width: 14px;
-		height: 14px;
+	#term_filter .reset_filter input {
+		display: none;
 	}
 
 	/* Filter Buttons */
-	.filter_btn {
-		display: inline-flex;
+	#term_filter .filter_btn {
+		margin-right: 10px;
 	}
 
-	.filter_btn input[type="radio"] {
+	#term_filter .filter_btn input {
 		display: none;
 	}
 
-	.filter_btn label {
-		padding: 8px 14px;
-		border: 1px solid #ddd;
-		background: #fff;
-		color: #333;
-		font-size: 13px;
-		font-weight: 500;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		white-space: nowrap;
-	}
-
-	.filter_btn label:hover {
-		background: #e9e9e9;
-		border-color: #ccc;
-	}
-
-	.filter_btn input[type="radio"]:checked + label {
-		background: #143E59;
+	#term_filter .filter_btn.checked label,
+	#term_filter .filter_btn input:checked + label {
+		background: #333;
 		color: #fff;
-		border-color: #143E59;
 	}
 
-	/* Apply Filter Button */
-	.apply_filter {
-		display: none;
+	#term_filter .filter_btn label {
+		cursor: pointer;
+		padding: 11px 32px;
+		border-radius: 25px;
+		border: 2px solid;
+		white-space: nowrap;
+		font-weight: 700;
+		color: #666;
+		display: block;
+		margin-bottom: 0;
 	}
 
 	/* Grid Layout */
