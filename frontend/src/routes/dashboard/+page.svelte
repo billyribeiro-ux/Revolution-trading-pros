@@ -712,6 +712,7 @@
 	.btn-orange {
 		display: inline-flex;
 		align-items: center;
+		justify-content: center;
 		gap: 8px;
 		padding: 10px 20px;
 		background-color: #f69532;
