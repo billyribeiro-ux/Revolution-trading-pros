@@ -48,45 +48,25 @@
 	// Render cards from actual API data instead of hardcoded slugs
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// Trading rooms for the dropdown button (from trading rooms + alert services + courses with room access)
+	// Trading rooms for the dropdown button - Only show Day Trading Room, Swing Trading Room, and Small Accounts
 	const tradingRooms = $derived.by(() => {
-		const rooms: { name: string; href: string; icon: string }[] = [];
-
-		// Add trading rooms
-		const tradingRoomData = membershipsData?.tradingRooms ?? [];
-		for (const room of tradingRoomData) {
-			if (room.status === 'active') {
-				rooms.push({
-					name: room.name,
-					href: room.accessUrl ?? `/live-trading-rooms/${room.slug}`,
-					icon: room.icon ?? 'chart-line'
-				});
+		const rooms: { name: string; href: string; icon: string }[] = [
+			{
+				name: 'Day Trading Room',
+				href: '#', // TODO: Provide URL
+				icon: 'chart-line'
+			},
+			{
+				name: 'Swing Trading Room',
+				href: '#', // TODO: Provide URL
+				icon: 'trending-up'
+			},
+			{
+				name: 'Small Accounts',
+				href: '#', // TODO: Provide URL
+				icon: 'dollar-sign'
 			}
-		}
-
-		// Add alert services with trading room access (SPX Profit Pulse, Explosive Swings)
-		const alertServiceData = membershipsData?.alertServices ?? [];
-		for (const service of alertServiceData) {
-			if (service.status === 'active' && service.accessUrl) {
-				rooms.push({
-					name: service.name,
-					href: service.accessUrl,
-					icon: service.icon ?? 'bell'
-				});
-			}
-		}
-
-		// Add courses with trading room access (Small Account Mentorship)
-		const courseData = membershipsData?.courses ?? [];
-		for (const course of courseData) {
-			if (course.status === 'active' && course.accessUrl) {
-				rooms.push({
-					name: course.name,
-					href: course.accessUrl,
-					icon: course.icon ?? 'book'
-				});
-			}
-		}
+		];
 
 		return rooms;
 	});
@@ -278,7 +258,7 @@
 				>
 					<strong>Enter the Trading Room</strong>
 					<span class="dropdown-arrow">
-						<RtpIcon name="chevron-right" size={14} />
+						<RtpIcon name="chevron-down" size={14} />
 					</span>
 				</button>
 
@@ -767,7 +747,7 @@
 	}
 
 	.dropdown.is-open .dropdown-arrow {
-		transform: rotate(90deg);
+		transform: rotate(180deg);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
