@@ -752,7 +752,7 @@ class EnterpriseApiClient {
 	 * Authentication
 	 */
 	async register(data: RegisterData): Promise<AuthResponse> {
-		const response = await this.post<AuthResponse>('/auth/register', data);
+		const response = await this.post<AuthResponse>('/api/auth/register', data);
 		this.setToken(response.token, response.refresh_token);
 		this.user.set(response.user);
 		await this.loadUserData();
@@ -761,7 +761,7 @@ class EnterpriseApiClient {
 
 	async login(credentials: LoginCredentials): Promise<AuthResponse> {
 		const deviceInfo = this.getDeviceInfo();
-		const response = await this.post<AuthResponse>('/auth/login', {
+		const response = await this.post<AuthResponse>('/api/auth/login', {
 			...credentials,
 			device_name: credentials.device_name || deviceInfo.name
 		});
@@ -798,7 +798,7 @@ class EnterpriseApiClient {
 		}
 
 		try {
-			const response = await this.post<AuthResponse>('/auth/refresh', {
+			const response = await this.post<AuthResponse>('/api/auth/refresh', {
 				refresh_token: this.refreshToken
 			});
 
@@ -813,7 +813,7 @@ class EnterpriseApiClient {
 	 * User methods
 	 */
 	async getMe(): Promise<User> {
-		const user = await this.get<User>('/auth/me', {
+		const user = await this.get<User>('/api/me', {
 			cache: { ttl: 60000 } // Cache for 1 minute
 		});
 		this.user.set(user);
@@ -821,8 +821,8 @@ class EnterpriseApiClient {
 	}
 
 	async updateProfile(data: Partial<User>): Promise<User> {
-		const user = await this.patch<User>('/auth/me', data, {
-			cache: { invalidate: ['/auth/me'] }
+		const user = await this.patch<User>('/api/me', data, {
+			cache: { invalidate: ['/api/me'] }
 		});
 		this.user.set(user);
 		return user;

@@ -26,3 +26,13 @@ pub async fn track_event(State(_state): State<AppState>, Json(_payload): Json<Tr
 pub async fn track_pageview(State(_state): State<AppState>, Json(_payload): Json<PageViewRequest>) -> Result<Json<serde_json::Value>, AppError> {
     Ok(Json(serde_json::json!({"success": true})))
 }
+
+#[derive(Debug, Deserialize)]
+pub struct PerformanceRequest {
+    pub metrics: Option<serde_json::Value>,
+}
+
+/// POST /api/analytics/performance - Track performance metrics
+pub async fn track_performance(Json(_payload): Json<PerformanceRequest>) -> Result<Json<serde_json::Value>, AppError> {
+    Ok(Json(serde_json::json!({"success": true})))
+}

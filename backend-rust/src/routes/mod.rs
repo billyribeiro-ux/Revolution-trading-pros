@@ -69,6 +69,7 @@ fn public_routes() -> Router<AppState> {
         // Analytics tracking
         .route("/analytics/track", post(handlers::analytics::track_event))
         .route("/analytics/pageview", post(handlers::analytics::track_pageview))
+        .route("/analytics/performance", post(handlers::analytics::track_performance))
         // Consent config
         .route("/consent/config", get(handlers::consent::public_settings))
         // Sitemap

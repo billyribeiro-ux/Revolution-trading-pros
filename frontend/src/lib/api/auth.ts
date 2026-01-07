@@ -538,7 +538,7 @@ class AuthenticationService {
 		// Validate password strength
 		this.validatePasswordStrength(data.password);
 
-		const response = await this.apiRequest<AuthResponse>('/auth/register', {
+		const response = await this.apiRequest<AuthResponse>('/api/auth/register', {
 			method: 'POST',
 			body: JSON.stringify(data),
 			skipAuth: true
@@ -563,7 +563,7 @@ class AuthenticationService {
 			device_fingerprint: this.sessionFingerprint
 		};
 
-		const response = await this.apiRequest<AuthResponse>('/auth/login', {
+		const response = await this.apiRequest<AuthResponse>('/api/auth/login', {
 			method: 'POST',
 			body: JSON.stringify(loginData),
 			skipAuth: true
@@ -638,7 +638,7 @@ class AuthenticationService {
 			device_id: this.getDeviceId()
 		};
 
-		const response = await this.apiRequest<AuthResponse>('/auth/login/biometric', {
+		const response = await this.apiRequest<AuthResponse>('/api/auth/login/biometric', {
 			method: 'POST',
 			body: JSON.stringify(data),
 			skipAuth: true
@@ -671,7 +671,7 @@ class AuthenticationService {
 	 */
 	async logout(): Promise<void> {
 		try {
-			await this.apiRequest<MessageResponse>('/auth/logout', {
+			await this.apiRequest<MessageResponse>('/api/auth/logout', {
 				method: 'POST'
 			});
 
@@ -701,7 +701,7 @@ class AuthenticationService {
 	 * Get current user
 	 */
 	async getUser(): Promise<User> {
-		const user = await this.apiRequest<User>('/auth/me');
+		const user = await this.apiRequest<User>('/api/me');
 		authStore.setUser(user);
 		return user;
 	}
@@ -727,7 +727,7 @@ class AuthenticationService {
 		// NOTE: Do NOT set Content-Type header manually for FormData
 		// The browser MUST set it automatically with the boundary parameter
 		// Setting it manually breaks multipart form parsing on the server
-		const user = await this.apiRequest<User>('/auth/me', {
+		const user = await this.apiRequest<User>('/api/me', {
 			method: 'PUT',
 			body: formData
 		});
@@ -744,7 +744,7 @@ class AuthenticationService {
 	 * Change password
 	 */
 	async changePassword(data: ChangePasswordData): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/auth/me/password', {
+		const response = await this.apiRequest<MessageResponse>('/api/me/password', {
 			method: 'PUT',
 			body: JSON.stringify(data)
 		});
@@ -764,7 +764,7 @@ class AuthenticationService {
 	 * Send password reset email
 	 */
 	async forgotPassword(data: ForgotPasswordData): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/auth/forgot-password', {
+		const response = await this.apiRequest<MessageResponse>('/api/auth/forgot-password', {
 			method: 'POST',
 			body: JSON.stringify(data),
 			skipAuth: true
@@ -783,7 +783,7 @@ class AuthenticationService {
 		// Validate password strength
 		this.validatePasswordStrength(data.password);
 
-		const response = await this.apiRequest<MessageResponse>('/auth/reset-password', {
+		const response = await this.apiRequest<MessageResponse>('/api/auth/reset-password', {
 			method: 'POST',
 			body: JSON.stringify(data),
 			skipAuth: true
@@ -799,7 +799,7 @@ class AuthenticationService {
 	 * Send email verification (legacy - use resendVerificationEmail instead)
 	 */
 	async sendEmailVerification(): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/auth/email/verification-notification', {
+		const response = await this.apiRequest<MessageResponse>('/api/auth/email/verification-notification', {
 			method: 'POST'
 		});
 
@@ -812,7 +812,7 @@ class AuthenticationService {
 	 */
 	async verifyEmail(token: string): Promise<string> {
 		const response = await this.apiRequest<MessageResponse>(
-			`/auth/verify-email?token=${encodeURIComponent(token)}`,
+			`/api/auth/verify-email/${encodeURIComponent(token)}`,
 			{
 				method: 'GET',
 				skipAuth: true
@@ -830,7 +830,7 @@ class AuthenticationService {
 	 * ICT 11+ Principal Engineer: New endpoint for resending verification
 	 */
 	async resendVerificationEmail(email: string): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/auth/resend-verification', {
+		const response = await this.apiRequest<MessageResponse>('/api/auth/resend-verification', {
 			method: 'POST',
 			body: JSON.stringify({ email }),
 			skipAuth: true
@@ -849,7 +849,7 @@ class AuthenticationService {
 			qr_code: string;
 			secret: string;
 			backup_codes: string[];
-		}>('/me/mfa/enable', {
+		}>('/api/me/mfa/enable', {
 			method: 'POST'
 		});
 
@@ -863,7 +863,7 @@ class AuthenticationService {
 	 * Verify MFA - Step 2: Verify code to enable MFA
 	 */
 	async verifyMFA(code: string): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/auth/me/mfa/verify', {
+		const response = await this.apiRequest<MessageResponse>('/api/me/mfa/verify', {
 			method: 'POST',
 			body: JSON.stringify({ code })
 		});
@@ -878,7 +878,7 @@ class AuthenticationService {
 	 * Disable MFA
 	 */
 	async disableMFA(password: string): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/auth/me/mfa/disable', {
+		const response = await this.apiRequest<MessageResponse>('/api/me/mfa/disable', {
 			method: 'POST',
 			body: JSON.stringify({ password })
 		});
@@ -898,7 +898,7 @@ class AuthenticationService {
 		mfaCode?: string,
 		backupCode?: string
 	): Promise<AuthResponse> {
-		const response = await this.apiRequest<AuthResponse>('/auth/login/mfa', {
+		const response = await this.apiRequest<AuthResponse>('/api/auth/login/mfa', {
 			method: 'POST',
 			body: JSON.stringify({
 				email,
@@ -934,7 +934,7 @@ class AuthenticationService {
 	 * Get security events
 	 */
 	async getSecurityEvents(): Promise<SecurityEvent[]> {
-		return this.apiRequest<SecurityEvent[]>('/auth/me/security-events');
+		return this.apiRequest<SecurityEvent[]>('/api/me/security-events');
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -945,14 +945,14 @@ class AuthenticationService {
 	 * Get all active sessions for current user
 	 */
 	async getSessions(): Promise<SessionsResponse> {
-		return this.apiRequest<SessionsResponse>('/auth/me/sessions');
+		return this.apiRequest<SessionsResponse>('/api/me/sessions');
 	}
 
 	/**
 	 * Revoke a specific session
 	 */
 	async revokeSession(sessionId: string): Promise<MessageResponse> {
-		return this.apiRequest<MessageResponse>(`/auth/me/sessions/${sessionId}`, {
+		return this.apiRequest<MessageResponse>(`/api/me/sessions/${sessionId}`, {
 			method: 'DELETE'
 		});
 	}
@@ -961,7 +961,7 @@ class AuthenticationService {
 	 * Logout from all devices
 	 */
 	async logoutAllDevices(keepCurrent: boolean = false): Promise<LogoutAllResponse> {
-		return this.apiRequest<LogoutAllResponse>('/auth/me/sessions/logout-all', {
+		return this.apiRequest<LogoutAllResponse>('/api/me/sessions/logout-all', {
 			method: 'POST',
 			body: JSON.stringify({ keep_current: keepCurrent })
 		});
@@ -1128,7 +1128,7 @@ class AuthenticationService {
 
 		for (let attempt = 1; attempt <= MAX_CHECK_RETRIES; attempt++) {
 			try {
-				await this.apiRequest<{ valid: boolean }>('/auth/me');
+				await this.apiRequest<{ valid: boolean }>('/api/me');
 				// Success - session is valid
 				return;
 			} catch (error) {
