@@ -158,7 +158,6 @@ fn build_cors_layer(config: &AppConfig) -> CorsLayer {
             header::CONTENT_TYPE,
             header::ACCEPT,
             header::ORIGIN,
-            header::X_REQUESTED_WITH,
         ])
         .allow_credentials(true)
         .max_age(Duration::from_secs(config.cors.max_age))

@@ -25,8 +25,9 @@ COPY Cargo.toml Cargo.lock ./
 # Build dependencies only (this layer will be cached)
 RUN cargo build --release && rm -rf src
 
-# Copy source code
+# Copy source code and migrations
 COPY src ./src
+COPY migrations ./migrations
 
 # Touch main.rs to trigger rebuild of our code (not dependencies)
 RUN touch src/main.rs
