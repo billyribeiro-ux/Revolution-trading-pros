@@ -30,7 +30,7 @@ impl<'a> SubscriptionService<'a> {
         Self { db }
     }
 
-    pub async fn get_user_subscriptions(&self, user_id: Uuid) -> Result<Vec<SubscriptionWithPlan>, AppError> {
+    pub async fn get_user_subscriptions(&self, user_id: i64) -> Result<Vec<SubscriptionWithPlan>, AppError> {
         let subscriptions: Vec<SubscriptionRow> = sqlx::query_as(
             r#"
             SELECT 
@@ -70,7 +70,7 @@ impl<'a> SubscriptionService<'a> {
         }).collect())
     }
 
-    pub async fn get_user_subscription(&self, user_id: Uuid, subscription_id: Uuid) -> Result<Option<SubscriptionWithPlan>, AppError> {
+    pub async fn get_user_subscription(&self, user_id: i64, subscription_id: Uuid) -> Result<Option<SubscriptionWithPlan>, AppError> {
         let subscription: Option<SubscriptionRow> = sqlx::query_as(
             r#"
             SELECT 

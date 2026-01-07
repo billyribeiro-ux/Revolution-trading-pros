@@ -1,12 +1,12 @@
 //! User Resource
 use serde::Serialize;
-use uuid::Uuid;
 
 use crate::models::User;
 
+/// ICT 11+: Production DB uses INT8 for user IDs
 #[derive(Debug, Serialize)]
 pub struct UserResource {
-    pub id: Uuid,
+    pub id: i64,
     pub name: String,
     pub first_name: Option<String>,
     pub last_name: Option<String>,
