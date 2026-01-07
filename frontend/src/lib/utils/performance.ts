@@ -46,8 +46,9 @@ function reportMetric(metric: PerformanceMetric): void {
 		}
 
 		// Send to custom analytics endpoint on Fly.io backend
-		// ICT 11+: Use Blob with application/json Content-Type for sendBeacon
-		const blob = new Blob([JSON.stringify(metric)], { type: 'application/json' });
+		// ICT 11+: Use text/plain to avoid CORS preflight (sendBeacon can't handle preflight)
+		// Backend parses JSON from raw bytes regardless of Content-Type
+		const blob = new Blob([JSON.stringify(metric)], { type: 'text/plain' });
 		navigator.sendBeacon?.(`${API_BASE_URL}${API_ENDPOINTS.analytics.performance}`, blob);
 	}
 }
