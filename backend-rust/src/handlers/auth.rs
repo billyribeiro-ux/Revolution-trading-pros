@@ -150,10 +150,8 @@ pub async fn login(
 }
 
 /// POST /api/auth/logout
-#[tracing::instrument(skip(state))]
-pub async fn logout(
-    State(_state): State<AppState>,
-) -> Result<Json<serde_json::Value>, AppError> {
+#[tracing::instrument]
+pub async fn logout() -> Result<Json<serde_json::Value>, AppError> {
     // In a stateless JWT system, logout is handled client-side
     // For stateful sessions, we would invalidate the token here
     Ok(Json(serde_json::json!({
