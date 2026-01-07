@@ -200,7 +200,9 @@
 				</div>
 				<div class="dashboard-filters__search">
 					<input 
-						type="text" 
+						type="text"
+						id="video-search"
+						name="video-search"
 						class="facetwp-autocomplete" 
 						placeholder="Search" 
 						value={searchQuery}

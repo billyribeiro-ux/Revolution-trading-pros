@@ -149,7 +149,7 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<!-- Category Filter Form - matches WordPress exactly -->
-		<form action="https://www.simplertrading.com/cms/wp-admin/admin-ajax.php" method="POST" id="term_filter">
+		<form action="#" method="POST" id="term_filter" onsubmit={(e) => e.preventDefault()}>
 			<div class="reset_filter">
 				<input 
 					type="radio" 
