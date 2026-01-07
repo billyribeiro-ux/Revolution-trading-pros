@@ -199,9 +199,14 @@
 		border-color: #0c2638;
 	}
 
-	@media (max-width: 767px) {
+	/* Mobile-first: stacked by default, row on md+ */
+	.fl-col-group {
+		flex-direction: column;
+	}
+
+	@media (min-width: 768px) {
 		.fl-col-group {
-			flex-direction: column;
+			flex-direction: row;
 		}
 
 		.fl-col {

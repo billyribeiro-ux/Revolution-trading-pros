@@ -11,6 +11,8 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
+
 	interface Trader {
 		id: string;
 		name: string;
@@ -115,6 +117,9 @@
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">Meet the Traders</h1>
+	</div>
+	<div class="dashboard__header-right">
+		<TradingRoomDropdown />
 	</div>
 </header>
 
@@ -256,17 +261,22 @@
 		background: #dc7309;
 	}
 
-	/* Responsive */
-	@media (max-width: 1199px) {
+	/* Mobile-first: 1 column by default, 2 on md+, 3 on lg+ */
+	.traders-grid {
+		grid-template-columns: 1fr;
+		gap: 20px;
+	}
+
+	@media (min-width: 768px) {
 		.traders-grid {
 			grid-template-columns: repeat(2, 1fr);
+			gap: 30px;
 		}
 	}
 
-	@media (max-width: 767px) {
+	@media (min-width: 1200px) {
 		.traders-grid {
-			grid-template-columns: 1fr;
-			gap: 20px;
+			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 </style>

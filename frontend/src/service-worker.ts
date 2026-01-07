@@ -82,10 +82,12 @@ sw.addEventListener('fetch', (event) => {
 	if (event.request.mode === 'navigate') {
 		event.respondWith(
 			fetch(event.request)
-				.catch(() => {
+				.catch(async () => {
 					// If offline, try to serve cached page or offline fallback
-					return caches.match(event.request)
-						.then((cached) => cached || caches.match('/offline.html'));
+					const cached = await caches.match(event.request);
+					if (cached) return cached;
+					const offline = await caches.match('/offline.html');
+					return offline || new Response('Offline', { status: 503 });
 				})
 		);
 		return;
@@ -128,7 +130,10 @@ sw.addEventListener('fetch', (event) => {
 				}
 				return response;
 			})
-			.catch(() => caches.match(event.request))
+			.catch(async () => {
+				const cached = await caches.match(event.request);
+				return cached || new Response('Not found', { status: 404 });
+			})
 	);
 });
 

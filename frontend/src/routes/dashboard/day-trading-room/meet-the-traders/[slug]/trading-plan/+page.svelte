@@ -142,8 +142,12 @@
 	.btn-orange { background: #F69532; color: #fff; border: 1px solid #F69532; }
 	.btn-orange:hover { background: #dc7309; border-color: #dc7309; }
 
-	@media (max-width: 767px) {
-		.plan-section { flex-direction: column; align-items: center; text-align: center; }
-		.section-list { padding-left: 0; list-style-position: inside; }
+	/* Mobile-first: stacked by default, row on md+ */
+	.plan-section { flex-direction: column; align-items: center; text-align: center; }
+	.section-list { padding-left: 0; list-style-position: inside; }
+
+	@media (min-width: 768px) {
+		.plan-section { flex-direction: row; align-items: flex-start; text-align: left; }
+		.section-list { padding-left: 20px; list-style-position: outside; }
 	}
 </style>

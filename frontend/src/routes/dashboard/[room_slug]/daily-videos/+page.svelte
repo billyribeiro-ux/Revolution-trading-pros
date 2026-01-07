@@ -802,10 +802,14 @@
 		max-width: 100%;
 	}
 
-	/* Mobile Responsive */
-	@media (max-width: 767px) {
+	/* Mobile-first: smaller padding by default, larger on md+ */
+	.dashboard__content-main {
+		padding: 1.5rem 1rem;
+	}
+
+	@media (min-width: 768px) {
 		.dashboard__content-main {
-			padding: 1.5rem 1rem;
+			padding: 2rem 1.5rem;
 		}
 
 		.section-title {

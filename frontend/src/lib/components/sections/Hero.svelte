@@ -359,7 +359,7 @@
 
 		// Fallback: If no GSAP, just make everything visible
 		if (!gsapLib) {
-			[h1, h2, p, ...buttons].forEach(el => {
+			[h1, h2, p, ...Array.from(buttons)].forEach(el => {
 				if (el instanceof HTMLElement) {
 					el.style.opacity = '1';
 					el.style.visibility = 'visible';
@@ -390,7 +390,7 @@
 		});
 
 		// Reset all elements
-		gsapLib.set([h1, h2, p, ...buttons], {
+		gsapLib.set([h1, h2, p, ...Array.from(buttons)], {
 			opacity: 0,
 			y: 0,
 			x: 0,

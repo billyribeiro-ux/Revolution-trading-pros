@@ -194,28 +194,26 @@
 		font-size: 13px;
 	}
 
-	@media (max-width: 991px) {
+	@media (min-width: 768px) {
 		.col-left,
 		.col-right {
 			flex: 0 0 50%;
 			max-width: 50%;
-		}
-
-		.desktop-only {
-			display: none;
-		}
-
-		.mobile-image {
-			display: block;
+			margin-bottom: 0;
 		}
 	}
 
-	@media (max-width: 767px) {
-		.col-left,
+	@media (min-width: 992px) {
+		.col-left {
+			flex: 0 0 41.666667%;
+			max-width: 41.666667%;
+		}
 		.col-right {
-			flex: 0 0 100%;
-			max-width: 100%;
-			margin-bottom: 20px;
+			flex: 0 0 58.333333%;
+			max-width: 58.333333%;
+		}
+		.desktop-only {
+			display: block;
 		}
 
 		.col-right:last-child {

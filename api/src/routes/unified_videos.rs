@@ -32,17 +32,9 @@ async fn list_videos(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    // Build dynamic query
+    // Build dynamic query - simplified to fetch videos only
     let mut sql = String::from(
-        "SELECT v.*, 
-         COALESCE(json_agg(DISTINCT jsonb_build_object('id', tr.id, 'name', tr.name, 'slug', tr.slug)) 
-                  FILTER (WHERE tr.id IS NOT NULL), '[]') as rooms_json,
-         jsonb_build_object('id', rt.id, 'name', rt.name, 'slug', rt.slug) as trader_json
-         FROM unified_videos v
-         LEFT JOIN video_room_assignments vra ON v.id = vra.video_id
-         LEFT JOIN trading_rooms tr ON vra.trading_room_id = tr.id
-         LEFT JOIN room_traders rt ON v.trader_id = rt.id
-         WHERE v.deleted_at IS NULL"
+        "SELECT * FROM unified_videos v WHERE v.deleted_at IS NULL"
     );
 
     let mut conditions: Vec<String> = Vec::new();
@@ -52,7 +44,7 @@ async fn list_videos(
     }
 
     if let Some(room_id) = query.room_id {
-        conditions.push(format!("vra.trading_room_id = {}", room_id));
+        conditions.push(format!("v.id IN (SELECT video_id FROM video_room_assignments WHERE trading_room_id = {})", room_id));
     }
 
     if let Some(trader_id) = query.trader_id {
@@ -86,8 +78,6 @@ async fn list_videos(
         sql.push_str(&format!(" AND {}", cond));
     }
 
-    sql.push_str(" GROUP BY v.id, rt.id");
-
     // Sorting
     let sort_by = query.sort_by.as_deref().unwrap_or("video_date");
     let sort_dir = query.sort_dir.as_deref().unwrap_or("desc");
@@ -95,28 +85,43 @@ async fn list_videos(
 
     sql.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
 
-    // Execute query
-    let rows: Vec<(UnifiedVideo, Option<serde_json::Value>, Option<serde_json::Value>)> = 
-        sqlx::query_as(&sql)
-            .fetch_all(&state.db.pool)
-            .await
-            .map_err(|e| {
-                error!("Failed to fetch videos: {}", e);
-                (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-            })?;
+    // Execute query - fetch videos
+    let videos_raw: Vec<UnifiedVideo> = sqlx::query_as(&sql)
+        .fetch_all(&state.db.pool)
+        .await
+        .map_err(|e| {
+            error!("Failed to fetch videos: {}", e);
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        })?;
 
-    // Build response
-    let videos: Vec<VideoResponse> = rows.iter().map(|(v, rooms_json, trader_json)| {
-        let rooms: Vec<RoomInfo> = rooms_json
-            .as_ref()
-            .and_then(|j| serde_json::from_value(j.clone()).ok())
-            .unwrap_or_default();
+    // Build response with rooms and trader info fetched separately
+    let mut videos: Vec<VideoResponse> = Vec::new();
+    
+    for v in videos_raw {
+        // Get rooms for this video
+        let rooms: Vec<RoomInfo> = sqlx::query_as(
+            "SELECT tr.id, tr.name, tr.slug FROM trading_rooms tr
+             INNER JOIN video_room_assignments vra ON tr.id = vra.trading_room_id
+             WHERE vra.video_id = $1"
+        )
+        .bind(v.id)
+        .fetch_all(&state.db.pool)
+        .await
+        .unwrap_or_default();
 
-        let trader: Option<TraderInfo> = trader_json
-            .as_ref()
-            .and_then(|j| serde_json::from_value(j.clone()).ok());
+        // Get trader info
+        let trader: Option<TraderInfo> = if let Some(tid) = v.trader_id {
+            sqlx::query_as("SELECT id, name, slug FROM room_traders WHERE id = $1")
+                .bind(tid)
+                .fetch_optional(&state.db.pool)
+                .await
+                .ok()
+                .flatten()
+        } else {
+            None
+        };
 
-        VideoResponse {
+        videos.push(VideoResponse {
             id: v.id,
             title: v.title.clone(),
             slug: v.slug.clone(),
@@ -138,14 +143,16 @@ async fn list_videos(
             trader,
             rooms,
             created_at: v.created_at.to_rfc3339(),
-        }
-    }).collect();
+        });
+    }
 
     // Get total count
-    let count_sql = "SELECT COUNT(DISTINCT v.id) FROM unified_videos v 
-                     LEFT JOIN video_room_assignments vra ON v.id = vra.video_id
-                     WHERE v.deleted_at IS NULL";
-    let total: (i64,) = sqlx::query_as(count_sql)
+    let mut count_sql = String::from("SELECT COUNT(*) FROM unified_videos v WHERE v.deleted_at IS NULL");
+    for cond in &conditions {
+        count_sql.push_str(&format!(" AND {}", cond));
+    }
+    
+    let total: (i64,) = sqlx::query_as(&count_sql)
         .fetch_one(&state.db.pool)
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;

@@ -945,19 +945,37 @@
 		margin-bottom: 25px;
 	}
 
-	/* Responsive */
-	@media (max-width: 991px) {
+	/* Mobile-first: stacked layout by default */
+	.fl-col-group {
+		flex-direction: column;
+	}
+
+	.fl-col-small {
+		flex: 0 0 100%;
+		max-width: 100%;
+		text-align: center;
+		margin-bottom: 20px;
+	}
+
+	.fl-col {
+		flex: 0 0 100%;
+		max-width: 100%;
+	}
+
+	.flex-grid {
+		grid-template-columns: 1fr;
+	}
+
+	@media (min-width: 768px) {
+		.fl-col-group {
+			flex-direction: row;
+		}
+
 		.fl-col-small {
 			flex: 0 0 200px;
 			max-width: 200px;
-		}
-
-		.fl-photo-img {
-			width: 180px;
-		}
-
-		.fl-heading-text.trader-name {
-			font-size: 28px;
+			text-align: left;
+			margin-bottom: 0;
 		}
 
 		.flex-grid {
@@ -965,21 +983,22 @@
 		}
 	}
 
-	@media (max-width: 767px) {
-		.fl-col-group {
-			flex-direction: column;
-		}
-
+	@media (min-width: 992px) {
 		.fl-col-small {
-			flex: 0 0 100%;
-			max-width: 100%;
-			text-align: center;
-			margin-bottom: 20px;
+			flex: 0 0 300px;
+			max-width: 300px;
 		}
 
-		.fl-col {
-			flex: 0 0 100%;
-			max-width: 100%;
+		.fl-photo-img {
+			width: 220px;
+		}
+
+		.fl-heading-text.trader-name {
+			font-size: 36px;
+		}
+
+		.flex-grid {
+			grid-template-columns: repeat(3, 1fr);
 		}
 
 		.fl-photo-img {

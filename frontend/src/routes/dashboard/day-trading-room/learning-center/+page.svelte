@@ -6,178 +6,89 @@
 	Apple ICT 11+ Principal Engineer Implementation
 
 	Educational resources and training materials for Day Trading Room members.
-	Matches WordPress Learning Center implementation exactly.
+	Fetches data from unified videos API with server-side rendering.
 
-	@version 2.0.0
+	@version 3.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
+	import { page } from '$app/stores';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import type { PageData } from './$types';
 
-	interface LearningResource {
-		id: number;
-		title: string;
-		trader: string;
-		excerpt: string;
-		slug: string;
-		thumbnail: string;
-		categories: string[];
-	}
+	// Server-side data
+	let { data }: { data: PageData } = $props();
 
-	// Filter state
-	let activeFilter = $state('all');
-	let filteredResources: LearningResource[] = $state([]);
+	// Reactive state from server data
+	let videos = $derived(data.videos || []);
+	let meta = $derived(data.meta || { current_page: 1, per_page: 9, total: 0, last_page: 1 });
+	let activeFilter = $derived(data.activeFilter || 'all');
+	let error = $derived(data.error);
 
-	// Pagination state
-	let currentPage = $state(1);
-	const itemsPerPage = 9;
-	let totalPages = $state(1);
-	let paginatedResources: LearningResource[] = $state([]);
+	// Pagination derived values
+	let currentPage = $derived(meta.current_page);
+	let totalPages = $derived(meta.last_page);
+	let totalItems = $derived(meta.total);
 
-	// Category options matching WordPress exactly
+	// Category options matching WordPress exactly - using WordPress category IDs
 	const categories = [
-		{ id: 'trade-setups', label: 'Trade Setups & Strategies' },
-		{ id: 'methodology', label: 'Methodology' },
-		{ id: 'member-webinar', label: 'Member Webinar' },
-		{ id: 'trade-management', label: 'Trade & Money Management/Trading Plan' },
-		{ id: 'indicators', label: 'Indicators' },
-		{ id: 'options', label: 'Options' },
-		{ id: 'foundation', label: 'Foundation' },
-		{ id: 'fundamentals', label: 'Fundamentals' },
-		{ id: 'simpler-tech', label: 'Simpler Tech' },
-		{ id: 'charting-indicators-tools', label: 'Charting/Indicators/Tools' },
-		{ id: 'charting', label: 'Charting' },
-		{ id: 'drama-free-daytrades', label: 'Drama Free Daytrades' },
-		{ id: 'quick-hits-daytrades', label: 'Quick Hits Daytrades' },
-		{ id: 'psychology', label: 'Psychology' },
-		{ id: 'trading-platform', label: 'Trading Platform' },
-		{ id: 'calls', label: 'Calls' },
-		{ id: 'thinkorswim', label: 'ThinkorSwim' },
-		{ id: 'tradestation', label: 'TradeStation' },
-		{ id: 'charting-software', label: 'Charting Software' },
-		{ id: 'trading-computer', label: 'Trading Computer' },
-		{ id: 'calls-puts-credit-spreads', label: 'Calls Puts Credit Spreads' },
-		{ id: 'puts', label: 'Puts' },
-		{ id: 'profit-recycling', label: 'Profit Recycling' },
-		{ id: 'trade-strategies', label: 'Trade Strategies' },
-		{ id: 'website-support', label: 'Website Support' },
-		{ id: 'options-strategies', label: 'Options Strategies (Level 2 & 3)' },
-		{ id: 'crypto', label: 'Crypto' },
-		{ id: 'fibonacci-options', label: 'Fibonacci & Options Trading' },
-		{ id: 'pricing-volatility', label: 'Pricing/Volatility' },
-		{ id: 'crypto-indicators', label: 'Crypto Indicators & Trading' },
-		{ id: 'browser-support', label: 'Browser Support' },
-		{ id: 'earnings-expiration', label: 'Earnings & Options Expiration' }
+		{ id: '529', label: 'Trade Setups & Strategies' },
+		{ id: '528', label: 'Methodology' },
+		{ id: '329', label: 'Member Webinar' },
+		{ id: '2932', label: 'Trade & Money Management/Trading Plan' },
+		{ id: '531', label: 'Indicators' },
+		{ id: '3260', label: 'Options' },
+		{ id: '469', label: 'foundation' },
+		{ id: '527', label: 'Fundamentals' },
+		{ id: '522', label: 'Simpler Tech' },
+		{ id: '2929', label: 'Charting/Indicators/Tools' },
+		{ id: '530', label: 'Charting' },
+		{ id: '3515', label: 'Drama Free Daytrades' },
+		{ id: '3516', label: 'Quick Hits Daytrades' },
+		{ id: '537', label: 'Psychology' },
+		{ id: '775', label: 'Trading Platform' },
+		{ id: '3055', label: 'Calls' },
+		{ id: '447', label: 'ThinkorSwim' },
+		{ id: '446', label: 'TradeStation' },
+		{ id: '776', label: 'Charting Software' },
+		{ id: '772', label: 'Trading Computer' },
+		{ id: '3057', label: 'Calls Puts Credit Spreads' },
+		{ id: '3056', label: 'Puts' },
+		{ id: '3514', label: 'Profit Recycling' },
+		{ id: '791', label: 'Trade Strategies' },
+		{ id: '774', label: 'Website Support' },
+		{ id: '2927', label: 'Options Strategies (Level 2 & 3)' },
+		{ id: '457', label: 'Crypto' },
+		{ id: '2931', label: 'Fibonacci & Options Trading' },
+		{ id: '2928', label: 'Pricing/Volatility' },
+		{ id: '459', label: 'Crypto Indicators & Trading' },
+		{ id: '771', label: 'Browser Support' },
+		{ id: '2930', label: 'Earnings & Options Expiration' }
 	];
 
-	// Learning resources data - matches WordPress structure
-	const allResources: LearningResource[] = [
-		{
-			id: 1,
-			title: 'Q3 Market Outlook July 2025',
-			trader: 'John Carter',
-			excerpt: "Using the economic cycle, John Carter will share insights on what's next in the stock market, commodities, Treasury yields, bonds, and more.",
-			slug: 'market-outlook-jul2025-john-carter',
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			categories: ['trade-setups']
-		},
-		{
-			id: 2,
-			title: "Intro to Kody Ashmore's Daily Sessions (and My Results!)",
-			trader: 'Kody Ashmore',
-			excerpt: "Intro to Kody Ashmore's Daily Sessions (and My Results!)",
-			slug: 'kody-ashmore-daily-sessions-results',
-			thumbnail: 'https://cdn.simplertrading.com/2022/12/18125338/Kody.jpg',
-			categories: ['methodology']
-		},
-		{
-			id: 3,
-			title: 'The 15:50 Trade (How Buybacks Matter the Last 10 Minutes Every Day)',
-			trader: 'Chris Brecher',
-			excerpt: 'The 15:50 Trade (How Buybacks Matter the Last 10 Minutes Every Day)',
-			slug: '15-50-trade',
-			thumbnail: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			categories: ['member-webinar', 'trade-management']
-		},
-		{
-			id: 4,
-			title: 'How Mike Teeto Builds His Watchlist',
-			trader: 'Mike Teeto',
-			excerpt: 'How Mike Teeto Builds His Watchlist',
-			slug: 'mike-teeto-watchlist',
-			thumbnail: 'https://cdn.simplertrading.com/2024/10/18134533/LearningCenter_MT.jpg',
-			categories: ['member-webinar']
-		},
-		{
-			id: 5,
-			title: 'Understanding Market Structure',
-			trader: 'Henry Gambell',
-			excerpt: 'Learn how to identify key market structure levels and use them in your trading.',
-			slug: 'understanding-market-structure',
-			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			categories: ['methodology', 'trade-setups']
-		},
-		{
-			id: 6,
-			title: 'Options Trading Fundamentals',
-			trader: 'John Carter',
-			excerpt: 'Master the basics of options trading with this comprehensive guide.',
-			slug: 'options-trading-fundamentals',
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			categories: ['methodology']
-		},
-		{
-			id: 7,
-			title: 'Using Squeeze Pro Indicator',
-			trader: 'John Carter',
-			excerpt: 'Learn how to use the Squeeze Pro indicator to identify high-probability trade setups.',
-			slug: 'squeeze-pro-indicator',
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			categories: ['indicators']
-		},
-		{
-			id: 8,
-			title: 'Risk Management Essentials',
-			trader: 'Chris Brecher',
-			excerpt: 'Protect your capital with proven risk management strategies.',
-			slug: 'risk-management-essentials',
-			thumbnail: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			categories: ['trade-management']
-		},
-		{
-			id: 9,
-			title: 'Futures Trading 101',
-			trader: 'Kody Ashmore',
-			excerpt: 'Get started with futures trading - from basics to advanced strategies.',
-			slug: 'futures-trading-101',
-			thumbnail: 'https://cdn.simplertrading.com/2022/12/18125338/Kody.jpg',
-			categories: ['methodology', 'trade-setups']
-		}
-	];
-
+	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {
-		activeFilter = categoryId;
-		currentPage = 1; // Reset to first page when filter changes
-		if (categoryId === 'all') {
-			filteredResources = allResources;
+		const url = new URL($page.url);
+		if (categoryId === 'all' || categoryId === '0') {
+			url.searchParams.delete('category');
 		} else {
-			filteredResources = allResources.filter(r => r.categories.includes(categoryId));
+			url.searchParams.set('category', categoryId);
 		}
-		updatePagination();
+		url.searchParams.delete('page'); // Reset to page 1
+		goto(url.toString(), { replaceState: true });
 	}
 
-	function updatePagination() {
-		totalPages = Math.ceil(filteredResources.length / itemsPerPage);
-		const startIndex = (currentPage - 1) * itemsPerPage;
-		const endIndex = startIndex + itemsPerPage;
-		paginatedResources = filteredResources.slice(startIndex, endIndex);
-	}
-
-	function goToPage(page: number) {
-		if (page >= 1 && page <= totalPages) {
-			currentPage = page;
-			updatePagination();
+	// Navigate to page
+	function goToPage(pageNum: number) {
+		if (pageNum >= 1 && pageNum <= totalPages) {
+			const url = new URL($page.url);
+			if (pageNum === 1) {
+				url.searchParams.delete('page');
+			} else {
+				url.searchParams.set('page', pageNum.toString());
+			}
+			goto(url.toString(), { replaceState: true });
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
@@ -222,11 +133,6 @@
 		const category = categories.find(c => c.id === categoryId);
 		return category?.label || categoryId;
 	}
-
-	onMount(() => {
-		filterResources('all');
-		updatePagination();
-	});
 </script>
 
 <svelte:head>
@@ -243,38 +149,28 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<!-- Category Filter Form - matches WordPress exactly -->
-		<form action="#" method="POST" id="term_filter" onsubmit={(e) => e.preventDefault()}>
-			<!-- Reset Filter Button -->
+		<form action="https://www.simplertrading.com/cms/wp-admin/admin-ajax.php" method="POST" id="term_filter">
 			<div class="reset_filter">
 				<input 
 					type="radio" 
-					id="filter-reset" 
-					value="all" 
+					id="0" 
+					value="0" 
 					name="categoryfilter"
 					checked={activeFilter === 'all'}
 					onchange={() => filterResources('all')}
 				/>
-				<label for="filter-reset" title="Reset Filter">
-					<svg aria-hidden="true" focusable="false" class="reset-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+				<label for="0">
+					<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="undo" class="svg-inline--fa fa-undo fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
 						<path fill="currentColor" d="M212.333 224.333H12c-6.627 0-12-5.373-12-12V12C0 5.373 5.373 0 12 0h48c6.627 0 12 5.373 12 12v78.112C117.773 39.279 184.26 7.47 258.175 8.007c136.906.994 246.448 111.623 246.157 248.532C504.041 393.258 393.12 504 256.333 504c-64.089 0-122.496-24.313-166.51-64.215-5.099-4.622-5.334-12.554-.467-17.42l33.967-33.967c4.474-4.474 11.662-4.717 16.401-.525C170.76 415.336 211.58 432 256.333 432c97.268 0 176-78.716 176-176 0-97.267-78.716-176-176-176-58.496 0-110.28 28.476-142.274 72.333h98.274c6.627 0 12 5.373 12 12v48c0 6.627-5.373 12-12 12z"></path>
 					</svg>
 				</label>
 			</div>
-
-			<!-- Category Filter Buttons -->
-			{#each categories as category}
-				<div class="filter_btn" class:active={activeFilter === category.id}>
-					<input 
-						type="radio" 
-						id="filter-{category.id}" 
-						value={category.id} 
-						name="categoryfilter"
-						checked={activeFilter === category.id}
-						onchange={() => filterResources(category.id)}
-					/>
-					<label for="filter-{category.id}">{category.label}</label>
-				</div>
-			{/each}
+			<div class="filter_btn"><input type="radio" id="529" value="529" name="categoryfilter" onchange={() => filterResources('529')}><label for="529">Trade Setups &amp; Strategies</label></div><div class="filter_btn"><input type="radio" id="528" value="528" name="categoryfilter" onchange={() => filterResources('528')}><label for="528">Methodology</label></div><div class="filter_btn"><input type="radio" id="329" value="329" name="categoryfilter" onchange={() => filterResources('329')}><label for="329">Member Webinar</label></div><div class="filter_btn"><input type="radio" id="2932" value="2932" name="categoryfilter" onchange={() => filterResources('2932')}><label for="2932">Trade &amp; Money Management/Trading Plan</label></div><div class="filter_btn"><input type="radio" id="531" value="531" name="categoryfilter" onchange={() => filterResources('531')}><label for="531">Indicators</label></div><div class="filter_btn"><input type="radio" id="3260" value="3260" name="categoryfilter" onchange={() => filterResources('3260')}><label for="3260">Options</label></div><div class="filter_btn"><input type="radio" id="469" value="469" name="categoryfilter" onchange={() => filterResources('469')}><label for="469">foundation</label></div><div class="filter_btn"><input type="radio" id="527" value="527" name="categoryfilter" onchange={() => filterResources('527')}><label for="527">Fundamentals</label></div><div class="filter_btn"><input type="radio" id="522" value="522" name="categoryfilter" onchange={() => filterResources('522')}><label for="522">Simpler Tech</label></div><div class="filter_btn"><input type="radio" id="2929" value="2929" name="categoryfilter" onchange={() => filterResources('2929')}><label for="2929">Charting/Indicators/Tools</label></div><div class="filter_btn"><input type="radio" id="530" value="530" name="categoryfilter" onchange={() => filterResources('530')}><label for="530">Charting</label></div><div class="filter_btn"><input type="radio" id="3515" value="3515" name="categoryfilter" onchange={() => filterResources('3515')}><label for="3515">Drama Free Daytrades</label></div><div class="filter_btn"><input type="radio" id="3516" value="3516" name="categoryfilter" onchange={() => filterResources('3516')}><label for="3516">Quick Hits Daytrades</label></div><div class="filter_btn"><input type="radio" id="537" value="537" name="categoryfilter" onchange={() => filterResources('537')}><label for="537">Psychology</label></div><div class="filter_btn"><input type="radio" id="775" value="775" name="categoryfilter" onchange={() => filterResources('775')}><label for="775">Trading Platform</label></div><div class="filter_btn"><input type="radio" id="3055" value="3055" name="categoryfilter" onchange={() => filterResources('3055')}><label for="3055">Calls</label></div><div class="filter_btn"><input type="radio" id="447" value="447" name="categoryfilter" onchange={() => filterResources('447')}><label for="447">ThinkorSwim</label></div><div class="filter_btn"><input type="radio" id="446" value="446" name="categoryfilter" onchange={() => filterResources('446')}><label for="446">TradeStation</label></div><div class="filter_btn"><input type="radio" id="776" value="776" name="categoryfilter" onchange={() => filterResources('776')}><label for="776">Charting Software</label></div><div class="filter_btn"><input type="radio" id="772" value="772" name="categoryfilter" onchange={() => filterResources('772')}><label for="772">Trading Computer</label></div><div class="filter_btn"><input type="radio" id="3057" value="3057" name="categoryfilter" onchange={() => filterResources('3057')}><label for="3057">Calls Puts Credit Spreads</label></div><div class="filter_btn"><input type="radio" id="3056" value="3056" name="categoryfilter" onchange={() => filterResources('3056')}><label for="3056">Puts</label></div><div class="filter_btn"><input type="radio" id="3514" value="3514" name="categoryfilter" onchange={() => filterResources('3514')}><label for="3514">Profit Recycling</label></div><div class="filter_btn"><input type="radio" id="791" value="791" name="categoryfilter" onchange={() => filterResources('791')}><label for="791">Trade Strategies</label></div><div class="filter_btn"><input type="radio" id="774" value="774" name="categoryfilter" onchange={() => filterResources('774')}><label for="774">Website Support</label></div><div class="filter_btn"><input type="radio" id="2927" value="2927" name="categoryfilter" onchange={() => filterResources('2927')}><label for="2927">Options Strategies (Level 2 &amp; 3)</label></div><div class="filter_btn"><input type="radio" id="457" value="457" name="categoryfilter" onchange={() => filterResources('457')}><label for="457">Crypto</label></div><div class="filter_btn"><input type="radio" id="2931" value="2931" name="categoryfilter" onchange={() => filterResources('2931')}><label for="2931">Fibonacci &amp; Options Trading</label></div><div class="filter_btn"><input type="radio" id="2928" value="2928" name="categoryfilter" onchange={() => filterResources('2928')}><label for="2928">Pricing/Volatility</label></div><div class="filter_btn"><input type="radio" id="459" value="459" name="categoryfilter" onchange={() => filterResources('459')}><label for="459">Crypto Indicators &amp; Trading</label></div><div class="filter_btn"><input type="radio" id="771" value="771" name="categoryfilter" onchange={() => filterResources('771')}><label for="771">Browser Support</label></div><div class="filter_btn"><input type="radio" id="2930" value="2930" name="categoryfilter" onchange={() => filterResources('2930')}><label for="2930">Earnings &amp; Options Expiration</label></div>
+			<input type="hidden" name="page_id" value="402087">
+			<input type="hidden" name="pagination_base" value="https://www.simplertrading.com/dashboard/mastering-the-trade/learning-center/page/%#%">
+			
+			<button class="apply_filter">Apply filter</button>
+			<input type="hidden" name="action" value="myfilter">
 		</form>
 
 		<!-- Section Title - matches WordPress exactly -->
@@ -283,48 +179,65 @@
 			<p></p>
 		</section>
 
+		<!-- Error State -->
+		{#if error}
+			<div class="error-message">
+				<p>Unable to load videos. Please try again later.</p>
+				<p class="error-detail">{error}</p>
+			</div>
+		{/if}
+
 		<!-- Learning Resources Grid -->
 		<div id="response">
-			<div class="article-cards row flex-grid">
-			{#each paginatedResources as resource (resource.id)}
-				<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
+			{#if videos.length === 0 && !error}
+				<div class="empty-state">
+					<h3>No videos found</h3>
+					<p>Try adjusting your filter or check back later for new content.</p>
+				</div>
+			{:else}
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+			{#each videos as video (video.id)}
+				<div>
 					<article class="article-card">
 						<figure 
 							class="article-card__image" 
-							style="background-image: url({resource.thumbnail});"
+							style="background-image: url({video.thumbnail_url || 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'});"
 						>
 							<img 
 								src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" 
-								alt={resource.title}
+								alt={video.title}
 								loading="lazy"
 							/>
 						</figure>
 						
 						<div class="article-card__type">
-							{#each resource.categories as cat}
-								<span class="label label--info">{getCategoryLabel(cat)}</span>
+							{#each video.tag_details as tag}
+								<span class="label label--info" style="background-color: {tag.color}">{tag.name}</span>
 							{/each}
 						</div>
 						
 						<h4 class="h5 article-card__title">
-							<a href="/learning-center/{resource.slug}">{resource.title}</a>
+							<a href="/learning-center/{video.slug}">{video.title}</a>
 						</h4>
 						
 						<div class="u--margin-top-0">
-							<span class="trader_name"><i>With {resource.trader}</i></span>
+							{#if video.trader}
+								<span class="trader_name"><i>With {video.trader.name}</i></span>
+							{/if}
 						</div>
 						
 						<div class="article-card__excerpt u--hide-read-more">
-							<p>{resource.excerpt}</p>
+							<p>{video.description || ''}</p>
 						</div>
 						
-						<a href="/learning-center/{resource.slug}" class="btn btn-tiny btn-default watch-now-btn">
+						<a href="/learning-center/{video.slug}" class="btn btn-tiny btn-default watch-now-btn">
 							Watch Now
 						</a>
 					</article>
 				</div>
 			{/each}
 			</div>
+			{/if}
 		</div>
 
 		<!-- Pagination -->
@@ -382,6 +295,12 @@
 </div>
 
 <style>
+	/* Dashboard Content Main - Padding for cards */
+	.dashboard__content-main {
+		padding-left: 10px;
+		padding-right: 10px;
+	}
+
 	/* Section Title */
 	.dashboard__content-section {
 		margin-bottom: 20px;
@@ -400,108 +319,123 @@
 		font-weight: 400;
 	}
 
-	/* Term Filter Form - matches WordPress exactly */
+	/* Term Filter Form - Exact WordPress CSS from dashboard.8f78208b.css */
 	#term_filter {
+		display: -webkit-flex;
+		display: -ms-flexbox;
 		display: flex;
-		flex-wrap: wrap;
-		gap: 8px;
-		margin-bottom: 25px;
-		padding: 20px;
-		background: #f5f5f5;
-		border-radius: 4px;
+		overflow-x: scroll;
+		-webkit-align-items: center;
+		-ms-flex-align: center;
 		align-items: center;
+		background: #fff;
+		padding: 20px;
+		-webkit-box-shadow: 0 3px 6px #00000029;
+		box-shadow: 0 3px 6px #00000029;
+	}
+
+	#term_filter .apply_filter {
+		display: none;
 	}
 
 	/* Reset Filter Button */
-	.reset_filter {
-		display: inline-flex;
+	#term_filter .reset_filter {
+		margin-right: 10px;
 	}
 
-	.reset_filter input[type="radio"] {
-		display: none;
-	}
-
-	.reset_filter label {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		width: 36px;
-		height: 36px;
-		background: #fff;
-		border: 1px solid #ddd;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: all 0.2s ease;
+	#term_filter .reset_filter :global(svg) {
+		min-width: 20px;
 		color: #666;
 	}
 
-	.reset_filter label:hover {
-		background: #e9e9e9;
-		border-color: #ccc;
+	#term_filter .reset_filter label {
+		border-radius: 25px;
+		cursor: pointer;
+		padding: 13px 32px;
+		border: 2px solid;
+		display: -webkit-flex;
+		display: -ms-flexbox;
+		display: flex;
+		margin-bottom: 0;
+		-webkit-align-items: center;
+		-ms-flex-align: center;
+		align-items: center;
+		font-family: 'Montserrat', sans-serif;
+		color: #666;
 	}
 
-	.reset_filter input[type="radio"]:checked + label {
-		background: #143E59;
-		color: #fff;
-		border-color: #143E59;
-	}
-
-	.reset-icon {
-		width: 14px;
-		height: 14px;
-	}
-
-	/* Filter Buttons */
-	.filter_btn {
-		display: inline-flex;
-	}
-
-	.filter_btn input[type="radio"] {
+	#term_filter .reset_filter input {
 		display: none;
 	}
 
-	.filter_btn label {
-		padding: 8px 14px;
-		border: 1px solid #ddd;
-		background: #fff;
-		color: #333;
-		font-size: 13px;
-		font-weight: 500;
-		border-radius: 4px;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		white-space: nowrap;
+	/* Filter Buttons */
+	#term_filter .filter_btn {
+		margin-right: 10px;
 	}
 
-	.filter_btn label:hover {
-		background: #e9e9e9;
-		border-color: #ccc;
+	#term_filter .filter_btn input {
+		display: none;
 	}
 
-	.filter_btn input[type="radio"]:checked + label,
-	.filter_btn.active label {
-		background: #143E59;
+	#term_filter .filter_btn input:checked + label {
+		background: #333;
 		color: #fff;
-		border-color: #143E59;
 	}
 
-	/* Grid Layout */
-	.article-cards {
-		display: flex;
-		flex-wrap: wrap;
-		margin: 0 -15px;
+	#term_filter .filter_btn label {
+		cursor: pointer;
+		padding: 11px 32px;
+		border-radius: 25px;
+		border: 2px solid;
+		white-space: nowrap;
+		font-weight: 700;
+		color: #666;
+		display: block;
+		margin-bottom: 0;
+		font-family: 'Montserrat', sans-serif;
 	}
 
-	.flex-grid-item {
-		padding: 0 15px 30px;
-		display: flex;
+	/* Error and Empty States */
+	.error-message {
+		background: #fef2f2;
+		border: 1px solid #fecaca;
+		border-radius: 8px;
+		padding: 20px;
+		margin-bottom: 20px;
+		text-align: center;
 	}
+
+	.error-message p {
+		margin: 0;
+		color: #dc2626;
+	}
+
+	.error-detail {
+		font-size: 12px;
+		color: #6b7280;
+		margin-top: 8px !important;
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 60px 20px;
+		color: #666;
+	}
+
+	.empty-state h3 {
+		margin: 0 0 10px;
+		font-size: 18px;
+	}
+
+	/* Grid Layout - Using Tailwind */
+	/* Grid classes in HTML: grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 */
 
 	/* Article Card */
 	.article-card {
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		height: 100%;
 		background: #fff;
 		border: 1px solid #e6e6e6;
 		border-radius: 5px;
@@ -589,13 +523,18 @@
 
 	.article-card__excerpt {
 		padding: 10px 20px;
-		flex: 1;
+		flex-grow: 1;
 	}
 
 	.article-card__excerpt p {
 		margin: 0;
 		font-size: 14px;
 		color: #666;
+		display: -webkit-box;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
 		line-height: 1.5;
 	}
 
@@ -698,47 +637,14 @@
 		color: #333;
 	}
 
-	/* Responsive Grid */
-	@media (max-width: 1199px) {
-		.col-xl-4 {
-			width: 50%;
-		}
+	/* Mobile-first: smaller title by default, larger on md+ */
+	.section-title {
+		font-size: 20px;
 	}
 
-	@media (max-width: 767px) {
-		#term_filter {
-			padding: 15px;
-			gap: 6px;
-		}
-		
-		.filter_btn label {
-			padding: 6px 10px;
-			font-size: 11px;
-		}
-
-		.reset_filter label {
-			width: 32px;
-			height: 32px;
-		}
-	}
-
-	@media (max-width: 575px) {
-		.col-xs-12 {
-			width: 100%;
-		}
-		
-		.article-cards {
-			margin: 0 -10px;
-		}
-		
-		.flex-grid-item {
-			padding: 0 10px 20px;
-		}
-	}
-
-	@media (min-width: 1200px) {
-		.col-xl-4 {
-			width: 33.333%;
+	@media (min-width: 768px) {
+		.section-title {
+			font-size: 24px;
 		}
 	}
 </style>
