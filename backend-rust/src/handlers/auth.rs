@@ -13,6 +13,7 @@ use validator::Validate;
 
 use crate::{
     errors::AppError,
+    models::User,
     responses::ApiResponse,
     services::AuthService,
     AppState,
