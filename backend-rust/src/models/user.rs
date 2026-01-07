@@ -1,11 +1,10 @@
 //! User Model
-use chrono::{DateTime, Utc};
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use uuid::Uuid;
 
 /// ICT 11+: User model matching PRODUCTION database schema
-/// Production DB uses INT8 for id, not UUID - this is a Laravel-style schema
+/// Production DB uses INT8 for id and TIMESTAMP (not TIMESTAMPTZ) for dates
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct User {
     pub id: i64,  // Production DB uses INT8, not UUID
@@ -14,8 +13,8 @@ pub struct User {
     #[serde(skip_serializing)]
     pub password: String,
     pub role: String,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub created_at: NaiveDateTime,  // Production uses TIMESTAMP, not TIMESTAMPTZ
+    pub updated_at: NaiveDateTime,
     // Optional columns that may or may not exist
     #[sqlx(default)]
     pub first_name: Option<String>,
@@ -24,7 +23,7 @@ pub struct User {
     #[sqlx(default)]
     pub avatar_url: Option<String>,
     #[sqlx(default)]
-    pub email_verified_at: Option<DateTime<Utc>>,
+    pub email_verified_at: Option<NaiveDateTime>,
     #[serde(skip_serializing)]
     #[sqlx(default)]
     pub remember_token: Option<String>,

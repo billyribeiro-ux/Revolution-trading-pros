@@ -29,7 +29,7 @@ impl<'a> UserService<'a> {
         last_name: Option<&str>,
         avatar_url: Option<&str>,
     ) -> Result<User, AppError> {
-        let now = chrono::Utc::now();
+        let now = chrono::Utc::now().naive_utc();
         let user = sqlx::query_as::<_, User>(
             &format!(r#"
             UPDATE users SET

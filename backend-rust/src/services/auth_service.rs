@@ -49,7 +49,8 @@ impl<'a> AuthService<'a> {
         let password_hash = self.hash_password(password)?;
 
         // Create user - production DB uses auto-increment INT8 for id
-        let now = Utc::now();
+        // Use NaiveDateTime for TIMESTAMP columns (no timezone)
+        let now = chrono::Utc::now().naive_utc();
 
         let user = sqlx::query_as::<_, User>(
             &format!(r#"
