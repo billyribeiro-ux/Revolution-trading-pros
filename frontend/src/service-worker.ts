@@ -4,10 +4,28 @@
 /// <reference lib="webworker" />
 
 /**
- * Service Worker - Apple ICT 11+ Grade
+ * Service Worker - Apple ICT 11+ Principal Engineer Grade
  * ═══════════════════════════════════════════════════════════════════════════
- * Handles caching with proper versioning to prevent stale chunk 404 errors
- * Uses SvelteKit's $service-worker module for build manifest
+ * 
+ * ENTERPRISE FEATURES:
+ * 
+ * 1. RESILIENT CACHING:
+ *    - Individual asset caching (not atomic addAll)
+ *    - Graceful degradation on cache failures
+ *    - Continues installation even if some assets fail
+ * 
+ * 2. SMART FETCH STRATEGIES:
+ *    - Network-first for navigation (always fresh HTML)
+ *    - Cache-first for static assets (performance)
+ *    - Network-first with fallback for dynamic content
+ * 
+ * 3. PROPER SCOPING:
+ *    - Skips cross-origin requests
+ *    - Skips API requests (always network)
+ *    - Handles offline gracefully
+ * 
+ * @version 2.0.0 (Apple ICT 11+ Principal Engineer)
+ * @author Revolution Trading Pros
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
@@ -19,23 +37,88 @@ const sw = self as unknown as ServiceWorkerGlobalScope;
 const CACHE_NAME = `cache-${version}`;
 
 // Assets to cache (from SvelteKit build)
+// Filter out any potentially problematic paths
 const ASSETS = [
 	...build, // Built app chunks
 	...files  // Static files
-];
+].filter(asset => {
+	// Skip assets that might cause issues
+	if (!asset) return false;
+	// Skip API routes (should never be cached)
+	if (asset.startsWith('/api/')) return false;
+	return true;
+});
 
-// Install: Cache all assets
+// Maximum concurrent cache operations to avoid overwhelming the browser
+const MAX_CONCURRENT_CACHE = 50;
+
+/**
+ * Cache assets in batches with individual error handling
+ * Apple ICT 11+ Pattern: Resilient caching that doesn't fail atomically
+ */
+async function cacheAssetsIndividually(cache: Cache, assets: string[]): Promise<void> {
+	let successCount = 0;
+	let failCount = 0;
+	
+	// Process assets in batches to avoid overwhelming the browser
+	for (let i = 0; i < assets.length; i += MAX_CONCURRENT_CACHE) {
+		const batch = assets.slice(i, i + MAX_CONCURRENT_CACHE);
+		
+		const results = await Promise.allSettled(
+			batch.map(async (asset) => {
+				try {
+					// Create a proper request with cache busting for fresh assets
+					const request = new Request(asset, { cache: 'reload' });
+					const response = await fetch(request);
+					
+					// Only cache successful responses
+					if (response.ok) {
+						await cache.put(asset, response);
+						return true;
+					} else {
+						console.warn(`[SW] Asset returned ${response.status}: ${asset}`);
+						return false;
+					}
+				} catch (error) {
+					// Log but don't throw - we want to continue caching other assets
+					console.warn(`[SW] Failed to cache asset: ${asset}`, error);
+					return false;
+				}
+			})
+		);
+		
+		// Count successes and failures
+		results.forEach((result) => {
+			if (result.status === 'fulfilled' && result.value) {
+				successCount++;
+			} else {
+				failCount++;
+			}
+		});
+	}
+	
+	console.log(`[SW] Cached ${successCount}/${assets.length} assets (${failCount} failed)`);
+}
+
+// Install: Cache all assets with resilient individual caching
 sw.addEventListener('install', (event) => {
 	console.log(`[SW] Installing version ${version}`);
+	console.log(`[SW] Preparing to cache ${ASSETS.length} assets`);
 	
 	event.waitUntil(
 		caches.open(CACHE_NAME)
-			.then((cache) => {
-				console.log(`[SW] Caching ${ASSETS.length} assets`);
-				return cache.addAll(ASSETS);
+			.then(async (cache) => {
+				// Use resilient individual caching instead of atomic addAll
+				await cacheAssetsIndividually(cache, ASSETS);
 			})
 			.then(() => {
+				console.log(`[SW] Installation complete, skipping waiting`);
 				// Skip waiting to activate immediately
+				return sw.skipWaiting();
+			})
+			.catch((error) => {
+				// Even if caching fails, still try to activate
+				console.error(`[SW] Installation error (continuing anyway):`, error);
 				return sw.skipWaiting();
 			})
 	);

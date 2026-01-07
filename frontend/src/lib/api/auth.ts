@@ -1112,18 +1112,56 @@ class AuthenticationService {
 
 	/**
 	 * Check session validity
+	 * Apple ICT 11+ Pattern: Resilient session checking with retry and network error handling
+	 * 
+	 * IMPORTANT: Network errors (ERR_NETWORK_CHANGED, timeouts) should NOT clear auth.
+	 * Only actual 401 responses indicate invalid sessions.
 	 */
 	private async checkSession(): Promise<void> {
 		// Use secure getter
 		const token = authStore.getToken();
 		if (!token) return;
 
-		try {
-			await this.apiRequest<{ valid: boolean }>('/auth/me');
-		} catch (error) {
-			if (error instanceof UnauthorizedError) {
-				console.warn('[AuthService] Session invalid, clearing auth');
-				this.clearAuth();
+		// Retry configuration for transient network errors
+		const MAX_CHECK_RETRIES = 3;
+		const RETRY_DELAY_MS = 2000;
+
+		for (let attempt = 1; attempt <= MAX_CHECK_RETRIES; attempt++) {
+			try {
+				await this.apiRequest<{ valid: boolean }>('/auth/me');
+				// Success - session is valid
+				return;
+			} catch (error) {
+				// Only clear auth on actual 401 Unauthorized responses
+				if (error instanceof UnauthorizedError) {
+					console.warn('[AuthService] Session invalid (401), clearing auth');
+					this.clearAuth();
+					return;
+				}
+
+				// For network errors, retry with exponential backoff
+				const isNetworkError = 
+					error instanceof AuthError && 
+					(error.code === 'NETWORK_ERROR' || error.code === 'TIMEOUT' || error.code === 'UNKNOWN');
+				
+				const isLastAttempt = attempt === MAX_CHECK_RETRIES;
+
+				if (isNetworkError && !isLastAttempt) {
+					// Network error - wait and retry
+					const delay = RETRY_DELAY_MS * Math.pow(2, attempt - 1);
+					console.debug(`[AuthService] Session check network error, retrying in ${delay}ms (attempt ${attempt}/${MAX_CHECK_RETRIES})`);
+					await new Promise(resolve => setTimeout(resolve, delay));
+					continue;
+				}
+
+				// Non-network error or final retry - log but don't clear auth
+				// The user might just have a temporary network issue
+				if (isNetworkError) {
+					console.debug('[AuthService] Session check failed due to network issues, will retry on next interval');
+				} else {
+					console.warn('[AuthService] Session check failed with unexpected error:', error);
+				}
+				return;
 			}
 		}
 	}
