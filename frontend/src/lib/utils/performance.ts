@@ -10,11 +10,8 @@
  * ══════════════════════════════════════════════════════════════════════════════
  */
 
-// API URL for analytics - use Fly.io backend in production
-// NOTE: No /api suffix - endpoints already include /api prefix
-const API_BASE = import.meta.env.DEV 
-	? '' 
-	: (import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev');
+// ICT 11+ Principal Engineer: Import from centralized config - single source of truth
+import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
 
 export interface PerformanceMetric {
 	name: string;
@@ -49,7 +46,7 @@ function reportMetric(metric: PerformanceMetric): void {
 		}
 
 		// Send to custom analytics endpoint on Fly.io backend
-		navigator.sendBeacon?.(`${API_BASE}/analytics/performance`, JSON.stringify(metric));
+		navigator.sendBeacon?.(`${API_BASE_URL}${API_ENDPOINTS.analytics.performance}`, JSON.stringify(metric));
 	}
 }
 
