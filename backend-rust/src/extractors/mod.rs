@@ -2,10 +2,7 @@
 //!
 //! ICT 11+ Principal Engineer Grade
 
-use axum::{
-    extract::FromRequestParts,
-    http::request::Parts,
-};
+use axum::{extract::FromRequestParts, http::request::Parts};
 
 use crate::{errors::AppError, models::User};
 
@@ -24,7 +21,10 @@ where
 {
     type Rejection = AppError;
 
-    fn from_request_parts(parts: &mut Parts, _state: &S) -> impl std::future::Future<Output = Result<Self, Self::Rejection>> + Send {
+    fn from_request_parts(
+        parts: &mut Parts,
+        _state: &S,
+    ) -> impl std::future::Future<Output = Result<Self, Self::Rejection>> + Send {
         let result = parts
             .extensions
             .get::<User>()

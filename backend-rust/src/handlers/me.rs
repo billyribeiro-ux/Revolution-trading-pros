@@ -3,18 +3,11 @@
 //! ICT 11+ Principal Engineer Grade
 //! User self-service endpoints
 
-use axum::{
-    extract::State,
-    Json,
-};
+use axum::{extract::State, Json};
 use serde::Serialize;
 
 use crate::{
-    errors::AppError,
-    extractors::AuthUser,
-    responses::ApiResponse,
-    services::UserService,
-    AppState,
+    errors::AppError, extractors::AuthUser, responses::ApiResponse, services::UserService, AppState,
 };
 
 #[derive(Debug, Serialize)]
@@ -55,7 +48,9 @@ pub async fn show(
     auth_user: AuthUser,
 ) -> Result<Json<ApiResponse<MeResponse>>, AppError> {
     let user_service = UserService::new(&state.db);
-    let user = user_service.find_by_id(auth_user.user_id).await?
+    let user = user_service
+        .find_by_id(auth_user.user_id)
+        .await?
         .ok_or(AppError::NotFound("User not found".to_string()))?;
 
     Ok(Json(ApiResponse::success(MeResponse {
@@ -80,20 +75,16 @@ pub async fn update(
     Json(payload): Json<serde_json::Value>,
 ) -> Result<Json<ApiResponse<MeResponse>>, AppError> {
     let user_service = UserService::new(&state.db);
-    
+
     // Extract fields from payload
     let name = payload.get("name").and_then(|v| v.as_str());
     let first_name = payload.get("firstName").and_then(|v| v.as_str());
     let last_name = payload.get("lastName").and_then(|v| v.as_str());
     let avatar_url = payload.get("avatar_url").and_then(|v| v.as_str());
 
-    let user = user_service.update_profile(
-        auth_user.user_id,
-        name,
-        first_name,
-        last_name,
-        avatar_url,
-    ).await?;
+    let user = user_service
+        .update_profile(auth_user.user_id, name, first_name, last_name, avatar_url)
+        .await?;
 
     Ok(Json(ApiResponse::success(MeResponse {
         id: user.id.to_string(),
@@ -125,7 +116,9 @@ pub async fn memberships(
             plan_name: m.plan_name,
             status: m.status,
             started_at: m.started_at.format("%Y-%m-%dT%H:%M:%S").to_string(),
-            expires_at: m.expires_at.map(|d| d.format("%Y-%m-%dT%H:%M:%S").to_string()),
+            expires_at: m
+                .expires_at
+                .map(|d| d.format("%Y-%m-%dT%H:%M:%S").to_string()),
         })
         .collect();
 

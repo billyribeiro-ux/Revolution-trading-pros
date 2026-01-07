@@ -1,5 +1,5 @@
 //! Revolution Trading Pros - Rust/Axum API
-//! 
+//!
 //! Apple ICT 11+ Principal Engineer Grade
 //! High-performance backend replacing Laravel PHP
 //!
@@ -26,11 +26,7 @@ use tower_http::{
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use revolution_trading_pros_api::{
-    config::AppConfig,
-    routes,
-    AppState,
-};
+use revolution_trading_pros_api::{config::AppConfig, routes, AppState};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -50,8 +46,8 @@ async fn main() -> anyhow::Result<()> {
     let config = AppConfig::from_env()?;
 
     tracing::info!(
-        "Configuration loaded: {}:{}", 
-        config.server.host, 
+        "Configuration loaded: {}:{}",
+        config.server.host,
         config.server.port
     );
 
@@ -60,10 +56,10 @@ async fn main() -> anyhow::Result<()> {
     let db_pool = PgPoolOptions::new()
         .max_connections(config.database.max_connections)
         .min_connections(config.database.min_connections)
-        .acquire_timeout(Duration::from_secs(10))  // Increased from 3s
-        .idle_timeout(Duration::from_secs(300))    // Reduced to recycle connections faster
-        .max_lifetime(Duration::from_secs(900))    // Reduced to prevent stale connections
-        .test_before_acquire(true)                 // Verify connection is valid
+        .acquire_timeout(Duration::from_secs(10)) // Increased from 3s
+        .idle_timeout(Duration::from_secs(300)) // Reduced to recycle connections faster
+        .max_lifetime(Duration::from_secs(900)) // Reduced to prevent stale connections
+        .test_before_acquire(true) // Verify connection is valid
         .connect(&config.database.url)
         .await?;
 
@@ -74,7 +70,10 @@ async fn main() -> anyhow::Result<()> {
         Ok(_) => tracing::info!("Database migrations completed"),
         Err(e) => {
             // Log warning but don't crash - migrations may have been applied differently
-            tracing::warn!("Migration check failed: {}. Continuing with existing schema.", e);
+            tracing::warn!(
+                "Migration check failed: {}. Continuing with existing schema.",
+                e
+            );
         }
     }
 
@@ -113,7 +112,7 @@ async fn main() -> anyhow::Result<()> {
         // Timeout
         .layer(TimeoutLayer::with_status_code(
             StatusCode::REQUEST_TIMEOUT,
-            Duration::from_secs(30)
+            Duration::from_secs(30),
         ))
         // CORS
         .layer(build_cors_layer(&config))
@@ -141,7 +140,7 @@ async fn main() -> anyhow::Result<()> {
 /// Build CORS layer from configuration
 /// ICT 11+: Properly configured to prevent CORB blocking
 fn build_cors_layer(config: &AppConfig) -> CorsLayer {
-    use axum::http::{header, Method, HeaderName};
+    use axum::http::{header, HeaderName, Method};
 
     let origins: Vec<_> = config
         .cors

@@ -1,7 +1,10 @@
 //! User Service
 use sqlx::PgPool;
 
-use crate::{errors::AppError, models::{User, UserMembership, UserProduct}};
+use crate::{
+    errors::AppError,
+    models::{User, UserMembership, UserProduct},
+};
 
 pub struct UserService<'a> {
     db: &'a PgPool,
@@ -13,10 +16,13 @@ impl<'a> UserService<'a> {
     }
 
     pub async fn find_by_id(&self, id: i64) -> Result<Option<User>, AppError> {
-        let user = sqlx::query_as::<_, User>(&format!("SELECT {} FROM users WHERE id = $1", User::SELECT_COLUMNS))
-            .bind(id)
-            .fetch_optional(self.db)
-            .await?;
+        let user = sqlx::query_as::<_, User>(&format!(
+            "SELECT {} FROM users WHERE id = $1",
+            User::SELECT_COLUMNS
+        ))
+        .bind(id)
+        .fetch_optional(self.db)
+        .await?;
         Ok(user)
     }
 
@@ -29,8 +35,8 @@ impl<'a> UserService<'a> {
         avatar_url: Option<&str>,
     ) -> Result<User, AppError> {
         let now = chrono::Utc::now().naive_utc();
-        let user = sqlx::query_as::<_, User>(
-            &format!(r#"
+        let user = sqlx::query_as::<_, User>(&format!(
+            r#"
             UPDATE users SET
                 name = COALESCE($2, name),
                 first_name = COALESCE($3, first_name),
@@ -39,8 +45,9 @@ impl<'a> UserService<'a> {
                 updated_at = $6
             WHERE id = $1
             RETURNING {}
-            "#, User::SELECT_COLUMNS)
-        )
+            "#,
+            User::SELECT_COLUMNS
+        ))
         .bind(id)
         .bind(name)
         .bind(first_name)

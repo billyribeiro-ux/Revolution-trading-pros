@@ -77,7 +77,7 @@ pub struct BatchRequest {
 // ═══════════════════════════════════════════════════════════════════════════
 
 /// POST /api/analytics/track - Track custom events
-/// 
+///
 /// ICT 11+ Pattern: Fire-and-forget with full observability
 #[tracing::instrument(name = "analytics.track", skip(body), fields(bytes = body.len()))]
 pub async fn track_event(body: Bytes) -> StatusCode {
@@ -124,7 +124,7 @@ pub async fn track_pageview(body: Bytes) -> StatusCode {
 }
 
 /// POST /api/analytics/performance - Track Core Web Vitals
-/// 
+///
 /// Accepts: LCP, INP, CLS, FCP, TTFB metrics from frontend
 #[tracing::instrument(name = "analytics.performance", skip(body), fields(bytes = body.len()))]
 pub async fn track_performance(body: Bytes) -> StatusCode {
@@ -151,7 +151,7 @@ pub async fn track_performance(body: Bytes) -> StatusCode {
 }
 
 /// POST /api/analytics/batch - Batch analytics events
-/// 
+///
 /// ICT 11+: Efficiently process multiple events in single request
 #[tracing::instrument(name = "analytics.batch", skip(body), fields(bytes = body.len()))]
 pub async fn track_batch(body: Bytes) -> StatusCode {
@@ -163,7 +163,7 @@ pub async fn track_batch(body: Bytes) -> StatusCode {
                 event_count = event_count,
                 "Batch analytics received"
             );
-            
+
             // Log individual events at debug level for detailed tracing
             for (i, event) in payload.events.iter().enumerate() {
                 tracing::debug!(

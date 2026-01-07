@@ -39,7 +39,7 @@ pub async fn index(
     Query(query): Query<VideoListQuery>,
 ) -> Result<Json<ApiResponse<VideoListResponse>>, AppError> {
     let repo = VideoRepository::new(&state.db);
-    
+
     let videos = repo.list(&query).await?;
     let total = repo.count(&query).await?;
     let per_page = query.per_page();
@@ -62,14 +62,16 @@ pub async fn show(
     Path(id): Path<Uuid>,
 ) -> Result<Json<ApiResponse<VideoWithTrader>>, AppError> {
     let repo = VideoRepository::new(&state.db);
-    
-    let video = repo.find(id).await?
+
+    let video = repo
+        .find(id)
+        .await?
         .ok_or_else(|| AppError::NotFound("Video not found".to_string()))?;
 
     // Get trader info if available
     let trader = if let Some(trader_id) = video.trader_id {
         sqlx::query_as::<_, (Uuid, String, String, Option<String>)>(
-            "SELECT id, name, slug, avatar_url FROM room_traders WHERE id = $1"
+            "SELECT id, name, slug, avatar_url FROM room_traders WHERE id = $1",
         )
         .bind(trader_id)
         .fetch_optional(&state.db)
@@ -118,7 +120,7 @@ pub async fn show_by_slug(
     Path(path): Path<RoomVideoPath>,
 ) -> Result<Json<ApiResponse<VideoWithNavigation>>, AppError> {
     let repo = VideoRepository::new(&state.db);
-    
+
     let video_nav = repo
         .get_with_navigation(&path.room_slug, &path.video_slug)
         .await?
@@ -136,14 +138,16 @@ pub async fn show_by_global_slug(
     Path(slug): Path<String>,
 ) -> Result<Json<ApiResponse<VideoWithTrader>>, AppError> {
     let repo = VideoRepository::new(&state.db);
-    
-    let video = repo.find_by_slug(&slug).await?
+
+    let video = repo
+        .find_by_slug(&slug)
+        .await?
         .ok_or_else(|| AppError::NotFound("Video not found".to_string()))?;
 
     // Get trader info
     let trader = if let Some(trader_id) = video.trader_id {
         sqlx::query_as::<_, (Uuid, String, String, Option<String>)>(
-            "SELECT id, name, slug, avatar_url FROM room_traders WHERE id = $1"
+            "SELECT id, name, slug, avatar_url FROM room_traders WHERE id = $1",
         )
         .bind(trader_id)
         .fetch_optional(&state.db)

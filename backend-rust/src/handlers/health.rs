@@ -3,11 +3,7 @@
 //! ICT 11+ Principal Engineer Grade
 //! Kubernetes-compatible health probes
 
-use axum::{
-    extract::State,
-    http::StatusCode,
-    Json,
-};
+use axum::{extract::State, http::StatusCode, Json};
 use serde::Serialize;
 
 use crate::AppState;
@@ -43,12 +39,10 @@ pub async fn readiness(State(state): State<AppState>) -> (StatusCode, Json<Readi
 
     // Check Redis connection
     let redis_status = match &state.redis {
-        Some(client) => {
-            match client.get_connection() {
-                Ok(_) => "connected",
-                Err(_) => "disconnected",
-            }
-        }
+        Some(client) => match client.get_connection() {
+            Ok(_) => "connected",
+            Err(_) => "disconnected",
+        },
         None => "not_configured",
     };
 

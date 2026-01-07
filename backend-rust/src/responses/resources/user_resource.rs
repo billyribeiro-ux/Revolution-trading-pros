@@ -26,7 +26,7 @@ impl From<User> for UserResource {
         let is_verified = user.is_verified();
         let created_at = user.created_at.format("%Y-%m-%dT%H:%M:%S").to_string();
         let updated_at = user.updated_at.format("%Y-%m-%dT%H:%M:%S").to_string();
-        
+
         Self {
             id: user.id,
             name: user.name,

@@ -94,9 +94,7 @@ impl AppConfig {
                 name: env::var("APP_NAME")
                     .unwrap_or_else(|_| "Revolution Trading Pros API".to_string()),
                 env: env::var("APP_ENV").unwrap_or_else(|_| "development".to_string()),
-                debug: env::var("APP_DEBUG")
-                    .map(|v| v == "true")
-                    .unwrap_or(false),
+                debug: env::var("APP_DEBUG").map(|v| v == "true").unwrap_or(false),
             },
             server: ServerSettings {
                 host: env::var("HOST").unwrap_or_else(|_| "0.0.0.0".to_string()),
@@ -106,8 +104,7 @@ impl AppConfig {
                     .unwrap_or(8080),
             },
             database: DatabaseSettings {
-                url: env::var("DATABASE_URL")
-                    .expect("DATABASE_URL must be set"),
+                url: env::var("DATABASE_URL").expect("DATABASE_URL must be set"),
                 max_connections: env::var("DATABASE_MAX_CONNECTIONS")
                     .ok()
                     .and_then(|v| v.parse().ok())
@@ -122,8 +119,7 @@ impl AppConfig {
                 password: env::var("REDIS_PASSWORD").ok(),
             },
             jwt: JwtSettings {
-                secret: env::var("JWT_SECRET")
-                    .expect("JWT_SECRET must be set"),
+                secret: env::var("JWT_SECRET").expect("JWT_SECRET must be set"),
                 access_token_expires_in: env::var("JWT_ACCESS_TOKEN_EXPIRES_IN")
                     .unwrap_or_else(|_| "15m".to_string()),
                 refresh_token_expires_in: env::var("JWT_REFRESH_TOKEN_EXPIRES_IN")
@@ -132,12 +128,9 @@ impl AppConfig {
                     .unwrap_or_else(|_| "revolution-trading-pros".to_string()),
             },
             stripe: StripeSettings {
-                secret_key: env::var("STRIPE_SECRET_KEY")
-                    .unwrap_or_default(),
-                publishable_key: env::var("STRIPE_PUBLISHABLE_KEY")
-                    .unwrap_or_default(),
-                webhook_secret: env::var("STRIPE_WEBHOOK_SECRET")
-                    .unwrap_or_default(),
+                secret_key: env::var("STRIPE_SECRET_KEY").unwrap_or_default(),
+                publishable_key: env::var("STRIPE_PUBLISHABLE_KEY").unwrap_or_default(),
+                webhook_secret: env::var("STRIPE_WEBHOOK_SECRET").unwrap_or_default(),
             },
             cors: CorsSettings {
                 allowed_origins: env::var("CORS_ALLOWED_ORIGINS")
@@ -174,8 +167,7 @@ impl AppConfig {
                     .map(|s| s.trim().to_lowercase())
                     .filter(|s| !s.is_empty())
                     .collect(),
-                password: env::var("DEVELOPER_PASSWORD")
-                    .unwrap_or_else(|_| "dev123!".to_string()),
+                password: env::var("DEVELOPER_PASSWORD").unwrap_or_else(|_| "dev123!".to_string()),
             },
         })
     }

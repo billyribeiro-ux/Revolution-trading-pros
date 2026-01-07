@@ -4,7 +4,10 @@ use chrono::{DateTime, Utc};
 use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
 
-use crate::{errors::AppError, models::{OrderItem, OrderSummary, OrderWithItems}};
+use crate::{
+    errors::AppError,
+    models::{OrderItem, OrderSummary, OrderWithItems},
+};
 
 /// Row struct for order query results
 #[derive(FromRow)]
@@ -60,7 +63,7 @@ impl<'a> OrderService<'a> {
             WHERE o.user_id = $1
             GROUP BY o.id, o.order_number, o.status, o.total, o.currency, o.created_at
             ORDER BY o.created_at DESC
-            "#
+            "#,
         )
         .bind(user_id)
         .fetch_all(self.db)
@@ -69,7 +72,11 @@ impl<'a> OrderService<'a> {
         Ok(orders)
     }
 
-    pub async fn get_user_order(&self, user_id: i64, order_id: Uuid) -> Result<Option<OrderWithItems>, AppError> {
+    pub async fn get_user_order(
+        &self,
+        user_id: i64,
+        order_id: Uuid,
+    ) -> Result<Option<OrderWithItems>, AppError> {
         let order: Option<OrderRow> = sqlx::query_as(
             r#"
             SELECT 
@@ -87,7 +94,7 @@ impl<'a> OrderService<'a> {
                 created_at
             FROM orders
             WHERE id = $1 AND user_id = $2
-            "#
+            "#,
         )
         .bind(order_id)
         .bind(user_id)
@@ -111,7 +118,7 @@ impl<'a> OrderService<'a> {
             FROM order_items
             WHERE order_id = $1
             ORDER BY created_at
-            "#
+            "#,
         )
         .bind(order_id)
         .fetch_all(self.db)
@@ -130,15 +137,18 @@ impl<'a> OrderService<'a> {
             payment_method: order.payment_method,
             billing_address: order.billing_address,
             created_at: order.created_at,
-            items: items.into_iter().map(|i| OrderItem {
-                id: i.id,
-                order_id: i.order_id,
-                product_id: i.product_id,
-                name: i.name,
-                quantity: i.quantity,
-                price: i.price,
-                total: i.total,
-            }).collect(),
+            items: items
+                .into_iter()
+                .map(|i| OrderItem {
+                    id: i.id,
+                    order_id: i.order_id,
+                    product_id: i.product_id,
+                    name: i.name,
+                    quantity: i.quantity,
+                    price: i.price,
+                    total: i.total,
+                })
+                .collect(),
         }))
     }
 }

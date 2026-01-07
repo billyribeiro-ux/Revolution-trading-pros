@@ -3,20 +3,12 @@
 //! ICT 11+ Principal Engineer Grade
 //! JWT-based authentication with Argon2 password hashing
 
-use axum::{
-    extract::State,
-    http::StatusCode,
-    Json,
-};
+use axum::{extract::State, http::StatusCode, Json};
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::{
-    errors::AppError,
-    models::User,
-    responses::ApiResponse,
-    services::AuthService,
-    AppState,
+    errors::AppError, models::User, responses::ApiResponse, services::AuthService, AppState,
 };
 
 // =============================================================================
@@ -103,7 +95,9 @@ impl UserResponse {
             role: user.role.clone(),
             roles: vec![user.role.clone()],
             is_verified: user.email_verified_at.is_some(),
-            email_verified_at: user.email_verified_at.map(|dt| dt.format("%Y-%m-%dT%H:%M:%SZ").to_string()),
+            email_verified_at: user
+                .email_verified_at
+                .map(|dt| dt.format("%Y-%m-%dT%H:%M:%SZ").to_string()),
             created_at: user.created_at.format("%Y-%m-%dT%H:%M:%SZ").to_string(),
             updated_at: user.updated_at.format("%Y-%m-%dT%H:%M:%SZ").to_string(),
         }
@@ -125,15 +119,15 @@ pub async fn register(
 
     // Check password confirmation
     if payload.password != payload.password_confirmation {
-        return Err(AppError::ValidationMessage("Passwords do not match".to_string()));
+        return Err(AppError::ValidationMessage(
+            "Passwords do not match".to_string(),
+        ));
     }
 
     let auth_service = AuthService::new(&state.db, &state.config.jwt);
-    let (user, tokens) = auth_service.register(
-        &payload.name,
-        &payload.email,
-        &payload.password,
-    ).await?;
+    let (user, tokens) = auth_service
+        .register(&payload.name, &payload.email, &payload.password)
+        .await?;
 
     Ok((
         StatusCode::CREATED,
@@ -154,8 +148,11 @@ pub async fn login(
 ) -> Result<Json<ApiResponse<AuthResponse>>, AppError> {
     payload.validate()?;
 
-    let auth_service = AuthService::with_developer_config(&state.db, &state.config.jwt, &state.config.developer);
-    let (user, tokens) = auth_service.login(&payload.email, &payload.password).await?;
+    let auth_service =
+        AuthService::with_developer_config(&state.db, &state.config.jwt, &state.config.developer);
+    let (user, tokens) = auth_service
+        .login(&payload.email, &payload.password)
+        .await?;
 
     Ok(Json(ApiResponse::success(AuthResponse {
         user: UserResponse::from_user(&user),
@@ -220,11 +217,15 @@ pub async fn reset_password(
     payload.validate()?;
 
     if payload.password != payload.password_confirmation {
-        return Err(AppError::ValidationMessage("Passwords do not match".to_string()));
+        return Err(AppError::ValidationMessage(
+            "Passwords do not match".to_string(),
+        ));
     }
 
     let auth_service = AuthService::new(&state.db, &state.config.jwt);
-    auth_service.reset_password(&payload.token, &payload.email, &payload.password).await?;
+    auth_service
+        .reset_password(&payload.token, &payload.email, &payload.password)
+        .await?;
 
     Ok(Json(serde_json::json!({
         "success": true,

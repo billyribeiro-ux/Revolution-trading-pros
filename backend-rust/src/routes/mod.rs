@@ -9,11 +9,7 @@ use axum::{
     Router,
 };
 
-use crate::{
-    handlers,
-    middleware as app_middleware,
-    AppState,
-};
+use crate::{handlers, middleware as app_middleware, AppState};
 
 /// Build all API routes
 pub fn api_routes(state: AppState) -> Router {
@@ -55,21 +51,42 @@ fn public_routes() -> Router<AppState> {
         // Videos (public)
         .route("/videos", get(handlers::videos::index))
         .route("/videos/{id}", get(handlers::videos::show))
-        .route("/videos/by-slug/{slug}", get(handlers::videos::show_by_global_slug))
+        .route(
+            "/videos/by-slug/{slug}",
+            get(handlers::videos::show_by_global_slug),
+        )
         // Newsletter
-        .route("/newsletter/subscribe", post(handlers::newsletter::subscribe))
+        .route(
+            "/newsletter/subscribe",
+            post(handlers::newsletter::subscribe),
+        )
         .route("/newsletter/confirm", get(handlers::newsletter::confirm))
-        .route("/newsletter/unsubscribe", get(handlers::newsletter::unsubscribe))
+        .route(
+            "/newsletter/unsubscribe",
+            get(handlers::newsletter::unsubscribe),
+        )
         // Popups
         .route("/popups/active", get(handlers::popups::active))
-        .route("/popups/{id}/impression", post(handlers::popups::impression))
-        .route("/popups/{id}/conversion", post(handlers::popups::conversion))
+        .route(
+            "/popups/{id}/impression",
+            post(handlers::popups::impression),
+        )
+        .route(
+            "/popups/{id}/conversion",
+            post(handlers::popups::conversion),
+        )
         // Payments config
         .route("/payments/config", get(handlers::payments::config))
         // Analytics tracking - all return 204 No Content to prevent CORB
         .route("/analytics/track", post(handlers::analytics::track_event))
-        .route("/analytics/pageview", post(handlers::analytics::track_pageview))
-        .route("/analytics/performance", post(handlers::analytics::track_performance))
+        .route(
+            "/analytics/pageview",
+            post(handlers::analytics::track_pageview),
+        )
+        .route(
+            "/analytics/performance",
+            post(handlers::analytics::track_performance),
+        )
         .route("/analytics/batch", post(handlers::analytics::track_batch))
         // Consent config
         .route("/consent/config", get(handlers::consent::public_settings))
@@ -112,34 +129,85 @@ fn protected_routes(state: AppState) -> Router<AppState> {
         // User subscriptions
         .route("/my/subscriptions", get(handlers::subscriptions::index))
         .route("/my/subscriptions/{id}", get(handlers::subscriptions::show))
-        .route("/my/subscriptions/{id}/cancel", post(handlers::subscriptions::cancel))
-        .route("/my/subscriptions/{id}/pause", post(handlers::subscriptions::pause))
-        .route("/my/subscriptions/{id}/resume", post(handlers::subscriptions::resume))
-        .route("/my/subscriptions/{id}/reactivate", post(handlers::subscriptions::reactivate))
-        .route("/my/subscriptions/{id}/invoices", get(handlers::subscriptions::invoices))
-        .route("/my/subscriptions/{id}/payments", get(handlers::subscriptions::payments))
+        .route(
+            "/my/subscriptions/{id}/cancel",
+            post(handlers::subscriptions::cancel),
+        )
+        .route(
+            "/my/subscriptions/{id}/pause",
+            post(handlers::subscriptions::pause),
+        )
+        .route(
+            "/my/subscriptions/{id}/resume",
+            post(handlers::subscriptions::resume),
+        )
+        .route(
+            "/my/subscriptions/{id}/reactivate",
+            post(handlers::subscriptions::reactivate),
+        )
+        .route(
+            "/my/subscriptions/{id}/invoices",
+            get(handlers::subscriptions::invoices),
+        )
+        .route(
+            "/my/subscriptions/{id}/payments",
+            get(handlers::subscriptions::payments),
+        )
         // Payment methods
-        .route("/user/payment-methods", get(handlers::payment_methods::index))
-        .route("/user/payment-methods", post(handlers::payment_methods::store))
-        .route("/user/payment-methods/{id}", delete(handlers::payment_methods::destroy))
+        .route(
+            "/user/payment-methods",
+            get(handlers::payment_methods::index),
+        )
+        .route(
+            "/user/payment-methods",
+            post(handlers::payment_methods::store),
+        )
+        .route(
+            "/user/payment-methods/{id}",
+            delete(handlers::payment_methods::destroy),
+        )
         // User indicators
         .route("/user/indicators", get(handlers::user_indicators::index))
-        .route("/user/indicators/{id}", get(handlers::user_indicators::show))
-        .route("/user/indicators/{id}/download", get(handlers::user_indicators::download))
+        .route(
+            "/user/indicators/{id}",
+            get(handlers::user_indicators::show),
+        )
+        .route(
+            "/user/indicators/{id}/download",
+            get(handlers::user_indicators::download),
+        )
         // Cart & Checkout
         .route("/cart/checkout", post(handlers::cart::checkout))
         .route("/cart/calculate-tax", post(handlers::cart::calculate_tax))
         // Payments
-        .route("/payments/create-intent", post(handlers::payments::create_intent))
-        .route("/payments/create-checkout", post(handlers::payments::create_checkout))
+        .route(
+            "/payments/create-intent",
+            post(handlers::payments::create_intent),
+        )
+        .route(
+            "/payments/create-checkout",
+            post(handlers::payments::create_checkout),
+        )
         .route("/payments/confirm", post(handlers::payments::confirm))
-        .route("/payments/order/{order_number}/status", get(handlers::payments::order_status))
+        .route(
+            "/payments/order/{order_number}/status",
+            get(handlers::payments::order_status),
+        )
         // Trading rooms
         .route("/trading-rooms", get(handlers::trading_rooms::index))
         .route("/trading-rooms/{slug}", get(handlers::trading_rooms::show))
-        .route("/trading-rooms/{slug}/videos", get(handlers::trading_rooms::videos))
-        .route("/trading-rooms/{room_slug}/videos/{video_slug}", get(handlers::videos::show_by_slug))
-        .route("/trading-rooms/{slug}/sso", post(handlers::trading_rooms::generate_sso))
+        .route(
+            "/trading-rooms/{slug}/videos",
+            get(handlers::trading_rooms::videos),
+        )
+        .route(
+            "/trading-rooms/{room_slug}/videos/{video_slug}",
+            get(handlers::videos::show_by_slug),
+        )
+        .route(
+            "/trading-rooms/{slug}/sso",
+            post(handlers::trading_rooms::generate_sso),
+        )
         // Logout
         .route("/logout", post(handlers::auth::logout))
         // Apply auth middleware
@@ -164,9 +232,18 @@ fn admin_routes(state: AppState) -> Router<AppState> {
         .route("/members/{id}", get(handlers::admin::members::show))
         // Subscriptions management
         .route("/subscriptions", get(handlers::admin::subscriptions::index))
-        .route("/subscriptions/{id}", get(handlers::admin::subscriptions::show))
-        .route("/subscriptions/{id}", put(handlers::admin::subscriptions::update))
-        .route("/subscriptions/{id}/cancel", post(handlers::admin::subscriptions::cancel))
+        .route(
+            "/subscriptions/{id}",
+            get(handlers::admin::subscriptions::show),
+        )
+        .route(
+            "/subscriptions/{id}",
+            put(handlers::admin::subscriptions::update),
+        )
+        .route(
+            "/subscriptions/{id}/cancel",
+            post(handlers::admin::subscriptions::cancel),
+        )
         // Products management
         .route("/products", get(handlers::admin::products::index))
         .route("/products", post(handlers::admin::products::store))
@@ -179,7 +256,10 @@ fn admin_routes(state: AppState) -> Router<AppState> {
         .route("/coupons/{id}", get(handlers::admin::coupons::show))
         .route("/coupons/{id}", put(handlers::admin::coupons::update))
         .route("/coupons/{id}", delete(handlers::admin::coupons::destroy))
-        .route("/coupons/user/available", get(handlers::admin::coupons::user_coupons))
+        .route(
+            "/coupons/user/available",
+            get(handlers::admin::coupons::user_coupons),
+        )
         // Apply admin middleware
         .layer(middleware::from_fn_with_state(
             state.clone(),
@@ -198,6 +278,9 @@ fn webhook_routes(state: AppState) -> Router<AppState> {
         // Stripe webhooks
         .route("/stripe", post(handlers::webhooks::stripe::handle))
         // Postmark inbound email
-        .route("/postmark/inbound", post(handlers::webhooks::email::postmark))
+        .route(
+            "/postmark/inbound",
+            post(handlers::webhooks::email::postmark),
+        )
         .with_state(state)
 }

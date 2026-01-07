@@ -9,8 +9,8 @@ use uuid::Uuid;
 use crate::{
     errors::AppError,
     models::{
-        RoomDailyVideo, TraderInfo, VideoListQuery, VideoNavReference, 
-        VideoWithNavigation, VideoWithTrader, CreateVideo, UpdateVideo,
+        CreateVideo, RoomDailyVideo, TraderInfo, UpdateVideo, VideoListQuery, VideoNavReference,
+        VideoWithNavigation, VideoWithTrader,
     },
 };
 
@@ -28,9 +28,9 @@ impl<'a> VideoRepository<'a> {
         let mut sql = String::from(
             "SELECT COUNT(*) FROM room_daily_videos v
              LEFT JOIN trading_rooms tr ON v.trading_room_id = tr.id
-             WHERE 1=1"
+             WHERE 1=1",
         );
-        
+
         if query.room_slug.is_some() {
             sql.push_str(" AND tr.slug = $1");
         }
@@ -64,9 +64,7 @@ impl<'a> VideoRepository<'a> {
                 .await?
         } else {
             let sql = "SELECT COUNT(*) FROM room_daily_videos v WHERE v.is_published = true";
-            sqlx::query_as(sql)
-                .fetch_one(self.pool)
-                .await?
+            sqlx::query_as(sql).fetch_one(self.pool).await?
         };
 
         Ok(count.0)
@@ -88,7 +86,7 @@ impl<'a> VideoRepository<'a> {
                   AND v.is_published = true
                 ORDER BY v.published_at DESC
                 LIMIT $2 OFFSET $3
-                "#
+                "#,
             )
             .bind(room_slug)
             .bind(query.per_page())
@@ -106,7 +104,7 @@ impl<'a> VideoRepository<'a> {
                 WHERE is_published = true
                 ORDER BY published_at DESC
                 LIMIT $1 OFFSET $2
-                "#
+                "#,
             )
             .bind(query.per_page())
             .bind(query.offset())
@@ -154,7 +152,7 @@ impl<'a> VideoRepository<'a> {
                    published_at, created_at
             FROM room_daily_videos
             WHERE id = $1
-            "#
+            "#,
         )
         .bind(id)
         .fetch_optional(self.pool)
@@ -173,7 +171,7 @@ impl<'a> VideoRepository<'a> {
                    published_at, created_at
             FROM room_daily_videos
             WHERE slug = $1 AND is_published = true
-            "#
+            "#,
         )
         .bind(slug)
         .fetch_optional(self.pool)
@@ -197,7 +195,7 @@ impl<'a> VideoRepository<'a> {
             FROM room_daily_videos v
             INNER JOIN trading_rooms tr ON v.trading_room_id = tr.id
             WHERE tr.slug = $1 AND v.slug = $2 AND v.is_published = true
-            "#
+            "#,
         )
         .bind(room_slug)
         .bind(video_slug)
@@ -232,7 +230,7 @@ impl<'a> VideoRepository<'a> {
               AND v.published_at < $2
             ORDER BY v.published_at DESC
             LIMIT 1
-            "#
+            "#,
         )
         .bind(video.trading_room_id)
         .bind(video.published_at)
@@ -250,7 +248,7 @@ impl<'a> VideoRepository<'a> {
               AND v.published_at > $2
             ORDER BY v.published_at ASC
             LIMIT 1
-            "#
+            "#,
         )
         .bind(video.trading_room_id)
         .bind(video.published_at)
@@ -323,7 +321,7 @@ impl<'a> VideoRepository<'a> {
             RETURNING id, trading_room_id, trader_id, title, slug, description,
                       video_url, thumbnail_url, duration, is_published, is_featured,
                       views_count, published_at, created_at
-            "#
+            "#,
         )
         .bind(data.trading_room_id)
         .bind(data.trader_id)
@@ -343,7 +341,11 @@ impl<'a> VideoRepository<'a> {
     }
 
     /// Update a video
-    pub async fn update(&self, id: Uuid, data: UpdateVideo) -> Result<Option<RoomDailyVideo>, AppError> {
+    pub async fn update(
+        &self,
+        id: Uuid,
+        data: UpdateVideo,
+    ) -> Result<Option<RoomDailyVideo>, AppError> {
         // Build dynamic update query
         let video = sqlx::query_as::<_, RoomDailyVideo>(
             r#"
@@ -362,7 +364,7 @@ impl<'a> VideoRepository<'a> {
             RETURNING id, trading_room_id, trader_id, title, slug, description,
                       video_url, thumbnail_url, duration, is_published, is_featured,
                       views_count, published_at, created_at
-            "#
+            "#,
         )
         .bind(id)
         .bind(data.trader_id)

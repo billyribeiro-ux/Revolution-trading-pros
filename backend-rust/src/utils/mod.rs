@@ -2,8 +2,8 @@
 //!
 //! ICT 11+ Principal Engineer Grade
 
-pub mod password;
 pub mod jwt;
+pub mod password;
 
-pub use password::*;
 pub use jwt::*;
+pub use password::*;

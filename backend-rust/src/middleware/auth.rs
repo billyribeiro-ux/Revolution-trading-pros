@@ -35,10 +35,7 @@ pub async fn require_auth(
 }
 
 /// Middleware to require admin role
-pub async fn require_admin(
-    request: Request,
-    next: Next,
-) -> Result<Response, AppError> {
+pub async fn require_admin(request: Request, next: Next) -> Result<Response, AppError> {
     let user = request
         .extensions()
         .get::<User>()

@@ -1,6 +1,6 @@
 //! Email Webhook Handlers (Postmark, etc.)
-use axum::{extract::State, Json};
 use crate::{errors::AppError, AppState};
+use axum::{extract::State, Json};
 
 pub async fn postmark(
     State(_state): State<AppState>,

@@ -7,13 +7,13 @@ use sqlx::FromRow;
 /// Production DB uses INT8 for id and TIMESTAMP (not TIMESTAMPTZ) for dates
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct User {
-    pub id: i64,  // Production DB uses INT8, not UUID
+    pub id: i64, // Production DB uses INT8, not UUID
     pub name: String,
     pub email: String,
     #[serde(skip_serializing)]
     pub password: String,
     pub role: String,
-    pub created_at: NaiveDateTime,  // Production uses TIMESTAMP, not TIMESTAMPTZ
+    pub created_at: NaiveDateTime, // Production uses TIMESTAMP, not TIMESTAMPTZ
     pub updated_at: NaiveDateTime,
     // Optional columns that may or may not exist
     #[sqlx(default)]
@@ -33,7 +33,8 @@ pub struct User {
 
 impl User {
     /// ICT 11+: SQL columns to select - includes email_verified_at for auth checks
-    pub const SELECT_COLUMNS: &'static str = "id, name, email, password, role, created_at, updated_at, email_verified_at";
+    pub const SELECT_COLUMNS: &'static str =
+        "id, name, email, password, role, created_at, updated_at, email_verified_at";
 
     pub fn is_admin(&self) -> bool {
         self.role == "admin" || self.role == "super-admin"

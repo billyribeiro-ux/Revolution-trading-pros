@@ -28,7 +28,10 @@ pub struct UpdateProfileRequest {
     pub new_password: Option<String>,
 }
 
-pub async fn get_profile(State(_state): State<AppState>, auth: AuthUser) -> Result<Json<ApiResponse<ProfileResponse>>, AppError> {
+pub async fn get_profile(
+    State(_state): State<AppState>,
+    auth: AuthUser,
+) -> Result<Json<ApiResponse<ProfileResponse>>, AppError> {
     Ok(Json(ApiResponse::success(ProfileResponse {
         id: auth.user_id.to_string(),
         first_name: None,
@@ -39,6 +42,12 @@ pub async fn get_profile(State(_state): State<AppState>, auth: AuthUser) -> Resu
     })))
 }
 
-pub async fn update_profile(State(_state): State<AppState>, _auth: AuthUser, Json(_payload): Json<UpdateProfileRequest>) -> Result<Json<serde_json::Value>, AppError> {
-    Ok(Json(serde_json::json!({"success": true, "message": "Profile updated"})))
+pub async fn update_profile(
+    State(_state): State<AppState>,
+    _auth: AuthUser,
+    Json(_payload): Json<UpdateProfileRequest>,
+) -> Result<Json<serde_json::Value>, AppError> {
+    Ok(Json(
+        serde_json::json!({"success": true, "message": "Profile updated"}),
+    ))
 }

@@ -1,6 +1,6 @@
 //! Stripe Webhook Handler
-use axum::{extract::State, http::HeaderMap, body::Bytes};
 use crate::{errors::AppError, AppState};
+use axum::{body::Bytes, extract::State, http::HeaderMap};
 
 pub async fn handle(
     State(_state): State<AppState>,

@@ -83,16 +83,8 @@ impl IntoResponse for AppError {
     fn into_response(self) -> Response {
         let (status, error_message, details) = match &self {
             // Authentication errors
-            AppError::Unauthorized(msg) => (
-                StatusCode::UNAUTHORIZED,
-                msg.clone(),
-                None,
-            ),
-            AppError::Forbidden(msg) => (
-                StatusCode::FORBIDDEN,
-                msg.clone(),
-                None,
-            ),
+            AppError::Unauthorized(msg) => (StatusCode::UNAUTHORIZED, msg.clone(), None),
+            AppError::Forbidden(msg) => (StatusCode::FORBIDDEN, msg.clone(), None),
             AppError::InvalidCredentials => (
                 StatusCode::UNAUTHORIZED,
                 "Invalid email or password".to_string(),
@@ -103,28 +95,12 @@ impl IntoResponse for AppError {
                 "Token has expired".to_string(),
                 None,
             ),
-            AppError::InvalidToken => (
-                StatusCode::UNAUTHORIZED,
-                "Invalid token".to_string(),
-                None,
-            ),
+            AppError::InvalidToken => (StatusCode::UNAUTHORIZED, "Invalid token".to_string(), None),
 
             // Resource errors
-            AppError::NotFound(msg) => (
-                StatusCode::NOT_FOUND,
-                msg.clone(),
-                None,
-            ),
-            AppError::Conflict(msg) => (
-                StatusCode::CONFLICT,
-                msg.clone(),
-                None,
-            ),
-            AppError::BadRequest(msg) => (
-                StatusCode::BAD_REQUEST,
-                msg.clone(),
-                None,
-            ),
+            AppError::NotFound(msg) => (StatusCode::NOT_FOUND, msg.clone(), None),
+            AppError::Conflict(msg) => (StatusCode::CONFLICT, msg.clone(), None),
+            AppError::BadRequest(msg) => (StatusCode::BAD_REQUEST, msg.clone(), None),
 
             // Validation errors
             AppError::Validation(errors) => (
@@ -132,11 +108,9 @@ impl IntoResponse for AppError {
                 "Validation failed".to_string(),
                 Some(format_validation_errors(errors)),
             ),
-            AppError::ValidationMessage(msg) => (
-                StatusCode::UNPROCESSABLE_ENTITY,
-                msg.clone(),
-                None,
-            ),
+            AppError::ValidationMessage(msg) => {
+                (StatusCode::UNPROCESSABLE_ENTITY, msg.clone(), None)
+            }
 
             // Database errors - log but don't expose internals
             AppError::Database(e) => {

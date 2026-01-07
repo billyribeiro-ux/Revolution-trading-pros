@@ -26,10 +26,18 @@ pub struct CalculateTaxRequest {
     pub state: Option<String>,
 }
 
-pub async fn checkout(State(_state): State<AppState>, _auth: AuthUser, Json(_payload): Json<CheckoutRequest>) -> Result<Json<serde_json::Value>, AppError> {
+pub async fn checkout(
+    State(_state): State<AppState>,
+    _auth: AuthUser,
+    Json(_payload): Json<CheckoutRequest>,
+) -> Result<Json<serde_json::Value>, AppError> {
     Err(AppError::Internal("Not implemented".to_string()))
 }
 
-pub async fn calculate_tax(State(_state): State<AppState>, _auth: AuthUser, Json(_payload): Json<CalculateTaxRequest>) -> Result<Json<serde_json::Value>, AppError> {
+pub async fn calculate_tax(
+    State(_state): State<AppState>,
+    _auth: AuthUser,
+    Json(_payload): Json<CalculateTaxRequest>,
+) -> Result<Json<serde_json::Value>, AppError> {
     Ok(Json(serde_json::json!({"success": true, "tax": 0.0})))
 }

@@ -30,7 +30,10 @@ impl<'a> SubscriptionService<'a> {
         Self { db }
     }
 
-    pub async fn get_user_subscriptions(&self, user_id: i64) -> Result<Vec<SubscriptionWithPlan>, AppError> {
+    pub async fn get_user_subscriptions(
+        &self,
+        user_id: i64,
+    ) -> Result<Vec<SubscriptionWithPlan>, AppError> {
         let subscriptions: Vec<SubscriptionRow> = sqlx::query_as(
             r#"
             SELECT 
@@ -49,28 +52,35 @@ impl<'a> SubscriptionService<'a> {
             JOIN subscription_plans sp ON us.plan_id = sp.id
             WHERE us.user_id = $1
             ORDER BY us.created_at DESC
-            "#
+            "#,
         )
         .bind(user_id)
         .fetch_all(self.db)
         .await?;
 
-        Ok(subscriptions.into_iter().map(|s| SubscriptionWithPlan {
-            id: s.id,
-            plan_id: s.plan_id,
-            plan_name: s.plan_name,
-            plan_description: s.plan_description,
-            status: s.status,
-            price: s.price,
-            currency: s.currency,
-            billing_period: s.billing_period,
-            start_date: s.start_date,
-            next_payment_date: s.next_payment_date,
-            created_at: s.created_at,
-        }).collect())
+        Ok(subscriptions
+            .into_iter()
+            .map(|s| SubscriptionWithPlan {
+                id: s.id,
+                plan_id: s.plan_id,
+                plan_name: s.plan_name,
+                plan_description: s.plan_description,
+                status: s.status,
+                price: s.price,
+                currency: s.currency,
+                billing_period: s.billing_period,
+                start_date: s.start_date,
+                next_payment_date: s.next_payment_date,
+                created_at: s.created_at,
+            })
+            .collect())
     }
 
-    pub async fn get_user_subscription(&self, user_id: i64, subscription_id: Uuid) -> Result<Option<SubscriptionWithPlan>, AppError> {
+    pub async fn get_user_subscription(
+        &self,
+        user_id: i64,
+        subscription_id: Uuid,
+    ) -> Result<Option<SubscriptionWithPlan>, AppError> {
         let subscription: Option<SubscriptionRow> = sqlx::query_as(
             r#"
             SELECT 
@@ -88,7 +98,7 @@ impl<'a> SubscriptionService<'a> {
             FROM user_subscriptions us
             JOIN subscription_plans sp ON us.plan_id = sp.id
             WHERE us.id = $1 AND us.user_id = $2
-            "#
+            "#,
         )
         .bind(subscription_id)
         .bind(user_id)

@@ -11,10 +11,7 @@ use serde::Serialize;
 use uuid::Uuid;
 
 use crate::{
-    errors::AppError,
-    extractors::AuthUser,
-    responses::ApiResponse,
-    services::OrderService,
+    errors::AppError, extractors::AuthUser, responses::ApiResponse, services::OrderService,
     AppState,
 };
 
