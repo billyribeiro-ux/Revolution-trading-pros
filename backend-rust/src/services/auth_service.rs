@@ -36,7 +36,7 @@ impl<'a> AuthService<'a> {
 
     pub async fn register(&self, name: &str, email: &str, password: &str) -> Result<(User, TokenPair), AppError> {
         // Check if email exists
-        let exists: (bool,) = sqlx::query_as("SELECT EXISTS(SELECT 1 FROM users WHERE email = $1 AND deleted_at IS NULL)")
+        let exists: (bool,) = sqlx::query_as("SELECT EXISTS(SELECT 1 FROM users WHERE email = $1)")
             .bind(email.to_lowercase())
             .fetch_one(self.db)
             .await?;
@@ -53,11 +53,11 @@ impl<'a> AuthService<'a> {
         let now = Utc::now();
 
         let user = sqlx::query_as::<_, User>(
-            r#"
+            &format!(r#"
             INSERT INTO users (id, name, email, password, role, created_at, updated_at)
             VALUES ($1, $2, $3, $4, 'user', $5, $5)
-            RETURNING *
-            "#
+            RETURNING {}
+            "#, User::SELECT_COLUMNS)
         )
         .bind(id)
         .bind(name)
@@ -73,7 +73,7 @@ impl<'a> AuthService<'a> {
 
     pub async fn login(&self, email: &str, password: &str) -> Result<(User, TokenPair), AppError> {
         let user = sqlx::query_as::<_, User>(
-            "SELECT * FROM users WHERE email = $1 AND deleted_at IS NULL"
+            &format!("SELECT {} FROM users WHERE email = $1", User::SELECT_COLUMNS)
         )
         .bind(email.to_lowercase())
         .fetch_optional(self.db)
@@ -90,7 +90,7 @@ impl<'a> AuthService<'a> {
         let claims = self.decode_token(refresh_token)?;
         let user_id = Uuid::parse_str(&claims.sub).map_err(|_| AppError::InvalidToken)?;
 
-        let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL")
+        let user = sqlx::query_as::<_, User>(&format!("SELECT {} FROM users WHERE id = $1", User::SELECT_COLUMNS))
             .bind(user_id)
             .fetch_optional(self.db)
             .await?
@@ -104,7 +104,7 @@ impl<'a> AuthService<'a> {
         let claims = self.decode_token(token)?;
         let user_id = Uuid::parse_str(&claims.sub).map_err(|_| AppError::InvalidToken)?;
 
-        sqlx::query_as::<_, User>("SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL")
+        sqlx::query_as::<_, User>(&format!("SELECT {} FROM users WHERE id = $1", User::SELECT_COLUMNS))
             .bind(user_id)
             .fetch_optional(self.db)
             .await?

@@ -14,7 +14,7 @@ impl<'a> UserService<'a> {
     }
 
     pub async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, AppError> {
-        let user = sqlx::query_as::<_, User>("SELECT * FROM users WHERE id = $1 AND deleted_at IS NULL")
+        let user = sqlx::query_as::<_, User>(&format!("SELECT {} FROM users WHERE id = $1", User::SELECT_COLUMNS))
             .bind(id)
             .fetch_optional(self.db)
             .await?;
@@ -31,16 +31,16 @@ impl<'a> UserService<'a> {
     ) -> Result<User, AppError> {
         let now = chrono::Utc::now();
         let user = sqlx::query_as::<_, User>(
-            r#"
+            &format!(r#"
             UPDATE users SET
                 name = COALESCE($2, name),
                 first_name = COALESCE($3, first_name),
                 last_name = COALESCE($4, last_name),
                 avatar_url = COALESCE($5, avatar_url),
                 updated_at = $6
-            WHERE id = $1 AND deleted_at IS NULL
-            RETURNING *
-            "#
+            WHERE id = $1
+            RETURNING {}
+            "#, User::SELECT_COLUMNS)
         )
         .bind(id)
         .bind(name)

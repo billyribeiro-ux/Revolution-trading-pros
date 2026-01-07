@@ -21,10 +21,12 @@ pub struct User {
     pub stripe_customer_id: Option<String>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
-    pub deleted_at: Option<DateTime<Utc>>,
 }
 
 impl User {
+    /// ICT 11+: SQL columns to select (excludes deleted_at which may not exist in DB)
+    pub const SELECT_COLUMNS: &'static str = "id, name, first_name, last_name, email, password, avatar_url, role, email_verified_at, remember_token, stripe_customer_id, created_at, updated_at";
+
     pub fn is_admin(&self) -> bool {
         self.role == "admin" || self.role == "super-admin"
     }

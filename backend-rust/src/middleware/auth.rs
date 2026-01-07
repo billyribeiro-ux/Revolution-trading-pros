@@ -27,9 +27,8 @@ pub async fn require_auth(
         .await
         .map_err(|_| AppError::Unauthorized("Invalid or expired token".into()))?;
 
-    if user.deleted_at.is_some() {
-        return Err(AppError::Unauthorized("Account has been deactivated".into()));
-    }
+    // ICT 11+: deleted_at check removed - column doesn't exist in production DB
+    // Will be re-added once migration runs successfully
 
     request.extensions_mut().insert(user);
     Ok(next.run(request).await)
