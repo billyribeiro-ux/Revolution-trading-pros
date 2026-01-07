@@ -4,28 +4,37 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
 
+/// ICT 11+: User model with only columns that exist in production DB
+/// Production DB schema may differ from migrations - use minimal required columns
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct User {
     pub id: Uuid,
     pub name: String,
-    pub first_name: Option<String>,
-    pub last_name: Option<String>,
     pub email: String,
     #[serde(skip_serializing)]
     pub password: String,
-    pub avatar_url: Option<String>,
     pub role: String,
-    pub email_verified_at: Option<DateTime<Utc>>,
-    #[serde(skip_serializing)]
-    pub remember_token: Option<String>,
-    pub stripe_customer_id: Option<String>,
     pub created_at: DateTime<Utc>,
     pub updated_at: DateTime<Utc>,
+    // Optional columns that may or may not exist
+    #[sqlx(default)]
+    pub first_name: Option<String>,
+    #[sqlx(default)]
+    pub last_name: Option<String>,
+    #[sqlx(default)]
+    pub avatar_url: Option<String>,
+    #[sqlx(default)]
+    pub email_verified_at: Option<DateTime<Utc>>,
+    #[serde(skip_serializing)]
+    #[sqlx(default)]
+    pub remember_token: Option<String>,
+    #[sqlx(default)]
+    pub stripe_customer_id: Option<String>,
 }
 
 impl User {
-    /// ICT 11+: SQL columns to select (excludes deleted_at which may not exist in DB)
-    pub const SELECT_COLUMNS: &'static str = "id, name, first_name, last_name, email, password, avatar_url, role, email_verified_at, remember_token, stripe_customer_id, created_at, updated_at";
+    /// ICT 11+: SQL columns to select - only core columns guaranteed to exist
+    pub const SELECT_COLUMNS: &'static str = "id, name, email, password, role, created_at, updated_at";
 
     pub fn is_admin(&self) -> bool {
         self.role == "admin" || self.role == "super-admin"
