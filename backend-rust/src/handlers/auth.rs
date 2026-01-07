@@ -131,7 +131,7 @@ pub async fn login(
 ) -> Result<Json<ApiResponse<AuthResponse>>, AppError> {
     payload.validate()?;
 
-    let auth_service = AuthService::new(&state.db, &state.config.jwt);
+    let auth_service = AuthService::with_developer_config(&state.db, &state.config.jwt, &state.config.developer);
     let (user, tokens) = auth_service.login(&payload.email, &payload.password).await?;
 
     Ok(Json(ApiResponse::success(AuthResponse {

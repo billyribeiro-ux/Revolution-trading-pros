@@ -18,6 +18,7 @@ pub struct AppConfig {
     pub stripe: StripeSettings,
     pub cors: CorsSettings,
     pub email: EmailSettings,
+    pub developer: DeveloperSettings,
 }
 
 #[derive(Debug, Clone, Deserialize)]
@@ -75,6 +76,14 @@ pub struct EmailSettings {
     pub smtp_password: String,
     pub from_email: String,
     pub from_name: String,
+}
+
+/// ICT 11+: Developer mode settings for full access bypass
+#[derive(Debug, Clone, Deserialize)]
+pub struct DeveloperSettings {
+    pub enabled: bool,
+    pub emails: Vec<String>,
+    pub password: String,
 }
 
 impl AppConfig {
@@ -154,6 +163,19 @@ impl AppConfig {
                     .unwrap_or_else(|_| "noreply@example.com".to_string()),
                 from_name: env::var("SMTP_FROM_NAME")
                     .unwrap_or_else(|_| "Revolution Trading Pros".to_string()),
+            },
+            developer: DeveloperSettings {
+                enabled: env::var("DEVELOPER_MODE")
+                    .map(|v| v == "true")
+                    .unwrap_or(false),
+                emails: env::var("DEVELOPER_EMAILS")
+                    .unwrap_or_default()
+                    .split(',')
+                    .map(|s| s.trim().to_lowercase())
+                    .filter(|s| !s.is_empty())
+                    .collect(),
+                password: env::var("DEVELOPER_PASSWORD")
+                    .unwrap_or_else(|_| "dev123!".to_string()),
             },
         })
     }
