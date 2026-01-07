@@ -2,7 +2,6 @@
 //!
 //! ICT 11+ Principal Engineer Grade
 
-use async_trait::async_trait;
 use axum::{
     extract::FromRequestParts,
     http::request::Parts,
@@ -19,23 +18,23 @@ pub struct AuthUser {
     pub role: String,
 }
 
-#[async_trait]
 impl<S> FromRequestParts<S> for AuthUser
 where
     S: Send + Sync,
 {
     type Rejection = AppError;
 
-    async fn from_request_parts(parts: &mut Parts, _state: &S) -> Result<Self, Self::Rejection> {
-        let user = parts
+    fn from_request_parts(parts: &mut Parts, _state: &S) -> impl std::future::Future<Output = Result<Self, Self::Rejection>> + Send {
+        let result = parts
             .extensions
             .get::<User>()
-            .ok_or(AppError::Unauthorized("Authentication required".into()))?;
+            .map(|user| AuthUser {
+                user_id: user.id,
+                email: user.email.clone(),
+                role: user.role.clone(),
+            })
+            .ok_or(AppError::Unauthorized("Authentication required".into()));
 
-        Ok(AuthUser {
-            user_id: user.id,
-            email: user.email.clone(),
-            role: user.role.clone(),
-        })
+        std::future::ready(result)
     }
 }

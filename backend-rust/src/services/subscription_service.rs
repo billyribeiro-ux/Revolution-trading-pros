@@ -1,8 +1,25 @@
 //! Subscription Service
-use sqlx::PgPool;
+use chrono::{DateTime, Utc};
+use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
 
 use crate::{errors::AppError, models::SubscriptionWithPlan};
+
+/// Row struct for query results
+#[derive(FromRow)]
+struct SubscriptionRow {
+    id: Uuid,
+    status: String,
+    price: f64,
+    currency: String,
+    billing_period: String,
+    start_date: DateTime<Utc>,
+    next_payment_date: Option<DateTime<Utc>>,
+    created_at: DateTime<Utc>,
+    plan_id: Uuid,
+    plan_name: String,
+    plan_description: Option<String>,
+}
 
 pub struct SubscriptionService<'a> {
     db: &'a PgPool,
@@ -14,7 +31,7 @@ impl<'a> SubscriptionService<'a> {
     }
 
     pub async fn get_user_subscriptions(&self, user_id: Uuid) -> Result<Vec<SubscriptionWithPlan>, AppError> {
-        let subscriptions = sqlx::query!(
+        let subscriptions: Vec<SubscriptionRow> = sqlx::query_as(
             r#"
             SELECT 
                 us.id,
@@ -32,9 +49,9 @@ impl<'a> SubscriptionService<'a> {
             JOIN subscription_plans sp ON us.plan_id = sp.id
             WHERE us.user_id = $1
             ORDER BY us.created_at DESC
-            "#,
-            user_id
+            "#
         )
+        .bind(user_id)
         .fetch_all(self.db)
         .await?;
 
@@ -54,7 +71,7 @@ impl<'a> SubscriptionService<'a> {
     }
 
     pub async fn get_user_subscription(&self, user_id: Uuid, subscription_id: Uuid) -> Result<Option<SubscriptionWithPlan>, AppError> {
-        let subscription = sqlx::query!(
+        let subscription: Option<SubscriptionRow> = sqlx::query_as(
             r#"
             SELECT 
                 us.id,
@@ -71,10 +88,10 @@ impl<'a> SubscriptionService<'a> {
             FROM user_subscriptions us
             JOIN subscription_plans sp ON us.plan_id = sp.id
             WHERE us.id = $1 AND us.user_id = $2
-            "#,
-            subscription_id,
-            user_id
+            "#
         )
+        .bind(subscription_id)
+        .bind(user_id)
         .fetch_optional(self.db)
         .await?;
 
