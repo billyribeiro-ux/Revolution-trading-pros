@@ -2,7 +2,6 @@
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
-use uuid::Uuid;
 
 use crate::errors::AppError;
 
@@ -15,8 +14,9 @@ pub struct Claims {
     pub iat: i64,
 }
 
+/// ICT 11+: Production DB uses INT8 for user IDs
 pub fn create_token(
-    user_id: Uuid,
+    user_id: i64,
     email: &str,
     role: &str,
     secret: &str,

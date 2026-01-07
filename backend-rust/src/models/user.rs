@@ -4,11 +4,11 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
 
-/// ICT 11+: User model with only columns that exist in production DB
-/// Production DB schema may differ from migrations - use minimal required columns
+/// ICT 11+: User model matching PRODUCTION database schema
+/// Production DB uses INT8 for id, not UUID - this is a Laravel-style schema
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct User {
-    pub id: Uuid,
+    pub id: i64,  // Production DB uses INT8, not UUID
     pub name: String,
     pub email: String,
     #[serde(skip_serializing)]

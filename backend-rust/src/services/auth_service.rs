@@ -4,7 +4,7 @@ use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
 use serde::{Deserialize, Serialize};
 use sqlx::PgPool;
-use uuid::Uuid;
+// ICT 11+: Production DB uses INT8 for user IDs, not UUID
 
 use crate::{config::JwtSettings, errors::AppError, models::User};
 
@@ -48,18 +48,16 @@ impl<'a> AuthService<'a> {
         // Hash password
         let password_hash = self.hash_password(password)?;
 
-        // Create user
-        let id = Uuid::now_v7();
+        // Create user - production DB uses auto-increment INT8 for id
         let now = Utc::now();
 
         let user = sqlx::query_as::<_, User>(
             &format!(r#"
-            INSERT INTO users (id, name, email, password, role, created_at, updated_at)
-            VALUES ($1, $2, $3, $4, 'user', $5, $5)
+            INSERT INTO users (name, email, password, role, created_at, updated_at)
+            VALUES ($1, $2, $3, 'user', $4, $4)
             RETURNING {}
             "#, User::SELECT_COLUMNS)
         )
-        .bind(id)
         .bind(name)
         .bind(email.to_lowercase())
         .bind(password_hash)
@@ -88,7 +86,7 @@ impl<'a> AuthService<'a> {
 
     pub async fn refresh_token(&self, refresh_token: &str) -> Result<(User, TokenPair), AppError> {
         let claims = self.decode_token(refresh_token)?;
-        let user_id = Uuid::parse_str(&claims.sub).map_err(|_| AppError::InvalidToken)?;
+        let user_id: i64 = claims.sub.parse().map_err(|_| AppError::InvalidToken)?;
 
         let user = sqlx::query_as::<_, User>(&format!("SELECT {} FROM users WHERE id = $1", User::SELECT_COLUMNS))
             .bind(user_id)
@@ -102,7 +100,7 @@ impl<'a> AuthService<'a> {
 
     pub async fn validate_token(&self, token: &str) -> Result<User, AppError> {
         let claims = self.decode_token(token)?;
-        let user_id = Uuid::parse_str(&claims.sub).map_err(|_| AppError::InvalidToken)?;
+        let user_id: i64 = claims.sub.parse().map_err(|_| AppError::InvalidToken)?;
 
         sqlx::query_as::<_, User>(&format!("SELECT {} FROM users WHERE id = $1", User::SELECT_COLUMNS))
             .bind(user_id)

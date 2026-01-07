@@ -6,14 +6,14 @@ use axum::{
     extract::FromRequestParts,
     http::request::Parts,
 };
-use uuid::Uuid;
 
 use crate::{errors::AppError, models::User};
 
 /// Authenticated user extractor
+/// ICT 11+: Production DB uses INT8 for user IDs
 #[derive(Debug, Clone)]
 pub struct AuthUser {
-    pub user_id: Uuid,
+    pub user_id: i64,
     pub email: String,
     pub role: String,
 }
