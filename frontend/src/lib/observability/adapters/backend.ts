@@ -380,8 +380,9 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 		const body = JSON.stringify(payload);
 
 		// Use sendBeacon for page unload
+		// ICT 11+: Use text/plain to avoid CORS preflight (sendBeacon can't handle preflight)
 		if (sync && this._useSendBeacon && navigator.sendBeacon) {
-			const blob = new Blob([body], { type: 'application/json' });
+			const blob = new Blob([body], { type: 'text/plain' });
 			return navigator.sendBeacon(this._endpoint, blob);
 		}
 

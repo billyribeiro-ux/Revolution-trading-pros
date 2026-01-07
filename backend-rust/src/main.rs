@@ -136,9 +136,9 @@ async fn main() -> anyhow::Result<()> {
 }
 
 /// Build CORS layer from configuration
+/// ICT 11+: Properly configured to prevent CORB blocking
 fn build_cors_layer(config: &AppConfig) -> CorsLayer {
-    use axum::http::{header, Method};
-    use tower_http::cors::Any;
+    use axum::http::{header, Method, HeaderName};
 
     let origins: Vec<_> = config
         .cors
@@ -146,6 +146,8 @@ fn build_cors_layer(config: &AppConfig) -> CorsLayer {
         .iter()
         .filter_map(|o| o.parse().ok())
         .collect();
+
+    tracing::info!("CORS allowed origins: {:?}", config.cors.allowed_origins);
 
     CorsLayer::new()
         .allow_origin(origins)
@@ -156,12 +158,20 @@ fn build_cors_layer(config: &AppConfig) -> CorsLayer {
             Method::PATCH,
             Method::DELETE,
             Method::OPTIONS,
+            Method::HEAD,
         ])
         .allow_headers([
             header::AUTHORIZATION,
             header::CONTENT_TYPE,
             header::ACCEPT,
             header::ORIGIN,
+            header::CACHE_CONTROL,
+            HeaderName::from_static("x-requested-with"),
+        ])
+        .expose_headers([
+            header::CONTENT_TYPE,
+            header::CONTENT_LENGTH,
+            HeaderName::from_static("x-request-id"),
         ])
         .allow_credentials(true)
         .max_age(Duration::from_secs(config.cors.max_age))

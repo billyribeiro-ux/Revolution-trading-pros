@@ -234,8 +234,10 @@ export function initReadingAnalytics(config: {
 		};
 
 		// Use sendBeacon for reliability
+		// ICT 11+: Use text/plain Blob to avoid CORS preflight (sendBeacon can't handle preflight)
 		if (navigator.sendBeacon) {
-			navigator.sendBeacon(opts.endpoint, JSON.stringify(payload));
+			const blob = new Blob([JSON.stringify(payload)], { type: 'text/plain' });
+			navigator.sendBeacon(opts.endpoint, blob);
 		} else {
 			fetch(opts.endpoint, {
 				method: 'POST',

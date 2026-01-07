@@ -106,17 +106,16 @@
 
 	function trackShare(platform: string) {
 		// Send to analytics endpoint
+		// ICT 11+: Use text/plain Blob to avoid CORS preflight
 		if (typeof navigator !== 'undefined' && navigator.sendBeacon) {
-			navigator.sendBeacon(
-				'/api/analytics/track',
-				JSON.stringify({
-					event: 'social_share',
-					platform,
-					url,
-					title,
-					timestamp: Date.now()
-				})
-			);
+			const blob = new Blob([JSON.stringify({
+				event: 'social_share',
+				platform,
+				url,
+				title,
+				timestamp: Date.now()
+			})], { type: 'text/plain' });
+			navigator.sendBeacon('/api/analytics/track', blob);
 		}
 	}
 
