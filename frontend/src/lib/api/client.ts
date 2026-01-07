@@ -749,7 +749,8 @@ class EnterpriseApiClient {
 	 */
 	async register(data: RegisterData): Promise<AuthResponse> {
 		const response = await this.post<AuthResponse>(API_ENDPOINTS.auth.register, data);
-		this.setToken(response.token, response.refresh_token);
+		const token = response.access_token || response.token || null;
+		this.setToken(token, response.refresh_token || null);
 		this.user.set(response.user);
 		await this.loadUserData();
 		return response;
@@ -762,7 +763,8 @@ class EnterpriseApiClient {
 			device_name: credentials.device_name || deviceInfo.name
 		});
 
-		this.setToken(response.token, response.refresh_token);
+		const token = response.access_token || response.token || null;
+		this.setToken(token, response.refresh_token || null);
 		this.user.set(response.user);
 		await this.loadUserData();
 
@@ -798,7 +800,8 @@ class EnterpriseApiClient {
 				refresh_token: this.refreshToken
 			});
 
-			this.setToken(response.token, response.refresh_token);
+			const token = response.access_token || response.token || null;
+			this.setToken(token, response.refresh_token || null);
 		} catch (error) {
 			this.handleUnauthenticated();
 			throw error;
