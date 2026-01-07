@@ -23,7 +23,7 @@ const getAdapter = () => {
 			return adapterCloudflare({
 				routes: {
 					include: ['/*'],
-					exclude: ['<all>']
+					exclude: ['<all>', '/offline.html']
 				},
 				platformProxy: {
 					configPath: 'wrangler.toml',
