@@ -14,7 +14,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	interface BreadcrumbItem {
 		name: string;
@@ -33,7 +33,7 @@
 		if (items.length > 0) return items;
 
 		// Default: Current page only (no Home link)
-		const currentPath = $page?.url?.pathname ?? '/dashboard';
+		const currentPath = page?.url?.pathname ?? '/dashboard';
 		const pathSegments = currentPath.split('/').filter(Boolean);
 
 		const defaultItems: BreadcrumbItem[] = [];
@@ -58,7 +58,7 @@
 	const breadcrumbSchema = $derived({
 		'@context': 'https://schema.org',
 		'@type': 'BreadcrumbList',
-		'@id': `${$page?.url?.href ?? ''}#breadcrumb`,
+		'@id': `${page?.url?.href ?? ''}#breadcrumb`,
 		itemListElement: breadcrumbItems.map((item: BreadcrumbItem) => ({
 			'@type': 'ListItem',
 			position: item.position,
@@ -90,8 +90,8 @@
 				</li>
 			{:else}
 				<!-- Current page (no link) -->
-				<li class="item-current item-{$page?.route?.id?.replace(/\//g, '-') ?? 'page'}">
-					<strong class="breadcrumb-current breadcrumb-{$page?.route?.id?.replace(/\//g, '-') ?? 'page'}">
+				<li class="item-current item-{page.route?.id?.replace(/\//g, '-') ?? 'page'}">
+					<strong class="breadcrumb-current breadcrumb-{page.route?.id?.replace(/\//g, '-') ?? 'page'}">
 						{item.name}
 					</strong>
 				</li>

@@ -9,7 +9,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 
 	interface Product {
@@ -286,51 +286,37 @@
 		{ label: 'Trader Store', path: '/trader-store' }
 	];
 
-	let store: TraderStore | null = null;
-	let loading = true;
-	let currentSlug = '';
+	let store = $state<TraderStore | null>(null);
+	let loading = $state(true);
+	let currentSlug = $state('');
 
 	function getTraderProducts(traderName: string): Product[] {
 		return allProducts.filter(p => p.traders.includes(traderName));
 	}
 
-	onMount(() => {
-		currentSlug = $page.params.slug;
-		const trader = traderData[currentSlug];
-		
-		if (trader) {
-			store = {
-				id: currentSlug,
-				name: trader.name,
-				slug: currentSlug,
-				title: trader.title,
-				image: trader.image,
-				quote: trader.quote,
-				products: getTraderProducts(trader.name)
-			};
+	// Svelte 5: Use $effect for reactive slug changes
+	$effect(() => {
+		const slug = page.params.slug;
+		if (slug !== currentSlug) {
+			currentSlug = slug;
+			const trader = traderData[slug];
+			
+			if (trader) {
+				store = {
+					id: slug,
+					name: trader.name,
+					slug: slug,
+					title: trader.title,
+					image: trader.image,
+					quote: trader.quote,
+					products: getTraderProducts(trader.name)
+				};
+			} else {
+				store = null;
+			}
+			loading = false;
 		}
-		
-		loading = false;
 	});
-
-	$: if ($page.params.slug !== currentSlug) {
-		currentSlug = $page.params.slug;
-		const trader = traderData[currentSlug];
-		
-		if (trader) {
-			store = {
-				id: currentSlug,
-				name: trader.name,
-				slug: currentSlug,
-				title: trader.title,
-				image: trader.image,
-				quote: trader.quote,
-				products: getTraderProducts(trader.name)
-			};
-		} else {
-			store = null;
-		}
-	}
 </script>
 
 <svelte:head>
@@ -430,7 +416,8 @@
 															<div class="trader_pill">
 																<a href="/dashboard/day-trading-room/meet-the-traders/{store.slug}{pill.path === '/trader-store' ? '' : pill.path}"
 																   class:active={pill.path === '/trader-store'}
-																   on:click|preventDefault={() => {
+																   onclick={(e) => {
+																	   e.preventDefault();
 																	   if (pill.path === '') {
 																		   window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}`;
 																	   } else if (pill.path !== '/trader-store') {

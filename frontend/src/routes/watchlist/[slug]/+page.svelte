@@ -15,7 +15,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
@@ -67,7 +67,7 @@
 	let currentSpreadsheetUrl = $state('');
 
 	// Get current slug from URL
-	const slug = $derived($page.params.slug);
+	const slug = $derived(page.params.slug);
 
 	// Find current entry and adjacent entries for pagination
 	$effect(() => {

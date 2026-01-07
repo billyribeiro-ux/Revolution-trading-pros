@@ -15,7 +15,7 @@
 -->
 <script lang="ts">
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	
 	interface DownloadFile {
 		name: string;
@@ -52,12 +52,11 @@
 		supportDocs: SupportDoc[];
 	}
 	
-	// Get indicator ID from URL
-	const indicatorId = $page.params.id;
-	
-	// Mock data - replace with actual API call
-	const indicator: Indicator = {
-		id: indicatorId,
+	// Get indicator ID from URL - access directly in derived context
+	let indicator = $derived.by(() => {
+		const id = page.params.id;
+		return {
+			id: id,
 		name: 'Volume Max Tool Kit (formerly VWAP)',
 		description: 'Professional volume analysis tools for advanced trading',
 		platforms: ['ThinkorSwim', 'TradingView'],
@@ -104,7 +103,8 @@
 			{ title: 'TradingView - What is my Username', url: 'https://intercom.help/simpler-trading/en/articles/3606861', type: 'view' },
 			{ title: 'What is Volume Max Tool Kit (formerly VWAP)?', url: 'https://intercom.help/simpler-trading/en/articles/3160130', type: 'view' }
 		]
-	};
+	} as Indicator;
+	});
 </script>
 
 <svelte:head>
@@ -169,7 +169,7 @@
 								width="250"
 								src={platformDownload.logo}
 								alt={platformDownload.platform}
-								on:error={(e) => {
+								onerror={(e) => {
 									const img = e.currentTarget as HTMLImageElement;
 									img.style.display = 'none';
 								}}

@@ -26,7 +26,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import type { PageData } from './+page';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -72,7 +72,7 @@
 				itemListElement: scanners.map((scanner: any, index: number) => ({
 					'@type': 'ListItem',
 					position: index + 1,
-					url: `${$page.url.origin}/store/scanners/${scanner.slug}/`,
+					url: `${page.url.origin}/store/scanners/${scanner.slug}/`,
 					item: {
 						'@type': 'SoftwareApplication',
 						name: scanner.name,
@@ -102,8 +102,8 @@
 			{
 				'@type': 'Organization',
 				name: 'Revolution Trading Pros',
-				url: $page.url.origin,
-				logo: `${$page.url.origin}/revolution-trading-pros.png`,
+				url: page.url.origin,
+				logo: `${page.url.origin}/revolution-trading-pros.png`,
 				sameAs: [
 					'https://twitter.com/revolutiontrading',
 					'https://facebook.com/revolutiontrading',
@@ -120,7 +120,7 @@
 				isPartOf: {
 					'@type': 'WebSite',
 					name: 'Revolution Trading Pros',
-					url: $page.url.origin
+					url: page.url.origin
 				}
 			}
 		]

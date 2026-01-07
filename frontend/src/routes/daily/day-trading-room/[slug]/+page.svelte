@@ -12,7 +12,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 
 	interface DailyVideo {
@@ -29,15 +29,15 @@
 	}
 
 	// Get slug from URL
-	const slug = $page.params.slug;
+	let slug = $derived(page.params.slug);
 
-	// Video data state
-	let currentVideo: DailyVideo | null = null;
-	let relatedVideos: DailyVideo[] = [];
-	let previousVideo: DailyVideo | null = null;
-	let nextVideo: DailyVideo | null = null;
-	let loading = true;
-	let videoElement: HTMLVideoElement;
+	// Video data state - Svelte 5 $state() runes
+	let currentVideo = $state<DailyVideo | null>(null);
+	let relatedVideos = $state<DailyVideo[]>([]);
+	let previousVideo = $state<DailyVideo | null>(null);
+	let nextVideo = $state<DailyVideo | null>(null);
+	let loading = $state(true);
+	let videoElement = $state<HTMLVideoElement | undefined>(undefined);
 
 	// Video ended redirect handler
 	function handleVideoEnded() {

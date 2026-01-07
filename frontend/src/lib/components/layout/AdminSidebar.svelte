@@ -6,7 +6,7 @@
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { user } from '$lib/stores/auth';
 	import {
 		IconDashboard,
@@ -100,7 +100,7 @@
 		onclose?.();
 	}
 
-	let currentPath = $derived($page.url.pathname);
+	let currentPath = $derived(page.url.pathname);
 </script>
 
 <aside class="admin-sidebar" class:open={isOpen}>

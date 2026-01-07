@@ -56,7 +56,7 @@
 	import { spring, tweened } from 'svelte/motion';
 	import { popupStore, activePopup, type Popup } from '$lib/stores/popups';
 	import { browser } from '$app/environment';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { IconX, IconLoader, IconCheck, IconAlertCircle } from '$lib/icons';
 	import CountdownTimer from './CountdownTimer.svelte';
 	import VideoEmbed from './VideoEmbed.svelte';
@@ -286,7 +286,7 @@
 	function isPageTargeted(popup: Popup): boolean {
 		if (!browser) return false;
 
-		const currentPath = $page.url.pathname;
+		const currentPath = page.url.pathname;
 
 		// Check exclude pages first
 		for (const excludePattern of popup.displayRules.excludePages) {
@@ -404,7 +404,7 @@
 			variant: variantId,
 			deviceType,
 			trigger: getTriggerType(),
-			pageUrl: $page.url.pathname
+			pageUrl: page.url.pathname
 		});
 
 		// Animate in
@@ -606,7 +606,7 @@
 					popupId: currentPopup.id,
 					variant: variantId,
 					deviceType,
-					pageUrl: $page.url.pathname
+					pageUrl: page.url.pathname
 				})
 			});
 

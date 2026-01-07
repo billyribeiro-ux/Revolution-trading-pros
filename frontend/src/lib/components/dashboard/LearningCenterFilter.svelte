@@ -11,7 +11,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 
 	interface Category {
 		id: string;
@@ -27,7 +27,7 @@
 
 	// Filter resources by navigating to new URL with query params
 	function filterResources(categoryId: string) {
-		const url = new URL($page.url);
+		const url = new URL(page.url);
 		if (categoryId === 'all' || categoryId === '0') {
 			url.searchParams.delete('category');
 		} else {

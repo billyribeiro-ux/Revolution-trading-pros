@@ -54,7 +54,7 @@
 -->
 
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
@@ -241,7 +241,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// URL Construction - use consistent server-side URL to avoid hydration mismatch
-	let currentUrl = $derived(`${siteUrl}${$page.url.pathname}`);
+	let currentUrl = $derived(`${siteUrl}${page.url.pathname}`);
 	let fullCanonical = $derived(canonical
 		? canonical.startsWith('http')
 			? canonical
@@ -274,7 +274,7 @@
 
 	let effectiveKeywords = $derived(keywords.length >= 3 ? keywords : generateDefaultKeywords());
 	let effectiveBreadcrumbs = $derived(
-		breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath($page.url.pathname));
+		breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath(page.url.pathname));
 
 	// SEO Score
 	let seoScore = $derived(calculateSEOScore());
@@ -460,7 +460,7 @@
 
 		// BreadcrumbList Schema - with safety check
 		const crumbs =
-			breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath($page.url.pathname);
+			breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath(page.url.pathname);
 		if (crumbs && crumbs.length > 0) {
 			schemas.push({
 				'@context': 'https://schema.org',

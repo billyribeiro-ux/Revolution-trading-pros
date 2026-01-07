@@ -11,7 +11,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 
 	interface LearningResource {
@@ -196,7 +196,7 @@
 	let loading = true;
 
 	onMount(() => {
-		const slug = $page.params.slug;
+		const slug = page.params.slug;
 		resource = allResources.find(r => r.slug === slug) || null;
 		loading = false;
 	});

@@ -6,7 +6,7 @@
 	@version 2.0.0
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { getTraderBySlug } from '$lib/data/traders';
 
 	interface ChartSetup {
@@ -19,7 +19,7 @@
 		type: 'Bullish' | 'Bearish' | 'Neutral';
 	}
 
-	$: trader = getTraderBySlug($page.params.slug);
+	let trader = $derived(getTraderBySlug(page.params.slug));
 
 	// Trader-specific chart setups - in production, fetch from API
 	const chartSetups: ChartSetup[] = [

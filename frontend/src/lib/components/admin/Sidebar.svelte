@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import {
 		IconDashboard,
 		IconForms,
@@ -56,9 +56,9 @@
 
 	function isActive(href: string): boolean {
 		if (href === '/admin') {
-			return $page.url.pathname === '/admin';
+			return page.url.pathname === '/admin';
 		}
-		return $page.url.pathname.startsWith(href);
+		return page.url.pathname.startsWith(href);
 	}
 </script>
 
@@ -89,7 +89,7 @@
 							<a
 								href={child.href}
 								class="nav-child"
-								class:active={$page.url.pathname === child.href}
+								class:active={page.url.pathname === child.href}
 							>
 								{child.label}
 							</a>

@@ -11,7 +11,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import VideoCard from './VideoCard.svelte';
 
 	interface VideoData {
@@ -69,7 +69,7 @@
 	// Navigate to page
 	function goToPage(pageNum: number) {
 		if (pageNum >= 1 && pageNum <= totalPages) {
-			const url = new URL($page.url);
+			const url = new URL(page.url);
 			if (pageNum === 1) {
 				url.searchParams.delete('page');
 			} else {

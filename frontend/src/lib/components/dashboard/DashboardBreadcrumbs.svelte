@@ -14,7 +14,7 @@
 	</nav>
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 
 	interface BreadcrumbItem {
@@ -28,7 +28,7 @@
 	// Apple ICT 11+ Pattern: Works on both SSR and client
 	let breadcrumbs = $derived.by(() => {
 		// Access pathname safely - $page store works on both server and client
-		const pathname = $page?.url?.pathname || '/';
+		const pathname = page?.url?.pathname || '/';
 		const segments = pathname.split('/').filter(Boolean);
 
 		const items: BreadcrumbItem[] = [

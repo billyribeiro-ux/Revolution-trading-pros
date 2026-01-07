@@ -7,23 +7,21 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { getTraderBySlug, type Trader } from '$lib/data/traders';
 	import TraderHeader from '$lib/components/traders/TraderHeader.svelte';
 	import TraderNav from '$lib/components/traders/TraderNav.svelte';
+	import type { Snippet } from 'svelte';
 
-	let trader: Trader | undefined;
-	let currentPath: string = '';
+	let { children }: { children: Snippet } = $props();
 
-	$: {
-		const slug = $page.params.slug;
-		trader = getTraderBySlug(slug);
-		
-		// Determine current sub-path
-		const fullPath = $page.url.pathname;
+	let trader = $derived(getTraderBySlug(page.params.slug));
+	let currentPath = $derived.by(() => {
+		const slug = page.params.slug;
+		const fullPath = page.url.pathname;
 		const basePath = `/dashboard/day-trading-room/meet-the-traders/${slug}`;
-		currentPath = fullPath.replace(basePath, '') || '';
-	}
+		return fullPath.replace(basePath, '') || '';
+	});
 </script>
 
 <svelte:head>
@@ -65,7 +63,7 @@
 							<div class="fl-col-group">
 								<div class="fl-col">
 									<div class="fl-col-content fl-node-content">
-										<slot />
+										{@render children()}
 									</div>
 								</div>
 							</div>
