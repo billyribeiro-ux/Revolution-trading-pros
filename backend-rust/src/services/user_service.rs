@@ -55,19 +55,19 @@ impl<'a> UserService<'a> {
         Ok(user)
     }
 
-    pub async fn get_memberships(&self, user_id: Uuid) -> Result<Vec<UserMembership>, AppError> {
+    pub async fn get_memberships(&self, user_id: i64) -> Result<Vec<UserMembership>, AppError> {
         // TODO: Implement actual membership query
         let _ = user_id;
         Ok(vec![])
     }
 
-    pub async fn get_products(&self, user_id: Uuid) -> Result<Vec<UserProduct>, AppError> {
+    pub async fn get_products(&self, user_id: i64) -> Result<Vec<UserProduct>, AppError> {
         // TODO: Implement actual products query
         let _ = user_id;
         Ok(vec![])
     }
 
-    pub async fn get_indicators(&self, user_id: Uuid) -> Result<Vec<UserProduct>, AppError> {
+    pub async fn get_indicators(&self, user_id: i64) -> Result<Vec<UserProduct>, AppError> {
         // TODO: Implement actual indicators query
         let _ = user_id;
         Ok(vec![])

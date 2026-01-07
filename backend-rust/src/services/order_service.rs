@@ -44,7 +44,7 @@ impl<'a> OrderService<'a> {
         Self { db }
     }
 
-    pub async fn get_user_orders(&self, user_id: Uuid) -> Result<Vec<OrderSummary>, AppError> {
+    pub async fn get_user_orders(&self, user_id: i64) -> Result<Vec<OrderSummary>, AppError> {
         let orders: Vec<OrderSummary> = sqlx::query_as(
             r#"
             SELECT 
@@ -69,7 +69,7 @@ impl<'a> OrderService<'a> {
         Ok(orders)
     }
 
-    pub async fn get_user_order(&self, user_id: Uuid, order_id: Uuid) -> Result<Option<OrderWithItems>, AppError> {
+    pub async fn get_user_order(&self, user_id: i64, order_id: Uuid) -> Result<Option<OrderWithItems>, AppError> {
         let order: Option<OrderRow> = sqlx::query_as(
             r#"
             SELECT 
