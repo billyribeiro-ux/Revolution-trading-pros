@@ -50,7 +50,7 @@ pub struct OrderWithItems {
     pub created_at: DateTime<Utc>,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, FromRow)]
 pub struct OrderSummary {
     pub id: Uuid,
     pub order_number: String,

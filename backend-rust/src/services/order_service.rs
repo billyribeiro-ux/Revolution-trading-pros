@@ -1,8 +1,39 @@
 //! Order Service
-use sqlx::PgPool;
+//! ICT 11+ Principal Engineer Grade - Runtime SQLx queries with FromRow
+use chrono::{DateTime, Utc};
+use sqlx::{FromRow, PgPool};
 use uuid::Uuid;
 
-use crate::{errors::AppError, models::{OrderSummary, OrderWithItems}};
+use crate::{errors::AppError, models::{OrderItem, OrderSummary, OrderWithItems}};
+
+/// Row struct for order query results
+#[derive(FromRow)]
+struct OrderRow {
+    id: Uuid,
+    user_id: Uuid,
+    order_number: String,
+    status: String,
+    subtotal: f64,
+    tax: f64,
+    discount: f64,
+    total: f64,
+    currency: String,
+    payment_method: Option<String>,
+    billing_address: Option<serde_json::Value>,
+    created_at: DateTime<Utc>,
+}
+
+/// Row struct for order item query results
+#[derive(FromRow)]
+struct OrderItemRow {
+    id: Uuid,
+    order_id: Uuid,
+    product_id: Option<Uuid>,
+    name: String,
+    quantity: i32,
+    price: f64,
+    total: f64,
+}
 
 pub struct OrderService<'a> {
     db: &'a PgPool,
@@ -14,8 +45,7 @@ impl<'a> OrderService<'a> {
     }
 
     pub async fn get_user_orders(&self, user_id: Uuid) -> Result<Vec<OrderSummary>, AppError> {
-        let orders = sqlx::query_as!(
-            OrderSummary,
+        let orders: Vec<OrderSummary> = sqlx::query_as(
             r#"
             SELECT 
                 o.id,
@@ -30,9 +60,9 @@ impl<'a> OrderService<'a> {
             WHERE o.user_id = $1
             GROUP BY o.id, o.order_number, o.status, o.total, o.currency, o.created_at
             ORDER BY o.created_at DESC
-            "#,
-            user_id
+            "#
         )
+        .bind(user_id)
         .fetch_all(self.db)
         .await?;
 
@@ -40,7 +70,7 @@ impl<'a> OrderService<'a> {
     }
 
     pub async fn get_user_order(&self, user_id: Uuid, order_id: Uuid) -> Result<Option<OrderWithItems>, AppError> {
-        let order = sqlx::query!(
+        let order: Option<OrderRow> = sqlx::query_as(
             r#"
             SELECT 
                 id,
@@ -57,10 +87,10 @@ impl<'a> OrderService<'a> {
                 created_at
             FROM orders
             WHERE id = $1 AND user_id = $2
-            "#,
-            order_id,
-            user_id
+            "#
         )
+        .bind(order_id)
+        .bind(user_id)
         .fetch_optional(self.db)
         .await?;
 
@@ -68,7 +98,7 @@ impl<'a> OrderService<'a> {
             return Ok(None);
         };
 
-        let items = sqlx::query!(
+        let items: Vec<OrderItemRow> = sqlx::query_as(
             r#"
             SELECT 
                 id,
@@ -81,9 +111,9 @@ impl<'a> OrderService<'a> {
             FROM order_items
             WHERE order_id = $1
             ORDER BY created_at
-            "#,
-            order_id
+            "#
         )
+        .bind(order_id)
         .fetch_all(self.db)
         .await?;
 
@@ -100,7 +130,7 @@ impl<'a> OrderService<'a> {
             payment_method: order.payment_method,
             billing_address: order.billing_address,
             created_at: order.created_at,
-            items: items.into_iter().map(|i| crate::models::OrderItem {
+            items: items.into_iter().map(|i| OrderItem {
                 id: i.id,
                 order_id: i.order_id,
                 product_id: i.product_id,
