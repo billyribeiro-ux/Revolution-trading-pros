@@ -66,10 +66,11 @@ fn public_routes() -> Router<AppState> {
         .route("/popups/{id}/conversion", post(handlers::popups::conversion))
         // Payments config
         .route("/payments/config", get(handlers::payments::config))
-        // Analytics tracking
+        // Analytics tracking - all return 204 No Content to prevent CORB
         .route("/analytics/track", post(handlers::analytics::track_event))
         .route("/analytics/pageview", post(handlers::analytics::track_pageview))
         .route("/analytics/performance", post(handlers::analytics::track_performance))
+        .route("/analytics/batch", post(handlers::analytics::track_batch))
         // Consent config
         .route("/consent/config", get(handlers::consent::public_settings))
         // Sitemap

@@ -2,10 +2,8 @@
 //!
 //! ICT 11+ Principal Engineer Grade
 
-use axum::{extract::State, body::Bytes, Json};
+use axum::{body::Bytes, http::StatusCode};
 use serde::Deserialize;
-
-use crate::{errors::AppError, AppState};
 
 #[derive(Debug, Deserialize)]
 pub struct TrackEventRequest {
@@ -19,12 +17,23 @@ pub struct PageViewRequest {
     pub referrer: Option<String>,
 }
 
-pub async fn track_event(State(_state): State<AppState>, Json(_payload): Json<TrackEventRequest>) -> Result<Json<serde_json::Value>, AppError> {
-    Ok(Json(serde_json::json!({"success": true})))
+/// POST /api/analytics/track - Track custom events
+/// ICT 11+: Returns 204 No Content to prevent CORB blocking (sendBeacon doesn't read responses)
+pub async fn track_event(body: Bytes) -> StatusCode {
+    // Parse JSON from raw bytes (supports text/plain from sendBeacon)
+    if let Ok(payload) = serde_json::from_slice::<TrackEventRequest>(&body) {
+        tracing::debug!(event = %payload.event, "Analytics event tracked");
+    }
+    StatusCode::NO_CONTENT
 }
 
-pub async fn track_pageview(State(_state): State<AppState>, Json(_payload): Json<PageViewRequest>) -> Result<Json<serde_json::Value>, AppError> {
-    Ok(Json(serde_json::json!({"success": true})))
+/// POST /api/analytics/pageview - Track page views
+/// ICT 11+: Returns 204 No Content to prevent CORB blocking
+pub async fn track_pageview(body: Bytes) -> StatusCode {
+    if let Ok(payload) = serde_json::from_slice::<PageViewRequest>(&body) {
+        tracing::debug!(url = %payload.url, "Page view tracked");
+    }
+    StatusCode::NO_CONTENT
 }
 
 #[derive(Debug, Deserialize)]
@@ -38,20 +47,26 @@ pub struct PerformanceRequest {
 
 /// POST /api/analytics/performance - Track performance metrics
 /// ICT 11+: Accept raw bytes to support sendBeacon which sends text/plain
-/// This avoids CORS preflight issues since text/plain is a "simple" content-type
-pub async fn track_performance(body: Bytes) -> Result<Json<serde_json::Value>, AppError> {
+/// Returns 204 No Content to prevent CORB blocking (sendBeacon is fire-and-forget)
+pub async fn track_performance(body: Bytes) -> StatusCode {
     // Parse the body as JSON regardless of Content-Type
     // sendBeacon sends as text/plain but the content is JSON
-    let _payload: PerformanceRequest = serde_json::from_slice(&body)
-        .map_err(|e| AppError::BadRequest(format!("Invalid JSON: {}", e)))?;
-    
-    // Log the metric (in production, you'd store this)
-    tracing::debug!(
-        name = ?_payload.name,
-        value = ?_payload.value,
-        rating = ?_payload.rating,
-        "Performance metric received"
-    );
-    
-    Ok(Json(serde_json::json!({"success": true})))
+    if let Ok(payload) = serde_json::from_slice::<PerformanceRequest>(&body) {
+        tracing::debug!(
+            name = ?payload.name,
+            value = ?payload.value,
+            rating = ?payload.rating,
+            "Performance metric received"
+        );
+    }
+    // Return 204 No Content - no body means no CORB issues
+    StatusCode::NO_CONTENT
+}
+
+/// POST /api/analytics/batch - Batch analytics events
+/// ICT 11+: Returns 204 No Content to prevent CORB blocking
+pub async fn track_batch(body: Bytes) -> StatusCode {
+    // Just accept the batch - in production, parse and store
+    tracing::debug!(bytes = body.len(), "Batch analytics received");
+    StatusCode::NO_CONTENT
 }
