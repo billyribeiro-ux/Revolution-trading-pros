@@ -44,6 +44,7 @@ impl<'a> OrderService<'a> {
             r#"
             SELECT 
                 id,
+                user_id,
                 order_number,
                 status,
                 subtotal,
@@ -71,6 +72,8 @@ impl<'a> OrderService<'a> {
             r#"
             SELECT 
                 id,
+                order_id,
+                product_id,
                 name,
                 quantity,
                 price,
@@ -86,6 +89,7 @@ impl<'a> OrderService<'a> {
 
         Ok(Some(OrderWithItems {
             id: order.id,
+            user_id: order.user_id,
             order_number: order.order_number,
             status: order.status,
             subtotal: order.subtotal,
@@ -98,6 +102,8 @@ impl<'a> OrderService<'a> {
             created_at: order.created_at,
             items: items.into_iter().map(|i| crate::models::OrderItem {
                 id: i.id,
+                order_id: i.order_id,
+                product_id: i.product_id,
                 name: i.name,
                 quantity: i.quantity,
                 price: i.price,

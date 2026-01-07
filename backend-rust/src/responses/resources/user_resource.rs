@@ -27,7 +27,7 @@ impl From<User> for UserResource {
             first_name: user.first_name,
             last_name: user.last_name,
             email: user.email,
-            avatar_url: user.avatar_url,
+            avatar_url: user.avatar_url.clone(),
             role: user.role.clone(),
             is_admin: user.is_admin(),
             is_verified: user.is_verified(),

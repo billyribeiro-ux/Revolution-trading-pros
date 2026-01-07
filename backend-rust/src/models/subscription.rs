@@ -26,7 +26,7 @@ pub struct UserSubscription {
 #[derive(Debug, Clone)]
 pub struct SubscriptionWithPlan {
     pub id: Uuid,
-    pub user_id: Uuid,
+    pub plan_id: Uuid,
     pub plan_name: String,
     pub plan_description: Option<String>,
     pub status: String,
@@ -35,10 +35,7 @@ pub struct SubscriptionWithPlan {
     pub billing_period: String,
     pub start_date: DateTime<Utc>,
     pub next_payment_date: Option<DateTime<Utc>>,
-    pub trial_end_date: Option<DateTime<Utc>>,
-    pub cancelled_at: Option<DateTime<Utc>>,
-    pub paused_at: Option<DateTime<Utc>>,
-    pub features: Vec<String>,
+    pub created_at: DateTime<Utc>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
