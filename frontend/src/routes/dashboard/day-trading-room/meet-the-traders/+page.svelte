@@ -12,100 +12,7 @@
 -->
 <script lang="ts">
 	import TradingRoomDropdown from '$lib/components/dashboard/TradingRoomDropdown.svelte';
-
-	interface Trader {
-		id: string;
-		name: string;
-		slug: string;
-		title: string;
-		image: string;
-		bio: string;
-		specialties: string[];
-	}
-
-	const traders: Trader[] = [
-		{
-			id: 'john-carter',
-			name: 'John Carter',
-			slug: 'john-carter',
-			title: 'Founder & CEO',
-			image: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
-			bio: 'John Carter is the founder of Simpler Trading and has been trading for over 25 years. He is known for his expertise in options trading and market cycles.',
-			specialties: ['Options', 'Market Cycles', 'Squeeze Pro']
-		},
-		{
-			id: 'henry-gambell',
-			name: 'Henry Gambell',
-			slug: 'henry-gambell',
-			title: 'Director of Options',
-			image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			bio: 'Henry Gambell specializes in options trading and technical analysis. He focuses on high-probability setups and risk management.',
-			specialties: ['Options', 'Technical Analysis', 'Risk Management']
-		},
-		{
-			id: 'taylor-horton',
-			name: 'Taylor Horton',
-			slug: 'taylor-horton',
-			title: 'Senior Trader',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Taylor Horton is known for his day trading strategies and market analysis techniques.',
-			specialties: ['Day Trading', 'Market Analysis', 'Trade Setups']
-		},
-		{
-			id: 'bruce-marshall',
-			name: 'Bruce Marshall',
-			slug: 'bruce-marshall',
-			title: 'Senior Trader',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Bruce Marshall focuses on options strategies and portfolio management.',
-			specialties: ['Options Strategies', 'Portfolio Management']
-		},
-		{
-			id: 'danielle-shay',
-			name: 'Danielle Shay',
-			slug: 'danielle-shay',
-			title: 'Director of Options',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Danielle Shay specializes in options trading with a focus on momentum and volatility strategies.',
-			specialties: ['Options', 'Momentum Trading', 'Volatility']
-		},
-		{
-			id: 'allison-ostrander',
-			name: 'Allison Ostrander',
-			slug: 'allison-ostrander',
-			title: 'Director of Risk Tolerance',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Allison Ostrander focuses on risk management and small account trading strategies.',
-			specialties: ['Risk Management', 'Small Account Trading']
-		},
-		{
-			id: 'sam-shames',
-			name: 'Sam Shames',
-			slug: 'sam-shames',
-			title: 'Senior Trader',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Sam Shames specializes in futures and day trading strategies.',
-			specialties: ['Futures', 'Day Trading']
-		},
-		{
-			id: 'kody-ashmore',
-			name: 'Kody Ashmore',
-			slug: 'kody-ashmore',
-			title: 'Senior Futures Trader',
-			image: 'https://cdn.simplertrading.com/2022/12/18125338/Kody.jpg',
-			bio: 'Kody Ashmore is an expert in futures trading and day trading strategies with a focus on ES and NQ.',
-			specialties: ['Futures', 'Day Trading', 'ES/NQ']
-		},
-		{
-			id: 'raghee-horner',
-			name: 'Raghee Horner',
-			slug: 'raghee-horner',
-			title: 'Senior Trader',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			bio: 'Raghee Horner specializes in forex and futures trading with decades of experience.',
-			specialties: ['Forex', 'Futures', 'Technical Analysis']
-		}
-	];
+	import { traders } from '$lib/data/traders';
 </script>
 
 <svelte:head>
@@ -140,13 +47,15 @@
 						<h3 class="trader-card__name">{trader.name}</h3>
 						<p class="trader-card__title">{trader.title}</p>
 						
-						<div class="trader-card__specialties">
-							{#each trader.specialties as specialty}
-								<span class="specialty-tag">{specialty}</span>
-							{/each}
-						</div>
+						{#if trader.specialties}
+							<div class="trader-card__specialties">
+								{#each trader.specialties as specialty}
+									<span class="specialty-tag">{specialty}</span>
+								{/each}
+							</div>
+						{/if}
 						
-						<p class="trader-card__bio">{trader.bio}</p>
+						<p class="trader-card__bio">{trader.whoIs.substring(0, 150)}...</p>
 						
 						<a href="/dashboard/day-trading-room/meet-the-traders/{trader.slug}" class="btn btn-primary">
 							View Profile

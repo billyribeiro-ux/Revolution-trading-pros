@@ -137,6 +137,17 @@ export const traders: Trader[] = [
 		whoIs: 'Raghee Horner is a Senior Trader with over 30 years of trading experience. She specializes in forex and futures trading with a focus on technical analysis that has stood the test of time.',
 		tradingApproach: 'Raghee is known for her proprietary indicators and trading methodology. She has authored multiple books on trading and has helped thousands of traders improve their skills.',
 		specialties: ['Forex', 'Futures', 'Technical Analysis', 'Proprietary Indicators']
+	},
+	{
+		id: 'billy-ribeiro',
+		name: 'Billy Ribeiro',
+		slug: 'billy-ribeiro',
+		title: 'Senior Developer & Trader',
+		image: 'https://cdn.simplertrading.com/2021/10/08113910/john-headshot-2020.png',
+		quote: '"Code and trade with precision, discipline, and a relentless focus on continuous improvement."',
+		whoIs: 'Billy Ribeiro is a Senior Developer and Trader at Revolution Trading Pros. He combines his technical expertise in software development with a deep understanding of trading strategies and market dynamics.',
+		tradingApproach: 'Billy\'s approach integrates algorithmic thinking with traditional trading principles. He focuses on building systems and strategies that are both technically sound and practically executable.',
+		specialties: ['Software Development', 'Trading Systems', 'Technical Analysis', 'Platform Development']
 	}
 ];
 
