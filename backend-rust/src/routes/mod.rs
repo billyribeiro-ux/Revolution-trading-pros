@@ -104,7 +104,6 @@ fn protected_routes(state: AppState) -> Router<AppState> {
         .route("/user/profile", put(handlers::user::update_profile))
         // User memberships (alias)
         .route("/user/memberships", get(handlers::me::memberships))
-        .route("/user/indicators", get(handlers::me::indicators))
         // User orders
         .route("/my/orders", get(handlers::orders::index))
         .route("/my/orders/{id}", get(handlers::orders::show))
