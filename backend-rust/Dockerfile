@@ -32,7 +32,7 @@ COPY src ./src
 RUN touch src/main.rs
 
 # Build the application
-RUN cargo build --release --locked
+RUN cargo build --release
 
 # =============================================================================
 # Stage 2: Runtime
