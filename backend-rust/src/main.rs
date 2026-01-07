@@ -55,13 +55,15 @@ async fn main() -> anyhow::Result<()> {
         config.server.port
     );
 
-    // Create database connection pool
+    // Create database connection pool with resilient settings
+    // ICT 11+: Increased timeouts for stability under load
     let db_pool = PgPoolOptions::new()
         .max_connections(config.database.max_connections)
         .min_connections(config.database.min_connections)
-        .acquire_timeout(Duration::from_secs(3))
-        .idle_timeout(Duration::from_secs(600))
-        .max_lifetime(Duration::from_secs(1800))
+        .acquire_timeout(Duration::from_secs(10))  // Increased from 3s
+        .idle_timeout(Duration::from_secs(300))    // Reduced to recycle connections faster
+        .max_lifetime(Duration::from_secs(900))    // Reduced to prevent stale connections
+        .test_before_acquire(true)                 // Verify connection is valid
         .connect(&config.database.url)
         .await?;
 
