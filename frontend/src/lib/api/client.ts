@@ -55,16 +55,10 @@ import { getAuthToken } from '$lib/stores/auth';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
-// Production fallbacks - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
+// ICT 11+ Principal Engineer: Import from centralized config - single source of truth
+import { API_BASE_URL, WS_URL, API_ENDPOINTS } from './config';
 
 const isDev = import.meta.env.DEV;
-const API_BASE_URL = isDev ? '' : (import.meta.env['VITE_API_URL'] || PROD_API);
-const WS_URL = import.meta.env['VITE_WS_URL'] || PROD_WS;
-
 const REQUEST_TIMEOUT = 30000; // 30 seconds
 const RETRY_ATTEMPTS = 3;
 const RETRY_DELAY = 1000; // Initial delay, exponential backoff
@@ -752,7 +746,7 @@ class EnterpriseApiClient {
 	 * Authentication
 	 */
 	async register(data: RegisterData): Promise<AuthResponse> {
-		const response = await this.post<AuthResponse>('/api/auth/register', data);
+		const response = await this.post<AuthResponse>(API_ENDPOINTS.auth.register, data);
 		this.setToken(response.token, response.refresh_token);
 		this.user.set(response.user);
 		await this.loadUserData();
@@ -761,7 +755,7 @@ class EnterpriseApiClient {
 
 	async login(credentials: LoginCredentials): Promise<AuthResponse> {
 		const deviceInfo = this.getDeviceInfo();
-		const response = await this.post<AuthResponse>('/api/auth/login', {
+		const response = await this.post<AuthResponse>(API_ENDPOINTS.auth.login, {
 			...credentials,
 			device_name: credentials.device_name || deviceInfo.name
 		});
@@ -798,7 +792,7 @@ class EnterpriseApiClient {
 		}
 
 		try {
-			const response = await this.post<AuthResponse>('/api/auth/refresh', {
+			const response = await this.post<AuthResponse>(API_ENDPOINTS.auth.refresh, {
 				refresh_token: this.refreshToken
 			});
 
@@ -813,7 +807,7 @@ class EnterpriseApiClient {
 	 * User methods
 	 */
 	async getMe(): Promise<User> {
-		const user = await this.get<User>('/api/me', {
+		const user = await this.get<User>(API_ENDPOINTS.me.profile, {
 			cache: { ttl: 60000 } // Cache for 1 minute
 		});
 		this.user.set(user);
@@ -821,15 +815,15 @@ class EnterpriseApiClient {
 	}
 
 	async updateProfile(data: Partial<User>): Promise<User> {
-		const user = await this.patch<User>('/api/me', data, {
-			cache: { invalidate: ['/api/me'] }
+		const user = await this.patch<User>(API_ENDPOINTS.me.update, data, {
+			cache: { invalidate: [API_ENDPOINTS.me.profile] }
 		});
 		this.user.set(user);
 		return user;
 	}
 
 	async getMyMemberships(): Promise<Membership[]> {
-		const memberships = await this.get<Membership[]>('/me/memberships', {
+		const memberships = await this.get<Membership[]>(API_ENDPOINTS.me.memberships, {
 			cache: { ttl: 300000 } // Cache for 5 minutes
 		});
 		this.memberships.set(memberships);
@@ -837,7 +831,7 @@ class EnterpriseApiClient {
 	}
 
 	async getMyProducts(): Promise<Product[]> {
-		const products = await this.get<Product[]>('/me/products', {
+		const products = await this.get<Product[]>(API_ENDPOINTS.me.products, {
 			cache: { ttl: 300000 }
 		});
 		this.products.set(products);

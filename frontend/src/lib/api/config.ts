@@ -33,16 +33,44 @@ export const API_VERSION = 'v1';
  * API endpoints with type-safe builders
  * Updated for Rust API - December 2025
  */
+/**
+ * ICT 11+ Principal Engineer Grade
+ * Single source of truth for all API endpoints
+ * All services MUST use these constants - no hardcoded strings
+ */
 export const API_ENDPOINTS = {
 	// Authentication - Rust API routes
 	auth: {
 		login: '/api/auth/login',
+		loginMfa: '/api/auth/login/mfa',
+		loginBiometric: '/api/auth/login/biometric',
 		register: '/api/auth/register',
 		logout: '/api/auth/logout',
 		refresh: '/api/auth/refresh',
-		me: '/api/auth/me',
 		forgotPassword: '/api/auth/forgot-password',
-		resetPassword: '/api/auth/reset-password'
+		resetPassword: '/api/auth/reset-password',
+		verifyEmail: (token: string) => `/api/auth/verify-email/${token}`,
+		resendVerification: '/api/auth/resend-verification',
+		emailVerificationNotification: '/api/auth/email/verification-notification'
+	},
+
+	// Current User (me) - Rust API routes
+	me: {
+		profile: '/api/me',
+		update: '/api/me',
+		password: '/api/me/password',
+		memberships: '/api/me/memberships',
+		products: '/api/me/products',
+		indicators: '/api/me/indicators',
+		sessions: '/api/me/sessions',
+		session: (id: string) => `/api/me/sessions/${id}`,
+		logoutAll: '/api/me/sessions/logout-all',
+		securityEvents: '/api/me/security-events',
+		mfa: {
+			enable: '/api/me/mfa/enable',
+			verify: '/api/me/mfa/verify',
+			disable: '/api/me/mfa/disable'
+		}
 	},
 
 	// Posts/Blog - Rust API

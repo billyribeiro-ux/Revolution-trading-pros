@@ -43,12 +43,8 @@ import { browser } from '$app/environment';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// ICT11+ Pattern: Use relative path in dev (Vite proxy), absolute URL in production
-// Cloudflare Pages doesn't expose VITE_* env vars at runtime, so we hardcode production URL
-// Backend routes are nested under /api, so production URL includes /api prefix
-const isDev = import.meta.env.DEV;
-const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev/api';
-const API_BASE_URL = isDev ? '' : (import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL);
+// ICT 11+ Principal Engineer: Import from centralized config - single source of truth
+import { API_BASE_URL, API_ENDPOINTS } from './config';
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE = 1000; // 1 second
@@ -538,7 +534,7 @@ class AuthenticationService {
 		// Validate password strength
 		this.validatePasswordStrength(data.password);
 
-		const response = await this.apiRequest<AuthResponse>('/api/auth/register', {
+		const response = await this.apiRequest<AuthResponse>(API_ENDPOINTS.auth.register, {
 			method: 'POST',
 			body: JSON.stringify(data),
 			skipAuth: true
@@ -563,7 +559,7 @@ class AuthenticationService {
 			device_fingerprint: this.sessionFingerprint
 		};
 
-		const response = await this.apiRequest<AuthResponse>('/api/auth/login', {
+		const response = await this.apiRequest<AuthResponse>(API_ENDPOINTS.auth.login, {
 			method: 'POST',
 			body: JSON.stringify(loginData),
 			skipAuth: true
@@ -638,7 +634,7 @@ class AuthenticationService {
 			device_id: this.getDeviceId()
 		};
 
-		const response = await this.apiRequest<AuthResponse>('/api/auth/login/biometric', {
+		const response = await this.apiRequest<AuthResponse>(API_ENDPOINTS.auth.loginBiometric, {
 			method: 'POST',
 			body: JSON.stringify(data),
 			skipAuth: true
@@ -671,7 +667,7 @@ class AuthenticationService {
 	 */
 	async logout(): Promise<void> {
 		try {
-			await this.apiRequest<MessageResponse>('/api/auth/logout', {
+			await this.apiRequest<MessageResponse>(API_ENDPOINTS.auth.logout, {
 				method: 'POST'
 			});
 
@@ -701,7 +697,7 @@ class AuthenticationService {
 	 * Get current user
 	 */
 	async getUser(): Promise<User> {
-		const user = await this.apiRequest<User>('/api/me');
+		const user = await this.apiRequest<User>(API_ENDPOINTS.me.profile);
 		authStore.setUser(user);
 		return user;
 	}
@@ -727,7 +723,7 @@ class AuthenticationService {
 		// NOTE: Do NOT set Content-Type header manually for FormData
 		// The browser MUST set it automatically with the boundary parameter
 		// Setting it manually breaks multipart form parsing on the server
-		const user = await this.apiRequest<User>('/api/me', {
+		const user = await this.apiRequest<User>(API_ENDPOINTS.me.update, {
 			method: 'PUT',
 			body: formData
 		});
@@ -744,7 +740,7 @@ class AuthenticationService {
 	 * Change password
 	 */
 	async changePassword(data: ChangePasswordData): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/api/me/password', {
+		const response = await this.apiRequest<MessageResponse>(API_ENDPOINTS.me.password, {
 			method: 'PUT',
 			body: JSON.stringify(data)
 		});
@@ -764,7 +760,7 @@ class AuthenticationService {
 	 * Send password reset email
 	 */
 	async forgotPassword(data: ForgotPasswordData): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/api/auth/forgot-password', {
+		const response = await this.apiRequest<MessageResponse>(API_ENDPOINTS.auth.forgotPassword, {
 			method: 'POST',
 			body: JSON.stringify(data),
 			skipAuth: true
@@ -783,7 +779,7 @@ class AuthenticationService {
 		// Validate password strength
 		this.validatePasswordStrength(data.password);
 
-		const response = await this.apiRequest<MessageResponse>('/api/auth/reset-password', {
+		const response = await this.apiRequest<MessageResponse>(API_ENDPOINTS.auth.resetPassword, {
 			method: 'POST',
 			body: JSON.stringify(data),
 			skipAuth: true
@@ -799,7 +795,7 @@ class AuthenticationService {
 	 * Send email verification (legacy - use resendVerificationEmail instead)
 	 */
 	async sendEmailVerification(): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/api/auth/email/verification-notification', {
+		const response = await this.apiRequest<MessageResponse>(API_ENDPOINTS.auth.emailVerificationNotification, {
 			method: 'POST'
 		});
 
@@ -812,7 +808,7 @@ class AuthenticationService {
 	 */
 	async verifyEmail(token: string): Promise<string> {
 		const response = await this.apiRequest<MessageResponse>(
-			`/api/auth/verify-email/${encodeURIComponent(token)}`,
+			API_ENDPOINTS.auth.verifyEmail(token),
 			{
 				method: 'GET',
 				skipAuth: true
@@ -830,7 +826,7 @@ class AuthenticationService {
 	 * ICT 11+ Principal Engineer: New endpoint for resending verification
 	 */
 	async resendVerificationEmail(email: string): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/api/auth/resend-verification', {
+		const response = await this.apiRequest<MessageResponse>(API_ENDPOINTS.auth.resendVerification, {
 			method: 'POST',
 			body: JSON.stringify({ email }),
 			skipAuth: true
@@ -849,7 +845,7 @@ class AuthenticationService {
 			qr_code: string;
 			secret: string;
 			backup_codes: string[];
-		}>('/api/me/mfa/enable', {
+		}>(API_ENDPOINTS.me.mfa.enable, {
 			method: 'POST'
 		});
 
@@ -863,7 +859,7 @@ class AuthenticationService {
 	 * Verify MFA - Step 2: Verify code to enable MFA
 	 */
 	async verifyMFA(code: string): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/api/me/mfa/verify', {
+		const response = await this.apiRequest<MessageResponse>(API_ENDPOINTS.me.mfa.verify, {
 			method: 'POST',
 			body: JSON.stringify({ code })
 		});
@@ -878,7 +874,7 @@ class AuthenticationService {
 	 * Disable MFA
 	 */
 	async disableMFA(password: string): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>('/api/me/mfa/disable', {
+		const response = await this.apiRequest<MessageResponse>(API_ENDPOINTS.me.mfa.disable, {
 			method: 'POST',
 			body: JSON.stringify({ password })
 		});
@@ -898,7 +894,7 @@ class AuthenticationService {
 		mfaCode?: string,
 		backupCode?: string
 	): Promise<AuthResponse> {
-		const response = await this.apiRequest<AuthResponse>('/api/auth/login/mfa', {
+		const response = await this.apiRequest<AuthResponse>(API_ENDPOINTS.auth.loginMfa, {
 			method: 'POST',
 			body: JSON.stringify({
 				email,
@@ -934,7 +930,7 @@ class AuthenticationService {
 	 * Get security events
 	 */
 	async getSecurityEvents(): Promise<SecurityEvent[]> {
-		return this.apiRequest<SecurityEvent[]>('/api/me/security-events');
+		return this.apiRequest<SecurityEvent[]>(API_ENDPOINTS.me.securityEvents);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -945,14 +941,14 @@ class AuthenticationService {
 	 * Get all active sessions for current user
 	 */
 	async getSessions(): Promise<SessionsResponse> {
-		return this.apiRequest<SessionsResponse>('/api/me/sessions');
+		return this.apiRequest<SessionsResponse>(API_ENDPOINTS.me.sessions);
 	}
 
 	/**
 	 * Revoke a specific session
 	 */
 	async revokeSession(sessionId: string): Promise<MessageResponse> {
-		return this.apiRequest<MessageResponse>(`/api/me/sessions/${sessionId}`, {
+		return this.apiRequest<MessageResponse>(API_ENDPOINTS.me.session(sessionId), {
 			method: 'DELETE'
 		});
 	}
@@ -961,7 +957,7 @@ class AuthenticationService {
 	 * Logout from all devices
 	 */
 	async logoutAllDevices(keepCurrent: boolean = false): Promise<LogoutAllResponse> {
-		return this.apiRequest<LogoutAllResponse>('/api/me/sessions/logout-all', {
+		return this.apiRequest<LogoutAllResponse>(API_ENDPOINTS.me.logoutAll, {
 			method: 'POST',
 			body: JSON.stringify({ keep_current: keepCurrent })
 		});
@@ -1128,7 +1124,7 @@ class AuthenticationService {
 
 		for (let attempt = 1; attempt <= MAX_CHECK_RETRIES; attempt++) {
 			try {
-				await this.apiRequest<{ valid: boolean }>('/api/me');
+				await this.apiRequest<{ valid: boolean }>(API_ENDPOINTS.me.profile);
 				// Success - session is valid
 				return;
 			} catch (error) {
