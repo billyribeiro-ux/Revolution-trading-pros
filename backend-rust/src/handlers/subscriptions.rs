@@ -31,8 +31,8 @@ pub async fn index(State(state): State<AppState>, auth: AuthUser) -> Result<Json
             status: s.status,
             price: format!("{:.2}", s.price),
             billing_period: s.billing_period,
-            start_date: s.start_date.to_rfc3339(),
-            next_payment_date: s.next_payment_date.map(|d| d.to_rfc3339()),
+            start_date: s.start_date.format("%Y-%m-%dT%H:%M:%S").to_string(),
+            next_payment_date: s.next_payment_date.map(|d| d.format("%Y-%m-%dT%H:%M:%S").to_string()),
         })
         .collect();
 
@@ -52,8 +52,8 @@ pub async fn show(State(state): State<AppState>, auth: AuthUser, Path(id): Path<
         status: subscription.status,
         price: format!("{:.2}", subscription.price),
         billing_period: subscription.billing_period,
-        start_date: subscription.start_date.to_rfc3339(),
-        next_payment_date: subscription.next_payment_date.map(|d| d.to_rfc3339()),
+        start_date: subscription.start_date.format("%Y-%m-%dT%H:%M:%S").to_string(),
+        next_payment_date: subscription.next_payment_date.map(|d| d.format("%Y-%m-%dT%H:%M:%S").to_string()),
     })))
 }
 

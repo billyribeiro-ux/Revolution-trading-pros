@@ -68,7 +68,7 @@ pub async fn index(
         .map(|o| OrderResponse {
             id: o.id.to_string(),
             number: o.order_number,
-            date: o.created_at.to_rfc3339(),
+            date: o.created_at.format("%Y-%m-%dT%H:%M:%S").to_string(),
             status: o.status,
             total: format!("{:.2}", o.total),
             currency: o.currency,
@@ -107,7 +107,7 @@ pub async fn show(
     Ok(Json(ApiResponse::success(OrderDetailResponse {
         id: order.id.to_string(),
         number: order.order_number,
-        date: order.created_at.to_rfc3339(),
+        date: order.created_at.format("%Y-%m-%dT%H:%M:%S").to_string(),
         status: order.status,
         total: format!("{:.2}", order.total),
         subtotal: format!("{:.2}", order.subtotal),

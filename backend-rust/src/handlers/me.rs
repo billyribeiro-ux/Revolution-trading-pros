@@ -68,7 +68,7 @@ pub async fn show(
         role: user.role.to_string(),
         is_verified: user.email_verified_at.is_some(),
         is_admin: user.is_admin(),
-        created_at: user.created_at.to_rfc3339(),
+        created_at: user.created_at.format("%Y-%m-%dT%H:%M:%S").to_string(),
     })))
 }
 
@@ -105,7 +105,7 @@ pub async fn update(
         role: user.role.to_string(),
         is_verified: user.email_verified_at.is_some(),
         is_admin: user.is_admin(),
-        created_at: user.created_at.to_rfc3339(),
+        created_at: user.created_at.format("%Y-%m-%dT%H:%M:%S").to_string(),
     })))
 }
 
@@ -124,8 +124,8 @@ pub async fn memberships(
             id: m.id.to_string(),
             plan_name: m.plan_name,
             status: m.status,
-            started_at: m.started_at.to_rfc3339(),
-            expires_at: m.expires_at.map(|d| d.to_rfc3339()),
+            started_at: m.started_at.format("%Y-%m-%dT%H:%M:%S").to_string(),
+            expires_at: m.expires_at.map(|d| d.format("%Y-%m-%dT%H:%M:%S").to_string()),
         })
         .collect();
 
