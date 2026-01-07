@@ -21,18 +21,24 @@ pub struct UserResource {
 
 impl From<User> for UserResource {
     fn from(user: User) -> Self {
+        // Call methods first before moving fields
+        let is_admin = user.is_admin();
+        let is_verified = user.is_verified();
+        let created_at = user.created_at.to_rfc3339();
+        let updated_at = user.updated_at.to_rfc3339();
+        
         Self {
             id: user.id,
             name: user.name,
             first_name: user.first_name,
             last_name: user.last_name,
             email: user.email,
-            avatar_url: user.avatar_url.clone(),
-            role: user.role.clone(),
-            is_admin: user.is_admin(),
-            is_verified: user.is_verified(),
-            created_at: user.created_at.to_rfc3339(),
-            updated_at: user.updated_at.to_rfc3339(),
+            avatar_url: user.avatar_url,
+            role: user.role,
+            is_admin,
+            is_verified,
+            created_at,
+            updated_at,
         }
     }
 }
