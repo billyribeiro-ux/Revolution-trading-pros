@@ -112,7 +112,8 @@ export interface UpdateProfileData {
 
 export interface AuthResponse {
 	user: User;
-	token: string;
+	token?: string; // Legacy field name
+	access_token?: string; // Backend uses this
 	refresh_token?: string;
 	session_id?: string;
 	expires_in?: number;
@@ -576,9 +577,16 @@ class AuthenticationService {
 		if (!response.user) {
 			throw new Error('Login response missing user data');
 		}
+		
+		// ICT11+ Fix: Backend sends "access_token", frontend expects "token"
+		const accessToken = response.access_token || response.token;
+		if (!accessToken) {
+			throw new Error('Login response missing access token');
+		}
+		
 		authStore.setAuth(
 			response.user,
-			response.token,
+			accessToken,
 			response.session_id,
 			response.expires_in,
 			response.refresh_token
@@ -592,7 +600,7 @@ class AuthenticationService {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
-						accessToken: response.token,
+						accessToken: accessToken,
 						refreshToken: response.refresh_token,
 						expiresIn: response.expires_in
 					})
@@ -641,9 +649,13 @@ class AuthenticationService {
 		});
 
 		// ICT11+ Principal Engineer: Store refresh_token in memory for token refresh
+		const biometricToken = response.access_token || response.token;
+		if (!biometricToken) {
+			throw new Error('Biometric login response missing access token');
+		}
 		authStore.setAuth(
 			response.user,
-			response.token,
+			biometricToken,
 			response.session_id,
 			response.expires_in,
 			response.refresh_token
@@ -907,9 +919,13 @@ class AuthenticationService {
 
 		// Store auth data with session_id
 		// ICT11+ Principal Engineer: Store refresh_token in memory for token refresh
+		const mfaToken = response.access_token || response.token;
+		if (!mfaToken) {
+			throw new Error('MFA login response missing access token');
+		}
 		authStore.setAuth(
 			response.user,
-			response.token,
+			mfaToken,
 			response.session_id,
 			response.expires_in,
 			response.refresh_token

@@ -180,9 +180,11 @@ export interface NotificationPreferences {
 
 export interface AuthResponse {
 	user: User;
-	token: string;
+	token?: string; // Legacy field name
+	access_token?: string; // Backend uses this
 	refresh_token?: string;
 	expires_at?: string;
+	expires_in?: number;
 	permissions?: string[];
 }
 
