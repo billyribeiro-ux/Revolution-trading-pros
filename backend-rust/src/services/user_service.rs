@@ -13,7 +13,7 @@ impl<'a> UserService<'a> {
         Self { db }
     }
 
-    pub async fn find_by_id(&self, id: Uuid) -> Result<Option<User>, AppError> {
+    pub async fn find_by_id(&self, id: i64) -> Result<Option<User>, AppError> {
         let user = sqlx::query_as::<_, User>(&format!("SELECT {} FROM users WHERE id = $1", User::SELECT_COLUMNS))
             .bind(id)
             .fetch_optional(self.db)
@@ -23,7 +23,7 @@ impl<'a> UserService<'a> {
 
     pub async fn update_profile(
         &self,
-        id: Uuid,
+        id: i64,
         name: Option<&str>,
         first_name: Option<&str>,
         last_name: Option<&str>,
