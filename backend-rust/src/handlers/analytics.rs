@@ -13,6 +13,7 @@
 //! - sendBeacon is fire-and-forget (doesn't read responses)
 //! - JSON responses trigger CORB (Cross-Origin Read Blocking)
 //! - No body = nothing for browser to block
+//!
 //! ═══════════════════════════════════════════════════════════════════════════
 
 use axum::{body::Bytes, http::StatusCode};

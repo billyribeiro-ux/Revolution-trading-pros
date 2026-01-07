@@ -5,7 +5,7 @@
 
 use axum::{
     middleware,
-    routing::{delete, get, patch, post, put},
+    routing::{delete, get, post, put},
     Router,
 };
 

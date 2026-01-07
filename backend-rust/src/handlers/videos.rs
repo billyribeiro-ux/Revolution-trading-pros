@@ -14,7 +14,7 @@ use crate::{
     errors::AppError,
     models::{VideoListQuery, VideoWithNavigation, VideoWithTrader},
     repositories::VideoRepository,
-    responses::{ApiResponse, PaginatedResponse},
+    responses::ApiResponse,
     AppState,
 };
 

@@ -14,7 +14,7 @@ use std::net::SocketAddr;
 use std::sync::Arc;
 use std::time::Duration;
 
-use axum::Router;
+use axum::{http::StatusCode, Router};
 use sqlx::postgres::PgPoolOptions;
 use tokio::net::TcpListener;
 use tower_http::{
@@ -111,7 +111,10 @@ async fn main() -> anyhow::Result<()> {
         // Compression
         .layer(CompressionLayer::new())
         // Timeout
-        .layer(TimeoutLayer::new(Duration::from_secs(30)))
+        .layer(TimeoutLayer::with_status_code(
+            StatusCode::REQUEST_TIMEOUT,
+            Duration::from_secs(30)
+        ))
         // CORS
         .layer(build_cors_layer(&config))
         // Tracing

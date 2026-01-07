@@ -1,6 +1,5 @@
 //! User Service
 use sqlx::PgPool;
-use uuid::Uuid;
 
 use crate::{errors::AppError, models::{User, UserMembership, UserProduct}};
 
