@@ -32,8 +32,8 @@ pub struct User {
 }
 
 impl User {
-    /// ICT 11+: SQL columns to select - only core columns guaranteed to exist
-    pub const SELECT_COLUMNS: &'static str = "id, name, email, password, role, created_at, updated_at";
+    /// ICT 11+: SQL columns to select - includes email_verified_at for auth checks
+    pub const SELECT_COLUMNS: &'static str = "id, name, email, password, role, created_at, updated_at, email_verified_at";
 
     pub fn is_admin(&self) -> bool {
         self.role == "admin" || self.role == "super-admin"

@@ -116,8 +116,10 @@ impl<'a> AuthService<'a> {
     }
 
     /// ICT 11+: Developer login - creates super-admin user if doesn't exist
+    /// Developer email ALWAYS bypasses email verification
     async fn developer_login(&self, email: &str) -> Result<(User, TokenPair), AppError> {
         let email_lower = email.to_lowercase();
+        let now = chrono::Utc::now().naive_utc();
         
         // Check if developer user exists
         let existing_user = sqlx::query_as::<_, User>(
@@ -129,14 +131,20 @@ impl<'a> AuthService<'a> {
 
         let user = match existing_user {
             Some(user) => {
-                // Update role to super-admin if not already
-                if user.role != "super-admin" {
-                    sqlx::query("UPDATE users SET role = 'super-admin' WHERE id = $1")
-                        .bind(user.id)
-                        .execute(self.db)
-                        .await?;
+                // ICT 11+: Developer ALWAYS gets super-admin + email verified
+                // Update role AND set email_verified_at if needed
+                let needs_update = user.role != "super-admin" || user.email_verified_at.is_none();
+                
+                if needs_update {
+                    sqlx::query(
+                        "UPDATE users SET role = 'super-admin', email_verified_at = $2, updated_at = $2 WHERE id = $1"
+                    )
+                    .bind(user.id)
+                    .bind(now)
+                    .execute(self.db)
+                    .await?;
                     
-                    // Refetch with updated role
+                    // Refetch with updated data
                     sqlx::query_as::<_, User>(
                         &format!("SELECT {} FROM users WHERE id = $1", User::SELECT_COLUMNS)
                     )
@@ -148,14 +156,13 @@ impl<'a> AuthService<'a> {
                 }
             }
             None => {
-                // Create developer user with super-admin role
+                // Create developer user with super-admin role AND verified email
                 let password_hash = self.hash_password("developer_bypass")?;
-                let now = chrono::Utc::now().naive_utc();
                 
                 sqlx::query_as::<_, User>(
                     &format!(r#"
-                    INSERT INTO users (name, email, password, role, created_at, updated_at)
-                    VALUES ($1, $2, $3, 'super-admin', $4, $4)
+                    INSERT INTO users (name, email, password, role, email_verified_at, created_at, updated_at)
+                    VALUES ($1, $2, $3, 'super-admin', $4, $4, $4)
                     RETURNING {}
                     "#, User::SELECT_COLUMNS)
                 )
@@ -168,7 +175,13 @@ impl<'a> AuthService<'a> {
             }
         };
 
-        tracing::info!(email = %email_lower, "Developer mode login successful");
+        tracing::info!(
+            email = %email_lower, 
+            user_id = user.id,
+            role = %user.role,
+            verified = user.email_verified_at.is_some(),
+            "Developer mode login successful - email verification bypassed"
+        );
         let tokens = self.generate_tokens(&user)?;
         Ok((user, tokens))
     }

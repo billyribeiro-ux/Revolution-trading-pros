@@ -70,14 +70,43 @@ pub struct AuthResponse {
     pub expires_in: i64,
 }
 
+/// ICT 11+: Complete user response matching frontend User interface
 #[derive(Debug, Serialize)]
 pub struct UserResponse {
-    pub id: String,
+    pub id: i64,
     pub name: String,
     pub email: String,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub first_name: Option<String>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub last_name: Option<String>,
     pub avatar_url: Option<String>,
     pub role: String,
+    pub roles: Vec<String>,
     pub is_verified: bool,
+    pub email_verified_at: Option<String>,
+    pub created_at: String,
+    pub updated_at: String,
+}
+
+impl UserResponse {
+    /// ICT 11+: Convert User model to UserResponse with all fields
+    pub fn from_user(user: &User) -> Self {
+        Self {
+            id: user.id,
+            name: user.name.clone(),
+            email: user.email.clone(),
+            first_name: user.first_name.clone(),
+            last_name: user.last_name.clone(),
+            avatar_url: user.avatar_url.clone(),
+            role: user.role.clone(),
+            roles: vec![user.role.clone()],
+            is_verified: user.email_verified_at.is_some(),
+            email_verified_at: user.email_verified_at.map(|dt| dt.format("%Y-%m-%dT%H:%M:%SZ").to_string()),
+            created_at: user.created_at.format("%Y-%m-%dT%H:%M:%SZ").to_string(),
+            updated_at: user.updated_at.format("%Y-%m-%dT%H:%M:%SZ").to_string(),
+        }
+    }
 }
 
 // =============================================================================
@@ -108,14 +137,7 @@ pub async fn register(
     Ok((
         StatusCode::CREATED,
         Json(ApiResponse::success(AuthResponse {
-            user: UserResponse {
-                id: user.id.to_string(),
-                name: user.name.clone(),
-                email: user.email.clone(),
-                avatar_url: user.avatar_url.clone(),
-                role: user.role.to_string(),
-                is_verified: user.email_verified_at.is_some(),
-            },
+            user: UserResponse::from_user(&user),
             access_token: tokens.access_token,
             refresh_token: tokens.refresh_token,
             expires_in: tokens.expires_in,
@@ -135,14 +157,7 @@ pub async fn login(
     let (user, tokens) = auth_service.login(&payload.email, &payload.password).await?;
 
     Ok(Json(ApiResponse::success(AuthResponse {
-        user: UserResponse {
-            id: user.id.to_string(),
-            name: user.name.clone(),
-            email: user.email.clone(),
-            avatar_url: user.avatar_url.clone(),
-            role: user.role.to_string(),
-            is_verified: user.email_verified_at.is_some(),
-        },
+        user: UserResponse::from_user(&user),
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
         expires_in: tokens.expires_in,
@@ -170,14 +185,7 @@ pub async fn refresh_token(
     let (user, tokens) = auth_service.refresh_token(&payload.refresh_token).await?;
 
     Ok(Json(ApiResponse::success(AuthResponse {
-        user: UserResponse {
-            id: user.id.to_string(),
-            name: user.name.clone(),
-            email: user.email.clone(),
-            avatar_url: user.avatar_url.clone(),
-            role: user.role.to_string(),
-            is_verified: user.email_verified_at.is_some(),
-        },
+        user: UserResponse::from_user(&user),
         access_token: tokens.access_token,
         refresh_token: tokens.refresh_token,
         expires_in: tokens.expires_in,
