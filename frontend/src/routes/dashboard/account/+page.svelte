@@ -209,12 +209,11 @@
 		margin: 0;
 	}
 
+	/* Content Box - EXACT MATCH to dashboard.8f78208b.css */
 	.content-box {
 		background: #fff;
-		border: 1px solid #e0e0e0;
-		margin-bottom: 0;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
-		border-radius: 4px;
+		border-radius: 5px;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 	}
 
 	.content-box--centered {
@@ -223,7 +222,13 @@
 	}
 
 	.content-box__section {
-		padding: 30px 40px;
+		padding: 20px;
+	}
+
+	@media screen and (min-width: 1280px) {
+		.content-box__section {
+			padding: 40px;
+		}
 	}
 
 	.woocommerce-MyAccount-content p {
@@ -271,10 +276,6 @@
 
 		.dashboard__page-title {
 			font-size: 20px;
-		}
-
-		.content-box__section {
-			padding: 20px 25px;
 		}
 
 		.woocommerce-MyAccount-content p {
