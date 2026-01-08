@@ -50,21 +50,24 @@
 
 	// Trading rooms for the dropdown button - Only show Day Trading Room, Swing Trading Room, and Small Accounts
 	const tradingRooms = $derived.by(() => {
-		const rooms: { name: string; href: string; icon: string }[] = [
+		const rooms: { name: string; href: string; icon: string; variant: string }[] = [
 			{
 				name: 'Day Trading Room',
 				href: '#', // TODO: Provide URL
-				icon: 'chart-line'
+				icon: 'chart-line',
+				variant: 'day-trading'
 			},
 			{
 				name: 'Swing Trading Room',
 				href: '#', // TODO: Provide URL
-				icon: 'trending-up'
+				icon: 'trending-up',
+				variant: 'swing-trading'
 			},
 			{
 				name: 'Small Accounts Mentorship',
 				href: '#', // TODO: Provide URL
-				icon: 'dollar-sign'
+				icon: 'piggy-bank',
+				variant: 'small-accounts'
 			}
 		];
 
@@ -308,18 +311,18 @@
 				{#if isDropdownOpen}
 					<div class="dropdown-menu" role="menu">
 						{#each tradingRooms as room}
-							<a 
-								href={room.href} 
-								class="dropdown-item" 
-								onclick={closeDropdown}
-								role="menuitem"
-							>
-								<span class="dropdown-item__icon">
-									<RtpIcon name={room.icon} size={20} />
-								</span>
-								<span class="dropdown-item__text">{room.name}</span>
-							</a>
-						{/each}
+						<a 
+							href={room.href} 
+							class="dropdown-item dropdown-item--{room.variant}" 
+							onclick={closeDropdown}
+							role="menuitem"
+						>
+							<span class="dropdown-item__icon">
+								<RtpIcon name={room.icon} size={20} />
+							</span>
+							<span class="dropdown-item__text">{room.name}</span>
+						</a>
+					{/each}
 					</div>
 				{/if}
 			</div>
@@ -911,12 +914,29 @@
 		background-color: #f4f4f4;
 	}
 
+	/* Trading Room Dropdown Icon Hover Effects */
 	.dropdown-item__icon {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
 		color: #143E59;
+		transition: color 0.15s ease-in-out;
+	}
+
+	/* Day Trading Room - Blue */
+	.dropdown-item--day-trading:hover .dropdown-item__icon {
+		color: #0984ae;
+	}
+
+	/* Swing Trading Room - Teal */
+	.dropdown-item--swing-trading:hover .dropdown-item__icon {
+		color: #00abaf;
+	}
+
+	/* Small Accounts Mentorship - Purple */
+	.dropdown-item--small-accounts:hover .dropdown-item__icon {
+		color: #3c22f1;
 	}
 
 	.dropdown-item__text {
