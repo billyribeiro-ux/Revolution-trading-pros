@@ -971,22 +971,24 @@
 
 	/* Icon inside tooltip-wrapped link - use static positioning */
 	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger .dashboard__nav-item-icon) {
-		position: static;
+		position: relative;
 		left: auto;
 		top: auto;
 		margin: 0;
 		transform: scale(1);
 		transition: all 0.15s ease-in-out;
+		z-index: 1;
 	}
 
 	/* Profile photo inside tooltip-wrapped link */
 	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger .dashboard__profile-photo) {
-		position: static;
+		position: relative;
 		left: auto;
 		top: auto;
 		margin: 0;
 		transform: scale(1);
 		transition: all 0.15s ease-in-out;
+		z-index: 1;
 	}
 
 	/* Hover effects for tooltip-wrapped links */
@@ -1010,7 +1012,7 @@
 		transform: scale(0.9);
 		background: transparent;
 		transition: all 0.15s ease-in-out;
-		z-index: -1;
+		z-index: 0;
 	}
 
 	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger a:hover::before) {
