@@ -21,9 +21,10 @@ import { authStore } from '$lib/stores/auth';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallback - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
+const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
+const API_BASE = API_ROOT ? `${API_ROOT}/api` : '';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types

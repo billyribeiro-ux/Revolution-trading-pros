@@ -65,14 +65,16 @@ import type {
 
 // ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
 // Production fallbacks - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 
 const isDev = import.meta.env.DEV;
-const API_BASE = browser 
-	? (isDev ? '/api' : (import.meta.env['VITE_API_URL'] || PROD_API)) 
+const API_ROOT = browser 
+	? (isDev ? '' : (import.meta.env['VITE_API_URL'] || PROD_API)) 
 	: '';
+// In dev mode, use /api for Vite proxy. In production, append /api to root URL
+const API_BASE = isDev ? '/api' : (API_ROOT ? `${API_ROOT}/api` : '');
 const WS_BASE = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 // Analytics API - only enable if explicitly configured (microservice is optional)
 const ANALYTICS_API = browser && import.meta.env['VITE_ANALYTICS_API']

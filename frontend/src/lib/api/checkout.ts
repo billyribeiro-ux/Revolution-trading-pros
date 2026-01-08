@@ -9,12 +9,14 @@ import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth';
 
 // Updated for Rust API - December 2025
-// NOTE: No /api suffix - endpoints already include /api prefix
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
 const isDev = import.meta.env.DEV;
 const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE = browser 
+const API_ROOT = browser 
 	? (isDev ? '' : (import.meta.env['VITE_API_URL'] || PRODUCTION_API_URL))
 	: '';
+// In dev mode, empty string works with Vite proxy. In production, append /api
+const API_BASE = isDev ? '' : (API_ROOT ? `${API_ROOT}/api` : '');
 
 export interface StripeConfig {
 	publishable_key: string;

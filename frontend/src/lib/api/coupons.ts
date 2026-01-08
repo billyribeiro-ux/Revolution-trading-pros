@@ -57,11 +57,12 @@ import { getAuthToken } from '$lib/stores/auth';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallbacks - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
+const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/ml';
 
-const API_URL = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
+const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API_ROOT : '';
+const API_URL = API_ROOT ? `${API_ROOT}/api` : '';
 const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 
 const CACHE_TTL = 300000; // 5 minutes

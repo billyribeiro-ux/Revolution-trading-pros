@@ -16,9 +16,11 @@ import { apiCache, buildCacheKey, invalidateCache } from './cache';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallback - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
+// Endpoints like /user/indicators need the /api prefix added here
+const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
+const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API_ROOT : '';
+const API_BASE = API_ROOT ? `${API_ROOT}/api` : '';
 const CACHE_TTL = 3 * 60 * 1000; // 3 minutes
 
 // ═══════════════════════════════════════════════════════════════════════════
