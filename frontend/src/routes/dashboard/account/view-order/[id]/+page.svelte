@@ -77,20 +77,10 @@
 <!-- Dashboard Content -->
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-		<section class="dashboard__content-section">
-			<div class="fl-builder-content fl-builder-content-33 fl-builder-content-primary fl-builder-global-templates-locked" data-post-id="33">
-				<div class="fl-row fl-row-fixed-width fl-row-bg-color fl-node-59793676724ad" data-node="59793676724ad">
-					<div class="fl-row-content-wrap">
-						<div class="fl-row-content fl-row-fixed-width fl-node-content">
-							<div class="fl-col-group fl-node-597936767334e" data-node="597936767334e">
-								<div class="fl-col fl-node-5979367673419" data-node="5979367673419">
-									<div class="fl-col-content fl-node-content">
-										<div class="fl-module fl-module-rich-text fl-node-59793676759ab dashboard-nav" data-node="59793676759ab">
-											<div class="fl-module-content fl-node-content">
-												<div class="fl-rich-text">
-													<div class="woocommerce">
-														<div class="woocommerce-MyAccount-content">
-															<div class="woocommerce-notices-wrapper"></div>
+		<div class="order-view-card">
+			<div class="woocommerce">
+				<div class="woocommerce-MyAccount-content">
+					<div class="woocommerce-notices-wrapper"></div>
 															
 															<p>
 																Order <mark class="order-number">#{order.number}</mark> was placed on 
@@ -236,19 +226,9 @@
 																	{/if}
 																</address>
 															</section>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
 				</div>
 			</div>
-		</section>
+		</div>
 	</div>
 </div>
 
@@ -280,58 +260,39 @@
 	.dashboard__content {
 		background: #f5f5f5;
 		min-height: calc(100vh - 60px);
-		padding: 30px;
+		padding: 40px 30px;
 	}
 
 	.dashboard__content-main {
-		max-width: 1200px;
+		max-width: 1100px;
 		margin: 0 auto;
 	}
 
-	.dashboard__content-section {
-		padding: 0;
-	}
-
-	/* Beaver Builder Structure */
-	.fl-builder-content {
-		width: 100%;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.fl-row-bg-color {
-		background-color: #ffffff;
-	}
-
-	.fl-row-fixed-width {
-		max-width: 1100px;
-	}
-
-	.fl-col-group {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	.fl-col {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.fl-rich-text {
-		font-family: 'Montserrat', sans-serif;
-		line-height: 1.6;
+	/* Professional Card Container */
+	.order-view-card {
+		background: #ffffff;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		padding: 40px;
+		margin-bottom: 30px;
 	}
 
 	/* WooCommerce Content */
 	.woocommerce {
-		background: #fff;
-		font-family: 'Montserrat', sans-serif;
+		background: transparent;
+		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+	}
+
+	.woocommerce-MyAccount-content {
+		padding: 0;
 	}
 
 	.woocommerce-MyAccount-content p {
-		font-size: 14px;
-		line-height: 1.6;
+		font-size: 15px;
+		line-height: 1.8;
 		color: #515151;
-		margin-bottom: 20px;
+		margin-bottom: 30px;
+		padding: 0;
 	}
 
 	mark {
@@ -371,20 +332,26 @@
 	}
 
 	.woocommerce-order-details {
-		margin-top: 30px;
+		margin-top: 40px;
+		padding-top: 30px;
+		border-top: 1px solid #e9ecef;
 	}
 
 	.woocommerce-order-details__title {
 		font-size: 20px;
 		font-weight: 600;
-		margin-bottom: 20px;
+		margin-bottom: 24px;
 		color: #333;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.woocommerce-table {
 		width: 100%;
 		border-collapse: collapse;
-		margin-bottom: 30px;
+		margin-bottom: 40px;
+		border: 1px solid #e9ecef;
+		border-radius: 6px;
+		overflow: hidden;
 	}
 
 	.woocommerce-table thead {
@@ -393,19 +360,30 @@
 	}
 
 	.woocommerce-table thead th {
-		padding: 12px 16px;
-		font-size: 14px;
+		padding: 16px 20px;
+		font-size: 13px;
 		font-weight: 600;
 		text-align: left;
 		color: #495057;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
 	}
 
 	.woocommerce-table tbody tr {
 		border-bottom: 1px solid #e9ecef;
+		transition: background-color 0.15s ease;
+	}
+
+	.woocommerce-table tbody tr:hover {
+		background-color: #f8f9fa;
+	}
+
+	.woocommerce-table tbody tr:last-child {
+		border-bottom: none;
 	}
 
 	.woocommerce-table tbody td {
-		padding: 12px 16px;
+		padding: 16px 20px;
 		font-size: 14px;
 		color: #495057;
 	}
@@ -415,9 +393,13 @@
 		font-weight: 400;
 	}
 
+	.woocommerce-table tfoot {
+		background: #fafbfc;
+	}
+
 	.woocommerce-table tfoot th,
 	.woocommerce-table tfoot td {
-		padding: 10px 16px;
+		padding: 14px 20px;
 		font-size: 14px;
 	}
 
@@ -432,12 +414,17 @@
 		color: #333;
 	}
 
+	.woocommerce-table tfoot tr:last-child {
+		background: #f1f3f5;
+	}
+
 	.woocommerce-table tfoot tr:last-child th,
 	.woocommerce-table tfoot tr:last-child td {
-		font-size: 16px;
+		font-size: 17px;
 		font-weight: 700;
-		padding-top: 16px;
-		border-top: 2px solid #e9ecef;
+		padding: 18px 20px;
+		border-top: 2px solid #dee2e6;
+		color: #0984ae;
 	}
 
 	.woocommerce-Price-amount {
@@ -445,19 +432,24 @@
 	}
 
 	.woocommerce-customer-details {
-		margin-top: 30px;
+		margin-top: 40px;
+		padding: 24px;
+		background: #f8f9fa;
+		border-radius: 6px;
+		border-left: 4px solid #0984ae;
 	}
 
 	.woocommerce-column__title {
 		font-size: 18px;
 		font-weight: 600;
-		margin-bottom: 16px;
+		margin-bottom: 20px;
 		color: #333;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	address {
 		font-style: normal;
-		line-height: 1.8;
+		line-height: 1.9;
 		color: #495057;
 		font-size: 14px;
 	}
@@ -480,8 +472,9 @@
 	header h2 {
 		font-size: 18px;
 		font-weight: 600;
-		margin: 30px 0 20px;
+		margin: 40px 0 24px;
 		color: #333;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.shop_table_responsive {
@@ -530,7 +523,33 @@
 		background: #076a8a;
 	}
 
+	/* Responsive */
 	@media (max-width: 768px) {
+		.dashboard__content {
+			padding: 20px 15px;
+		}
+
+		.order-view-card {
+			padding: 24px 20px;
+			border-radius: 6px;
+		}
+
+		.woocommerce-MyAccount-content p {
+			font-size: 14px;
+			margin-bottom: 20px;
+		}
+
+		.woocommerce-order-details {
+			margin-top: 30px;
+			padding-top: 20px;
+		}
+
+		.woocommerce-customer-details {
+			padding: 20px;
+			margin-top: 30px;
+		}
+
+
 		.woocommerce-table thead {
 			display: none;
 		}
