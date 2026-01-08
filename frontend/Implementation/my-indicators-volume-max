@@ -16,21 +16,21 @@
 	<meta name='robots' content='noindex, follow' />
 
 	<!-- This site is optimized with the Yoast SEO Premium plugin v19.2.1 (Yoast SEO v20.12) - https://yoast.com/wordpress/plugins/seo/ -->
-	<title>My Indicators - Simpler Trading</title>
+	<title>Volume Max Tool Kit (formerly VWAP) - Simpler Trading</title>
 	<meta property="og:locale" content="en_US" />
 	<meta property="og:type" content="article" />
-	<meta property="og:title" content="My Indicators" />
-	<meta property="og:url" content="https://my.simplertrading.com/dashboard/indicators" />
+	<meta property="og:title" content="Volume Max Tool Kit (formerly VWAP)" />
+	<meta property="og:url" content="https://my.simplertrading.com/indicators/volume-max-i" />
 	<meta property="og:site_name" content="Simpler Trading" />
 	<meta property="article:publisher" content="https://www.facebook.com/simplerofficial/" />
-	<meta property="article:modified_time" content="2022-10-07T16:30:39+00:00" />
+	<meta property="article:modified_time" content="2024-08-28T20:26:47+00:00" />
 	<meta property="og:image" content="https://cdn.simplertrading.com/dev/wp-content/uploads/2018/02/27105517/open-graph.jpg" />
 	<meta property="og:image:width" content="1200" />
 	<meta property="og:image:height" content="630" />
 	<meta property="og:image:type" content="image/jpeg" />
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:site" content="@simpleroptions" />
-	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://my.simplertrading.com/dashboard/indicators","url":"https://my.simplertrading.com/dashboard/indicators","name":"My Indicators - Simpler Trading","isPartOf":{"@id":"https://my.simplertrading.com/#website"},"datePublished":"2019-12-16T21:22:33+00:00","dateModified":"2022-10-07T16:30:39+00:00","breadcrumb":{"@id":"https://my.simplertrading.com/dashboard/indicators#breadcrumb"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://my.simplertrading.com/dashboard/indicators"]}]},{"@type":"BreadcrumbList","@id":"https://my.simplertrading.com/dashboard/indicators#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.simplertrading.com/"},{"@type":"ListItem","position":2,"name":"Member Dashboard","item":"https://my.simplertrading.com/dashboard"},{"@type":"ListItem","position":3,"name":"My Indicators"}]},{"@type":"WebSite","@id":"https://my.simplertrading.com/#website","url":"https://my.simplertrading.com/","name":"Simpler Trading","description":"Trading Made Simple","publisher":{"@id":"https://my.simplertrading.com/#organization"},"potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://my.simplertrading.com/?s={search_term_string}"},"query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"Organization","@id":"https://my.simplertrading.com/#organization","name":"Simpler Trading","url":"https://my.simplertrading.com/","logo":{"@type":"ImageObject","inLanguage":"en-US","@id":"https://my.simplertrading.com/#/schema/logo/image/","url":"https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png","contentUrl":"https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png","width":901,"height":80,"caption":"Simpler Trading"},"image":{"@id":"https://my.simplertrading.com/#/schema/logo/image/"},"sameAs":["https://www.facebook.com/simplerofficial/","https://twitter.com/simpleroptions","https://www.instagram.com/simplertrading/","https://www.linkedin.com/company/4418329/","https://www.youtube.com/user/SimplerOptions"]}]}</script>
+	<script type="application/ld+json" class="yoast-schema-graph">{"@context":"https://schema.org","@graph":[{"@type":"WebPage","@id":"https://my.simplertrading.com/indicators/volume-max-i","url":"https://my.simplertrading.com/indicators/volume-max-i","name":"Volume Max Tool Kit (formerly VWAP) - Simpler Trading","isPartOf":{"@id":"https://my.simplertrading.com/#website"},"datePublished":"2022-10-17T19:08:18+00:00","dateModified":"2024-08-28T20:26:47+00:00","breadcrumb":{"@id":"https://my.simplertrading.com/indicators/volume-max-i#breadcrumb"},"inLanguage":"en-US","potentialAction":[{"@type":"ReadAction","target":["https://my.simplertrading.com/indicators/volume-max-i"]}]},{"@type":"BreadcrumbList","@id":"https://my.simplertrading.com/indicators/volume-max-i#breadcrumb","itemListElement":[{"@type":"ListItem","position":1,"name":"Home","item":"https://www.simplertrading.com/"},{"@type":"ListItem","position":2,"name":"Volume Max Tool Kit (formerly VWAP)"}]},{"@type":"WebSite","@id":"https://my.simplertrading.com/#website","url":"https://my.simplertrading.com/","name":"Simpler Trading","description":"Trading Made Simple","publisher":{"@id":"https://my.simplertrading.com/#organization"},"potentialAction":[{"@type":"SearchAction","target":{"@type":"EntryPoint","urlTemplate":"https://my.simplertrading.com/?s={search_term_string}"},"query-input":"required name=search_term_string"}],"inLanguage":"en-US"},{"@type":"Organization","@id":"https://my.simplertrading.com/#organization","name":"Simpler Trading","url":"https://my.simplertrading.com/","logo":{"@type":"ImageObject","inLanguage":"en-US","@id":"https://my.simplertrading.com/#/schema/logo/image/","url":"https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png","contentUrl":"https://cdn.simplertrading.com/2018/11/08120448/Trademark-Simpler-Logo-White.png","width":901,"height":80,"caption":"Simpler Trading"},"image":{"@id":"https://my.simplertrading.com/#/schema/logo/image/"},"sameAs":["https://www.facebook.com/simplerofficial/","https://twitter.com/simpleroptions","https://www.instagram.com/simplertrading/","https://www.linkedin.com/company/4418329/","https://www.youtube.com/user/SimplerOptions"]}]}</script>
 	<!-- / Yoast SEO Premium plugin. -->
 
 
@@ -1757,6 +1757,100 @@ figure.weekly_watchlist .article-card__title {
 
 
 </style>
+<style id='fl-builder-layout-81420-inline-css' type='text/css'>
+
+
+
+
+
+.fl-node-59de760b3cd10 > .fl-row-content-wrap {
+	background-color: #ffffff;
+	border-top-width: 1px;
+	border-right-width: 0px;
+	border-bottom-width: 1px;
+	border-left-width: 0px;
+}
+ .fl-node-59de760b3cd10 > .fl-row-content-wrap {
+	padding-top:60px;
+	padding-bottom:60px;
+}
+
+
+
+
+.fl-node-5a317c8155e77 {
+	width: 100%;
+}
+
+
+
+
+.fl-node-5bfeb7b424689 {
+	width: 100%;
+}
+
+
+
+
+.fl-node-5e4419ede4dc1 {
+	width: 100%;
+}
+
+
+
+
+.fl-node-59de760b3ce73 {
+	width: 100%;
+}
+
+
+
+
+.fl-node-5e441bb106ff4 {
+	width: 100%;
+}
+.fl-module-heading .fl-heading {
+	padding: 0 !important;
+	margin: 0 !important;
+}.fl-node-5a317c8e5f4c9.fl-module-heading .fl-heading {
+	font-family: "Open Sans", sans-serif;
+	font-weight: 600;
+	text-align: left;
+}
+.fl-node-5a317c8155ca5 .fl-separator {
+	border-top-width: 1px;
+	border-top-style: solid;
+	border-top-color: #cccccc;
+	max-width: 100%;
+	margin: auto;
+}
+
+	@media (max-width: 992px) {
+		.fl-node-5a317c8155ca5 .fl-separator {
+											}
+	}
+	@media (max-width: 768px) {
+		.fl-node-5a317c8155ca5 .fl-separator {
+											}
+	}
+ .fl-node-5a317c8155ca5 > .fl-module-content {
+	margin-top:0px;
+	margin-bottom:0px;
+}
+
+/* Start Global Nodes CSS */
+
+/* End Global Nodes CSS */
+
+
+/* Start Layout CSS */
+.entry-content {
+    background: #f7f7f7;
+}
+/* End Layout CSS */
+
+
+</style>
 <link rel='stylesheet' id='metorik-css-css' href='https://www.simplertrading.com/wp-content/plugins/metorik-helper/assets/css/metorik.css?ver=1.6.3' type='text/css' media='all' />
 <link rel='stylesheet' id='wc-memberships-frontend-css' href='https://www.simplertrading.com/wp-content/plugins/woocommerce-memberships/assets/css/frontend/wc-memberships-frontend.min.css?ver=1.25.0' type='text/css' media='all' />
 <link rel='stylesheet' id='dashicons-css' href='https://www.simplertrading.com/cms/wp-includes/css/dashicons.min.css?ver=6.5.5' type='text/css' media='all' />
@@ -1791,12 +1885,12 @@ h1.entry-title{font-weight:bold;}.navigation-branding .main-title{font-weight:bo
 <link rel='stylesheet' id='wlion-global-css' href='https://www.simplertrading.com/wp-content/themes/simpler-trading/build/global.95a93139.css?ver=1764891004' type='text/css' media='all' />
 <link rel='stylesheet' id='introjsstyle-css' href='https://www.simplertrading.com/wp-content/themes/simpler-trading/assets/css/introjs.min.css?ver=1.0.0' type='text/css' media='' />
 <link rel='stylesheet' id='slick_style-css' href='https://www.simplertrading.com/wp-content/themes/simpler-trading/assets/css/slick.css?ver=1.8.1' type='text/css' media='' />
-<link rel='stylesheet' id='wlion-dashboard-css' href='https://www.simplertrading.com/wp-content/themes/simpler-trading/build/dashboard.8f78208b.css?ver=1764891004' type='text/css' media='all' />
-<link rel='stylesheet' id='fl-builder-google-fonts-90e3a935a526a58321e47b94db858e5b-css' href='//fonts.googleapis.com/css?family=Open+Sans%3A400%2C700&#038;ver=6.5.5' type='text/css' media='all' />
+<link rel='stylesheet' id='wlion-custom-posts-css' href='https://www.simplertrading.com/wp-content/themes/simpler-trading/build/custom-posts.a3b0831a.css?ver=1764891004' type='text/css' media='all' />
+<link rel='stylesheet' id='fl-builder-google-fonts-47271b3298349d5ff4c367234bb30736-css' href='//fonts.googleapis.com/css?family=Open+Sans%3A600%2C400%2C700&#038;ver=6.5.5' type='text/css' media='all' />
 <link rel='stylesheet' id='google-fonts-1-css' href='https://fonts.googleapis.com/css?family=Roboto%3A100%2C100italic%2C200%2C200italic%2C300%2C300italic%2C400%2C400italic%2C500%2C500italic%2C600%2C600italic%2C700%2C700italic%2C800%2C800italic%2C900%2C900italic&#038;display=auto&#038;ver=6.5.5' type='text/css' media='all' />
 <link rel="preconnect" href="https://fonts.gstatic.com/" crossorigin><script type="text/javascript" id="localStorage-js-extra">
 /* <![CDATA[ */
-var st_user_memberships = {"memberships":{"notActive":[],"active":[],"paused":[],"trial":["mastering_the_trade"],"complimentary":[]},"user_tags":[],"subscriptions":{"monthly":["mastering_the_trade"],"quarterly":[],"annually":[]}};
+var st_user_memberships = {"memberships":{"notActive":["free_trading_room","sector_secrets_mastery","tr3ndy_trading","scanner","voodoolines","five_star_trader_mastery","futuresgold","fibonaccigold","bias","mastering_the_trade"],"active":[],"paused":[],"trial":[],"complimentary":[]},"user_tags":["1779","1789","1811","1812","1813","1814","1817","1823","1824","1825","1891","1892","1899","1900","1904","1905","1909","1928","1929","1930","1934","1935","1940","1941","1942","1954","1959","1960","1979","1994","1995","2023","2024","2046","2047","2052","2053","2061","2062","2096","2097","2109","2116","2117","2118","2125","2126","2128","2129","2136","2139","2173","2212","2213","2215","2216","2217","2220","2226","2274","2275","2294","2295","2296","2297","2308","2315","2316","2317","2321","2325","2332","2334","2335","2336","2337","2338","2352","2353","2355","2356","2387","2420","2426","2427","2445","2446","2497","2498","2504","2508","2509","2534","2567","2589","2601","2602","2606","2616","2622","2634","2671","2672","2675","2737","2738","2742","2743","2753","2766","2767","2768","2950","2976","2977","2984","2985","3060","3067","3093","3094","3125","3143","3146","3177","3178","3180","3190","3192","3276","3281","3321","3672","3677","3703","3708"],"subscriptions":{"monthly":[],"quarterly":[],"annually":[]}};
 /* ]]> */
 </script>
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/themes/simpler-trading/assets/js/localStorage.js?ver=1.1.1" id="localStorage-js"></script>
@@ -1807,7 +1901,7 @@ var st_user_memberships = {"memberships":{"notActive":[],"active":[],"paused":[]
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/plugins/pixelyoursite-pro/dist/scripts/jquery.bind-first-0.2.3.min.js?ver=6.5.5" id="jquery-bind-first-js"></script>
 <script type="text/javascript" id="pys-js-extra">
 /* <![CDATA[ */
-var pysOptions = {"staticEvents":{"facebook":{"init_event":[{"delay":0,"type":"static","name":"PageView","eventID":"8e6701ad-60ab-4f74-ad33-5c7ed03110ef","pixelIds":["841178052635402"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"init_event","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""}]}},"dynamicEvents":{"automatic_event_internal_link":{"facebook":{"delay":0,"type":"dyn","name":"InternalClick","eventID":"fa22e8c6-ddd8-4db2-a714-05a8cd4e91ca","pixelIds":["841178052635402"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_internal_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"InternalClick","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_internal_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"InternalClick","conversion_ids":["AW-953127058"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_internal_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_outbound_link":{"facebook":{"delay":0,"type":"dyn","name":"OutboundClick","eventID":"b5e4bf08-f392-4caf-a481-c9a42bfdfce8","pixelIds":["841178052635402"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_outbound_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"OutboundClick","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_outbound_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"OutboundClick","conversion_ids":["AW-953127058"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_outbound_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_video":{"facebook":{"delay":0,"type":"dyn","name":"WatchVideo","eventID":"08113c17-9d5a-4f7f-9bf6-f55dc1697b69","pixelIds":["841178052635402"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_video","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"WatchVideo","youtube_disabled":false,"trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_video","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"WatchVideo","conversion_ids":["AW-953127058"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_video","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_tel_link":{"facebook":{"delay":0,"type":"dyn","name":"TelClick","eventID":"a32c2d13-b6c6-48bf-96ac-86b4c2e6d043","pixelIds":["841178052635402"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_tel_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"TelClick","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_tel_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"TelClick","conversion_ids":["AW-953127058"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_tel_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_email_link":{"facebook":{"delay":0,"type":"dyn","name":"EmailClick","eventID":"b2229b49-ef25-49c7-9f8b-da19661cfed0","pixelIds":["841178052635402"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_email_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"EmailClick","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_email_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"EmailClick","conversion_ids":["AW-953127058"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_email_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_form":{"facebook":{"delay":0,"type":"dyn","name":"Form","eventID":"9bedf939-dfaa-4d47-89c9-2ca239b8a18d","pixelIds":["841178052635402"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_form","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"Form","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_form","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"Form","conversion_ids":["AW-953127058"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_form","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_download":{"facebook":{"delay":0,"type":"dyn","name":"Download","extensions":["","doc","exe","js","pdf","ppt","tgz","zip","xls"],"eventID":"d05fc309-3340-4ae0-9c1c-d2f5280d3671","pixelIds":["841178052635402"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_download","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"Download","extensions":["","doc","exe","js","pdf","ppt","tgz","zip","xls"],"trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_download","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"Download","extensions":["","doc","exe","js","pdf","ppt","tgz","zip","xls"],"conversion_ids":["AW-953127058"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_download","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_comment":{"facebook":{"delay":0,"type":"dyn","name":"Comment","eventID":"61c8a0bf-2905-4922-b72c-498699e1d449","pixelIds":["841178052635402"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_comment","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"Comment","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_comment","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"Comment","conversion_ids":["AW-953127058"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"automatic_event_comment","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}}},"triggerEvents":{"1776881":{"facebook":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-webreg"],"hasTimeWindow":true,"timeWindow":24,"name":"CompleteRegistration","eventID":"cdf8c944-8b6b-45cd-bf5c-918399ea4bef","pixelIds":["841178052635402"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"custom_event","ids":[],"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-webreg"],"hasTimeWindow":true,"timeWindow":24,"name":"Webinar_Registration","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-webreg"],"hasTimeWindow":true,"timeWindow":24,"name":"generate_lead","conversion_labels":["AW-953127058\/ECb3CIWrtK4ZEJKhvsYD"],"params":{"value":2,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""},"bing":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-webreg"],"hasTimeWindow":true,"timeWindow":24,"name":"lead_capture","pixel_ids":["25038927"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""}},"1743980":{"facebook":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-submit"],"hasTimeWindow":true,"timeWindow":24,"name":"Lead","eventID":"85c4c228-9eba-49f6-b472-ba5f44d56eb5","pixelIds":["841178052635402"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"custom_event","ids":[],"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-submit"],"hasTimeWindow":true,"timeWindow":24,"name":"Free_Course_OptIn","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-submit"],"hasTimeWindow":true,"timeWindow":24,"name":"generate_lead","conversion_labels":["AW-953127058\/ECb3CIWrtK4ZEJKhvsYD"],"params":{"value":1,"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""},"bing":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-submit"],"hasTimeWindow":true,"timeWindow":24,"name":"lead_capture","pixel_ids":["25038927"],"params":{"page_title":"My Indicators","post_type":"page","post_id":1021444,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/dashboard\/indicators","user_role":"subscriber"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""}}},"triggerEventTypes":{"css_click":{"1776881":[".pys-webreg"],"1743980":[".pys-submit"]}},"facebook":{"pixelIds":["841178052635402"],"advancedMatching":{"fn":"sergio","ln":"bellotti","em":"willribeirodrums@outlook.com","ph":"8082765515","ct":"wolcott","st":"ct","country":"us"},"removeMetadata":false,"wooVariableAsSimple":true,"serverApiEnabled":true,"ajaxForServerEvent":true,"wooCRSendFromServer":false,"send_external_id":true},"ga":{"trackingIds":["G-60BCN08ZC1"],"enhanceLinkAttr":true,"anonimizeIP":false,"retargetingLogic":"ecomm","crossDomainEnabled":true,"crossDomainAcceptIncoming":true,"crossDomainDomains":["https:\/\/go.simplertrading.com"],"wooVariableAsSimple":false,"isDebugEnabled":["index_0"],"disableAdvertisingFeatures":false,"disableAdvertisingPersonalization":false},"google_ads":{"conversion_ids":["AW-953127058"],"enhanced_conversion":["index_0"],"wooVariableAsSimple":false,"user_data":{"email":"willribeirodrums@outlook.com","address":{"first_name":"Sergio","last_name":"Bellotti"}}},"bing":{"pixelId":"25038927"},"debug":"","siteUrl":"https:\/\/www.simplertrading.com\/cms","ajaxUrl":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php","trackUTMs":"1","trackTrafficSource":"1","user_id":"96112","enable_lading_page_param":"1","cookie_duration":"30","enable_event_day_param":"1","enable_event_month_param":"1","enable_event_time_param":"1","enable_remove_target_url_param":"","enable_remove_download_url_param":"","visit_data_model":"first_visit","last_visit_duration":"60","gdpr":{"ajax_enabled":false,"all_disabled_by_api":false,"facebook_disabled_by_api":false,"tiktok_disabled_by_api":false,"analytics_disabled_by_api":false,"google_ads_disabled_by_api":false,"pinterest_disabled_by_api":false,"bing_disabled_by_api":false,"facebook_prior_consent_enabled":true,"tiktok_prior_consent_enabled":true,"analytics_prior_consent_enabled":true,"google_ads_prior_consent_enabled":true,"pinterest_prior_consent_enabled":true,"bing_prior_consent_enabled":true,"cookiebot_integration_enabled":false,"cookiebot_facebook_consent_category":"marketing","cookiebot_analytics_consent_category":"statistics","cookiebot_google_ads_consent_category":"marketing","cookiebot_pinterest_consent_category":"marketing","cookiebot_bing_consent_category":"marketing","cookie_notice_integration_enabled":false,"cookie_law_info_integration_enabled":false,"real_cookie_banner_integration_enabled":false,"consent_magic_integration_enabled":true},"automatic":{"enable_youtube":true,"enable_vimeo":true,"enable_video":true},"woo":{"enabled":true,"addToCartOnButtonEnabled":true,"addToCartOnButtonValueEnabled":true,"addToCartOnButtonValueOption":"price","woo_purchase_on_transaction":true,"singleProductId":null,"affiliateEnabled":false,"removeFromCartSelector":"form.woocommerce-cart-form .remove","addToCartCatchMethod":"add_cart_hook","is_order_received_page":false,"containOrderId":false,"affiliateEventName":"Lead"},"edd":{"enabled":false}};
+var pysOptions = {"staticEvents":{"facebook":{"init_event":[{"delay":0,"type":"static","name":"PageView","eventID":"ca3abc14-ee88-415a-b9f4-0a31d4d8bad9","pixelIds":["841178052635402"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"init_event","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""}]}},"dynamicEvents":{"automatic_event_internal_link":{"facebook":{"delay":0,"type":"dyn","name":"InternalClick","eventID":"539ee0db-6b4e-499c-a1e2-1ce0877f316a","pixelIds":["841178052635402"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_internal_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"InternalClick","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_internal_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"InternalClick","conversion_ids":["AW-953127058"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_internal_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_outbound_link":{"facebook":{"delay":0,"type":"dyn","name":"OutboundClick","eventID":"5933942f-0d9e-4163-82aa-bae811792e70","pixelIds":["841178052635402"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_outbound_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"OutboundClick","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_outbound_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"OutboundClick","conversion_ids":["AW-953127058"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_outbound_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_video":{"facebook":{"delay":0,"type":"dyn","name":"WatchVideo","eventID":"679dac89-8707-4e84-bc08-c2ea22a919fb","pixelIds":["841178052635402"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_video","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"WatchVideo","youtube_disabled":false,"trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_video","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"WatchVideo","conversion_ids":["AW-953127058"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_video","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_tel_link":{"facebook":{"delay":0,"type":"dyn","name":"TelClick","eventID":"3453a941-feaa-43da-84dd-11eb6562fce1","pixelIds":["841178052635402"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_tel_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"TelClick","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_tel_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"TelClick","conversion_ids":["AW-953127058"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_tel_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_email_link":{"facebook":{"delay":0,"type":"dyn","name":"EmailClick","eventID":"d250f3c8-3928-4993-a6f5-7401d9de21be","pixelIds":["841178052635402"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_email_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"EmailClick","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_email_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"EmailClick","conversion_ids":["AW-953127058"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_email_link","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_form":{"facebook":{"delay":0,"type":"dyn","name":"Form","eventID":"418fe29c-c326-4930-980b-aaa73dcf7c2f","pixelIds":["841178052635402"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_form","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"Form","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_form","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"Form","conversion_ids":["AW-953127058"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_form","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_download":{"facebook":{"delay":0,"type":"dyn","name":"Download","extensions":["","doc","exe","js","pdf","ppt","tgz","zip","xls"],"eventID":"2f73413c-6bf5-4c1a-8b19-b8332f44d286","pixelIds":["841178052635402"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_download","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"Download","extensions":["","doc","exe","js","pdf","ppt","tgz","zip","xls"],"trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_download","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"Download","extensions":["","doc","exe","js","pdf","ppt","tgz","zip","xls"],"conversion_ids":["AW-953127058"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_download","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}},"automatic_event_comment":{"facebook":{"delay":0,"type":"dyn","name":"Comment","eventID":"0dab3f97-e67a-45a0-bf5e-8b2de171a432","pixelIds":["841178052635402"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_comment","ids":[],"hasTimeWindow":false,"timeWindow":0,"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"dyn","name":"Comment","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_comment","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"dyn","name":"Comment","conversion_ids":["AW-953127058"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"automatic_event_comment","ids":[],"hasTimeWindow":false,"timeWindow":0,"eventID":"","woo_order":"","edd_order":""}}},"triggerEvents":{"1776881":{"facebook":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-webreg"],"hasTimeWindow":true,"timeWindow":24,"name":"CompleteRegistration","eventID":"13a8bf1f-a642-4caa-9b3d-d28d1667cf01","pixelIds":["841178052635402"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"custom_event","ids":[],"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-webreg"],"hasTimeWindow":true,"timeWindow":24,"name":"Webinar_Registration","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-webreg"],"hasTimeWindow":true,"timeWindow":24,"name":"generate_lead","conversion_labels":["AW-953127058\/ECb3CIWrtK4ZEJKhvsYD"],"params":{"value":2,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""},"bing":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-webreg"],"hasTimeWindow":true,"timeWindow":24,"name":"lead_capture","pixel_ids":["25038927"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""}},"1743980":{"facebook":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-submit"],"hasTimeWindow":true,"timeWindow":24,"name":"Lead","eventID":"cfee3a11-a0d4-4d98-9281-ed6e38cb364e","pixelIds":["841178052635402"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"custom_event","ids":[],"woo_order":"","edd_order":""},"ga":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-submit"],"hasTimeWindow":true,"timeWindow":24,"name":"Free_Course_OptIn","trackingIds":["G-60BCN08ZC1"],"params":{"non_interaction":false,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""},"google_ads":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-submit"],"hasTimeWindow":true,"timeWindow":24,"name":"generate_lead","conversion_labels":["AW-953127058\/ECb3CIWrtK4ZEJKhvsYD"],"params":{"value":1,"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""},"bing":{"delay":0,"type":"trigger","trigger_type":"css_click","trigger_value":[".pys-submit"],"hasTimeWindow":true,"timeWindow":24,"name":"lead_capture","pixel_ids":["25038927"],"params":{"page_title":"Volume Max Tool Kit (formerly VWAP)","post_type":"indicators","post_id":719939,"plugin":"PixelYourSite","event_url":"www.simplertrading.com\/indicators\/volume-max-i","user_role":"customer"},"e_id":"custom_event","ids":[],"eventID":"","woo_order":"","edd_order":""}}},"triggerEventTypes":{"css_click":{"1776881":[".pys-webreg"],"1743980":[".pys-submit"]}},"facebook":{"pixelIds":["841178052635402"],"advancedMatching":{"fn":"bill","ln":"kelly","em":"raflessilva65@gmail.com","ph":"8082328851","ct":"kihei","st":"hi","country":"us"},"removeMetadata":false,"wooVariableAsSimple":true,"serverApiEnabled":true,"ajaxForServerEvent":true,"wooCRSendFromServer":false,"send_external_id":true},"ga":{"trackingIds":["G-60BCN08ZC1"],"enhanceLinkAttr":true,"anonimizeIP":false,"retargetingLogic":"ecomm","crossDomainEnabled":true,"crossDomainAcceptIncoming":true,"crossDomainDomains":["https:\/\/go.simplertrading.com"],"wooVariableAsSimple":false,"isDebugEnabled":["index_0"],"disableAdvertisingFeatures":false,"disableAdvertisingPersonalization":false},"google_ads":{"conversion_ids":["AW-953127058"],"enhanced_conversion":["index_0"],"wooVariableAsSimple":false,"user_data":{"email":"raflessilva65@gmail.com","address":{"first_name":"Bill","last_name":"Kelly"}}},"bing":{"pixelId":"25038927"},"debug":"","siteUrl":"https:\/\/www.simplertrading.com\/cms","ajaxUrl":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php","trackUTMs":"1","trackTrafficSource":"1","user_id":"15866","enable_lading_page_param":"1","cookie_duration":"30","enable_event_day_param":"1","enable_event_month_param":"1","enable_event_time_param":"1","enable_remove_target_url_param":"","enable_remove_download_url_param":"","visit_data_model":"first_visit","last_visit_duration":"60","gdpr":{"ajax_enabled":false,"all_disabled_by_api":false,"facebook_disabled_by_api":false,"tiktok_disabled_by_api":false,"analytics_disabled_by_api":false,"google_ads_disabled_by_api":false,"pinterest_disabled_by_api":false,"bing_disabled_by_api":false,"facebook_prior_consent_enabled":true,"tiktok_prior_consent_enabled":true,"analytics_prior_consent_enabled":true,"google_ads_prior_consent_enabled":true,"pinterest_prior_consent_enabled":true,"bing_prior_consent_enabled":true,"cookiebot_integration_enabled":false,"cookiebot_facebook_consent_category":"marketing","cookiebot_analytics_consent_category":"statistics","cookiebot_google_ads_consent_category":"marketing","cookiebot_pinterest_consent_category":"marketing","cookiebot_bing_consent_category":"marketing","cookie_notice_integration_enabled":false,"cookie_law_info_integration_enabled":false,"real_cookie_banner_integration_enabled":false,"consent_magic_integration_enabled":true},"automatic":{"enable_youtube":true,"enable_vimeo":true,"enable_video":true},"woo":{"enabled":true,"addToCartOnButtonEnabled":true,"addToCartOnButtonValueEnabled":true,"addToCartOnButtonValueOption":"price","woo_purchase_on_transaction":true,"singleProductId":null,"affiliateEnabled":false,"removeFromCartSelector":"form.woocommerce-cart-form .remove","addToCartCatchMethod":"add_cart_hook","is_order_received_page":false,"containOrderId":false,"affiliateEventName":"Lead"},"edd":{"enabled":false}};
 /* ]]> */
 </script>
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/plugins/pixelyoursite-pro/dist/scripts/public.js?ver=9.2.2" id="pys-js"></script>
@@ -1816,22 +1910,22 @@ var pysOptions = {"staticEvents":{"facebook":{"init_event":[{"delay":0,"type":"s
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/plugins/pixelyoursite-pro/dist/scripts/vimeo.min.js?ver=6.5.5" id="vimeo-js"></script>
 <script type="text/javascript" id="consent-magic-js-extra">
 /* <![CDATA[ */
-var CS_Data = {"nn_cookie_ids":[],"non_necessary_cookies":[],"cookielist":{"3865":{"term_id":3865,"name":"Necessary","slug":"necessary","ignore":0},"3866":{"term_id":3866,"name":"Analytics","slug":"analytics","ignore":0},"3867":{"term_id":3867,"name":"Marketing","slug":"marketing","ignore":0},"3868":{"term_id":3868,"name":"Google Fonts","slug":"googlefonts","ignore":0},"3869":{"term_id":3869,"name":"Unassigned","slug":"unassigned","ignore":"1"},"3870":{"term_id":3870,"name":"Embedded Videos","slug":"embedded_video","ignore":0}},"ajax_url":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php","current_lang":"en","security":"b08d239243","consentVersion":"1","cs_cookie_domain":"","privacy_length":"250","cs_expire_days":"180","cs_script_cat":{"facebook":0,"analytics":0,"gads":0,"pinterest":0,"bing":0,"adsense":0,"hubspot":0,"matomo":0,"maps":0,"addthis":0,"sharethis":0,"soundcloud":0,"slideshare":0,"instagram":0,"hotjar":0,"tiktok":0,"twitter":0,"youtube":0,"googlefonts":0,"google_captcha":0,"reddit":0,"pys":3865,"conversion_exporter":3867},"cs_proof_expire":"360","cs_default_close_on_scroll":"60","cs_track_analytics":"0","test_prefix":"","cs_refresh_after_consent":"0","cs_consent_for_pys":"1","cs_track_before_consent_expressed_for_pys":"1","cs_video_placeholder_text":"<div><p>Accept consent to view this<\/p><\/div><div><a class='cs_manage_current_consent' data-cs-script-type='3870' data-cs-manage='manage_placeholder'>Click to allow Embedded Videos<\/a><\/div>","cs_google_consent_mode":{"analytics_storage":{"enabled":true,"value":"denied","filter":false,"category":3866},"ad_storage":{"enabled":true,"value":"denied","filter":false,"category":3867},"ad_user_data":{"enabled":true,"value":"denied","filter":false,"category":3867},"ad_personalization":{"enabled":true,"value":"denied","filter":false,"category":3867}},"cs_google_consent_mode_enabled":"1","cs_bing_consent_mode":{"ad_storage":{"filter":0,"category":3867}},"cs_bing_consent_mode_enabled":"0","cs_reddit_ldu_mode":"0","cs_url_passthrough_mode":{"enabled":false,"value":true,"filter":false},"cs_meta_ldu_mode":"0","cs_block_video_personal_data":"0","cs_necessary_cat_id":"3865","cs_cache_label":"1767898182","cs_cache_enabled":"1","cs_active_rule":"2172652","cs_active_rule_name":"ask_before_tracking","cs_showing_rule_until_express_consent":"0","cs_minimum_recommended":{"3866":1,"3870":1,"3868":1,"3867":1,"cs_enabled_advanced_matching":1,"cs_enabled_server_side":1},"cs_deny_consent_for_close":"1","cs_run_scripts":"1","cs_iab":{"enabled":0,"native_scripts":"0"},"cs_translations":{"cs_iab_name":"Name","cs_iab_domain":"Domain","cs_iab_purposes":"Purposes","cs_iab_expiry":"Expiry","cs_iab_type":"Type","cs_iab_cookie_details":"Cookie Details","cs_iab_years":"% year(s)","cs_iab_months":"% month(s)","cs_iab_days":"% day(s)","cs_iab_hours":"% hour(s)","cs_iab_minutes":"% minute(s)","cs_iab_legitimate_interest":"Legitimate Interest","cs_iab_privacy_policy":"Privacy policy","cs_iab_special_purposes":"Special Purposes","cs_iab_features":"Features","cs_iab_special_features":"Special Features","cs_iab_data_categories":"Data categories","cs_iab_storage_methods":"Storage methods or accessing","cs_iab_cookies_and_others":"Cookies and others","cs_iab_other_methods":"Other methods","cs_iab_consent_preferences":"Consent Preferences","cs_iab_cookie_refreshed":"Cookie expiry may be refreshed","cs_iab_show_cookie_details":"Show cookie details","cs_iab_nodata":"No data","cs_iab_btn_text_allow":"Allow"},"cs_design_type":"multi","cs_embedded_video":{"block":false},"cs_wp_consent_api":{"enabled":false,"consent_type":"optin","categories":{"statistics":{"name":"Statistics","slug":"statistics","ids":[3866]},"preferences":{"name":"Preferences","slug":"preferences","ids":[3870,3868]},"marketing":{"name":"Marketing","slug":"marketing","ids":[3867]},"functional":{"name":"Functional","slug":"functional","ids":[]},"statistics-anonymous":{"name":"Statistics-anonymous","slug":"statistics-anonymous","ids":[]}}},"cs_conversion_exporter":{"load_cookies":true},"version":"5.1.0"};
+var CS_Data = {"nn_cookie_ids":[],"non_necessary_cookies":[],"cookielist":{"3865":{"term_id":3865,"name":"Necessary","slug":"necessary","ignore":0},"3866":{"term_id":3866,"name":"Analytics","slug":"analytics","ignore":0},"3867":{"term_id":3867,"name":"Marketing","slug":"marketing","ignore":0},"3868":{"term_id":3868,"name":"Google Fonts","slug":"googlefonts","ignore":0},"3869":{"term_id":3869,"name":"Unassigned","slug":"unassigned","ignore":"1"},"3870":{"term_id":3870,"name":"Embedded Videos","slug":"embedded_video","ignore":0}},"ajax_url":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php","current_lang":"en","security":"42395a1ace","consentVersion":"1","cs_cookie_domain":"","privacy_length":"250","cs_expire_days":"180","cs_script_cat":{"facebook":0,"analytics":0,"gads":0,"pinterest":0,"bing":0,"adsense":0,"hubspot":0,"matomo":0,"maps":0,"addthis":0,"sharethis":0,"soundcloud":0,"slideshare":0,"instagram":0,"hotjar":0,"tiktok":0,"twitter":0,"youtube":0,"googlefonts":0,"google_captcha":0,"reddit":0,"pys":3865,"conversion_exporter":3867},"cs_proof_expire":"360","cs_default_close_on_scroll":"60","cs_track_analytics":"0","test_prefix":"","cs_refresh_after_consent":"0","cs_consent_for_pys":"1","cs_track_before_consent_expressed_for_pys":"1","cs_video_placeholder_text":"<div><p>Accept consent to view this<\/p><\/div><div><a class='cs_manage_current_consent' data-cs-script-type='3870' data-cs-manage='manage_placeholder'>Click to allow Embedded Videos<\/a><\/div>","cs_google_consent_mode":{"analytics_storage":{"enabled":true,"value":"denied","filter":false,"category":3866},"ad_storage":{"enabled":true,"value":"denied","filter":false,"category":3867},"ad_user_data":{"enabled":true,"value":"denied","filter":false,"category":3867},"ad_personalization":{"enabled":true,"value":"denied","filter":false,"category":3867}},"cs_google_consent_mode_enabled":"1","cs_bing_consent_mode":{"ad_storage":{"filter":0,"category":3867}},"cs_bing_consent_mode_enabled":"0","cs_reddit_ldu_mode":"0","cs_url_passthrough_mode":{"enabled":false,"value":true,"filter":false},"cs_meta_ldu_mode":"0","cs_block_video_personal_data":"0","cs_necessary_cat_id":"3865","cs_cache_label":"1767898386","cs_cache_enabled":"1","cs_active_rule":"2172652","cs_active_rule_name":"ask_before_tracking","cs_showing_rule_until_express_consent":"0","cs_minimum_recommended":{"3866":1,"3870":1,"3868":1,"3867":1,"cs_enabled_advanced_matching":1,"cs_enabled_server_side":1},"cs_deny_consent_for_close":"1","cs_run_scripts":"1","cs_iab":{"enabled":0,"native_scripts":"0"},"cs_translations":{"cs_iab_name":"Name","cs_iab_domain":"Domain","cs_iab_purposes":"Purposes","cs_iab_expiry":"Expiry","cs_iab_type":"Type","cs_iab_cookie_details":"Cookie Details","cs_iab_years":"% year(s)","cs_iab_months":"% month(s)","cs_iab_days":"% day(s)","cs_iab_hours":"% hour(s)","cs_iab_minutes":"% minute(s)","cs_iab_legitimate_interest":"Legitimate Interest","cs_iab_privacy_policy":"Privacy policy","cs_iab_special_purposes":"Special Purposes","cs_iab_features":"Features","cs_iab_special_features":"Special Features","cs_iab_data_categories":"Data categories","cs_iab_storage_methods":"Storage methods or accessing","cs_iab_cookies_and_others":"Cookies and others","cs_iab_other_methods":"Other methods","cs_iab_consent_preferences":"Consent Preferences","cs_iab_cookie_refreshed":"Cookie expiry may be refreshed","cs_iab_show_cookie_details":"Show cookie details","cs_iab_nodata":"No data","cs_iab_btn_text_allow":"Allow"},"cs_design_type":"multi","cs_embedded_video":{"block":false},"cs_wp_consent_api":{"enabled":false,"consent_type":"optin","categories":{"statistics":{"name":"Statistics","slug":"statistics","ids":[3866]},"preferences":{"name":"Preferences","slug":"preferences","ids":[3870,3868]},"marketing":{"name":"Marketing","slug":"marketing","ids":[3867]},"functional":{"name":"Functional","slug":"functional","ids":[]},"statistics-anonymous":{"name":"Statistics-anonymous","slug":"statistics-anonymous","ids":[]}}},"cs_conversion_exporter":{"load_cookies":true},"version":"5.1.0"};
 var cs_log_object = {"ajaxurl":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php"};
 /* ]]> */
 </script>
-<script src="https://www.simplertrading.com/wp-content/plugins/consent-magic-pro/assets/scripts/cs-public.min.js?ver=1767898182" type="text/javascript" integrity="sha256-LHEFUgvir59AlTamX2Pn9j+dntiZduu/xYHGzaCJRgs=" crossorigin="anonymous"></script>
+<script src="https://www.simplertrading.com/wp-content/plugins/consent-magic-pro/assets/scripts/cs-public.min.js?ver=1767898386" type="text/javascript" integrity="sha256-LHEFUgvir59AlTamX2Pn9j+dntiZduu/xYHGzaCJRgs=" crossorigin="anonymous"></script>
 <script type="text/javascript" src="https://cdn.jwplayer.com/libraries/TngQ8ly9.js?ver=8.23.2" id="jwplayer-js"></script>
 <script src="https://www.simplertrading.com/wp-content/themes/simpler-trading/assets/js/min/slick.min.js?ver=1.8.1" type="text/javascript" integrity="sha256-J76+eOO2pLFmTdT6g6jNAYfwUWMaBiSP76PvOZGlqSo=" crossorigin="anonymous"></script>
 <script src="https://www.googletagmanager.com/gtag/js?id=AW-953127058&ver=1.0.0" type="text/javascript" nonce="" async></script>
 <script src="https://www.simplertrading.com/wp-content/themes/simpler-trading/assets/js/min/googleTagManager.js?ver=1.0.0" type="text/javascript" nonce="" crossorigin="anonymous" async></script>
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/themes/simpler-trading/assets/js/training-room-archive.js?ver=1" id="videoredirect-js"></script>
-<link rel="https://api.w.org/" href="https://www.simplertrading.com/wp-json/" /><link rel="alternate" type="application/json" href="https://www.simplertrading.com/wp-json/wp/v2/pages/1021444" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.simplertrading.com/cms/xmlrpc.php?rsd" />
+<link rel="https://api.w.org/" href="https://www.simplertrading.com/wp-json/" /><link rel="EditURI" type="application/rsd+xml" title="RSD" href="https://www.simplertrading.com/cms/xmlrpc.php?rsd" />
 <meta name="generator" content="WordPress 6.5.5" />
 <meta name="generator" content="WooCommerce 7.9.0" />
-<link rel='shortlink' href='https://www.simplertrading.com/?p=1021444' />
-<link rel="alternate" type="application/json+oembed" href="https://www.simplertrading.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.simplertrading.com%2Fdashboard%2Findicators" />
-<link rel="alternate" type="text/xml+oembed" href="https://www.simplertrading.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.simplertrading.com%2Fdashboard%2Findicators&#038;format=xml" />
+<link rel='shortlink' href='https://www.simplertrading.com/?p=719939' />
+<link rel="alternate" type="application/json+oembed" href="https://www.simplertrading.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.simplertrading.com%2Findicators%2Fvolume-max-i" />
+<link rel="alternate" type="text/xml+oembed" href="https://www.simplertrading.com/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fwww.simplertrading.com%2Findicators%2Fvolume-max-i&#038;format=xml" />
 <meta name="viewport" content="width=device-width, initial-scale=1">	<noscript><style>.woocommerce-product-gallery{ opacity: 1 !important; }</style></noscript>
 	<meta name="generator" content="Elementor 3.11.5; settings: css_print_method-internal, google_font-enabled, font_display-auto">
 <link rel="icon" type="image/png" href="https://cdn.simplertrading.com/2022/08/27170204/favicon.png" />
@@ -1849,7 +1943,7 @@ const setupRichpanelMessengerConfiguration = function (properties) {
 	}
 };
 
-setupRichpanelMessengerConfiguration({"data":"37b33637d5629b9efd6b63067e4ebe4e:8252d258ef06ba0e6735580442a10c94d91011bb664e0fb2a8f93255418cc691d5aca26bf79d563cab98ffb4ea32acd62f752382b61129e426591dc9ee9a87e6cac756a2c3ec26f8e2b6c4239586fb14b0ea74bffe2239ea3ea5be005bf98fd1d16e6d15beb7be4201cadbe8634e99f5f9b215b24423c687530515075b9373a75cfd7db7b4de6ac896215bb3fd4d20631febb290f973b6e4ab2cbdc4193ad9214a05b72d47bdb42682963a35b418ad602daf549ad77135d331bcceda7f1725abc436c28d74604210c3d50ce3e7b0fc5102dabb3ee9659705d0c8d7ddce8881804b2dfe762825cd2aeb722c1cd8f57c0962fc6042711fe6b7a23fc1180cce0fd8ca6cc6bcc3a9033ca9de33b39435727555cf68dd697470012e745906c3a2fa275e1fdbc6cbd91af4d67851aea4879c8120f97eb6dd14297d042289e068e7fe29ddadee92fa7f5bdda3f75c307507083ee270043809d67e34935a643400dde2bc9baf2c62890d7eb5bbd20930d3ea11e0185032cb6883f831cc6f7ea8f745ee78d7f847a0c3ce08d08c5db96d1fe21d9d7dde265ee0d01d2d9a7c32d4e01589fe47c6be1559c79c97b592c4f35350c602c6685eb232afa4101c38dffe4997b69f734882a357981c68510e664d608d12ff99e60d4d02d16c595a486e39b0fc5e6ca5b9d7ae828c4eb23ba5ea75b9f173ebc9cf30b5b98bbcc0527e5eda20c0e78c9b8e09bdb0011f937ecd5d1c9b34dbba5709ba5d80aa0a77d5bd4c9751c20c883003809132a327c2c8f75085258322de5d158560f83820cd40022020bc890870f9127cc5f0c29d7a3202c475bd9909dd2f937fa5d51322de7b634ea43e8c1f8fd0fddabb3ad476c405be4a997f32b5bc96d71c264baff62e4edc4ae90e99c1fe529c059effcc516fc75c03481ce46e1c"});
+setupRichpanelMessengerConfiguration({"data":"9e73afeff02c6a5c03ae98b17d6ae7da:fae4542c15d3c8739b653d0d772dc388805dda2af53f4fa82db0164db0bf5fd3d0645f020cae655b59fb89ddecfbdeb43e286f901a57b97b8637e236bd61262f73338d997d315f225f15ad5c49d24528a414e69c7fdad20963adce76c01a0d9a4a29d834ca03aced5c5667197d68254d894541ffe02592acfeb9c120fb5fe2ab26e37e82d89f5e8f01aacc1fbde3cc6cb333ac4aac75668e1bdf93464e3ed30162352624a01cc4c28da3565d4cc735a0833393f50f9f87e73fe7e552b107043bf2bea89d19deb291cfe87e10416c8537646cf1fa4f1fdb7eeb1375ea168df23c02157977999e21f164536dd065e476d1c80f97b0e5f9b350c619d74b1890ff7e882584988f31198433ff0def574353a0f197bb7d82a4ed720972601c7a9b308d3e49819e7a90672b7f44b82a1b128872abe791b223dc52d8817a7f897195a37d23b4e6003f26b384b39b31dfd95457da73711f52c0bb8ab692ed561fabefb713b16cd14cec8187b4a44416c947de9cac364e0b4a73e277dd78b9ec477a54ae04988f051df57d1aa4d05b4158147400fa25b369e0b4b251982f6d9b656e565ddfcfd7cf318f6c13ac91a2b58d4ddacecdefbe5b24d722259f89c0126fde4d17e24ddbd3a7215390f9c42e3c148c9bf1658541d753b9d7b1a2bd7084c30f762e1b0a18d145c5a5457e5f2f1f7ce174d98bf60eae7fd5b3a085bcfd3332da40d0a0837a61ca845f1d15f7cf53d6c94f2a121526caecec1d81e241bf570273c6908855d3a44c1079fec9e278217ef1e4ef1aa5b441e1b4e855014c46c57079a35a51df9bd44ffa3328c8197148ecb98f7d0f84a21288b5b551c7b42ce56d8d7948b7613bc2ee945614c6b0b25d37805909a9"});
 
 window.richpanel||(window.richpanel=[]),window.richpanel.q=[],mth=["track","debug","atr"],sk=function(e){return function(){a=Array.prototype.slice.call(arguments);a.unshift(e);window.richpanel.q.push(a)}};for(var i=0;mth.length>i;i++){window.richpanel[mth[i]]=sk(mth[i])}window.richpanel.load=function(e){var t=document,n=t.getElementsByTagName("script")[0],r=t.createElement("script");r.type="text/javascript";r.async=true;r.src="https://cdn.richpanel.com/js/tracking.js";n.parentNode.insertBefore(r,n)};
 window.richpanel.ensure_rpuid = "";
@@ -1858,7 +1952,7 @@ window['appClientId']=apiKey;
 richpanel.load(apiKey);
 </script>
 <script type="text/javascript">
-						richpanel.track("page_view", {"name":"My Indicators"}, {"uid":"willribeirodrums@outlook.com","email":"willribeirodrums@outlook.com","name":"Sergio Bellotti","firstName":"Sergio","lastName":"Bellotti","lastLogin":"","facebook":"","twitter":"","linkedin":"","instagram":"","pinterest":"","tumblr":"","googleplus":"","billingAddress":{"firstName":"Sergio","lastName":"Bellotti","city":"WOLCOTT","state":"CT","country":"US","email":"willribeirodrums@outlook.com","postcode":"06716-2828","phone":"8082765515","address1":"477 WOODTICK RD","address2":""},"shippingAddress":{"firstName":"","lastName":"","city":"","state":"","country":"","email":"","postcode":"","phone":"","address1":"","address2":""}});
+						richpanel.track("view_article", {"id":719939,"name":"Volume Max Tool Kit (formerly VWAP)","url":"https:\/\/www.simplertrading.com\/indicators\/volume-max-i"}, {"uid":"raflessilva65@gmail.com","email":"raflessilva65@gmail.com","name":"Bill Kelly","firstName":"Bill","lastName":"Kelly","lastLogin":"","facebook":"","twitter":"","linkedin":"","instagram":"","pinterest":"","tumblr":"","googleplus":"","billingAddress":{"firstName":"Rafles","lastName":"Silva","city":"Kihei","state":"HI","country":"US","email":"raflessilva65@gmail.com","postcode":"24702","phone":"808-232-8851","address1":"2487 South Kijei Rd","address2":""},"shippingAddress":{"firstName":"","lastName":"","city":"","state":"","country":"","email":"","postcode":"","phone":"","address1":"","address2":""}});
 			</script>
 
 <script>var test_prefix = '';</script>
@@ -2488,17 +2582,17 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 			window.dataLayer = window.dataLayer || [];
 			window.dataLayer.push({
 				'event': 'dataLayer-initialized',
-				'user_id': 96112,
+				'user_id': 15866,
 				'pageType': "Uncategorized",
 				'membership_type': [],
-				'content_author_id': "2",
-				'content_author': "Taylor Letterman",
-				'content_title': "My Indicators",
-				'content_publish_date': "16th Dec 2019",
-				'post_id': 1021444,
+				'content_author_id': "24",
+				'content_author': "Diana Carrera",
+				'content_title': "Volume Max Tool Kit (formerly VWAP)",
+				'content_publish_date': "17th Oct 2022",
+				'post_id': 719939,
 				'content_type': "Uncategorized",
 				'activeSubscriptions': [],
-				'currentTime': {"date":"2026-01-08 12:49:42.391955","timezone_type":3,"timezone":"America\/Chicago"},
+				'currentTime': {"date":"2026-01-08 12:53:06.926352","timezone_type":3,"timezone":"America\/Chicago"},
 				'employee_alias': "",
 			});
 
@@ -2583,7 +2677,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 	<!-- End Google Tag Manager - Install in Head -->
 </head>
 
-<body class="page-template page-template-templates page-template-dashboard-courses page-template-templatesdashboard-courses-php page page-id-1021444 page-child parent-pageid-401190 logged-in wp-custom-logo wp-embed-responsive theme-generatepress post-image-aligned-center sticky-menu-slide sticky-enabled regular-menu-logo menu-logo-enabled both-sticky-menu woocommerce-no-js fl-theme-builder-footer member-logged-in no-sidebar nav-below-header fluid-header separate-containers active-footer-widgets-4 nav-aligned-right header-aligned-center dropdown-hover elementor-default elementor-kit-1684418 cm-manage-google-fonts" itemtype="https://schema.org/WebPage" itemscope>
+<body class="indicators-template indicators-template-templates indicators-template-indicators indicators-template-templatesindicators-php single single-indicators postid-719939 logged-in wp-custom-logo wp-embed-responsive theme-generatepress post-image-above-header post-image-aligned-center sticky-menu-slide sticky-enabled regular-menu-logo menu-logo-enabled both-sticky-menu woocommerce-no-js fl-theme-builder-footer fl-theme-builder-singular member-logged-in no-sidebar nav-below-header fluid-header separate-containers active-footer-widgets-4 nav-aligned-right header-aligned-center dropdown-hover elementor-default elementor-kit-1684418 cm-manage-google-fonts" itemtype="https://schema.org/Blog" itemscope>
 	<!-- Google Tag Manager (noscript) -->
 	<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-PT24H76"
 	height="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>
@@ -2672,13 +2766,13 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 	<li id="menu-item-1903956" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903956"><a href="/traders">Our Traders</a></li>
 </ul>
 </li>
-<li id="menu-item-1903958" class="nmr-logged-in menu-item menu-item-type-custom menu-item-object-custom current-menu-ancestor current-menu-parent menu-item-has-children menu-item-1903958"><a href="/dashboard">Dashboard<span role="presentation" class="dropdown-menu-toggle"><span class="gp-icon icon-arrow"><svg viewBox="0 0 330 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em">
+<li id="menu-item-1903958" class="nmr-logged-in menu-item menu-item-type-custom menu-item-object-custom menu-item-has-children menu-item-1903958"><a href="/dashboard">Dashboard<span role="presentation" class="dropdown-menu-toggle"><span class="gp-icon icon-arrow"><svg viewBox="0 0 330 512" aria-hidden="true" role="img" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1em" height="1em">
 						<path d="M305.913 197.085c0 2.266-1.133 4.815-2.833 6.514L171.087 335.593c-1.7 1.7-4.249 2.832-6.515 2.832s-4.815-1.133-6.515-2.832L26.064 203.599c-1.7-1.7-2.832-4.248-2.832-6.514s1.132-4.816 2.832-6.515l14.162-14.163c1.7-1.699 3.966-2.832 6.515-2.832 2.266 0 4.815 1.133 6.515 2.832l111.316 111.317 111.316-111.317c1.7-1.699 4.249-2.832 6.515-2.832s4.815 1.133 6.515 2.832l14.162 14.163c1.7 1.7 2.833 4.249 2.833 6.515z" fill-rule="nonzero"/>
 					</svg></span></span></a>
 <ul class="sub-menu">
 	<li id="menu-item-1903959" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903959"><a href="/dashboard">My Memberships</a></li>
 	<li id="menu-item-1903960" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903960"><a href="/dashboard/classes">My Classes</a></li>
-	<li id="menu-item-1903961" class="menu-item menu-item-type-custom menu-item-object-custom current-menu-item menu-item-1903961"><a href="/dashboard/indicators" aria-current="page">My Indicators</a></li>
+	<li id="menu-item-1903961" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903961"><a href="/dashboard/indicators">My Indicators</a></li>
 	<li id="menu-item-1903962" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903962"><a href="/dashboard/account">My Account</a></li>
 	<li id="menu-item-1903963" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903963"><a href="/support">Support</a></li>
 	<li id="menu-item-1903966" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1903966"><a href="https://www.simplertrading.com/dashboard/account/customer-logout/">Logout</a></li>
@@ -2687,146 +2781,338 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 <li id="menu-item-1957762" class="menu-item menu-item-type-custom menu-item-object-custom menu-item-1957762"><a href="tel:5122668659"><span class="fa fa-phone fa-cust-rotate-90 blue_icon"></span> (512) 266-8659</a></li>
 </ul></div>			</div><!-- .inside-navigation -->
 		</nav><!-- #site-navigation -->
-		<nav id="breadcrumbs" class="breadcrumbs"><div class="container-fluid"><ul><li class="item-home"><a class="breadcrumb-link breadcrumb-home" href="https://www.simplertrading.com" title="Home">Home</a></li><li class="separator separator-home"> / </li><li class="item-parent item-parent-401190"><a class="breadcrumb-parent breadcrumb-parent-401190" href="https://www.simplertrading.com/dashboard" title="Member Dashboard">Member Dashboard</a></li><li class="separator separator-401190"> / </li><li class="item-current item-1021444"><strong title="My Indicators"> My Indicators</strong></li></ul></div></nav>
+		<nav id="breadcrumbs" class="breadcrumbs"><div class="container-fluid"><ul><li class="item-home"><a class="breadcrumb-link breadcrumb-home" href="https://www.simplertrading.com" title="Home">Home</a></li><li class="separator separator-home"> / </li><li class="item-cat item-custom-post-type-indicators"><a class="breadcrumb-cat breadcrumb-custom-post-type-indicators" href="" title="Indicators">Indicators</a></li><li class="separator"> / </li><li class="item-current item-719939"><strong class="breadcrumb-current breadcrumb-719939" title="Volume Max Tool Kit (formerly VWAP)">Volume Max Tool Kit (formerly VWAP)</strong></li></ul></div></nav>
 	<div id="page" class="hfeed site grid-parent">
 				<div id="content" class="site-content">
-			
+			        <div class="indicators">
+            <main>
+                <h1>Volume Max Tool Kit (formerly VWAP)</h1>
+                <section>
+                    <p class="platforms">
+                        <strong>Available Platforms:</strong>
+                        ThinkorSwim, TradingView                    </p>
+                    <hr>
 
-    <a id="top"></a>
+                    
+                                            
+                        
+                        
+                        <section id="ca-main" class="ca-section cpost-section">
+                            <div class="section-inner">
+                                <div class="ca-content-block cpost-content-block">
+                                    <div class="current-vid">
+                                        
+                            <div class="video-container current">
+                                <div class="video-overlay">
+                                </div>
+                                <div id="1" class="video-player"></div>
+                                <video id="1" controls width="100%" poster="https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg" style="aspect-ratio: 16/9;" title="Indicator Setup and Q&A, with Eric Purdy" >
+                                    <source src="https://cloud-streaming.s3.amazonaws.com/classes/SubmarketSonar-IndicatorSetup-EP.mp4" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                                                            </div>
+                                    <div class="">
+                                                                                    
+                            <div class="video-container current current-vid">
+                                <div class="video-overlay">
+                                </div>
 
-    <div class="dashboard">
-        <aside class="dashboard__sidebar">
-            <nav class="dashboard__nav-primary  ">
-  <a href="https://www.simplertrading.com/dashboard/account" class="dashboard__profile-nav-item">
-    <span class="dashboard__profile-photo" style="background-image: url(https://secure.gravatar.com/avatar/ea27c234957d9b10cf07c281907bd387?s=32&d=mm&r=g);"></span>
-    <span class="dashboard__profile-name">Sergio Bellotti</span>
-    </span>
-  </a>
-      <ul>
-      <li>
-              </li>
-      <ul class="dash_main_links">
-                                          <li class=" ">
-                <a href="/dashboard/" target="">
-                  <span class="dashboard__nav-item-icon st-icon-home"></span>
-                  <span class="dashboard__nav-item-text" style=" ">Member Dashboard</span>
-                </a>
-              </li>
-                                                    <li class=" ">
-                <a href="/dashboard/classes/" target="">
-                  <span class="dashboard__nav-item-icon st-icon-courses"></span>
-                  <span class="dashboard__nav-item-text" style="font-weight:bold;color: white; ">My Classes</span>
-                </a>
-              </li>
-                                                    <li class=" is-active">
-                <a href="/dashboard/indicators/" target="">
-                  <span class="dashboard__nav-item-icon st-icon-indicators"></span>
-                  <span class="dashboard__nav-item-text" style="font-weight:bold;color: white; ">My Indicators</span>
-                </a>
-              </li>
-                        </ul>
-    </ul>
-      <ul>
-      <li>
-                  <p class="dashboard__nav-category">memberships</p>
-              </li>
-      <ul class="dash_main_links">
-                                                                      <li class=" ">
-                <a href="/dashboard/mastering-the-trade" target="">
-                  <span class="dashboard__nav-item-icon st-icon-mastering-the-trade"></span>
-                  <span class="dashboard__nav-item-text" style=" ">Mastering the Trade</span>
-                </a>
-              </li>
-                                                    <li class=" ">
-                <a href="/dashboard/simpler-showcase/" target="">
-                  <span class="dashboard__nav-item-icon st-icon-simpler-showcase"></span>
-                  <span class="dashboard__nav-item-text" style=" ">Simpler Showcase</span>
-                </a>
-              </li>
-                                                    </ul>
-    </ul>
-      <ul>
-      <li>
-                  <p class="dashboard__nav-category">mastery</p>
-              </li>
-      <ul class="dash_main_links">
-                                                                                                                                                                                                                                                                          </ul>
-    </ul>
-      <ul>
-      <li>
-                  <p class="dashboard__nav-category">premium reports</p>
-              </li>
-      <ul class="dash_main_links">
-                                                                      </ul>
-    </ul>
-      <ul>
-      <li>
-                  <p class="dashboard__nav-category">tools</p>
-              </li>
-      <ul class="dash_main_links">
-                                                                      <li class=" ">
-                <a href="/dashboard/ww/" target="">
-                  <span class="dashboard__nav-item-icon st-icon-trade-of-the-week"></span>
-                  <span class="dashboard__nav-item-text" style=" ">Weekly Watchlist</span>
-                </a>
-              </li>
-                                                                                <li class=" ">
-                <a href="https://intercom.help/simpler-trading/en/" target="_blank">
-                  <span class="dashboard__nav-item-icon st-icon-support"></span>
-                  <span class="dashboard__nav-item-text" style=" ">Support</span>
-                </a>
-              </li>
-                        </ul>
-    </ul>
-      <ul>
-      <li>
-                  <p class="dashboard__nav-category">account</p>
-              </li>
-      <ul class="dash_main_links">
-                                          <li class=" ">
-                <a href="/dashboard/account/" target="">
-                  <span class="dashboard__nav-item-icon st-icon-settings"></span>
-                  <span class="dashboard__nav-item-text" style=" ">My Account</span>
-                </a>
-              </li>
-                        </ul>
-    </ul>
-  </nav>
-
-<footer class="dashboard__toggle  ">
-  <button class="dashboard__toggle-button" data-toggle-dashboard-menu>
-    <div class="dashboard__toggle-button-icon">
-      <span></span>
-      <span></span>
-      <span></span>
-    </div>
-    <span class="framework__toggle-button-label">Dashboard Menu</span>
-  </button>
-</footer>
-<div class="dashboard__overlay" data-toggle-dashboard-menu></div>              
-        </aside>
-        <main class="dashboard__main">
-                <header class="dashboard__header">
-        <div class="dashboard__header-left">
-                        <h1 class="dashboard__page-title">My Indicators</h1>
+                                <div id="2" class="video-player"></div>
+                                <video id="2" controls width="100%" poster="https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg" style="aspect-ratio: 16/9;" title="VWAP Training and Live Trading Recorded Session with Raghee Horner" >
+                                    <source src="https://s3.amazonaws.com/cloud-streaming/chatrecordings%2FSTWebinars/1176-RH-06-12-2019__09.01.394_AM.mp4" type="video/mp4">
+                                    Your browser does not support the video tag.
+                                </video>
+                            </div>
+                                                                                                    </div>
+                                </div>
+                            </div>
+                        </section>
+                    
+                                                                            <div class="st_box thinkorswim">
+                                    <img width="250" src="/wp-content/themes/simpler-trading/assets/images/thinkorswim.png" alt="ThinkorSwim">
+                                    
+                                                                            <table>
+                                            <tr>
+                                                <th>ThinkorSwim Install File:</th>
+                                                <th></th>
+                                            </tr>
+                                                                                            <tr>
+                                                    <td>
+                                                        Volume Max Indicator                                                    </td>
+                                                    <td class="text-right">
+                                                                                                                    <a class="orng_btn" href="/?st-download-file=452914b18dc78691e6c98731b9e094fe">
+                                                                Click to Download                                                            </a>
+                                                                                                            </td>
+                                                </tr>
+                                                                                            <tr>
+                                                    <td>
+                                                        VScore EOD Study                                                    </td>
+                                                    <td class="text-right">
+                                                                                                                    <a class="orng_btn" href="/?st-download-file=12ab53eb7e85a005a6a21f800db57777">
+                                                                Click to Download                                                            </a>
+                                                                                                            </td>
+                                                </tr>
+                                                                                            <tr>
+                                                    <td>
+                                                        VScore Intraday Signals Study                                                    </td>
+                                                    <td class="text-right">
+                                                                                                                    <a class="orng_btn" href="/?st-download-file=4bd68f7bbfec21d14c099258f6833a9c">
+                                                                Click to Download                                                            </a>
+                                                                                                            </td>
+                                                </tr>
+                                                                                            <tr>
+                                                    <td>
+                                                        VScore Bands EOD Study                                                    </td>
+                                                    <td class="text-right">
+                                                                                                                    <a class="orng_btn" href="/?st-download-file=4fb2197916c551be4acb037afccc607f">
+                                                                Click to Download                                                            </a>
+                                                                                                            </td>
+                                                </tr>
+                                                                                            <tr>
+                                                    <td>
+                                                        VScore Bands Intraday Study                                                    </td>
+                                                    <td class="text-right">
+                                                                                                                    <a class="orng_btn" href="/?st-download-file=560ebea65a1229c04c0c268107fdb693">
+                                                                Click to Download                                                            </a>
+                                                                                                            </td>
+                                                </tr>
+                                                                                            <tr>
+                                                    <td>
+                                                        VProfile EOD Study                                                    </td>
+                                                    <td class="text-right">
+                                                                                                                    <a class="orng_btn" href="/?st-download-file=da8f1193496d5cf4bed2cdd049a2d70b">
+                                                                Click to Download                                                            </a>
+                                                                                                            </td>
+                                                </tr>
+                                                                                            <tr>
+                                                    <td>
+                                                        VProfile Intraday Study                                                    </td>
+                                                    <td class="text-right">
+                                                                                                                    <a class="orng_btn" href="/?st-download-file=ab0357f17694826819f632d50f6cfccc">
+                                                                Click to Download                                                            </a>
+                                                                                                            </td>
+                                                </tr>
+                                                                                            <tr>
+                                                    <td>
+                                                        Volume Labels                                                    </td>
+                                                    <td class="text-right">
+                                                                                                                    <a class="orng_btn" href="/?st-download-file=7aa9537ae79f082d9b8ff2ede9c2561b">
+                                                                Click to Download                                                            </a>
+                                                                                                            </td>
+                                                </tr>
+                                                                                    </table>
+                                    
+                                                                    </div>
+                                                                                    <div class="st_box tradingview">
+                                    <img width="250" src="/wp-content/themes/simpler-trading/assets/images/tradingview.png" alt="TradingView">
+                                    
+                                    
+                                                                            <div class="platform_notes">
+                                            Please email your TradingView Username to <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="f88b8d8888978a8cb88b919588949d8a8c8a999c91969fd69b9795">[email&#160;protected]</a>. The TradingView chart indicator is very easy to get set up in your online charting profile. Once you are logged into TradingView, locate your Notifications area. Once we receive your Username, you should have a notification letting you know the new chart study has been made available. Clicking on the notification will bring up a chart for the study to be displayed.                                        </div>
+                                                                    </div>
+                                                                        
+                                                                        <div class="st_box">
+                                <h2>
+                                    <strong>
+                                        Supporting Documentation                                    </strong>
+                                </h2>
+                                                                    <table>
+                                                                                    <tr>
+                                                <td>
+                                                    TOS Installation Guide                                                </td>
+                                                <td class="text-right">
+                                                                                                            <a class="orng_btn" href="https://intercom.help/simpler-trading/en/articles/3263969">
+                                                            Click to View                                                        </a>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <td>
+                                                    Troubleshooting within TOS                                                </td>
+                                                <td class="text-right">
+                                                                                                            <a class="orng_btn" href="https://intercom.help/simpler-trading/en/articles/3481530-tos-indicator-will-not-import">
+                                                            Click to View                                                        </a>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <td>
+                                                    TradingView - Installing an Indicator                                                </td>
+                                                <td class="text-right">
+                                                                                                            <a class="orng_btn" href="https://intercom.help/simpler-trading/en/articles/3498380">
+                                                            Click to View                                                        </a>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <td>
+                                                    TradingView - What is my Username                                                </td>
+                                                <td class="text-right">
+                                                                                                            <a class="orng_btn" href="https://intercom.help/simpler-trading/en/articles/3606861">
+                                                            Click to View                                                        </a>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <td>
+                                                    What is Volume Max Tool Kit (formerly VWAP)?                                                </td>
+                                                <td class="text-right">
+                                                                                                            <a class="orng_btn" href="https://intercom.help/simpler-trading/en/articles/3160130">
+                                                            Click to View                                                        </a>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <td>
+                                                    What are Volume Max Tool Kit (formerly VWAP) Settings?                                                </td>
+                                                <td class="text-right">
+                                                                                                            <a class="orng_btn" href="https://intercom.help/simpler-trading/en/articles/3311644">
+                                                            Click to View                                                        </a>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <td>
+                                                    What is VScore?                                                </td>
+                                                <td class="text-right">
+                                                                                                            <a class="orng_btn" href="https://intercom.help/simpler-trading/en/articles/3210561">
+                                                            Click to View                                                        </a>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <td>
+                                                    VScore Settings and Configuration                                                </td>
+                                                <td class="text-right">
+                                                                                                            <a class="orng_btn" href="https://intercom.help/simpler-trading/en/articles/3210408">
+                                                            Click to View                                                        </a>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <td>
+                                                    What is VProfile?                                                </td>
+                                                <td class="text-right">
+                                                                                                            <a class="orng_btn" href="https://intercom.help/simpler-trading/en/articles/3341484">
+                                                            Click to View                                                        </a>
+                                                                                                    </td>
+                                            </tr>
+                                                                                    <tr>
+                                                <td>
+                                                    What are VProfile Settings?                                                </td>
+                                                <td class="text-right">
+                                                                                                            <a class="orng_btn" href="https://intercom.help/simpler-trading/en/articles/3341233">
+                                                            Click to View                                                        </a>
+                                                                                                    </td>
+                                            </tr>
+                                                                            </table>
+                                                            </div>
+                                            
+                                    </section>
+            </main>
         </div>
-    </header>
-            <div class="dashboard__content">
-                <div class="dashboard__content-main">
-                    <section class="dashboard__content-section">
-                        <div>
-                                                            <h4 class="pb-2">
-                                    You don't have any Indicators.
-                                </h4>
-                                <a target="_blank" class="btn btn-orange" href="/product/product-category/Indicators/">See All Indicators</a>
-                                                    </div>
-                    </section>
-                </div>
-            </div>
-        </main>
-    </div>
+<style id='fl-builder-layout-878010-inline-css' type='text/css'>
+
+.fl-builder-content .fl-node-5d56ce96c4c56 a {
+	color: #0984ae;
+}
 
 
+
+
+.fl-node-5d56ce96c4c56 > .fl-row-content-wrap {
+	background-color: #f7f7f7;
+}
+.fl-node-5d56ce96c4c56 .fl-row-content {
+	max-width: 800px;
+}
+ .fl-node-5d56ce96c4c56 > .fl-row-content-wrap {
+	padding-top:60px;
+	padding-bottom:60px;
+}
+@media ( max-width: 992px ) {
+ .fl-node-5d56ce96c4c56.fl-row > .fl-row-content-wrap {
+	padding-top:40px;
+	padding-bottom:40px;
+}
+}
+@media ( max-width: 768px ) {
+ .fl-node-5d56ce96c4c56.fl-row > .fl-row-content-wrap {
+	padding-top:30px;
+	padding-right:20px;
+	padding-bottom:30px;
+	padding-left:20px;
+}
+}
+
+
+
+
+.fl-node-5d56ce96c4b9d {
+	width: 100%;
+}
+.fl-builder-content .fl-node-5d56ce96c4be0 .fl-rich-text, .fl-builder-content .fl-node-5d56ce96c4be0 .fl-rich-text *:not(b, strong) {
+	font-size: 42px;
+	text-align: center;
+}
+@media(max-width: 768px) {
+	.fl-builder-content .fl-node-5d56ce96c4be0 .fl-rich-text, .fl-builder-content .fl-node-5d56ce96c4be0 .fl-rich-text *:not(b, strong) {
+		font-size: 24px;
+	}
+}
+ .fl-node-5d56ce96c4be0 > .fl-module-content {
+	margin-top:0px;
+	margin-bottom:0px;
+}
+.fl-builder-content .fl-node-5d56ce96c4c1b .fl-rich-text, .fl-builder-content .fl-node-5d56ce96c4c1b .fl-rich-text *:not(b, strong) {
+	font-size: 22px;
+	text-align: center;
+}
+@media(max-width: 768px) {
+	.fl-builder-content .fl-node-5d56ce96c4c1b .fl-rich-text, .fl-builder-content .fl-node-5d56ce96c4c1b .fl-rich-text *:not(b, strong) {
+		font-size: 16px;
+		text-align: center;
+	}
+}
+ .fl-node-5d56ce96c4c1b > .fl-module-content {
+	margin-top:0px;
+	margin-right:0px;
+	margin-bottom:0px;
+	margin-left:0px;
+}
+
+/* Start Global Nodes CSS */
+
+/* End Global Nodes CSS */
+
+
+/* Start Layout CSS */
+
+/* End Layout CSS */
+
+
+</style>
+<div class="fl-builder-content fl-builder-content-878010 fl-builder-template fl-builder-row-template fl-builder-global-templates-locked" data-post-id="878010"><div class="fl-row fl-row-full-width fl-row-bg-color fl-node-5d56ce96c4c56" data-node="5d56ce96c4c56">
+	<div class="fl-row-content-wrap">
+						<div class="fl-row-content fl-row-fixed-width fl-node-content">
+		
+<div class="fl-col-group fl-node-5d56ce96c4b60" data-node="5d56ce96c4b60">
+			<div class="fl-col fl-node-5d56ce96c4b9d" data-node="5d56ce96c4b9d">
+	<div class="fl-col-content fl-node-content">
+	<div class="fl-module fl-module-rich-text fl-node-5d56ce96c4be0" data-node="5d56ce96c4be0">
+	<div class="fl-module-content fl-node-content">
+		<div class="fl-rich-text">
+	<h2><strong>Have Questions?</strong></h2>
+</div>
+	</div>
+</div>
+<div class="fl-module fl-module-rich-text fl-node-5d56ce96c4c1b" data-node="5d56ce96c4c1b">
+	<div class="fl-module-content fl-node-content">
+		<div class="fl-rich-text">
+	<p>Our support staff is the best by far! You can email <a href="/cdn-cgi/l/email-protection#6c3f191c1c031e182c3f05011c00091e381e0d0805020b420f0301"><span class="__cf_email__" data-cfemail="d487a1a4a4bba6a09487bdb9a4b8b1a680a6b5b0bdbab3fab7bbb9">[email&#160;protected]</span></a> or call us at <a href="tel:5122668659">(512) 266-8659</a></p>
+</div>
+	</div>
+</div>
+	</div>
+</div>
+	</div>
+		</div>
+	</div>
+</div>
+</div>
 	</div><!-- #content -->
 </div><!-- #page -->
 
@@ -2918,7 +3204,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 <div class="fl-module fl-module-html fl-node-68f79a2f87033" data-node="68f79a2f87033">
 	<div class="fl-module-content fl-node-content">
 		<div class="fl-html">
-	<script>
+	<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
 (() => {
   const MAX_LEN = 800;
   const desc = Object.getOwnPropertyDescriptor(Document.prototype, 'cookie');
@@ -2950,7 +3236,7 @@ a[href="/dashboard/small-lot-trading-room/learning-center?category=profit-recycl
 <div class="fl-module fl-module-rich-text fl-node-5b6c66888faf0" data-node="5b6c66888faf0">
 	<div class="fl-module-content fl-node-content">
 		<div class="fl-rich-text">
-	<p><span style="font-size: 14px;"><a href="/cdn-cgi/l/email-protection#f1828481819e8385b182989c819d948385839095989f96df929e9c" target="_blank" rel="noopener"><span class="__cf_email__" data-cfemail="fa898f8a8a95888eba8993978a969f888e889b9e93949dd4999597">[email&#160;protected]</span></a></span><br />
+	<p><span style="font-size: 14px;"><a href="/cdn-cgi/l/email-protection#deadabaeaeb1acaa9eadb7b3aeb2bbacaaacbfbab7b0b9f0bdb1b3" target="_blank" rel="noopener"><span class="__cf_email__" data-cfemail="71020401011e03053102181c011d140305031015181f165f121e1c">[email&#160;protected]</span></a></span><br />
 <span style="font-size: 14px;">8911 North Capital of Texas Hwy<br />
 Suite 4200 #1005</span><br />
 <span style="font-size: 14px;">Austin, TX 78759</span><br />
@@ -3176,7 +3462,7 @@ EF.click({
             }
         </script>
             <div id="cs_preview_popup"><div class="cs_preview_container  bars_position_bottom bar_large cs_block_content_0" style="display: none;" data-scroll="0" data-sticky="1" data-smart-sticky-desktop="1" data-smart-sticky-mobile="0"  data-smart-sticky-desktop-show="1" data-cstype="ask_before_tracking" data-rule="2172652"><div class="preview_wrap"><!--googleoff: all-->    <div class="cs_popup_overlay"></div>
-    <div class="xYUpaaygHnDFzGeSgHZLdbbOiXHJHpNapWlX"
+    <div class="dFTXrJfhSwpiSfWCTFXUbTBlQlbSlhHCKton"
          style="--cs-color-active-toggle: #0172CB40; --cs-color-active-toggle-button: #0172CB; --cs-active-toggle-background-color: #0172CB; --cs-active-toggle-text-color: #ffffff; --cs-text-underline-color: #5D5D5D80; --cs-text-color: #5D5D5D; --cs-color-underline: #005BD3; --cs_subtitles_text_color: #5D5D5D; --cs_op_subtitle_f_w: 600; --cs_tab_buttons_bg: #E7ECF1"
     >
         <div data-cli-geo-loc=""
@@ -3567,7 +3853,7 @@ EF.click({
         }
         remove_add_new_post_href_in_admin_bar();
     </script>
-    <noscript><img height="1" width="1" style="display: none;" src="https://www.facebook.com/tr?id=841178052635402&ev=PageView&noscript=1&eid=8411780526354028e6701ad-60ab-4f74-ad33-5c7ed03110ef&cd%5Bpage_title%5D=My+Indicators&cd%5Bpost_type%5D=page&cd%5Bpost_id%5D=1021444&cd%5Bplugin%5D=PixelYourSite&cd%5Bevent_url%5D=www.simplertrading.com%2Fdashboard%2Findicators&cd%5Buser_role%5D=subscriber" alt="facebook_pixel"></noscript>
+    <noscript><img height="1" width="1" style="display: none;" src="https://www.facebook.com/tr?id=841178052635402&ev=PageView&noscript=1&eid=841178052635402ca3abc14-ee88-415a-b9f4-0a31d4d8bad9&cd%5Bpage_title%5D=Volume+Max+Tool+Kit+%28formerly+VWAP%29&cd%5Bpost_type%5D=indicators&cd%5Bpost_id%5D=719939&cd%5Bplugin%5D=PixelYourSite&cd%5Bevent_url%5D=www.simplertrading.com%2Findicators%2Fvolume-max-i&cd%5Buser_role%5D=customer" alt="facebook_pixel"></noscript>
 
 <script>
      async function manageTumme() {
@@ -3681,7 +3967,7 @@ EF.click({
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/plugins/woocommerce/assets/js/selectWoo/selectWoo.full.min.js?ver=1.0.9-wc.7.9.0" id="selectWoo-js"></script>
 <script type="text/javascript" id="wc-memberships-blocks-common-js-extra">
 /* <![CDATA[ */
-var wc_memberships_blocks_common = {"keywords":{"email":"Email","phone":"Phone","plan":"Plan","address":"Address","search_not_found":"We didn\u2019t find any members. Please try a different search or check for typos.","results_not_found":"No records found..."},"ajaxUrl":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php","restUrl":"https:\/\/www.simplertrading.com\/wp-json\/","restNonce":"da44aa46fb"};
+var wc_memberships_blocks_common = {"keywords":{"email":"Email","phone":"Phone","plan":"Plan","address":"Address","search_not_found":"We didn\u2019t find any members. Please try a different search or check for typos.","results_not_found":"No records found..."},"ajaxUrl":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php","restUrl":"https:\/\/www.simplertrading.com\/wp-json\/","restNonce":"28e4112d88"};
 /* ]]> */
 </script>
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/plugins/woocommerce-memberships/assets/js/frontend/wc-memberships-blocks-common.min.js?ver=1.25.0" id="wc-memberships-blocks-common-js"></script>
@@ -3693,6 +3979,7 @@ var smooth = {"elements":[".smooth-scroll","li.smooth-scroll a"],"duration":"800
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/plugins/gp-premium/general/js/smooth-scroll.min.js?ver=1.9.1" id="generate-smooth-scroll-js"></script>
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/plugins/revslider/public/assets/js/rbtools.min.js?ver=6.5.18" defer async id="tp-tools-js"></script>
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/plugins/revslider/public/assets/js/rs6.min.js?ver=6.5.31" defer async id="revmin-js"></script>
+<script type="text/javascript" src="https://www.simplertrading.com/wp-content/plugins/bb-plugin/js/jquery.fitvids.min.js?ver=1.2" id="jquery-fitvids-js"></script>
 <script type="text/javascript" id="metorik-js-js-extra">
 /* <![CDATA[ */
 var metorik_params = {"lifetime":"6","session":"30","ajaxurl":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php","cart_tracking":"1","cart_items":"0","cart_checkout_button":"1","add_cart_popup_placement":"bottom","send_cart_events":"added_to_cart removed_from_cart updated_cart_totals updated_shipping_method applied_coupon removed_coupon updated_checkout","sbjs_domain":"","send_cart_fragments":"1"};
@@ -3714,7 +4001,7 @@ var sv_wc_payment_gateway_payment_form_params = {"card_number_missing":"Card num
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/plugins/woocommerce-gateway-paypal-powered-by-braintree/vendor/skyverge/wc-plugin-framework/woocommerce/payment-gateway/assets/dist/frontend/sv-wc-payment-gateway-payment-form.js?ver=5.10.15" id="sv-wc-payment-gateway-payment-form-v5_10_15-js"></script>
 <script type="text/javascript" id="eael-general-js-extra">
 /* <![CDATA[ */
-var localize = {"ajaxurl":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php","nonce":"1e1d87f64c","i18n":{"added":"Added ","compare":"Compare","loading":"Loading..."},"page_permalink":"https:\/\/www.simplertrading.com\/dashboard\/indicators","ParticleThemesData":{"default":"{\"particles\":{\"number\":{\"value\":160,\"density\":{\"enable\":true,\"value_area\":800}},\"color\":{\"value\":\"#ffffff\"},\"shape\":{\"type\":\"circle\",\"stroke\":{\"width\":0,\"color\":\"#000000\"},\"polygon\":{\"nb_sides\":5},\"image\":{\"src\":\"img\/github.svg\",\"width\":100,\"height\":100}},\"opacity\":{\"value\":0.5,\"random\":false,\"anim\":{\"enable\":false,\"speed\":1,\"opacity_min\":0.1,\"sync\":false}},\"size\":{\"value\":3,\"random\":true,\"anim\":{\"enable\":false,\"speed\":40,\"size_min\":0.1,\"sync\":false}},\"line_linked\":{\"enable\":true,\"distance\":150,\"color\":\"#ffffff\",\"opacity\":0.4,\"width\":1},\"move\":{\"enable\":true,\"speed\":6,\"direction\":\"none\",\"random\":false,\"straight\":false,\"out_mode\":\"out\",\"bounce\":false,\"attract\":{\"enable\":false,\"rotateX\":600,\"rotateY\":1200}}},\"interactivity\":{\"detect_on\":\"canvas\",\"events\":{\"onhover\":{\"enable\":true,\"mode\":\"repulse\"},\"onclick\":{\"enable\":true,\"mode\":\"push\"},\"resize\":true},\"modes\":{\"grab\":{\"distance\":400,\"line_linked\":{\"opacity\":1}},\"bubble\":{\"distance\":400,\"size\":40,\"duration\":2,\"opacity\":8,\"speed\":3},\"repulse\":{\"distance\":200,\"duration\":0.4},\"push\":{\"particles_nb\":4},\"remove\":{\"particles_nb\":2}}},\"retina_detect\":true}","nasa":"{\"particles\":{\"number\":{\"value\":250,\"density\":{\"enable\":true,\"value_area\":800}},\"color\":{\"value\":\"#ffffff\"},\"shape\":{\"type\":\"circle\",\"stroke\":{\"width\":0,\"color\":\"#000000\"},\"polygon\":{\"nb_sides\":5},\"image\":{\"src\":\"img\/github.svg\",\"width\":100,\"height\":100}},\"opacity\":{\"value\":1,\"random\":true,\"anim\":{\"enable\":true,\"speed\":1,\"opacity_min\":0,\"sync\":false}},\"size\":{\"value\":3,\"random\":true,\"anim\":{\"enable\":false,\"speed\":4,\"size_min\":0.3,\"sync\":false}},\"line_linked\":{\"enable\":false,\"distance\":150,\"color\":\"#ffffff\",\"opacity\":0.4,\"width\":1},\"move\":{\"enable\":true,\"speed\":1,\"direction\":\"none\",\"random\":true,\"straight\":false,\"out_mode\":\"out\",\"bounce\":false,\"attract\":{\"enable\":false,\"rotateX\":600,\"rotateY\":600}}},\"interactivity\":{\"detect_on\":\"canvas\",\"events\":{\"onhover\":{\"enable\":true,\"mode\":\"bubble\"},\"onclick\":{\"enable\":true,\"mode\":\"repulse\"},\"resize\":true},\"modes\":{\"grab\":{\"distance\":400,\"line_linked\":{\"opacity\":1}},\"bubble\":{\"distance\":250,\"size\":0,\"duration\":2,\"opacity\":0,\"speed\":3},\"repulse\":{\"distance\":400,\"duration\":0.4},\"push\":{\"particles_nb\":4},\"remove\":{\"particles_nb\":2}}},\"retina_detect\":true}","bubble":"{\"particles\":{\"number\":{\"value\":15,\"density\":{\"enable\":true,\"value_area\":800}},\"color\":{\"value\":\"#1b1e34\"},\"shape\":{\"type\":\"polygon\",\"stroke\":{\"width\":0,\"color\":\"#000\"},\"polygon\":{\"nb_sides\":6},\"image\":{\"src\":\"img\/github.svg\",\"width\":100,\"height\":100}},\"opacity\":{\"value\":0.3,\"random\":true,\"anim\":{\"enable\":false,\"speed\":1,\"opacity_min\":0.1,\"sync\":false}},\"size\":{\"value\":50,\"random\":false,\"anim\":{\"enable\":true,\"speed\":10,\"size_min\":40,\"sync\":false}},\"line_linked\":{\"enable\":false,\"distance\":200,\"color\":\"#ffffff\",\"opacity\":1,\"width\":2},\"move\":{\"enable\":true,\"speed\":8,\"direction\":\"none\",\"random\":false,\"straight\":false,\"out_mode\":\"out\",\"bounce\":false,\"attract\":{\"enable\":false,\"rotateX\":600,\"rotateY\":1200}}},\"interactivity\":{\"detect_on\":\"canvas\",\"events\":{\"onhover\":{\"enable\":false,\"mode\":\"grab\"},\"onclick\":{\"enable\":false,\"mode\":\"push\"},\"resize\":true},\"modes\":{\"grab\":{\"distance\":400,\"line_linked\":{\"opacity\":1}},\"bubble\":{\"distance\":400,\"size\":40,\"duration\":2,\"opacity\":8,\"speed\":3},\"repulse\":{\"distance\":200,\"duration\":0.4},\"push\":{\"particles_nb\":4},\"remove\":{\"particles_nb\":2}}},\"retina_detect\":true}","snow":"{\"particles\":{\"number\":{\"value\":450,\"density\":{\"enable\":true,\"value_area\":800}},\"color\":{\"value\":\"#fff\"},\"shape\":{\"type\":\"circle\",\"stroke\":{\"width\":0,\"color\":\"#000000\"},\"polygon\":{\"nb_sides\":5},\"image\":{\"src\":\"img\/github.svg\",\"width\":100,\"height\":100}},\"opacity\":{\"value\":0.5,\"random\":true,\"anim\":{\"enable\":false,\"speed\":1,\"opacity_min\":0.1,\"sync\":false}},\"size\":{\"value\":5,\"random\":true,\"anim\":{\"enable\":false,\"speed\":40,\"size_min\":0.1,\"sync\":false}},\"line_linked\":{\"enable\":false,\"distance\":500,\"color\":\"#ffffff\",\"opacity\":0.4,\"width\":2},\"move\":{\"enable\":true,\"speed\":6,\"direction\":\"bottom\",\"random\":false,\"straight\":false,\"out_mode\":\"out\",\"bounce\":false,\"attract\":{\"enable\":false,\"rotateX\":600,\"rotateY\":1200}}},\"interactivity\":{\"detect_on\":\"canvas\",\"events\":{\"onhover\":{\"enable\":true,\"mode\":\"bubble\"},\"onclick\":{\"enable\":true,\"mode\":\"repulse\"},\"resize\":true},\"modes\":{\"grab\":{\"distance\":400,\"line_linked\":{\"opacity\":0.5}},\"bubble\":{\"distance\":400,\"size\":4,\"duration\":0.3,\"opacity\":1,\"speed\":3},\"repulse\":{\"distance\":200,\"duration\":0.4},\"push\":{\"particles_nb\":4},\"remove\":{\"particles_nb\":2}}},\"retina_detect\":true}","nyan_cat":"{\"particles\":{\"number\":{\"value\":150,\"density\":{\"enable\":false,\"value_area\":800}},\"color\":{\"value\":\"#ffffff\"},\"shape\":{\"type\":\"star\",\"stroke\":{\"width\":0,\"color\":\"#000000\"},\"polygon\":{\"nb_sides\":5},\"image\":{\"src\":\"http:\/\/wiki.lexisnexis.com\/academic\/images\/f\/fb\/Itunes_podcast_icon_300.jpg\",\"width\":100,\"height\":100}},\"opacity\":{\"value\":0.5,\"random\":false,\"anim\":{\"enable\":false,\"speed\":1,\"opacity_min\":0.1,\"sync\":false}},\"size\":{\"value\":4,\"random\":true,\"anim\":{\"enable\":false,\"speed\":40,\"size_min\":0.1,\"sync\":false}},\"line_linked\":{\"enable\":false,\"distance\":150,\"color\":\"#ffffff\",\"opacity\":0.4,\"width\":1},\"move\":{\"enable\":true,\"speed\":14,\"direction\":\"left\",\"random\":false,\"straight\":true,\"out_mode\":\"out\",\"bounce\":false,\"attract\":{\"enable\":false,\"rotateX\":600,\"rotateY\":1200}}},\"interactivity\":{\"detect_on\":\"canvas\",\"events\":{\"onhover\":{\"enable\":false,\"mode\":\"grab\"},\"onclick\":{\"enable\":true,\"mode\":\"repulse\"},\"resize\":true},\"modes\":{\"grab\":{\"distance\":200,\"line_linked\":{\"opacity\":1}},\"bubble\":{\"distance\":400,\"size\":40,\"duration\":2,\"opacity\":8,\"speed\":3},\"repulse\":{\"distance\":200,\"duration\":0.4},\"push\":{\"particles_nb\":4},\"remove\":{\"particles_nb\":2}}},\"retina_detect\":true}"},"eael_translate_text":{"required_text":"is a required field","invalid_text":"Invalid","billing_text":"Billing","shipping_text":"Shipping"},"eael_login_nonce":"922ba827b1","eael_register_nonce":"27b24cd9ba"};
+var localize = {"ajaxurl":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php","nonce":"51d573f041","i18n":{"added":"Added ","compare":"Compare","loading":"Loading..."},"page_permalink":"https:\/\/www.simplertrading.com\/indicators\/volume-max-i","ParticleThemesData":{"default":"{\"particles\":{\"number\":{\"value\":160,\"density\":{\"enable\":true,\"value_area\":800}},\"color\":{\"value\":\"#ffffff\"},\"shape\":{\"type\":\"circle\",\"stroke\":{\"width\":0,\"color\":\"#000000\"},\"polygon\":{\"nb_sides\":5},\"image\":{\"src\":\"img\/github.svg\",\"width\":100,\"height\":100}},\"opacity\":{\"value\":0.5,\"random\":false,\"anim\":{\"enable\":false,\"speed\":1,\"opacity_min\":0.1,\"sync\":false}},\"size\":{\"value\":3,\"random\":true,\"anim\":{\"enable\":false,\"speed\":40,\"size_min\":0.1,\"sync\":false}},\"line_linked\":{\"enable\":true,\"distance\":150,\"color\":\"#ffffff\",\"opacity\":0.4,\"width\":1},\"move\":{\"enable\":true,\"speed\":6,\"direction\":\"none\",\"random\":false,\"straight\":false,\"out_mode\":\"out\",\"bounce\":false,\"attract\":{\"enable\":false,\"rotateX\":600,\"rotateY\":1200}}},\"interactivity\":{\"detect_on\":\"canvas\",\"events\":{\"onhover\":{\"enable\":true,\"mode\":\"repulse\"},\"onclick\":{\"enable\":true,\"mode\":\"push\"},\"resize\":true},\"modes\":{\"grab\":{\"distance\":400,\"line_linked\":{\"opacity\":1}},\"bubble\":{\"distance\":400,\"size\":40,\"duration\":2,\"opacity\":8,\"speed\":3},\"repulse\":{\"distance\":200,\"duration\":0.4},\"push\":{\"particles_nb\":4},\"remove\":{\"particles_nb\":2}}},\"retina_detect\":true}","nasa":"{\"particles\":{\"number\":{\"value\":250,\"density\":{\"enable\":true,\"value_area\":800}},\"color\":{\"value\":\"#ffffff\"},\"shape\":{\"type\":\"circle\",\"stroke\":{\"width\":0,\"color\":\"#000000\"},\"polygon\":{\"nb_sides\":5},\"image\":{\"src\":\"img\/github.svg\",\"width\":100,\"height\":100}},\"opacity\":{\"value\":1,\"random\":true,\"anim\":{\"enable\":true,\"speed\":1,\"opacity_min\":0,\"sync\":false}},\"size\":{\"value\":3,\"random\":true,\"anim\":{\"enable\":false,\"speed\":4,\"size_min\":0.3,\"sync\":false}},\"line_linked\":{\"enable\":false,\"distance\":150,\"color\":\"#ffffff\",\"opacity\":0.4,\"width\":1},\"move\":{\"enable\":true,\"speed\":1,\"direction\":\"none\",\"random\":true,\"straight\":false,\"out_mode\":\"out\",\"bounce\":false,\"attract\":{\"enable\":false,\"rotateX\":600,\"rotateY\":600}}},\"interactivity\":{\"detect_on\":\"canvas\",\"events\":{\"onhover\":{\"enable\":true,\"mode\":\"bubble\"},\"onclick\":{\"enable\":true,\"mode\":\"repulse\"},\"resize\":true},\"modes\":{\"grab\":{\"distance\":400,\"line_linked\":{\"opacity\":1}},\"bubble\":{\"distance\":250,\"size\":0,\"duration\":2,\"opacity\":0,\"speed\":3},\"repulse\":{\"distance\":400,\"duration\":0.4},\"push\":{\"particles_nb\":4},\"remove\":{\"particles_nb\":2}}},\"retina_detect\":true}","bubble":"{\"particles\":{\"number\":{\"value\":15,\"density\":{\"enable\":true,\"value_area\":800}},\"color\":{\"value\":\"#1b1e34\"},\"shape\":{\"type\":\"polygon\",\"stroke\":{\"width\":0,\"color\":\"#000\"},\"polygon\":{\"nb_sides\":6},\"image\":{\"src\":\"img\/github.svg\",\"width\":100,\"height\":100}},\"opacity\":{\"value\":0.3,\"random\":true,\"anim\":{\"enable\":false,\"speed\":1,\"opacity_min\":0.1,\"sync\":false}},\"size\":{\"value\":50,\"random\":false,\"anim\":{\"enable\":true,\"speed\":10,\"size_min\":40,\"sync\":false}},\"line_linked\":{\"enable\":false,\"distance\":200,\"color\":\"#ffffff\",\"opacity\":1,\"width\":2},\"move\":{\"enable\":true,\"speed\":8,\"direction\":\"none\",\"random\":false,\"straight\":false,\"out_mode\":\"out\",\"bounce\":false,\"attract\":{\"enable\":false,\"rotateX\":600,\"rotateY\":1200}}},\"interactivity\":{\"detect_on\":\"canvas\",\"events\":{\"onhover\":{\"enable\":false,\"mode\":\"grab\"},\"onclick\":{\"enable\":false,\"mode\":\"push\"},\"resize\":true},\"modes\":{\"grab\":{\"distance\":400,\"line_linked\":{\"opacity\":1}},\"bubble\":{\"distance\":400,\"size\":40,\"duration\":2,\"opacity\":8,\"speed\":3},\"repulse\":{\"distance\":200,\"duration\":0.4},\"push\":{\"particles_nb\":4},\"remove\":{\"particles_nb\":2}}},\"retina_detect\":true}","snow":"{\"particles\":{\"number\":{\"value\":450,\"density\":{\"enable\":true,\"value_area\":800}},\"color\":{\"value\":\"#fff\"},\"shape\":{\"type\":\"circle\",\"stroke\":{\"width\":0,\"color\":\"#000000\"},\"polygon\":{\"nb_sides\":5},\"image\":{\"src\":\"img\/github.svg\",\"width\":100,\"height\":100}},\"opacity\":{\"value\":0.5,\"random\":true,\"anim\":{\"enable\":false,\"speed\":1,\"opacity_min\":0.1,\"sync\":false}},\"size\":{\"value\":5,\"random\":true,\"anim\":{\"enable\":false,\"speed\":40,\"size_min\":0.1,\"sync\":false}},\"line_linked\":{\"enable\":false,\"distance\":500,\"color\":\"#ffffff\",\"opacity\":0.4,\"width\":2},\"move\":{\"enable\":true,\"speed\":6,\"direction\":\"bottom\",\"random\":false,\"straight\":false,\"out_mode\":\"out\",\"bounce\":false,\"attract\":{\"enable\":false,\"rotateX\":600,\"rotateY\":1200}}},\"interactivity\":{\"detect_on\":\"canvas\",\"events\":{\"onhover\":{\"enable\":true,\"mode\":\"bubble\"},\"onclick\":{\"enable\":true,\"mode\":\"repulse\"},\"resize\":true},\"modes\":{\"grab\":{\"distance\":400,\"line_linked\":{\"opacity\":0.5}},\"bubble\":{\"distance\":400,\"size\":4,\"duration\":0.3,\"opacity\":1,\"speed\":3},\"repulse\":{\"distance\":200,\"duration\":0.4},\"push\":{\"particles_nb\":4},\"remove\":{\"particles_nb\":2}}},\"retina_detect\":true}","nyan_cat":"{\"particles\":{\"number\":{\"value\":150,\"density\":{\"enable\":false,\"value_area\":800}},\"color\":{\"value\":\"#ffffff\"},\"shape\":{\"type\":\"star\",\"stroke\":{\"width\":0,\"color\":\"#000000\"},\"polygon\":{\"nb_sides\":5},\"image\":{\"src\":\"http:\/\/wiki.lexisnexis.com\/academic\/images\/f\/fb\/Itunes_podcast_icon_300.jpg\",\"width\":100,\"height\":100}},\"opacity\":{\"value\":0.5,\"random\":false,\"anim\":{\"enable\":false,\"speed\":1,\"opacity_min\":0.1,\"sync\":false}},\"size\":{\"value\":4,\"random\":true,\"anim\":{\"enable\":false,\"speed\":40,\"size_min\":0.1,\"sync\":false}},\"line_linked\":{\"enable\":false,\"distance\":150,\"color\":\"#ffffff\",\"opacity\":0.4,\"width\":1},\"move\":{\"enable\":true,\"speed\":14,\"direction\":\"left\",\"random\":false,\"straight\":true,\"out_mode\":\"out\",\"bounce\":false,\"attract\":{\"enable\":false,\"rotateX\":600,\"rotateY\":1200}}},\"interactivity\":{\"detect_on\":\"canvas\",\"events\":{\"onhover\":{\"enable\":false,\"mode\":\"grab\"},\"onclick\":{\"enable\":true,\"mode\":\"repulse\"},\"resize\":true},\"modes\":{\"grab\":{\"distance\":200,\"line_linked\":{\"opacity\":1}},\"bubble\":{\"distance\":400,\"size\":40,\"duration\":2,\"opacity\":8,\"speed\":3},\"repulse\":{\"distance\":200,\"duration\":0.4},\"push\":{\"particles_nb\":4},\"remove\":{\"particles_nb\":2}}},\"retina_detect\":true}"},"eael_translate_text":{"required_text":"is a required field","invalid_text":"Invalid","billing_text":"Billing","shipping_text":"Shipping"},"eael_login_nonce":"af5b407c56","eael_register_nonce":"b818a4460a"};
 /* ]]> */
 </script>
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/plugins/essential-addons-for-elementor-lite/assets/front-end/js/view/general.min.js?ver=5.2.3" id="eael-general-js"></script>
@@ -3722,12 +4009,13 @@ var localize = {"ajaxurl":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admi
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/themes/simpler-trading/build/polyfills.f1a8980f.js?ver=1764891004" id="wlion-polyfills-js"></script>
 <script type="text/javascript" id="wlion-global-js-extra">
 /* <![CDATA[ */
-var ajax_object = {"ajax_url":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php","ajax_nonce":"7e84549b56"};
+var ajax_object = {"ajax_url":"https:\/\/www.simplertrading.com\/cms\/wp-admin\/admin-ajax.php","ajax_nonce":"f450bb0373"};
 /* ]]> */
 </script>
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/themes/simpler-trading/build/global.95a93139.js?ver=1764891004" id="wlion-global-js"></script>
 <script type="text/javascript" src="https://www.simplertrading.com/wp-content/themes/simpler-trading/assets/js/min/intro.min.js?ver=1.0.0" id="introjs-js"></script>
-<script type="text/javascript" src="https://www.simplertrading.com/wp-content/themes/simpler-trading/build/dashboard.8f78208b.js?ver=1764891004" id="wlion-dashboard-js"></script>
+<script type="text/javascript" src="https://www.simplertrading.com/wp-content/themes/simpler-trading/build/custom-posts.a3b0831a.js?ver=1764891004" id="wlion-custom-posts-js"></script>
+<script type="text/javascript" src="https://www.simplertrading.com/wp-content/themes/simpler-trading/build/jwplaylist.7a870bd5.js?ver=1764891004" id="wlion-jwplaylist-js"></script>
 <!-- WooCommerce JavaScript -->
 <script type="text/javascript">
 jQuery(function($) { 
@@ -5240,9 +5528,50 @@ if (jQuery('body').hasClass('scanners-template')) {
 }
 /* End Layout Custom JS */
 
+
+(function($) {
+	$(function() {
+
+		// FitVids
+		if ( 'undefined' !== typeof $.fn.fitVids ) {
+			$('.fl-module-fl-post-content').fitVids();
+		}
+
+	});
+})(jQuery);
+
+/* Start Global Node Custom JS */
+
+/* End Global Node Custom JS */
+
+
+/* Start Layout Custom JS */
+ 
+// if (document.referrer.split('/')[2] === 'tradethemarkets.com') { 
+//     document.getElementById('from_ttm').style.display = 'block'; 
+//     document.getElementById('from_st').style.display = 'none'; 
+// } else {
+//     document.getElementById('from_ttm').style.display = 'none'; 
+//     document.getElementById('from_st').style.display = 'block'; 
+// }
+/* End Layout Custom JS */
+
+
+/* Start Global Node Custom JS */
+
+/* End Global Node Custom JS */
+
+
+/* Start Layout Custom JS */
+
+/* End Layout Custom JS */
+
 </script>
 <input type="hidden" class="cs-blocker-script-advanced-data" value="{&quot;data_layers&quot;:[&quot;dataLayer&quot;]}"><script defer src="https://static.cloudflareinsights.com/beacon.min.js/vcd15cbe7772f49c399c6a5babf22c1241717689176015" integrity="sha512-ZpsOmlRQV6y907TI0dKBHq9Md29nnaEIPlkf84rnaERnq6zvWvPUqr2ft8M1aS28oN72PdrCzSjY4U6VaAw1EQ==" data-cf-beacon='{"version":"2024.11.0","token":"485cf297e01e4936beee6df03732224c","server_timing":{"name":{"cfCacheStatus":true,"cfEdge":true,"cfExtPri":true,"cfL4":true,"cfOrigin":true,"cfSpeedBrain":true},"location_startswith":null}}' crossorigin="anonymous"></script>
 </body>
 </html>
+<script>
+    jQuery('a.breadcrumb-custom-post-type-indicators').attr('href', 'https://www.simplertrading.com/dashboard/indicators');
+</script>
 
-<!-- plugin=object-cache-pro client=phpredis metric#hits=11374 metric#misses=309 metric#hit-ratio=97.4 metric#bytes=3663845 metric#prefetches=599 metric#store-reads=268 metric#store-writes=58 metric#store-hits=652 metric#store-misses=278 metric#sql-queries=196 metric#ms-total=821.08 metric#ms-cache=88.25 metric#ms-cache-median=0.22 metric#ms-cache-ratio=10.8 -->
+<!-- plugin=object-cache-pro client=phpredis metric#hits=12292 metric#misses=315 metric#hit-ratio=97.5 metric#bytes=4176263 metric#prefetches=616 metric#store-reads=341 metric#store-writes=33 metric#store-hits=753 metric#store-misses=281 metric#sql-queries=176 metric#ms-total=824.62 metric#ms-cache=88.51 metric#ms-cache-median=0.21 metric#ms-cache-ratio=10.7 -->
