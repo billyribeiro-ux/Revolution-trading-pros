@@ -41,11 +41,20 @@
 	<title>My Subscriptions - Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="woocommerce">
-	<div class="woocommerce-MyAccount-content">
-		<div class="woocommerce-notices-wrapper"></div>
-		
-		<h2 class="section-title">My Subscriptions</h2>
+<!-- Dashboard Header -->
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">My Account</h1>
+	</div>
+</header>
+
+<!-- Dashboard Content -->
+<div class="dashboard__content">
+	<div class="dashboard__content-main">
+		<div class="subscriptions-card">
+			<div class="woocommerce-notices-wrapper"></div>
+			
+			<h2 class="section-title">My Subscriptions</h2>
 
 		{#if subscriptions.length === 0}
 			<div class="woocommerce-message woocommerce-message--info">
@@ -92,11 +101,57 @@
 					{/each}
 				</tbody>
 			</table>
-		{/if}
+			{/if}
+		</div>
 	</div>
 </div>
 
 <style>
+	/* Dashboard Header */
+	.dashboard__header {
+		background: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		padding: 20px 30px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.dashboard__header-left {
+		flex: 1;
+	}
+
+	.dashboard__page-title {
+		font-family: 'Open Sans', sans-serif;
+		font-size: 28px;
+		font-weight: 400;
+		font-style: italic;
+		color: #333333;
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	/* Dashboard Content */
+	.dashboard__content {
+		background: #f5f5f5;
+		min-height: calc(100vh - 60px);
+		padding: 40px 30px;
+	}
+
+	.dashboard__content-main {
+		max-width: 1100px;
+		margin: 0 auto;
+	}
+
+	/* Professional Card Container */
+	.subscriptions-card {
+		background: #ffffff;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		padding: 40px;
+		margin-bottom: 30px;
+	}
+
 	.section-title {
 		font-size: 24px;
 		font-weight: 700;
