@@ -26,7 +26,36 @@
 	
 	// Mock data - replace with actual API call
 	// Set to empty array to show empty state, or populate with classes
-	const classes: ClassItem[] = [];
+	const classes: ClassItem[] = [
+		{
+			id: 1,
+			title: 'Tax Loss Harvest',
+			slug: 'tax-loss-harvest-c',
+			date: 'December 2025',
+			instructor: 'John Carter'
+		},
+		{
+			id: 2,
+			title: 'Mastering the Trade University',
+			slug: 'mtt-university-c',
+			date: 'December 2025',
+			instructor: 'John Carter'
+		},
+		{
+			id: 3,
+			title: 'Quickstart to Precision Trading E-Learning Module',
+			slug: 'quickstart-precision-trading-elearning-c',
+			date: 'February 2022',
+			instructor: 'TG Watkins'
+		},
+		{
+			id: 4,
+			title: 'Quickstart To Precision Trading',
+			slug: 'quickstart-precision-trading-c',
+			date: 'April 2020',
+			instructor: 'TG Watkins'
+		}
+	];
 </script>
 
 <svelte:head>
@@ -158,11 +187,172 @@
 		background-color: #e67e00;
 		text-decoration: none;
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Card Grid - WordPress Exact Match
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.card-grid {
+		display: flex;
+		flex-wrap: wrap;
+		margin-left: -15px;
+		margin-right: -15px;
+	}
+
+	.card-grid-spacer {
+		padding-left: 15px;
+		padding-right: 15px;
+		margin-bottom: 30px;
+	}
+
+	.flex-grid-item {
+		display: flex;
+	}
+
+	.card {
+		background: #fff;
+		border: 1px solid #e5e5e5;
+		border-radius: 5px;
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		display: flex;
+		flex-direction: column;
+		width: 100%;
+		transition: all 0.2s ease-in-out;
+	}
+
+	.card:hover {
+		box-shadow: 0 8px 35px rgba(0, 0, 0, 0.15);
+		transform: translateY(-2px);
+	}
+
+	.flex-grid-panel {
+		display: flex;
+		flex-direction: column;
+		height: 100%;
+	}
+
+	.card-body {
+		padding: 20px;
+		flex: 1 1 auto;
+	}
+
+	.u--squash {
+		padding-bottom: 10px;
+	}
+
+	.card-title {
+		font-size: 18px;
+		font-weight: 700;
+		color: #333;
+		margin: 0;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		line-height: 1.4;
+	}
+
+	.card-title a {
+		color: #333;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.card-title a:hover {
+		color: #143E59;
+	}
+
+	.h5 {
+		font-size: 18px;
+		font-weight: 600;
+	}
+
+	.pb-1 {
+		padding-bottom: 0.5rem;
+	}
+
+	.article-card__meta {
+		color: #999;
+		font-size: 13px;
+		margin: 8px 0 0;
+	}
+
+	.article-card__meta small {
+		font-size: 13px;
+	}
+
+	.card-footer {
+		padding: 0 20px 20px;
+		margin-top: auto;
+	}
+
+	.btn {
+		display: inline-block;
+		text-decoration: none;
+		border-radius: 5px;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		transition: all 0.2s ease-in-out;
+		text-align: center;
+		cursor: pointer;
+		border: none;
+	}
+
+	.btn-tiny {
+		padding: 10px 24px;
+		font-size: 13px;
+		min-width: 120px;
+	}
+
+	.btn-default {
+		background-color: #143E59;
+		color: #fff;
+		border: 1px solid #143E59;
+		box-shadow: none;
+	}
+
+	.btn-default:hover {
+		background-color: #0f2d41;
+		border-color: #0f2d41;
+		box-shadow: none;
+		text-decoration: none;
+	}
+
+	/* Grid System - Bootstrap-like */
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin-left: -15px;
+		margin-right: -15px;
+	}
+
+	.col-xs-12 {
+		width: 100%;
+	}
+
+	@media (min-width: 576px) {
+		.col-sm-6 {
+			width: 50%;
+		}
+	}
+
+	@media (min-width: 768px) {
+		.col-md-6 {
+			width: 50%;
+		}
+	}
+
+	@media (min-width: 992px) {
+		.col-lg-4 {
+			width: 33.333333%;
+		}
+	}
 	
 	/* Responsive */
 	@media (max-width: 768px) {
 		.dashboard__page-title {
 			font-size: 24px;
+		}
+
+		.card-grid-spacer {
+			margin-bottom: 20px;
 		}
 	}
 </style>
