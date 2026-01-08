@@ -1,26 +1,29 @@
 <script lang="ts">
 	import type { AccountPageData } from './+page.d';
+	import { page } from '$app/state';
 
 	interface Props {
-		data: AccountPageData;
+		data: AccountPageData & { user?: { id: string; email: string; name?: string } };
 	}
 
 	let { data }: Props = $props();
 
-	// Derived user data with proper fallbacks
-	let firstName = $derived(data.profile?.firstName || '');
-	let lastName = $derived(data.profile?.lastName || '');
-	let email = $derived(data.profile?.email || '');
-	
-	// Use full name if available, otherwise use email username, otherwise 'Member'
+	// Get user name from multiple sources with proper fallbacks
+	// Priority: 1) profile first+last name, 2) parent user.name, 3) email username
 	let displayName = $derived.by(() => {
+		// Try profile first/last name
+		const firstName = data.profile?.firstName || '';
+		const lastName = data.profile?.lastName || '';
 		const fullName = `${firstName} ${lastName}`.trim();
 		if (fullName) return fullName;
 		
-		// Extract name from email (part before @)
+		// Try parent layout's user.name (from auth)
+		if (data.user?.name) return data.user.name;
+		
+		// Try email from profile or user
+		const email = data.profile?.email || data.user?.email || '';
 		if (email) {
 			const emailName = email.split('@')[0];
-			// Capitalize first letter and replace dots/underscores with spaces
 			return emailName
 				.replace(/[._]/g, ' ')
 				.split(' ')
@@ -57,22 +60,22 @@
 										<div class="fl-module fl-module-rich-text fl-node-59793676759ab dashboard-nav" data-node="59793676759ab">
 											<div class="fl-module-content fl-node-content">
 												<div class="fl-rich-text">
-													<p><div class="woocommerce">
-<div class="woocommerce-MyAccount-content">
-	<div class="woocommerce-notices-wrapper"></div>
-<div class="content-box content-box--centered">
-	<div class="content-box__section">
+													<div class="woocommerce">
+														<div class="woocommerce-MyAccount-content">
+															<div class="woocommerce-notices-wrapper"></div>
+															<div class="content-box content-box--centered">
+																<div class="content-box__section">
+																	<p>
+																		Hello <strong>{displayName}</strong> (not <strong>{displayName}</strong>? <a href="/logout">Log out</a>)
+																	</p>
 
-		<p>
-		Hello <strong>{displayName}</strong> (not <strong>{displayName}</strong>? <a href="/logout">Log out</a>)		</p>
-
-		<p class="u--margin-bottom-0">
-		From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/edit-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.		</p>
-	</div>
-</div>
-
-</div>
-</div></p>
+																	<p class="u--margin-bottom-0">
+																		From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/edit-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.
+																	</p>
+																</div>
+															</div>
+														</div>
+													</div>
 												</div>
 											</div>
 										</div>
