@@ -460,9 +460,10 @@
 	}
 
 	.btn-tiny {
-		padding: 10px 24px;
-		font-size: 13px;
-		min-width: 120px;
+		font-size: 14px;
+		line-height: 16px;
+		padding: 6px 8px;
+		font-weight: 600;
 	}
 
 	.btn-default {
