@@ -41,7 +41,9 @@ export const prerender = false;
 export const load = async ({ locals }: ServerLoadEvent) => {
 	// User is guaranteed to exist here because hooks.server.ts
 	// redirects to login if not authenticated
+	// ICT 7 FIX: Also pass accessToken for server-side API calls in child pages
 	return {
-		user: (locals as { user?: { id: string; email: string; name?: string; role?: string } }).user ?? null
+		user: (locals as { user?: { id: string; email: string; name?: string; role?: string } }).user ?? null,
+		accessToken: (locals as { accessToken?: string | null }).accessToken ?? null
 	};
 };

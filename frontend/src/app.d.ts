@@ -45,6 +45,8 @@ declare global {
 				name?: string;
 				role?: string;
 			} | null;
+			/** Access token for server-side API calls (from httpOnly cookie) */
+			accessToken?: string | null;
 			/** Authentication method to get current session */
 			auth: () => Promise<{ user: { id: string; email: string; name?: string; role?: string } | null } | null>;
 		}

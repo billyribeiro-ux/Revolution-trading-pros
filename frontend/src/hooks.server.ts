@@ -128,6 +128,10 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				name: userData.name,
 				role: userData.role
 			};
+			
+			// ICT 7 FIX: Store token in locals for server-side API calls
+			// This allows +page.server.ts load functions to make authenticated API calls
+			event.locals.accessToken = token || refreshToken;
 		} else if (response.status === 401) {
 			// ICT 7: 401 = Invalid/expired token - attempt refresh if available
 			if (!refreshToken) {
@@ -181,6 +185,9 @@ const authHandler: Handle = async ({ event, resolve }) => {
 						name: userData.name,
 						role: userData.role
 					};
+					
+					// ICT 7 FIX: Store refreshed token in locals for server-side API calls
+					event.locals.accessToken = newToken;
 				}
 			} else {
 				// Refresh failed - permanent auth failure

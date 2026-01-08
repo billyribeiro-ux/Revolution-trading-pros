@@ -28,8 +28,9 @@ import type { PageServerLoad, Actions } from './$types';
 /**
  * Page load function
  * Parent layout already handles auth - we just add account-specific data
+ * ICT 7 FIX: Now receives accessToken from parent for server-side API calls
  */
-export const load: PageServerLoad = async ({ parent }: { parent: () => Promise<{ user: { id: string; email: string; name?: string; role?: string } | null }> }) => {
+export const load: PageServerLoad = async ({ parent, fetch }: { parent: () => Promise<{ user: { id: string; email: string; name?: string; role?: string } | null; accessToken?: string | null }>; fetch: typeof globalThis.fetch }) => {
 	// Get user data from parent layout
 	const parentData = await parent();
 
@@ -59,91 +60,75 @@ export const load: PageServerLoad = async ({ parent }: { parent: () => Promise<{
 		};
 	}
 
+	// ICT 7 FIX: Use accessToken from parent for server-side API calls
+	const accessToken = parentData.accessToken;
+	
+	if (!accessToken) {
+		console.warn('[Account Page] No access token from parent - using user data only');
+		return {
+			profile: {
+				firstName: '',
+				lastName: '',
+				email: parentData.user?.email || '',
+				avatarUrl: null
+			},
+			memberships: {
+				active: [],
+				expired: []
+			},
+			billing: {
+				email: parentData.user?.email || null,
+				phone: null,
+				address: null,
+				paymentMethod: null
+			},
+			user: parentData.user
+		};
+	}
+
 	try {
-		// Fetch real account data from Laravel backend
-		const accountData = await accountApi.getAccountData();
-
-		// Transform memberships to match page format
-		const memberships = {
-			active: accountData.memberships.active.map(m => ({
-				id: m.id,
-				name: m.name,
-				slug: m.slug,
-				type: m.type,
-				status: m.status,
-				startDate: new Date(m.start_date).toLocaleDateString('en-US', {
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric'
-				}),
-				endDate: m.end_date ? new Date(m.end_date).toLocaleDateString('en-US', {
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric'
-				}) : null,
-				price: m.price,
-				interval: m.interval,
-				autoRenew: m.auto_renew,
-				canCancel: m.can_cancel,
-				accessUrl: m.access_url
-			})),
-			expired: accountData.memberships.expired.map(m => ({
-				id: m.id,
-				name: m.name,
-				slug: m.slug,
-				type: m.type,
-				status: m.status,
-				startDate: new Date(m.start_date).toLocaleDateString('en-US', {
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric'
-				}),
-				endDate: m.end_date ? new Date(m.end_date).toLocaleDateString('en-US', {
-					year: 'numeric',
-					month: 'long',
-					day: 'numeric'
-				}) : null,
-				price: m.price,
-				interval: m.interval
-			}))
-		};
-
-		// Format billing data
-		const billing = {
-			email: accountData.billing.email,
-			phone: accountData.billing.phone,
-			address: accountData.billing.address ? {
-				line1: accountData.billing.address.line1,
-				line2: accountData.billing.address.line2,
-				city: accountData.billing.address.city,
-				state: accountData.billing.address.state,
-				postalCode: accountData.billing.address.postal_code,
-				country: accountData.billing.address.country
-			} : null,
-			paymentMethod: accountData.billing.payment_method ? {
-				type: accountData.billing.payment_method.type,
-				last4: accountData.billing.payment_method.last4,
-				brand: accountData.billing.payment_method.brand,
-				expMonth: accountData.billing.payment_method.exp_month,
-				expYear: accountData.billing.payment_method.exp_year
-			} : null
-		};
-
-		// Return profile data for form population
+		// ICT 7 FIX: Fetch account data using server-side fetch with token
+		// This uses SvelteKit's fetch which handles cookies and headers correctly
+		const API_BASE_URL = process.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
+		const profileResponse = await fetch(`${API_BASE_URL}/api/user/profile`, {
+			headers: {
+				'Authorization': `Bearer ${accessToken}`,
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			}
+		});
+		
+		if (!profileResponse.ok) {
+			throw new Error(`Profile fetch failed: ${profileResponse.status}`);
+		}
+		
+		const profileJson = await profileResponse.json();
+		const profileData = profileJson.data || profileJson;
+		
+		// ICT 7 FIX: Build response directly from profile data
+		// Memberships and billing are not yet available from this endpoint
 		const profile = {
-			firstName: accountData.profile.first_name || '',
-			lastName: accountData.profile.last_name || '',
-			email: accountData.profile.email,
-			avatarUrl: accountData.profile.avatar_url
+			firstName: profileData.first_name || '',
+			lastName: profileData.last_name || '',
+			email: profileData.email,
+			avatarUrl: profileData.avatar_url
 		};
 
-		console.log('[Account Page] Loaded account data successfully');
+		console.log('[Account Page] Loaded account data successfully via server-side fetch');
 
 		return {
 			profile,
-			memberships,
-			billing,
-			user: parentData.user  // Pass parent user data through for fallback display name
+			memberships: {
+				active: [],
+				expired: []
+			},
+			billing: {
+				email: profileData.email,
+				phone: null,
+				address: null,
+				paymentMethod: null
+			},
+			user: parentData.user
 		};
 	} catch (error) {
 		console.error('[Account Page] Failed to load account data:', error);
