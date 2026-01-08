@@ -321,6 +321,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.card-grid {
+		margin-bottom: 30px;
 		display: flex;
 		flex-wrap: wrap;
 		margin-left: -15px;
@@ -330,6 +331,7 @@
 	.card-grid-spacer {
 		padding-left: 15px;
 		padding-right: 15px;
+		margin-top: 30px;
 		margin-bottom: 30px;
 	}
 
@@ -338,34 +340,44 @@
 	}
 
 	.card {
+		position: relative;
 		background: #fff;
-		border: 1px solid #e5e5e5;
 		border-radius: 5px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 		display: flex;
 		flex-direction: column;
 		width: 100%;
-		transition: all 0.2s ease-in-out;
+		height: 100%;
+		transition: all 0.15s ease-in-out;
+		padding-bottom: 60px;
 	}
 
 	.card:hover {
-		box-shadow: 0 8px 35px rgba(0, 0, 0, 0.15);
-		transform: translateY(-2px);
+		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 	}
 
 	.flex-grid-panel {
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+		width: 100%;
 	}
 
 	.card-body {
 		padding: 20px;
-		flex: 1 1 auto;
+		flex-grow: 0;
 		display: flex;
 		flex-direction: column;
 		text-align: center;
 		align-items: center;
+	}
+
+	.card-body:last-of-type {
+		flex-grow: 1;
+	}
+
+	.card-body + .card-body {
+		border-top: 1px solid #e8e8e8;
 	}
 
 	.u--squash {
@@ -415,9 +427,11 @@
 	}
 
 	.card-footer {
+		position: absolute;
+		bottom: 0;
+		left: 0;
+		right: 0;
 		padding: 0 20px 20px;
-		margin-top: auto;
-		flex-shrink: 0;
 		text-align: center;
 		display: flex;
 		justify-content: center;
@@ -446,6 +460,7 @@
 		color: #fff;
 		border: 1px solid #143E59;
 		box-shadow: none;
+		transition: all 0.15s ease-in-out;
 	}
 
 	.btn-default:hover {
@@ -453,6 +468,7 @@
 		border-color: #0f2d41;
 		box-shadow: none;
 		text-decoration: none;
+		color: #fff;
 	}
 
 	/* Grid System - Bootstrap-like */
