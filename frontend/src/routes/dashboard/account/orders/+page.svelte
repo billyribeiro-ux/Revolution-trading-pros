@@ -27,203 +27,77 @@
 
 <svelte:head>
 	<title>My Orders - Revolution Trading Pros</title>
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 </svelte:head>
 
-<!-- Dashboard Header -->
-<header class="dashboard__header">
-	<div class="dashboard__header-left">
-		<h1 class="dashboard__page-title">My Account</h1>
-	</div>
-</header>
+<!-- Pixel-Perfect Orders Page - Matching Simpler Trading Reference -->
+<div class="woocommerce">
+	<div class="woocommerce-MyAccount-content">
+		<div class="woocommerce-notices-wrapper"></div>
+		<h2 class="section-title">My Orders</h2>
 
-<!-- Dashboard Content -->
-<div class="dashboard__content">
-	<div class="dashboard__content-main">
-		<section class="dashboard__content-section">
-			<div class="fl-builder-content fl-builder-content-33 fl-builder-content-primary fl-builder-global-templates-locked" data-post-id="33">
-				<div class="fl-row fl-row-fixed-width fl-row-bg-color fl-node-59793676724ad" data-node="59793676724ad">
-					<div class="fl-row-content-wrap">
-						<div class="fl-row-content fl-row-fixed-width fl-node-content">
-							<div class="fl-col-group fl-node-597936767334e" data-node="597936767334e">
-								<div class="fl-col fl-node-5979367673419" data-node="5979367673419">
-									<div class="fl-col-content fl-node-content">
-										<div class="fl-module fl-module-rich-text fl-node-59793676759ab dashboard-nav" data-node="59793676759ab">
-											<div class="fl-module-content fl-node-content">
-												<div class="fl-rich-text">
-													<div class="woocommerce">
-														<div class="woocommerce-MyAccount-content">
-															<div class="woocommerce-notices-wrapper"></div>
-															<h2 class="section-title">My Orders</h2>
-
-															{#if orders.length === 0}
-																<div class="woocommerce-message woocommerce-message--info woocommerce-Message woocommerce-Message--info woocommerce-info">
-																	<p>No orders have been made yet.</p>
-																</div>
-															{:else}
-																<table class="table">
-																	<thead>
-																		<tr>
-																			<th class="col-xs-2">Order</th>
-																			<th class="col-xs-3">Date</th>
-																			<th class="col-xs-2 text-right">Actions</th>
-																		</tr>
-																	</thead>
-																	<tbody class="u--font-size-sm">
-																		{#each orders as order (order.id)}
-																			<tr>
-																				<td class="col-xs-2">
-																					<a href="/dashboard/account/view-order/{order.id}">
-																						#{order.number}
-																					</a>
-																				</td>
-																				<td class="col-xs-3">
-																					<time datetime={order.date}>
-																						{formatDate(order.date)}
-																					</time>
-																				</td>
-																				<td class="col-xs-2 text-right table__actions">
-																					<div class="dropdown">
-																						<button type="button" class="btn btn-xs btn-white table__more-actions" id="dLabel-{order.id}" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Order actions for #{order.number}">
-																							<span class="st-icon-ellipsis-h icon--md"></span>
-																						</button>
-																						<nav class="dropdown-menu" data-append-to-body="1" aria-labelledby="dLabel-{order.id}">
-																							<div class="dropdown-menu__content">
-																								<ul class="dropdown-menu__menu dropdown-menu__menu--compact">
-																									<li>
-																										<a href="/dashboard/account/view-order/{order.id}">
-																											<i class="fa fa-eye icon--sm"></i>View
-																										</a>
-																									</li>
-																								</ul>
-																							</div>
-																						</nav>
-																					</div>
-																				</td>
-																			</tr>
-																		{/each}
-																	</tbody>
-																</table>
-															{/if}
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
+		{#if orders.length === 0}
+			<div class="woocommerce-message woocommerce-message--info woocommerce-Message woocommerce-Message--info woocommerce-info">
+				No order has been made yet.
 			</div>
-		</section>
+		{:else}
+			<table class="table">
+				<thead>
+					<tr>
+						<th class="col-xs-2">Order</th><th class="col-xs-3">Date</th><th class="col-xs-2 text-right">Actions</th>
+					</tr>
+				</thead>
+				<tbody class="u--font-size-sm">
+					{#each orders as order (order.id)}
+						<tr>
+							<td class="col-xs-2">
+								<a href="/dashboard/account/view-order/{order.id}">#{order.number}</a>
+							</td>
+							<td class="col-xs-3">
+								<time datetime={order.date}>{formatDate(order.date)}</time>
+							</td>
+							<td class="col-xs-2 text-right table__actions">
+								<div class="dropdown">
+									<button 
+										type="button" 
+										class="btn btn-xs btn-white table__more-actions" 
+										id="dLabel-{order.id}" 
+										aria-expanded="false" 
+										aria-label="Order actions for #{order.number}"
+									>
+										<span class="st-icon-ellipsis-h icon--md">&#8943;</span>
+									</button>
+									<nav class="dropdown-menu" aria-labelledby="dLabel-{order.id}">
+										<div class="dropdown-menu__content">
+											<ul class="dropdown-menu__menu dropdown-menu__menu--compact">
+												<li>
+													<a href="/dashboard/account/view-order/{order.id}">
+														<i class="fa fa-eye icon--sm"></i>View
+													</a>
+												</li>
+											</ul>
+										</div>
+									</nav>
+								</div>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
 	</div>
 </div>
 
 <style>
-	/* Dashboard Header */
-	.dashboard__header {
-		background: #fff;
-		border-bottom: 1px solid #dbdbdb;
-		padding: 20px 30px;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PIXEL-PERFECT ORDERS PAGE - MATCHING SIMPLER TRADING REFERENCE EXACTLY
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dashboard__header-left {
-		flex: 1;
-	}
-
-	.dashboard__page-title {
-		font-family: 'Montserrat', sans-serif;
-		font-size: 24px;
-		font-weight: 600;
-		color: #0a2335;
-		margin: 0;
-		line-height: 1.2;
-	}
-
-	/* Dashboard Content Wrapper */
-	.dashboard__content {
-		background: #f5f5f5;
-		min-height: calc(100vh - 60px);
-		padding: 30px;
-	}
-
-	.dashboard__content-main {
-		max-width: 1200px;
-		margin: 0 auto;
-	}
-
-	.dashboard__content-section {
-		padding: 0;
-	}
-
-	/* Beaver Builder Structure */
-	.fl-builder-content {
-		width: 100%;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.fl-row {
-		width: 100%;
-		position: relative;
-	}
-
-	.fl-row-bg-color {
-		background-color: #ffffff;
-	}
-
-	.fl-row-content-wrap {
-		position: relative;
-	}
-
-	.fl-row-content {
-		margin-left: auto;
-		margin-right: auto;
-	}
-
-	.fl-row-fixed-width {
-		max-width: 1100px;
-	}
-
-	.fl-col-group {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	.fl-col {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.fl-col-content {
-		padding: 0;
-	}
-
-	.fl-node-content {
-		position: relative;
-	}
-
-	.fl-module {
-		margin-bottom: 0;
-	}
-
-	.fl-module-content {
-		position: relative;
-	}
-
-	.fl-rich-text {
-		font-family: 'Montserrat', sans-serif;
-		line-height: 1.6;
-	}
-
-	/* WooCommerce Content */
+	/* WooCommerce Container */
 	.woocommerce {
 		background: #fff;
-		padding: 0;
-		font-family: 'Montserrat', sans-serif;
+		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+		line-height: 1.6;
 	}
 
 	.woocommerce-MyAccount-content {
@@ -234,55 +108,70 @@
 		margin: 0;
 	}
 
+	/* Section Title - Exact Match */
 	.section-title {
-		font-family: 'Montserrat', sans-serif;
-		font-size: 24px;
-		font-weight: 700;
-		margin-bottom: 20px;
-		color: #333;
+		font-family: 'Open Sans', sans-serif;
+		font-size: 18px;
+		font-weight: 600;
+		color: #333333;
+		margin: 0 0 15px 0;
+		padding: 0;
+		line-height: 1.4;
 	}
 
+	/* Orders Table - Pixel Perfect */
 	.table {
 		width: 100%;
 		border-collapse: collapse;
 		background: #fff;
-		font-family: 'Montserrat', sans-serif;
+		font-family: 'Open Sans', sans-serif;
+		margin: 0;
+		border: none;
 	}
 
 	.table thead {
-		background: #f8f9fa;
-		border-bottom: 1px solid #e9ecef;
+		background: transparent;
+		border-bottom: 2px solid #e5e5e5;
+	}
+
+	.table thead tr {
+		border: none;
 	}
 
 	.table thead th {
-		padding: 12px 15px;
-		font-size: 13px;
+		padding: 10px 12px;
+		font-size: 12px;
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
-		color: #495057;
+		color: #666666;
 		text-align: left;
+		border: none;
+		background: transparent;
 	}
 
 	.table thead th.text-right {
 		text-align: right;
 	}
 
+	/* Table Body */
 	.table tbody tr {
-		border-bottom: 1px solid #e9ecef;
+		border-bottom: 1px solid #e5e5e5;
 	}
 
 	.table tbody tr:last-child {
-		border-bottom: none;
+		border-bottom: 1px solid #e5e5e5;
 	}
 
 	.table tbody td {
-		padding: 12px 15px;
+		padding: 15px 12px;
 		font-size: 14px;
-		color: #495057;
+		color: #333333;
 		vertical-align: middle;
+		border: none;
 	}
 
+	/* Order Number Link */
 	.table tbody td a {
 		color: #0984ae;
 		font-weight: 600;
@@ -294,58 +183,101 @@
 		text-decoration: underline;
 	}
 
+	/* Date */
 	.table tbody td time {
-		color: #6c757d;
+		color: #333333;
 		font-size: 14px;
+		font-weight: 400;
 	}
 
+	/* Actions Column */
 	.table__actions {
 		text-align: right;
+	}
+
+	/* Dropdown Button - Ellipsis */
+	.btn {
+		display: inline-block;
+		font-weight: 400;
+		text-align: center;
+		white-space: nowrap;
+		vertical-align: middle;
+		user-select: none;
+		border: 1px solid transparent;
+		padding: 6px 12px;
+		font-size: 14px;
+		line-height: 1.5;
+		border-radius: 4px;
+		transition: all 0.15s ease-in-out;
+		cursor: pointer;
+	}
+
+	.btn-xs {
+		padding: 4px 8px;
+		font-size: 12px;
+		line-height: 1.5;
+		border-radius: 3px;
+	}
+
+	.btn-white {
+		background-color: #ffffff;
+		border-color: #d4d4d4;
+		color: #666666;
+	}
+
+	.btn-white:hover {
+		background-color: #f5f5f5;
+		border-color: #c4c4c4;
+		color: #333333;
 	}
 
 	.table__more-actions {
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
-		padding: 6px 10px;
-		background: #fff;
-		border: 1px solid #dee2e6;
-		border-radius: 4px;
-		cursor: pointer;
-		text-decoration: none;
-		color: #495057;
+		min-width: 32px;
+		height: 28px;
+		padding: 0 8px;
 	}
 
-	.table__more-actions:hover {
-		background: #f8f9fa;
-		border-color: #adb5bd;
-		text-decoration: none;
+	/* Ellipsis Icon */
+	.st-icon-ellipsis-h {
+		font-size: 16px;
+		color: #666666;
+		letter-spacing: 2px;
 	}
 
+	.icon--md {
+		font-size: 16px;
+	}
+
+	/* Dropdown Container */
 	.dropdown {
 		position: relative;
 		display: inline-block;
 	}
 
+	/* Dropdown Menu */
 	.dropdown-menu {
 		position: absolute;
 		right: 0;
 		top: 100%;
-		margin-top: 4px;
-		min-width: 140px;
+		margin-top: 2px;
+		min-width: 120px;
 		background: #fff;
-		border: 1px solid #dee2e6;
+		border: 1px solid #d4d4d4;
 		border-radius: 4px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 6px 12px rgba(0, 0, 0, 0.175);
 		opacity: 0;
 		visibility: hidden;
 		transform: translateY(-5px);
 		transition: all 0.15s ease;
 		z-index: 1000;
+		padding: 0;
 	}
 
 	.dropdown:hover .dropdown-menu,
-	.dropdown-menu:hover {
+	.dropdown:focus-within .dropdown-menu {
 		opacity: 1;
 		visibility: visible;
 		transform: translateY(0);
@@ -361,6 +293,10 @@
 		padding: 0;
 	}
 
+	.dropdown-menu__menu--compact {
+		padding: 0;
+	}
+
 	.dropdown-menu__menu li {
 		margin: 0;
 	}
@@ -368,45 +304,50 @@
 	.dropdown-menu__menu li a {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		padding: 8px 12px;
-		color: #495057;
+		padding: 8px 15px;
+		color: #333333;
 		text-decoration: none;
-		font-size: 13px;
-		font-weight: 500;
+		font-size: 14px;
+		font-weight: 400;
+		white-space: nowrap;
 	}
 
 	.dropdown-menu__menu li a:hover {
-		background: #f8f9fa;
+		background: #f5f5f5;
 		color: #0984ae;
 		text-decoration: none;
 	}
 
 	.dropdown-menu__menu li a i {
+		margin-right: 10px;
 		width: 14px;
 		text-align: center;
 		color: inherit;
-	}
-
-	.woocommerce-message {
-		padding: 15px 20px;
-		background: #e7f3ff;
-		border-left: 4px solid #0984ae;
-		border-radius: 4px;
-		margin-bottom: 20px;
-	}
-
-	.woocommerce-message p {
-		margin: 0;
-		color: #495057;
-		font-size: 14px;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.u--font-size-sm {
 		font-size: 14px;
 	}
 
+	.icon--sm {
+		font-size: 14px;
+	}
+
+	/* Info Message - No Orders */
+	.woocommerce-message,
+	.woocommerce-info {
+		padding: 12px 20px;
+		background: #f7f6f7;
+		border-top: 3px solid #0984ae;
+		margin: 0 0 20px 0;
+		color: #515151;
+		font-size: 14px;
+		line-height: 1.6;
+		list-style: none;
+	}
+
+	.woocommerce-message::before {
+		content: none;
+	}
+
+	/* Column Widths */
 	.col-xs-2 {
 		width: 20%;
 	}
@@ -419,32 +360,31 @@
 		text-align: right;
 	}
 
+	.u--font-size-sm {
+		font-size: 14px;
+	}
+
 	/* Responsive */
 	@media (max-width: 768px) {
-		.dashboard__header {
-			padding: 15px 20px;
-		}
-
-		.dashboard__page-title {
-			font-size: 20px;
-		}
-
-		.dashboard__content {
-			padding: 20px 15px;
-		}
-
 		.table {
 			display: block;
 			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
 		}
 
 		.table thead th,
 		.table tbody td {
-			padding: 10px 12px;
+			padding: 10px 8px;
+			font-size: 13px;
 		}
 
 		.section-title {
-			font-size: 20px;
+			font-size: 16px;
+		}
+
+		.col-xs-2,
+		.col-xs-3 {
+			width: auto;
 		}
 	}
 </style>
