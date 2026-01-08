@@ -200,10 +200,23 @@
 	.dashboard__header {
 		background: #fff;
 		border-bottom: 1px solid #dbdbdb;
-		padding: 20px 30px;
+		border-right: 1px solid #dbdbdb;
+		padding: 20px;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
+	}
+
+	@media (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
 	}
 
 	.dashboard__header-left {
