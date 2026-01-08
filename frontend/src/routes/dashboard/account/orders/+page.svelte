@@ -290,8 +290,13 @@
 		padding: 0 8px;
 	}
 
-	/* Ellipsis Icon */
+	/* Ellipsis Icon - Using ::before like reference */
 	.st-icon-ellipsis-h {
+		display: inline-block;
+	}
+
+	.st-icon-ellipsis-h::before {
+		content: '\2022\2022\2022'; /* Three dots: ••• */
 		font-size: 16px;
 		color: #666666;
 		letter-spacing: 2px;
