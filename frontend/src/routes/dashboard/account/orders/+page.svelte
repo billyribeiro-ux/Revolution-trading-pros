@@ -49,61 +49,62 @@
 								<div class="fl-col fl-node-5979367673419" data-node="5979367673419">
 									<div class="fl-col-content fl-node-content">
 										<div class="fl-module fl-module-rich-text fl-node-59793676759ab dashboard-nav" data-node="59793676759ab">
-	<div class="fl-module-content fl-node-content">
-		<div class="fl-rich-text">
-			<div class="woocommerce">
-				<div class="woocommerce-MyAccount-content">
-					<div class="woocommerce-notices-wrapper"></div>
-					<h2 class="section-title">My Orders</h2>
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-rich-text">
+													<div class="woocommerce">
+														<div class="woocommerce-MyAccount-content">
+															<div class="woocommerce-notices-wrapper"></div>
+															<h2 class="section-title">My Orders</h2>
 
-					{#if orders.length === 0}
-						<div class="woocommerce-message woocommerce-info">
-							No order has been made yet.
-						</div>
-					{:else}
-						<table class="table">
-							<thead>
-								<tr>
-									<th class="col-xs-2">Order</th><th class="col-xs-3">Date</th><th class="col-xs-2 text-right">Actions</th>
-								</tr>
-							</thead>
-							<tbody class="u--font-size-sm">
-								{#each orders as order (order.id)}
-									<tr>
-										<td class="col-xs-2">
-											<a href="/dashboard/account/view-order/{order.id}">
-												#{order.number}
-											</a>
-										</td>
-										<td class="col-xs-3">
-											<time datetime={order.date}>{formatDate(order.date)}</time>
-										</td>
-										<td class="col-xs-2 text-right table__actions">
-											<div class="dropdown">
-												<button type="button" class="btn btn-xs btn-white table__more-actions" id="dLabel-{order.id}" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Order actions for #{order.number}">
-													<span class="st-icon-ellipsis-h icon--md"></span>
-												</button>
-												<nav class="dropdown-menu" data-append-to-body="1" aria-labelledby="dLabel-{order.id}">
-													<div class="dropdown-menu__content">
-														<ul class="dropdown-menu__menu dropdown-menu__menu--compact">
-															<li>
-																<a href="/dashboard/account/view-order/{order.id}">
-																	<i class="fa fa-eye icon--sm"></i>View
-																</a>
-															</li>
-														</ul>
+															{#if orders.length === 0}
+																<div class="woocommerce-message woocommerce-info">
+																	No order has been made yet.
+																</div>
+															{:else}
+																<table class="table">
+																	<thead>
+																		<tr>
+																			<th class="col-xs-2">Order</th><th class="col-xs-3">Date</th><th class="col-xs-2 text-right">Actions</th>
+																		</tr>
+																	</thead>
+																	<tbody class="u--font-size-sm">
+																		{#each orders as order (order.id)}
+																			<tr>
+																				<td class="col-xs-2">
+																					<a href="/dashboard/account/view-order/{order.id}">
+																						#{order.number}
+																					</a>
+																				</td>
+																				<td class="col-xs-3">
+																					<time datetime={order.date}>{formatDate(order.date)}</time>
+																				</td>
+																				<td class="col-xs-2 text-right table__actions">
+																					<div class="dropdown">
+																						<button type="button" class="btn btn-xs btn-white table__more-actions" id="dLabel-{order.id}" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Order actions for #{order.number}">
+																							<span class="st-icon-ellipsis-h icon--md"></span>
+																						</button>
+																						<nav class="dropdown-menu" data-append-to-body="1" aria-labelledby="dLabel-{order.id}">
+																							<div class="dropdown-menu__content">
+																								<ul class="dropdown-menu__menu dropdown-menu__menu--compact">
+																									<li>
+																										<a href="/dashboard/account/view-order/{order.id}">
+																											<i class="fa fa-eye icon--sm"></i>View
+																										</a>
+																									</li>
+																								</ul>
+																							</div>
+																						</nav>
+																					</div>
+																				</td>
+																			</tr>
+																		{/each}
+																	</tbody>
+																</table>
+															{/if}
+														</div>
 													</div>
-												</nav>
+												</div>
 											</div>
-										</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					{/if}
-				</div>
-			</div>
-		</div>
 										</div>
 									</div>
 								</div>
