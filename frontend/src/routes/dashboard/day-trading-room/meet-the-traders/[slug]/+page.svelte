@@ -8,6 +8,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import { getTraderBySlug } from '$lib/data/traders';
+	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 
 	let trader = $derived(getTraderBySlug(page.params.slug));
 </script>
@@ -31,28 +32,7 @@
 	</div>
 
 	<!-- Weekly Watchlist Section -->
-	<div class="weekly-watchlist-section">
-		<div class="row">
-			<div class="col-left">
-				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
-				<div class="mobile-image">
-					<a href="/dashboard/day-trading-room/weekly-watchlist">
-						<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
-					</a>
-				</div>
-				<h4 class="h5 u--font-weight-bold">Weekly Watchlist with David Starr</h4>
-				<div class="u--hide-read-more">
-					<p>Week of December 29, 2025.</p>
-				</div>
-				<a href="/dashboard/day-trading-room/weekly-watchlist" class="btn btn-tiny btn-default">Watch Now</a>
-			</div>
-			<div class="col-right desktop-only">
-				<a href="/dashboard/day-trading-room/weekly-watchlist">
-					<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="u--border-radius" />
-				</a>
-			</div>
-		</div>
-	</div>
+	<WeeklyWatchlist />
 {/if}
 
 <style>
@@ -101,123 +81,5 @@
 
 	.fl-rich-text p:last-child {
 		margin-bottom: 0;
-	}
-
-	/* Weekly Watchlist Section */
-	.weekly-watchlist-section {
-		margin-top: 40px;
-		padding-top: 40px;
-		border-top: 1px solid #e6e6e6;
-	}
-
-	.row {
-		display: flex;
-		flex-wrap: wrap;
-		margin: 0 -15px;
-	}
-
-	.col-left {
-		flex: 0 0 41.666667%;
-		max-width: 41.666667%;
-		padding: 0 15px;
-	}
-
-	.col-right {
-		flex: 0 0 58.333333%;
-		max-width: 58.333333%;
-		padding: 0 15px;
-	}
-
-	.section-title-alt {
-		font-size: 24px;
-		font-weight: 700;
-		color: #333;
-		margin: 0 0 20px;
-	}
-
-	.section-title-alt--underline {
-		padding-bottom: 15px;
-		border-bottom: 3px solid #F69532;
-	}
-
-	.h5 {
-		font-size: 18px;
-		margin: 0 0 10px;
-	}
-
-	.u--font-weight-bold {
-		font-weight: 700;
-	}
-
-	.u--border-radius {
-		border-radius: 8px;
-		width: 100%;
-		height: auto;
-	}
-
-	.u--hide-read-more p {
-		color: #666;
-		font-size: 14px;
-		margin: 0 0 15px;
-	}
-
-	.mobile-image {
-		display: none;
-		margin-bottom: 15px;
-	}
-
-	.btn {
-		display: inline-block;
-		padding: 10px 20px;
-		font-size: 14px;
-		font-weight: 600;
-		text-align: center;
-		text-decoration: none;
-		border-radius: 4px;
-		transition: all 0.2s ease;
-		cursor: pointer;
-	}
-
-	.btn-default {
-		background: #143E59;
-		color: #fff;
-		border: 1px solid #143E59;
-	}
-
-	.btn-default:hover {
-		background: #0c2638;
-		border-color: #0c2638;
-	}
-
-	.btn-tiny {
-		padding: 8px 16px;
-		font-size: 13px;
-	}
-
-	@media (min-width: 768px) {
-		.col-left,
-		.col-right {
-			flex: 0 0 50%;
-			max-width: 50%;
-			margin-bottom: 0;
-		}
-	}
-
-	@media (min-width: 992px) {
-		.col-left {
-			flex: 0 0 41.666667%;
-			max-width: 41.666667%;
-		}
-		.col-right {
-			flex: 0 0 58.333333%;
-			max-width: 58.333333%;
-		}
-		.desktop-only {
-			display: block;
-		}
-
-		.col-right:last-child {
-			margin-bottom: 0;
-		}
 	}
 </style>
