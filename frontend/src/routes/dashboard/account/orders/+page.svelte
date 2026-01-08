@@ -31,17 +31,13 @@
 </svelte:head>
 
 <!-- Pixel-Perfect Orders Page - Matching Simpler Trading Reference -->
-<div class="woocommerce">
-	<div class="woocommerce-MyAccount-content">
-		<div class="woocommerce-notices-wrapper"></div>
-		<h2 class="section-title">My Orders</h2>
-
-		{#if orders.length === 0}
-			<div class="woocommerce-message woocommerce-message--info woocommerce-Message woocommerce-Message--info woocommerce-info">
-				No order has been made yet.
-			</div>
-		{:else}
-			<table class="table">
+<div class="content-box">
+	{#if orders.length === 0}
+		<div class="woocommerce-message woocommerce-info">
+			No order has been made yet.
+		</div>
+	{:else}
+		<table class="table">
 				<thead>
 					<tr>
 						<th class="col-xs-2">Order</th><th class="col-xs-3">Date</th><th class="col-xs-2 text-right">Actions</th>
@@ -84,8 +80,7 @@
 					{/each}
 				</tbody>
 			</table>
-		{/if}
-	</div>
+	{/if}
 </div>
 
 <style>
@@ -93,30 +88,14 @@
 	   PIXEL-PERFECT ORDERS PAGE - MATCHING SIMPLER TRADING REFERENCE EXACTLY
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* WooCommerce Container */
-	.woocommerce {
+	/* White Card Container - Matching Reference */
+	.content-box {
 		background: #fff;
+		border-radius: 4px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		padding: 20px;
 		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 		line-height: 1.6;
-	}
-
-	.woocommerce-MyAccount-content {
-		padding: 0;
-	}
-
-	.woocommerce-notices-wrapper {
-		margin: 0;
-	}
-
-	/* Section Title - Exact Match */
-	.section-title {
-		font-family: 'Open Sans', sans-serif;
-		font-size: 18px;
-		font-weight: 600;
-		color: #333333;
-		margin: 0 0 15px 0;
-		padding: 0;
-		line-height: 1.4;
 	}
 
 	/* Orders Table - Pixel Perfect */
