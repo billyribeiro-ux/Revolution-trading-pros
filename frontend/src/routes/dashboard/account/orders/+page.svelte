@@ -30,57 +30,71 @@
 	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
 </svelte:head>
 
-<!-- Pixel-Perfect Orders Page - Matching Simpler Trading Reference -->
-<div class="content-box">
-	{#if orders.length === 0}
-		<div class="woocommerce-message woocommerce-info">
-			No order has been made yet.
+<!-- My Account Header -->
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">My Account</h1>
+	</div>
+</header>
+
+<!-- Order Box - Exact Simpler Trading Structure -->
+<div class="fl-module fl-module-rich-text fl-node-59793676759ab dashboard-nav" data-node="59793676759ab">
+	<div class="fl-module-content fl-node-content">
+		<div class="fl-rich-text">
+			<div class="woocommerce">
+				<div class="woocommerce-MyAccount-content">
+					<div class="woocommerce-notices-wrapper"></div>
+					<h2 class="section-title">My Orders</h2>
+
+					{#if orders.length === 0}
+						<div class="woocommerce-message woocommerce-info">
+							No order has been made yet.
+						</div>
+					{:else}
+						<table class="table">
+							<thead>
+								<tr>
+									<th class="col-xs-2">Order</th><th class="col-xs-3">Date</th><th class="col-xs-2 text-right">Actions</th>
+								</tr>
+							</thead>
+							<tbody class="u--font-size-sm">
+								{#each orders as order (order.id)}
+									<tr>
+										<td class="col-xs-2">
+											<a href="/dashboard/account/view-order/{order.id}">
+												#{order.number}
+											</a>
+										</td>
+										<td class="col-xs-3">
+											<time datetime={order.date}>{formatDate(order.date)}</time>
+										</td>
+										<td class="col-xs-2 text-right table__actions">
+											<div class="dropdown">
+												<a href="#" class="btn btn-xs btn-white table__more-actions" id="dLabel-{order.id}" data-bs-toggle="dropdown" aria-expanded="false">
+													<span class="st-icon-ellipsis-h icon--md"></span>
+												</a>
+												<nav class="dropdown-menu" data-append-to-body="1" aria-labelledby="dLabel-{order.id}">
+													<div class="dropdown-menu__content">
+														<ul class="dropdown-menu__menu dropdown-menu__menu--compact">
+															<li>
+																<a href="/dashboard/account/view-order/{order.id}">
+																	<i class="fa fa-eye icon--sm"></i>View
+																</a>
+															</li>
+														</ul>
+													</div>
+												</nav>
+											</div>
+										</td>
+									</tr>
+								{/each}
+							</tbody>
+						</table>
+					{/if}
+				</div>
+			</div>
 		</div>
-	{:else}
-		<table class="table">
-				<thead>
-					<tr>
-						<th class="col-xs-2">Order</th><th class="col-xs-3">Date</th><th class="col-xs-2 text-right">Actions</th>
-					</tr>
-				</thead>
-				<tbody class="u--font-size-sm">
-					{#each orders as order (order.id)}
-						<tr>
-							<td class="col-xs-2">
-								<a href="/dashboard/account/view-order/{order.id}">#{order.number}</a>
-							</td>
-							<td class="col-xs-3">
-								<time datetime={order.date}>{formatDate(order.date)}</time>
-							</td>
-							<td class="col-xs-2 text-right table__actions">
-								<div class="dropdown">
-									<button 
-										type="button" 
-										class="btn btn-xs btn-white table__more-actions" 
-										id="dLabel-{order.id}" 
-										aria-expanded="false" 
-										aria-label="Order actions for #{order.number}"
-									>
-										<span class="st-icon-ellipsis-h icon--md">&#8943;</span>
-									</button>
-									<nav class="dropdown-menu" aria-labelledby="dLabel-{order.id}">
-										<div class="dropdown-menu__content">
-											<ul class="dropdown-menu__menu dropdown-menu__menu--compact">
-												<li>
-													<a href="/dashboard/account/view-order/{order.id}">
-														<i class="fa fa-eye icon--sm"></i>View
-													</a>
-												</li>
-											</ul>
-										</div>
-									</nav>
-								</div>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-	{/if}
+	</div>
 </div>
 
 <style>
@@ -88,14 +102,71 @@
 	   PIXEL-PERFECT ORDERS PAGE - MATCHING SIMPLER TRADING REFERENCE EXACTLY
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* White Card Container - Matching Reference */
-	.content-box {
+	/* Dashboard Header */
+	.dashboard__header {
+		background: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		padding: 20px 30px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.dashboard__header-left {
+		flex: 1;
+	}
+
+	.dashboard__page-title {
+		font-family: 'Open Sans', sans-serif;
+		font-size: 28px;
+		font-weight: 400;
+		font-style: italic;
+		color: #333333;
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	/* Beaver Builder Module Structure */
+	.fl-module {
+		margin-bottom: 0;
+	}
+
+	.fl-module-content {
+		position: relative;
+	}
+
+	.fl-rich-text {
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.6;
+	}
+
+	/* WooCommerce Container */
+	.woocommerce {
 		background: #fff;
 		border-radius: 4px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		padding: 20px;
 		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 		line-height: 1.6;
+	}
+
+	.woocommerce-MyAccount-content {
+		padding: 0;
+	}
+
+	.woocommerce-notices-wrapper {
+		margin: 0;
+	}
+
+	/* Section Title */
+	.section-title {
+		font-family: 'Open Sans', sans-serif;
+		font-size: 18px;
+		font-weight: 600;
+		color: #333333;
+		margin: 0 0 15px 0;
+		padding: 0;
+		line-height: 1.4;
 	}
 
 	/* Orders Table - Pixel Perfect */
