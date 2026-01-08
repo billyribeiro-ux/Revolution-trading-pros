@@ -901,27 +901,27 @@
 		position: absolute;
 	}
 
-	/* Circular background pseudo-element */
+	/* Circular background pseudo-element - EXACT MATCH to dashboard.8f78208b.css */
 	.dashboard__sidebar.is-collapsed .dash_main_links li a:before {
 		position: absolute;
 		display: block;
 		content: "";
 		top: 50%;
 		left: 50%;
-		width: 44px;
-		height: 44px;
-		margin-top: -22px;
-		margin-left: -22px;
+		width: 50px;
+		height: 50px;
+		margin-top: -25px;
+		margin-left: -25px;
 		border-radius: 50%;
-		transform: scale(0.85);
+		transform: scale(0.9);
 		background: transparent;
-		transition: all 0.12s ease-out;
+		transition: all 0.15s ease-in-out;
 	}
 
 	/* HOVER EFFECTS - Circular background appears */
 	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover:before {
 		transform: scale(1);
-		background-color: rgba(0, 0, 0, 0.25);
+		background-color: rgba(0, 0, 0, 0.2);
 	}
 
 	/* Active indicator hides on hover */
@@ -996,26 +996,26 @@
 		color: #fff;
 	}
 
-	/* Circular background on hover for tooltip-wrapped links */
+	/* Circular background on hover for tooltip-wrapped links - EXACT MATCH */
 	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger a::before) {
 		content: "";
 		position: absolute;
 		top: 50%;
 		left: 50%;
-		width: 44px;
-		height: 44px;
-		margin-top: -22px;
-		margin-left: -22px;
+		width: 50px;
+		height: 50px;
+		margin-top: -25px;
+		margin-left: -25px;
 		border-radius: 50%;
-		transform: scale(0.85);
+		transform: scale(0.9);
 		background: transparent;
-		transition: all 0.12s ease-out;
+		transition: all 0.15s ease-in-out;
 		z-index: -1;
 	}
 
 	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger a:hover::before) {
 		transform: scale(1);
-		background-color: rgba(0, 0, 0, 0.25);
+		background-color: rgba(0, 0, 0, 0.2);
 	}
 
 	/* Active state indicator for tooltip-wrapped links */
