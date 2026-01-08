@@ -227,15 +227,6 @@
 		margin-bottom: 30px;
 	}
 
-
-	.woocommerce {
-		background: #fff;
-	}
-
-	.woocommerce-MyAccount-content {
-		padding: 0;
-	}
-
 	.woocommerce-notices-wrapper {
 		margin-bottom: 20px;
 	}

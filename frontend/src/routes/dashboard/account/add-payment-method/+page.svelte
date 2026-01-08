@@ -263,15 +263,6 @@
 		margin-bottom: 30px;
 	}
 
-
-	.woocommerce {
-		background: #fff;
-	}
-
-	.woocommerce-MyAccount-content {
-		padding: 0;
-	}
-
 	.section-title {
 		font-size: 24px;
 		font-weight: 600;
