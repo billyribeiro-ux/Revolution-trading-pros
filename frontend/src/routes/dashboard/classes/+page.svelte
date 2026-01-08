@@ -137,9 +137,26 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	
 	.dashboard__header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
 		justify-content: space-between;
-		padding: 20px 0;
-		margin-bottom: 30px;
+		background: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		border-right: 1px solid #dbdbdb;
+		padding: 20px;
+	}
+	
+	@media (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
 	}
 	
 	.dashboard__header-left {
