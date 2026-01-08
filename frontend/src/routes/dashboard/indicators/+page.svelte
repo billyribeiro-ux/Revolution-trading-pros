@@ -27,7 +27,62 @@
 	
 	// Mock data - replace with actual API call
 	// Set to empty array to show empty state, or populate with indicators
-	const indicators: Indicator[] = [];
+	const indicators: Indicator[] = [
+		{
+			id: 1,
+			name: 'Volume Max Tool Kit (formerly VWAP)',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/volume-max-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 2,
+			name: 'Multi (EMA) Cross Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/multi-cross-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 3,
+			name: 'QuantPivots Tool',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/quantpivots-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 4,
+			name: 'Trend and HiLo Oscillator Pro Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/trend-hilo-oscillator-pro-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 5,
+			name: 'Simpler Momentum Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/simpler-momentum-indicator-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 6,
+			name: 'Hawkeye Volume Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/hawkeye-volume-indicator-i',
+			icon: '',
+			status: 'active'
+		}
+	];
 </script>
 
 <svelte:head>
@@ -80,7 +135,7 @@
 										<div class="card flex-grid-panel">
 											<section class="card-body u--squash">
 												<h4 class="h5 card-title pb-1">
-													<a href="/indicators/{indicator.id}">
+													<a href="{indicator.platformUrl}">
 														{indicator.name}
 													</a>
 												</h4>
@@ -91,7 +146,7 @@
 												{/if}
 											</section>
 											<footer class="card-footer">
-												<a class="btn btn-tiny btn-default" href="/indicators/{indicator.id}">View Details</a>
+												<a class="btn btn-tiny btn-default" href="{indicator.platformUrl}">Watch Now</a>
 											</footer>
 										</div>
 									</article>
