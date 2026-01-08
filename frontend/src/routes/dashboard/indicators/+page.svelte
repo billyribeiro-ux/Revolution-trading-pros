@@ -376,10 +376,6 @@
 		flex-grow: 1;
 	}
 
-	.card-body + .card-body {
-		border-top: 1px solid #e8e8e8;
-	}
-
 	.u--squash {
 		padding-bottom: 10px;
 	}
