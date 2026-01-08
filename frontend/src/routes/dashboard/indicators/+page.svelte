@@ -119,7 +119,7 @@
 						<section class="dashboard__content-section">
 							<div class="empty-state">
 								<p class="empty-state__message">You don't have any Indicators.</p>
-								<a href="/product/product-category/Indicators/" class="btn btn-orange" target="_blank">See All Indicators</a>
+								<a href="https://www.simplertrading.com/product/product-category/indicators/" class="btn btn-orange" target="_blank">See All Indicators</a>
 							</div>
 						</section>
 					</div>

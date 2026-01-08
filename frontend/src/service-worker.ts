@@ -77,6 +77,13 @@ const ASSETS = [
 	return true;
 });
 
+// ICT 7 FIX: Ensure offline.html is always in the cache list
+// This file is critical for offline functionality
+const OFFLINE_PAGE = '/offline.html';
+if (!ASSETS.includes(OFFLINE_PAGE)) {
+	ASSETS.push(OFFLINE_PAGE);
+}
+
 // Maximum concurrent cache operations to avoid overwhelming the browser
 const MAX_CONCURRENT_CACHE = 50;
 
@@ -215,8 +222,16 @@ sw.addEventListener('fetch', (event) => {
 					// If offline, try to serve cached page or offline fallback
 					const cached = await caches.match(event.request);
 					if (cached) return cached;
-					const offline = await caches.match('/offline.html');
-					return offline || new Response('Offline', { status: 503 });
+					
+					// ICT 7 FIX: Try offline page with graceful inline fallback
+					const offline = await caches.match(OFFLINE_PAGE);
+					if (offline) return offline;
+					
+					// Ultimate fallback: inline offline response
+					return new Response(
+						`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline</title><style>body{font-family:system-ui,sans-serif;background:#0a101c;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}div{text-align:center;padding:2rem}h1{margin-bottom:1rem}button{background:#facc15;color:#0a101c;border:none;padding:1rem 2rem;border-radius:9999px;font-weight:600;cursor:pointer}</style></head><body><div><h1>You're Offline</h1><p>Please check your connection and try again.</p><button onclick="location.reload()">Retry</button></div></body></html>`,
+						{ status: 503, headers: { 'Content-Type': 'text/html' } }
+					);
 				})
 		);
 		return;
