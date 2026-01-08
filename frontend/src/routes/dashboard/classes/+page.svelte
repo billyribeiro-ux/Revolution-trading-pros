@@ -478,12 +478,21 @@
 		color: #0984ae;
 	}
 
-	.btn-default:hover,
-	.btn-default:focus {
+	.btn-default:hover {
 		color: #0984ae;
 		background: #e7e7e7;
 		border-color: transparent;
 		box-shadow: none;
+		text-decoration: none;
+	}
+
+	.btn-default:focus,
+	.btn-default:active {
+		color: #0984ae;
+		background: #e7e7e7;
+		border-color: transparent;
+		outline: 0;
+		box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
 		text-decoration: none;
 	}
 
