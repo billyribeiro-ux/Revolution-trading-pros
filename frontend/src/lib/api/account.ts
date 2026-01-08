@@ -130,14 +130,32 @@ export interface ApiResponse<T> {
 export const accountApi = {
 	/**
 	 * Get complete account data (profile + memberships + billing)
+	 * Aggregates data from multiple endpoints since backend doesn't have /account
 	 * 
 	 * @returns Complete account data
 	 * @throws ApiError on failure
 	 */
 	async getAccountData(): Promise<AccountData> {
 		try {
-			const response = await apiClient.get<ApiResponse<AccountData>>('/api/user/account');
-			return response.data;
+			// Backend only has /profile endpoint, fetch it directly
+			// The profile response includes name which we parse into first_name/last_name
+			const profileResponse = await apiClient.get<UserProfile>('/api/user/profile');
+			
+			// Return account data structure with profile
+			// Memberships and billing are empty for now until those endpoints are implemented
+			return {
+				profile: profileResponse,
+				memberships: {
+					active: [],
+					expired: []
+				},
+				billing: {
+					email: profileResponse.email,
+					phone: null,
+					address: null,
+					payment_method: null
+				}
+			};
 		} catch (error) {
 			console.error('[Account API] Failed to fetch account data:', error);
 			throw error;
