@@ -456,19 +456,24 @@
 	}
 
 	.btn-default {
-		background-color: #143E59;
-		color: #fff;
-		border: 1px solid #143E59;
+		background: #f4f4f4;
+		color: #0984ae;
+		border-color: transparent;
 		box-shadow: none;
 		transition: all 0.15s ease-in-out;
 	}
 
-	.btn-default:hover {
-		background-color: #0f2d41;
-		border-color: #0f2d41;
+	.btn-default:visited {
+		color: #0984ae;
+	}
+
+	.btn-default:hover,
+	.btn-default:focus {
+		color: #0984ae;
+		background: #e7e7e7;
+		border-color: transparent;
 		box-shadow: none;
 		text-decoration: none;
-		color: #fff;
 	}
 
 	/* Grid System - Bootstrap-like */
