@@ -24,6 +24,10 @@
 		date?: string;
 	}
 	
+	// Pagination configuration - ICT 7 Enterprise Standard
+	let currentPage = 1;
+	const itemsPerPage = 12;
+	
 	// Mock data - replace with actual API call
 	// Set to empty array to show empty state, or populate with classes
 	const classes: ClassItem[] = [
@@ -56,6 +60,33 @@
 			instructor: 'TG Watkins'
 		}
 	];
+	
+	// Computed pagination values
+	$: totalPages = Math.ceil(classes.length / itemsPerPage);
+	$: startIndex = (currentPage - 1) * itemsPerPage;
+	$: endIndex = startIndex + itemsPerPage;
+	$: paginatedClasses = classes.slice(startIndex, endIndex);
+	$: pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+	
+	// Pagination navigation functions
+	function goToPage(page: number) {
+		if (page >= 1 && page <= totalPages) {
+			currentPage = page;
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+	}
+	
+	function nextPage() {
+		if (currentPage < totalPages) {
+			goToPage(currentPage + 1);
+		}
+	}
+	
+	function previousPage() {
+		if (currentPage > 1) {
+			goToPage(currentPage - 1);
+		}
+	}
 </script>
 
 <svelte:head>
@@ -100,7 +131,7 @@
 				<div class="dashboard__content-main">
 					<section class="dashboard__content-section">
 						<div class="card-grid flex-grid row">
-							{#each classes as classItem}
+							{#each paginatedClasses as classItem}
 								<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
 									<div class="card flex-grid-panel">
 										<section class="card-body u--squash">
@@ -122,6 +153,56 @@
 								</article>
 							{/each}
 						</div>
+						
+						<!-- Pagination Controls -->
+						{#if totalPages > 1}
+							<div class="pagination-wrapper">
+								<nav class="pagination" aria-label="Pagination">
+									<ul class="page-numbers">
+										<!-- Previous Button -->
+										<li>
+											<button
+												class="page-numbers prev"
+												on:click={previousPage}
+												disabled={currentPage === 1}
+												aria-label="Previous page"
+											>
+												← Previous
+											</button>
+										</li>
+										
+										<!-- Page Numbers -->
+										{#each pageNumbers as pageNum}
+											<li>
+												{#if pageNum === currentPage}
+													<span class="page-numbers current" aria-current="page">{pageNum}</span>
+												{:else}
+													<button
+														class="page-numbers"
+														on:click={() => goToPage(pageNum)}
+														aria-label="Go to page {pageNum}"
+													>
+														{pageNum}
+													</button>
+												{/if}
+											</li>
+										{/each}
+										
+										<!-- Next Button -->
+										<li>
+											<button
+												class="page-numbers next"
+												on:click={nextPage}
+												disabled={currentPage === totalPages}
+												aria-label="Next page"
+											>
+												Next →
+											</button>
+										</li>
+									</ul>
+								</nav>
+							</div>
+						{/if}
 					</section>
 				</div>
 			</div>
@@ -370,6 +451,106 @@
 
 		.card-grid-spacer {
 			margin-bottom: 20px;
+		}
+	}
+	
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Pagination - Enterprise ICT 7 Standard
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	
+	.pagination-wrapper {
+		padding: 40px 0;
+		text-align: center;
+	}
+	
+	.pagination {
+		display: inline-block;
+	}
+	
+	.page-numbers {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+	
+	.page-numbers li {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	
+	.page-numbers button,
+	.page-numbers span {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 40px;
+		height: 40px;
+		padding: 8px 12px;
+		border: 1px solid #e6e6e6;
+		background: #fff;
+		color: #333;
+		font-size: 14px;
+		font-weight: 600;
+		font-family: 'Open Sans', sans-serif;
+		text-decoration: none;
+		border-radius: 4px;
+		transition: all 0.2s ease;
+		cursor: pointer;
+	}
+	
+	.page-numbers button:hover:not(:disabled) {
+		background: #f5f5f5;
+		border-color: #143E59;
+		color: #143E59;
+		text-decoration: none;
+	}
+	
+	.page-numbers button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		background: #f9f9f9;
+	}
+	
+	.page-numbers .current {
+		background: #143E59;
+		color: #fff;
+		border-color: #143E59;
+		cursor: default;
+	}
+	
+	.page-numbers .prev,
+	.page-numbers .next {
+		min-width: auto;
+		padding: 8px 16px;
+		font-weight: 700;
+	}
+	
+	@media (max-width: 576px) {
+		.pagination-wrapper {
+			padding: 30px 0;
+		}
+		
+		.page-numbers {
+			gap: 4px;
+		}
+		
+		.page-numbers button,
+		.page-numbers span {
+			min-width: 36px;
+			height: 36px;
+			padding: 6px 10px;
+			font-size: 13px;
+		}
+		
+		.page-numbers .prev,
+		.page-numbers .next {
+			padding: 6px 12px;
 		}
 	}
 </style>
