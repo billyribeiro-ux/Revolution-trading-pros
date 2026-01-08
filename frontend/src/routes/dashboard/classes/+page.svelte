@@ -13,18 +13,20 @@
 <script lang="ts">
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	
+	interface ClassItem {
+		id: number;
+		title: string;
+		slug: string;
+		description?: string;
+		thumbnail?: string;
+		duration?: string;
+		instructor?: string;
+		date?: string;
+	}
+	
 	// Mock data - replace with actual API call
-	const classes = [
-		{
-			id: 1,
-			title: 'Tax Loss Harvest',
-			slug: 'tax-loss-harvest',
-			description: 'Learn tax loss harvesting strategies',
-			thumbnail: '/images/classes/tax-loss-harvest.jpg',
-			duration: '2 hours'
-		},
-		// Add more classes as needed
-	];
+	// Set to empty array to show empty state, or populate with classes
+	const classes: ClassItem[] = [];
 </script>
 
 <svelte:head>
@@ -50,35 +52,51 @@
 				</div>
 			</header>
 			
-			<!-- Classes Grid -->
-			<div class="classes-grid">
-				{#each classes as classItem}
-					<article class="class-card">
-						<a href="/classes/{classItem.slug}" class="class-card__link">
-							<div class="class-card__thumbnail">
-								{#if classItem.thumbnail}
-									<img src={classItem.thumbnail} alt={classItem.title} />
-								{:else}
-									<div class="class-card__placeholder">
-										<span class="fa fa-graduation-cap"></span>
-									</div>
-								{/if}
-							</div>
-							<div class="class-card__content">
-								<h2 class="class-card__title">{classItem.title}</h2>
-								{#if classItem.description}
-									<p class="class-card__description">{classItem.description}</p>
-								{/if}
-								{#if classItem.duration}
-									<span class="class-card__duration">
-										<span class="fa fa-clock-o"></span> {classItem.duration}
-									</span>
-								{/if}
-							</div>
-						</a>
-					</article>
-				{/each}
+			<!-- Classes Grid or Empty State -->
+		{#if classes.length === 0}
+			<!-- Empty State -->
+			<div class="dashboard__content">
+				<div class="dashboard__content-main">
+					<section class="dashboard__content-section">
+						<div class="empty-state">
+							<p class="empty-state__message">You don't have any Classes.</p>
+							<a href="/courses" class="btn btn-orange">See All Courses</a>
+						</div>
+					</section>
+				</div>
 			</div>
+		{:else}
+			<!-- Classes Grid -->
+			<div class="dashboard__content">
+				<div class="dashboard__content-main">
+					<section class="dashboard__content-section">
+						<div class="card-grid flex-grid row">
+							{#each classes as classItem}
+								<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
+									<div class="card flex-grid-panel">
+										<section class="card-body u--squash">
+											<h4 class="h5 card-title pb-1">
+												<a href="/classes/{classItem.slug}">
+													{classItem.title}
+												</a>
+											</h4>
+											{#if classItem.date && classItem.instructor}
+												<p class="article-card__meta">
+													<small>{classItem.date} with {classItem.instructor}</small>
+												</p>
+											{/if}
+										</section>
+										<footer class="card-footer">
+											<a class="btn btn-tiny btn-default" href="/classes/{classItem.slug}">Watch Now</a>
+										</footer>
+									</div>
+								</article>
+							{/each}
+						</div>
+					</section>
+				</div>
+			</div>
+		{/if}
 		</main>
 	</div>
 </div>
@@ -106,99 +124,43 @@
 		margin: 0;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
-	
-	/* Classes Grid */
-	.classes-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-		gap: 30px;
-		padding: 20px 0;
-	}
-	
-	.class-card {
-		background: #fff;
-		border: 1px solid #e5e5e5;
-		border-radius: 8px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-	}
-	
-	.class-card:hover {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-		transform: translateY(-2px);
-	}
-	
-	.class-card__link {
-		display: block;
-		text-decoration: none;
-		color: inherit;
-	}
-	
-	.class-card__thumbnail {
-		position: relative;
-		padding-top: 56.25%; /* 16:9 aspect ratio */
+
+	/* Empty State - Matches screenshot */
+	.empty-state {
 		background: #f5f5f5;
-		overflow: hidden;
+		padding: 40px 20px;
+		text-align: left;
+		min-height: 200px;
 	}
-	
-	.class-card__thumbnail img {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-	
-	.class-card__placeholder {
-		position: absolute;
-		top: 0;
-		left: 0;
-		width: 100%;
-		height: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-		color: #fff;
-		font-size: 48px;
-	}
-	
-	.class-card__content {
-		padding: 20px;
-	}
-	
-	.class-card__title {
-		font-size: 20px;
-		font-weight: 700;
+
+	.empty-state__message {
+		font-size: 16px;
 		color: #333;
-		margin: 0 0 10px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		margin: 0 0 20px;
+		font-family: 'Open Sans', sans-serif;
 	}
-	
-	.class-card__description {
+
+	.btn-orange {
+		background-color: #ff8c00;
+		color: #fff;
+		padding: 12px 24px;
+		border-radius: 4px;
+		text-decoration: none;
+		display: inline-block;
+		font-weight: 700;
 		font-size: 14px;
-		color: #666;
-		line-height: 1.6;
-		margin: 0 0 15px;
+		border: none;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
 	}
-	
-	.class-card__duration {
-		display: inline-flex;
-		align-items: center;
-		gap: 6px;
-		font-size: 13px;
-		color: #999;
+
+	.btn-orange:hover {
+		background-color: #e67e00;
+		text-decoration: none;
 	}
 	
 	/* Responsive */
 	@media (max-width: 768px) {
-		.classes-grid {
-			grid-template-columns: 1fr;
-			gap: 20px;
-		}
-		
 		.dashboard__page-title {
 			font-size: 24px;
 		}
