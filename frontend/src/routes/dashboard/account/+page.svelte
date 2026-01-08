@@ -13,7 +13,7 @@
 	let email = $derived(data.profile?.email || '');
 	
 	// Use full name if available, otherwise use email username, otherwise 'Member'
-	let displayName = $derived(() => {
+	let displayName = $derived.by(() => {
 		const fullName = `${firstName} ${lastName}`.trim();
 		if (fullName) return fullName;
 		
