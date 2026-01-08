@@ -1,0 +1,22 @@
+/**
+ * Start Here Page - Server Load Function
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * Apple ICT 11+ Principal Engineer Grade - January 2026
+ * 
+ * SSR pre-fetch for 0ms loading delay on Weekly Watchlist.
+ * 
+ * @version 1.0.0
+ */
+
+import type { ServerLoadEvent } from '@sveltejs/kit';
+import { getLatestWatchlist } from '$lib/server/watchlist';
+
+export async function load({ fetch }: ServerLoadEvent) {
+	// Pre-fetch latest watchlist for day-trading-room
+	const watchlist = await getLatestWatchlist('day-trading-room', fetch);
+
+	return {
+		watchlist
+	};
+}

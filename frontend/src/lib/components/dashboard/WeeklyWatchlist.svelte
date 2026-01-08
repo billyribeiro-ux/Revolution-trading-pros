@@ -4,49 +4,151 @@
 	
 	Apple ICT 11+ Principal Engineer Grade - January 2026
 	
-	Reusable Weekly Watchlist section that appears across multiple dashboard pages.
-	Matches WordPress styling exactly with proper color inheritance.
+	SSR-FIRST: Pre-fetched data for 0ms loading delay.
+	Reusable across all dashboard pages with room-aware filtering.
 	
-	@version 1.0.0
+	Usage:
+	  SSR (recommended - 0ms delay):
+	    Pass data prop from +page.server.ts load function
+	  
+	  Client fallback (auto-fetch if no data prop):
+	    Pass roomSlug for room-specific filtering
+	
+	@version 2.0.0 - January 2026 - SSR-first with auto-fetch fallback
 -->
 <script lang="ts">
+	import { browser } from '$app/environment';
+	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
+
+	interface WatchlistData {
+		id: number;
+		slug: string;
+		title: string;
+		trader: string;
+		weekOf: string;
+		video: { src: string; poster: string; title: string };
+		description?: string;
+	}
+
 	interface Props {
+		/** SSR pre-fetched data - pass this for 0ms loading */
+		data?: WatchlistData | null;
+		/** Room slug for filtering (used if no data prop) */
+		roomSlug?: string;
+		/** Custom href override */
 		href?: string;
-		imageUrl?: string;
-		weekOf?: string;
+		/** Additional CSS class */
 		className?: string;
 	}
 
 	let { 
-		href = '/dashboard/day-trading-room/weekly-watchlist',
-		imageUrl = 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
-		weekOf = 'December 29, 2025',
+		data = null,
+		roomSlug,
+		href,
 		className = ''
 	}: Props = $props();
+
+	// Client-side state (only used if no SSR data)
+	let clientData = $state<WatchlistData | null>(null);
+	let isLoading = $state(false);
+	let hasError = $state(false);
+
+	// Resolved watchlist data: SSR data takes priority, then client fetch
+	const watchlist = $derived(data || clientData);
+
+	// Computed display values
+	const displayTitle = $derived(watchlist?.title || 'Weekly Watchlist');
+	const displayTrader = $derived(watchlist?.trader || 'Trading Team');
+	const displayWeekOf = $derived(formatWeekOf(watchlist?.weekOf));
+	const displayImage = $derived(
+		watchlist?.video?.poster || 
+		'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg'
+	);
+	const displayHref = $derived(
+		href || 
+		(watchlist?.slug ? `/watchlist/${watchlist.slug}` : '/watchlist/latest')
+	);
+
+	// Format week_of date
+	function formatWeekOf(dateStr?: string): string {
+		if (!dateStr) return 'This Week';
+		try {
+			const date = new Date(dateStr);
+			return date.toLocaleDateString('en-US', { 
+				month: 'long', 
+				day: 'numeric', 
+				year: 'numeric' 
+			});
+		} catch {
+			return dateStr;
+		}
+	}
+
+	// Client-side fetch fallback (only if no SSR data)
+	$effect(() => {
+		if (!browser || data) return; // Skip if SSR data exists
+		
+		isLoading = true;
+		hasError = false;
+
+		watchlistApi.getLatest(roomSlug)
+			.then((response) => {
+				if (response.success && response.data) {
+					clientData = response.data;
+				}
+			})
+			.catch((err) => {
+				console.warn('[WeeklyWatchlist] Failed to fetch:', err);
+				hasError = true;
+			})
+			.finally(() => {
+				isLoading = false;
+			});
+	});
 </script>
 
-<div class="weekly-watchlist-section {className}">
-	<div class="row">
-		<div class="col-left">
-			<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
-			<div class="mobile-image">
-				<a href={href}>
-					<img src={imageUrl} alt="Weekly Watchlist" class="u--border-radius" />
-				</a>
+{#if isLoading}
+	<!-- Loading skeleton for client-side fetch -->
+	<div class="weekly-watchlist-section {className}">
+		<div class="row">
+			<div class="col-left">
+				<div class="skeleton-title"></div>
+				<div class="skeleton-subtitle"></div>
+				<div class="skeleton-text"></div>
+				<div class="skeleton-button"></div>
 			</div>
-			<h4 class="h5 u--font-weight-bold">Weekly Watchlist with David Starr</h4>
-			<div class="u--hide-read-more">
-				<p>Week of {weekOf}.</p>
+			<div class="col-right desktop-only">
+				<div class="skeleton-image"></div>
 			</div>
-			<a href={href} class="btn btn-tiny btn-default">Watch Now</a>
-		</div>
-		<div class="col-right desktop-only">
-			<a href={href}>
-				<img src={imageUrl} alt="Weekly Watchlist" class="u--border-radius" />
-			</a>
 		</div>
 	</div>
-</div>
+{:else if hasError && !watchlist}
+	<!-- Error state - hide section gracefully -->
+{:else}
+	<!-- Main content -->
+	<div class="weekly-watchlist-section {className}">
+		<div class="row">
+			<div class="col-left">
+				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+				<div class="mobile-image">
+					<a href={displayHref}>
+						<img src={displayImage} alt="Weekly Watchlist" class="u--border-radius" loading="eager" />
+					</a>
+				</div>
+				<h4 class="h5 u--font-weight-bold">{displayTitle}</h4>
+				<div class="u--hide-read-more">
+					<p>Week of {displayWeekOf}.</p>
+				</div>
+				<a href={displayHref} class="btn btn-tiny btn-default">Watch Now</a>
+			</div>
+			<div class="col-right desktop-only">
+				<a href={displayHref}>
+					<img src={displayImage} alt="Weekly Watchlist" class="u--border-radius" loading="eager" />
+				</a>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <style>
 	/* Weekly Watchlist Section */
@@ -183,5 +285,59 @@
 			flex: 0 0 58.333333%;
 			max-width: 58.333333%;
 		}
+	}
+
+	/* Skeleton Loading States */
+	.skeleton-title {
+		height: 32px;
+		width: 200px;
+		background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 4px;
+		margin-bottom: 20px;
+	}
+
+	.skeleton-subtitle {
+		height: 22px;
+		width: 280px;
+		background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 4px;
+		margin-bottom: 10px;
+	}
+
+	.skeleton-text {
+		height: 18px;
+		width: 180px;
+		background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 4px;
+		margin-bottom: 15px;
+	}
+
+	.skeleton-button {
+		height: 36px;
+		width: 120px;
+		background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 4px;
+	}
+
+	.skeleton-image {
+		width: 100%;
+		padding-top: 56.25%;
+		background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 8px;
+	}
+
+	@keyframes shimmer {
+		0% { background-position: -200% 0; }
+		100% { background-position: 200% 0; }
 	}
 </style>

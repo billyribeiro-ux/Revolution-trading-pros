@@ -11,6 +11,10 @@
 -->
 <script lang="ts">
 	import { IconPlus, IconMinus, IconChevronRight } from '$lib/icons';
+	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+
+	// SSR data from +page.server.ts
+	let { data } = $props();
 
 	// Accordion state management - Svelte 5 runes
 	let openAccordions = $state<Set<number>>(new Set());
@@ -317,30 +321,9 @@
 	</div>
 </div>
 
-<!-- Weekly Watchlist Section -->
+<!-- Weekly Watchlist Section - SSR pre-fetched for 0ms loading -->
 <div class="dashboard__content-section u--background-color-white">
-	<section class="watchlist-section">
-		<div class="row">
-			<div class="col-text">
-				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
-				<div class="watchlist-image-mobile">
-					<a href="/watchlist/latest">
-						<img src="https://cdn.simplertrading.com/2025/03/09130833/Melissa-WeeklyWatchlist.jpg" alt="Weekly Watchlist" class="u--border-radius" />
-					</a>
-				</div>
-				<h4 class="watchlist-title">Weekly Watchlist with Our Trading Team</h4>
-				<div class="watchlist-desc">
-					<p>Week of January 6, 2026.</p>
-				</div>
-				<a href="/watchlist/latest" class="btn btn-tiny btn-default">Watch Now</a>
-			</div>
-			<div class="col-image">
-				<a href="/watchlist/latest">
-					<img src="https://cdn.simplertrading.com/2025/03/09130833/Melissa-WeeklyWatchlist.jpg" alt="Weekly Watchlist" class="u--border-radius" />
-				</a>
-			</div>
-		</div>
-	</section>
+	<WeeklyWatchlist data={(data as { watchlist?: any }).watchlist} />
 </div>
 
 <style>

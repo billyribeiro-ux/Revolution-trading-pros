@@ -22,6 +22,10 @@
 	import { user, isAuthenticated, isInitializing } from '$lib/stores/auth';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
+	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+
+	// SSR data from +page.server.ts
+	let { data } = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -471,26 +475,9 @@
 		</div>
 	</section>
 
-	<!-- Weekly Watchlist Section -->
+	<!-- Weekly Watchlist Section - SSR pre-fetched for 0ms loading -->
 	<section class="dashboard__content-section">
-		<div class="watchlist-row">
-			<div class="watchlist-col-left">
-				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
-				<div class="watchlist-mobile-image">
-					<a href="/watchlist/current">
-						<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="watchlist-image" />
-					</a>
-				</div>
-				<h4 class="watchlist-subtitle">Weekly Watchlist with David Starr</h4>
-				<p class="watchlist-description">Week of December 29, 2025.</p>
-				<a href="/watchlist/current" class="btn btn-tiny btn-default">Watch Now</a>
-			</div>
-			<div class="watchlist-col-right">
-				<a href="/watchlist/current">
-					<img src="https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg" alt="Weekly Watchlist" class="watchlist-image" />
-				</a>
-			</div>
-		</div>
+		<WeeklyWatchlist data={(data as { watchlist?: any }).watchlist} />
 		<!-- Divider -->
 		<div class="section-divider">
 			<div class="section-divider__line"></div>
