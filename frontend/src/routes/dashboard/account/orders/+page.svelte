@@ -357,10 +357,6 @@
 			font-size: 13px;
 		}
 
-		.section-title {
-			font-size: 16px;
-		}
-
 		.col-xs-2,
 		.col-xs-3 {
 			width: auto;
