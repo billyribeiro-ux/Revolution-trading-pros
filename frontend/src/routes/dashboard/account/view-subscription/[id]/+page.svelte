@@ -106,154 +106,269 @@
 	<title>Subscription #{subscription.id} - Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="woocommerce">
-	<div class="woocommerce-MyAccount-content">
-		<div class="woocommerce-notices-wrapper">
-			{#if form?.success}
-				<div class="woocommerce-message" role="alert">
-					{form.message}
-				</div>
-			{/if}
+<!-- Dashboard Header -->
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">My Account</h1>
+	</div>
+</header>
 
-			{#if form?.error}
-				<div class="woocommerce-error" role="alert">
-					{form.error}
-				</div>
-			{/if}
-		</div>
+<!-- Dashboard Content -->
+<div class="dashboard__content">
+	<div class="dashboard__content-main">
+		<section class="dashboard__content-section">
+			<div class="fl-builder-content fl-builder-content-33 fl-builder-content-primary fl-builder-global-templates-locked" data-post-id="33">
+				<div class="fl-row fl-row-fixed-width fl-row-bg-color fl-node-59793676724ad" data-node="59793676724ad">
+					<div class="fl-row-content-wrap">
+						<div class="fl-row-content fl-row-fixed-width fl-node-content">
+							<div class="fl-col-group fl-node-597936767334e" data-node="597936767334e">
+								<div class="fl-col fl-node-5979367673419" data-node="5979367673419">
+									<div class="fl-col-content fl-node-content">
+										<div class="fl-module fl-module-rich-text fl-node-59793676759ab dashboard-nav" data-node="59793676759ab">
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-rich-text">
+													<div class="woocommerce">
+														<div class="woocommerce-MyAccount-content">
+															<div class="woocommerce-notices-wrapper">
+																{#if form?.success}
+																	<div class="woocommerce-message" role="alert">
+																		{form.message}
+																	</div>
+																{/if}
 
-		<div class="content-box u--margin-bottom-20">
-			<div class="content-box__section">
-				<table class="shop_table subscription_details u--margin-bottom-0">
-					<tbody>
-						<tr>
-							<td>Status</td>
-							<td class={getStatusClass(subscription.status)}>
-								{subscription.status}
-							</td>
-						</tr>
-						<tr>
-							<td>Start Date</td>
-							<td>{formatDate(subscription.startDate)}</td>
-						</tr>
-						{#if subscription.lastPaymentDate}
-							<tr>
-								<td>Last Payment Date</td>
-								<td>{formatDate(subscription.lastPaymentDate)}</td>
-							</tr>
-						{/if}
-						{#if subscription.nextPaymentDate}
-							<tr>
-								<td>Next Payment Date</td>
-								<td>{formatDate(subscription.nextPaymentDate)}</td>
-							</tr>
-						{/if}
-						{#if subscription.trialEndDate}
-							<tr>
-								<td>Trial End Date</td>
-								<td>{formatDate(subscription.trialEndDate)}</td>
-							</tr>
-						{/if}
-						<tr>
-							<td>Price</td>
-							<td>{formatCurrency(subscription.price, subscription.currency)} / {subscription.interval}</td>
-						</tr>
-						<tr>
-							<td>Total Paid</td>
-							<td>{formatCurrency(subscription.totalPaid, subscription.currency)}</td>
-						</tr>
-						<tr>
-							<td>Actions</td>
-							<td class="subscription-actions">
-								{#if canCancel(subscription)}
-									<form method="post" action="?/cancel" use:enhance={() => {
-										isSubmitting = true;
-										return async ({ update }) => {
-											await update();
-											isSubmitting = false;
-										};
-									}} style="display: inline;">
-										<button 
-											type="submit" 
-											class="btn btn-xs btn-default cancel"
-											disabled={isSubmitting}
-										>
-											Cancel
-										</button>
-									</form>
-								{/if}
-								{#if canPause(subscription)}
-									<form method="post" action="?/pause" use:enhance={() => {
-										isSubmitting = true;
-										return async ({ update }) => {
-											await update();
-											isSubmitting = false;
-										};
-									}} style="display: inline;">
-										<button 
-											type="submit" 
-											class="btn btn-xs btn-default suspend"
-											disabled={isSubmitting}
-										>
-											Pause
-										</button>
-									</form>
-								{/if}
-								<a href="/dashboard/account/payment-methods" class="btn btn-xs btn-default change_payment_method">
-									Change payment
-								</a>
-							</td>
-						</tr>
-					</tbody>
-				</table>
+																{#if form?.error}
+																	<div class="woocommerce-error" role="alert">
+																		{form.error}
+																	</div>
+																{/if}
+															</div>
+
+															<h2 class="section-title">Subscription #{subscription.id}</h2>
+
+															<div class="content-box u--margin-bottom-20">
+																<div class="content-box__section">
+																	<table class="shop_table subscription_details u--margin-bottom-0">
+																		<tbody>
+																			<tr>
+																				<td>Status</td>
+																				<td class={getStatusClass(subscription.status)}>
+																					{subscription.status}
+																				</td>
+																			</tr>
+																			<tr>
+																				<td>Start Date</td>
+																				<td>{formatDate(subscription.startDate)}</td>
+																			</tr>
+																			{#if subscription.lastPaymentDate}
+																				<tr>
+																					<td>Last Payment Date</td>
+																					<td>{formatDate(subscription.lastPaymentDate)}</td>
+																				</tr>
+																			{/if}
+																			{#if subscription.nextPaymentDate}
+																				<tr>
+																					<td>Next Payment Date</td>
+																					<td>{formatDate(subscription.nextPaymentDate)}</td>
+																				</tr>
+																			{/if}
+																			{#if subscription.trialEndDate}
+																				<tr>
+																					<td>Trial End Date</td>
+																					<td>{formatDate(subscription.trialEndDate)}</td>
+																				</tr>
+																			{/if}
+																			<tr>
+																				<td>Price</td>
+																				<td>{formatCurrency(subscription.price, subscription.currency)} / {subscription.interval}</td>
+																			</tr>
+																			<tr>
+																				<td>Total Paid</td>
+																				<td>{formatCurrency(subscription.totalPaid, subscription.currency)}</td>
+																			</tr>
+																			<tr>
+																				<td>Actions</td>
+																				<td class="subscription-actions">
+																					{#if canCancel(subscription)}
+																						<form method="post" action="?/cancel" use:enhance={() => {
+																							isSubmitting = true;
+																							return async ({ update }) => {
+																								await update();
+																								isSubmitting = false;
+																							};
+																						}} style="display: inline;">
+																							<button 
+																								type="submit" 
+																								class="btn btn-xs btn-default cancel"
+																								disabled={isSubmitting}
+																							>
+																								Cancel
+																							</button>
+																						</form>
+																					{/if}
+																					{#if canPause(subscription)}
+																						<form method="post" action="?/pause" use:enhance={() => {
+																							isSubmitting = true;
+																							return async ({ update }) => {
+																								await update();
+																								isSubmitting = false;
+																							};
+																						}} style="display: inline;">
+																							<button 
+																								type="submit" 
+																								class="btn btn-xs btn-default suspend"
+																								disabled={isSubmitting}
+																							>
+																								Pause
+																							</button>
+																						</form>
+																					{/if}
+																					<a href="/dashboard/account/payment-methods" class="btn btn-xs btn-default change_payment_method">
+																						Change payment
+																					</a>
+																				</td>
+																			</tr>
+																		</tbody>
+																	</table>
+																</div>
+															</div>
+
+															{#if subscription.paymentHistory && subscription.paymentHistory.length > 0}
+																<div class="content-box u--margin-bottom-20">
+																	<div class="content-box__section">
+																		<header>
+																			<h2>Payment History</h2>
+																		</header>
+
+																		<table class="shop_table shop_table_responsive">
+																			<thead>
+																				<tr>
+																					<th>Payment Date</th>
+																					<th>Amount</th>
+																					<th>Status</th>
+																					<th>Method</th>
+																				</tr>
+																			</thead>
+
+																			<tbody>
+																				{#each subscription.paymentHistory as payment (payment.id)}
+																					<tr>
+																						<td data-title="Payment Date">
+																							{formatDate(payment.paymentDate)}
+																						</td>
+																						<td data-title="Amount">
+																							{formatCurrency(payment.amount, subscription.currency)}
+																						</td>
+																						<td data-title="Status" style="text-transform: capitalize;">
+																							{payment.status}
+																						</td>
+																						<td data-title="Method" style="text-transform: capitalize;">
+																							{payment.paymentMethod}
+																						</td>
+																					</tr>
+																				{/each}
+																			</tbody>
+																		</table>
+																	</div>
+																</div>
+															{/if}
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
 			</div>
-		</div>
-
-		{#if subscription.paymentHistory && subscription.paymentHistory.length > 0}
-			<div class="content-box u--margin-bottom-20">
-				<div class="content-box__section">
-					<header>
-						<h2>Payment History</h2>
-					</header>
-
-					<table class="shop_table shop_table_responsive">
-						<thead>
-							<tr>
-								<th>Payment Date</th>
-								<th>Amount</th>
-								<th>Status</th>
-								<th>Method</th>
-							</tr>
-						</thead>
-
-						<tbody>
-							{#each subscription.paymentHistory as payment (payment.id)}
-								<tr>
-									<td data-title="Payment Date">
-										{formatDate(payment.paymentDate)}
-									</td>
-									<td data-title="Amount">
-										{formatCurrency(payment.amount, subscription.currency)}
-									</td>
-									<td data-title="Status" style="text-transform: capitalize;">
-										{payment.status}
-									</td>
-									<td data-title="Method" style="text-transform: capitalize;">
-										{payment.paymentMethod}
-									</td>
-								</tr>
-							{/each}
-						</tbody>
-					</table>
-				</div>
-			</div>
-		{/if}
+		</section>
 	</div>
 </div>
 
 <style>
+	/* Dashboard Header */
+	.dashboard__header {
+		background: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		padding: 20px 30px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.dashboard__header-left {
+		flex: 1;
+	}
+
+	.dashboard__page-title {
+		font-family: 'Montserrat', sans-serif;
+		font-size: 24px;
+		font-weight: 600;
+		color: #0a2335;
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	/* Dashboard Content */
+	.dashboard__content {
+		background: #f5f5f5;
+		min-height: calc(100vh - 60px);
+		padding: 30px;
+	}
+
+	.dashboard__content-main {
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+
+	.dashboard__content-section {
+		padding: 0;
+	}
+
+	/* Beaver Builder Structure */
+	.fl-builder-content {
+		width: 100%;
+		font-family: 'Montserrat', sans-serif;
+	}
+
+	.fl-row-bg-color {
+		background-color: #ffffff;
+	}
+
+	.fl-row-fixed-width {
+		max-width: 1100px;
+	}
+
+	.fl-col-group {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.fl-col {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.fl-rich-text {
+		font-family: 'Montserrat', sans-serif;
+		line-height: 1.6;
+	}
+
+	/* Section Title */
+	.section-title {
+		font-family: 'Montserrat', sans-serif;
+		font-size: 24px;
+		font-weight: 700;
+		margin-bottom: 20px;
+		color: #333;
+	}
+
+	/* WooCommerce Content */
 	.woocommerce {
 		background: #fff;
+		font-family: 'Montserrat', sans-serif;
 	}
 
 	.woocommerce-MyAccount-content {

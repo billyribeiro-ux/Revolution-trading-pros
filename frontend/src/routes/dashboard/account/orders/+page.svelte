@@ -83,10 +83,10 @@
 																				</td>
 																				<td class="col-xs-2 text-right table__actions">
 																					<div class="dropdown">
-																						<a href="#" class="btn btn-xs btn-white table__more-actions" id="dLabel" data-bs-toggle="dropdown" aria-expanded="false">
+																						<button type="button" class="btn btn-xs btn-white table__more-actions" id="dLabel-{order.id}" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Order actions for #{order.number}">
 																							<span class="st-icon-ellipsis-h icon--md"></span>
-																						</a>
-																						<nav class="dropdown-menu" data-append-to-body="1" aria-labelledby="dLabel">
+																						</button>
+																						<nav class="dropdown-menu" data-append-to-body="1" aria-labelledby="dLabel-{order.id}">
 																							<div class="dropdown-menu__content">
 																								<ul class="dropdown-menu__menu dropdown-menu__menu--compact">
 																									<li>

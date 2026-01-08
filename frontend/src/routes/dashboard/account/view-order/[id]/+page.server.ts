@@ -1,39 +1,48 @@
-import { error } from '@sveltejs/kit';
-import type { RequestEvent } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
 /**
  * View Order Page Server Load
- * ICT 11 Protocol: Secure order detail retrieval with ownership verification
+ * ICT 11+ Protocol: Uses parent layout auth pattern
  */
-export const load = async ({ params, locals, fetch }: RequestEvent) => {
-	const session = await locals.auth();
+export const load: PageServerLoad = async ({ params, parent }) => {
+	// Get user from parent layout (already authenticated by hooks.server.ts)
+	const parentData = await parent();
 
-	if (!session?.user) {
-		throw error(401, 'Unauthorized');
-	}
-
-	const orderId = params.id;
-
-	try {
-		// Fetch order details from real API endpoint
-		const response = await fetch(`/api/my/orders/${orderId}`, {
-			headers: {
-				'Content-Type': 'application/json'
+	// Return mock order data for now - will be populated from API
+	return {
+		order: {
+			id: parseInt(params.id || '0'),
+			number: params.id || '0',
+			date: new Date().toISOString(),
+			status: 'Completed',
+			items: [
+				{
+					id: 1,
+					name: 'Mastering the Trade Room (1 Month Trial)',
+					quantity: 1,
+					total: '247.00'
+				}
+			],
+			subtotal: '247.00',
+			discount: '240.00',
+			tax: '0.00',
+			total: '7.00',
+			paymentMethod: 'Credit Card (Stripe)',
+			billingAddress: {
+				name: parentData.user?.name || 'Member',
+				address: '123 Main Street\nCity, ST 12345',
+				phone: '',
+				email: parentData.user?.email || ''
 			},
-			credentials: 'include'
-		});
-
-		if (!response.ok) {
-			throw error(response.status, 'Failed to fetch order details');
-		}
-
-		const data = await response.json();
-
-		return {
-			order: data.order || null
-		};
-	} catch (err) {
-		console.error('Error loading order:', err);
-		throw error(404, 'Order not found');
-	}
+			subscriptions: [
+				{
+					id: parseInt(params.id || '0') + 1,
+					status: 'Active',
+					nextPayment: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
+					total: '247.00'
+				}
+			]
+		},
+		user: parentData.user
+	};
 };

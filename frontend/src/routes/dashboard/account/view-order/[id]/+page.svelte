@@ -67,160 +67,264 @@
 	<title>Order #{order.number} - Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="woocommerce">
-	<div class="woocommerce-MyAccount-content">
-		<div class="woocommerce-notices-wrapper"></div>
-		
-		<p>
-			Order <mark class="order-number">#{order.number}</mark> was placed on 
-			<mark class="order-date">{formatDate(order.date)}</mark> and is currently 
-			<mark class="order-status {getStatusClass(order.status)}">{order.status}</mark>.
-		</p>
+<!-- Dashboard Header -->
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">My Account</h1>
+	</div>
+</header>
 
-		<section class="woocommerce-order-details">
-			<h2 class="woocommerce-order-details__title">Order details</h2>
+<!-- Dashboard Content -->
+<div class="dashboard__content">
+	<div class="dashboard__content-main">
+		<section class="dashboard__content-section">
+			<div class="fl-builder-content fl-builder-content-33 fl-builder-content-primary fl-builder-global-templates-locked" data-post-id="33">
+				<div class="fl-row fl-row-fixed-width fl-row-bg-color fl-node-59793676724ad" data-node="59793676724ad">
+					<div class="fl-row-content-wrap">
+						<div class="fl-row-content fl-row-fixed-width fl-node-content">
+							<div class="fl-col-group fl-node-597936767334e" data-node="597936767334e">
+								<div class="fl-col fl-node-5979367673419" data-node="5979367673419">
+									<div class="fl-col-content fl-node-content">
+										<div class="fl-module fl-module-rich-text fl-node-59793676759ab dashboard-nav" data-node="59793676759ab">
+											<div class="fl-module-content fl-node-content">
+												<div class="fl-rich-text">
+													<div class="woocommerce">
+														<div class="woocommerce-MyAccount-content">
+															<div class="woocommerce-notices-wrapper"></div>
+															
+															<p>
+																Order <mark class="order-number">#{order.number}</mark> was placed on 
+																<mark class="order-date">{formatDate(order.date)}</mark> and is currently 
+																<mark class="order-status {getStatusClass(order.status)}">{order.status}</mark>.
+															</p>
 
-			<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
-				<thead>
-					<tr>
-						<th class="woocommerce-table__product-name product-name">Product</th>
-						<th class="woocommerce-table__product-table product-total">Total</th>
-					</tr>
-				</thead>
+															<section class="woocommerce-order-details">
+																<h2 class="woocommerce-order-details__title">Order details</h2>
 
-				<tbody>
-					{#each order.items as item (item.id)}
-						<tr class="woocommerce-table__line-item order_item">
-							<td class="woocommerce-table__product-name product-name">
-								{item.name} <strong class="product-quantity">&times;&nbsp;{item.quantity}</strong>
-							</td>
-							<td class="woocommerce-table__product-total product-total">
-								<span class="woocommerce-Price-amount amount">
-									<bdi><span class="woocommerce-Price-currencySymbol">$</span>{item.total}</bdi>
-								</span>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
+																<table class="woocommerce-table woocommerce-table--order-details shop_table order_details">
+																	<thead>
+																		<tr>
+																			<th class="woocommerce-table__product-name product-name">Product</th>
+																			<th class="woocommerce-table__product-table product-total">Total</th>
+																		</tr>
+																	</thead>
 
-				<tfoot>
-					<tr>
-						<th scope="row">Subtotal:</th>
-						<td>
-							<span class="woocommerce-Price-amount amount">
-								<span class="woocommerce-Price-currencySymbol">$</span>{order.subtotal}
-							</span>
-						</td>
-					</tr>
-					{#if order.discount && parseFloat(order.discount) > 0}
-						<tr>
-							<th scope="row">Discount:</th>
-							<td>
-								-<span class="woocommerce-Price-amount amount">
-									<span class="woocommerce-Price-currencySymbol">$</span>{order.discount}
-								</span>
-							</td>
-						</tr>
-					{/if}
-					<tr>
-						<th scope="row">Tax:</th>
-						<td>
-							<span class="woocommerce-Price-amount amount">
-								<span class="woocommerce-Price-currencySymbol">$</span>{order.tax}
-							</span>
-						</td>
-					</tr>
-					<tr>
-						<th scope="row">Payment method:</th>
-						<td>{order.paymentMethod}</td>
-					</tr>
-					<tr>
-						<th scope="row">Total:</th>
-						<td>
-							<span class="woocommerce-Price-amount amount">
-								<span class="woocommerce-Price-currencySymbol">$</span>{order.total}
-							</span>
-						</td>
-					</tr>
-				</tfoot>
-			</table>
+																	<tbody>
+																		{#each order.items as item (item.id)}
+																			<tr class="woocommerce-table__line-item order_item">
+																				<td class="woocommerce-table__product-name product-name">
+																					{item.name} <strong class="product-quantity">&times;&nbsp;{item.quantity}</strong>
+																				</td>
+																				<td class="woocommerce-table__product-total product-total">
+																					<span class="woocommerce-Price-amount amount">
+																						<bdi><span class="woocommerce-Price-currencySymbol">$</span>{item.total}</bdi>
+																					</span>
+																				</td>
+																			</tr>
+																		{/each}
+																	</tbody>
 
-			{#if order.subscriptions && order.subscriptions.length > 0}
-				<header>
-					<h2>Related subscriptions</h2>
-				</header>
+																	<tfoot>
+																		<tr>
+																			<th scope="row">Subtotal:</th>
+																			<td>
+																				<span class="woocommerce-Price-amount amount">
+																					<span class="woocommerce-Price-currencySymbol">$</span>{order.subtotal}
+																				</span>
+																			</td>
+																		</tr>
+																		{#if order.discount && parseFloat(order.discount) > 0}
+																			<tr>
+																				<th scope="row">Discount:</th>
+																				<td>
+																					-<span class="woocommerce-Price-amount amount">
+																						<span class="woocommerce-Price-currencySymbol">$</span>{order.discount}
+																					</span>
+																				</td>
+																			</tr>
+																		{/if}
+																		<tr>
+																			<th scope="row">Tax:</th>
+																			<td>
+																				<span class="woocommerce-Price-amount amount">
+																					<span class="woocommerce-Price-currencySymbol">$</span>{order.tax}
+																				</span>
+																			</td>
+																		</tr>
+																		<tr>
+																			<th scope="row">Payment method:</th>
+																			<td>{order.paymentMethod}</td>
+																		</tr>
+																		<tr>
+																			<th scope="row">Total:</th>
+																			<td>
+																				<span class="woocommerce-Price-amount amount">
+																					<span class="woocommerce-Price-currencySymbol">$</span>{order.total}
+																				</span>
+																			</td>
+																		</tr>
+																	</tfoot>
+																</table>
 
-				<table class="shop_table shop_table_responsive my_account_orders woocommerce-orders-table woocommerce-MyAccount-subscriptions woocommerce-orders-table--subscriptions">
-					<thead>
-						<tr>
-							<th class="subscription-id order-number woocommerce-orders-table__header woocommerce-orders-table__header-order-number woocommerce-orders-table__header-subscription-id">
-								<span class="nobr">Subscription</span>
-							</th>
-							<th class="subscription-status order-status woocommerce-orders-table__header woocommerce-orders-table__header-order-status woocommerce-orders-table__header-subscription-status">
-								<span class="nobr">Status</span>
-							</th>
-							<th class="subscription-next-payment order-date woocommerce-orders-table__header woocommerce-orders-table__header-order-date woocommerce-orders-table__header-subscription-next-payment">
-								<span class="nobr">Next payment</span>
-							</th>
-							<th class="subscription-total order-total woocommerce-orders-table__header woocommerce-orders-table__header-order-total woocommerce-orders-table__header-subscription-total">
-								<span class="nobr">Total</span>
-							</th>
-							<th class="subscription-actions order-actions woocommerce-orders-table__header woocommerce-orders-table__header-order-actions woocommerce-orders-table__header-subscription-actions">
-								&nbsp;
-							</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each order.subscriptions as subscription (subscription.id)}
-							<tr class="order woocommerce-orders-table__row woocommerce-orders-table__row--status-{subscription.status.toLowerCase()}">
-								<td class="subscription-id order-number woocommerce-orders-table__cell woocommerce-orders-table__cell-subscription-id woocommerce-orders-table__cell-order-number" data-title="ID">
-									<a href="/dashboard/account/view-subscription/{subscription.id}">
-										#{subscription.id}
-									</a>
-								</td>
-								<td class="subscription-status order-status woocommerce-orders-table__cell woocommerce-orders-table__cell-subscription-status woocommerce-orders-table__cell-order-status" style="white-space:nowrap;" data-title="Status">
-									{subscription.status}
-								</td>
-								<td class="subscription-next-payment order-date woocommerce-orders-table__cell woocommerce-orders-table__cell-subscription-next-payment woocommerce-orders-table__cell-order-date" data-title="Next payment">
-									{formatDate(subscription.nextPayment)}
-								</td>
-								<td class="subscription-total order-total woocommerce-orders-table__cell woocommerce-orders-table__cell-subscription-total woocommerce-orders-table__cell-order-total" data-title="Total">
-									<span class="woocommerce-Price-amount amount">
-										<span class="woocommerce-Price-currencySymbol">$</span>{subscription.total}
-									</span>
-								</td>
-								<td class="subscription-actions order-actions woocommerce-orders-table__cell woocommerce-orders-table__cell-subscription-actions woocommerce-orders-table__cell-order-actions">
-									<a href="/dashboard/account/view-subscription/{subscription.id}" class="woocommerce-button button view">View</a>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			{/if}
-		</section>
+																{#if order.subscriptions && order.subscriptions.length > 0}
+																	<header>
+																		<h2>Related subscriptions</h2>
+																	</header>
 
-		<section class="woocommerce-customer-details">
-			<h2 class="woocommerce-column__title">Billing address</h2>
+																	<table class="shop_table shop_table_responsive my_account_orders woocommerce-orders-table woocommerce-MyAccount-subscriptions woocommerce-orders-table--subscriptions">
+																		<thead>
+																			<tr>
+																				<th class="subscription-id order-number woocommerce-orders-table__header woocommerce-orders-table__header-order-number woocommerce-orders-table__header-subscription-id">
+																					<span class="nobr">Subscription</span>
+																				</th>
+																				<th class="subscription-status order-status woocommerce-orders-table__header woocommerce-orders-table__header-order-status woocommerce-orders-table__header-subscription-status">
+																					<span class="nobr">Status</span>
+																				</th>
+																				<th class="subscription-next-payment order-date woocommerce-orders-table__header woocommerce-orders-table__header-order-date woocommerce-orders-table__header-subscription-next-payment">
+																					<span class="nobr">Next payment</span>
+																				</th>
+																				<th class="subscription-total order-total woocommerce-orders-table__header woocommerce-orders-table__header-order-total woocommerce-orders-table__header-subscription-total">
+																					<span class="nobr">Total</span>
+																				</th>
+																				<th class="subscription-actions order-actions woocommerce-orders-table__header woocommerce-orders-table__header-order-actions woocommerce-orders-table__header-subscription-actions">
+																					&nbsp;
+																				</th>
+																			</tr>
+																		</thead>
+																		<tbody>
+																			{#each order.subscriptions as subscription (subscription.id)}
+																				<tr class="order woocommerce-orders-table__row woocommerce-orders-table__row--status-{subscription.status.toLowerCase()}">
+																					<td class="subscription-id order-number woocommerce-orders-table__cell woocommerce-orders-table__cell-subscription-id woocommerce-orders-table__cell-order-number" data-title="ID">
+																						<a href="/dashboard/account/view-subscription/{subscription.id}">
+																							#{subscription.id}
+																						</a>
+																					</td>
+																					<td class="subscription-status order-status woocommerce-orders-table__cell woocommerce-orders-table__cell-subscription-status woocommerce-orders-table__cell-order-status" style="white-space:nowrap;" data-title="Status">
+																						{subscription.status}
+																					</td>
+																					<td class="subscription-next-payment order-date woocommerce-orders-table__cell woocommerce-orders-table__cell-subscription-next-payment woocommerce-orders-table__cell-order-date" data-title="Next payment">
+																						{formatDate(subscription.nextPayment)}
+																					</td>
+																					<td class="subscription-total order-total woocommerce-orders-table__cell woocommerce-orders-table__cell-subscription-total woocommerce-orders-table__cell-order-total" data-title="Total">
+																						<span class="woocommerce-Price-amount amount">
+																							<span class="woocommerce-Price-currencySymbol">$</span>{subscription.total}
+																						</span> / month
+																					</td>
+																					<td class="subscription-actions order-actions woocommerce-orders-table__cell woocommerce-orders-table__cell-subscription-actions woocommerce-orders-table__cell-order-actions">
+																						<a href="/dashboard/account/view-subscription/{subscription.id}" class="woocommerce-button button view">View</a>
+																					</td>
+																				</tr>
+																			{/each}
+																		</tbody>
+																	</table>
+																{/if}
+															</section>
 
-			<address>
-				{order.billingAddress.name}<br />
-				{@html order.billingAddress.address.replace(/\n/g, '<br />')}
-				{#if order.billingAddress.phone}
-					<p class="woocommerce-customer-details--phone">{order.billingAddress.phone}</p>
-				{/if}
-				{#if order.billingAddress.email}
-					<p class="woocommerce-customer-details--email">
-						<a href="mailto:{order.billingAddress.email}">{order.billingAddress.email}</a>
-					</p>
-				{/if}
-			</address>
+															<section class="woocommerce-customer-details">
+																<h2 class="woocommerce-column__title">Billing address</h2>
+
+																<address>
+																	{order.billingAddress.name}<br />
+																	{@html order.billingAddress.address.replace(/\n/g, '<br />')}
+																	{#if order.billingAddress.phone}
+																		<p class="woocommerce-customer-details--phone">{order.billingAddress.phone}</p>
+																	{/if}
+																	{#if order.billingAddress.email}
+																		<p class="woocommerce-customer-details--email">
+																			<a href="mailto:{order.billingAddress.email}">{order.billingAddress.email}</a>
+																		</p>
+																	{/if}
+																</address>
+															</section>
+														</div>
+													</div>
+												</div>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		</section>
 	</div>
 </div>
 
 <style>
+	/* Dashboard Header */
+	.dashboard__header {
+		background: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		padding: 20px 30px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.dashboard__header-left {
+		flex: 1;
+	}
+
+	.dashboard__page-title {
+		font-family: 'Montserrat', sans-serif;
+		font-size: 24px;
+		font-weight: 600;
+		color: #0a2335;
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	/* Dashboard Content */
+	.dashboard__content {
+		background: #f5f5f5;
+		min-height: calc(100vh - 60px);
+		padding: 30px;
+	}
+
+	.dashboard__content-main {
+		max-width: 1200px;
+		margin: 0 auto;
+	}
+
+	.dashboard__content-section {
+		padding: 0;
+	}
+
+	/* Beaver Builder Structure */
+	.fl-builder-content {
+		width: 100%;
+		font-family: 'Montserrat', sans-serif;
+	}
+
+	.fl-row-bg-color {
+		background-color: #ffffff;
+	}
+
+	.fl-row-fixed-width {
+		max-width: 1100px;
+	}
+
+	.fl-col-group {
+		display: flex;
+		flex-wrap: wrap;
+	}
+
+	.fl-col {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.fl-rich-text {
+		font-family: 'Montserrat', sans-serif;
+		line-height: 1.6;
+	}
+
+	/* WooCommerce Content */
 	.woocommerce {
 		background: #fff;
+		font-family: 'Montserrat', sans-serif;
 	}
 
 	.woocommerce-MyAccount-content p {
