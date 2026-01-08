@@ -362,6 +362,10 @@
 	.card-body {
 		padding: 20px;
 		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
+		text-align: center;
+		align-items: center;
 	}
 
 	.u--squash {
@@ -375,12 +379,15 @@
 		margin: 0;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		line-height: 1.4;
+		text-align: center;
 	}
 
 	.card-title a {
 		color: #333;
 		text-decoration: none;
 		transition: color 0.2s;
+		display: block;
+		text-align: center;
 	}
 
 	.card-title a:hover {
@@ -400,6 +407,7 @@
 		color: #999;
 		font-size: 13px;
 		margin: 8px 0 0;
+		text-align: center;
 	}
 
 	.article-card__meta small {
@@ -409,6 +417,10 @@
 	.card-footer {
 		padding: 0 20px 20px;
 		margin-top: auto;
+		flex-shrink: 0;
+		text-align: center;
+		display: flex;
+		justify-content: center;
 	}
 
 	.btn {
