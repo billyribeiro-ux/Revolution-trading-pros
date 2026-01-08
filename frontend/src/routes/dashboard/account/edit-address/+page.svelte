@@ -33,9 +33,18 @@
 	<title>Billing Address - Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="woocommerce">
-	<div class="woocommerce-MyAccount-content">
-		<div class="woocommerce-notices-wrapper">
+<!-- Dashboard Header -->
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">My Account</h1>
+	</div>
+</header>
+
+<!-- Dashboard Content -->
+<div class="dashboard__content">
+	<div class="dashboard__content-main">
+		<div class="billing-address-card">
+			<div class="woocommerce-notices-wrapper">
 			{#if form?.success}
 				<div class="woocommerce-message woocommerce-message--success">
 					<p>{form.message}</p>
@@ -45,11 +54,11 @@
 					<p>{form.message}</p>
 				</div>
 			{/if}
-		</div>
+			</div>
 
-		<h2 class="section-title">Billing Address</h2>
+			<h2 class="section-title">Billing Address</h2>
 
-		<form method="POST" use:enhance>
+			<form method="POST" use:enhance>
 			<div class="form-row">
 				<div class="form-group col-md-6">
 					<label for="firstName">First Name <span class="required">*</span></label>
@@ -180,31 +189,81 @@
 				/>
 			</div>
 
-			<button type="submit" class="btn btn-primary">Save Address</button>
-		</form>
+				<button type="submit" class="btn btn-primary">Save Address</button>
+			</form>
+		</div>
 	</div>
 </div>
 
 <style>
-	.section-title {
-		font-size: 24px;
-		font-weight: 700;
+	/* Dashboard Header */
+	.dashboard__header {
+		background: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		padding: 20px 30px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.dashboard__header-left {
+		flex: 1;
+	}
+
+	.dashboard__page-title {
+		font-family: 'Open Sans', sans-serif;
+		font-size: 28px;
+		font-weight: 400;
+		font-style: italic;
+		color: #333333;
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	/* Dashboard Content */
+	.dashboard__content {
+		background: #f5f5f5;
+		min-height: calc(100vh - 60px);
+		padding: 40px 30px;
+	}
+
+	.dashboard__content-main {
+		max-width: 900px;
+		margin: 0 auto;
+	}
+
+	/* Professional Card Container */
+	.billing-address-card {
+		background: #ffffff;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		padding: 40px;
 		margin-bottom: 30px;
+	}
+
+	.section-title {
+		font-family: 'Open Sans', sans-serif;
+		font-size: 22px;
+		font-weight: 600;
+		margin-bottom: 32px;
 		color: #333;
+		padding-bottom: 16px;
+		border-bottom: 2px solid #e9ecef;
 	}
 
 	.form-row {
 		display: flex;
-		gap: 20px;
-		margin-bottom: 20px;
+		gap: 24px;
+		margin-bottom: 0;
 	}
 
 	.form-group {
-		margin-bottom: 20px;
+		margin-bottom: 24px;
 	}
 
 	.form-group.col-md-6 {
 		flex: 1;
+		margin-bottom: 24px;
 	}
 
 	.form-group label {
@@ -212,7 +271,8 @@
 		font-size: 14px;
 		font-weight: 600;
 		color: #495057;
-		margin-bottom: 8px;
+		margin-bottom: 10px;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.form-group label .required {
@@ -221,48 +281,62 @@
 
 	.form-control {
 		width: 100%;
-		padding: 12px 16px;
+		padding: 13px 16px;
 		font-size: 14px;
 		line-height: 1.5;
 		color: #495057;
 		background-color: #fff;
-		border: 1px solid #ced4da;
-		border-radius: 4px;
+		border: 1px solid #d4d4d4;
+		border-radius: 5px;
 		transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+		font-family: 'Open Sans', sans-serif;
+	}
+
+	.form-control::placeholder {
+		color: #999;
 	}
 
 	.form-control:focus {
 		outline: none;
-		border-color: #143E59;
-		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.1);
+		border-color: #0984ae;
+		box-shadow: 0 0 0 3px rgba(9, 132, 174, 0.1);
 	}
 
 	.btn {
 		display: inline-block;
-		padding: 12px 24px;
-		font-size: 14px;
+		padding: 14px 32px;
+		font-size: 15px;
 		font-weight: 600;
 		text-align: center;
 		text-decoration: none;
 		border: none;
-		border-radius: 4px;
+		border-radius: 5px;
 		cursor: pointer;
-		transition: all 0.15s ease;
+		transition: all 0.2s ease;
+		font-family: 'Open Sans', sans-serif;
+		margin-top: 8px;
 	}
 
 	.btn-primary {
-		background: #143E59;
+		background: #0984ae;
 		color: #fff;
+		box-shadow: 0 2px 4px rgba(9, 132, 174, 0.2);
 	}
 
 	.btn-primary:hover {
-		background: #0f2f43;
+		background: #076a8a;
+		box-shadow: 0 4px 8px rgba(9, 132, 174, 0.3);
+		transform: translateY(-1px);
+	}
+
+	.woocommerce-notices-wrapper {
+		margin-bottom: 24px;
 	}
 
 	.woocommerce-message {
 		padding: 16px 20px;
-		border-radius: 4px;
-		margin-bottom: 20px;
+		border-radius: 6px;
+		margin-bottom: 24px;
 	}
 
 	.woocommerce-message--success {
@@ -275,8 +349,8 @@
 		padding: 16px 20px;
 		background: #f8d7da;
 		border-left: 4px solid #dc3545;
-		border-radius: 4px;
-		margin-bottom: 20px;
+		border-radius: 6px;
+		margin-bottom: 24px;
 		color: #721c24;
 	}
 
@@ -284,9 +358,25 @@
 	.woocommerce-error p {
 		margin: 0;
 		font-size: 14px;
+		font-family: 'Open Sans', sans-serif;
 	}
 
+	/* Responsive */
 	@media (max-width: 768px) {
+		.dashboard__content {
+			padding: 20px 15px;
+		}
+
+		.billing-address-card {
+			padding: 24px 20px;
+			border-radius: 6px;
+		}
+
+		.section-title {
+			font-size: 20px;
+			margin-bottom: 24px;
+		}
+
 		.form-row {
 			flex-direction: column;
 			gap: 0;
@@ -294,6 +384,11 @@
 
 		.form-group.col-md-6 {
 			flex: none;
+		}
+
+		.btn {
+			width: 100%;
+			padding: 12px 24px;
 		}
 	}
 </style>
