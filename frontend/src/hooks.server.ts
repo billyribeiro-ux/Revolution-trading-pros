@@ -40,23 +40,55 @@ const PROTECTED_ROUTES = ['/dashboard', '/account', '/checkout', '/trading-room'
 const authHandler: Handle = async ({ event, resolve }) => {
 	const { pathname } = event.url;
 
-	// Check if this is a protected route
-	const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
-
-	if (!isProtectedRoute) {
-		// Not a protected route - continue without auth check
-		return resolve(event);
-	}
-
-	// Get auth token from cookies
+	// Get auth token from cookies (always read for locals.auth)
 	const accessToken = event.cookies.get('rtp_access_token');
 	const refreshToken = event.cookies.get('rtp_refresh_token');
 
 	// Also check Authorization header (for API calls)
 	const authHeader = event.request.headers.get('Authorization');
 	const headerToken = authHeader?.replace('Bearer ', '');
-
 	const token = accessToken || headerToken;
+
+	// ICT 11+ FIX: Always set locals.auth method (declared in app.d.ts)
+	// This method returns the current user session
+	event.locals.auth = async () => {
+		if (event.locals.user) {
+			return { user: event.locals.user };
+		}
+		return null;
+	};
+
+	// Check if this is a protected route
+	const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+
+	if (!isProtectedRoute) {
+		// Not a protected route - but still try to get user if token exists
+		if (token) {
+			try {
+				const response = await fetch(`${API_BASE_URL}/api/me`, {
+					method: 'GET',
+					headers: {
+						'Authorization': `Bearer ${token}`,
+						'Content-Type': 'application/json',
+						'Accept': 'application/json'
+					}
+				});
+				if (response.ok) {
+					const json = await response.json();
+					const userData = json.data || json;
+					event.locals.user = {
+						id: String(userData.id),
+						email: userData.email,
+						name: userData.name,
+						role: userData.role
+					};
+				}
+			} catch {
+				// Ignore errors on non-protected routes
+			}
+		}
+		return resolve(event);
+	}
 
 	if (!token && !refreshToken) {
 		// No tokens - redirect to login with return URL
@@ -149,9 +181,23 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			throw error;
 		}
 
-		// Network error - allow client-side auth to handle
-		console.error('[Auth Hook] Token validation failed:', error);
-		// Don't redirect on network errors - let client handle
+		// ICT 11+ FIX: Network error - DON'T redirect to login!
+		// This was causing logouts on API failures
+		console.error('[Auth Hook] Token validation failed (network error):', error);
+		
+		// On network error, if we have tokens, trust them temporarily
+		// and let the page handle re-auth if needed
+		if (token || refreshToken) {
+			// Set a minimal user object to prevent redirect
+			// The actual user data will be fetched by the page
+			event.locals.user = {
+				id: 'pending',
+				email: 'pending@temp.local',
+				name: 'Loading...',
+				role: 'user'
+			};
+			console.log('[Auth Hook] Network error - trusting existing tokens');
+		}
 	}
 
 	return resolve(event);

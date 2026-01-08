@@ -33,9 +33,30 @@ export const load: PageServerLoad = async ({ parent }: { parent: () => Promise<{
 	// Get user data from parent layout
 	const parentData = await parent();
 
-	// Ensure user is authenticated
+	// ICT 11+ FIX: Don't throw on missing user - hooks.server.ts handles auth redirect
+	// If we get here without a user, return minimal data and let the page handle it
 	if (!parentData.user) {
-		throw new Error('User not authenticated');
+		console.warn('[Account Page] No user data from parent - returning minimal data');
+		return {
+			profile: {
+				firstName: '',
+				lastName: '',
+				email: '',
+				avatarUrl: null
+			},
+			memberships: {
+				active: [],
+				expired: []
+			},
+			billing: {
+				email: null,
+				phone: null,
+				address: null,
+				paymentMethod: null
+			},
+			user: null,
+			error: 'Session expired. Please log in again.'
+		};
 	}
 
 	try {
