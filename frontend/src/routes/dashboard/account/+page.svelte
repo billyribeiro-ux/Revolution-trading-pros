@@ -1,6 +1,5 @@
 <script lang="ts">
 	import type { AccountPageData } from './+page.d';
-	import { page } from '$app/state';
 
 	interface Props {
 		data: AccountPageData & { user?: { id: string; email: string; name?: string } };
@@ -8,9 +7,8 @@
 
 	let { data }: Props = $props();
 
-	// Get user name from multiple sources with proper fallbacks
-	// Priority: 1) profile first+last name, 2) parent user.name, 3) email username
-	let displayName = $derived.by(() => {
+	// Helper function to get display name
+	function getDisplayName(): string {
 		// Try profile first/last name
 		const firstName = data.profile?.firstName || '';
 		const lastName = data.profile?.lastName || '';
@@ -27,12 +25,15 @@
 			return emailName
 				.replace(/[._]/g, ' ')
 				.split(' ')
-				.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+				.map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
 				.join(' ');
 		}
 		
 		return 'Member';
-	});
+	}
+
+	// Derived value that recomputes when data changes
+	let displayName = $derived(getDisplayName());
 </script>
 
 <svelte:head>
