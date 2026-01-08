@@ -189,12 +189,10 @@
 	</div>
 </header>
 
-<div class="dashboard__content">
-	<div class="dashboard__content-main">
-		<section class="dashboard__content-section">
-			<h2 class="section-title">{roomName} Premium Daily Videos</h2>
-			<p></p>
-			<div class="dashboard-filters">
+<section class="dashboard__content-section">
+	<h2 class="section-title">{roomName} Premium Daily Videos</h2>
+	<p></p>
+	<div class="dashboard-filters">
 				<div class="dashboard-filters__count">
 					Showing <span class="facetwp-counts">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}</span>
 				</div>
@@ -223,7 +221,11 @@
 				</div>
 			</div>
 			<div id="products-list" class="facetwp-template">
-
+				{#if displayedVideos.length === 0}
+					<div class="empty-state">
+						<p>No videos found. Please check back later.</p>
+					</div>
+				{:else}
 				<div class="card-grid flex-grid row">
 			{#each displayedVideos as video (video.id)}
 				<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
@@ -289,10 +291,9 @@
 						{/each}
 					</div>
 				</div>
+				{/if}
 			</div>
-		</section>
-	</div>
-</div>
+</section>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -470,20 +471,9 @@
 	 * DASHBOARD CONTENT SECTION
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Dashboard Content */
-	.dashboard__content {
-		flex: 1;
-		padding: 0;
-	}
-
-	.dashboard__content-main {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 2rem 1.5rem;
-	}
-
 	.dashboard__content-section {
 		margin-bottom: 3rem;
+		padding: 2rem 1.5rem;
 	}
 
 	.section-title {
@@ -777,6 +767,18 @@
 		color: #333;
 	}
 
+	/* Empty State */
+	.empty-state {
+		text-align: center;
+		padding: 4rem 2rem;
+		color: #666;
+	}
+
+	.empty-state p {
+		font-size: 1.1rem;
+		margin: 0;
+	}
+
 	/* Responsive Grid */
 	@media (min-width: 768px) {
 		.col-sm-6 {
@@ -805,15 +807,7 @@
 	}
 
 	/* Mobile-first: smaller padding by default, larger on md+ */
-	.dashboard__content-main {
-		padding: 1.5rem 1rem;
-	}
-
 	@media (min-width: 768px) {
-		.dashboard__content-main {
-			padding: 2rem 1.5rem;
-		}
-
 		.section-title {
 			font-size: 1.5rem;
 		}
