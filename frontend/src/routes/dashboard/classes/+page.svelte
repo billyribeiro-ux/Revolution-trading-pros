@@ -130,28 +130,30 @@
 			<div class="dashboard__content">
 				<div class="dashboard__content-main">
 					<section class="dashboard__content-section">
-						<div class="card-grid flex-grid row">
-							{#each paginatedClasses as classItem}
-								<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
-									<div class="card flex-grid-panel">
-										<section class="card-body u--squash">
-											<h4 class="h5 card-title pb-1">
-												<a href="/classes/{classItem.slug}">
-													{classItem.title}
-												</a>
-											</h4>
-											{#if classItem.date && classItem.instructor}
-												<p class="article-card__meta">
-													<small>{classItem.date} with {classItem.instructor}</small>
-												</p>
-											{/if}
-										</section>
-										<footer class="card-footer">
-											<a class="btn btn-tiny btn-default" href="/classes/{classItem.slug}">Watch Now</a>
-										</footer>
-									</div>
-								</article>
-							{/each}
+						<div>
+							<div class="card-grid flex-grid row">
+								{#each paginatedClasses as classItem}
+									<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
+										<div class="card flex-grid-panel">
+											<section class="card-body u--squash">
+												<h4 class="h5 card-title pb-1">
+													<a href="/classes/{classItem.slug}">
+														{classItem.title}
+													</a>
+												</h4>
+												{#if classItem.date && classItem.instructor}
+													<p class="article-card__meta">
+														<small>{classItem.date} with {classItem.instructor}</small>
+													</p>
+												{/if}
+											</section>
+											<footer class="card-footer">
+												<a class="btn btn-tiny btn-default" href="/classes/{classItem.slug}">Watch Now</a>
+											</footer>
+										</div>
+									</article>
+								{/each}
+							</div>
 						</div>
 						
 						<!-- Pagination Controls -->
@@ -301,10 +303,12 @@
 		padding-left: 15px;
 		padding-right: 15px;
 		margin-bottom: 30px;
+		box-sizing: border-box;
 	}
 
 	.flex-grid-item {
 		display: flex;
+		flex-direction: column;
 	}
 
 	.card {
@@ -315,7 +319,9 @@
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		height: 100%;
 		transition: all 0.2s ease-in-out;
+		overflow: hidden;
 	}
 
 	.card:hover {
@@ -327,11 +333,14 @@
 		display: flex;
 		flex-direction: column;
 		height: 100%;
+		width: 100%;
 	}
 
 	.card-body {
 		padding: 20px;
 		flex: 1 1 auto;
+		display: flex;
+		flex-direction: column;
 	}
 
 	.u--squash {
@@ -351,6 +360,7 @@
 		color: #333;
 		text-decoration: none;
 		transition: color 0.2s;
+		display: block;
 	}
 
 	.card-title a:hover {
@@ -370,6 +380,7 @@
 		color: #999;
 		font-size: 13px;
 		margin: 8px 0 0;
+		line-height: 1.5;
 	}
 
 	.article-card__meta small {
@@ -379,6 +390,7 @@
 	.card-footer {
 		padding: 0 20px 20px;
 		margin-top: auto;
+		flex-shrink: 0;
 	}
 
 	.btn {
@@ -391,6 +403,7 @@
 		text-align: center;
 		cursor: pointer;
 		border: none;
+		line-height: 1.5;
 	}
 
 	.btn-tiny {
@@ -411,9 +424,10 @@
 		border-color: #0f2d41;
 		box-shadow: none;
 		text-decoration: none;
+		color: #fff;
 	}
 
-	/* Grid System - Bootstrap-like */
+	/* Grid System - Bootstrap-like with Svelte Best Practices */
 	.row {
 		display: flex;
 		flex-wrap: wrap;
@@ -421,36 +435,83 @@
 		margin-right: -15px;
 	}
 
+	/* Mobile First - Base styles for all devices */
 	.col-xs-12 {
 		width: 100%;
+		flex: 0 0 100%;
+		max-width: 100%;
 	}
 
+	/* Small devices (landscape phones, 576px and up) */
 	@media (min-width: 576px) {
 		.col-sm-6 {
 			width: 50%;
+			flex: 0 0 50%;
+			max-width: 50%;
 		}
 	}
 
+	/* Medium devices (tablets, 768px and up) */
 	@media (min-width: 768px) {
 		.col-md-6 {
 			width: 50%;
+			flex: 0 0 50%;
+			max-width: 50%;
 		}
 	}
 
+	/* Large devices (desktops, 992px and up) */
 	@media (min-width: 992px) {
 		.col-lg-4 {
 			width: 33.333333%;
+			flex: 0 0 33.333333%;
+			max-width: 33.333333%;
 		}
 	}
 	
-	/* Responsive */
-	@media (max-width: 768px) {
+	/* Responsive Adjustments */
+	@media (max-width: 991px) {
+		.card-grid-spacer {
+			margin-bottom: 25px;
+		}
+	}
+
+	@media (max-width: 767px) {
 		.dashboard__page-title {
 			font-size: 24px;
 		}
 
 		.card-grid-spacer {
 			margin-bottom: 20px;
+		}
+
+		.card-title {
+			font-size: 16px;
+		}
+
+		.card-body {
+			padding: 16px;
+		}
+
+		.card-footer {
+			padding: 0 16px 16px;
+		}
+	}
+
+	@media (max-width: 575px) {
+		.card-grid {
+			margin-left: -10px;
+			margin-right: -10px;
+		}
+
+		.card-grid-spacer {
+			padding-left: 10px;
+			padding-right: 10px;
+			margin-bottom: 15px;
+		}
+
+		.dashboard__page-title {
+			font-size: 22px;
 		}
 	}
 	
