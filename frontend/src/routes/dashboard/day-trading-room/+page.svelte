@@ -349,16 +349,20 @@
 	.article-card__image {
 		position: relative;
 		width: 100%;
-		height: 200px;
+		padding-top: 56.25%;
 		background-size: cover;
 		background-position: center;
 		margin: 0;
+		overflow: hidden;
 	}
 
 	.article-card__image img {
+		position: absolute;
+		top: 0;
+		left: 0;
 		width: 100%;
 		height: 100%;
-		object-fit: contain;
+		object-fit: cover;
 		opacity: 0;
 	}
 
