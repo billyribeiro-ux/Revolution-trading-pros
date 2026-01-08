@@ -41,6 +41,7 @@
 	import IconDotsVertical from '@tabler/icons-svelte/icons/dots-vertical';
 	import IconCloudUpload from '@tabler/icons-svelte/icons/cloud-upload';
 	import IconLink from '@tabler/icons-svelte/icons/link';
+	import IconPhoto from '@tabler/icons-svelte/icons/photo';
 	import BunnyVideoUploader from '$lib/components/admin/BunnyVideoUploader.svelte';
 	import { 
 		unifiedVideoApi, 
@@ -78,7 +79,7 @@
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let totalVideos = $state(0);
-	let perPage = $state(20);
+	let perPage = $state(12);
 
 	// Filters
 	let searchQuery = $state('');
@@ -117,6 +118,72 @@
 		difficulty_level: '',
 		duration: null as number | null
 	});
+
+	// Thumbnail upload state
+	let thumbnailMode = $state<'upload' | 'url'>('upload');
+	let thumbnailFile = $state<File | null>(null);
+	let thumbnailPreview = $state<string | null>(null);
+	let isUploadingThumbnail = $state(false);
+	let thumbnailInput = $state<HTMLInputElement | null>(null);
+
+	// Thumbnail upload functions
+	function handleThumbnailSelect(file: File) {
+		const allowedTypes = ['image/jpeg', 'image/png', 'image/webp'];
+		const maxSize = 5 * 1024 * 1024; // 5MB
+
+		if (!allowedTypes.includes(file.type)) {
+			error = 'Invalid image type. Please upload JPEG, PNG, or WebP.';
+			return;
+		}
+
+		if (file.size > maxSize) {
+			error = 'Thumbnail too large. Maximum size is 5MB.';
+			return;
+		}
+
+		thumbnailFile = file;
+		thumbnailPreview = URL.createObjectURL(file);
+	}
+
+	function handleThumbnailInputChange(event: Event) {
+		const input = event.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (file) handleThumbnailSelect(file);
+	}
+
+	function clearThumbnail() {
+		if (thumbnailPreview) URL.revokeObjectURL(thumbnailPreview);
+		thumbnailFile = null;
+		thumbnailPreview = null;
+		formData.thumbnail_url = '';
+		if (thumbnailInput) thumbnailInput.value = '';
+	}
+
+	async function uploadThumbnail(): Promise<string | null> {
+		if (!thumbnailFile) return formData.thumbnail_url || null;
+
+		isUploadingThumbnail = true;
+		try {
+			const uploadFormData = new FormData();
+			uploadFormData.append('file', thumbnailFile);
+			uploadFormData.append('type', 'thumbnail');
+
+			const response = await fetch('/api/media/upload', {
+				method: 'POST',
+				body: uploadFormData
+			});
+
+			if (!response.ok) throw new Error('Thumbnail upload failed');
+
+			const result = await response.json();
+			return result.data?.url || result.url;
+		} catch (err) {
+			console.error('Thumbnail upload error:', err);
+			return null;
+		} finally {
+			isUploadingThumbnail = false;
+		}
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
@@ -203,6 +270,9 @@
 			difficulty_level: '',
 			duration: null
 		};
+		// Reset thumbnail state
+		thumbnailMode = 'upload';
+		clearThumbnail();
 		showUploadModal = true;
 	}
 
@@ -225,6 +295,10 @@
 			difficulty_level: '',
 			duration: video.duration
 		};
+		// Reset thumbnail state - use URL mode if existing thumbnail
+		thumbnailMode = video.thumbnail_url ? 'url' : 'upload';
+		thumbnailFile = null;
+		thumbnailPreview = null;
 		showEditModal = true;
 	}
 
@@ -239,6 +313,15 @@
 		error = '';
 
 		try {
+			// Upload thumbnail first if file was selected
+			let finalThumbnailUrl = formData.thumbnail_url;
+			if (thumbnailFile) {
+				const uploadedUrl = await uploadThumbnail();
+				if (uploadedUrl) {
+					finalThumbnailUrl = uploadedUrl;
+				}
+			}
+
 			const data = {
 				title: formData.title,
 				description: formData.description || undefined,
@@ -252,7 +335,7 @@
 				tags: formData.tags,
 				room_ids: formData.room_ids,
 				upload_to_all: formData.upload_to_all,
-				thumbnail_url: formData.thumbnail_url || undefined,
+				thumbnail_url: finalThumbnailUrl || undefined,
 				duration: formData.duration || undefined
 			};
 
@@ -879,10 +962,74 @@
 					</div>
 				</div>
 
-				<!-- Thumbnail URL -->
+				<!-- Thumbnail Upload/URL -->
 				<div class="form-group">
-					<label for="thumbnail-url">Thumbnail URL (optional)</label>
-					<input type="url" id="thumbnail-url" placeholder="https://..." bind:value={formData.thumbnail_url} />
+					<label>
+						<IconPhoto size={16} style="display: inline; vertical-align: middle; margin-right: 4px;" />
+						Thumbnail (optional)
+					</label>
+					<div class="thumbnail-mode-toggle">
+						<button
+							type="button"
+							class="mode-btn"
+							class:active={thumbnailMode === 'upload'}
+							onclick={() => thumbnailMode = 'upload'}
+						>
+							<IconCloudUpload size={16} />
+							Upload
+						</button>
+						<button
+							type="button"
+							class="mode-btn"
+							class:active={thumbnailMode === 'url'}
+							onclick={() => thumbnailMode = 'url'}
+						>
+							<IconLink size={16} />
+							URL
+						</button>
+					</div>
+
+					{#if thumbnailMode === 'upload'}
+						<div class="thumbnail-upload-zone">
+							{#if thumbnailPreview}
+								<div class="thumbnail-preview">
+									<img src={thumbnailPreview} alt="Thumbnail preview" />
+									<button type="button" class="thumbnail-remove" onclick={clearThumbnail} aria-label="Remove thumbnail">
+										<IconX size={16} />
+									</button>
+								</div>
+							{:else}
+								<div
+									class="thumbnail-dropzone"
+									role="button"
+									tabindex="0"
+									onclick={() => thumbnailInput?.click()}
+									onkeydown={(e) => e.key === 'Enter' && thumbnailInput?.click()}
+									ondragover={(e) => { e.preventDefault(); e.currentTarget.classList.add('dragover'); }}
+									ondragleave={(e) => { e.preventDefault(); e.currentTarget.classList.remove('dragover'); }}
+									ondrop={(e) => {
+										e.preventDefault();
+										e.currentTarget.classList.remove('dragover');
+										const file = e.dataTransfer?.files?.[0];
+										if (file) handleThumbnailSelect(file);
+									}}
+								>
+									<IconPhoto size={32} />
+									<span>Drop image or click to browse</span>
+									<small>JPEG, PNG, WebP (max 5MB)</small>
+								</div>
+							{/if}
+							<input
+								bind:this={thumbnailInput}
+								type="file"
+								accept="image/jpeg,image/png,image/webp"
+								hidden
+								onchange={handleThumbnailInputChange}
+							/>
+						</div>
+					{:else}
+						<input type="url" id="thumbnail-url" placeholder="https://..." bind:value={formData.thumbnail_url} />
+					{/if}
 				</div>
 
 				<!-- Options -->
@@ -1222,11 +1369,214 @@
 
 	.btn-spinner { width: 16px; height: 16px; border: 2px solid rgba(255, 255, 255, 0.3); border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
 
+	/* Thumbnail Upload Styles */
+	.thumbnail-mode-toggle {
+		display: flex;
+		gap: 0.5rem;
+		margin-bottom: 0.75rem;
+	}
+
+	.thumbnail-upload-zone {
+		margin-top: 0.5rem;
+	}
+
+	.thumbnail-dropzone {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		gap: 0.5rem;
+		padding: 2rem;
+		border: 2px dashed rgba(99, 102, 241, 0.3);
+		border-radius: 10px;
+		background: rgba(99, 102, 241, 0.05);
+		cursor: pointer;
+		transition: all 0.2s;
+		color: #64748b;
+	}
+
+	.thumbnail-dropzone:hover,
+	.thumbnail-dropzone.dragover {
+		border-color: #6366f1;
+		background: rgba(99, 102, 241, 0.1);
+		color: #818cf8;
+	}
+
+	.thumbnail-dropzone :global(svg) { color: inherit; }
+	.thumbnail-dropzone span { font-size: 0.9rem; font-weight: 500; }
+	.thumbnail-dropzone small { font-size: 0.75rem; color: #475569; }
+
+	.thumbnail-preview {
+		position: relative;
+		width: 200px;
+		height: 112px;
+		border-radius: 8px;
+		overflow: hidden;
+		border: 2px solid rgba(34, 197, 94, 0.5);
+	}
+
+	.thumbnail-preview img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.thumbnail-remove {
+		position: absolute;
+		top: 6px;
+		right: 6px;
+		width: 28px;
+		height: 28px;
+		border-radius: 50%;
+		background: rgba(239, 68, 68, 0.9);
+		border: none;
+		color: white;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.2s;
+	}
+
+	.thumbnail-remove:hover {
+		background: #ef4444;
+		transform: scale(1.1);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════ */
+	/* RESPONSIVE DESIGN - Industry Best Practices (Mobile-First) */
+	/* ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile First - Base styles above, breakpoints for larger screens */
+
+	/* Small Mobile (< 480px) */
+	@media (max-width: 480px) {
+		.page-header h1 { font-size: 1.25rem; }
+		.header-actions { width: 100%; justify-content: space-between; }
+		.btn-primary { flex: 1; justify-content: center; font-size: 0.875rem; padding: 0.625rem 1rem; }
+		.stats-grid { grid-template-columns: 1fr; gap: 0.75rem; }
+		.stat-card { padding: 1rem; }
+		.stat-value { font-size: 1.25rem; }
+		.content-type-tabs { gap: 0.375rem; }
+		.type-tab { padding: 0.625rem 0.75rem; font-size: 0.8rem; width: 100%; justify-content: center; }
+		.tab-count { display: none; }
+		.filters-bar { flex-direction: column; }
+		.search-box { max-width: 100%; }
+		.filter-select { width: 100%; }
+		.bulk-actions-bar { flex-wrap: wrap; gap: 0.5rem; }
+		.bulk-btn { padding: 0.5rem 0.75rem; font-size: 0.75rem; }
+		.modal { max-height: 95vh; border-radius: 12px; margin: 0.5rem; }
+		.modal-header { padding: 1rem; }
+		.modal-body { padding: 1rem; }
+		.modal-footer { padding: 1rem; flex-direction: column; }
+		.modal-footer button { width: 100%; justify-content: center; }
+		.content-type-selector { flex-direction: column; }
+		.type-option { width: 100%; justify-content: center; }
+		.source-mode-toggle { flex-direction: column; }
+		.thumbnail-mode-toggle { flex-direction: column; }
+		.mode-btn { width: 100%; }
+		.rooms-grid, .tags-grid { max-height: 150px; }
+		.form-options { flex-direction: column; gap: 0.75rem; }
+		.pagination { flex-direction: column; gap: 0.5rem; }
+		.pagination button { width: 100%; }
+	}
+
+	/* Tablet (768px and below) */
 	@media (max-width: 768px) {
 		.form-row { grid-template-columns: 1fr; }
-		.videos-table-wrapper { overflow-x: auto; }
-		.videos-table { min-width: 1000px; }
+		.videos-table-wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+		.videos-table { min-width: 900px; }
 		.stats-grid { grid-template-columns: repeat(2, 1fr); }
-		.content-type-tabs { flex-direction: column; }
+		.content-type-tabs { overflow-x: auto; flex-wrap: nowrap; padding-bottom: 0.5rem; -webkit-overflow-scrolling: touch; }
+		.type-tab { flex-shrink: 0; }
+		.filters-bar { gap: 0.75rem; }
+		.filter-select { flex: 1; min-width: 120px; }
+		.page-header { flex-direction: column; align-items: stretch; }
+		.header-actions { justify-content: flex-end; }
+	}
+
+	/* Tablet Landscape / Small Desktop (1024px and below) */
+	@media (max-width: 1024px) {
+		.videos-page { padding: 0 1rem; }
+		.stats-grid { gap: 0.75rem; }
+		.stat-card { padding: 1rem; }
+		.stat-icon { width: 40px; height: 40px; }
+		.stat-value { font-size: 1.25rem; }
+	}
+
+	/* Large Desktop (1280px and above) */
+	@media (min-width: 1280px) {
+		.videos-page { padding: 0 2rem; }
+		.stats-grid { grid-template-columns: repeat(4, 1fr); }
+		.filters-bar { gap: 1.25rem; }
+		.search-box { max-width: 500px; }
+	}
+
+	/* Touch Device Optimizations */
+	@media (hover: none) and (pointer: coarse) {
+		.type-tab,
+		.btn-primary,
+		.btn-secondary,
+		.btn-icon,
+		.room-option,
+		.tag-option,
+		.type-option,
+		.mode-btn,
+		.thumbnail-dropzone {
+			min-height: 44px; /* Apple HIG touch target */
+		}
+
+		.btn-icon { width: 44px; height: 44px; }
+		.checkbox-btn { padding: 0.5rem; }
+	}
+
+	/* High DPI / Retina Displays */
+	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+		.video-thumbnail img,
+		.thumbnail-preview img {
+			image-rendering: -webkit-optimize-contrast;
+		}
+	}
+
+	/* Reduced Motion Preference */
+	@media (prefers-reduced-motion: reduce) {
+		.btn-primary,
+		.btn-secondary,
+		.btn-icon,
+		.type-tab,
+		.mode-btn,
+		.room-option,
+		.tag-option,
+		.type-option,
+		.thumbnail-dropzone,
+		.thumbnail-remove {
+			transition: none;
+		}
+
+		.btn-primary:hover:not(:disabled) {
+			transform: none;
+		}
+
+		.spinner,
+		.btn-spinner {
+			animation: none;
+			opacity: 0.7;
+		}
+	}
+
+	/* Print Styles */
+	@media print {
+		.modal-overlay,
+		.header-actions,
+		.filters-bar,
+		.bulk-actions-bar,
+		.action-buttons,
+		.pagination {
+			display: none !important;
+		}
+
+		.videos-page { max-width: 100%; }
+		.videos-table-wrapper { overflow: visible; }
+		.videos-table { min-width: auto; }
 	}
 </style>
