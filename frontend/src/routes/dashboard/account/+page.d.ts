@@ -49,6 +49,13 @@ export interface Billing {
 	paymentMethod: PaymentMethod | null;
 }
 
+export interface User {
+	id: string;
+	email: string;
+	name?: string;
+	role?: string;
+}
+
 export interface AccountPageData {
 	profile: Profile;
 	memberships: {
@@ -56,5 +63,6 @@ export interface AccountPageData {
 		expired: Membership[];
 	};
 	billing: Billing;
+	user?: User | null;
 	error?: string;
 }

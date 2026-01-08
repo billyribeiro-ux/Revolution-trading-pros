@@ -2,38 +2,42 @@
 	import type { AccountPageData } from './+page.d';
 
 	interface Props {
-		data: AccountPageData & { user?: { id: string; email: string; name?: string } };
+		data: AccountPageData;
 	}
 
 	let { data }: Props = $props();
 
-	// Helper function to get display name
-	function getDisplayName(): string {
-		// Try profile first/last name
-		const firstName = data.profile?.firstName || '';
-		const lastName = data.profile?.lastName || '';
-		const fullName = `${firstName} ${lastName}`.trim();
-		if (fullName) return fullName;
-		
-		// Try parent layout's user.name (from auth)
-		if (data.user?.name) return data.user.name;
-		
-		// Try email from profile or user
-		const email = data.profile?.email || data.user?.email || '';
-		if (email) {
-			const emailName = email.split('@')[0];
-			return emailName
-				.replace(/[._]/g, ' ')
-				.split(' ')
-				.map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
-				.join(' ');
-		}
-		
-		return 'Member';
-	}
-
-	// Derived value that recomputes when data changes
-	let displayName = $derived(getDisplayName());
+	/**
+	 * Display name with fallback chain:
+	 * 1. Profile firstName + lastName
+	 * 2. Auth user.name from parent layout
+	 * 3. Email username formatted
+	 * 4. "Member" as last resort
+	 */
+	let displayName = $derived(
+		(() => {
+			// Try profile first/last name
+			const firstName = data.profile?.firstName || '';
+			const lastName = data.profile?.lastName || '';
+			const fullName = `${firstName} ${lastName}`.trim();
+			if (fullName) return fullName;
+			
+			// Try parent layout's user.name (from auth)
+			if (data.user?.name) return data.user.name;
+			
+			// Try email from profile or user
+			const email = data.profile?.email || data.user?.email || '';
+			if (email) {
+				return email.split('@')[0]
+					.replace(/[._]/g, ' ')
+					.split(' ')
+					.map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
+					.join(' ');
+			}
+			
+			return 'Member';
+		})()
+	);
 </script>
 
 <svelte:head>

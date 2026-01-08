@@ -121,12 +121,14 @@ export const load: PageServerLoad = async ({ parent }: { parent: () => Promise<{
 		return {
 			profile,
 			memberships,
-			billing
+			billing,
+			user: parentData.user  // Pass parent user data through for fallback display name
 		};
 	} catch (error) {
 		console.error('[Account Page] Failed to load account data:', error);
 		
 		// Return minimal data on error to prevent page crash
+		// Use parent user data for display name fallback
 		return {
 			profile: {
 				firstName: '',
@@ -144,6 +146,7 @@ export const load: PageServerLoad = async ({ parent }: { parent: () => Promise<{
 				address: null,
 				paymentMethod: null
 			},
+			user: parentData.user,  // Pass parent user data through for fallback display name
 			error: 'Failed to load account data. Please try again.'
 		};
 	}
