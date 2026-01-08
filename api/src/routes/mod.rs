@@ -33,6 +33,7 @@ pub mod schedules;
 pub mod cms;
 pub mod realtime;
 pub mod unified_videos;
+pub mod video_advanced;
 
 use axum::Router;
 use crate::AppState;
@@ -62,6 +63,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/schedules", schedules::admin_router())
         .nest("/admin/unified-videos", unified_videos::router())
         .nest("/unified-videos", unified_videos::router()) // Public access route
+        .nest("/admin/video-advanced", video_advanced::router())
+        .nest("/video-advanced", video_advanced::router())
         .nest("/migrate", migrate::router())
         .nest("/my/orders", orders::router())
         .nest("/my/subscriptions", subscriptions::my_router())
