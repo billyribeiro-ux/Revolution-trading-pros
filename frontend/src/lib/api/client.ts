@@ -629,7 +629,9 @@ class EnterpriseApiClient {
 						break;
 					case 'json':
 					default:
-						data = await response.json();
+						// ICT11+ Fix: Backend wraps response in { success: true, data: {...} }
+						const json = await response.json();
+						data = json.data !== undefined ? json.data : json;
 						break;
 				}
 

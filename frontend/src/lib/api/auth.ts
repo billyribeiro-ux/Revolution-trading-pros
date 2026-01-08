@@ -473,7 +473,9 @@ class AuthenticationService {
 		}
 
 		// Parse successful response
-		return response.json();
+		// ICT11+ Fix: Backend wraps response in { success: true, data: {...} }
+		const json = await response.json();
+		return json.data !== undefined ? json.data : json;
 	}
 
 	/**
