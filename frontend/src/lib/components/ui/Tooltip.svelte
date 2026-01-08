@@ -71,7 +71,7 @@
 		const triggerRect = triggerElement.getBoundingClientRect();
 		const viewportWidth = window.innerWidth;
 		const viewportHeight = window.innerHeight;
-		const gap = 2;
+		const gap = 6; // ICT 7 FIX: Reduced gap to position tooltip closer to icon
 
 		// Append to body first to measure
 		document.body.appendChild(tooltipElement);

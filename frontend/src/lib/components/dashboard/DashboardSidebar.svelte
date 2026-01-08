@@ -908,22 +908,20 @@
 		content: "";
 		top: 50%;
 		left: 50%;
-		width: 50px;
-		height: 50px;
-		margin-top: -25px;
-		margin-left: -25px;
+		width: 44px;
+		height: 44px;
+		margin-top: -22px;
+		margin-left: -22px;
 		border-radius: 50%;
-		transform: scale(.9);
+		transform: scale(0.85);
 		background: transparent;
-		transition: all 0.15s ease-in-out;
+		transition: all 0.12s ease-out;
 	}
-
-	/* OLD CSS-BASED TOOLTIP STYLES REMOVED - Now using Tooltip.svelte component */
 
 	/* HOVER EFFECTS - Circular background appears */
 	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover:before {
 		transform: scale(1);
-		background-color: rgba(0,0,0,.2);
+		background-color: rgba(0, 0, 0, 0.25);
 	}
 
 	/* Active indicator hides on hover */
@@ -1004,20 +1002,20 @@
 		position: absolute;
 		top: 50%;
 		left: 50%;
-		width: 50px;
-		height: 50px;
-		margin-top: -25px;
-		margin-left: -25px;
+		width: 44px;
+		height: 44px;
+		margin-top: -22px;
+		margin-left: -22px;
 		border-radius: 50%;
-		transform: scale(0.9);
+		transform: scale(0.85);
 		background: transparent;
-		transition: all 0.15s ease-in-out;
+		transition: all 0.12s ease-out;
 		z-index: -1;
 	}
 
 	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger a:hover::before) {
 		transform: scale(1);
-		background-color: rgba(0, 0, 0, 0.2);
+		background-color: rgba(0, 0, 0, 0.25);
 	}
 
 	/* Active state indicator for tooltip-wrapped links */
