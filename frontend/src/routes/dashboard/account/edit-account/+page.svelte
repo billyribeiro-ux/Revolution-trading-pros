@@ -28,9 +28,18 @@
 	<title>Account Details - Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="woocommerce">
-	<div class="woocommerce-MyAccount-content">
-		<div class="woocommerce-notices-wrapper">
+<!-- Dashboard Header -->
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">My Account</h1>
+	</div>
+</header>
+
+<!-- Dashboard Content -->
+<div class="dashboard__content">
+	<div class="dashboard__content-main">
+		<div class="edit-account-card">
+			<div class="woocommerce-notices-wrapper">
 			{#if form?.success}
 				<div class="woocommerce-message" role="alert">
 					{form.message}
@@ -167,11 +176,58 @@
 				</button>
 				<input type="hidden" name="action" value="save_account_details" />
 			</p>
-		</form>
+			</form>
+		</div>
 	</div>
 </div>
 
 <style>
+	/* Dashboard Header */
+	.dashboard__header {
+		background: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		padding: 20px 30px;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.dashboard__header-left {
+		flex: 1;
+	}
+
+	.dashboard__page-title {
+		font-family: 'Open Sans', sans-serif;
+		font-size: 28px;
+		font-weight: 400;
+		font-style: italic;
+		color: #333333;
+		margin: 0;
+		line-height: 1.2;
+	}
+
+	/* Dashboard Content */
+	.dashboard__content {
+		background: #f5f5f5;
+		min-height: calc(100vh - 60px);
+		padding: 40px 30px;
+	}
+
+	.dashboard__content-main {
+		max-width: 900px;
+		margin: 0 auto;
+	}
+
+	/* Professional Card Container */
+	.edit-account-card {
+		background: #ffffff;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+		padding: 40px;
+		margin-bottom: 30px;
+	}
+
+
 	.woocommerce {
 		background: #fff;
 	}
