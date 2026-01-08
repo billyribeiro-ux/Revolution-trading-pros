@@ -138,6 +138,45 @@
 		return cards;
 	});
 
+	// Scanner cards - Scanners and High Octane indicator (between Mentorship and Tools)
+	const scannerCards = $derived.by(() => {
+		const cards: {
+			name: string;
+			href: string;
+			icon: string;
+			variant: string;
+		}[] = [];
+
+		// Add scanners
+		const scannerData = membershipsData?.scanners ?? [];
+		for (const scanner of scannerData) {
+			if (scanner.status === 'active') {
+				cards.push({
+					name: scanner.name,
+					href: `/dashboard/${scanner.slug}`,
+					icon: scanner.icon ?? 'chart-candle',
+					variant: 'scanner'
+				});
+			}
+		}
+
+		// Add indicators (High Octane Scanner specifically)
+		const indicatorData = membershipsData?.indicators ?? [];
+		for (const indicator of indicatorData) {
+			// Only show High Octane Scanner in this section (other indicators go elsewhere)
+			if (indicator.status === 'active' && indicator.slug === 'high-octane-scanner') {
+				cards.push({
+					name: indicator.name,
+					href: `/dashboard/${indicator.slug}`,
+					icon: indicator.icon ?? 'chart-candle',
+					variant: 'high-octane'
+				});
+			}
+		}
+
+		return cards;
+	});
+
 	// Tools cards (always shown - static)
 	const toolsCards = [
 		{
@@ -359,6 +398,36 @@
 								{#if card.tradingRoom}
 									<a href={card.tradingRoom} target="_blank">Trading Room</a>
 								{/if}
+							</div>
+						</article>
+					</div>
+				{/each}
+			</div>
+			<!-- Divider -->
+			<div class="section-divider">
+				<div class="section-divider__line"></div>
+			</div>
+		</section>
+	{/if}
+
+	<!-- Scanners Section (High Octane Scanner) -->
+	{#if scannerCards.length > 0}
+		<section class="dashboard__content-section">
+			<h2 class="section-title">Scanners</h2>
+			<div class="membership-cards">
+				{#each scannerCards as card}
+					<div class="membership-card-col">
+						<article class="membership-card membership-card--{card.variant}">
+							<a href={card.href} class="membership-card__header">
+								<span class="mem_icon">
+									<span class="membership-card__icon">
+										<RtpIcon name={card.icon} size={32} />
+									</span>
+								</span>
+								<span class="mem_div">{card.name}</span>
+							</a>
+							<div class="membership-card__actions">
+								<a href={card.href}>Dashboard</a>
 							</div>
 						</article>
 					</div>
@@ -1090,6 +1159,26 @@
 
 	.membership-card--training:hover .membership-card__icon {
 		background-color: #280edc;
+	}
+
+	/* Scanner Card Variant */
+	.membership-card--scanner .membership-card__icon {
+		background-color: #7c3aed;
+		box-shadow: 0 5px 15px rgba(124, 58, 237, 0.25);
+	}
+
+	.membership-card--scanner:hover .membership-card__icon {
+		background-color: #6d28d9;
+	}
+
+	/* High Octane Scanner Card Variant */
+	.membership-card--high-octane .membership-card__icon {
+		background-color: #dc2626;
+		box-shadow: 0 5px 15px rgba(220, 38, 38, 0.25);
+	}
+
+	.membership-card--high-octane:hover .membership-card__icon {
+		background-color: #b91c1c;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
