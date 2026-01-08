@@ -13,10 +13,10 @@
 	import type { PageData } from './+page.server';
 
 	// Server-loaded data with Previous/Next navigation
-	export let data: PageData;
+	let { data }: { data: PageData } = $props();
 
 	// Reactive video data from server
-	$: video = data.video;
+	const video = $derived(data.video);
 
 	// Related videos (could also be fetched from server in the future)
 	const relatedVideos = [

@@ -806,19 +806,82 @@
 		max-width: 100%;
 	}
 
-	/* Mobile-first: smaller padding by default, larger on md+ */
-	@media (min-width: 768px) {
+	/* Mobile Responsive Styles */
+	@media (max-width: 767px) {
+		.dashboard__header {
+			padding: 15px;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 15px;
+		}
+
+		.dashboard__page-title {
+			font-size: 24px;
+		}
+
+		.dashboard__header-right {
+			width: 100%;
+			margin-top: 0;
+		}
+
+		.btn-tradingroom {
+			width: 100%;
+		}
+
+		.dashboard__content-section {
+			padding: 1.5rem 1rem;
+		}
+
 		.section-title {
 			font-size: 1.5rem;
 		}
 
 		.dashboard-filters {
 			flex-direction: column;
-			align-items: stretch;
+			gap: 1rem;
+		}
+
+		.dashboard-filters__count {
+			font-size: 0.875rem;
 		}
 
 		.dashboard-filters__search {
 			max-width: 100%;
+		}
+
+		.card-grid {
+			margin: 0 -10px;
+		}
+
+		.card-grid-spacer {
+			padding: 0 10px;
+			margin-bottom: 20px;
+		}
+
+		.card-title {
+			font-size: 1rem;
+		}
+
+		.facetwp-pagination {
+			margin-top: 2rem;
+			padding-top: 1.5rem;
+		}
+
+		.facetwp-page {
+			min-width: 36px;
+			height: 36px;
+			font-size: 13px;
+		}
+	}
+
+	/* Tablet Responsive Styles */
+	@media (min-width: 768px) and (max-width: 991px) {
+		.dashboard__content-section {
+			padding: 1.75rem 1.25rem;
+		}
+
+		.section-title {
+			font-size: 1.625rem;
 		}
 	}
 </style>
