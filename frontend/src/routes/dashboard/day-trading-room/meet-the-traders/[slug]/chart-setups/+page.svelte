@@ -2,6 +2,7 @@
 	Chart Setups Sub-Page
 	═══════════════════════════════════════════════════════════════════════════
 	Trader-specific chart setups content. Uses shared layout.
+	Matches John Carter reference implementation exactly.
 	
 	@version 2.0.0
 -->
@@ -9,48 +10,7 @@
 	import { page } from '$app/state';
 	import { getTraderBySlug } from '$lib/data/traders';
 
-	interface ChartSetup {
-		id: string;
-		title: string;
-		description: string;
-		image: string;
-		date: string;
-		symbol: string;
-		type: 'Bullish' | 'Bearish' | 'Neutral';
-	}
-
 	let trader = $derived(getTraderBySlug(page.params.slug));
-
-	// Trader-specific chart setups - in production, fetch from API
-	const chartSetups: ChartSetup[] = [
-		{
-			id: '1',
-			title: 'SPY Squeeze Pro Setup',
-			description: 'Looking for a breakout above resistance with squeeze firing.',
-			image: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2019/08/22154121/Squeeze-Pro-Trailer-Cardxx-300x169.jpg',
-			date: 'January 3, 2026',
-			symbol: 'SPY',
-			type: 'Bullish'
-		},
-		{
-			id: '2',
-			title: 'QQQ Momentum Play',
-			description: 'Tech sector showing strength, watching for continuation.',
-			image: 'https://cdn.simplertrading.com/2022/08/07092727/Quick-Hits-Strategy-Video-bg-300x169.jpg',
-			date: 'January 2, 2026',
-			symbol: 'QQQ',
-			type: 'Bullish'
-		},
-		{
-			id: '3',
-			title: 'TSLA Consolidation Break',
-			description: 'Tesla forming a tight consolidation pattern near key levels.',
-			image: 'https://cdn.simplertrading.com/2023/03/21162031/Micro-voodoo-lines-video-bg-300x169.jpg',
-			date: 'January 2, 2026',
-			symbol: 'TSLA',
-			type: 'Neutral'
-		}
-	];
 </script>
 
 <!-- Page Content -->
@@ -58,94 +18,180 @@
 	<div class="fl-module fl-module-heading">
 		<div class="fl-module-content fl-node-content">
 			<h2 class="fl-heading">
-				<span class="fl-heading-text section-title">{trader.name.split(' ')[0]}'s Chart Setups</span>
+				<span class="fl-heading-text">{trader.name.split(' ')[0]}'s Indicators</span>
 			</h2>
 		</div>
 	</div>
+	
 	<div class="fl-module fl-module-rich-text">
 		<div class="fl-module-content fl-node-content">
 			<div class="fl-rich-text">
-				<p>Explore the latest chart setups and trading ideas from {trader.name}. These setups showcase key levels, patterns, and opportunities in the markets.</p>
+				<p class="no-margin">You may have heard, {trader.name.split(' ')[0]} uses a combination of indicators and market internals across his 6 monitors that he looks at daily. As you know each trader should decide what is most important to them to have on their own charts, and what works best for them.</p>
+				
+				<p class="no-margin">His core setup includes the following <b>free indicators</b>:</p>
+				<ul>
+					<li>
+						<p class="no-margin"><a href="https://intercom.help/simpler-trading/en/articles/3264121" target="_blank" rel="noopener">The Exponential Moving Averages</a> (8, 21, 34, 55, and 200)</p>
+					</li>
+					<li>
+						<p class="no-margin"><a href="https://intercom.help/simpler-trading/en/articles/3293713" target="_blank" rel="noopener">VolumeAvg</a></p>
+					</li>
+					<li>
+						<p class="no-margin"><a href="https://intercom.help/simpler-trading/en/articles/3347719" target="_blank" rel="noopener">Custom Time Frames</a> (39, 78, 195, and Daily charts)</p>
+					</li>
+				</ul>
+				
+				<div class="intercom-container">
+					<img 
+						src="https://downloads.intercomcdn.com/i/o/258328594/bff0055e0282c1edd00ced72/image.png" 
+						alt="Chart Setup Example"
+						loading="lazy"
+					/>
+				</div>
+				
+				<p class="no-margin">Additionally, {trader.name.split(' ')[0]} uses the following <b>premium indicators</b> that aren't included in the below link.</p>
+				<ul>
+					<li>
+						<p class="no-margin"><a href="https://intercom.help/simpler-trading/en/articles/3189130" target="_blank" rel="noopener">Three ATR / Keltner Channels Setup</a> (free in most platforms)</p>
+					</li>
+					<li>
+						<p class="no-margin"><a href="https://intercom.help/simpler-trading/en/articles/3186315" target="_blank" rel="noopener">The Squeeze Pro</a> (You can use the free version of <a href="https://intercom.help/simpler-trading/en/articles/3263889" target="_blank" rel="noopener">The Squeeze</a> as well)</p>
+					</li>
+					<li>
+						<p class="no-margin"><a href="https://intercom.help/simpler-trading/en/articles/3230954" target="_blank" rel="noopener">Early In-N-Out Pro</a></p>
+					</li>
+					<li>
+						<p class="no-margin"><a href="https://intercom.help/simpler-trading/en/articles/3999973" target="_blank" rel="noopener">Multi-Squeeze Pro</a></p>
+					</li>
+					<li>
+						<p class="no-margin"><a href="https://intercom.help/simpler-trading/en/articles/3287902" target="_blank" rel="noopener">The Voodoo lines</a></p>
+					</li>
+					<li>
+						<p class="no-margin"><a href="https://intercom.help/simpler-trading/en/articles/3188127" target="_blank" rel="noopener">Reversal Arrows</a></p>
+					</li>
+					<li>
+						<p class="no-margin"><a href="https://intercom.help/simpler-trading/en/articles/4426649" target="_blank" rel="noopener">Ready Aim Fire Pro</a></p>
+					</li>
+					<li><a href="https://intercom.help/simpler-trading/en/articles/7208076-about-micro-voodoo-lines" target="_blank" rel="noopener">Micro Voodoo Lines</a></li>
+					<li><a href="https://intercom.help/simpler-trading/en/articles/6003945-about-quant-pivots" target="_blank" rel="noopener">Quant Pivots</a></li>
+				</ul>
+				
+				<div class="intercom-container">
+					<img 
+						src="https://cdn.simplertrading.com/2023/06/20151402/image-57.png" 
+						alt="Advanced Chart Setup"
+						width="2546" 
+						height="1433"
+						srcset="https://cdn.simplertrading.com/2023/06/20151402/image-57.png 2546w, https://cdn.simplertrading.com/2023/06/20151402/image-57-300x169.png 300w, https://cdn.simplertrading.com/2023/06/20151402/image-57-1024x576.png 1024w, https://cdn.simplertrading.com/2023/06/20151402/image-57-150x84.png 150w, https://cdn.simplertrading.com/2023/06/20151402/image-57-768x432.png 768w, https://cdn.simplertrading.com/2023/06/20151402/image-57-1536x865.png 1536w, https://cdn.simplertrading.com/2023/06/20151402/image-57-2048x1153.png 2048w, https://cdn.simplertrading.com/2023/06/20151402/image-57-400x225.png 400w" 
+						sizes="(max-width: 2546px) 100vw, 2546px"
+						loading="lazy"
+					/>
+				</div>
+				
+				<p class="no-margin"><b>Basic chart layout:</b></p>
+				<p class="no-margin">Below is a link to the shared chart which will get you set up with the basic chart setup, look and feel which you will see on {trader.name.split(' ')[0]}'s charts.</p>
+				<p class="no-margin">Below is a shared link TOS, copy and paste this shared link into Thinkorswim (TOS):</p>
+				<p class="no-margin"><a href="https://tos.mx/F5XE5sa" target="_blank" rel="nofollow noopener">https://tos.mx/F5XE5sa</a></p>
+				<p class="no-margin">Please go to: Setup &gt; Open Shared item &gt; paste link into Shared item URL: &gt; Open</p>
 			</div>
 		</div>
 	</div>
-
-	<!-- Chart Setups Grid -->
-	<div class="chart-setups-grid">
-		{#each chartSetups as setup (setup.id)}
-			<article class="chart-setup-card">
-				<figure class="card-media">
-					<div class="card-image" style="background-image: url({setup.image});">
-						<span class="setup-type" class:bullish={setup.type === 'Bullish'} class:bearish={setup.type === 'Bearish'}>{setup.type}</span>
-					</div>
-				</figure>
-				<div class="card-body">
-					<div class="card-meta">
-						<span class="symbol">{setup.symbol}</span>
-						<span class="date">{setup.date}</span>
-					</div>
-					<h3 class="card-title">{setup.title}</h3>
-					<p class="card-description">{setup.description}</p>
-					<button class="btn btn-xs btn-default">View Setup</button>
-				</div>
-			</article>
-		{/each}
-	</div>
-
-	{#if chartSetups.length === 0}
-		<div class="empty-state">
-			<p>No chart setups available at this time. Check back soon!</p>
-		</div>
-	{/if}
 {/if}
 
 <style>
-	.fl-module { margin-bottom: 20px; }
-	.fl-module:last-child { margin-bottom: 0; }
-	.fl-module-content { position: relative; }
-	.fl-node-content { position: relative; }
-
-	.fl-heading { margin: 0; padding: 0; line-height: 1.2; }
-	.fl-heading-text { display: block; }
-	.fl-heading-text.section-title { font-size: 24px; font-weight: 700; color: #333; margin-bottom: 15px; }
-
-	.fl-rich-text { font-size: 16px; line-height: 1.7; color: #444; margin-bottom: 30px; }
-	.fl-rich-text p { margin: 0; }
-
-	.chart-setups-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 25px; margin-top: 20px; }
-
-	.chart-setup-card { background: #fff; border: 1px solid #e6e6e6; border-radius: 8px; overflow: hidden; transition: box-shadow 0.3s ease; }
-	.chart-setup-card:hover { box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1); }
-
-	.card-media { margin: 0; padding: 0; position: relative; height: 160px; overflow: hidden; }
-	.card-image { display: block; width: 100%; height: 100%; background-size: cover; background-position: center; background-repeat: no-repeat; position: relative; }
-
-	.setup-type { position: absolute; top: 10px; left: 10px; padding: 4px 12px; background: #666; color: #fff; font-size: 11px; font-weight: 600; border-radius: 3px; text-transform: uppercase; }
-	.setup-type.bullish { background: #28a745; }
-	.setup-type.bearish { background: #dc3545; }
-
-	.card-body { padding: 20px; }
-	.card-meta { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; font-size: 12px; }
-	.symbol { background: #143E59; color: #fff; padding: 3px 8px; border-radius: 3px; font-weight: 600; }
-	.date { color: #999; }
-	.card-title { font-size: 18px; font-weight: 700; color: #333; margin: 0 0 10px; }
-	.card-description { font-size: 14px; color: #666; line-height: 1.5; margin: 0 0 15px; }
-
-	.btn { display: inline-block; padding: 10px 20px; font-size: 14px; font-weight: 600; text-align: center; text-decoration: none; border-radius: 4px; transition: all 0.2s ease; cursor: pointer; }
-	.btn-xs { padding: 8px 16px; font-size: 12px; }
-	.btn-default { background: #143E59; color: #fff; border: 1px solid #143E59; }
-	.btn-default:hover { background: #0c2638; border-color: #0c2638; }
-
-	.empty-state { text-align: center; padding: 60px 20px; color: #666; }
-
-	/* Mobile-first: 1 column by default, 2 on md+, 3 on lg+ */
-	.chart-setups-grid { grid-template-columns: 1fr; }
-
-	@media (min-width: 768px) {
-		.chart-setups-grid { grid-template-columns: repeat(2, 1fr); }
+	.fl-module {
+		margin-bottom: 20px;
 	}
 
-	@media (min-width: 992px) {
-		.chart-setups-grid { grid-template-columns: repeat(3, 1fr); }
+	.fl-module:last-child {
+		margin-bottom: 0;
+	}
+
+	.fl-module-content {
+		position: relative;
+	}
+
+	.fl-node-content {
+		position: relative;
+	}
+
+	.fl-heading {
+		margin: 0;
+		padding: 0;
+		line-height: 1.2;
+	}
+
+	.fl-heading-text {
+		display: block;
+		font-size: 52px;
+		font-weight: 700;
+		color: #0C2434;
+		font-family: 'Open Sans Condensed', sans-serif;
+	}
+
+	.fl-rich-text {
+		font-size: 23px;
+		line-height: 1.5;
+		color: #333;
+	}
+
+	.fl-rich-text p {
+		margin: 0 0 20px;
+	}
+
+	.fl-rich-text p.no-margin {
+		margin-bottom: 10px;
+	}
+
+	.fl-rich-text ul {
+		margin: 15px 0 20px;
+		padding-left: 40px;
+	}
+
+	.fl-rich-text li {
+		margin-bottom: 8px;
+	}
+
+	.fl-rich-text li p {
+		margin: 0;
+	}
+
+	.fl-rich-text a {
+		color: #0984ae;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.fl-rich-text a:hover {
+		color: #076787;
+		text-decoration: underline;
+	}
+
+	.fl-rich-text b {
+		font-weight: 700;
+	}
+
+	.intercom-container {
+		margin: 20px 0;
+		text-align: center;
+	}
+
+	.intercom-container img {
+		max-width: 100%;
+		height: auto;
+		display: block;
+		margin: 0 auto;
+		border-radius: 4px;
+	}
+
+	@media (max-width: 768px) {
+		.fl-heading-text {
+			font-size: 32px;
+			text-align: center;
+		}
+
+		.fl-rich-text {
+			font-size: 18px;
+		}
 	}
 </style>

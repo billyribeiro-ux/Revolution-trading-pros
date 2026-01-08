@@ -142,12 +142,12 @@ export const traders: Trader[] = [
 		id: 'billy-ribeiro',
 		name: 'Billy Ribeiro',
 		slug: 'billy-ribeiro',
-		title: 'Senior Developer & Trader',
+		title: 'Founder of Revolution Trading Pros',
 		image: 'https://cdn.simplertrading.com/2021/10/08113910/john-headshot-2020.png',
-		quote: '"Code and trade with precision, discipline, and a relentless focus on continuous improvement."',
-		whoIs: 'Billy Ribeiro is a Senior Developer and Trader at Revolution Trading Pros. He combines his technical expertise in software development with a deep understanding of trading strategies and market dynamics.',
-		tradingApproach: 'Billy\'s approach integrates algorithmic thinking with traditional trading principles. He focuses on building systems and strategies that are both technically sound and practically executable.',
-		specialties: ['Software Development', 'Trading Systems', 'Technical Analysis', 'Platform Development']
+		quote: '"Trading is not just about making money—it\'s about mastering yourself, understanding the markets, and building a sustainable edge that works in any condition."',
+		whoIs: 'Billy Ribeiro is the Founder of Revolution Trading Pros. With a unique background combining software engineering and professional trading, Billy has built a reputation for creating innovative trading systems and educational content that helps traders at all levels improve their skills. His journey from developer to full-time trader has given him a distinctive perspective on market analysis and risk management.',
+		tradingApproach: 'Billy\'s trading methodology blends technical analysis with systematic risk management. He emphasizes the importance of building repeatable processes, maintaining discipline, and continuously adapting to market conditions. His approach focuses on high-probability setups with clearly defined risk parameters, making complex strategies accessible to traders of all experience levels.',
+		specialties: ['Options Trading', 'Technical Analysis', 'Trading Systems', 'Risk Management']
 	}
 ];
 
