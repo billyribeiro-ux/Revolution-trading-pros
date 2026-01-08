@@ -255,8 +255,8 @@ Trading Pros - Rust API Deployment Guide</h1>
 </tr>
 <tr class="odd">
 <td><strong>Database</strong></td>
-<td>Neon PostgreSQL</td>
-<td>FREE tier</td>
+<td>Fly.io PostgreSQL</td>
+<td>$0-15/mo</td>
 </tr>
 <tr class="even">
 <td><strong>Cache</strong></td>
@@ -277,9 +277,7 @@ Trading Pros - Rust API Deployment Guide</h1>
 </table>
 <p><strong>Total: $5-29/mo</strong></p>
 <hr />
-<h2 id="neon-postgresql-database">1. Neon PostgreSQL (Database)</h2>
-<h3 id="sign-up">Sign Up</h3>
-<p><strong>URL:</strong> https://console.neon.tech</p>
+<h2 id="flyio-postgresql-database">1. Fly.io PostgreSQL (Database)</h2>
 <h3 id="pricing">Pricing</h3>
 <table>
 <thead>
@@ -292,40 +290,31 @@ Trading Pros - Rust API Deployment Guide</h1>
 </thead>
 <tbody>
 <tr class="odd">
-<td><strong>Free</strong></td>
+<td><strong>Development</strong></td>
 <td>$0</td>
-<td>512MB</td>
+<td>1GB</td>
 <td>Shared</td>
 </tr>
 <tr class="even">
-<td><strong>Launch</strong></td>
-<td>$19/mo</td>
+<td><strong>Production</strong></td>
+<td>$15/mo</td>
 <td>10GB</td>
 <td>Dedicated</td>
-</tr>
-<tr class="odd">
-<td><strong>Scale</strong></td>
-<td>$69/mo</td>
-<td>50GB</td>
-<td>Autoscaling</td>
 </tr>
 </tbody>
 </table>
 <h3 id="setup">Setup</h3>
 <ol type="1">
-<li>Go to https://console.neon.tech</li>
-<li>Click “Create Project”</li>
-<li>Name: <code>revolution-trading-pros</code></li>
-<li>Region: <code>US East (N. Virginia)</code> (closest to Fly.io
-IAD)</li>
-<li>Click “Create Project”</li>
+<li>Create Postgres cluster: <code>fly postgres create --name rtp-postgres --region iad</code></li>
+<li>Attach to your app: <code>fly postgres attach --app revolution-trading-pros-api rtp-postgres</code></li>
+<li>This automatically sets DATABASE_URL as a secret</li>
 </ol>
 <h3 id="get-connection-string">Get Connection String</h3>
 <ol type="1">
-<li>Go to Dashboard → Connection Details</li>
-<li>Copy the connection string:</li>
+<li>Run: <code>fly postgres connect -a rtp-postgres</code></li>
+<li>Or check secrets: <code>fly secrets list -a revolution-trading-pros-api</code></li>
 </ol>
-<pre><code>postgresql://user:password@ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require</code></pre>
+<pre><code>postgres://user:password@rtp-postgres.flycast:5432/revolution_trading_pros</code></pre>
 <hr />
 <h2 id="upstash-redis-cache">2. Upstash Redis (Cache)</h2>
 <h3 id="sign-up-1">Sign Up</h3>
@@ -469,8 +458,8 @@ class="sourceCode bash"><code class="sourceCode bash"><span id="cb3-1"><a href="
 PORT=8080
 ENVIRONMENT=production
 
-# Neon PostgreSQL
-DATABASE_URL=postgresql://user:pass@ep-xxx.us-east-2.aws.neon.tech/neondb?sslmode=require
+# Fly.io PostgreSQL (auto-set when attached)
+DATABASE_URL=postgres://user:pass@rtp-postgres.flycast:5432/revolution_trading_pros
 
 # Upstash Redis
 REDIS_URL=rediss://default:xxx@xxx.upstash.io:6379
@@ -497,7 +486,7 @@ FROM_EMAIL=noreply@revolutiontradingpros.com
 CORS_ORIGINS=https://revolution-trading-pros.pages.dev,https://revolutiontradingpros.com</code></pre>
 <hr />
 <h2 id="deployment-checklist">Deployment Checklist</h2>
-<pre><code>[ ] 1. Create Neon PostgreSQL database
+<pre><code>[ ] 1. Create Fly.io PostgreSQL: fly postgres create --name rtp-postgres
 [ ] 2. Create Upstash Redis database
 [ ] 3. Get Cloudflare R2 API keys
 [ ] 4. Get Stripe API keys

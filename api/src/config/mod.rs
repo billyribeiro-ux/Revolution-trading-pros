@@ -9,7 +9,7 @@ pub struct Config {
     pub port: u16,
     pub environment: String,
 
-    // Database (Neon PostgreSQL)
+    // Database (Fly.io PostgreSQL)
     pub database_url: String,
 
     // Redis (Upstash)

@@ -25,10 +25,11 @@ case "${1:-deploy}" in
         echo "✅ App created: $APP_NAME"
         echo ""
         echo "📋 Next steps:"
-        echo "1. Set up Neon PostgreSQL: https://console.neon.tech"
-        echo "2. Set up Upstash Redis: https://console.upstash.com"
-        echo "3. Run: ./scripts/deploy.sh secrets"
-        echo "4. Run: ./scripts/deploy.sh deploy"
+        echo "1. Create Fly.io Postgres: fly postgres create --name rtp-postgres"
+        echo "2. Attach to app: fly postgres attach --app $APP_NAME rtp-postgres"
+        echo "3. Set up Upstash Redis: https://console.upstash.com"
+        echo "4. Run: ./scripts/deploy.sh secrets"
+        echo "5. Run: ./scripts/deploy.sh deploy"
         ;;
 
     secrets)

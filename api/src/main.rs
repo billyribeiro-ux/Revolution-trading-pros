@@ -1,7 +1,7 @@
 //! Revolution Trading Pros API
 //!
 //! High-performance Rust backend with Axum
-//! Stack: Neon PostgreSQL, Upstash Redis, Cloudflare R2
+//! Stack: Fly.io PostgreSQL, Upstash Redis, Cloudflare R2
 
 mod config;
 mod db;

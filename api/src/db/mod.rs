@@ -1,4 +1,4 @@
-//! Database module - Neon PostgreSQL connection
+//! Database module - Fly.io PostgreSQL connection
 
 use anyhow::Result;
 use sqlx::{postgres::PgPoolOptions, PgPool};
