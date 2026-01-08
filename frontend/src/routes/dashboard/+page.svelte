@@ -639,6 +639,8 @@
 
 	.section-divider {
 		margin-top: 30px;
+		padding-top: 0;
+		padding-bottom: 30px; /* Equal spacing below divider */
 		width: 100%;
 		margin-left: 0;
 		margin-right: 0;
@@ -949,21 +951,26 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content-section {
-		padding: 30px 20px;
+		padding: 30px 20px 0 20px; /* Remove bottom padding - divider handles spacing */
 		overflow-x: auto;
 		overflow-y: hidden;
 		background-color: #ffffff;
 	}
 
+	/* First section after header needs no extra top padding */
+	.dashboard__content-section:first-of-type {
+		padding-top: 30px;
+	}
+
 	@media (min-width: 1280px) {
 		.dashboard__content-section {
-			padding: 30px;
+			padding: 30px 30px 0 30px;
 		}
 	}
 
 	@media (min-width: 1440px) {
 		.dashboard__content-section {
-			padding: 40px;
+			padding: 40px 40px 0 40px;
 		}
 	}
 
@@ -1238,7 +1245,7 @@
 		}
 
 		.dashboard__content-section {
-			padding: 20px 15px;
+			padding: 20px 15px 0 15px;
 		}
 
 		.section-title {
