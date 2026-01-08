@@ -14,7 +14,6 @@
 -->
 <script lang="ts">
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-	import { onMount } from 'svelte';
 	
 	interface Indicator {
 		id: number;
@@ -26,49 +25,9 @@
 		status: 'active' | 'inactive';
 	}
 	
-	// Check if user has indicators - this would come from API/store
-	let hasIndicators = false;
-	let isLoading = true;
-	
-	// Mock data for indicators (replace with actual API call)
-	let indicators: Indicator[] = [
-		{
-			id: 1,
-			name: 'ThinkorSwim Indicators',
-			description: 'Professional trading indicators for ThinkorSwim platform',
-			platform: 'ThinkorSwim',
-			platformUrl: 'https://www.thinkorswim.com',
-			icon: 'fa-line-chart',
-			status: 'active'
-		},
-		{
-			id: 2,
-			name: 'TradeStation Indicators',
-			description: 'Advanced indicators for TradeStation platform',
-			platform: 'TradeStation',
-			platformUrl: 'https://www.tradestation.com',
-			icon: 'fa-bar-chart',
-			status: 'active'
-		},
-		{
-			id: 3,
-			name: 'NinjaTrader Indicators',
-			description: 'Custom indicators for NinjaTrader platform',
-			platform: 'NinjaTrader',
-			platformUrl: 'https://ninjatrader.com',
-			icon: 'fa-area-chart',
-			status: 'active'
-		}
-	];
-	
-	onMount(async () => {
-		// Simulate API call to fetch user's indicators
-		// Replace with actual API call: const response = await fetch('/api/user/indicators');
-		setTimeout(() => {
-			hasIndicators = indicators.length > 0;
-			isLoading = false;
-		}, 500);
-	});
+	// Mock data - replace with actual API call
+	// Set to empty array to show empty state, or populate with indicators
+	const indicators: Indicator[] = [];
 </script>
 
 <svelte:head>
@@ -97,71 +56,51 @@
 				</div>
 			</header>
 			
-			<!-- Content Area -->
-			<div class="dashboard__content">
-				{#if isLoading}
-					<!-- Loading State -->
-					<div class="loading-state">
-						<div class="spinner"></div>
-						<p>Loading your indicators...</p>
+			<!-- Indicators Grid or Empty State -->
+			{#if indicators.length === 0}
+				<!-- Empty State -->
+				<div class="dashboard__content">
+					<div class="dashboard__content-main">
+						<section class="dashboard__content-section">
+							<div class="empty-state">
+								<p class="empty-state__message">You don't have any Indicators.</p>
+								<a href="/product/product-category/Indicators/" class="btn btn-orange" target="_blank">See All Indicators</a>
+							</div>
+						</section>
 					</div>
-				{:else if !hasIndicators}
-					<!-- Empty State - No Indicators -->
-					<div class="empty-state">
-						<div class="empty-state__icon">
-							<span class="fa fa-line-chart"></span>
-						</div>
-						<h2 class="empty-state__title">No Indicators Yet</h2>
-						<p class="empty-state__description">
-							You don't have any indicators at the moment. Indicators will appear here once you gain access to them through your membership.
-						</p>
-						<div class="empty-state__actions">
-							<a href="/dashboard" class="btn btn-primary">
-								<span class="fa fa-arrow-left"></span>
-								Back to Dashboard
-							</a>
-							<a href="https://www.simplertrading.com/products" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
-								<span class="fa fa-shopping-cart"></span>
-								Browse Products
-							</a>
-						</div>
+				</div>
+			{:else}
+				<!-- Indicators Grid -->
+				<div class="dashboard__content">
+					<div class="dashboard__content-main">
+						<section class="dashboard__content-section">
+							<div class="card-grid flex-grid row">
+								{#each indicators as indicator}
+									<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
+										<div class="card flex-grid-panel">
+											<section class="card-body u--squash">
+												<h4 class="h5 card-title pb-1">
+													<a href="/indicators/{indicator.id}">
+														{indicator.name}
+													</a>
+												</h4>
+												{#if indicator.description}
+													<p class="article-card__meta">
+														<small>{indicator.description}</small>
+													</p>
+												{/if}
+											</section>
+											<footer class="card-footer">
+												<a class="btn btn-tiny btn-default" href="/indicators/{indicator.id}">View Details</a>
+											</footer>
+										</div>
+									</article>
+								{/each}
+							</div>
+						</section>
 					</div>
-				{:else}
-					<!-- Indicators Grid -->
-					<div class="indicators-grid">
-						{#each indicators as indicator (indicator.id)}
-							<article class="indicator-card">
-								<div class="indicator-card__header">
-									<div class="indicator-card__icon">
-										<span class="fa {indicator.icon}"></span>
-									</div>
-									<span class="indicator-card__status indicator-card__status--{indicator.status}">
-										{indicator.status}
-									</span>
-								</div>
-								<div class="indicator-card__body">
-									<h3 class="indicator-card__title">{indicator.name}</h3>
-									<p class="indicator-card__description">{indicator.description}</p>
-									<div class="indicator-card__platform">
-										<span class="fa fa-desktop"></span>
-										<span>{indicator.platform}</span>
-									</div>
-								</div>
-								<div class="indicator-card__footer">
-									<a href={indicator.platformUrl} class="btn btn-primary btn-block" target="_blank" rel="noopener noreferrer">
-										<span class="fa fa-external-link"></span>
-										Access Platform
-									</a>
-									<a href="/dashboard/indicators/{indicator.id}" class="btn btn-secondary btn-block">
-										<span class="fa fa-info-circle"></span>
-										View Details
-									</a>
-								</div>
-							</article>
-						{/each}
-					</div>
-				{/if}
-			</div>
+				</div>
+			{/if}
 		</main>
 	</div>
 </div>
@@ -173,9 +112,26 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	
 	.dashboard__header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
 		justify-content: space-between;
-		padding: 20px 0;
-		margin-bottom: 30px;
+		background: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		border-right: 1px solid #dbdbdb;
+		padding: 20px;
+	}
+	
+	@media (min-width: 1280px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
 	}
 	
 	.dashboard__header-left {
@@ -190,303 +146,205 @@
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 	
-	.dashboard__content {
-		padding: 20px 0;
-	}
-	
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Empty State Styles
-	 * Identical to "no classes" experience
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+	/* Empty State - Matches screenshot */
 	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		text-align: center;
-		padding: 60px 20px;
-		background: #fff;
-		border-radius: 8px;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-		min-height: 400px;
+		background: #f5f5f5;
+		padding: 40px 20px;
+		text-align: left;
+		min-height: 200px;
 	}
-	
-	.empty-state__icon {
-		width: 120px;
-		height: 120px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: linear-gradient(135deg, #143E59 0%, #0984ae 100%);
-		border-radius: 50%;
-		margin-bottom: 30px;
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.2);
-	}
-	
-	.empty-state__icon .fa {
-		font-size: 56px;
-		color: #fff;
-	}
-	
-	.empty-state__title {
-		font-size: 32px;
-		font-weight: 700;
+
+	.empty-state__message {
+		font-size: 16px;
 		color: #333;
-		margin: 0 0 15px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		margin: 0 0 20px;
+		font-family: 'Open Sans', sans-serif;
 	}
-	
-	.empty-state__description {
-		font-size: 16px;
-		line-height: 1.6;
-		color: #666;
-		max-width: 500px;
-		margin: 0 0 30px;
-	}
-	
-	.empty-state__actions {
-		display: flex;
-		gap: 15px;
-		flex-wrap: wrap;
-		justify-content: center;
-	}
-	
-	/* Button Styles */
-	.btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
+
+	.btn-orange {
+		background-color: #ff8c00;
+		color: #fff;
 		padding: 12px 24px;
-		font-size: 16px;
-		font-weight: 600;
+		border-radius: 4px;
 		text-decoration: none;
-		border-radius: 6px;
-		transition: all 0.2s ease;
-		cursor: pointer;
+		display: inline-block;
+		font-weight: 700;
+		font-size: 14px;
 		border: none;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
 	}
-	
-	.btn-primary {
-		background: #143E59;
-		color: #fff;
+
+	.btn-orange:hover {
+		background-color: #e67e00;
+		text-decoration: none;
 	}
-	
-	.btn-primary:hover {
-		background: #0f2d42;
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
-	}
-	
-	.btn-secondary {
-		background: #fff;
-		color: #143E59;
-		border: 2px solid #143E59;
-	}
-	
-	.btn-secondary:hover {
-		background: #143E59;
-		color: #fff;
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.2);
-	}
-	
-	/* Loading State */
-	.loading-state {
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Card Grid - WordPress Exact Match
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.card-grid {
 		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 60px 20px;
-		min-height: 400px;
+		flex-wrap: wrap;
+		margin-left: -15px;
+		margin-right: -15px;
 	}
-	
-	.spinner {
-		width: 50px;
-		height: 50px;
-		border: 4px solid #f3f3f3;
-		border-top: 4px solid #143E59;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-		margin-bottom: 20px;
+
+	.card-grid-spacer {
+		padding-left: 15px;
+		padding-right: 15px;
+		margin-bottom: 30px;
 	}
-	
-	@keyframes spin {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
+
+	.flex-grid-item {
+		display: flex;
 	}
-	
-	.loading-state p {
-		color: #666;
-		font-size: 16px;
-	}
-	
-	/* Indicators Grid */
-	.indicators-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-		gap: 30px;
-		padding: 20px 0;
-	}
-	
-	.indicator-card {
+
+	.card {
 		background: #fff;
 		border: 1px solid #e5e5e5;
-		border-radius: 8px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+		border-radius: 5px;
+		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
 		display: flex;
 		flex-direction: column;
+		width: 100%;
+		transition: all 0.2s ease-in-out;
 	}
-	
-	.indicator-card:hover {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+
+	.card:hover {
+		box-shadow: 0 8px 35px rgba(0, 0, 0, 0.15);
 		transform: translateY(-2px);
 	}
-	
-	.indicator-card__header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 20px;
-		background: linear-gradient(135deg, #143E59 0%, #0984ae 100%);
-	}
-	
-	.indicator-card__icon {
-		width: 50px;
-		height: 50px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: rgba(255, 255, 255, 0.2);
-		border-radius: 8px;
-	}
-	
-	.indicator-card__icon .fa {
-		font-size: 24px;
-		color: #fff;
-	}
-	
-	.indicator-card__status {
-		padding: 4px 12px;
-		border-radius: 12px;
-		font-size: 12px;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
-	
-	.indicator-card__status--active {
-		background: #4caf50;
-		color: #fff;
-	}
-	
-	.indicator-card__status--inactive {
-		background: #f44336;
-		color: #fff;
-	}
-	
-	.indicator-card__body {
-		padding: 20px;
-		flex: 1;
-	}
-	
-	.indicator-card__title {
-		font-size: 20px;
-		font-weight: 700;
-		color: #333;
-		margin: 0 0 10px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-	
-	.indicator-card__description {
-		font-size: 14px;
-		line-height: 1.6;
-		color: #666;
-		margin: 0 0 15px;
-	}
-	
-	.indicator-card__platform {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		color: #143E59;
-		font-size: 14px;
-		font-weight: 600;
-	}
-	
-	.indicator-card__platform .fa {
-		font-size: 16px;
-	}
-	
-	.indicator-card__footer {
-		padding: 20px;
-		background: #f9f9f9;
-		border-top: 1px solid #e5e5e5;
+
+	.flex-grid-panel {
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		height: 100%;
 	}
-	
-	.btn-block {
+
+	.card-body {
+		padding: 20px;
+		flex: 1 1 auto;
+	}
+
+	.u--squash {
+		padding-bottom: 10px;
+	}
+
+	.card-title {
+		font-size: 18px;
+		font-weight: 700;
+		color: #333;
+		margin: 0;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		line-height: 1.4;
+	}
+
+	.card-title a {
+		color: #333;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.card-title a:hover {
+		color: #143E59;
+	}
+
+	.h5 {
+		font-size: 18px;
+		font-weight: 600;
+	}
+
+	.pb-1 {
+		padding-bottom: 0.5rem;
+	}
+
+	.article-card__meta {
+		color: #999;
+		font-size: 13px;
+		margin: 8px 0 0;
+	}
+
+	.article-card__meta small {
+		font-size: 13px;
+	}
+
+	.card-footer {
+		padding: 0 20px 20px;
+		margin-top: auto;
+	}
+
+	.btn {
+		display: inline-block;
+		text-decoration: none;
+		border-radius: 5px;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		transition: all 0.2s ease-in-out;
+		text-align: center;
+		cursor: pointer;
+		border: none;
+	}
+
+	.btn-tiny {
+		padding: 10px 24px;
+		font-size: 13px;
+		min-width: 120px;
+	}
+
+	.btn-default {
+		background-color: #143E59;
+		color: #fff;
+		border: 1px solid #143E59;
+		box-shadow: none;
+	}
+
+	.btn-default:hover {
+		background-color: #0f2d41;
+		border-color: #0f2d41;
+		box-shadow: none;
+		text-decoration: none;
+	}
+
+	/* Grid System - Bootstrap-like */
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin-left: -15px;
+		margin-right: -15px;
+	}
+
+	.col-xs-12 {
 		width: 100%;
-		justify-content: center;
+	}
+
+	@media (min-width: 576px) {
+		.col-sm-6 {
+			width: 50%;
+		}
+	}
+
+	@media (min-width: 768px) {
+		.col-md-6 {
+			width: 50%;
+		}
+	}
+
+	@media (min-width: 992px) {
+		.col-lg-4 {
+			width: 33.333333%;
+		}
 	}
 	
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Responsive Styles
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+	/* Responsive */
 	@media (max-width: 768px) {
 		.dashboard__page-title {
 			font-size: 24px;
 		}
-		
-		.empty-state {
-			padding: 40px 20px;
-			min-height: 300px;
-		}
-		
-		.empty-state__icon {
-			width: 100px;
-			height: 100px;
+
+		.card-grid-spacer {
 			margin-bottom: 20px;
-		}
-		
-		.empty-state__icon .fa {
-			font-size: 48px;
-		}
-		
-		.empty-state__title {
-			font-size: 24px;
-		}
-		
-		.empty-state__description {
-			font-size: 14px;
-		}
-		
-		.empty-state__actions {
-			flex-direction: column;
-			width: 100%;
-			max-width: 300px;
-		}
-		
-		.btn {
-			width: 100%;
-			justify-content: center;
-		}
-		
-		.indicators-grid {
-			grid-template-columns: 1fr;
-			gap: 20px;
-		}
-	}
-	
-	@media (min-width: 769px) and (max-width: 1024px) {
-		.indicators-grid {
-			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 </style>
