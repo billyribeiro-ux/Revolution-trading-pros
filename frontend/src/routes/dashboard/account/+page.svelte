@@ -57,22 +57,22 @@
 										<div class="fl-module fl-module-rich-text fl-node-59793676759ab dashboard-nav" data-node="59793676759ab">
 											<div class="fl-module-content fl-node-content">
 												<div class="fl-rich-text">
-													<div class="woocommerce">
-														<div class="woocommerce-MyAccount-content">
-															<div class="woocommerce-notices-wrapper"></div>
-															<div class="content-box content-box--centered">
-																<div class="content-box__section">
-																	<p>
-																		Hello <strong>{displayName}</strong> (not <strong>{displayName}</strong>? <a href="/logout">Log out</a>)
-																	</p>
-																	
-																	<p class="u--margin-bottom-0">
-																		From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/edit-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.
-																	</p>
-																</div>
-															</div>
-														</div>
-													</div>
+													<p><div class="woocommerce">
+<div class="woocommerce-MyAccount-content">
+	<div class="woocommerce-notices-wrapper"></div>
+<div class="content-box content-box--centered">
+	<div class="content-box__section">
+
+		<p>
+		Hello <strong>{displayName}</strong> (not <strong>{displayName}</strong>? <a href="/logout">Log out</a>)		</p>
+
+		<p class="u--margin-bottom-0">
+		From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/edit-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.		</p>
+	</div>
+</div>
+
+</div>
+</div></p>
 												</div>
 											</div>
 										</div>
