@@ -29,6 +29,7 @@ import { apiClient } from './client';
 
 /**
  * User profile data from backend
+ * Matches Rust UserResponse struct exactly
  */
 export interface UserProfile {
 	id: number;
@@ -36,8 +37,13 @@ export interface UserProfile {
 	first_name: string | null;
 	last_name: string | null;
 	email: string;
+	role: string;
+	roles: string[];
+	permissions: string[];
+	email_verified: boolean;
 	avatar_url: string | null;
-	email_verified_at: string | null;
+	mfa_enabled: boolean;
+	is_admin: boolean;
 	created_at: string;
 	updated_at: string;
 }
