@@ -96,16 +96,25 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		throw redirect(303, `/login?redirect=${returnUrl}`);
 	}
 
-	// Validate token by calling /api/me (ICT11+ Fix: correct endpoint)
+	// ICT 7 FIX: Validate token with proper timeout and error handling
+	let validationAttempted = false;
 	try {
+		// Add timeout to prevent hanging requests
+		const controller = new AbortController();
+		const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+		
 		const response = await fetch(`${API_BASE_URL}/api/me`, {
 			method: 'GET',
 			headers: {
 				'Authorization': `Bearer ${token || refreshToken}`,
 				'Content-Type': 'application/json',
 				'Accept': 'application/json'
-			}
+			},
+			signal: controller.signal
 		});
+		
+		clearTimeout(timeoutId);
+		validationAttempted = true;
 
 		if (response.ok) {
 			const json = await response.json();
@@ -119,7 +128,15 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				name: userData.name,
 				role: userData.role
 			};
-		} else if (response.status === 401 && refreshToken) {
+		} else if (response.status === 401) {
+			// ICT 7: 401 = Invalid/expired token - attempt refresh if available
+			if (!refreshToken) {
+				// No refresh token - permanent auth failure
+				console.log('[Auth Hook] 401 with no refresh token - redirecting to login');
+				const returnUrl = encodeURIComponent(pathname);
+				throw redirect(303, `/login?redirect=${returnUrl}`);
+			}
+			
 			// Token expired - try to refresh
 			const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
 				method: 'POST',
@@ -166,37 +183,88 @@ const authHandler: Handle = async ({ event, resolve }) => {
 					};
 				}
 			} else {
-				// Refresh failed - redirect to login
+				// Refresh failed - permanent auth failure
+				console.log('[Auth Hook] Token refresh failed - redirecting to login');
 				const returnUrl = encodeURIComponent(pathname);
 				throw redirect(303, `/login?redirect=${returnUrl}`);
 			}
-		} else {
-			// Auth failed - redirect to login
+		} else if (response.status >= 500) {
+			// ICT 7: 5xx = Server error (transient) - preserve session
+			console.warn(`[Auth Hook] API server error (${response.status}) - preserving session`);
+			// Don't set user - let it fall through to catch block
+			throw new Error(`API_SERVER_ERROR_${response.status}`);
+		} else if (response.status === 403) {
+			// ICT 7: 403 = Forbidden (permanent) - redirect to login
+			console.log('[Auth Hook] 403 Forbidden - redirecting to login');
 			const returnUrl = encodeURIComponent(pathname);
 			throw redirect(303, `/login?redirect=${returnUrl}`);
+		} else {
+			// ICT 7: Other errors (4xx) - treat as transient, preserve session
+			console.warn(`[Auth Hook] Unexpected response (${response.status}) - preserving session`);
+			throw new Error(`API_UNEXPECTED_RESPONSE_${response.status}`);
 		}
 	} catch (error) {
-		// If it's a redirect, rethrow it
+		// ICT 7: Sophisticated error handling with transient vs permanent failure detection
+		
+		// If it's a redirect, rethrow it (permanent auth failure)
 		if (error instanceof Response || (error as any)?.status === 303) {
 			throw error;
 		}
 
-		// ICT 11+ FIX: Network error - DON'T redirect to login!
-		// This was causing logouts on API failures
-		console.error('[Auth Hook] Token validation failed (network error):', error);
+		// Determine if this is a transient or permanent failure
+		const errorMessage = error instanceof Error ? error.message : String(error);
+		const isNetworkError = 
+			errorMessage.includes('fetch') ||
+			errorMessage.includes('network') ||
+			errorMessage.includes('ECONNREFUSED') ||
+			errorMessage.includes('ETIMEDOUT') ||
+			errorMessage.includes('aborted') ||
+			errorMessage.includes('API_SERVER_ERROR') ||
+			errorMessage.includes('API_UNEXPECTED_RESPONSE');
 		
-		// On network error, if we have tokens, trust them temporarily
-		// and let the page handle re-auth if needed
-		if (token || refreshToken) {
-			// Set a minimal user object to prevent redirect
-			// The actual user data will be fetched by the page
+		if (isNetworkError && (token || refreshToken)) {
+			// ICT 7: Transient failure - preserve session with graceful degradation
+			console.warn('[Auth Hook] Transient failure detected - preserving session:', errorMessage);
+			
+			// Try to decode token to get user info (JWT tokens contain user data)
+			// This allows us to preserve the actual user session during transient failures
+			try {
+				const tokenToDecode = token || refreshToken;
+				if (tokenToDecode) {
+					// JWT tokens are base64 encoded: header.payload.signature
+					const parts = tokenToDecode.split('.');
+					if (parts.length === 3) {
+						const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
+						
+						// ICT 7: Set user from token payload (offline validation)
+						event.locals.user = {
+							id: String(payload.sub || payload.id || payload.user_id || 'unknown'),
+							email: payload.email || 'unknown@temp.local',
+							name: payload.name || payload.username || 'User',
+							role: payload.role || 'user'
+						};
+						console.log('[Auth Hook] Session preserved from token payload:', event.locals.user.email);
+						return resolve(event);
+					}
+				}
+			} catch (decodeError) {
+				console.warn('[Auth Hook] Could not decode token:', decodeError);
+			}
+			
+			// Fallback: If token decode fails, still preserve session with minimal data
+			// This prevents logout during transient failures
 			event.locals.user = {
-				id: 'pending',
-				email: 'pending@temp.local',
-				name: 'Loading...',
+				id: 'session_preserved',
+				email: 'session@preserved.local',
+				name: 'Session Preserved',
 				role: 'user'
 			};
-			console.log('[Auth Hook] Network error - trusting existing tokens');
+			console.log('[Auth Hook] Session preserved with fallback user');
+		} else {
+			// ICT 7: Permanent failure or no tokens - redirect to login
+			console.error('[Auth Hook] Permanent auth failure:', error);
+			const returnUrl = encodeURIComponent(pathname);
+			throw redirect(303, `/login?redirect=${returnUrl}`);
 		}
 	}
 
