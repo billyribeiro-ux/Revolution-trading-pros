@@ -7,10 +7,29 @@
 
 	let { data }: Props = $props();
 
-	// Derived user data
+	// Derived user data with proper fallbacks
 	let firstName = $derived(data.profile?.firstName || '');
 	let lastName = $derived(data.profile?.lastName || '');
-	let displayName = $derived(`${firstName} ${lastName}`.trim() || 'Member');
+	let email = $derived(data.profile?.email || '');
+	
+	// Use full name if available, otherwise use email username, otherwise 'Member'
+	let displayName = $derived(() => {
+		const fullName = `${firstName} ${lastName}`.trim();
+		if (fullName) return fullName;
+		
+		// Extract name from email (part before @)
+		if (email) {
+			const emailName = email.split('@')[0];
+			// Capitalize first letter and replace dots/underscores with spaces
+			return emailName
+				.replace(/[._]/g, ' ')
+				.split(' ')
+				.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+				.join(' ');
+		}
+		
+		return 'Member';
+	});
 </script>
 
 <svelte:head>
