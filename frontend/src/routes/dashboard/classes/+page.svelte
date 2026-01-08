@@ -58,6 +58,41 @@
 			slug: 'quickstart-precision-trading-c',
 			date: 'April 2020',
 			instructor: 'TG Watkins'
+		},
+		{
+			id: 5,
+			title: 'Advanced Options Strategies',
+			slug: 'advanced-options-strategies-c',
+			date: 'November 2024',
+			instructor: 'John Carter'
+		},
+		{
+			id: 6,
+			title: 'Technical Analysis Masterclass',
+			slug: 'technical-analysis-masterclass-c',
+			date: 'October 2024',
+			instructor: 'TG Watkins'
+		},
+		{
+			id: 7,
+			title: 'Risk Management Essentials',
+			slug: 'risk-management-essentials-c',
+			date: 'September 2024',
+			instructor: 'John Carter'
+		},
+		{
+			id: 8,
+			title: 'Market Psychology & Trading',
+			slug: 'market-psychology-trading-c',
+			date: 'August 2024',
+			instructor: 'TG Watkins'
+		},
+		{
+			id: 9,
+			title: 'Swing Trading Fundamentals',
+			slug: 'swing-trading-fundamentals-c',
+			date: 'July 2024',
+			instructor: 'John Carter'
 		}
 	];
 	
