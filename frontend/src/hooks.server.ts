@@ -64,9 +64,9 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		throw redirect(303, `/login?redirect=${returnUrl}`);
 	}
 
-	// Validate token by calling /api/auth/me
+	// Validate token by calling /api/me (ICT11+ Fix: correct endpoint)
 	try {
-		const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
+		const response = await fetch(`${API_BASE_URL}/api/me`, {
 			method: 'GET',
 			headers: {
 				'Authorization': `Bearer ${token || refreshToken}`,
@@ -76,7 +76,9 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		});
 
 		if (response.ok) {
-			const userData = await response.json();
+			const json = await response.json();
+			// ICT11+ Fix: Backend wraps response in { success: true, data: {...} }
+			const userData = json.data || json;
 
 			// Set user in locals for use in load functions
 			event.locals.user = {
@@ -97,10 +99,13 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			});
 
 			if (refreshResponse.ok) {
-				const refreshData = await refreshResponse.json();
+				const refreshJson = await refreshResponse.json();
+				// ICT11+ Fix: Backend wraps response in { success: true, data: {...} }
+				const refreshData = refreshJson.data || refreshJson;
 
-				// Set new access token cookie
-				event.cookies.set('rtp_access_token', refreshData.token, {
+				// Set new access token cookie (backend sends access_token, not token)
+				const newToken = refreshData.access_token || refreshData.token;
+				event.cookies.set('rtp_access_token', newToken, {
 					path: '/',
 					httpOnly: true,
 					secure: true,
@@ -109,16 +114,18 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				});
 
 				// Fetch user data with new token
-				const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
+				const userResponse = await fetch(`${API_BASE_URL}/api/me`, {
 					method: 'GET',
 					headers: {
-						'Authorization': `Bearer ${refreshData.token}`,
+						'Authorization': `Bearer ${newToken}`,
 						'Content-Type': 'application/json'
 					}
 				});
 
 				if (userResponse.ok) {
-					const userData = await userResponse.json();
+					const userJson = await userResponse.json();
+					// ICT11+ Fix: Backend wraps response in { success: true, data: {...} }
+					const userData = userJson.data || userJson;
 					event.locals.user = {
 						id: String(userData.id),
 						email: userData.email,

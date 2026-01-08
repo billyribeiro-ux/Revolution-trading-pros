@@ -596,9 +596,10 @@ class AuthenticationService {
 
 		// ICT11+ Pattern: Set httpOnly cookies for server-side auth
 		// This enables SSR auth checks in hooks.server.ts
+		// CRITICAL: Must complete before redirect or hooks.server.ts will redirect back to login
 		if (browser) {
 			try {
-				await fetch('/api/auth/set-session', {
+				const sessionResponse = await fetch('/api/auth/set-session', {
 					method: 'POST',
 					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
@@ -607,8 +608,14 @@ class AuthenticationService {
 						expiresIn: response.expires_in
 					})
 				});
+				
+				if (!sessionResponse.ok) {
+					console.error('[AuthService] Failed to set session cookies:', await sessionResponse.text());
+				} else {
+					console.log('[AuthService] Session cookies set successfully');
+				}
 			} catch (cookieError) {
-				console.warn('[AuthService] Failed to set session cookies:', cookieError);
+				console.error('[AuthService] Failed to set session cookies:', cookieError);
 				// Continue anyway - client-side auth will still work
 			}
 		}

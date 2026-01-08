@@ -25,11 +25,15 @@ export const POST: RequestHandler = async ({ request, cookies }: RequestEvent) =
 			return json({ error: 'Access token required' }, { status: 400 });
 		}
 
+		// ICT11+ Fix: Cloudflare Pages doesn't have process.env.NODE_ENV
+		// Always use secure cookies - Cloudflare Pages is always HTTPS
+		const isSecure = true;
+
 		// Set access token cookie
 		cookies.set('rtp_access_token', accessToken, {
 			path: '/',
 			httpOnly: true,
-			secure: process.env.NODE_ENV === 'production',
+			secure: isSecure,
 			sameSite: 'lax',
 			maxAge: expiresIn || 3600 // Default 1 hour
 		});
@@ -39,11 +43,13 @@ export const POST: RequestHandler = async ({ request, cookies }: RequestEvent) =
 			cookies.set('rtp_refresh_token', refreshToken, {
 				path: '/',
 				httpOnly: true,
-				secure: process.env.NODE_ENV === 'production',
+				secure: isSecure,
 				sameSite: 'lax',
 				maxAge: 60 * 60 * 24 * 30 // 30 days
 			});
 		}
+
+		console.log('[Set Session] Cookies set successfully');
 
 		return json({ success: true });
 	} catch (error) {
