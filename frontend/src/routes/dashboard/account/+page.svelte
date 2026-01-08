@@ -84,6 +84,7 @@
 	}
 
 	.dashboard__page-title {
+		font-family: 'Montserrat', sans-serif;
 		font-size: 24px;
 		font-weight: 600;
 		color: #0a2335;
@@ -110,11 +111,16 @@
 	/* Beaver Builder Structure */
 	.fl-builder-content {
 		width: 100%;
+		font-family: 'Montserrat', sans-serif;
 	}
 
 	.fl-row {
 		width: 100%;
 		position: relative;
+	}
+
+	.fl-row-bg-color {
+		background-color: #ffffff;
 	}
 
 	.fl-row-content-wrap {
@@ -141,11 +147,15 @@
 	}
 
 	.fl-col-content {
-		padding: 20px;
+		padding: 0;
+	}
+
+	.fl-node-content {
+		position: relative;
 	}
 
 	.fl-module {
-		margin-bottom: 20px;
+		margin-bottom: 0;
 	}
 
 	.fl-module-content {
@@ -153,6 +163,7 @@
 	}
 
 	.fl-rich-text {
+		font-family: 'Montserrat', sans-serif;
 		line-height: 1.6;
 	}
 
@@ -160,37 +171,48 @@
 	.woocommerce {
 		background: #fff;
 		padding: 0;
+		font-family: 'Montserrat', sans-serif;
 	}
 
 	.woocommerce-MyAccount-content {
 		padding: 0;
 	}
 
+	.woocommerce-notices-wrapper {
+		margin: 0;
+	}
+
 	.content-box {
 		background: #fff;
-		border: 1px solid #e5e5e5;
-		margin-bottom: 20px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-		border-radius: 3px;
+		border: 1px solid #e0e0e0;
+		margin-bottom: 0;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+		border-radius: 4px;
 	}
 
 	.content-box--centered {
 		max-width: 100%;
+		margin: 0 auto;
 	}
 
 	.content-box__section {
-		padding: 24px;
+		padding: 30px 40px;
 	}
 
 	.woocommerce-MyAccount-content p {
-		font-size: 14px;
-		line-height: 1.6;
-		color: #515151;
-		margin-bottom: 16px;
+		font-family: 'Montserrat', sans-serif;
+		font-size: 15px;
+		line-height: 1.7;
+		color: #333333;
+		margin: 0 0 15px 0;
 	}
 
 	.woocommerce-MyAccount-content p:first-of-type {
 		margin-top: 0;
+	}
+
+	.woocommerce-MyAccount-content p:last-child {
+		margin-bottom: 0;
 	}
 
 	.u--margin-bottom-0 {
@@ -198,18 +220,20 @@
 	}
 
 	.woocommerce-MyAccount-content a {
-		color: #0073aa;
+		color: #0984ae;
 		text-decoration: none;
+		transition: color 0.2s ease;
 	}
 
 	.woocommerce-MyAccount-content a:hover {
-		color: #005177;
+		color: #076787;
 		text-decoration: underline;
 	}
 
 	.woocommerce-MyAccount-content strong {
-		font-weight: 600;
-		color: #333;
+		font-family: 'Montserrat', sans-serif;
+		font-weight: 700;
+		color: #0a2335;
 	}
 
 	/* Responsive */
@@ -222,8 +246,12 @@
 			font-size: 20px;
 		}
 
-		.fl-col-content {
-			padding: 15px;
+		.content-box__section {
+			padding: 20px 25px;
+		}
+
+		.woocommerce-MyAccount-content p {
+			font-size: 14px;
 		}
 	}
 </style>
