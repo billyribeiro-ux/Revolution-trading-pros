@@ -37,6 +37,21 @@
 <!-- WordPress Wrapper Structure -->
 <div id="page" class="hfeed site grid-parent">
 	<div id="content" class="site-content">
+		<!-- Non-Member Upsell Header -->
+		<section class="class-section cpost-section" id="non-member-upsell-section">
+			<div class="section-inner">
+				<div id="non-member-class-upsell">
+					<div id="non-member-class-title">
+						<h1>Quickstart To Precision Trading</h1>
+						<h3></h3>
+					</div>
+					<div id="non-member-class-description">
+						<p></p>
+					</div>
+				</div>
+			</div>
+		</section>
+
 		<!-- Class Recordings Section -->
 		<section class="class-section cpost-section" id="class-recordings">
 			<div class="section-inner">
@@ -213,7 +228,39 @@
 		display: none;
 	}
 
-	/* 6. DOWNLOADS SECTION */
+	/* 6. NON-MEMBER UPSELL HEADER */
+	#non-member-upsell-section {
+		padding-top: 20px;
+		padding-bottom: 20px;
+	}
+
+	#non-member-class-upsell {
+		text-align: center;
+		padding: 20px;
+	}
+
+	#non-member-class-title h1 {
+		font-size: 2rem;
+		font-weight: 700;
+		color: #666666;
+		margin-bottom: 10px;
+		line-height: 1.2;
+	}
+
+	#non-member-class-title h3 {
+		font-size: 1.2rem;
+		font-weight: 400;
+		color: #999999;
+		margin-bottom: 15px;
+	}
+
+	#non-member-class-description {
+		color: #666666;
+		font-size: 1rem;
+		line-height: 1.6;
+	}
+
+	/* 7. DOWNLOADS SECTION */
 	#dl-rp-row .section-inner {
 		display: flex;
 		flex-direction: column;
@@ -321,6 +368,17 @@
 	@media (min-width: 1140px) {
 		.cpost-section .section-inner {
 			padding: 0;
+		}
+	}
+
+	/* Non-Member Header Responsive */
+	@media (min-width: 768px) {
+		#non-member-class-title h1 {
+			font-size: 2.5rem;
+		}
+
+		#non-member-class-title h3 {
+			font-size: 1.4rem;
 		}
 	}
 </style>
