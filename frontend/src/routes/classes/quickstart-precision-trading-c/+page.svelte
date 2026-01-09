@@ -9,6 +9,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import ClassHeaderSection from '$lib/components/classes/ClassHeaderSection.svelte';
+	import ClassVideoSection from '$lib/components/classes/ClassVideoSection.svelte';
 	import ClassDownloadsSection from '$lib/components/classes/ClassDownloadsSection.svelte';
 
 	onMount(() => {
@@ -41,21 +42,11 @@
 					<div class="current-vid">
 						<h2 class="class-player-header">Quickstart To Precision Trading</h2>
 						<h3 class="current-title">Quickstart To Precision Trading</h3>
-						<div class="class-video-container current">
-							<video
-								id="quickstart-video"
-								controls
-								width="100%"
-								style="aspect-ratio: 16/9;"
-								title="quickstart-to-precision-trading"
-							>
-								<source
-									src="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4"
-									type="video/mp4"
-								/>
-								Your browser does not support the video tag.
-							</video>
-						</div>
+						<ClassVideoSection 
+							videoUrl="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4"
+							videoTitle="quickstart-to-precision-trading"
+							videoId="quickstart-video"
+						/>
 					</div>
 				</div>
 			</div>
@@ -113,19 +104,7 @@
 		text-align: center;
 	}
 
-	.class-video-container {
-		width: 100%;
-		margin-bottom: 30px;
-		background: #000000;
-		border-radius: 4px;
-		overflow: hidden;
-	}
-
-	.class-video-container video {
-		display: block;
-		width: 100%;
-		height: auto;
-	}
+	/* Video container - Now using ClassVideoSection component (SSOT) */
 
 	/* Downloads Section - Now using ClassDownloadsSection component (SSOT) */
 

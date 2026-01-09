@@ -9,6 +9,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import ClassHeaderSection from '$lib/components/classes/ClassHeaderSection.svelte';
+	import ClassVideoSection from '$lib/components/classes/ClassVideoSection.svelte';
 	import ClassDownloadsSection from '$lib/components/classes/ClassDownloadsSection.svelte';
 
 	const videos = [
@@ -67,23 +68,18 @@
 			<div class="section-inner">
 				<div class="class-content-block cpost-content-block">
 					{#each videos as video, index}
-						<div class="current-vid" class:first-video={index === 0}>
-							{#if index === 0}
-								<h2 class="class-player-header">{video.title}</h2>
-								<h3 class="current-title">{video.subtitle}</h3>
-							{/if}
-							<div class="class-video-container current">
-								{#if index > 0}
-									<div class="video-overlay">
-										<h3>{video.title}</h3>
-									</div>
-								{/if}
-								<video controls width="100%" style="aspect-ratio: 16/9;" title={video.title}>
-									<source src={video.url} type="video/mp4" />
-									Your browser does not support the video tag.
-								</video>
-							</div>
-						</div>
+					<div class="current-vid" class:first-video={index === 0}>
+						{#if index === 0}
+							<h2 class="class-player-header">{video.title}</h2>
+							<h3 class="current-title">{video.subtitle}</h3>
+						{/if}
+						<ClassVideoSection 
+							videoUrl={video.url}
+							videoTitle={video.title}
+							overlayTitle={index > 0 ? video.title : ''}
+							showOverlay={index > 0}
+						/>
+					</div>
 					{/each}
 				</div>
 			</div>
@@ -153,33 +149,7 @@
 		text-align: center;
 	}
 
-	.class-video-container {
-		width: 100%;
-		margin-bottom: 20px;
-		background: #000000;
-		border-radius: 4px;
-		overflow: hidden;
-		position: relative;
-	}
-
-	.video-overlay {
-		padding: 15px 20px;
-		background-color: #f5f5f5;
-		border-bottom: 1px solid #e0e0e0;
-	}
-
-	.video-overlay h3 {
-		font-size: 1.2rem;
-		font-weight: 600;
-		color: #333333;
-		margin: 0;
-	}
-
-	.class-video-container video {
-		display: block;
-		width: 100%;
-		height: auto;
-	}
+	/* Video container - Now using ClassVideoSection component (SSOT) */
 
 	/* Downloads Section - Now using ClassDownloadsSection component (SSOT) */
 
@@ -202,9 +172,7 @@
 			font-size: 1.2rem;
 		}
 
-		.video-overlay h3 {
-			font-size: 1.1rem;
-		}
+		/* Video responsive styles now in ClassVideoSection component */
 
 		/* Downloads responsive styles now in ClassDownloadsSection component */
 	}
