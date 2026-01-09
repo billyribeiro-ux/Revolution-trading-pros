@@ -8,6 +8,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import ClassHeaderSection from '$lib/components/classes/ClassHeaderSection.svelte';
 	import ClassDownloadsSection from '$lib/components/classes/ClassDownloadsSection.svelte';
 
 	onMount(() => {
@@ -32,15 +33,7 @@
 
 <div class="class-page-wrapper">
 	<div class="class-page-container">
-		<section class="class-section cpost-section" id="class-info">
-			<div class="section-inner">
-				<div id="non-member-class-upsell">
-					<div id="non-member-class-title">
-						<h1>Quickstart To Precision Trading</h1>
-					</div>
-				</div>
-			</div>
-		</section>
+		<ClassHeaderSection title="Quickstart To Precision Trading" />
 
 		<section class="class-section cpost-section" id="class-recordings">
 			<div class="section-inner">
@@ -101,15 +94,7 @@
 		width: 100%;
 	}
 
-	/* Title Section - Centered */
-	#non-member-class-title h1 {
-		font-size: 2.5rem;
-		font-weight: 700;
-		color: #333333;
-		margin-bottom: 30px;
-		line-height: 1.2;
-		text-align: center;
-	}
+	/* Title Section - Now using ClassHeaderSection component (SSOT) */
 
 	/* Video Headers - Centered */
 	.class-player-header {
@@ -153,9 +138,7 @@
 			padding: 30px 15px;
 		}
 
-		#non-member-class-title h1 {
-			font-size: 2rem;
-		}
+		/* Header responsive styles now in ClassHeaderSection component */
 
 		.class-player-header {
 			font-size: 1.5rem;
@@ -173,9 +156,7 @@
 			padding: 20px 10px;
 		}
 
-		#non-member-class-title h1 {
-			font-size: 1.75rem;
-		}
+		/* Header responsive styles now in ClassHeaderSection component */
 
 		.class-player-header {
 			font-size: 1.3rem;
