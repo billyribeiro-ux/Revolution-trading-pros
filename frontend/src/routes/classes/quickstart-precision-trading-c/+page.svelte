@@ -29,67 +29,81 @@
 	});
 </script>
 
-<div class="class-page-container">
-	<section class="class-section cpost-section" id="class-info">
-		<div class="section-inner">
-			<div id="non-member-class-upsell">
-				<div id="non-member-class-title">
-					<h1>Quickstart To Precision Trading</h1>
-				</div>
-			</div>
-		</div>
-	</section>
-
-	<section class="class-section cpost-section" id="class-recordings">
-		<div class="section-inner">
-			<div class="class-content-block cpost-content-block">
-				<div class="current-vid">
-					<h2 class="class-player-header">Quickstart To Precision Trading</h2>
-					<h3 class="current-title">Quickstart To Precision Trading</h3>
-					<div class="class-video-container current">
-						<video
-							id="quickstart-video"
-							controls
-							width="100%"
-							style="aspect-ratio: 16/9;"
-							title="quickstart-to-precision-trading"
-						>
-							<source
-								src="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4"
-								type="video/mp4"
-							/>
-							Your browser does not support the video tag.
-						</video>
+<div class="class-page-wrapper">
+	<div class="class-page-container">
+		<section class="class-section cpost-section" id="class-info">
+			<div class="section-inner">
+				<div id="non-member-class-upsell">
+					<div id="non-member-class-title">
+						<h1>Quickstart To Precision Trading</h1>
 					</div>
 				</div>
 			</div>
-		</div>
-	</section>
+		</section>
 
-	<section class="class-section cpost-section" id="dl-rp-row">
-		<div class="section-inner">
-			<section class="class-subsection" id="class-downloads">
-				<h2>Class Downloads</h2>
-				<div class="class-downloads-container">
-					<iframe
-						src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list"
-						width="500"
-						height="400"
-						frameborder="0"
-						allowfullscreen
-						title="Class Downloads"
-					></iframe>
+		<section class="class-section cpost-section" id="class-recordings">
+			<div class="section-inner">
+				<div class="class-content-block cpost-content-block">
+					<div class="current-vid">
+						<h2 class="class-player-header">Quickstart To Precision Trading</h2>
+						<h3 class="current-title">Quickstart To Precision Trading</h3>
+						<div class="class-video-container current">
+							<video
+								id="quickstart-video"
+								controls
+								width="100%"
+								style="aspect-ratio: 16/9;"
+								title="quickstart-to-precision-trading"
+							>
+								<source
+									src="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4"
+									type="video/mp4"
+								/>
+								Your browser does not support the video tag.
+							</video>
+						</div>
+					</div>
 				</div>
-			</section>
-		</div>
-	</section>
+			</div>
+		</section>
+
+		<section class="class-section cpost-section" id="dl-rp-row">
+			<div class="section-inner">
+				<section class="class-subsection" id="class-downloads">
+					<h2>Class Downloads</h2>
+					<div class="class-downloads-container">
+						<iframe
+							src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list"
+							width="500"
+							height="400"
+							frameborder="0"
+							allowfullscreen
+							title="Class Downloads"
+						></iframe>
+					</div>
+				</section>
+			</div>
+		</section>
+	</div>
 </div>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Quickstart To Precision Trading - Apple ICT 7 Standards
+	 * Pixel-perfect WordPress match with white background and centered layout
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.class-page-wrapper {
+		background-color: #ffffff;
+		min-height: 100vh;
+		width: 100%;
+	}
+
 	.class-page-container {
 		max-width: 1200px;
 		margin: 0 auto;
-		padding: 0 20px;
+		padding: 40px 20px;
+		background-color: #ffffff;
 	}
 
 	.class-section {
@@ -100,32 +114,37 @@
 		width: 100%;
 	}
 
+	/* Title Section - Centered */
 	#non-member-class-title h1 {
 		font-size: 2.5rem;
 		font-weight: 700;
-		color: #333;
-		margin-bottom: 20px;
+		color: #333333;
+		margin-bottom: 30px;
 		line-height: 1.2;
+		text-align: center;
 	}
 
+	/* Video Headers - Centered */
 	.class-player-header {
 		font-size: 1.8rem;
 		font-weight: 600;
-		color: #333;
+		color: #333333;
 		margin-bottom: 10px;
+		text-align: center;
 	}
 
 	.current-title {
 		font-size: 1.4rem;
 		font-weight: 500;
-		color: #666;
-		margin-bottom: 20px;
+		color: #666666;
+		margin-bottom: 25px;
+		text-align: center;
 	}
 
 	.class-video-container {
 		width: 100%;
 		margin-bottom: 30px;
-		background: #000;
+		background: #000000;
 		border-radius: 4px;
 		overflow: hidden;
 	}
@@ -136,25 +155,39 @@
 		height: auto;
 	}
 
+	/* Downloads Section - Centered */
+	#class-downloads {
+		text-align: center;
+	}
+
 	#class-downloads h2 {
 		font-size: 1.8rem;
 		font-weight: 600;
-		color: #333;
-		margin-bottom: 20px;
+		color: #333333;
+		margin-bottom: 25px;
 	}
 
 	.class-downloads-container {
 		width: 100%;
 		max-width: 500px;
+		margin: 0 auto;
 	}
 
 	.class-downloads-container iframe {
 		width: 100%;
-		border: 1px solid #ddd;
+		border: 1px solid #dddddd;
 		border-radius: 4px;
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Responsive Design - Mobile First
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (max-width: 768px) {
+		.class-page-container {
+			padding: 30px 15px;
+		}
+
 		#non-member-class-title h1 {
 			font-size: 2rem;
 		}
@@ -177,6 +210,24 @@
 
 		.class-downloads-container iframe {
 			height: 300px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.class-page-container {
+			padding: 20px 10px;
+		}
+
+		#non-member-class-title h1 {
+			font-size: 1.75rem;
+		}
+
+		.class-player-header {
+			font-size: 1.3rem;
+		}
+
+		.current-title {
+			font-size: 1.1rem;
 		}
 	}
 </style>
