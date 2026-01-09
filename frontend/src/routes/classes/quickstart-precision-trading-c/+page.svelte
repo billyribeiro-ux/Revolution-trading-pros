@@ -8,9 +8,8 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import ClassHeaderSection from '$lib/components/classes/ClassHeaderSection.svelte';
-	import ClassVideoSection from '$lib/components/classes/ClassVideoSection.svelte';
-	import ClassDownloadsSection from '$lib/components/classes/ClassDownloadsSection.svelte';
+	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
+	import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.svelte';
 
 	onMount(() => {
 		if (typeof window !== 'undefined' && (window as any).richpanel) {
@@ -32,92 +31,228 @@
 	});
 </script>
 
-<div class="class-page-wrapper">
-	<div class="class-page-container">
-		<ClassHeaderSection title="Quickstart To Precision Trading" />
+<!-- Breadcrumbs -->
+<DashboardBreadcrumbs />
 
+<!-- WordPress Wrapper Structure -->
+<div id="page" class="hfeed site grid-parent">
+	<div id="content" class="site-content">
+		<!-- Class Recordings Section -->
 		<section class="class-section cpost-section" id="class-recordings">
 			<div class="section-inner">
 				<div class="class-content-block cpost-content-block">
 					<div class="current-vid">
 						<h2 class="class-player-header">Quickstart To Precision Trading</h2>
 						<h3 class="current-title">Quickstart To Precision Trading</h3>
-						<ClassVideoSection 
-							videoUrl="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4"
-							videoTitle="quickstart-to-precision-trading"
-							videoId="quickstart-video"
-						/>
+						<div class="class-video-description">
+							<p></p>
+						</div>
+						<div class="class-video-container current">
+							<div class="video-overlay">
+								<h3>Quickstart To Precision Trading</h3>
+							</div>
+							<div id="quickstart-to-precision-trading" class="class-video-player"></div>
+							<video 
+								id="quickstart-video" 
+								controls 
+								width="100%" 
+								poster="" 
+								style="aspect-ratio: 16/9;" 
+								title="quickstart-to-precision-trading"
+							>
+								<source src="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4" type="video/mp4">
+								Your browser does not support the video tag.
+							</video>
+						</div>
 					</div>
 				</div>
 			</div>
 		</section>
 
-		<ClassDownloadsSection 
-			boxUrl="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list"
-		/>
+		<!-- Class Downloads Section -->
+		<section class="class-section cpost-section" id="dl-rp-row">
+			<div class="section-inner">
+				<section class="class-subsection" id="class-downloads">
+					<h2>Class Downloads</h2>
+					<div class="class-downloads-container">
+						<iframe 
+							src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
+							width="500" 
+							height="400" 
+							allowfullscreen
+							title="Class Downloads"
+						></iframe>
+					</div>
+				</section>
+			</div>
+		</section>
 	</div>
 </div>
 
+<!-- Have Questions Section -->
+<HaveQuestionsSection 
+	email="support@revolutiontradingpros.com" 
+	phone="8002668659" 
+	phoneDisplay="(800) 266-8659" 
+/>
+
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Quickstart To Precision Trading - Apple ICT 7 Standards
-	 * Pixel-perfect WordPress match with white background and centered layout
+	 * WORDPRESS EXACT MATCH - from CLASS_PAGE_REFERENCE.md
+	 * Source: https://my.simplertrading.com/classes/quickstart-precision-trading-c
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.class-page-wrapper {
-		background-color: #ffffff;
-		min-height: 100vh;
-		width: 100%;
+	/* 1. BODY BACKGROUND - White per user preference */
+	:global(html),
+	:global(body) {
+		background-color: #FFFFFF !important;
+		color: #666666;
+		font-family: "Open Sans", sans-serif;
 	}
 
-	.class-page-container {
-		max-width: 1200px;
+	:global(a), :global(a:visited) {
+		color: #1e73be;
+	}
+
+	:global(a:hover), :global(a:focus), :global(a:active) {
+		color: #000000;
+	}
+
+	/* 2. PAGE WRAPPER */
+	#page {
+		max-width: 100%;
+		margin: 0;
+		padding: 0;
+	}
+
+	#content {
+		max-width: 100%;
+	}
+
+	/* 3. SECTION STRUCTURE - Mobile First */
+	.cpost-section {
+		padding: 40px 0;
+	}
+
+	.cpost-section .section-inner {
+		max-width: 1100px;
 		margin: 0 auto;
-		padding: 40px 20px;
-		background-color: #ffffff;
+		padding: 0 20px;
 	}
 
-	.class-section {
-		margin-bottom: 40px;
+	/* 4. CLASS RECORDINGS SECTION */
+	#class-recordings {
+		padding-top: 0;
 	}
 
-	.section-inner {
+	.class-content-block {
+		padding: 0 20px 40px;
+		border-radius: 0;
+	}
+
+	/* 5. VIDEO SECTION - Dark Blue Background */
+	.current-vid {
 		width: 100%;
+		background-color: #0a2335;
+		padding: 10px 10px 0;
 	}
 
-	/* Title Section - Now using ClassHeaderSection component (SSOT) */
-
-	/* Video Headers - Centered */
 	.class-player-header {
-		font-size: 1.8rem;
+		color: #ffffff;
+		font-size: 1.3rem;
 		font-weight: 600;
-		color: #333333;
 		margin-bottom: 10px;
 		text-align: center;
 	}
 
 	.current-title {
-		font-size: 1.4rem;
+		color: #d5d5d5;
+		font-size: 1.1rem;
 		font-weight: 500;
-		color: #666666;
-		margin-bottom: 25px;
+		margin-bottom: 15px;
 		text-align: center;
 	}
 
-	/* Video container - Now using ClassVideoSection component (SSOT) */
+	.class-video-description {
+		margin-bottom: 10px;
+	}
 
-	/* Downloads Section - Now using ClassDownloadsSection component (SSOT) */
+	.class-video-container {
+		position: relative;
+		background: #000;
+		overflow: hidden;
+		border: 1px solid #999;
+		cursor: pointer;
+	}
+
+	.class-video-container.current {
+		width: 100%;
+		display: flex;
+		z-index: 1;
+	}
+
+	.class-video-container video {
+		width: 100%;
+		display: block;
+	}
+
+	.video-overlay {
+		background-color: rgba(0, 0, 0, 0.269);
+	}
+
+	.video-overlay h3 {
+		display: none;
+	}
+
+	/* 6. DOWNLOADS SECTION */
+	#dl-rp-row .section-inner {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.class-subsection {
+		flex: 1 1;
+		background-color: #fff;
+		padding: 25px;
+	}
+
+	#class-downloads {
+		margin: 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	#class-downloads h2 {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: #666666;
+		margin-bottom: 20px;
+		text-align: center;
+	}
+
+	.class-downloads-container {
+		margin-bottom: 0;
+		width: 100%;
+		max-width: 500px;
+	}
+
+	.class-downloads-container iframe {
+		width: 100%;
+		height: 400px;
+		border: 0;
+	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Responsive Design - Mobile First
+	 * RESPONSIVE - Mobile-First (min-width breakpoints)
+	 * Base styles above are mobile, these scale UP
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 768px) {
-		.class-page-container {
-			padding: 30px 15px;
+	/* Tablet (416px+) */
+	@media (min-width: 416px) {
+		.current-vid {
+			padding: 25px 25px 0;
 		}
-
-		/* Header responsive styles now in ClassHeaderSection component */
 
 		.class-player-header {
 			font-size: 1.5rem;
@@ -126,23 +261,42 @@
 		.current-title {
 			font-size: 1.2rem;
 		}
-
-		/* Downloads responsive styles now in ClassDownloadsSection component */
 	}
 
-	@media (max-width: 480px) {
-		.class-page-container {
-			padding: 20px 10px;
+	/* Tablet Large (600px+) */
+	@media (min-width: 600px) {
+		.class-content-block {
+			padding: 0 40px 40px;
+		}
+	}
+
+	/* Desktop (768px+) */
+	@media (min-width: 768px) {
+		.cpost-section {
+			padding: 60px 0;
 		}
 
-		/* Header responsive styles now in ClassHeaderSection component */
-
 		.class-player-header {
-			font-size: 1.3rem;
+			font-size: 1.8rem;
 		}
 
 		.current-title {
-			font-size: 1.1rem;
+			font-size: 1.4rem;
+		}
+
+		#dl-rp-row .section-inner {
+			flex-direction: row;
+		}
+
+		#class-downloads {
+			margin-right: 20px;
+		}
+	}
+
+	/* Desktop Large (1140px+) */
+	@media (min-width: 1140px) {
+		.cpost-section .section-inner {
+			padding: 0;
 		}
 	}
 </style>
