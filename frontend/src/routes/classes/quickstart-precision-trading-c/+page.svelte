@@ -253,6 +253,8 @@
 		max-width: 1020px;
 		min-height: 148px;
 		margin: 0 auto;
+		width: 100%;
+		box-sizing: border-box;
 	}
 
 	#non-member-class-title h1 {
@@ -306,6 +308,8 @@
 		align-items: center;
 		max-width: 1030px;
 		min-height: 458px;
+		width: 100%;
+		box-sizing: border-box;
 	}
 
 	#class-downloads h2 {
@@ -318,12 +322,15 @@
 
 	.class-downloads-container {
 		margin-bottom: 0;
-		width: 500px;
+		width: 100%;
+		max-width: 500px;
 		height: 400px;
+		box-sizing: border-box;
 	}
 
 	.class-downloads-container iframe {
-		width: 500px;
+		width: 100%;
+		max-width: 500px;
 		height: 400px;
 		border: 0;
 	}
@@ -348,6 +355,26 @@
 	 * Base styles above are mobile, these scale UP
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* Mobile Small (max 480px) */
+	@media (max-width: 480px) {
+		#non-member-class-upsell {
+			padding: 15px;
+			min-height: auto;
+		}
+
+		#non-member-class-title h1 {
+			font-size: 1.5rem;
+		}
+
+		.class-downloads-container {
+			padding: 0 10px;
+		}
+
+		.class-downloads-container iframe {
+			height: 300px;
+		}
+	}
+
 	/* Tablet (416px+) */
 	@media (min-width: 416px) {
 		.current-vid {
@@ -367,6 +394,10 @@
 	@media (min-width: 600px) {
 		.cpost-content-block.class-content-block {
 			padding: 0 40px 40px;
+		}
+
+		.class-downloads-container iframe {
+			height: 400px;
 		}
 	}
 
