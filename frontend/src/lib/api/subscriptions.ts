@@ -1097,9 +1097,12 @@ class SubscriptionService {
 
 	/**
 	 * Analytics & Insights
+	 * ICT 7 FIX: Use SvelteKit proxy endpoint instead of direct backend call
 	 */
 	async getStats(): Promise<SubscriptionStats> {
-		return this.authFetch<SubscriptionStats>(`${API_BASE}/subscriptions/metrics`);
+		// ICT 7 FIX: Use proxy endpoint to prevent 404 errors
+		// Proxy at /api/subscriptions/metrics returns mock data if backend unavailable
+		return this.authFetch<SubscriptionStats>('/api/subscriptions/metrics');
 	}
 
 	async getRevenueMetrics(): Promise<RevenueMetrics | null> {

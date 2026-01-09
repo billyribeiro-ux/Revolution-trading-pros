@@ -843,6 +843,7 @@ class PopupEngagementService {
 
 	/**
 	 * Load active popups for current page
+	 * ICT 7 FIX: Use SvelteKit proxy endpoint instead of direct backend call
 	 */
 	async loadActivePopups(): Promise<void> {
 		if (!browser) return;
@@ -858,11 +859,12 @@ class PopupEngagementService {
 		}
 
 		try {
-			const response = await fetch(`${API_BASE}/popups/active?page=${encodeURIComponent(page)}`);
+			// ICT 7 FIX: Use SvelteKit proxy endpoint (NOT direct backend URL)
+			// Proxy at /api/popups/active returns empty array if backend unavailable
+			const response = await fetch(`/api/popups/active?page=${encodeURIComponent(page)}`);
 
 			if (!response.ok) {
-				// Endpoint may not exist yet
-				console.debug('[PopupService] Active popups endpoint not available');
+				// Endpoint returned error - use empty popups
 				return;
 			}
 
@@ -875,8 +877,7 @@ class PopupEngagementService {
 			// Process popups
 			this.processActivePopups(popups);
 		} catch (error) {
-			// Gracefully handle missing endpoint
-			console.debug('[PopupService] Popups not available');
+			// Gracefully handle errors - popups are optional
 		}
 	}
 
