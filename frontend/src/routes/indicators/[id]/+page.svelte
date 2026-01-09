@@ -284,6 +284,7 @@
 		margin: 0 0 20px;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.2;
+		text-align: center;
 	}
 
 	.platforms {
@@ -291,6 +292,7 @@
 		color: #666666;
 		margin: 0 0 15px;
 		font-family: 'Open Sans', sans-serif;
+		text-align: center;
 	}
 
 	.platforms strong {
@@ -301,7 +303,7 @@
 	hr {
 		border: none;
 		border-top: 1px solid #dddddd;
-		margin: 15px 0 30px;
+		margin: 20px 0 40px;
 	}
 
 	/* Video Section */
@@ -314,15 +316,16 @@
 	}
 
 	.current-vid {
-		margin-bottom: 30px;
+		margin-bottom: 20px;
 	}
 
 	.video-container {
 		position: relative;
 		background: #000;
-		border-radius: 4px;
+		border-radius: 0;
 		overflow: hidden;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		margin-bottom: 20px;
 	}
 
 	.video-container video {
@@ -337,17 +340,17 @@
 	/* Platform Download Boxes */
 	.st_box {
 		background: #ffffff;
-		border: 1px solid #dddddd;
-		border-radius: 0;
-		padding: 30px;
-		margin-bottom: 30px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+		border: 1px solid #e5e5e5;
+		border-radius: 4px;
+		padding: 40px 30px;
+		margin-bottom: 20px;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 	}
 
 	.st_box img {
 		display: block;
-		margin: 0 auto 25px;
-		max-width: 250px;
+		margin: 0 auto 30px;
+		max-width: 200px;
 		height: auto;
 	}
 
@@ -405,16 +408,17 @@
 	/* Orange Button */
 	.orng_btn {
 		display: inline-block;
-		padding: 10px 20px;
+		padding: 8px 20px;
 		background: #F69532;
-		color: #fff;
+		color: #ffffff;
 		text-decoration: none;
-		border-radius: 4px;
+		border-radius: 20px;
 		font-weight: 600;
-		font-size: 14px;
+		font-size: 13px;
 		transition: all 0.2s ease;
 		border: none;
 		cursor: pointer;
+		white-space: nowrap;
 	}
 
 	.orng_btn:hover {
@@ -428,10 +432,10 @@
 		border: 1px solid #e5e5e5;
 		padding: 20px;
 		margin-top: 20px;
-		border-radius: 0;
+		border-radius: 4px;
 		color: #666666;
 		font-size: 14px;
-		line-height: 1.6;
+		line-height: 1.7;
 		font-family: 'Open Sans', sans-serif;
 	}
 
