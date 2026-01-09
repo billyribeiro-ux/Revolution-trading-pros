@@ -262,24 +262,33 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * WordPress Exact Match Styles
+	 * WORDPRESS EXACT MATCH - from INDICATOR_PAGE_REFERENCE.md
+	 * Source: https://my.simplertrading.com/indicators/volume-max-i
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* 1. BODY BACKGROUND - CRITICAL */
+	:global(html),
 	:global(body) {
 		background-color: #efefef !important;
-	}
-	
-	:global(html),
-	:global(body),
-	:global(main) {
-		background-color: #efefef !important;
+		color: #666666;
+		font-family: "Open Sans", sans-serif;
 	}
 
+	:global(a), :global(a:visited) {
+		color: #1e73be;
+	}
+
+	:global(a:hover), :global(a:focus), :global(a:active) {
+		color: #000000;
+	}
+
+	/* 2. INDICATORS CONTAINER - White background, centered */
 	.indicators {
-		max-width: 1160px;
-		margin: 0 auto;
-		padding: 40px 20px;
-		background-color: #ffffff;
+		background-color: #fff;
+		font-size: 24px;
+		padding: 50px 15px;
+		max-width: 1200px;
+		margin: auto;
 	}
 
 	.indicators main {
@@ -288,22 +297,24 @@
 		padding: 0;
 	}
 
+	/* 3. H1 TITLE - WordPress exact */
 	.indicators h1 {
-		font-size: 32px;
-		font-weight: 400;
-		color: #666666;
-		margin: 0 0 20px;
-		font-family: 'Open Sans', sans-serif;
-		line-height: 1.2;
+		color: #0c2434;
+		font-weight: 700;
 		text-align: center;
+		margin-bottom: 10px;
+		font-size: 54px;
+		font-family: "Open Sans Condensed", sans-serif;
+		line-height: 1.1em;
 	}
 
+	/* 4. PLATFORMS - Centered */
 	.platforms {
-		font-size: 16px;
-		color: #666666;
-		margin: 0 0 15px;
-		font-family: 'Open Sans', sans-serif;
 		text-align: center;
+		margin-bottom: 40px;
+		font-size: 24px;
+		color: #666666;
+		font-family: "Open Sans", sans-serif;
 	}
 
 	.platforms strong {
@@ -317,45 +328,40 @@
 		margin: 20px 0 40px;
 	}
 
-	/* Video Section */
+	/* 5. VIDEO SECTION - #f4f4f4 for indicators NOT #0a2335 */
 	.ca-section {
-		margin-bottom: 40px;
+		padding-bottom: 0;
 	}
 
 	.section-inner {
-		width: 100%;
-		margin: 0;
+		max-width: 1200px;
+		margin: 0 auto;
 		padding: 0;
-		border: 0;
 	}
 
 	.ca-content-block {
 		margin: 0;
 		padding: 0;
-		border: 0;
 	}
 
 	.current-vid {
-		padding: 0 25px;
-		margin: 0 0 25px 0;
-		border: 0;
+		width: 100%;
+		background-color: #f4f4f4;
+		padding: 25px 25px 0;
 	}
 
 	.video-container {
 		position: relative;
 		background: #000;
-		border-radius: 0;
 		overflow: hidden;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-		margin: 0;
-		padding: 0;
-		border: 0;
+		border: 1px solid #999;
+		cursor: pointer;
 	}
 
-	/* WordPress has current-vid on video-container for second video */
-	.video-container.current-vid {
-		padding: 0 25px;
-		margin: 0 0 25px 0;
+	.video-container.current {
+		width: 100%;
+		display: flex;
+		z-index: 1;
 	}
 
 	.video-container video {
@@ -364,68 +370,58 @@
 	}
 
 	.video-overlay {
-		display: none;
+		background-color: rgba(0, 0, 0, 0.269);
 	}
 
-	/* Platform Download Boxes */
+	/* 6. ST_BOX - 24px solid #f4f4f4 border */
 	.st_box {
+		border: 24px solid #f4f4f4;
+		padding: 20px;
+		margin-top: 30px;
 		background: #ffffff;
-		border: 1px solid #e5e5e5;
-		border-radius: 4px;
-		padding: 40px 30px;
-		margin-bottom: 20px;
-		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 	}
 
 	.st_box img {
 		display: block;
-		margin: 0 auto 30px;
+		margin: 0 auto 20px;
 		max-width: 250px;
 		height: auto;
 	}
 
 	.st_box h2 {
+		margin-bottom: 20px;
 		font-size: 22px;
 		font-weight: 700;
 		color: #666666;
-		margin: 0 0 20px;
 		font-family: 'Open Sans', sans-serif;
 	}
 
-	/* Tables */
+	/* 7. TABLES - No border, specific styling */
 	.st_box table {
 		width: 100%;
+		margin: 0;
+		border: 0;
 		border-collapse: collapse;
-		background: #ffffff;
-		border: 1px solid #e5e5e5;
-		border-radius: 0;
 	}
 
 	.st_box table th {
-		background: #f5f5f5;
-		color: #666666;
+		border: 0;
 		padding: 12px 15px;
 		text-align: left;
 		font-weight: 700;
 		font-size: 14px;
 		font-family: 'Open Sans', sans-serif;
-		border-bottom: 1px solid #e5e5e5;
+		color: #666666;
 	}
 
-	.st_box table tr {
-		border-bottom: 1px solid #e5e5e5;
-	}
-
-	.st_box table tr:last-child {
-		border-bottom: none;
-	}
-
-	.st_box table tr:hover {
-		background-color: #f5f5f5;
+	.st_box table th:first-child {
+		padding-left: 0;
 	}
 
 	.st_box table td {
-		padding: 15px;
+		border: 0;
+		padding: 20px 0;
+		border-top: 1px solid #f4f4f4;
 		color: #666666;
 		font-size: 14px;
 		font-family: 'Open Sans', sans-serif;
@@ -435,34 +431,31 @@
 		text-align: right;
 	}
 
-	/* Orange Button */
+	/* 8. ORANGE BUTTON - #f8ac00 */
 	.orng_btn {
+		background-color: #f8ac00;
+		border-radius: 80px;
+		font-weight: 700;
+		color: #fff;
 		display: inline-block;
-		padding: 8px 20px;
-		background: #F69532;
-		color: #ffffff;
+		text-align: center;
+		padding: 10px 35px;
+		min-width: 250px;
+		font-size: 20px;
 		text-decoration: none;
-		border-radius: 20px;
-		font-weight: 600;
-		font-size: 13px;
-		transition: all 0.2s ease;
-		border: none;
-		cursor: pointer;
-		white-space: nowrap;
+		transition: background-color 0.2s ease;
 	}
 
 	.orng_btn:hover {
-		background: #dc7309;
+		background-color: #df9c00;
+		color: #fff;
 		text-decoration: none;
 	}
 
-	/* Platform Notes */
+	/* 9. PLATFORM NOTES */
 	.platform_notes {
-		background: #f9f9f9;
-		border: 1px solid #e5e5e5;
-		padding: 20px;
-		margin-top: 20px;
-		border-radius: 4px;
+		padding-top: 20px;
+		border-top: 1px solid #f4f4f4;
 		color: #666666;
 		font-size: 14px;
 		line-height: 1.7;
@@ -479,24 +472,46 @@
 		text-decoration: underline;
 	}
 
-	/* Have Questions Section */
+	/* 10. HAVE QUESTIONS SECTION */
 	.fl-builder-content {
 		width: 100%;
-		margin-top: 60px;
-		background-color: #f7f7f7;
 	}
 
 	.fl-row-bg-color {
 		background-color: #f7f7f7;
-		padding: 60px 20px;
+	}
+
+	.fl-row-content-wrap {
+		padding-top: 60px;
+		padding-bottom: 60px;
+	}
+
+	.fl-row-content {
+		max-width: 800px;
+		margin: 0 auto;
+		padding: 0 20px;
 	}
 
 	.fl-rich-text {
 		font-family: 'Open Sans', sans-serif;
 	}
 
+	.fl-rich-text h2 {
+		font-size: 42px;
+		text-align: center;
+		margin: 0 0 20px;
+		color: #666666;
+	}
+
+	.fl-rich-text p {
+		font-size: 22px;
+		text-align: center;
+		margin: 0;
+		color: #666666;
+	}
+
 	.fl-rich-text a {
-		color: #1e73be;
+		color: #0984ae;
 		text-decoration: none;
 	}
 
@@ -505,93 +520,51 @@
 		text-decoration: underline;
 	}
 
-	/* Responsive */
+	/* 11. RESPONSIVE - WordPress breakpoints */
 	@media (max-width: 992px) {
-		.fl-row-content {
-			padding: 40px 20px !important;
-		}
-		
-		.fl-rich-text h2 {
-			font-size: 32px !important;
-		}
-		
-		.fl-rich-text p {
-			font-size: 18px !important;
+		.fl-row-content-wrap {
+			padding-top: 40px;
+			padding-bottom: 40px;
 		}
 	}
 
 	@media (max-width: 768px) {
-		.indicators {
+		.indicators h1 {
+			font-size: 30px;
+		}
+
+		.fl-row-content-wrap {
 			padding: 30px 20px;
 		}
 
-		.indicators h1 {
+		.fl-rich-text h2 {
 			font-size: 24px;
 		}
 
-		.st_box {
-			padding: 20px;
-		}
-
-		.st_box img {
-			max-width: 200px;
-		}
-
-		.fl-row-content {
-			padding: 30px 20px !important;
-		}
-		
-		.fl-rich-text h2 {
-			font-size: 24px !important;
-		}
-		
 		.fl-rich-text p {
-			font-size: 16px !important;
-		}
-
-		.st_box table td,
-		.st_box table th {
-			padding: 10px;
-			font-size: 13px;
-		}
-
-		.orng_btn {
-			padding: 8px 16px;
-			font-size: 13px;
-		}
-	}
-
-	@media (max-width: 480px) {
-		.st_box table {
-			font-size: 12px;
-		}
-
-		.st_box table tr:first-child {
-			display: none;
-		}
-
-		.st_box table tr {
-			display: block;
-			margin-bottom: 15px;
-			border: 1px solid #e5e5e5;
-			border-radius: 4px;
-			padding: 10px;
+			font-size: 16px;
 		}
 
 		.st_box table td {
-			display: block;
-			text-align: left !important;
-			padding: 8px 0;
-			border-bottom: none;
-		}
-
-		.st_box table td.text-right {
-			margin-top: 10px;
+			display: flex;
 		}
 
 		.orng_btn {
-			width: 100%;
-			text-align: center;
+			min-width: 200px;
+			font-size: 18px;
+			padding: 10px 25px;
+		}
+	}
+
+	@media (max-width: 415px) {
+		.current-vid {
+			padding: 10px 10px 0;
+		}
+
+		.orng_btn {
+			min-width: 150px;
+			font-size: 16px;
+			padding: 8px 20px;
 		}
 	}
 </style>
