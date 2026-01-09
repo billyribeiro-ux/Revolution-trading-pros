@@ -1,7 +1,7 @@
 /**
  * Admin Membership Plans API Proxy
  * ICT 7 FIX: Return mock data immediately - backend endpoint not implemented
- * This prevents 404 console errors from fetch calls to non-existent endpoints
+ * This prevents 404 console errors
  */
 
 import { json } from '@sveltejs/kit';

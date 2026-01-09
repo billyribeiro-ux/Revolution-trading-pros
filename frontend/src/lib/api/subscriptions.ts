@@ -1101,7 +1101,6 @@ class SubscriptionService {
 	 */
 	async getStats(): Promise<SubscriptionStats> {
 		// ICT 7 FIX: Use proxy endpoint to prevent 404 errors
-		// Proxy at /api/subscriptions/metrics returns mock data if backend unavailable
 		return this.authFetch<SubscriptionStats>('/api/subscriptions/metrics');
 	}
 
