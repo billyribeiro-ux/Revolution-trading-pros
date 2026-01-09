@@ -330,7 +330,7 @@
 	}
 
 	.current-vid {
-		padding: 0;
+		padding: 0 25px;
 		margin: 0 0 25px 0;
 		border: 0;
 	}
