@@ -180,9 +180,10 @@
 		padding-top: 0;
 	}
 
-	.class-content-block {
-		padding: 0 20px 40px;
+	.cpost-content-block.class-content-block {
+		padding: 0 40px 40px;
 		border-radius: 0;
+		background-color: #ffffff;
 	}
 
 	/* 5. VIDEO SECTION - Dark Blue Background */
@@ -359,7 +360,7 @@
 
 	/* Tablet Large (600px+) */
 	@media (min-width: 600px) {
-		.class-content-block {
+		.cpost-content-block.class-content-block {
 			padding: 0 40px 40px;
 		}
 	}
@@ -368,6 +369,10 @@
 	@media (min-width: 768px) {
 		.cpost-section {
 			padding: 60px 0;
+		}
+
+		.cpost-content-block.class-content-block {
+			padding: 0 40px 40px;
 		}
 
 		.class-player-header {
