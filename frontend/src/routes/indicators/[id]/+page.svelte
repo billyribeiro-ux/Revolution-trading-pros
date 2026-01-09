@@ -116,10 +116,8 @@
 </svelte:head>
 
 <!-- Main Content - Matches WordPress exactly -->
-<div id="page" class="hfeed site grid-parent">
-	<div id="content" class="site-content">
-		<div class="indicators">
-			<main>
+<div class="indicators">
+	<main>
 				<!-- Page Title -->
 				<h1>{indicator.name}</h1>
 				
@@ -219,9 +217,7 @@
 						</table>
 					</div>
 				</section>
-			</main>
-		</div>
-	</div>
+	</main>
 </div>
 
 <!-- Have Questions Section - WordPress Footer -->
@@ -264,41 +260,48 @@
 	 * WordPress Exact Match Styles
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	:global(body) {
+		background-color: #efefef;
+	}
+
 	.indicators {
+		max-width: 1160px;
+		margin: 0 auto;
+		padding: 40px 20px;
+		background-color: #ffffff;
+	}
+
+	.indicators main {
 		max-width: 100%;
 		margin: 0;
 		padding: 0;
 	}
 
-	.indicators main {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 40px 20px;
-	}
-
 	.indicators h1 {
 		font-size: 32px;
-		font-weight: 700;
-		color: #333;
+		font-weight: 400;
+		color: #666666;
 		margin: 0 0 20px;
 		font-family: 'Open Sans', sans-serif;
+		line-height: 1.2;
 	}
 
 	.platforms {
 		font-size: 16px;
-		color: #666;
+		color: #666666;
 		margin: 0 0 15px;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.platforms strong {
-		color: #333;
-		font-weight: 600;
+		color: #666666;
+		font-weight: 700;
 	}
 
 	hr {
 		border: none;
-		border-top: 1px solid #ddd;
-		margin: 20px 0 30px;
+		border-top: 1px solid #dddddd;
+		margin: 15px 0 30px;
 	}
 
 	/* Video Section */
@@ -333,11 +336,12 @@
 
 	/* Platform Download Boxes */
 	.st_box {
-		background: #f9f9f9;
-		border: 1px solid #e0e0e0;
-		border-radius: 4px;
+		background: #ffffff;
+		border: 1px solid #dddddd;
+		border-radius: 0;
 		padding: 30px;
 		margin-bottom: 30px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 	}
 
 	.st_box img {
@@ -348,9 +352,9 @@
 	}
 
 	.st_box h2 {
-		font-size: 24px;
+		font-size: 22px;
 		font-weight: 700;
-		color: #333;
+		color: #666666;
 		margin: 0 0 20px;
 		font-family: 'Open Sans', sans-serif;
 	}
@@ -359,19 +363,20 @@
 	.st_box table {
 		width: 100%;
 		border-collapse: collapse;
-		background: #fff;
-		border-radius: 4px;
-		overflow: hidden;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		background: #ffffff;
+		border: 1px solid #e5e5e5;
+		border-radius: 0;
 	}
 
 	.st_box table th {
-		background: #0984ae;
-		color: #fff;
+		background: #f5f5f5;
+		color: #666666;
 		padding: 12px 15px;
 		text-align: left;
-		font-weight: 600;
+		font-weight: 700;
 		font-size: 14px;
+		font-family: 'Open Sans', sans-serif;
+		border-bottom: 1px solid #e5e5e5;
 	}
 
 	.st_box table tr {
@@ -388,8 +393,9 @@
 
 	.st_box table td {
 		padding: 15px;
-		color: #333;
+		color: #666666;
 		font-size: 14px;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.st_box table td.text-right {
@@ -418,22 +424,24 @@
 
 	/* Platform Notes */
 	.platform_notes {
-		background: #fff;
-		border-left: 4px solid #F69532;
+		background: #f9f9f9;
+		border: 1px solid #e5e5e5;
 		padding: 20px;
 		margin-top: 20px;
-		border-radius: 4px;
-		color: #666;
+		border-radius: 0;
+		color: #666666;
 		font-size: 14px;
 		line-height: 1.6;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.platform_notes :global(a) {
-		color: #0984ae;
+		color: #1e73be;
 		text-decoration: none;
 	}
 
 	.platform_notes :global(a:hover) {
+		color: #000000;
 		text-decoration: underline;
 	}
 
@@ -441,18 +449,25 @@
 	.fl-builder-content {
 		width: 100%;
 		margin-top: 60px;
+		background-color: #f7f7f7;
 	}
 
 	.fl-row-bg-color {
 		background-color: #f7f7f7;
+		padding: 60px 20px;
+	}
+
+	.fl-rich-text {
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.fl-rich-text a {
-		color: #0984ae;
+		color: #1e73be;
 		text-decoration: none;
 	}
 
 	.fl-rich-text a:hover {
+		color: #000000;
 		text-decoration: underline;
 	}
 
@@ -472,7 +487,7 @@
 	}
 
 	@media (max-width: 768px) {
-		.indicators main {
+		.indicators {
 			padding: 30px 20px;
 		}
 
