@@ -13,7 +13,6 @@
 	- Matches original WordPress structure exactly
 -->
 <script lang="ts">
-	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import IndicatorCard from '$lib/components/indicators/IndicatorCard.svelte';
 	
 	interface Indicator {
@@ -124,9 +123,6 @@
 	<meta property="og:url" content="https://my.simplertrading.com/dashboard/indicators" />
 	<meta property="og:type" content="article" />
 </svelte:head>
-
-<!-- Breadcrumbs -->
-<DashboardBreadcrumbs />
 
 <!-- Main Content -->
 <div id="page" class="hfeed site grid-parent">

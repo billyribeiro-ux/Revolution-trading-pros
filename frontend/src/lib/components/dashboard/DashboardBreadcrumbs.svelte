@@ -69,9 +69,16 @@
 				className: 'item-current'
 			});
 		} else if (isIndicatorDetailPage) {
-			// Indicator detail page breadcrumb: Home / Indicators / [Indicator Name]
+			// Indicator detail page breadcrumb: Home / Member Dashboard / My Indicators / [Indicator Name]
 			items.push({
-				label: 'Indicators',
+				label: 'Member Dashboard',
+				href: '/dashboard',
+				isCurrent: false,
+				className: 'item-parent item-parent-401190'
+			});
+
+			items.push({
+				label: 'My Indicators',
 				href: '/dashboard/indicators',
 				isCurrent: false,
 				className: 'item-cat item-custom-post-type-indicators'

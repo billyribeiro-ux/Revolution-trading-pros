@@ -11,7 +11,6 @@
 	- Matches original WordPress structure exactly
 -->
 <script lang="ts">
-	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	
 	interface ClassItem {
 		id: number;
@@ -128,9 +127,6 @@
 	<title>My Classes - Simpler Trading</title>
 	<meta name="description" content="Access your trading classes and educational content" />
 </svelte:head>
-
-<!-- Breadcrumbs -->
-<DashboardBreadcrumbs />
 
 <!-- Main Content -->
 <div id="page" class="hfeed site grid-parent">
