@@ -8,8 +8,13 @@
 <script lang="ts">
 	import { traderSubPages } from '$lib/data/traders';
 	
-	export let traderSlug: string;
-	export let currentPath: string = '';
+	// ICT 7 FIX: Svelte 5 $props() syntax (Nov 2025 best practice)
+	interface Props {
+		traderSlug: string;
+		currentPath?: string;
+	}
+	
+	let { traderSlug, currentPath = '' }: Props = $props();
 </script>
 
 <div class="trader_pills">
