@@ -395,7 +395,6 @@
 	.st_box img {
 		display: block;
 		margin: 0 auto 20px;
-		max-width: 250px;
 		height: auto;
 	}
 
@@ -560,6 +559,12 @@
 			min-width: 200px;
 			font-size: 18px;
 			padding: 10px 25px;
+		}
+	}
+
+	@media (max-width: 576px) {
+		.st_box img {
+			max-width: 200px;
 		}
 	}
 
