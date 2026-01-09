@@ -304,6 +304,8 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
+		max-width: 1030px;
+		min-height: 458px;
 	}
 
 	#class-downloads h2 {
@@ -316,12 +318,12 @@
 
 	.class-downloads-container {
 		margin-bottom: 0;
-		width: 100%;
-		max-width: 500px;
+		width: 500px;
+		height: 400px;
 	}
 
 	.class-downloads-container iframe {
-		width: 100%;
+		width: 500px;
 		height: 400px;
 		border: 0;
 	}
