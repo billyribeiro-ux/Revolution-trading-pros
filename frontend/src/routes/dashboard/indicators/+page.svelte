@@ -172,17 +172,18 @@
 								<div class="pagination-wrapper">
 								<nav class="pagination" aria-label="Pagination">
 										<ul class="page-numbers">
-											<!-- Previous Button -->
-											<li>
-												<button
-													class="page-numbers prev"
-													on:click={previousPage}
-													disabled={currentPage === 1}
-													aria-label="Previous page"
-												>
-													← Previous
-												</button>
-											</li>
+											<!-- Previous Button - Only show if not on first page -->
+											{#if currentPage > 1}
+												<li>
+													<button
+														class="page-numbers prev"
+														on:click={previousPage}
+														aria-label="Previous page"
+													>
+														← Previous
+													</button>
+												</li>
+											{/if}
 											
 											<!-- Page Numbers -->
 											{#each pageNumbers as pageNum}
@@ -201,17 +202,18 @@
 												</li>
 											{/each}
 											
-											<!-- Next Button -->
-											<li>
-												<button
-													class="page-numbers next"
-													on:click={nextPage}
-													disabled={currentPage === totalPages}
-													aria-label="Next page"
-												>
-													Next →
-												</button>
-											</li>
+											<!-- Next Button - Only show if not on last page -->
+											{#if currentPage < totalPages}
+												<li>
+													<button
+														class="page-numbers next"
+														on:click={nextPage}
+														aria-label="Next page"
+													>
+														Next →
+													</button>
+												</li>
+											{/if}
 										</ul>
 									</nav>
 								</div>
