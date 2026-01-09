@@ -76,12 +76,8 @@
 </script>
 
 <svelte:head>
-	<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-	<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" media="all" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+	<!-- ICT 11 Fix: Font loading handled in app.html - no duplicates -->
+	<!-- Viewport already in app.html, theme-color set per page preference -->
 	<meta name="theme-color" content="#FFFFFF" />
 </svelte:head>
 

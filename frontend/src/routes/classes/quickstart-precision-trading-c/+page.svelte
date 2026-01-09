@@ -75,13 +75,22 @@
 				<section class="class-subsection" id="class-downloads">
 					<h2>Class Downloads</h2>
 					<div class="class-downloads-container">
+						<!-- ICT 11 Fix: Proper iframe attributes for Box.com embed -->
+						<!-- sandbox allows scripts/forms/same-origin for Box.com functionality -->
+						<!-- loading=lazy for performance, referrerpolicy for privacy -->
 						<iframe 
 							src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
 							width="500" 
 							height="400" 
 							allowfullscreen
 							title="Class Downloads"
+							loading="lazy"
+							referrerpolicy="strict-origin-when-cross-origin"
+							sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
 						></iframe>
+						<noscript>
+							<p class="iframe-fallback">Please enable JavaScript to view class downloads, or <a href="https://simplertrading.app.box.com/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq" target="_blank" rel="noopener noreferrer">click here to open in Box.com</a>.</p>
+						</noscript>
 					</div>
 				</section>
 			</div>
@@ -241,6 +250,21 @@
 		width: 100%;
 		height: 400px;
 		border: 0;
+	}
+
+	/* ICT 11 Fix: Fallback for iframe errors */
+	.iframe-fallback {
+		padding: 20px;
+		text-align: center;
+		background-color: #f4f4f4;
+		border: 1px solid #ddd;
+		border-radius: 4px;
+		color: #666666;
+	}
+
+	.iframe-fallback a {
+		color: #1e73be;
+		text-decoration: underline;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

@@ -15,12 +15,14 @@
 		<link rel="dns-prefetch" href="https://www.google-analytics.com" />
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-		<!-- Zero-Latency Video: Bunny.net CDN Preconnects - January 2026 -->
+		<!-- Zero-Latency Video: Bunny.net CDN - DNS Prefetch Only (ICT 11 Fix) -->
+		<!-- Preconnect moved to video pages only to avoid "preloaded but not used" -->
 		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 		<link rel="dns-prefetch" href="https://iframe.mediadelivery.net" />
 		<link rel="dns-prefetch" href="https://video.bunnycdn.com" />
-		<link rel="preconnect" href="https://iframe.mediadelivery.net" crossorigin />
-		<link rel="preconnect" href="https://video.bunnycdn.com" crossorigin />
+		<!-- Box.com for class downloads -->
+		<link rel="dns-prefetch" href="https://simplertrading.app.box.com" />
+		<link rel="dns-prefetch" href="https://app.box.com" />
 
 		<!-- Preconnect for critical resources -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
