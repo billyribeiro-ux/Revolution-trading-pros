@@ -318,10 +318,21 @@
 
 	.section-inner {
 		width: 100%;
+		margin: 0;
+		padding: 0;
+		border: 0;
+	}
+
+	.ca-content-block {
+		margin: 0;
+		padding: 0;
+		border: 0;
 	}
 
 	.current-vid {
-		padding: 25px;
+		padding: 0;
+		margin: 0 0 25px 0;
+		border: 0;
 	}
 
 	.video-container {
@@ -330,6 +341,9 @@
 		border-radius: 0;
 		overflow: hidden;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		margin: 0;
+		padding: 0;
+		border: 0;
 	}
 
 	.video-container video {
