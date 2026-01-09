@@ -129,7 +129,7 @@
 					</p>
 					<hr>
 					
-					<!-- Training Videos Section -->
+					<!-- Training Videos Section - WordPress Structure -->
 					<section id="ca-main" class="ca-section cpost-section">
 						<div class="section-inner">
 							<div class="ca-content-block cpost-content-block">
@@ -137,16 +137,16 @@
 									<div class="current-vid">
 										<div class="video-container current">
 											<div class="video-overlay"></div>
-											<div id={video.id} class="video-player"></div>
+											<div id="{video.id}" class="video-player"></div>
 											<video 
-												id={video.id} 
+												id="{video.id}" 
 												controls 
 												width="100%" 
-												poster={video.posterUrl}
+												poster="{video.posterUrl}"
 												style="aspect-ratio: 16/9;" 
-												title={video.title}
+												title="{video.title}"
 											>
-												<source src={video.videoUrl} type="video/mp4">
+												<source src="{video.videoUrl}" type="video/mp4">
 												Your browser does not support the video tag.
 											</video>
 										</div>
