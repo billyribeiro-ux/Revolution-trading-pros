@@ -17,6 +17,7 @@
 <script lang="ts">
 	import { page } from '$app/state';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
+	import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.svelte';
 	
 	interface DownloadFile {
 		name: string;
@@ -227,40 +228,12 @@
 	</div>
 </div>
 
-<!-- Have Questions Section - WordPress Footer -->
-<div class="fl-builder-content">
-	<div class="fl-row fl-row-full-width fl-row-bg-color" style="background-color: #f7f7f7;">
-		<div class="fl-row-content-wrap">
-			<div class="fl-row-content fl-row-fixed-width" style="max-width: 800px; margin: 0 auto; padding: 60px 20px;">
-				<div class="fl-col-group">
-					<div class="fl-col">
-						<div class="fl-col-content">
-							<div class="fl-module fl-module-rich-text">
-								<div class="fl-module-content">
-									<div class="fl-rich-text">
-										<h2 style="text-align: center; font-size: 42px; margin: 0 0 20px;"><strong>Have Questions?</strong></h2>
-									</div>
-								</div>
-							</div>
-							<div class="fl-module fl-module-rich-text">
-								<div class="fl-module-content">
-									<div class="fl-rich-text">
-										<p style="text-align: center; font-size: 22px; margin: 0;">
-											Our support staff is the best by far! You can email 
-											<a href="mailto:support@simplertrading.com" style="color: #0984ae;">support@revolutiontradingpros.com</a> 
-											or call us at 
-											<a href="tel:5122668659" style="color: #0984ae;">(800) 266-8659</a>
-										</p>
-									</div>
-								</div>
-							</div>
-						</div>
-					</div>
-				</div>
-			</div>
-		</div>
-	</div>
-</div>
+<!-- Have Questions Section -->
+<HaveQuestionsSection 
+	email="support@revolutiontradingpros.com" 
+	phone="8002668659" 
+	phoneDisplay="(800) 266-8659" 
+/>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -478,53 +451,6 @@
 		text-decoration: underline;
 	}
 
-	/* 10. HAVE QUESTIONS SECTION */
-	.fl-builder-content {
-		width: 100%;
-	}
-
-	.fl-row-bg-color {
-		background-color: #f7f7f7;
-	}
-
-	.fl-row-content-wrap {
-		padding: 30px 20px;
-	}
-
-	.fl-row-content {
-		max-width: 800px;
-		margin: 0 auto;
-		padding: 0 20px;
-	}
-
-	.fl-rich-text {
-		font-family: 'Open Sans', sans-serif;
-	}
-
-	.fl-rich-text h2 {
-		font-size: 24px;
-		text-align: center;
-		margin: 0 0 20px;
-		color: #666666;
-	}
-
-	.fl-rich-text p {
-		font-size: 16px;
-		text-align: center;
-		margin: 0;
-		color: #666666;
-	}
-
-	.fl-rich-text a {
-		color: #0984ae;
-		text-decoration: none;
-	}
-
-	.fl-rich-text a:hover {
-		color: #000000;
-		text-decoration: underline;
-	}
-
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * RESPONSIVE - Mobile-First (min-width breakpoints)
 	 * Base styles above are mobile, these scale UP
@@ -553,26 +479,10 @@
 			font-size: 54px;
 		}
 
-		.fl-rich-text h2 {
-			font-size: 42px;
-		}
-
-		.fl-rich-text p {
-			font-size: 22px;
-		}
-
 		.orng_btn {
 			min-width: 250px;
 			font-size: 20px;
 			padding: 10px 35px;
-		}
-	}
-
-	/* Desktop (992px+) */
-	@media (min-width: 992px) {
-		.fl-row-content-wrap {
-			padding-top: 60px;
-			padding-bottom: 60px;
 		}
 	}
 </style>
