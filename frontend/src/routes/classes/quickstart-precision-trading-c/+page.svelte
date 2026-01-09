@@ -8,13 +8,6 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-
-	const breadcrumbs = [
-		{ label: 'Home', href: '/' },
-		{ label: 'Classes', href: '/dashboard/classes' },
-		{ label: 'Quickstart To Precision Trading', href: '', active: true }
-	];
 
 	onMount(() => {
 		if (typeof window !== 'undefined' && (window as any).richpanel) {
@@ -35,8 +28,6 @@
 		}
 	});
 </script>
-
-<DashboardBreadcrumbs items={breadcrumbs} />
 
 <div class="class-page-container">
 	<section class="class-section cpost-section" id="class-info">
