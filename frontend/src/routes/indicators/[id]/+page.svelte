@@ -16,6 +16,7 @@
 -->
 <script lang="ts">
 	import { page } from '$app/state';
+	import Breadcrumbs from '$lib/components/dashboard/Breadcrumbs.svelte';
 	
 	interface DownloadFile {
 		name: string;
@@ -114,6 +115,12 @@
 	<title>{indicator.name} - Simpler Trading</title>
 	<meta name="description" content="Download and install {indicator.name} for your trading platform" />
 </svelte:head>
+
+<Breadcrumbs items={[
+	{ name: 'Home', href: '/', position: 1 },
+	{ name: 'Indicators', href: '/dashboard/indicators', position: 2 },
+	{ name: indicator.name, position: 3 }
+]} />
 
 <!-- Main Content - Matches WordPress exactly -->
 <div class="indicators">
