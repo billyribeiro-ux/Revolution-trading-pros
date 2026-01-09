@@ -160,9 +160,8 @@
 					{#each indicator.downloads as platformDownload}
 						<div class="st_box {platformDownload.platform.toLowerCase()}">
 							<img 
-								width="200" 
+								width="250" 
 								src={platformDownload.logo}
-								srcset={platformDownload.platform === 'TradingView' ? '/logos/platforms/tradingview@2x.png 2x' : ''}
 								alt={platformDownload.platform}
 							>
 							
@@ -374,7 +373,7 @@
 	.st_box img {
 		display: block;
 		margin: 0 auto 30px;
-		max-width: 200px;
+		max-width: 250px;
 		height: auto;
 	}
 
@@ -528,7 +527,7 @@
 		}
 
 		.st_box img {
-			max-width: 180px;
+			max-width: 200px;
 		}
 
 		.fl-row-content {
