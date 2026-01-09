@@ -75,7 +75,7 @@
 			downloads: [
 				{
 					platform: 'ThinkorSwim',
-					logo: '/wp-content/themes/simpler-trading/assets/images/thinkorswim.png',
+					logo: '/logos/platforms/thinkorswim.png',
 					files: [
 						{ name: 'Volume Max Indicator', downloadUrl: '/?st-download-file=452914b18dc78691e6c98731b9e094fe' },
 						{ name: 'VScore EOD Study', downloadUrl: '/?st-download-file=12ab53eb7e85a005a6a21f800db57777' },
@@ -89,7 +89,7 @@
 				},
 				{
 					platform: 'TradingView',
-					logo: '/wp-content/themes/simpler-trading/assets/images/tradingview.png',
+					logo: '/logos/platforms/tradingview.png',
 					files: [],
 					notes: 'Please email your TradingView Username to <a href="mailto:support@simplertrading.com">support@simplertrading.com</a>. The TradingView chart indicator is very easy to get set up in your online charting profile. Once you are logged into TradingView, locate your Notifications area. Once we receive your Username, you should have a notification letting you know the new chart study has been made available. Clicking on the notification will bring up a chart for the study to be displayed.'
 				}
@@ -160,8 +160,9 @@
 					{#each indicator.downloads as platformDownload}
 						<div class="st_box {platformDownload.platform.toLowerCase()}">
 							<img 
-								width="250" 
-								src={platformDownload.logo} 
+								width="200" 
+								src={platformDownload.logo}
+								srcset={platformDownload.platform === 'TradingView' ? '/logos/platforms/tradingview@2x.png 2x' : ''}
 								alt={platformDownload.platform}
 							>
 							
