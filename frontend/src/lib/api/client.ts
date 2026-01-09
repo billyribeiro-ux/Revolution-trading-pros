@@ -997,19 +997,20 @@ class EnterpriseApiClient {
 	private setupWebSocket(): void {
 		if (!this.token || this.wsConnection) return;
 
-		// ICT11+ Pattern: Skip WebSocket in dev if not configured
-		// WebSocket requires a separate server that may not be running in dev
-		if (isDev && !import.meta.env['VITE_WS_URL']) {
-			console.debug('[ApiClient] WebSocket skipped in dev (no VITE_WS_URL configured)');
+		// ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
+		// Fly.io backend doesn't support WebSockets unless explicitly set up
+		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
+		if (!configuredWsUrl) {
+			// Silently skip - WebSocket is optional
 			return;
 		}
 
 		try {
-			this.wsConnection = new WebSocket(`${WS_URL}/ws`);
+			this.wsConnection = new WebSocket(`${configuredWsUrl}/ws`);
 
 			this.wsConnection.onopen = () => {
 				console.debug('[ApiClient] WebSocket connected');
-				this.wsReconnectAttempts = 0; // Reset on successful connection
+				this.wsReconnectAttempts = 0;
 				this.authenticateWebSocket();
 			};
 
@@ -1017,28 +1018,16 @@ class EnterpriseApiClient {
 				this.handleWebSocketMessage(event);
 			};
 
-			this.wsConnection.onerror = (error) => {
-				// Silent fail in dev - WebSocket server may not be running
-				if (!isDev) {
-					console.error('[ApiClient] WebSocket error:', error);
-				}
+			this.wsConnection.onerror = () => {
+				// Silently handle - WebSocket is optional
 			};
 
 			this.wsConnection.onclose = () => {
-				if (!isDev) {
-					console.debug('[ApiClient] WebSocket disconnected');
-				}
 				(this.wsConnection as WebSocket | undefined) = undefined;
-
-				// ICT 11+ Performance: Reconnect with exponential backoff
-				if (this.token && !isDev) {
-					this.scheduleWSReconnect();
-				}
+				// Don't auto-reconnect - WebSocket is optional
 			};
 		} catch (error) {
-			if (!isDev) {
-				console.error('[ApiClient] Failed to setup WebSocket:', error);
-			}
+			// Silently handle - WebSocket is optional
 		}
 	}
 

@@ -626,18 +626,20 @@ class FormsService {
 
 	/**
 	 * WebSocket connection for real-time updates
+	 * ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
 	 */
 	private setupWebSocket(): void {
 		if (!browser || !this.getAuthToken()) return;
 
-		// ICT11+ Pattern: Skip WebSocket in dev if not configured
-		if (isDev && !import.meta.env['VITE_WS_URL']) {
-			console.debug('[FormsService] WebSocket skipped in dev (no VITE_WS_URL configured)');
+		// ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
+		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
+		if (!configuredWsUrl) {
+			// Silently skip - WebSocket is optional
 			return;
 		}
 
 		try {
-			this.wsConnection = new WebSocket(`${WS_BASE}/forms`);
+			this.wsConnection = new WebSocket(`${configuredWsUrl}/forms`);
 
 			this.wsConnection.onopen = () => {
 				console.debug('[FormsService] WebSocket connected');
@@ -648,26 +650,15 @@ class FormsService {
 				this.handleWebSocketMessage(event);
 			};
 
-			this.wsConnection.onerror = (error) => {
-				// Silent fail in dev - WebSocket server may not be running
-				if (!isDev) {
-					console.error('[FormsService] WebSocket error:', error);
-				}
+			this.wsConnection.onerror = () => {
+				// Silently handle - WebSocket is optional
 			};
 
 			this.wsConnection.onclose = () => {
-				if (!isDev) {
-					console.debug('[FormsService] WebSocket disconnected');
-				}
-				// Reconnect after delay (skip in dev)
-				if (!isDev) {
-					setTimeout(() => this.setupWebSocket(), 5000);
-				}
+				// Don't auto-reconnect - WebSocket is optional
 			};
 		} catch (error) {
-			if (!isDev) {
-				console.error('[FormsService] Failed to setup WebSocket:', error);
-			}
+			// Silently handle - WebSocket is optional
 		}
 	}
 

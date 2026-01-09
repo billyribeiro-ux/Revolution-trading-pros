@@ -573,18 +573,22 @@ class SubscriptionService {
 
 	/**
 	 * WebSocket setup for real-time updates
+	 * ICT 7 FIX: Only attempt WebSocket if explicitly configured via VITE_WS_URL
+	 * Fly.io and Cloudflare Pages don't support WebSockets by default
 	 */
 	private setupWebSocket(): void {
 		if (!browser || !this.getAuthToken()) return;
 
-		// Skip WebSocket in development if not configured
-		if (!WS_BASE || isDev) {
-			console.debug('[SubscriptionService] WebSocket not configured, using polling fallback');
+		// ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
+		// The backend on Fly.io doesn't support WebSockets unless explicitly set up
+		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
+		if (!configuredWsUrl) {
+			// Silently skip - WebSocket is optional
 			return;
 		}
 
 		try {
-			this.wsConnection = new WebSocket(`${WS_BASE}/subscriptions`);
+			this.wsConnection = new WebSocket(`${configuredWsUrl}/subscriptions`);
 
 			this.wsConnection.onopen = () => {
 				console.debug('[SubscriptionService] WebSocket connected');
@@ -597,15 +601,14 @@ class SubscriptionService {
 			};
 
 			this.wsConnection.onerror = () => {
-				console.debug('[SubscriptionService] WebSocket not available, using polling');
+				// Silently handle - WebSocket is optional
 			};
 
 			this.wsConnection.onclose = () => {
-				console.debug('[SubscriptionService] WebSocket disconnected');
-				// Don't auto-reconnect if WebSocket isn't properly configured
+				// Don't auto-reconnect - WebSocket is optional
 			};
 		} catch (error) {
-			console.debug('[SubscriptionService] WebSocket not available');
+			// Silently handle - WebSocket is optional
 		}
 	}
 

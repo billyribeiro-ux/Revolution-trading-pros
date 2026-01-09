@@ -599,65 +599,48 @@ class CouponManagementService {
 	 * - Performance: Message batching and throttling
 	 */
 	private setupWebSocket(): void {
-		if (!browser || !WS_ENABLED || !WS_URL) {
-			console.debug('[CouponService] WebSocket not available or disabled, using REST API only');
+		if (!browser) return;
+
+		// ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
+		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
+		if (!configuredWsUrl) {
+			// Silently skip - WebSocket is optional
 			return;
 		}
 
 		this.wsConnectionState.set('connecting');
-		console.info('[CouponService] Establishing WebSocket connection...');
 
 		try {
-			// Create WebSocket connection with authentication token
 			const token = this.getAuthToken();
-			const wsUrl = token ? `${WS_URL}/ws/coupons?token=${encodeURIComponent(token)}` : `${WS_URL}/ws/coupons`;
+			const wsUrl = token ? `${configuredWsUrl}/ws/coupons?token=${encodeURIComponent(token)}` : `${configuredWsUrl}/ws/coupons`;
 			
 			this.wsConnection = new WebSocket(wsUrl);
 
-			// Connection opened successfully
 			this.wsConnection.onopen = () => {
-				console.info('[CouponService] ✓ WebSocket connected');
+				console.debug('[CouponService] WebSocket connected');
 				this.wsConnectionState.set('connected');
 				this.wsReconnectAttempts = 0;
 				this.wsReconnectDelay = WS_RECONNECT_DELAY;
-				
-				// Start heartbeat mechanism
 				this.startHeartbeat();
-				
-				// Subscribe to coupon updates
 				this.subscribeToUpdates();
-				
-				// Flush queued messages
 				this.flushMessageQueue();
 			};
 
-			// Handle incoming messages
 			this.wsConnection.onmessage = (event: MessageEvent) => {
 				this.handleWebSocketMessage(event);
 			};
 
-			// Handle connection errors
-			this.wsConnection.onerror = (error) => {
-				console.error('[CouponService] WebSocket error:', error);
-				this.error.set('WebSocket connection error');
+			this.wsConnection.onerror = () => {
+				// Silently handle - WebSocket is optional
 			};
 
-			// Handle connection close
-			this.wsConnection.onclose = (event) => {
-				console.warn('[CouponService] WebSocket closed:', event.code, event.reason);
+			this.wsConnection.onclose = () => {
 				this.wsConnectionState.set('disconnected');
 				this.stopHeartbeat();
-				
-				// Attempt reconnection if not a clean close
-				if (!event.wasClean && this.wsReconnectAttempts < WS_MAX_RECONNECT_ATTEMPTS) {
-					this.scheduleReconnect();
-				} else if (this.wsReconnectAttempts >= WS_MAX_RECONNECT_ATTEMPTS) {
-					console.error('[CouponService] Max reconnection attempts reached. Falling back to REST API.');
-					this.error.set('WebSocket connection failed. Using REST API.');
-				}
+				// Don't auto-reconnect - WebSocket is optional
 			};
 		} catch (error) {
-			console.error('[CouponService] Failed to create WebSocket:', error);
+			// Silently handle - WebSocket is optional
 			this.wsConnectionState.set('disconnected');
 		}
 	}

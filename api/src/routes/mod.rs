@@ -34,6 +34,8 @@ pub mod cms;
 pub mod realtime;
 pub mod unified_videos;
 pub mod video_advanced;
+pub mod popups;
+pub mod trading_rooms;
 
 use axum::Router;
 use crate::AppState;
@@ -74,6 +76,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/preview", cms::preview_router())
         // Real-time updates - SSE
         .nest("/realtime", realtime::router())
+        .nest("/popups", popups::router())
+        .nest("/trading-rooms", trading_rooms::router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())

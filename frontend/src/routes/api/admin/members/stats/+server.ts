@@ -15,7 +15,7 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 	try {
 		const token = cookies.get('auth_token');
 
-		const response = await fetch(`${BACKEND_URL}/api/admin/members/stats`, {
+		const response = await fetch(`${BACKEND_URL}/api/admin/users/stats`, {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
