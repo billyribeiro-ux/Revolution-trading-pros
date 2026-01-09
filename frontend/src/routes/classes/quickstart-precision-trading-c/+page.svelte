@@ -250,6 +250,9 @@
 		text-align: center;
 		padding: 20px;
 		background-color: #f4f4f4;
+		max-width: 1020px;
+		min-height: 148px;
+		margin: 0 auto;
 	}
 
 	#non-member-class-title h1 {
