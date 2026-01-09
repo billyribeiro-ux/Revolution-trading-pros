@@ -334,6 +334,10 @@
 		padding: 10px 10px 0;
 	}
 
+	.current-vid:last-child {
+		padding-bottom: 25px;
+	}
+
 	.video-container {
 		position: relative;
 		background: #000;
@@ -460,6 +464,10 @@
 	@media (min-width: 416px) {
 		.current-vid {
 			padding: 25px 25px 0;
+		}
+
+		.current-vid:last-child {
+			padding-bottom: 25px;
 		}
 
 		.orng_btn {
