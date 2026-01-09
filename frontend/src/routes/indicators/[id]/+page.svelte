@@ -370,9 +370,7 @@
 	}
 
 	.st_box img {
-		display: block;
-		margin: 0 auto 20px;
-		height: auto;
+		margin-bottom: 20px;
 	}
 
 	.st_box h2 {
