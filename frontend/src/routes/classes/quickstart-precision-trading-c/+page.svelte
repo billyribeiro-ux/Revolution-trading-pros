@@ -249,7 +249,7 @@
 	#non-member-class-upsell {
 		text-align: center;
 		padding: 20px;
-		background-color: #ffffff;
+		background-color: #f4f4f4;
 	}
 
 	#non-member-class-title h1 {
