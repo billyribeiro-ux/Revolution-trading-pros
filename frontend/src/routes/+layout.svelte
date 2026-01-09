@@ -42,6 +42,7 @@
 	let isAdminArea = $derived(pathname.startsWith('/admin'));
 	let isEmbedArea = $derived(pathname.startsWith('/embed'));
 	let isDashboardArea = $derived(pathname.startsWith('/dashboard'));
+	let isIndicatorPage = $derived(pathname.startsWith('/indicators/'));
 	
 	// ICT9+ Hydration-Safe Pattern: 
 	// Auth state is ONLY read client-side to prevent SSR/client mismatch
@@ -105,6 +106,23 @@
 			<ConsentSettingsButton position="bottom-left" />
 		{/if}
 	</div>
+{:else if isIndicatorPage}
+	<!-- Indicator pages: Light theme matching WordPress exactly -->
+	<div class="min-h-screen indicator-page-layout" class:has-admin-toolbar={isAdmin}>
+		{#if mounted}
+			<AdminToolbar />
+		{/if}
+		<!-- No NavBar for indicator pages - matches WordPress -->
+		<main>
+			{@render children()}
+		</main>
+		<!-- No MarketingFooter for indicator pages - Have Questions section is in page -->
+		{#if mounted}
+			<ConsentBanner />
+			<ConsentPreferencesModal />
+			<ConsentSettingsButton position="bottom-left" />
+		{/if}
+	</div>
 {:else}
 	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
 		<!-- ICT9+ Hydration-Safe: Only render AdminToolbar after client mount -->
@@ -129,5 +147,19 @@
 	.has-admin-toolbar {
 		--admin-toolbar-height: 46px;
 		padding-top: var(--admin-toolbar-height);
+	}
+
+	/* Indicator pages: Light theme matching WordPress */
+	.indicator-page-layout {
+		background-color: #efefef !important;
+		color: #666666;
+	}
+
+	.indicator-page-layout :global(a) {
+		color: #1e73be;
+	}
+
+	.indicator-page-layout :global(a:hover) {
+		color: #000000;
 	}
 </style>
