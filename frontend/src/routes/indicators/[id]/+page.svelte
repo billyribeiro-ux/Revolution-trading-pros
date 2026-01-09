@@ -346,6 +346,12 @@
 		border: 0;
 	}
 
+	/* WordPress has current-vid on video-container for second video */
+	.video-container.current-vid {
+		padding: 0 25px;
+		margin: 0 0 25px 0;
+	}
+
 	.video-container video {
 		width: 100%;
 		display: block;
