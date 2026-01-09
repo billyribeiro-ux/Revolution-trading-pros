@@ -311,12 +311,48 @@
 		margin-right: -15px;
 	}
 
-	/* Grid System */
+	/* Grid System - WordPress/Bootstrap Standard */
 	.row {
 		display: flex;
 		flex-wrap: wrap;
 		margin-left: -15px;
 		margin-right: -15px;
+	}
+
+	/* Global column classes for proper width application */
+	:global(.col-xs-12),
+	:global(.col-sm-6),
+	:global(.col-md-6),
+	:global(.col-lg-4) {
+		width: 100%;
+		padding-left: 15px;
+		padding-right: 15px;
+		box-sizing: border-box;
+		flex-shrink: 0;
+	}
+
+	/* Small Tablet: 2 columns (≥ 576px) */
+	@media (min-width: 576px) {
+		:global(.col-sm-6) {
+			width: 50%;
+			max-width: 50%;
+		}
+	}
+
+	/* Tablet: 2 columns (≥ 768px) */
+	@media (min-width: 768px) {
+		:global(.col-md-6) {
+			width: 50%;
+			max-width: 50%;
+		}
+	}
+
+	/* Desktop: 3 columns (≥ 992px) */
+	@media (min-width: 992px) {
+		:global(.col-lg-4) {
+			width: 33.333333%;
+			max-width: 33.333333%;
+		}
 	}
 	
 	/* Responsive */
