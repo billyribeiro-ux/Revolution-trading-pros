@@ -37,22 +37,28 @@
 <!-- WordPress Wrapper Structure -->
 <div id="page" class="hfeed site grid-parent">
 	<div id="content" class="site-content">
-		<!-- Class Header Section -->
-		<section class="class-section cpost-section" id="class-header-section">
+		<!-- section#class-info.class-section.cpost-section -->
+		<section class="class-section cpost-section" id="class-info">
 			<div class="section-inner">
-				<div class="class-header-wrapper">
-					<div class="class-title-block">
+				<div id="non-member-class-upsell">
+					<div id="non-member-class-title">
 						<h1>Quickstart To Precision Trading</h1>
 						<h3></h3>
 					</div>
-					<div class="class-description-block">
+					<div id="non-member-class-description">
 						<p></p>
 					</div>
 				</div>
 			</div>
 		</section>
 
-		<!-- Class Recordings Section -->
+		<!-- section#classroom-access.class-section.cpost-section -->
+		<section class="class-section cpost-section" id="classroom-access">
+			<div class="section-inner">
+			</div>
+		</section>
+
+		<!-- section#class-recordings.class-section.cpost-section -->
 		<section class="class-section cpost-section" id="class-recordings">
 			<div class="section-inner">
 				<div class="class-content-block cpost-content-block">
@@ -68,7 +74,7 @@
 							</div>
 							<div id="quickstart-to-precision-trading" class="class-video-player"></div>
 							<video 
-								id="quickstart-video" 
+								id="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4" 
 								controls 
 								width="100%" 
 								poster="" 
@@ -80,19 +86,23 @@
 							</video>
 						</div>
 					</div>
+					<div class=""></div>
 				</div>
 			</div>
 		</section>
 
-		<!-- Class Downloads Section -->
+		<!-- section#class-elearning.class-section.cpost-section -->
+		<section class="class-section cpost-section" id="class-elearning">
+			<div class="section-inner">
+			</div>
+		</section>
+
+		<!-- section#dl-rp-row.class-section.cpost-section -->
 		<section class="class-section cpost-section" id="dl-rp-row">
 			<div class="section-inner">
 				<section class="class-subsection" id="class-downloads">
 					<h2>Class Downloads</h2>
 					<div class="class-downloads-container">
-						<!-- ICT 11 Fix: Proper iframe attributes for Box.com embed -->
-						<!-- sandbox allows scripts/forms/same-origin for Box.com functionality -->
-						<!-- loading=lazy for performance, referrerpolicy for privacy -->
 						<iframe 
 							src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
 							width="500" 
@@ -228,18 +238,18 @@
 		display: none;
 	}
 
-	/* 6. CLASS HEADER SECTION */
-	#class-header-section {
+	/* 6. CLASS INFO SECTION (Non-Member Upsell) */
+	#class-info {
 		padding-top: 20px;
 		padding-bottom: 20px;
 	}
 
-	.class-header-wrapper {
+	#non-member-class-upsell {
 		text-align: center;
 		padding: 20px;
 	}
 
-	.class-title-block h1 {
+	#non-member-class-title h1 {
 		font-size: 2rem;
 		font-weight: 700;
 		color: #666666;
@@ -247,17 +257,28 @@
 		line-height: 1.2;
 	}
 
-	.class-title-block h3 {
+	#non-member-class-title h3 {
 		font-size: 1.2rem;
 		font-weight: 400;
 		color: #999999;
 		margin-bottom: 15px;
 	}
 
-	.class-description-block {
+	#non-member-class-description {
 		color: #666666;
 		font-size: 1rem;
 		line-height: 1.6;
+	}
+
+	/* Empty sections - WordPress placeholder */
+	#classroom-access,
+	#class-elearning {
+		padding: 0;
+	}
+
+	#classroom-access .section-inner,
+	#class-elearning .section-inner {
+		display: none;
 	}
 
 	/* 7. DOWNLOADS SECTION */
@@ -371,13 +392,13 @@
 		}
 	}
 
-	/* Class Header Responsive */
+	/* Class Info Responsive */
 	@media (min-width: 768px) {
-		.class-title-block h1 {
+		#non-member-class-title h1 {
 			font-size: 2.5rem;
 		}
 
-		.class-title-block h3 {
+		#non-member-class-title h3 {
 			font-size: 1.4rem;
 		}
 	}
