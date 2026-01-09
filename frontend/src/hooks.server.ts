@@ -315,9 +315,14 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 	headers.set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
 
 	// Cross-Origin policies for security
-	headers.set('Cross-Origin-Opener-Policy', 'same-origin');
-	headers.set('Cross-Origin-Resource-Policy', 'same-origin');
-	headers.set('Cross-Origin-Embedder-Policy', 'credentialless');
+	// ICT 7 FIX: Relaxed COEP to allow third-party iframes (Box.com, YouTube, Vimeo)
+	// COOP: same-origin-allow-popups allows popups (needed for OAuth flows)
+	// CORP: cross-origin allows embedding from other origins
+	// COEP: unsafe-none allows third-party resources without CORP headers
+	headers.set('Cross-Origin-Opener-Policy', 'same-origin-allow-popups');
+	headers.set('Cross-Origin-Resource-Policy', 'cross-origin');
+	// NOTE: COEP removed - it blocks third-party iframes like Box.com that don't set CORP headers
+	// headers.set('Cross-Origin-Embedder-Policy', 'credentialless');
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SEO & Performance Headers
