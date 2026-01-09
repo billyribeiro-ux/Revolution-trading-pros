@@ -20,15 +20,15 @@
 
 <section class="class-section cpost-section" id="class-info">
 	<div class="section-inner">
-		<div id="non-member-class-upsell">
-			<div id="non-member-class-title">
+		<div id="class-header-wrapper">
+			<div id="class-title-section">
 				<h1>{title}</h1>
 				{#if subtitle}
 					<h3>{subtitle}</h3>
 				{/if}
 			</div>
 			{#if description}
-				<div id="non-member-class-description">
+				<div id="class-description">
 					<p>{description}</p>
 				</div>
 			{/if}
@@ -51,7 +51,7 @@
 	}
 
 	/* Title Section - Centered */
-	#non-member-class-title h1 {
+	#class-title-section h1 {
 		font-size: 2.5rem;
 		font-weight: 700;
 		color: #333333;
@@ -60,7 +60,7 @@
 		text-align: center;
 	}
 
-	#non-member-class-title h3 {
+	#class-title-section h3 {
 		font-size: 1.5rem;
 		font-weight: 500;
 		color: #666666;
@@ -68,12 +68,12 @@
 		text-align: center;
 	}
 
-	#non-member-class-description {
+	#class-description {
 		text-align: center;
 		margin-top: 20px;
 	}
 
-	#non-member-class-description p {
+	#class-description p {
 		font-size: 1.1rem;
 		line-height: 1.6;
 		color: #555555;
@@ -86,29 +86,29 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	@media (max-width: 768px) {
-		#non-member-class-title h1 {
+		#class-title-section h1 {
 			font-size: 2rem;
 		}
 
-		#non-member-class-title h3 {
+		#class-title-section h3 {
 			font-size: 1.3rem;
 		}
 
-		#non-member-class-description p {
+		#class-description p {
 			font-size: 1rem;
 		}
 	}
 
 	@media (max-width: 480px) {
-		#non-member-class-title h1 {
+		#class-title-section h1 {
 			font-size: 1.75rem;
 		}
 
-		#non-member-class-title h3 {
+		#class-title-section h3 {
 			font-size: 1.1rem;
 		}
 
-		#non-member-class-description p {
+		#class-description p {
 			font-size: 0.95rem;
 		}
 	}
