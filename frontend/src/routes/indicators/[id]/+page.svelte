@@ -247,9 +247,9 @@
 									<div class="fl-rich-text">
 										<p style="text-align: center; font-size: 22px; margin: 0;">
 											Our support staff is the best by far! You can email 
-											<a href="mailto:support@simplertrading.com" style="color: #0984ae;">support@simplertrading.com</a> 
+											<a href="mailto:support@simplertrading.com" style="color: #0984ae;">support@revolutiontradingpros.com</a> 
 											or call us at 
-											<a href="tel:5122668659" style="color: #0984ae;">(512) 266-8659</a>
+											<a href="tel:5122668659" style="color: #0984ae;">(800) 266-8659</a>
 										</p>
 									</div>
 								</div>
@@ -294,11 +294,11 @@
 		width: 100%;
 	}
 
-	/* 3. INDICATORS CONTAINER - White background, centered */
+	/* 3. INDICATORS CONTAINER - Mobile-first */
 	.indicators {
 		background-color: #fff;
 		font-size: 24px;
-		padding: 50px 15px;
+		padding: 30px 15px;
 		max-width: 1200px;
 		margin: auto;
 	}
@@ -309,13 +309,13 @@
 		padding: 0;
 	}
 
-	/* 3. H1 TITLE - WordPress exact */
+	/* 4. H1 TITLE - Mobile-first */
 	.indicators h1 {
 		color: #0c2434;
 		font-weight: 700;
 		text-align: center;
 		margin-bottom: 10px;
-		font-size: 54px;
+		font-size: 30px;
 		font-family: "Open Sans Condensed", sans-serif;
 		line-height: 1.1em;
 	}
@@ -339,7 +339,7 @@
 		margin: 20px 0 40px;
 	}
 
-	/* 5. VIDEO SECTION - #f4f4f4 for indicators NOT #0a2335 */
+	/* 5. VIDEO SECTION - Mobile-first */
 	.ca-section {
 		padding-bottom: 0;
 	}
@@ -358,7 +358,7 @@
 	.current-vid {
 		width: 100%;
 		background-color: #f4f4f4;
-		padding: 25px 25px 0;
+		padding: 10px 10px 0;
 	}
 
 	.video-container {
@@ -438,7 +438,7 @@
 		text-align: right;
 	}
 
-	/* 8. ORANGE BUTTON - #f8ac00 */
+	/* 8. ORANGE BUTTON - Mobile-first */
 	.orng_btn {
 		background-color: #f8ac00;
 		border-radius: 80px;
@@ -446,9 +446,9 @@
 		color: #fff;
 		display: inline-block;
 		text-align: center;
-		padding: 10px 35px;
-		min-width: 250px;
-		font-size: 20px;
+		padding: 8px 20px;
+		min-width: 150px;
+		font-size: 16px;
 		text-decoration: none;
 		transition: background-color 0.2s ease;
 	}
@@ -488,8 +488,7 @@
 	}
 
 	.fl-row-content-wrap {
-		padding-top: 60px;
-		padding-bottom: 60px;
+		padding: 30px 20px;
 	}
 
 	.fl-row-content {
@@ -503,14 +502,14 @@
 	}
 
 	.fl-rich-text h2 {
-		font-size: 42px;
+		font-size: 24px;
 		text-align: center;
 		margin: 0 0 20px;
 		color: #666666;
 	}
 
 	.fl-rich-text p {
-		font-size: 22px;
+		font-size: 16px;
 		text-align: center;
 		margin: 0;
 		color: #666666;
@@ -526,33 +525,15 @@
 		text-decoration: underline;
 	}
 
-	/* 11. RESPONSIVE - WordPress breakpoints */
-	@media (max-width: 992px) {
-		.fl-row-content-wrap {
-			padding-top: 40px;
-			padding-bottom: 40px;
-		}
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE - Mobile-First (min-width breakpoints)
+	 * Base styles above are mobile, these scale UP
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 768px) {
-		.indicators h1 {
-			font-size: 30px;
-		}
-
-		.fl-row-content-wrap {
-			padding: 30px 20px;
-		}
-
-		.fl-rich-text h2 {
-			font-size: 24px;
-		}
-
-		.fl-rich-text p {
-			font-size: 16px;
-		}
-
-		.st_box table td {
-			display: flex;
+	/* Tablet (416px+) */
+	@media (min-width: 416px) {
+		.current-vid {
+			padding: 25px 25px 0;
 		}
 
 		.orng_btn {
@@ -562,21 +543,36 @@
 		}
 	}
 
-	@media (max-width: 576px) {
-		.st_box img {
-			max-width: 200px;
+	/* Tablet Large (768px+) */
+	@media (min-width: 768px) {
+		.indicators {
+			padding: 50px 15px;
 		}
-	}
 
-	@media (max-width: 415px) {
-		.current-vid {
-			padding: 10px 10px 0;
+		.indicators h1 {
+			font-size: 54px;
+		}
+
+		.fl-rich-text h2 {
+			font-size: 42px;
+		}
+
+		.fl-rich-text p {
+			font-size: 22px;
 		}
 
 		.orng_btn {
-			min-width: 150px;
-			font-size: 16px;
-			padding: 8px 20px;
+			min-width: 250px;
+			font-size: 20px;
+			padding: 10px 35px;
+		}
+	}
+
+	/* Desktop (992px+) */
+	@media (min-width: 992px) {
+		.fl-row-content-wrap {
+			padding-top: 60px;
+			padding-bottom: 60px;
 		}
 	}
 </style>
