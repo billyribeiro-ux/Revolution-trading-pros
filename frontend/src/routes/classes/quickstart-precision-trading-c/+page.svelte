@@ -8,6 +8,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import ClassDownloadsSection from '$lib/components/classes/ClassDownloadsSection.svelte';
 
 	onMount(() => {
 		if (typeof window !== 'undefined' && (window as any).richpanel) {
@@ -67,23 +68,9 @@
 			</div>
 		</section>
 
-		<section class="class-section cpost-section" id="dl-rp-row">
-			<div class="section-inner">
-				<section class="class-subsection" id="class-downloads">
-					<h2>Class Downloads</h2>
-					<div class="class-downloads-container">
-						<iframe
-							src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list"
-							width="500"
-							height="400"
-							frameborder="0"
-							allowfullscreen
-							title="Class Downloads"
-						></iframe>
-					</div>
-				</section>
-			</div>
-		</section>
+		<ClassDownloadsSection 
+			boxUrl="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list"
+		/>
 	</div>
 </div>
 
@@ -155,29 +142,7 @@
 		height: auto;
 	}
 
-	/* Downloads Section - Centered */
-	#class-downloads {
-		text-align: center;
-	}
-
-	#class-downloads h2 {
-		font-size: 1.8rem;
-		font-weight: 600;
-		color: #333333;
-		margin-bottom: 25px;
-	}
-
-	.class-downloads-container {
-		width: 100%;
-		max-width: 500px;
-		margin: 0 auto;
-	}
-
-	.class-downloads-container iframe {
-		width: 100%;
-		border: 1px solid #dddddd;
-		border-radius: 4px;
-	}
+	/* Downloads Section - Now using ClassDownloadsSection component (SSOT) */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Responsive Design - Mobile First
@@ -200,17 +165,7 @@
 			font-size: 1.2rem;
 		}
 
-		#class-downloads h2 {
-			font-size: 1.5rem;
-		}
-
-		.class-downloads-container {
-			max-width: 100%;
-		}
-
-		.class-downloads-container iframe {
-			height: 300px;
-		}
+		/* Downloads responsive styles now in ClassDownloadsSection component */
 	}
 
 	@media (max-width: 480px) {
