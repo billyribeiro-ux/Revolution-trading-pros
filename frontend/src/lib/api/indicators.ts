@@ -1,10 +1,13 @@
 /**
- * Indicators API
+ * Indicator Management System API
  * ═══════════════════════════════════════════════════════════════════════════
+ * Apple Principal Engineer ICT 7 Grade - January 2026
  *
- * API client for managing user indicators (purchased/licensed).
- *
- * @version 1.0.0 - December 2025
+ * Full-service indicator management with:
+ * - Multi-platform file downloads (ThinkorSwim, TradingView, etc.)
+ * - Secure hash-based download URLs
+ * - Video management via Bunny Stream
+ * - Ownership verification
  */
 
 import { api } from './config';
@@ -14,6 +17,145 @@ import { api } from './config';
 // ═══════════════════════════════════════════════════════════════════════════
 
 export interface Indicator {
+	id: string;
+	name: string;
+	slug: string;
+	tagline?: string;
+	description?: string;
+	price_cents: number;
+	is_free?: boolean;
+	sale_price_cents?: number;
+	sale_ends_at?: string;
+	logo_url?: string;
+	card_image_url?: string;
+	banner_image_url?: string;
+	featured_video_url?: string;
+	bunny_video_guid?: string;
+	short_description?: string;
+	long_description?: string;
+	features?: string[];
+	requirements?: string[];
+	compatibility?: string[];
+	supported_platforms?: string[];
+	version?: string;
+	release_date?: string;
+	last_update?: string;
+	meta_title?: string;
+	meta_description?: string;
+	og_image_url?: string;
+	status?: string;
+	is_published?: boolean;
+	published_at?: string;
+	view_count?: number;
+	download_count?: number;
+	purchase_count?: number;
+	creator_id?: number;
+	product_id?: number;
+	created_at?: string;
+	updated_at?: string;
+}
+
+export interface IndicatorListItem {
+	id: string;
+	name: string;
+	slug: string;
+	tagline?: string;
+	price_cents: number;
+	is_free?: boolean;
+	sale_price_cents?: number;
+	logo_url?: string;
+	card_image_url?: string;
+	status?: string;
+	is_published?: boolean;
+	view_count?: number;
+	download_count?: number;
+	created_at?: string;
+}
+
+export interface IndicatorFile {
+	id: number;
+	indicator_id: string;
+	file_name: string;
+	original_name?: string;
+	file_path: string;
+	file_size_bytes?: number;
+	file_type?: string;
+	mime_type?: string;
+	platform: string;
+	platform_version?: string;
+	cdn_url?: string;
+	version?: string;
+	is_current_version?: boolean;
+	changelog?: string;
+	display_name?: string;
+	display_order?: number;
+	is_active?: boolean;
+	download_count?: number;
+	uploaded_at?: string;
+}
+
+export interface IndicatorVideo {
+	id: number;
+	indicator_id: string;
+	title: string;
+	description?: string;
+	bunny_video_guid: string;
+	bunny_library_id?: string;
+	embed_url?: string;
+	play_url?: string;
+	thumbnail_url?: string;
+	duration_seconds?: number;
+	display_order?: number;
+	is_featured?: boolean;
+	is_preview?: boolean;
+	encoding_status?: string;
+	is_published?: boolean;
+	view_count?: number;
+}
+
+export interface UserIndicatorOwnership {
+	id: number;
+	user_id: number;
+	indicator_id: string;
+	order_id?: number;
+	price_paid_cents?: number;
+	access_granted_at?: string;
+	access_expires_at?: string;
+	is_lifetime_access?: boolean;
+	source?: string;
+	is_active?: boolean;
+}
+
+export interface TradingPlatform {
+	id: number;
+	name: string;
+	slug: string;
+	display_name: string;
+	icon_url?: string;
+	file_extension?: string;
+	install_instructions?: string;
+	is_active?: boolean;
+	display_order?: number;
+}
+
+export interface SecureDownloadUrl {
+	download_url: string;
+	token: string;
+	expires_at: string;
+	file_name: string;
+	file_size_bytes?: number;
+	platform: string;
+}
+
+export interface IndicatorWithDetails {
+	indicator: Indicator;
+	files: IndicatorFile[];
+	videos: IndicatorVideo[];
+	platforms: string[];
+}
+
+// Legacy type for backward compatibility
+export interface LegacyIndicator {
 	id: number;
 	name: string;
 	slug: string;

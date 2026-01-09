@@ -36,6 +36,11 @@ pub mod unified_videos;
 pub mod video_advanced;
 pub mod popups;
 pub mod trading_rooms;
+pub mod admin_courses;
+pub mod member_courses;
+pub mod admin_indicators;
+pub mod member_indicators;
+pub mod migrate;
 
 use axum::Router;
 use crate::AppState;
@@ -46,7 +51,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/auth", auth::router())
         .nest("/users", users::router())
         .nest("/user", user::router())  // Singular /user routes for frontend
-        .nest("/courses", courses::router())
+        // Legacy courses route - replaced by member_courses
+        // .nest("/courses", courses::router())
         .nest("/payments", payments::router())
         .nest("/search", search::router())
         .nest("/products", products::router())
@@ -78,6 +84,14 @@ pub fn api_router() -> Router<AppState> {
         .nest("/realtime", realtime::router())
         .nest("/popups", popups::router())
         .nest("/trading-rooms", trading_rooms::router())
+        .nest("/admin/courses", admin_courses::router())
+        .nest("/courses", member_courses::public_router())
+        .nest("/my/courses", member_courses::member_router())
+        // Indicator Management System
+        .nest("/admin/indicators", admin_indicators::router())
+        .nest("/indicators", member_indicators::public_router())
+        .nest("/my/indicators", member_indicators::member_router())
+        .nest("/download", member_indicators::download_router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())
