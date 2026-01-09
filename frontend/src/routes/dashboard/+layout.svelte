@@ -422,7 +422,7 @@
 	.dashboard__main {
 		flex: 1 1 auto;
 		min-inline-size: 0; /* Prevent flex overflow */
-		background-color: #f4f4f4;
+		background-color: #efefef;
 		position: relative;
 		container-type: inline-size;
 		container-name: dashboard-main;
