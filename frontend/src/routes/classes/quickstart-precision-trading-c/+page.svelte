@@ -137,10 +137,10 @@
 	 * Source: https://my.simplertrading.com/classes/quickstart-precision-trading-c
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* 1. BODY BACKGROUND - White per user preference */
+	/* 1. BODY BACKGROUND - Light gray per WordPress */
 	:global(html),
 	:global(body) {
-		background-color: #FFFFFF !important;
+		background-color: #EFEFEF !important;
 		color: #666666;
 		font-family: "Open Sans", sans-serif;
 	}
@@ -249,7 +249,6 @@
 	#non-member-class-upsell {
 		text-align: center;
 		padding: 20px;
-		background-color: #ffffff;
 	}
 
 	#non-member-class-title h1 {
