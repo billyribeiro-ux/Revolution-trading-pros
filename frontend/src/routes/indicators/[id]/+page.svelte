@@ -262,7 +262,13 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	:global(body) {
-		background-color: #efefef;
+		background-color: #efefef !important;
+	}
+	
+	:global(html),
+	:global(body),
+	:global(main) {
+		background-color: #efefef !important;
 	}
 
 	.indicators {
