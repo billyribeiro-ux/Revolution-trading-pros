@@ -168,13 +168,11 @@
 							
 							{#if platformDownload.files.length > 0}
 								<table>
-									<thead>
+									<tbody>
 										<tr>
 											<th>{platformDownload.platform} Install File:</th>
 											<th></th>
 										</tr>
-									</thead>
-									<tbody>
 										{#each platformDownload.files as file}
 											<tr>
 												<td>{file.name}</td>
@@ -542,7 +540,7 @@
 			font-size: 12px;
 		}
 
-		.st_box table thead {
+		.st_box table tr:first-child {
 			display: none;
 		}
 
