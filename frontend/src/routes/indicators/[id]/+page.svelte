@@ -316,7 +316,7 @@
 	}
 
 	.current-vid {
-		margin-bottom: 20px;
+		padding: 25px;
 	}
 
 	.video-container {
@@ -325,7 +325,6 @@
 		border-radius: 0;
 		overflow: hidden;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-		margin-bottom: 20px;
 	}
 
 	.video-container video {
