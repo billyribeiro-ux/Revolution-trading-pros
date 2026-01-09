@@ -371,6 +371,8 @@
 
 	.st_box img {
 		margin-bottom: 20px;
+		max-width: 100%;
+		height: auto;
 	}
 
 	.st_box h2 {
