@@ -324,7 +324,6 @@
 	.platforms {
 		text-align: center;
 		margin-bottom: 40px;
-		font-size: 24px;
 		color: #666666;
 		font-family: "Open Sans", sans-serif;
 	}
@@ -402,7 +401,6 @@
 
 	.st_box h2 {
 		margin-bottom: 20px;
-		font-size: 22px;
 		font-weight: 700;
 		color: #666666;
 		font-family: 'Open Sans', sans-serif;
@@ -421,7 +419,6 @@
 		padding: 12px 15px;
 		text-align: left;
 		font-weight: 700;
-		font-size: 14px;
 		font-family: 'Open Sans', sans-serif;
 		color: #666666;
 	}
@@ -435,7 +432,6 @@
 		padding: 20px 0;
 		border-top: 1px solid #f4f4f4;
 		color: #666666;
-		font-size: 14px;
 		font-family: 'Open Sans', sans-serif;
 	}
 
@@ -469,7 +465,6 @@
 		padding-top: 20px;
 		border-top: 1px solid #f4f4f4;
 		color: #666666;
-		font-size: 14px;
 		line-height: 1.7;
 		font-family: 'Open Sans', sans-serif;
 	}
