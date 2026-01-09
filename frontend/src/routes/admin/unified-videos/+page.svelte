@@ -773,11 +773,7 @@
 				if (response.success) {
 					showSuccess('Video created successfully');
 					clearDraft();
-
-					// Optimistic add to list
-					if (response.data) {
-						videos = [response.data, ...videos];
-					}
+					// Note: loadVideos() below will refresh the full list
 				} else {
 					throw new Error('Create failed');
 				}
@@ -1647,7 +1643,7 @@
 {#if showVideoPreview && previewVideoUrl}
 	<div class="modal-overlay" role="button" tabindex="0" aria-label="Close preview" onclick={closeVideoPreview} onkeydown={(e) => e.key === 'Escape' && closeVideoPreview()}>
 		<!-- svelte-ignore a11y_no_static_element_interactions -->
-		<div class="preview-modal" role="dialog" aria-modal="true" aria-label="Video preview" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+		<div class="preview-modal" role="dialog" aria-modal="true" aria-label="Video preview" tabindex="-1" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 			<div class="preview-header">
 				<h3>Video Preview</h3>
 				<button class="modal-close" onclick={closeVideoPreview} aria-label="Close preview">&times;</button>
