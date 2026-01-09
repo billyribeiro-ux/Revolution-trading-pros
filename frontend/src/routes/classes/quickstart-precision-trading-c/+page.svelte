@@ -37,15 +37,15 @@
 <!-- WordPress Wrapper Structure -->
 <div id="page" class="hfeed site grid-parent">
 	<div id="content" class="site-content">
-		<!-- Non-Member Upsell Header -->
-		<section class="class-section cpost-section" id="non-member-upsell-section">
+		<!-- Class Header Section -->
+		<section class="class-section cpost-section" id="class-header-section">
 			<div class="section-inner">
-				<div id="non-member-class-upsell">
-					<div id="non-member-class-title">
+				<div class="class-header-wrapper">
+					<div class="class-title-block">
 						<h1>Quickstart To Precision Trading</h1>
 						<h3></h3>
 					</div>
-					<div id="non-member-class-description">
+					<div class="class-description-block">
 						<p></p>
 					</div>
 				</div>
@@ -228,18 +228,18 @@
 		display: none;
 	}
 
-	/* 6. NON-MEMBER UPSELL HEADER */
-	#non-member-upsell-section {
+	/* 6. CLASS HEADER SECTION */
+	#class-header-section {
 		padding-top: 20px;
 		padding-bottom: 20px;
 	}
 
-	#non-member-class-upsell {
+	.class-header-wrapper {
 		text-align: center;
 		padding: 20px;
 	}
 
-	#non-member-class-title h1 {
+	.class-title-block h1 {
 		font-size: 2rem;
 		font-weight: 700;
 		color: #666666;
@@ -247,14 +247,14 @@
 		line-height: 1.2;
 	}
 
-	#non-member-class-title h3 {
+	.class-title-block h3 {
 		font-size: 1.2rem;
 		font-weight: 400;
 		color: #999999;
 		margin-bottom: 15px;
 	}
 
-	#non-member-class-description {
+	.class-description-block {
 		color: #666666;
 		font-size: 1rem;
 		line-height: 1.6;
@@ -371,13 +371,13 @@
 		}
 	}
 
-	/* Non-Member Header Responsive */
+	/* Class Header Responsive */
 	@media (min-width: 768px) {
-		#non-member-class-title h1 {
+		.class-title-block h1 {
 			font-size: 2.5rem;
 		}
 
-		#non-member-class-title h3 {
+		.class-title-block h3 {
 			font-size: 1.4rem;
 		}
 	}
