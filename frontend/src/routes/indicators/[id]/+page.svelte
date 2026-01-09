@@ -123,8 +123,11 @@
 ]} />
 
 <!-- Main Content - Matches WordPress exactly -->
-<div class="indicators">
-	<main>
+<!-- WordPress structure: #page > #content.site-content > .indicators > main -->
+<div id="page" class="hfeed site grid-parent">
+	<div id="content" class="site-content">
+		<div class="indicators">
+			<main>
 				<!-- Page Title -->
 				<h1>{indicator.name}</h1>
 				
@@ -222,7 +225,9 @@
 						</table>
 					</div>
 				</section>
-	</main>
+			</main>
+		</div>
+	</div>
 </div>
 
 <!-- Have Questions Section - WordPress Footer -->
@@ -282,7 +287,17 @@
 		color: #000000;
 	}
 
-	/* 2. INDICATORS CONTAINER - White background, centered */
+	/* 2. PAGE WRAPPER - WordPress structure */
+	#page {
+		padding: 0;
+		max-width: 100%;
+	}
+
+	#content.site-content {
+		width: 100%;
+	}
+
+	/* 3. INDICATORS CONTAINER - White background, centered */
 	.indicators {
 		background-color: #fff;
 		font-size: 24px;
