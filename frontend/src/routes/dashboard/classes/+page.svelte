@@ -407,7 +407,7 @@
 	}
 
 	.card-title a:hover {
-		color: #143E59;
+		color: #1D73BE;
 	}
 
 	.h5 {
