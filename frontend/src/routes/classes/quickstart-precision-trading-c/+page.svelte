@@ -43,6 +43,7 @@
 				<div id="non-member-class-upsell">
 					<div id="non-member-class-title">
 						<h1>Quickstart To Precision Trading</h1>
+						<!-- svelte-ignore a11y_missing_content -->
 						<h3></h3>
 					</div>
 					<div id="non-member-class-description">
