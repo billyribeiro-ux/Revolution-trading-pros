@@ -1132,14 +1132,18 @@ class EnterpriseApiClient {
 
 	/**
 	 * Setup Server-Sent Events connection
+	 * ICT 7 FIX: Only attempt SSE if VITE_SSE_URL is explicitly configured
+	 * Fly.io backend doesn't support SSE unless explicitly set up
 	 * @security Uses cookie-based auth - token NOT exposed in URL
 	 */
 	private setupSSE(): void {
 		if (!this.token) return;
 
-		// ICT11+ Pattern: Skip SSE in dev - endpoint may not exist
-		if (isDev) {
-			console.debug('[ApiClient] SSE skipped in dev (endpoint may not exist)');
+		// ICT 7 FIX: Only attempt SSE if explicitly configured
+		// Fly.io backend doesn't support SSE unless explicitly set up
+		const configuredSseUrl = import.meta.env['VITE_SSE_URL'];
+		if (!configuredSseUrl) {
+			// Silently skip - SSE is optional
 			return;
 		}
 
@@ -1147,7 +1151,7 @@ class EnterpriseApiClient {
 			// SECURITY: Use credentials for cookie-based auth instead of token in URL
 			// EventSource doesn't support custom headers, so we use withCredentials
 			// The server should validate the httpOnly session cookie
-			this.sseConnection = new EventSource(`${API_BASE_URL}/sse`, {
+			this.sseConnection = new EventSource(`${configuredSseUrl}/sse`, {
 				withCredentials: true // Uses httpOnly cookies for authentication
 			});
 
@@ -1155,20 +1159,18 @@ class EnterpriseApiClient {
 				this.handleSSEMessage(event);
 			};
 
-			this.sseConnection.onerror = (error) => {
-				console.error('[ApiClient] SSE error:', error);
-				// Attempt reconnection with exponential backoff
+			this.sseConnection.onerror = () => {
+				// Silently handle - SSE is optional
 				this.sseConnection?.close();
 				(this.sseConnection as EventSource | undefined) = undefined;
-				this.scheduleSSEReconnect();
+				// Don't auto-reconnect - SSE is optional
 			};
 
 			this.sseConnection.onopen = () => {
-				this.sseReconnectAttempts = 0; // Reset on successful connection
 				console.debug('[ApiClient] SSE connected');
 			};
 		} catch (error) {
-			console.error('[ApiClient] Failed to setup SSE:', error);
+			// Silently handle - SSE is optional
 		}
 	}
 
@@ -1176,10 +1178,12 @@ class EnterpriseApiClient {
 	private readonly MAX_SSE_RECONNECT_ATTEMPTS = 5;
 
 	private scheduleSSEReconnect(): void {
+		// ICT 7 FIX: Don't auto-reconnect SSE - it's optional
+		// Only reconnect if explicitly configured
+		const configuredSseUrl = import.meta.env['VITE_SSE_URL'];
+		if (!configuredSseUrl) return;
+		
 		if (this.sseReconnectAttempts >= this.MAX_SSE_RECONNECT_ATTEMPTS) {
-			if (import.meta.env.DEV) {
-				console.warn('[ApiClient] Max SSE reconnect attempts reached');
-			}
 			return;
 		}
 
