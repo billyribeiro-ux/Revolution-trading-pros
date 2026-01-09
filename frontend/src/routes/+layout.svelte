@@ -82,7 +82,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" media="all" />
 	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-	<meta name="theme-color" content="#efefef" />
+	<meta name="theme-color" content="#FFFFFF" />
 </svelte:head>
 
 {#if isAdminArea || isEmbedArea}
@@ -106,7 +106,7 @@
 		{/if}
 	</div>
 {:else}
-	<div class="min-h-screen bg-[#efefef] text-[#666666]" class:has-admin-toolbar={isAdmin}>
+	<div class="min-h-screen bg-white text-[#666666]" class:has-admin-toolbar={isAdmin}>
 		<!-- ICT9+ Hydration-Safe: Only render AdminToolbar after client mount -->
 		{#if mounted}
 			<AdminToolbar />

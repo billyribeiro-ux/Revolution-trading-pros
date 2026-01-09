@@ -241,10 +241,10 @@
 	 * Source: https://my.simplertrading.com/indicators/volume-max-i
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* 1. BODY BACKGROUND - CRITICAL */
+	/* 1. BODY BACKGROUND - White columns on sides */
 	:global(html),
 	:global(body) {
-		background-color: #efefef !important;
+		background-color: #FFFFFF !important;
 		color: #666666;
 		font-family: "Open Sans", sans-serif;
 	}
