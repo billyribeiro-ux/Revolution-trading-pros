@@ -439,7 +439,7 @@
 	}
 
 	.cpost-content-block.class-content-block {
-		padding: 0 clamp(var(--space-5), 4vw, var(--space-10)) clamp(var(--space-10), 4vw, var(--space-10));
+		padding: 0;
 		border-radius: 0;
 		background-color: var(--color-background-secondary);
 	}
