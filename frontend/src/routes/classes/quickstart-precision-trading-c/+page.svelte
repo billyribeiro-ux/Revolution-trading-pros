@@ -233,7 +233,7 @@
 
 	:global(html),
 	:global(body) {
-		background-color: #EFEFEF !important;
+		background-color: #FFFFFF !important;
 		color: #666666;
 		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 		font-size: 1rem;
@@ -301,7 +301,7 @@
 		align-items: center;
 		text-align: center;
 		padding: 30px 40px;
-		background-color: #FFFFFF !important;
+		background-color: #EFEFEF !important;
 		max-width: 1020px;
 		min-height: 148px;
 		margin: 0 auto;
@@ -340,7 +340,7 @@
 	.cpost-content-block.class-content-block {
 		padding: 0 clamp(var(--space-5), 4vw, var(--space-10)) clamp(var(--space-10), 4vw, var(--space-10));
 		border-radius: 0;
-		background-color: var(--color-content-bg);
+		background-color: #EFEFEF;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
