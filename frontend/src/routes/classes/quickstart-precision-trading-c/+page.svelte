@@ -330,8 +330,7 @@
 	}
 
 	.video-content {
-		padding: 0 clamp(var(--space-5), 4vw, var(--space-10)) clamp(var(--space-10), 4vw, var(--space-10));
-		border-radius: 0;
+		padding: 0;
 		background-color: #EFEFEF;
 	}
 
