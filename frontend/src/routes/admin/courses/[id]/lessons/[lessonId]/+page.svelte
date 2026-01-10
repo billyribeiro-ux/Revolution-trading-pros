@@ -5,7 +5,6 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
 	interface Lesson {
@@ -39,8 +38,16 @@
 		title: string;
 	}
 
-	let courseId = $derived($page.params.id);
-	let lessonId = $derived($page.params.lessonId);
+	let courseId = $state('');
+	let lessonId = $state('');
+
+	onMount(() => {
+		const pathParts = window.location.pathname.split('/');
+		// URL: /admin/courses/[id]/lessons/[lessonId]
+		lessonId = pathParts[pathParts.length - 1];
+		courseId = pathParts[pathParts.length - 3];
+		fetchLesson();
+	});
 	let lesson = $state<Lesson | null>(null);
 	let downloads = $state<Download[]>([]);
 	let modules = $state<Module[]>([]);
@@ -134,8 +141,6 @@
 			uploading = false;
 		}
 	};
-
-	onMount(fetchLesson);
 </script>
 
 <svelte:head>

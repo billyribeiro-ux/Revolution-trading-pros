@@ -5,7 +5,6 @@
 	 * Platform-specific downloads with secure URLs
 	 */
 
-	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 
 	interface Indicator {
@@ -47,8 +46,13 @@
 	let loading = $state(true);
 	let downloading = $state<number | null>(null);
 	let error = $state('');
+	let slug = $state('');
 
-	const slug = $page.params.slug;
+	onMount(() => {
+		const pathParts = window.location.pathname.split('/');
+		slug = pathParts[pathParts.length - 1];
+		fetchIndicator();
+	});
 
 	const platformIcons: Record<string, string> = {
 		thinkorswim: '📊',
@@ -139,8 +143,6 @@
 		}
 		return grouped;
 	});
-
-	onMount(fetchIndicator);
 </script>
 
 <svelte:head>

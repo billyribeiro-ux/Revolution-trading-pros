@@ -26,7 +26,6 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import IconVideo from '@tabler/icons-svelte/icons/video';
 	import IconUpload from '@tabler/icons-svelte/icons/upload';
 	import IconSearch from '@tabler/icons-svelte/icons/search';

@@ -5,7 +5,6 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
 
 	interface Module {
@@ -67,7 +66,13 @@
 		bunny_library_id?: number;
 	}
 
-	let courseId = $derived($page.params.id);
+	let courseId = $state('');
+
+	onMount(() => {
+		const pathParts = window.location.pathname.split('/');
+		courseId = pathParts[pathParts.length - 1];
+		fetchCourse();
+	});
 	let course = $state<Course | null>(null);
 	let modules = $state<Module[]>([]);
 	let unassignedLessons = $state<Lesson[]>([]);
@@ -197,8 +202,6 @@
 			alert('Failed to delete lesson');
 		}
 	};
-
-	onMount(fetchCourse);
 </script>
 
 <svelte:head>
