@@ -254,7 +254,7 @@
 		align-items: center;
 		text-align: center;
 		padding: 20px;
-		background-color: #f4f4f4;
+		background-color: #FFFFFF;
 		max-width: 1020px;
 		min-height: 148px;
 		margin: 0 auto;
@@ -352,7 +352,7 @@
 	.iframe-fallback {
 		padding: 20px;
 		text-align: center;
-		background-color: #f4f4f4;
+		background-color: #FFFFFF;
 		border: 1px solid #ddd;
 		border-radius: 4px;
 		color: #666666;

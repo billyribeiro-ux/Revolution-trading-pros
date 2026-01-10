@@ -197,7 +197,7 @@
 	/* Base styles - Mobile (320px+) */
 	.breadcrumbs {
 		z-index: 1;
-		background-color: #efefef;
+		background-color: #FFFFFF;
 		border-bottom: 1px solid #dbdbdb;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		font-size: 12px;
