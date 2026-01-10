@@ -102,7 +102,7 @@
 		<section class="class-section cpost-section" id="dl-rp-row">
 			<div class="section-inner">
 				<section class="class-subsection" id="class-downloads">
-					<h2 class="class-downloads-heading">Class Downloads</h2>
+					<h2>Class Downloads</h2>
 					<div class="class-downloads-container">
 						<iframe 
 							src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
@@ -143,11 +143,6 @@
 		background-color: #EFEFEF !important;
 		color: #666666;
 		font-family: "Open Sans", sans-serif;
-	}
-
-	/* Breadcrumbs white background for this page */
-	:global(.dashboard-breadcrumbs) {
-		background-color: #FFFFFF !important;
 	}
 
 	:global(a), :global(a:visited) {
@@ -195,7 +190,7 @@
 	.current-vid {
 		width: 100%;
 		background-color: #0a2335;
-		padding: 25px;
+		padding: 10px 10px 0;
 	}
 
 	.class-player-header {
@@ -258,7 +253,7 @@
 		align-items: center;
 		text-align: center;
 		padding: 20px;
-		background-color: #FFFFFF;
+		background-color: #f4f4f4;
 		max-width: 1020px;
 		min-height: 148px;
 		margin: 0 auto;
@@ -328,7 +323,7 @@
 		box-sizing: border-box;
 	}
 
-	.class-downloads-heading {
+	#class-downloads h2 {
 		font-size: 1.5rem;
 		font-weight: 400;
 		color: #333;
@@ -337,26 +332,22 @@
 	}
 
 	.class-downloads-container {
-		width: 100%;
-		max-width: 550px;
-		height: 350px;
+		width: 500px;
+		height: 400px;
 		box-sizing: border-box;
-		border: 1px solid #ddd;
-		border-radius: 8px;
-		overflow: hidden;
 	}
 
 	.class-downloads-container iframe {
-		width: 100%;
-		height: 100%;
-		border: none;
+		width: 500px;
+		height: 400px;
+		border: 1px solid #ddd;
 	}
 
 	/* ICT 11 Fix: Fallback for iframe errors */
 	.iframe-fallback {
 		padding: 20px;
 		text-align: center;
-		background-color: #FFFFFF;
+		background-color: #f4f4f4;
 		border: 1px solid #ddd;
 		border-radius: 4px;
 		color: #666666;
@@ -383,21 +374,12 @@
 			font-size: 1.5rem;
 		}
 
-		.class-subsection {
-			width: 100%;
-			max-width: 100%;
-			padding: 15px;
-			min-height: auto;
-		}
-
-		.class-downloads-heading {
-			font-size: 1.3rem;
-			margin-bottom: 15px;
-		}
-
 		.class-downloads-container {
-			max-width: 100%;
-			height: 280px;
+			padding: 0 10px;
+		}
+
+		.class-downloads-container iframe {
+			height: 300px;
 		}
 	}
 
@@ -422,14 +404,8 @@
 			padding: 0 40px 40px;
 		}
 
-		.class-subsection {
-			width: 100%;
-			max-width: 100%;
-			padding: 20px;
-		}
-
-		.class-downloads-container {
-			height: 350px;
+		.class-downloads-container iframe {
+			height: 400px;
 		}
 	}
 
@@ -458,32 +434,12 @@
 		#class-downloads {
 			margin-right: 20px;
 		}
-
-		.class-subsection {
-			width: 100%;
-			max-width: 900px;
-			padding: 25px;
-		}
-
-		.class-downloads-container {
-			height: 400px;
-		}
 	}
 
 	/* Desktop Large (1140px+) */
 	@media (min-width: 1140px) {
 		.cpost-section .section-inner {
 			padding: 0;
-		}
-
-		.class-subsection {
-			width: 1030px;
-			max-width: 1030px;
-			min-height: 458px;
-		}
-
-		.class-downloads-heading {
-			font-size: 1.5rem;
 		}
 	}
 
