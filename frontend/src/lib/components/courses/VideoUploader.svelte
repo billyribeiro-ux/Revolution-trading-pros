@@ -6,6 +6,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	// @ts-expect-error - tus-js-client types will be available after npm install
 	import * as tus from 'tus-js-client';
 
 	interface Props {
