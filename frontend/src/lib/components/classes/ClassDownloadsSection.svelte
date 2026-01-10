@@ -60,7 +60,7 @@
 
 	#dl-rp-row {
 		padding: 40px 0;
-		background-color: #EFEFEF;
+		background-color: #FFFFFF;
 	}
 
 	#dl-rp-row .section-inner {
@@ -73,7 +73,7 @@
 	}
 
 	.class-subsection#class-downloads {
-		background-color: #FFFFFF !important;
+		background-color: #EFEFEF !important;
 		padding: 25px;
 		width: 100%;
 		max-width: 1080px;
@@ -97,7 +97,7 @@
 		width: 100%;
 		height: 518px;
 		box-sizing: border-box;
-		background: #FFFFFF;
+		background: #EFEFEF;
 		overflow: hidden;
 	}
 
@@ -111,7 +111,7 @@
 	.iframe-fallback {
 		padding: 20px;
 		text-align: center;
-		background-color: #FFFFFF;
+		background-color: #EFEFEF;
 		border: 1px solid #dddddd;
 		border-radius: 4px;
 		color: #666666;
