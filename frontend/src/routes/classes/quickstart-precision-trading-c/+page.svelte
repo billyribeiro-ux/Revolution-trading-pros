@@ -311,8 +311,9 @@
 		flex: 1 1;
 		background-color: #fff;
 		padding: 25px;
-		width: 100%;
-		max-width: 600px;
+		width: 1030px;
+		max-width: 1030px;
+		min-height: 458px;
 		box-sizing: border-box;
 	}
 
