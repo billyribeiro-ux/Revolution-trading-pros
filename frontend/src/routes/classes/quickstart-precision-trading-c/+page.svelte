@@ -190,7 +190,7 @@
 	.current-vid {
 		width: 100%;
 		background-color: #0a2335;
-		padding: 10px 10px 0;
+		padding: 10px 10px 25px;
 	}
 
 	.class-player-header {
