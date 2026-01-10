@@ -1257,7 +1257,7 @@
 			localStorage.removeItem('course-draft-date');
 
 			// Redirect to courses list
-			goto('/admin/products?type=course');
+			goto('/admin/courses');
 		} catch (error) {
 			if (error instanceof AdminApiError) {
 				if (error.status === 401) {

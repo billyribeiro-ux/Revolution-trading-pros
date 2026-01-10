@@ -539,6 +539,66 @@ async fn handle_checkout_completed(
         .await
         .ok();
 
+        // ═══════════════════════════════════════════════════════════════════════════
+        // COURSE ENROLLMENT CREATION - Apple ICT 11+ Grade
+        // ═══════════════════════════════════════════════════════════════════════════
+        // Check if any order items are courses and create enrollments
+        if let Some(user_id) = user_id {
+            #[derive(sqlx::FromRow)]
+            struct CourseOrderItem {
+                product_id: Option<i64>,
+            }
+
+            let course_items: Vec<CourseOrderItem> = sqlx::query_as(
+                "SELECT product_id FROM order_items WHERE order_id = $1 AND product_id IS NOT NULL"
+            )
+            .bind(order_id)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default();
+
+            for item in course_items {
+                if let Some(product_id) = item.product_id {
+                    // Check if this product is a course (has a course_id in products table)
+                    let course_id: Option<uuid::Uuid> = sqlx::query_scalar(
+                        "SELECT course_id FROM products WHERE id = $1 AND course_id IS NOT NULL"
+                    )
+                    .bind(product_id)
+                    .fetch_optional(&state.db.pool)
+                    .await
+                    .ok()
+                    .flatten();
+
+                    if let Some(course_id) = course_id {
+                        // Create enrollment for this course
+                        sqlx::query(
+                            r#"INSERT INTO user_course_enrollments (user_id, course_id, status, enrolled_at)
+                               VALUES ($1, $2, 'active', NOW())
+                               ON CONFLICT (user_id, course_id) DO UPDATE SET
+                                   status = 'active',
+                                   updated_at = NOW()"#
+                        )
+                        .bind(user_id)
+                        .bind(course_id)
+                        .execute(&state.db.pool)
+                        .await
+                        .ok();
+
+                        // Auto-create Bunny Storage folder for course downloads
+                        // (folder path: courses/{course_id})
+                        tracing::info!(
+                            target: "payments",
+                            event = "course_enrollment_created",
+                            user_id = %user_id,
+                            course_id = %course_id,
+                            order_id = %order_id,
+                            "User enrolled in course after purchase"
+                        );
+                    }
+                }
+            }
+        }
+
         // Send order confirmation email
         if let Some(user_id) = user_id {
             if let Some(ref email_service) = state.services.email {

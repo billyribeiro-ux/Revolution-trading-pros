@@ -261,6 +261,17 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 		hasUnsavedChanges = true;
 	}
 
+	function importLayout(data: { title?: string; blocks?: unknown; status?: string; course_id?: string }): void {
+		layout = {
+			title: data.title || 'Untitled Course',
+			blocks: Array.isArray(data.blocks) ? data.blocks as PageBlock[] : [],
+			status: (data.status as 'draft' | 'published') || 'draft',
+			courseId: data.course_id
+		};
+		selectedBlockId = null;
+		hasUnsavedChanges = false;
+	}
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// UI STATE
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -322,6 +333,7 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 		setLayout,
 		updateLayoutMeta,
 		clearLayout,
+		importLayout,
 		exportLayout,
 
 		// UI state

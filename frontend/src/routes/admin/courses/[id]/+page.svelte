@@ -315,6 +315,10 @@
 				</span>
 			</div>
 			<div class="header-actions">
+				<a href="/admin/page-builder?course={course.id}" class="btn-builder">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+					Page Builder
+				</a>
 				<a href="/classes/{course.slug}" target="_blank" class="btn-secondary">
 					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" x2="21" y1="14" y2="3"/></svg>
 					Preview
@@ -573,6 +577,8 @@
 	.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
 	.btn-secondary { background: #f3f4f6; color: #1f2937; }
 	.btn-secondary:hover { background: #e5e7eb; }
+	.btn-builder { background: linear-gradient(135deg, #143E59 0%, #1E73BE 100%); color: #fff; }
+	.btn-builder:hover { background: linear-gradient(135deg, #0F2D42 0%, #143E59 100%); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3); }
 
 	.tabs { display: flex; gap: 4px; margin-bottom: 24px; border-bottom: 1px solid #e5e7eb; }
 	.tabs button { padding: 12px 20px; background: none; border: none; color: #6b7280; font-size: 14px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; }
