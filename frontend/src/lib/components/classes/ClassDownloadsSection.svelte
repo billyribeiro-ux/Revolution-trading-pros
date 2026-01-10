@@ -60,7 +60,7 @@
 
 	#dl-rp-row {
 		padding: 40px 0;
-		background-color: #FFFFFF;
+		background-color: #EFEFEF;
 	}
 
 	#dl-rp-row .section-inner {
@@ -73,21 +73,21 @@
 	}
 
 	.class-subsection#class-downloads {
-		background-color: #EFEFEF !important;
+		background-color: #FFFFFF !important;
 		padding: 25px;
 		width: 100%;
 		max-width: 1080px;
 		height: 512px;
 		box-sizing: border-box;
 		margin: 0 auto;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		box-shadow: none;
 	}
 
 	.class-subsection#class-downloads h2 {
-		font-size: 1.75rem !important;
+		font-size: 1.5rem !important;
 		font-weight: 400 !important;
-		color: #4a4a4a !important;
-		margin: 0 0 25px 0 !important;
+		color: #333333 !important;
+		margin: 0 0 20px 0 !important;
 		text-align: left;
 		line-height: 1.2 !important;
 		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
@@ -97,7 +97,7 @@
 		width: 100%;
 		height: 518px;
 		box-sizing: border-box;
-		background: #EFEFEF;
+		background: #FFFFFF;
 		overflow: hidden;
 	}
 
@@ -111,7 +111,7 @@
 	.iframe-fallback {
 		padding: 20px;
 		text-align: center;
-		background-color: #EFEFEF;
+		background-color: #FFFFFF;
 		border: 1px solid #dddddd;
 		border-radius: 4px;
 		color: #666666;
