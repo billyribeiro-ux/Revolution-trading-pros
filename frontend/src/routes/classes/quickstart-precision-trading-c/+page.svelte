@@ -458,13 +458,14 @@
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
-	#class-downloads h2 {
-		font-size: 1.75rem;
-		font-weight: 400;
-		color: #4a4a4a;
-		margin: 0 0 25px 0;
+	.class-subsection#class-downloads h2 {
+		font-size: 1.75rem !important;
+		font-weight: 400 !important;
+		color: #4a4a4a !important;
+		margin: 0 0 25px 0 !important;
 		text-align: left;
-		line-height: 1.2;
+		line-height: 1.2 !important;
+		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
 	}
 
 	.class-downloads-container {
