@@ -287,7 +287,7 @@
 		text-align: center;
 		padding: 30px 40px;
 		background-color: #FFFFFF !important;
-		max-width: 1020px;
+		max-width: 1180px;
 		min-height: 148px;
 		margin: 0 auto;
 		width: 100%;
@@ -405,7 +405,7 @@
 		background-color: #FFFFFF;
 		padding: 25px;
 		width: 100%;
-		max-width: 1080px;
+		max-width: 1180px;
 		box-sizing: border-box;
 		margin: 0 auto;
 	}

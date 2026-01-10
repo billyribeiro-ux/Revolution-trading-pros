@@ -2,9 +2,13 @@
 	/**
 	 * Admin Courses List Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
+	 * 
+	 * Features streamlined QuickCreate modal for instant course creation
+	 * that redirects directly to the Page Builder for visual design.
 	 */
 
 	import { onMount } from 'svelte';
+	import { goto } from '$app/navigation';
 	import { CourseCard } from '$lib/components/courses';
 
 	interface Course {
@@ -35,6 +39,89 @@
 	let currentPage = $state(1);
 	let totalPages = $state(1);
 	let total = $state(0);
+
+	// QuickCreate Modal State
+	let showQuickCreate = $state(false);
+	let quickCreateTitle = $state('');
+	let quickCreateSlug = $state('');
+	let quickCreateDescription = $state('');
+	let quickCreateLoading = $state(false);
+	let quickCreateError = $state<string | null>(null);
+
+	// Auto-generate slug from title
+	const generateSlug = (title: string) => {
+		return title
+			.toLowerCase()
+			.replace(/[^a-z0-9\s-]/g, '')
+			.replace(/\s+/g, '-')
+			.replace(/-+/g, '-')
+			.trim();
+	};
+
+	// Handle title input - auto-generate slug
+	const handleTitleInput = () => {
+		if (!quickCreateSlug || quickCreateSlug === generateSlug(quickCreateTitle.slice(0, -1))) {
+			quickCreateSlug = generateSlug(quickCreateTitle);
+		}
+	};
+
+	// Create course and redirect to page builder
+	const handleQuickCreate = async () => {
+		if (!quickCreateTitle.trim()) {
+			quickCreateError = 'Please enter a course title';
+			return;
+		}
+
+		quickCreateLoading = true;
+		quickCreateError = null;
+
+		try {
+			const res = await fetch('/api/admin/courses', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					title: quickCreateTitle.trim(),
+					slug: quickCreateSlug || generateSlug(quickCreateTitle),
+					description: quickCreateDescription || `Welcome to ${quickCreateTitle}`,
+					card_description: quickCreateDescription || `Learn with ${quickCreateTitle}`,
+					price_cents: 0,
+					is_free: true,
+					status: 'draft'
+				})
+			});
+
+			const data = await res.json();
+
+			if (data.success && data.data?.id) {
+				// Redirect to page builder with new course
+				goto(`/admin/page-builder?course=${data.data.id}`);
+			} else {
+				quickCreateError = data.error || 'Failed to create course';
+			}
+		} catch (e) {
+			quickCreateError = 'Failed to connect to server';
+		} finally {
+			quickCreateLoading = false;
+		}
+	};
+
+	// Close modal and reset
+	const closeQuickCreate = () => {
+		showQuickCreate = false;
+		quickCreateTitle = '';
+		quickCreateSlug = '';
+		quickCreateDescription = '';
+		quickCreateError = null;
+	};
+
+	// Handle keyboard in modal
+	const handleModalKeydown = (e: KeyboardEvent) => {
+		if (e.key === 'Escape') closeQuickCreate();
+		if (e.key === 'Enter' && !e.shiftKey) {
+			e.preventDefault();
+			handleQuickCreate();
+		}
+	};
 
 	const fetchCourses = async () => {
 		loading = true;
@@ -114,10 +201,10 @@
 			<h1>Courses</h1>
 			<p class="subtitle">{total} courses total</p>
 		</div>
-		<a href="/admin/courses/create" class="btn-primary">
+		<button class="btn-create" onclick={() => showQuickCreate = true}>
 			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
 			Create Course
-		</a>
+		</button>
 	</header>
 
 	<div class="filters">
@@ -154,7 +241,7 @@
 			<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
 			<h3>No courses found</h3>
 			<p>Get started by creating your first course</p>
-			<a href="/admin/courses/create" class="btn-primary">Create Course</a>
+			<button class="btn-primary" onclick={() => showQuickCreate = true}>Create Course</button>
 		</div>
 	{:else}
 		<div class="courses-grid">
@@ -205,6 +292,88 @@
 	{/if}
 </div>
 
+<!-- QuickCreate Modal -->
+{#if showQuickCreate}
+	<div class="modal-overlay" onclick={closeQuickCreate} onkeydown={handleModalKeydown} role="dialog" aria-modal="true" aria-labelledby="modal-title" tabindex="-1">
+		<div class="modal" role="document">
+			<button class="modal-close" onclick={closeQuickCreate} aria-label="Close">
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+			</button>
+
+			<div class="modal-icon">
+				<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+			</div>
+
+			<h2 id="modal-title">Create New Course</h2>
+			<p class="modal-subtitle">Enter a name and we'll take you straight to the visual builder</p>
+
+			{#if quickCreateError}
+				<div class="modal-error">
+					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+					{quickCreateError}
+				</div>
+			{/if}
+
+			<div class="modal-form">
+				<div class="form-group">
+					<label for="course-title">Course Title <span class="required">*</span></label>
+					<input 
+						id="course-title"
+						type="text" 
+						placeholder="e.g., Options Trading Mastery"
+						bind:value={quickCreateTitle}
+						oninput={handleTitleInput}
+						disabled={quickCreateLoading}
+					/>
+				</div>
+
+				<div class="form-group">
+					<label for="course-slug">URL Slug</label>
+					<div class="slug-preview">
+						<span class="slug-prefix">/classes/</span>
+						<input 
+							id="course-slug"
+							type="text" 
+							placeholder="options-trading-mastery"
+							bind:value={quickCreateSlug}
+							disabled={quickCreateLoading}
+						/>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="course-desc">Short Description <span class="optional">(optional)</span></label>
+					<textarea 
+						id="course-desc"
+						placeholder="What will students learn?"
+						rows="2"
+						bind:value={quickCreateDescription}
+						disabled={quickCreateLoading}
+					></textarea>
+				</div>
+			</div>
+
+			<div class="modal-actions">
+				<button class="btn-cancel" onclick={closeQuickCreate} disabled={quickCreateLoading}>Cancel</button>
+				<button class="btn-create-course" onclick={handleQuickCreate} disabled={quickCreateLoading || !quickCreateTitle.trim()}>
+					{#if quickCreateLoading}
+						<span class="spinner-small"></span>
+						Creating...
+					{:else}
+						<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="7" height="7" x="3" y="3" rx="1"/><rect width="7" height="7" x="14" y="3" rx="1"/><rect width="7" height="7" x="14" y="14" rx="1"/><rect width="7" height="7" x="3" y="14" rx="1"/></svg>
+						Open in Builder
+					{/if}
+				</button>
+			</div>
+
+			<p class="modal-hint">
+				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>
+				You can add pricing, modules, and videos in the builder
+			</p>
+		</div>
+	</div>
+{/if}
+
 <style>
 	.admin-courses { padding: 24px; max-width: 1400px; margin: 0 auto; }
 
@@ -212,8 +381,10 @@
 	.header-content h1 { font-size: 28px; font-weight: 700; color: #1f2937; margin: 0; }
 	.subtitle { color: #6b7280; margin: 4px 0 0; font-size: 14px; }
 
-	.btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: #143e59; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 14px; transition: background 0.2s; }
-	.btn-primary:hover { background: #0f2d42; }
+	.btn-primary, .btn-create { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: #143e59; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s; border: none; cursor: pointer; }
+	.btn-primary:hover, .btn-create:hover { background: #0f2d42; }
+	.btn-create { background: linear-gradient(135deg, #143E59 0%, #1E73BE 100%); }
+	.btn-create:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3); }
 
 	.filters { display: flex; gap: 12px; margin-bottom: 24px; }
 	.search-box { flex: 1; max-width: 400px; position: relative; }
@@ -259,5 +430,268 @@
 		.filters { flex-direction: column; }
 		.search-box { max-width: none; }
 		.courses-grid { grid-template-columns: 1fr; }
+	}
+
+	/* QuickCreate Modal */
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.6);
+		backdrop-filter: blur(4px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+		padding: 24px;
+		animation: fadeIn 0.2s ease;
+	}
+
+	@keyframes fadeIn {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
+
+	.modal {
+		background: #fff;
+		border-radius: 16px;
+		padding: 32px;
+		width: 100%;
+		max-width: 480px;
+		position: relative;
+		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+		animation: slideUp 0.3s ease;
+	}
+
+	@keyframes slideUp {
+		from { opacity: 0; transform: translateY(20px); }
+		to { opacity: 1; transform: translateY(0); }
+	}
+
+	.modal-close {
+		position: absolute;
+		top: 16px;
+		right: 16px;
+		background: none;
+		border: none;
+		color: #9ca3af;
+		cursor: pointer;
+		padding: 8px;
+		border-radius: 8px;
+		transition: all 0.2s;
+	}
+
+	.modal-close:hover {
+		background: #f3f4f6;
+		color: #1f2937;
+	}
+
+	.modal-icon {
+		width: 64px;
+		height: 64px;
+		background: linear-gradient(135deg, #143E59 0%, #1E73BE 100%);
+		border-radius: 16px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		margin: 0 auto 20px;
+		color: #fff;
+	}
+
+	.modal h2 {
+		font-size: 24px;
+		font-weight: 700;
+		color: #1f2937;
+		margin: 0 0 8px;
+		text-align: center;
+	}
+
+	.modal-subtitle {
+		color: #6b7280;
+		text-align: center;
+		margin: 0 0 24px;
+		font-size: 14px;
+	}
+
+	.modal-error {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 12px 16px;
+		background: #fef2f2;
+		border: 1px solid #fecaca;
+		border-radius: 8px;
+		color: #dc2626;
+		font-size: 14px;
+		margin-bottom: 20px;
+	}
+
+	.modal-form {
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
+		margin-bottom: 24px;
+	}
+
+	.modal-form .form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.modal-form label {
+		font-size: 13px;
+		font-weight: 600;
+		color: #374151;
+	}
+
+	.modal-form .required {
+		color: #dc2626;
+	}
+
+	.modal-form .optional {
+		color: #9ca3af;
+		font-weight: 400;
+	}
+
+	.modal-form input,
+	.modal-form textarea {
+		padding: 12px 14px;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
+		font-size: 15px;
+		transition: all 0.2s;
+	}
+
+	.modal-form input:focus,
+	.modal-form textarea:focus {
+		outline: none;
+		border-color: #143e59;
+		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.1);
+	}
+
+	.modal-form input:disabled,
+	.modal-form textarea:disabled {
+		background: #f9fafb;
+		cursor: not-allowed;
+	}
+
+	.slug-preview {
+		display: flex;
+		align-items: center;
+		background: #f9fafb;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
+		overflow: hidden;
+	}
+
+	.slug-prefix {
+		padding: 12px;
+		background: #f3f4f6;
+		color: #6b7280;
+		font-size: 14px;
+		font-family: monospace;
+		border-right: 1px solid #e5e7eb;
+	}
+
+	.slug-preview input {
+		border: none;
+		border-radius: 0;
+		flex: 1;
+		font-family: monospace;
+	}
+
+	.slug-preview input:focus {
+		box-shadow: none;
+	}
+
+	.modal-actions {
+		display: flex;
+		gap: 12px;
+	}
+
+	.btn-cancel {
+		flex: 1;
+		padding: 12px 20px;
+		background: #f3f4f6;
+		border: none;
+		border-radius: 8px;
+		font-size: 14px;
+		font-weight: 500;
+		color: #374151;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-cancel:hover {
+		background: #e5e7eb;
+	}
+
+	.btn-cancel:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.btn-create-course {
+		flex: 2;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		padding: 12px 24px;
+		background: linear-gradient(135deg, #143E59 0%, #1E73BE 100%);
+		border: none;
+		border-radius: 8px;
+		font-size: 15px;
+		font-weight: 600;
+		color: #fff;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-create-course:hover:not(:disabled) {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
+	}
+
+	.btn-create-course:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+		transform: none;
+		box-shadow: none;
+	}
+
+	.spinner-small {
+		width: 16px;
+		height: 16px;
+		border: 2px solid rgba(255,255,255,0.3);
+		border-top-color: #fff;
+		border-radius: 50%;
+		animation: spin 0.6s linear infinite;
+	}
+
+	.modal-hint {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		margin-top: 16px;
+		font-size: 13px;
+		color: #9ca3af;
+	}
+
+	@media (max-width: 480px) {
+		.modal {
+			padding: 24px;
+		}
+
+		.modal-actions {
+			flex-direction: column-reverse;
+		}
+
+		.btn-cancel,
+		.btn-create-course {
+			flex: none;
+			width: 100%;
+		}
 	}
 </style>
