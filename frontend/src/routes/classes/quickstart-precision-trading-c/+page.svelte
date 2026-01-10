@@ -224,7 +224,6 @@
 		overflow: hidden;
 		border: 1px solid #999;
 		cursor: pointer;
-		margin-bottom: 25px;
 	}
 
 	.class-video-container.current {
