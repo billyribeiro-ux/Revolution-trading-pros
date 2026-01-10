@@ -101,8 +101,8 @@
 		<!-- section#dl-rp-row.class-section.cpost-section -->
 		<section class="class-section cpost-section" id="dl-rp-row">
 			<div class="section-inner">
-				<h2 class="class-downloads-heading">Class Downloads</h2>
 				<section class="class-subsection" id="class-downloads">
+					<h2 class="class-downloads-heading">Class Downloads</h2>
 					<div class="class-downloads-container">
 						<iframe 
 							src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
