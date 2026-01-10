@@ -260,10 +260,12 @@
 		max-width: 100%;
 		margin: 0;
 		padding: 0;
+		background-color: #EFEFEF;
 	}
 
 	#content {
 		max-width: 100%;
+		background-color: #EFEFEF;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
@@ -271,6 +273,7 @@
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	.class-section {
 		padding: clamp(var(--space-10), 5vw, var(--space-15)) 0;
+		background-color: #EFEFEF;
 	}
 
 	.class-section .section-inner {
@@ -331,7 +334,6 @@
 
 	.video-content {
 		padding: 0;
-		background-color: #EFEFEF;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
