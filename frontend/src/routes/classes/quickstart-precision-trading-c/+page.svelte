@@ -11,6 +11,7 @@
 	import { onMount } from 'svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.svelte';
+	import ClassDownloadsSection from '$lib/components/classes/ClassDownloadsSection.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SVELTE 5 RUNES - Reactive State Management
@@ -140,29 +141,11 @@
 			</div>
 		</section>
 
-		<!-- section#dl-rp-row.class-section.cpost-section -->
-		<section class="class-section cpost-section" id="dl-rp-row">
-			<div class="section-inner">
-				<section class="class-subsection" id="class-downloads">
-					<h2>Class Downloads</h2>
-					<div class="class-downloads-container">
-						<iframe 
-							src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
-							width="500" 
-							height="400" 
-							allowfullscreen
-							title="Class Downloads"
-							loading="lazy"
-							referrerpolicy="strict-origin-when-cross-origin"
-							sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-						></iframe>
-						<noscript>
-							<p class="iframe-fallback">Please enable JavaScript to view class downloads, or <a href="https://simplertrading.app.box.com/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq" target="_blank" rel="noopener noreferrer">click here to open in Box.com</a>.</p>
-						</noscript>
-					</div>
-				</section>
-			</div>
-		</section>
+		<!-- Class Downloads Section - Component -->
+		<ClassDownloadsSection 
+			boxUrl="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list"
+			title="Class Downloads"
+		/>
 	</div>
 </div>
 
@@ -431,78 +414,8 @@
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * CLASS DOWNLOADS - EXACT: 1080x512 container, 518px iframe
+	 * RESPONSIVE BREAKPOINTS - Page-specific (non-downloads)
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	#dl-rp-row {
-		padding: 40px 0;
-		background-color: #EFEFEF;
-	}
-
-	#dl-rp-row .section-inner {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		max-width: 1100px;
-		margin: 0 auto;
-		padding: 0 20px;
-	}
-
-	.class-subsection#class-downloads {
-		background-color: #FFFFFF !important;
-		padding: 25px;
-		width: 100%;
-		max-width: 1080px;
-		height: 512px;
-		box-sizing: border-box;
-		margin: 0 auto;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-	}
-
-	.class-subsection#class-downloads h2 {
-		font-size: 1.75rem !important;
-		font-weight: 400 !important;
-		color: #4a4a4a !important;
-		margin: 0 0 25px 0 !important;
-		text-align: left;
-		line-height: 1.2 !important;
-		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif !important;
-	}
-
-	.class-downloads-container {
-		width: 100%;
-		height: 518px;
-		box-sizing: border-box;
-		background: #FFFFFF;
-		overflow: hidden;
-	}
-
-	.class-downloads-container iframe {
-		width: 100%;
-		height: 518px;
-		border: none;
-		display: block;
-	}
-
-	.iframe-fallback {
-		padding: var(--space-5);
-		text-align: center;
-		background-color: var(--color-content-bg);
-		border: 1px solid var(--color-border-light);
-		border-radius: 4px;
-		color: var(--color-text-primary);
-	}
-
-	.iframe-fallback a {
-		color: var(--color-link);
-		text-decoration: underline;
-		display: inline-block;
-		min-height: var(--touch-target-min);
-		line-height: var(--touch-target-min);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE BREAKPOINTS
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Mobile Small (< 428px) */
 	@media (max-width: 427px) {
@@ -515,40 +428,8 @@
 			min-height: auto;
 		}
 
-		.class-subsection#class-downloads {
-			width: 100%;
-			height: auto;
-			min-height: 350px;
-			padding: var(--space-4);
-		}
-
-		.class-downloads-container {
-			height: 300px;
-		}
-
-		.class-downloads-container iframe {
-			height: 300px;
-		}
-
 		.current-vid {
 			padding: var(--space-3);
-		}
-	}
-
-	/* Mobile (428px - 743px) */
-	@media (min-width: 428px) and (max-width: 743px) {
-		.class-subsection#class-downloads {
-			width: 100%;
-			height: auto;
-			min-height: 400px;
-		}
-
-		.class-downloads-container {
-			height: 350px;
-		}
-
-		.class-downloads-container iframe {
-			height: 350px;
 		}
 	}
 
@@ -556,21 +437,6 @@
 	@media (min-width: 744px) and (max-width: 1023px) {
 		.cpost-section .section-inner {
 			padding: 0 var(--space-8);
-		}
-
-		.class-subsection#class-downloads {
-			width: 100%;
-			max-width: 720px;
-			height: auto;
-			min-height: 450px;
-		}
-
-		.class-downloads-container {
-			height: 400px;
-		}
-
-		.class-downloads-container iframe {
-			height: 400px;
 		}
 
 		.current-vid {
@@ -583,40 +449,12 @@
 		.cpost-section .section-inner {
 			padding: 0 var(--space-10);
 		}
-
-		.class-subsection#class-downloads {
-			width: 100%;
-			max-width: 1080px;
-			height: 512px;
-		}
-
-		.class-downloads-container {
-			height: 518px;
-		}
-
-		.class-downloads-container iframe {
-			height: 518px;
-		}
 	}
 
 	/* Desktop Large (1366px+) */
 	@media (min-width: 1366px) {
 		.cpost-section .section-inner {
 			padding: 0;
-		}
-
-		.class-subsection#class-downloads {
-			width: 1080px;
-			max-width: 1080px;
-			height: 512px;
-		}
-
-		.class-downloads-container {
-			height: 518px;
-		}
-
-		.class-downloads-container iframe {
-			height: 518px;
 		}
 	}
 
@@ -655,17 +493,6 @@
 		.class-player-header,
 		.current-title {
 			color: black !important;
-		}
-
-		.class-downloads-container iframe {
-			display: none;
-		}
-
-		.class-downloads-container::after {
-			content: "Visit simplertrading.app.box.com for downloads";
-			display: block;
-			padding: var(--space-5);
-			text-align: center;
 		}
 	}
 
