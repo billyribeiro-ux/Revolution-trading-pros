@@ -434,7 +434,8 @@
 	 * CLASS DOWNLOADS - EXACT: 1080x512 container, 518px iframe
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	#dl-rp-row {
-		padding: var(--space-10) 0;
+		padding: 40px 0;
+		background-color: #EFEFEF;
 	}
 
 	#dl-rp-row .section-inner {
@@ -443,23 +444,24 @@
 		align-items: center;
 		max-width: 1100px;
 		margin: 0 auto;
-		padding: 0 var(--space-5);
+		padding: 0 20px;
 	}
 
 	.class-subsection#class-downloads {
-		background-color: var(--color-content-bg);
+		background-color: #FFFFFF !important;
 		padding: 25px;
 		width: 100%;
 		max-width: 1080px;
 		height: 512px;
 		box-sizing: border-box;
 		margin: 0 auto;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
 	#class-downloads h2 {
 		font-size: 1.75rem;
 		font-weight: 400;
-		color: var(--color-text-heading);
+		color: #4a4a4a;
 		margin: 0 0 25px 0;
 		text-align: left;
 		line-height: 1.2;
@@ -469,7 +471,8 @@
 		width: 100%;
 		height: 518px;
 		box-sizing: border-box;
-		background: var(--color-content-bg);
+		background: #FFFFFF;
+		overflow: hidden;
 	}
 
 	.class-downloads-container iframe {
