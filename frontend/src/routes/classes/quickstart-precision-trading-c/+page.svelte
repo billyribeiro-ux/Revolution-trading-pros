@@ -145,7 +145,7 @@
 			<div class="section-inner">
 				<section class="class-subsection" id="class-downloads">
 					<h2>Class Downloads</h2>
-					<div class="class-downloads-container" style="background-color: #EFEFEF;">
+					<div class="class-downloads-container">
 						<iframe 
 						src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
 						height="400" 
@@ -184,7 +184,7 @@
 	:root {
 		/* ═══ Color Tokens - CORRECTED ═══ */
 		--color-page-bg: #EFEFEF;
-		--color-content-bg: #FFFFFF;
+		--color-content-bg: #EFEFEF;
 		--color-video-bg: #0a2335;
 		--color-text-primary: #666666;
 		--color-text-heading: #4a4a4a;
@@ -448,7 +448,7 @@
 	}
 
 	#class-downloads {
-		background-color: #EFEFEF;
+		background-color: #FFFFFF;
 		padding: 25px;
 		width: 100%;
 		max-width: 1080px;
@@ -470,7 +470,7 @@
 		width: 100%;
 		height: 400px;
 		box-sizing: border-box;
-		background: #EFEFEF;
+		background: #FFFFFF;
 		overflow: hidden;
 	}
 
@@ -484,7 +484,7 @@
 	.iframe-fallback {
 		padding: 20px;
 		text-align: center;
-		background-color: #EFEFEF;
+		background-color: #FFFFFF;
 		border: 1px solid #dddddd;
 		border-radius: 4px;
 		color: #666666;
