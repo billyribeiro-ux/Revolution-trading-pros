@@ -145,6 +145,11 @@
 		font-family: "Open Sans", sans-serif;
 	}
 
+	/* Breadcrumbs white background for this page */
+	:global(.dashboard-breadcrumbs) {
+		background-color: #FFFFFF !important;
+	}
+
 	:global(a), :global(a:visited) {
 		color: #1e73be;
 	}
