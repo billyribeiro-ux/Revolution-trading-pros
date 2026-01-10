@@ -318,7 +318,7 @@
 		align-items: center;
 		text-align: center;
 		padding: 30px 40px;
-		background-color: #EFEFEF !important;
+		background-color: #FFFFFF !important;
 		max-width: 1020px;
 		min-height: 148px;
 		margin: 0 auto;
@@ -448,7 +448,7 @@
 	}
 
 	#class-downloads {
-		background-color: #EFEFEF;
+		background-color: #FFFFFF;
 		padding: 25px;
 		width: 100%;
 		max-width: 1080px;
@@ -470,7 +470,7 @@
 		width: 100%;
 		height: 400px;
 		box-sizing: border-box;
-		background: #EFEFEF;
+		background: #FFFFFF;
 		overflow: hidden;
 	}
 
@@ -484,7 +484,7 @@
 	.iframe-fallback {
 		padding: 20px;
 		text-align: center;
-		background-color: #EFEFEF;
+		background-color: #FFFFFF;
 		border: 1px solid #dddddd;
 		border-radius: 4px;
 		color: #666666;
