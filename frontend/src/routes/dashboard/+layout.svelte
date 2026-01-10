@@ -218,6 +218,7 @@
 			title: 'SPX Profit Pulse',
 			items: [
 				{ href: '/dashboard/spx-profit-pulse', icon: 'layout-dashboard', text: 'SPX Profit Pulse Dashboard' },
+				{ href: '/dashboard/spx-profit-pulse/start-here', icon: 'info', text: 'Start Here' },
 				{ href: '/dashboard/spx-profit-pulse/alerts', icon: 'bolt', text: 'Alerts' }
 			]
 		},
