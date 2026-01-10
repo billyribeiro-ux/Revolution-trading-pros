@@ -1,8 +1,6 @@
 /**
- * Page Builder Module Index
- * Apple Principal Engineer ICT 7 Grade - January 2026
- * 
- * Central export point for all page builder functionality.
+ * Page Builder Module Exports
+ * Apple Principal Engineer ICT 11 Grade - January 2026
  */
 
 // Types
@@ -13,3 +11,6 @@ export { componentRegistry, getComponentByType, getComponentsByCategory, createD
 
 // Store
 export { createBuilderStore, type BuilderStore } from './store.svelte';
+
+// Components
+export { default as DynamicRenderer } from './components/DynamicRenderer.svelte';
