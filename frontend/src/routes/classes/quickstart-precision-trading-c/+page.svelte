@@ -80,33 +80,27 @@
 <!-- WordPress Wrapper Structure -->
 <div id="page" class="hfeed site grid-parent">
 	<div id="content" class="site-content">
-		<!-- section#class-info.class-section.cpost-section -->
-		<section class="class-section cpost-section" id="class-info">
+		<!-- Title Section -->
+		<section class="class-section" id="title-section">
 			<div class="section-inner">
-				<div id="non-member-class-upsell">
-					<div id="non-member-class-title">
+				<div id="title-box">
+					<div id="title-header">
 						<h1>Quickstart To Precision Trading</h1>
 						<!-- svelte-ignore a11y_missing_content -->
 						<h3></h3>
 					</div>
-					<div id="non-member-class-description">
+					<div id="title-description">
 						<p></p>
 					</div>
 				</div>
 			</div>
 		</section>
 
-		<!-- section#classroom-access.class-section.cpost-section -->
-		<section class="class-section cpost-section" id="classroom-access">
+		<!-- Video Section -->
+		<section class="class-section" id="video-section">
 			<div class="section-inner">
-			</div>
-		</section>
-
-		<!-- section#class-recordings.class-section.cpost-section -->
-		<section class="class-section cpost-section" id="class-recordings">
-			<div class="section-inner">
-				<div class="class-content-block cpost-content-block">
-					<div class="current-vid">
+				<div class="video-content">
+					<div class="video-player-wrapper">
 						<h2 class="class-player-header">Quickstart To Precision Trading</h2>
 						<h3 class="current-title">Quickstart To Precision Trading</h3>
 						<div class="class-video-description">
@@ -134,18 +128,12 @@
 			</div>
 		</section>
 
-		<!-- section#class-elearning.class-section.cpost-section -->
-		<section class="class-section cpost-section" id="class-elearning">
+		<!-- Downloads Section -->
+		<section class="class-section" id="downloads-section">
 			<div class="section-inner">
-			</div>
-		</section>
-
-		<!-- section#dl-rp-row.class-section.cpost-section -->
-		<section class="class-section cpost-section" id="dl-rp-row">
-			<div class="section-inner">
-				<section class="class-subsection" id="class-downloads">
+				<div id="downloads-box">
 					<h2>Class Downloads</h2>
-					<div class="class-downloads-container">
+					<div class="downloads-container">
 						<iframe 
 						src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
 						height="400" 
@@ -160,7 +148,7 @@
 							<p class="iframe-fallback">Please enable JavaScript to view class downloads, or <a href="https://simplertrading.app.box.com/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq" target="_blank" rel="noopener noreferrer">click here to open in Box.com</a>.</p>
 						</noscript>
 					</div>
-				</section>
+				</div>
 			</div>
 		</section>
 	</div>
@@ -294,24 +282,24 @@
 	/* ─────────────────────────────────────────────────────────────────────────────
 	 * SECTION STRUCTURE
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	.cpost-section {
+	.class-section {
 		padding: clamp(var(--space-10), 5vw, var(--space-15)) 0;
 	}
 
-	.cpost-section .section-inner {
+	.class-section .section-inner {
 		max-width: min(1100px, 100% - var(--space-10));
 		margin: 0 auto;
 		padding: 0 var(--space-5);
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * CLASS INFO SECTION
+	 * TITLE SECTION
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	#class-info {
+	#title-section {
 		padding: var(--space-15) 0;
 	}
 
-	#non-member-class-upsell {
+	#title-box {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
@@ -326,7 +314,7 @@
 		box-sizing: border-box;
 	}
 
-	#non-member-class-title h1 {
+	#title-header h1 {
 		font-size: var(--font-size-3xl);
 		font-weight: 700;
 		color: var(--color-text-primary);
@@ -334,36 +322,36 @@
 		line-height: 1.2;
 	}
 
-	#non-member-class-title h3 {
+	#title-header h3 {
 		font-size: var(--font-size-lg);
 		font-weight: 400;
 		color: var(--color-text-light);
 		margin: 0 0 var(--space-4) 0;
 	}
 
-	#non-member-class-description {
+	#title-description {
 		color: var(--color-text-primary);
 		font-size: var(--font-size-base);
 		line-height: 1.6;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * CLASS RECORDINGS SECTION
+	 * VIDEO SECTION
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	#class-recordings {
+	#video-section {
 		padding-top: var(--space-15);
 	}
 
-	.cpost-content-block.class-content-block {
+	.video-content {
 		padding: 0 clamp(var(--space-5), 4vw, var(--space-10)) clamp(var(--space-10), 4vw, var(--space-10));
 		border-radius: 0;
 		background-color: #EFEFEF;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * VIDEO SECTION - 25px padding all sides
+	 * VIDEO PLAYER WRAPPER
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	.current-vid {
+	.video-player-wrapper {
 		width: 100%;
 		background-color: var(--color-video-bg);
 		padding: clamp(var(--space-3), 2.5vw, var(--space-6));
@@ -417,28 +405,16 @@
 		display: none;
 	}
 
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * EMPTY SECTIONS
-	 * ───────────────────────────────────────────────────────────────────────────── */
-	#classroom-access,
-	#class-elearning {
-		padding: 0;
-	}
-
-	#classroom-access .section-inner,
-	#class-elearning .section-inner {
-		display: none;
-	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * CLASS DOWNLOADS SECTION
+	 * DOWNLOADS SECTION
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	#dl-rp-row {
+	#downloads-section {
 		padding: 40px 0;
 		background-color: #EFEFEF;
 	}
 
-	#dl-rp-row .section-inner {
+	#downloads-section .section-inner {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -447,7 +423,7 @@
 		padding: 0 20px;
 	}
 
-	#class-downloads {
+	#downloads-box {
 		background-color: #FFFFFF;
 		padding: 25px;
 		width: 100%;
@@ -456,7 +432,7 @@
 		margin: 0 auto;
 	}
 
-	#class-downloads h2 {
+	#downloads-box h2 {
 		font-size: 1.5rem;
 		font-weight: 400;
 		color: #333333;
@@ -466,7 +442,7 @@
 		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 	}
 
-	.class-downloads-container {
+	.downloads-container {
 		width: 100%;
 		height: 400px;
 		box-sizing: border-box;
@@ -474,7 +450,7 @@
 		overflow: hidden;
 	}
 
-	.class-downloads-container iframe {
+	.downloads-container iframe {
 		width: 100%;
 		height: 100%;
 		border: none;
@@ -501,41 +477,41 @@
 
 	/* Mobile Small (< 428px) */
 	@media (max-width: 427px) {
-		.cpost-section .section-inner {
+		.class-section .section-inner {
 			padding: 0 var(--space-4);
 		}
 
-		#non-member-class-upsell {
+		#title-box {
 			padding: var(--space-4);
 			min-height: auto;
 		}
 
-		.current-vid {
+		.video-player-wrapper {
 			padding: var(--space-3);
 		}
 	}
 
 	/* Tablet (744px - 1023px) */
 	@media (min-width: 744px) and (max-width: 1023px) {
-		.cpost-section .section-inner {
+		.class-section .section-inner {
 			padding: 0 var(--space-8);
 		}
 
-		.current-vid {
+		.video-player-wrapper {
 			padding: var(--space-6);
 		}
 	}
 
 	/* Desktop (1024px - 1365px) */
 	@media (min-width: 1024px) and (max-width: 1365px) {
-		.cpost-section .section-inner {
+		.class-section .section-inner {
 			padding: 0 var(--space-10);
 		}
 	}
 
 	/* Desktop Large (1366px+) */
 	@media (min-width: 1366px) {
-		.cpost-section .section-inner {
+		.class-section .section-inner {
 			padding: 0;
 		}
 	}
@@ -549,15 +525,15 @@
 
 	/* Landscape Mobile */
 	@media (orientation: landscape) and (max-height: 500px) {
-		.cpost-section {
+		.class-section {
 			padding: var(--space-6) 0;
 		}
 
-		#class-info {
+		#title-section {
 			padding: var(--space-8) 0;
 		}
 
-		#non-member-class-upsell {
+		#title-box {
 			min-height: auto;
 		}
 	}
@@ -568,7 +544,7 @@
 			background-color: white !important;
 		}
 
-		.current-vid {
+		.video-player-wrapper {
 			background-color: #f0f0f0 !important;
 		}
 
