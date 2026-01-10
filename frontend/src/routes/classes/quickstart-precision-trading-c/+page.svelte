@@ -1,5 +1,5 @@
 <svelte:head>
-	<title>Quickstart To Precision Trading - Simpler Trading</title>
+	<title>Quickstart To Precision Trading - Revolution Trading Pros</title>
 	<meta property="og:locale" content="en_US" />
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content="Quickstart To Precision Trading" />
