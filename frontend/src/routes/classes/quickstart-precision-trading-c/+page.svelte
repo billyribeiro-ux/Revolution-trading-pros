@@ -378,8 +378,20 @@
 			font-size: 1.5rem;
 		}
 
+		.class-subsection {
+			width: 100%;
+			max-width: 100%;
+			padding: 15px;
+			min-height: auto;
+		}
+
+		#class-downloads h2 {
+			font-size: 1.3rem;
+			margin-bottom: 15px;
+		}
+
 		.class-downloads-container {
-			padding: 0;
+			max-width: 100%;
 			height: 280px;
 		}
 	}
@@ -403,6 +415,12 @@
 	@media (min-width: 600px) {
 		.cpost-content-block.class-content-block {
 			padding: 0 40px 40px;
+		}
+
+		.class-subsection {
+			width: 100%;
+			max-width: 100%;
+			padding: 20px;
 		}
 
 		.class-downloads-container {
@@ -435,12 +453,32 @@
 		#class-downloads {
 			margin-right: 20px;
 		}
+
+		.class-subsection {
+			width: 100%;
+			max-width: 900px;
+			padding: 25px;
+		}
+
+		.class-downloads-container {
+			height: 400px;
+		}
 	}
 
 	/* Desktop Large (1140px+) */
 	@media (min-width: 1140px) {
 		.cpost-section .section-inner {
 			padding: 0;
+		}
+
+		.class-subsection {
+			width: 1030px;
+			max-width: 1030px;
+			min-height: 458px;
+		}
+
+		#class-downloads h2 {
+			font-size: 1.5rem;
 		}
 	}
 
