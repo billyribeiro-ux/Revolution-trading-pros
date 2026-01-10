@@ -4,7 +4,6 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
-	import { page } from '$app/stores';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 
@@ -69,7 +68,14 @@
 	let error = $state('');
 	let success = $state('');
 
-	const indicatorId = $page.params.id;
+	// Extract indicator ID from URL pathname
+	let indicatorId = $state('');
+	
+	onMount(() => {
+		const pathParts = window.location.pathname.split('/');
+		indicatorId = pathParts[pathParts.length - 1];
+		fetchIndicator();
+	});
 
 	const fetchIndicator = async () => {
 		loading = true;
@@ -167,8 +173,6 @@
 		if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
 		return `${(bytes / 1048576).toFixed(1)} MB`;
 	};
-
-	onMount(fetchIndicator);
 </script>
 
 <svelte:head>
