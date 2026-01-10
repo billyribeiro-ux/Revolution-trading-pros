@@ -311,48 +311,36 @@
 		flex: 1 1;
 		background-color: #fff;
 		padding: 25px;
-		width: 100%;
+		width: 1030px;
 		max-width: 1030px;
+		min-height: 458px;
 		box-sizing: border-box;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
 	}
 
 	#class-downloads {
 		margin: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
 		width: 100%;
 		box-sizing: border-box;
 	}
 
 	#class-downloads h2 {
 		font-size: 1.5rem;
-		font-weight: 700;
-		color: #666666;
+		font-weight: 400;
+		color: #333;
 		margin: 0 0 20px 0;
-		text-align: center;
-		width: 100%;
+		text-align: left;
 	}
 
 	.class-downloads-container {
-		margin: 0 auto;
-		width: 100%;
-		max-width: 500px;
+		width: 500px;
 		height: 400px;
 		box-sizing: border-box;
-		display: flex;
-		justify-content: center;
 	}
 
 	.class-downloads-container iframe {
-		width: 100%;
-		max-width: 500px;
+		width: 500px;
 		height: 400px;
-		border: 0;
-		display: block;
+		border: 1px solid #ddd;
 	}
 
 	/* ICT 11 Fix: Fallback for iframe errors */
