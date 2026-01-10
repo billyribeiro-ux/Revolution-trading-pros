@@ -190,7 +190,7 @@
 	.current-vid {
 		width: 100%;
 		background-color: #0a2335;
-		padding: 10px 10px 25px;
+		padding: 10px;
 	}
 
 	.class-player-header {
@@ -219,6 +219,7 @@
 		overflow: hidden;
 		border: 1px solid #999;
 		cursor: pointer;
+		margin-bottom: 25px;
 	}
 
 	.class-video-container.current {
