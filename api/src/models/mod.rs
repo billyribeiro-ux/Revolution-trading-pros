@@ -15,6 +15,7 @@ pub mod order_service_types;
 pub mod video;
 pub mod video_advanced;
 pub mod watchlist;
+pub mod page_layout;
 
 pub use user::*;
 pub use course::*;

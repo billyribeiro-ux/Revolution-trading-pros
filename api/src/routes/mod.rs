@@ -41,6 +41,7 @@ pub mod member_courses;
 pub mod admin_indicators;
 pub mod member_indicators;
 pub mod migrate;
+pub mod admin_page_layouts;
 
 use axum::Router;
 use crate::AppState;
@@ -89,6 +90,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/my/courses", member_courses::member_router())
         // Indicator Management System
         .nest("/admin/indicators", admin_indicators::router())
+        .nest("/admin/page-layouts", admin_page_layouts::router())
         .nest("/indicators", member_indicators::public_router())
         .nest("/my/indicators", member_indicators::member_router())
         .nest("/download", member_indicators::download_router())
