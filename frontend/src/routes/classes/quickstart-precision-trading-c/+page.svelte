@@ -242,11 +242,15 @@
 
 	/* 6. CLASS INFO SECTION (Non-Member Upsell) */
 	#class-info {
-		padding-top: 20px;
-		padding-bottom: 0;
+		padding-top: 60px;
+		padding-bottom: 60px;
 	}
 
 	#non-member-class-upsell {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: center;
 		text-align: center;
 		padding: 20px;
 		background-color: #f4f4f4;
