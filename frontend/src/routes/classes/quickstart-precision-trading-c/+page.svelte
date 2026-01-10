@@ -311,9 +311,8 @@
 		flex: 1 1;
 		background-color: #fff;
 		padding: 25px;
-		width: 1030px;
-		max-width: 1030px;
-		min-height: 458px;
+		width: 100%;
+		max-width: 600px;
 		box-sizing: border-box;
 	}
 
@@ -332,15 +331,19 @@
 	}
 
 	.class-downloads-container {
-		width: 500px;
-		height: 400px;
+		width: 100%;
+		max-width: 550px;
+		height: 350px;
 		box-sizing: border-box;
+		border: 1px solid #ddd;
+		border-radius: 8px;
+		overflow: hidden;
 	}
 
 	.class-downloads-container iframe {
-		width: 500px;
-		height: 400px;
-		border: 1px solid #ddd;
+		width: 100%;
+		height: 100%;
+		border: none;
 	}
 
 	/* ICT 11 Fix: Fallback for iframe errors */
@@ -375,11 +378,8 @@
 		}
 
 		.class-downloads-container {
-			padding: 0 10px;
-		}
-
-		.class-downloads-container iframe {
-			height: 300px;
+			padding: 0;
+			height: 280px;
 		}
 	}
 
@@ -404,8 +404,8 @@
 			padding: 0 40px 40px;
 		}
 
-		.class-downloads-container iframe {
-			height: 400px;
+		.class-downloads-container {
+			height: 350px;
 		}
 	}
 
