@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * ClassDownloads Component - Box.com Identical UI
-	 * Apple Principal Engineer ICT 7 Grade - January 2026
+	 * Svelte 5 / SvelteKit - January 2026
 	 * 
 	 * Displays course files in a Box-like interface with:
 	 * - White background, grey alternating rows
@@ -9,9 +9,11 @@
 	 * - Scrollbar for many files
 	 * - File type icons
 	 * - Download buttons
+	 * - Mobile-first responsive design
 	 */
 
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 
 	interface Download {
 		id: number;
@@ -39,9 +41,22 @@
 	let error = $state('');
 	let sortColumn = $state<'name' | 'size' | 'date'>('name');
 	let sortDirection = $state<'asc' | 'desc'>('asc');
+	let viewportWidth = $state(0);
+
+	// Responsive breakpoint detection
+	const isMobile = $derived(viewportWidth > 0 && viewportWidth < 640);
+	const isTablet = $derived(viewportWidth >= 640 && viewportWidth < 1024);
 
 	onMount(() => {
 		fetchDownloads();
+		
+		if (!browser) return;
+		
+		viewportWidth = window.innerWidth;
+		const handleResize = () => { viewportWidth = window.innerWidth; };
+		window.addEventListener('resize', handleResize, { passive: true });
+		
+		return () => window.removeEventListener('resize', handleResize);
 	});
 
 	const fetchDownloads = async () => {
@@ -75,8 +90,8 @@
 		}
 	};
 
-	// Sort downloads
-	const sortedDownloads = $derived(() => {
+	// Sort downloads using $derived.by for complex computation
+	const sortedDownloads = $derived.by(() => {
 		const sorted = [...downloads];
 		sorted.sort((a, b) => {
 			let comparison = 0;
@@ -172,36 +187,55 @@
 			<table class="downloads-table">
 				<thead>
 					<tr>
-						<th class="col-name" onclick={() => toggleSort('name')}>
-							Name
-							{#if sortColumn === 'name'}
-								<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
-							{/if}
+						<th class="col-name">
+							<button type="button" class="sort-btn" onclick={() => toggleSort('name')}>
+								Name
+								{#if sortColumn === 'name'}
+									<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+								{/if}
+							</button>
 						</th>
-						<th class="col-size" onclick={() => toggleSort('size')}>
-							Size
-							{#if sortColumn === 'size'}
-								<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
-							{/if}
-						</th>
-						<th class="col-date" onclick={() => toggleSort('date')}>
-							Modified
-							{#if sortColumn === 'date'}
-								<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
-							{/if}
-						</th>
+						{#if !isMobile}
+							<th class="col-size">
+								<button type="button" class="sort-btn" onclick={() => toggleSort('size')}>
+									Size
+									{#if sortColumn === 'size'}
+										<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+									{/if}
+								</button>
+							</th>
+						{/if}
+						{#if !isMobile && !isTablet}
+							<th class="col-date">
+								<button type="button" class="sort-btn" onclick={() => toggleSort('date')}>
+									Modified
+									{#if sortColumn === 'date'}
+										<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+									{/if}
+								</button>
+							</th>
+						{/if}
 						<th class="col-action"></th>
 					</tr>
 				</thead>
 				<tbody>
-					{#each sortedDownloads() as dl, index}
+					{#each sortedDownloads as dl, index (dl.id)}
 						<tr class:alt={index % 2 === 1}>
 							<td class="col-name">
 								<span class="file-icon">{getFileIcon(dl.file_type)}</span>
-								<span class="file-name">{dl.title || dl.file_name}</span>
+								<div class="file-info">
+									<span class="file-name">{dl.title || dl.file_name}</span>
+									{#if isMobile}
+										<span class="file-meta">{formatFileSize(dl.file_size_bytes)}</span>
+									{/if}
+								</div>
 							</td>
-							<td class="col-size">{formatFileSize(dl.file_size_bytes)}</td>
-							<td class="col-date">{formatDate(dl.updated_at || dl.created_at)}</td>
+							{#if !isMobile}
+								<td class="col-size">{formatFileSize(dl.file_size_bytes)}</td>
+							{/if}
+							{#if !isMobile && !isTablet}
+								<td class="col-date">{formatDate(dl.updated_at || dl.created_at)}</td>
+							{/if}
 							<td class="col-action">
 								<button 
 									class="download-btn" 
@@ -282,18 +316,38 @@
 	}
 
 	.downloads-table th {
-		padding: 12px 16px;
+		padding: 0;
 		text-align: left;
 		font-weight: 600;
 		color: #666666;
 		border-bottom: 1px solid #e0e0e0;
-		cursor: pointer;
-		user-select: none;
 		white-space: nowrap;
 	}
 
-	.downloads-table th:hover {
+	/* Sort button - accessible clickable headers */
+	.sort-btn {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+		width: 100%;
+		padding: 12px 16px;
+		background: transparent;
+		border: none;
+		font: inherit;
+		font-weight: 600;
+		color: #666666;
+		cursor: pointer;
+		text-align: left;
+		transition: background-color 0.15s ease;
+	}
+
+	.sort-btn:hover {
 		background: #eeeeee;
+	}
+
+	.sort-btn:focus-visible {
+		outline: 2px solid #0061d5;
+		outline-offset: -2px;
 	}
 
 	.sort-indicator {
@@ -345,7 +399,7 @@
 	}
 
 	/* File name cell */
-	.col-name {
+	td.col-name {
 		display: flex;
 		align-items: center;
 		gap: 10px;
@@ -356,10 +410,23 @@
 		flex-shrink: 0;
 	}
 
+	.file-info {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		min-width: 0;
+		flex: 1;
+	}
+
 	.file-name {
 		overflow: hidden;
 		text-overflow: ellipsis;
 		white-space: nowrap;
+	}
+
+	.file-meta {
+		font-size: 12px;
+		color: #888888;
 	}
 
 	/* Download button */
@@ -418,27 +485,50 @@
 		color: #d32f2f;
 	}
 
-	/* Responsive */
-	@media (max-width: 600px) {
-		.col-date {
-			display: none;
-		}
-
+	/* Responsive - Tablet */
+	@media (max-width: 1023px) {
 		.col-name {
-			width: 60%;
+			width: 65%;
 		}
 
 		.col-size {
-			width: 25%;
+			width: 20%;
 		}
 
 		.col-action {
 			width: 15%;
 		}
+	}
 
-		.downloads-table th,
+	/* Responsive - Mobile */
+	@media (max-width: 639px) {
+		.downloads-header {
+			padding: 12px 16px;
+		}
+
+		.downloads-header h2 {
+			font-size: 1.1rem;
+		}
+
+		.col-name {
+			width: 75%;
+		}
+
+		.col-action {
+			width: 25%;
+		}
+
+		.sort-btn {
+			padding: 10px 12px;
+		}
+
 		.downloads-table td {
 			padding: 10px 12px;
+		}
+
+		.download-btn {
+			width: 40px;
+			height: 40px;
 		}
 	}
 </style>

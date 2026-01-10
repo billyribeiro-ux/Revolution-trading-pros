@@ -41,8 +41,9 @@
 			{#if selectedBlock.type === 'course-header'}
 				{@const config = selectedBlock.config as CourseHeaderConfig}
 				<div class="config-section">
-					<label class="config-label">Title</label>
+					<label class="config-label" for="config-title">Title</label>
 					<input 
+						id="config-title"
 						type="text" 
 						class="config-input"
 						value={config.title}
@@ -50,8 +51,9 @@
 					/>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Subtitle</label>
+					<label class="config-label" for="config-subtitle">Subtitle</label>
 					<input 
+						id="config-subtitle"
 						type="text" 
 						class="config-input"
 						value={config.subtitle ?? ''}
@@ -60,8 +62,9 @@
 					/>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Description</label>
-					<textarea 
+					<label class="config-label" for="config-description">Description</label>
+					<textarea
+						id="config-description" 
 						class="config-textarea"
 						value={config.description ?? ''}
 						oninput={(e) => updateConfig({ description: (e.target as HTMLTextAreaElement).value })}
@@ -70,9 +73,10 @@
 					></textarea>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Background Color</label>
+					<label class="config-label" for="config-bgcolor">Background Color</label>
 					<div class="color-input-group">
 						<input 
+							id="config-bgcolor"
 							type="color" 
 							class="config-color"
 							value={config.backgroundColor ?? '#143E59'}
@@ -98,8 +102,9 @@
 				</div>
 				{#if config.showLoginButton}
 					<div class="config-section">
-						<label class="config-label">Button Text</label>
+						<label class="config-label" for="config-btn-text">Button Text</label>
 						<input 
+							id="config-btn-text"
 							type="text" 
 							class="config-input"
 							value={config.loginButtonText ?? 'LOGIN TO THE CLASSROOM'}
@@ -112,8 +117,9 @@
 			{:else if selectedBlock.type === 'video-player'}
 				{@const config = selectedBlock.config as VideoPlayerConfig}
 				<div class="config-section">
-					<label class="config-label">Video Title</label>
+					<label class="config-label" for="config-video-title">Video Title</label>
 					<input 
+						id="config-video-title"
 						type="text" 
 						class="config-input"
 						value={config.title}
@@ -121,8 +127,9 @@
 					/>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Subtitle / Date</label>
+					<label class="config-label" for="config-video-subtitle">Subtitle / Date</label>
 					<input 
+						id="config-video-subtitle"
 						type="text" 
 						class="config-input"
 						value={config.subtitle ?? ''}
@@ -131,8 +138,9 @@
 					/>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Bunny Video GUID</label>
+					<label class="config-label" for="config-video-guid">Bunny Video GUID</label>
 					<input 
+						id="config-video-guid"
 						type="text" 
 						class="config-input"
 						value={config.bunnyVideoGuid ?? ''}
@@ -141,8 +149,9 @@
 					/>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Bunny Library ID</label>
+					<label class="config-label" for="config-library-id">Bunny Library ID</label>
 					<input 
+						id="config-library-id"
 						type="number" 
 						class="config-input"
 						value={config.bunnyLibraryId ?? ''}
@@ -151,8 +160,9 @@
 					/>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Thumbnail URL</label>
+					<label class="config-label" for="config-thumbnail">Thumbnail URL</label>
 					<input 
+						id="config-thumbnail"
 						type="text" 
 						class="config-input"
 						value={config.thumbnailUrl ?? ''}
@@ -175,9 +185,10 @@
 			{:else if selectedBlock.type === 'spacer'}
 				{@const config = selectedBlock.config as SpacerConfig}
 				<div class="config-section">
-					<label class="config-label">Height (px)</label>
+					<label class="config-label" for="config-height">Height (px)</label>
 					<div class="slider-group">
 						<input 
+							id="config-height"
 							type="range" 
 							class="config-slider"
 							min="10"
@@ -194,8 +205,9 @@
 			{:else if selectedBlock.type === 'divider'}
 				{@const config = selectedBlock.config as DividerConfig}
 				<div class="config-section">
-					<label class="config-label">Style</label>
+					<label class="config-label" for="config-style">Style</label>
 					<select 
+						id="config-style"
 						class="config-select"
 						value={config.style ?? 'solid'}
 						onchange={(e) => updateConfig({ style: (e.target as HTMLSelectElement).value })}
@@ -206,9 +218,10 @@
 					</select>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Color</label>
+					<label class="config-label" for="config-divider-color">Color</label>
 					<div class="color-input-group">
 						<input 
+							id="config-divider-color"
 							type="color" 
 							class="config-color"
 							value={config.color ?? '#E0E0E0'}
@@ -223,8 +236,9 @@
 					</div>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Thickness (px)</label>
+					<label class="config-label" for="config-thickness">Thickness (px)</label>
 					<input 
+						id="config-thickness"
 						type="number" 
 						class="config-input"
 						min="1"
@@ -234,8 +248,9 @@
 					/>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Margin Top (px)</label>
+					<label class="config-label" for="config-margin-top">Margin Top (px)</label>
 					<input 
+						id="config-margin-top"
 						type="number" 
 						class="config-input"
 						min="0"
@@ -245,8 +260,9 @@
 					/>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Margin Bottom (px)</label>
+					<label class="config-label" for="config-margin-bottom">Margin Bottom (px)</label>
 					<input 
+						id="config-margin-bottom"
 						type="number" 
 						class="config-input"
 						min="0"
@@ -260,8 +276,9 @@
 			{:else if selectedBlock.type === 'class-downloads'}
 				{@const config = selectedBlock.config as ClassDownloadsConfig}
 				<div class="config-section">
-					<label class="config-label">Section Title</label>
+					<label class="config-label" for="config-section-title">Section Title</label>
 					<input 
+						id="config-section-title"
 						type="text" 
 						class="config-input"
 						value={config.title ?? 'Class Downloads'}
@@ -269,8 +286,9 @@
 					/>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Max Height</label>
+					<label class="config-label" for="config-max-height">Max Height</label>
 					<select 
+						id="config-max-height"
 						class="config-select"
 						value={config.maxHeight ?? '400px'}
 						onchange={(e) => updateConfig({ maxHeight: (e.target as HTMLSelectElement).value })}
@@ -291,8 +309,9 @@
 			{:else if selectedBlock.type === 'video-stack'}
 				{@const config = selectedBlock.config as VideoStackConfig}
 				<div class="config-section">
-					<label class="config-label">Sort Order</label>
+					<label class="config-label" for="config-sort-order">Sort Order</label>
 					<select 
+						id="config-sort-order"
 						class="config-select"
 						value={config.sortOrder ?? 'newest'}
 						onchange={(e) => updateConfig({ sortOrder: (e.target as HTMLSelectElement).value })}
@@ -313,7 +332,7 @@
 					</label>
 				</div>
 				<div class="config-section">
-					<label class="config-label">Videos ({config.videos?.length ?? 0})</label>
+					<span class="config-label">Videos ({config.videos?.length ?? 0})</span>
 					<button class="add-video-btn">
 						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/></svg>
 						Add Video

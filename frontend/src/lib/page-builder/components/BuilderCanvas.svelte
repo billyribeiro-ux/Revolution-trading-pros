@@ -106,9 +106,9 @@
 		ondrop={handleDrop}
 		onclick={handleCanvasClick}
 		onkeydown={(e) => { if (e.key === 'Escape') store.clearSelection(); }}
-		role="region"
-		tabindex="-1"
-		aria-label="Page builder canvas"
+		role="application"
+		tabindex="0"
+		aria-label="Page builder canvas - drag and drop components here"
 	>
 		<div class="canvas-inner">
 			{#if store.sortedBlocks.length === 0 && !store.dragState.isDragging}
