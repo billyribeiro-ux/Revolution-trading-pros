@@ -170,19 +170,6 @@
 	 * DESIGN TOKENS
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	:root {
-		/* ═══ Color Tokens - CORRECTED ═══ */
-		--color-page-bg: #EFEFEF;
-		--color-content-bg: #EFEFEF;
-		--color-video-bg: #0a2335;
-		--color-text-primary: #666666;
-		--color-text-heading: #4a4a4a;
-		--color-text-light: #999999;
-		--color-text-inverse: #ffffff;
-		--color-text-inverse-muted: #d5d5d5;
-		--color-link: #1e73be;
-		--color-link-hover: #000000;
-		--color-border: #999999;
-		--color-border-light: #dddddd;
 
 		/* ═══ Spacing Tokens (8px grid) ═══ */
 		--space-1: 0.25rem;
@@ -251,17 +238,17 @@
 	}
 
 	:global(a), :global(a:visited) {
-		color: var(--color-link);
+		color: #1e73be;
 		text-decoration: none;
 		transition: color 150ms ease-out;
 	}
 
 	:global(a:hover), :global(a:focus) {
-		color: var(--color-link-hover);
+		color: #000000;
 	}
 
 	:global(a:focus-visible) {
-		outline: 2px solid var(--color-link);
+		outline: 2px solid #1e73be;
 		outline-offset: 2px;
 		border-radius: 4px;
 	}
@@ -317,7 +304,7 @@
 	#title-header h1 {
 		font-size: var(--font-size-3xl);
 		font-weight: 700;
-		color: var(--color-text-primary);
+		color: #666666;
 		margin: 0 0 var(--space-3) 0;
 		line-height: 1.2;
 	}
@@ -325,12 +312,12 @@
 	#title-header h3 {
 		font-size: var(--font-size-lg);
 		font-weight: 400;
-		color: var(--color-text-light);
+		color: #999999;
 		margin: 0 0 var(--space-4) 0;
 	}
 
 	#title-description {
-		color: var(--color-text-primary);
+		color: #666666;
 		font-size: var(--font-size-base);
 		line-height: 1.6;
 	}
@@ -353,12 +340,12 @@
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	.video-player-wrapper {
 		width: 100%;
-		background-color: var(--color-video-bg);
+		background-color: #0a2335;
 		padding: clamp(var(--space-3), 2.5vw, var(--space-6));
 	}
 
 	.class-player-header {
-		color: var(--color-text-inverse);
+		color: #ffffff;
 		font-size: var(--font-size-xl);
 		font-weight: 600;
 		margin: 0 0 var(--space-3) 0;
@@ -366,7 +353,7 @@
 	}
 
 	.current-title {
-		color: var(--color-text-inverse-muted);
+		color: #d5d5d5;
 		font-size: var(--font-size-lg);
 		font-weight: 500;
 		margin: 0 0 var(--space-4) 0;
@@ -381,7 +368,7 @@
 		position: relative;
 		background: #000;
 		overflow: hidden;
-		border: 1px solid var(--color-border);
+		border: 1px solid #999999;
 	}
 
 	.class-video-container.current {
