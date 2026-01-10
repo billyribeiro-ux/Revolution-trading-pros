@@ -145,17 +145,17 @@
 			<div class="section-inner">
 				<section class="class-subsection" id="class-downloads">
 					<h2>Class Downloads</h2>
-					<div class="class-downloads-container">
+					<div class="class-downloads-container" style="background-color: #EFEFEF;">
 						<iframe 
-							src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
-							width="500" 
-							height="400" 
-							allowfullscreen
-							title="Class Downloads"
-							loading="lazy"
-							referrerpolicy="strict-origin-when-cross-origin"
-							sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-						></iframe>
+						src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
+						height="400" 
+						allowfullscreen
+						title="Class Downloads"
+						loading="lazy"
+						referrerpolicy="strict-origin-when-cross-origin"
+						sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
+						width="100%"
+					></iframe>
 						<noscript>
 							<p class="iframe-fallback">Please enable JavaScript to view class downloads, or <a href="https://simplertrading.app.box.com/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq" target="_blank" rel="noopener noreferrer">click here to open in Box.com</a>.</p>
 						</noscript>
@@ -351,13 +351,13 @@
 	 * CLASS RECORDINGS SECTION
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	#class-recordings {
-		padding-top: 0;
+		padding-top: var(--space-15);
 	}
 
 	.cpost-content-block.class-content-block {
 		padding: 0 clamp(var(--space-5), 4vw, var(--space-10)) clamp(var(--space-10), 4vw, var(--space-10));
 		border-radius: 0;
-		background-color: #FFFFFF;
+		background-color: #EFEFEF;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
@@ -448,7 +448,7 @@
 	}
 
 	#class-downloads {
-		background-color: #FFFFFF;
+		background-color: #EFEFEF;
 		padding: 25px;
 		width: 100%;
 		max-width: 1080px;
@@ -470,7 +470,7 @@
 		width: 100%;
 		height: 400px;
 		box-sizing: border-box;
-		background: #FFFFFF;
+		background: #EFEFEF;
 		overflow: hidden;
 	}
 
@@ -484,7 +484,7 @@
 	.iframe-fallback {
 		padding: 20px;
 		text-align: center;
-		background-color: #FFFFFF;
+		background-color: #EFEFEF;
 		border: 1px solid #dddddd;
 		border-radius: 4px;
 		color: #666666;
