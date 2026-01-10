@@ -248,11 +248,12 @@
 		scroll-behavior: smooth;
 	}
 
+	:global(html),
 	:global(body) {
-		background-color: var(--color-page-bg) !important;
-		color: var(--color-text-primary);
+		background-color: #EFEFEF !important;
+		color: #666666;
 		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-		font-size: var(--font-size-base);
+		font-size: 1rem;
 		line-height: 1.5;
 		min-height: 100dvh;
 		margin: 0;
@@ -316,9 +317,9 @@
 		justify-content: center;
 		align-items: center;
 		text-align: center;
-		padding: clamp(var(--space-4), 3vw, var(--space-5));
-		background-color: var(--color-content-bg);
-		max-width: min(1020px, 100%);
+		padding: 30px 40px;
+		background-color: #FFFFFF !important;
+		max-width: 1020px;
 		min-height: 148px;
 		margin: 0 auto;
 		width: 100%;
