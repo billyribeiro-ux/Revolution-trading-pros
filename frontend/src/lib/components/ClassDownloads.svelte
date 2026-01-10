@@ -1,0 +1,444 @@
+<script lang="ts">
+	/**
+	 * ClassDownloads Component - Box.com Identical UI
+	 * Apple Principal Engineer ICT 7 Grade - January 2026
+	 * 
+	 * Displays course files in a Box-like interface with:
+	 * - White background, grey alternating rows
+	 * - Sortable columns (Name, Size, Modified)
+	 * - Scrollbar for many files
+	 * - File type icons
+	 * - Download buttons
+	 */
+
+	import { onMount } from 'svelte';
+
+	interface Download {
+		id: number;
+		title: string;
+		file_name: string;
+		file_size_bytes?: number;
+		file_type?: string;
+		download_url?: string;
+		category?: string;
+		created_at?: string;
+		updated_at?: string;
+	}
+
+	interface Props {
+		courseId?: string;
+		courseSlug?: string;
+		title?: string;
+		maxHeight?: string;
+	}
+
+	let { courseId = '', courseSlug = '', title = 'Class Downloads', maxHeight = '400px' }: Props = $props();
+
+	let downloads = $state<Download[]>([]);
+	let loading = $state(true);
+	let error = $state('');
+	let sortColumn = $state<'name' | 'size' | 'date'>('name');
+	let sortDirection = $state<'asc' | 'desc'>('asc');
+
+	onMount(() => {
+		fetchDownloads();
+	});
+
+	const fetchDownloads = async () => {
+		loading = true;
+		error = '';
+		try {
+			let url = '';
+			if (courseId) {
+				url = `/api/courses/${courseId}/downloads`;
+			} else if (courseSlug) {
+				url = `/api/courses/slug/${courseSlug}/downloads`;
+			} else {
+				error = 'No course ID or slug provided';
+				loading = false;
+				return;
+			}
+
+			const res = await fetch(url);
+			const data = await res.json();
+			
+			if (data.success) {
+				downloads = data.data || [];
+			} else {
+				error = data.error || 'Failed to load downloads';
+			}
+		} catch (e) {
+			console.error('Failed to fetch downloads:', e);
+			error = 'Failed to load downloads';
+		} finally {
+			loading = false;
+		}
+	};
+
+	// Sort downloads
+	const sortedDownloads = $derived(() => {
+		const sorted = [...downloads];
+		sorted.sort((a, b) => {
+			let comparison = 0;
+			switch (sortColumn) {
+				case 'name':
+					comparison = (a.title || a.file_name).localeCompare(b.title || b.file_name);
+					break;
+				case 'size':
+					comparison = (a.file_size_bytes || 0) - (b.file_size_bytes || 0);
+					break;
+				case 'date':
+					comparison = new Date(a.updated_at || a.created_at || 0).getTime() - 
+								 new Date(b.updated_at || b.created_at || 0).getTime();
+					break;
+			}
+			return sortDirection === 'asc' ? comparison : -comparison;
+		});
+		return sorted;
+	});
+
+	const toggleSort = (column: 'name' | 'size' | 'date') => {
+		if (sortColumn === column) {
+			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
+		} else {
+			sortColumn = column;
+			sortDirection = 'asc';
+		}
+	};
+
+	// Format file size
+	const formatFileSize = (bytes?: number): string => {
+		if (!bytes) return '-';
+		if (bytes < 1024) return `${bytes} B`;
+		if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
+		if (bytes < 1073741824) return `${(bytes / 1048576).toFixed(1)} MB`;
+		return `${(bytes / 1073741824).toFixed(1)} GB`;
+	};
+
+	// Format date
+	const formatDate = (dateStr?: string): string => {
+		if (!dateStr) return '-';
+		const date = new Date(dateStr);
+		return date.toLocaleDateString('en-US', { 
+			month: 'short', 
+			day: 'numeric', 
+			year: 'numeric' 
+		});
+	};
+
+	// Get file icon based on type
+	const getFileIcon = (fileType?: string): string => {
+		const type = (fileType || '').toLowerCase();
+		if (['pdf'].includes(type)) return '📄';
+		if (['doc', 'docx'].includes(type)) return '📝';
+		if (['xls', 'xlsx', 'csv'].includes(type)) return '📊';
+		if (['ppt', 'pptx'].includes(type)) return '📽️';
+		if (['zip', 'rar', '7z', 'tar', 'gz'].includes(type)) return '📦';
+		if (['mp4', 'mov', 'avi', 'webm'].includes(type)) return '🎬';
+		if (['mp3', 'wav', 'ogg'].includes(type)) return '🎵';
+		if (['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(type)) return '🖼️';
+		if (['txt', 'md'].includes(type)) return '📃';
+		return '📁';
+	};
+
+	// Handle download
+	const handleDownload = (dl: Download) => {
+		if (dl.download_url) {
+			window.open(dl.download_url, '_blank');
+		}
+	};
+</script>
+
+<div class="class-downloads-wrapper">
+	<div class="downloads-header">
+		<h2>{title}</h2>
+	</div>
+
+	<div class="downloads-container" style="max-height: {maxHeight}">
+		{#if loading}
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<span>Loading files...</span>
+			</div>
+		{:else if error}
+			<div class="error-state">
+				<span>⚠️ {error}</span>
+			</div>
+		{:else if downloads.length === 0}
+			<div class="empty-state">
+				<span>No files available for download.</span>
+			</div>
+		{:else}
+			<table class="downloads-table">
+				<thead>
+					<tr>
+						<th class="col-name" onclick={() => toggleSort('name')}>
+							Name
+							{#if sortColumn === 'name'}
+								<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+							{/if}
+						</th>
+						<th class="col-size" onclick={() => toggleSort('size')}>
+							Size
+							{#if sortColumn === 'size'}
+								<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+							{/if}
+						</th>
+						<th class="col-date" onclick={() => toggleSort('date')}>
+							Modified
+							{#if sortColumn === 'date'}
+								<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+							{/if}
+						</th>
+						<th class="col-action"></th>
+					</tr>
+				</thead>
+				<tbody>
+					{#each sortedDownloads() as dl, index}
+						<tr class:alt={index % 2 === 1}>
+							<td class="col-name">
+								<span class="file-icon">{getFileIcon(dl.file_type)}</span>
+								<span class="file-name">{dl.title || dl.file_name}</span>
+							</td>
+							<td class="col-size">{formatFileSize(dl.file_size_bytes)}</td>
+							<td class="col-date">{formatDate(dl.updated_at || dl.created_at)}</td>
+							<td class="col-action">
+								<button 
+									class="download-btn" 
+									onclick={() => handleDownload(dl)}
+									aria-label="Download {dl.title || dl.file_name}"
+									disabled={!dl.download_url}
+								>
+									<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+										<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+										<polyline points="7 10 12 15 17 10"/>
+										<line x1="12" x2="12" y1="15" y2="3"/>
+									</svg>
+								</button>
+							</td>
+						</tr>
+					{/each}
+				</tbody>
+			</table>
+		{/if}
+	</div>
+</div>
+
+<style>
+	.class-downloads-wrapper {
+		background-color: #FFFFFF;
+		border-radius: 4px;
+		overflow: hidden;
+		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+	}
+
+	.downloads-header {
+		padding: 16px 20px;
+		border-bottom: 1px solid #e0e0e0;
+	}
+
+	.downloads-header h2 {
+		margin: 0;
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: #333333;
+	}
+
+	.downloads-container {
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+
+	/* Scrollbar styling */
+	.downloads-container::-webkit-scrollbar {
+		width: 8px;
+	}
+
+	.downloads-container::-webkit-scrollbar-track {
+		background: #f1f1f1;
+	}
+
+	.downloads-container::-webkit-scrollbar-thumb {
+		background: #c1c1c1;
+		border-radius: 4px;
+	}
+
+	.downloads-container::-webkit-scrollbar-thumb:hover {
+		background: #a1a1a1;
+	}
+
+	/* Table styles */
+	.downloads-table {
+		width: 100%;
+		border-collapse: collapse;
+		font-size: 14px;
+	}
+
+	.downloads-table thead {
+		position: sticky;
+		top: 0;
+		background: #f7f7f7;
+		z-index: 1;
+	}
+
+	.downloads-table th {
+		padding: 12px 16px;
+		text-align: left;
+		font-weight: 600;
+		color: #666666;
+		border-bottom: 1px solid #e0e0e0;
+		cursor: pointer;
+		user-select: none;
+		white-space: nowrap;
+	}
+
+	.downloads-table th:hover {
+		background: #eeeeee;
+	}
+
+	.sort-indicator {
+		margin-left: 4px;
+		font-size: 10px;
+		color: #999999;
+	}
+
+	.downloads-table td {
+		padding: 12px 16px;
+		border-bottom: 1px solid #f0f0f0;
+		color: #333333;
+	}
+
+	.downloads-table tr:last-child td {
+		border-bottom: none;
+	}
+
+	/* Alternating row colors - Box style */
+	.downloads-table tbody tr {
+		background: #FFFFFF;
+	}
+
+	.downloads-table tbody tr.alt {
+		background: #f9f9f9;
+	}
+
+	.downloads-table tbody tr:hover {
+		background: #f0f7ff;
+	}
+
+	/* Column widths */
+	.col-name {
+		width: 55%;
+	}
+
+	.col-size {
+		width: 15%;
+		text-align: right;
+	}
+
+	.col-date {
+		width: 20%;
+	}
+
+	.col-action {
+		width: 10%;
+		text-align: center;
+	}
+
+	/* File name cell */
+	.col-name {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.file-icon {
+		font-size: 18px;
+		flex-shrink: 0;
+	}
+
+	.file-name {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	/* Download button */
+	.download-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		background: transparent;
+		border: 1px solid #d0d0d0;
+		border-radius: 4px;
+		color: #666666;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.download-btn:hover:not(:disabled) {
+		background: #0061d5;
+		border-color: #0061d5;
+		color: white;
+	}
+
+	.download-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	/* States */
+	.loading-state,
+	.error-state,
+	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 48px 24px;
+		color: #666666;
+		gap: 12px;
+	}
+
+	.spinner {
+		width: 24px;
+		height: 24px;
+		border: 3px solid #e0e0e0;
+		border-top-color: #0061d5;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	.error-state {
+		color: #d32f2f;
+	}
+
+	/* Responsive */
+	@media (max-width: 600px) {
+		.col-date {
+			display: none;
+		}
+
+		.col-name {
+			width: 60%;
+		}
+
+		.col-size {
+			width: 25%;
+		}
+
+		.col-action {
+			width: 15%;
+		}
+
+		.downloads-table th,
+		.downloads-table td {
+			padding: 10px 12px;
+		}
+	}
+</style>

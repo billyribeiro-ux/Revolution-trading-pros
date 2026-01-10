@@ -11,6 +11,7 @@
 	import { onMount } from 'svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.svelte';
+	import ClassDownloads from '$lib/components/ClassDownloads.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SVELTE 5 RUNES - Reactive State Management
@@ -132,22 +133,11 @@
 		<section class="class-section" id="downloads-section">
 			<div class="section-inner">
 				<div id="downloads-box">
-					<h2>Class Downloads</h2>
-					<div class="downloads-container">
-						<iframe 
-						src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
-						height="400" 
-						allowfullscreen
+					<ClassDownloads 
+						courseSlug="quickstart-precision-trading-c" 
 						title="Class Downloads"
-						loading="lazy"
-						referrerpolicy="strict-origin-when-cross-origin"
-						sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
-						width="100%"
-					></iframe>
-						<noscript>
-							<p class="iframe-fallback">Please enable JavaScript to view class downloads, or <a href="https://simplertrading.app.box.com/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq" target="_blank" rel="noopener noreferrer">click here to open in Box.com</a>.</p>
-						</noscript>
-					</div>
+						maxHeight="400px"
+					/>
 				</div>
 			</div>
 		</section>
@@ -420,44 +410,6 @@
 		margin: 0 auto;
 	}
 
-	#downloads-box h2 {
-		font-size: 1.5rem;
-		font-weight: 400;
-		color: #333333;
-		margin: 0 0 20px 0;
-		text-align: left;
-		line-height: 1.2;
-		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-	}
-
-	.downloads-container {
-		width: 100%;
-		height: 400px;
-		box-sizing: border-box;
-		background: #FFFFFF;
-		overflow: hidden;
-	}
-
-	.downloads-container iframe {
-		width: 100%;
-		height: 100%;
-		border: none;
-		display: block;
-	}
-
-	.iframe-fallback {
-		padding: 20px;
-		text-align: center;
-		background-color: #FFFFFF;
-		border: 1px solid #dddddd;
-		border-radius: 4px;
-		color: #666666;
-	}
-
-	.iframe-fallback a {
-		color: #1e73be;
-		text-decoration: underline;
-	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
 	 * RESPONSIVE BREAKPOINTS - Page-specific (non-downloads)

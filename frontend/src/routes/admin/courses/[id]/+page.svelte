@@ -79,6 +79,8 @@
 	let downloads = $state<Download[]>([]);
 	let loading = $state(true);
 	let saving = $state(false);
+	let uploading = $state(false);
+	let fileInput: HTMLInputElement;
 	let activeTab = $state<'details' | 'content' | 'downloads' | 'settings'>('details');
 
 	const fetchCourse = async () => {
@@ -185,6 +187,92 @@
 		} catch {
 			alert('Failed to create lesson');
 		}
+	};
+
+	// File upload handler
+	const handleFileUpload = async (event: Event) => {
+		const input = event.target as HTMLInputElement;
+		const file = input.files?.[0];
+		if (!file) return;
+
+		uploading = true;
+		try {
+			// Get upload URL from backend
+			const urlRes = await fetch(`/api/admin/courses/${courseId}/upload-url`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({ file_name: file.name, content_type: file.type })
+			});
+			const urlData = await urlRes.json();
+			
+			if (!urlData.success) {
+				alert(urlData.error || 'Failed to get upload URL');
+				return;
+			}
+
+			// Upload file to Bunny Storage
+			const uploadRes = await fetch(urlData.data.upload_url, {
+				method: 'PUT',
+				headers: {
+					'Content-Type': file.type,
+					'AccessKey': urlData.data.access_key
+				},
+				body: file
+			});
+
+			if (!uploadRes.ok) {
+				alert('Failed to upload file to storage');
+				return;
+			}
+
+			// Create download record in database
+			const createRes = await fetch(`/api/admin/courses/${courseId}/downloads`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					title: file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' '),
+					file_name: file.name,
+					file_path: urlData.data.file_path,
+					file_size_bytes: file.size,
+					file_type: file.name.split('.').pop()?.toLowerCase(),
+					mime_type: file.type,
+					download_url: urlData.data.cdn_url,
+					category: 'resource'
+				})
+			});
+
+			const createData = await createRes.json();
+			if (createData.success) {
+				downloads = [...downloads, createData.data];
+			} else {
+				alert(createData.error || 'Failed to create download record');
+			}
+		} catch (e) {
+			console.error('Upload error:', e);
+			alert('Failed to upload file');
+		} finally {
+			uploading = false;
+			input.value = '';
+		}
+	};
+
+	// Delete download handler
+	const deleteDownload = async (downloadId: number) => {
+		if (!confirm('Delete this download?')) return;
+		try {
+			await fetch(`/api/admin/courses/${courseId}/downloads/${downloadId}`, { method: 'DELETE' });
+			downloads = downloads.filter(d => d.id !== downloadId);
+		} catch {
+			alert('Failed to delete download');
+		}
+	};
+
+	// Format file size
+	const formatFileSize = (bytes?: number) => {
+		if (!bytes) return '-';
+		if (bytes < 1024) return `${bytes} B`;
+		if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
+		return `${(bytes / 1048576).toFixed(1)} MB`;
 	};
 
 	const deleteLesson = async (lessonId: string, moduleId?: number) => {
@@ -400,9 +488,15 @@
 				<div class="downloads-section">
 					<div class="content-header">
 						<h2>Course Downloads</h2>
-						<button class="btn-secondary">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
-							Upload File
+						<input type="file" bind:this={fileInput} onchange={handleFileUpload} style="display: none;" />
+						<button class="btn-secondary" onclick={() => fileInput?.click()} disabled={uploading}>
+							{#if uploading}
+								<span class="spinner-small"></span>
+								Uploading...
+							{:else}
+								<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+								Upload File
+							{/if}
 						</button>
 					</div>
 
@@ -416,8 +510,11 @@
 							{#each downloads as dl}
 								<li>
 									<span class="dl-title">{dl.title}</span>
-									<span class="dl-file">{dl.file_name}</span>
-									<button aria-label="Delete download">
+									<span class="dl-meta">
+										<span class="dl-file">{dl.file_name}</span>
+										<span class="dl-size">{formatFileSize(dl.file_size_bytes)}</span>
+									</span>
+									<button onclick={() => deleteDownload(dl.id)} aria-label="Delete download">
 										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/></svg>
 									</button>
 								</li>
@@ -523,10 +620,14 @@
 	.empty-downloads svg { margin-bottom: 16px; opacity: 0.5; }
 	.downloads-list { list-style: none; margin: 0; padding: 0; }
 	.downloads-list li { display: flex; align-items: center; gap: 12px; padding: 12px; background: #f9fafb; border-radius: 6px; margin-bottom: 8px; }
-	.dl-title { font-weight: 500; }
-	.dl-file { color: #6b7280; font-size: 13px; margin-left: auto; }
+	.dl-title { font-weight: 500; flex: 1; }
+	.dl-meta { display: flex; gap: 16px; align-items: center; }
+	.dl-file { color: #6b7280; font-size: 13px; }
+	.dl-size { color: #9ca3af; font-size: 12px; }
 	.downloads-list button { background: none; border: none; color: #9ca3af; cursor: pointer; }
 	.downloads-list button:hover { color: #dc2626; }
+	.spinner-small { width: 16px; height: 16px; border: 2px solid #e5e7eb; border-top-color: #143e59; border-radius: 50%; animation: spin 0.8s linear infinite; display: inline-block; }
+	@keyframes spin { to { transform: rotate(360deg); } }
 
 	@media (max-width: 768px) {
 		.editor-header { flex-direction: column; gap: 16px; }
