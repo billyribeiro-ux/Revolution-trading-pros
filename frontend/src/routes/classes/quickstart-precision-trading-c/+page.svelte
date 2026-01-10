@@ -11,7 +11,6 @@
 	import { onMount } from 'svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.svelte';
-	import ClassDownloadsSection from '$lib/components/classes/ClassDownloadsSection.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SVELTE 5 RUNES - Reactive State Management
@@ -141,11 +140,7 @@
 			</div>
 		</section>
 
-		<!-- Class Downloads Section - Component -->
-		<ClassDownloadsSection 
-			boxUrl="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list"
-			title="Class Downloads"
-		/>
+		<!-- Class Downloads Section - Will be rebuilt -->
 	</div>
 </div>
 
