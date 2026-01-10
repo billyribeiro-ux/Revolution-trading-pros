@@ -88,8 +88,8 @@
 	// STATE
 	// ═══════════════════════════════════════════════════════════════════════
 
-	let containerElement: HTMLDivElement;
-	let iframeElement: HTMLIFrameElement;
+	let containerElement = $state<HTMLDivElement | null>(null);
+	let iframeElement = $state<HTMLIFrameElement | null>(null);
 	let isLoaded = $state(false);
 	let isPlaying = $state(false);
 	let hasInteracted = $state(false);
