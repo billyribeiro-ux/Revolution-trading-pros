@@ -226,6 +226,7 @@
 			title: 'Explosive Swings',
 			items: [
 				{ href: '/dashboard/explosive-swings', icon: 'layout-dashboard', text: 'Explosive Swings Dashboard' },
+				{ href: '/dashboard/explosive-swings/start-here', icon: 'info', text: 'Start Here' },
 				{ href: '/dashboard/explosive-swings/alerts', icon: 'bolt', text: 'Alerts' }
 			]
 		},
