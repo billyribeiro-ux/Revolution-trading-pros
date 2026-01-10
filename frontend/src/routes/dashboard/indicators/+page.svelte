@@ -26,7 +26,7 @@
 	}
 	
 	// Pagination configuration - ICT 7 Enterprise Standard
-	let currentPage = 1;
+	let currentPage = $state(1);
 	const itemsPerPage = 12;
 	
 	// Mock data - replace with actual API call
@@ -88,12 +88,12 @@
 		{ id: 53, name: 'TurboVZO TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/turbovzo-tsd', icon: '', status: 'active' }
 	];
 	
-	// Computed pagination values
-	$: totalPages = Math.ceil(indicators.length / itemsPerPage);
-	$: startIndex = (currentPage - 1) * itemsPerPage;
-	$: endIndex = startIndex + itemsPerPage;
-	$: paginatedIndicators = indicators.slice(startIndex, endIndex);
-	$: pageNumbers = Array.from({ length: totalPages }, (_, i) => i + 1);
+	// Computed pagination values - Svelte 5
+	let totalPages = $derived(Math.ceil(indicators.length / itemsPerPage));
+	let startIndex = $derived((currentPage - 1) * itemsPerPage);
+	let endIndex = $derived(startIndex + itemsPerPage);
+	let paginatedIndicators = $derived(indicators.slice(startIndex, endIndex));
+	let pageNumbers = $derived(Array.from({ length: totalPages }, (_, i) => i + 1));
 	
 	// Pagination navigation functions
 	function goToPage(page: number) {
@@ -173,7 +173,7 @@
 												<li>
 													<button
 														class="page-numbers prev"
-														on:click={previousPage}
+														onclick={previousPage}
 														aria-label="Previous page"
 													>
 														← Previous
@@ -189,7 +189,7 @@
 													{:else}
 														<button
 															class="page-numbers"
-															on:click={() => goToPage(pageNum)}
+															onclick={() => goToPage(pageNum)}
 															aria-label="Go to page {pageNum}"
 														>
 															{pageNum}
@@ -203,7 +203,7 @@
 												<li>
 													<button
 														class="page-numbers next"
-														on:click={nextPage}
+														onclick={nextPage}
 														aria-label="Next page"
 													>
 														Next →
