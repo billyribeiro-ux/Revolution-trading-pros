@@ -68,7 +68,7 @@ impl Config {
             r2_secret_access_key: std::env::var("R2_SECRET_ACCESS_KEY").unwrap_or_default(),
             r2_bucket: std::env::var("R2_BUCKET").unwrap_or_else(|_| "revolution-trading-media".to_string()),
             r2_public_url: std::env::var("R2_PUBLIC_URL")
-                .unwrap_or_else(|_| "https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev".to_string()),
+                .unwrap_or_else(|_| "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev".to_string()),
 
             jwt_secret: std::env::var("JWT_SECRET").context("JWT_SECRET required")?,
             jwt_expires_in: std::env::var("JWT_EXPIRES_IN")
