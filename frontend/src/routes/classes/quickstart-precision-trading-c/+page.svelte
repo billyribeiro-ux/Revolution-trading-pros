@@ -3,7 +3,7 @@
 	<meta property="og:locale" content="en_US" />
 	<meta property="og:type" content="article" />
 	<meta property="og:title" content="Quickstart To Precision Trading" />
-	<meta property="og:site_name" content="Revolution Trading Pros" />
+	<meta property="og:site_name" content="Simpler Trading" />
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
 </svelte:head>
 
@@ -15,69 +15,24 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SVELTE 5 RUNES - Reactive State Management
 	// ═══════════════════════════════════════════════════════════════════════════
-	
-	// Viewport state for responsive behavior
 	let viewportWidth = $state(0);
-	let viewportHeight = $state(0);
 	let prefersReducedMotion = $state(false);
 	let isClient = $state(false);
 
-	// Derived breakpoint states (Apple HIG aligned)
 	const breakpoint = $derived.by(() => {
 		if (viewportWidth === 0) return 'mobile';
-		if (viewportWidth < 428) return 'mobile-small';    // iPhone SE, Mini
-		if (viewportWidth < 744) return 'mobile';          // iPhone Pro Max
-		if (viewportWidth < 1024) return 'tablet';         // iPad Mini, Air
-		if (viewportWidth < 1366) return 'desktop';        // iPad Pro, laptops
-		return 'desktop-large';                            // Large displays
+		if (viewportWidth < 428) return 'mobile-small';
+		if (viewportWidth < 744) return 'mobile';
+		if (viewportWidth < 1024) return 'tablet';
+		if (viewportWidth < 1366) return 'desktop';
+		return 'desktop-large';
 	});
 
-	const isMobile = $derived(breakpoint === 'mobile-small' || breakpoint === 'mobile');
-	const isTablet = $derived(breakpoint === 'tablet');
-	const isDesktop = $derived(breakpoint === 'desktop' || breakpoint === 'desktop-large');
-
-	// Fluid container dimensions based on viewport
-	const containerMaxWidth = $derived.by(() => {
-		switch (breakpoint) {
-			case 'mobile-small': return '100%';
-			case 'mobile': return '100%';
-			case 'tablet': return '720px';
-			case 'desktop': return '1080px';
-			case 'desktop-large': return '1080px';
-			default: return '100%';
-		}
-	});
-
-	// Downloads section dimensions (exact match to screenshot)
-	const downloadsHeight = $derived.by(() => {
-		switch (breakpoint) {
-			case 'mobile-small': return '350px';
-			case 'mobile': return '400px';
-			case 'tablet': return '450px';
-			case 'desktop': return '512px';
-			case 'desktop-large': return '512px';
-			default: return '400px';
-		}
-	});
-
-	const iframeHeight = $derived.by(() => {
-		switch (breakpoint) {
-			case 'mobile-small': return '300px';
-			case 'mobile': return '350px';
-			case 'tablet': return '400px';
-			case 'desktop': return '518px';
-			case 'desktop-large': return '518px';
-			default: return '350px';
-		}
-	});
-
-	// Effect for viewport tracking and accessibility preferences
 	$effect(() => {
 		if (!isClient) return;
 
 		const updateViewport = () => {
 			viewportWidth = window.innerWidth;
-			viewportHeight = window.innerHeight;
 		};
 
 		const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -100,7 +55,6 @@
 	onMount(() => {
 		isClient = true;
 
-		// Analytics tracking
 		if (typeof window !== 'undefined' && (window as any).richpanel) {
 			(window as any).richpanel.track('view_article', {
 				id: 1142327,
@@ -176,7 +130,6 @@
 							</video>
 						</div>
 					</div>
-					<div class=""></div>
 				</div>
 			</div>
 		</section>
@@ -190,13 +143,9 @@
 		<!-- section#dl-rp-row.class-section.cpost-section -->
 		<section class="class-section cpost-section" id="dl-rp-row">
 			<div class="section-inner">
-				<section 
-					class="class-subsection" 
-					id="class-downloads"
-					style="--downloads-height: {downloadsHeight}; --container-max-width: {containerMaxWidth};"
-				>
+				<section class="class-subsection" id="class-downloads">
 					<h2>Class Downloads</h2>
-					<div class="class-downloads-container" style="--iframe-height: {iframeHeight};">
+					<div class="class-downloads-container">
 						<iframe 
 							src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
 							width="500" 
@@ -227,17 +176,16 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * APPLE PRINCIPAL ENGINEER ICT 7 GRADE - RESPONSIVE DESIGN SYSTEM
-	 * Implements: Apple HIG, WCAG 2.2 AA, Fluid Typography, Safe Areas
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * DESIGN TOKENS - CSS Custom Properties (Systematic Breakpoint Tokens)
+	 * DESIGN TOKENS
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	:root {
-		/* ═══ Color Tokens ═══ */
-		--color-background-primary: #FFFFFF;
-		--color-background-secondary: #EFEFEF;
-		--color-background-video: #0a2335;
+		/* ═══ Color Tokens - CORRECTED ═══ */
+		--color-page-bg: #EFEFEF;
+		--color-content-bg: #FFFFFF;
+		--color-video-bg: #0a2335;
 		--color-text-primary: #666666;
 		--color-text-heading: #4a4a4a;
 		--color-text-light: #999999;
@@ -248,20 +196,19 @@
 		--color-border: #999999;
 		--color-border-light: #dddddd;
 
-		/* ═══ Spacing Tokens (8px base grid - Apple HIG) ═══ */
-		--space-1: 0.25rem;   /* 4px */
-		--space-2: 0.5rem;    /* 8px */
-		--space-3: 0.75rem;   /* 12px */
-		--space-4: 1rem;      /* 16px */
-		--space-5: 1.25rem;   /* 20px */
-		--space-6: 1.5rem;    /* 24px */
-		--space-8: 2rem;      /* 32px */
-		--space-10: 2.5rem;   /* 40px */
-		--space-12: 3rem;     /* 48px */
-		--space-15: 3.75rem;  /* 60px */
+		/* ═══ Spacing Tokens (8px grid) ═══ */
+		--space-1: 0.25rem;
+		--space-2: 0.5rem;
+		--space-3: 0.75rem;
+		--space-4: 1rem;
+		--space-5: 1.25rem;
+		--space-6: 1.5rem;
+		--space-8: 2rem;
+		--space-10: 2.5rem;
+		--space-12: 3rem;
+		--space-15: 3.75rem;
 
-		/* ═══ Fluid Typography (clamp with rem + vw for accessibility) ═══ */
-		--font-size-xs: clamp(0.75rem, 0.7rem + 0.25vw, 0.875rem);
+		/* ═══ Fluid Typography ═══ */
 		--font-size-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
 		--font-size-base: clamp(1rem, 0.925rem + 0.375vw, 1.125rem);
 		--font-size-lg: clamp(1.1rem, 1rem + 0.5vw, 1.4rem);
@@ -269,51 +216,21 @@
 		--font-size-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
 		--font-size-3xl: clamp(1.75rem, 1.5rem + 1.5vw, 2.5rem);
 
-		/* ═══ Line Heights (optimal readability) ═══ */
-		--line-height-tight: 1.2;
-		--line-height-normal: 1.5;
-		--line-height-relaxed: 1.6;
-
-		/* ═══ Touch Targets (Apple HIG: 44pt minimum) ═══ */
-		--touch-target-min: 44px;
-
-		/* ═══ Border Radius ═══ */
-		--radius-sm: 4px;
-		--radius-md: 8px;
-		--radius-lg: 12px;
-
-		/* ═══ Transitions (respect reduced motion) ═══ */
-		--transition-fast: 150ms ease-out;
-		--transition-normal: 250ms ease-out;
-		--transition-slow: 350ms ease-out;
-
-		/* ═══ Safe Area Insets (notched devices) ═══ */
+		/* ═══ Safe Areas ═══ */
 		--safe-area-inset-top: env(safe-area-inset-top, 0px);
 		--safe-area-inset-right: env(safe-area-inset-right, 0px);
 		--safe-area-inset-bottom: env(safe-area-inset-bottom, 0px);
 		--safe-area-inset-left: env(safe-area-inset-left, 0px);
 
-		/* ═══ Container Widths ═══ */
-		--container-sm: 640px;
-		--container-md: 768px;
-		--container-lg: 1024px;
-		--container-xl: 1080px;
-		--container-2xl: 1366px;
-
-		/* ═══ Z-Index Scale ═══ */
-		--z-base: 0;
-		--z-elevated: 1;
-		--z-overlay: 10;
-		--z-modal: 100;
+		/* ═══ Touch Targets ═══ */
+		--touch-target-min: 44px;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * REDUCED MOTION PREFERENCES (WCAG 2.2 AA Compliance)
+	 * REDUCED MOTION
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	@media (prefers-reduced-motion: reduce) {
-		*,
-		*::before,
-		*::after {
+		*, *::before, *::after {
 			animation-duration: 0.01ms !important;
 			animation-iteration-count: 1 !important;
 			transition-duration: 0.01ms !important;
@@ -322,77 +239,75 @@
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * BASE STYLES - Global Resets with Logical Properties
+	 * BASE STYLES
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	:global(html) {
-		font-size: 100%; /* Respect user font size preferences */
+		font-size: 100%;
 		-webkit-text-size-adjust: 100%;
 		text-size-adjust: 100%;
 		scroll-behavior: smooth;
 	}
 
 	:global(body) {
-		background-color: var(--color-background-primary) !important;
+		background-color: var(--color-page-bg) !important;
 		color: var(--color-text-primary);
 		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 		font-size: var(--font-size-base);
-		line-height: var(--line-height-normal);
-		min-block-size: 100dvh; /* Dynamic viewport height */
-		padding-inline: var(--safe-area-inset-left) var(--safe-area-inset-right);
-		padding-block-end: var(--safe-area-inset-bottom);
+		line-height: 1.5;
+		min-height: 100dvh;
+		margin: 0;
+		padding: 0;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}
 
-	:global(a),
-	:global(a:visited) {
+	:global(a), :global(a:visited) {
 		color: var(--color-link);
 		text-decoration: none;
-		transition: color var(--transition-fast);
+		transition: color 150ms ease-out;
 	}
 
-	:global(a:hover),
-	:global(a:focus) {
+	:global(a:hover), :global(a:focus) {
 		color: var(--color-link-hover);
 	}
 
 	:global(a:focus-visible) {
 		outline: 2px solid var(--color-link);
 		outline-offset: 2px;
-		border-radius: var(--radius-sm);
+		border-radius: 4px;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
 	 * PAGE WRAPPER
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	#page {
-		max-inline-size: 100%;
+		max-width: 100%;
 		margin: 0;
 		padding: 0;
 	}
 
 	#content {
-		max-inline-size: 100%;
+		max-width: 100%;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * SECTION STRUCTURE - Fluid Spacing
+	 * SECTION STRUCTURE
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	.cpost-section {
-		padding-block: clamp(var(--space-10), 5vw, var(--space-15));
+		padding: clamp(var(--space-10), 5vw, var(--space-15)) 0;
 	}
 
 	.cpost-section .section-inner {
-		max-inline-size: min(var(--container-xl), 100% - var(--space-10));
-		margin-inline: auto;
-		padding-inline: var(--space-5);
+		max-width: min(1100px, 100% - var(--space-10));
+		margin: 0 auto;
+		padding: 0 var(--space-5);
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * CLASS INFO SECTION (Non-Member Upsell)
+	 * CLASS INFO SECTION
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	#class-info {
-		padding-block: var(--space-15);
+		padding: var(--space-15) 0;
 	}
 
 	#non-member-class-upsell {
@@ -402,11 +317,11 @@
 		align-items: center;
 		text-align: center;
 		padding: clamp(var(--space-4), 3vw, var(--space-5));
-		background-color: var(--color-background-secondary);
-		max-inline-size: min(1020px, 100%);
-		min-block-size: 148px;
-		margin-inline: auto;
-		inline-size: 100%;
+		background-color: var(--color-content-bg);
+		max-width: min(1020px, 100%);
+		min-height: 148px;
+		margin: 0 auto;
+		width: 100%;
 		box-sizing: border-box;
 	}
 
@@ -414,42 +329,42 @@
 		font-size: var(--font-size-3xl);
 		font-weight: 700;
 		color: var(--color-text-primary);
-		margin-block-end: var(--space-3);
-		line-height: var(--line-height-tight);
+		margin: 0 0 var(--space-3) 0;
+		line-height: 1.2;
 	}
 
 	#non-member-class-title h3 {
 		font-size: var(--font-size-lg);
 		font-weight: 400;
 		color: var(--color-text-light);
-		margin-block-end: var(--space-4);
+		margin: 0 0 var(--space-4) 0;
 	}
 
 	#non-member-class-description {
 		color: var(--color-text-primary);
 		font-size: var(--font-size-base);
-		line-height: var(--line-height-relaxed);
+		line-height: 1.6;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
 	 * CLASS RECORDINGS SECTION
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	#class-recordings {
-		padding-block-start: 0;
+		padding-top: 0;
 	}
 
 	.cpost-content-block.class-content-block {
-		padding: 0;
+		padding: 0 clamp(var(--space-5), 4vw, var(--space-10)) clamp(var(--space-10), 4vw, var(--space-10));
 		border-radius: 0;
-		background-color: var(--color-background-secondary);
+		background-color: var(--color-content-bg);
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * VIDEO SECTION - Dark Blue Background with 25px border all sides
+	 * VIDEO SECTION - 25px padding all sides
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	.current-vid {
-		inline-size: 100%;
-		background-color: var(--color-background-video);
+		width: 100%;
+		background-color: var(--color-video-bg);
 		padding: clamp(var(--space-3), 2.5vw, var(--space-6));
 	}
 
@@ -457,7 +372,7 @@
 		color: var(--color-text-inverse);
 		font-size: var(--font-size-xl);
 		font-weight: 600;
-		margin-block-end: var(--space-3);
+		margin: 0 0 var(--space-3) 0;
 		text-align: center;
 	}
 
@@ -465,12 +380,12 @@
 		color: var(--color-text-inverse-muted);
 		font-size: var(--font-size-lg);
 		font-weight: 500;
-		margin-block-end: var(--space-4);
+		margin: 0 0 var(--space-4) 0;
 		text-align: center;
 	}
 
 	.class-video-description {
-		margin-block-end: var(--space-3);
+		margin: 0 0 var(--space-3) 0;
 	}
 
 	.class-video-container {
@@ -478,25 +393,23 @@
 		background: #000;
 		overflow: hidden;
 		border: 1px solid var(--color-border);
-		cursor: pointer;
 	}
 
 	.class-video-container.current {
-		inline-size: 100%;
+		width: 100%;
 		display: flex;
-		z-index: var(--z-elevated);
 	}
 
 	.class-video-container video {
-		inline-size: 100%;
-		block-size: auto;
+		width: 100%;
+		height: auto;
 		display: block;
 		aspect-ratio: 16 / 9;
 		object-fit: contain;
 	}
 
 	.video-overlay {
-		background-color: rgba(0, 0, 0, 0.269);
+		display: none;
 	}
 
 	.video-overlay h3 {
@@ -504,7 +417,7 @@
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * EMPTY SECTIONS - WordPress Placeholders
+	 * EMPTY SECTIONS
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	#classroom-access,
 	#class-elearning {
@@ -517,106 +430,99 @@
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * DOWNLOADS SECTION - Exact Match 1080x512 centered (Screenshot Perfect)
+	 * CLASS DOWNLOADS - EXACT: 1080x512 container, 518px iframe
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	#dl-rp-row {
-		padding-block: var(--space-10);
+		padding: var(--space-10) 0;
 	}
 
 	#dl-rp-row .section-inner {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		max-inline-size: var(--container-xl);
-		margin-inline: auto;
-		padding-inline: var(--space-5);
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 0 var(--space-5);
 	}
 
-	.class-subsection {
-		flex: 1 1 auto;
-		background-color: var(--color-background-secondary);
-		padding: clamp(var(--space-5), 3vw, var(--space-6));
-		inline-size: min(var(--container-max-width, 1080px), 100%);
-		max-inline-size: 1080px;
-		min-block-size: var(--downloads-height, 512px);
+	.class-subsection#class-downloads {
+		background-color: var(--color-content-bg);
+		padding: 25px;
+		width: 100%;
+		max-width: 1080px;
+		height: 512px;
 		box-sizing: border-box;
-	}
-
-	#class-downloads {
-		margin-inline: auto;
-		inline-size: 100%;
-		box-sizing: border-box;
+		margin: 0 auto;
 	}
 
 	#class-downloads h2 {
-		font-size: var(--font-size-2xl);
+		font-size: 1.75rem;
 		font-weight: 400;
 		color: var(--color-text-heading);
-		margin: 0 0 var(--space-6) 0;
-		text-align: start;
-		line-height: var(--line-height-tight);
+		margin: 0 0 25px 0;
+		text-align: left;
+		line-height: 1.2;
 	}
 
 	.class-downloads-container {
-		inline-size: 100%;
-		max-inline-size: 100%;
-		block-size: var(--iframe-height, 518px);
+		width: 100%;
+		height: 518px;
 		box-sizing: border-box;
-		background: var(--color-background-secondary);
+		background: var(--color-content-bg);
 	}
 
 	.class-downloads-container iframe {
-		inline-size: 100%;
-		block-size: 100%;
+		width: 100%;
+		height: 518px;
 		border: none;
 		display: block;
 	}
 
-	/* ICT 11 Fix: Fallback for iframe errors */
 	.iframe-fallback {
 		padding: var(--space-5);
 		text-align: center;
-		background-color: var(--color-background-secondary);
+		background-color: var(--color-content-bg);
 		border: 1px solid var(--color-border-light);
-		border-radius: var(--radius-sm);
+		border-radius: 4px;
 		color: var(--color-text-primary);
 	}
 
 	.iframe-fallback a {
 		color: var(--color-link);
 		text-decoration: underline;
-		/* Touch target compliance */
 		display: inline-block;
-		min-block-size: var(--touch-target-min);
+		min-height: var(--touch-target-min);
 		line-height: var(--touch-target-min);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE BREAKPOINTS - Apple HIG Aligned
-	 * Mobile-first with systematic breakpoints
+	 * RESPONSIVE BREAKPOINTS
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * MOBILE SMALL (< 428px) - iPhone SE, Mini
-	 * ───────────────────────────────────────────────────────────────────────────── */
+	/* Mobile Small (< 428px) */
 	@media (max-width: 427px) {
 		.cpost-section .section-inner {
-			padding-inline: var(--space-4);
+			padding: 0 var(--space-4);
 		}
 
 		#non-member-class-upsell {
 			padding: var(--space-4);
-			min-block-size: auto;
+			min-height: auto;
 		}
 
-		.class-subsection {
-			inline-size: 100%;
-			min-block-size: 350px;
+		.class-subsection#class-downloads {
+			width: 100%;
+			height: auto;
+			min-height: 350px;
 			padding: var(--space-4);
 		}
 
 		.class-downloads-container {
-			block-size: 300px;
+			height: 300px;
+		}
+
+		.class-downloads-container iframe {
+			height: 300px;
 		}
 
 		.current-vid {
@@ -624,135 +530,114 @@
 		}
 	}
 
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * MOBILE (428px - 743px) - iPhone Pro Max
-	 * ───────────────────────────────────────────────────────────────────────────── */
+	/* Mobile (428px - 743px) */
 	@media (min-width: 428px) and (max-width: 743px) {
-		.class-subsection {
-			inline-size: 100%;
-			min-block-size: 400px;
+		.class-subsection#class-downloads {
+			width: 100%;
+			height: auto;
+			min-height: 400px;
 		}
 
 		.class-downloads-container {
-			block-size: 350px;
+			height: 350px;
+		}
+
+		.class-downloads-container iframe {
+			height: 350px;
 		}
 	}
 
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * TABLET (744px - 1023px) - iPad Mini, Air
-	 * ───────────────────────────────────────────────────────────────────────────── */
+	/* Tablet (744px - 1023px) */
 	@media (min-width: 744px) and (max-width: 1023px) {
 		.cpost-section .section-inner {
-			padding-inline: var(--space-8);
+			padding: 0 var(--space-8);
 		}
 
-		.class-subsection {
-			inline-size: min(720px, 100%);
-			min-block-size: 450px;
+		.class-subsection#class-downloads {
+			width: 100%;
+			max-width: 720px;
+			height: auto;
+			min-height: 450px;
 		}
 
 		.class-downloads-container {
-			block-size: 400px;
+			height: 400px;
+		}
+
+		.class-downloads-container iframe {
+			height: 400px;
 		}
 
 		.current-vid {
 			padding: var(--space-6);
 		}
-
-		#dl-rp-row .section-inner {
-			flex-direction: column;
-		}
 	}
 
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * DESKTOP (1024px - 1365px) - iPad Pro, Laptops
-	 * ───────────────────────────────────────────────────────────────────────────── */
+	/* Desktop (1024px - 1365px) */
 	@media (min-width: 1024px) and (max-width: 1365px) {
 		.cpost-section .section-inner {
-			padding-inline: var(--space-10);
+			padding: 0 var(--space-10);
 		}
 
-		.class-subsection {
-			inline-size: min(1080px, 100%);
-			block-size: 512px;
-			min-block-size: 512px;
-		}
-
-		.class-downloads-container {
-			block-size: 518px;
-		}
-
-		#dl-rp-row .section-inner {
-			flex-direction: row;
-		}
-
-		#class-downloads {
-			margin-inline-end: var(--space-5);
-		}
-	}
-
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * DESKTOP LARGE (1366px+) - Large Displays
-	 * ───────────────────────────────────────────────────────────────────────────── */
-	@media (min-width: 1366px) {
-		.cpost-section .section-inner {
-			padding-inline: 0;
-		}
-
-		.class-subsection {
-			inline-size: 1080px;
-			max-inline-size: 1080px;
-			block-size: 512px;
-			min-block-size: 512px;
+		.class-subsection#class-downloads {
+			width: 100%;
+			max-width: 1080px;
+			height: 512px;
 		}
 
 		.class-downloads-container {
-			block-size: 518px;
+			height: 518px;
 		}
 
 		.class-downloads-container iframe {
-			block-size: 518px;
-		}
-
-		#dl-rp-row .section-inner {
-			flex-direction: row;
-		}
-
-		#class-downloads {
-			margin-inline-end: var(--space-5);
+			height: 518px;
 		}
 	}
 
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * HIGH DPI / RETINA DISPLAYS
-	 * ───────────────────────────────────────────────────────────────────────────── */
+	/* Desktop Large (1366px+) */
+	@media (min-width: 1366px) {
+		.cpost-section .section-inner {
+			padding: 0;
+		}
+
+		.class-subsection#class-downloads {
+			width: 1080px;
+			max-width: 1080px;
+			height: 512px;
+		}
+
+		.class-downloads-container {
+			height: 518px;
+		}
+
+		.class-downloads-container iframe {
+			height: 518px;
+		}
+	}
+
+	/* High DPI */
 	@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
-		/* Sharper borders for retina */
 		.class-video-container {
 			border-width: 0.5px;
 		}
 	}
 
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * LANDSCAPE ORIENTATION ADJUSTMENTS
-	 * ───────────────────────────────────────────────────────────────────────────── */
+	/* Landscape Mobile */
 	@media (orientation: landscape) and (max-height: 500px) {
 		.cpost-section {
-			padding-block: var(--space-6);
+			padding: var(--space-6) 0;
 		}
 
 		#class-info {
-			padding-block: var(--space-8);
+			padding: var(--space-8) 0;
 		}
 
 		#non-member-class-upsell {
-			min-block-size: auto;
+			min-height: auto;
 		}
 	}
 
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * PRINT STYLES
-	 * ───────────────────────────────────────────────────────────────────────────── */
+	/* Print */
 	@media print {
 		:global(body) {
 			background-color: white !important;
@@ -760,7 +645,6 @@
 
 		.current-vid {
 			background-color: #f0f0f0 !important;
-			color: black !important;
 		}
 
 		.class-player-header,
@@ -780,44 +664,7 @@
 		}
 	}
 
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * CONTAINER QUERIES (Progressive Enhancement)
-	 * ───────────────────────────────────────────────────────────────────────────── */
-	@supports (container-type: inline-size) {
-		#dl-rp-row .section-inner {
-			container-type: inline-size;
-			container-name: downloads-container;
-		}
-
-		@container downloads-container (min-width: 800px) {
-			.class-subsection {
-				inline-size: min(1080px, 100%);
-			}
-		}
-
-		@container downloads-container (min-width: 1100px) {
-			.class-subsection {
-				inline-size: 1080px;
-				block-size: 512px;
-			}
-
-			.class-downloads-container {
-				block-size: 518px;
-			}
-		}
-	}
-
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * DARK MODE SUPPORT (Future Enhancement)
-	 * ───────────────────────────────────────────────────────────────────────────── */
-	@media (prefers-color-scheme: dark) {
-		/* Ready for dark mode implementation */
-		/* Currently maintains light theme as per WordPress design */
-	}
-
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * HIGH CONTRAST MODE (Accessibility)
-	 * ───────────────────────────────────────────────────────────────────────────── */
+	/* High Contrast */
 	@media (prefers-contrast: high) {
 		:root {
 			--color-text-primary: #000000;
