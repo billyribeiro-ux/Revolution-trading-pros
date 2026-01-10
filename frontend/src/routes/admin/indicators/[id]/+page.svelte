@@ -241,7 +241,7 @@
 						</div>
 						<div class="form-group">
 							<label for="price">Price (USD)</label>
-							<input type="number" id="price" step="0.01" value={(indicator.price_cents / 100).toFixed(2)} onchange={(e) => indicator.price_cents = Math.round(parseFloat(e.currentTarget.value) * 100)} />
+							<input type="number" id="price" step="0.01" value={(indicator!.price_cents / 100).toFixed(2)} onchange={(e) => indicator!.price_cents = Math.round(parseFloat(e.currentTarget.value) * 100)} />
 						</div>
 						<div class="form-group">
 							<label for="is_free">Free?</label>
