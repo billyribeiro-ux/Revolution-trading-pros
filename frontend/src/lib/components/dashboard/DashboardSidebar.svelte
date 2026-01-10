@@ -574,9 +574,9 @@
 	 * - FIX #3: Removed !important cascade conflicts
 	 * - FIX #4: Proper padding-top alignment
 	 *
-	 * LAYOUT PATTERN (matching WordPress exactly):
-	 * - Desktop (1280px+): position: static, part of flex layout
-	 * - Mobile (<1280px): position: fixed, full height overlay
+	 * LAYOUT PATTERN (Industry Standard Breakpoints):
+	 * - Desktop (1024px+): position: static, part of flex layout
+	 * - Mobile/Tablet (<1024px): position: fixed, full height overlay
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1058,7 +1058,7 @@
 		transition: all 0.3s ease-in-out;
 
 		/* ═══════════════════════════════════════════════════════════════════════
-		 * DESKTOP FIRST (≥1280px) - Static flex child
+		 * DESKTOP FIRST (≥1024px) - Static flex child
 		 * This is the DEFAULT state on desktop - NOT fixed positioning
 		 * ═══════════════════════════════════════════════════════════════════════ */
 		display: block;
@@ -1073,10 +1073,10 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * MOBILE/TABLET (<1280px) - Fixed overlay panel
+	 * MOBILE/TABLET (<1024px) - Fixed overlay panel
 	 * Only apply fixed positioning on smaller screens
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	@media (max-width: 1279px) {
+	@media (max-width: 1023px) {
 		.dashboard__nav-secondary {
 			position: fixed;
 			bottom: 50px;
@@ -1379,10 +1379,10 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE - Mobile (<1280px)
+	 * RESPONSIVE - Mobile/Tablet (<1024px)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 1279px) {
+	@media (max-width: 1023px) {
 		.dashboard__sidebar {
 			position: fixed;
 			top: 0;
@@ -1452,10 +1452,10 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE - Desktop (1280px+)
+	 * RESPONSIVE - Desktop (1024px+)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (min-width: 1280px) {
+	@media (min-width: 1024px) {
 		.dashboard__sidebar {
 			position: static;
 			height: auto;

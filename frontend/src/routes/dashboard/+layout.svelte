@@ -509,8 +509,8 @@
 		}
 	}
 
-	/* Tablet: 768px - 1279px (iPad, Surface, small laptops) */
-	@media (768px <= width < 1280px) {
+	/* Tablet: 768px - 1023px (iPad, Surface) - Industry Standard Breakpoint */
+	@media (768px <= width < 1024px) {
 		.dashboard__main {
 			inline-size: 100%;
 			padding-block-end: var(--mobile-footer-height);

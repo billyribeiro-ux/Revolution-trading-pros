@@ -87,7 +87,7 @@ const config = {
 				'style-src': ['self', 'unsafe-inline', 'fonts.googleapis.com'],
 				'font-src': ['self', 'fonts.gstatic.com', 'data:'],
 				'img-src': ['self', 'data:', 'https:', 'blob:'],
-				'media-src': ['self', 'https://simpler-options.s3.amazonaws.com', 'https://simpler-cdn.s3.amazonaws.com', 'https://*.s3.amazonaws.com', 'https://cloud-streaming.s3.amazonaws.com', 'blob:'],
+				'media-src': ['self', 'https://s3.amazonaws.com', 'https://simpler-options.s3.amazonaws.com', 'https://simpler-cdn.s3.amazonaws.com', 'https://*.s3.amazonaws.com', 'https://cloud-streaming.s3.amazonaws.com', 'blob:'],
 				'connect-src': ['self', 'ws:', 'wss:', 'https:', 'https://revolution-trading-pros-api.fly.dev', 'https://revolution-trading-pros.pages.dev', 'https://www.googleapis.com', 'https://pendo-data-prod.box.com'],
 				'frame-src': ['self', 'https://simplertrading.app.box.com', 'https://*.box.com', 'https://www.youtube.com', 'https://player.vimeo.com'],
 				'frame-ancestors': ['none'],
