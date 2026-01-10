@@ -6,7 +6,6 @@
 	 */
 
 	import { onMount } from 'svelte';
-	// @ts-ignore - tus-js-client needs to be installed: npm install tus-js-client
 	import * as tus from 'tus-js-client';
 
 	interface Props {
