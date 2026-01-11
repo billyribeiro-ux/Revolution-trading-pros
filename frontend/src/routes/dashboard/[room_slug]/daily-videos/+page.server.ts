@@ -9,8 +9,6 @@
  * @version 4.0.0 - January 2026 - Unified Videos API
  */
 
-import type { ServerLoadEvent } from '@sveltejs/kit';
-
 const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
 
 // Room slug to room ID mapping
@@ -47,7 +45,8 @@ export interface PageData {
 	error?: string;
 }
 
-export async function load({ params, url, fetch, cookies }: ServerLoadEvent): Promise<PageData> {
+/** @type {import('./$types').PageServerLoad} */
+export async function load({ params, url, fetch, cookies }): Promise<PageData> {
 	const { room_slug } = params;
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const search = url.searchParams.get('search') || '';

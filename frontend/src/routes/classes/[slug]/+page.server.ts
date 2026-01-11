@@ -12,7 +12,6 @@
  * @version 1.0.0
  */
 
-import type { RequestEvent } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
 const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
@@ -60,7 +59,8 @@ interface CourseData {
 	enrollment?: unknown;
 }
 
-export const load = async ({ params, cookies, fetch }: RequestEvent<{ slug: string }>) => {
+/** @type {import('./$types').PageServerLoad} */
+export const load = async ({ params, cookies, fetch }) => {
 	const { slug } = params;
 	
 	// Get auth token for API request

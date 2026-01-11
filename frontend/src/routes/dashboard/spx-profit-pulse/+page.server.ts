@@ -9,9 +9,8 @@
  * @version 1.0.0
  */
 
-import type { ServerLoadEvent } from '@sveltejs/kit';
-
-export async function load({ fetch }: ServerLoadEvent) {
+/** @type {import('./$types').PageServerLoad} */
+export async function load({ fetch }) {
 	// Pre-fetch latest alerts and performance data
 	// TODO: Implement actual API calls when backend endpoints are ready
 	

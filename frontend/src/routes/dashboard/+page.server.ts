@@ -9,10 +9,10 @@
  * @version 1.0.0
  */
 
-import type { ServerLoadEvent } from '@sveltejs/kit';
 import { getLatestWatchlist } from '$lib/server/watchlist';
 
-export async function load({ fetch }: ServerLoadEvent) {
+/** @type {import('./$types').PageServerLoad} */
+export async function load({ fetch }) {
 	// Pre-fetch latest watchlist for 0ms render
 	const watchlist = await getLatestWatchlist(undefined, fetch);
 
