@@ -308,26 +308,26 @@
 	 * Modern CSS Best Practices (Nov/Dec 2025)
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 * 
-	 * BREAKPOINT STRATEGY:
+	 * BREAKPOINT STRATEGY (Industry Standard - Jan 2026):
 	 * - CSS Custom Properties for maintainability
-	 * - Range syntax (width >= 1280px) for modern browsers
+	 * - Range syntax for modern browsers
 	 * - Container queries where appropriate
 	 * - Logical properties for i18n support
 	 * - Fluid typography and spacing
 	 * 
-	 * DEVICE TARGETS:
-	 * - Mobile: 320px - 767px (iPhone SE to iPhone 15 Pro Max)
-	 * - Tablet: 768px - 1279px (iPad Mini to iPad Pro 11")
-	 * - Desktop: 1280px+ (MacBook Air 13" to Studio Display)
-	 * - Large: 1920px+ (iMac 27" to Pro Display XDR)
+	 * DEVICE TARGETS (Tailwind/Apple ICT 11+ Aligned):
+	 * - Mobile: < 768px (iPhone SE to iPhone 15 Pro Max) - Sidebar hidden
+	 * - Tablet+: >= 768px (iPad Mini+) - Sidebar visible
+	 * - Desktop: >= 1024px (MacBook Air 13"+) - Full layout
+	 * - Large: >= 1440px (MacBook Pro 16", iMac) - Extra spacing
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	:root {
-		/* Breakpoint tokens - Apple Design System aligned */
+		/* Breakpoint tokens - Industry Standard (Tailwind + Apple ICT 11+) */
 		--bp-mobile-max: 767px;
 		--bp-tablet-min: 768px;
-		--bp-tablet-max: 1279px;
-		--bp-desktop-min: 1280px;
+		--bp-tablet-max: 1023px;
+		--bp-desktop-min: 1024px;
 		--bp-desktop-large: 1440px;
 		--bp-desktop-xl: 1920px;
 
@@ -509,20 +509,10 @@
 		}
 	}
 
-	/* Tablet: 768px - 1023px (iPad, Surface) - Industry Standard Breakpoint */
-	@media (768px <= width < 1024px) {
-		.dashboard__main {
-			inline-size: 100%;
-			padding-block-end: var(--mobile-footer-height);
-		}
+	/* Desktop: >= 768px - Sidebar visible (Industry Standard) */
+	/* No special rules needed - sidebar stays visible via DashboardSidebar component */
 
-		/* No secondary sidebar margin on tablet */
-		.dashboard__main.has-secondary-sidebar {
-			margin-inline-start: 0;
-		}
-	}
-
-	/* Desktop: >= 1280px (MacBook Air 13"+, iMac, Studio Display) */
+	/* Desktop: >= 1024px (MacBook Air 13"+, iMac, Studio Display) */
 	/* Sidebar is static in flex layout, main content fills remaining space */
 
 	/* Large Desktop: >= 1440px (MacBook Pro 16", iMac 27") */
