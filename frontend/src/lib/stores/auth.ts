@@ -417,7 +417,8 @@ function createAuthStore() {
 
 		/**
 		 * Refresh access token with race condition prevention
-		 * @security ICT11+ Principal Engineer: Sends refresh_token in body as backend expects
+		 * @security ICT 7 Principal Engineer: Properly handles backend response envelope
+		 * Backend returns: {"success": true, "data": {"access_token": "...", "refresh_token": "...", "expires_in": 900}}
 		 */
 		refreshToken: async (): Promise<boolean> => {
 			// Prevent multiple concurrent refresh attempts
@@ -429,7 +430,7 @@ function createAuthStore() {
 			refreshPromise = (async () => {
 				try {
 					const currentRefreshToken = secureTokens.getRefreshToken();
-					
+
 					// If no refresh token in memory, we can't refresh
 					if (!currentRefreshToken) {
 						throw new Error('No refresh token available');
@@ -449,10 +450,17 @@ function createAuthStore() {
 						throw new Error('Token refresh failed');
 					}
 
-					const data = await response.json();
+					const rawData = await response.json();
 
-					if (data.token) {
-						secureTokens.setAccessToken(data.token);
+					// ICT 7 FIX: Backend wraps response in {success: true, data: {...}} envelope
+					// Unwrap the data envelope to get the actual auth response
+					const data = rawData.data || rawData;
+
+					// ICT 7 FIX: Backend sends "access_token", not "token"
+					const newAccessToken = data.access_token || data.token;
+
+					if (newAccessToken) {
+						secureTokens.setAccessToken(newAccessToken);
 
 						// Update refresh token if a new one is provided (token rotation)
 						if (data.refresh_token) {
@@ -464,6 +472,12 @@ function createAuthStore() {
 							safeLocalStorage('set', TOKEN_EXPIRY_KEY, tokenExpiry.toString());
 							update((state) => ({ ...state, tokenExpiry }));
 						}
+
+						if (import.meta.env.DEV) {
+							console.log('[Auth] Token refreshed successfully');
+						}
+					} else {
+						throw new Error('No access token in refresh response');
 					}
 				} catch (error) {
 					if (import.meta.env.DEV) {
