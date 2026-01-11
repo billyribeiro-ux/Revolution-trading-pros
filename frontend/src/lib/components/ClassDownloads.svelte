@@ -179,10 +179,6 @@
 			<div class="error-state">
 				<span>⚠️ {error}</span>
 			</div>
-		{:else if downloads.length === 0}
-			<div class="empty-state">
-				<span>No files available for download.</span>
-			</div>
 		{:else}
 			<table class="downloads-table">
 				<thead>
@@ -219,39 +215,54 @@
 					</tr>
 				</thead>
 				<tbody>
-					{#each sortedDownloads as dl, index (dl.id)}
-						<tr class:alt={index % 2 === 1}>
-							<td class="col-name">
-								<span class="file-icon">{getFileIcon(dl.file_type)}</span>
-								<div class="file-info">
-									<span class="file-name">{dl.title || dl.file_name}</span>
-									{#if isMobile}
-										<span class="file-meta">{formatFileSize(dl.file_size_bytes)}</span>
-									{/if}
+					{#if downloads.length === 0}
+						<tr>
+							<td colspan={isMobile ? 2 : (isTablet ? 3 : 4)} class="empty-state-cell">
+								<div class="empty-state-content">
+									<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+										<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+										<polyline points="13 2 13 9 20 9"/>
+									</svg>
+									<span class="empty-message">Nothing to download</span>
+									<span class="empty-submessage">No files are currently available for this class</span>
 								</div>
 							</td>
-							{#if !isMobile}
-								<td class="col-size">{formatFileSize(dl.file_size_bytes)}</td>
-							{/if}
-							{#if !isMobile && !isTablet}
-								<td class="col-date">{formatDate(dl.updated_at || dl.created_at)}</td>
-							{/if}
-							<td class="col-action">
-								<button 
-									class="download-btn" 
-									onclick={() => handleDownload(dl)}
-									aria-label="Download {dl.title || dl.file_name}"
-									disabled={!dl.download_url}
-								>
-									<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-										<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-										<polyline points="7 10 12 15 17 10"/>
-										<line x1="12" x2="12" y1="15" y2="3"/>
-									</svg>
-								</button>
-							</td>
 						</tr>
-					{/each}
+					{:else}
+						{#each sortedDownloads as dl, index (dl.id)}
+							<tr class:alt={index % 2 === 1}>
+								<td class="col-name">
+									<span class="file-icon">{getFileIcon(dl.file_type)}</span>
+									<div class="file-info">
+										<span class="file-name">{dl.title || dl.file_name}</span>
+										{#if isMobile}
+											<span class="file-meta">{formatFileSize(dl.file_size_bytes)}</span>
+										{/if}
+									</div>
+								</td>
+								{#if !isMobile}
+									<td class="col-size">{formatFileSize(dl.file_size_bytes)}</td>
+								{/if}
+								{#if !isMobile && !isTablet}
+									<td class="col-date">{formatDate(dl.updated_at || dl.created_at)}</td>
+								{/if}
+								<td class="col-action">
+									<button 
+										class="download-btn" 
+										onclick={() => handleDownload(dl)}
+										aria-label="Download {dl.title || dl.file_name}"
+										disabled={!dl.download_url}
+									>
+										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+											<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+											<polyline points="7 10 12 15 17 10"/>
+											<line x1="12" x2="12" y1="15" y2="3"/>
+										</svg>
+									</button>
+								</td>
+							</tr>
+						{/each}
+					{/if}
 				</tbody>
 			</table>
 		{/if}
@@ -457,8 +468,7 @@
 
 	/* States */
 	.loading-state,
-	.error-state,
-	.empty-state {
+	.error-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -466,6 +476,37 @@
 		padding: 48px 24px;
 		color: #666666;
 		gap: 12px;
+	}
+
+	/* Empty state inside table */
+	.empty-state-cell {
+		padding: 60px 24px !important;
+		text-align: center;
+		background: #FFFFFF !important;
+		border-bottom: none !important;
+	}
+
+	.empty-state-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.empty-state-content svg {
+		color: #c1c1c1;
+		margin-bottom: 8px;
+	}
+
+	.empty-message {
+		font-size: 16px;
+		font-weight: 600;
+		color: #666666;
+	}
+
+	.empty-submessage {
+		font-size: 14px;
+		color: #999999;
 	}
 
 	.spinner {
