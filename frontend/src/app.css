@@ -79,6 +79,35 @@
 /* CSS Variables for runtime access (IDE compatibility) */
 :root {
 	/* ═══════════════════════════════════════════════════════════════════════════
+	 * BREAKPOINTS - SINGLE SOURCE OF TRUTH (SSOT)
+	 * Svelte 5 / SvelteKit Best Practice: Define once in app.css
+	 * Aligned with Tailwind CSS defaults
+	 * 
+	 * NOTE: CSS media queries cannot use variables, so components must use
+	 * hardcoded values matching these. This serves as documentation + runtime.
+	 * 
+	 * MEDIA QUERY REFERENCE (copy-paste ready):
+	 * Mobile:  @media (max-width: 767px)  { }
+	 * Tablet+: @media (min-width: 768px)  { }
+	 * Desktop: @media (min-width: 1024px) { }
+	 * Large:   @media (min-width: 1440px) { }
+	 * XL:      @media (min-width: 1920px) { }
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--bp-mobile: 375px;       /* iPhone SE baseline */
+	--bp-mobile-lg: 428px;    /* iPhone Pro Max */
+	--bp-sm: 640px;           /* Tailwind sm */
+	--bp-md: 768px;           /* Tailwind md - SIDEBAR VISIBLE */
+	--bp-lg: 1024px;          /* Tailwind lg - Full desktop */
+	--bp-xl: 1280px;          /* Tailwind xl */
+	--bp-2xl: 1536px;         /* Tailwind 2xl */
+	--bp-3xl: 1920px;         /* Ultra-wide */
+
+	/* Layout dimensions */
+	--sidebar-width-expanded: 280px;
+	--sidebar-width-collapsed: 80px;
+	--mobile-footer-height: 50px;
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Font Families
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	--font-heading: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;

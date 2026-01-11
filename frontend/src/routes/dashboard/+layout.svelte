@@ -322,44 +322,8 @@
 	 * - Large: >= 1440px (MacBook Pro 16", iMac) - Extra spacing
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	:root {
-		/* Breakpoint tokens - Industry Standard (Tailwind + Apple ICT 11+) */
-		--bp-mobile-max: 767px;
-		--bp-tablet-min: 768px;
-		--bp-tablet-max: 1023px;
-		--bp-desktop-min: 1024px;
-		--bp-desktop-large: 1440px;
-		--bp-desktop-xl: 1920px;
-
-		/* Spacing scale - 8pt grid system */
-		--space-xs: 0.25rem;  /* 4px */
-		--space-sm: 0.5rem;   /* 8px */
-		--space-md: 1rem;     /* 16px */
-		--space-lg: 1.5rem;   /* 24px */
-		--space-xl: 2rem;     /* 32px */
-		--space-2xl: 3rem;    /* 48px */
-		--space-3xl: 4rem;    /* 64px */
-
-		/* Layout dimensions */
-		--sidebar-width-expanded: 280px;
-		--sidebar-width-collapsed: 80px;
-		--mobile-footer-height: 50px;
-
-		/* Z-index scale */
-		--z-base: 1;
-		--z-dropdown: 10;
-		--z-sticky: 100;
-		--z-overlay: 1000;
-		--z-modal: 10000;
-
-		/* Transitions - Apple-style easing */
-		--ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-		--ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
-		--ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
-		--duration-fast: 150ms;
-		--duration-normal: 250ms;
-		--duration-slow: 350ms;
-	}
+	/* Breakpoints defined in app.css (SSOT) - use var(--bp-*) or hardcoded values in media queries */
+	/* Layout uses global CSS custom properties from app.css */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Collapsed Sidebar Hover Effect - WordPress Evidence-Based Implementation
