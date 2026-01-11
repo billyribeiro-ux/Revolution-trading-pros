@@ -212,11 +212,12 @@ async fn get_analytics_dashboard(
     .await
     .unwrap_or_default();
 
-    let device_map: serde_json::Value = device_breakdown
-        .into_iter()
-        .map(|(d, c)| (d.unwrap_or_else(|| "unknown".to_string()), c))
-        .collect::<std::collections::HashMap<_, _>>()
-        .into();
+    let device_map: serde_json::Value = serde_json::to_value(
+        device_breakdown
+            .into_iter()
+            .map(|(d, c)| (d.unwrap_or_else(|| "unknown".to_string()), c))
+            .collect::<std::collections::HashMap<_, _>>()
+    ).unwrap_or_default();
 
     Ok(Json(json!({
         "success": true,

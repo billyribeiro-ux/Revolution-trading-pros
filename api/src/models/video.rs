@@ -205,14 +205,14 @@ pub struct TagDetail {
     pub color: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct TraderInfo {
     pub id: i64,
     pub name: String,
     pub slug: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, Serialize, Deserialize, sqlx::FromRow)]
 pub struct RoomInfo {
     pub id: i64,
     pub name: String,
