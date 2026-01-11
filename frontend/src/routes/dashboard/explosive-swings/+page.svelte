@@ -250,7 +250,7 @@
 		padding: 30px 20px;
 	}
 
-	@media screen and (min-width: 1280px) {
+	@media screen and (min-width: 1024px) {
 		.dashboard__content-section-member {
 			padding: 30px;
 		}
@@ -290,7 +290,7 @@
 		overflow-y: hidden;
 	}
 
-	@media screen and (min-width: 1280px) {
+	@media screen and (min-width: 1024px) {
 		.dashboard__content-section {
 			padding: 30px;
 		}

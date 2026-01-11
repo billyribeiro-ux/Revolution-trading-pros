@@ -240,7 +240,7 @@
 		padding: 20px;
 	}
 
-	@media (min-width: 1280px) {
+	@media (min-width: 1024px) {
 		.dashboard__header {
 			padding: 30px;
 		}
@@ -285,7 +285,7 @@
 		padding: 30px 20px;
 	}
 
-	@media screen and (min-width: 1280px) {
+	@media screen and (min-width: 1024px) {
 		.dashboard__content-section {
 			padding: 30px;
 		}
@@ -384,7 +384,7 @@
 		}
 	}
 
-	@media screen and (min-width: 1280px) {
+	@media screen and (min-width: 1024px) {
 		.alerts-list {
 			grid-template-columns: repeat(3, 1fr);
 		}

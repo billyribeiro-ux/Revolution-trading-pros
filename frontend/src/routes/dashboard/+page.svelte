@@ -514,7 +514,7 @@
 		padding: 20px;
 	}
     
-	@media (min-width: 1280px) {
+	@media (min-width: 1024px) {
 		.dashboard__header {
 			padding: 30px;
 		}
@@ -937,7 +937,7 @@
 		padding-top: 30px;
 	}
 
-	@media (min-width: 1280px) {
+	@media (min-width: 1024px) {
 		.dashboard__content-section {
 			padding: 30px 30px 0 30px;
 		}
