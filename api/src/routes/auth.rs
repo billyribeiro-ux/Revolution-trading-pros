@@ -87,7 +87,7 @@ async fn register(
 
     // Check if email exists
     let existing: Option<User> = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
+        "SELECT id, email, password, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
     )
         .bind(&input.email)
         .fetch_optional(&state.db.pool)
@@ -254,7 +254,7 @@ async fn verify_email(
 
     // Get user for welcome email
     let user: User = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE id = $1"
+        "SELECT id, email, password, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE id = $1"
     )
         .bind(user_id)
         .fetch_one(&state.db.pool)
@@ -343,7 +343,7 @@ async fn resend_verification(
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
     // Find user by email
     let user: Option<User> = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
+        "SELECT id, email, password, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
     )
         .bind(&input.email)
         .fetch_optional(&state.db.pool)
@@ -500,7 +500,7 @@ async fn login(
 
     // Find user
     let user_result: Option<User> = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
+        "SELECT id, email, password, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
     )
         .bind(&input.email)
         .fetch_optional(&state.db.pool)
@@ -824,7 +824,7 @@ async fn forgot_password(
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
     // Find user (but don't reveal if they exist)
     let user: Option<User> = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
+        "SELECT id, email, password, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
     )
         .bind(&input.email)
         .fetch_optional(&state.db.pool)

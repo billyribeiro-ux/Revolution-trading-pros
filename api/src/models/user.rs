@@ -14,6 +14,7 @@ pub struct User {
     pub id: i64,
     pub email: String,
     #[serde(skip_serializing)]
+    #[sqlx(rename = "password")]
     pub password_hash: String,
     pub name: String,
     #[sqlx(default)]

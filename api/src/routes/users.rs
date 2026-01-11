@@ -18,7 +18,7 @@ async fn get_user(
     Path(id): Path<i64>,
 ) -> Result<Json<UserResponse>, (StatusCode, Json<serde_json::Value>)> {
     let user: crate::models::User = sqlx::query_as(
-        "SELECT id, email, password_hash, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE id = $1"
+        "SELECT id, email, password, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE id = $1"
     )
         .bind(id)
         .fetch_optional(&state.db.pool)
