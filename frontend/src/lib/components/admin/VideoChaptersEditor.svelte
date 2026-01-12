@@ -73,7 +73,7 @@
 			return;
 		}
 
-		const endSeconds = newChapter.endTime ? parseTimeToSeconds(newChapter.endTime) : undefined;
+		const endSeconds = newChapter.endTime ? (parseTimeToSeconds(newChapter.endTime) ?? undefined) : undefined;
 
 		isSaving = true;
 		error = '';
@@ -117,7 +117,7 @@
 			return;
 		}
 
-		const endSeconds = editForm.endTime ? parseTimeToSeconds(editForm.endTime) : undefined;
+		const endSeconds = editForm.endTime ? (parseTimeToSeconds(editForm.endTime) ?? undefined) : undefined;
 
 		isSaving = true;
 		error = '';

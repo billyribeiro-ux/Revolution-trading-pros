@@ -98,7 +98,7 @@
 	let thumbnailUrl = $derived(video.thumbnail_url || defaultThumbnail);
 
 	// Extract Bunny info for preloading
-	let bunnyInfo = $derived<VideoPreloadInfo | null>(() => {
+	let bunnyInfo = $derived.by<VideoPreloadInfo | null>(() => {
 		if (video.bunny_video_guid && video.bunny_library_id) {
 			return {
 				videoId: video.bunny_video_guid,
@@ -110,7 +110,7 @@
 	});
 
 	// Loading priority based on position
-	let loadingPriority = $derived(() => {
+	let loadingPriority = $derived.by(() => {
 		if (priority !== 'auto') return priority;
 		return isInViewport ? 'high' : 'low';
 	});
@@ -167,7 +167,7 @@
 		isHovering = true;
 
 		// Trigger aggressive preloading on hover
-		const info = bunnyInfo();
+		const info = bunnyInfo;
 		if (enablePreload && info) {
 			videoPreloader.onHoverStart(info, 50); // 50ms debounce
 		}
@@ -177,7 +177,7 @@
 		isHovering = false;
 
 		// Cancel pending preload
-		const info = bunnyInfo();
+		const info = bunnyInfo;
 		if (info) {
 			videoPreloader.onHoverEnd(info);
 		}
@@ -221,9 +221,9 @@
 			<img
 				src={thumbnailUrl}
 				alt={video.title}
-				loading={loadingPriority() === 'high' ? 'eager' : 'lazy'}
+				loading={loadingPriority === 'high' ? 'eager' : 'lazy'}
 				decoding="async"
-				fetchpriority={loadingPriority()}
+				fetchpriority={loadingPriority}
 				class="video-card__image"
 				class:is-loaded={thumbnailLoaded}
 				onload={handleThumbnailLoad}

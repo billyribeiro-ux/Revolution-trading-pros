@@ -397,7 +397,10 @@ class AuthenticationService {
 				await this.refreshToken();
 				return authStore.getToken();
 			} catch (error) {
-				console.error('[AuthService] Token refresh failed:', error);
+				// CRITICAL: Token refresh failed - clear auth state to prevent subsequent
+				// requests from failing mysteriously with stale/invalid tokens
+				console.error('[AuthService] Token refresh failed - clearing auth state to prevent inconsistent state:', error);
+				authStore.clearAuth();
 				return null;
 			}
 		}
@@ -637,7 +640,10 @@ class AuthenticationService {
 
 			return fullUser;
 		} catch (error) {
-			console.error('[AuthService] Failed to fetch user data:', error);
+			// CRITICAL: Log at ERROR level so this is visible in production
+			// Returning response.user as fallback, but callers should know user fetch failed
+			console.error('[AuthService] CRITICAL: Failed to fetch full user data after login. Using initial response data as fallback. Error:', error);
+			console.warn('[AuthService] Login succeeded but user profile fetch failed - user data may be incomplete');
 			return response.user;
 		}
 	}
@@ -1439,7 +1445,9 @@ export async function initializeAuth(): Promise<boolean> {
 			return false;
 		}
 	} catch (error) {
-		console.debug('[Auth] Session restoration failed:', error);
+		// CRITICAL: Use console.warn so errors are visible in production
+		// Session restoration failures should be noticeable for debugging auth issues
+		console.warn('[Auth] Session restoration failed:', error);
 		authStore.completeInitialization(false);
 		return false;
 	}
