@@ -78,6 +78,13 @@ async fn main() -> anyhow::Result<()> {
         }
     }
 
+    // ICT 7 Principal Engineer: Bootstrap developer account from environment variables
+    // No hardcoded credentials - reads from DEVELOPER_BOOTSTRAP_* env vars
+    match db.bootstrap_developer(&config).await {
+        Ok(_) => tracing::info!("✅ Developer bootstrap complete"),
+        Err(e) => tracing::warn!("Developer bootstrap skipped or failed: {}", e),
+    }
+
     // Initialize services
     let services = Services::new(&config).await?;
     tracing::info!("Services initialized");

@@ -49,6 +49,12 @@ pub struct Config {
     // Developer Configuration (Enterprise Pattern)
     pub developer_emails: Vec<String>,
     pub developer_mode: bool,
+    
+    // Developer Bootstrap (ICT 7 - No Hardcoded Credentials)
+    // These are read from environment variables and used to bootstrap developer account on startup
+    pub developer_bootstrap_email: Option<String>,
+    pub developer_bootstrap_password_hash: Option<String>,
+    pub developer_bootstrap_name: Option<String>,
 }
 
 impl Config {
@@ -123,6 +129,11 @@ impl Config {
                 .unwrap_or_else(|_| "false".to_string())
                 .parse()
                 .unwrap_or(false),
+            
+            // ICT 7 Developer Bootstrap - Read from secure environment variables
+            developer_bootstrap_email: std::env::var("DEVELOPER_BOOTSTRAP_EMAIL").ok(),
+            developer_bootstrap_password_hash: std::env::var("DEVELOPER_BOOTSTRAP_PASSWORD_HASH").ok(),
+            developer_bootstrap_name: std::env::var("DEVELOPER_BOOTSTRAP_NAME").ok(),
         })
     }
 
