@@ -318,6 +318,7 @@
 							</div>
 							<input
 								id="name"
+								name="name"
 								type="text"
 								bind:value={name}
 								required
@@ -342,6 +343,7 @@
 							</div>
 							<input
 								id="email"
+								name="email"
 								type="email"
 								bind:value={email}
 								required
@@ -366,6 +368,7 @@
 							</div>
 							<input
 								id="password"
+								name="password"
 								type={showPassword ? 'text' : 'password'}
 								bind:value={password}
 								required
@@ -403,6 +406,7 @@
 							</div>
 							<input
 								id="password_confirmation"
+								name="password_confirmation"
 								type={showConfirmPassword ? 'text' : 'password'}
 								bind:value={password_confirmation}
 								required
