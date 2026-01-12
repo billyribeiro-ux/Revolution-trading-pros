@@ -17,7 +17,7 @@ pub mod courses;
 pub mod payments;
 pub mod search;
 pub mod products;
-pub mod indicators;
+// pub mod indicators; // Legacy - replaced by member_indicators
 pub mod posts;
 pub mod subscriptions;
 pub mod newsletter;
