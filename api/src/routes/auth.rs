@@ -542,20 +542,9 @@ async fn login(
         }
     };
 
-    // ICT 7 DEBUG: Log password bytes for diagnosis (INFO level to ensure visibility)
-    let password_bytes: Vec<u8> = input.password.as_bytes().to_vec();
-    let password_hex: String = password_bytes.iter().map(|b| format!("{:02x}", b)).collect();
-    tracing::info!(
-        target: "security",
-        event = "password_verification_start",
-        password_length = %input.password.len(),
-        password_first_char = %input.password.chars().next().unwrap_or('?'),
-        password_last_char = %input.password.chars().last().unwrap_or('?'),
-        password_hex = %password_hex,
-        hash_prefix = %&user.password_hash[..30.min(user.password_hash.len())],
-        "Verifying password - DEBUG with hex"
-    );
-    
+    // ICT 7 SECURITY: Password verification - NO password data logged
+    // Apple Principal Engineer Grade: Never log credentials, hashes, or password metadata
+
     // Verify password (this happens regardless of user existence due to above)
     let password_valid = verify_password(&input.password, &user.password_hash).map_err(|e| {
         tracing::error!("Password verification error: {}", e);

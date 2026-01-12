@@ -216,8 +216,10 @@ impl<'a> AuthService<'a> {
         Ok((user, tokens))
     }
 
+    /// ICT 7 SECURITY: Refresh tokens use separate secret
     pub async fn refresh_token(&self, refresh_token: &str) -> Result<(User, TokenPair), AppError> {
-        let claims = self.decode_token(refresh_token)?;
+        // ICT 7: Use refresh-specific decoder (separate secret)
+        let claims = self.decode_refresh_token(refresh_token)?;
         let user_id: i64 = claims.sub.parse().map_err(|_| AppError::InvalidToken)?;
 
         let user = sqlx::query_as::<_, User>(&format!(
@@ -283,6 +285,8 @@ impl<'a> AuthService<'a> {
             .map_err(|_| AppError::InvalidCredentials)
     }
 
+    /// ICT 7 SECURITY: Generate tokens with separate secrets
+    /// Apple Principal Engineer Grade: Defense in depth - prevent token type confusion
     fn generate_tokens(&self, user: &User) -> Result<TokenPair, AppError> {
         let now = Utc::now();
         let expires_in = 15 * 60; // 15 minutes
@@ -303,6 +307,7 @@ impl<'a> AuthService<'a> {
             iat: now.timestamp(),
         };
 
+        // ICT 7: Access token uses main secret
         let access_token = encode(
             &Header::default(),
             &access_claims,
@@ -310,10 +315,12 @@ impl<'a> AuthService<'a> {
         )
         .map_err(|e| AppError::Internal(format!("JWT encoding error: {}", e)))?;
 
+        // ICT 7 SECURITY: Refresh token uses SEPARATE secret
+        // This prevents refresh tokens from being used as access tokens
         let refresh_token = encode(
             &Header::default(),
             &refresh_claims,
-            &EncodingKey::from_secret(self.jwt_config.secret.as_bytes()),
+            &EncodingKey::from_secret(self.jwt_config.refresh_secret.as_bytes()),
         )
         .map_err(|e| AppError::Internal(format!("JWT encoding error: {}", e)))?;
 
@@ -324,10 +331,26 @@ impl<'a> AuthService<'a> {
         })
     }
 
+    /// ICT 7: Decode access token (uses main secret)
     fn decode_token(&self, token: &str) -> Result<Claims, AppError> {
         decode::<Claims>(
             token,
             &DecodingKey::from_secret(self.jwt_config.secret.as_bytes()),
+            &Validation::default(),
+        )
+        .map(|data| data.claims)
+        .map_err(|e| match e.kind() {
+            jsonwebtoken::errors::ErrorKind::ExpiredSignature => AppError::TokenExpired,
+            _ => AppError::InvalidToken,
+        })
+    }
+
+    /// ICT 7 SECURITY: Decode refresh token (uses SEPARATE secret)
+    /// This ensures refresh tokens cannot be used as access tokens
+    fn decode_refresh_token(&self, token: &str) -> Result<Claims, AppError> {
+        decode::<Claims>(
+            token,
+            &DecodingKey::from_secret(self.jwt_config.refresh_secret.as_bytes()),
             &Validation::default(),
         )
         .map(|data| data.claims)

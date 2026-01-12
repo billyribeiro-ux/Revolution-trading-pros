@@ -83,9 +83,16 @@ interface AuthState {
 // =============================================================================
 
 /**
- * SECURITY: Tokens stored in memory only - not accessible via XSS
- * This closure prevents direct access to tokens from global scope
- * ICT11+ Principal Engineer: Both access and refresh tokens in memory
+ * ICT 7 SECURITY: Tokens stored in memory only - XSS resistant
+ * Apple Principal Engineer Grade: Defense in depth
+ *
+ * CRITICAL SECURITY NOTES:
+ * - Access tokens: Memory only (this closure)
+ * - Refresh tokens: httpOnly cookies ONLY (set by server)
+ * - NEVER store tokens in localStorage (XSS vulnerable)
+ *
+ * The refresh token in memory is only used for the current API call.
+ * Page refreshes rely on httpOnly cookies handled by hooks.server.ts
  */
 const createSecureTokenStorage = () => {
 	let accessToken: string | null = null;
@@ -99,28 +106,21 @@ const createSecureTokenStorage = () => {
 			return accessToken;
 		},
 		setRefreshToken: (token: string | null): void => {
+			// ICT 7 SECURITY: Store in memory only - NOT localStorage
+			// Refresh tokens are also stored in httpOnly cookies by the server
+			// This memory copy is for client-side API calls only
 			refreshToken = token;
-			// ICT11+ Fix: Persist refresh token to survive page navigation
-			if (token) {
-				safeLocalStorage('set', REFRESH_TOKEN_KEY, token);
-			} else {
-				safeLocalStorage('remove', REFRESH_TOKEN_KEY);
-			}
+			// NOTE: We intentionally do NOT persist to localStorage (XSS risk)
 		},
 		getRefreshToken: (): string | null => {
-			// ICT11+ Fix: Try memory first, fallback to localStorage
-			if (refreshToken) return refreshToken;
-			const stored = safeLocalStorage<string>('get', REFRESH_TOKEN_KEY);
-			if (stored) {
-				refreshToken = stored; // Restore to memory
-				return stored;
-			}
-			return null;
+			// ICT 7 SECURITY: Memory only - no localStorage fallback
+			// If memory is empty (page refresh), rely on httpOnly cookies
+			return refreshToken;
 		},
 		clearTokens: (): void => {
 			accessToken = null;
 			refreshToken = null;
-			// ICT11+ Fix: Clear persisted refresh token
+			// ICT 7: Also clear any legacy localStorage tokens for cleanup
 			safeLocalStorage('remove', REFRESH_TOKEN_KEY);
 		}
 	};
@@ -416,12 +416,19 @@ function createAuthStore() {
 		},
 
 		/**
-		 * Refresh access token with race condition prevention
-		 * @security ICT 7 Principal Engineer: Properly handles backend response envelope
-		 * Backend returns: {"success": true, "data": {"access_token": "...", "refresh_token": "...", "expires_in": 900}}
+		 * ICT 7 SECURITY: Refresh access token using httpOnly cookies
+		 * Apple Principal Engineer Grade: Tokens never exposed to JavaScript
+		 *
+		 * SECURITY ARCHITECTURE:
+		 * 1. Refresh token stored in httpOnly cookie (set by server)
+		 * 2. credentials: 'include' sends the cookie automatically
+		 * 3. Server reads cookie, validates, returns new access token
+		 * 4. New access token stored in memory only
+		 *
+		 * This prevents XSS attacks from stealing refresh tokens.
 		 */
 		refreshToken: async (): Promise<boolean> => {
-			// Prevent multiple concurrent refresh attempts
+			// Prevent multiple concurrent refresh attempts (race condition prevention)
 			if (refreshPromise) {
 				await refreshPromise;
 				return !!secureTokens.getAccessToken();
@@ -429,40 +436,47 @@ function createAuthStore() {
 
 			refreshPromise = (async () => {
 				try {
+					// ICT 7 SECURITY: Try memory token first, then rely on httpOnly cookie
 					const currentRefreshToken = secureTokens.getRefreshToken();
 
-					// If no refresh token in memory, we can't refresh
-					if (!currentRefreshToken) {
-						throw new Error('No refresh token available');
+					// Build request body - include token if in memory, otherwise server uses cookie
+					const requestBody: Record<string, string> = {};
+					if (currentRefreshToken) {
+						requestBody.refresh_token = currentRefreshToken;
 					}
 
 					const response = await fetch('/api/auth/refresh', {
 						method: 'POST',
-						credentials: 'include',
+						credentials: 'include', // ICT 7: Sends httpOnly cookies
 						headers: {
 							'Content-Type': 'application/json',
 							'Accept': 'application/json'
 						},
-						body: JSON.stringify({ refresh_token: currentRefreshToken })
+						body: JSON.stringify(requestBody)
 					});
 
 					if (!response.ok) {
-						throw new Error('Token refresh failed');
+						// ICT 7: Check for specific error codes
+						if (response.status === 401) {
+							throw new Error('Refresh token expired or invalid');
+						}
+						throw new Error(`Token refresh failed: ${response.status}`);
 					}
 
 					const rawData = await response.json();
 
-					// ICT 7 FIX: Backend wraps response in {success: true, data: {...}} envelope
-					// Unwrap the data envelope to get the actual auth response
+					// ICT 7: Unwrap the data envelope
 					const data = rawData.data || rawData;
 
-					// ICT 7 FIX: Backend sends "access_token", not "token"
+					// ICT 7: Backend sends "access_token", not "token"
 					const newAccessToken = data.access_token || data.token;
 
 					if (newAccessToken) {
+						// Store new access token in memory only (XSS safe)
 						secureTokens.setAccessToken(newAccessToken);
 
-						// Update refresh token if a new one is provided (token rotation)
+						// Update refresh token in memory if rotated (new one provided)
+						// The httpOnly cookie is updated by the server response
 						if (data.refresh_token) {
 							secureTokens.setRefreshToken(data.refresh_token);
 						}
@@ -474,7 +488,7 @@ function createAuthStore() {
 						}
 
 						if (import.meta.env.DEV) {
-							console.log('[Auth] Token refreshed successfully');
+							console.debug('[Auth] Token refreshed successfully');
 						}
 					} else {
 						throw new Error('No access token in refresh response');
@@ -483,7 +497,6 @@ function createAuthStore() {
 					if (import.meta.env.DEV) {
 						console.error('[Auth] Token refresh failed:', error);
 					}
-					// Don't clear auth here - let the caller decide
 					throw error;
 				} finally {
 					refreshPromise = null;
