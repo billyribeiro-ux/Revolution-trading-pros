@@ -565,10 +565,27 @@ class AuthenticationService {
 			device_fingerprint: this.sessionFingerprint
 		};
 
-		const response = await this.apiRequest<AuthResponse>(API_ENDPOINTS.auth.login, {
+		// ICT 7 Fix: Use local SvelteKit proxy to avoid CORB issues
+		// Cloudflare Pages doesn't support 200 proxy redirects to external URLs
+		// The local /api/auth/login route proxies to the Fly.io backend
+		const response = await fetch('/api/auth/login', {
 			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				'Accept': 'application/json'
+			},
 			body: JSON.stringify(loginData),
-			skipAuth: true
+			credentials: 'include'
+		}).then(async (res) => {
+			const data = await res.json();
+			if (!res.ok) {
+				// Transform error response to match expected format
+				const error = new Error(data.error || 'Login failed') as any;
+				error.code = data.code;
+				error.status = res.status;
+				throw error;
+			}
+			return data as AuthResponse;
 		});
 
 		// Handle MFA requirement
