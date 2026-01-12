@@ -1,32 +1,24 @@
-import { error } from '@sveltejs/kit';
 import type { RequestEvent } from '@sveltejs/kit';
 
 /**
  * Subscriptions Page Server Load
- * ICT 11 Protocol: Enterprise-grade subscription retrieval with auth verification
+ * ICT 7 FIX: Graceful error handling - don't throw errors that could trigger logout
+ * Auth is already validated by hooks.server.ts, no need to re-check here
  */
-export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
-	const session = await locals.auth();
-
-	if (!session?.user) {
-		throw error(401, 'Unauthorized');
-	}
-
+export const load = async ({ fetch }: RequestEvent) => {
 	try {
-		// Get auth token from cookies
-		const token = cookies.get('rtp_access_token');
-		
-		// Fetch subscriptions from real API endpoint
+		// ICT 7 FIX: Use the new /api/my/subscriptions proxy endpoint
+		// This endpoint handles auth internally and returns empty array on error
 		const response = await fetch('/api/my/subscriptions', {
 			headers: {
-				'Content-Type': 'application/json',
-				...(token && { 'Authorization': `Bearer ${token}` })
+				'Content-Type': 'application/json'
 			},
 			credentials: 'include'
 		});
 
 		if (!response.ok) {
-			throw error(response.status, 'Failed to fetch subscriptions');
+			console.warn('[Subscriptions] API returned', response.status);
+			return { subscriptions: [] };
 		}
 
 		const data = await response.json();
@@ -35,7 +27,7 @@ export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
 			subscriptions: data.subscriptions || []
 		};
 	} catch (err) {
-		console.error('Error loading subscriptions:', err);
+		console.error('[Subscriptions] Error loading:', err);
 		return {
 			subscriptions: []
 		};

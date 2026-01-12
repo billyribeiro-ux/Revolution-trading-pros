@@ -405,6 +405,9 @@ class AuthenticationService {
 	/**
 	 * Get valid token (refresh if needed)
 	 * @security Uses secure memory-only token storage
+	 * 
+	 * ICT 7 FIX: Do NOT clear auth on refresh failure - the token might still be valid
+	 * Clearing auth causes unexpected logouts when refresh fails but token is still usable
 	 */
 	private async getValidToken(): Promise<string | null> {
 		// Use the secure getter from auth store
@@ -419,11 +422,12 @@ class AuthenticationService {
 				await this.refreshToken();
 				return authStore.getToken();
 			} catch (error) {
-				// CRITICAL: Token refresh failed - clear auth state to prevent subsequent
-				// requests from failing mysteriously with stale/invalid tokens
-				console.error('[AuthService] Token refresh failed - clearing auth state to prevent inconsistent state:', error);
-				authStore.clearAuth();
-				return null;
+				// ICT 7 FIX: Don't clear auth - token might still be valid for a few more minutes
+				// The actual API call will fail with 401 if token is truly invalid,
+				// and the 401 handler will properly redirect to login
+				console.warn('[AuthService] Token refresh failed, using existing token:', error);
+				// Return the existing token - let the actual API call determine if it's still valid
+				return token;
 			}
 		}
 
