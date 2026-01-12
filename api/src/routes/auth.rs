@@ -535,6 +535,16 @@ async fn login(
         }
     };
 
+    // ICT 7 DEBUG: Log password length and hash prefix for diagnosis
+    tracing::debug!(
+        target: "security_debug",
+        event = "password_verification_start",
+        password_length = %input.password.len(),
+        password_first_char = %input.password.chars().next().unwrap_or('?'),
+        hash_prefix = %&user.password_hash[..30.min(user.password_hash.len())],
+        "Verifying password"
+    );
+    
     // Verify password (this happens regardless of user existence due to above)
     let password_valid = verify_password(&input.password, &user.password_hash).map_err(|e| {
         tracing::error!("Password verification error: {}", e);
