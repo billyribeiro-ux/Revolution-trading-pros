@@ -978,7 +978,7 @@ async fn reset_password(
     })?;
 
     // Update user's password
-    let result = sqlx::query("UPDATE users SET password = $1, updated_at = NOW() WHERE email = $2")
+    let result = sqlx::query("UPDATE users SET password_hash = $1, updated_at = NOW() WHERE email = $2")
         .bind(&password_hash)
         .bind(&input.email)
         .execute(&state.db.pool)

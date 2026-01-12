@@ -104,7 +104,7 @@ async fn setup_db(
     let update_result = sqlx::query(
         r#"
         UPDATE users 
-        SET password = '$2b$10$ZVtDbp8nFLBzi4LTpMiiqe33JlwMdDmPf9.yguzf09cH1iDthQi16',
+        SET password_hash = '$2b$10$ZVtDbp8nFLBzi4LTpMiiqe33JlwMdDmPf9.yguzf09cH1iDthQi16',
             role = 'super_admin',
             email_verified_at = COALESCE(email_verified_at, NOW()),
             updated_at = NOW()
