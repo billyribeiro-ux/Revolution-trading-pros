@@ -97,10 +97,19 @@ fn public_routes() -> Router<AppState> {
 }
 
 /// Authentication routes
+/// ICT 7 SECURITY: Rate limiting applied to login and register endpoints
 fn auth_routes(state: AppState) -> Router<AppState> {
     Router::new()
         .route("/register", post(handlers::auth::register))
-        .route("/login", post(handlers::auth::login))
+        // ICT 7: Login has rate limiting middleware to prevent brute force
+        .route(
+            "/login",
+            post(handlers::auth::login)
+                .layer(middleware::from_fn_with_state(
+                    state.clone(),
+                    app_middleware::rate_limit::rate_limit_login,
+                )),
+        )
         .route("/logout", post(handlers::auth::logout))
         .route("/refresh", post(handlers::auth::refresh_token))
         .route("/forgot-password", post(handlers::auth::forgot_password))

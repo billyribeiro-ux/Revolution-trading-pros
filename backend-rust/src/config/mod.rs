@@ -47,9 +47,12 @@ pub struct RedisSettings {
     pub password: Option<String>,
 }
 
+/// ICT 7 SECURITY: Separate secrets for access and refresh tokens
+/// Apple Principal Engineer Grade: Defense in depth - token type confusion prevention
 #[derive(Debug, Clone, Deserialize)]
 pub struct JwtSettings {
     pub secret: String,
+    pub refresh_secret: String, // ICT 7: Separate secret for refresh tokens
     pub access_token_expires_in: String,
     pub refresh_token_expires_in: String,
     pub issuer: String,
@@ -78,7 +81,8 @@ pub struct EmailSettings {
     pub from_name: String,
 }
 
-/// ICT 11+: Developer mode settings for full access bypass
+/// ICT 7 SECURITY: Developer mode settings with production safeguards
+/// Apple Principal Engineer Grade: Defense in depth - never enable in production
 #[derive(Debug, Clone, Deserialize)]
 pub struct DeveloperSettings {
     pub enabled: bool,
@@ -86,10 +90,57 @@ pub struct DeveloperSettings {
     pub password: String,
 }
 
+impl DeveloperSettings {
+    /// ICT 7: Validate developer settings - CRITICAL SECURITY CHECK
+    /// Returns error if developer mode is misconfigured
+    pub fn validate(&self, is_production: bool) -> Result<(), String> {
+        // CRITICAL: Developer mode MUST be disabled in production
+        if is_production && self.enabled {
+            return Err(
+                "SECURITY VIOLATION: Developer mode cannot be enabled in production. \
+                Set DEVELOPER_MODE=false or APP_ENV to non-production value.".to_string()
+            );
+        }
+
+        // Warn if enabled with weak password
+        if self.enabled && self.password.len() < 16 {
+            tracing::warn!(
+                target: "security",
+                "Developer mode password is weak. Use at least 16 characters."
+            );
+        }
+
+        // Warn if enabled with no emails
+        if self.enabled && self.emails.is_empty() {
+            tracing::warn!(
+                target: "security",
+                "Developer mode enabled but no emails configured. This is a security risk."
+            );
+        }
+
+        Ok(())
+    }
+}
+
 impl AppConfig {
     /// Load configuration from environment variables
+    /// ICT 7 SECURITY: Validates configuration before returning
     pub fn from_env() -> anyhow::Result<Self> {
-        Ok(Self {
+        // ICT 7: Check if developer mode requires password upfront
+        let dev_mode_enabled = env::var("DEVELOPER_MODE")
+            .map(|v| v == "true")
+            .unwrap_or(false);
+
+        // Only require DEVELOPER_PASSWORD if developer mode is actually enabled
+        let dev_password = if dev_mode_enabled {
+            env::var("DEVELOPER_PASSWORD")
+                .expect("DEVELOPER_PASSWORD must be set when DEVELOPER_MODE=true")
+        } else {
+            // Dummy value when not in dev mode - never used
+            String::new()
+        };
+
+        let config = Self {
             app: AppSettings {
                 name: env::var("APP_NAME")
                     .unwrap_or_else(|_| "Revolution Trading Pros API".to_string()),
@@ -120,6 +171,14 @@ impl AppConfig {
             },
             jwt: JwtSettings {
                 secret: env::var("JWT_SECRET").expect("JWT_SECRET must be set"),
+                // ICT 7 SECURITY: Separate refresh token secret - falls back to main secret if not set
+                // Apple Principal Engineer Grade: Defense in depth - recommend setting separate secret
+                refresh_secret: env::var("JWT_REFRESH_SECRET")
+                    .unwrap_or_else(|_| {
+                        let main_secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
+                        // Derive a different secret by appending suffix (still recommend separate env var)
+                        format!("{}_refresh_v1", main_secret)
+                    }),
                 access_token_expires_in: env::var("JWT_ACCESS_TOKEN_EXPIRES_IN")
                     .unwrap_or_else(|_| "15m".to_string()),
                 refresh_token_expires_in: env::var("JWT_REFRESH_TOKEN_EXPIRES_IN")
@@ -158,18 +217,39 @@ impl AppConfig {
                     .unwrap_or_else(|_| "Revolution Trading Pros".to_string()),
             },
             developer: DeveloperSettings {
-                enabled: env::var("DEVELOPER_MODE")
-                    .map(|v| v == "true")
-                    .unwrap_or(false),
+                enabled: dev_mode_enabled,
                 emails: env::var("DEVELOPER_EMAILS")
                     .unwrap_or_default()
                     .split(',')
                     .map(|s| s.trim().to_lowercase())
                     .filter(|s| !s.is_empty())
                     .collect(),
-                password: env::var("DEVELOPER_PASSWORD").unwrap_or_else(|_| "dev123!".to_string()),
+                // ICT 7 SECURITY: Password required only when dev mode enabled
+                password: dev_password,
             },
-        })
+        };
+
+        // ICT 7 SECURITY: Validate developer settings BEFORE returning config
+        let is_production = config.is_production();
+        if let Err(e) = config.developer.validate(is_production) {
+            // In production with developer mode, this is a fatal security violation
+            if is_production {
+                panic!("SECURITY: {}", e);
+            } else {
+                tracing::error!(target: "security", "{}", e);
+            }
+        }
+
+        // Log security-relevant configuration on startup
+        if dev_mode_enabled {
+            tracing::warn!(
+                target: "security",
+                developer_emails = ?config.developer.emails,
+                "⚠️ DEVELOPER MODE ENABLED - Authentication bypass active for configured emails"
+            );
+        }
+
+        Ok(config)
     }
 
     /// Check if running in production

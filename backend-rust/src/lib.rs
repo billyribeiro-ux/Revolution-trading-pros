@@ -1,7 +1,7 @@
 //! Revolution Trading Pros - Library Root
 //!
-//! Apple ICT 11+ Principal Engineer Grade
-//! Enterprise-grade Rust/Axum API
+//! ICT 7 Principal Engineer Grade
+//! Enterprise-grade Rust/Axum API with security hardening
 
 use std::sync::Arc;
 
@@ -21,8 +21,11 @@ pub mod validation;
 
 pub use errors::AppError;
 pub use responses::ApiResponse;
+pub use middleware::rate_limit::RateLimiter;
+pub use services::TokenBlacklist;
 
 /// Application state shared across all handlers
+/// ICT 7 SECURITY: Includes rate limiter and token blacklist
 #[derive(Clone)]
 pub struct AppState {
     /// PostgreSQL connection pool
@@ -31,4 +34,8 @@ pub struct AppState {
     pub redis: Option<redis::Client>,
     /// Application configuration
     pub config: Arc<config::AppConfig>,
+    /// ICT 7 SECURITY: In-memory rate limiter for auth endpoints
+    pub rate_limiter: RateLimiter,
+    /// ICT 7 SECURITY: Token blacklist for logout/revocation
+    pub token_blacklist: TokenBlacklist,
 }

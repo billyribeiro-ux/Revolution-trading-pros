@@ -26,7 +26,13 @@ use tower_http::{
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use revolution_trading_pros_api::{config::AppConfig, routes, AppState};
+use revolution_trading_pros_api::{
+    config::AppConfig,
+    middleware::rate_limit::new_rate_limiter,
+    routes,
+    services::{new_token_blacklist, start_cleanup_task},
+    AppState,
+};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -94,11 +100,22 @@ async fn main() -> anyhow::Result<()> {
         None
     };
 
+    // ICT 7 SECURITY: Create rate limiter for auth endpoints
+    let rate_limiter = new_rate_limiter();
+    tracing::info!("Rate limiter initialized for authentication protection");
+
+    // ICT 7 SECURITY: Create token blacklist for logout/revocation
+    let token_blacklist = new_token_blacklist();
+    start_cleanup_task(token_blacklist.clone());
+    tracing::info!("Token blacklist initialized with automatic cleanup");
+
     // Create application state
     let state = AppState {
         db: db_pool,
         redis: redis_client,
         config: Arc::new(config.clone()),
+        rate_limiter,
+        token_blacklist,
     };
 
     // Build application router
@@ -127,8 +144,9 @@ async fn main() -> anyhow::Result<()> {
 
     tracing::info!("Listening on {}", addr);
 
-    // Start server
+    // Start server with ConnectInfo for rate limiting (need client IP)
     let listener = TcpListener::bind(addr).await?;
+    let app = app.into_make_service_with_connect_info::<SocketAddr>();
     axum::serve(listener, app)
         .with_graceful_shutdown(shutdown_signal())
         .await?;

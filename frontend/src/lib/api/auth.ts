@@ -565,15 +565,14 @@ class AuthenticationService {
 			device_fingerprint: this.sessionFingerprint
 		};
 
-		// ICT 7 DEBUG: Log exactly what's being sent (mask password for security)
-		console.log('[AuthService:DEBUG] Login request:', {
-			email: loginData.email,
-			passwordLength: loginData.password?.length,
-			passwordFirstChar: loginData.password?.charAt(0),
-			passwordLastChar: loginData.password?.charAt(loginData.password.length - 1),
-			hasDeviceName: !!loginData.device_name,
-			hasFingerprint: !!loginData.device_fingerprint
-		});
+		// ICT 7 SECURITY: Log login attempt without any password metadata
+		// Apple Principal Engineer Grade: Never log credentials or password characteristics
+		if (import.meta.env.DEV) {
+			console.debug('[AuthService] Login attempt:', {
+				email: loginData.email?.replace(/(.{2}).*(@.*)/, '$1***$2'),
+				hasCredentials: !!loginData.password
+			});
+		}
 
 		const response = await this.apiRequest<AuthResponse>(API_ENDPOINTS.auth.login, {
 			method: 'POST',

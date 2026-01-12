@@ -1,14 +1,24 @@
 //! Authentication Handlers
 //!
-//! ICT 11+ Principal Engineer Grade
+//! ICT 7 Principal Engineer Grade
 //! JWT-based authentication with Argon2 password hashing
+//! Security-hardened with token revocation
 
-use axum::{extract::State, http::StatusCode, Json};
+use axum::{
+    extract::State,
+    http::{header, StatusCode},
+    Json,
+};
+use axum::extract::Request;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 
 use crate::{
-    errors::AppError, models::User, responses::ApiResponse, services::AuthService, AppState,
+    errors::AppError,
+    models::User,
+    responses::ApiResponse,
+    services::{revoke_token, AuthService},
+    AppState,
 };
 
 // =============================================================================
@@ -163,10 +173,28 @@ pub async fn login(
 }
 
 /// POST /api/auth/logout
-#[tracing::instrument]
-pub async fn logout() -> Result<Json<serde_json::Value>, AppError> {
-    // In a stateless JWT system, logout is handled client-side
-    // For stateful sessions, we would invalidate the token here
+/// ICT 7 SECURITY: Revokes the access token to prevent further use
+#[tracing::instrument(skip(state, request))]
+pub async fn logout(
+    State(state): State<AppState>,
+    request: Request,
+) -> Result<Json<serde_json::Value>, AppError> {
+    // Extract the token from Authorization header
+    if let Some(auth_header) = request.headers().get(header::AUTHORIZATION) {
+        if let Ok(auth_str) = auth_header.to_str() {
+            if let Some(token) = auth_str.strip_prefix("Bearer ") {
+                // ICT 7 SECURITY: Revoke the token
+                // Access tokens expire in 15 minutes (900 seconds)
+                revoke_token(&state.token_blacklist, token, 900).await;
+
+                tracing::info!(
+                    target: "security",
+                    "Token revoked on logout"
+                );
+            }
+        }
+    }
+
     Ok(Json(serde_json::json!({
         "success": true,
         "message": "Logged out successfully"
