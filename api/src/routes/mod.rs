@@ -34,14 +34,8 @@ pub mod cms;
 pub mod realtime;
 pub mod unified_videos;
 pub mod video_advanced;
-pub mod popups;
-pub mod trading_rooms;
-pub mod admin_courses;
-pub mod member_courses;
-pub mod admin_indicators;
-pub mod member_indicators;
-pub mod migrate;
-pub mod admin_page_layouts;
+pub mod courses_admin;
+pub mod indicators_admin;
 
 use axum::Router;
 use crate::AppState;
@@ -74,6 +68,9 @@ pub fn api_router() -> Router<AppState> {
         .nest("/unified-videos", unified_videos::router()) // Public access route
         .nest("/admin/video-advanced", video_advanced::router())
         .nest("/video-advanced", video_advanced::router())
+        // Enhanced Course & Indicator Management - ICT 7 Grade
+        .nest("/admin/courses-enhanced", courses_admin::router())
+        .nest("/admin/indicators-enhanced", indicators_admin::router())
         .nest("/migrate", migrate::router())
         .nest("/my/orders", orders::router())
         .nest("/my/subscriptions", subscriptions::my_router())
