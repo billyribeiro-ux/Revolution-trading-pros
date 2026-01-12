@@ -560,7 +560,9 @@ async fn login(
 
     if !password_valid {
         // Record failed attempt for rate limiting
-        let _ = state.services.redis.record_failed_login(&input.email).await;
+        if let Some(redis) = &state.services.redis {
+            let _ = redis.record_failed_login(&input.email).await;
+        }
         
         tracing::info!(
             target: "security",
@@ -577,7 +579,9 @@ async fn login(
     }
 
     // Clear failed login attempts on successful authentication
-    let _ = state.services.redis.clear_login_attempts(&input.email).await;
+    if let Some(redis) = &state.services.redis {
+        let _ = redis.clear_login_attempts(&input.email).await;
+    }
 
     // ICT 11+ ENTERPRISE SECURITY: Email Verification Enforcement
     // Apple Principal Engineer Grade - Zero Trust Security Model
@@ -782,8 +786,10 @@ async fn logout(
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
     // Invalidate session in Redis if session_id provided
     if let Some(session_id) = input.session_id {
-        if let Err(e) = state.services.redis.invalidate_session(&session_id).await {
-            tracing::warn!("Failed to invalidate session: {}", e);
+        if let Some(redis) = &state.services.redis {
+            if let Err(e) = redis.invalidate_session(&session_id).await {
+                tracing::warn!("Failed to invalidate session: {}", e);
+            }
         }
     }
 

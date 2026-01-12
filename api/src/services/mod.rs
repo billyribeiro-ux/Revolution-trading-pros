@@ -17,7 +17,7 @@ use crate::config::Config;
 /// Container for all external services
 #[derive(Clone)]
 pub struct Services {
-    pub redis: redis::RedisService,
+    pub redis: Option<redis::RedisService>,
     pub storage: storage::StorageService,
     pub stripe: stripe::StripeService,
     pub search: search::SearchService,
@@ -46,8 +46,29 @@ impl Services {
             tracing::warn!("Email service not initialized (POSTMARK_TOKEN not set)");
         }
 
+        // Initialize Redis (optional - timeout after 2 seconds)
+        let redis = tokio::time::timeout(
+            std::time::Duration::from_secs(2),
+            redis::RedisService::new(&config.redis_url)
+        ).await;
+
+        let redis = match redis {
+            Ok(Ok(r)) => {
+                tracing::info!("Redis service initialized");
+                Some(r)
+            }
+            Ok(Err(e)) => {
+                tracing::warn!("Redis connection failed: {}", e);
+                None
+            }
+            Err(_) => {
+                tracing::warn!("Redis connection timeout - continuing without Redis");
+                None
+            }
+        };
+
         Ok(Self {
-            redis: redis::RedisService::new(&config.redis_url).await?,
+            redis,
             storage: storage::StorageService::new(config).await?,
             stripe: stripe::StripeService::new(&config.stripe_secret_key),
             search,

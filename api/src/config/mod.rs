@@ -67,7 +67,7 @@ impl Config {
             environment: std::env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string()),
 
             database_url: std::env::var("DATABASE_URL").context("DATABASE_URL required")?,
-            redis_url: std::env::var("REDIS_URL").context("REDIS_URL required")?,
+            redis_url: std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379".to_string()),
 
             r2_endpoint: std::env::var("R2_ENDPOINT").unwrap_or_default(),
             r2_access_key_id: std::env::var("R2_ACCESS_KEY_ID").unwrap_or_default(),
