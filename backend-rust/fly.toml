@@ -13,6 +13,12 @@ RUST_LOG = "info,sqlx=warn,tower_http=debug"
 RUST_BACKTRACE = "1"
 HOST = "0.0.0.0"
 PORT = "8080"
+APP_ENV = "production"
+# CORS: Allow both Cloudflare Pages subdomain and custom domain
+CORS_ALLOWED_ORIGINS = "https://revolution-trading-pros.pages.dev,https://revolutiontradingpros.com,https://www.revolutiontradingpros.com"
+CORS_MAX_AGE = "3600"
+# Frontend URL for email links and redirects
+FRONTEND_URL = "https://revolution-trading-pros.pages.dev"
 
 [http_service]
 internal_port = 8080
