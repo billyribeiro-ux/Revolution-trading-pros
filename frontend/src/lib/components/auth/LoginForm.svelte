@@ -495,24 +495,29 @@
 				);
 			}
 
-			// ICT 11+: Handle EMAIL_NOT_VERIFIED error specifically
-			if (error && typeof error === 'object') {
+			// ICT 7 Fix: Simplified error handling to ensure generalError is always set
+			let errorMessage = 'Unable to sign in. Please check your credentials and try again.';
+			
+			if (error instanceof Error) {
+				errorMessage = error.message;
+			} else if (error && typeof error === 'object') {
 				const errorObj = error as any;
-				if (errorObj.code === 'EMAIL_NOT_VERIFIED' || errorObj.message?.includes('verify your email')) {
-					emailNotVerified = true;
-					generalError = '';
-				} else if ('errors' in errorObj && errorObj.errors) {
-					// ICT 11+ Svelte 5 Fix: Create new object to ensure reactivity
-					errors = { ...errorObj.errors };
-				} else if (errorObj.message) {
-					generalError = errorObj.message;
-				} else {
-					generalError = 'Unable to sign in. Please check your credentials and try again.';
+				if (errorObj.message) {
+					errorMessage = errorObj.message;
+				} else if (errorObj.error) {
+					errorMessage = errorObj.error;
 				}
-			} else if (error instanceof Error) {
-				generalError = error.message;
+			}
+			
+			// Check for email verification error
+			if (errorMessage.toLowerCase().includes('verify your email') || 
+				(error && typeof error === 'object' && (error as any).code === 'EMAIL_NOT_VERIFIED')) {
+				emailNotVerified = true;
+				generalError = '';
 			} else {
-				generalError = 'Unable to sign in. Please check your credentials and try again.';
+				// ICT 7 Debug: Log before setting generalError
+				console.log('[LoginForm:ICT7] Setting generalError to:', errorMessage);
+				generalError = errorMessage;
 			}
 		} finally {
 			isLoading = false;
