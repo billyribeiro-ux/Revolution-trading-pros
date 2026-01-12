@@ -36,6 +36,14 @@ pub mod unified_videos;
 pub mod video_advanced;
 pub mod courses_admin;
 pub mod indicators_admin;
+pub mod member_courses;
+pub mod member_indicators;
+pub mod admin_courses;
+pub mod admin_indicators;
+pub mod admin_page_layouts;
+pub mod migrate;
+pub mod popups;
+pub mod trading_rooms;
 
 use axum::Router;
 use crate::AppState;
