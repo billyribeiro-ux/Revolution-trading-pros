@@ -565,6 +565,16 @@ class AuthenticationService {
 			device_fingerprint: this.sessionFingerprint
 		};
 
+		// ICT 7 DEBUG: Log exactly what's being sent (mask password for security)
+		console.log('[AuthService:DEBUG] Login request:', {
+			email: loginData.email,
+			passwordLength: loginData.password?.length,
+			passwordFirstChar: loginData.password?.charAt(0),
+			passwordLastChar: loginData.password?.charAt(loginData.password.length - 1),
+			hasDeviceName: !!loginData.device_name,
+			hasFingerprint: !!loginData.device_fingerprint
+		});
+
 		const response = await this.apiRequest<AuthResponse>(API_ENDPOINTS.auth.login, {
 			method: 'POST',
 			body: JSON.stringify(loginData),
