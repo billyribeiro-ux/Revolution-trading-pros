@@ -468,9 +468,16 @@ async fn login(
 
     // ICT L11+ Security: Check rate limit BEFORE any processing
     // Gracefully degrade if Redis is unavailable
-    let rate_limit_result = state.services.redis
-        .check_login_rate_limit(&input.email)
-        .await;
+    let rate_limit_result = if let Some(redis) = &state.services.redis {
+        redis.check_login_rate_limit(&input.email).await
+    } else {
+        Ok(crate::services::redis::RateLimitResult {
+            allowed: true,
+            remaining: 999,
+            retry_after: None,
+            locked: false,
+        })
+    };
     
     match rate_limit_result {
         Ok(rate_limit) => {
@@ -670,12 +677,13 @@ async fn login(
     let session_id = generate_session_id();
     
     // ICT L11+ Security: Create server-side session in Redis
-    if let Err(e) = state.services.redis
-        .create_session(&session_id, user.id, &user.email, None, None)
-        .await
-    {
-        tracing::error!("Failed to create session in Redis: {}", e);
-        // Continue anyway - JWT still works without Redis session
+    if let Some(redis) = &state.services.redis {
+        if let Err(e) = redis
+            .create_session(&session_id, user.id, &user.email, None, None)
+            .await
+        {
+            tracing::warn!("Failed to create session in Redis: {}", e);
+        }
     }
 
     // Security audit: successful login
@@ -813,13 +821,14 @@ async fn logout_all(
     State(state): State<AppState>,
     user: User,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let count = state.services.redis
-        .invalidate_all_user_sessions(user.id)
-        .await
-        .map_err(|e| {
-            tracing::error!("Failed to invalidate all sessions: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Failed to logout from all devices"})))
-        })?;
+    let count = if let Some(redis) = &state.services.redis {
+        redis
+            .invalidate_all_user_sessions(user.id)
+            .await
+            .unwrap_or(0)
+    } else {
+        0
+    };
 
     tracing::info!(
         target: "security",
