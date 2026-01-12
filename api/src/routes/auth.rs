@@ -685,7 +685,8 @@ async fn login(
     );
 
     Ok(Json(AuthResponse {
-        token,
+        token: token.clone(),
+        access_token: token,  // Frontend prefers access_token
         refresh_token,
         session_id,
         user: user.into(),

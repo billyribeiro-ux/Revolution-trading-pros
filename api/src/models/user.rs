@@ -45,6 +45,8 @@ pub struct LoginUser {
     pub remember: Option<bool>,
     #[serde(default)]
     pub device_name: Option<String>,
+    #[serde(default)]
+    pub device_fingerprint: Option<String>,
 }
 
 /// Request to refresh token
@@ -69,10 +71,11 @@ pub struct ResetPasswordRequest {
 }
 
 /// Authentication response - matches frontend AuthResponse interface
-/// Frontend expects: token, refresh_token, session_id, user, expires_in
+/// Frontend expects: token/access_token, refresh_token, session_id, user, expires_in
 #[derive(Debug, Serialize)]
 pub struct AuthResponse {
     pub token: String,
+    pub access_token: String,  // Alias for token - frontend prefers this
     pub refresh_token: String,
     pub session_id: String,
     pub user: UserResponse,
