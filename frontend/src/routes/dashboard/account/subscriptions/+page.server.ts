@@ -1,14 +1,24 @@
-import type { RequestEvent } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
 /**
  * Subscriptions Page Server Load
- * ICT 7 FIX: Graceful error handling - don't throw errors that could trigger logout
- * Auth is already validated by hooks.server.ts, no need to re-check here
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * Apple Principal Engineer ICT 7 Grade Implementation
+ * 
+ * DESIGN PRINCIPLES:
+ * - Graceful degradation: Never throw errors that could trigger logout
+ * - Defense in depth: Auth validated by hooks.server.ts, proxy handles token
+ * - Separation of concerns: Page load delegates to API proxy
+ * - Performance: Request timing for debugging
+ * 
+ * @version 1.0.0
  */
-export const load = async ({ fetch }: RequestEvent) => {
+export const load: PageServerLoad = async ({ fetch }) => {
+	const startTime = performance.now();
+	
 	try {
-		// ICT 7 FIX: Use the new /api/my/subscriptions proxy endpoint
-		// This endpoint handles auth internally and returns empty array on error
+		// ICT 7: Delegate to proxy endpoint which handles auth and errors gracefully
 		const response = await fetch('/api/my/subscriptions', {
 			headers: {
 				'Content-Type': 'application/json'
@@ -16,20 +26,27 @@ export const load = async ({ fetch }: RequestEvent) => {
 			credentials: 'include'
 		});
 
+		const duration = Math.round(performance.now() - startTime);
+
 		if (!response.ok) {
-			console.warn('[Subscriptions] API returned', response.status);
+			console.warn(`[Subscriptions:PageLoad] API returned ${response.status} (${duration}ms)`);
 			return { subscriptions: [] };
 		}
 
 		const data = await response.json();
+		const subscriptions = data.subscriptions || [];
+		
+		console.debug(`[Subscriptions:PageLoad] Loaded ${subscriptions.length} subscriptions (${duration}ms)`);
 
-		return {
-			subscriptions: data.subscriptions || []
-		};
+		return { subscriptions };
 	} catch (err) {
-		console.error('[Subscriptions] Error loading:', err);
-		return {
-			subscriptions: []
-		};
+		// ICT 7: Structured error logging
+		const duration = Math.round(performance.now() - startTime);
+		const errorMessage = err instanceof Error ? err.message : 'Unknown error';
+		
+		console.error(`[Subscriptions:PageLoad] Failed: ${errorMessage} (${duration}ms)`);
+		
+		// ICT 7: Graceful degradation - return empty array, never crash
+		return { subscriptions: [] };
 	}
 };
