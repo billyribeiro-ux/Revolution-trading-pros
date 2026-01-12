@@ -3255,6 +3255,7 @@ dependencies = [
  "hyper 1.8.1",
  "jsonwebtoken",
  "lazy_static",
+ "libc",
  "md5",
  "meilisearch-sdk",
  "rand 0.8.5",

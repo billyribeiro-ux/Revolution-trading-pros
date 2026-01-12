@@ -2,6 +2,7 @@
 //! ICT 7 Principal Engineer Grade - Secure Bootstrap System
 
 use anyhow::Result;
+use argon2::password_hash::PasswordHash;
 use sqlx::{postgres::PgPoolOptions, PgPool};
 
 use crate::config::Config;
@@ -70,6 +71,32 @@ impl Database {
                 return Ok(());
             }
         };
+        
+        // ICT 7+: Config-time validation - catch malformed hashes at startup, not runtime
+        if !password_hash.starts_with("$argon2id$") {
+            tracing::error!(
+                target: "security_audit",
+                event = "developer_bootstrap_invalid_hash",
+                "ICT 7: DEVELOPER_BOOTSTRAP_PASSWORD_HASH must be an Argon2id hash (starts with $argon2id$)"
+            );
+            return Err(anyhow::anyhow!(
+                "Invalid DEVELOPER_BOOTSTRAP_PASSWORD_HASH format. Expected Argon2id hash. \
+                 Use 'cargo run --bin bootstrap_dev' to generate a proper hash."
+            ));
+        }
+        
+        // Validate hash can be parsed
+        if argon2::PasswordHash::new(&password_hash).is_err() {
+            tracing::error!(
+                target: "security_audit",
+                event = "developer_bootstrap_malformed_hash",
+                "ICT 7: DEVELOPER_BOOTSTRAP_PASSWORD_HASH is malformed and cannot be parsed"
+            );
+            return Err(anyhow::anyhow!(
+                "Malformed DEVELOPER_BOOTSTRAP_PASSWORD_HASH. The hash cannot be parsed. \
+                 Use 'cargo run --bin bootstrap_dev' to generate a valid hash."
+            ));
+        }
         
         let name = config.developer_bootstrap_name
             .clone()
