@@ -85,7 +85,7 @@ export interface DynamicArchivePageData {
 
 /** @type {import('./$types').PageServerLoad} */
 export const load = async ({ url, fetch, params }): Promise<DynamicArchivePageData> => {
-	const API_URL = env.API_URL || 'https://api.revolutiontradingpros.com';
+	const API_URL = env.API_URL || 'https://api.revolution-trading-pros.pages.dev';
 	const roomSlug = params.room_slug;
 	
 	// Get room config

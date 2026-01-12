@@ -91,8 +91,8 @@ impl Config {
                     // Include localhost origins for development
                     let origins = vec![
                         "https://revolution-trading-pros.pages.dev",
-                        "https://revolutiontradingpros.com",
-                        "https://www.revolutiontradingpros.com",
+                        "https://revolution-trading-pros.pages.dev",
+                        "https://www.revolution-trading-pros.pages.dev",
                         "http://localhost:5173",
                         "http://localhost:3000",
                         "http://127.0.0.1:5173",

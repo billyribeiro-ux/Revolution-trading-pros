@@ -49,11 +49,11 @@ spec:
           
           env:
             - name: VITE_API_URL
-              value: "https://api.revolutiontradingpros.com/api"
+              value: "https://api.revolution-trading-pros.pages.dev/api"
             - name: VITE_WS_URL
-              value: "wss://api.revolutiontradingpros.com"
+              value: "wss://api.revolution-trading-pros.pages.dev"
             - name: VITE_CDN_URL
-              value: "https://cdn.revolutiontradingpros.com"
+              value: "https://cdn.revolution-trading-pros.pages.dev"
             - name: NODE_ENV
               value: "production"
           
@@ -166,11 +166,11 @@ metadata:
 spec:
   tls:
     - hosts:
-        - revolutiontradingpros.com
-        - www.revolutiontradingpros.com
+        - revolution-trading-pros.pages.dev
+        - www.revolution-trading-pros.pages.dev
       secretName: frontend-tls
   rules:
-    - host: revolutiontradingpros.com
+    - host: revolution-trading-pros.pages.dev
       http:
         paths:
           - path: /
@@ -180,7 +180,7 @@ spec:
                 name: frontend-service
                 port:
                   number: 80
-    - host: www.revolutiontradingpros.com
+    - host: www.revolution-trading-pros.pages.dev
       http:
         paths:
           - path: /

@@ -70,7 +70,7 @@ pub async fn sitemap_index(State(state): State<AppState>) -> Response {
         .unwrap_or(0);
 
     let sitemap_count = (post_count as f64 / MAX_URLS_PER_SITEMAP as f64).ceil() as i64;
-    let site_url = std::env::var("SITE_URL").unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
+    let site_url = std::env::var("SITE_URL").unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string());
 
     let mut content = String::from("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     content.push_str("<sitemapindex xmlns=\"http://www.sitemaps.org/schemas/sitemap/0.9\">\n");
@@ -123,7 +123,7 @@ pub async fn main_sitemap(State(state): State<AppState>) -> Response {
         }
     }
 
-    let site_url = std::env::var("SITE_URL").unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
+    let site_url = std::env::var("SITE_URL").unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string());
     let mut content = build_xml_header(false);
 
     // Static pages
@@ -198,7 +198,7 @@ pub async fn posts(State(state): State<AppState>, Path(page): Path<i64>) -> Resp
         }
     }
 
-    let site_url = std::env::var("SITE_URL").unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
+    let site_url = std::env::var("SITE_URL").unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string());
     let offset = (page - 1) * MAX_URLS_PER_SITEMAP;
 
     let posts: Vec<(String, DateTime<Utc>, Option<String>)> = sqlx::query_as(
@@ -247,7 +247,7 @@ pub async fn categories(State(state): State<AppState>) -> Response {
         }
     }
 
-    let site_url = std::env::var("SITE_URL").unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
+    let site_url = std::env::var("SITE_URL").unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string());
 
     let categories: Vec<(String, DateTime<Utc>)> = sqlx::query_as(
         "SELECT slug, updated_at FROM categories WHERE is_active = true"
@@ -289,7 +289,7 @@ pub async fn tags_sitemap(State(state): State<AppState>) -> Response {
         }
     }
 
-    let site_url = std::env::var("SITE_URL").unwrap_or_else(|_| "https://revolutiontradingpros.com".to_string());
+    let site_url = std::env::var("SITE_URL").unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string());
 
     let tags: Vec<(String, DateTime<Utc>)> = sqlx::query_as(
         "SELECT slug, updated_at FROM tags"

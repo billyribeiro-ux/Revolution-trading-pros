@@ -114,9 +114,9 @@ spec:
             - name: REDIS_HOST
               value: "redis-service"
             - name: APP_URL
-              value: "https://api.revolutiontradingpros.com"
+              value: "https://api.revolution-trading-pros.pages.dev"
             - name: FRONTEND_URL
-              value: "https://revolutiontradingpros.com"
+              value: "https://revolution-trading-pros.pages.dev"
           
           # Resource limits
           resources:
@@ -287,10 +287,10 @@ metadata:
 spec:
   tls:
     - hosts:
-        - api.revolutiontradingpros.com
+        - api.revolution-trading-pros.pages.dev
       secretName: backend-tls
   rules:
-    - host: api.revolutiontradingpros.com
+    - host: api.revolution-trading-pros.pages.dev
       http:
         paths:
           - path: /

@@ -510,7 +510,7 @@
 					</div>
 
 					<a
-						href="mailto:institutional@revolutiontradingpros.com?subject=Institutional%20Audit%20Application"
+						href="mailto:institutional@revolution-trading-pros.pages.dev?subject=Institutional%20Audit%20Application"
 						class="inline-flex items-center justify-center w-full md:w-auto px-12 py-5 bg-white text-black font-bold text-sm uppercase tracking-[0.25em] hover:bg-amber-500 transition-all duration-300"
 					>
 						Submit Request

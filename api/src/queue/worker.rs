@@ -41,7 +41,7 @@ async fn send_email_via_postmark(to: &str, subject: &str, body: &str) -> Result<
     let postmark_token = std::env::var("POSTMARK_API_KEY")
         .unwrap_or_else(|_| "".to_string());
     let from_email = std::env::var("FROM_EMAIL")
-        .unwrap_or_else(|_| "noreply@revolutiontradingpros.com".to_string());
+        .unwrap_or_else(|_| "noreply@revolution-trading-pros.pages.dev".to_string());
 
     if postmark_token.is_empty() {
         tracing::warn!("POSTMARK_API_KEY not set, skipping email send");
