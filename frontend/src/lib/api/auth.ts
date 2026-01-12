@@ -46,6 +46,17 @@ import { browser } from '$app/environment';
 // ICT 11+ Principal Engineer: Import from centralized config - single source of truth
 import { API_BASE_URL, API_ENDPOINTS } from './config';
 const API_TIMEOUT = 30000; // 30 seconds
+
+// ICT 11+ CORB Fix: Auth endpoints that should use local proxy in browser context
+// Using local proxy avoids CORS/CORB issues by keeping requests same-origin
+const AUTH_PROXY_ENDPOINTS = [
+	API_ENDPOINTS.auth.login,
+	API_ENDPOINTS.auth.register,
+	API_ENDPOINTS.auth.refresh,
+	API_ENDPOINTS.auth.forgotPassword,
+	API_ENDPOINTS.auth.resetPassword,
+	API_ENDPOINTS.auth.resendVerification
+] as const;
 const MAX_RETRIES = 3;
 const RETRY_DELAY_BASE = 1000; // 1 second
 const TOKEN_REFRESH_THRESHOLD = 300000; // 5 minutes before expiry
@@ -307,6 +318,7 @@ class AuthenticationService {
 
 	/**
 	 * Execute API request with retry logic
+	 * ICT 11+ CORB Fix: Uses local proxy for auth endpoints in browser context
 	 */
 	private async executeRequest<T>(
 		endpoint: string,
@@ -322,8 +334,18 @@ class AuthenticationService {
 			// Build headers
 			const headers = await this.buildHeaders(skipAuth, options.headers);
 
+			// ICT 11+ CORB Fix: Use local proxy for auth endpoints in browser context
+			// This avoids CORS/CORB issues by keeping auth requests same-origin
+			const isAuthEndpoint = AUTH_PROXY_ENDPOINTS.includes(endpoint as typeof AUTH_PROXY_ENDPOINTS[number]);
+			const useLocalProxy = browser && isAuthEndpoint;
+			const requestUrl = useLocalProxy ? endpoint : `${API_BASE_URL}${endpoint}`;
+
+			if (useLocalProxy) {
+				console.debug('[AuthService] Using local proxy for:', endpoint);
+			}
+
 			// Make request
-			const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+			const response = await fetch(requestUrl, {
 				...options,
 				headers,
 				signal: this.abortController.signal,

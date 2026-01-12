@@ -110,14 +110,30 @@ async fn main() -> anyhow::Result<()> {
     };
 
     // Build CORS layer - ICT 11+ CORB Fix: explicit headers required when using credentials
+    // Log configured CORS origins for debugging
+    tracing::info!("CORS origins configured: {:?}", config.cors_origins);
+
+    let parsed_origins: Vec<HeaderValue> = config
+        .cors_origins
+        .iter()
+        .filter_map(|o| {
+            match o.parse::<HeaderValue>() {
+                Ok(hv) => {
+                    tracing::debug!("CORS origin parsed successfully: {}", o);
+                    Some(hv)
+                }
+                Err(e) => {
+                    tracing::error!("Failed to parse CORS origin '{}': {}", o, e);
+                    None
+                }
+            }
+        })
+        .collect();
+
+    tracing::info!("CORS layer allowing {} origins", parsed_origins.len());
+
     let cors = CorsLayer::new()
-        .allow_origin(
-            config
-                .cors_origins
-                .iter()
-                .filter_map(|o| o.parse::<HeaderValue>().ok())
-                .collect::<Vec<_>>(),
-        )
+        .allow_origin(parsed_origins)
         .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::PATCH, Method::OPTIONS])
         .allow_headers([
             header::CONTENT_TYPE,
