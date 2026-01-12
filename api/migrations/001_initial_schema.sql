@@ -1,7 +1,7 @@
 -- Revolution Trading Pros - Full Database Schema
 -- Apple ICT 11+ Principal Engineer Grade - December 2025
--- PostgreSQL (Neon/Fly Postgres)
--- Note: Users table already exists from Laravel migration
+-- PostgreSQL (Fly Postgres)
+-- Note: Users table already exists from previous migration
 
 -- Add missing columns to users table if they don't exist
 DO $$ 

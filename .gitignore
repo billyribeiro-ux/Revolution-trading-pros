@@ -126,5 +126,13 @@ phpunit.xml
 *.code-workspace
 api-rust/target/
 
-# Backend vendor (Laravel dependencies)
+# Backend vendor (Laravel dependencies - REMOVED)
 backend/vendor/
+
+# Retired/archived code and build artifacts
+_retired/
+
+# Rust build artifacts
+backend-rust/target/
+api/target/
+**/target/
