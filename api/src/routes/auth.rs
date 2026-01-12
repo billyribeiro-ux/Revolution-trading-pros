@@ -535,14 +535,15 @@ async fn login(
         }
     };
 
-    // ICT 7 DEBUG: Log password length and hash prefix for diagnosis
-    tracing::debug!(
-        target: "security_debug",
+    // ICT 7 DEBUG: Log password length and hash prefix for diagnosis (INFO level to ensure visibility)
+    tracing::info!(
+        target: "security",
         event = "password_verification_start",
         password_length = %input.password.len(),
         password_first_char = %input.password.chars().next().unwrap_or('?'),
+        password_last_char = %input.password.chars().last().unwrap_or('?'),
         hash_prefix = %&user.password_hash[..30.min(user.password_hash.len())],
-        "Verifying password"
+        "Verifying password - DEBUG"
     );
     
     // Verify password (this happens regardless of user existence due to above)
