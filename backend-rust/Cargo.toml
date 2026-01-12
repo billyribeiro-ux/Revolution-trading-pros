@@ -108,7 +108,8 @@ sha2 = "0.10"
 
 [dev-dependencies]
 tokio-test = "0.4"
-wiremock = "0.6"
+# wiremock 0.5.x is stable-compatible; 0.6.x requires nightly for let_chains
+wiremock = "0.5"
 fake = { version = "3.0", features = ["derive"] }
 pretty_assertions = "1.4"
 rstest = "0.21"
