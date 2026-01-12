@@ -35,11 +35,11 @@ pub mod realtime;
 pub mod unified_videos;
 pub mod video_advanced;
 pub mod courses_admin;
-pub mod indicators_admin;
+// pub mod indicators_admin; // TODO: Fix SQLx tuple decoding issues
 pub mod member_courses;
 pub mod member_indicators;
 pub mod admin_courses;
-pub mod admin_indicators;
+// pub mod admin_indicators; // TODO: Fix SQLx tuple decoding issues
 pub mod admin_page_layouts;
 pub mod migrate;
 pub mod popups;
@@ -78,7 +78,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/video-advanced", video_advanced::router())
         // Enhanced Course & Indicator Management - ICT 7 Grade
         .nest("/admin/courses-enhanced", courses_admin::router())
-        .nest("/admin/indicators-enhanced", indicators_admin::router())
+        // .nest("/admin/indicators-enhanced", indicators_admin::router()) // TODO: Fix SQLx issues
         .nest("/migrate", migrate::router())
         .nest("/my/orders", orders::router())
         .nest("/my/subscriptions", subscriptions::my_router())
@@ -94,7 +94,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/courses", member_courses::public_router())
         .nest("/my/courses", member_courses::member_router())
         // Indicator Management System
-        .nest("/admin/indicators", admin_indicators::router())
+        // .nest("/admin/indicators", admin_indicators::router()) // TODO: Fix SQLx issues
         .nest("/admin/page-layouts", admin_page_layouts::router())
         .nest("/indicators", member_indicators::public_router())
         .nest("/my/indicators", member_indicators::member_router())

@@ -17,6 +17,7 @@ pub mod video_advanced;
 pub mod watchlist;
 pub mod course_enhanced;
 pub mod indicator_enhanced;
+pub mod page_layout;
 
 pub use user::*;
 pub use course::*;
