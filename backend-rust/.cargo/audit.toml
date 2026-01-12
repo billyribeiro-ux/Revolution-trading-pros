@@ -1,0 +1,11 @@
+# Cargo audit configuration
+# ICT 7 Principal Engineer: Configure audit to handle transitive dependency issues
+
+[advisories]
+# Ignore RSA vulnerability - we only use PostgreSQL, not MySQL
+# The vulnerable crate (rsa) is pulled in by sqlx-mysql which is only used
+# by sqlx-macros-core for compile-time checking, not runtime
+ignore = ["RUSTSEC-2023-0071"]
+
+# Allow unmaintained crate warnings (these are transitive deps we can't control)
+informational_warnings = ["unmaintained"]
