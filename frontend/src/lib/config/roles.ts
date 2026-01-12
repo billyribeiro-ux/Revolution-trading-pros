@@ -1,5 +1,5 @@
 /**
- * Role & Permission Configuration - Microsoft Enterprise Pattern
+ * Role & Permission Configuration - Apple ICT 7 Principal Engineer Pattern
  * ═══════════════════════════════════════════════════════════════════════════
  * 
  * Centralized role and permission management for the entire application.
@@ -10,33 +10,56 @@
  * 3. MEMBER - Authenticated user with purchased access
  * 4. USER - Basic authenticated user
  * 
- * @version 1.0.0
+ * ICT 7 PRINCIPLE: Zero hardcoded values - all configuration via environment
+ * 
+ * @version 2.0.0
  * @author Revolution Trading Pros
  */
 
+import { browser } from '$app/environment';
+
 // ═══════════════════════════════════════════════════════════════════════════
-// Superadmin Configuration
+// Environment-Based Configuration (ICT 7)
 // ═══════════════════════════════════════════════════════════════════════════
 
 /**
- * Superadmin emails - these users have FULL unrestricted access to everything.
+ * Parse comma-separated email list from environment variable
+ * ICT 7: Defensive parsing with validation
+ */
+function parseEmailList(envVar: string | undefined): readonly string[] {
+	if (!envVar || typeof envVar !== 'string') return [];
+	
+	return Object.freeze(
+		envVar
+			.split(',')
+			.map(email => email.trim().toLowerCase())
+			.filter(email => email.length > 0 && email.includes('@'))
+	);
+}
+
+/**
+ * Superadmin emails - loaded from environment variable
+ * These users have FULL unrestricted access to everything.
  * They bypass all permission checks and can access any feature.
  * 
- * @security This list should be kept minimal and secure
+ * @security Configure via VITE_SUPERADMIN_EMAILS environment variable
+ * @example VITE_SUPERADMIN_EMAILS=admin@example.com,superadmin@example.com
  */
-export const SUPERADMIN_EMAILS: readonly string[] = Object.freeze([
-	'welberribeirodrums@gmail.com'
-]);
+export const SUPERADMIN_EMAILS: readonly string[] = browser 
+	? parseEmailList(import.meta.env.VITE_SUPERADMIN_EMAILS)
+	: [];
 
 /**
- * Developer emails - these users bypass email verification and get all memberships unlocked.
+ * Developer emails - loaded from environment variable
+ * These users bypass email verification and get all memberships unlocked.
  * They experience the platform as a regular member (not admin) with full access for testing.
  * 
- * @security This list should be kept minimal and secure
+ * @security Configure via VITE_DEVELOPER_EMAILS environment variable
+ * @example VITE_DEVELOPER_EMAILS=dev@example.com,test@example.com
  */
-export const DEVELOPER_EMAILS: readonly string[] = Object.freeze([
-	'welberribeirodrums@gmail.com'
-]);
+export const DEVELOPER_EMAILS: readonly string[] = browser
+	? parseEmailList(import.meta.env.VITE_DEVELOPER_EMAILS)
+	: [];
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Role Definitions

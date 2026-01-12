@@ -14,7 +14,7 @@
 import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth';
 import { apiCache, buildCacheKey, invalidateCache } from './cache';
-import { isSuperadminEmail } from '$lib/config/roles';
+import { isSuperadminEmail, isDeveloperEmail } from '$lib/config/roles';
 import { get } from 'svelte/store';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -251,10 +251,10 @@ export async function getUserMemberships(options?: {
 		console.log('[UserMemberships] No in-memory token - will use cookies for auth');
 	}
 
-	// ENTERPRISE DEVELOPER ACCESS: Check if user is developer or superadmin
+	// ICT 7: ENTERPRISE DEVELOPER ACCESS - Check via environment-based config
 	// Developers get all memberships to test the complete member experience
 	const isDeveloper = storeUser && (
-		storeUser.email === 'welberribeirodrums@gmail.com' ||
+		isDeveloperEmail(storeUser.email) ||
 		isSuperadminEmail(storeUser.email)
 	);
 	
