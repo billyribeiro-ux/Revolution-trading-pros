@@ -65,7 +65,7 @@ export interface ArchivePageData {
 
 /** @type {import('./$types').PageServerLoad} */
 export const load = async ({ url, fetch }): Promise<ArchivePageData> => {
-	const API_URL = env.API_URL || 'https://api.revolution-trading-pros.pages.dev';
+	const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
 	
 	// Get query params
 	const page = url.searchParams.get('page') || '1';
