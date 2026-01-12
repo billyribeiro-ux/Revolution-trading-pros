@@ -51,7 +51,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/payments", payments::router())
         .nest("/search", search::router())
         .nest("/products", products::router())
-        .nest("/indicators", indicators::router())
+        // .nest("/indicators", indicators::router()) // Removed - replaced by member_indicators
         .nest("/posts", posts::router())
         .nest("/subscriptions", subscriptions::router())
         .nest("/newsletter", newsletter::router())
