@@ -15,7 +15,12 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 	try {
 		const body = await request.json();
 		
-		console.log('[Auth Proxy] Login request received');
+		// ICT 7 Debug: Log request details (mask password)
+		console.log('[Auth Proxy] Login request:', {
+			email: body.email,
+			hasPassword: !!body.password,
+			passwordLength: body.password?.length || 0
+		});
 		
 		// Forward request to backend
 		const response = await fetch(`${API_URL}/api/auth/login`, {
@@ -27,9 +32,23 @@ export const POST = async ({ request, cookies }: RequestEvent) => {
 			body: JSON.stringify(body),
 		});
 		
-		const data = await response.json();
+		// Get response text first to handle non-JSON responses
+		const responseText = await response.text();
+		let data;
+		try {
+			data = JSON.parse(responseText);
+		} catch {
+			console.error('[Auth Proxy] Non-JSON response:', responseText);
+			return json({ error: 'Invalid response from auth server' }, { status: 502 });
+		}
 		
-		console.log('[Auth Proxy] Backend response:', response.status);
+		// ICT 7 Debug: Log full response for diagnosis
+		console.log('[Auth Proxy] Backend response:', {
+			status: response.status,
+			error: data.error,
+			hasToken: !!data.token,
+			hasUser: !!data.user
+		});
 		
 		// If successful, set httpOnly cookies for the tokens
 		if (response.ok && data.token) {
