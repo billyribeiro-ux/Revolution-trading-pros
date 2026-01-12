@@ -57,7 +57,7 @@ export const load = async ({ setHeaders }: { setHeaders: (headers: Record<string
 		preconnect: [
 			'https://fonts.googleapis.com',
 			'https://fonts.gstatic.com',
-			'https://api.revolutiontradingpros.com'
+			'https://revolution-trading-pros-api.fly.dev'
 		],
 		
 		// DNS prefetch for external resources
