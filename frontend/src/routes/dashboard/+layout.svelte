@@ -218,6 +218,7 @@
 			title: 'SPX Profit Pulse',
 			items: [
 				{ href: '/dashboard/spx-profit-pulse', icon: 'layout-dashboard', text: 'SPX Profit Pulse Dashboard' },
+				{ href: '/dashboard/spx-profit-pulse/start-here', icon: 'info', text: 'Start Here' },
 				{ href: '/dashboard/spx-profit-pulse/alerts', icon: 'bolt', text: 'Alerts' }
 			]
 		},
@@ -225,6 +226,7 @@
 			title: 'Explosive Swings',
 			items: [
 				{ href: '/dashboard/explosive-swings', icon: 'layout-dashboard', text: 'Explosive Swings Dashboard' },
+				{ href: '/dashboard/explosive-swings/start-here', icon: 'info', text: 'Start Here' },
 				{ href: '/dashboard/explosive-swings/alerts', icon: 'bolt', text: 'Alerts' }
 			]
 		},
@@ -306,58 +308,22 @@
 	 * Modern CSS Best Practices (Nov/Dec 2025)
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 * 
-	 * BREAKPOINT STRATEGY:
+	 * BREAKPOINT STRATEGY (Industry Standard - Jan 2026):
 	 * - CSS Custom Properties for maintainability
-	 * - Range syntax (width >= 1280px) for modern browsers
+	 * - Range syntax for modern browsers
 	 * - Container queries where appropriate
 	 * - Logical properties for i18n support
 	 * - Fluid typography and spacing
 	 * 
-	 * DEVICE TARGETS:
-	 * - Mobile: 320px - 767px (iPhone SE to iPhone 15 Pro Max)
-	 * - Tablet: 768px - 1279px (iPad Mini to iPad Pro 11")
-	 * - Desktop: 1280px+ (MacBook Air 13" to Studio Display)
-	 * - Large: 1920px+ (iMac 27" to Pro Display XDR)
+	 * DEVICE TARGETS (Tailwind/Apple ICT 11+ Aligned):
+	 * - Mobile: < 768px (iPhone SE to iPhone 15 Pro Max) - Sidebar hidden
+	 * - Tablet+: >= 768px (iPad Mini+) - Sidebar visible
+	 * - Desktop: >= 1024px (MacBook Air 13"+) - Full layout
+	 * - Large: >= 1440px (MacBook Pro 16", iMac) - Extra spacing
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	:root {
-		/* Breakpoint tokens - Apple Design System aligned */
-		--bp-mobile-max: 767px;
-		--bp-tablet-min: 768px;
-		--bp-tablet-max: 1279px;
-		--bp-desktop-min: 1280px;
-		--bp-desktop-large: 1440px;
-		--bp-desktop-xl: 1920px;
-
-		/* Spacing scale - 8pt grid system */
-		--space-xs: 0.25rem;  /* 4px */
-		--space-sm: 0.5rem;   /* 8px */
-		--space-md: 1rem;     /* 16px */
-		--space-lg: 1.5rem;   /* 24px */
-		--space-xl: 2rem;     /* 32px */
-		--space-2xl: 3rem;    /* 48px */
-		--space-3xl: 4rem;    /* 64px */
-
-		/* Layout dimensions */
-		--sidebar-width-expanded: 280px;
-		--sidebar-width-collapsed: 80px;
-		--mobile-footer-height: 50px;
-
-		/* Z-index scale */
-		--z-base: 1;
-		--z-dropdown: 10;
-		--z-sticky: 100;
-		--z-overlay: 1000;
-		--z-modal: 10000;
-
-		/* Transitions - Apple-style easing */
-		--ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
-		--ease-decelerate: cubic-bezier(0, 0, 0.2, 1);
-		--ease-accelerate: cubic-bezier(0.4, 0, 1, 1);
-		--duration-fast: 150ms;
-		--duration-normal: 250ms;
-		--duration-slow: 350ms;
-	}
+	/* Breakpoints defined in app.css (SSOT) - use var(--bp-*) or hardcoded values in media queries */
+	/* Layout uses global CSS custom properties from app.css */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Collapsed Sidebar Hover Effect - WordPress Evidence-Based Implementation
@@ -422,7 +388,7 @@
 	.dashboard__main {
 		flex: 1 1 auto;
 		min-inline-size: 0; /* Prevent flex overflow */
-		background-color: #f4f4f4;
+		background-color: #efefef;
 		position: relative;
 		container-type: inline-size;
 		container-name: dashboard-main;
@@ -507,20 +473,10 @@
 		}
 	}
 
-	/* Tablet: 768px - 1279px (iPad, Surface, small laptops) */
-	@media (768px <= width < 1280px) {
-		.dashboard__main {
-			inline-size: 100%;
-			padding-block-end: var(--mobile-footer-height);
-		}
+	/* Desktop: >= 768px - Sidebar visible (Industry Standard) */
+	/* No special rules needed - sidebar stays visible via DashboardSidebar component */
 
-		/* No secondary sidebar margin on tablet */
-		.dashboard__main.has-secondary-sidebar {
-			margin-inline-start: 0;
-		}
-	}
-
-	/* Desktop: >= 1280px (MacBook Air 13"+, iMac, Studio Display) */
+	/* Desktop: >= 1024px (MacBook Air 13"+, iMac, Studio Display) */
 	/* Sidebar is static in flex layout, main content fills remaining space */
 
 	/* Large Desktop: >= 1440px (MacBook Pro 16", iMac 27") */

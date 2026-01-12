@@ -76,13 +76,9 @@
 </script>
 
 <svelte:head>
-	<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
-	<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
-	<link rel="preconnect" href="https://fonts.googleapis.com" crossorigin="anonymous" />
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
-	<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" media="all" />
-	<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-	<meta name="theme-color" content="#0a101c" />
+	<!-- ICT 11 Fix: Font loading handled in app.html - no duplicates -->
+	<!-- Viewport already in app.html, theme-color set per page preference -->
+	<meta name="theme-color" content="#FFFFFF" />
 </svelte:head>
 
 {#if isAdminArea || isEmbedArea}
@@ -106,7 +102,7 @@
 		{/if}
 	</div>
 {:else}
-	<div class="min-h-screen bg-rtp-bg text-rtp-text" class:has-admin-toolbar={isAdmin}>
+	<div class="min-h-screen bg-white text-[#666666]" class:has-admin-toolbar={isAdmin}>
 		<!-- ICT9+ Hydration-Safe: Only render AdminToolbar after client mount -->
 		{#if mounted}
 			<AdminToolbar />

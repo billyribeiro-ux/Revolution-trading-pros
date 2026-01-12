@@ -10,7 +10,7 @@ use serde_json::json;
 use uuid::Uuid;
 
 use crate::{
-    models::{Course, CreateCourse, Lesson},
+    models::{Course, CreateCourseRequest, Lesson},
     middleware::admin::AdminUser,
     AppState,
 };
@@ -80,7 +80,7 @@ async fn get_lessons(
 async fn create_course(
     State(state): State<AppState>,
     AdminUser(user): AdminUser,
-    Json(input): Json<CreateCourse>,
+    Json(input): Json<CreateCourseRequest>,
 ) -> Result<Json<Course>, (StatusCode, Json<serde_json::Value>)> {
     tracing::info!(
         target: "security",

@@ -8,7 +8,12 @@
 <script lang="ts">
 	import type { Trader } from '$lib/data/traders';
 	
-	export let trader: Trader;
+	// ICT 7 FIX: Svelte 5 $props() syntax (Nov 2025 best practice)
+	interface Props {
+		trader: Trader;
+	}
+	
+	let { trader }: Props = $props();
 </script>
 
 <div class="fl-row fl-row-full-width fl-row-bg-color">

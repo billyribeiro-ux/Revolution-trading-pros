@@ -59,15 +59,17 @@ import { getAuthToken, getSessionId as _getAuthSessionId } from '$lib/stores/aut
 
 // ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
 // Production fallbacks - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/ai';
 
 const isDev = import.meta.env.DEV;
-const API_BASE = browser 
+const API_ROOT = browser 
 	? (isDev ? '' : (import.meta.env['VITE_API_URL'] || PROD_API)) 
 	: '';
+// In dev mode, empty string works with Vite proxy. In production, append /api
+const API_BASE = isDev ? '' : (API_ROOT ? `${API_ROOT}/api` : '');
 const WS_BASE = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 const AI_API = browser ? import.meta.env['VITE_AI_API_URL'] || PROD_AI : '';
 
@@ -624,18 +626,20 @@ class FormsService {
 
 	/**
 	 * WebSocket connection for real-time updates
+	 * ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
 	 */
 	private setupWebSocket(): void {
 		if (!browser || !this.getAuthToken()) return;
 
-		// ICT11+ Pattern: Skip WebSocket in dev if not configured
-		if (isDev && !import.meta.env['VITE_WS_URL']) {
-			console.debug('[FormsService] WebSocket skipped in dev (no VITE_WS_URL configured)');
+		// ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
+		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
+		if (!configuredWsUrl) {
+			// Silently skip - WebSocket is optional
 			return;
 		}
 
 		try {
-			this.wsConnection = new WebSocket(`${WS_BASE}/forms`);
+			this.wsConnection = new WebSocket(`${configuredWsUrl}/forms`);
 
 			this.wsConnection.onopen = () => {
 				console.debug('[FormsService] WebSocket connected');
@@ -646,26 +650,15 @@ class FormsService {
 				this.handleWebSocketMessage(event);
 			};
 
-			this.wsConnection.onerror = (error) => {
-				// Silent fail in dev - WebSocket server may not be running
-				if (!isDev) {
-					console.error('[FormsService] WebSocket error:', error);
-				}
+			this.wsConnection.onerror = () => {
+				// Silently handle - WebSocket is optional
 			};
 
 			this.wsConnection.onclose = () => {
-				if (!isDev) {
-					console.debug('[FormsService] WebSocket disconnected');
-				}
-				// Reconnect after delay (skip in dev)
-				if (!isDev) {
-					setTimeout(() => this.setupWebSocket(), 5000);
-				}
+				// Don't auto-reconnect - WebSocket is optional
 			};
 		} catch (error) {
-			if (!isDev) {
-				console.error('[FormsService] Failed to setup WebSocket:', error);
-			}
+			// Silently handle - WebSocket is optional
 		}
 	}
 

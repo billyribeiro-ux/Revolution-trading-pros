@@ -13,8 +13,7 @@
 	- Matches original WordPress structure exactly
 -->
 <script lang="ts">
-	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-	import { onMount } from 'svelte';
+	import IndicatorCard from '$lib/components/indicators/IndicatorCard.svelte';
 	
 	interface Indicator {
 		id: number;
@@ -26,49 +25,95 @@
 		status: 'active' | 'inactive';
 	}
 	
-	// Check if user has indicators - this would come from API/store
-	let hasIndicators = false;
-	let isLoading = true;
+	// Pagination configuration - ICT 7 Enterprise Standard
+	let currentPage = $state(1);
+	const itemsPerPage = 12;
 	
-	// Mock data for indicators (replace with actual API call)
-	let indicators: Indicator[] = [
-		{
-			id: 1,
-			name: 'ThinkorSwim Indicators',
-			description: 'Professional trading indicators for ThinkorSwim platform',
-			platform: 'ThinkorSwim',
-			platformUrl: 'https://www.thinkorswim.com',
-			icon: 'fa-line-chart',
-			status: 'active'
-		},
-		{
-			id: 2,
-			name: 'TradeStation Indicators',
-			description: 'Advanced indicators for TradeStation platform',
-			platform: 'TradeStation',
-			platformUrl: 'https://www.tradestation.com',
-			icon: 'fa-bar-chart',
-			status: 'active'
-		},
-		{
-			id: 3,
-			name: 'NinjaTrader Indicators',
-			description: 'Custom indicators for NinjaTrader platform',
-			platform: 'NinjaTrader',
-			platformUrl: 'https://ninjatrader.com',
-			icon: 'fa-area-chart',
-			status: 'active'
-		}
+	// Mock data - replace with actual API call
+	// Set to empty array to show empty state, or populate with indicators
+	// All 53 indicators from WordPress my-indicators-yes reference
+	const indicators: Indicator[] = [
+		{ id: 1, name: 'Volume Max Tool Kit (formerly VWAP)', description: '', platform: 'TradingView', platformUrl: '/indicators/volume-max-i', icon: '', status: 'active' },
+		{ id: 2, name: 'Multi (EMA) Cross Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-cross-i', icon: '', status: 'active' },
+		{ id: 3, name: 'QuantPivots Tool', description: '', platform: 'TradingView', platformUrl: '/indicators/quantpivots-i', icon: '', status: 'active' },
+		{ id: 4, name: 'Trend and HiLo Oscillator Pro Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/trend-hilo-oscillator-pro-i', icon: '', status: 'active' },
+		{ id: 5, name: 'Darvas Box 3.0', description: '', platform: 'TradingView', platformUrl: '/indicators/darvas-3-i', icon: '', status: 'active' },
+		{ id: 6, name: 'Ready.Aim.Fire!® (RAF) Pro Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/ready-aim-fire-pro-i', icon: '', status: 'active' },
+		{ id: 7, name: 'Multi Squeeze Pro Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-squeeze-pro-i', icon: '', status: 'active' },
+		{ id: 8, name: 'TurboVZO Indicator & VZO Signals', description: '', platform: 'TradingView', platformUrl: '/indicators/turbovzo-indicator-i', icon: '', status: 'active' },
+		{ id: 9, name: 'Multi 10x', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-10x-i', icon: '', status: 'active' },
+		{ id: 10, name: 'Power Correlations', description: '', platform: 'TradingView', platformUrl: '/indicators/power-correlations', icon: '', status: 'active' },
+		{ id: 11, name: 'GRaB and Wave Premium', description: '', platform: 'TradingView', platformUrl: '/indicators/grab-and-wave-premium-i', icon: '', status: 'active' },
+		{ id: 12, name: 'Top Hat Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/top-hat-indicator', icon: '', status: 'active' },
+		{ id: 13, name: 'Multi-Squeeze Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-squeeze-indicator', icon: '', status: 'active' },
+		{ id: 14, name: 'Compound Breakout Tool', description: '', platform: 'TradingView', platformUrl: '/indicators/compound-breakout-tool-i', icon: '', status: 'active' },
+		{ id: 15, name: 'Divergent Bar', description: '', platform: 'TradingView', platformUrl: '/indicators/divergent-bar-i', icon: '', status: 'active' },
+		{ id: 16, name: 'Reversal Arrows (formerly HOLB/LOHB)', description: '', platform: 'TradingView', platformUrl: '/indicators/reversal-arrows-holblohb-i', icon: '', status: 'active' },
+		{ id: 17, name: 'Voodoo Lines®', description: '', platform: 'TradingView', platformUrl: '/indicators/voodoo-lines-i', icon: '', status: 'active' },
+		{ id: 18, name: 'Two Week Statistics Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/two-week-statistics-i', icon: '', status: 'active' },
+		{ id: 19, name: 'Weekly Price Statistics Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/weekly-price-statistics-i', icon: '', status: 'active' },
+		{ id: 20, name: 'Cumulative and Comparative TICK', description: '', platform: 'TradingView', platformUrl: '/indicators/cumulative-comparative-tick-i', icon: '', status: 'active' },
+		{ id: 21, name: 'Multi Time Frame (MTF) Trend', description: '', platform: 'TradingView', platformUrl: '/indicators/mtf-trend-i', icon: '', status: 'active' },
+		{ id: 22, name: 'Credit Sniper', description: '', platform: 'TradingView', platformUrl: '/indicators/credit-sniper-i', icon: '', status: 'active' },
+		{ id: 23, name: 'Earnings Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/earnings-indicator-i', icon: '', status: 'active' },
+		{ id: 24, name: '10x Bars', description: '', platform: 'TradingView', platformUrl: '/indicators/10x-bars-i', icon: '', status: 'active' },
+		{ id: 25, name: 'Probability Zones', description: '', platform: 'TradingView', platformUrl: '/indicators/probability-zones-i', icon: '', status: 'active' },
+		{ id: 26, name: 'Launch Pad', description: '', platform: 'TradingView', platformUrl: '/indicators/launch-pad-i', icon: '', status: 'active' },
+		{ id: 27, name: 'Squeeze Pro Stats', description: '', platform: 'TradingView', platformUrl: '/indicators/squeeze-pro-stats-i', icon: '', status: 'active' },
+		{ id: 28, name: 'EINO Pro', description: '', platform: 'TradingView', platformUrl: '/indicators/eino-pro-i', icon: '', status: 'active' },
+		{ id: 29, name: 'Squeeze Pro', description: '', platform: 'TradingView', platformUrl: '/indicators/squeeze-pro-i', icon: '', status: 'active' },
+		{ id: 30, name: 'Dynamic Profit Zones', description: '', platform: 'TradingView', platformUrl: '/indicators/dynamic-profit-zones-i', icon: '', status: 'active' },
+		{ id: 31, name: 'Phoenix Finder', description: '', platform: 'TradingView', platformUrl: '/indicators/phoenix-finder-i', icon: '', status: 'active' },
+		{ id: 32, name: 'Power Correlations TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/power-correlations-tsd', icon: '', status: 'active' },
+		{ id: 33, name: 'Multi-Squeeze Indicator TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-squeeze-indicator-tsd', icon: '', status: 'active' },
+		{ id: 34, name: 'Top Hat Indicator TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/top-hat-indicator-tsd', icon: '', status: 'active' },
+		{ id: 35, name: 'Compound Breakout Tool TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/compound-breakout-tool-tsd', icon: '', status: 'active' },
+		{ id: 36, name: 'Divergent Bar TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/divergent-bar-tsd', icon: '', status: 'active' },
+		{ id: 37, name: 'Reversal Arrows TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/reversal-arrows-holblohb-tsd', icon: '', status: 'active' },
+		{ id: 38, name: '10x Bars TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/10x-bars-tsd', icon: '', status: 'active' },
+		{ id: 39, name: 'Ready.Aim.Fire! Pro TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/ready-aim-fire-pro-tsd', icon: '', status: 'active' },
+		{ id: 40, name: 'Squeeze Pro Stats TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/squeeze-pro-stats-tsd', icon: '', status: 'active' },
+		{ id: 41, name: 'EINO Pro TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/eino-pro-tsd', icon: '', status: 'active' },
+		{ id: 42, name: 'Squeeze Pro TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/squeeze-pro-tsd', icon: '', status: 'active' },
+		{ id: 43, name: 'Dynamic Profit Zones Activated', description: '', platform: 'TradingView', platformUrl: '/indicators/dynamic-profit-zones-i-activated', icon: '', status: 'active' },
+		{ id: 44, name: 'Multi Cross Activated', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-cross-i-activated', icon: '', status: 'active' },
+		{ id: 45, name: 'VX TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/vx-tsd', icon: '', status: 'active' },
+		{ id: 46, name: 'Probability Zones TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/probability-zones-tsd', icon: '', status: 'active' },
+		{ id: 47, name: 'Launch Pad TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/launch-pad-tsd', icon: '', status: 'active' },
+		{ id: 48, name: 'Two Week TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/twoweek-tsd', icon: '', status: 'active' },
+		{ id: 49, name: 'Phoenix Finder TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/phoenix-finder-tsd', icon: '', status: 'active' },
+		{ id: 50, name: 'Credit Sniper TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/credit-sniper-tsd', icon: '', status: 'active' },
+		{ id: 51, name: 'Weekly Statistics TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/weekly-statistics-tsd', icon: '', status: 'active' },
+		{ id: 52, name: 'CCTICK TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/cctick-tsd', icon: '', status: 'active' },
+		{ id: 53, name: 'TurboVZO TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/turbovzo-tsd', icon: '', status: 'active' }
 	];
 	
-	onMount(async () => {
-		// Simulate API call to fetch user's indicators
-		// Replace with actual API call: const response = await fetch('/api/user/indicators');
-		setTimeout(() => {
-			hasIndicators = indicators.length > 0;
-			isLoading = false;
-		}, 500);
-	});
+	// Computed pagination values - Svelte 5
+	let totalPages = $derived(Math.ceil(indicators.length / itemsPerPage));
+	let startIndex = $derived((currentPage - 1) * itemsPerPage);
+	let endIndex = $derived(startIndex + itemsPerPage);
+	let paginatedIndicators = $derived(indicators.slice(startIndex, endIndex));
+	let pageNumbers = $derived(Array.from({ length: totalPages }, (_, i) => i + 1));
+	
+	// Pagination navigation functions
+	function goToPage(page: number) {
+		if (page >= 1 && page <= totalPages) {
+			currentPage = page;
+			window.scrollTo({ top: 0, behavior: 'smooth' });
+		}
+	}
+	
+	function nextPage() {
+		if (currentPage < totalPages) {
+			goToPage(currentPage + 1);
+		}
+	}
+	
+	function previousPage() {
+		if (currentPage > 1) {
+			goToPage(currentPage - 1);
+		}
+	}
 </script>
 
 <svelte:head>
@@ -78,9 +123,6 @@
 	<meta property="og:url" content="https://my.simplertrading.com/dashboard/indicators" />
 	<meta property="og:type" content="article" />
 </svelte:head>
-
-<!-- Breadcrumbs -->
-<DashboardBreadcrumbs />
 
 <!-- Main Content -->
 <div id="page" class="hfeed site grid-parent">
@@ -97,71 +139,85 @@
 				</div>
 			</header>
 			
-			<!-- Content Area -->
-			<div class="dashboard__content">
-				{#if isLoading}
-					<!-- Loading State -->
-					<div class="loading-state">
-						<div class="spinner"></div>
-						<p>Loading your indicators...</p>
+			<!-- Indicators Grid or Empty State -->
+			{#if indicators.length === 0}
+				<!-- Empty State -->
+				<div class="dashboard__content">
+					<div class="dashboard__content-main">
+						<section class="dashboard__content-section">
+							<div class="empty-state">
+								<p class="empty-state__message">You don't have any Indicators.</p>
+								<a href="https://www.simplertrading.com/product/product-category/indicators/" class="btn btn-orange" target="_blank">See All Indicators</a>
+							</div>
+						</section>
 					</div>
-				{:else if !hasIndicators}
-					<!-- Empty State - No Indicators -->
-					<div class="empty-state">
-						<div class="empty-state__icon">
-							<span class="fa fa-line-chart"></span>
-						</div>
-						<h2 class="empty-state__title">No Indicators Yet</h2>
-						<p class="empty-state__description">
-							You don't have any indicators at the moment. Indicators will appear here once you gain access to them through your membership.
-						</p>
-						<div class="empty-state__actions">
-							<a href="/dashboard" class="btn btn-primary">
-								<span class="fa fa-arrow-left"></span>
-								Back to Dashboard
-							</a>
-							<a href="https://www.simplertrading.com/products" class="btn btn-secondary" target="_blank" rel="noopener noreferrer">
-								<span class="fa fa-shopping-cart"></span>
-								Browse Products
-							</a>
-						</div>
+				</div>
+			{:else}
+				<!-- Indicators Grid -->
+				<div class="dashboard__content">
+					<div class="dashboard__content-main">
+						<section class="dashboard__content-section">
+							<div class="card-grid flex-grid row">
+								{#each paginatedIndicators as indicator (indicator.id)}
+									<IndicatorCard {...indicator} />
+								{/each}
+							</div>
+							
+							<!-- Pagination Controls -->
+							{#if totalPages > 1}
+								<div class="pagination-wrapper">
+								<nav class="pagination" aria-label="Pagination">
+										<ul class="page-numbers">
+											<!-- Previous Button - Only show if not on first page -->
+											{#if currentPage > 1}
+												<li>
+													<button
+														class="page-numbers prev"
+														onclick={previousPage}
+														aria-label="Previous page"
+													>
+														← Previous
+													</button>
+												</li>
+											{/if}
+											
+											<!-- Page Numbers -->
+											{#each pageNumbers as pageNum}
+												<li>
+													{#if pageNum === currentPage}
+														<span class="page-numbers current" aria-current="page">{pageNum}</span>
+													{:else}
+														<button
+															class="page-numbers"
+															onclick={() => goToPage(pageNum)}
+															aria-label="Go to page {pageNum}"
+														>
+															{pageNum}
+														</button>
+													{/if}
+												</li>
+											{/each}
+											
+											<!-- Next Button - Only show if not on last page -->
+											{#if currentPage < totalPages}
+												<li>
+													<button
+														class="page-numbers next"
+														onclick={nextPage}
+														aria-label="Next page"
+													>
+														Next →
+													</button>
+												</li>
+											{/if}
+										</ul>
+									</nav>
+								</div>
+							{/if}
+						</section>
 					</div>
-				{:else}
-					<!-- Indicators Grid -->
-					<div class="indicators-grid">
-						{#each indicators as indicator (indicator.id)}
-							<article class="indicator-card">
-								<div class="indicator-card__header">
-									<div class="indicator-card__icon">
-										<span class="fa {indicator.icon}"></span>
-									</div>
-									<span class="indicator-card__status indicator-card__status--{indicator.status}">
-										{indicator.status}
-									</span>
-								</div>
-								<div class="indicator-card__body">
-									<h3 class="indicator-card__title">{indicator.name}</h3>
-									<p class="indicator-card__description">{indicator.description}</p>
-									<div class="indicator-card__platform">
-										<span class="fa fa-desktop"></span>
-										<span>{indicator.platform}</span>
-									</div>
-								</div>
-								<div class="indicator-card__footer">
-									<a href={indicator.platformUrl} class="btn btn-primary btn-block" target="_blank" rel="noopener noreferrer">
-										<span class="fa fa-external-link"></span>
-										Access Platform
-									</a>
-									<a href="/dashboard/indicators/{indicator.id}" class="btn btn-secondary btn-block">
-										<span class="fa fa-info-circle"></span>
-										View Details
-									</a>
-								</div>
-							</article>
-						{/each}
-					</div>
-				{/if}
-			</div>
+				</div>
+			{/if}
 		</main>
 	</div>
 </div>
@@ -173,9 +229,26 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	
 	.dashboard__header {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
 		justify-content: space-between;
-		padding: 20px 0;
-		margin-bottom: 30px;
+		background: #fff;
+		border-bottom: 1px solid #dbdbdb;
+		border-right: 1px solid #dbdbdb;
+		padding: 20px;
+	}
+	
+	@media (min-width: 1024px) {
+		.dashboard__header {
+			padding: 30px;
+		}
+	}
+
+	@media (min-width: 1440px) {
+		.dashboard__header {
+			padding: 30px 40px;
+		}
 	}
 	
 	.dashboard__header-left {
@@ -190,303 +263,200 @@
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 	
-	.dashboard__content {
-		padding: 20px 0;
-	}
-	
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Empty State Styles
-	 * Identical to "no classes" experience
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+	/* Empty State - Matches screenshot */
 	.empty-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		text-align: center;
-		padding: 60px 20px;
-		background: #fff;
-		border-radius: 8px;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-		min-height: 400px;
+		background: #f5f5f5;
+		padding: 40px 20px;
+		text-align: left;
+		min-height: 200px;
 	}
-	
-	.empty-state__icon {
-		width: 120px;
-		height: 120px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: linear-gradient(135deg, #143E59 0%, #0984ae 100%);
-		border-radius: 50%;
-		margin-bottom: 30px;
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.2);
-	}
-	
-	.empty-state__icon .fa {
-		font-size: 56px;
-		color: #fff;
-	}
-	
-	.empty-state__title {
-		font-size: 32px;
-		font-weight: 700;
-		color: #333;
-		margin: 0 0 15px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-	
-	.empty-state__description {
+
+	.empty-state__message {
 		font-size: 16px;
-		line-height: 1.6;
-		color: #666;
-		max-width: 500px;
-		margin: 0 0 30px;
+		color: #333;
+		margin: 0 0 20px;
+		font-family: 'Open Sans', sans-serif;
 	}
-	
-	.empty-state__actions {
-		display: flex;
-		gap: 15px;
-		flex-wrap: wrap;
-		justify-content: center;
-	}
-	
-	/* Button Styles */
-	.btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
+
+	.btn-orange {
+		background-color: #ff8c00;
+		color: #fff;
 		padding: 12px 24px;
-		font-size: 16px;
-		font-weight: 600;
+		border-radius: 4px;
 		text-decoration: none;
-		border-radius: 6px;
-		transition: all 0.2s ease;
-		cursor: pointer;
-		border: none;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-	
-	.btn-primary {
-		background: #143E59;
-		color: #fff;
-	}
-	
-	.btn-primary:hover {
-		background: #0f2d42;
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
-	}
-	
-	.btn-secondary {
-		background: #fff;
-		color: #143E59;
-		border: 2px solid #143E59;
-	}
-	
-	.btn-secondary:hover {
-		background: #143E59;
-		color: #fff;
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.2);
-	}
-	
-	/* Loading State */
-	.loading-state {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 60px 20px;
-		min-height: 400px;
-	}
-	
-	.spinner {
-		width: 50px;
-		height: 50px;
-		border: 4px solid #f3f3f3;
-		border-top: 4px solid #143E59;
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-		margin-bottom: 20px;
-	}
-	
-	@keyframes spin {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
-	}
-	
-	.loading-state p {
-		color: #666;
-		font-size: 16px;
-	}
-	
-	/* Indicators Grid */
-	.indicators-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-		gap: 30px;
-		padding: 20px 0;
-	}
-	
-	.indicator-card {
-		background: #fff;
-		border: 1px solid #e5e5e5;
-		border-radius: 8px;
-		overflow: hidden;
-		transition: all 0.3s ease;
-		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-		display: flex;
-		flex-direction: column;
-	}
-	
-	.indicator-card:hover {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-		transform: translateY(-2px);
-	}
-	
-	.indicator-card__header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 20px;
-		background: linear-gradient(135deg, #143E59 0%, #0984ae 100%);
-	}
-	
-	.indicator-card__icon {
-		width: 50px;
-		height: 50px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: rgba(255, 255, 255, 0.2);
-		border-radius: 8px;
-	}
-	
-	.indicator-card__icon .fa {
-		font-size: 24px;
-		color: #fff;
-	}
-	
-	.indicator-card__status {
-		padding: 4px 12px;
-		border-radius: 12px;
-		font-size: 12px;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-	}
-	
-	.indicator-card__status--active {
-		background: #4caf50;
-		color: #fff;
-	}
-	
-	.indicator-card__status--inactive {
-		background: #f44336;
-		color: #fff;
-	}
-	
-	.indicator-card__body {
-		padding: 20px;
-		flex: 1;
-	}
-	
-	.indicator-card__title {
-		font-size: 20px;
+		display: inline-block;
 		font-weight: 700;
-		color: #333;
-		margin: 0 0 10px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-	}
-	
-	.indicator-card__description {
 		font-size: 14px;
-		line-height: 1.6;
-		color: #666;
-		margin: 0 0 15px;
+		border: none;
+		cursor: pointer;
+		transition: background-color 0.2s ease;
 	}
-	
-	.indicator-card__platform {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		color: #143E59;
-		font-size: 14px;
-		font-weight: 600;
+
+	.btn-orange:hover {
+		background-color: #e67e00;
+		text-decoration: none;
 	}
-	
-	.indicator-card__platform .fa {
-		font-size: 16px;
-	}
-	
-	.indicator-card__footer {
-		padding: 20px;
-		background: #f9f9f9;
-		border-top: 1px solid #e5e5e5;
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-	}
-	
-	.btn-block {
-		width: 100%;
-		justify-content: center;
-	}
-	
+
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Responsive Styles
+	 * Card Grid Container - WordPress Exact Match
 	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.card-grid {
+		margin-bottom: 30px;
+		display: flex;
+		flex-wrap: wrap;
+		margin-left: -15px;
+		margin-right: -15px;
+	}
+
+	/* Grid System - WordPress/Bootstrap Standard */
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin-left: -15px;
+		margin-right: -15px;
+	}
+
+	/* Global column classes for proper width application */
+	:global(.col-xs-12),
+	:global(.col-sm-6),
+	:global(.col-md-6),
+	:global(.col-lg-4) {
+		width: 100%;
+		padding-left: 15px;
+		padding-right: 15px;
+		box-sizing: border-box;
+		flex-shrink: 0;
+	}
+
+	/* Small Tablet: 2 columns (≥ 576px) */
+	@media (min-width: 576px) {
+		:global(.col-sm-6) {
+			width: 50%;
+			max-width: 50%;
+		}
+	}
+
+	/* Tablet: 2 columns (≥ 768px) */
+	@media (min-width: 768px) {
+		:global(.col-md-6) {
+			width: 50%;
+			max-width: 50%;
+		}
+	}
+
+	/* Desktop: 3 columns (≥ 992px) */
+	@media (min-width: 992px) {
+		:global(.col-lg-4) {
+			width: 33.333333%;
+			max-width: 33.333333%;
+		}
+	}
 	
+	/* Responsive */
 	@media (max-width: 768px) {
 		.dashboard__page-title {
 			font-size: 24px;
 		}
-		
-		.empty-state {
-			padding: 40px 20px;
-			min-height: 300px;
-		}
-		
-		.empty-state__icon {
-			width: 100px;
-			height: 100px;
-			margin-bottom: 20px;
-		}
-		
-		.empty-state__icon .fa {
-			font-size: 48px;
-		}
-		
-		.empty-state__title {
-			font-size: 24px;
-		}
-		
-		.empty-state__description {
-			font-size: 14px;
-		}
-		
-		.empty-state__actions {
-			flex-direction: column;
-			width: 100%;
-			max-width: 300px;
-		}
-		
-		.btn {
-			width: 100%;
-			justify-content: center;
-		}
-		
-		.indicators-grid {
-			grid-template-columns: 1fr;
-			gap: 20px;
-		}
 	}
 	
-	@media (min-width: 769px) and (max-width: 1024px) {
-		.indicators-grid {
-			grid-template-columns: repeat(2, 1fr);
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Pagination - Enterprise ICT 7 Standard
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	
+	.pagination-wrapper {
+		padding: 40px 0;
+		text-align: center;
+	}
+	
+	.pagination {
+		display: inline-block;
+	}
+	
+	.page-numbers {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		gap: 8px;
+		align-items: center;
+		justify-content: center;
+		flex-wrap: wrap;
+	}
+	
+	.page-numbers li {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	
+	.page-numbers button,
+	.page-numbers span {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 40px;
+		height: 40px;
+		padding: 8px 12px;
+		border: 1px solid #e6e6e6;
+		background: #fff;
+		color: #333;
+		font-size: 14px;
+		font-weight: 600;
+		font-family: 'Open Sans', sans-serif;
+		text-decoration: none;
+		border-radius: 4px;
+		transition: all 0.2s ease;
+		cursor: pointer;
+	}
+	
+	.page-numbers button:hover:not(:disabled) {
+		background: #f5f5f5;
+		border-color: #143E59;
+		color: #143E59;
+		text-decoration: none;
+	}
+	
+	.page-numbers button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+		background: #f9f9f9;
+	}
+	
+	.page-numbers .current {
+		background: #143E59;
+		color: #fff;
+		border-color: #143E59;
+		cursor: default;
+	}
+	
+	.page-numbers .prev,
+	.page-numbers .next {
+		min-width: auto;
+		padding: 8px 16px;
+		font-weight: 700;
+	}
+	
+	@media (max-width: 576px) {
+		.pagination-wrapper {
+			padding: 30px 0;
+		}
+		
+		.page-numbers {
+			gap: 4px;
+		}
+		
+		.page-numbers button,
+		.page-numbers span {
+			min-width: 36px;
+			height: 36px;
+			padding: 6px 10px;
+			font-size: 13px;
+		}
+		
+		.page-numbers .prev,
+		.page-numbers .next {
+			padding: 6px 12px;
 		}
 	}
 </style>

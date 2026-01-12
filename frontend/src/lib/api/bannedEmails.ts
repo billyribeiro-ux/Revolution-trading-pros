@@ -57,11 +57,13 @@ import { getAuthToken } from '$lib/stores/auth';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallbacks - NEVER use localhost in production
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
+const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/api/ml';
 
-const API_BASE = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
+const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API_ROOT : '';
+const API_BASE = API_ROOT ? `${API_ROOT}/api` : '';
 const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 
@@ -384,12 +386,20 @@ class BannedEmailManagementService {
 
 	/**
 	 * WebSocket setup
+	 * ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
 	 */
 	private setupWebSocket(): void {
-		if (!browser || !WS_URL) return;
+		if (!browser) return;
+
+		// ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
+		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
+		if (!configuredWsUrl) {
+			// Silently skip - WebSocket is optional
+			return;
+		}
 
 		try {
-			this.wsConnection = new WebSocket(`${WS_URL}/banned-emails`);
+			this.wsConnection = new WebSocket(`${configuredWsUrl}/banned-emails`);
 
 			this.wsConnection.onopen = () => {
 				console.debug('[BannedEmailService] WebSocket connected');
@@ -400,16 +410,15 @@ class BannedEmailManagementService {
 				this.handleWebSocketMessage(event);
 			};
 
-			this.wsConnection.onerror = (error) => {
-				console.error('[BannedEmailService] WebSocket error:', error);
+			this.wsConnection.onerror = () => {
+				// Silently handle - WebSocket is optional
 			};
 
 			this.wsConnection.onclose = () => {
-				console.debug('[BannedEmailService] WebSocket disconnected');
-				setTimeout(() => this.setupWebSocket(), 5000);
+				// Don't auto-reconnect - WebSocket is optional
 			};
 		} catch (error) {
-			console.error('[BannedEmailService] Failed to setup WebSocket:', error);
+			// Silently handle - WebSocket is optional
 		}
 	}
 

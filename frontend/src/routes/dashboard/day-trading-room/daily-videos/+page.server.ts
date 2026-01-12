@@ -8,8 +8,6 @@
  * @version 2.0.0 - January 2026 - Connected to real backend
  */
 
-import type { ServerLoadEvent, RequestEvent } from '@sveltejs/kit';
-
 const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 
 export interface DailyVideo {
@@ -34,7 +32,8 @@ export interface PageData {
 	error?: string;
 }
 
-export async function load({ url, fetch, cookies }: ServerLoadEvent): Promise<PageData> {
+/** @type {import('./$types').PageServerLoad} */
+export async function load({ url, fetch, cookies }): Promise<PageData> {
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const search = url.searchParams.get('search') || '';
 	const perPage = 12;

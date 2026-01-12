@@ -79,6 +79,35 @@
 /* CSS Variables for runtime access (IDE compatibility) */
 :root {
 	/* ═══════════════════════════════════════════════════════════════════════════
+	 * BREAKPOINTS - SINGLE SOURCE OF TRUTH (SSOT)
+	 * Svelte 5 / SvelteKit Best Practice: Define once in app.css
+	 * Aligned with Tailwind CSS defaults
+	 * 
+	 * NOTE: CSS media queries cannot use variables, so components must use
+	 * hardcoded values matching these. This serves as documentation + runtime.
+	 * 
+	 * MEDIA QUERY REFERENCE (copy-paste ready):
+	 * Mobile:  @media (max-width: 767px)  { }
+	 * Tablet+: @media (min-width: 768px)  { }
+	 * Desktop: @media (min-width: 1024px) { }
+	 * Large:   @media (min-width: 1440px) { }
+	 * XL:      @media (min-width: 1920px) { }
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--bp-mobile: 375px;       /* iPhone SE baseline */
+	--bp-mobile-lg: 428px;    /* iPhone Pro Max */
+	--bp-sm: 640px;           /* Tailwind sm */
+	--bp-md: 768px;           /* Tailwind md - SIDEBAR VISIBLE */
+	--bp-lg: 1024px;          /* Tailwind lg - Full desktop */
+	--bp-xl: 1280px;          /* Tailwind xl */
+	--bp-2xl: 1536px;         /* Tailwind 2xl */
+	--bp-3xl: 1920px;         /* Ultra-wide */
+
+	/* Layout dimensions */
+	--sidebar-width-expanded: 280px;
+	--sidebar-width-collapsed: 80px;
+	--mobile-footer-height: 50px;
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Font Families
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	--font-heading: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -357,62 +386,57 @@ body.dark,
 	}
 
 	/* Base body styles (Open Sans) */
+	/* COMMENTED OUT - Conflicts with class pages
 	body {
 		font-family: var(--font-body);
 		font-size: var(--font-size-body);
 		font-weight: 400;
 		line-height: var(--line-height-body);
-		/* Prevent horizontal scroll */
 		overflow-x: hidden;
-		/* Optimize paint performance */
 		contain: layout style;
 	}
+	*/
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Headings (Montserrat - Financial Tone)
-	 * Slightly smaller and tighter than typical marketing - authority over screaming
+	 * COMMENTED OUT - Conflicts with class pages
 	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* 
 	h1, h2, h3, h4, h5, h6 {
 		font-family: var(--font-heading);
 		margin: 0;
 	}
 
-	/* H1: Main page title / hero - 40px desktop */
 	h1 {
 		font-size: var(--font-size-h1);
 		font-weight: 700;
 		line-height: var(--line-height-heading);
 	}
 
-	/* H2: Major sections (Live Trading Rooms, Alerts) - 32px desktop */
 	h2 {
 		font-size: var(--font-size-h2);
-		font-weight: 700; /* 700 for key sections, use .heading-semibold for secondary */
+		font-weight: 700;
 		line-height: 1.25;
 	}
 
-	/* H3: Subsections, card group headings - 24px desktop */
 	h3 {
 		font-size: var(--font-size-h3);
 		font-weight: 600;
 		line-height: 1.3;
 	}
 
-	/* H4: Card titles, feature titles - 20px desktop */
 	h4 {
 		font-size: var(--font-size-h4);
 		font-weight: 600;
 		line-height: 1.35;
 	}
 
-	/* H5: Small section labels, overlines - 18px desktop */
 	h5 {
 		font-size: var(--font-size-h5);
-		font-weight: 500; /* 500-600 range */
+		font-weight: 500;
 		line-height: var(--line-height-tight);
 	}
 
-	/* H6: Eyebrow / category labels - 14-16px, uppercase with letter-spacing */
 	h6 {
 		font-size: var(--font-size-h6);
 		font-weight: 500;
@@ -420,13 +444,14 @@ body.dark,
 		text-transform: uppercase;
 		line-height: var(--line-height-tight);
 	}
+	*/
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Body Text (Open Sans)
-	 * Financial sites need comfort and clarity for text + numbers
+	 * COMMENTED OUT - Conflicts with class pages
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	
-	/* Default body text - 16px, line-height 1.6-1.7 for readability */
+	/* 
 	p {
 		font-family: var(--font-body);
 		font-size: var(--font-size-body);
@@ -434,33 +459,34 @@ body.dark,
 		line-height: var(--line-height-body);
 	}
 
-	/* Emphasis in body - same size, weight 600, no screaming */
 	strong, b {
 		font-weight: 600;
 	}
+	*/
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Mobile Responsive Headings
-	 * H4/H5/H6 stay mostly the same or drop by 2px
+	 * COMMENTED OUT - Conflicts with class pages
 	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/*
 	@media (max-width: 639px) {
 		h1 {
-			font-size: var(--font-size-h1-mobile); /* 32px */
+			font-size: var(--font-size-h1-mobile);
 		}
 		h2 {
-			font-size: var(--font-size-h2-mobile); /* 28px */
+			font-size: var(--font-size-h2-mobile);
 		}
 		h3 {
-			font-size: var(--font-size-h3-mobile); /* 22px */
+			font-size: var(--font-size-h3-mobile);
 		}
 		h4 {
-			font-size: var(--font-size-h4-mobile); /* 18px */
+			font-size: var(--font-size-h4-mobile);
 		}
 		h5 {
-			font-size: var(--font-size-h5-mobile); /* 16px */
+			font-size: var(--font-size-h5-mobile);
 		}
-		/* H6 stays the same */
 	}
+	*/
 
 	/* Box sizing reset - More specific than universal selector */
 	html {

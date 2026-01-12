@@ -38,6 +38,9 @@
 		// Check if we're on a class detail page (e.g., /classes/tax-loss-harvest)
 		const isClassDetailPage = segments[0] === 'classes' && segments.length > 1;
 		
+		// Check if we're on an indicator detail page (e.g., /indicators/volume-max-i)
+		const isIndicatorDetailPage = segments[0] === 'indicators' && segments.length > 1;
+		
 		// Check if we're on My Classes list page
 		const isMyClassesPage = pathname === '/dashboard/classes';
 		
@@ -61,6 +64,34 @@
 
 			items.push({
 				label: className,
+				href: null,
+				isCurrent: true,
+				className: 'item-current'
+			});
+		} else if (isIndicatorDetailPage) {
+			// Indicator detail page breadcrumb: Home / Member Dashboard / My Indicators / [Indicator Name]
+			items.push({
+				label: 'Member Dashboard',
+				href: '/dashboard',
+				isCurrent: false,
+				className: 'item-parent item-parent-401190'
+			});
+
+			items.push({
+				label: 'My Indicators',
+				href: '/dashboard/indicators',
+				isCurrent: false,
+				className: 'item-cat item-custom-post-type-indicators'
+			});
+
+			// Add indicator name as current item (formatted from slug)
+			const indicatorName = segments[1]
+				.split('-')
+				.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+				.join(' ');
+
+			items.push({
+				label: indicatorName,
 				href: null,
 				isCurrent: true,
 				className: 'item-current'

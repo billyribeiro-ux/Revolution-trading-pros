@@ -9,7 +9,7 @@ import { getAuthToken } from '$lib/stores/auth';
 // ICT11+ PRODUCTION DEPLOYMENT: Always use deployed URLs
 // Backend is deployed on Fly.io (Rust + Axum)
 const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
-const PRODUCTION_CDN_URL = 'https://pub-a6d59af18a9645e6a7b38dca4d53f2af.r2.dev';
+const PRODUCTION_CDN_URL = 'https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev';
 const PRODUCTION_WS_URL = 'wss://revolution-trading-pros-api.fly.dev';
 
 // Always use production URLs - no localhost

@@ -9,7 +9,6 @@
  */
 
 import { env } from '$env/dynamic/private';
-import type { ServerLoadEvent } from '@sveltejs/kit';
 
 // Video response from API
 interface VideoResponse {
@@ -64,7 +63,8 @@ export interface ArchivePageData {
 	error: string | null;
 }
 
-export const load = async ({ url, fetch }: ServerLoadEvent): Promise<ArchivePageData> => {
+/** @type {import('./$types').PageServerLoad} */
+export const load = async ({ url, fetch }): Promise<ArchivePageData> => {
 	const API_URL = env.API_URL || 'https://api.revolutiontradingpros.com';
 	
 	// Get query params

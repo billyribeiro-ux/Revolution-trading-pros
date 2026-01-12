@@ -166,7 +166,7 @@
 		justify-content: space-between;
 	}
 
-	@media (min-width: 1280px) {
+	@media (min-width: 1024px) {
 		.dashboard__header {
 			padding: 30px;
 		}

@@ -575,18 +575,20 @@ class PopupEngagementService {
 
 	/**
 	 * WebSocket setup - Optional, gracefully degrades if not available
+	 * ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
 	 */
 	private setupWebSocket(): void {
-		if (!browser || !WS_URL) return;
+		if (!browser) return;
 
-		// Skip WebSocket in development if not configured
-		if (!WS_URL || import.meta.env.DEV) {
-			console.debug('[PopupService] WebSocket not configured, using polling fallback');
+		// ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
+		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
+		if (!configuredWsUrl) {
+			// Silently skip - WebSocket is optional
 			return;
 		}
 
 		try {
-			this.wsConnection = new WebSocket(`${WS_URL}/popups`);
+			this.wsConnection = new WebSocket(`${configuredWsUrl}/popups`);
 
 			this.wsConnection.onopen = () => {
 				console.debug('[PopupService] WebSocket connected');
@@ -598,15 +600,14 @@ class PopupEngagementService {
 			};
 
 			this.wsConnection.onerror = () => {
-				console.debug('[PopupService] WebSocket not available, using polling');
+				// Silently handle - WebSocket is optional
 			};
 
 			this.wsConnection.onclose = () => {
-				console.debug('[PopupService] WebSocket disconnected');
-				// Don't auto-reconnect if WebSocket isn't properly configured
+				// Don't auto-reconnect - WebSocket is optional
 			};
 		} catch (error) {
-			console.debug('[PopupService] WebSocket not available');
+			// Silently handle - WebSocket is optional
 		}
 	}
 
@@ -857,11 +858,10 @@ class PopupEngagementService {
 		}
 
 		try {
-			const response = await fetch(`${API_BASE}/popups/active?page=${encodeURIComponent(page)}`);
+			// ICT 7 FIX: Use SvelteKit proxy endpoint (NOT direct backend URL)
+			const response = await fetch(`/api/popups/active?page=${encodeURIComponent(page)}`);
 
 			if (!response.ok) {
-				// Endpoint may not exist yet
-				console.debug('[PopupService] Active popups endpoint not available');
 				return;
 			}
 

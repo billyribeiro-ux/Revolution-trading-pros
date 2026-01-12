@@ -10,7 +10,6 @@
  */
 
 import { env } from '$env/dynamic/private';
-import type { ServerLoadEvent } from '@sveltejs/kit';
 
 // Room configuration
 const ROOM_CONFIG: Record<string, { name: string; startHereUrl: string }> = {
@@ -84,7 +83,8 @@ export interface DynamicArchivePageData {
 	error: string | null;
 }
 
-export const load = async ({ url, fetch, params }: ServerLoadEvent): Promise<DynamicArchivePageData> => {
+/** @type {import('./$types').PageServerLoad} */
+export const load = async ({ url, fetch, params }): Promise<DynamicArchivePageData> => {
 	const API_URL = env.API_URL || 'https://api.revolutiontradingpros.com';
 	const roomSlug = params.room_slug;
 	

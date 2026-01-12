@@ -23,8 +23,11 @@ import { get } from 'svelte/store';
 
 // Production fallback - NEVER use localhost in production
 // API routes are nested under /api in the backend
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
-const API_BASE = browser ? (import.meta.env['VITE_API_URL'] || PROD_API) : '';
+const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
+// We must append /api here since this file calls endpoints directly
+const API_ROOT = browser ? (import.meta.env['VITE_API_URL'] || PROD_API_ROOT) : '';
+const API_BASE = API_ROOT ? `${API_ROOT}/api` : '';
 
 // Cache TTLs (in milliseconds)
 const CACHE_TTL = {
@@ -393,9 +396,12 @@ export async function preloadMembershipData(): Promise<void> {
  * Developers get automatic access to ALL available memberships to test the complete
  * member experience. They appear as regular members with full access to all services.
  * 
+ * ICT 7 FIX: Use SvelteKit proxy endpoints instead of direct backend calls
+ * This prevents 404 console errors when backend endpoints don't exist yet.
+ * 
  * FALLBACK STRATEGY:
- * 1. Try /admin/products endpoint (primary)
- * 2. Try /products endpoint (fallback)
+ * 1. Try /api/admin/membership-plans proxy endpoint (primary)
+ * 2. Try /api/products proxy endpoint (fallback)
  * 3. Return mock data if both fail (development safety)
  * 
  * @returns UserMembershipsResponse with all available memberships
@@ -404,25 +410,28 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 	console.log('[Developer] 🔓 Fetching all available memberships for developer access...');
 	
 	try {
-		// STRATEGY 1: Try membership plans endpoint (correct admin endpoint)
-		let response = await fetch(`${API_BASE}/admin/membership-plans`, {
+		// ICT 7 FIX: Use SvelteKit proxy endpoints (NOT direct backend URLs)
+		// STRATEGY 1: Try membership plans proxy endpoint
+		let response = await fetch('/api/admin/membership-plans', {
 			method: 'GET',
 			headers: await getAuthHeaders(),
 			credentials: 'include'
 		});
 
-		// STRATEGY 2: Fallback to public products endpoint with correct parameter
-		if (!response.ok) {
-			console.warn('[Developer] Admin membership-plans endpoint failed, trying public products endpoint...');
-			response = await fetch(`${API_BASE}/products?product_type=membership&per_page=100`, {
+		// STRATEGY 2: Fallback to products proxy endpoint
+		if (!response.ok || (await response.clone().json()).plans?.length === 0) {
+			console.warn('[Developer] Admin membership-plans endpoint returned empty, trying products endpoint...');
+			response = await fetch('/api/products?product_type=membership&per_page=100', {
 				method: 'GET',
 				headers: await getAuthHeaders(),
 				credentials: 'include'
 			});
 		}
 
-		if (!response.ok) {
-			console.error('[Developer] ❌ Both API endpoints failed:', response.status, response.statusText);
+		// Check if we got valid data
+		const responseData = await response.clone().json();
+		if (!response.ok || (!responseData.data?.length && !responseData.products?.length && !responseData.plans?.length)) {
+			console.log('[Developer] API returned no products, using mock data');
 			// STRATEGY 3: Return mock data for development
 			return getDeveloperMockMemberships();
 		}

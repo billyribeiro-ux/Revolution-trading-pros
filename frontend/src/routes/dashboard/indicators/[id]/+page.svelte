@@ -77,7 +77,7 @@
 		downloads: [
 			{
 				platform: 'ThinkorSwim',
-				logo: '/wp-content/themes/simpler-trading/assets/images/thinkorswim.png',
+				logo: '/logos/platforms/thinkorswim.png',
 				files: [
 					{ name: 'Volume Max Indicator', downloadUrl: '/?st-download-file=452914b18dc78691e6c98731b9e094fe' },
 					{ name: 'VScore EOD Study', downloadUrl: '/?st-download-file=12ab53eb7e85a005a6a21f800db57777' },
@@ -91,7 +91,7 @@
 			},
 			{
 				platform: 'TradingView',
-				logo: '/wp-content/themes/simpler-trading/assets/images/tradingview.png',
+				logo: '/logos/platforms/tradingview.png',
 				files: [],
 				notes: 'Please email your TradingView Username to support@simplertrading.com. The TradingView chart indicator is very easy to get set up in your online charting profile. Once you are logged into TradingView, locate your Notifications area. Once we receive your Username, you should have a notification letting you know the new chart study has been made available.'
 			}
@@ -166,8 +166,9 @@
 					<section class="st_box {platformDownload.platform.toLowerCase().replace(/\s+/g, '')}">
 						<div class="platform-header">
 							<img
-								width="250"
+								width="200"
 								src={platformDownload.logo}
+								srcset={platformDownload.platform === 'TradingView' ? '/logos/platforms/tradingview@2x.png 2x' : ''}
 								alt={platformDownload.platform}
 								onerror={(e) => {
 									const img = e.currentTarget as HTMLImageElement;
@@ -251,88 +252,78 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Indicator Detail Page Styles
-	 * Matches WordPress implementation exactly
+	 * WordPress Exact Match Styles - NO CUSTOM STYLING
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.indicators {
-		max-width: 1200px;
+		max-width: 1160px;
 		margin: 0 auto;
-		padding: 20px;
+		padding: 40px 20px;
+		background-color: #ffffff;
 	}
 
 	.indicator-detail {
-		background: #fff;
-		border-radius: 8px;
-		padding: 40px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+		max-width: 100%;
+		margin: 0;
+		padding: 0;
+		background: transparent;
+		border-radius: 0;
+		box-shadow: none;
 	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Header
-	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.indicator-detail__header h1 {
 		font-size: 32px;
-		font-weight: 700;
-		color: #333;
+		font-weight: 400;
+		color: #666666;
 		margin: 0 0 20px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.2;
+		text-align: center;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Platforms Section
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
 	.indicator-detail__platforms {
-		margin-bottom: 30px;
+		margin-bottom: 0;
 	}
 
 	.platforms {
 		font-size: 16px;
-		color: #666;
+		color: #666666;
 		margin: 0 0 15px;
+		font-family: 'Open Sans', sans-serif;
+		text-align: center;
 	}
 
 	.platforms strong {
-		color: #333;
-		font-weight: 600;
+		color: #666666;
+		font-weight: 700;
 	}
 
 	hr {
 		border: none;
-		border-top: 1px solid #e5e5e5;
-		margin: 20px 0;
+		border-top: 1px solid #dddddd;
+		margin: 20px 0 40px;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Training Videos
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
+	/* Video Section */
 	.indicator-detail__videos {
 		margin-bottom: 40px;
 	}
 
 	.indicator-detail__videos h2 {
-		font-size: 24px;
-		font-weight: 700;
-		color: #333;
-		margin: 0 0 20px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		display: none;
 	}
 
 	.videos-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
-		gap: 30px;
-		margin-bottom: 30px;
+		display: block;
 	}
 
 	.video-container {
+		position: relative;
 		background: #000;
-		border-radius: 8px;
+		border-radius: 0;
 		overflow: hidden;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		margin-bottom: 25px;
 	}
 
 	.video-container video {
@@ -341,72 +332,63 @@
 	}
 
 	.video-title {
-		padding: 15px;
-		background: #f9f9f9;
-		color: #333;
-		font-size: 14px;
-		font-weight: 600;
-		margin: 0;
-		text-align: center;
+		display: none;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Download Sections (st_box)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
+	/* Platform Download Boxes - WordPress Exact */
 	.st_box {
-		background: #f9f9f9;
+		background: #ffffff;
 		border: 1px solid #e5e5e5;
-		border-radius: 8px;
-		padding: 30px;
-		margin-bottom: 30px;
+		border-radius: 4px;
+		padding: 40px 30px;
+		margin-bottom: 20px;
+		box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 	}
 
 	.st_box h2 {
 		font-size: 22px;
 		font-weight: 700;
-		color: #333;
+		color: #666666;
 		margin: 0 0 20px;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.platform-header {
 		text-align: center;
-		margin-bottom: 25px;
+		margin-bottom: 30px;
 	}
 
 	.platform-header img {
-		max-width: 250px;
+		max-width: 200px;
 		height: auto;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Downloads Table
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
+	/* Downloads Table - WordPress Exact */
 	.downloads-table {
 		width: 100%;
 		border-collapse: collapse;
-		background: #fff;
-		border-radius: 6px;
-		overflow: hidden;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		background: #ffffff;
+		border: 1px solid #e5e5e5;
+		border-radius: 0;
+		overflow: visible;
+		box-shadow: none;
 	}
 
 	.downloads-table thead th {
-		background: linear-gradient(135deg, #143E59 0%, #0984ae 100%);
-		color: #fff;
+		background: #f5f5f5;
+		color: #666666;
 		padding: 15px 20px;
 		text-align: left;
-		font-weight: 600;
+		font-weight: 700;
 		font-size: 14px;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
+		text-transform: none;
+		letter-spacing: 0;
+		border-bottom: 1px solid #e5e5e5;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.downloads-table tbody tr {
 		border-bottom: 1px solid #e5e5e5;
-		transition: background-color 0.2s ease;
 	}
 
 	.downloads-table tbody tr:last-child {
@@ -414,163 +396,124 @@
 	}
 
 	.downloads-table tbody tr:hover {
-		background-color: #f5f5f5;
+		background-color: #fafafa;
 	}
 
 	.downloads-table td {
 		padding: 15px 20px;
-		color: #333;
+		color: #666666;
 		font-size: 14px;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.downloads-table td.text-right {
 		text-align: right;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Orange Button (orng_btn)
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
+	/* Orange Button - WordPress Exact */
 	.orng_btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		padding: 10px 20px;
+		display: inline-block;
+		padding: 8px 20px;
 		background: #F69532;
-		color: #fff;
+		color: #ffffff;
 		text-decoration: none;
-		border-radius: 6px;
+		border-radius: 20px;
 		font-weight: 600;
-		font-size: 14px;
+		font-size: 13px;
 		transition: all 0.2s ease;
 		border: none;
 		cursor: pointer;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		white-space: nowrap;
 	}
 
 	.orng_btn:hover {
 		background: #dc7309;
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(246, 149, 50, 0.3);
+		text-decoration: none;
 	}
 
 	.orng_btn .fa {
-		font-size: 14px;
+		display: none;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Platform Notes
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
+	/* Platform Notes - WordPress Exact */
 	.platform_notes {
-		background: #fff;
-		border-left: 4px solid #F69532;
+		background: #f9f9f9;
+		border: 1px solid #e5e5e5;
 		padding: 20px;
 		margin-top: 20px;
 		border-radius: 4px;
-		color: #666;
+		color: #666666;
 		font-size: 14px;
-		line-height: 1.6;
+		line-height: 1.7;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.platform_notes a {
-		color: #143E59;
-		text-decoration: underline;
+		color: #1e73be;
+		text-decoration: none;
 	}
 
 	.platform_notes a:hover {
-		color: #F69532;
+		color: #000000;
+		text-decoration: underline;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Footer
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
+	/* Footer */
 	.indicator-detail__footer {
 		margin-top: 40px;
 		padding-top: 30px;
-		border-top: 1px solid #e5e5e5;
+		border-top: 1px solid #dddddd;
 		text-align: center;
 	}
 
 	.btn {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		padding: 12px 24px;
-		font-size: 16px;
+		display: inline-block;
+		padding: 10px 24px;
+		font-size: 14px;
 		font-weight: 600;
 		text-decoration: none;
-		border-radius: 6px;
+		border-radius: 4px;
 		transition: all 0.2s ease;
 		cursor: pointer;
-		border: none;
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.btn-secondary {
-		background: #fff;
-		color: #143E59;
-		border: 2px solid #143E59;
+		background: #f5f5f5;
+		color: #666666;
+		border: 1px solid #dddddd;
 	}
 
 	.btn-secondary:hover {
-		background: #143E59;
-		color: #fff;
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.2);
+		background: #e5e5e5;
+		color: #333333;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Responsive Styles
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
+	/* Responsive */
 	@media (max-width: 768px) {
-		.indicator-detail {
-			padding: 20px;
+		.indicators {
+			padding: 20px 15px;
 		}
 
 		.indicator-detail__header h1 {
 			font-size: 24px;
 		}
 
-		.videos-grid {
-			grid-template-columns: 1fr;
-			gap: 20px;
-		}
-
 		.st_box {
 			padding: 20px;
 		}
 
-		.downloads-table {
-			font-size: 13px;
-		}
-
-		.downloads-table td {
-			padding: 12px 15px;
-		}
-
+		.downloads-table td,
 		.downloads-table thead th {
 			padding: 12px 15px;
-			font-size: 12px;
-		}
-
-		.orng_btn {
-			padding: 8px 16px;
-			font-size: 13px;
 		}
 
 		.platform-header img {
-			max-width: 180px;
+			max-width: 150px;
 		}
 	}
 
 	@media (max-width: 480px) {
-		.indicators {
-			padding: 10px;
-		}
-
 		.downloads-table td,
 		.downloads-table thead th {
 			display: block;
@@ -586,7 +529,6 @@
 			display: block;
 			margin-bottom: 15px;
 			border: 1px solid #e5e5e5;
-			border-radius: 6px;
 			padding: 10px;
 		}
 
@@ -602,7 +544,7 @@
 
 		.orng_btn {
 			width: 100%;
-			justify-content: center;
+			text-align: center;
 		}
 	}
 </style>

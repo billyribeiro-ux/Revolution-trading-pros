@@ -514,7 +514,7 @@
 		padding: 20px;
 	}
     
-	@media (min-width: 1280px) {
+	@media (min-width: 1024px) {
 		.dashboard__header {
 			padding: 30px;
 		}
@@ -692,9 +692,6 @@
 			padding-right: 15px;
 		}
 
-		.watchlist-mobile-image {
-			display: none;
-		}
 	}
 
 	.section-title-alt {
@@ -709,15 +706,6 @@
 		padding-bottom: 10px;
 		border-bottom: 3px solid #ff8c00;
 		display: inline-block;
-	}
-
-	.watchlist-mobile-image {
-		margin-bottom: 15px;
-	}
-
-	.watchlist-mobile-image img {
-		width: 100%;
-		border-radius: 5px;
 	}
 
 	.watchlist-subtitle {
@@ -949,7 +937,7 @@
 		padding-top: 30px;
 	}
 
-	@media (min-width: 1280px) {
+	@media (min-width: 1024px) {
 		.dashboard__content-section {
 			padding: 30px 30px 0 30px;
 		}

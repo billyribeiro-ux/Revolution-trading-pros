@@ -57,11 +57,12 @@ import { getAuthToken } from '$lib/stores/auth';
 // ═══════════════════════════════════════════════════════════════════════════
 
 // Production fallbacks - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
+const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/ml';
 
-const API_URL = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
+const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API_ROOT : '';
+const API_URL = API_ROOT ? `${API_ROOT}/api` : '';
 const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
 
 const CACHE_TTL = 300000; // 5 minutes
@@ -598,65 +599,48 @@ class CouponManagementService {
 	 * - Performance: Message batching and throttling
 	 */
 	private setupWebSocket(): void {
-		if (!browser || !WS_ENABLED || !WS_URL) {
-			console.debug('[CouponService] WebSocket not available or disabled, using REST API only');
+		if (!browser) return;
+
+		// ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
+		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
+		if (!configuredWsUrl) {
+			// Silently skip - WebSocket is optional
 			return;
 		}
 
 		this.wsConnectionState.set('connecting');
-		console.info('[CouponService] Establishing WebSocket connection...');
 
 		try {
-			// Create WebSocket connection with authentication token
 			const token = this.getAuthToken();
-			const wsUrl = token ? `${WS_URL}/ws/coupons?token=${encodeURIComponent(token)}` : `${WS_URL}/ws/coupons`;
+			const wsUrl = token ? `${configuredWsUrl}/ws/coupons?token=${encodeURIComponent(token)}` : `${configuredWsUrl}/ws/coupons`;
 			
 			this.wsConnection = new WebSocket(wsUrl);
 
-			// Connection opened successfully
 			this.wsConnection.onopen = () => {
-				console.info('[CouponService] ✓ WebSocket connected');
+				console.debug('[CouponService] WebSocket connected');
 				this.wsConnectionState.set('connected');
 				this.wsReconnectAttempts = 0;
 				this.wsReconnectDelay = WS_RECONNECT_DELAY;
-				
-				// Start heartbeat mechanism
 				this.startHeartbeat();
-				
-				// Subscribe to coupon updates
 				this.subscribeToUpdates();
-				
-				// Flush queued messages
 				this.flushMessageQueue();
 			};
 
-			// Handle incoming messages
 			this.wsConnection.onmessage = (event: MessageEvent) => {
 				this.handleWebSocketMessage(event);
 			};
 
-			// Handle connection errors
-			this.wsConnection.onerror = (error) => {
-				console.error('[CouponService] WebSocket error:', error);
-				this.error.set('WebSocket connection error');
+			this.wsConnection.onerror = () => {
+				// Silently handle - WebSocket is optional
 			};
 
-			// Handle connection close
-			this.wsConnection.onclose = (event) => {
-				console.warn('[CouponService] WebSocket closed:', event.code, event.reason);
+			this.wsConnection.onclose = () => {
 				this.wsConnectionState.set('disconnected');
 				this.stopHeartbeat();
-				
-				// Attempt reconnection if not a clean close
-				if (!event.wasClean && this.wsReconnectAttempts < WS_MAX_RECONNECT_ATTEMPTS) {
-					this.scheduleReconnect();
-				} else if (this.wsReconnectAttempts >= WS_MAX_RECONNECT_ATTEMPTS) {
-					console.error('[CouponService] Max reconnection attempts reached. Falling back to REST API.');
-					this.error.set('WebSocket connection failed. Using REST API.');
-				}
+				// Don't auto-reconnect - WebSocket is optional
 			};
 		} catch (error) {
-			console.error('[CouponService] Failed to create WebSocket:', error);
+			// Silently handle - WebSocket is optional
 			this.wsConnectionState.set('disconnected');
 		}
 	}

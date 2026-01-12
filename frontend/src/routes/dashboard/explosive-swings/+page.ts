@@ -1,8 +1,8 @@
 /**
- * Start Here Page Load
+ * Explosive Swings Dashboard Page Load
  * ═══════════════════════════════════════════════════════════════════════════
  * 
- * Client-side only page - no server data needed
+ * Client-side page configuration
  * 
  * @version 1.0.0
  */

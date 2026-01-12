@@ -86,7 +86,9 @@ async fn register(
     }
 
     // Check if email exists
-    let existing: Option<User> = sqlx::query_as("SELECT * FROM users WHERE email = $1")
+    let existing: Option<User> = sqlx::query_as(
+        "SELECT id, email, password, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
+    )
         .bind(&input.email)
         .fetch_optional(&state.db.pool)
         .await
@@ -251,7 +253,9 @@ async fn verify_email(
     })?;
 
     // Get user for welcome email
-    let user: User = sqlx::query_as("SELECT * FROM users WHERE id = $1")
+    let user: User = sqlx::query_as(
+        "SELECT id, email, password, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE id = $1"
+    )
         .bind(user_id)
         .fetch_one(&state.db.pool)
         .await
@@ -338,7 +342,9 @@ async fn resend_verification(
     Json(input): Json<ResendVerificationRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
     // Find user by email
-    let user: Option<User> = sqlx::query_as("SELECT * FROM users WHERE email = $1")
+    let user: Option<User> = sqlx::query_as(
+        "SELECT id, email, password, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
+    )
         .bind(&input.email)
         .fetch_optional(&state.db.pool)
         .await
@@ -493,12 +499,14 @@ async fn login(
     }
 
     // Find user
-    let user_result: Option<User> = sqlx::query_as("SELECT * FROM users WHERE email = $1")
+    let user_result: Option<User> = sqlx::query_as(
+        "SELECT id, email, password, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
+    )
         .bind(&input.email)
         .fetch_optional(&state.db.pool)
         .await
         .map_err(|e| {
-            tracing::error!("Database error: {}", e);
+            tracing::error!("Database error during login: {}", e);
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(json!({"error": "Database error"})),
@@ -815,7 +823,9 @@ async fn forgot_password(
     Json(input): Json<ForgotPasswordRequest>,
 ) -> Result<Json<MessageResponse>, (StatusCode, Json<serde_json::Value>)> {
     // Find user (but don't reveal if they exist)
-    let user: Option<User> = sqlx::query_as("SELECT * FROM users WHERE email = $1")
+    let user: Option<User> = sqlx::query_as(
+        "SELECT id, email, password, name, role, email_verified_at, avatar_url, mfa_enabled, created_at, updated_at FROM users WHERE email = $1"
+    )
         .bind(&input.email)
         .fetch_optional(&state.db.pool)
         .await

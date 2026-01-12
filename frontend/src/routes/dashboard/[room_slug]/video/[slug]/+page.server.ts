@@ -9,7 +9,6 @@
  * @version 3.0.0 - January 2026 - Multi-room support
  */
 
-import type { ServerLoadEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
@@ -48,7 +47,8 @@ export interface PageData {
 	roomName: string;
 }
 
-export async function load({ params, fetch, cookies }: ServerLoadEvent): Promise<PageData> {
+/** @type {import('./$types').PageServerLoad} */
+export async function load({ params, fetch, cookies }): Promise<PageData> {
 	const { room_slug, slug } = params;
 
 	if (!slug || !room_slug) {

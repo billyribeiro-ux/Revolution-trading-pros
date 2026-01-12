@@ -57,6 +57,7 @@
 		"lightweight-charts": "^5.0.9",
 		"lottie-web": "^5.13.0",
 		"three": "^0.182.0",
+		"tus-js-client": "^4.2.3",
 		"typed.js": "^2.1.0",
 		"vivus": "^0.4.6",
 		"zod": "^4.1.13"

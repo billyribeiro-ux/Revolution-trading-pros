@@ -8,7 +8,6 @@
  * @version 2.0.0 - January 2026 - Connected to real backend
  */
 
-import type { ServerLoadEvent } from '@sveltejs/kit';
 import { error } from '@sveltejs/kit';
 
 const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
@@ -45,7 +44,8 @@ export interface PageData {
 	video: VideoDetail;
 }
 
-export async function load({ params, fetch, cookies }: ServerLoadEvent): Promise<PageData> {
+/** @type {import('./$types').PageServerLoad} */
+export async function load({ params, fetch, cookies }): Promise<PageData> {
 	const { slug } = params;
 
 	if (!slug) {

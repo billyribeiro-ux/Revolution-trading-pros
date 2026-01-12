@@ -65,14 +65,16 @@ import type {
 
 // ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
 // Production fallbacks - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
 const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 
 const isDev = import.meta.env.DEV;
-const API_BASE = browser 
-	? (isDev ? '/api' : (import.meta.env['VITE_API_URL'] || PROD_API)) 
+const API_ROOT = browser 
+	? (isDev ? '' : (import.meta.env['VITE_API_URL'] || PROD_API)) 
 	: '';
+// In dev mode, use /api for Vite proxy. In production, append /api to root URL
+const API_BASE = isDev ? '/api' : (API_ROOT ? `${API_ROOT}/api` : '');
 const WS_BASE = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 // Analytics API - only enable if explicitly configured (microservice is optional)
 const ANALYTICS_API = browser && import.meta.env['VITE_ANALYTICS_API']
@@ -571,18 +573,22 @@ class SubscriptionService {
 
 	/**
 	 * WebSocket setup for real-time updates
+	 * ICT 7 FIX: Only attempt WebSocket if explicitly configured via VITE_WS_URL
+	 * Fly.io and Cloudflare Pages don't support WebSockets by default
 	 */
 	private setupWebSocket(): void {
 		if (!browser || !this.getAuthToken()) return;
 
-		// Skip WebSocket in development if not configured
-		if (!WS_BASE || isDev) {
-			console.debug('[SubscriptionService] WebSocket not configured, using polling fallback');
+		// ICT 7 FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
+		// The backend on Fly.io doesn't support WebSockets unless explicitly set up
+		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
+		if (!configuredWsUrl) {
+			// Silently skip - WebSocket is optional
 			return;
 		}
 
 		try {
-			this.wsConnection = new WebSocket(`${WS_BASE}/subscriptions`);
+			this.wsConnection = new WebSocket(`${configuredWsUrl}/subscriptions`);
 
 			this.wsConnection.onopen = () => {
 				console.debug('[SubscriptionService] WebSocket connected');
@@ -595,15 +601,14 @@ class SubscriptionService {
 			};
 
 			this.wsConnection.onerror = () => {
-				console.debug('[SubscriptionService] WebSocket not available, using polling');
+				// Silently handle - WebSocket is optional
 			};
 
 			this.wsConnection.onclose = () => {
-				console.debug('[SubscriptionService] WebSocket disconnected');
-				// Don't auto-reconnect if WebSocket isn't properly configured
+				// Don't auto-reconnect - WebSocket is optional
 			};
 		} catch (error) {
-			console.debug('[SubscriptionService] WebSocket not available');
+			// Silently handle - WebSocket is optional
 		}
 	}
 
@@ -1092,9 +1097,11 @@ class SubscriptionService {
 
 	/**
 	 * Analytics & Insights
+	 * ICT 7 FIX: Use SvelteKit proxy endpoint instead of direct backend call
 	 */
 	async getStats(): Promise<SubscriptionStats> {
-		return this.authFetch<SubscriptionStats>(`${API_BASE}/subscriptions/metrics`);
+		// ICT 7 FIX: Use proxy endpoint to prevent 404 errors
+		return this.authFetch<SubscriptionStats>('/api/subscriptions/metrics');
 	}
 
 	async getRevenueMetrics(): Promise<RevenueMetrics | null> {

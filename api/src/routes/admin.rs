@@ -1032,6 +1032,41 @@ async fn delete_campaign(
 // DASHBOARD STATS
 // ═══════════════════════════════════════════════════════════════════════════
 
+/// Products stats (admin)
+async fn products_stats(
+    State(state): State<AppState>,
+    user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
+    let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM products")
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
+
+    let active: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM products WHERE is_active = true")
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
+
+    let draft: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM products WHERE is_active = false")
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
+
+    Ok(Json(json!({
+        "total": total.0,
+        "active": active.0,
+        "draft": draft.0,
+        "featured": 0,
+        "total_revenue": 0,
+        "total_sales": 0,
+        "data": {
+            "total": total.0
+        }
+    })))
+}
+
 /// Dashboard overview (admin)
 async fn dashboard_overview(
     State(state): State<AppState>,
@@ -1076,6 +1111,8 @@ pub fn router() -> Router<AppState> {
     Router::new()
         // Dashboard
         .route("/dashboard", get(dashboard_overview))
+        // Products stats
+        .route("/products/stats", get(products_stats))
         // Users
         .route("/users", get(list_users).post(create_user))
         .route("/users/stats", get(user_stats))

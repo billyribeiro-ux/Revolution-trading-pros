@@ -15,12 +15,14 @@
 		<link rel="dns-prefetch" href="https://www.google-analytics.com" />
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-		<!-- Zero-Latency Video: Bunny.net CDN Preconnects - January 2026 -->
+		<!-- Zero-Latency Video: Bunny.net CDN - DNS Prefetch Only (ICT 11 Fix) -->
+		<!-- Preconnect moved to video pages only to avoid "preloaded but not used" -->
 		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 		<link rel="dns-prefetch" href="https://iframe.mediadelivery.net" />
 		<link rel="dns-prefetch" href="https://video.bunnycdn.com" />
-		<link rel="preconnect" href="https://iframe.mediadelivery.net" crossorigin />
-		<link rel="preconnect" href="https://video.bunnycdn.com" crossorigin />
+		<!-- Box.com for class downloads -->
+		<link rel="dns-prefetch" href="https://simplertrading.app.box.com" />
+		<link rel="dns-prefetch" href="https://app.box.com" />
 
 		<!-- Preconnect for critical resources -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
@@ -34,8 +36,8 @@
 		<link rel="icon" type="image/png" href="%sveltekit.assets%/favicon.png" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.png" />
 
-		<!-- Web App Manifest for PWA -->
-		<link rel="manifest" href="%sveltekit.assets%/manifest.json" />
+		<!-- Web App Manifest for PWA - ICT 7 FIX: Use server route for reliability -->
+		<link rel="manifest" href="/manifest.json" />
 
 		<!-- Theme and Display -->
 		<meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
@@ -111,15 +113,16 @@
 		<!-- Includes all weights required for pixel-perfect Simpler Trading match -->
 		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 
-		<!-- Preload critical fonts for faster LCP -->
-		<link
-			rel="preload"
-			href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&family=Open+Sans+Condensed:wght@700&family=Montserrat:wght@500;600;700&display=swap"
-			as="style"
-		/>
+		<!-- 
+			ICT 7 FIX: Google Fonts loading optimized for Nov 2025 best practices
+			- Using rel="preload" with as="style" causes "unsupported type" warning
+			- Instead, use fetchpriority="high" on stylesheet for priority hint
+			- Browsers auto-prioritize render-blocking stylesheets anyway
+		-->
 		<link
 			href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&family=Open+Sans+Condensed:wght@700&family=Montserrat:wght@500;600;700&display=swap"
 			rel="stylesheet"
+			fetchpriority="high"
 		/>
 
 		<!-- Critical CSS for above-the-fold content (prevents FOUC) -->
