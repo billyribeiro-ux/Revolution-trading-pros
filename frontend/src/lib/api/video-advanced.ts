@@ -16,9 +16,7 @@
  * - Drag & Drop Reorder
  */
 
-import { PUBLIC_API_URL } from '$env/static/public';
-
-const API_BASE = PUBLIC_API_URL || 'https://revolution-trading-pros-api.fly.dev';
+const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -311,7 +309,7 @@ export const analyticsApi = {
 		period?: '7d' | '30d' | '90d';
 		content_type?: string;
 		room_id?: number;
-	}): Promise<{ success: boolean; data?: AnalyticsDashboard }> {
+	}): Promise<{ success: boolean; data?: AnalyticsDashboard; error?: string }> {
 		const searchParams = new URLSearchParams();
 		if (params?.period) searchParams.set('period', params.period);
 		if (params?.content_type) searchParams.set('content_type', params.content_type);
@@ -327,7 +325,7 @@ export const analyticsApi = {
 	async getVideoAnalytics(
 		videoId: number,
 		period?: '7d' | '30d' | '90d'
-	): Promise<{ success: boolean; data?: VideoAnalytics }> {
+	): Promise<{ success: boolean; data?: VideoAnalytics; error?: string }> {
 		const query = period ? `?period=${period}` : '';
 		return apiRequest(`/analytics/video/${videoId}${query}`);
 	},
@@ -451,14 +449,14 @@ export const chaptersApi = {
 	/**
 	 * Get chapters for a video
 	 */
-	async list(videoId: number): Promise<{ success: boolean; data?: VideoChapter[] }> {
+	async list(videoId: number): Promise<{ success: boolean; data?: VideoChapter[]; error?: string }> {
 		return apiRequest(`/videos/${videoId}/chapters`);
 	},
 
 	/**
 	 * Create a chapter
 	 */
-	async create(videoId: number, data: CreateChapterRequest): Promise<{ success: boolean; data?: { id: number } }> {
+	async create(videoId: number, data: CreateChapterRequest): Promise<{ success: boolean; data?: { id: number }; error?: string }> {
 		return apiRequest(`/videos/${videoId}/chapters`, {
 			method: 'POST',
 			body: JSON.stringify(data)
@@ -471,7 +469,7 @@ export const chaptersApi = {
 	async bulkCreate(
 		videoId: number,
 		chapters: { title: string; description?: string; start_time_seconds: number; end_time_seconds?: number }[]
-	): Promise<{ success: boolean }> {
+	): Promise<{ success: boolean; error?: string }> {
 		return apiRequest(`/videos/${videoId}/chapters/bulk`, {
 			method: 'POST',
 			body: JSON.stringify({ chapters })
@@ -481,7 +479,7 @@ export const chaptersApi = {
 	/**
 	 * Update a chapter
 	 */
-	async update(videoId: number, chapterId: number, data: Partial<CreateChapterRequest>): Promise<{ success: boolean }> {
+	async update(videoId: number, chapterId: number, data: Partial<CreateChapterRequest>): Promise<{ success: boolean; error?: string }> {
 		return apiRequest(`/videos/${videoId}/chapters/${chapterId}`, {
 			method: 'PUT',
 			body: JSON.stringify(data)
@@ -491,7 +489,7 @@ export const chaptersApi = {
 	/**
 	 * Delete a chapter
 	 */
-	async delete(videoId: number, chapterId: number): Promise<{ success: boolean }> {
+	async delete(videoId: number, chapterId: number): Promise<{ success: boolean; error?: string }> {
 		return apiRequest(`/videos/${videoId}/chapters/${chapterId}`, { method: 'DELETE' });
 	}
 };
@@ -509,7 +507,7 @@ export const scheduledApi = {
 		resource_type?: string;
 		page?: number;
 		per_page?: number;
-	}): Promise<{ success: boolean; data?: ScheduledJob[] }> {
+	}): Promise<{ success: boolean; data?: ScheduledJob[]; error?: string }> {
 		const searchParams = new URLSearchParams();
 		if (params?.status) searchParams.set('status', params.status);
 		if (params?.resource_type) searchParams.set('resource_type', params.resource_type);
@@ -523,7 +521,7 @@ export const scheduledApi = {
 	/**
 	 * Create a scheduled job
 	 */
-	async create(data: CreateScheduledJobRequest): Promise<{ success: boolean; data?: { id: number; scheduled_at: string } }> {
+	async create(data: CreateScheduledJobRequest): Promise<{ success: boolean; data?: { id: number; scheduled_at: string }; error?: string }> {
 		return apiRequest('/scheduled-jobs', {
 			method: 'POST',
 			body: JSON.stringify(data)
@@ -533,7 +531,7 @@ export const scheduledApi = {
 	/**
 	 * Cancel a scheduled job
 	 */
-	async cancel(id: number): Promise<{ success: boolean }> {
+	async cancel(id: number): Promise<{ success: boolean; error?: string }> {
 		return apiRequest(`/scheduled-jobs/${id}/cancel`, { method: 'POST' });
 	}
 };
@@ -546,7 +544,7 @@ export const bulkUploadApi = {
 	/**
 	 * Initialize bulk upload
 	 */
-	async init(data: BulkUploadRequest): Promise<{ success: boolean; data?: BulkUploadResponse }> {
+	async init(data: BulkUploadRequest): Promise<{ success: boolean; data?: BulkUploadResponse; error?: string }> {
 		return apiRequest('/bulk-upload', {
 			method: 'POST',
 			body: JSON.stringify(data)
@@ -606,7 +604,7 @@ export const videoOpsApi = {
 	/**
 	 * Bulk edit videos
 	 */
-	async bulkEdit(data: BulkEditRequest): Promise<{ success: boolean }> {
+	async bulkEdit(data: BulkEditRequest): Promise<{ success: boolean; error?: string }> {
 		return apiRequest('/bulk-edit', {
 			method: 'POST',
 			body: JSON.stringify(data)
