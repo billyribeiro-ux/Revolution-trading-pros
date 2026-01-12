@@ -369,6 +369,12 @@
 
 	// --- Form Submit ---
 	async function handleSubmit() {
+		// ICT 11+ Debug: Entry point logging for troubleshooting silent failures
+		console.log('[LoginForm:ICT11] handleSubmit called', {
+			email: email ? email.substring(0, 3) + '***' : '(empty)',
+			passwordLength: password?.length || 0,
+			timestamp: new Date().toISOString()
+		});
 
 		// Mark all fields as touched
 		touched = { email: true, password: true };
@@ -378,9 +384,15 @@
 		const passwordError = validatePassword(password);
 
 		if (emailError || passwordError) {
-			errors = {};
-			if (emailError) errors['email'] = [emailError];
-			if (passwordError) errors['password'] = [passwordError];
+			// ICT 11+ Debug: Log validation failures
+			console.log('[LoginForm:ICT11] Validation failed', { emailError, passwordError });
+			
+			// ICT 11+ Svelte 5 Fix: Create complete object in single assignment
+			// Mutating after assignment may not trigger reactivity in Svelte 5
+			errors = {
+				...(emailError ? { email: [emailError] } : {}),
+				...(passwordError ? { password: [passwordError] } : {})
+			};
 
 			// Shake animation
 			if (gsap && cardRef) {
@@ -456,7 +468,15 @@
 				});
 			}, 400);
 		} catch (error: unknown) {
-			// Error handling
+			// ICT 11+ Debug: Log all caught errors for diagnosis
+			console.error('[LoginForm:ICT11] Login error caught:', {
+				error,
+				type: error instanceof Error ? error.constructor.name : typeof error,
+				message: error instanceof Error ? error.message : String(error),
+				timestamp: new Date().toISOString()
+			});
+
+			// Reset button animation
 			if (gsap && submitBtn) gsap.to(submitBtn, { scale: 1, duration: 0.2 });
 
 			// Shake animation
@@ -481,9 +501,9 @@
 				if (errorObj.code === 'EMAIL_NOT_VERIFIED' || errorObj.message?.includes('verify your email')) {
 					emailNotVerified = true;
 					generalError = '';
-				} else if ('errors' in errorObj) {
-					// DEFENSIVE: Ensure errors is always an object, never undefined
-					errors = errorObj.errors ?? {};
+				} else if ('errors' in errorObj && errorObj.errors) {
+					// ICT 11+ Svelte 5 Fix: Create new object to ensure reactivity
+					errors = { ...errorObj.errors };
 				} else if (errorObj.message) {
 					generalError = errorObj.message;
 				} else {
