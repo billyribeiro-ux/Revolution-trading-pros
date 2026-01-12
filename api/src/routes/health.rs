@@ -128,7 +128,7 @@ async fn setup_db(
     if update_result.rows_affected() == 0 {
         sqlx::query(
             r#"
-            INSERT INTO users (email, password, name, role, email_verified_at, created_at, updated_at)
+            INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
             VALUES (
                 'welberribeirodrums@gmail.com',
                 '$2b$10$ZVtDbp8nFLBzi4LTpMiiqe33JlwMdDmPf9.yguzf09cH1iDthQi16',

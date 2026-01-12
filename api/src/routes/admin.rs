@@ -190,7 +190,7 @@ async fn create_user(
 
     let user: AdminUserRow = sqlx::query_as(
         r#"
-        INSERT INTO users (name, email, password, role, is_active, created_at, updated_at)
+        INSERT INTO users (name, email, password_hash, role, is_active, created_at, updated_at)
         VALUES ($1, $2, $3, $4, true, NOW(), NOW())
         RETURNING id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at
         "#
