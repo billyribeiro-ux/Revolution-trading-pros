@@ -225,16 +225,14 @@ async fn init_db(
 ) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
     // Run migrations
     let _ = state.db.migrate().await;
-    let _ = state.db.bootstrap_developer(&state.config).await;
     
-    // Create user
-    let _ = sqlx::query(r#"
-        INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
-        VALUES ('billy.ribeiro@icloud.com', '$argon2id$v=19$m=19456,t=2,p=1$YWJjZGVmZ2hpamtsbW5vcA$K8Z8XzVqkHjNqFmqbMXg6wD5qVtFzxYTqxW8hFvNKJY', 'Billy', 'developer', NOW(), NOW(), NOW())
-        ON CONFLICT (email) DO UPDATE SET password_hash = '$argon2id$v=19$m=19456,t=2,p=1$YWJjZGVmZ2hpamtsbW5vcA$K8Z8XzVqkHjNqFmqbMXg6wD5qVtFzxYTqxW8hFvNKJY', role = 'developer', email_verified_at = NOW()
-    "#).execute(&state.db.pool).await;
+    // Bootstrap developer from environment variables ONLY
+    let _ = state.db.bootstrap_developer(&state.config).await;
 
-    Ok(Json(SetupResponse { success: true, message: "Done".to_string() }))
+    Ok(Json(SetupResponse { 
+        success: true, 
+        message: "Migrations and bootstrap completed from environment variables".to_string()
+    }))
 }
 
 pub fn router() -> Router<AppState> {
