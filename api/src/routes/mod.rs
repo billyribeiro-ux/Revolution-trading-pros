@@ -45,6 +45,8 @@ pub mod trading_rooms;
 pub mod forms;
 pub mod email_templates;
 pub mod subscriptions_admin;
+pub mod room_content;
+pub mod watchlist;
 
 use axum::Router;
 use crate::AppState;
@@ -104,6 +106,11 @@ pub fn api_router() -> Router<AppState> {
         .nest("/indicators", member_indicators::public_router())
         .nest("/my/indicators", member_indicators::member_router())
         .nest("/download", member_indicators::download_router())
+        // Room Content Management - Trade Plans, Alerts, Weekly Videos
+        .nest("/room-content", room_content::public_router())
+        .nest("/admin/room-content", room_content::admin_router())
+        // Weekly Watchlist
+        .nest("/watchlist", watchlist::router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())
