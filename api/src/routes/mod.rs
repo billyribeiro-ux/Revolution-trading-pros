@@ -32,8 +32,6 @@ pub mod orders;
 pub mod schedules;
 pub mod cms;
 pub mod realtime;
-pub mod unified_videos;
-pub mod video_advanced;
 pub mod courses_admin;
 // pub mod indicators_admin; // TODO: Fix SQLx tuple decoding issues
 pub mod member_courses;
@@ -76,10 +74,6 @@ pub fn api_router() -> Router<AppState> {
         .nest("/security", security::router())
         .nest("/schedules", schedules::router())
         .nest("/admin/schedules", schedules::admin_router())
-        .nest("/admin/unified-videos", unified_videos::router())
-        .nest("/unified-videos", unified_videos::router()) // Public access route
-        .nest("/admin/video-advanced", video_advanced::router())
-        .nest("/video-advanced", video_advanced::router())
         // Enhanced Course & Indicator Management - ICT 7 Grade
         .nest("/admin/courses-enhanced", courses_admin::router())
         // .nest("/admin/indicators-enhanced", indicators_admin::router()) // TODO: Fix SQLx issues

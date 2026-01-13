@@ -6,9 +6,9 @@
 	Apple ICT 11+ Principal Engineer Implementation
 
 	Educational resources and training materials for any trading room.
-	Uses reusable components and unified videos API.
+	Uses reusable components.
 
-	@version 1.0.0
+	@version 2.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">

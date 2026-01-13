@@ -3,9 +3,9 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Implementation
  * 
- * Fetches room archive videos from unified videos API
+ * Fetches room archive videos
  * 
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 import { env } from '$env/dynamic/private';
@@ -71,46 +71,12 @@ export const load = async ({ url, fetch }): Promise<ArchivePageData> => {
 	const page = url.searchParams.get('page') || '1';
 	const search = url.searchParams.get('search') || '';
 	
-	try {
-		// Fetch room archives from unified videos API
-		const params = new URLSearchParams({
-			content_type: 'room_archive',
-			room_slug: 'day-trading-room',
-			page,
-			per_page: '50',
-		});
-		
-		if (search) {
-			params.set('search', search);
-		}
-		
-		const response = await fetch(`${API_URL}/api/videos?${params.toString()}`);
-		
-		if (!response.ok) {
-			console.error('Failed to fetch archives:', response.status);
-			return {
-				videos: [],
-				meta: { current_page: 1, per_page: 50, total: 0, last_page: 1 },
-				search,
-				error: 'Failed to load archives'
-			};
-		}
-		
-		const data: ApiResponse = await response.json();
-		
-		return {
-			videos: data.data || [],
-			meta: data.meta || { current_page: 1, per_page: 50, total: 0, last_page: 1 },
-			search,
-			error: null
-		};
-	} catch (error) {
-		console.error('Error fetching archives:', error);
-		return {
-			videos: [],
-			meta: { current_page: 1, per_page: 50, total: 0, last_page: 1 },
-			search,
-			error: 'Failed to load archives'
-		};
-	}
+	// TODO: Implement new video fetching approach
+	// Returning empty data until new implementation is ready
+	return {
+		videos: [],
+		meta: { current_page: 1, per_page: 50, total: 0, last_page: 1 },
+		search,
+		error: null
+	};
 };

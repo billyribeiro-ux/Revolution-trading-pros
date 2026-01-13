@@ -11,10 +11,8 @@
 	 * - Drag and drop support
 	 * - Automatic video URL generation
 	 *
-	 * @version 1.0.0 - January 2026
+	 * @version 2.0.0 - January 2026
 	 */
-
-	import { unifiedVideoApi } from '$lib/api/unified-videos';
 
 	interface Props {
 		onUploadComplete?: (data: { video_url: string; embed_url: string; video_guid: string }) => void;
@@ -96,34 +94,8 @@
 		isGettingUrl = true;
 
 		try {
-			// Get upload URL from our backend
-			const title = videoFile.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
-			const uploadUrlResponse = await unifiedVideoApi.getUploadUrl(title);
-
-			if (!uploadUrlResponse.success) {
-				throw new Error('Failed to get upload URL');
-			}
-
-			const { upload_url, video_guid, embed_url, play_url } = uploadUrlResponse.data;
-			isGettingUrl = false;
-			uploadStatus = 'uploading';
-
-			// Upload directly to Bunny.net using TUS protocol
-			await uploadToBunny(upload_url, videoFile);
-
-			uploadStatus = 'processing';
-
-			// Small delay to allow Bunny to start processing
-			await new Promise(resolve => setTimeout(resolve, 2000));
-
-			uploadStatus = 'complete';
-
-			// Return the video URLs
-			onUploadComplete?.({
-				video_url: play_url,
-				embed_url: embed_url,
-				video_guid: video_guid
-			});
+			// TODO: Implement new video upload approach
+			throw new Error('Video upload functionality temporarily disabled - new implementation needed');
 
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Upload failed';

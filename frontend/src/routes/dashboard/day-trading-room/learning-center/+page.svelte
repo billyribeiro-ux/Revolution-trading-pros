@@ -6,9 +6,9 @@
 	Apple ICT 11+ Principal Engineer Implementation
 
 	Educational resources and training materials for Day Trading Room members.
-	Fetches data from unified videos API with server-side rendering.
+	Fetches data with server-side rendering.
 
-	@version 3.0.0
+	@version 4.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">

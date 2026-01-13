@@ -3,10 +3,10 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Implementation
  * 
- * Fetches room archive videos from unified videos API for any trading room.
+ * Fetches room archive videos for any trading room.
  * Supports: day-trading-room, swing-trading-room, small-account-mentorship
  * 
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 import { env } from '$env/dynamic/private';
@@ -98,55 +98,15 @@ export const load = async ({ url, fetch, params }): Promise<DynamicArchivePageDa
 	const page = url.searchParams.get('page') || '1';
 	const search = url.searchParams.get('search') || '';
 	
-	try {
-		// Fetch room archives from unified videos API
-		const apiParams = new URLSearchParams({
-			content_type: 'room_archive',
-			room_slug: roomSlug,
-			page,
-			per_page: '50',
-		});
-		
-		if (search) {
-			apiParams.set('search', search);
-		}
-		
-		const response = await fetch(`${API_URL}/api/videos?${apiParams.toString()}`);
-		
-		if (!response.ok) {
-			console.error('Failed to fetch archives:', response.status);
-			return {
-				roomSlug,
-				roomName: roomConfig.name,
-				startHereUrl: roomConfig.startHereUrl,
-				videos: [],
-				meta: { current_page: 1, per_page: 50, total: 0, last_page: 1 },
-				search,
-				error: 'Failed to load archives'
-			};
-		}
-		
-		const data: ApiResponse = await response.json();
-		
-		return {
-			roomSlug,
-			roomName: roomConfig.name,
-			startHereUrl: roomConfig.startHereUrl,
-			videos: data.data || [],
-			meta: data.meta || { current_page: 1, per_page: 50, total: 0, last_page: 1 },
-			search,
-			error: null
-		};
-	} catch (error) {
-		console.error('Error fetching archives:', error);
-		return {
-			roomSlug,
-			roomName: roomConfig.name,
-			startHereUrl: roomConfig.startHereUrl,
-			videos: [],
-			meta: { current_page: 1, per_page: 50, total: 0, last_page: 1 },
-			search,
-			error: 'Failed to load archives'
-		};
-	}
+	// TODO: Implement new video fetching approach
+	// Returning empty data until new implementation is ready
+	return {
+		roomSlug,
+		roomName: roomConfig.name,
+		startHereUrl: roomConfig.startHereUrl,
+		videos: [],
+		meta: { current_page: 1, per_page: 50, total: 0, last_page: 1 },
+		search,
+		error: null
+	};
 };

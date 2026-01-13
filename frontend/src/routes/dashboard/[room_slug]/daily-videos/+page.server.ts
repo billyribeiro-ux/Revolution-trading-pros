@@ -3,10 +3,10 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * 
  * ICT 11+ Principal Engineer Grade
- * Fetches videos from unified_videos API with pagination support
+ * Fetches videos with pagination support
  * NOW SUPPORTS DYNAMIC ROOM SELECTION via [room_slug] parameter
  * 
- * @version 4.0.0 - January 2026 - Unified Videos API
+ * @version 5.0.0 - January 2026
  */
 
 const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
@@ -55,71 +55,9 @@ export async function load({ params, url, fetch, cookies }): Promise<PageData> {
 	// Get room ID from slug
 	const roomId = ROOM_IDS[room_slug as string] || 1;
 
-	try {
-		// Build unified videos API URL
-		const apiUrl = new URL(`${API_BASE}/api/unified-videos`);
-		apiUrl.searchParams.set('content_type', 'daily_video');
-		apiUrl.searchParams.set('room_id', roomId.toString());
-		apiUrl.searchParams.set('is_published', 'true');
-		apiUrl.searchParams.set('page', page.toString());
-		apiUrl.searchParams.set('per_page', perPage.toString());
-		apiUrl.searchParams.set('sort_by', 'video_date');
-		apiUrl.searchParams.set('sort_dir', 'desc');
-		
-		if (search) {
-			apiUrl.searchParams.set('search', search);
-		}
-
-		// Get auth token if available
-		const token = cookies.get('access_token');
-		const headers: HeadersInit = {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json',
-		};
-		if (token) {
-			headers['Authorization'] = `Bearer ${token}`;
-		}
-
-		const response = await fetch(apiUrl.toString(), { headers });
-
-		if (response.ok) {
-			const data = await response.json();
-			
-			// Transform unified videos API response to frontend format
-			const videos: DailyVideo[] = (data.data || []).map((video: any) => ({
-				id: video.id,
-				title: video.title,
-				slug: video.slug,
-				date: video.formatted_date || formatDate(video.video_date),
-				trader: video.trader?.name || 'Trading Team',
-				excerpt: video.description || '',
-				thumbnail: video.thumbnail_url || 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg',
-				duration: video.formatted_duration,
-				isVideo: true,
-			}));
-
-			return {
-				videos,
-				pagination: {
-					page: data.meta?.current_page || page,
-					perPage: data.meta?.per_page || perPage,
-					total: data.meta?.total || 0,
-					totalPages: data.meta?.last_page || 1,
-				},
-				roomSlug: room_slug as string,
-				roomName: getRoomName(room_slug as string),
-			};
-		}
-
-		// If API fails, return mock data for development
-		console.warn('[DailyVideos] Backend API unavailable, using mock data for room:', room_slug);
-		return getMockData(room_slug as string, page, perPage, search);
-
-	} catch (err) {
-		console.error('[DailyVideos] Failed to fetch videos:', err);
-		// Return mock data as fallback
-		return getMockData(room_slug as string, page, perPage, search);
-	}
+	// TODO: Implement new video fetching approach
+	// Using mock data until new implementation is ready
+	return getMockData(room_slug as string, page, perPage, search);
 }
 
 function formatDate(dateStr: string): string {

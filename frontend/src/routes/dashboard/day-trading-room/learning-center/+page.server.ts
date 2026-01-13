@@ -4,8 +4,8 @@
  * 
  * Apple ICT 11+ Principal Engineer Grade - January 2026
  * 
- * Fetches learning center videos from the unified videos API
- * Supports filtering by category/tags and pagination
+ * Fetches learning center videos with pagination
+ * Supports filtering by category/tags
  */
 
 import type { PageServerLoad } from './$types';
@@ -88,61 +88,12 @@ export const load: PageServerLoad = async ({ url, fetch, cookies }) => {
 	const category = url.searchParams.get('category');
 	const perPage = 9;
 
-	// Build API URL
-	const apiUrl = new URL(`${API_BASE}/api/unified-videos`);
-	apiUrl.searchParams.set('content_type', 'learning_center');
-	apiUrl.searchParams.set('is_published', 'true');
-	apiUrl.searchParams.set('page', page.toString());
-	apiUrl.searchParams.set('per_page', perPage.toString());
-	apiUrl.searchParams.set('sort_by', 'video_date');
-	apiUrl.searchParams.set('sort_dir', 'desc');
-
-	// Add tag filter if category selected
-	if (category && category !== '0' && CATEGORY_TAG_MAP[category]) {
-		apiUrl.searchParams.set('tags', CATEGORY_TAG_MAP[category]);
-	}
-
-	// Add room filter for day trading room
-	apiUrl.searchParams.set('room_id', '1'); // Day Trading Room ID
-
-	try {
-		const token = cookies.get('access_token');
-		const headers: Record<string, string> = {
-			'Content-Type': 'application/json',
-			'Accept': 'application/json'
-		};
-
-		if (token) {
-			headers['Authorization'] = `Bearer ${token}`;
-		}
-
-		const response = await fetch(apiUrl.toString(), { headers });
-
-		if (!response.ok) {
-			console.error(`[LearningCenter] API error: ${response.status}`);
-			return {
-				videos: [],
-				meta: { current_page: 1, per_page: perPage, total: 0, last_page: 1 },
-				activeFilter: category || 'all',
-				error: `Failed to fetch videos: ${response.status}`
-			};
-		}
-
-		const data: ApiResponse = await response.json();
-
-		return {
-			videos: data.data || [],
-			meta: data.meta || { current_page: 1, per_page: perPage, total: 0, last_page: 1 },
-			activeFilter: category || 'all',
-			error: null
-		};
-	} catch (error) {
-		console.error('[LearningCenter] Fetch error:', error);
-		return {
-			videos: [],
-			meta: { current_page: 1, per_page: perPage, total: 0, last_page: 1 },
-			activeFilter: category || 'all',
-			error: 'Failed to connect to API'
-		};
+	// TODO: Implement new video fetching approach
+	// Returning empty data until new implementation is ready
+	return {
+		videos: [],
+		meta: { current_page: 1, per_page: perPage, total: 0, last_page: 1 },
+		activeFilter: category || 'all',
+		error: null
 	}
 };

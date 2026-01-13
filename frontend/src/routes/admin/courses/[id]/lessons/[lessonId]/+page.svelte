@@ -119,22 +119,8 @@
 
 		uploading = true;
 		try {
-			// Get upload URL from Bunny
-			const urlRes = await fetch(`/api/admin/unified-videos/upload-url`, {
-				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({ title: lesson?.title || file.name })
-			});
-			const urlData = await urlRes.json();
-
-			if (urlData.success) {
-				// Update lesson with video GUID
-				if (lesson) {
-					lesson.bunny_video_guid = urlData.data.video_guid;
-					lesson.video_url = urlData.data.play_url;
-				}
-				alert('Video created. Upload the file using the TUS URL provided.');
-			}
+			// TODO: Implement new video upload approach
+			throw new Error('Video upload functionality temporarily disabled - new implementation needed');
 		} catch (e) {
 			alert('Failed to create video upload');
 		} finally {
