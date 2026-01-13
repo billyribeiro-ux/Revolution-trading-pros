@@ -10,7 +10,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { IconPlus, IconMinus, IconChevronRight } from '$lib/icons';
+	import { IconChevronRight } from '$lib/icons';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 
 	// SSR data from +page.server.ts
@@ -33,14 +33,17 @@
 		return openAccordions.has(index);
 	}
 
-	// Trader team data
+	// Trader team data - matches reference HTML
 	const traders = [
 		{ name: 'John Carter', title: 'Founder of Revolution Trading Pros', slug: 'john-carter', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23145036/John-Carter-1-300x300.jpg' },
 		{ name: 'Henry Gambell', title: 'Senior Managing Director of Options Trading', slug: 'henry-gambell', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23145751/Henry-Gambell-300x300.jpg' },
 		{ name: 'Bruce Marshall', title: 'Director of Options and Income Trading', slug: 'bruce-marshall', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23145841/Bruce-Marhsall-300x300.jpg' },
 		{ name: 'Danielle Shay', title: 'Director of Options', slug: 'danielle-shay', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23150014/Danielle-Shay-300x300.jpg' },
 		{ name: 'Allison Ostrander', title: 'Director of Risk Tolerance', slug: 'allison-ostrander', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23151106/Allison-Ostrander-300x300.jpg' },
-		{ name: 'Sam Shames', title: 'Director of Equities', slug: 'sam-shames', image: 'https://cdn.simplertrading.com/2023/04/13144655/6.jpg' }
+		{ name: 'Sam Shames', title: 'Director of Equities', slug: 'sam-shames', image: 'https://cdn.simplertrading.com/2023/04/13144655/6.jpg' },
+		{ name: 'Taylor Horton', title: 'VP of Directional Options Strategies', slug: 'taylor-horton', image: 'https://cdn.simplertrading.com/2023/04/13144658/7.jpg' },
+		{ name: 'Kody Ashmore', title: 'Director of Weekly Options Strategies', slug: 'kody-ashmore', image: 'https://cdn.simplertrading.com/2023/04/13144650/4.jpg' },
+		{ name: 'Raghee Horner', title: 'Director of Sector Secrets Mastery', slug: 'raghee-horner', image: 'https://cdn.simplertrading.com/2023/08/28092920/img-RagheeHorner-1.png' }
 	];
 </script>
 
@@ -112,11 +115,11 @@
 							Trading Plan 
 							<span class="accordion-subtitle"><em>As you prepare to dive into this service and trade with us, one of the most crucial steps to getting started is taking time to look at your trading plan.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon">
+						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
 							{#if isOpen(0)}
-								<IconMinus size={20} />
+								<i class="fas fa-times-circle"></i>
 							{:else}
-								<IconPlus size={20} />
+								<i class="fas fa-plus-circle"></i>
 							{/if}
 						</span>
 					</button>
@@ -159,11 +162,11 @@
 							Charts, Brokers, & Tools 
 							<span class="accordion-subtitle"><em>Part of being set-up for success with trading is having the right tools for the job. This section has some helpful tips to get started.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon">
+						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
 							{#if isOpen(1)}
-								<IconMinus size={20} />
+								<i class="fas fa-times-circle"></i>
 							{:else}
-								<IconPlus size={20} />
+								<i class="fas fa-plus-circle"></i>
 							{/if}
 						</span>
 					</button>
@@ -217,11 +220,11 @@
 							Get to Know Revolution Trading & Our Trading Team 
 							<span class="accordion-subtitle"><em>Here you'll find everything from the Traders' trading plans, favorite strategies & setups, what's on their charts, their recommended courses and videos, and more.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon">
+						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
 							{#if isOpen(2)}
-								<IconMinus size={20} />
+								<i class="fas fa-times-circle"></i>
 							{:else}
-								<IconPlus size={20} />
+								<i class="fas fa-plus-circle"></i>
 							{/if}
 						</span>
 					</button>
@@ -262,11 +265,11 @@
 							Make Sure You're Signed Up for Trade Alerts 
 							<span class="accordion-subtitle"><em>Trade Alerts are sent out by various members of the Trading Team during their Live Trading Sessions. You'll want to be sure to sign up for these powerful alerts.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon">
+						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
 							{#if isOpen(3)}
-								<IconMinus size={20} />
+								<i class="fas fa-times-circle"></i>
 							{:else}
-								<IconPlus size={20} />
+								<i class="fas fa-plus-circle"></i>
 							{/if}
 						</span>
 					</button>
@@ -296,11 +299,11 @@
 							Additional Member Resources 
 							<span class="accordion-subtitle"><em>These links are helpful when trying to learn some of the internal language as well as find articles on a wide array of technical information.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon">
+						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
 							{#if isOpen(4)}
-								<IconMinus size={20} />
+								<i class="fas fa-times-circle"></i>
 							{:else}
-								<IconPlus size={20} />
+								<i class="fas fa-plus-circle"></i>
 							{/if}
 						</span>
 					</button>
@@ -474,9 +477,17 @@
 
 	.fl-accordion-button-icon {
 		flex-shrink: 0;
-		color: #3879F3;
 		margin-left: 15px;
 		margin-top: 3px;
+	}
+
+	.fl-accordion-button-icon-right {
+		color: #fdac3b;
+		font-size: 1.5rem;
+	}
+
+	.fl-accordion-button-icon-right i {
+		color: #fdac3b;
 	}
 
 	.fl-accordion-content {
