@@ -158,7 +158,7 @@ CREATE TABLE IF NOT EXISTS room_stats_cache (
     room_slug VARCHAR(100) NOT NULL UNIQUE,
     
     -- Performance stats
-    win_rate DECIMAL(5,2) DEFAULT 0,
+    win_rate FLOAT8 DEFAULT 0,
     weekly_profit VARCHAR(50) DEFAULT '$0',
     monthly_profit VARCHAR(50) DEFAULT '$0',
     active_trades INTEGER DEFAULT 0,
