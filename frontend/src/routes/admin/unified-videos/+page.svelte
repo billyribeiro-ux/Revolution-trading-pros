@@ -2031,7 +2031,7 @@
 	}
 
 	.thumbnail-dropzone:hover,
-	.thumbnail-dropzone.dragover {
+	.thumbnail-dropzone:global(.dragover) {
 		border-color: #6366f1;
 		background: rgba(99, 102, 241, 0.1);
 		color: #818cf8;
@@ -2328,92 +2328,6 @@
 		font-size: 0.875rem;
 	}
 
-	/* Upload Progress Indicator */
-	.upload-progress-indicator {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		gap: 0.5rem;
-		margin-top: 1rem;
-		padding: 0.75rem;
-		background: rgba(15, 23, 42, 0.6);
-		border-radius: 8px;
-	}
-
-	.progress-stage {
-		font-size: 0.75rem;
-		color: #475569;
-		transition: color 0.2s;
-	}
-
-	.progress-stage.active {
-		color: #818cf8;
-		font-weight: 600;
-	}
-
-	.progress-arrow {
-		font-size: 0.7rem;
-		color: #334155;
-	}
-
-	/* Form Validation */
-	.form-group.has-error input,
-	.form-group.has-error select,
-	.form-group.has-error textarea {
-		border-color: rgba(239, 68, 68, 0.5);
-	}
-
-	.form-group.has-error input:focus,
-	.form-group.has-error select:focus,
-	.form-group.has-error textarea:focus {
-		border-color: rgba(239, 68, 68, 0.7);
-		box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.1);
-	}
-
-	.field-error {
-		display: block;
-		font-size: 0.75rem;
-		color: #f87171;
-		margin-top: 0.375rem;
-	}
-
-	.required {
-		color: #f87171;
-	}
-
-	.char-count {
-		text-align: right;
-	}
-
-	/* Input with Action Button */
-	.input-with-action {
-		display: flex;
-		gap: 0.5rem;
-	}
-
-	.input-with-action input {
-		flex: 1;
-	}
-
-	.btn-preview {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 42px;
-		height: 42px;
-		background: rgba(99, 102, 241, 0.15);
-		border: 1px solid rgba(99, 102, 241, 0.3);
-		border-radius: 10px;
-		color: #818cf8;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-preview:hover {
-		background: rgba(99, 102, 241, 0.25);
-		color: #a5b4fc;
-	}
-
 	/* Video Preview Modal */
 	.preview-modal {
 		background: #0f172a;
@@ -2455,46 +2369,13 @@
 		border: none;
 	}
 
-	/* Bunny Thumbnail Selection */
-	.bunny-thumbnails {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 0.5rem;
-		margin-top: 0.75rem;
-	}
-
-	.bunny-thumb {
-		position: relative;
-		aspect-ratio: 16/9;
-		border-radius: 6px;
-		overflow: hidden;
-		cursor: pointer;
-		border: 2px solid transparent;
-		transition: all 0.2s;
-	}
-
-	.bunny-thumb:hover {
-		border-color: rgba(99, 102, 241, 0.5);
-	}
-
-	.bunny-thumb.selected {
-		border-color: #6366f1;
-		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
-	}
-
-	.bunny-thumb img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	/* Lazy Loading Images */
-	img.lazy {
+	/* Lazy Loading Images - class removed dynamically via JS */
+	:global(img.lazy) {
 		opacity: 0;
 		transition: opacity 0.3s;
 	}
 
-	img.lazy[src] {
+	:global(img.lazy[src]) {
 		opacity: 1;
 	}
 </style>

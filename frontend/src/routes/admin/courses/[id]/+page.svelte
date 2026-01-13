@@ -80,7 +80,7 @@
 	let loading = $state(true);
 	let saving = $state(false);
 	let uploading = $state(false);
-	let fileInput: HTMLInputElement;
+	let fileInput = $state<HTMLInputElement | null>(null);
 	let activeTab = $state<'details' | 'content' | 'downloads' | 'settings'>('details');
 
 	const fetchCourse = async () => {
