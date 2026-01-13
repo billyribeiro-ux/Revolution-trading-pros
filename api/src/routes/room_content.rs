@@ -96,7 +96,7 @@ pub struct RoomStats {
     pub id: i64,
     pub room_id: i64,
     pub room_slug: String,
-    pub win_rate: Option<rust_decimal::Decimal>,
+    pub win_rate: Option<f64>,
     pub weekly_profit: Option<String>,
     pub monthly_profit: Option<String>,
     pub active_trades: Option<i32>,

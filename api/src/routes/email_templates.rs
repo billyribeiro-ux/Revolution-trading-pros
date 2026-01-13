@@ -277,7 +277,8 @@ async fn preview_template(
     if let Some(data_obj) = input.data.as_object() {
         for (key, value) in data_obj {
             let placeholder = format!("{{{{{}}}}}", key);
-            let replacement = value.as_str().unwrap_or(&value.to_string());
+            let value_string = value.to_string();
+            let replacement = value.as_str().unwrap_or(&value_string);
             html = html.replace(&placeholder, replacement);
             subject = subject.replace(&placeholder, replacement);
         }
