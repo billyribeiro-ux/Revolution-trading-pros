@@ -292,7 +292,7 @@
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">Member Dashboard</h1>
-		<a href="https://www.simplertrading.com/dashboard/start-here" class="btn btn-xs btn-default">
+		<a href="/dashboard/day-trading-room/start-here" class="btn btn-start-here btn-default">
 			New? Start Here
 		</a>
 	</div>
@@ -560,6 +560,12 @@
 	.btn-xs {
 		padding: 6px 12px;
 		font-size: 12px;
+	}
+
+	.btn-start-here {
+		padding: 8px 20px;
+		font-size: 13px;
+		font-weight: 600;
 	}
 
 	.dashboard__header-right {
