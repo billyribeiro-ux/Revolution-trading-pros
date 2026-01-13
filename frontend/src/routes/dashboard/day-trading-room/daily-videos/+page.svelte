@@ -15,6 +15,7 @@
 -->
 <script lang="ts">
 	import type { DailyVideo, PageData } from './+page.server';
+	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
 	interface Props {
 		data: PageData;
@@ -55,9 +56,13 @@
 	<title>Day Trading Room Premium Daily Videos - Revolution Trading Pros</title>
 </svelte:head>
 
+<TradingRoomHeader 
+	roomName="Day Trading Room" 
+	pageTitle="Premium Daily Videos"
+	startHereUrl="/dashboard/day-trading-room/start-here" 
+/>
+
 <section class="dashboard__content-section">
-	<h2 class="section-title">Day Trading Room Premium Daily Videos</h2>
-	<p></p>
 	
 	<!-- Dashboard Filters -->
 	<div class="dashboard-filters">
@@ -182,6 +187,8 @@
 		font-size: 14px;
 		width: 200px;
 		outline: none;
+		color: #333;
+		background-color: #fff;
 	}
 
 	.dashboard-filters__search .facetwp-autocomplete:focus {
