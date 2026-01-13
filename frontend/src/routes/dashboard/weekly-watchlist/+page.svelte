@@ -11,7 +11,7 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
+	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
 	// Featured cards data matching WordPress
 	const featuredCards = [
@@ -138,17 +138,12 @@
 	<title>Weekly Watchlist Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<DashboardBreadcrumbs />
+<TradingRoomHeader 
+	roomName="Weekly Watchlist" 
+	startHereUrl="/dashboard/weekly-watchlist/getting-started" 
+/>
 
-<main class="dashboard__main">
-	
-	<header class="dashboard__header">
-		<div class="dashboard__header-left">
-			<h1 class="dashboard__page-title">Weekly Watchlist Dashboard</h1>
-		</div>
-	</header>
-
-	<div class="dashboard__content">
+<div class="dashboard__content">
 
 		<div class="dashboard__content-main">
 			
@@ -219,9 +214,7 @@
 		</section>
 	</aside>
 
-	</div>
-
-</main>
+</div>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
