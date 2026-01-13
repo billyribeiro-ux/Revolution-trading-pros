@@ -128,7 +128,8 @@
 			title: 'Opening NVDA Swing Position',
 			time: 'Today at 10:32 AM',
 			message: 'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.',
-			isNew: true
+			isNew: true,
+			notes: 'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.'
 		},
 		{
 			id: 2,
@@ -137,7 +138,8 @@
 			title: 'TSLA Approaching Entry Zone',
 			time: 'Today at 9:15 AM',
 			message: 'TSLA pulling back to our entry zone. Be ready. Will alert when triggered.',
-			isNew: true
+			isNew: true,
+			notes: 'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.'
 		},
 		{
 			id: 3,
@@ -146,7 +148,8 @@
 			title: 'Closing MSFT for +8.2%',
 			time: 'Yesterday at 3:45 PM',
 			message: 'Taking profits on MSFT. Hit second target. +$2,450 on this trade.',
-			isNew: false
+			isNew: false,
+			notes: 'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.'
 		},
 		{
 			id: 4,
@@ -155,7 +158,8 @@
 			title: 'META Entry Triggered',
 			time: 'Yesterday at 11:20 AM',
 			message: 'META hit our entry at $585. Position active. Targets in trade plan.',
-			isNew: false
+			isNew: false,
+			notes: 'Entry confirmed at $585 with volume spike. Stop placed at $565 (3.4% risk). Currently up 1.3% and holding well. Momentum strong with AI revenue narrative. Will trail stop after T1 hit.'
 		},
 		{
 			id: 5,
@@ -164,9 +168,23 @@
 			title: 'AMD Short Setup Active',
 			time: 'Jan 10 at 2:30 PM',
 			message: 'Bearish setup triggered on AMD. Short at $125 with stop at $132.',
-			isNew: false
+			isNew: false,
+			notes: 'Bearish breakdown confirmed. Entered short at $125, currently at $123.50 (-1.2%). Stop at $132 gives us 5.6% risk. First target $120, second target $115. Watch for bounce at $120 psychological level.'
 		}
 	];
+
+	// Track which alert notes are expanded
+	let expandedNotes = $state<Set<number>>(new Set());
+
+	function toggleNotes(alertId: number) {
+		const newExpanded = new Set(expandedNotes);
+		if (newExpanded.has(alertId)) {
+			newExpanded.delete(alertId);
+		} else {
+			newExpanded.add(alertId);
+		}
+		expandedNotes = newExpanded;
+	}
 
 	// Filter alerts
 	const filteredAlerts = $derived(
@@ -420,6 +438,33 @@
 						</div>
 						<h3>{alert.title}</h3>
 						<p>{alert.message}</p>
+						
+						<button 
+							class="notes-toggle" 
+							class:expanded={expandedNotes.has(alert.id)}
+							onclick={() => toggleNotes(alert.id)}
+						>
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+								<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
+							</svg>
+							Trade Notes
+							<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+								<path d="M19 9l-7 7-7-7"/>
+							</svg>
+						</button>
+						
+						{#if expandedNotes.has(alert.id)}
+							<div class="notes-dropdown">
+								<div class="notes-content">
+									<div class="notes-icon">
+										<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+											<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
+										</svg>
+									</div>
+									<p>{alert.notes}</p>
+								</div>
+							</div>
+						{/if}
 					</div>
 				{/each}
 			</div>
@@ -1089,7 +1134,108 @@
 		font-size: 14px;
 		color: #666;
 		line-height: 1.6;
+		margin: 0 0 15px 0;
+	}
+
+	/* Notes Toggle Button */
+	.notes-toggle {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		width: 100%;
+		background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+		border: 1.5px solid #e5e7eb;
+		padding: 12px 16px;
+		border-radius: 10px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #475569;
+		cursor: pointer;
+		transition: all 0.3s ease;
+		margin-top: 12px;
+	}
+
+	.notes-toggle:hover {
+		background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+		border-color: #143E59;
+		color: #143E59;
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.1);
+	}
+
+	.notes-toggle.expanded {
+		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
+		border-color: #143E59;
+		color: #fff;
+		box-shadow: 0 4px 16px rgba(20, 62, 89, 0.2);
+	}
+
+	.notes-toggle svg:first-child {
+		flex-shrink: 0;
+	}
+
+	.notes-toggle .chevron {
+		margin-left: auto;
+		transition: transform 0.3s ease;
+	}
+
+	.notes-toggle.expanded .chevron {
+		transform: rotate(180deg);
+	}
+
+	/* Notes Dropdown */
+	.notes-dropdown {
+		margin-top: 12px;
+		background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+		border: 2px solid #bae6fd;
+		border-radius: 12px;
+		padding: 0;
+		overflow: hidden;
+		animation: slideDown 0.3s ease;
+	}
+
+	@keyframes slideDown {
+		from {
+			opacity: 0;
+			transform: translateY(-10px);
+			max-height: 0;
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+			max-height: 500px;
+		}
+	}
+
+	.notes-content {
+		padding: 20px;
+		display: flex;
+		gap: 15px;
+	}
+
+	.notes-icon {
+		flex-shrink: 0;
+		width: 40px;
+		height: 40px;
+		background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+		border-radius: 10px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+	}
+
+	.notes-icon svg {
+		color: #fff;
+	}
+
+	.notes-content p {
+		flex: 1;
+		font-size: 14px;
+		color: #0c4a6e;
+		line-height: 1.7;
 		margin: 0;
+		font-weight: 500;
 	}
 
 	.view-all-link {
