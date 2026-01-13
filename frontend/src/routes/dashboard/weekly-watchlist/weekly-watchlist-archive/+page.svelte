@@ -29,7 +29,6 @@
 
 <!-- Archive Section -->
 <section class="dashboard__content-section">
-	<div class="archive-container">
 		<!-- Archive Grid -->
 		<div class="fl-post-grid-post">
 			{#each data.archiveEntries as entry}
@@ -50,7 +49,7 @@
 		</div>
 
 		<!-- Pagination - WordPress Match -->
-		<div class="text-center pagination-container">
+		<div class="text-center" style="margin-top: 20px;">
 			<div id="loopage_pg" class="pagination-wrap">
 				<span aria-current="page" class="page-numbers current">{data.currentPage}</span>
 				{#if data.currentPage < data.totalPages}
@@ -62,17 +61,39 @@
 				{/if}
 			</div>
 		</div>
-	</div>
 </section>
 
-<style>
-	/* Archive Container */
-	.archive-container {
-		padding: 30px 20px;
-		max-width: 1100px;
-		margin: 0 auto;
-	}
+<!-- Weekly Watchlist Featured Section - WordPress Match -->
+<div class="dashboard__content-section u--background-color-white">
+	<section>
+		<div class="row">
+			<div class="col-sm-6 col-lg-5">
+				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+				<div class="hidden-md d-lg-none pb-2">
+					{#if data.latestWatchlist}
+						<a href="/watchlist/{data.latestWatchlist.slug}">
+							<img src={data.latestWatchlist.image} alt="Weekly Watchlist" class="u--border-radius" />
+						</a>
+					{/if}
+				</div>
+				<h4 class="h5 u--font-weight-bold">Weekly Watchlist with {data.latestWatchlist?.trader || 'TG Watkins'}</h4>
+				<div class="u--hide-read-more">
+					<p>{data.latestWatchlist?.weekText || 'Week of January 12, 2026.'}</p>
+				</div>
+				<a href="/watchlist/{data.latestWatchlist?.slug || ''}" class="btn btn-tiny btn-default">Watch Now</a>
+			</div>
+			<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
+				{#if data.latestWatchlist}
+					<a href="/watchlist/{data.latestWatchlist.slug}">
+						<img src={data.latestWatchlist.image} alt="Weekly Watchlist" class="u--border-radius" />
+					</a>
+				{/if}
+			</div>
+		</div>
+	</section>
+</div>
 
+<style>
 	/* Archive Grid - WordPress Match */
 	.fl-post-grid-post {
 		font-size: 19px;
@@ -81,43 +102,31 @@
 		display: flex;
 		flex-wrap: wrap;
 		justify-content: space-between;
-		margin-bottom: 40px;
 	}
 
-	/* Archive Cards */
+	/* Archive Cards - WordPress Match */
 	.card {
 		max-width: 32%;
 		margin: 0.5%;
-		background: #fff;
-		border-radius: 8px;
-		box-shadow: 0px 3px 6px rgba(0, 0, 0, 0.1);
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
-	}
-
-	.card:hover {
-		transform: translateY(-4px);
-		box-shadow: 0px 6px 12px rgba(0, 0, 0, 0.15);
 	}
 
 	.card-body {
-		padding: 30px;
+		padding: 0;
 	}
 
 	.u--squash {
 		margin: 0;
 	}
 
-	/* Card Title */
+	/* Card Title - WordPress Match */
 	.card-title {
-		font-size: 24px !important;
-		margin-bottom: 0 !important;
+		font-size: 24px;
+		margin-bottom: 0;
 		line-height: 26px;
-		font-weight: 700;
-		color: #333;
-		font-family: 'Open Sans', sans-serif;
+		padding: 0 0 5px;
 	}
 
-	/* Excerpt */
+	/* Excerpt - WordPress Match */
 	.excerpt {
 		margin: 20px 0;
 		max-height: 8rem;
@@ -127,9 +136,7 @@
 		overflow: hidden !important;
 		text-overflow: ellipsis;
 		-webkit-line-clamp: 4;
-		line-clamp: 4;
 		font-size: 16px;
-		color: #666;
 	}
 
 	.excerpt i {
@@ -138,20 +145,12 @@
 
 	/* Read Now Button */
 	.fl-post-more-link {
-		margin-top: 15px;
+		margin-top: 0;
 	}
 
 	.btn {
 		display: inline-block;
-		padding: 10px 24px;
-		font-size: 14px;
-		font-weight: 600;
 		text-decoration: none;
-		border-radius: 50px;
-		transition: all 0.2s ease;
-		font-family: 'Open Sans', sans-serif;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
 	}
 
 	.btn-tiny {
@@ -163,26 +162,21 @@
 		background: transparent linear-gradient(180deg, #FFB834 0%, #C68000 100%) 0% 0% no-repeat padding-box;
 		color: #fff !important;
 		border: none;
-	}
-
-	.btn-default:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(255, 184, 52, 0.4);
+		border-radius: 50px;
 	}
 
 	/* Pagination - WordPress Match */
-	.pagination-container {
-		margin-top: 20px;
+	.text-center {
 		text-align: center;
+		margin-top: 20px;
 	}
 
 	.pagination-wrap {
-		display: inline-block;
 		background: transparent;
 	}
 
 	.page-numbers {
-		display: inline-block;
+		background: transparent !important;
 		padding: 0 10px;
 		font-size: 17px;
 		font-weight: 600;
@@ -192,24 +186,15 @@
 		text-align: center;
 		border-radius: 0;
 		text-decoration: none;
-		border: 1px solid #e5e5e5;
-		transition: all 0.2s ease;
-	}
-
-	.page-numbers:hover {
-		background: #f5f5f5 !important;
-		color: #333;
 	}
 
 	.page-numbers.current {
 		font-weight: 400;
 		color: #f4f4f4;
 		background: #0984ae !important;
-		border-color: #0984ae;
 	}
 
 	.page-numbers.dots {
-		border: none;
 		background: transparent !important;
 	}
 
@@ -231,21 +216,13 @@
 
 	/* Responsive - Mobile */
 	@media (max-width: 768px) {
-		.archive-container {
-			padding: 20px 15px;
-		}
-
 		.card {
 			max-width: 100%;
 			margin: 10px 0;
 		}
 
-		.card-body {
-			padding: 20px;
-		}
-
 		.card-title {
-			font-size: 20px !important;
+			font-size: 20px;
 		}
 
 		.excerpt {
@@ -253,8 +230,110 @@
 		}
 
 		.page-numbers {
-			padding: 5px 8px;
+			padding: 0 8px;
 			font-size: 15px;
+		}
+	}
+
+	/* Featured Section - WordPress Match */
+	.u--background-color-white {
+		background-color: #fff;
+	}
+
+	.row {
+		display: flex;
+		flex-wrap: wrap;
+		margin: 0 -15px;
+	}
+
+	.col-sm-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+		padding: 0 15px;
+	}
+
+	.col-lg-5 {
+		flex: 0 0 41.666667%;
+		max-width: 41.666667%;
+	}
+
+	.col-lg-7 {
+		flex: 0 0 58.333333%;
+		max-width: 58.333333%;
+	}
+
+	.section-title-alt {
+		font-size: 28px;
+		margin-bottom: 20px;
+	}
+
+	.section-title-alt--underline {
+		border-bottom: 3px solid #0984ae;
+		padding-bottom: 10px;
+		display: inline-block;
+	}
+
+	.u--font-weight-bold {
+		font-weight: 700;
+	}
+
+	.u--hide-read-more p {
+		margin: 10px 0 20px;
+	}
+
+	.u--border-radius {
+		border-radius: 8px;
+		width: 100%;
+	}
+
+	.hidden-md {
+		display: block;
+	}
+
+	.d-lg-none {
+		display: block;
+	}
+
+	.d-none {
+		display: none;
+	}
+
+	.d-lg-block {
+		display: block;
+	}
+
+	.pb-2 {
+		padding-bottom: 0.5rem;
+	}
+
+	@media (min-width: 992px) {
+		.d-lg-none {
+			display: none;
+		}
+
+		.d-lg-block {
+			display: block;
+		}
+
+		.col-lg-5 {
+			flex: 0 0 41.666667%;
+			max-width: 41.666667%;
+		}
+
+		.col-lg-7 {
+			flex: 0 0 58.333333%;
+			max-width: 58.333333%;
+		}
+	}
+
+	@media (max-width: 576px) {
+		.col-sm-6 {
+			flex: 0 0 100%;
+			max-width: 100%;
+		}
+
+		.hidden-xs {
+			display: none;
 		}
 	}
 </style>
