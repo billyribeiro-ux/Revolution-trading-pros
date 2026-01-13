@@ -39,7 +39,7 @@
 					{section.heading}
 				{/if}
 				{#if section.subheading}
-					<p class="pssubject">{section.subheading}</p>
+					<p class="pssubject text-center">{section.subheading}</p>
 				{/if}
 			</h4>
 
