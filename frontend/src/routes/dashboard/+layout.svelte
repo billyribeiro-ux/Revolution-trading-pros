@@ -230,6 +230,14 @@
 				{ href: '/dashboard/explosive-swings/alerts', icon: 'bolt', text: 'Alerts' }
 			]
 		},
+		'/dashboard/weekly-watchlist': {
+			title: 'Weekly Watchlist',
+			items: [
+				{ href: '/dashboard/weekly-watchlist', icon: 'layout-dashboard', text: 'Weekly Watchlist' },
+				{ href: '/dashboard/weekly-watchlist/watchlist-rundown-archive', icon: 'video', text: 'Watchlist Rundown Archive' },
+				{ href: '/dashboard/weekly-watchlist/weekly-watchlist-archive', icon: 'file-text', text: 'Weekly Watchlist Archive' }
+			]
+		},
 		'/dashboard/account': {
 			title: 'My Account',
 			items: [

@@ -8,7 +8,9 @@
  * @version 2.0.0 - January 2026 - Connected to real backend
  */
 
-const BACKEND_URL = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev/api';
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
+const API_ROOT = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
+const BACKEND_URL = `${API_ROOT}/api`;
 
 export interface DailyVideo {
 	id: string;

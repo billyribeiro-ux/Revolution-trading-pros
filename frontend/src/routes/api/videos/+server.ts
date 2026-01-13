@@ -11,8 +11,10 @@ import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
 // Production fallback - Rust API on Fly.io
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
-const BACKEND_URL = import.meta.env.VITE_API_URL || PROD_API;
+// ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
+const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
+const API_ROOT = import.meta.env.VITE_API_URL || PROD_API_ROOT;
+const BACKEND_URL = `${API_ROOT}/api`;
 
 /**
  * Get authorization headers from request

@@ -17,7 +17,7 @@
 
 		try {
 			const response = await fetch(
-				`${import.meta.env.VITE_API_URL}/api/auth/verify-email?token=${encodeURIComponent(token)}`,
+				`${import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev'}/api/auth/verify-email?token=${encodeURIComponent(token)}`,
 				{
 					method: 'GET',
 					headers: {
