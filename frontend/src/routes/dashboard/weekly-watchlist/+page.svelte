@@ -11,6 +11,7 @@
 -->
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 
 	// Featured cards data matching WordPress
 	const featuredCards = [
@@ -18,7 +19,7 @@
 			id: 1,
 			title: 'Get Started',
 			description: 'Learn how to best use the Weekly Watchlist and get the most out of it.',
-			href: '/dashboard/ww/getting-started/',
+			href: '/dashboard/weekly-watchlist/getting-started/',
 			bgImage: 'https://cdn.simplertrading.com/2021/09/30134809/getting-started-top-card-bg-1.png',
 			cardClass: 'img_1',
 			titleClass: 'card_title'
@@ -27,7 +28,7 @@
 			id: 2,
 			title: 'Watchlist Rundown',
 			description: 'Video reviewing the Watchlist of the Week by the Trader who created it.',
-			href: '/dashboard/ww/watchlist-rundown-archive/',
+			href: '/dashboard/weekly-watchlist/watchlist-rundown-archive/',
 			bgImage: 'https://cdn.simplertrading.com/2021/09/30134811/watchlist-rundown-top-card-bg.png',
 			cardClass: 'img_2',
 			titleClass: 'card_title_2'
@@ -36,7 +37,7 @@
 			id: 3,
 			title: 'Weekly Watchlist',
 			description: 'Get the complete Watchlist of the Week in a downloadable format.',
-			href: '/dashboard/ww/weekly-watchlist-archive/',
+			href: '/dashboard/weekly-watchlist/weekly-watchlist-archive/',
 			bgImage: 'https://cdn.simplertrading.com/2021/09/30134813/weekly-watchlist-top-card-bg.png',
 			cardClass: 'img_3',
 			titleClass: 'card_title_3'
@@ -136,6 +137,8 @@
 <svelte:head>
 	<title>Weekly Watchlist Dashboard | Revolution Trading Pros</title>
 </svelte:head>
+
+<DashboardBreadcrumbs />
 
 <main class="dashboard__main">
 	
