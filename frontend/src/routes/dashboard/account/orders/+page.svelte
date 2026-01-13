@@ -447,9 +447,6 @@
 		text-align: right;
 	}
 
-	.orders-table__body {
-		font-size: 14px;
-	}
 
 	/* Responsive */
 	@media (max-width: 768px) {

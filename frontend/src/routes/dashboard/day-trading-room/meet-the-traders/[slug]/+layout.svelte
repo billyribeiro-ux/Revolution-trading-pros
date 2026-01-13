@@ -42,30 +42,16 @@
 				<TraderHeader {trader} />
 
 				<!-- Navigation & Content Section -->
-				<div class="fl-row fl-row-full-width pills-section">
-					<div class="fl-row-content-wrap">
-						<div class="fl-row-content fl-row-fixed-width fl-node-content">
-							<div class="fl-col-group">
-								<div class="fl-col">
-									<div class="fl-col-content fl-node-content">
-										<div class="fl-module fl-module-html">
-											<div class="fl-module-content fl-node-content">
-												<div class="fl-html">
-													<TraderNav traderSlug={trader.slug} {currentPath} />
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
+				<div class="trader-section">
+					<div class="trader-section__wrapper">
+						<div class="trader-section__content">
+							<div class="trader-nav-container">
+								<TraderNav traderSlug={trader.slug} {currentPath} />
 							</div>
 
 							<!-- Page Content Slot -->
-							<div class="fl-col-group">
-								<div class="fl-col">
-									<div class="fl-col-content fl-node-content">
-										{@render children()}
-									</div>
-								</div>
+							<div class="trader-page-content">
+								{@render children()}
 							</div>
 						</div>
 					</div>
@@ -96,64 +82,29 @@
 		padding: 0;
 	}
 
-	.fl-row {
-		margin: 0;
-		padding: 0;
+	/* Trader Section - Semantic naming */
+	.trader-section {
 		width: 100%;
-	}
-
-	.fl-row-full-width {
-		width: 100%;
-	}
-
-	.pills-section {
 		background-color: #fff;
 	}
 
-	.fl-row-content-wrap {
+	.trader-section__wrapper {
 		max-width: 1200px;
 		margin: 0 auto;
 		padding: 30px 20px 40px;
 	}
 
-	.fl-row-content {
+	.trader-section__content {
+		max-width: 1100px;
+		margin: 0 auto;
 		width: 100%;
 	}
 
-	.fl-row-fixed-width {
-		max-width: 1100px;
-		margin: 0 auto;
-	}
-
-	.fl-col-group {
-		display: flex;
-		flex-wrap: wrap;
-		margin: 0 -15px;
-	}
-
-	.fl-col {
-		flex: 1;
-		padding: 0 15px;
-		min-width: 0;
-	}
-
-	.fl-col-content {
-		height: 100%;
-	}
-
-	.fl-node-content {
-		position: relative;
-	}
-
-	.fl-module {
+	.trader-nav-container {
 		margin-bottom: 20px;
 	}
 
-	.fl-module:last-child {
-		margin-bottom: 0;
-	}
-
-	.fl-module-content {
+	.trader-page-content {
 		position: relative;
 	}
 
@@ -197,19 +148,4 @@
 		border-color: #0c2638;
 	}
 
-	/* Mobile-first: stacked by default, row on md+ */
-	.fl-col-group {
-		flex-direction: column;
-	}
-
-	@media (min-width: 768px) {
-		.fl-col-group {
-			flex-direction: row;
-		}
-
-		.fl-col {
-			flex: 0 0 100%;
-			max-width: 100%;
-		}
-	}
 </style>
