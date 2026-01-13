@@ -1,176 +1,130 @@
 <script lang="ts">
 	/**
-	 * Explosive Swings Dashboard - Trading Room
+	 * Explosive Swings - ULTIMATE Dashboard
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 *
-	 * Alert service dashboard for Explosive Swings members
-	 * Follows Day Trading Room pattern with reusable components
-	 *
-	 * @version 1.0.0
+	 * Apple ICT 7 Principal Engineer Grade - January 2026
+	 * State-of-the-art UI/UX with advanced features
+	 * 
+	 * @version 2.0.0 - Ultimate Edition
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
 
-	// SSR data from +page.server.ts
+	// SSR data
 	let { data } = $props();
 
 	// Filter state
 	let selectedFilter = $state('all');
-	const filterOptions = ['all', 'momentum', 'earnings', 'options', 'tech-sector', 'breakout'];
+	let activeTab = $state('alerts');
 
-	// Latest alerts and updates with tags
-	const articles = [
+	// Featured Video of the Week
+	const featuredVideo = {
+		title: "This Week's Market Outlook & Top Swing Setups",
+		date: 'January 13, 2026',
+		duration: '24:35',
+		thumbnail: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+		href: '/dashboard/explosive-swings/video/weekly-outlook-011326',
+		description: "Join us for this week's comprehensive breakdown of the hottest swing trade setups. We cover NVDA, TSLA, AMZN, and reveal our top picks for the week ahead.",
+		timestamps: [
+			{ time: '0:00', label: 'Market Overview' },
+			{ time: '5:24', label: 'NVDA Setup Analysis' },
+			{ time: '10:15', label: 'TSLA Breakout Play' },
+			{ time: '15:40', label: 'AMZN Entry Strategy' },
+			{ time: '20:30', label: 'Risk Management Tips' }
+		]
+	};
+
+	// This Week's Watchlist
+	const watchlistTickers = [
+		{ symbol: 'NVDA', entry: '$142.50', target: '$158.00', stop: '$136.00', status: 'active', change: '+2.4%' },
+		{ symbol: 'TSLA', entry: '$248.00', target: '$275.00', stop: '$235.00', status: 'watching', change: '+1.8%' },
+		{ symbol: 'AMZN', entry: '$185.00', target: '$198.00', stop: '$178.00', status: 'active', change: '+0.9%' },
+		{ symbol: 'GOOGL', entry: '$175.50', target: '$188.00', stop: '$168.00', status: 'watching', change: '-0.3%' },
+		{ symbol: 'AAPL', entry: '$182.00', target: '$195.00', stop: '$175.00', status: 'closed', change: '+3.2%' }
+	];
+
+	// Recent Trades
+	const recentTrades = [
+		{ symbol: 'MSFT', type: 'WIN', profit: '+$2,450', percent: '+8.2%', duration: '5 days', setup: 'Breakout' },
+		{ symbol: 'META', type: 'WIN', profit: '+$1,820', percent: '+6.1%', duration: '3 days', setup: 'Momentum' },
+		{ symbol: 'AMD', type: 'LOSS', profit: '-$680', percent: '-2.3%', duration: '2 days', setup: 'Reversal' },
+		{ symbol: 'NFLX', type: 'WIN', profit: '+$3,100', percent: '+9.5%', duration: '7 days', setup: 'Earnings' }
+	];
+
+	// Alerts with tags
+	const alerts = [
 		{
 			id: 1,
 			type: 'Trade Alert',
 			title: 'NVDA Swing Trade Setup',
-			date: 'January 10, 2026 at 2:30 PM ET',
+			date: 'January 10, 2026 • 2:30 PM ET',
 			excerpt: 'Opening swing position on NVDA with bullish momentum. Multi-day hold targeting key resistance levels.',
 			href: '/dashboard/explosive-swings/alerts/nvda-swing-011026',
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: false,
-			tags: ['momentum', 'tech-sector', 'breakout']
+			tags: ['momentum', 'tech', 'breakout'],
+			isNew: true
 		},
 		{
 			id: 2,
 			type: 'Market Update',
 			title: 'Weekly Swing Trade Outlook',
-			date: 'January 10, 2026 at 9:00 AM ET',
-			excerpt: 'Key swing trade setups for the week ahead. Technical analysis on major tech stocks and market leaders.',
+			date: 'January 10, 2026 • 9:00 AM ET',
+			excerpt: 'Key swing trade setups for the week ahead. Technical analysis on major tech stocks.',
 			href: '/dashboard/explosive-swings/alerts/weekly-outlook-011026',
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: false,
-			tags: ['tech-sector']
+			tags: ['tech'],
+			isNew: true
 		},
 		{
 			id: 3,
 			type: 'Trade Alert',
-			title: 'TSLA Position Closed',
-			date: 'January 9, 2026 at 3:45 PM ET',
-			excerpt: 'Closing TSLA swing trade for profit. Target reached after 5-day hold.',
+			title: 'TSLA Position Closed - WIN',
+			date: 'January 9, 2026 • 3:45 PM ET',
+			excerpt: 'Closing TSLA swing trade for +$2,450 profit. Target reached after 5-day hold.',
 			href: '/dashboard/explosive-swings/alerts/tsla-close-010926',
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: false,
-			tags: ['momentum']
+			tags: ['momentum'],
+			isNew: false
 		},
 		{
 			id: 4,
 			type: 'Trade Alert',
 			title: 'AMZN Breakout Play',
-			date: 'January 9, 2026 at 11:15 AM ET',
+			date: 'January 9, 2026 • 11:15 AM ET',
 			excerpt: 'AMZN breaking above key resistance. Swing trade entry with momentum confirmation.',
 			href: '/dashboard/explosive-swings/alerts/amzn-breakout-010926',
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: false,
-			tags: ['breakout', 'momentum', 'tech-sector']
+			tags: ['breakout', 'momentum', 'tech'],
+			isNew: false
 		},
 		{
 			id: 5,
-			type: 'Market Update',
-			title: 'Sector Rotation Analysis',
-			date: 'January 8, 2026 at 4:30 PM ET',
-			excerpt: 'Identifying the strongest sectors for swing trading opportunities. Technology and healthcare showing strength.',
-			href: '/dashboard/explosive-swings/alerts/sector-analysis-010826',
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: false,
-			tags: ['tech-sector']
-		},
-		{
-			id: 6,
 			type: 'Trade Alert',
 			title: 'GOOGL Options Swing',
-			date: 'January 8, 2026 at 10:00 AM ET',
-			excerpt: 'Multi-week options swing trade on GOOGL. Targeting earnings catalyst with defined risk.',
+			date: 'January 8, 2026 • 10:00 AM ET',
+			excerpt: 'Multi-week options swing trade on GOOGL. Targeting earnings catalyst.',
 			href: '/dashboard/explosive-swings/alerts/googl-options-010826',
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: false,
-			tags: ['options', 'earnings', 'tech-sector']
+			tags: ['options', 'earnings', 'tech'],
+			isNew: false
 		}
 	];
 
-	// Filtered articles based on selected filter
-	const filteredArticles = $derived(
+	// Filtered alerts
+	const filteredAlerts = $derived(
 		selectedFilter === 'all'
-			? articles
-			: articles.filter(article => article.tags?.includes(selectedFilter))
+			? alerts
+			: alerts.filter(alert => alert.tags?.includes(selectedFilter))
 	);
 
-	// Google Calendar integration
-	onMount(() => {
-		const script = document.createElement('script');
-		script.src = 'https://apis.google.com/js/api.js';
-		script.onload = () => {
-			setTimeout(initCalendar, 100);
-		};
-		script.onerror = () => {
-			console.warn('Failed to load Google Calendar API');
-		};
-		document.head.appendChild(script);
-	});
-
-	function initCalendar() {
-		const CLIENT_ID = '656301048421-g2s2jvb2pe772mnj8j8it67eirh4jq1f.apps.googleusercontent.com';
-		const API_KEY = 'AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw';
-		const DISCOVERY_DOCS = ['https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest'];
-		const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
-
-		// @ts-ignore
-		if (typeof gapi === 'undefined' || !gapi.client) {
-			console.warn('Google API not loaded yet');
-			return;
-		}
-
-		try {
-			// @ts-ignore
-			gapi.load('client', () => {
-				// @ts-ignore
-				gapi.client.init({
-					apiKey: API_KEY,
-					clientId: CLIENT_ID,
-					discoveryDocs: DISCOVERY_DOCS,
-					scope: SCOPES
-				}).then(() => {
-					// @ts-ignore
-					return gapi.client.calendar.events.list({
-						'calendarId': 'simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com',
-						'timeMin': (new Date()).toISOString(),
-						'showDeleted': false,
-						'singleEvents': true,
-						'maxResults': 10,
-						'orderBy': 'startTime',
-						'fields': 'items(summary,start/dateTime)'
-					});
-				}).then((response: any) => {
-					const dateOptions: Intl.DateTimeFormatOptions = {
-						month: 'short',
-						day: 'numeric',
-						year: 'numeric',
-						hour: 'numeric',
-						minute: 'numeric',
-						timeZoneName: 'short'
-					};
-					const container = document.querySelector('.room-sched');
-					if (container && response.result.items) {
-						for (let i = 0; i < response.result.items.length; i++) {
-							const eventStart = new Date(response.result.items[i].start.dateTime);
-							const eventHtml = `<h4>${response.result.items[i].summary}</h4><span>${eventStart.toLocaleString('en-US', dateOptions)}</span>`;
-							container.innerHTML += eventHtml;
-						}
-					}
-				}).catch((error: any) => {
-					console.warn('Calendar Error:', error);
-				});
-			});
-		} catch (error) {
-			console.warn('Failed to initialize Google Calendar:', error);
-		}
-	}
+	// Performance stats
+	const stats = {
+		winRate: 82,
+		totalProfit: 18750,
+		totalTrades: 28,
+		avgHold: 4.2,
+		bestTrade: 3100,
+		streak: 5
+	};
 </script>
 
 <svelte:head>
-	<title>Explosive Swings TESTER | Revolution Trading Pros</title>
-	<script src="https://apis.google.com/js/api.js"></script>
+	<title>Explosive Swings - Ultimate Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
 <TradingRoomHeader 
@@ -178,536 +132,819 @@
 	startHereUrl="/dashboard/explosive-swings/start-here" 
 />
 
-<!-- DASHBOARD CONTENT -->
-<div class="dashboard__content">
-	<div class="dashboard__content-main">
-
-		<!-- PINNED WEEKLY WATCHLIST BANNER -->
-		<section class="dashboard__content-section-member">
-			<div class="watchlist-banner">
-				<div class="watchlist-banner__icon">📊</div>
-				<div class="watchlist-banner__content">
-					<h3>This Week's Watchlist</h3>
-					<p>Top swing trade setups for the week: NVDA, TSLA, AMZN, GOOGL, AAPL</p>
-				</div>
-				<a href="/dashboard/explosive-swings/watchlist" class="watchlist-banner__btn">View Full List</a>
-			</div>
-		</section>
-
-		<!-- WELCOME SECTION -->
-		<section class="dashboard__content-section-member">
-			<div class="welcome-banner">
-				<h2>Welcome to Explosive Swings</h2>
-				<p>Get high-probability swing trade alerts on stocks and options with explosive momentum. All trades include detailed entry, exit, and risk management strategies for multi-day holds.</p>
-			</div>
-		</section>
-
-		<!-- LATEST ALERTS SECTION WITH FILTERS -->
-		<section class="dashboard__content-section u--background-color-white">
-			<div class="alerts-header">
-				<h3 class="section-heading">Latest Alerts & Updates</h3>
-				<div class="filter-tabs">
-					<button 
-						class="filter-tab" 
-						class:active={selectedFilter === 'all'}
-						onclick={() => selectedFilter = 'all'}
-					>
-						All
-					</button>
-					<button 
-						class="filter-tab" 
-						class:active={selectedFilter === 'momentum'}
-						onclick={() => selectedFilter = 'momentum'}
-					>
-						Momentum
-					</button>
-					<button 
-						class="filter-tab" 
-						class:active={selectedFilter === 'earnings'}
-						onclick={() => selectedFilter = 'earnings'}
-					>
-						Earnings Play
-					</button>
-					<button 
-						class="filter-tab" 
-						class:active={selectedFilter === 'options'}
-						onclick={() => selectedFilter = 'options'}
-					>
-						Options
-					</button>
-					<button 
-						class="filter-tab" 
-						class:active={selectedFilter === 'tech-sector'}
-						onclick={() => selectedFilter = 'tech-sector'}
-					>
-						Tech Sector
-					</button>
-					<button 
-						class="filter-tab" 
-						class:active={selectedFilter === 'breakout'}
-						onclick={() => selectedFilter = 'breakout'}
-					>
-						Breakout
-					</button>
+<div class="ultimate-dashboard">
+	<!-- HERO: Featured Video of the Week -->
+	<section class="hero-section">
+		<div class="hero-badge">📺 THIS WEEK'S FEATURED VIDEO</div>
+		<div class="hero-content">
+			<div class="hero-video">
+				<div class="video-thumbnail" style="background-image: url('{featuredVideo.thumbnail}')">
+					<div class="play-button">
+						<svg viewBox="0 0 24 24" fill="currentColor">
+							<path d="M8 5v14l11-7z"/>
+						</svg>
+					</div>
+					<div class="video-duration">{featuredVideo.duration}</div>
 				</div>
 			</div>
-			<LatestUpdates items={filteredArticles} title="" roomSlug="explosive-swings" />
-		</section>
-
-		<!-- PERFORMANCE METRICS SECTION -->
-		<section class="dashboard__content-section u--background-color-white">
-			<h3 class="section-heading">Recent Performance</h3>
-			<div class="metrics-grid">
-				<div class="metric-card">
-					<div class="metric-value">82%</div>
-					<div class="metric-label">Win Rate (30 Days)</div>
+			<div class="hero-info">
+				<h1>{featuredVideo.title}</h1>
+				<p class="hero-date">{featuredVideo.date}</p>
+				<p class="hero-description">{featuredVideo.description}</p>
+				
+				<div class="timestamps">
+					<h4>Jump to Section</h4>
+					<div class="timestamp-list">
+						{#each featuredVideo.timestamps as ts}
+							<a href="{featuredVideo.href}?t={ts.time}" class="timestamp-item">
+								<span class="ts-time">{ts.time}</span>
+								<span class="ts-label">{ts.label}</span>
+							</a>
+						{/each}
+					</div>
 				</div>
-				<div class="metric-card">
-					<div class="metric-value">+$18,750</div>
-					<div class="metric-label">Total Profit (30 Days)</div>
-				</div>
-				<div class="metric-card">
-					<div class="metric-value">28</div>
-					<div class="metric-label">Total Trades</div>
-				</div>
-				<div class="metric-card">
-					<div class="metric-value">3.2:1</div>
-					<div class="metric-label">Avg Risk/Reward</div>
-				</div>
+				
+				<a href={featuredVideo.href} class="hero-cta">
+					Watch Full Video
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<path d="M5 12h14M12 5l7 7-7 7"/>
+					</svg>
+				</a>
 			</div>
-		</section>
+		</div>
+	</section>
 
-		<!-- PERFORMANCE CHARTS SECTION -->
-		<section class="dashboard__content-section">
-			<div class="charts-grid">
-				<!-- Profit Trend Chart -->
-				<div class="chart-card">
-					<h4 class="chart-title">Profit Trend (Last 8 Weeks)</h4>
-					<div class="chart-container">
-						<svg viewBox="0 0 400 200" class="trend-chart">
-							<!-- Grid lines -->
-							<line x1="50" y1="20" x2="50" y2="170" stroke="#e0e0e0" stroke-width="1"/>
-							<line x1="50" y1="170" x2="380" y2="170" stroke="#e0e0e0" stroke-width="1"/>
-							<line x1="50" y1="95" x2="380" y2="95" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4"/>
-							<line x1="50" y1="45" x2="380" y2="45" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4"/>
-							<line x1="50" y1="130" x2="380" y2="130" stroke="#e0e0e0" stroke-width="1" stroke-dasharray="4"/>
-							
-							<!-- Y-axis labels -->
-							<text x="45" y="175" text-anchor="end" class="chart-label">$0</text>
-							<text x="45" y="135" text-anchor="end" class="chart-label">$5k</text>
-							<text x="45" y="100" text-anchor="end" class="chart-label">$10k</text>
-							<text x="45" y="50" text-anchor="end" class="chart-label">$20k</text>
-							
-							<!-- Gradient fill -->
+	<!-- QUICK STATS BAR -->
+	<section class="stats-bar">
+		<div class="stat-item">
+			<div class="stat-value">{stats.winRate}%</div>
+			<div class="stat-label">Win Rate</div>
+		</div>
+		<div class="stat-divider"></div>
+		<div class="stat-item">
+			<div class="stat-value">+${stats.totalProfit.toLocaleString()}</div>
+			<div class="stat-label">30-Day Profit</div>
+		</div>
+		<div class="stat-divider"></div>
+		<div class="stat-item">
+			<div class="stat-value">{stats.totalTrades}</div>
+			<div class="stat-label">Total Trades</div>
+		</div>
+		<div class="stat-divider"></div>
+		<div class="stat-item">
+			<div class="stat-value">{stats.avgHold} days</div>
+			<div class="stat-label">Avg Hold</div>
+		</div>
+		<div class="stat-divider"></div>
+		<div class="stat-item highlight">
+			<div class="stat-value">🔥 {stats.streak}</div>
+			<div class="stat-label">Win Streak</div>
+		</div>
+	</section>
+
+	<!-- MAIN CONTENT -->
+	<div class="main-content">
+		<!-- LEFT: Watchlist & Trades -->
+		<div class="content-left">
+			<!-- This Week's Watchlist -->
+			<section class="card watchlist-card">
+				<div class="card-header">
+					<h2>📊 This Week's Watchlist</h2>
+					<a href="/dashboard/explosive-swings/watchlist" class="view-all">View All →</a>
+				</div>
+				<div class="watchlist-table">
+					<div class="table-header">
+						<span>Symbol</span>
+						<span>Entry</span>
+						<span>Target</span>
+						<span>Stop</span>
+						<span>Status</span>
+					</div>
+					{#each watchlistTickers as ticker}
+						<div class="table-row">
+							<span class="ticker-symbol">
+								{ticker.symbol}
+								<small class:positive={ticker.change.startsWith('+')} class:negative={ticker.change.startsWith('-')}>{ticker.change}</small>
+							</span>
+							<span>{ticker.entry}</span>
+							<span class="target">{ticker.target}</span>
+							<span class="stop">{ticker.stop}</span>
+							<span class="status status--{ticker.status}">{ticker.status}</span>
+						</div>
+					{/each}
+				</div>
+			</section>
+
+			<!-- Recent Trades -->
+			<section class="card trades-card">
+				<div class="card-header">
+					<h2>📈 Recent Trades</h2>
+					<a href="/dashboard/explosive-swings/trade-tracker" class="view-all">Trade Tracker →</a>
+				</div>
+				<div class="trades-grid">
+					{#each recentTrades as trade}
+						<div class="trade-item trade--{trade.type.toLowerCase()}">
+							<div class="trade-symbol">{trade.symbol}</div>
+							<div class="trade-result">
+								<span class="trade-type">{trade.type}</span>
+								<span class="trade-profit">{trade.profit}</span>
+							</div>
+							<div class="trade-meta">
+								<span>{trade.percent}</span>
+								<span>•</span>
+								<span>{trade.duration}</span>
+								<span>•</span>
+								<span class="trade-setup">{trade.setup}</span>
+							</div>
+						</div>
+					{/each}
+				</div>
+			</section>
+
+			<!-- Performance Charts -->
+			<section class="card charts-card">
+				<div class="card-header">
+					<h2>📉 Performance Analytics</h2>
+				</div>
+				<div class="charts-grid">
+					<!-- Profit Trend -->
+					<div class="chart-box">
+						<h4>Cumulative Profit (8 Weeks)</h4>
+						<svg viewBox="0 0 400 180" class="trend-chart">
 							<defs>
-								<linearGradient id="profitGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-									<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.3" />
+								<linearGradient id="profitFill" x1="0%" y1="0%" x2="0%" y2="100%">
+									<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.4" />
 									<stop offset="100%" style="stop-color:#22c55e;stop-opacity:0" />
 								</linearGradient>
 							</defs>
-							
-							<!-- Area fill -->
-							<path d="M70,140 L115,120 L160,100 L205,85 L250,90 L295,65 L340,50 L340,170 L70,170 Z" fill="url(#profitGradient)"/>
-							
-							<!-- Trend line -->
-							<polyline 
-								points="70,140 115,120 160,100 205,85 250,90 295,65 340,50" 
-								fill="none" 
-								stroke="#22c55e" 
-								stroke-width="3"
-								stroke-linecap="round"
-								stroke-linejoin="round"
-							/>
-							
-							<!-- Data points -->
-							<circle cx="70" cy="140" r="5" fill="#22c55e" class="data-point"/>
-							<circle cx="115" cy="120" r="5" fill="#22c55e" class="data-point"/>
-							<circle cx="160" cy="100" r="5" fill="#22c55e" class="data-point"/>
-							<circle cx="205" cy="85" r="5" fill="#22c55e" class="data-point"/>
-							<circle cx="250" cy="90" r="5" fill="#22c55e" class="data-point"/>
-							<circle cx="295" cy="65" r="5" fill="#22c55e" class="data-point"/>
-							<circle cx="340" cy="50" r="5" fill="#22c55e" class="data-point"/>
-							
-							<!-- X-axis labels -->
-							<text x="70" y="188" text-anchor="middle" class="chart-label">W1</text>
-							<text x="115" y="188" text-anchor="middle" class="chart-label">W2</text>
-							<text x="160" y="188" text-anchor="middle" class="chart-label">W3</text>
-							<text x="205" y="188" text-anchor="middle" class="chart-label">W4</text>
-							<text x="250" y="188" text-anchor="middle" class="chart-label">W5</text>
-							<text x="295" y="188" text-anchor="middle" class="chart-label">W6</text>
-							<text x="340" y="188" text-anchor="middle" class="chart-label">W7</text>
+							<path d="M40,140 L85,125 L130,105 L175,90 L220,95 L265,70 L310,55 L355,40 L355,160 L40,160 Z" fill="url(#profitFill)"/>
+							<polyline points="40,140 85,125 130,105 175,90 220,95 265,70 310,55 355,40" fill="none" stroke="#22c55e" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+							<circle cx="355" cy="40" r="6" fill="#22c55e"/>
+							<text x="355" y="30" text-anchor="middle" class="chart-highlight">$18.7k</text>
 						</svg>
 					</div>
-				</div>
-
-				<!-- Setup Success Pie Chart -->
-				<div class="chart-card">
-					<h4 class="chart-title">Setup Success Breakdown</h4>
-					<div class="chart-container pie-container">
-						<svg viewBox="0 0 200 200" class="pie-chart">
-							<!-- Pie segments - Breakouts 35%, Momentum 28%, Earnings 22%, Reversals 15% -->
-							<circle cx="100" cy="100" r="80" fill="transparent" stroke="#22c55e" stroke-width="40" 
-								stroke-dasharray="175.93 326.73" stroke-dashoffset="0" class="pie-segment"/>
-							<circle cx="100" cy="100" r="80" fill="transparent" stroke="#3b82f6" stroke-width="40" 
-								stroke-dasharray="140.74 361.92" stroke-dashoffset="-175.93" class="pie-segment"/>
-							<circle cx="100" cy="100" r="80" fill="transparent" stroke="#f59e0b" stroke-width="40" 
-								stroke-dasharray="110.58 392.08" stroke-dashoffset="-316.67" class="pie-segment"/>
-							<circle cx="100" cy="100" r="80" fill="transparent" stroke="#ef4444" stroke-width="40" 
-								stroke-dasharray="75.4 427.26" stroke-dashoffset="-427.25" class="pie-segment"/>
-							
-							<!-- Center circle for donut effect -->
-							<circle cx="100" cy="100" r="50" fill="#fff"/>
-							<text x="100" y="95" text-anchor="middle" class="pie-center-value">82%</text>
-							<text x="100" y="115" text-anchor="middle" class="pie-center-label">Win Rate</text>
-						</svg>
-						<div class="pie-legend">
-							<div class="legend-item">
-								<span class="legend-dot" style="background: #22c55e;"></span>
-								<span>Breakouts (35%)</span>
-							</div>
-							<div class="legend-item">
-								<span class="legend-dot" style="background: #3b82f6;"></span>
-								<span>Momentum (28%)</span>
-							</div>
-							<div class="legend-item">
-								<span class="legend-dot" style="background: #f59e0b;"></span>
-								<span>Earnings (22%)</span>
-							</div>
-							<div class="legend-item">
-								<span class="legend-dot" style="background: #ef4444;"></span>
-								<span>Reversals (15%)</span>
+					<!-- Win/Loss -->
+					<div class="chart-box">
+						<h4>Setup Performance</h4>
+						<div class="donut-container">
+							<svg viewBox="0 0 120 120" class="donut-chart">
+								<circle cx="60" cy="60" r="45" fill="none" stroke="#e5e7eb" stroke-width="12"/>
+								<circle cx="60" cy="60" r="45" fill="none" stroke="#22c55e" stroke-width="12" 
+									stroke-dasharray="232" stroke-dashoffset="42" transform="rotate(-90 60 60)"/>
+								<text x="60" y="55" text-anchor="middle" class="donut-value">82%</text>
+								<text x="60" y="72" text-anchor="middle" class="donut-label">Win Rate</text>
+							</svg>
+							<div class="donut-legend">
+								<div><span class="dot win"></span>Wins: 23</div>
+								<div><span class="dot loss"></span>Losses: 5</div>
 							</div>
 						</div>
 					</div>
 				</div>
-			</div>
-		</section>
+			</section>
+		</div>
 
+		<!-- RIGHT: Alerts Feed -->
+		<div class="content-right">
+			<section class="card alerts-card">
+				<div class="card-header">
+					<h2>🔔 Alerts & Updates</h2>
+				</div>
+				
+				<!-- Filter Pills -->
+				<div class="filter-pills">
+					<button class="pill" class:active={selectedFilter === 'all'} onclick={() => selectedFilter = 'all'}>All</button>
+					<button class="pill" class:active={selectedFilter === 'momentum'} onclick={() => selectedFilter = 'momentum'}>Momentum</button>
+					<button class="pill" class:active={selectedFilter === 'breakout'} onclick={() => selectedFilter = 'breakout'}>Breakout</button>
+					<button class="pill" class:active={selectedFilter === 'earnings'} onclick={() => selectedFilter = 'earnings'}>Earnings</button>
+					<button class="pill" class:active={selectedFilter === 'options'} onclick={() => selectedFilter = 'options'}>Options</button>
+					<button class="pill" class:active={selectedFilter === 'tech'} onclick={() => selectedFilter = 'tech'}>Tech</button>
+				</div>
+
+				<!-- Alerts List -->
+				<div class="alerts-feed">
+					{#each filteredAlerts as alert}
+						<a href={alert.href} class="alert-item" class:is-new={alert.isNew}>
+							{#if alert.isNew}
+								<span class="new-badge">NEW</span>
+							{/if}
+							<div class="alert-type">{alert.type}</div>
+							<h3>{alert.title}</h3>
+							<p>{alert.excerpt}</p>
+							<div class="alert-footer">
+								<span class="alert-date">{alert.date}</span>
+								<div class="alert-tags">
+									{#each alert.tags as tag}
+										<span class="tag">{tag}</span>
+									{/each}
+								</div>
+							</div>
+						</a>
+					{/each}
+				</div>
+
+				<a href="/dashboard/explosive-swings/alerts" class="view-all-btn">
+					View All Alerts
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+						<path d="M5 12h14M12 5l7 7-7 7"/>
+					</svg>
+				</a>
+			</section>
+
+			<!-- Quick Resources -->
+			<section class="card resources-card">
+				<div class="card-header">
+					<h2>📚 Resources</h2>
+				</div>
+				<div class="resources-grid">
+					<a href="/dashboard/explosive-swings/video-library" class="resource-item">
+						<span class="resource-icon">��</span>
+						<span>Video Library</span>
+					</a>
+					<a href="/dashboard/explosive-swings/trade-tracker" class="resource-item">
+						<span class="resource-icon">📊</span>
+						<span>Trade Tracker</span>
+					</a>
+					<a href="/guides/swing-entry" class="resource-item">
+						<span class="resource-icon">📖</span>
+						<span>Entry Guide</span>
+					</a>
+					<a href="/guides/risk-management" class="resource-item">
+						<span class="resource-icon">🛡️</span>
+						<span>Risk Management</span>
+					</a>
+					<a href="/guides/exit-strategies" class="resource-item">
+						<span class="resource-icon">🎯</span>
+						<span>Exit Strategies</span>
+					</a>
+					<a href="/dashboard/account" class="resource-item">
+						<span class="resource-icon">⚙️</span>
+						<span>Alert Settings</span>
+					</a>
+				</div>
+			</section>
+		</div>
 	</div>
-
-	<!-- SIDEBAR -->
-	<aside class="dashboard__content-sidebar">
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">
-				Alert Schedule
-				<p class="pssubject" style="font-size: 10px;margin-top: 15px;text-transform: initial;text-align: center;">Schedule is subject to change.</p>
-			</h4>
-			<div class="script-container">
-				<div class="room-sched"></div>
-			</div>
-		</section>
-
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">My Alerts</h4>
-			<ul class="link-list">
-				<li><a href="/dashboard/explosive-swings/favorites">⭐ Favorites (3)</a></li>
-				<li><a href="/dashboard/explosive-swings/alerts">📋 All Alerts</a></li>
-				<li><a href="/dashboard/explosive-swings/video-library">🎥 Video Library</a></li>
-				<li><a href="/dashboard/explosive-swings/trade-tracker">📊 Trade Tracker</a></li>
-			</ul>
-		</section>
-
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">Strategy Guides</h4>
-			<ul class="link-list">
-				<li><a href="/guides/swing-entry">📖 Entry Strategies</a></li>
-				<li><a href="/guides/risk-management">🛡️ Risk Management</a></li>
-				<li><a href="/guides/exit-strategies">🎯 Exit Strategies</a></li>
-				<li><a href="/guides/position-sizing">💰 Position Sizing</a></li>
-			</ul>
-		</section>
-
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">Quick Links</h4>
-			<ul class="link-list">
-				<li><a href="https://intercom.help/simpler-trading/en/" target="_blank">Support</a></li>
-				<li><a href="/tutorials" target="_blank">Platform Tutorials</a></li>
-				<li><a href="/blog" target="_blank">Trading Blog</a></li>
-			</ul>
-		</section>
-
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">Alert Settings</h4>
-			<ul class="link-list">
-				<li><a href="/dashboard/account">Notification Preferences</a></li>
-				<li><a href="/dashboard/account">SMS Alerts</a></li>
-				<li><a href="/dashboard/account">Email Alerts</a></li>
-			</ul>
-		</section>
-	</aside>
 </div>
 
 <style>
-	.dashboard__content {
-		display: flex;
-		flex-flow: row nowrap;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * ULTIMATE DASHBOARD - State of the Art UI/UX
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	
+	.ultimate-dashboard {
+		background: #f8fafc;
+		min-height: 100vh;
 	}
 
-	.dashboard__content-main {
-		border-right: 1px solid #dbdbdb;
-		flex: 1 1 auto;
-		min-width: 0;
-	}
-
-	.dashboard__content-section-member {
-		padding: 30px 20px;
-	}
-
-	@media screen and (min-width: 1024px) {
-		.dashboard__content-section-member {
-			padding: 30px;
-		}
-	}
-
-	@media screen and (min-width: 1440px) {
-		.dashboard__content-section-member {
-			padding: 40px;
-		}
-	}
-
-	/* Pinned Watchlist Banner */
-	.watchlist-banner {
-		background: linear-gradient(135deg, #F69532 0%, #f7941d 100%);
+	/* HERO SECTION */
+	.hero-section {
+		background: linear-gradient(135deg, #143E59 0%, #1e5a7e 50%, #0984ae 100%);
+		padding: 40px 30px;
 		color: #fff;
-		padding: 25px 30px;
-		border-radius: 8px;
-		box-shadow: 0 4px 20px rgba(246, 149, 50, 0.3);
+		text-align: center;
+	}
+
+	.hero-badge {
+		display: inline-block;
+		background: rgba(255, 255, 255, 0.15);
+		backdrop-filter: blur(10px);
+		padding: 8px 20px;
+		border-radius: 50px;
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		margin-bottom: 30px;
+		border: 1px solid rgba(255, 255, 255, 0.2);
+	}
+
+	.hero-content {
+		display: flex;
+		gap: 40px;
+		max-width: 1200px;
+		margin: 0 auto;
+		align-items: flex-start;
+		text-align: left;
+	}
+
+	.hero-video {
+		flex: 0 0 500px;
+	}
+
+	.video-thumbnail {
+		position: relative;
+		width: 100%;
+		padding-bottom: 56.25%;
+		background-size: cover;
+		background-position: center;
+		border-radius: 16px;
+		overflow: hidden;
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
+		cursor: pointer;
+		transition: transform 0.3s ease;
+	}
+
+	.video-thumbnail:hover {
+		transform: scale(1.02);
+	}
+
+	.video-thumbnail::before {
+		content: '';
+		position: absolute;
+		inset: 0;
+		background: linear-gradient(to top, rgba(0,0,0,0.6) 0%, transparent 50%);
+	}
+
+	.play-button {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 80px;
+		height: 80px;
+		background: rgba(255, 255, 255, 0.95);
+		border-radius: 50%;
 		display: flex;
 		align-items: center;
-		gap: 20px;
-		margin-bottom: 20px;
+		justify-content: center;
+		color: #143E59;
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+		transition: all 0.3s ease;
 	}
 
-	.watchlist-banner__icon {
-		font-size: 48px;
-		line-height: 1;
-		flex-shrink: 0;
+	.play-button svg {
+		width: 32px;
+		height: 32px;
+		margin-left: 4px;
 	}
 
-	.watchlist-banner__content {
+	.video-thumbnail:hover .play-button {
+		transform: translate(-50%, -50%) scale(1.1);
+		background: #fff;
+	}
+
+	.video-duration {
+		position: absolute;
+		bottom: 15px;
+		right: 15px;
+		background: rgba(0, 0, 0, 0.8);
+		padding: 6px 12px;
+		border-radius: 6px;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.hero-info {
 		flex: 1;
+		text-align: center;
 	}
 
-	.watchlist-banner__content h3 {
-		margin: 0 0 8px 0;
-		font-size: 24px;
+	.hero-info h1 {
+		font-size: 32px;
 		font-weight: 700;
+		margin: 0 0 12px 0;
+		font-family: 'Montserrat', sans-serif;
+		line-height: 1.3;
+	}
+
+	.hero-date {
+		font-size: 14px;
+		opacity: 0.8;
+		margin: 0 0 20px 0;
+	}
+
+	.hero-description {
+		font-size: 16px;
+		line-height: 1.7;
+		opacity: 0.95;
+		margin: 0 0 30px 0;
+	}
+
+	.timestamps {
+		background: rgba(255, 255, 255, 0.1);
+		border-radius: 12px;
+		padding: 20px;
+		margin-bottom: 30px;
+		text-align: center;
+	}
+
+	.timestamps h4 {
+		font-size: 12px;
+		font-weight: 700;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		margin: 0 0 15px 0;
+		opacity: 0.8;
+	}
+
+	.timestamp-list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 10px;
+		justify-content: center;
+	}
+
+	.timestamp-item {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		background: rgba(255, 255, 255, 0.1);
+		padding: 8px 14px;
+		border-radius: 8px;
+		font-size: 13px;
+		color: #fff;
+		text-decoration: none;
+		transition: all 0.2s ease;
+	}
+
+	.timestamp-item:hover {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	.ts-time {
+		font-weight: 700;
+		color: #F69532;
+	}
+
+	.hero-cta {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		background: #F69532;
+		color: #fff;
+		padding: 16px 32px;
+		border-radius: 12px;
+		font-size: 16px;
+		font-weight: 700;
+		text-decoration: none;
+		transition: all 0.3s ease;
+		box-shadow: 0 10px 30px rgba(246, 149, 50, 0.4);
+	}
+
+	.hero-cta:hover {
+		background: #e8850d;
+		transform: translateY(-3px);
+		box-shadow: 0 15px 40px rgba(246, 149, 50, 0.5);
+	}
+
+	.hero-cta svg {
+		width: 20px;
+		height: 20px;
+	}
+
+	@media (max-width: 1024px) {
+		.hero-content {
+			flex-direction: column;
+			text-align: center;
+		}
+
+		.hero-video {
+			flex: none;
+			width: 100%;
+			max-width: 600px;
+			margin: 0 auto;
+		}
+
+		.hero-info {
+			text-align: center;
+		}
+	}
+
+	/* STATS BAR */
+	.stats-bar {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 30px;
+		background: #fff;
+		padding: 25px 30px;
+		border-bottom: 1px solid #e5e7eb;
+		flex-wrap: wrap;
+	}
+
+	.stat-item {
+		text-align: center;
+	}
+
+	.stat-value {
+		font-size: 28px;
+		font-weight: 700;
+		color: #143E59;
 		font-family: 'Montserrat', sans-serif;
 	}
 
-	.watchlist-banner__content p {
-		margin: 0;
-		font-size: 15px;
-		opacity: 0.95;
-		line-height: 1.5;
+	.stat-label {
+		font-size: 12px;
+		color: #666;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-top: 4px;
 	}
 
-	.watchlist-banner__btn {
-		background: #fff;
+	.stat-item.highlight .stat-value {
 		color: #F69532;
-		padding: 12px 24px;
-		border-radius: 6px;
-		font-weight: 600;
-		text-decoration: none;
-		font-size: 14px;
-		transition: all 0.2s ease;
-		flex-shrink: 0;
-		white-space: nowrap;
 	}
 
-	.watchlist-banner__btn:hover {
-		background: #f5f5f5;
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	.stat-divider {
+		width: 1px;
+		height: 40px;
+		background: #e5e7eb;
 	}
 
 	@media (max-width: 768px) {
-		.watchlist-banner {
-			flex-direction: column;
-			text-align: center;
-			gap: 15px;
+		.stats-bar {
+			gap: 20px;
 		}
 
-		.watchlist-banner__btn {
+		.stat-divider {
+			display: none;
+		}
+
+		.stat-value {
+			font-size: 22px;
+		}
+	}
+
+	/* MAIN CONTENT */
+	.main-content {
+		display: flex;
+		gap: 30px;
+		padding: 30px;
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+
+	.content-left {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+		gap: 30px;
+		min-width: 0;
+	}
+
+	.content-right {
+		width: 420px;
+		flex-shrink: 0;
+		display: flex;
+		flex-direction: column;
+		gap: 30px;
+	}
+
+	@media (max-width: 1200px) {
+		.main-content {
+			flex-direction: column;
+		}
+
+		.content-right {
 			width: 100%;
 		}
 	}
 
-	.welcome-banner {
-		background: linear-gradient(135deg, #143E59 0%, #0984ae 100%);
-		color: #fff;
-		padding: 40px;
-		border-radius: 8px;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
+	/* CARDS */
+	.card {
+		background: #fff;
+		border-radius: 16px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+		overflow: hidden;
 	}
 
-	.welcome-banner h2 {
-		margin: 0 0 15px 0;
-		font-size: 32px;
-		font-weight: 600;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.welcome-banner p {
-		margin: 0;
-		font-size: 16px;
-		line-height: 1.6;
-		opacity: 0.95;
-	}
-
-	.dashboard__content-section {
-		padding: 30px 20px;
-		overflow-x: auto;
-		overflow-y: hidden;
-	}
-
-	@media screen and (min-width: 1024px) {
-		.dashboard__content-section {
-			padding: 30px;
-		}
-	}
-
-	@media screen and (min-width: 1440px) {
-		.dashboard__content-section {
-			padding: 40px;
-		}
-	}
-
-	.u--background-color-white {
-		background-color: #fff !important;
-	}
-
-	/* Alerts Header with Filters */
-	.alerts-header {
-		margin-bottom: 30px;
-	}
-
-	.section-heading {
-		margin: 0 0 20px 0;
-		font-size: 24px;
-		font-weight: 600;
-		color: #333;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.filter-tabs {
+	.card-header {
 		display: flex;
-		gap: 10px;
-		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+		padding: 20px 25px;
+		border-bottom: 1px solid #f0f0f0;
 	}
 
-	.filter-tab {
-		background: #f5f5f5;
-		color: #666;
-		border: 2px solid transparent;
-		padding: 10px 20px;
-		border-radius: 25px;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		font-family: 'Open Sans', sans-serif;
-	}
-
-	.filter-tab:hover {
-		background: #e8e8e8;
+	.card-header h2 {
+		font-size: 18px;
+		font-weight: 700;
+		margin: 0;
 		color: #333;
+		font-family: 'Montserrat', sans-serif;
+		text-align: center;
+		flex: 1;
 	}
 
-	.filter-tab.active {
-		background: #143E59;
-		color: #fff;
-		border-color: #143E59;
+	.view-all {
+		font-size: 13px;
+		color: #0984ae;
+		text-decoration: none;
+		font-weight: 600;
+		transition: color 0.2s;
+	}
+
+	.view-all:hover {
+		color: #143E59;
+	}
+
+	/* WATCHLIST TABLE */
+	.watchlist-table {
+		padding: 0 25px 25px;
+	}
+
+	.table-header, .table-row {
+		display: grid;
+		grid-template-columns: 1.2fr 1fr 1fr 1fr 0.8fr;
+		gap: 15px;
+		padding: 15px 0;
+		text-align: center;
+	}
+
+	.table-header {
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		color: #888;
+		border-bottom: 1px solid #f0f0f0;
+	}
+
+	.table-row {
+		border-bottom: 1px solid #f5f5f5;
+		font-size: 14px;
+		align-items: center;
+	}
+
+	.table-row:last-child {
+		border-bottom: none;
+	}
+
+	.ticker-symbol {
+		font-weight: 700;
+		color: #143E59;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 2px;
+	}
+
+	.ticker-symbol small {
+		font-size: 11px;
+		font-weight: 600;
+	}
+
+	.ticker-symbol small.positive {
+		color: #22c55e;
+	}
+
+	.ticker-symbol small.negative {
+		color: #ef4444;
+	}
+
+	.target {
+		color: #22c55e;
+		font-weight: 600;
+	}
+
+	.stop {
+		color: #ef4444;
+		font-weight: 600;
+	}
+
+	.status {
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		padding: 4px 10px;
+		border-radius: 20px;
+	}
+
+	.status--active {
+		background: #dcfce7;
+		color: #166534;
+	}
+
+	.status--watching {
+		background: #fef3c7;
+		color: #92400e;
+	}
+
+	.status--closed {
+		background: #f3f4f6;
+		color: #6b7280;
+	}
+
+	/* TRADES GRID */
+	.trades-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 15px;
+		padding: 25px;
 	}
 
 	@media (max-width: 640px) {
-		.filter-tabs {
-			gap: 8px;
-		}
-
-		.filter-tab {
-			padding: 8px 16px;
-			font-size: 13px;
+		.trades-grid {
+			grid-template-columns: 1fr;
 		}
 	}
 
-	.metrics-grid {
-		display: grid;
-		grid-template-columns: repeat(1, 1fr);
-		gap: 20px;
-	}
-
-	@media screen and (min-width: 640px) {
-		.metrics-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	@media screen and (min-width: 1024px) {
-		.metrics-grid {
-			grid-template-columns: repeat(4, 1fr);
-		}
-	}
-
-	.metric-card {
-		background: #f8f9fa;
-		padding: 25px;
-		border-radius: 8px;
+	.trade-item {
+		background: #f8fafc;
+		border-radius: 12px;
+		padding: 18px;
 		text-align: center;
-		border: 1px solid #e0e0e0;
+		border: 1px solid #e5e7eb;
 		transition: all 0.2s ease;
 	}
 
-	.metric-card:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+	.trade-item:hover {
+		transform: translateY(-3px);
+		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
 	}
 
-	.metric-value {
-		font-size: 32px;
+	.trade-item.trade--win {
+		border-left: 4px solid #22c55e;
+	}
+
+	.trade-item.trade--loss {
+		border-left: 4px solid #ef4444;
+	}
+
+	.trade-symbol {
+		font-size: 20px;
 		font-weight: 700;
 		color: #143E59;
 		margin-bottom: 8px;
-		font-family: 'Montserrat', sans-serif;
 	}
 
-	.metric-label {
-		font-size: 14px;
+	.trade-result {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		margin-bottom: 8px;
+	}
+
+	.trade-type {
+		font-size: 11px;
+		font-weight: 700;
+		padding: 3px 8px;
+		border-radius: 4px;
+	}
+
+	.trade--win .trade-type {
+		background: #dcfce7;
+		color: #166534;
+	}
+
+	.trade--loss .trade-type {
+		background: #fee2e2;
+		color: #991b1b;
+	}
+
+	.trade-profit {
+		font-size: 16px;
+		font-weight: 700;
+	}
+
+	.trade--win .trade-profit {
+		color: #22c55e;
+	}
+
+	.trade--loss .trade-profit {
+		color: #ef4444;
+	}
+
+	.trade-meta {
+		font-size: 12px;
 		color: #666;
-		font-weight: 500;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
 	}
 
-	/* Charts Grid */
+	.trade-setup {
+		background: #e5e7eb;
+		padding: 2px 8px;
+		border-radius: 4px;
+		font-weight: 600;
+	}
+
+	/* CHARTS */
 	.charts-grid {
 		display: grid;
-		grid-template-columns: 1fr;
-		gap: 30px;
+		grid-template-columns: 1fr 1fr;
+		gap: 25px;
+		padding: 25px;
 	}
 
-	@media (min-width: 1024px) {
+	@media (max-width: 768px) {
 		.charts-grid {
-			grid-template-columns: 1fr 1fr;
+			grid-template-columns: 1fr;
 		}
 	}
 
-	.chart-card {
-		background: #fff;
-		border-radius: 12px;
-		padding: 25px;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-		border: 1px solid #e5e7eb;
+	.chart-box {
+		text-align: center;
 	}
 
-	.chart-title {
-		margin: 0 0 20px 0;
-		font-size: 18px;
+	.chart-box h4 {
+		font-size: 13px;
 		font-weight: 600;
-		color: #333;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.chart-container {
-		width: 100%;
+		color: #666;
+		margin: 0 0 15px 0;
 	}
 
 	.trend-chart {
@@ -715,178 +952,243 @@
 		height: auto;
 	}
 
-	.chart-label {
-		font-size: 11px;
+	.chart-highlight {
+		font-size: 12px;
+		font-weight: 700;
+		fill: #22c55e;
+	}
+
+	.donut-container {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 15px;
+	}
+
+	.donut-chart {
+		width: 120px;
+		height: 120px;
+	}
+
+	.donut-value {
+		font-size: 22px;
+		font-weight: 700;
+		fill: #143E59;
+	}
+
+	.donut-label {
+		font-size: 10px;
 		fill: #666;
-		font-family: 'Open Sans', sans-serif;
 	}
 
-	.data-point {
-		transition: r 0.2s ease;
+	.donut-legend {
+		display: flex;
+		gap: 20px;
+		font-size: 13px;
+	}
+
+	.donut-legend .dot {
+		display: inline-block;
+		width: 10px;
+		height: 10px;
+		border-radius: 50%;
+		margin-right: 6px;
+	}
+
+	.donut-legend .dot.win {
+		background: #22c55e;
+	}
+
+	.donut-legend .dot.loss {
+		background: #ef4444;
+	}
+
+	/* ALERTS CARD */
+	.filter-pills {
+		display: flex;
+		gap: 8px;
+		padding: 15px 25px;
+		flex-wrap: wrap;
+		justify-content: center;
+		border-bottom: 1px solid #f0f0f0;
+	}
+
+	.pill {
+		background: #f3f4f6;
+		border: none;
+		padding: 8px 16px;
+		border-radius: 20px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #666;
 		cursor: pointer;
+		transition: all 0.2s ease;
 	}
 
-	.data-point:hover {
-		r: 8;
+	.pill:hover {
+		background: #e5e7eb;
 	}
 
-	/* Pie Chart */
-	.pie-container {
+	.pill.active {
+		background: #143E59;
+		color: #fff;
+	}
+
+	.alerts-feed {
+		padding: 15px 25px;
+		display: flex;
+		flex-direction: column;
+		gap: 15px;
+		max-height: 500px;
+		overflow-y: auto;
+	}
+
+	.alert-item {
+		display: block;
+		background: #f8fafc;
+		border-radius: 12px;
+		padding: 18px;
+		text-decoration: none;
+		color: inherit;
+		border: 1px solid #e5e7eb;
+		transition: all 0.2s ease;
+		position: relative;
+		text-align: center;
+	}
+
+	.alert-item:hover {
+		border-color: #143E59;
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
+	}
+
+	.alert-item.is-new {
+		border-color: #F69532;
+		background: #fffbf5;
+	}
+
+	.new-badge {
+		position: absolute;
+		top: -8px;
+		right: 15px;
+		background: #F69532;
+		color: #fff;
+		font-size: 10px;
+		font-weight: 700;
+		padding: 4px 10px;
+		border-radius: 10px;
+	}
+
+	.alert-type {
+		font-size: 11px;
+		font-weight: 700;
+		text-transform: uppercase;
+		color: #0984ae;
+		margin-bottom: 8px;
+	}
+
+	.alert-item h3 {
+		font-size: 15px;
+		font-weight: 700;
+		margin: 0 0 8px 0;
+		color: #333;
+	}
+
+	.alert-item p {
+		font-size: 13px;
+		color: #666;
+		line-height: 1.5;
+		margin: 0 0 12px 0;
+	}
+
+	.alert-footer {
 		display: flex;
 		align-items: center;
-		gap: 30px;
+		justify-content: center;
+		gap: 15px;
 		flex-wrap: wrap;
+	}
+
+	.alert-date {
+		font-size: 11px;
+		color: #888;
+	}
+
+	.alert-tags {
+		display: flex;
+		gap: 6px;
 		justify-content: center;
 	}
 
-	.pie-chart {
-		width: 180px;
-		height: 180px;
-		transform: rotate(-90deg);
+	.tag {
+		background: #e5e7eb;
+		font-size: 10px;
+		font-weight: 600;
+		padding: 3px 8px;
+		border-radius: 4px;
+		color: #555;
+		text-transform: uppercase;
 	}
 
-	.pie-segment {
-		transition: opacity 0.2s ease;
-	}
-
-	.pie-segment:hover {
-		opacity: 0.8;
-	}
-
-	.pie-center-value {
-		font-size: 24px;
-		font-weight: 700;
-		fill: #143E59;
-		font-family: 'Montserrat', sans-serif;
-		transform: rotate(90deg);
-		transform-origin: 100px 100px;
-	}
-
-	.pie-center-label {
-		font-size: 12px;
-		fill: #666;
-		font-family: 'Open Sans', sans-serif;
-		transform: rotate(90deg);
-		transform-origin: 100px 100px;
-	}
-
-	.pie-legend {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-	}
-
-	.legend-item {
+	.view-all-btn {
 		display: flex;
 		align-items: center;
-		gap: 10px;
-		font-size: 14px;
-		color: #333;
-		font-family: 'Open Sans', sans-serif;
-	}
-
-	.legend-dot {
-		width: 12px;
-		height: 12px;
-		border-radius: 50%;
-		flex-shrink: 0;
-	}
-
-	@media (max-width: 640px) {
-		.pie-container {
-			flex-direction: column;
-		}
-
-		.pie-legend {
-			flex-direction: row;
-			flex-wrap: wrap;
-			justify-content: center;
-			gap: 15px;
-		}
-	}
-
-	.dashboard__content-sidebar {
-		display: block;
-		width: 260px;
-		flex: 0 0 auto;
-		margin-top: -1px;
-		background: #fff;
-		border-right: 1px solid #dbdbdb;
-		border-top: 1px solid #dbdbdb;
-		font-family: 'Open Sans', sans-serif;
-		font-size: 14px;
-		line-height: 1.6;
-	}
-
-	.dashboard__content-sidebar {
-		display: none;
-	}
-
-	@media (min-width: 1080px) {
-		.dashboard__content-sidebar {
-			display: block;
-		}
-	}
-
-	.content-sidebar__section {
-		padding: 20px 30px 20px 20px;
-		border-bottom: 1px solid #dbdbdb;
-	}
-
-	.content-sidebar__heading {
-		padding: 15px 20px;
-		margin: -20px -30px 20px -20px;
-		font-size: 14px;
-		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: #333;
-		background: #ededed;
-		border-bottom: 1px solid #dbdbdb;
-		line-height: 1.4;
-	}
-
-	.pssubject {
-		font-size: 10px;
-		margin-top: 15px;
-		text-transform: initial;
-	}
-
-	.script-container {
-		margin: 0;
-	}
-
-	.room-sched {
-		margin: 0;
-	}
-
-	.link-list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.link-list li {
-		margin-bottom: 12px;
-	}
-
-	.link-list a {
-		color: #0984ae;
+		justify-content: center;
+		gap: 8px;
+		margin: 15px 25px 25px;
+		padding: 14px;
+		background: #143E59;
+		color: #fff;
+		border-radius: 10px;
 		text-decoration: none;
+		font-weight: 600;
 		font-size: 14px;
-		font-family: 'Open Sans', sans-serif;
-		transition: color 0.2s;
+		transition: all 0.2s ease;
 	}
 
-	.link-list a:hover {
-		color: #076787;
-		text-decoration: underline;
+	.view-all-btn:hover {
+		background: #0f2d42;
 	}
 
-	@media (min-width: 993px) {
-		.dashboard__content {
-			flex-direction: row;
+	/* RESOURCES */
+	.resources-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 12px;
+		padding: 20px;
+	}
+
+	.resource-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		padding: 18px 12px;
+		background: #f8fafc;
+		border-radius: 12px;
+		text-decoration: none;
+		color: #333;
+		font-size: 12px;
+		font-weight: 600;
+		transition: all 0.2s ease;
+		text-align: center;
+		border: 1px solid transparent;
+	}
+
+	.resource-item:hover {
+		background: #fff;
+		border-color: #143E59;
+		transform: translateY(-3px);
+		box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+	}
+
+	.resource-icon {
+		font-size: 24px;
+	}
+
+	@media (max-width: 480px) {
+		.resources-grid {
+			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 </style>
