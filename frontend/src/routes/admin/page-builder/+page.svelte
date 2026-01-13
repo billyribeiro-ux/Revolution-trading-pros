@@ -9,7 +9,6 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { page } from '$app/stores';
 	import { createBuilderStore } from '$lib/page-builder';
 	import ComponentPalette from '$lib/page-builder/components/ComponentPalette.svelte';
 	import BuilderCanvas from '$lib/page-builder/components/BuilderCanvas.svelte';
