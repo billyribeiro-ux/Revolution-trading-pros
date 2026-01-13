@@ -187,7 +187,7 @@
 	<section class="cpost-section ww-content-section">
 		<div class="section-inner">
 			<!-- Tabs - WordPress Match -->
-			<div class="ww-content-tabs">
+			<div class="tr_tabs ww-single">
 				<div class="tab">
 					<button 
 						id="tab-link-1"
@@ -418,7 +418,7 @@
 	}
 
 	/* Tabs - WordPress Match */
-	.ww-content-tabs {
+	.tr_tabs.ww-single {
 		background: #fff;
 		border-radius: 0;
 		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
