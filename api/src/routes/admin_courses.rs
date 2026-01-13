@@ -7,7 +7,7 @@ use axum::{
     routing::{get, post, put},
     Json, Router,
 };
-use chrono::{DateTime, Utc};
+use chrono::NaiveDateTime;
 use serde_json::json;
 use uuid::Uuid;
 
@@ -65,7 +65,7 @@ async fn list_courses(
     query.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
 
     // Query base course data
-    let rows: Vec<(Uuid, String, String, Option<String>, i32, bool, Option<String>, Option<String>, DateTime<Utc>)> = 
+    let rows: Vec<(Uuid, String, String, Option<String>, i32, bool, Option<String>, Option<String>, NaiveDateTime)> = 
         sqlx::query_as(&query)
             .fetch_all(&state.db.pool)
             .await
