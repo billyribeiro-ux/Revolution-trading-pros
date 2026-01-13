@@ -44,6 +44,9 @@ pub mod admin_page_layouts;
 pub mod migrate;
 pub mod popups;
 pub mod trading_rooms;
+pub mod forms;
+pub mod email_templates;
+pub mod subscriptions_admin;
 
 use axum::Router;
 use crate::AppState;
@@ -97,6 +100,13 @@ pub fn api_router() -> Router<AppState> {
         // Indicator Management System
         // .nest("/admin/indicators", admin_indicators::router()) // TODO: Fix SQLx issues
         .nest("/admin/page-layouts", admin_page_layouts::router())
+        // Forms Admin - ICT 7 Grade
+        .nest("/admin/forms", forms::admin_router())
+        // Email Templates Admin - ICT 7 Grade
+        .nest("/admin/email/templates", email_templates::admin_router())
+        // Subscriptions Admin - ICT 7 Grade
+        .nest("/admin/subscriptions", subscriptions_admin::subscriptions_router())
+        .nest("/admin/subscriptions/plans", subscriptions_admin::plans_router())
         .nest("/indicators", member_indicators::public_router())
         .nest("/my/indicators", member_indicators::member_router())
         .nest("/download", member_indicators::download_router())
