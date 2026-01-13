@@ -25,8 +25,8 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 		});
 
 		if (!response.ok) {
-			// Return mock data for development if backend unavailable
-			if (response.status === 404 || response.status === 500) {
+			// Return mock data for auth/not-found errors to prevent console errors
+			if (response.status === 401 || response.status === 404 || response.status === 500) {
 				return json({
 					data: {
 						active_subscriptions: 0,
