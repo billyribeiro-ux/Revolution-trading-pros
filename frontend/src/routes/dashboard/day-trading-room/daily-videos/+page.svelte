@@ -144,13 +144,6 @@
 	 * Matches: frontend/Implementation/daily-videos
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.section-title {
-		font-size: 1.75rem;
-		font-weight: 600;
-		margin-bottom: 1rem;
-		color: #1a1a1a;
-	}
-
 	/* Dashboard Filters */
 	.dashboard-filters {
 		display: flex;
