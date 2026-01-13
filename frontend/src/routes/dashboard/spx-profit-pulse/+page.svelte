@@ -207,7 +207,7 @@
 		<section class="content-sidebar__section">
 			<h4 class="content-sidebar__heading">
 				Alert Schedule
-				<p class="pssubject" style="font-size: 10px;margin-top: 15px;text-transform: initial;">Schedule is subject to change.</p>
+				<p class="pssubject" style="font-size: 10px;margin-top: 15px;text-transform: initial;text-align: center;">Schedule is subject to change.</p>
 			</h4>
 			<div class="script-container">
 				<div class="room-sched"></div>

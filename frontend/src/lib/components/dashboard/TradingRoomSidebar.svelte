@@ -497,6 +497,7 @@
 		color: #666;
 		font-weight: 400;
 		letter-spacing: normal;
+		text-align: center;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
