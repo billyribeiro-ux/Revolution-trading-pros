@@ -511,6 +511,7 @@
 	@media (max-width: 640px) {
 		.admin-header {
 			padding: 0 1rem;
+			height: 60px;
 		}
 
 		.header-title h1 {
@@ -531,6 +532,146 @@
 
 		.theme-label {
 			display: none;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * APPLE ENTERPRISE ENHANCEMENTS - Mobile First
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Extra Small Mobile (< 380px) - iPhone SE, Galaxy Fold */
+	@media (max-width: 380px) {
+		.admin-header {
+			padding: 0 0.75rem;
+			height: 56px;
+		}
+
+		.header-title h1 {
+			font-size: 1.1rem;
+		}
+
+		.header-actions {
+			gap: 0.25rem;
+		}
+
+		.header-btn {
+			padding: 0.375rem;
+		}
+
+		.view-site-btn {
+			padding: 0.375rem 0.625rem;
+			font-size: 0.75rem;
+		}
+
+		.admin-content {
+			padding: 0.75rem;
+		}
+	}
+
+	/* Touch Device Optimizations - Apple HIG 44pt minimum touch target */
+	@media (hover: none) and (pointer: coarse) {
+		.header-btn,
+		.mobile-menu-btn,
+		.theme-toggle,
+		.view-site-btn {
+			min-height: 44px;
+			min-width: 44px;
+		}
+
+		.header-btn {
+			padding: 0.625rem;
+		}
+
+		.view-site-btn {
+			padding: 0.625rem 1rem;
+		}
+
+		/* Ensure adequate spacing for touch targets */
+		.header-actions {
+			gap: 0.5rem;
+		}
+	}
+
+	/* Reduced Motion - Accessibility */
+	@media (prefers-reduced-motion: reduce) {
+		.admin-layout,
+		.admin-header,
+		.header-btn,
+		.mobile-menu-btn,
+		.theme-toggle,
+		.view-site-btn {
+			transition: none;
+		}
+
+		.view-site-btn:hover {
+			transform: none;
+		}
+
+		.mobile-menu-btn:hover {
+			transform: none;
+		}
+	}
+
+	/* High Contrast Mode - Accessibility */
+	@media (prefers-contrast: high) {
+		.admin-header {
+			border-bottom-width: 2px;
+		}
+
+		.header-btn,
+		.theme-toggle,
+		.view-site-btn {
+			border-width: 2px;
+		}
+
+		.header-title h1 {
+			font-weight: 800;
+		}
+	}
+
+	/* Dark Mode Preference (system) */
+	@media (prefers-color-scheme: dark) {
+		.admin-layout {
+			color-scheme: dark;
+		}
+	}
+
+	/* Light Mode Preference (system) */
+	@media (prefers-color-scheme: light) {
+		.admin-layout {
+			color-scheme: light;
+		}
+	}
+
+	/* Print Styles */
+	@media print {
+		.admin-header,
+		.mobile-menu-btn {
+			display: none !important;
+		}
+
+		.admin-main {
+			margin-left: 0;
+		}
+
+		.admin-content {
+			padding: 0;
+		}
+	}
+
+	/* Landscape Mode - Short viewport */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.admin-header {
+			height: 50px;
+			padding: 0 1rem;
+		}
+
+		.header-title h1 {
+			font-size: 1.1rem;
+		}
+
+		.admin-content {
+			padding: 0.75rem 1rem;
 		}
 	}
 </style>

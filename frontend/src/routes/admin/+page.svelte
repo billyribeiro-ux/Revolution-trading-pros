@@ -1514,4 +1514,285 @@
 		font-size: 0.8rem;
 		color: #64748b;
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * APPLE ENTERPRISE RESPONSIVE BREAKPOINTS - Mobile First
+	 * Based on Apple Human Interface Guidelines & Enterprise Design Standards
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Small Mobile (< 480px) - iPhone SE, Small Android */
+	@media (max-width: 480px) {
+		.dashboard-page {
+			padding: 0;
+		}
+
+		.dashboard-header {
+			padding: 1rem;
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.75rem;
+		}
+
+		.dashboard-header h1 {
+			font-size: 1.5rem;
+		}
+
+		.header-controls {
+			width: 100%;
+			flex-wrap: wrap;
+			gap: 0.5rem;
+		}
+
+		.period-selector {
+			flex: 1;
+			min-width: 120px;
+		}
+
+		.refresh-btn {
+			padding: 0.625rem;
+		}
+
+		.refresh-btn span {
+			display: none;
+		}
+
+		/* Stats Grid - Single column on small mobile */
+		.analytics-grid,
+		.seo-grid {
+			grid-template-columns: 1fr;
+			gap: 0.75rem;
+		}
+
+		.seo-metric-card.primary {
+			grid-column: span 1;
+		}
+
+		.seo-metric-card.primary .seo-metric-value {
+			font-size: 2rem;
+		}
+
+		/* Business Grid */
+		.business-grid {
+			grid-template-columns: 1fr;
+			gap: 0.75rem;
+		}
+
+		.business-card {
+			padding: 1rem;
+		}
+
+		.business-card-icon {
+			width: 48px;
+			height: 48px;
+		}
+
+		.business-card-value {
+			font-size: 1.5rem;
+		}
+
+		/* CMS Grid */
+		.cms-grid {
+			grid-template-columns: 1fr;
+			gap: 0.75rem;
+		}
+
+		.cms-card {
+			padding: 0.875rem 1rem;
+		}
+
+		.cms-icon {
+			width: 40px;
+			height: 40px;
+		}
+
+		/* Panel Sections */
+		.panel-section {
+			padding: 1rem;
+			border-radius: 12px;
+			margin-bottom: 1rem;
+		}
+
+		.panel-header h2 {
+			font-size: 1rem;
+		}
+
+		/* Metric Cards */
+		.metric-card {
+			padding: 1rem;
+		}
+
+		.metric-value {
+			font-size: 1.25rem;
+		}
+
+		.metric-label {
+			font-size: 0.7rem;
+		}
+
+		/* Health Grid */
+		.health-grid {
+			gap: 0.75rem;
+		}
+
+		.health-card {
+			padding: 1rem;
+		}
+
+		.error-stats {
+			gap: 1rem;
+		}
+
+		.error-count,
+		.redirect-count {
+			font-size: 1.25rem;
+		}
+
+		/* Section Titles */
+		.section-title {
+			font-size: 1.1rem;
+			margin-bottom: 1rem;
+		}
+
+		/* Connection Status */
+		.connection-status {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.5rem;
+		}
+	}
+
+	/* Mobile Landscape / Large Mobile (481px - 640px) */
+	@media (min-width: 481px) and (max-width: 640px) {
+		.analytics-grid,
+		.seo-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.business-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	/* Tablet Portrait (641px - 768px) */
+	@media (min-width: 641px) and (max-width: 768px) {
+		.analytics-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.seo-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.seo-metric-card.primary {
+			grid-column: span 2;
+		}
+
+		.business-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.cms-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	/* Tablet Landscape (769px - 1024px) */
+	@media (min-width: 769px) and (max-width: 1024px) {
+		.analytics-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		.seo-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		.business-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	/* Touch Device Optimizations - Apple HIG 44pt minimum touch target */
+	@media (hover: none) and (pointer: coarse) {
+		.refresh-btn,
+		.period-selector,
+		.business-card,
+		.cms-card {
+			min-height: 44px;
+		}
+
+		.business-card {
+			padding: 1rem 1.25rem;
+		}
+
+		.cms-card {
+			padding: 1rem;
+		}
+
+		/* Larger tap targets for mobile */
+		.metric-card,
+		.seo-metric-card,
+		.health-card {
+			min-height: 80px;
+		}
+	}
+
+	/* Reduced Motion - Accessibility */
+	@media (prefers-reduced-motion: reduce) {
+		.business-card,
+		.cms-card,
+		.metric-card,
+		.seo-metric-card,
+		.device-bar,
+		.seo-metric-bar-fill {
+			transition: none;
+		}
+
+		.business-card:hover,
+		.cms-card:hover {
+			transform: none;
+		}
+
+		.business-card-arrow {
+			transition: none;
+		}
+	}
+
+	/* High Contrast Mode - Accessibility */
+	@media (prefers-contrast: high) {
+		.business-card,
+		.cms-card,
+		.metric-card,
+		.seo-metric-card,
+		.health-card {
+			border-width: 2px;
+		}
+
+		.metric-value,
+		.seo-metric-value,
+		.business-card-value {
+			font-weight: 900;
+		}
+	}
+
+	/* Print Styles */
+	@media print {
+		.dashboard-page {
+			background: white;
+			color: black;
+		}
+
+		.header-controls,
+		.business-card-arrow,
+		.refresh-btn {
+			display: none !important;
+		}
+
+		.business-card,
+		.cms-card,
+		.metric-card {
+			break-inside: avoid;
+			box-shadow: none;
+			border: 1px solid #ccc;
+		}
+	}
 </style>
