@@ -287,7 +287,7 @@
 				<div class="video-container">
 					<div class="video-player" style="background-image: url('{weeklyContent.thumbnail}')">
 						<div class="video-overlay">
-							<button class="play-btn">
+							<button class="play-btn" aria-label="Play video">
 								<svg viewBox="0 0 24 24" fill="currentColor">
 									<path d="M8 5v14l11-7z"/>
 								</svg>
