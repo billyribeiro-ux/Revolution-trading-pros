@@ -254,7 +254,7 @@
 
 		<!-- Pagination -->
 		{#if totalPages > 1}
-			<div class="fl-builder-pagination">
+			<div class="pagination-container">
 				<ul class="page-numbers">
 					{#if currentPage > 1}
 						<li>
@@ -589,7 +589,7 @@
 	}
 
 	/* Pagination */
-	.fl-builder-pagination {
+	.pagination-container {
 		margin-top: 40px;
 		padding: 20px;
 		background: #f9f9f9;
@@ -597,7 +597,7 @@
 		text-align: center;
 	}
 
-	.fl-builder-pagination ul.page-numbers {
+	.pagination-container ul.page-numbers {
 		list-style: none;
 		margin: 0;
 		padding: 0;
@@ -606,15 +606,15 @@
 		gap: 0;
 	}
 
-	.fl-builder-pagination li {
+	.pagination-container li {
 		display: inline-block;
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
 
-	.fl-builder-pagination li button.page-numbers,
-	.fl-builder-pagination li span.page-numbers {
+	.pagination-container li button.page-numbers,
+	.pagination-container li span.page-numbers {
 		border: 1px solid #e6e6e6;
 		display: inline-block;
 		padding: 10px 16px;
@@ -631,19 +631,19 @@
 		font-weight: 400;
 	}
 
-	.fl-builder-pagination li button.page-numbers:hover {
+	.pagination-container li button.page-numbers:hover {
 		background: #f5f5f5;
 		border-color: #ccc;
 	}
 
-	.fl-builder-pagination li span.current {
+	.pagination-container li span.current {
 		background: #1e73be;
 		color: #fff;
 		border-color: #1e73be;
 		font-weight: 600;
 	}
 
-	.fl-builder-pagination li span.dots {
+	.pagination-container li span.dots {
 		background: #fff;
 		cursor: default;
 		color: #333;
