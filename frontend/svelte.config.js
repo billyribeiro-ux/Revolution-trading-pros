@@ -20,10 +20,11 @@ const getAdapter = () => {
 
 	switch (target) {
 		case 'cloudflare':
+			// ICT 7 FIX: Don't exclude offline.html - it's needed by service worker
 			return adapterCloudflare({
 				routes: {
 					include: ['/*'],
-					exclude: ['<all>', '/offline.html']
+					exclude: ['<all>']
 				},
 				platformProxy: {
 					configPath: 'wrangler.toml',
