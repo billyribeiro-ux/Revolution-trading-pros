@@ -165,7 +165,7 @@
 			0 8px 16px rgba(20, 62, 89, 0.12),
 			0 16px 32px rgba(20, 62, 89, 0.08),
 			0 24px 48px rgba(0, 0, 0, 0.06);
-		transform: translateY(-6px) scale(1.01);
+		transform: scale(1.01);
 		border-color: rgba(20, 62, 89, 0.1);
 	}
 
@@ -325,7 +325,6 @@
 		background-color: #0f2d41;
 		border-color: #0f2d41;
 		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
-		transform: translateY(-1px);
 	}
 
 	.article-card:hover .btn-default {
