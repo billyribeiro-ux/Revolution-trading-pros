@@ -213,7 +213,7 @@
 	});
 
 	const toolsLinks: NavLink[] = [
-		{ href: '/dashboard/weekly-watchlist/', icon: 'weekly-watchlist', text: 'Weekly Watchlist' },
+		{ href: '/dashboard/weekly-watchlist/', icon: 'calendar', text: 'Weekly Watchlist' },
 		{ href: 'https://support.revolutiontradingpros.com/', icon: 'support', text: 'Support', external: true }
 	];
 
