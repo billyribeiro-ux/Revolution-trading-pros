@@ -1,9 +1,29 @@
 <script lang="ts">
+	/**
+	 * Video Library - Explosive Swings
+	 * @version 1.0.0
+	 * @requires Svelte 5.0+ / SvelteKit 2.0+
+	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
-	let selectedCategory = $state('all');
+	// TYPE DEFINITIONS
+	interface Video {
+		id: number;
+		title: string;
+		date: string;
+		duration: string;
+		category: 'weekly' | 'entry' | 'exit' | 'analysis' | 'education';
+		thumbnail: string;
+		excerpt: string;
+		href: string;
+	}
 
-	const videos = [
+	type VideoCategory = 'all' | 'weekly' | 'entry' | 'exit' | 'analysis' | 'education';
+
+	// REACTIVE STATE
+	let selectedCategory = $state<VideoCategory>('all');
+
+	const videos: Video[] = [
 		{
 			id: 1,
 			title: 'Weekly Breakdown: Top Swing Setups',

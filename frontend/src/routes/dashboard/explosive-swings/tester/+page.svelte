@@ -6,21 +6,84 @@
 	 * 1. This week's video breakdown
 	 * 2. The exact trade plan (entries, targets, stops, options)
 	 * 
-	 * @version 2.1.0
+	 * @version 2.2.0
+	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
-	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
-	let { data } = $props();
+	// ═══════════════════════════════════════════════════════════════════════════
+	// TYPE DEFINITIONS - Principal Engineer ICT 11 Standards
+	// ═══════════════════════════════════════════════════════════════════════════
+	interface WeeklyContent {
+		title: string;
+		videoTitle: string;
+		videoUrl: string;
+		thumbnail: string;
+		duration: string;
+		publishedDate: string;
+	}
 
-	// Hero tabs: Video or Entries
-	let heroTab = $state<'video' | 'entries'>('video');
+	interface TradePlanEntry {
+		ticker: string;
+		bias: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+		entry: string;
+		target1: string;
+		target2: string;
+		target3: string;
+		runner: string;
+		stop: string;
+		optionsStrike: string;
+		optionsExp: string;
+		notes: string;
+	}
 
-	// Alert filters
-	let selectedFilter = $state('all');
+	interface Alert {
+		id: number;
+		type: 'ENTRY' | 'EXIT' | 'UPDATE';
+		ticker: string;
+		title: string;
+		time: string;
+		message: string;
+		isNew: boolean;
+		notes: string;
+	}
 
-	// This Week's Featured Content
-	const weeklyContent = {
+	interface QuickStats {
+		winRate: number;
+		weeklyProfit: string;
+		activeTrades: number;
+		closedThisWeek: number;
+	}
+
+	interface VideoUpdate {
+		id: number;
+		title: string;
+		date: string;
+		excerpt: string;
+		href: string;
+		image: string;
+		isVideo: boolean;
+		duration: string;
+	}
+
+	type HeroTab = 'video' | 'entries';
+	type AlertFilter = 'all' | 'entry' | 'exit' | 'update';
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// COMPONENT PROPS
+	// ═══════════════════════════════════════════════════════════════════════════
+	let { data } = $props<{ data?: unknown }>();
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// REACTIVE STATE - Svelte 5 $state runes
+	// ═══════════════════════════════════════════════════════════════════════════
+	let heroTab = $state<HeroTab>('video');
+	let selectedFilter = $state<AlertFilter>('all');
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DATA - This Week's Content (will be fetched from API/Google Sheets)
+	// ═══════════════════════════════════════════════════════════════════════════
+	const weeklyContent: WeeklyContent = {
 		title: "Week of January 13, 2026",
 		videoTitle: "Weekly Breakdown: Top Swing Setups",
 		videoUrl: "https://player.vimeo.com/video/123456789",
@@ -29,8 +92,7 @@
 		publishedDate: 'January 13, 2026 at 9:00 AM ET'
 	};
 
-	// Trade Plan - The Google Sheet equivalent
-	const tradePlan = [
+	const tradePlan: TradePlanEntry[] = [
 		{
 			ticker: 'NVDA',
 			bias: 'BULLISH',
@@ -111,16 +173,14 @@
 		}
 	];
 
-	// Quick Stats
-	const stats = {
+	const stats: QuickStats = {
 		winRate: 82,
 		weeklyProfit: '+$4,850',
 		activeTrades: 4,
 		closedThisWeek: 2
 	};
 
-	// Recent Alerts
-	const alerts = [
+	const alerts: Alert[] = [
 		{
 			id: 1,
 			type: 'ENTRY',
@@ -193,8 +253,7 @@
 			: alerts.filter(a => a.type.toLowerCase() === selectedFilter)
 	);
 
-	// Latest Updates - Video updates for entries/exits
-	const latestUpdates = [
+	const latestUpdates: VideoUpdate[] = [
 		{
 			id: 1,
 			title: 'NVDA Entry Alert - Opening Swing Position',

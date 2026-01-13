@@ -1,7 +1,33 @@
 <script lang="ts">
+	/**
+	 * Watchlist - Explosive Swings
+	 * @version 1.0.0
+	 * @requires Svelte 5.0+ / SvelteKit 2.0+
+	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
-	const watchlist = [
+	// TYPE DEFINITIONS
+	interface WatchlistEntry {
+		ticker: string;
+		company: string;
+		bias: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+		entry: string;
+		target1: string;
+		target2: string;
+		target3: string;
+		runner: string;
+		stop: string;
+		optionsStrike: string;
+		optionsExp: string;
+		currentPrice: string;
+		change: string;
+		status: 'active' | 'watching' | 'closed';
+		notes: string;
+		technicals: string;
+		catalyst: string;
+	}
+
+	const watchlist: WatchlistEntry[] = [
 		{
 			ticker: 'NVDA',
 			company: 'NVIDIA Corporation',

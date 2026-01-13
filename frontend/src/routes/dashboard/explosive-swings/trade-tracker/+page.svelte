@@ -1,9 +1,45 @@
 <script lang="ts">
+	/**
+	 * Trade Tracker - Explosive Swings
+	 * @version 1.0.0
+	 * @requires Svelte 5.0+ / SvelteKit 2.0+
+	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
-	let filterStatus = $state('all');
+	// TYPE DEFINITIONS
+	interface Trade {
+		id: number;
+		ticker: string;
+		entryDate: string;
+		exitDate: string | null;
+		entryPrice: number;
+		exitPrice: number | null;
+		shares: number;
+		profit: number;
+		profitPercent: number;
+		duration: number;
+		setup: 'Breakout' | 'Momentum' | 'Reversal' | 'Earnings';
+		result: 'WIN' | 'LOSS' | 'ACTIVE';
+		notes: string;
+	}
 
-	const trades = [
+	interface TradeStats {
+		totalTrades: number;
+		wins: number;
+		losses: number;
+		winRate: string;
+		totalProfit: number;
+		avgWin: string;
+		avgLoss: string;
+		profitFactor: string;
+	}
+
+	type FilterStatus = 'all' | 'active' | 'win' | 'loss';
+
+	// REACTIVE STATE
+	let filterStatus = $state<FilterStatus>('all');
+
+	const trades: Trade[] = [
 		{
 			id: 1,
 			ticker: 'MSFT',
