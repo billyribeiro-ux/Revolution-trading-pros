@@ -8,7 +8,6 @@
 	@version 2.0.0 - January 2026 - Refactored with reusable components
 -->
 <script lang="ts">
-	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import FeaturedCards from '$lib/components/dashboard/FeaturedCards.svelte';
 
 	// Featured cards configuration
@@ -136,17 +135,18 @@
 	<title>Weekly Watchlist Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Weekly Watchlist" 
-	startHereUrl="/dashboard/weekly-watchlist/getting-started" 
-/>
+<header class="dashboard__header">
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">Weekly Watchlist Dashboard</h1>
+	</div>
+</header>
 
 <div class="dashboard__content">
 
 		<div class="dashboard__content-main">
 			
-			<!-- FEATURED CARDS SECTION -->
-			<FeaturedCards {cards} />
+			<!-- FEATURED CARDS SECTION - 2x1 Layout (2 top, 1 centered bottom) -->
+			<FeaturedCards {cards} layout="2x1" />
 
 		<!-- WATCHLIST RUNDOWN ARCHIVE SECTION -->
 		<div class="dashboard__content-section">

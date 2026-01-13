@@ -26,15 +26,23 @@
 		cards: Card[];
 		/** Optional CSS class for container */
 		className?: string;
+		/** Layout mode: '3x1' (default 3 columns) or '2x1' (2 top, 1 centered bottom) */
+		layout?: '3x1' | '2x1';
 	}
 
-	let { cards = [], className = '' }: Props = $props();
+	let { cards = [], className = '', layout = '3x1' }: Props = $props();
 </script>
 
 <section class="dashboard__content-section-member {className}">
-	<div class="row featured_cards">
-		{#each cards as card (card.id)}
-			<div class="col-md-6 col-lg-4 text-center">
+	<div class="row featured_cards" class:layout-2x1={layout === '2x1'}>
+		{#each cards as card, index (card.id)}
+			<div 
+				class="text-center"
+				class:col-md-6={layout === '3x1' || (layout === '2x1' && index < 2)}
+				class:col-lg-4={layout === '3x1'}
+				class:col-lg-6={layout === '2x1' && index < 2}
+				class:col-centered={layout === '2x1' && index === 2}
+			>
 				<div class={card.cardClass}>
 					<h2 class={card.titleClass}>{card.title}</h2>
 					<p>{card.description}</p>
@@ -53,6 +61,19 @@
 	.featured_cards {
 		display: flex;
 		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	/* 2x1 Layout - 2 cards on top, 1 centered on bottom */
+	.featured_cards.layout-2x1 {
+		justify-content: center;
+	}
+
+	.col-centered {
+		flex: 0 0 100%;
+		max-width: 485px;
+		margin: 0 auto;
+		display: flex;
 		justify-content: center;
 	}
 
