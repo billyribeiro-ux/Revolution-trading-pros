@@ -9,6 +9,7 @@
 -->
 <script lang="ts">
 	import FeaturedCards from '$lib/components/dashboard/FeaturedCards.svelte';
+	import ContentSidebar from '$lib/components/dashboard/ContentSidebar.svelte';
 
 	// Featured cards configuration
 	const cards = [
@@ -117,17 +118,13 @@
 		}
 	];
 
-	// Sidebar watchlist dates
-	const sidebarDates = [
-		{ title: 'Weekly Watchlist', date: 'Jan 12, 2026' },
-		{ title: 'Weekly Watchlist', date: 'Jan 5, 2026' },
-		{ title: 'Weekly Watchlist', date: 'Dec 29, 2025' },
-		{ title: 'Weekly Watchlist', date: 'Dec 22, 2025' },
-		{ title: 'Weekly Watchlist', date: 'Dec 15, 2025' },
-		{ title: 'Weekly Watchlist', date: 'Dec 8, 2025' },
-		{ title: 'Weekly Watchlist', date: 'Dec 1, 2025' },
-		{ title: 'Weekly Watchlist', date: 'Nov 24, 2025' },
-		{ title: 'Weekly Watchlist', date: 'Nov 17, 2025' }
+	// Sidebar configuration - matches WordPress reference
+	const sidebarSections = [
+		{
+			heading: 'Weekly Watchlist Schedule',
+			subheading: 'Schedule is subject to change.',
+			content: 'schedule' as const
+		}
 	];
 </script>
 
@@ -184,21 +181,8 @@
 
 	</div>
 
-	<!-- SIDEBAR -->
-	<aside class="dashboard__content-sidebar">
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">
-				<div class="text-center">Weekly Watchlist Schedule</div>
-				<p class="pssubject" style="font-size: 10px; margin-top: 15px; text-transform: initial;">Schedule is subject to change.</p>
-			</h4>
-			<div class="sidebar-list">
-				{#each sidebarDates as item}
-					<h4>{item.title}</h4>
-					<span>{item.date}</span>
-				{/each}
-			</div>
-		</section>
-	</aside>
+	<!-- SIDEBAR - Using ContentSidebar component (SSOT) -->
+	<ContentSidebar sections={sidebarSections} />
 
 </div>
 
@@ -380,69 +364,4 @@
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * SIDEBAR
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__content-sidebar {
-		flex: 0 0 100%;
-		max-width: 100%;
-		padding: 20px;
-		background: #f5f5f5;
-	}
-
-	@media (min-width: 992px) {
-		.dashboard__content-main {
-			flex: 0 0 70%;
-			max-width: 70%;
-		}
-
-		.dashboard__content-sidebar {
-			flex: 0 0 30%;
-			max-width: 30%;
-		}
-	}
-
-	.content-sidebar__section {
-		background: #fff;
-		border-radius: 5px;
-		padding: 20px;
-		margin-bottom: 20px;
-	}
-
-	.content-sidebar__heading {
-		font-size: 16px;
-		font-weight: 700;
-		color: #333;
-		margin: 0 0 15px;
-		padding-bottom: 15px;
-		border-bottom: 2px solid #f5f5f5;
-	}
-
-	.content-sidebar__heading .text-center {
-		text-align: center;
-	}
-
-	.pssubject {
-		font-weight: 400;
-		color: #666;
-	}
-
-	.sidebar-list h4 {
-		font-size: 14px;
-		font-weight: 600;
-		color: #333;
-		margin: 15px 0 5px;
-	}
-
-	.sidebar-list h4:first-child {
-		margin-top: 0;
-	}
-
-	.sidebar-list span {
-		display: block;
-		font-size: 13px;
-		color: #666;
-		margin-bottom: 10px;
-	}
 </style>
