@@ -5,10 +5,20 @@
  * ICT 11+ Principal Engineer Grade
  * Fetches videos from backend API with pagination support
  * 
+ * SSR Configuration (SvelteKit Official Docs):
+ * - ssr: true - Server-side render for SEO and fast initial load
+ * - csr: true - Enable client-side hydration for interactivity
+ * - prerender: false - Dynamic content, cannot be prerendered
+ * 
  * @version 2.0.0 - January 2026 - Connected to real backend
  */
 
 import type { PageServerLoad } from './$types';
+
+// SSR/SSG Configuration - Per SvelteKit Official Docs
+export const ssr = true;      // Enable server-side rendering
+export const csr = true;      // Enable client-side hydration
+export const prerender = false; // Dynamic content - cannot prerender
 
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
 const API_ROOT = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
