@@ -174,6 +174,70 @@
 			? alerts 
 			: alerts.filter(a => a.type.toLowerCase() === selectedFilter)
 	);
+
+	// Latest Updates - Video updates for entries/exits
+	const latestUpdates = [
+		{
+			id: 1,
+			title: 'NVDA Entry Alert - Opening Swing Position',
+			date: 'January 13, 2026 at 10:32 AM ET',
+			excerpt: 'Entering NVDA at $142.50. Watch this video breakdown for entry reasoning, targets, and risk management.',
+			href: '/dashboard/explosive-swings/updates/nvda-entry-011326',
+			image: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=NVDA+ENTRY',
+			isVideo: true,
+			duration: '8:45'
+		},
+		{
+			id: 2,
+			title: 'MSFT Exit - Closing for +8.2% Profit',
+			date: 'January 12, 2026 at 3:45 PM ET',
+			excerpt: 'Taking profits on MSFT swing trade. Hit second target. Watch the exit strategy breakdown and lessons learned.',
+			href: '/dashboard/explosive-swings/updates/msft-exit-011226',
+			image: 'https://placehold.co/640x360/3b82f6/FFFFFF/png?text=MSFT+EXIT',
+			isVideo: true,
+			duration: '6:20'
+		},
+		{
+			id: 3,
+			title: 'META Entry - Momentum Play Setup',
+			date: 'January 11, 2026 at 11:20 AM ET',
+			excerpt: 'META triggered our entry at $585. Full breakdown of the momentum setup and what to watch for.',
+			href: '/dashboard/explosive-swings/updates/meta-entry-011126',
+			image: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=META+ENTRY',
+			isVideo: true,
+			duration: '7:15'
+		},
+		{
+			id: 4,
+			title: 'TSLA Update - Approaching Entry Zone',
+			date: 'January 11, 2026 at 9:15 AM ET',
+			excerpt: 'TSLA pulling back to our entry zone. Technical analysis and what levels to watch.',
+			href: '/dashboard/explosive-swings/updates/tsla-update-011126',
+			image: 'https://placehold.co/640x360/f59e0b/FFFFFF/png?text=TSLA+UPDATE',
+			isVideo: true,
+			duration: '5:30'
+		},
+		{
+			id: 5,
+			title: 'AMD Short Setup - Bearish Breakdown',
+			date: 'January 10, 2026 at 2:30 PM ET',
+			excerpt: 'AMD short position triggered at $125. Breakdown of the bearish setup and downside targets.',
+			href: '/dashboard/explosive-swings/updates/amd-short-011026',
+			image: 'https://placehold.co/640x360/ef4444/FFFFFF/png?text=AMD+SHORT',
+			isVideo: true,
+			duration: '9:10'
+		},
+		{
+			id: 6,
+			title: 'AMZN Entry - Breakout Confirmation',
+			date: 'January 9, 2026 at 11:15 AM ET',
+			excerpt: 'AMZN breaking above key resistance. Entry at $185 with full technical breakdown.',
+			href: '/dashboard/explosive-swings/updates/amzn-entry-010926',
+			image: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=AMZN+ENTRY',
+			isVideo: true,
+			duration: '7:45'
+		}
+	];
 </script>
 
 <svelte:head>
@@ -411,6 +475,35 @@
 			</div>
 		</aside>
 	</div>
+
+	<!-- ═══════════════════════════════════════════════════════════════════════════
+	     LATEST UPDATES - Video Updates for Entries/Exits
+	     ═══════════════════════════════════════════════════════════════════════════ -->
+	<section class="latest-updates">
+		<div class="updates-header">
+			<h2>Latest Updates</h2>
+			<p>Video breakdowns as we enter and exit trades</p>
+		</div>
+		<div class="updates-grid">
+			{#each latestUpdates as update}
+				<a href={update.href} class="update-card">
+					<div class="update-thumbnail" style="background-image: url('{update.image}')">
+						<div class="play-overlay">
+							<svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
+								<path d="M8 5v14l11-7z"/>
+							</svg>
+						</div>
+						<div class="update-duration">{update.duration}</div>
+					</div>
+					<div class="update-content">
+						<h3>{update.title}</h3>
+						<p class="update-date">{update.date}</p>
+						<p class="update-excerpt">{update.excerpt}</p>
+					</div>
+				</a>
+			{/each}
+		</div>
+	</section>
 </div>
 
 <style>
@@ -1114,5 +1207,142 @@
 	.support-btn:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LATEST UPDATES SECTION
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.latest-updates {
+		background: #fff;
+		padding: 60px 30px;
+		border-top: 1px solid #e5e7eb;
+	}
+
+	.updates-header {
+		text-align: center;
+		max-width: 800px;
+		margin: 0 auto 50px;
+	}
+
+	.updates-header h2 {
+		font-size: 32px;
+		font-weight: 700;
+		margin: 0 0 12px 0;
+		color: #333;
+		font-family: 'Montserrat', sans-serif;
+	}
+
+	.updates-header p {
+		font-size: 16px;
+		color: #666;
+		margin: 0;
+	}
+
+	.updates-grid {
+		display: grid;
+		grid-template-columns: repeat(1, 1fr);
+		gap: 30px;
+		max-width: 1400px;
+		margin: 0 auto;
+	}
+
+	@media (min-width: 640px) {
+		.updates-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.updates-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	.update-card {
+		background: #fff;
+		border-radius: 16px;
+		overflow: hidden;
+		box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+		transition: all 0.3s ease;
+		text-decoration: none;
+		color: inherit;
+		display: block;
+	}
+
+	.update-card:hover {
+		transform: translateY(-8px);
+		box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+	}
+
+	.update-thumbnail {
+		position: relative;
+		width: 100%;
+		padding-bottom: 56.25%;
+		background-size: cover;
+		background-position: center;
+		overflow: hidden;
+	}
+
+	.play-overlay {
+		position: absolute;
+		inset: 0;
+		background: rgba(0,0,0,0.4);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: background 0.3s;
+	}
+
+	.update-card:hover .play-overlay {
+		background: rgba(0,0,0,0.6);
+	}
+
+	.play-overlay svg {
+		color: #fff;
+		opacity: 0.9;
+		transition: all 0.3s;
+	}
+
+	.update-card:hover .play-overlay svg {
+		opacity: 1;
+		transform: scale(1.1);
+	}
+
+	.update-duration {
+		position: absolute;
+		bottom: 12px;
+		right: 12px;
+		background: rgba(0,0,0,0.85);
+		color: #fff;
+		padding: 5px 10px;
+		border-radius: 6px;
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	.update-content {
+		padding: 20px;
+		text-align: center;
+	}
+
+	.update-content h3 {
+		font-size: 16px;
+		font-weight: 700;
+		margin: 0 0 8px 0;
+		color: #333;
+		line-height: 1.4;
+	}
+
+	.update-date {
+		font-size: 12px;
+		color: #888;
+		margin: 0 0 12px 0;
+	}
+
+	.update-excerpt {
+		font-size: 14px;
+		color: #666;
+		line-height: 1.6;
+		margin: 0;
 	}
 </style>
