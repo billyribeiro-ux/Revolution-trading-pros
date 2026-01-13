@@ -135,24 +135,33 @@
 </svelte:head>
 
 <div class="watchlist-page">
-	<!-- Breadcrumb -->
+	<!-- Breadcrumb - WordPress Match -->
 	<nav class="breadcrumbs">
-		<a href="/dashboard">Dashboard</a>
-		<span class="separator">/</span>
-		<a href="/dashboard/ww">Weekly Watchlist</a>
-		<span class="separator">/</span>
-		<span class="current">{currentEntry?.trader || 'Loading...'}</span>
+		<div class="container-fluid">
+			<ul>
+				<li class="item-home">
+					<a class="breadcrumb-link" href="/">Home</a>
+				</li>
+				<li class="separator"> / </li>
+				<li class="item-cat">
+					<a class="breadcrumb-link" href="/dashboard/weekly-watchlist">Weekly Watchlist</a>
+				</li>
+				<li class="separator"> / </li>
+				<li class="item-current">
+					<strong class="breadcrumb-current">{currentEntry?.title || 'Loading...'}</strong>
+				</li>
+			</ul>
+		</div>
 	</nav>
 
-	<!-- Header Section with Pagination -->
-	<section class="cpost-header">
+	<!-- Header Section with Pagination - WordPress Match -->
+	<section id="ww-title" class="cpost-section cpost-title-section">
 		<div class="section-inner">
 			<!-- Previous Button -->
-			<div class="cpost-previous">
+			<div id="w-previous" class="cpost-previous">
 				{#if previousEntry}
 					<a href="/watchlist/{previousEntry.slug}" title="{previousEntry.title}">
-						<RtpIcon name="chevron-left" size={16} />
-						<span>Previous</span>
+						<i class="fa fa-chevron-circle-left"></i><span> Previous</span>
 					</a>
 				{/if}
 			</div>
@@ -161,35 +170,38 @@
 			<h1 class="cpost-title">{currentEntry?.title || 'Weekly Watchlist'}</h1>
 
 			<!-- Next Button -->
-			<div class="cpost-next">
+			<div id="ww-next" class="cpost-next">
 				{#if nextEntry}
 					<a href="/watchlist/{nextEntry.slug}" title="{nextEntry.title}">
-						<span>Next</span>
-						<RtpIcon name="chevron-right" size={16} />
+						<span>Next </span><i class="fa fa-chevron-circle-right"></i>
 					</a>
 				{/if}
 			</div>
 
 			<!-- Subtitle -->
-			<h2 class="cpost-subtitle">Week of {currentEntry?.weekOf || ''}</h2>
+			<h2 class="cpost-subtitle sub-lg-up">Week of {currentEntry?.weekOf || ''}</h2>
 		</div>
 	</section>
 
 	<!-- Content Section -->
-	<section class="cpost-section">
+	<section class="cpost-section ww-content-section">
 		<div class="section-inner">
-			<!-- Tabs -->
-			<div class="ww-tabs">
-				<div class="tab-buttons">
+			<!-- Tabs - WordPress Match -->
+			<div class="ww-content-tabs">
+				<div class="tab">
 					<button 
-						class="tab-btn" 
+						id="tab-link-1"
+						data-tab="tab-1"
+						class="tablinks" 
 						class:active={activeTab === 'rundown'}
 						onclick={() => setTab('rundown')}
 					>
 						Rundown
 					</button>
 					<button 
-						class="tab-btn" 
+						id="tab-link-2"
+						data-tab="tab-2"
+						class="tablinks" 
 						class:active={activeTab === 'watchlist'}
 						onclick={() => setTab('watchlist')}
 					>
@@ -198,7 +210,7 @@
 				</div>
 
 				<!-- Rundown Tab Content -->
-				<div class="tab-content" class:active={activeTab === 'rundown'}>
+				<div id="tab-1" class="tabcontent" class:active={activeTab === 'rundown'}>
 					{#if currentEntry}
 						<div class="ww-content-block">
 							<div class="current-vid">
@@ -222,9 +234,9 @@
 				</div>
 
 				<!-- Watchlist Tab Content -->
-				<div class="tab-content" class:active={activeTab === 'watchlist'}>
+				<div id="tab-2" class="tabcontent" class:active={activeTab === 'watchlist'}>
 					{#if currentSpreadsheetUrl}
-						<div class="ww-spreadsheet">
+						<div id="ww-spreadsheet" class="ww-spreadsheet">
 							<iframe 
 								src={currentSpreadsheetUrl} 
 								width="100%" 
@@ -286,18 +298,39 @@
 		padding-bottom: 40px;
 	}
 
-	/* Breadcrumbs */
+	/* Breadcrumbs - WordPress Match */
 	.breadcrumbs {
-		padding: 15px 20px;
+		padding: 10px 20px;
 		font-size: 13px;
 		color: #666;
-		background: #fff;
+		background: #f9f9f9;
 		border-bottom: 1px solid #e5e5e5;
+	}
+
+	.breadcrumbs .container-fluid {
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 0;
+	}
+
+	.breadcrumbs ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+		display: flex;
+		align-items: center;
+		flex-wrap: wrap;
+	}
+
+	.breadcrumbs li {
+		margin: 0;
+		padding: 0;
 	}
 
 	.breadcrumbs a {
 		color: #0984ae;
 		text-decoration: none;
+		font-size: 13px;
 	}
 
 	.breadcrumbs a:hover {
@@ -309,14 +342,16 @@
 		color: #ccc;
 	}
 
-	.breadcrumbs .current {
+	.breadcrumb-current {
 		color: #333;
+		font-weight: 600;
+		font-size: 13px;
 	}
 
-	/* Header Section */
-	.cpost-header {
+	/* Header Section - WordPress Match */
+	.cpost-section.cpost-title-section {
 		background: #143E59;
-		padding: 30px 20px;
+		padding: 40px 20px;
 		text-align: center;
 	}
 
@@ -382,49 +417,53 @@
 		padding: 30px 20px;
 	}
 
-	/* Tabs */
-	.ww-tabs {
+	/* Tabs - WordPress Match */
+	.ww-content-tabs {
 		background: #fff;
-		border-radius: 8px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-		overflow: hidden;
+		border-radius: 0;
+		box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 	}
 
-	.tab-buttons {
+	.tab {
 		display: flex;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 2px solid #e5e5e5;
+		background: #f5f5f5;
 	}
 
-	.tab-btn {
+	.tablinks {
 		flex: 1;
-		padding: 16px 24px;
-		font-size: 15px;
+		padding: 18px 24px;
+		font-size: 16px;
 		font-weight: 600;
 		color: #666;
-		background: #f9f9f9;
+		background: transparent;
 		border: none;
+		border-bottom: 3px solid transparent;
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: all 0.3s ease;
 		font-family: 'Open Sans', sans-serif;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
 	}
 
-	.tab-btn:hover {
-		background: #f0f0f0;
+	.tablinks:hover {
+		background: rgba(255, 255, 255, 0.5);
 		color: #333;
 	}
 
-	.tab-btn.active {
+	.tablinks.active {
 		background: #fff;
 		color: #143E59;
-		border-bottom: 3px solid #143E59;
+		border-bottom-color: #143E59;
 	}
 
-	.tab-content {
+	.tabcontent {
 		display: none;
-		padding: 30px;
+		padding: 40px 30px;
+		background: #fff;
 	}
 
-	.tab-content.active {
+	.tabcontent.active {
 		display: block;
 	}
 
@@ -559,8 +598,8 @@
 
 	/* Responsive */
 	@media (max-width: 768px) {
-		.cpost-header {
-			padding: 20px 15px;
+		.cpost-section.cpost-title-section {
+			padding: 25px 15px;
 		}
 
 		.cpost-title {
@@ -582,12 +621,12 @@
 			padding: 10px;
 		}
 
-		.tab-content {
-			padding: 20px 15px;
+		.tabcontent {
+			padding: 25px 15px;
 		}
 
-		.tab-btn {
-			padding: 12px 16px;
+		.tablinks {
+			padding: 14px 16px;
 			font-size: 14px;
 		}
 
@@ -619,7 +658,7 @@
 			gap: 15px;
 		}
 
-		.cpost-header .section-inner {
+		.cpost-section.cpost-title-section .section-inner {
 			flex-direction: row;
 			flex-wrap: wrap;
 			justify-content: space-between;
