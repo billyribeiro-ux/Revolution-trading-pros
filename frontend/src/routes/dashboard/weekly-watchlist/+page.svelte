@@ -188,6 +188,20 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
+	 * DASHBOARD CONTENT LAYOUT - Flex container for main + sidebar
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__content {
+		display: flex;
+		flex-flow: row nowrap;
+	}
+
+	.dashboard__content-main {
+		border-right: 1px solid #dbdbdb;
+		flex: 1 1 auto;
+		min-width: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	 * ARCHIVE SECTION
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
