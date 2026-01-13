@@ -258,7 +258,7 @@
 				</div>
 				<div>
 					<h1>Members Command Center</h1>
-					<p>Enterprise-grade member lifecycle management</p>
+					<p>Comprehensive member management and analytics</p>
 				</div>
 			</div>
 			<div class="header-actions">

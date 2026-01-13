@@ -125,18 +125,21 @@ function createMembersStore() {
 
 		/**
 		 * Load members with current filters
+		 * ICT 7 Grade: API client handles request deduplication automatically
 		 */
 		async loadMembers(filters?: MemberFilters) {
+			const currentState = get({ subscribe });
+			const newFilters = filters ? { ...currentState.filters, ...filters } : currentState.filters;
+
 			update((state) => ({
 				...state,
 				loading: true,
 				error: null,
-				filters: filters ? { ...state.filters, ...filters } : state.filters
+				filters: newFilters
 			}));
 
 			try {
-				const currentState = get({ subscribe });
-				const response = await membersApi.getMembers(currentState.filters);
+				const response = await membersApi.getMembers(newFilters);
 				update((state) => ({
 					...state,
 					members: response.members,
