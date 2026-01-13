@@ -236,6 +236,19 @@
 	// Track which alert notes are expanded
 	let expandedNotes = $state<Set<number>>(new Set());
 
+	// Track which trade plan notes are expanded
+	let expandedTradeNotes = $state<Set<string>>(new Set());
+
+	function toggleTradeNotes(ticker: string) {
+		const newExpanded = new Set(expandedTradeNotes);
+		if (newExpanded.has(ticker)) {
+			newExpanded.delete(ticker);
+		} else {
+			newExpanded.add(ticker);
+		}
+		expandedTradeNotes = newExpanded;
+	}
+
 	function toggleNotes(alertId: number) {
 		const newExpanded = new Set(expandedNotes);
 		if (newExpanded.has(alertId)) {
@@ -404,11 +417,12 @@
 									<th>Stop</th>
 									<th>Options</th>
 									<th>Exp</th>
+									<th class="notes-th">Notes</th>
 								</tr>
 							</thead>
 							<tbody>
 								{#each tradePlan as trade}
-									<tr>
+									<tr class:has-notes-open={expandedTradeNotes.has(trade.ticker)}>
 										<td class="ticker-cell">
 											<strong>{trade.ticker}</strong>
 										</td>
@@ -423,12 +437,29 @@
 										<td class="stop-cell">{trade.stop}</td>
 										<td class="options-cell">{trade.optionsStrike}</td>
 										<td class="exp-cell">{trade.optionsExp}</td>
-									</tr>
-									<tr class="notes-row">
-										<td colspan="10">
-											<span class="notes-label">Notes:</span> {trade.notes}
+										<td class="notes-toggle-cell">
+											<button 
+												class="table-notes-btn" 
+												class:expanded={expandedTradeNotes.has(trade.ticker)}
+												onclick={() => toggleTradeNotes(trade.ticker)}
+												aria-label="Toggle notes for {trade.ticker}"
+											>
+												<svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+													<path d="M19 9l-7 7-7-7"/>
+												</svg>
+											</button>
 										</td>
 									</tr>
+									{#if expandedTradeNotes.has(trade.ticker)}
+										<tr class="notes-row expanded">
+											<td colspan="11">
+												<div class="trade-notes-panel">
+													<div class="trade-notes-badge">{trade.ticker}</div>
+													<p>{trade.notes}</p>
+												</div>
+											</td>
+										</tr>
+									{/if}
 								{/each}
 							</tbody>
 						</table>
@@ -913,18 +944,103 @@
 		color: #666;
 	}
 
-	.notes-row td {
-		text-align: left;
-		padding: 10px 20px 16px;
-		font-size: 13px;
-		color: #666;
-		background: transparent !important;
-		border-bottom: 2px solid #e5e7eb;
+	/* Notes Column Header */
+	.notes-th {
+		width: 60px;
+		text-align: center;
 	}
 
-	.notes-label {
-		font-weight: 700;
-		color: #333;
+	/* Notes Toggle Button in Table */
+	.notes-toggle-cell {
+		text-align: center;
+		vertical-align: middle;
+	}
+
+	.table-notes-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		background: #f1f5f9;
+		border: 1.5px solid #e2e8f0;
+		border-radius: 8px;
+		cursor: pointer;
+		transition: all 0.25s ease;
+		color: #64748b;
+	}
+
+	.table-notes-btn:hover {
+		background: #e2e8f0;
+		border-color: #143E59;
+		color: #143E59;
+	}
+
+	.table-notes-btn.expanded {
+		background: #143E59;
+		border-color: #143E59;
+		color: #fff;
+	}
+
+	.table-notes-btn .chevron-icon {
+		transition: transform 0.3s ease;
+	}
+
+	.table-notes-btn.expanded .chevron-icon {
+		transform: rotate(180deg);
+	}
+
+	/* Row highlight when notes open */
+	tr.has-notes-open td {
+		background: #f0f9ff !important;
+	}
+
+	/* Expandable Notes Row */
+	.notes-row.expanded td {
+		text-align: left;
+		padding: 0;
+		background: transparent !important;
+		border-bottom: 2px solid #143E59;
+	}
+
+	.trade-notes-panel {
+		display: flex;
+		align-items: flex-start;
+		gap: 16px;
+		padding: 18px 24px;
+		background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+		animation: notesSlide 0.3s ease;
+	}
+
+	@keyframes notesSlide {
+		from {
+			opacity: 0;
+			transform: translateY(-8px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.trade-notes-badge {
+		flex-shrink: 0;
+		background: #143E59;
+		color: #fff;
+		font-size: 12px;
+		font-weight: 800;
+		padding: 6px 14px;
+		border-radius: 6px;
+		letter-spacing: 0.05em;
+	}
+
+	.trade-notes-panel p {
+		flex: 1;
+		font-size: 14px;
+		color: #0c4a6e;
+		line-height: 1.7;
+		margin: 0;
+		font-weight: 500;
 	}
 
 	.sheet-footer {
