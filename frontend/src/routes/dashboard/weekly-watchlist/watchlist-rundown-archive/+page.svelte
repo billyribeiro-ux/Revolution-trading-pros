@@ -5,27 +5,27 @@
 	Apple ICT 11+ Principal Engineer Grade - January 2026
 	Matches: frontend/Implementation/wwl-Rundown-Archive
 	
-	@version 1.0.0 - January 2026
+	Svelte 5 / SvelteKit 2.0 Best Practices:
+	- $props() rune for component props
+	- $derived() rune for reactive computed values
+	- Type imports from server load function
+	- Proper empty state handling
+	
+	@version 1.1.0 - January 2026
 -->
 <script lang="ts">
-	interface WatchlistVideo {
-		id: string;
-		slug: string;
-		title: string;
-		date: string;
-		weekOf: string;
-		image: string;
-		href: string;
-		description: string;
+	import type { WatchlistVideo } from './+page.server';
+
+	interface Props {
+		data: {
+			videos: WatchlistVideo[];
+		};
 	}
 
-	interface PageData {
-		videos: WatchlistVideo[];
-	}
+	let { data }: Props = $props();
 
-	let { data }: { data: PageData } = $props();
-
-	let videos = $derived(data.videos || []);
+	let videos = $derived(data.videos ?? []);
+	let hasVideos = $derived(videos.length > 0);
 </script>
 
 <svelte:head>
@@ -36,8 +36,9 @@
 	<div class="">
 		<section>
 			<h2 class="section-title">Watchlist Rundown Archive</h2>
+			{#if hasVideos}
 			<div class="article-cards row flex-grid">
-				{#each videos as video}
+				{#each videos as video (video.id)}
 					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 						<article class="article-card">
 							<figure class="weekly_watchlist">
@@ -67,6 +68,11 @@
 					</div>
 				{/each}
 			</div>
+			{:else}
+			<div class="empty-state">
+				<p>No watchlist rundown videos available at this time.</p>
+			</div>
+			{/if}
 		</section>
 	</div>
 </div>

@@ -3,44 +3,67 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Grade - January 2026
  * 
- * Fetches watchlist rundown videos from the backend API
+ * Svelte 5 / SvelteKit 2.0 Best Practices:
+ * - Typed load function with explicit return type
+ * - Proper error handling with structured responses
+ * - Type-safe API response mapping
  */
 
-import type { ServerLoadEvent } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
-export async function load({ fetch }: ServerLoadEvent) {
+/** API response structure from backend */
+interface WatchlistApiEntry {
+	id: string | number;
+	slug: string;
+	title: string;
+	publish_date?: string;
+	week_of?: string;
+	thumbnail_url?: string;
+	image_url?: string;
+	description?: string;
+}
+
+interface WatchlistApiResponse {
+	entries?: WatchlistApiEntry[];
+}
+
+/** Transformed video for frontend consumption */
+export interface WatchlistVideo {
+	id: string;
+	slug: string;
+	title: string;
+	date: string;
+	weekOf: string;
+	image: string;
+	href: string;
+	description: string;
+}
+
+export const load = (async ({ fetch }) => {
 	try {
-		// Fetch watchlist entries from backend
 		const response = await fetch('https://revolution-trading-pros-api.fly.dev/api/watchlist/entries');
 		
 		if (!response.ok) {
-			console.error('Failed to fetch watchlist entries:', response.statusText);
-			return {
-				videos: []
-			};
+			console.error('[WatchlistRundown] API error:', response.status, response.statusText);
+			return { videos: [] as WatchlistVideo[] };
 		}
 
-		const data = await response.json();
+		const data: WatchlistApiResponse = await response.json();
 		
-		// Filter and map to video format
-		const videos = (data.entries || []).map((entry: any) => ({
-			id: entry.id,
+		const videos: WatchlistVideo[] = (data.entries ?? []).map((entry) => ({
+			id: String(entry.id),
 			slug: entry.slug,
 			title: entry.title,
-			date: entry.publish_date,
-			weekOf: entry.week_of,
-			image: entry.thumbnail_url || entry.image_url,
+			date: entry.publish_date ?? '',
+			weekOf: entry.week_of ?? '',
+			image: entry.thumbnail_url ?? entry.image_url ?? '',
 			href: `/watchlist/${entry.slug}`,
-			description: entry.description || entry.week_of
+			description: entry.description ?? entry.week_of ?? ''
 		}));
 
-		return {
-			videos
-		};
+		return { videos };
 	} catch (error) {
-		console.error('Error loading watchlist rundown archive:', error);
-		return {
-			videos: []
-		};
+		console.error('[WatchlistRundown] Load error:', error);
+		return { videos: [] as WatchlistVideo[] };
 	}
-};
+}) satisfies PageServerLoad;
