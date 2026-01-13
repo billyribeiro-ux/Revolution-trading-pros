@@ -8,6 +8,8 @@
  * @version 2.0.0 - January 2026 - Connected to real backend
  */
 
+import type { PageServerLoad } from './$types';
+
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
 const API_ROOT = import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
 const BACKEND_URL = `${API_ROOT}/api`;
@@ -34,8 +36,7 @@ export interface PageData {
 	error?: string;
 }
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ url, fetch, cookies }): Promise<PageData> {
+export const load = (async ({ url, fetch, cookies }): Promise<PageData> => {
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const search = url.searchParams.get('search') || '';
 	const perPage = 12;
@@ -96,7 +97,7 @@ export async function load({ url, fetch, cookies }): Promise<PageData> {
 		// Return mock data as fallback
 		return getMockData(page, perPage, search);
 	}
-};
+}) satisfies PageServerLoad;
 
 function formatDate(dateStr: string): string {
 	try {
