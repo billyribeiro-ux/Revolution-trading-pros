@@ -1,17 +1,11 @@
-import type { PageServerLoad } from './$types';
-import { fetchWeeklyWatchlist } from '$lib/api/weekly-watchlist';
+import { getLatestWatchlist } from '$lib/server/watchlist';
 
-export const load: PageServerLoad = async ({ fetch }) => {
-	try {
-		const watchlist = await fetchWeeklyWatchlist(fetch);
-		
-		return {
-			watchlist
-		};
-	} catch (error) {
-		console.error('Error loading Weekly Watchlist for Getting Started page:', error);
-		return {
-			watchlist: null
-		};
-	}
-};
+/** @type {import('./$types').PageServerLoad} */
+export async function load({ fetch }) {
+	// Pre-fetch latest watchlist for weekly-watchlist (or global if none)
+	const watchlist = await getLatestWatchlist('weekly-watchlist', fetch);
+
+	return {
+		watchlist
+	};
+}
