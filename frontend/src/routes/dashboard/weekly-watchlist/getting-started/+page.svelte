@@ -31,12 +31,12 @@
 		<section class="dashboard__content-section">
 			
 			<!-- Getting Started Heading -->
-			<h2 class="fl-heading">
-				<span class="fl-heading-text">Getting Started</span>
+			<h2 class="page-heading">
+				<span class="page-heading__text">Getting Started</span>
 			</h2>
 
 			<!-- Introduction Text -->
-			<div class="fl-rich-text">
+			<div class="intro-content">
 				<p>Welcome to your Simpler Weekly Watchlist! Part of our routine as traders is curating, managing, and updating our watchlists. This can be a challenging and tedious task for both new and experienced traders alike. It's hard to know what to look for and where to find solid information that you can trust.</p>
 				<p>Our Weekly Watchlist takes the guesswork out of this for you and will help you build confidence around the tickers you follow each week.</p>
 				<p>So, how exactly do we do this?</p>
@@ -73,7 +73,7 @@
 					</div>
 				</div>
 				<div class="icon-text-col icon-text-col--text">
-					<div class="fl-rich-text">
+					<div class="intro-content">
 						<p>Every Monday morning before the cash market opens (8:30 am central time), you'll receive an email and push notification via our Revolution Trading Pros Mobile App letting you know the new Weekly Watchlist has been posted.</p>
 					</div>
 				</div>
@@ -82,7 +82,7 @@
 
 		<!-- Additional Information Section -->
 		<section class="dashboard__content-section">
-			<div class="fl-rich-text">
+			<div class="intro-content">
 				<p>You'll come to the Weekly Watchlist page where you can watch the new video and/or, you can simply review the list of tickers on the spreadsheet.</p>
 				<p><em>Couple of things to note:</em></p>
 				<ul>
@@ -136,22 +136,22 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * HEADING STYLES - WordPress Exact Match
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	.fl-heading {
+	.page-heading {
 		margin: 0 0 30px;
 		padding: 0;
 		font-family: 'Open Sans', sans-serif;
 	}
 
-	.fl-heading-text {
+	.page-heading__text {
 		font-size: 32px;
 		font-weight: 700;
 		line-height: 1.3;
 		color: #333;
-		font-family: 'Open Sans', sans-serif;
+		display: block;
 	}
 
 	@media screen and (min-width: 768px) {
-		.fl-heading-text {
+		.page-heading__text {
 			font-size: 36px;
 		}
 	}
@@ -159,39 +159,39 @@
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * RICH TEXT CONTENT - WordPress Exact Match
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	.fl-rich-text {
+	.intro-content {
 		font-family: 'Open Sans', sans-serif;
 		font-size: 16px;
 		line-height: 1.8;
 		color: #333;
 	}
 
-	.fl-rich-text p {
+	.intro-content p {
 		margin: 0 0 20px;
 		font-size: 16px;
 		line-height: 1.8;
 		color: #333;
 	}
 
-	.fl-rich-text p:last-child {
+	.intro-content p:last-child {
 		margin-bottom: 0;
 	}
 
-	.fl-rich-text strong {
+	.intro-content strong {
 		font-weight: 700;
 	}
 
-	.fl-rich-text em {
+	.intro-content em {
 		font-style: italic;
 	}
 
-	.fl-rich-text ul {
+	.intro-content ul {
 		margin: 0 0 20px;
 		padding-left: 30px;
 		list-style-type: disc;
 	}
 
-	.fl-rich-text li {
+	.intro-content li {
 		margin-bottom: 10px;
 		font-size: 16px;
 		line-height: 1.8;
