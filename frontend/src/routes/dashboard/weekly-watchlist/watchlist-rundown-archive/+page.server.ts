@@ -6,9 +6,9 @@
  * Fetches watchlist rundown videos from the backend API
  */
 
-import type { PageServerLoad } from './$types';
+import type { ServerLoadEvent } from '@sveltejs/kit';
 
-export const load: PageServerLoad = async ({ fetch }) => {
+export async function load({ fetch }: ServerLoadEvent) {
 	try {
 		// Fetch watchlist entries from backend
 		const response = await fetch('https://revolution-trading-pros-api.fly.dev/api/watchlist/entries');

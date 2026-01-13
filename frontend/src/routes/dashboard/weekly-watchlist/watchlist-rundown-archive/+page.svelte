@@ -8,11 +8,24 @@
 	@version 1.0.0 - January 2026
 -->
 <script lang="ts">
-	import type { PageData } from './$types';
+	interface WatchlistVideo {
+		id: string;
+		slug: string;
+		title: string;
+		date: string;
+		weekOf: string;
+		image: string;
+		href: string;
+		description: string;
+	}
+
+	interface PageData {
+		videos: WatchlistVideo[];
+	}
 
 	let { data }: { data: PageData } = $props();
 
-	const videos = data.videos || [];
+	let videos = $derived(data.videos || []);
 </script>
 
 <svelte:head>
