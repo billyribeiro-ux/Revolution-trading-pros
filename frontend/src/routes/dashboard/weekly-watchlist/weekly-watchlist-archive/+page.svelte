@@ -136,6 +136,7 @@
 		overflow: hidden !important;
 		text-overflow: ellipsis;
 		-webkit-line-clamp: 4;
+		line-clamp: 4;
 		font-size: 16px;
 	}
 
