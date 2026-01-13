@@ -7,8 +7,11 @@ const PROD_API = 'https://revolution-trading-pros-api.fly.dev/api';
 const API_URL = env.VITE_API_URL || (env.BACKEND_URL ? `${env.BACKEND_URL}/api` : PROD_API);
 
 /**
- * ICT 7 SECURITY: Token refresh endpoint using httpOnly cookies
- * Apple Principal Engineer Grade: Defense in depth
+ * Token Refresh Proxy - Apple ICT 7 Principal Engineer Grade
+ * ═══════════════════════════════════════════════════════════════════════════════
+ *
+ * ROOT CAUSE FIX: Backend returns flat response, not wrapped in {data: {...}}
+ * This proxy now handles BOTH formats for maximum compatibility.
  *
  * SECURITY ARCHITECTURE:
  * 1. Client sends POST with credentials: 'include'
@@ -17,8 +20,13 @@ const API_URL = env.VITE_API_URL || (env.BACKEND_URL ? `${env.BACKEND_URL}/api` 
  * 4. New refresh token set via httpOnly cookie in response
  *
  * This ensures refresh tokens are NEVER exposed to JavaScript (XSS safe).
+ *
+ * @version 2.0.0 - Fixed data envelope handling
  */
 export const POST: RequestHandler = async ({ request, cookies }) => {
+	const requestId = crypto.randomUUID().slice(0, 8);
+	const startTime = performance.now();
+	
 	try {
 		const sessionId = request.headers.get('X-Session-ID') || '';
 
@@ -36,11 +44,13 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			const cookieToken = cookies.get('rtp_refresh_token');
 			if (cookieToken) {
 				body.refresh_token = cookieToken;
+				console.debug(`[Refresh:${requestId}] Using httpOnly cookie token`);
 			}
 		}
 
 		// If still no token, return error
 		if (!body.refresh_token) {
+			console.warn(`[Refresh:${requestId}] No refresh token available`);
 			return json(
 				{ error: 'No refresh token', message: 'Please log in again' },
 				{ status: 401 }
@@ -57,38 +67,60 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			body: JSON.stringify(body)
 		});
 
-		const data = await response.json();
+		const rawData = await response.json();
+		const duration = Math.round(performance.now() - startTime);
 
-		// ICT 7 SECURITY: Set new tokens in httpOnly cookies on successful refresh
-		if (response.ok && data.data) {
-			const authData = data.data;
+		// ICT 7 FIX: Handle BOTH wrapped {data: {...}} and flat response formats
+		// Backend currently returns flat: { token, refresh_token, expires_in }
+		// But some responses may be wrapped: { data: { access_token, refresh_token, expires_in } }
+		const authData = rawData.data || rawData;
+		
+		// ICT 7: Extract tokens with fallbacks for different field names
+		const accessToken = authData.access_token || authData.token;
+		const refreshToken = authData.refresh_token;
+		const expiresIn = authData.expires_in;
 
+		if (response.ok && accessToken) {
 			// Set new access token cookie
-			if (authData.access_token) {
-				cookies.set('rtp_access_token', authData.access_token, {
-					path: '/',
-					httpOnly: true,
-					secure: true,
-					sameSite: 'lax',
-					maxAge: authData.expires_in || 900 // 15 min default
-				});
-			}
+			cookies.set('rtp_access_token', accessToken, {
+				path: '/',
+				httpOnly: true,
+				secure: true,
+				sameSite: 'lax',
+				maxAge: expiresIn || 900 // 15 min default
+			});
+			console.debug(`[Refresh:${requestId}] Access token cookie updated`);
 
 			// Set new refresh token cookie (token rotation)
-			if (authData.refresh_token) {
-				cookies.set('rtp_refresh_token', authData.refresh_token, {
+			if (refreshToken) {
+				cookies.set('rtp_refresh_token', refreshToken, {
 					path: '/',
 					httpOnly: true,
 					secure: true,
 					sameSite: 'lax',
 					maxAge: 60 * 60 * 24 * 7 // 7 days
 				});
+				console.debug(`[Refresh:${requestId}] Refresh token cookie rotated`);
 			}
-		}
 
-		return json(data, { status: response.status });
+			console.debug(`[Refresh:${requestId}] Success (${duration}ms)`);
+			
+			// Return normalized response with data wrapper for frontend compatibility
+			return json({
+				data: {
+					access_token: accessToken,
+					refresh_token: refreshToken,
+					expires_in: expiresIn
+				}
+			}, { status: response.status });
+		} else {
+			console.warn(`[Refresh:${requestId}] Backend returned ${response.status} (${duration}ms)`);
+			return json(rawData, { status: response.status });
+		}
 	} catch (error) {
-		console.error('[API Proxy] Auth refresh error:', error);
+		const duration = Math.round(performance.now() - startTime);
+		const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+		console.error(`[Refresh:${requestId}] Error: ${errorMessage} (${duration}ms)`);
 		return json(
 			{ error: 'Token refresh failed', message: 'Unable to refresh authentication token' },
 			{ status: 500 }

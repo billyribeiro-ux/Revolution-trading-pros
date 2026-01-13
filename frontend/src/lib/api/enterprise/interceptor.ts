@@ -277,7 +277,7 @@ export const errorLoggingInterceptor: ErrorInterceptor = (error, context) => {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════
-// Token Refresh Interceptor
+// Token Refresh Interceptor - Apple ICT 7 Principal Engineer Grade
 // ═══════════════════════════════════════════════════════════════════════════════
 
 /** Pending requests waiting for token refresh */
@@ -287,9 +287,16 @@ const pendingRequests: Array<{
 	reject: (error: Error) => void;
 }> = [];
 
+/** Track consecutive refresh failures to prevent logout loops */
+let consecutiveRefreshFailures = 0;
+const MAX_REFRESH_FAILURES = 3;
+
 /**
  * Token refresh error interceptor
  * Automatically refreshes token on 401 and retries request
+ * 
+ * ICT 7 FIX: Don't immediately logout on refresh failure
+ * Only logout after MAX_REFRESH_FAILURES consecutive failures
  */
 export function createTokenRefreshInterceptor(
 	options: {
@@ -303,10 +310,25 @@ export function createTokenRefreshInterceptor(
 			return error;
 		}
 
+		// ICT 7: Skip auth endpoints to prevent infinite loops
+		// Check metadata for endpoint info (set by request interceptor)
+		const endpoint = String(context.metadata?.['endpoint'] || '');
+		if (endpoint.includes('/auth/refresh') || endpoint.includes('/auth/login') || endpoint.includes('/auth/logout')) {
+			console.debug('[Interceptor] Skipping refresh for auth endpoint:', endpoint);
+			return error;
+		}
+
 		// Check if this is already a retry
 		if (context.isRetry && context.metadata?.['tokenRefreshed']) {
 			// Token was already refreshed but still got 401
-			options.onRefreshFailed?.();
+			consecutiveRefreshFailures++;
+			console.warn(`[Interceptor] Token refreshed but still 401 (failure ${consecutiveRefreshFailures}/${MAX_REFRESH_FAILURES})`);
+			
+			if (consecutiveRefreshFailures >= MAX_REFRESH_FAILURES) {
+				console.error('[Interceptor] Max refresh failures reached, triggering logout');
+				consecutiveRefreshFailures = 0; // Reset for next session
+				options.onRefreshFailed?.();
+			}
 			return error;
 		}
 
@@ -350,6 +372,10 @@ export function createTokenRefreshInterceptor(
 			pendingRequests.length = 0;
 
 			if (success) {
+				// ICT 7: Reset failure counter on successful refresh
+				consecutiveRefreshFailures = 0;
+				console.debug('[Interceptor] Token refresh successful, will retry request');
+				
 				// Return error with retry flag
 				return createApiError({
 					...error,
@@ -363,7 +389,15 @@ export function createTokenRefreshInterceptor(
 				});
 			}
 
-			options.onRefreshFailed?.();
+			// ICT 7: Track failure but don't logout immediately
+			consecutiveRefreshFailures++;
+			console.warn(`[Interceptor] Token refresh returned false (failure ${consecutiveRefreshFailures}/${MAX_REFRESH_FAILURES})`);
+			
+			if (consecutiveRefreshFailures >= MAX_REFRESH_FAILURES) {
+				console.error('[Interceptor] Max refresh failures reached, triggering logout');
+				consecutiveRefreshFailures = 0;
+				options.onRefreshFailed?.();
+			}
 			return error;
 		} catch (refreshError) {
 			// Notify pending requests of failure
@@ -372,7 +406,15 @@ export function createTokenRefreshInterceptor(
 			});
 			pendingRequests.length = 0;
 
-			options.onRefreshFailed?.();
+			// ICT 7: Track failure but don't logout immediately
+			consecutiveRefreshFailures++;
+			console.warn(`[Interceptor] Token refresh threw error (failure ${consecutiveRefreshFailures}/${MAX_REFRESH_FAILURES}):`, refreshError);
+			
+			if (consecutiveRefreshFailures >= MAX_REFRESH_FAILURES) {
+				console.error('[Interceptor] Max refresh failures reached, triggering logout');
+				consecutiveRefreshFailures = 0;
+				options.onRefreshFailed?.();
+			}
 			return error;
 		} finally {
 			refreshPromise = null;
