@@ -74,12 +74,46 @@ export default defineConfig({
 		sourcemap: false,
 		// Target modern browsers for smaller bundle
 		target: 'es2020',
-		// Enable module preload polyfill
+		// ICT 11+ Fix: Optimize module preload to reduce "preloaded but not used" warnings
 		modulePreload: {
-			polyfill: true
+			polyfill: true,
+			// Only preload modules that are immediately needed
+			resolveDependencies: (filename, deps, { hostId, hostType }) => {
+				// Filter out CSS files from preload unless they're critical
+				return deps.filter(dep => {
+					// Always preload JS modules
+					if (dep.endsWith('.js')) return true;
+					// Only preload CSS for the current route, not all routes
+					if (dep.endsWith('.css')) {
+						// Only preload CSS if it's for the same route chunk
+						return filename.includes(dep.split('.')[0]);
+					}
+					return true;
+				});
+			}
 		},
 		// Optimize asset inlining
-		assetsInlineLimit: 4096 // 4KB
+		assetsInlineLimit: 4096, // 4KB
+		// ICT 11+ Fix: Optimize CSS code splitting to reduce unused preloads
+		cssCodeSplit: true,
+		rollupOptions: {
+			output: {
+				// Better chunk naming for debugging
+				chunkFileNames: '_app/immutable/chunks/[name]-[hash].js',
+				assetFileNames: '_app/immutable/assets/[name]-[hash][extname]',
+				// Optimize manual chunks to reduce CSS splitting issues
+				manualChunks: (id) => {
+					// Keep vendor code separate
+					if (id.includes('node_modules')) {
+						return 'vendor';
+					}
+					// Group dashboard routes together to reduce CSS chunks
+					if (id.includes('/routes/dashboard/')) {
+						return 'dashboard';
+					}
+				}
+			}
+		}
 	},
 	// SSR configuration to handle CSS properly
 	ssr: {
