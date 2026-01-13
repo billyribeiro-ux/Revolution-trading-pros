@@ -238,13 +238,20 @@
 		opacity: 0;
 	}
 
-	/* Card Content */
+	/* Card Content - Centered */
 	.card_content {
 		padding: 20px;
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
+		align-items: center;
+		text-align: center;
 		flex: 1;
+	}
+
+	.card_content > div {
+		width: 100%;
+		text-align: center;
 	}
 
 	.article-card__title {
@@ -284,6 +291,7 @@
 		color: #f7941d;
 		text-decoration: none;
 		font-weight: 500;
+		display: inline-block;
 	}
 
 	.watch-now-link:hover {

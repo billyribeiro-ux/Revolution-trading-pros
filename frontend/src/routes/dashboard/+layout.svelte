@@ -235,7 +235,7 @@
 			items: [
 				{ href: '/dashboard/weekly-watchlist', icon: 'layout-dashboard', text: 'Weekly Watchlist' },
 				{ href: '/dashboard/weekly-watchlist/watchlist-rundown-archive', icon: 'video', text: 'Watchlist Rundown Archive' },
-				{ href: '/dashboard/weekly-watchlist/archive', icon: 'file-text', text: 'Weekly Watchlist Archive' }
+				{ href: '/dashboard/weekly-watchlist/archive', icon: 'file', text: 'Weekly Watchlist Archive' }
 			]
 		},
 		'/dashboard/account': {

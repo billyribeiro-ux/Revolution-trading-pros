@@ -292,12 +292,15 @@
 	.video-grid {
 		display: flex;
 		flex-wrap: wrap;
+		margin: 0 -15px;
 	}
 
 	.video-grid__item {
 		display: flex;
-		margin-bottom: 20px;
+		margin-bottom: 30px;
 		width: 100%;
+		padding: 0 15px;
+		box-sizing: border-box;
 	}
 
 	@media (min-width: 576px) {
