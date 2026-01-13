@@ -1,187 +1,225 @@
 <!--
 	Watchlist Rundown Archive - Pixel-Perfect WordPress Match
 	═══════════════════════════════════════════════════════════════════════════
-	
-	Apple ICT 11+ Principal Engineer Grade - January 2026
 	Matches: frontend/Implementation/wwl-Rundown-Archive
-	
-	Svelte 5 / SvelteKit 2.0 Best Practices:
-	- $props() rune for component props
-	- $derived() rune for reactive computed values
-	- Type imports from server load function
-	- Proper empty state handling
-	
-	@version 1.1.0 - January 2026
+	@version 2.0.0 - January 2026
 -->
 <script lang="ts">
-	// Inline mock data - bypasses server load issues
+	// 9 cards matching WordPress exactly
 	const videos = [
 		{
 			id: '1',
-			title: 'Weekly Watchlist Rundown',
+			title: 'Weekly Watchlist with TG Watkins',
 			date: 'January 12, 2026',
-			description: 'TG Watkins breaks down the Weekly Watchlist for the week of January 12, 2026.',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			description: 'Week of January 12, 2026.',
+			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 			href: '/watchlist/01122026-tg-watkins'
 		},
 		{
 			id: '2',
-			title: 'Weekly Watchlist Rundown',
-			date: 'January 5, 2026',
-			description: 'Melissa Beegle breaks down the Weekly Watchlist for the week of January 5, 2026.',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
-			href: '/watchlist/01052026-melissa-beegle'
+			title: 'Weekly Watchlist with Melissa Beegle',
+			date: 'January 03, 2026',
+			description: 'Week starting on January 3, 2026.',
+			image: 'https://cdn.simplertrading.com/2025/03/09130833/Melissa-WeeklyWatchlist.jpg',
+			href: '/watchlist/01032026-melissa-beegle'
 		},
 		{
 			id: '3',
-			title: 'Weekly Watchlist Rundown',
+			title: 'Weekly Watchlist with David Starr',
 			date: 'December 29, 2025',
-			description: 'David Starr breaks down the Weekly Watchlist for the week of December 29, 2025.',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			description: 'Week of December 29, 2025.',
+			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
 			href: '/watchlist/12292025-david-starr'
 		},
 		{
 			id: '4',
-			title: 'Weekly Watchlist Rundown',
+			title: 'Weekly Watchlist with TG Watkins',
 			date: 'December 22, 2025',
-			description: 'TG Watkins breaks down the Weekly Watchlist for the week of December 22, 2025.',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			description: 'Week of December 22, 2025.',
+			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 			href: '/watchlist/12222025-tg-watkins'
 		},
 		{
 			id: '5',
-			title: 'Weekly Watchlist Rundown',
+			title: 'Weekly Watchlist with Allison Ostrander',
 			date: 'December 15, 2025',
-			description: 'Allison Ostrander breaks down the Weekly Watchlist for the week of December 15, 2025.',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			description: 'Week of December 15, 2025.',
+			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
 			href: '/watchlist/12152025-allison-ostrander'
 		},
 		{
 			id: '6',
-			title: 'Weekly Watchlist Rundown',
-			date: 'December 8, 2025',
-			description: 'Taylor Horton breaks down the Weekly Watchlist for the week of December 8, 2025.',
-			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			title: 'Weekly Watchlist with Taylor Horton',
+			date: 'December 08, 2025',
+			description: 'Week of December 8, 2025.',
+			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
 			href: '/watchlist/12082025-taylor-horton'
+		},
+		{
+			id: '7',
+			title: 'Weekly Watchlist with Raghee Horner',
+			date: 'December 01, 2025',
+			description: 'Week of December 1, 2025.',
+			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Raghee-Watchlist-Rundown.jpg',
+			href: '/watchlist/12012025-raghee-horner'
+		},
+		{
+			id: '8',
+			title: 'Weekly Watchlist with David Starr',
+			date: 'November 24, 2025',
+			description: 'Week of November 24, 2025.',
+			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
+			href: '/watchlist/11242025-david-starr'
+		},
+		{
+			id: '9',
+			title: 'Weekly Watchlist with Mike Teeto',
+			date: 'November 17, 2025',
+			description: 'Week of November 17, 2025.',
+			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/WeeklyWatchlist_MT.jpg',
+			href: '/watchlist/11172025-mike-teeto'
 		}
 	];
 
-	const hasVideos = videos.length > 0;
+	const currentPage = 1;
+	const totalPages = 29;
 </script>
 
 <svelte:head>
 	<title>Watchlist Rundown Archive - Revolution Trading Pros</title>
 </svelte:head>
 
+<header class="dashboard__header">
+	<h1 class="dashboard__page-title">Weekly Watchlist Dashboard</h1>
+</header>
+
 <div class="dashboard__content-section">
 	<section>
 		<h2 class="section-title">Watchlist Rundown Archive</h2>
-		{#if hasVideos}
-		<div class="video-grid">
-			{#each videos as { id, title, date, description, image, href } (id)}
-				<div class="video-grid__item">
-					<article class="video-card">
-						<figure class="video-card__figure">
-							<div class="video-card__thumbnail" style="background-image: url({image});">
-								<a {href}>
-									<img 
-										src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" 
-										alt={title}
-									/>
+		<div class="article-cards row flex-grid">
+			{#each videos as video (video.id)}
+				<div class="col-xs-12 col-sm-6 col-xl-4 flex-grid-item">
+					<article class="article-card">
+						<figure class="weekly_watchlist">
+							<div class="article-card__image" style="background-image: url({video.image});">
+								<a href={video.href}>
+									<img src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" alt={video.title} />
 								</a>
 							</div>
-							<div class="video-card__content">
+							<div class="card_content">
 								<div>
-									<h4 class="video-card__title">
-										<a {href}>{title}</a>
-									</h4>
-									<div class="video-card__date">
-										<span><i>{date}</i></span><br />
+									<h4 class="h5 article-card__title"><a href={video.href}>{video.title}</a></h4>
+									<div class="article-card__date">
+										<span><i>{video.date}</i></span>
 									</div>
-									<p class="video-card__description">{description}</p>
+									<p class="article-card__description">{video.description}</p>
 								</div>
-								<a {href} class="video-card__link">Watch Now</a>
+								<a class="watch-now-link" href={video.href}>Watch Now</a>
 							</div>
 						</figure>
 					</article>
 				</div>
 			{/each}
 		</div>
-		{:else}
-		<div class="empty-state">
-			<p>No watchlist rundown videos available at this time.</p>
-		</div>
-		{/if}
 	</section>
+
+	<!-- Pagination - WordPress Match -->
+	<div class="text-center">
+		<div class="pagination">
+			<span aria-current="page" class="page-numbers current">{currentPage}</span>
+			<a class="page-numbers" href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=2">2</a>
+			<span class="page-numbers dots">&hellip;</span>
+			<a class="page-numbers" href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=28">28</a>
+			<a class="page-numbers" href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=29">{totalPages}</a>
+			<a class="next page-numbers" href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=2">&raquo;</a>
+		</div>
+	</div>
 </div>
 
 <style>
-	/* Video Grid - Semantic class names */
+	/* Dashboard Header */
+	.dashboard__header {
+		padding: 20px 30px;
+		background: #f5f5f5;
+	}
+
+	.dashboard__page-title {
+		font-size: 24px;
+		font-weight: 700;
+		color: #333;
+		margin: 0;
+	}
+
+	/* Content Section */
+	.dashboard__content-section {
+		padding: 20px 30px;
+		background: #f5f5f5;
+	}
+
 	.section-title {
-		font-size: 1.75rem;
+		font-size: 1.5rem;
 		font-weight: 600;
-		margin-bottom: 2rem;
+		margin-bottom: 1.5rem;
 		color: #1a1a1a;
 	}
 
-	.video-grid {
+	/* Article Cards Grid - WordPress Match */
+	.article-cards.row.flex-grid {
 		display: flex;
 		flex-wrap: wrap;
-		margin-left: -15px;
-		margin-right: -15px;
+		margin: 0 -15px;
 	}
 
-	.video-grid__item {
-		padding-left: 15px;
-		padding-right: 15px;
+	.flex-grid-item {
+		padding: 0 15px;
 		margin-bottom: 30px;
+	}
+
+	.col-xs-12 {
 		width: 100%;
 	}
 
 	@media (min-width: 576px) {
-		.video-grid__item {
+		.col-sm-6 {
 			width: 50%;
 		}
 	}
 
 	@media (min-width: 1200px) {
-		.video-grid__item {
+		.col-xl-4 {
 			width: 33.333333%;
 		}
 	}
 
-	.video-card {
-		display: flex;
-		flex-direction: column;
-		height: 100%;
+	/* Article Card - WordPress Match */
+	.article-card {
 		background: #fff;
 		border-radius: 8px;
 		overflow: hidden;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-		transition: box-shadow 0.3s ease;
+		box-shadow: 0 3px 6px rgba(0, 0, 0, 0.16);
+		height: 100%;
+		display: flex;
+		flex-direction: column;
 	}
 
-	.video-card:hover {
-		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
-	}
-
-	.video-card__figure {
+	.weekly_watchlist {
 		margin: 0;
 		display: flex;
 		flex-direction: column;
 		height: 100%;
 	}
 
-	.video-card__thumbnail {
+	/* Card Image */
+	.article-card__image {
 		position: relative;
 		width: 100%;
 		padding-bottom: 56.25%;
 		background-size: cover;
-		background-position: center;
+		background-position: center top;
 		overflow: hidden;
 	}
 
-	.video-card__thumbnail a {
+	.article-card__image a {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -190,7 +228,7 @@
 		display: block;
 	}
 
-	.video-card__thumbnail img {
+	.article-card__image img {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -198,14 +236,10 @@
 		height: 100%;
 		object-fit: cover;
 		opacity: 0;
-		transition: opacity 0.3s ease;
 	}
 
-	.video-card__thumbnail:hover img {
-		opacity: 0.1;
-	}
-
-	.video-card__content {
+	/* Card Content */
+	.card_content {
 		padding: 20px;
 		display: flex;
 		flex-direction: column;
@@ -213,56 +247,115 @@
 		flex: 1;
 	}
 
-	.video-card__title {
-		font-size: 1.125rem;
+	.article-card__title {
+		font-size: 1rem;
 		font-weight: 600;
-		margin: 0 0 10px 0;
+		margin: 0 0 0 0;
 		line-height: 1.4;
 	}
 
-	.video-card__title a {
+	.article-card__title a {
 		color: #1a1a1a;
 		text-decoration: none;
-		transition: color 0.2s ease;
 	}
 
-	.video-card__title a:hover {
+	.article-card__title a:hover {
 		color: #143E59;
 	}
 
-	.video-card__date {
-		margin-bottom: 20px;
+	.article-card__date {
+		margin: 0 0 20px 0;
 	}
 
-	.video-card__date span i {
+	.article-card__date span i {
 		font-style: italic;
 		color: #666;
 		font-size: 0.875rem;
 	}
 
-	.video-card__description {
+	.article-card__description {
 		font-size: 0.9375rem;
 		line-height: 1.6;
 		color: #666;
-		margin: 0 0 20px;
+		margin: 0 0 20px 0;
 	}
 
-	.video-card__link {
-		font-weight: 600;
-		text-decoration: none;
-		font-size: 0.9375rem;
+	.watch-now-link {
 		color: #f7941d;
-		transition: color 0.2s ease;
-		align-self: flex-start;
+		text-decoration: none;
+		font-weight: 500;
 	}
 
-	.video-card__link:hover {
+	.watch-now-link:hover {
 		color: #c67000;
 	}
 
-	.empty-state {
-		padding: 40px;
+	/* Pagination - WordPress Exact Match */
+	.text-center {
 		text-align: center;
+		margin-top: 20px;
+	}
+
+	.pagination {
+		display: inline-flex;
+		align-items: center;
+		gap: 0;
+	}
+
+	.page-numbers {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		min-width: 40px;
+		height: 40px;
+		padding: 0 12px;
+		font-size: 15px;
+		font-weight: 600;
 		color: #666;
+		background: #fff;
+		border: 1px solid #ddd;
+		margin-left: -1px;
+		text-decoration: none;
+	}
+
+	.page-numbers:first-child {
+		border-radius: 4px 0 0 4px;
+		margin-left: 0;
+	}
+
+	.page-numbers:last-child {
+		border-radius: 0 4px 4px 0;
+	}
+
+	.page-numbers.current {
+		background: #143E59;
+		color: #fff;
+		border-color: #143E59;
+	}
+
+	.page-numbers.dots {
+		background: transparent;
+		border: none;
+		min-width: 30px;
+		padding: 0 8px;
+	}
+
+	.page-numbers:hover:not(.current):not(.dots) {
+		background: #f5f5f5;
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.dashboard__header,
+		.dashboard__content-section {
+			padding: 15px 20px;
+		}
+
+		.page-numbers {
+			min-width: 35px;
+			height: 35px;
+			padding: 0 8px;
+			font-size: 14px;
+		}
 	}
 </style>
