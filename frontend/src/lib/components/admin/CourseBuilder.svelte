@@ -139,23 +139,27 @@
 		isSaving = true;
 		error = '';
 
-		let result;
 		if (courseId) {
-			result = await coursesApi.update(courseId, formData);
-		} else {
-			result = await coursesApi.create(formData);
-		}
-
-		if (result.success) {
-			if (!courseId && result.data) {
-				// Reload with new course ID
-				courseId = result.data.course?.id;
+			// Update existing course
+			const result = await coursesApi.update(courseId, formData);
+			if (result.success) {
+				await loadCourse();
+				editMode = false;
+				onSave?.(course!);
+			} else {
+				error = result.error || 'Failed to save course';
 			}
-			await loadCourse();
-			editMode = false;
-			onSave?.(course!);
 		} else {
-			error = result.error || 'Failed to save course';
+			// Create new course
+			const result = await coursesApi.create(formData);
+			if (result.success && result.data?.course) {
+				courseId = result.data.course.id;
+				await loadCourse();
+				editMode = false;
+				onSave?.(course!);
+			} else {
+				error = result.error || 'Failed to create course';
+			}
 		}
 
 		isSaving = false;
@@ -502,7 +506,6 @@
 							type="text"
 							bind:value={sectionFormData.title}
 							placeholder="Section title"
-							autofocus
 						/>
 						<input
 							type="text"
@@ -521,7 +524,13 @@
 				<div class="sections-list">
 					{#each course.sections || [] as section (section.id)}
 						<div class="section-item">
-							<div class="section-header" onclick={() => toggleSection(section.id)}>
+							<div
+								class="section-header"
+								role="button"
+								tabindex="0"
+								onclick={() => toggleSection(section.id)}
+								onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSection(section.id); } }}
+							>
 								<div class="section-grip">
 									<IconGripVertical size={16} />
 								</div>
@@ -536,7 +545,8 @@
 									<span class="section-title">{section.title}</span>
 									<span class="section-meta">{section.lesson_count} lessons</span>
 								</div>
-								<div class="section-actions" onclick={(e) => e.stopPropagation()}>
+								<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+								<div class="section-actions" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="group">
 									<button
 										type="button"
 										class="btn-icon"
@@ -618,8 +628,18 @@
 
 			<!-- Add Lesson Modal -->
 			{#if showLessonForm && selectedSectionId}
-				<div class="modal-overlay" onclick={() => (showLessonForm = false)}>
-					<div class="modal-content" onclick={(e) => e.stopPropagation()}>
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+				<div
+					class="modal-overlay"
+					role="dialog"
+					aria-modal="true"
+					aria-label="Add Lesson"
+					tabindex="-1"
+					onclick={() => (showLessonForm = false)}
+					onkeydown={(e) => { if (e.key === 'Escape') showLessonForm = false; }}
+				>
+					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+					<div class="modal-content" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 						<h3>Add Lesson</h3>
 
 						<div class="form-group">

@@ -186,22 +186,27 @@
 		isSaving = true;
 		error = '';
 
-		let result;
 		if (indicatorId) {
-			result = await indicatorsApi.update(indicatorId, formData);
-		} else {
-			result = await indicatorsApi.create(formData);
-		}
-
-		if (result.success) {
-			if (!indicatorId && result.data) {
-				indicatorId = result.data.indicator?.id;
+			// Update existing indicator
+			const result = await indicatorsApi.update(indicatorId, formData);
+			if (result.success) {
+				await loadData();
+				editMode = false;
+				onSave?.(indicator!);
+			} else {
+				error = result.error || 'Failed to save indicator';
 			}
-			await loadData();
-			editMode = false;
-			onSave?.(indicator!);
 		} else {
-			error = result.error || 'Failed to save indicator';
+			// Create new indicator
+			const result = await indicatorsApi.create(formData);
+			if (result.success && result.data?.indicator) {
+				indicatorId = result.data.indicator.id;
+				await loadData();
+				editMode = false;
+				onSave?.(indicator!);
+			} else {
+				error = result.error || 'Failed to create indicator';
+			}
 		}
 
 		isSaving = false;
@@ -663,8 +668,18 @@
 
 			<!-- File Upload Modal -->
 			{#if showFileUpload && selectedPlatformId}
-				<div class="modal-overlay" onclick={() => (showFileUpload = false)}>
-					<div class="modal-content" onclick={(e) => e.stopPropagation()}>
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+				<div
+					class="modal-overlay"
+					role="dialog"
+					aria-modal="true"
+					aria-label="Upload File"
+					tabindex="-1"
+					onclick={() => (showFileUpload = false)}
+					onkeydown={(e) => { if (e.key === 'Escape') showFileUpload = false; }}
+				>
+					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+					<div class="modal-content" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 						<h3>Upload File for {getPlatformName(selectedPlatformId)}</h3>
 
 						<div class="form-group">
@@ -809,8 +824,18 @@
 
 			<!-- Video Form Modal -->
 			{#if showVideoForm}
-				<div class="modal-overlay" onclick={() => (showVideoForm = false)}>
-					<div class="modal-content" onclick={(e) => e.stopPropagation()}>
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+				<div
+					class="modal-overlay"
+					role="dialog"
+					aria-modal="true"
+					aria-label="Add Video"
+					tabindex="-1"
+					onclick={() => (showVideoForm = false)}
+					onkeydown={(e) => { if (e.key === 'Escape') showVideoForm = false; }}
+				>
+					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+					<div class="modal-content" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 						<h3>Add Video</h3>
 
 						<div class="form-group">
@@ -984,8 +1009,18 @@
 
 			<!-- Grant Access Modal -->
 			{#if showTvAccessForm}
-				<div class="modal-overlay" onclick={() => (showTvAccessForm = false)}>
-					<div class="modal-content" onclick={(e) => e.stopPropagation()}>
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+				<div
+					class="modal-overlay"
+					role="dialog"
+					aria-modal="true"
+					aria-label="Grant TradingView Access"
+					tabindex="-1"
+					onclick={() => (showTvAccessForm = false)}
+					onkeydown={(e) => { if (e.key === 'Escape') showTvAccessForm = false; }}
+				>
+					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+					<div class="modal-content" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 						<h3>Grant TradingView Access</h3>
 
 						<div class="form-group">

@@ -13,9 +13,9 @@
  * - Download Tracking
  */
 
-import { PUBLIC_API_URL } from '$env/static/public';
+import { browser } from '$app/environment';
 
-const API_BASE = PUBLIC_API_URL || 'https://revolution-trading-pros-api.fly.dev';
+const API_BASE = browser ? (import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev') : 'https://revolution-trading-pros-api.fly.dev';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
