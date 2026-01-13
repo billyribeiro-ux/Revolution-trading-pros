@@ -1,5 +1,3 @@
-import type { PageServerLoad } from './$types';
-
 /**
  * @type {import('./$types').PageServerLoad}
  */
@@ -67,4 +65,4 @@ export const load = (async () => {
 		totalPages: 22,
 		currentPage: 1
 	};
-}) satisfies PageServerLoad;
+});

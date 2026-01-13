@@ -18,7 +18,7 @@
 <script lang="ts">
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	
-	let { data } = $props();
+	let { data }: { data: any } = $props();
 	
 	const breadcrumbs = [
 		{ label: 'Dashboard', href: '/dashboard' },
@@ -133,6 +133,7 @@
 		overflow: hidden !important;
 		text-overflow: ellipsis;
 		-webkit-line-clamp: 4;
+		line-clamp: 4;
 		font-size: 16px;
 		color: #666;
 	}
