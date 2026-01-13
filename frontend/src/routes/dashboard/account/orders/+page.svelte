@@ -41,17 +41,9 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
-			<div class="fl-builder-content fl-builder-content-33 fl-builder-content-primary fl-builder-global-templates-locked" data-post-id="33">
-				<div class="fl-row fl-row-fixed-width fl-row-bg-color fl-node-59793676724ad" data-node="59793676724ad">
-					<div class="fl-row-content-wrap">
-						<div class="fl-row-content fl-row-fixed-width fl-node-content">
-							<div class="fl-col-group fl-node-597936767334e" data-node="597936767334e">
-								<div class="fl-col fl-node-5979367673419" data-node="5979367673419">
-									<div class="fl-col-content fl-node-content">
-										<div class="fl-module fl-module-rich-text fl-node-59793676759ab dashboard-nav" data-node="59793676759ab">
-											<div class="fl-module-content fl-node-content">
-												<div class="fl-rich-text">
-													<div class="woocommerce">
+			<div class="orders-container">
+				<div class="orders-content">
+					<div class="woocommerce">
 														<div class="woocommerce-MyAccount-content">
 															<div class="woocommerce-notices-wrapper"></div>
 															<h2 class="section-title">My Orders</h2>
@@ -102,14 +94,6 @@
 																</table>
 															{/if}
 														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
 					</div>
 				</div>
 			</div>
@@ -175,47 +159,15 @@
 		padding: 0;
 	}
 
-	/* Beaver Builder Structure */
-	.fl-builder-content {
+	/* Orders Container - Semantic naming */
+	.orders-container {
 		width: 100%;
-	}
-
-	.fl-row-fixed-width {
 		max-width: 1100px;
 		margin: 0 auto;
-	}
-
-	.fl-row-bg-color {
-		background-color: transparent;
-	}
-
-	.fl-row-content-wrap {
 		padding: 30px 15px;
 	}
 
-	.fl-col-group {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	.fl-col {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.fl-col-content {
-		padding: 0;
-	}
-
-	.fl-module {
-		margin-bottom: 0;
-	}
-
-	.fl-module-content {
-		position: relative;
-	}
-
-	.fl-rich-text {
+	.orders-content {
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.6;
 	}
@@ -495,7 +447,7 @@
 		text-align: right;
 	}
 
-	.u--font-size-sm {
+	.orders-table__body {
 		font-size: 14px;
 	}
 

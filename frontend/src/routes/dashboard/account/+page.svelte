@@ -55,35 +55,20 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
-			<div class="fl-builder-content fl-builder-content-33 fl-builder-content-primary fl-builder-global-templates-locked" data-post-id="33">
-				<div class="fl-row fl-row-fixed-width fl-row-bg-color fl-node-59793676724ad" data-node="59793676724ad">
-					<div class="fl-row-content-wrap">
-						<div class="fl-row-content fl-row-fixed-width fl-node-content">
-							<div class="fl-col-group fl-node-597936767334e" data-node="597936767334e">
-								<div class="fl-col fl-node-5979367673419" data-node="5979367673419">
-									<div class="fl-col-content fl-node-content">
-										<div class="fl-module fl-module-rich-text fl-node-59793676759ab dashboard-nav" data-node="59793676759ab">
-											<div class="fl-module-content fl-node-content">
-												<div class="fl-rich-text">
-													<div class="woocommerce">
-														<div class="woocommerce-MyAccount-content">
-															<div class="woocommerce-notices-wrapper"></div>
-															<div class="content-box content-box--centered">
-																<div class="content-box__section">
-																	<p>
-																		Hello <strong>{displayName}</strong> (not <strong>{displayName}</strong>? <a href="/logout">Log out</a>)
-																	</p>
-
-																	<p class="u--margin-bottom-0">
-																		From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/edit-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.
-																	</p>
-																</div>
-															</div>
-														</div>
-													</div>
-												</div>
-											</div>
-										</div>
+			<div class="account-container">
+				<div class="account-row">
+					<div class="account-content">
+						<div class="woocommerce">
+							<div class="woocommerce-MyAccount-content">
+								<div class="woocommerce-notices-wrapper"></div>
+								<div class="content-box content-box--centered">
+									<div class="content-box__section">
+										<p>
+											Hello <strong>{displayName}</strong> (not <strong>{displayName}</strong>? <a href="/logout">Log out</a>)
+										</p>
+										<p class="account-text--no-margin">
+											From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/edit-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.
+										</p>
 									</div>
 								</div>
 							</div>
@@ -148,63 +133,24 @@
 		padding: 0;
 	}
 
-	/* Beaver Builder Structure */
-	.fl-builder-content {
+	/* Account Container - Semantic naming */
+	.account-container {
 		width: 100%;
 		font-family: 'Montserrat', sans-serif;
-	}
-
-	.fl-row {
-		width: 100%;
-		position: relative;
-	}
-
-	.fl-row-bg-color {
 		background-color: #ffffff;
 	}
 
-	.fl-row-content-wrap {
-		position: relative;
-	}
-
-	.fl-row-content {
-		margin-left: auto;
-		margin-right: auto;
-	}
-
-	.fl-row-fixed-width {
+	.account-row {
 		max-width: 1100px;
+		margin: 0 auto;
 	}
 
-	.fl-col-group {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	.fl-col {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.fl-col-content {
-		padding: 0;
-	}
-
-	.fl-node-content {
-		position: relative;
-	}
-
-	.fl-module {
-		margin-bottom: 0;
-	}
-
-	.fl-module-content {
-		position: relative;
-	}
-
-	.fl-rich-text {
-		font-family: 'Montserrat', sans-serif;
+	.account-content {
 		line-height: 1.6;
+	}
+
+	.account-text--no-margin {
+		margin-bottom: 0 !important;
 	}
 
 	/* WooCommerce Content */
@@ -260,9 +206,6 @@
 		margin-bottom: 0;
 	}
 
-	.u--margin-bottom-0 {
-		margin-bottom: 0 !important;
-	}
 
 	.woocommerce-MyAccount-content a {
 		color: #0984ae;
