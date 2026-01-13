@@ -1,11 +1,11 @@
 <!--
-	ContentSidebar Component - Reusable Dashboard Right Sidebar
+	RightSidebar Component - Reusable Dashboard Right Sidebar
 	═══════════════════════════════════════════════════════════════════════════
 	
 	Apple ICT 11+ Principal Engineer Grade - January 2026
 	Svelte 5 Best Practices - Latest Nov/Dec 2024 Syntax
 	
-	SSOT for dashboard content sidebars (right panel).
+	SSOT for dashboard right sidebars (right panel).
 	Used across Day Trading Room, Weekly Watchlist, etc.
 	
 	@version 1.0.0 - January 2026 - Extracted from Day Trading Room

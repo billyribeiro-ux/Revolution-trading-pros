@@ -9,7 +9,7 @@
 -->
 <script lang="ts">
 	import FeaturedCards from '$lib/components/dashboard/FeaturedCards.svelte';
-	import ContentSidebar from '$lib/components/dashboard/ContentSidebar.svelte';
+	import RightSidebar from '$lib/components/dashboard/RightSidebar.svelte';
 
 	// Featured cards configuration
 	const cards = [
@@ -181,8 +181,8 @@
 
 	</div>
 
-	<!-- SIDEBAR - Using ContentSidebar component (SSOT) -->
-	<ContentSidebar sections={sidebarSections} />
+	<!-- SIDEBAR - Using RightSidebar component (SSOT) -->
+	<RightSidebar sections={sidebarSections} />
 
 </div>
 
