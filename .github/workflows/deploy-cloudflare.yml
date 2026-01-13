@@ -88,7 +88,9 @@ jobs:
             echo "site_url=https://revolution-trading-pros.pages.dev" >> $GITHUB_OUTPUT
           fi
         env:
-          SITE_URL: ${{ vars.SITE_URL || '' }}
+          # yamllint disable-line rule:line-length
+          SITE_URL: ${{ vars.SITE_URL || '' }} # Optional: defaults to pages.dev URL if not set
+        if: always()
 
       - name: Build for Cloudflare
         working-directory: frontend
@@ -268,7 +270,10 @@ jobs:
             echo "::notice::Lighthouse CI skipped - LHCI_GITHUB_APP_TOKEN not configured"
           fi
         env:
-          LHCI_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN || '' }}
+          # yamllint disable-line rule:line-length
+          # Optional secret - workflow handles missing token gracefully
+          LHCI_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN || '' }} # Optional: Lighthouse skipped if not configured
+        if: always()
 
       - name: Run Lighthouse CI
         if: steps.check-lighthouse.outputs.has_token == 'true'
@@ -281,7 +286,8 @@ jobs:
           uploadArtifacts: true
           temporaryPublicStorage: true
         env:
-          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN || '' }}
+          # yamllint disable-line rule:line-length
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN || '' }} # Conditional: only runs if token exists
         continue-on-error: true
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -306,8 +312,11 @@ jobs:
             echo "::notice::Skipping cache purge - CLOUDFLARE_ZONE_ID or CLOUDFLARE_API_TOKEN not configured"
           fi
         env:
-          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID || '' }}
-          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || '' }}
+          # yamllint disable-line rule:line-length
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID || '' }} # Optional: cache purge skipped if not configured
+          # yamllint disable-line rule:line-length
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || '' }} # Optional: cache purge skipped if not configured
+        if: always()
 
       - name: Purge Cloudflare cache
         if: steps.check-cache-secrets.outputs.has_secrets == 'true'
@@ -317,8 +326,10 @@ jobs:
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}'
         env:
-          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID || '' }}
-          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || '' }}
+          # yamllint disable-line rule:line-length
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID || '' }} # Conditional: only runs if secrets exist
+          # yamllint disable-line rule:line-length
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || '' }} # Conditional: only runs if secrets exist
         continue-on-error: true
 
   # ═══════════════════════════════════════════════════════════════════════════
@@ -342,4 +353,6 @@ jobs:
           #     "$SLACK_WEBHOOK"
           # fi
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL || '' }}
+          # yamllint disable-line rule:line-length
+          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK_URL || '' }} # Optional: notification code is commented out
+        if: always()
