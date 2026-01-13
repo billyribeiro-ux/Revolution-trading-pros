@@ -64,6 +64,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/subscriptions", subscriptions::router())
         .nest("/newsletter", newsletter::router())
         .nest("/admin", admin::router())
+        .nest("/admin/products", products::admin_router())  // Admin product CRUD
         .nest("/checkout", checkout::router())
         .nest("/videos", videos::router())
         .nest("/analytics", analytics::router())

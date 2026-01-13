@@ -326,3 +326,93 @@ pub fn router() -> Router<AppState> {
         .route("/my", get(get_user_products))
         .route("/:slug", get(get_product).put(update_product).delete(delete_product))
 }
+
+/// Admin router for /admin/products - ICT 7 Principal Engineer Grade
+/// Provides CRUD operations for admin product management
+pub fn admin_router() -> Router<AppState> {
+    use axum::routing::{get, post, put, delete};
+    
+    Router::new()
+        .route("/", get(list_products_admin).post(create_product))
+        .route("/:id", get(get_product_by_id).put(update_product).delete(delete_product))
+}
+
+/// List products for admin (includes inactive products)
+async fn list_products_admin(
+    State(state): State<AppState>,
+    AdminUser(_user): AdminUser,
+    Query(query): Query<ProductListQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let page = query.page.unwrap_or(1).max(1);
+    let per_page = query.per_page.unwrap_or(20).min(100);
+    let offset = (page - 1) * per_page;
+
+    // Admin sees ALL products (active and inactive)
+    let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
+    
+    let products: Vec<ProductRow> = sqlx::query_as(
+        r#"
+        SELECT * FROM products
+        WHERE ($1::text IS NULL OR type = $1)
+          AND ($2::boolean IS NULL OR is_active = $2)
+          AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
+        ORDER BY created_at DESC
+        LIMIT $4 OFFSET $5
+        "#
+    )
+    .bind(query.product_type.as_deref())
+    .bind(query.is_active)
+    .bind(search_pattern.as_deref())
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!("Database error in list_products_admin: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+    })?;
+
+    let total: (i64,) = sqlx::query_as(
+        r#"
+        SELECT COUNT(*) FROM products
+        WHERE ($1::text IS NULL OR type = $1)
+          AND ($2::boolean IS NULL OR is_active = $2)
+          AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
+        "#
+    )
+    .bind(query.product_type.as_deref())
+    .bind(query.is_active)
+    .bind(search_pattern.as_deref())
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!("Database error in list_products_admin count: {}", e);
+        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+    })?;
+
+    Ok(Json(json!({
+        "data": products,
+        "meta": {
+            "current_page": page,
+            "per_page": per_page,
+            "total": total.0,
+            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
+        }
+    })))
+}
+
+/// Get product by ID (admin)
+async fn get_product_by_id(
+    State(state): State<AppState>,
+    AdminUser(_user): AdminUser,
+    Path(id): Path<i64>,
+) -> Result<Json<ProductRow>, (StatusCode, Json<serde_json::Value>)> {
+    let product: ProductRow = sqlx::query_as("SELECT * FROM products WHERE id = $1")
+        .bind(id)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Product not found"}))))?;
+
+    Ok(Json(product))
+}
