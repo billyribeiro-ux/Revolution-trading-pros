@@ -340,20 +340,20 @@
 					</div>
 				</div>
 			{:else if store}
-				<!-- Trader Header Section - fl-row-bg-color -->
-				<div class="fl-row fl-row-full-width fl-row-bg-color">
-					<div class="fl-row-content-wrap">
-						<div class="fl-row-content fl-row-fixed-width fl-node-content">
-							<div class="fl-col-group fl-col-group-equal-height fl-col-group-align-bottom">
+				<!-- Trader Header Section -->
+				<div class="trader-header trader-header--full-width trader-header--bg-color">
+					<div class="trader-header__wrap">
+						<div class="trader-header__content trader-header--fixed-width">
+							<div class="trader-header__columns trader-header__columns--equal-height trader-header__columns--align-bottom">
 								<!-- Left Column - Photo -->
-								<div class="fl-col fl-col-small">
-									<div class="fl-col-content fl-node-content">
-										<div class="fl-module fl-module-photo fl-visible-desktop-medium">
-											<div class="fl-module-content fl-node-content">
-												<div class="fl-photo fl-photo-align-center">
-													<div class="fl-photo-content fl-photo-img-png">
+								<div class="trader-header__col trader-header__col--small">
+									<div class="trader-header__col-content">
+										<div class="trader-photo trader-photo--desktop">
+											<div class="trader-photo__wrapper">
+												<div class="trader-photo__frame trader-photo__frame--center">
+													<div class="trader-photo__content">
 														<img 
-															class="fl-photo-img" 
+															class="trader-photo__img" 
 															src={store.image} 
 															alt={store.name}
 															width="2000" 
@@ -366,32 +366,24 @@
 									</div>
 								</div>
 								<!-- Right Column - Info -->
-								<div class="fl-col">
-									<div class="fl-col-content fl-node-content">
-										<div class="fl-module fl-module-heading">
-											<div class="fl-module-content fl-node-content">
-												<h2 class="fl-heading">
-													<span class="fl-heading-text trader-name">{store.name}</span>
-												</h2>
-											</div>
+								<div class="trader-header__col">
+									<div class="trader-header__col-content">
+										<div class="trader-info__block">
+											<h2 class="trader-info__heading">
+												<span class="trader-info__name">{store.name}</span>
+											</h2>
 										</div>
-										<div class="fl-module fl-module-heading">
-											<div class="fl-module-content fl-node-content">
-												<h2 class="fl-heading">
-													<span class="fl-heading-text trader-title">{store.title}</span>
-												</h2>
-											</div>
+										<div class="trader-info__block">
+											<h2 class="trader-info__heading">
+												<span class="trader-info__title">{store.title}</span>
+											</h2>
 										</div>
-										<div class="fl-module fl-module-separator">
-											<div class="fl-module-content fl-node-content">
-												<div class="fl-separator"></div>
-											</div>
+										<div class="trader-info__block trader-info__block--separator">
+											<div class="trader-info__separator"></div>
 										</div>
-										<div class="fl-module fl-module-rich-text">
-											<div class="fl-module-content fl-node-content">
-												<div class="fl-rich-text">
-													<p><em>{store.quote}</em></p>
-												</div>
+										<div class="trader-info__block">
+											<div class="trader-info__quote">
+												<p><em>{store.quote}</em></p>
 											</div>
 										</div>
 									</div>
@@ -402,33 +394,31 @@
 				</div>
 
 				<!-- Trader Pills Navigation -->
-				<div class="fl-row fl-row-fixed-width fl-row-bg-none">
-					<div class="fl-row-content-wrap">
-						<div class="fl-row-content fl-row-fixed-width fl-node-content">
-							<div class="fl-col-group">
-								<div class="fl-col">
-									<div class="fl-col-content fl-node-content">
-										<div class="fl-module fl-module-html">
-											<div class="fl-module-content fl-node-content">
-												<div class="fl-html">
-													<div class="trader_pills">
-														{#each traderPills as pill}
-															<div class="trader_pill">
-																<a href="/dashboard/day-trading-room/meet-the-traders/{store.slug}{pill.path === '/trader-store' ? '' : pill.path}"
-																   class:active={pill.path === '/trader-store'}
-																   onclick={(e) => {
-																	   e.preventDefault();
-																	   if (pill.path === '') {
-																		   window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}`;
-																	   } else if (pill.path !== '/trader-store') {
-																		   window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}${pill.path}`;
-																	   }
-																   }}>
-																	{pill.label}
-																</a>
-															</div>
-														{/each}
-													</div>
+				<div class="trader-nav trader-nav--fixed-width trader-nav--bg-none">
+					<div class="trader-nav__wrap">
+						<div class="trader-nav__content trader-nav--fixed-width">
+							<div class="trader-nav__columns">
+								<div class="trader-nav__col">
+									<div class="trader-nav__col-content">
+										<div class="trader-nav__module">
+											<div class="trader-nav__module-content">
+												<div class="trader_pills">
+													{#each traderPills as pill}
+														<div class="trader_pill">
+															<a href="/dashboard/day-trading-room/meet-the-traders/{store.slug}{pill.path === '/trader-store' ? '' : pill.path}"
+															   class:active={pill.path === '/trader-store'}
+															   onclick={(e) => {
+																   e.preventDefault();
+																   if (pill.path === '') {
+																	   window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}`;
+																   } else if (pill.path !== '/trader-store') {
+																	   window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}${pill.path}`;
+																   }
+															   }}>
+																{pill.label}
+															</a>
+														</div>
+													{/each}
 												</div>
 											</div>
 										</div>
@@ -541,171 +531,163 @@
 		to { transform: rotate(360deg); }
 	}
 
-	/* FL Row - Beaver Builder Style Classes */
-	.fl-row {
+	/* Trader Header Section */
+	.trader-header {
 		margin: 0;
 		padding: 0;
 		width: 100%;
 	}
 
-	.fl-row-full-width {
+	.trader-header--full-width {
 		width: 100%;
 	}
 
-	.fl-row-bg-color {
+	.trader-header--bg-color {
 		background-color: #E5E9F4;
 	}
 
-	.fl-row-bg-none {
+	.trader-nav--bg-none {
 		background: #fff;
 	}
 
-	.fl-row-content-wrap {
+	.trader-header__wrap,
+	.trader-nav__wrap {
 		max-width: 1200px;
 		margin: 0 auto;
 		padding: 40px 20px;
 	}
 
-	.fl-row-content {
+	.trader-header__content,
+	.trader-nav__content {
 		width: 100%;
 	}
 
-	.fl-row-fixed-width {
+	.trader-header--fixed-width,
+	.trader-nav--fixed-width {
 		max-width: 1100px;
 		margin: 0 auto;
 	}
 
-	.fl-row-fixed-width .fl-row-content-wrap {
+	.trader-nav__wrap {
 		padding: 30px 20px;
 	}
 
-	/* FL Column Groups */
-	.fl-col-group {
+	/* Trader Header Columns */
+	.trader-header__columns,
+	.trader-nav__columns {
 		display: flex;
 		flex-wrap: wrap;
 		margin: 0 -15px;
 	}
 
-	.fl-col-group-equal-height {
+	.trader-header__columns--equal-height {
 		align-items: stretch;
 	}
 
-	.fl-col-group-align-bottom {
+	.trader-header__columns--align-bottom {
 		align-items: flex-end;
 	}
 
-	/* FL Columns */
-	.fl-col {
+	/* Trader Header Cols */
+	.trader-header__col,
+	.trader-nav__col {
 		flex: 1;
 		padding: 0 15px;
 		min-width: 0;
 	}
 
-	.fl-col-small {
+	.trader-header__col--small {
 		flex: 0 0 300px;
 		max-width: 300px;
 	}
 
-	.fl-col-content {
+	.trader-header__col-content,
+	.trader-nav__col-content {
 		height: 100%;
 	}
 
-	.fl-node-content {
-		position: relative;
-	}
-
-	/* FL Modules */
-	.fl-module {
+	/* Trader Info Blocks */
+	.trader-info__block {
 		margin-bottom: 20px;
 	}
 
-	.fl-module:last-child {
+	.trader-info__block:last-child {
 		margin-bottom: 0;
 	}
 
-	.fl-module-content {
-		position: relative;
-	}
-
-	/* FL Photo */
-	.fl-module-photo {
+	/* Trader Photo */
+	.trader-photo {
 		margin-bottom: 0;
 	}
 
-	.fl-photo {
+	.trader-photo__frame {
 		display: block;
 	}
 
-	.fl-photo-align-center {
+	.trader-photo__frame--center {
 		text-align: center;
 	}
 
-	.fl-photo-content {
+	.trader-photo__content {
 		display: inline-block;
 		line-height: 0;
 	}
 
-	.fl-photo-img-png {
-		background: transparent;
-	}
-
-	.fl-photo-img {
+	.trader-photo__img {
 		max-width: 100%;
 		height: auto;
 		width: 250px;
 		border-radius: 50%;
 	}
 
-	/* FL Headings */
-	.fl-heading {
+	/* Trader Info Headings */
+	.trader-info__heading {
 		margin: 0;
 		padding: 0;
 		line-height: 1.2;
 	}
 
-	.fl-heading-text {
+	.trader-info__name {
 		display: block;
-	}
-
-	.fl-heading-text.trader-name {
 		font-size: 36px;
 		font-weight: 700;
 		color: #333;
 	}
 
-	.fl-heading-text.trader-title {
+	.trader-info__title {
+		display: block;
 		font-size: 18px;
 		font-weight: 400;
 		color: #666;
 		margin-top: 5px;
 	}
 
-	/* FL Separator */
-	.fl-module-separator {
+	/* Trader Info Separator */
+	.trader-info__block--separator {
 		margin: 20px 0;
 	}
 
-	.fl-separator {
+	.trader-info__separator {
 		border-top: 2px solid #F69532;
 		width: 60px;
 	}
 
-	/* FL Rich Text */
-	.fl-rich-text {
+	/* Trader Info Quote */
+	.trader-info__quote {
 		font-size: 16px;
 		line-height: 1.7;
 		color: #444;
 	}
 
-	.fl-rich-text p {
+	.trader-info__quote p {
 		margin: 0 0 15px;
 	}
 
-	.fl-rich-text p:last-child {
+	.trader-info__quote p:last-child {
 		margin-bottom: 0;
 	}
 
-	.fl-rich-text em {
+	.trader-info__quote em {
 		font-style: italic;
 		color: #555;
 	}
@@ -933,18 +915,20 @@
 	}
 
 	/* Mobile-first: stacked layout by default */
-	.fl-col-group {
+	.trader-header__columns,
+	.trader-nav__columns {
 		flex-direction: column;
 	}
 
-	.fl-col-small {
+	.trader-header__col--small {
 		flex: 0 0 100%;
 		max-width: 100%;
 		text-align: center;
 		margin-bottom: 20px;
 	}
 
-	.fl-col {
+	.trader-header__col,
+	.trader-nav__col {
 		flex: 0 0 100%;
 		max-width: 100%;
 	}
@@ -954,11 +938,12 @@
 	}
 
 	@media (min-width: 768px) {
-		.fl-col-group {
+		.trader-header__columns,
+		.trader-nav__columns {
 			flex-direction: row;
 		}
 
-		.fl-col-small {
+		.trader-header__col--small {
 			flex: 0 0 200px;
 			max-width: 200px;
 			text-align: left;
@@ -971,41 +956,43 @@
 	}
 
 	@media (min-width: 992px) {
-		.fl-col-small {
+		.trader-header__col--small {
 			flex: 0 0 300px;
 			max-width: 300px;
 		}
 
-		.fl-photo-img {
+		.trader-photo__img {
 			width: 220px;
 		}
 
-		.fl-heading-text.trader-name {
+		.trader-info__name {
 			font-size: 36px;
 		}
 
 		.flex-grid {
 			grid-template-columns: repeat(3, 1fr);
 		}
+	}
 
-		.fl-photo-img {
+	@media (max-width: 640px) {
+		.trader-photo__img {
 			width: 150px;
 		}
 
-		.fl-heading-text.trader-name {
+		.trader-info__name {
 			font-size: 24px;
 			text-align: center;
 		}
 
-		.fl-heading-text.trader-title {
+		.trader-info__title {
 			text-align: center;
 		}
 
-		.fl-separator {
+		.trader-info__separator {
 			margin: 15px auto;
 		}
 
-		.fl-rich-text {
+		.trader-info__quote {
 			text-align: center;
 		}
 
