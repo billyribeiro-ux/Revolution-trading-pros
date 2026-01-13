@@ -117,7 +117,7 @@
 			<nav class="facetwp-pager" aria-label="Pagination">
 				{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum}
 					{#if pageNum === pagination.page}
-						<a class="facetwp-page active" data-page={pageNum}>{pageNum}</a>
+						<a class="facetwp-page active" href={getPageUrl(pageNum)} data-page={pageNum} aria-current="page">{pageNum}</a>
 					{:else if pageNum === 1 || pageNum === pagination.totalPages || Math.abs(pageNum - pagination.page) <= 2}
 						<a class="facetwp-page" href={getPageUrl(pageNum)} data-page={pageNum}>{pageNum}</a>
 					{:else if Math.abs(pageNum - pagination.page) === 3}
@@ -362,6 +362,7 @@
 		margin: 0;
 		display: -webkit-box;
 		-webkit-line-clamp: 3;
+		line-clamp: 3;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}
