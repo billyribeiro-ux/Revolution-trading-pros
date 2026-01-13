@@ -149,19 +149,24 @@
 
 	.article-card {
 		background: #fff;
-		border-radius: 5px;
+		border-radius: 8px;
 		overflow: hidden;
-		box-shadow: 0 5px 30px rgba(0, 0, 0, 0.1);
-		transition: all 0.2s ease-in-out;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 20px rgba(0, 0, 0, 0.06);
+		transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 		height: 100%;
+		border: 1px solid rgba(0, 0, 0, 0.04);
 	}
 
 	.article-card:hover {
-		box-shadow: 0 8px 35px rgba(0, 0, 0, 0.15);
-		transform: translateY(-2px);
+		box-shadow: 
+			0 8px 16px rgba(20, 62, 89, 0.12),
+			0 16px 32px rgba(20, 62, 89, 0.08),
+			0 24px 48px rgba(0, 0, 0, 0.06);
+		transform: translateY(-6px) scale(1.01);
+		border-color: rgba(20, 62, 89, 0.1);
 	}
 
 	.article-card__image {
@@ -172,6 +177,27 @@
 		background-position: center;
 		margin: 0;
 		overflow: hidden;
+		transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+	}
+
+	.article-card:hover .article-card__image {
+		transform: scale(1.03);
+	}
+
+	.article-card__image::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		background: linear-gradient(to bottom, transparent 60%, rgba(0, 0, 0, 0.05) 100%);
+		opacity: 0;
+		transition: opacity 0.35s ease;
+	}
+
+	.article-card:hover .article-card__image::after {
+		opacity: 1;
 	}
 
 	.article-card__image img {
@@ -215,11 +241,15 @@
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
-		transition: color 0.2s;
+		transition: color 0.25s ease;
+	}
+
+	.article-card:hover .article-card__title a {
+		color: #143E59;
 	}
 
 	.article-card__title a:hover {
-		color: #143E59;
+		color: #0f2d41;
 	}
 
 	.h5 {
@@ -294,7 +324,12 @@
 	.btn-default:hover {
 		background-color: #0f2d41;
 		border-color: #0f2d41;
-		box-shadow: none;
+		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
+		transform: translateY(-1px);
+	}
+
+	.article-card:hover .btn-default {
+		box-shadow: 0 2px 8px rgba(20, 62, 89, 0.2);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
