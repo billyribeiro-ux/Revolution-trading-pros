@@ -304,6 +304,18 @@
 		margin-bottom: 20px;
 	}
 
+	/* Date styling - ensure visibility */
+	.u--margin-top-0.u--margin-bottom-20 span {
+		color: #666;
+		font-size: 13px;
+		line-height: 1.6;
+	}
+
+	.u--margin-top-0.u--margin-bottom-20 span i {
+		font-style: italic;
+		color: #666;
+	}
+
 	.card_content p {
 		color: #666;
 		font-size: 14px;
