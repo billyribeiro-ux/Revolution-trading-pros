@@ -77,6 +77,18 @@ VALUES
         '{"type": "alert-service", "icon": "activity"}',
         '["SPX Options Alerts", "Intraday Opportunities", "Premium Analysis", "High Win Rate Setups"]',
         0
+    ),
+    -- Premium Reports
+    (
+        'Weekly Watchlist',
+        'weekly-watchlist',
+        'Weekly stock watchlist with detailed analysis and trading opportunities from expert traders.',
+        47.00,
+        'monthly',
+        true,
+        '{"type": "premium-report", "icon": "calendar"}',
+        '["Weekly Stock Watchlist", "Expert Analysis", "Trading Opportunities", "Downloadable Spreadsheets", "Video Rundowns"]',
+        0
     )
 ON CONFLICT (slug) DO UPDATE SET
     name = EXCLUDED.name,
