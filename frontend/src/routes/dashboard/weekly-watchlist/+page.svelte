@@ -3,18 +3,16 @@
 	═══════════════════════════════════════════════════════════════════════════
 	
 	Apple ICT 11+ Principal Engineer Grade - January 2026
+	Svelte 5 Best Practices - Latest Nov/Dec 2024 Syntax
 	
-	Matches frontend/Implementation/wwlDashboard exactly.
-	Three featured cards with background images and archive section below.
-	
-	@version 1.0.0 - January 2026 - WordPress pixel-perfect match
+	@version 2.0.0 - January 2026 - Refactored with reusable components
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import FeaturedCards from '$lib/components/dashboard/FeaturedCards.svelte';
 
-	// Featured cards data matching WordPress
-	const featuredCards = [
+	// Featured cards configuration
+	const cards = [
 		{
 			id: 1,
 			title: 'Get Started',
@@ -148,19 +146,7 @@
 		<div class="dashboard__content-main">
 			
 			<!-- FEATURED CARDS SECTION -->
-			<section class="dashboard__content-section-member">
-			<div class="row featured_cards">
-				{#each featuredCards as card (card.id)}
-					<div class="col-md-6 col-lg-4 text-center">
-						<div class="{card.cardClass}">
-							<h2 class="{card.titleClass}">{card.title}</h2>
-							<p>{card.description}</p>
-							<a href="{card.href}">Check It Out</a>
-						</div>
-					</div>
-				{/each}
-			</div>
-		</section>
+			<FeaturedCards {cards} />
 
 		<!-- WATCHLIST RUNDOWN ARCHIVE SECTION -->
 		<div class="dashboard__content-section">
@@ -217,154 +203,6 @@
 </div>
 
 <style>
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * FEATURED CARDS - WordPress Exact Match
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.featured_cards {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
-	}
-
-	.featured_cards .text-center {
-		display: flex;
-		margin-bottom: 20px;
-		min-width: 384px;
-		max-width: 485px;
-	}
-
-	.featured_cards p {
-		padding: 0 20px;
-		color: #ffffff;
-		font-size: 14px;
-		line-height: 1.6;
-	}
-
-	.featured_cards a {
-		color: #fff !important;
-		display: inline-block;
-		font-family: "Open Sans Condensed", sans-serif;
-		font-weight: 700;
-		background: transparent linear-gradient(180deg, #FFB834 0%, #C68000 100%) 0% 0% no-repeat padding-box;
-		border-radius: 50px;
-		padding: 5px 30px;
-		margin-bottom: 20px;
-		text-decoration: none;
-		transition: all 0.2s ease;
-	}
-
-	.featured_cards a:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-	}
-
-	/* Card Titles */
-	.card_title {
-		background-color: #19416b;
-		opacity: 0.81;
-		border-radius: 8px 8px 0 0;
-		padding: 20px;
-		font-weight: 700;
-		font-size: 30px;
-		color: #ffffff;
-		margin: 0;
-	}
-
-	.card_title_2 {
-		background-color: #45770c;
-		opacity: 0.81;
-		border-radius: 8px 8px 0 0;
-		padding: 20px;
-		font-weight: 700;
-		font-size: 30px;
-		color: #ffffff;
-		margin: 0;
-	}
-
-	.card_title_3 {
-		background-color: #1f9eab;
-		border-radius: 8px 8px 0 0;
-		opacity: 0.81;
-		padding: 20px;
-		font-weight: 700;
-		font-size: 30px;
-		color: #ffffff;
-		margin: 0;
-	}
-
-	/* Card Background Images */
-	.featured_cards .img_1 {
-		width: 100%;
-		border-radius: 8px;
-		background-position: center;
-		background-repeat: no-repeat;
-		background-size: cover;
-		color: #ffffff;
-		background-image: url('https://cdn.simplertrading.com/2021/09/30134809/getting-started-top-card-bg-1.png');
-	}
-
-	.featured_cards .img_2 {
-		width: 100%;
-		border-radius: 8px;
-		background-position: center;
-		background-repeat: no-repeat;
-		background-size: cover;
-		color: #ffffff;
-		background-image: url('https://cdn.simplertrading.com/2021/09/30134811/watchlist-rundown-top-card-bg.png');
-	}
-
-	.featured_cards .img_3 {
-		width: 100%;
-		border-radius: 8px;
-		background-position: center;
-		background-repeat: no-repeat;
-		background-size: cover;
-		color: #ffffff;
-		background-image: url('https://cdn.simplertrading.com/2021/09/30134813/weekly-watchlist-top-card-bg.png');
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE GRID
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.row {
-		display: flex;
-		flex-wrap: wrap;
-		margin-left: -15px;
-		margin-right: -15px;
-	}
-
-	.col-md-6,
-	.col-lg-4,
-	.col-12 {
-		padding-left: 15px;
-		padding-right: 15px;
-		width: 100%;
-	}
-
-	/* Mobile first - full width */
-	.text-center {
-		text-align: center;
-		width: 100%;
-	}
-
-	/* Tablet - 2 columns */
-	@media (min-width: 768px) {
-		.col-md-6 {
-			flex: 0 0 50%;
-			max-width: 50%;
-		}
-	}
-
-	/* Desktop - 3 columns */
-	@media (min-width: 992px) {
-		.col-lg-4 {
-			flex: 0 0 33.333333%;
-			max-width: 33.333333%;
-		}
-	}
-
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * ARCHIVE SECTION
 	 * ═══════════════════════════════════════════════════════════════════════════ */
