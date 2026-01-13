@@ -1,7 +1,7 @@
 //! Course Management System Models
 //! Apple Principal Engineer ICT 7 Grade - January 2026
 
-use chrono::{DateTime, Utc};
+use chrono::{DateTime, NaiveDateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use uuid::Uuid;
@@ -24,8 +24,8 @@ pub struct Course {
     pub duration_minutes: Option<i32>,
     pub level: Option<String>,
     pub metadata: Option<serde_json::Value>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
     
     // Card Display
     pub card_image_url: Option<String>,
@@ -59,7 +59,7 @@ pub struct Course {
     
     // Status
     pub status: Option<String>,
-    pub published_at: Option<DateTime<Utc>>,
+    pub published_at: Option<NaiveDateTime>,
     
     // Analytics
     pub enrollment_count: Option<i32>,
@@ -96,7 +96,7 @@ pub struct CourseListItem {
     pub enrollment_count: Option<i32>,
     pub avg_rating: Option<f64>,
     pub review_count: Option<i32>,
-    pub created_at: DateTime<Utc>,
+    pub created_at: NaiveDateTime,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -113,11 +113,11 @@ pub struct CourseModule {
     pub is_published: bool,
     pub drip_enabled: Option<bool>,
     pub drip_days: Option<i32>,
-    pub drip_date: Option<DateTime<Utc>>,
+    pub drip_date: Option<NaiveDateTime>,
     pub lesson_count: Option<i32>,
     pub total_duration_minutes: Option<i32>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -137,8 +137,8 @@ pub struct Lesson {
     pub position: i32,
     pub is_free: bool,
     pub content: Option<String>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
     
     // Video Integration
     pub video_id: Option<i64>,
@@ -207,8 +207,8 @@ pub struct CourseDownload {
     pub require_lesson_complete: Option<bool>,
     pub download_count: Option<i32>,
     pub uploaded_by: Option<i64>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -225,17 +225,17 @@ pub struct UserCourseEnrollment {
     pub completed_lesson_ids: Option<serde_json::Value>,
     pub progress_percent: Option<i16>,
     pub status: Option<String>,
-    pub enrolled_at: DateTime<Utc>,
-    pub started_at: Option<DateTime<Utc>>,
-    pub completed_at: Option<DateTime<Utc>>,
-    pub last_accessed_at: Option<DateTime<Utc>>,
-    pub access_expires_at: Option<DateTime<Utc>>,
+    pub enrolled_at: NaiveDateTime,
+    pub started_at: Option<NaiveDateTime>,
+    pub completed_at: Option<NaiveDateTime>,
+    pub last_accessed_at: Option<NaiveDateTime>,
+    pub access_expires_at: Option<NaiveDateTime>,
     pub is_lifetime_access: Option<bool>,
     pub order_id: Option<i64>,
     pub price_paid_cents: Option<i32>,
     pub certificate_issued: Option<bool>,
     pub certificate_url: Option<String>,
-    pub certificate_issued_at: Option<DateTime<Utc>>,
+    pub certificate_issued_at: Option<NaiveDateTime>,
     pub notes: Option<serde_json::Value>,
     pub bookmarks: Option<serde_json::Value>,
 }
@@ -260,11 +260,11 @@ pub struct UserLessonProgress {
     pub video_duration_seconds: Option<i32>,
     pub video_watch_percent: Option<i16>,
     pub is_completed: bool,
-    pub completed_at: Option<DateTime<Utc>>,
+    pub completed_at: Option<NaiveDateTime>,
     pub time_spent_seconds: Option<i32>,
     pub view_count: Option<i32>,
-    pub first_accessed_at: DateTime<Utc>,
-    pub last_accessed_at: DateTime<Utc>,
+    pub first_accessed_at: NaiveDateTime,
+    pub last_accessed_at: NaiveDateTime,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -285,8 +285,8 @@ pub struct CourseReview {
     pub is_approved: Option<bool>,
     pub helpful_count: Option<i32>,
     pub not_helpful_count: Option<i32>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub created_at: NaiveDateTime,
+    pub updated_at: NaiveDateTime,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
