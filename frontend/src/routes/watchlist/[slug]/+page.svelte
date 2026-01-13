@@ -76,6 +76,9 @@
 		if (currentIndex !== -1) {
 			currentEntry = watchlistEntries[currentIndex];
 			
+			// CRITICAL: Reset date index when switching watchlist entries
+			selectedDateIndex = 0;
+			
 			// Previous = older entry (higher index in array since newest is first)
 			previousEntry = currentIndex < watchlistEntries.length - 1 
 				? watchlistEntries[currentIndex + 1] 
@@ -102,10 +105,14 @@
 	}
 
 	function selectDate(index: number) {
-		selectedDateIndex = index;
-		if (currentEntry?.watchlistDates?.[index]) {
-			currentSpreadsheetUrl = currentEntry.watchlistDates[index].spreadsheetUrl;
+		// Validate index is within bounds
+		if (!currentEntry?.watchlistDates || index < 0 || index >= currentEntry.watchlistDates.length) {
+			console.warn('Invalid date index:', index);
+			return;
 		}
+		
+		selectedDateIndex = index;
+		currentSpreadsheetUrl = currentEntry.watchlistDates[index].spreadsheetUrl;
 	}
 
 	function nextDate() {
@@ -122,10 +129,28 @@
 
 	// Initialize spreadsheet URL when entry changes
 	$effect(() => {
-		if (currentEntry?.watchlistDates?.[selectedDateIndex]) {
-			currentSpreadsheetUrl = currentEntry.watchlistDates[selectedDateIndex].spreadsheetUrl;
-		} else if (currentEntry?.spreadsheetUrl) {
+		if (!currentEntry) {
+			currentSpreadsheetUrl = '';
+			return;
+		}
+		
+		// Priority 1: Use watchlistDates array if available
+		if (currentEntry.watchlistDates && currentEntry.watchlistDates.length > 0) {
+			// Ensure selectedDateIndex is valid
+			const validIndex = Math.min(selectedDateIndex, currentEntry.watchlistDates.length - 1);
+			if (validIndex !== selectedDateIndex) {
+				selectedDateIndex = validIndex;
+			}
+			currentSpreadsheetUrl = currentEntry.watchlistDates[validIndex].spreadsheetUrl;
+		} 
+		// Priority 2: Fallback to single spreadsheetUrl
+		else if (currentEntry.spreadsheetUrl) {
 			currentSpreadsheetUrl = currentEntry.spreadsheetUrl;
+		}
+		// Priority 3: No spreadsheet available
+		else {
+			currentSpreadsheetUrl = '';
+			console.warn('No spreadsheet URL found for watchlist:', currentEntry.slug);
 		}
 	});
 </script>
