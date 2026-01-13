@@ -1,0 +1,31 @@
+---
+# YAML Lint Configuration for GitHub Actions Workflows
+# Apple ICT 7 Grade - Zero Warnings Standard
+#
+# Suppresses IDE warnings for optional secrets/vars that may not be configured
+# These are intentional and safe - workflows have proper conditional checks
+
+extends: default
+
+rules:
+  line-length:
+    max: 200
+    level: warning
+  
+  comments:
+    min-spaces-from-content: 1
+  
+  # Allow GitHub Actions expression syntax
+  braces:
+    min-spaces-inside: 0
+    max-spaces-inside: 1
+  
+  # Allow empty values for optional secrets
+  empty-values:
+    forbid-in-block-mappings: false
+    forbid-in-flow-mappings: false
+
+# Ignore specific patterns
+ignore: |
+  *.md
+  node_modules/
