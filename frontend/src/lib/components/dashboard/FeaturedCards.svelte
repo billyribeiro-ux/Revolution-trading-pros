@@ -77,18 +77,19 @@
 		justify-content: center;
 	}
 
-	/* Apple ICT 7: Mobile-first - no min-width constraint */
+	/* Apple ICT 7: Equal width and height for all cards */
 	.featured_cards .text-center {
 		display: flex;
 		margin-bottom: 20px;
 		width: 100%;
-		max-width: 485px;
 	}
 
-	/* Tablet+ - restore min-width for proper card sizing */
+	/* Tablet+ - fixed equal dimensions */
 	@media (min-width: 768px) {
 		.featured_cards .text-center {
-			min-width: 384px;
+			width: 485px;
+			min-width: 485px;
+			max-width: 485px;
 		}
 	}
 
@@ -151,34 +152,32 @@
 		margin: 0;
 	}
 
-	/* Card Background Images */
-	:global(.featured_cards .img_1) {
+	/* Card Background Images - Equal dimensions */
+	:global(.featured_cards .img_1),
+	:global(.featured_cards .img_2),
+	:global(.featured_cards .img_3) {
 		width: 100%;
+		height: 220px;
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
 		border-radius: 8px;
 		background-position: center;
 		background-repeat: no-repeat;
 		background-size: cover;
 		color: #ffffff;
+		padding-bottom: 20px;
+	}
+
+	:global(.featured_cards .img_1) {
 		background-image: url('https://cdn.simplertrading.com/2021/09/30134809/getting-started-top-card-bg-1.png');
 	}
 
 	:global(.featured_cards .img_2) {
-		width: 100%;
-		border-radius: 8px;
-		background-position: center;
-		background-repeat: no-repeat;
-		background-size: cover;
-		color: #ffffff;
 		background-image: url('https://cdn.simplertrading.com/2021/09/30134811/watchlist-rundown-top-card-bg.png');
 	}
 
 	:global(.featured_cards .img_3) {
-		width: 100%;
-		border-radius: 8px;
-		background-position: center;
-		background-repeat: no-repeat;
-		background-size: cover;
-		color: #ffffff;
 		background-image: url('https://cdn.simplertrading.com/2021/09/30134813/weekly-watchlist-top-card-bg.png');
 	}
 
