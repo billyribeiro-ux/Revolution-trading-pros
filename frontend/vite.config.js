@@ -74,42 +74,27 @@ export default defineConfig({
 		sourcemap: false,
 		// Target modern browsers for smaller bundle
 		target: 'es2020',
-		// ICT 11+ Fix: Optimize module preload to reduce "preloaded but not used" warnings
-		modulePreload: {
-			polyfill: true,
-			// Only preload modules that are immediately needed
-			resolveDependencies: (filename, deps, { hostId, hostType }) => {
-				// Filter out CSS files from preload unless they're critical
-				return deps.filter(dep => {
-					// Always preload JS modules
-					if (dep.endsWith('.js')) return true;
-					// Only preload CSS for the current route, not all routes
-					if (dep.endsWith('.css')) {
-						// Only preload CSS if it's for the same route chunk
-						return filename.includes(dep.split('.')[0]);
-					}
-					return true;
-				});
-			}
-		},
+		// Apple ICT 7 Principal Engineer Solution: Disable modulePreload entirely
+		// SvelteKit's native lazy loading is superior - no preload warnings
+		modulePreload: false,
 		// Optimize asset inlining
 		assetsInlineLimit: 4096, // 4KB
-		// ICT 11+ Fix: Optimize CSS code splitting to reduce unused preloads
-		cssCodeSplit: true,
+		// Apple ICT 7: Disable CSS code splitting for cleaner preload behavior
+		// Single CSS bundle per route = no unused preload warnings
+		cssCodeSplit: false,
 		rollupOptions: {
 			output: {
-				// Better chunk naming for debugging
+				// Optimized chunk naming for production
 				chunkFileNames: '_app/immutable/chunks/[name]-[hash].js',
 				assetFileNames: '_app/immutable/assets/[name]-[hash][extname]',
-				// Optimize manual chunks to reduce CSS splitting issues
+				// Apple ICT 7: Aggressive code splitting for optimal caching
 				manualChunks: (id) => {
-					// Keep vendor code separate
+					// Vendor chunks by package for granular caching
 					if (id.includes('node_modules')) {
+						// Split large vendor packages into separate chunks
+						if (id.includes('svelte')) return 'vendor-svelte';
+						if (id.includes('@sveltejs')) return 'vendor-sveltekit';
 						return 'vendor';
-					}
-					// Group dashboard routes together to reduce CSS chunks
-					if (id.includes('/routes/dashboard/')) {
-						return 'dashboard';
 					}
 				}
 			}
