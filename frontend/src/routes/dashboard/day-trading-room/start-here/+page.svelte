@@ -58,12 +58,12 @@
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
 			<!-- Welcome Heading -->
-			<h2 class="fl-heading">
-				<span class="fl-heading-text">Welcome to your Revolution Trading Pros Day Trading Room Membership</span>
+			<h2 class="page-heading">
+				<span class="page-heading__text">Welcome to your Revolution Trading Pros Day Trading Room Membership</span>
 			</h2>
 
 			<!-- Intro Text -->
-			<div class="fl-rich-text intro-text">
+			<div class="intro-content">
 				<p>On this "Start Here" page, we've outlined what we believe are the key steps to get you started on a good path with us. Please take some time to go through this page carefully and "check all of the boxes" to ensure you're set-up for success.</p>
 				<p>The <strong>Getting Started Checklist</strong> below is essential. Regardless of if you're new to trading or are a seasoned veteran, we want to help you navigate your way through the Revolution Trading environment in the most efficient way possible.</p>
 			</div>
@@ -104,19 +104,19 @@
 			</div>
 
 			<!-- Accordion Sections -->
-			<div id="accordion_options" class="fl-accordion fl-accordion-large">
+			<div id="accordion_options" class="accordion accordion--large">
 				<!-- Accordion 1: Trading Plan -->
-				<div class="fl-accordion-item" class:is-open={isOpen(0)}>
+				<div class="accordion__item" class:is-open={isOpen(0)}>
 					<button 
-						class="fl-accordion-button"
+						class="accordion__button"
 						onclick={() => toggleAccordion(0)}
 						aria-expanded={isOpen(0)}
 					>
-						<span class="fl-accordion-button-label">
+						<span class="accordion__label">
 							Trading Plan 
-							<span class="accordion-subtitle"><em>As you prepare to dive into this service and trade with us, one of the most crucial steps to getting started is taking time to look at your trading plan.</em></span>
+							<span class="accordion__subtitle"><em>As you prepare to dive into this service and trade with us, one of the most crucial steps to getting started is taking time to look at your trading plan.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
+						<span class="accordion__icon accordion__icon--right">
 							{#if isOpen(0)}
 								<i class="fas fa-times-circle"></i>
 							{:else}
@@ -125,7 +125,7 @@
 						</span>
 					</button>
 					{#if isOpen(0)}
-						<div class="fl-accordion-content">
+						<div class="accordion__content">
 							<p>First off, do you have one? If you do, great! It's a great time to re-examine this and remind yourself of your goals, your rules, and what you most hope to get out of working with Revolution Trading. Be sure to update your plan accordingly and document anything new that pops up.</p>
 							<p>If you don't have a trading plan (or if you do and you'd like to change it up a bit), we have a few tools and resources to help you craft a plan that will help your focus and determination with trading.</p>
 							<p><strong>Below is an example of one of our Trader's Plans:</strong></p>
@@ -153,17 +153,17 @@
 				</div>
 
 				<!-- Accordion 2: Charts, Brokers & Tools -->
-				<div class="fl-accordion-item" class:is-open={isOpen(1)}>
+				<div class="accordion__item" class:is-open={isOpen(1)}>
 					<button 
-						class="fl-accordion-button"
+						class="accordion__button"
 						onclick={() => toggleAccordion(1)}
 						aria-expanded={isOpen(1)}
 					>
-						<span class="fl-accordion-button-label">
+						<span class="accordion__label">
 							Charts, Brokers, & Tools 
-							<span class="accordion-subtitle"><em>Part of being set-up for success with trading is having the right tools for the job. This section has some helpful tips to get started.</em></span>
+							<span class="accordion__subtitle"><em>Part of being set-up for success with trading is having the right tools for the job. This section has some helpful tips to get started.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
+						<span class="accordion__icon accordion__icon--right">
 							{#if isOpen(1)}
 								<i class="fas fa-times-circle"></i>
 							{:else}
@@ -172,7 +172,7 @@
 						</span>
 					</button>
 					{#if isOpen(1)}
-						<div class="fl-accordion-content">
+						<div class="accordion__content">
 							<p>There's a wide-range here and it can become more to manage than what's really needed. However, there are some basic considerations for every trader to ensure you're stepping into the world of trading appropriately equipped.</p>
 							<p>Are you set-up with a broker and have negotiated a rate for your commissions that's in line with the industry standard and/or that you're happy with?</p>
 							<p>Here's what we use and recommend:</p>
@@ -211,17 +211,17 @@
 				</div>
 
 				<!-- Accordion 3: Get to Know Our Trading Team -->
-				<div class="fl-accordion-item" class:is-open={isOpen(2)}>
+				<div class="accordion__item" class:is-open={isOpen(2)}>
 					<button 
-						class="fl-accordion-button"
+						class="accordion__button"
 						onclick={() => toggleAccordion(2)}
 						aria-expanded={isOpen(2)}
 					>
-						<span class="fl-accordion-button-label">
+						<span class="accordion__label">
 							Get to Know Revolution Trading & Our Trading Team 
-							<span class="accordion-subtitle"><em>Here you'll find everything from the Traders' trading plans, favorite strategies & setups, what's on their charts, their recommended courses and videos, and more.</em></span>
+							<span class="accordion__subtitle"><em>Here you'll find everything from the Traders' trading plans, favorite strategies & setups, what's on their charts, their recommended courses and videos, and more.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
+						<span class="accordion__icon accordion__icon--right">
 							{#if isOpen(2)}
 								<i class="fas fa-times-circle"></i>
 							{:else}
@@ -230,7 +230,7 @@
 						</span>
 					</button>
 					{#if isOpen(2)}
-						<div class="fl-accordion-content">
+						<div class="accordion__content">
 							<p>If you haven't already watched the welcome video that walks through everything you get to enjoy as part of this service, please make time to do so.</p>
 							<p>Below you'll find links to each of our Traders Bio Pages. Inside their pages you'll find everything from their Trading Plans, Favorite Strategies & Setups, what's on their charts, recommended courses and videos, and more.</p>
 							
@@ -256,17 +256,17 @@
 				</div>
 
 				<!-- Accordion 4: Trade Alerts -->
-				<div class="fl-accordion-item" class:is-open={isOpen(3)}>
+				<div class="accordion__item" class:is-open={isOpen(3)}>
 					<button 
-						class="fl-accordion-button"
+						class="accordion__button"
 						onclick={() => toggleAccordion(3)}
 						aria-expanded={isOpen(3)}
 					>
-						<span class="fl-accordion-button-label">
+						<span class="accordion__label">
 							Make Sure You're Signed Up for Trade Alerts 
-							<span class="accordion-subtitle"><em>Trade Alerts are sent out by various members of the Trading Team during their Live Trading Sessions. You'll want to be sure to sign up for these powerful alerts.</em></span>
+							<span class="accordion__subtitle"><em>Trade Alerts are sent out by various members of the Trading Team during their Live Trading Sessions. You'll want to be sure to sign up for these powerful alerts.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
+						<span class="accordion__icon accordion__icon--right">
 							{#if isOpen(3)}
 								<i class="fas fa-times-circle"></i>
 							{:else}
@@ -275,7 +275,7 @@
 						</span>
 					</button>
 					{#if isOpen(3)}
-						<div class="fl-accordion-content">
+						<div class="accordion__content">
 							<div class="trader-alerts--container">
 								<div class="alerts-copy">
 									<p>The trades are posted in the room and simultaneously delivered through our App via push notifications. Our <a href="https://intercom.help/simpler-trading/en/?q=mobile+app" target="_blank" rel="noopener">Support Section</a> has some great articles about the app.</p>
@@ -313,17 +313,17 @@
 				</div>
 
 				<!-- Accordion 5: Explore the Live Trading Room -->
-				<div class="fl-accordion-item" class:is-open={isOpen(4)}>
+				<div class="accordion__item" class:is-open={isOpen(4)}>
 					<button 
-						class="fl-accordion-button"
+						class="accordion__button"
 						onclick={() => toggleAccordion(4)}
 						aria-expanded={isOpen(4)}
 					>
-						<span class="fl-accordion-button-label">
+						<span class="accordion__label">
 							Explore the Live Trading Room 
-							<span class="accordion-subtitle"><em>The Live Trading Room provides an excellent platform to connect, collaborate, and build consistency in a live trading environment.</em></span>
+							<span class="accordion__subtitle"><em>The Live Trading Room provides an excellent platform to connect, collaborate, and build consistency in a live trading environment.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
+						<span class="accordion__icon accordion__icon--right">
 							{#if isOpen(4)}
 								<i class="fas fa-times-circle"></i>
 							{:else}
@@ -332,7 +332,7 @@
 						</span>
 					</button>
 					{#if isOpen(4)}
-						<div class="fl-accordion-content">
+						<div class="accordion__content">
 							<p>Check out the schedule for each day/week which is posted just below the login to the room on your Day Trading Room Member Dashboard:</p>
 							<p>
 								<img src="https://cdn.simplertrading.com/2025/05/01151648/SCR-20250501-mrti.png" alt="Trading Room Schedule" class="schedule-screenshot" />
@@ -344,17 +344,17 @@
 				</div>
 
 				<!-- Accordion 6: Additional Member Resources -->
-				<div class="fl-accordion-item" class:is-open={isOpen(5)}>
+				<div class="accordion__item" class:is-open={isOpen(5)}>
 					<button 
-						class="fl-accordion-button"
+						class="accordion__button"
 						onclick={() => toggleAccordion(5)}
 						aria-expanded={isOpen(5)}
 					>
-						<span class="fl-accordion-button-label">
+						<span class="accordion__label">
 							Additional Member Resources 
-							<span class="accordion-subtitle"><em>These links are helpful when trying to learn some of the internal Simpler Language as well as find articles on a wide array of technical information.</em></span>
+							<span class="accordion__subtitle"><em>These links are helpful when trying to learn some of the internal Simpler Language as well as find articles on a wide array of technical information.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
+						<span class="accordion__icon accordion__icon--right">
 							{#if isOpen(5)}
 								<i class="fas fa-times-circle"></i>
 							{:else}
@@ -363,7 +363,7 @@
 						</span>
 					</button>
 					{#if isOpen(5)}
-						<div class="fl-accordion-content">
+						<div class="accordion__content">
 							<p><strong>Simpler Terms</strong><br />
 							A big part of learning how to trade or acclimating to any new service is understanding the jargon used. This page will help you understand the terminology used by our Traders.</p>
 							<p><a class="resource-link" href="https://www.simplertrading.com/simpler-terms/" target="_blank" rel="noopener"><strong>Check out the Simpler Terms here</strong></a></p>
@@ -386,12 +386,12 @@
 
 <style>
 	/* Welcome Heading */
-	.fl-heading {
+	.page-heading {
 		text-align: center;
 		margin-bottom: 30px;
 	}
 
-	.fl-heading-text {
+	.page-heading__text {
 		font-size: 2rem;
 		font-weight: 400;
 		color: #666666;
@@ -400,17 +400,17 @@
 	}
 
 	@media (min-width: 768px) {
-		.fl-heading-text {
+		.page-heading__text {
 			font-size: 2.5rem;
 		}
 	}
 
-	/* Intro Text */
-	.intro-text {
+	/* Intro Content */
+	.intro-content {
 		margin-bottom: 30px;
 	}
 
-	.intro-text p {
+	.intro-content p {
 		font-size: 1rem;
 		line-height: 1.8;
 		color: #676767;
@@ -477,11 +477,11 @@
 	}
 
 	/* Accordion Styles */
-	.fl-accordion {
+	.accordion {
 		margin-top: 20px;
 	}
 
-	.fl-accordion-item {
+	.accordion__item {
 		background: #ffffff;
 		border: 1px solid #e0e0e0;
 		border-radius: 8px;
@@ -489,11 +489,11 @@
 		overflow: hidden;
 	}
 
-	.fl-accordion-item.is-open {
+	.accordion__item.is-open {
 		border-color: #3879F3;
 	}
 
-	.fl-accordion-button {
+	.accordion__button {
 		width: 100%;
 		display: flex;
 		justify-content: space-between;
@@ -506,15 +506,15 @@
 		transition: background 0.2s ease;
 	}
 
-	.fl-accordion-button:hover {
+	.accordion__button:hover {
 		background: #f0f0f0;
 	}
 
-	.fl-accordion-item.is-open .fl-accordion-button {
+	.accordion__item.is-open .accordion__button {
 		background: #e8f4fd;
 	}
 
-	.fl-accordion-button-label {
+	.accordion__label {
 		flex: 1;
 		font-size: 1.25rem;
 		font-weight: 600;
@@ -522,7 +522,7 @@
 		font-family: 'Open Sans', sans-serif;
 	}
 
-	.accordion-subtitle {
+	.accordion__subtitle {
 		display: block;
 		font-size: 1rem;
 		font-weight: 400;
@@ -530,58 +530,58 @@
 		margin-top: 8px;
 	}
 
-	.fl-accordion-button-icon {
+	.accordion__icon {
 		flex-shrink: 0;
 		margin-left: 15px;
 		margin-top: 3px;
 	}
 
-	.fl-accordion-button-icon-right {
+	.accordion__icon--right {
 		color: #fdac3b;
 		font-size: 1.5rem;
 	}
 
-	.fl-accordion-button-icon-right i {
+	.accordion__icon--right i {
 		color: #fdac3b;
 	}
 
-	.fl-accordion-content {
+	.accordion__content {
 		padding: 25px;
 		border-top: 1px solid #e0e0e0;
 	}
 
-	.fl-accordion-content p {
+	.accordion__content p {
 		font-size: 1rem;
 		line-height: 1.8;
 		color: #555;
 		margin-bottom: 15px;
 	}
 
-	.fl-accordion-content ul,
-	.fl-accordion-content ol {
+	.accordion__content ul,
+	.accordion__content ol {
 		margin: 15px 0;
 		padding-left: 25px;
 	}
 
-	.fl-accordion-content li {
+	.accordion__content li {
 		font-size: 1rem;
 		line-height: 1.8;
 		color: #555;
 		margin-bottom: 8px;
 	}
 
-	.fl-accordion-content hr {
+	.accordion__content hr {
 		border: none;
 		border-top: 1px solid #e0e0e0;
 		margin: 20px 0;
 	}
 
-	.fl-accordion-content a {
+	.accordion__content a {
 		color: #3879F3;
 		text-decoration: none;
 	}
 
-	.fl-accordion-content a:hover {
+	.accordion__content a:hover {
 		text-decoration: underline;
 	}
 

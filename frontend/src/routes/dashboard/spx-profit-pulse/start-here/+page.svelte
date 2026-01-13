@@ -40,12 +40,12 @@
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
 			<!-- Welcome Heading -->
-			<h2 class="fl-heading">
-				<span class="fl-heading-text">Welcome to your Revolution Trading Pros SPX Profit Pulse Membership</span>
+			<h2 class="page-heading">
+				<span class="page-heading__text">Welcome to your Revolution Trading Pros SPX Profit Pulse Membership</span>
 			</h2>
 
 			<!-- Intro Text -->
-			<div class="fl-rich-text intro-text">
+			<div class="intro-content">
 				<p>On this "Start Here" page, we've outlined what we believe are the key steps to get you started on a good path with us. Please take some time to go through this page carefully and "check all of the boxes" to ensure you're set-up for success.</p>
 				<p>The <strong>Getting Started Checklist</strong> below is essential. Regardless of if you're new to trading or are a seasoned veteran, we want to help you navigate your way through the Revolution Trading environment in the most efficient way possible.</p>
 			</div>
@@ -86,19 +86,19 @@
 			</div>
 
 			<!-- Accordion Sections -->
-			<div id="accordion_options" class="fl-accordion fl-accordion-large">
+			<div id="accordion_options" class="accordion accordion--large">
 				<!-- Accordion 1: What is SPX Profit Pulse -->
-				<div class="fl-accordion-item" class:is-open={isOpen(0)}>
+				<div class="accordion__item" class:is-open={isOpen(0)}>
 					<button 
-						class="fl-accordion-button"
+						class="accordion__button"
 						onclick={() => toggleAccordion(0)}
 						aria-expanded={isOpen(0)}
 					>
-						<span class="fl-accordion-button-label">
+						<span class="accordion__label">
 							What is SPX Profit Pulse? 
-							<span class="accordion-subtitle"><em>Learn about our 0DTE SPX options trading alert service and how it works.</em></span>
+							<span class="accordion__subtitle"><em>Learn about our 0DTE SPX options trading alert service and how it works.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon">
+						<span class="accordion__icon">
 							{#if isOpen(0)}
 								<IconMinus size={20} />
 							{:else}
@@ -107,7 +107,7 @@
 						</span>
 					</button>
 					{#if isOpen(0)}
-						<div class="fl-accordion-content">
+						<div class="accordion__content">
 							<p>SPX Profit Pulse is our premium alert service focused exclusively on 0DTE (Zero Days to Expiration) options trading on the S&P 500 Index (SPX).</p>
 							<p><strong>What You Get:</strong></p>
 							<ul>
@@ -128,17 +128,17 @@
 				</div>
 
 				<!-- Accordion 2: Setting Up Alerts -->
-				<div class="fl-accordion-item" class:is-open={isOpen(1)}>
+				<div class="accordion__item" class:is-open={isOpen(1)}>
 					<button 
-						class="fl-accordion-button"
+						class="accordion__button"
 						onclick={() => toggleAccordion(1)}
 						aria-expanded={isOpen(1)}
 					>
-						<span class="fl-accordion-button-label">
+						<span class="accordion__label">
 							Setting Up Your Alerts 
-							<span class="accordion-subtitle"><em>Configure your notification preferences to receive trade alerts instantly.</em></span>
+							<span class="accordion__subtitle"><em>Configure your notification preferences to receive trade alerts instantly.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon">
+						<span class="accordion__icon">
 							{#if isOpen(1)}
 								<IconMinus size={20} />
 							{:else}
@@ -147,7 +147,7 @@
 						</span>
 					</button>
 					{#if isOpen(1)}
-						<div class="fl-accordion-content">
+						<div class="accordion__content">
 							<p>To ensure you receive all trade alerts in real-time, please configure your notification settings:</p>
 							<p><strong>Step 1: Enable SMS Alerts</strong></p>
 							<ol>
@@ -168,17 +168,17 @@
 				</div>
 
 				<!-- Accordion 3: Understanding 0DTE Trading -->
-				<div class="fl-accordion-item" class:is-open={isOpen(2)}>
+				<div class="accordion__item" class:is-open={isOpen(2)}>
 					<button 
-						class="fl-accordion-button"
+						class="accordion__button"
 						onclick={() => toggleAccordion(2)}
 						aria-expanded={isOpen(2)}
 					>
-						<span class="fl-accordion-button-label">
+						<span class="accordion__label">
 							Understanding 0DTE Trading 
-							<span class="accordion-subtitle"><em>Learn the basics of zero days to expiration options trading and risk management.</em></span>
+							<span class="accordion__subtitle"><em>Learn the basics of zero days to expiration options trading and risk management.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon">
+						<span class="accordion__icon">
 							{#if isOpen(2)}
 								<IconMinus size={20} />
 							{:else}
@@ -187,7 +187,7 @@
 						</span>
 					</button>
 					{#if isOpen(2)}
-						<div class="fl-accordion-content">
+						<div class="accordion__content">
 							<p>0DTE options trading involves buying and selling options contracts that expire on the same day. This strategy offers unique opportunities but requires careful risk management.</p>
 							<p><strong>Key Characteristics:</strong></p>
 							<ul>
@@ -214,17 +214,17 @@
 				</div>
 
 				<!-- Accordion 4: Broker Requirements -->
-				<div class="fl-accordion-item" class:is-open={isOpen(3)}>
+				<div class="accordion__item" class:is-open={isOpen(3)}>
 					<button 
-						class="fl-accordion-button"
+						class="accordion__button"
 						onclick={() => toggleAccordion(3)}
 						aria-expanded={isOpen(3)}
 					>
-						<span class="fl-accordion-button-label">
+						<span class="accordion__label">
 							Broker Requirements & Setup 
-							<span class="accordion-subtitle"><em>Ensure your brokerage account is properly configured for 0DTE SPX options trading.</em></span>
+							<span class="accordion__subtitle"><em>Ensure your brokerage account is properly configured for 0DTE SPX options trading.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon">
+						<span class="accordion__icon">
 							{#if isOpen(3)}
 								<IconMinus size={20} />
 							{:else}
@@ -233,7 +233,7 @@
 						</span>
 					</button>
 					{#if isOpen(3)}
-						<div class="fl-accordion-content">
+						<div class="accordion__content">
 							<p>To trade 0DTE SPX options, you'll need a brokerage account with specific capabilities:</p>
 							<p><strong>Required Account Features:</strong></p>
 							<ul>
@@ -268,17 +268,17 @@
 				</div>
 
 				<!-- Accordion 5: Additional Resources -->
-				<div class="fl-accordion-item" class:is-open={isOpen(4)}>
+				<div class="accordion__item" class:is-open={isOpen(4)}>
 					<button 
-						class="fl-accordion-button"
+						class="accordion__button"
 						onclick={() => toggleAccordion(4)}
 						aria-expanded={isOpen(4)}
 					>
-						<span class="fl-accordion-button-label">
+						<span class="accordion__label">
 							Additional Member Resources 
-							<span class="accordion-subtitle"><em>Access our library of educational content, tools, and support resources.</em></span>
+							<span class="accordion__subtitle"><em>Access our library of educational content, tools, and support resources.</em></span>
 						</span>
-						<span class="fl-accordion-button-icon">
+						<span class="accordion__icon">
 							{#if isOpen(4)}
 								<IconMinus size={20} />
 							{:else}
@@ -287,7 +287,7 @@
 						</span>
 					</button>
 					{#if isOpen(4)}
-						<div class="fl-accordion-content">
+						<div class="accordion__content">
 							<p><strong>Trading Terms Glossary</strong><br />
 							A comprehensive guide to options trading terminology and jargon used in our alerts.</p>
 							<p><a class="resource-link" href="/trading-terms">View Trading Terms Glossary</a></p>
@@ -313,12 +313,12 @@
 
 <style>
 	/* Welcome Heading */
-	.fl-heading {
+	.page-heading {
 		text-align: center;
 		margin-bottom: 30px;
 	}
 
-	.fl-heading-text {
+	.page-heading__text {
 		font-size: 2rem;
 		font-weight: 400;
 		color: #666666;
@@ -327,17 +327,17 @@
 	}
 
 	@media (min-width: 768px) {
-		.fl-heading-text {
+		.page-heading__text {
 			font-size: 2.5rem;
 		}
 	}
 
-	/* Intro Text */
-	.intro-text {
+	/* Intro Content */
+	.intro-content {
 		margin-bottom: 30px;
 	}
 
-	.intro-text p {
+	.intro-content p {
 		font-size: 1rem;
 		line-height: 1.8;
 		color: #676767;
@@ -404,11 +404,11 @@
 	}
 
 	/* Accordion Styles */
-	.fl-accordion {
+	.accordion {
 		margin-top: 20px;
 	}
 
-	.fl-accordion-item {
+	.accordion__item {
 		background: #ffffff;
 		border: 1px solid #e0e0e0;
 		border-radius: 8px;
@@ -416,11 +416,11 @@
 		overflow: hidden;
 	}
 
-	.fl-accordion-item.is-open {
+	.accordion__item.is-open {
 		border-color: #3879F3;
 	}
 
-	.fl-accordion-button {
+	.accordion__button {
 		width: 100%;
 		display: flex;
 		justify-content: space-between;
@@ -433,15 +433,15 @@
 		transition: background 0.2s ease;
 	}
 
-	.fl-accordion-button:hover {
+	.accordion__button:hover {
 		background: #f0f0f0;
 	}
 
-	.fl-accordion-item.is-open .fl-accordion-button {
+	.accordion__item.is-open .accordion__button {
 		background: #e8f4fd;
 	}
 
-	.fl-accordion-button-label {
+	.accordion__label {
 		flex: 1;
 		font-size: 1.25rem;
 		font-weight: 600;
@@ -449,7 +449,7 @@
 		font-family: 'Open Sans', sans-serif;
 	}
 
-	.accordion-subtitle {
+	.accordion__subtitle {
 		display: block;
 		font-size: 1rem;
 		font-weight: 400;
@@ -457,50 +457,50 @@
 		margin-top: 8px;
 	}
 
-	.fl-accordion-button-icon {
+	.accordion__icon {
 		flex-shrink: 0;
 		color: #3879F3;
 		margin-left: 15px;
 		margin-top: 3px;
 	}
 
-	.fl-accordion-content {
+	.accordion__content {
 		padding: 25px;
 		border-top: 1px solid #e0e0e0;
 	}
 
-	.fl-accordion-content p {
+	.accordion__content p {
 		font-size: 1rem;
 		line-height: 1.8;
 		color: #555;
 		margin-bottom: 15px;
 	}
 
-	.fl-accordion-content ul,
-	.fl-accordion-content ol {
+	.accordion__content ul,
+	.accordion__content ol {
 		margin: 15px 0;
 		padding-left: 25px;
 	}
 
-	.fl-accordion-content li {
+	.accordion__content li {
 		font-size: 1rem;
 		line-height: 1.8;
 		color: #555;
 		margin-bottom: 8px;
 	}
 
-	.fl-accordion-content hr {
+	.accordion__content hr {
 		border: none;
 		border-top: 1px solid #e0e0e0;
 		margin: 20px 0;
 	}
 
-	.fl-accordion-content a {
+	.accordion__content a {
 		color: #3879F3;
 		text-decoration: none;
 	}
 
-	.fl-accordion-content a:hover {
+	.accordion__content a:hover {
 		text-decoration: underline;
 	}
 
