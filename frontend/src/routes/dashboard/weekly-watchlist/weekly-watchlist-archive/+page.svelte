@@ -52,21 +52,19 @@
 <!-- Archive Section -->
 <section class="dashboard__content-section">
 		<!-- Archive Grid -->
-		<div class="fl-post-grid-post">
+		<div class="archive-grid">
 			{#each data.archiveEntries as { slug, title, trader }}
-				<div class="card fl-post-text">
-					<div>
-						<section class="card-body u--squash">
-							<h4 class="h5 card-title">{title}</h4>
-							<div class="excerpt"><i>With {trader}</i></div>
-							<div class="fl-post-more-link">
-								<a class="btn btn-tiny btn-default" href="/watchlist/{slug}?tab=2">
-									Read Now
-								</a>
-							</div>
-						</section>
+				<article class="archive-card">
+					<div class="archive-card__content">
+						<h4 class="archive-card__title">{title}</h4>
+						<div class="archive-card__excerpt"><i>With {trader}</i></div>
+						<div class="archive-card__action">
+							<a class="btn btn-tiny btn-default" href="/watchlist/{slug}?tab=2">
+								Read Now
+							</a>
+						</div>
 					</div>
-				</div>
+				</article>
 			{/each}
 		</div>
 
@@ -114,8 +112,8 @@
 {/if}
 
 <style>
-	/* Archive Grid - WordPress Match */
-	.fl-post-grid-post {
+	/* Archive Grid */
+	.archive-grid {
 		font-size: 19px;
 		background: transparent !important;
 		border: 0;
@@ -124,30 +122,27 @@
 		justify-content: space-between;
 	}
 
-	/* Archive Cards - WordPress Match */
-	.card {
+	/* Archive Card */
+	.archive-card {
 		max-width: 32%;
 		margin: 0.5%;
 	}
 
-	.card-body {
+	.archive-card__content {
 		padding: 0;
-	}
-
-	.u--squash {
 		margin: 0;
 	}
 
-	/* Card Title - WordPress Match */
-	.card-title {
+	/* Card Title */
+	.archive-card__title {
 		font-size: 24px;
 		margin-bottom: 0;
 		line-height: 26px;
 		padding: 0 0 5px;
 	}
 
-	/* Excerpt - WordPress Match */
-	.excerpt {
+	/* Card Excerpt */
+	.archive-card__excerpt {
 		margin: 20px 0;
 		max-height: 8rem;
 		-webkit-box-orient: vertical;
@@ -160,12 +155,12 @@
 		font-size: 16px;
 	}
 
-	.excerpt i {
+	.archive-card__excerpt i {
 		font-style: italic;
 	}
 
-	/* Read Now Button */
-	.fl-post-more-link {
+	/* Card Action */
+	.archive-card__action {
 		margin-top: 0;
 	}
 
@@ -229,7 +224,7 @@
 
 	/* Responsive - Tablet */
 	@media (max-width: 992px) {
-		.card {
+		.archive-card {
 			max-width: 48%;
 			margin: 1%;
 		}
@@ -237,16 +232,16 @@
 
 	/* Responsive - Mobile */
 	@media (max-width: 768px) {
-		.card {
+		.archive-card {
 			max-width: 100%;
 			margin: 10px 0;
 		}
 
-		.card-title {
+		.archive-card__title {
 			font-size: 20px;
 		}
 
-		.excerpt {
+		.archive-card__excerpt {
 			font-size: 14px;
 		}
 
