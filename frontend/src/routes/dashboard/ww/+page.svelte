@@ -137,12 +137,20 @@
 	<title>Weekly Watchlist Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<!-- DASHBOARD CONTENT -->
-<div class="dashboard__content">
-	<div class="dashboard__content-main">
-		
-		<!-- FEATURED CARDS SECTION -->
-		<section class="dashboard__content-section">
+<main class="dashboard__main">
+	
+	<header class="dashboard__header">
+		<div class="dashboard__header-left">
+			<h1 class="dashboard__page-title">Weekly Watchlist Dashboard</h1>
+		</div>
+	</header>
+
+	<div class="dashboard__content">
+
+		<div class="dashboard__content-main">
+			
+			<!-- FEATURED CARDS SECTION -->
+			<section class="dashboard__content-section-member">
 			<div class="row featured_cards">
 				{#each featuredCards as card (card.id)}
 					<div class="col-md-6 col-lg-4 text-center">
@@ -208,7 +216,9 @@
 		</section>
 	</aside>
 
-</div>
+	</div>
+
+</main>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
