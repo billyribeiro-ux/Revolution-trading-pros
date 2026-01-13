@@ -12,23 +12,30 @@
 <script lang="ts">
 	import { IconChevronRight } from '$lib/icons';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
+	import type { PageData } from './$types';
 
-	// SSR data from +page.server.ts
-	let { data } = $props();
+	// Svelte 5 props with proper typing
+	interface Props {
+		data: PageData;
+	}
+
+	let { data }: Props = $props();
 
 	// Accordion state management - Svelte 5 runes
 	let openAccordions = $state<Set<number>>(new Set());
 
-	function toggleAccordion(index: number) {
-		if (openAccordions.has(index)) {
-			openAccordions.delete(index);
-			openAccordions = new Set(openAccordions);
+	// Toggle accordion with Set reassignment for reactivity
+	function toggleAccordion(index: number): void {
+		const updated = new Set(openAccordions);
+		if (updated.has(index)) {
+			updated.delete(index);
 		} else {
-			openAccordions.add(index);
-			openAccordions = new Set(openAccordions);
+			updated.add(index);
 		}
+		openAccordions = updated;
 	}
 
+	// Check if accordion is open
 	function isOpen(index: number): boolean {
 		return openAccordions.has(index);
 	}

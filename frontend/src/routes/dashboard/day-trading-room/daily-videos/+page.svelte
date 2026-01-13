@@ -14,22 +14,27 @@
 	@version 1.0.0 - January 2026
 -->
 <script lang="ts">
-	import type { DailyVideo, PageData } from './+page.server';
+	import type { PageData } from './$types';
+	import type { DailyVideo } from './+page.server';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
+	// Svelte 5 props with SvelteKit typing
 	interface Props {
 		data: PageData;
 	}
 
 	let { data }: Props = $props();
 
+	// Derived state for reactive computed values
 	let videos = $derived(data.videos ?? []);
 	let pagination = $derived(data.pagination);
 	let hasVideos = $derived(videos.length > 0);
 
+	// Local state for search input
 	let searchQuery = $state('');
 
-	function handleSearch(e: Event) {
+	// Form submission handler - navigates with search params
+	function handleSearch(e: Event): void {
 		e.preventDefault();
 		const url = new URL(window.location.href);
 		if (searchQuery) {
@@ -41,12 +46,14 @@
 		window.location.href = url.toString();
 	}
 
+	// Generate pagination URL
 	function getPageUrl(page: number): string {
 		const url = new URL(window.location.href);
 		url.searchParams.set('page', page.toString());
 		return url.toString();
 	}
 
+	// Generate video detail URL
 	function getVideoUrl(video: DailyVideo): string {
 		return `/dashboard/day-trading-room/daily-videos/${video.slug}`;
 	}
