@@ -188,7 +188,7 @@
 	const toolsCards = [
 		{
 			name: 'Weekly Watchlist',
-			href: '/dashboard/ww',
+			href: '/dashboard/weekly-watchlist',
 			icon: 'weekly-watchlist',
 			variant: 'ww'
 		}
