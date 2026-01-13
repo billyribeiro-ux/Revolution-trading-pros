@@ -18,72 +18,54 @@ use validator::Validate;
 // INDICATOR (Core Entity)
 // ═══════════════════════════════════════════════════════════════════════════════════
 
+/// Indicator entity matching existing database schema
+/// Database uses BIGINT id and has different column set
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct Indicator {
-    pub id: Uuid,
+    pub id: i64,
     pub name: String,
     pub slug: String,
-    pub tagline: Option<String>,
     pub description: Option<String>,
-    pub price_cents: i32,
-    pub is_free: Option<bool>,
-    pub sale_price_cents: Option<i32>,
-    pub sale_ends_at: Option<DateTime<Utc>>,
-    pub logo_url: Option<String>,
-    pub card_image_url: Option<String>,
-    pub banner_image_url: Option<String>,
-    pub featured_video_url: Option<String>,
-    pub bunny_video_guid: Option<String>,
-    pub short_description: Option<String>,
     pub long_description: Option<String>,
+    pub price: Option<f64>,
+    pub is_active: Option<bool>,
+    pub platform: Option<String>,
+    pub version: Option<String>,
+    pub download_url: Option<String>,
+    pub documentation_url: Option<String>,
+    pub thumbnail: Option<String>,
+    pub screenshots: Option<serde_json::Value>,
     pub features: Option<serde_json::Value>,
     pub requirements: Option<serde_json::Value>,
-    pub compatibility: Option<serde_json::Value>,
-    pub supported_platforms: Option<serde_json::Value>,
-    pub version: Option<String>,
-    pub release_date: Option<NaiveDate>,
-    pub last_update: Option<NaiveDate>,
     pub meta_title: Option<String>,
     pub meta_description: Option<String>,
-    pub og_image_url: Option<String>,
-    pub status: Option<String>,
-    pub is_published: Option<bool>,
-    pub published_at: Option<DateTime<Utc>>,
-    pub view_count: Option<i32>,
-    pub download_count: Option<i32>,
-    pub purchase_count: Option<i32>,
-    pub creator_id: Option<i32>,
-    pub product_id: Option<i32>,
-    pub created_at: Option<DateTime<Utc>>,
-    pub updated_at: Option<DateTime<Utc>>,
+    pub created_at: Option<NaiveDateTime>,
+    pub updated_at: Option<NaiveDateTime>,
 }
 
+/// IndicatorListItem matching existing database schema  
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct IndicatorListItem {
-    pub id: Uuid,
+    pub id: i64,
     pub name: String,
     pub slug: String,
-    pub tagline: Option<String>,
-    pub price_cents: i32,
-    pub is_free: Option<bool>,
-    pub sale_price_cents: Option<i32>,
-    pub logo_url: Option<String>,
-    pub card_image_url: Option<String>,
-    pub status: Option<String>,
-    pub is_published: Option<bool>,
-    pub view_count: Option<i32>,
-    pub download_count: Option<i32>,
-    pub created_at: Option<DateTime<Utc>>,
+    pub description: Option<String>,
+    pub price: Option<f64>,
+    pub is_active: Option<bool>,
+    pub platform: Option<String>,
+    pub thumbnail: Option<String>,
+    pub created_at: Option<NaiveDateTime>,
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // INDICATOR FILES (Multi-platform downloads)
 // ═══════════════════════════════════════════════════════════════════════════════════
 
+/// IndicatorFile matching database schema with BIGINT indicator_id
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct IndicatorFile {
     pub id: i32,
-    pub indicator_id: Uuid,
+    pub indicator_id: i64,
     pub file_name: String,
     pub original_name: Option<String>,
     pub file_path: String,

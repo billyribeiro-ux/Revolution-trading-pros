@@ -37,7 +37,7 @@ pub mod courses_admin;
 pub mod member_courses;
 pub mod member_indicators;
 pub mod admin_courses;
-// pub mod admin_indicators; // TODO: Fix SQLx tuple decoding issues
+pub mod admin_indicators;
 pub mod admin_page_layouts;
 pub mod migrate;
 pub mod popups;
@@ -94,7 +94,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/courses", member_courses::public_router())
         .nest("/my/courses", member_courses::member_router())
         // Indicator Management System
-        // .nest("/admin/indicators", admin_indicators::router()) // TODO: Fix SQLx issues
+        .nest("/admin/indicators", admin_indicators::router())
         .nest("/admin/page-layouts", admin_page_layouts::router())
         // Forms Admin - ICT 7 Grade
         .nest("/admin/forms", forms::admin_router())
