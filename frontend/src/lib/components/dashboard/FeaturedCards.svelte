@@ -77,11 +77,19 @@
 		justify-content: center;
 	}
 
+	/* Apple ICT 7: Mobile-first - no min-width constraint */
 	.featured_cards .text-center {
 		display: flex;
 		margin-bottom: 20px;
-		min-width: 384px;
+		width: 100%;
 		max-width: 485px;
+	}
+
+	/* Tablet+ - restore min-width for proper card sizing */
+	@media (min-width: 768px) {
+		.featured_cards .text-center {
+			min-width: 384px;
+		}
 	}
 
 	.featured_cards p {
@@ -206,11 +214,36 @@
 		}
 	}
 
-	/* Desktop - 3 columns */
+	/* Desktop - 3 columns for 3x1 layout */
 	@media (min-width: 992px) {
 		.col-lg-4 {
 			flex: 0 0 33.333333%;
 			max-width: 33.333333%;
+		}
+
+		/* 2x1 layout - 2 columns on desktop */
+		.col-lg-6 {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SECTION PADDING - Matches WordPress
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	.dashboard__content-section-member {
+		padding: 30px 20px;
+	}
+
+	@media screen and (min-width: 1024px) {
+		.dashboard__content-section-member {
+			padding: 30px;
+		}
+	}
+
+	@media screen and (min-width: 1440px) {
+		.dashboard__content-section-member {
+			padding: 40px;
 		}
 	}
 </style>

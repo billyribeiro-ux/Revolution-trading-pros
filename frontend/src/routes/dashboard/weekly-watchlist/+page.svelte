@@ -188,7 +188,8 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DASHBOARD CONTENT LAYOUT - Flex container for main + sidebar
+	 * DASHBOARD CONTENT LAYOUT - Apple ICT 7 Fix
+	 * Exact match to Day Trading Room (working reference)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	.dashboard__content {
 		display: flex;
@@ -199,6 +200,60 @@
 		border-right: 1px solid #dbdbdb;
 		flex: 1 1 auto;
 		min-width: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * SIDEBAR - Apple ICT 7 Fix: Parent must style child component
+	 * RightSidebar component CSS is scoped, so parent needs :global()
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.dashboard__content-sidebar) {
+		display: none;
+		width: 260px;
+		flex: 0 0 auto;
+		margin-top: -1px;
+		background: #fff;
+		border-right: 1px solid #dbdbdb;
+		border-top: 1px solid #dbdbdb;
+		font-family: 'Open Sans', sans-serif;
+		font-size: 14px;
+		line-height: 1.6;
+	}
+
+	@media (min-width: 1080px) {
+		:global(.dashboard__content-sidebar) {
+			display: block;
+		}
+	}
+
+	:global(.content-sidebar__section) {
+		padding: 20px 30px 20px 20px;
+		border-bottom: 1px solid #dbdbdb;
+	}
+
+	:global(.content-sidebar__heading) {
+		padding: 15px 20px;
+		margin: -20px -30px 20px -20px;
+		font-size: 14px;
+		font-weight: 700;
+		font-family: 'Open Sans', sans-serif;
+		letter-spacing: 0.1em;
+		text-transform: uppercase;
+		color: #333;
+		background: #ededed;
+		border-bottom: 1px solid #dbdbdb;
+		line-height: 1.4;
+	}
+
+	:global(.content-sidebar__heading .text-center) {
+		text-align: center;
+	}
+
+	:global(.pssubject) {
+		font-size: 10px;
+		margin-top: 15px;
+		text-transform: initial;
+		font-weight: 400;
+		letter-spacing: normal;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -360,31 +415,21 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * DASHBOARD CONTENT STRUCTURE
+	 * CONTENT SECTIONS
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard__content {
-		display: flex;
-		flex-wrap: wrap;
-		width: 100%;
-	}
-
-	.dashboard__content-main {
-		flex: 1 1 100%;
-		max-width: 100%;
-	}
-
 	.dashboard__content-section {
 		padding: 30px 20px;
+		overflow-x: auto;
+		overflow-y: hidden;
 	}
 
-	@media (min-width: 1280px) {
+	@media screen and (min-width: 1024px) {
 		.dashboard__content-section {
 			padding: 30px;
 		}
 	}
 
-	@media (min-width: 1440px) {
+	@media screen and (min-width: 1440px) {
 		.dashboard__content-section {
 			padding: 40px;
 		}
