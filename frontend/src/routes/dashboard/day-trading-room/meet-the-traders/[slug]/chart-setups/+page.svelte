@@ -15,17 +15,12 @@
 
 <!-- Page Content -->
 {#if trader}
-	<div class="fl-module fl-module-heading">
-		<div class="fl-module-content fl-node-content">
-			<h2 class="fl-heading">
-				<span class="fl-heading-text">{trader.name.split(' ')[0]}'s Indicators</span>
-			</h2>
-		</div>
+	<div class="content-block">
+		<h2 class="page-heading">{trader.name.split(' ')[0]}'s Indicators</h2>
 	</div>
 	
-	<div class="fl-module fl-module-rich-text">
-		<div class="fl-module-content fl-node-content">
-			<div class="fl-rich-text">
+	<div class="content-block">
+		<div class="content-text">
 				<p class="no-margin">You may have heard, {trader.name.split(' ')[0]} uses a combination of indicators and market internals across his 6 monitors that he looks at daily. As you know each trader should decide what is most important to them to have on their own charts, and what works best for them.</p>
 				
 				<p class="no-margin">His core setup includes the following <b>free indicators</b>:</p>
@@ -93,81 +88,67 @@
 				<p class="no-margin">Below is a shared link TOS, copy and paste this shared link into Thinkorswim (TOS):</p>
 				<p class="no-margin"><a href="https://tos.mx/F5XE5sa" target="_blank" rel="nofollow noopener">https://tos.mx/F5XE5sa</a></p>
 				<p class="no-margin">Please go to: Setup &gt; Open Shared item &gt; paste link into Shared item URL: &gt; Open</p>
-			</div>
 		</div>
 	</div>
 {/if}
 
 <style>
-	.fl-module {
+	.content-block {
 		margin-bottom: 20px;
 	}
 
-	.fl-module:last-child {
+	.content-block:last-child {
 		margin-bottom: 0;
 	}
 
-	.fl-module-content {
-		position: relative;
-	}
-
-	.fl-node-content {
-		position: relative;
-	}
-
-	.fl-heading {
-		margin: 0;
-		padding: 0;
-		line-height: 1.2;
-	}
-
-	.fl-heading-text {
-		display: block;
+	.page-heading {
 		font-size: 52px;
 		font-weight: 700;
 		color: #0C2434;
 		font-family: 'Open Sans Condensed', sans-serif;
+		margin: 0;
+		line-height: 1.2;
 	}
 
-	.fl-rich-text {
+	.content-text {
 		font-size: 23px;
 		line-height: 1.5;
 		color: #333;
 	}
 
-	.fl-rich-text p {
+	.content-text p {
 		margin: 0 0 20px;
 	}
 
-	.fl-rich-text p.no-margin {
+	.content-text p.no-margin {
 		margin-bottom: 10px;
 	}
 
-	.fl-rich-text ul {
+	.content-text ul {
 		margin: 15px 0 20px;
 		padding-left: 40px;
 	}
 
-	.fl-rich-text li {
+	.content-text li {
 		margin-bottom: 8px;
 	}
 
-	.fl-rich-text li p {
+	.content-text li p {
 		margin: 0;
 	}
 
-	.fl-rich-text a {
+	.content-text a {
 		color: #0984ae;
 		text-decoration: none;
 		transition: color 0.2s;
 	}
 
-	.fl-rich-text a:hover {
+	.content-text a:hover {
 		color: #076787;
 		text-decoration: underline;
 	}
 
-	.fl-rich-text b {
+	.content-text b {
 		font-weight: 700;
 	}
 
@@ -185,12 +166,12 @@
 	}
 
 	@media (max-width: 768px) {
-		.fl-heading-text {
+		.page-heading {
 			font-size: 32px;
 			text-align: center;
 		}
 
-		.fl-rich-text {
+		.content-text {
 			font-size: 18px;
 		}
 	}
