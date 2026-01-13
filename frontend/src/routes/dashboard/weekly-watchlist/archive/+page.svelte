@@ -140,17 +140,18 @@
 	}
 
 	.archive-item__title {
-		font-size: 18px;
+		font-size: 24px;
 		font-weight: 700;
 		color: #333;
-		margin: 0 0 5px;
-		line-height: 1.4;
+		margin: 0 0 0;
+		line-height: 26px;
+		padding: 0 0 5px;
 	}
 
 	.archive-item__trader {
-		font-size: 14px;
+		font-size: 16px;
 		color: #666;
-		margin: 0 0 10px;
+		margin: 20px 0;
 	}
 
 	.archive-item__trader em {
@@ -159,18 +160,19 @@
 
 	.archive-item__btn {
 		display: inline-block;
-		padding: 6px 15px;
-		font-size: 12px;
+		padding: 8px 20px;
+		font-size: 13px;
 		font-weight: 600;
 		color: #fff;
-		background: #17a2b8;
-		border-radius: 3px;
+		background: transparent linear-gradient(180deg, #17a2b8 0%, #138496 100%) 0% 0% no-repeat padding-box;
+		border-radius: 50px;
 		text-decoration: none;
-		transition: background 0.2s;
+		transition: all 0.2s;
+		border: none;
 	}
 
 	.archive-item__btn:hover {
-		background: #138496;
+		background: transparent linear-gradient(180deg, #138496 0%, #0f6674 100%) 0% 0% no-repeat padding-box;
 	}
 
 	/* Pagination */
