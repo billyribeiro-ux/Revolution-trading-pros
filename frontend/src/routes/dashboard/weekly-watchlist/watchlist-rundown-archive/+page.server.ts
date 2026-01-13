@@ -3,13 +3,12 @@
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Grade - January 2026
  * 
- * Svelte 5 / SvelteKit 2.0 Best Practices:
- * - Typed load function with explicit return type
+ * SvelteKit 2.0 / Svelte 5 Best Practices (Nov/Dec 2025):
+ * - JSDoc type annotation for auto-generated types
+ * - async function syntax (preferred over arrow functions)
  * - Proper error handling with structured responses
  * - Type-safe API response mapping
  */
-
-import type { RequestEvent } from '@sveltejs/kit';
 
 /** API response structure from backend */
 interface WatchlistApiEntry {
@@ -103,7 +102,8 @@ const MOCK_VIDEOS: WatchlistVideo[] = [
 	}
 ];
 
-export const load = async ({ fetch }: RequestEvent) => {
+/** @type {import('./$types').PageServerLoad} */
+export async function load({ fetch }) {
 	try {
 		const response = await fetch('https://revolution-trading-pros-api.fly.dev/api/watchlist/entries');
 		
