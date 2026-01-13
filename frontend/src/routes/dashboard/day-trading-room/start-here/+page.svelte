@@ -275,20 +275,43 @@
 					</button>
 					{#if isOpen(3)}
 						<div class="fl-accordion-content">
-							<p>Trade Alerts are sent out by various members of our Trading Team during their Live Trading Sessions. These alerts provide real-time notifications about potential trade setups, entries, and exits.</p>
-							<p>To sign up for Trade Alerts:</p>
-							<ol>
-								<li>Go to your <a href="/dashboard/account">Account Settings</a></li>
-								<li>Navigate to the "Notifications" section</li>
-								<li>Enable SMS and/or Email alerts for Trade Notifications</li>
-								<li>Select which traders you'd like to receive alerts from</li>
-							</ol>
-							<p><strong>Note:</strong> Make sure your phone number is verified to receive SMS alerts.</p>
+							<div class="trader-alerts--container">
+								<div class="alerts-copy">
+									<p>The trades are posted in the room and simultaneously delivered through our App via push notifications. Our <a href="https://intercom.help/simpler-trading/en/?q=mobile+app" target="_blank" rel="noopener">Support Section</a> has some great articles about the app.</p>
+									<p><strong>Follow these steps to download our app:</strong></p>
+									<ol class="app-steps">
+										<li>Navigate to your App Store (<a href="https://apps.apple.com/us/developer/simpler-options/id663042245" target="_blank" rel="noopener">Apple</a> or <a href="https://play.google.com/store/apps/details?id=com.bellesoft.stprotradingroom&hl=en" target="_blank" rel="noopener">Android</a>) Search for "Simpler Trading Mobile" and then download the app.
+											<div class="mobile-app-buttons">
+												<a href="https://apps.apple.com/us/developer/simpler-options/id663042245" target="_blank" rel="noopener">
+													<img src="https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/25152618/apple-store.png" alt="Apple App Store" width="149" height="46" />
+												</a>
+												<a href="https://play.google.com/store/apps/details?id=com.bellesoft.stprotradingroom&hl=en" target="_blank" rel="noopener">
+													<img src="https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/25152633/google-play.png" alt="Google Play Store" width="149" height="47" />
+												</a>
+											</div>
+										</li>
+										<li>Once downloaded, login using the same username (email) and password as you have for the site.</li>
+										<li>Next, you'll login to the Trading Room you have access to, and from there, you'll be enabled for push notifications with the trade alerts.</li>
+									</ol>
+								</div>
+								<div class="alerts-image">
+									<img src="https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/17115251/trade-alerts-phone.png" alt="Trade Alerts Phone" width="240" height="297" />
+									<div class="app-images">
+										<a href="https://apps.apple.com/us/developer/simpler-options/id663042245" target="_blank" rel="noopener">
+											<img src="https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/25152618/apple-store.png" alt="Apple App Store" width="149" height="46" />
+										</a>
+										<a href="https://play.google.com/store/apps/details?id=com.bellesoft.stprotradingroom&hl=en" target="_blank" rel="noopener">
+											<img src="https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/25152633/google-play.png" alt="Google Play Store" width="149" height="47" />
+										</a>
+									</div>
+								</div>
+							</div>
+							<p class="alerts-note">If you need help interpreting the trade alerts, please check out this <a href="https://www.simplertrading.com/entering-trades-using-trade-alerts-henry-gambell/" target="_blank" rel="noopener">blog post</a>. Keep in mind our traders take trades appropriate for their personal accounts. It is not intended for you to blindly copy trades. You must decide for yourself which trades are appropriate for your trading plan and risk appetite.</p>
 						</div>
 					{/if}
 				</div>
 
-				<!-- Accordion 5: Additional Member Resources -->
+				<!-- Accordion 5: Explore the Live Trading Room -->
 				<div class="fl-accordion-item" class:is-open={isOpen(4)}>
 					<button 
 						class="fl-accordion-button"
@@ -296,8 +319,8 @@
 						aria-expanded={isOpen(4)}
 					>
 						<span class="fl-accordion-button-label">
-							Additional Member Resources 
-							<span class="accordion-subtitle"><em>These links are helpful when trying to learn some of the internal language as well as find articles on a wide array of technical information.</em></span>
+							Explore the Live Trading Room 
+							<span class="accordion-subtitle"><em>The Live Trading Room provides an excellent platform to connect, collaborate, and build consistency in a live trading environment.</em></span>
 						</span>
 						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
 							{#if isOpen(4)}
@@ -309,13 +332,44 @@
 					</button>
 					{#if isOpen(4)}
 						<div class="fl-accordion-content">
-							<p><strong>Trading Terms</strong><br />
+							<p>Check out the schedule for each day/week which is posted just below the login to the room on your Day Trading Room Member Dashboard:</p>
+							<p>
+								<img src="https://cdn.simplertrading.com/2025/05/01151648/SCR-20250501-mrti.png" alt="Trading Room Schedule" class="schedule-screenshot" />
+							</p>
+							<p>In the Live Trading Room you'll find a unique community of traders that offer support & guidance. It also provides the opportunity to look over the shoulder of seasoned traders who are trading real accounts in live market conditions. It allows you to better understand the thought process behind the setups and in doing so, better apply these trading ideas into your trading plan.</p>
+							<p>And, if you aren't able to be in the room throughout the day or happen to miss a session that you really wanted to see, we've got you covered. You can find a complete recording of the trading room each day in our <a href="/dashboard/day-trading-room/trading-room-archive">Trading Room Archive section HERE</a>.</p>
+						</div>
+					{/if}
+				</div>
+
+				<!-- Accordion 6: Additional Member Resources -->
+				<div class="fl-accordion-item" class:is-open={isOpen(5)}>
+					<button 
+						class="fl-accordion-button"
+						onclick={() => toggleAccordion(5)}
+						aria-expanded={isOpen(5)}
+					>
+						<span class="fl-accordion-button-label">
+							Additional Member Resources 
+							<span class="accordion-subtitle"><em>These links are helpful when trying to learn some of the internal Simpler Language as well as find articles on a wide array of technical information.</em></span>
+						</span>
+						<span class="fl-accordion-button-icon fl-accordion-button-icon-right">
+							{#if isOpen(5)}
+								<i class="fas fa-times-circle"></i>
+							{:else}
+								<i class="fas fa-plus-circle"></i>
+							{/if}
+						</span>
+					</button>
+					{#if isOpen(5)}
+						<div class="fl-accordion-content">
+							<p><strong>Simpler Terms</strong><br />
 							A big part of learning how to trade or acclimating to any new service is understanding the jargon used. This page will help you understand the terminology used by our Traders.</p>
-							<p><a class="resource-link" href="/trading-terms">Check out the Trading Terms here</a></p>
+							<p><a class="resource-link" href="https://www.simplertrading.com/simpler-terms/" target="_blank" rel="noopener"><strong>Check out the Simpler Terms here</strong></a></p>
 							
 							<p><strong>Support Knowledge Base</strong><br />
 							For questions and definitions on everything from Indicators to Chart Patterns, Studies and more, please make sure to check out the Support Knowledge Base.</p>
-							<p><a class="resource-link" href="/support">Visit the Support Knowledge Base</a></p>
+							<p><a class="resource-link" href="https://intercom.help/simpler-trading/en/" target="_blank" rel="noopener"><strong>Visit the Support Knowledge base</strong></a></p>
 						</div>
 					{/if}
 				</div>
@@ -643,6 +697,86 @@
 		margin: 0;
 		font-size: 0.875rem;
 		opacity: 0.9;
+	}
+
+	/* Trade Alerts Section */
+	.trader-alerts--container {
+		display: flex;
+		gap: 30px;
+		align-items: flex-start;
+		flex-wrap: wrap;
+	}
+
+	.alerts-copy {
+		flex: 1;
+		min-width: 300px;
+	}
+
+	.alerts-image {
+		flex-shrink: 0;
+		text-align: center;
+	}
+
+	.alerts-image img {
+		max-width: 240px;
+		height: auto;
+	}
+
+	.app-images {
+		margin-top: 15px;
+		display: flex;
+		gap: 10px;
+		justify-content: center;
+	}
+
+	.app-images img {
+		height: 46px;
+		width: auto;
+	}
+
+	.mobile-app-buttons {
+		display: flex;
+		gap: 10px;
+		margin-top: 15px;
+		margin-bottom: 15px;
+	}
+
+	.mobile-app-buttons img {
+		height: 46px;
+		width: auto;
+	}
+
+	.app-steps {
+		list-style-type: decimal;
+	}
+
+	.app-steps li {
+		margin: 20px 0;
+		text-align: left;
+	}
+
+	.alerts-note {
+		margin-top: 20px;
+		padding-top: 15px;
+		border-top: 1px solid #e0e0e0;
+	}
+
+	@media (max-width: 768px) {
+		.trader-alerts--container {
+			flex-direction: column;
+		}
+
+		.alerts-image {
+			width: 100%;
+		}
+	}
+
+	/* Schedule Screenshot */
+	.schedule-screenshot {
+		max-width: 100%;
+		height: auto;
+		border-radius: 8px;
+		box-shadow: 0 2px 8px rgba(0,0,0,0.1);
 	}
 
 	/* Weekly Watchlist Section */
