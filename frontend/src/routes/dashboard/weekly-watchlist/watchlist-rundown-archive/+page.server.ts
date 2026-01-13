@@ -9,7 +9,7 @@
  * - Type-safe API response mapping
  */
 
-import type { PageServerLoad } from './$types';
+import type { RequestEvent } from '@sveltejs/kit';
 
 /** API response structure from backend */
 interface WatchlistApiEntry {
@@ -103,7 +103,7 @@ const MOCK_VIDEOS: WatchlistVideo[] = [
 	}
 ];
 
-export const load = (async ({ fetch }) => {
+export const load = async ({ fetch }: RequestEvent) => {
 	try {
 		const response = await fetch('https://revolution-trading-pros-api.fly.dev/api/watchlist/entries');
 		
@@ -135,4 +135,4 @@ export const load = (async ({ fetch }) => {
 		console.error('[WatchlistRundown] Load error - using mock data:', error);
 		return { videos: MOCK_VIDEOS };
 	}
-}) satisfies PageServerLoad;
+};
