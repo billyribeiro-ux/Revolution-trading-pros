@@ -70,9 +70,23 @@
 	type AlertFilter = 'all' | 'entry' | 'exit' | 'update';
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// COMPONENT PROPS
+	// COMPONENT PROPS - Server data with types
 	// ═══════════════════════════════════════════════════════════════════════════
-	let { data } = $props<{ data?: unknown }>();
+	import type { TradePlanEntry as ApiTradePlan, RoomAlert as ApiAlert, WeeklyVideo } from '$lib/api/room-content';
+	
+	interface PageData {
+		tradePlan?: ApiTradePlan[];
+		alerts?: ApiAlert[];
+		weeklyVideo?: WeeklyVideo | null;
+		performance?: {
+			winRate: number;
+			weeklyProfit: string;
+			activeTrades: number;
+			closedThisWeek: number;
+		};
+	}
+	
+	let { data = {} as PageData } = $props<{ data?: PageData }>();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE - Svelte 5 $state runes
@@ -81,9 +95,11 @@
 	let selectedFilter = $state<AlertFilter>('all');
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// DATA - This Week's Content (will be fetched from API/Google Sheets)
+	// DATA - This Week's Content (fetched from API with fallback)
 	// ═══════════════════════════════════════════════════════════════════════════
-	const weeklyContent: WeeklyContent = {
+	
+	// Fallback data constants
+	const fallbackWeeklyContent: WeeklyContent = {
 		title: "Week of January 13, 2026",
 		videoTitle: "Weekly Breakdown: Top Swing Setups",
 		videoUrl: "https://player.vimeo.com/video/123456789",
@@ -92,146 +108,71 @@
 		publishedDate: 'January 13, 2026 at 9:00 AM ET'
 	};
 
-	const tradePlan: TradePlanEntry[] = [
-		{
-			ticker: 'NVDA',
-			bias: 'BULLISH',
-			entry: '$142.50',
-			target1: '$148.00',
-			target2: '$152.00',
-			target3: '$158.00',
-			runner: '$165.00+',
-			stop: '$136.00',
-			optionsStrike: '$145 Call',
-			optionsExp: 'Jan 24, 2026',
-			notes: 'Breakout above consolidation. Wait for pullback to entry.'
-		},
-		{
-			ticker: 'TSLA',
-			bias: 'BULLISH',
-			entry: '$248.00',
-			target1: '$255.00',
-			target2: '$265.00',
-			target3: '$275.00',
-			runner: '$290.00+',
-			stop: '$235.00',
-			optionsStrike: '$250 Call',
-			optionsExp: 'Jan 31, 2026',
-			notes: 'Momentum building. Earnings catalyst ahead.'
-		},
-		{
-			ticker: 'AMZN',
-			bias: 'BULLISH',
-			entry: '$185.00',
-			target1: '$190.00',
-			target2: '$195.00',
-			target3: '$198.00',
-			runner: '$205.00+',
-			stop: '$178.00',
-			optionsStrike: '$185 Call',
-			optionsExp: 'Jan 24, 2026',
-			notes: 'Breaking resistance. Strong volume confirmation.'
-		},
-		{
-			ticker: 'GOOGL',
-			bias: 'NEUTRAL',
-			entry: '$175.50',
-			target1: '$180.00',
-			target2: '$185.00',
-			target3: '$188.00',
-			runner: '$195.00+',
-			stop: '$168.00',
-			optionsStrike: '$177.50 Call',
-			optionsExp: 'Feb 7, 2026',
-			notes: 'Watching for breakout. Not triggered yet.'
-		},
-		{
-			ticker: 'META',
-			bias: 'BULLISH',
-			entry: '$585.00',
-			target1: '$600.00',
-			target2: '$615.00',
-			target3: '$630.00',
-			runner: '$650.00+',
-			stop: '$565.00',
-			optionsStrike: '$590 Call',
-			optionsExp: 'Jan 24, 2026',
-			notes: 'Strong trend. Buy dips to support.'
-		},
-		{
-			ticker: 'AMD',
-			bias: 'BEARISH',
-			entry: '$125.00',
-			target1: '$120.00',
-			target2: '$115.00',
-			target3: '$110.00',
-			runner: '$100.00',
-			stop: '$132.00',
-			optionsStrike: '$122 Put',
-			optionsExp: 'Jan 31, 2026',
-			notes: 'Breakdown in progress. Short on bounces.'
-		}
+	const fallbackTradePlan: TradePlanEntry[] = [
+		{ ticker: 'NVDA', bias: 'BULLISH', entry: '$142.50', target1: '$148.00', target2: '$152.00', target3: '$158.00', runner: '$165.00+', stop: '$136.00', optionsStrike: '$145 Call', optionsExp: 'Jan 24, 2026', notes: 'Breakout above consolidation. Wait for pullback to entry.' },
+		{ ticker: 'TSLA', bias: 'BULLISH', entry: '$248.00', target1: '$255.00', target2: '$265.00', target3: '$275.00', runner: '$290.00+', stop: '$235.00', optionsStrike: '$250 Call', optionsExp: 'Jan 31, 2026', notes: 'Momentum building. Earnings catalyst ahead.' },
+		{ ticker: 'AMZN', bias: 'BULLISH', entry: '$185.00', target1: '$190.00', target2: '$195.00', target3: '$198.00', runner: '$205.00+', stop: '$178.00', optionsStrike: '$185 Call', optionsExp: 'Jan 24, 2026', notes: 'Breaking resistance. Strong volume confirmation.' },
+		{ ticker: 'GOOGL', bias: 'NEUTRAL', entry: '$175.50', target1: '$180.00', target2: '$185.00', target3: '$188.00', runner: '$195.00+', stop: '$168.00', optionsStrike: '$177.50 Call', optionsExp: 'Feb 7, 2026', notes: 'Watching for breakout. Not triggered yet.' },
+		{ ticker: 'META', bias: 'BULLISH', entry: '$585.00', target1: '$600.00', target2: '$615.00', target3: '$630.00', runner: '$650.00+', stop: '$565.00', optionsStrike: '$590 Call', optionsExp: 'Jan 24, 2026', notes: 'Strong trend. Buy dips to support.' },
+		{ ticker: 'AMD', bias: 'BEARISH', entry: '$125.00', target1: '$120.00', target2: '$115.00', target3: '$110.00', runner: '$100.00', stop: '$132.00', optionsStrike: '$122 Put', optionsExp: 'Jan 31, 2026', notes: 'Breakdown in progress. Short on bounces.' }
 	];
 
-	const stats: QuickStats = {
-		winRate: 82,
-		weeklyProfit: '+$4,850',
-		activeTrades: 4,
-		closedThisWeek: 2
-	};
+	const fallbackStats: QuickStats = { winRate: 82, weeklyProfit: '+$4,850', activeTrades: 4, closedThisWeek: 2 };
 
-	const alerts: Alert[] = [
-		{
-			id: 1,
-			type: 'ENTRY',
-			ticker: 'NVDA',
-			title: 'Opening NVDA Swing Position',
-			time: 'Today at 10:32 AM',
-			message: 'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.',
-			isNew: true,
-			notes: 'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.'
-		},
-		{
-			id: 2,
-			type: 'UPDATE',
-			ticker: 'TSLA',
-			title: 'TSLA Approaching Entry Zone',
-			time: 'Today at 9:15 AM',
-			message: 'TSLA pulling back to our entry zone. Be ready. Will alert when triggered.',
-			isNew: true,
-			notes: 'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.'
-		},
-		{
-			id: 3,
-			type: 'EXIT',
-			ticker: 'MSFT',
-			title: 'Closing MSFT for +8.2%',
-			time: 'Yesterday at 3:45 PM',
-			message: 'Taking profits on MSFT. Hit second target. +$2,450 on this trade.',
-			isNew: false,
-			notes: 'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.'
-		},
-		{
-			id: 4,
-			type: 'ENTRY',
-			ticker: 'META',
-			title: 'META Entry Triggered',
-			time: 'Yesterday at 11:20 AM',
-			message: 'META hit our entry at $585. Position active. Targets in trade plan.',
-			isNew: false,
-			notes: 'Entry confirmed at $585 with volume spike. Stop placed at $565 (3.4% risk). Currently up 1.3% and holding well. Momentum strong with AI revenue narrative. Will trail stop after T1 hit.'
-		},
-		{
-			id: 5,
-			type: 'UPDATE',
-			ticker: 'AMD',
-			title: 'AMD Short Setup Active',
-			time: 'Jan 10 at 2:30 PM',
-			message: 'Bearish setup triggered on AMD. Short at $125 with stop at $132.',
-			isNew: false,
-			notes: 'Bearish breakdown confirmed. Entered short at $125, currently at $123.50 (-1.2%). Stop at $132 gives us 5.6% risk. First target $120, second target $115. Watch for bounce at $120 psychological level.'
-		}
+	// Reactive data derived from server props - use $derived for reactivity
+	const weeklyContent = $derived<WeeklyContent>(data.weeklyVideo ? {
+		title: data.weeklyVideo.week_title,
+		videoTitle: data.weeklyVideo.video_title,
+		videoUrl: data.weeklyVideo.video_url,
+		thumbnail: data.weeklyVideo.thumbnail_url || 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
+		duration: data.weeklyVideo.duration || '',
+		publishedDate: new Date(data.weeklyVideo.published_at).toLocaleString('en-US', { 
+			month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'
+		})
+	} : fallbackWeeklyContent);
+	
+	// Transform API trade plan to local format or use fallback
+	const tradePlan = $derived<TradePlanEntry[]>((data.tradePlan && data.tradePlan.length > 0) 
+		? data.tradePlan.map((p: ApiTradePlan) => ({
+			ticker: p.ticker,
+			bias: p.bias as 'BULLISH' | 'BEARISH' | 'NEUTRAL',
+			entry: p.entry || '-',
+			target1: p.target1 || '-',
+			target2: p.target2 || '-',
+			target3: p.target3 || '-',
+			runner: p.runner || '-',
+			stop: p.stop || '-',
+			optionsStrike: p.options_strike || '-',
+			optionsExp: p.options_exp ? new Date(p.options_exp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-',
+			notes: p.notes || ''
+		}))
+		: fallbackTradePlan);
+
+	// Stats from API or fallback
+	const stats = $derived<QuickStats>(data.performance || fallbackStats);
+
+	// Fallback alerts
+	const fallbackAlerts: Alert[] = [
+		{ id: 1, type: 'ENTRY', ticker: 'NVDA', title: 'Opening NVDA Swing Position', time: 'Today at 10:32 AM', message: 'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.', isNew: true, notes: 'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.' },
+		{ id: 2, type: 'UPDATE', ticker: 'TSLA', title: 'TSLA Approaching Entry Zone', time: 'Today at 9:15 AM', message: 'TSLA pulling back to our entry zone. Be ready. Will alert when triggered.', isNew: true, notes: 'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.' },
+		{ id: 3, type: 'EXIT', ticker: 'MSFT', title: 'Closing MSFT for +8.2%', time: 'Yesterday at 3:45 PM', message: 'Taking profits on MSFT. Hit second target. +$2,450 on this trade.', isNew: false, notes: 'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.' },
+		{ id: 4, type: 'ENTRY', ticker: 'META', title: 'META Entry Triggered', time: 'Yesterday at 11:20 AM', message: 'META hit our entry at $585. Position active. Targets in trade plan.', isNew: false, notes: 'Entry confirmed at $585 with volume spike. Stop placed at $565 (3.4% risk). Currently up 1.3% and holding well. Momentum strong with AI revenue narrative. Will trail stop after T1 hit.' },
+		{ id: 5, type: 'UPDATE', ticker: 'AMD', title: 'AMD Short Setup Active', time: 'Jan 10 at 2:30 PM', message: 'Bearish setup triggered on AMD. Short at $125 with stop at $132.', isNew: false, notes: 'Bearish breakdown confirmed. Entered short at $125, currently at $123.50 (-1.2%). Stop at $132 gives us 5.6% risk. First target $120, second target $115. Watch for bounce at $120 psychological level.' }
 	];
+
+	// Transform API alerts to local format or use fallback
+	const alerts = $derived<Alert[]>((data.alerts && data.alerts.length > 0) 
+		? data.alerts.map((a: ApiAlert) => ({
+			id: a.id,
+			type: a.alert_type as 'ENTRY' | 'EXIT' | 'UPDATE',
+			ticker: a.ticker,
+			title: a.title,
+			time: new Date(a.published_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
+			message: a.message,
+			isNew: a.is_new,
+			notes: a.notes || ''
+		}))
+		: fallbackAlerts);
 
 	// Track which alert notes are expanded
 	let expandedNotes = $state<Set<number>>(new Set());
