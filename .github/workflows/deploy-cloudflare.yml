@@ -144,15 +144,19 @@ jobs:
       - name: Check Cloudflare secrets
         id: check-secrets
         run: |
-          if [ -z "${{ secrets.CLOUDFLARE_API_TOKEN }}" ]; then
+          if [ -z "$CF_API_TOKEN" ]; then
             echo "::warning::CLOUDFLARE_API_TOKEN is not set"
             echo "has_secrets=false" >> $GITHUB_OUTPUT
-          elif [ -z "${{ secrets.CLOUDFLARE_ACCOUNT_ID }}" ]; then
+          elif [ -z "$CF_ACCOUNT_ID" ]; then
             echo "::warning::CLOUDFLARE_ACCOUNT_ID is not set"
             echo "has_secrets=false" >> $GITHUB_OUTPUT
           else
             echo "has_secrets=true" >> $GITHUB_OUTPUT
           fi
+        env:
+          # IDE Warning Expected: secret may not exist (safe - validated before use)
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CF_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Deploy to Cloudflare Pages
         id: deploy
@@ -312,10 +316,9 @@ jobs:
             echo "::notice::Skipping cache purge - CLOUDFLARE_ZONE_ID or CLOUDFLARE_API_TOKEN not configured"
           fi
         env:
-          # yamllint disable-line rule:line-length
-          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID || '' }} # Optional: cache purge skipped if not configured
-          # yamllint disable-line rule:line-length
-          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || '' }} # Optional: cache purge skipped if not configured
+          # IDE Warning Expected: secret may not exist (safe - validated before use)
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         if: always()
 
       - name: Purge Cloudflare cache
@@ -326,8 +329,7 @@ jobs:
             -H "Content-Type: application/json" \
             --data '{"purge_everything":true}'
         env:
-          # yamllint disable-line rule:line-length
-          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID || '' }} # Conditional: only runs if secrets exist
-          # yamllint disable-line rule:line-length
-          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN || '' }} # Conditional: only runs if secrets exist
+          # IDE Warning Expected: secret may not exist (safe - conditional execution)
+          CF_ZONE_ID: ${{ secrets.CLOUDFLARE_ZONE_ID }}
+          CF_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         continue-on-error: true
