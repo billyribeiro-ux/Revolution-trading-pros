@@ -486,40 +486,42 @@
 
 			<div class="alerts-list">
 				{#each filteredAlerts as alert}
-					<div class="alert-card" class:is-new={alert.isNew}>
+					<div class="alert-card" class:is-new={alert.isNew} class:has-notes-open={expandedNotes.has(alert.id)}>
 						{#if alert.isNew}
 							<span class="new-badge">NEW</span>
 						{/if}
-						<div class="alert-header">
-							<span class="alert-type alert-type--{alert.type.toLowerCase()}">{alert.type}</span>
-							<span class="alert-ticker">{alert.ticker}</span>
-							<span class="alert-time">{alert.time}</span>
+						
+						<!-- Alert Header Row with Inline Chevron -->
+						<div class="alert-row">
+							<div class="alert-info">
+								<span class="alert-type alert-type--{alert.type.toLowerCase()}">{alert.type}</span>
+								<span class="alert-ticker">{alert.ticker}</span>
+								<span class="alert-time">{alert.time}</span>
+							</div>
+							<button 
+								class="notes-chevron" 
+								class:expanded={expandedNotes.has(alert.id)}
+								onclick={() => toggleNotes(alert.id)}
+								aria-label="Toggle trade notes"
+							>
+								<span class="notes-label">Notes</span>
+								<svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+									<path d="M19 9l-7 7-7-7"/>
+								</svg>
+							</button>
 						</div>
+						
 						<h3>{alert.title}</h3>
-						<p>{alert.message}</p>
+						<p class="alert-message">{alert.message}</p>
 						
-						<button 
-							class="notes-toggle" 
-							class:expanded={expandedNotes.has(alert.id)}
-							onclick={() => toggleNotes(alert.id)}
-						>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-								<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"/>
-							</svg>
-							Trade Notes
-							<svg class="chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-								<path d="M19 9l-7 7-7-7"/>
-							</svg>
-						</button>
-						
+						<!-- Expandable Notes Panel -->
 						{#if expandedNotes.has(alert.id)}
-							<div class="notes-dropdown">
-								<div class="notes-content">
-									<div class="notes-icon">
-										<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-											<path d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"/>
-										</svg>
-									</div>
+							<div class="notes-panel">
+								<div class="notes-panel-header">
+									<div class="notes-ticker-badge">{alert.ticker}</div>
+									<span class="notes-title">Trade Analysis & Notes</span>
+								</div>
+								<div class="notes-panel-body">
 									<p>{alert.notes}</p>
 								</div>
 							</div>
@@ -1140,13 +1142,58 @@
 		border-radius: 10px;
 	}
 
-	.alert-header {
+	/* Alert Row - Inline Header with Chevron */
+	.alert-row {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		gap: 12px;
+		justify-content: space-between;
 		margin-bottom: 12px;
+	}
+
+	.alert-info {
+		display: flex;
+		align-items: center;
+		gap: 12px;
 		flex-wrap: wrap;
+	}
+
+	.notes-chevron {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		background: transparent;
+		border: none;
+		padding: 8px 12px;
+		border-radius: 8px;
+		font-size: 12px;
+		font-weight: 600;
+		color: #64748b;
+		cursor: pointer;
+		transition: all 0.25s ease;
+	}
+
+	.notes-chevron:hover {
+		background: #f1f5f9;
+		color: #143E59;
+	}
+
+	.notes-chevron.expanded {
+		background: #143E59;
+		color: #fff;
+	}
+
+	.notes-label {
+		font-size: 12px;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.chevron-icon {
+		transition: transform 0.3s ease;
+	}
+
+	.notes-chevron.expanded .chevron-icon {
+		transform: rotate(180deg);
 	}
 
 	.alert-type {
@@ -1189,110 +1236,74 @@
 		color: #333;
 	}
 
-	.alert-card p {
+	.alert-card p.alert-message {
 		font-size: 14px;
 		color: #666;
 		line-height: 1.6;
-		margin: 0 0 15px 0;
+		margin: 0;
 	}
 
-	/* Notes Toggle Button */
-	.notes-toggle {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		width: 100%;
+	/* Card state when notes are open */
+	.alert-card.has-notes-open {
+		border-color: #143E59;
+		box-shadow: 0 8px 30px rgba(20, 62, 89, 0.12);
+	}
+
+	/* Notes Panel - Expandable */
+	.notes-panel {
+		margin-top: 16px;
 		background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-		border: 1.5px solid #e5e7eb;
-		padding: 12px 16px;
-		border-radius: 10px;
-		font-size: 13px;
-		font-weight: 600;
-		color: #475569;
-		cursor: pointer;
-		transition: all 0.3s ease;
-		margin-top: 12px;
-	}
-
-	.notes-toggle:hover {
-		background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-		border-color: #143E59;
-		color: #143E59;
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.1);
-	}
-
-	.notes-toggle.expanded {
-		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
-		border-color: #143E59;
-		color: #fff;
-		box-shadow: 0 4px 16px rgba(20, 62, 89, 0.2);
-	}
-
-	.notes-toggle svg:first-child {
-		flex-shrink: 0;
-	}
-
-	.notes-toggle .chevron {
-		margin-left: auto;
-		transition: transform 0.3s ease;
-	}
-
-	.notes-toggle.expanded .chevron {
-		transform: rotate(180deg);
-	}
-
-	/* Notes Dropdown */
-	.notes-dropdown {
-		margin-top: 12px;
-		background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
-		border: 2px solid #bae6fd;
 		border-radius: 12px;
-		padding: 0;
 		overflow: hidden;
-		animation: slideDown 0.3s ease;
+		border: 1px solid #e2e8f0;
+		animation: panelSlide 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
-	@keyframes slideDown {
+	@keyframes panelSlide {
 		from {
 			opacity: 0;
-			transform: translateY(-10px);
-			max-height: 0;
+			transform: translateY(-8px);
 		}
 		to {
 			opacity: 1;
 			transform: translateY(0);
-			max-height: 500px;
 		}
 	}
 
-	.notes-content {
-		padding: 20px;
-		display: flex;
-		gap: 15px;
-	}
-
-	.notes-icon {
-		flex-shrink: 0;
-		width: 40px;
-		height: 40px;
-		background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
-		border-radius: 10px;
+	.notes-panel-header {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		box-shadow: 0 4px 12px rgba(14, 165, 233, 0.3);
+		gap: 12px;
+		padding: 14px 18px;
+		background: linear-gradient(135deg, #143E59 0%, #1e5175 100%);
+		border-bottom: 1px solid rgba(255,255,255,0.1);
 	}
 
-	.notes-icon svg {
-		color: #fff;
+	.notes-ticker-badge {
+		background: #fff;
+		color: #143E59;
+		font-size: 12px;
+		font-weight: 800;
+		padding: 5px 12px;
+		border-radius: 6px;
+		letter-spacing: 0.05em;
 	}
 
-	.notes-content p {
-		flex: 1;
+	.notes-title {
+		color: rgba(255,255,255,0.9);
+		font-size: 13px;
+		font-weight: 600;
+		letter-spacing: 0.02em;
+	}
+
+	.notes-panel-body {
+		padding: 18px 20px;
+	}
+
+	.notes-panel-body p {
 		font-size: 14px;
-		color: #0c4a6e;
-		line-height: 1.7;
+		color: #334155;
+		line-height: 1.75;
 		margin: 0;
 		font-weight: 500;
 	}
