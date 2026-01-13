@@ -24,7 +24,7 @@
 		title: "Week of January 13, 2026",
 		videoTitle: "Weekly Breakdown: Top Swing Setups",
 		videoUrl: "https://player.vimeo.com/video/123456789",
-		thumbnail: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+		thumbnail: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video+Breakdown',
 		duration: '24:35',
 		publishedDate: 'January 13, 2026 at 9:00 AM ET'
 	};
