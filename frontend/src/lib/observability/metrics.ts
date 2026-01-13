@@ -22,6 +22,9 @@
  * @author Revolution Trading Pros
  */
 
+/// <reference lib="dom" />
+/// <reference lib="dom.iterable" />
+
 import { browser } from '$app/environment';
 import { getOrchestrator } from './orchestrator';
 import type {
@@ -212,7 +215,7 @@ class MetricsService {
 	 * Track a page view.
 	 */
 	trackPageView(properties?: PageViewProperties): void {
-		if (!browser) return;
+		if (!browser || typeof window === 'undefined') return;
 
 		const payload: PageViewPayload = {
 			page_path: properties?.path || window.location.pathname,

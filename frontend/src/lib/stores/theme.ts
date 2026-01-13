@@ -9,6 +9,9 @@
  * - Smooth transitions
  */
 
+/// <reference lib="dom" />
+/// <reference lib="dom.iterable" />
+
 import { writable, derived } from 'svelte/store';
 import { browser } from '$app/environment';
 
@@ -27,7 +30,7 @@ function createThemeStore() {
 
 	// Apply theme to document
 	function applyTheme(theme: Theme) {
-		if (!browser) return;
+		if (!browser || typeof document === 'undefined') return;
 
 		const root = document.documentElement;
 		const body = document.body;
@@ -39,7 +42,7 @@ function createThemeStore() {
 		let effectiveTheme: 'dark' | 'light';
 
 		if (theme === 'auto') {
-			effectiveTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+			effectiveTheme = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 		} else {
 			effectiveTheme = theme;
 		}
@@ -52,7 +55,7 @@ function createThemeStore() {
 		root.dataset['theme'] = effectiveTheme;
 
 		// Update meta theme-color for mobile browsers - Apple-style colors
-		const metaThemeColor = document.querySelector('meta[name="theme-color"]');
+		const metaThemeColor = typeof document !== 'undefined' ? document.querySelector('meta[name="theme-color"]') : null;
 		if (metaThemeColor) {
 			metaThemeColor.setAttribute('content', effectiveTheme === 'dark' ? '#0f172a' : '#f5f5f7');
 		}
@@ -63,13 +66,15 @@ function createThemeStore() {
 		applyTheme(initialTheme);
 
 		// Listen for system theme changes
-		const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
-		mediaQuery.addEventListener('change', () => {
-			const currentTheme = localStorage.getItem('theme') as Theme;
-			if (currentTheme === 'auto') {
-				applyTheme('auto');
-			}
-		});
+		if (typeof window !== 'undefined') {
+			const mediaQuery = window.matchMedia('(prefers-color-scheme: dark)');
+			mediaQuery.addEventListener('change', () => {
+				const currentTheme = localStorage.getItem('theme') as Theme;
+				if (currentTheme === 'auto') {
+					applyTheme('auto');
+				}
+			});
+		}
 	}
 
 	return {
@@ -134,7 +139,7 @@ export const themeStore = createThemeStore();
  * Derived store for effective theme (resolves 'auto' to actual value)
  */
 export const effectiveTheme = derived(themeStore, ($theme) => {
-	if ($theme === 'auto' && browser) {
+	if ($theme === 'auto' && browser && typeof window !== 'undefined') {
 		return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 	}
 	return $theme === 'auto' ? 'dark' : $theme;

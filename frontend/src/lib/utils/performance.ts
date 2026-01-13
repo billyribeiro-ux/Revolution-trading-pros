@@ -10,6 +10,9 @@
  * ══════════════════════════════════════════════════════════════════════════════
  */
 
+/// <reference lib="dom" />
+/// <reference lib="dom.iterable" />
+
 // ICT 11+ Principal Engineer: Import from centralized config - single source of truth
 import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
 
@@ -34,7 +37,7 @@ function reportMetric(metric: PerformanceMetric): void {
 	}
 
 	// Send to analytics in production
-	if (import.meta.env.PROD && typeof window !== 'undefined') {
+	if (import.meta.env.PROD && typeof window !== 'undefined' && typeof navigator !== 'undefined') {
 		// Example: Send to Google Analytics
 		if ('gtag' in window) {
 			(window as any).gtag('event', metric.name, {
@@ -48,8 +51,10 @@ function reportMetric(metric: PerformanceMetric): void {
 		// Send to custom analytics endpoint on Fly.io backend
 		// ICT 11+: Use text/plain to avoid CORS preflight (sendBeacon can't handle preflight)
 		// Backend parses JSON from raw bytes regardless of Content-Type
-		const blob = new Blob([JSON.stringify(metric)], { type: 'text/plain' });
-		navigator.sendBeacon?.(`${API_BASE_URL}${API_ENDPOINTS.analytics.performance}`, blob);
+		if ('sendBeacon' in navigator && typeof navigator.sendBeacon === 'function') {
+			const blob = new Blob([JSON.stringify(metric)], { type: 'text/plain' });
+			navigator.sendBeacon(`${API_BASE_URL}${API_ENDPOINTS.analytics.performance}`, blob);
+		}
 	}
 }
 
@@ -67,7 +72,7 @@ function getRating(value: number, thresholds: [number, number]): 'good' | 'needs
  * Good: < 2.5s, Needs Improvement: < 4s, Poor: >= 4s
  */
 export function measureLCP(): void {
-	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+	if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') return;
 
 	try {
 		let reported = false;
@@ -109,7 +114,7 @@ export function measureLCP(): void {
  * @returns Cleanup function to remove event listeners (prevents memory leaks in SPAs)
  */
 export function measureINP(): (() => void) | undefined {
-	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+	if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') return;
 
 	try {
 		let worstINP = 0;
@@ -145,13 +150,15 @@ export function measureINP(): (() => void) | undefined {
 
 		// Named handler for cleanup (prevents memory leaks)
 		const visibilityHandler = () => {
-			if (document.visibilityState === 'hidden') {
+			if (typeof document !== 'undefined' && document.visibilityState === 'hidden') {
 				reportINP();
 			}
 		};
 
 		// Report when page is hidden (most accurate)
-		document.addEventListener('visibilitychange', visibilityHandler);
+		if (typeof document !== 'undefined') {
+			document.addEventListener('visibilitychange', visibilityHandler);
+		}
 
 		// Fallback: report after 30 seconds of page load
 		timeoutId = setTimeout(() => {
@@ -160,7 +167,9 @@ export function measureINP(): (() => void) | undefined {
 
 		// Return cleanup function for SPA navigation
 		return () => {
-			document.removeEventListener('visibilitychange', visibilityHandler);
+			if (typeof document !== 'undefined') {
+				document.removeEventListener('visibilitychange', visibilityHandler);
+			}
 			if (timeoutId) clearTimeout(timeoutId);
 			observer.disconnect();
 		};
@@ -178,7 +187,7 @@ export function measureINP(): (() => void) | undefined {
  * @deprecated Use measureINP() instead - INP is the official Core Web Vital since March 2024
  */
 export function measureFID(): void {
-	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+	if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') return;
 
 	try {
 		let reported = false;
@@ -213,7 +222,7 @@ export function measureFID(): void {
  * @returns Cleanup function to remove event listeners (prevents memory leaks in SPAs)
  */
 export function measureCLS(): (() => void) | undefined {
-	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+	if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') return;
 
 	try {
 		let clsValue = 0;
@@ -233,7 +242,7 @@ export function measureCLS(): (() => void) | undefined {
 
 		// Named handler for proper cleanup (prevents memory leaks)
 		const visibilityHandler = () => {
-			if (document.visibilityState === 'hidden' && !reported) {
+			if (typeof document !== 'undefined' && document.visibilityState === 'hidden' && !reported) {
 				reported = true;
 				const metric: PerformanceMetric = {
 					name: 'CLS',
@@ -260,11 +269,15 @@ export function measureCLS(): (() => void) | undefined {
 		}, 5000);
 
 		// Also report on page hide
-		document.addEventListener('visibilitychange', visibilityHandler);
+		if (typeof document !== 'undefined') {
+			document.addEventListener('visibilitychange', visibilityHandler);
+		}
 
 		// Return cleanup function for SPA navigation
 		return () => {
-			document.removeEventListener('visibilitychange', visibilityHandler);
+			if (typeof document !== 'undefined') {
+				document.removeEventListener('visibilitychange', visibilityHandler);
+			}
 			if (timeoutId) clearTimeout(timeoutId);
 			observer.disconnect();
 		};
@@ -279,7 +292,7 @@ export function measureCLS(): (() => void) | undefined {
  * Good: < 1.8s, Needs Improvement: < 3s, Poor: >= 3s
  */
 export function measureFCP(): void {
-	if (typeof window === 'undefined' || !('PerformanceObserver' in window)) return;
+	if (typeof window === 'undefined' || typeof PerformanceObserver === 'undefined') return;
 
 	try {
 		let reported = false;
@@ -313,7 +326,7 @@ export function measureFCP(): void {
  * Good: < 800ms, Needs Improvement: < 1800ms, Poor: >= 1800ms
  */
 export function measureTTFB(): void {
-	if (typeof window === 'undefined' || !('performance' in window)) return;
+	if (typeof window === 'undefined' || typeof performance === 'undefined') return;
 
 	try {
 		const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
