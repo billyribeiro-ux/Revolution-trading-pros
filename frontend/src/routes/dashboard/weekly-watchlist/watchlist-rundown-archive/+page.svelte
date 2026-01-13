@@ -200,6 +200,13 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
+		transition: transform 0.3s ease, box-shadow 0.3s ease;
+		will-change: transform;
+	}
+
+	.article-card:hover {
+		transform: translateY(-8px);
+		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
 	}
 
 	.weekly_watchlist {

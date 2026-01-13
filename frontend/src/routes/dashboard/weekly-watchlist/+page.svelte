@@ -322,15 +322,16 @@
 		border-radius: 5px;
 		overflow: hidden;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-		transition: all 0.3s ease;
+		transition: transform 0.3s ease, box-shadow 0.3s ease;
 		display: flex;
 		flex-direction: column;
 		width: 100%;
+		will-change: transform;
 	}
 
 	.video-card:hover {
-		box-shadow: 0 8px 16px rgba(20, 62, 89, 0.12), 0 16px 32px rgba(20, 62, 89, 0.08);
-		transform: scale(1.01);
+		transform: translateY(-8px);
+		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
 	}
 
 	.video-card__figure {
