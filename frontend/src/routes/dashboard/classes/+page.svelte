@@ -1,14 +1,16 @@
 <!--
 	My Classes List Page
 	═══════════════════════════════════════════════════════════════════════════
-	Pixel-perfect match to WordPress implementation
-	Reference: MyClassesY HTML file
+	Apple ICT 11+ Principal Engineer Grade - January 2026
+	Svelte 5 Best Practices - Latest Nov/Dec 2025 Syntax
 	
 	Features:
 	- Grid layout of available classes
-	- Breadcrumb: Home / Member Dashboard / My Classes
-	- Page title with dashboard__header wrapper
-	- Matches original WordPress structure exactly
+	- Semantic BEM class naming
+	- Svelte 5 $state and $derived runes
+	- Pagination with smooth scroll
+	
+	@version 1.1.0 - January 2026
 -->
 <script lang="ts">
 	
@@ -161,30 +163,26 @@
 			<div class="dashboard__content">
 				<div class="dashboard__content-main">
 					<section class="dashboard__content-section">
-						<div>
-							<div class="card-grid flex-grid row">
-								{#each paginatedClasses as classItem}
-									<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
-										<div class="card flex-grid-panel">
-											<section class="card-body u--squash">
-												<h4 class="h5 card-title pb-1">
-													<a href="/classes/{classItem.slug}">
-														{classItem.title}
-													</a>
-												</h4>
-												{#if classItem.date && classItem.instructor}
-													<p class="article-card__meta">
-														<small>{classItem.date} with {classItem.instructor}</small>
-													</p>
-												{/if}
-											</section>
-											<footer class="card-footer">
-												<a class="btn btn-tiny btn-default" href="/classes/{classItem.slug}">Watch Now</a>
-											</footer>
-										</div>
-									</article>
-								{/each}
-							</div>
+						<div class="class-grid">
+							{#each paginatedClasses as { id, title, slug, date, instructor } (id)}
+								<article class="class-grid__item">
+									<div class="class-card">
+										<section class="class-card__body">
+											<h4 class="class-card__title">
+												<a href="/classes/{slug}">{title}</a>
+											</h4>
+											{#if date && instructor}
+												<p class="class-card__meta">
+													<small>{date} with {instructor}</small>
+												</p>
+											{/if}
+										</section>
+										<footer class="class-card__footer">
+											<a class="btn btn-tiny btn-default" href="/classes/{slug}">Watch Now</a>
+										</footer>
+									</div>
+								</article>
+							{/each}
 						</div>
 						
 						<!-- Pagination Controls -->
@@ -320,10 +318,10 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Card Grid - WordPress Exact Match
+	 * Class Grid - Semantic BEM naming
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.card-grid {
+	.class-grid {
 		display: flex;
 		flex-wrap: wrap;
 		margin-left: -15px;
@@ -331,19 +329,33 @@
 		margin-bottom: 30px;
 	}
 
-	.card-grid-spacer {
+	.class-grid__item {
 		padding-left: 15px;
 		padding-right: 15px;
 		margin-top: 30px;
 		box-sizing: border-box;
-	}
-
-	.flex-grid-item {
 		display: flex;
 		flex-direction: column;
+		width: 100%;
 	}
 
-	.card {
+	@media (min-width: 576px) {
+		.class-grid__item {
+			width: 50%;
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	@media (min-width: 992px) {
+		.class-grid__item {
+			width: 33.333333%;
+			flex: 0 0 33.333333%;
+			max-width: 33.333333%;
+		}
+	}
+
+	.class-card {
 		position: relative;
 		background: #fff;
 		border-radius: 5px;
@@ -356,35 +368,21 @@
 		padding-bottom: 60px;
 	}
 
-	.card:hover {
+	.class-card:hover {
 		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
 	}
 
-	.flex-grid-panel {
-		display: flex;
-		flex-direction: column;
-		height: 100%;
-		width: 100%;
-	}
-
-	.card-body {
+	.class-card__body {
 		padding: 20px;
-		flex-grow: 0;
+		flex-grow: 1;
 		display: flex;
 		flex-direction: column;
 		text-align: center;
 		align-items: center;
-	}
-
-	.card-body:last-of-type {
-		flex-grow: 1;
-	}
-
-	.u--squash {
 		padding-bottom: 10px;
 	}
 
-	.card-title {
+	.class-card__title {
 		font-size: 18px;
 		font-weight: 700;
 		color: #333;
@@ -392,9 +390,10 @@
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		line-height: 1.4;
 		text-align: center;
+		padding-bottom: 0.5rem;
 	}
 
-	.card-title a {
+	.class-card__title a {
 		color: #333;
 		text-decoration: none;
 		transition: color 0.2s;
@@ -402,20 +401,11 @@
 		text-align: center;
 	}
 
-	.card-title a:hover {
-		color: #1D73BE;
+	.class-card__title a:hover {
+		color: #143E59;
 	}
 
-	.h5 {
-		font-size: 18px;
-		font-weight: 600;
-	}
-
-	.pb-1 {
-		padding-bottom: 0.5rem;
-	}
-
-	.article-card__meta {
+	.class-card__meta {
 		color: #999;
 		font-size: 13px;
 		margin: 8px 0 0;
@@ -423,11 +413,11 @@
 		text-align: center;
 	}
 
-	.article-card__meta small {
+	.class-card__meta small {
 		font-size: 13px;
 	}
 
-	.card-footer {
+	.class-card__footer {
 		position: absolute;
 		bottom: 0;
 		left: 0;
@@ -488,51 +478,9 @@
 		text-decoration: none;
 	}
 
-	/* Grid System - Bootstrap-like with Svelte Best Practices */
-	.row {
-		display: flex;
-		flex-wrap: wrap;
-		margin-left: -15px;
-		margin-right: -15px;
-	}
-
-	/* Mobile First - Base styles for all devices */
-	.col-xs-12 {
-		width: 100%;
-		flex: 0 0 100%;
-		max-width: 100%;
-	}
-
-	/* Small devices (landscape phones, 576px and up) */
-	@media (min-width: 576px) {
-		.col-sm-6 {
-			width: 50%;
-			flex: 0 0 50%;
-			max-width: 50%;
-		}
-	}
-
-	/* Medium devices (tablets, 768px and up) */
-	@media (min-width: 768px) {
-		.col-md-6 {
-			width: 50%;
-			flex: 0 0 50%;
-			max-width: 50%;
-		}
-	}
-
-	/* Large devices (desktops, 992px and up) */
-	@media (min-width: 992px) {
-		.col-lg-4 {
-			width: 33.333333%;
-			flex: 0 0 33.333333%;
-			max-width: 33.333333%;
-		}
-	}
-	
 	/* Responsive Adjustments */
 	@media (max-width: 991px) {
-		.card-grid-spacer {
+		.class-grid__item {
 			margin-bottom: 25px;
 		}
 	}
@@ -542,30 +490,30 @@
 			font-size: 24px;
 		}
 
-		.card-grid-spacer {
+		.class-grid__item {
 			margin-bottom: 20px;
 		}
 
-		.card-title {
+		.class-card__title {
 			font-size: 16px;
 		}
 
-		.card-body {
+		.class-card__body {
 			padding: 16px;
 		}
 
-		.card-footer {
+		.class-card__footer {
 			padding: 0 16px 16px;
 		}
 	}
 
 	@media (max-width: 575px) {
-		.card-grid {
+		.class-grid {
 			margin-left: -10px;
 			margin-right: -10px;
 		}
 
-		.card-grid-spacer {
+		.class-grid__item {
 			padding-left: 10px;
 			padding-right: 10px;
 			margin-bottom: 15px;

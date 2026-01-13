@@ -74,7 +74,7 @@
 				</div>
 				<div class="icon-text-col icon-text-col--text">
 					<div class="fl-rich-text">
-						<p>Every Monday morning before the cash market opens (8:30 am central time), you'll receive an email and push notification via our Simpler Trading Mobile App letting you know the new Weekly Watchlist has been posted.</p>
+						<p>Every Monday morning before the cash market opens (8:30 am central time), you'll receive an email and push notification via our Revolution Trading Pros Mobile App letting you know the new Weekly Watchlist has been posted.</p>
 					</div>
 				</div>
 			</div>
