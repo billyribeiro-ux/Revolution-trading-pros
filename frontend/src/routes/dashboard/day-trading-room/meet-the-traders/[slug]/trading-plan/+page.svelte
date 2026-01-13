@@ -68,18 +68,12 @@
 
 <!-- Page Content -->
 {#if trader}
-	<div class="fl-module fl-module-heading">
-		<div class="fl-module-content fl-node-content">
-			<h2 class="fl-heading">
-				<span class="fl-heading-text section-title">{trader.name.split(' ')[0]}'s Trading Plan</span>
-			</h2>
-		</div>
+	<div class="content-block">
+		<h2 class="section-heading">{trader.name.split(' ')[0]}'s Trading Plan</h2>
 	</div>
-	<div class="fl-module fl-module-rich-text">
-		<div class="fl-module-content fl-node-content">
-			<div class="fl-rich-text">
-				<p>A comprehensive look at {trader.name}'s trading plan and methodology. Learn the principles and routines that guide successful trading.</p>
-			</div>
+	<div class="content-block">
+		<div class="content-text">
+			<p>A comprehensive look at {trader.name}'s trading plan and methodology. Learn the principles and routines that guide successful trading.</p>
 		</div>
 	</div>
 
@@ -108,17 +102,13 @@
 {/if}
 
 <style>
-	.fl-module { margin-bottom: 20px; }
-	.fl-module:last-child { margin-bottom: 0; }
-	.fl-module-content { position: relative; }
-	.fl-node-content { position: relative; }
+	.content-block { margin-bottom: 20px; }
+	.content-block:last-child { margin-bottom: 0; }
 
-	.fl-heading { margin: 0; padding: 0; line-height: 1.2; }
-	.fl-heading-text { display: block; }
-	.fl-heading-text.section-title { font-size: 24px; font-weight: 700; color: #333; margin-bottom: 15px; }
+	.section-heading { font-size: 24px; font-weight: 700; color: #333; margin: 0 0 15px; line-height: 1.2; }
 
-	.fl-rich-text { font-size: 16px; line-height: 1.7; color: #444; margin-bottom: 30px; }
-	.fl-rich-text p { margin: 0; }
+	.content-text { font-size: 16px; line-height: 1.7; color: #444; margin-bottom: 30px; }
+	.content-text p { margin: 0; }
 
 	.trading-plan-sections { display: flex; flex-direction: column; gap: 25px; margin-bottom: 40px; }
 
