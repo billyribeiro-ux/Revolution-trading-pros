@@ -18,7 +18,29 @@
 <script lang="ts">
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	
-	let { data }: { data: any } = $props();
+	// Svelte 5 $props destructuring
+	const { data } = $props<{
+		data: {
+			archiveEntries: Array<{
+				slug: string;
+				title: string;
+				trader: string;
+				date: string;
+			}>;
+			latestWatchlist?: {
+				slug: string;
+				trader: string;
+				weekText: string;
+				image: string;
+			};
+			totalPages: number;
+			currentPage: number;
+		};
+	}>();
+	
+	// Svelte 5 $derived for computed values
+	const hasMorePages = $derived(data.currentPage < data.totalPages);
+	const latestWatchlist = $derived(data.latestWatchlist);
 </script>
 
 <svelte:head>
@@ -31,14 +53,14 @@
 <section class="dashboard__content-section">
 		<!-- Archive Grid -->
 		<div class="fl-post-grid-post">
-			{#each data.archiveEntries as entry}
+			{#each data.archiveEntries as { slug, title, trader }}
 				<div class="card fl-post-text">
 					<div>
 						<section class="card-body u--squash">
-							<h4 class="h5 card-title">{entry.title}</h4>
-							<div class="excerpt"><i>With {entry.trader}</i></div>
+							<h4 class="h5 card-title">{title}</h4>
+							<div class="excerpt"><i>With {trader}</i></div>
 							<div class="fl-post-more-link">
-								<a class="btn btn-tiny btn-default" href="/watchlist/{entry.slug}?tab=2">
+								<a class="btn btn-tiny btn-default" href="/watchlist/{slug}?tab=2">
 									Read Now
 								</a>
 							</div>
@@ -52,7 +74,7 @@
 		<div class="text-center" style="margin-top: 20px;">
 			<div id="loopage_pg" class="pagination-wrap">
 				<span aria-current="page" class="page-numbers current">{data.currentPage}</span>
-				{#if data.currentPage < data.totalPages}
+				{#if hasMorePages}
 					<a class="page-numbers" href="/dashboard/weekly-watchlist/weekly-watchlist-archive?pg=2">2</a>
 					<a class="page-numbers" href="/dashboard/weekly-watchlist/weekly-watchlist-archive?pg=3">3</a>
 					<span class="page-numbers dots">&hellip;</span>
@@ -64,34 +86,32 @@
 </section>
 
 <!-- Weekly Watchlist Featured Section - WordPress Match -->
-<div class="dashboard__content-section u--background-color-white">
-	<section>
-		<div class="row">
-			<div class="col-sm-6 col-lg-5">
-				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
-				<div class="hidden-md d-lg-none pb-2">
-					{#if data.latestWatchlist}
-						<a href="/watchlist/{data.latestWatchlist.slug}">
-							<img src={data.latestWatchlist.image} alt="Weekly Watchlist" class="u--border-radius" />
+{#if latestWatchlist}
+	<div class="dashboard__content-section u--background-color-white">
+		<section>
+			<div class="row">
+				<div class="col-sm-6 col-lg-5">
+					<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
+					<div class="hidden-md d-lg-none pb-2">
+						<a href="/watchlist/{latestWatchlist.slug}">
+							<img src={latestWatchlist.image} alt="Weekly Watchlist" class="u--border-radius" />
 						</a>
-					{/if}
+					</div>
+					<h4 class="h5 u--font-weight-bold">Weekly Watchlist with {latestWatchlist.trader}</h4>
+					<div class="u--hide-read-more">
+						<p>{latestWatchlist.weekText}</p>
+					</div>
+					<a href="/watchlist/{latestWatchlist.slug}" class="btn btn-tiny btn-default">Watch Now</a>
 				</div>
-				<h4 class="h5 u--font-weight-bold">Weekly Watchlist with {data.latestWatchlist?.trader || 'TG Watkins'}</h4>
-				<div class="u--hide-read-more">
-					<p>{data.latestWatchlist?.weekText || 'Week of January 12, 2026.'}</p>
-				</div>
-				<a href="/watchlist/{data.latestWatchlist?.slug || ''}" class="btn btn-tiny btn-default">Watch Now</a>
-			</div>
-			<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
-				{#if data.latestWatchlist}
-					<a href="/watchlist/{data.latestWatchlist.slug}">
-						<img src={data.latestWatchlist.image} alt="Weekly Watchlist" class="u--border-radius" />
+				<div class="col-sm-6 col-lg-7 hidden-xs hidden-sm d-none d-lg-block">
+					<a href="/watchlist/{latestWatchlist.slug}">
+						<img src={latestWatchlist.image} alt="Weekly Watchlist" class="u--border-radius" />
 					</a>
-				{/if}
+				</div>
 			</div>
-		</div>
-	</section>
-</div>
+		</section>
+	</div>
+{/if}
 
 <style>
 	/* Archive Grid - WordPress Match */
