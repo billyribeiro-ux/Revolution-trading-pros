@@ -179,6 +179,7 @@
 					class="header-btn"
 					onclick={() => isCommandPaletteOpen = true}
 					title="Search (⌘K)"
+					aria-label="Open search"
 				>
 					<IconSearch size={18} />
 					<span class="btn-label desktop-only">Search</span>
@@ -190,6 +191,7 @@
 					class="header-btn notification-btn"
 					onclick={() => isNotificationCenterOpen = true}
 					title="Notifications"
+					aria-label="Open notifications"
 				>
 					<IconBell size={18} />
 					{#if $unreadCount > 0}
@@ -201,7 +203,8 @@
 				<button
 					class="header-btn"
 					onclick={() => isConnectionHealthOpen = true}
-					title="API Connections"
+					title="API Connection Status"
+					aria-label="View API connection status"
 				>
 					<IconPlugConnected size={18} />
 				</button>
@@ -214,6 +217,7 @@
 					class="theme-toggle"
 					onclick={() => themeStore.cycle()}
 					title="Theme: {getThemeLabel($themeStore)} (click to cycle)"
+					aria-label="Toggle theme, currently {getThemeLabel($themeStore)}"
 				>
 					<ThemeIcon size={20} />
 					<span class="theme-label desktop-only">{getThemeLabel($themeStore)}</span>
@@ -223,12 +227,13 @@
 				<button
 					class="header-btn desktop-only"
 					onclick={() => isKeyboardHelpOpen = true}
-					title="Keyboard Shortcuts"
+					title="Keyboard Shortcuts (?)"
+					aria-label="View keyboard shortcuts"
 				>
 					<IconCommand size={18} />
 				</button>
 
-				<a href="/" class="view-site-btn">View Site</a>
+				<a href="/" class="view-site-btn" title="Open main website in new context" target="_blank" rel="noopener">View Site</a>
 			</div>
 		</header>
 
