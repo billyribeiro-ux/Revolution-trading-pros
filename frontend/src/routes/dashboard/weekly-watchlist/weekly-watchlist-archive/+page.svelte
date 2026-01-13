@@ -19,19 +19,13 @@
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	
 	let { data }: { data: any } = $props();
-	
-	const breadcrumbs = [
-		{ label: 'Dashboard', href: '/dashboard' },
-		{ label: 'Weekly Watchlist', href: '/dashboard/weekly-watchlist' },
-		{ label: 'Archive', href: '/dashboard/weekly-watchlist/weekly-watchlist-archive' }
-	];
 </script>
 
 <svelte:head>
 	<title>Weekly Watchlist Archive - Revolution Trading Pros</title>
 </svelte:head>
 
-<DashboardBreadcrumbs items={breadcrumbs} />
+<DashboardBreadcrumbs />
 
 <!-- Archive Section -->
 <section class="dashboard__content-section">
