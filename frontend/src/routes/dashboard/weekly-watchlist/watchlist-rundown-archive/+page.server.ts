@@ -1,14 +1,16 @@
 /**
  * Watchlist Rundown Archive - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════
- * Apple ICT 11+ Principal Engineer Grade - January 2026
+ * Apple ICT 7 Principal Engineer Grade - January 2026
  * 
  * SvelteKit 2.0 / Svelte 5 Best Practices (Nov/Dec 2025):
- * - JSDoc type annotation for auto-generated types
+ * - Explicit ServerLoadEvent type from @sveltejs/kit (no auto-gen dependency)
  * - async function syntax (preferred over arrow functions)
  * - Proper error handling with structured responses
  * - Type-safe API response mapping
  */
+
+import type { ServerLoadEvent } from '@sveltejs/kit';
 
 /** API response structure from backend */
 interface WatchlistApiEntry {
@@ -102,8 +104,7 @@ const MOCK_VIDEOS: WatchlistVideo[] = [
 	}
 ];
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ fetch }) {
+export async function load({ fetch }: ServerLoadEvent) {
 	try {
 		const response = await fetch('https://revolution-trading-pros-api.fly.dev/api/watchlist/entries');
 		
