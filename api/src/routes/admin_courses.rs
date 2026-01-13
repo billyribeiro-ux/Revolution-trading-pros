@@ -101,7 +101,7 @@ async fn list_courses(
             "enrollment_count": 0,
             "avg_rating": null,
             "review_count": 0,
-            "created_at": row.8.to_rfc3339()
+            "created_at": row.8.format("%Y-%m-%dT%H:%M:%S").to_string()
         })
     }).collect();
 
