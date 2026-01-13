@@ -55,7 +55,7 @@
 			id: 3,
 			title: 'Weekly Watchlist',
 			description: 'Get the complete Watchlist of the Week in a downloadable format.',
-			href: '/dashboard/weekly-watchlist/weekly-watchlist-archive/',
+			href: '/dashboard/weekly-watchlist/archive/',
 			bgImage: 'https://cdn.simplertrading.com/2021/09/30134813/weekly-watchlist-top-card-bg.png',
 			cardClass: 'img_3',
 			titleClass: 'card_title_3'
