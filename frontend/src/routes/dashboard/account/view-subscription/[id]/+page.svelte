@@ -117,17 +117,9 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
-			<div class="fl-builder-content fl-builder-content-33 fl-builder-content-primary fl-builder-global-templates-locked" data-post-id="33">
-				<div class="fl-row fl-row-fixed-width fl-row-bg-color fl-node-59793676724ad" data-node="59793676724ad">
-					<div class="fl-row-content-wrap">
-						<div class="fl-row-content fl-row-fixed-width fl-node-content">
-							<div class="fl-col-group fl-node-597936767334e" data-node="597936767334e">
-								<div class="fl-col fl-node-5979367673419" data-node="5979367673419">
-									<div class="fl-col-content fl-node-content">
-										<div class="fl-module fl-module-rich-text fl-node-59793676759ab dashboard-nav" data-node="59793676759ab">
-											<div class="fl-module-content fl-node-content">
-												<div class="fl-rich-text">
-													<div class="woocommerce">
+			<div class="subscription-container">
+				<div class="subscription-content">
+					<div class="woocommerce">
 														<div class="woocommerce-MyAccount-content">
 															<div class="woocommerce-notices-wrapper">
 																{#if form?.success}
@@ -272,14 +264,6 @@
 																</div>
 															{/if}
 														</div>
-													</div>
-												</div>
-											</div>
-										</div>
-									</div>
-								</div>
-							</div>
-						</div>
 					</div>
 				</div>
 			</div>
@@ -340,32 +324,16 @@
 		padding: 0;
 	}
 
-	/* Beaver Builder Structure */
-	.fl-builder-content {
+	/* Subscription Container - Semantic naming */
+	.subscription-container {
 		width: 100%;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.fl-row-bg-color {
-		background-color: #ffffff;
-	}
-
-	.fl-row-fixed-width {
 		max-width: 1100px;
-	}
-
-	.fl-col-group {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	.fl-col {
-		flex: 1;
-		min-width: 0;
-	}
-
-	.fl-rich-text {
+		margin: 0 auto;
+		background-color: #ffffff;
 		font-family: 'Montserrat', sans-serif;
+	}
+
+	.subscription-content {
 		line-height: 1.6;
 	}
 
