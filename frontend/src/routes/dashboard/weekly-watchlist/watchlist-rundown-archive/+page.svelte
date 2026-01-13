@@ -14,18 +14,59 @@
 	@version 1.1.0 - January 2026
 -->
 <script lang="ts">
-	import type { WatchlistVideo } from './+page.server';
+	// Inline mock data - bypasses server load issues
+	const videos = [
+		{
+			id: '1',
+			title: 'Weekly Watchlist Rundown',
+			date: 'January 12, 2026',
+			description: 'TG Watkins breaks down the Weekly Watchlist for the week of January 12, 2026.',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			href: '/watchlist/01122026-tg-watkins'
+		},
+		{
+			id: '2',
+			title: 'Weekly Watchlist Rundown',
+			date: 'January 5, 2026',
+			description: 'Melissa Beegle breaks down the Weekly Watchlist for the week of January 5, 2026.',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			href: '/watchlist/01052026-melissa-beegle'
+		},
+		{
+			id: '3',
+			title: 'Weekly Watchlist Rundown',
+			date: 'December 29, 2025',
+			description: 'David Starr breaks down the Weekly Watchlist for the week of December 29, 2025.',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			href: '/watchlist/12292025-david-starr'
+		},
+		{
+			id: '4',
+			title: 'Weekly Watchlist Rundown',
+			date: 'December 22, 2025',
+			description: 'TG Watkins breaks down the Weekly Watchlist for the week of December 22, 2025.',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			href: '/watchlist/12222025-tg-watkins'
+		},
+		{
+			id: '5',
+			title: 'Weekly Watchlist Rundown',
+			date: 'December 15, 2025',
+			description: 'Allison Ostrander breaks down the Weekly Watchlist for the week of December 15, 2025.',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			href: '/watchlist/12152025-allison-ostrander'
+		},
+		{
+			id: '6',
+			title: 'Weekly Watchlist Rundown',
+			date: 'December 8, 2025',
+			description: 'Taylor Horton breaks down the Weekly Watchlist for the week of December 8, 2025.',
+			image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
+			href: '/watchlist/12082025-taylor-horton'
+		}
+	];
 
-	interface Props {
-		data: {
-			videos: WatchlistVideo[];
-		};
-	}
-
-	let { data }: Props = $props();
-
-	let videos = $derived(data.videos ?? []);
-	let hasVideos = $derived(videos.length > 0);
+	const hasVideos = videos.length > 0;
 </script>
 
 <svelte:head>
