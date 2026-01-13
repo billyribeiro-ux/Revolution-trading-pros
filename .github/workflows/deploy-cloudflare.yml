@@ -98,7 +98,11 @@ jobs:
           DEPLOY_TARGET: cloudflare
           VITE_SITE_NAME: "Revolution Trading Pros"
           VITE_SITE_URL: ${{ steps.build-env.outputs.site_url }}
-          # Production secrets are injected at runtime via Cloudflare Dashboard
+          # ICT 7 FIX: VITE_API_URL must NOT include /api suffix
+          # API_ENDPOINTS in config.ts already include /api prefix in each path
+          VITE_API_URL: "https://revolution-trading-pros-api.fly.dev"
+          VITE_API_BASE_URL: "https://revolution-trading-pros-api.fly.dev"
+          VITE_CDN_URL: "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
 
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
