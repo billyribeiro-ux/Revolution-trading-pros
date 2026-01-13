@@ -288,14 +288,22 @@
 	}
 
 	.watch-now-link {
-		color: #f7941d;
-		text-decoration: none;
-		font-weight: 500;
 		display: inline-block;
+		background: #F69532;
+		color: #fff;
+		padding: 10px 20px;
+		font-size: 14px;
+		font-weight: 600;
+		text-decoration: none;
+		border-radius: 4px;
+		border: 1px solid #F69532;
+		transition: all 0.2s ease;
 	}
 
 	.watch-now-link:hover {
-		color: #c67000;
+		background: #dc7309;
+		border-color: #dc7309;
+		color: #fff;
 	}
 
 	/* Pagination - WordPress Exact Match */

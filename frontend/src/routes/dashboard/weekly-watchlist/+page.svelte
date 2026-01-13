@@ -364,6 +364,13 @@
 		display: flex;
 		flex-direction: column;
 		flex-grow: 1;
+		align-items: center;
+		text-align: center;
+	}
+
+	.video-card__content > div {
+		width: 100%;
+		text-align: center;
 	}
 
 	.video-card__title {
@@ -407,14 +414,22 @@
 
 	.video-card__link {
 		margin-top: auto;
+		display: inline-block;
+		background: #F69532;
+		color: #fff;
+		padding: 10px 20px;
+		font-size: 14px;
 		font-weight: 600;
 		text-decoration: none;
-		color: #f7941d;
-		transition: color 0.2s ease;
+		border-radius: 4px;
+		border: 1px solid #F69532;
+		transition: all 0.2s ease;
 	}
 
 	.video-card__link:hover {
-		color: #c67000;
+		background: #dc7309;
+		border-color: #dc7309;
+		color: #fff;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
