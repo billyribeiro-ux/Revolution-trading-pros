@@ -31,7 +31,8 @@
 		IconShoppingCart,
 		IconBellRinging,
 		IconHeartbeat,
-		IconPlugConnected
+		IconPlugConnected,
+		IconBook
 	} from '$lib/icons';
 	interface Props {
 		isOpen?: boolean;
@@ -61,6 +62,7 @@
 			title: 'Content',
 			items: [
 				{ icon: IconNews, label: 'Blog Posts', href: '/admin/blog' },
+				{ icon: IconBook, label: 'Courses', href: '/admin/courses' },
 				{ icon: IconTag, label: 'Categories', href: '/admin/blog/categories' },
 				{ icon: IconPhoto, label: 'Media Library', href: '/admin/media' },
 				{ icon: IconVideo, label: 'Videos', href: '/admin/videos' },
