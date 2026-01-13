@@ -3,13 +3,33 @@
 	═══════════════════════════════════════════════════════════════════════════
 	
 	Apple ICT 11+ Principal Engineer Grade - January 2026
-	Svelte 5 Best Practices - Latest Nov/Dec 2024 Syntax
+	Svelte 5 Best Practices - Latest Nov/Dec 2025 Syntax
 	
-	@version 2.0.0 - January 2026 - Refactored with reusable components
+	@version 2.1.0 - January 2026 - Semantic class names, Svelte 5 patterns
 -->
 <script lang="ts">
 	import FeaturedCards from '$lib/components/dashboard/FeaturedCards.svelte';
 	import RightSidebar from '$lib/components/dashboard/RightSidebar.svelte';
+	
+	// Type definitions for component data
+	interface FeaturedCard {
+		id: number;
+		title: string;
+		description: string;
+		href: string;
+		bgImage: string;
+		cardClass: string;
+		titleClass: string;
+	}
+	
+	interface ArchiveItem {
+		id: number;
+		title: string;
+		date: string;
+		weekOf: string;
+		image: string;
+		href: string;
+	}
 
 	// Featured cards configuration
 	const cards = [
@@ -141,43 +161,43 @@
 <div class="dashboard__content">
 
 		<div class="dashboard__content-main">
-			
-			<!-- FEATURED CARDS SECTION - 2x1 Layout (2 top, 1 centered bottom) -->
-			<FeaturedCards {cards} layout="2x1" />
+		
+		<!-- FEATURED CARDS SECTION - 2x1 Layout (2 top, 1 centered bottom) -->
+		<FeaturedCards {cards} layout="2x1" />
 
-		<!-- WATCHLIST RUNDOWN ARCHIVE SECTION -->
-		<div class="dashboard__content-section">
-			<section>
-				<h2 class="section-title">Watchlist Rundown Archive</h2>
-				<div class="article-cards row flex-grid">
-					{#each archiveItems as item (item.id)}
-						<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
-							<article class="article-card">
-								<figure class="weekly_watchlist">
-									<div class="article-card__image" style="background-image: url({item.image});">
-										<a href="{item.href}">
-											<img src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" alt="{item.title}" loading="lazy" />
-										</a>
-									</div>
-									<div class="card_content u--margin-top-0">
-										<div>
-											<h4 class="h5 article-card__title">
-												<a href="{item.href}">{item.title}</a>
-											</h4>
-											<div class="u--margin-top-0 u--margin-bottom-20">
-												<span><i>{item.date}</i></span><br />
-											</div>
-											<p class="u--margin-bottom-20">{item.weekOf}</p>
+	<!-- WATCHLIST RUNDOWN ARCHIVE SECTION -->
+	<div class="dashboard__content-section">
+		<section>
+			<h2 class="section-title">Watchlist Rundown Archive</h2>
+			<div class="video-grid">
+				{#each archiveItems as { id, title, date, weekOf, image, href } (id)}
+					<div class="video-grid__item">
+						<article class="video-card">
+							<figure class="video-card__figure">
+								<div class="video-card__thumbnail" style="background-image: url({image});">
+									<a {href}>
+										<img src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" alt={title} loading="lazy" />
+									</a>
+								</div>
+								<div class="video-card__content">
+									<div>
+										<h4 class="video-card__title">
+											<a {href}>{title}</a>
+										</h4>
+										<div class="video-card__date">
+											<span><i>{date}</i></span><br />
 										</div>
-										<a href="{item.href}" style="color: #f7941d;">Watch Now</a>
+										<p class="video-card__description">{weekOf}</p>
 									</div>
-								</figure>
-							</article>
-						</div>
-					{/each}
-				</div>
-			</section>
-		</div>
+									<a {href} class="video-card__link">Watch Now</a>
+								</div>
+							</figure>
+						</article>
+					</div>
+				{/each}
+			</div>
+		</section>
+	</div>
 
 	</div>
 
@@ -257,7 +277,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * ARCHIVE SECTION
+	 * VIDEO GRID - Archive Section
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.section-title {
@@ -269,23 +289,32 @@
 		line-height: 1.2;
 	}
 
-	.article-cards {
+	.video-grid {
 		display: flex;
 		flex-wrap: wrap;
 	}
 
-	.flex-grid {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	/* Archive Cards */
-	.flex-grid-item {
+	.video-grid__item {
 		display: flex;
 		margin-bottom: 20px;
+		width: 100%;
 	}
 
-	.article-card {
+	@media (min-width: 576px) {
+		.video-grid__item {
+			flex: 0 0 50%;
+			max-width: 50%;
+		}
+	}
+
+	@media (min-width: 1200px) {
+		.video-grid__item {
+			flex: 0 0 33.333333%;
+			max-width: 33.333333%;
+		}
+	}
+
+	.video-card {
 		background: #fff;
 		border-radius: 5px;
 		overflow: hidden;
@@ -296,19 +325,19 @@
 		width: 100%;
 	}
 
-	.article-card:hover {
+	.video-card:hover {
 		box-shadow: 0 8px 16px rgba(20, 62, 89, 0.12), 0 16px 32px rgba(20, 62, 89, 0.08);
 		transform: scale(1.01);
 	}
 
-	.weekly_watchlist {
+	.video-card__figure {
 		margin: 0;
 		display: flex;
 		flex-direction: column;
 		height: 100%;
 	}
 
-	.article-card__image {
+	.video-card__thumbnail {
 		position: relative;
 		width: 100%;
 		padding-top: 56.25%;
@@ -317,7 +346,7 @@
 		overflow: hidden;
 	}
 
-	.article-card__image img {
+	.video-card__thumbnail img {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -327,91 +356,62 @@
 		opacity: 0;
 	}
 
-	.card_content {
+	.video-card__content {
 		padding: 20px;
 		display: flex;
 		flex-direction: column;
 		flex-grow: 1;
 	}
 
-	.article-card__title {
+	.video-card__title {
 		margin: 0 0 10px;
 		font-size: 16px;
 		font-weight: 700;
 		line-height: 1.4;
 	}
 
-	.article-card__title a {
+	.video-card__title a {
 		color: #333;
 		text-decoration: none;
 		transition: color 0.2s ease;
 	}
 
-	.article-card__title a:hover {
+	.video-card__title a:hover {
 		color: #143E59;
 	}
 
-	.u--margin-top-0 {
-		margin-top: 0;
-	}
-
-	.u--margin-bottom-20 {
+	.video-card__date {
 		margin-bottom: 20px;
 	}
 
-	/* Date styling - ensure visibility */
-	.u--margin-top-0.u--margin-bottom-20 span {
+	.video-card__date span {
 		color: #666;
 		font-size: 13px;
 		line-height: 1.6;
 	}
 
-	.u--margin-top-0.u--margin-bottom-20 span i {
+	.video-card__date span i {
 		font-style: italic;
 		color: #666;
 	}
 
-	.card_content p {
+	.video-card__description {
 		color: #666;
 		font-size: 14px;
 		line-height: 1.6;
-		margin: 0;
+		margin: 0 0 20px;
 	}
 
-	.card_content > a {
+	.video-card__link {
 		margin-top: auto;
 		font-weight: 600;
 		text-decoration: none;
+		color: #f7941d;
 		transition: color 0.2s ease;
 	}
 
-	.card_content > a:hover {
-		color: #c67000 !important;
-	}
-
-	.col-xs-12 {
-		width: 100%;
-	}
-
-	@media (min-width: 576px) {
-		.col-sm-6 {
-			flex: 0 0 50%;
-			max-width: 50%;
-		}
-	}
-
-	@media (min-width: 768px) {
-		.col-md-6 {
-			flex: 0 0 50%;
-			max-width: 50%;
-		}
-	}
-
-	@media (min-width: 1200px) {
-		.col-xl-4 {
-			flex: 0 0 33.333333%;
-			max-width: 33.333333%;
-		}
+	.video-card__link:hover {
+		color: #c67000;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

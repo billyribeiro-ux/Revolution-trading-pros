@@ -33,53 +33,49 @@
 </svelte:head>
 
 <div class="dashboard__content-section">
-	<div class="">
-		<section>
-			<h2 class="section-title">Watchlist Rundown Archive</h2>
-			{#if hasVideos}
-			<div class="article-cards row flex-grid">
-				{#each videos as video (video.id)}
-					<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
-						<article class="article-card">
-							<figure class="weekly_watchlist">
-								<div class="article-card__image" style="background-image: url({video.image});">
-									<a href={video.href}>
-										<img 
-											src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" 
-											alt={video.title}
-										/>
-									</a>
-								</div>
-
-								<div class="card_content u--margin-top-0">
-									<div>
-										<h4 class="h5 article-card__title">
-											<a href={video.href}>{video.title}</a>
-										</h4>
-										<div class="u--margin-top-0 u--margin-bottom-20">
-											<span class=""><i>{video.date}</i></span><br />
-										</div>
-										<p class="u--margin-bottom-20">{video.description}</p>
+	<section>
+		<h2 class="section-title">Watchlist Rundown Archive</h2>
+		{#if hasVideos}
+		<div class="video-grid">
+			{#each videos as { id, title, date, description, image, href } (id)}
+				<div class="video-grid__item">
+					<article class="video-card">
+						<figure class="video-card__figure">
+							<div class="video-card__thumbnail" style="background-image: url({image});">
+								<a {href}>
+									<img 
+										src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" 
+										alt={title}
+									/>
+								</a>
+							</div>
+							<div class="video-card__content">
+								<div>
+									<h4 class="video-card__title">
+										<a {href}>{title}</a>
+									</h4>
+									<div class="video-card__date">
+										<span><i>{date}</i></span><br />
 									</div>
-									<a class="" href={video.href} style="color: #f7941d;">Watch Now</a>
+									<p class="video-card__description">{description}</p>
 								</div>
-							</figure>
-						</article>
-					</div>
-				{/each}
-			</div>
-			{:else}
-			<div class="empty-state">
-				<p>No watchlist rundown videos available at this time.</p>
-			</div>
-			{/if}
-		</section>
-	</div>
+								<a {href} class="video-card__link">Watch Now</a>
+							</div>
+						</figure>
+					</article>
+				</div>
+			{/each}
+		</div>
+		{:else}
+		<div class="empty-state">
+			<p>No watchlist rundown videos available at this time.</p>
+		</div>
+		{/if}
+	</section>
 </div>
 
 <style>
-	/* Watchlist Rundown Archive Styles - Matching WordPress Reference */
-	
+	/* Video Grid - Semantic class names */
 	.section-title {
 		font-size: 1.75rem;
 		font-weight: 600;
@@ -87,47 +83,33 @@
 		color: #1a1a1a;
 	}
 
-	.article-cards {
+	.video-grid {
 		display: flex;
 		flex-wrap: wrap;
 		margin-left: -15px;
 		margin-right: -15px;
 	}
 
-	.flex-grid {
-		display: flex;
-		flex-wrap: wrap;
-	}
-
-	.flex-grid-item {
+	.video-grid__item {
 		padding-left: 15px;
 		padding-right: 15px;
 		margin-bottom: 30px;
-	}
-
-	.col-xs-12 {
 		width: 100%;
 	}
 
 	@media (min-width: 576px) {
-		.col-sm-6 {
-			width: 50%;
-		}
-	}
-
-	@media (min-width: 768px) {
-		.col-md-6 {
+		.video-grid__item {
 			width: 50%;
 		}
 	}
 
 	@media (min-width: 1200px) {
-		.col-xl-4 {
+		.video-grid__item {
 			width: 33.333333%;
 		}
 	}
 
-	.article-card {
+	.video-card {
 		display: flex;
 		flex-direction: column;
 		height: 100%;
@@ -138,27 +120,27 @@
 		transition: box-shadow 0.3s ease;
 	}
 
-	.article-card:hover {
+	.video-card:hover {
 		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 	}
 
-	.weekly_watchlist {
+	.video-card__figure {
 		margin: 0;
 		display: flex;
 		flex-direction: column;
 		height: 100%;
 	}
 
-	.article-card__image {
+	.video-card__thumbnail {
 		position: relative;
 		width: 100%;
-		padding-bottom: 56.25%; /* 16:9 aspect ratio */
+		padding-bottom: 56.25%;
 		background-size: cover;
 		background-position: center;
 		overflow: hidden;
 	}
 
-	.article-card__image a {
+	.video-card__thumbnail a {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -167,7 +149,7 @@
 		display: block;
 	}
 
-	.article-card__image img {
+	.video-card__thumbnail img {
 		position: absolute;
 		top: 0;
 		left: 0;
@@ -178,11 +160,11 @@
 		transition: opacity 0.3s ease;
 	}
 
-	.article-card__image:hover img {
+	.video-card__thumbnail:hover img {
 		opacity: 0.1;
 	}
 
-	.card_content {
+	.video-card__content {
 		padding: 20px;
 		display: flex;
 		flex-direction: column;
@@ -190,53 +172,56 @@
 		flex: 1;
 	}
 
-	.u--margin-top-0 {
-		margin-top: 0 !important;
-	}
-
-	.u--margin-bottom-20 {
-		margin-bottom: 20px !important;
-	}
-
-	.article-card__title {
+	.video-card__title {
 		font-size: 1.125rem;
 		font-weight: 600;
 		margin: 0 0 10px 0;
 		line-height: 1.4;
 	}
 
-	.article-card__title a {
+	.video-card__title a {
 		color: #1a1a1a;
 		text-decoration: none;
 		transition: color 0.2s ease;
 	}
 
-	.article-card__title a:hover {
-		color: #f7941d;
+	.video-card__title a:hover {
+		color: #143E59;
 	}
 
-	.card_content p {
-		font-size: 0.9375rem;
-		line-height: 1.6;
-		color: #666;
-		margin: 0;
+	.video-card__date {
+		margin-bottom: 20px;
 	}
 
-	.card_content > a {
-		font-weight: 600;
-		text-decoration: none;
-		font-size: 0.9375rem;
-		transition: opacity 0.2s ease;
-		align-self: flex-start;
-	}
-
-	.card_content > a:hover {
-		opacity: 0.8;
-	}
-
-	.card_content span i {
+	.video-card__date span i {
 		font-style: italic;
 		color: #666;
 		font-size: 0.875rem;
+	}
+
+	.video-card__description {
+		font-size: 0.9375rem;
+		line-height: 1.6;
+		color: #666;
+		margin: 0 0 20px;
+	}
+
+	.video-card__link {
+		font-weight: 600;
+		text-decoration: none;
+		font-size: 0.9375rem;
+		color: #f7941d;
+		transition: color 0.2s ease;
+		align-self: flex-start;
+	}
+
+	.video-card__link:hover {
+		color: #c67000;
+	}
+
+	.empty-state {
+		padding: 40px;
+		text-align: center;
+		color: #666;
 	}
 </style>

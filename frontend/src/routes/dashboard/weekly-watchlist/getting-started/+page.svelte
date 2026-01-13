@@ -3,7 +3,7 @@
 	═══════════════════════════════════════════════════════════════════════════
 	
 	Apple ICT 11+ Principal Engineer Grade - January 2026
-	Svelte 5 Best Practices - Latest Nov/Dec 2024 Syntax
+	Svelte 5 Best Practices - Latest Nov/Dec 2025 Syntax
 	
 	Pixel-perfect match to WordPress reference: frontend/Implementation/wwlGettingStarted
 	
