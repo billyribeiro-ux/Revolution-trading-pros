@@ -42,15 +42,9 @@
 
 	// Trader team data - matches reference HTML
 	const traders = [
-		{ name: 'John Carter', title: 'Founder of Revolution Trading Pros', slug: 'john-carter', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23145036/John-Carter-1-300x300.jpg' },
-		{ name: 'Henry Gambell', title: 'Senior Managing Director of Options Trading', slug: 'henry-gambell', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23145751/Henry-Gambell-300x300.jpg' },
-		{ name: 'Bruce Marshall', title: 'Director of Options and Income Trading', slug: 'bruce-marshall', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23145841/Bruce-Marhsall-300x300.jpg' },
-		{ name: 'Danielle Shay', title: 'Director of Options', slug: 'danielle-shay', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23150014/Danielle-Shay-300x300.jpg' },
-		{ name: 'Allison Ostrander', title: 'Director of Risk Tolerance', slug: 'allison-ostrander', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23151106/Allison-Ostrander-300x300.jpg' },
-		{ name: 'Sam Shames', title: 'Director of Equities', slug: 'sam-shames', image: 'https://cdn.simplertrading.com/2023/04/13144655/6.jpg' },
-		{ name: 'Taylor Horton', title: 'VP of Directional Options Strategies', slug: 'taylor-horton', image: 'https://cdn.simplertrading.com/2023/04/13144658/7.jpg' },
-		{ name: 'Kody Ashmore', title: 'Director of Weekly Options Strategies', slug: 'kody-ashmore', image: 'https://cdn.simplertrading.com/2023/04/13144650/4.jpg' },
-		{ name: 'Raghee Horner', title: 'Director of Sector Secrets Mastery', slug: 'raghee-horner', image: 'https://cdn.simplertrading.com/2023/08/28092920/img-RagheeHorner-1.png' }
+		{ name: 'Billy Ribeiro', title: 'Founder of Revolution Trading Pros', slug: 'billy-ribeiro', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23145036/John-Carter-1-300x300.jpg' },
+		{ name: 'Freddie Ferber', title: 'Senior Managing Director of Options Trading', slug: 'freddie-ferber', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23145751/Henry-Gambell-300x300.jpg' },
+		{ name: 'Shao Wan', title: 'Director of Options and Income Trading', slug: 'shao-wan', image: 'https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/23145841/Bruce-Marhsall-300x300.jpg' }
 	];
 </script>
 

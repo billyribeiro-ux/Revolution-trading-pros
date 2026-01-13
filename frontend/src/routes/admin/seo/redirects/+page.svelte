@@ -167,7 +167,8 @@
 	<div class="controls-bar">
 		<div class="search-box">
 			<IconSearch size={20} />
-			<input type="text" bind:value={searchQuery} placeholder="Search redirects..." />
+			<label for="search-redirects" class="sr-only">Search redirects</label>
+			<input type="text" id="search-redirects" name="search" bind:value={searchQuery} placeholder="Search redirects..." />
 		</div>
 
 		<div class="filter-tabs">

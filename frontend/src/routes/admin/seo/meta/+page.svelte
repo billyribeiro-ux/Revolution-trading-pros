@@ -48,7 +48,8 @@
 		<div class="entities-sidebar">
 			<div class="search-box">
 				<IconSearch size={20} />
-				<input type="text" bind:value={searchQuery} placeholder="Search entities..." />
+				<label for="search-entities" class="sr-only">Search entities</label>
+				<input type="text" id="search-entities" name="search" bind:value={searchQuery} placeholder="Search entities..." />
 			</div>
 
 			<div class="entities-list">

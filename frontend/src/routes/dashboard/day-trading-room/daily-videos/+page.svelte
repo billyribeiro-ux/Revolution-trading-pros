@@ -79,7 +79,9 @@
 		<div class="dashboard-filters__search">
 			<form onsubmit={handleSearch}>
 				<input 
-					type="text" 
+					type="text"
+					id="video-search"
+					name="search"
 					class="facetwp-autocomplete" 
 					bind:value={searchQuery}
 					placeholder="Search" 
