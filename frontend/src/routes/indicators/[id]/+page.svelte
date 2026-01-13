@@ -18,6 +18,10 @@
 	import { page } from '$app/state';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.svelte';
+	import IndicatorHeader from '$lib/components/indicators/IndicatorHeader.svelte';
+	import TrainingVideosSection from '$lib/components/indicators/TrainingVideosSection.svelte';
+	import PlatformDownloads from '$lib/components/indicators/PlatformDownloads.svelte';
+	import SupportDocsSection from '$lib/components/indicators/SupportDocsSection.svelte';
 	
 	interface DownloadFile {
 		name: string;
@@ -55,7 +59,9 @@
 	// Get indicator ID from URL
 	let indicator = $derived.by(() => {
 		const id = page.params.id;
-		// Mock data - replace with API call
+		// TODO: Replace with actual API call to your backend
+		// Example: const response = await fetch(`/api/indicators/${id}`);
+		// const data = await response.json();
 		return {
 			id: id,
 			name: 'Volume Max Tool Kit (formerly VWAP)',
@@ -126,103 +132,27 @@
 	<div id="content" class="site-content">
 		<div class="indicators">
 			<main>
-				<!-- Page Title -->
-				<h1>{indicator.name}</h1>
+				<!-- Indicator Header Component -->
+				<IndicatorHeader 
+					name={indicator.name}
+					platforms={indicator.platforms}
+				/>
 				
-				<!-- Platforms Section -->
-				<section>
-					<p class="platforms">
-						<strong>Available Platforms:</strong>
-						{indicator.platforms.join(', ')}
-					</p>
-					<hr>
-					
-					<!-- Training Videos Section - WordPress Structure -->
-					<section id="ca-main" class="ca-section cpost-section">
-						<div class="section-inner">
-							<div class="ca-content-block cpost-content-block">
-								{#each indicator.trainingVideos as video (video.id)}
-									<div class="current-vid">
-										<div class="video-container current">
-											<div class="video-overlay"></div>
-											<div id="{video.id}" class="video-player"></div>
-											<video 
-												id="{video.id}" 
-												controls 
-												width="100%" 
-												poster="{video.posterUrl}"
-												style="aspect-ratio: 16/9;" 
-												title="{video.title}"
-											>
-												<source src="{video.videoUrl}" type="video/mp4">
-												Your browser does not support the video tag.
-											</video>
-										</div>
-									</div>
-								{/each}
-							</div>
-						</div>
-					</section>
-					
-					<!-- ThinkorSwim Downloads -->
-					{#each indicator.downloads as platformDownload}
-						<div class="st_box {platformDownload.platform.toLowerCase()}">
-							<img 
-								width="250" 
-								src={platformDownload.logo}
-								alt={platformDownload.platform}
-							>
-							
-							{#if platformDownload.files.length > 0}
-								<table>
-									<tbody>
-										<tr>
-											<th>{platformDownload.platform} Install File:</th>
-											<th></th>
-										</tr>
-										{#each platformDownload.files as file}
-											<tr>
-												<td>{file.name}</td>
-												<td class="text-right">
-													<a class="orng_btn" href={file.downloadUrl}>
-														Click to Download
-													</a>
-												</td>
-											</tr>
-										{/each}
-									</tbody>
-								</table>
-							{/if}
-							
-							{#if platformDownload.notes}
-								<div class="platform_notes">
-									{@html platformDownload.notes}
-								</div>
-							{/if}
-						</div>
-					{/each}
-					
-					<!-- Supporting Documentation -->
-					<div class="st_box">
-						<h2>
-							<strong>Supporting Documentation</strong>
-						</h2>
-						<table>
-							<tbody>
-								{#each indicator.supportDocs as doc}
-									<tr>
-										<td>{doc.title}</td>
-										<td class="text-right">
-											<a class="orng_btn" href={doc.url} target="_blank" rel="noopener noreferrer">
-												Click to View
-											</a>
-										</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
-				</section>
+				<!-- Training Videos Component -->
+				<TrainingVideosSection videos={indicator.trainingVideos} />
+				
+				<!-- Platform Downloads Components -->
+				{#each indicator.downloads as platformDownload}
+					<PlatformDownloads 
+						platform={platformDownload.platform}
+						logo={platformDownload.logo}
+						files={platformDownload.files}
+						notes={platformDownload.notes}
+					/>
+				{/each}
+				
+				<!-- Support Documentation Component -->
+				<SupportDocsSection docs={indicator.supportDocs} />
 			</main>
 		</div>
 	</div>
@@ -282,215 +212,18 @@
 		padding: 0;
 	}
 
-	/* 4. H1 TITLE - Mobile-first */
-	.indicators h1 {
-		color: #0c2434;
-		font-weight: 700;
-		text-align: center;
-		margin-bottom: 10px;
-		font-size: 30px;
-		font-family: "Open Sans Condensed", sans-serif;
-		line-height: 1.1em;
-	}
-
-	/* 4. PLATFORMS - Centered */
-	.platforms {
-		text-align: center;
-		margin-bottom: 40px;
-		color: #666666;
-		font-family: "Open Sans", sans-serif;
-	}
-
-	.platforms strong {
-		color: #666666;
-		font-weight: 700;
-	}
-
-	hr {
-		border: none;
-		border-top: 1px solid #dddddd;
-		margin: 20px 0 40px;
-	}
-
-	/* 5. VIDEO SECTION - Mobile-first */
-	.ca-section {
-		padding-bottom: 0;
-	}
-
-	.section-inner {
-		max-width: 1200px;
-		margin: 0 auto;
-		padding: 0;
-	}
-
-	.ca-content-block {
-		margin: 0;
-		padding: 0;
-	}
-
-	.current-vid {
-		width: 100%;
-		background-color: #f4f4f4;
-		padding: 10px 10px 0;
-	}
-
-	.current-vid:last-child {
-		padding-bottom: 25px;
-	}
-
-	.video-container {
-		position: relative;
-		background: #000;
-		overflow: hidden;
-		border: 1px solid #999;
-		cursor: pointer;
-	}
-
-	.video-container.current {
-		width: 100%;
-		display: flex;
-		z-index: 1;
-	}
-
-	.video-container video {
-		width: 100%;
-		display: block;
-	}
-
-	.video-overlay {
-		background-color: rgba(0, 0, 0, 0.269);
-	}
-
-	/* 6. ST_BOX - 24px solid #f4f4f4 border */
-	.st_box {
-		border: 24px solid #f4f4f4;
-		padding: 20px;
-		margin-top: 30px;
-		background: #ffffff;
-	}
-
-	.st_box img {
-		margin-bottom: 20px;
-		max-width: 100%;
-		height: auto;
-	}
-
-	.st_box h2 {
-		margin-bottom: 20px;
-		font-weight: 700;
-		color: #666666;
-		font-family: 'Open Sans', sans-serif;
-	}
-
-	/* 7. TABLES - No border, specific styling */
-	.st_box table {
-		width: 100%;
-		margin: 0;
-		border: 0;
-		border-collapse: collapse;
-	}
-
-	.st_box table th {
-		border: 0;
-		padding: 12px 15px;
-		text-align: left;
-		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		color: #666666;
-	}
-
-	.st_box table th:first-child {
-		padding-left: 0;
-	}
-
-	.st_box table td {
-		border: 0;
-		padding: 20px 0;
-		border-top: 1px solid #f4f4f4;
-		color: #666666;
-		font-family: 'Open Sans', sans-serif;
-	}
-
-	.st_box table td.text-right {
-		text-align: right;
-	}
-
-	/* 8. ORANGE BUTTON - Mobile-first */
-	.orng_btn {
-		background-color: #f8ac00;
-		border-radius: 80px;
-		font-weight: 700;
-		color: #fff;
-		display: inline-block;
-		text-align: center;
-		padding: 8px 20px;
-		min-width: 150px;
-		font-size: 16px;
-		text-decoration: none;
-		transition: background-color 0.2s ease;
-	}
-
-	.orng_btn:hover {
-		background-color: #df9c00;
-		color: #fff;
-		text-decoration: none;
-	}
-
-	/* 9. PLATFORM NOTES */
-	.platform_notes {
-		padding-top: 20px;
-		border-top: 1px solid #f4f4f4;
-		color: #666666;
-		line-height: 1.7;
-		font-family: 'Open Sans', sans-serif;
-	}
-
-	.platform_notes :global(a) {
-		color: #1e73be;
-		text-decoration: none;
-	}
-
-	.platform_notes :global(a:hover) {
-		color: #000000;
-		text-decoration: underline;
-	}
+	/* Component styles moved to individual component files */
+	/* This page now only contains layout-specific styles */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * RESPONSIVE - Mobile-First (min-width breakpoints)
 	 * Base styles above are mobile, these scale UP
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Tablet (416px+) */
-	@media (min-width: 416px) {
-		.current-vid {
-			padding: 25px 25px 0;
-		}
-
-		.current-vid:last-child {
-			padding-bottom: 25px;
-		}
-
-		.orng_btn {
-			min-width: 200px;
-			font-size: 18px;
-			padding: 10px 25px;
-		}
-	}
-
 	/* Tablet Large (768px+) */
 	@media (min-width: 768px) {
 		.indicators {
 			padding: 50px 15px;
-		}
-
-		.indicators h1 {
-			font-size: 54px;
-		}
-
-		.orng_btn {
-			min-width: 250px;
-			font-size: 20px;
-			padding: 10px 35px;
 		}
 	}
 </style>
