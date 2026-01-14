@@ -121,14 +121,13 @@ const config = {
 		env: {
 			publicPrefix: 'PUBLIC_'
 		},
-		// Apple ICT 7 CORB Fix: Output configuration per SvelteKit 2.13+ docs
+		// Apple ICT 7: Output configuration per SvelteKit 2.13+ docs
 		// https://svelte.dev/docs/kit/configuration#output
 		output: {
 			// Preload strategy for modern browsers
-			preloadStrategy: 'modulepreload',
-			// CRITICAL: 'single' creates ONE CSS file instead of chunks
-			// This eliminates CORB by avoiding cross-origin CSS chunk requests
-			bundleStrategy: 'single'
+			preloadStrategy: 'modulepreload'
+			// NOTE: bundleStrategy: 'single' removed - caused scroll/CSS issues
+			// CORB prevention handled via inlineStyleThreshold: 10240 above
 		}
 	}
 };
