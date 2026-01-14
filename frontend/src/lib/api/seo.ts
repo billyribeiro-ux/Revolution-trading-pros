@@ -586,23 +586,23 @@ class SeoManagementService {
 
 	/**
 	 * Initialize service
+	 * ICT 7 FIX: Disabled auto-loading - backend SEO endpoints not implemented
+	 * These features require manual initialization when backend is ready
 	 */
 	private initialize(): void {
 		if (!browser) return;
 
-		// Setup WebSocket for real-time updates
-		this.setupWebSocket();
+		// ICT 7 FIX: WebSocket, rank tracking, alert monitoring, and data loading
+		// are DISABLED because the backend SEO endpoints don't exist yet.
+		// This prevents 404 errors on every page load.
+		// 
+		// To enable when backend is ready, uncomment:
+		// this.setupWebSocket();
+		// this.startRankTracking();
+		// this.startAlertMonitoring();
+		// this.loadInitialData();
 
-		// Start rank tracking
-		this.startRankTracking();
-
-		// Start alert monitoring
-		this.startAlertMonitoring();
-
-		// Load initial data
-		this.loadInitialData();
-
-		console.debug('[SeoService] Initialized');
+		console.debug('[SeoService] Initialized (backend SEO endpoints pending)');
 	}
 
 	/**
@@ -1079,9 +1079,15 @@ class SeoManagementService {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async loadRedirects(params?: any): Promise<Redirect[]> {
-		const response = await api.get<ApiResponse<Redirect[]>>('/admin/redirects', { params });
-		this.redirects.set(response.data);
-		return response.data;
+		try {
+			const response = await api.get<ApiResponse<Redirect[]>>('/admin/redirects', { params });
+			this.redirects.set(response.data);
+			return response.data;
+		} catch (error) {
+			// ICT 7: Silently fail if endpoint doesn't exist
+			console.debug('[SeoService] loadRedirects endpoint not available');
+			return [];
+		}
 	}
 
 	async createRedirect(data: Partial<Redirect>): Promise<Redirect> {
@@ -1150,9 +1156,15 @@ class SeoManagementService {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async load404Errors(params?: any): Promise<Error404[]> {
-		const response = await api.get<ApiResponse<Error404[]>>('/admin/404-errors', { params });
-		this.errors404.set(response.data);
-		return response.data;
+		try {
+			const response = await api.get<ApiResponse<Error404[]>>('/admin/404-errors', { params });
+			this.errors404.set(response.data);
+			return response.data;
+		} catch (error) {
+			// ICT 7: Silently fail if endpoint doesn't exist
+			console.debug('[SeoService] load404Errors endpoint not available');
+			return [];
+		}
 	}
 
 	async resolve404(id: number, redirectTo?: string): Promise<void> {
@@ -1209,11 +1221,17 @@ class SeoManagementService {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async loadRankings(keywords?: string[]): Promise<RankTracking[]> {
-		const response = await api.get<{ rankings: RankTracking[] }>('/admin/seo/rankings', {
-			params: { keywords }
-		});
-		this.rankings.set(response.rankings);
-		return response.rankings;
+		try {
+			const response = await api.get<{ rankings: RankTracking[] }>('/admin/seo/rankings', {
+				params: { keywords }
+			});
+			this.rankings.set(response.rankings);
+			return response.rankings;
+		} catch (error) {
+			// ICT 7: Silently fail if endpoint doesn't exist
+			console.debug('[SeoService] loadRankings endpoint not available');
+			return [];
+		}
 	}
 
 	async trackKeyword(
@@ -1250,10 +1268,16 @@ class SeoManagementService {
 	// Public API Methods - Backlinks
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	async loadBacklinks(): Promise<BacklinkProfile> {
-		const response = await api.get<{ profile: BacklinkProfile }>('/admin/seo/backlinks');
-		this.backlinks.set(response.profile);
-		return response.profile;
+	async loadBacklinks(): Promise<BacklinkProfile | null> {
+		try {
+			const response = await api.get<{ profile: BacklinkProfile }>('/admin/seo/backlinks');
+			this.backlinks.set(response.profile);
+			return response.profile;
+		} catch (error) {
+			// ICT 7: Silently fail if endpoint doesn't exist
+			console.debug('[SeoService] loadBacklinks endpoint not available');
+			return null;
+		}
 	}
 
 	async checkNewBacklinks(): Promise<Backlink[]> {
