@@ -15,11 +15,10 @@
 
 import { env } from '$env/dynamic/private';
 import { getLatestWatchlist } from '$lib/server/watchlist';
-import type { PageServerLoad } from './$types';
 
 const EXPLOSIVE_SWINGS_ROOM_ID = 2;
 
-export const load: PageServerLoad = async ({ fetch }) => {
+export const load = async ({ fetch }: { fetch: typeof globalThis.fetch }) => {
 	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
 	
 	// Parallel fetch for optimal performance
@@ -29,17 +28,17 @@ export const load: PageServerLoad = async ({ fetch }) => {
 		
 		// Featured tutorial video
 		fetch(`${baseUrl}/api/room-resources?room_id=${EXPLOSIVE_SWINGS_ROOM_ID}&resource_type=video&content_type=tutorial&is_featured=true&per_page=1`)
-			.then(r => r.ok ? r.json() : { data: [] })
+			.then((r: Response) => r.ok ? r.json() : { data: [] })
 			.catch(() => ({ data: [] })),
 		
 		// Latest daily videos with tags
 		fetch(`${baseUrl}/api/room-resources?room_id=${EXPLOSIVE_SWINGS_ROOM_ID}&resource_type=video&content_type=daily_video&per_page=6`)
-			.then(r => r.ok ? r.json() : { data: [] })
+			.then((r: Response) => r.ok ? r.json() : { data: [] })
 			.catch(() => ({ data: [] })),
 		
 		// PDFs and documents
 		fetch(`${baseUrl}/api/room-resources?room_id=${EXPLOSIVE_SWINGS_ROOM_ID}&resource_type=pdf&per_page=10`)
-			.then(r => r.ok ? r.json() : { data: [] })
+			.then((r: Response) => r.ok ? r.json() : { data: [] })
 			.catch(() => ({ data: [] }))
 	]);
 
