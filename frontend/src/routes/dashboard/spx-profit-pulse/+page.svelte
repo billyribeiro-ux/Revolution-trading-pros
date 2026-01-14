@@ -195,24 +195,27 @@
 		}
 	}
 
-	/* Video Container - Constrained to 1024x575 max */
+	/* Video Container - Constrained to 1024x575 max
+	   CRITICAL: aspect-ratio reserves space BEFORE video loads to prevent layout shift */
 	.video-container {
 		margin-bottom: 30px;
 		max-width: 1024px;
 		margin-left: auto;
 		margin-right: auto;
 		width: 100%;
+		aspect-ratio: 16 / 9;
+		background: #000;
+		border-radius: 8px;
+		overflow: hidden;
 	}
 
 	.welcome-video {
 		width: 100%;
-		max-width: 1024px;
-		max-height: 575px;
-		height: auto;
+		height: 100%;
 		display: block;
-		margin: 0 auto;
 		border-radius: 8px;
 		object-fit: contain;
+		background: #000;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

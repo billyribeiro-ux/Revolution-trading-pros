@@ -55,8 +55,8 @@
 	// Loading state for memberships data
 	let isLoadingData = $state(false);
 
-	// Sidebar state
-	let sidebarCollapsed = $state(false);
+	// Sidebar state - user can manually toggle
+	let userToggledSidebar = $state<boolean | null>(null);
 
 	// Memberships data
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
@@ -277,13 +277,16 @@
 	// Derived: Check if on membership route (secondary sidebar visible)
 	let isOnMembershipRoute = $derived(currentMembershipData !== null);
 
-	$effect(() => {
-		if (isOnMembershipRoute && !sidebarCollapsed) {
-			sidebarCollapsed = true;
-		} else if (!isOnMembershipRoute && sidebarCollapsed) {
-			sidebarCollapsed = false;
-		}
-	});
+	// SVELTE 5 BEST PRACTICE: Use $derived for computed state, not $effect to mutate state
+	// This prevents layout shift by computing correct value BEFORE first render
+	let sidebarCollapsed = $derived(
+		userToggledSidebar !== null ? userToggledSidebar : isOnMembershipRoute
+	);
+
+	// Handler for user manually toggling sidebar
+	function handleSidebarToggle(collapsed: boolean) {
+		userToggledSidebar = collapsed;
+	}
 </script>
 
 <svelte:head>
@@ -299,7 +302,8 @@
 	<!-- Sidebar Navigation (LEFT) -->
 	<DashboardSidebar
 		user={userData}
-		bind:collapsed={sidebarCollapsed}
+		collapsed={sidebarCollapsed}
+		onToggle={handleSidebarToggle}
 		secondaryNavItems={currentMembershipData?.items ?? []}
 		secondarySidebarTitle={currentMembershipData?.title ?? ''}
 	/>

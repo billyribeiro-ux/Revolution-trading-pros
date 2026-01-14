@@ -59,7 +59,8 @@
 		type?: MembershipType;
 	}
 
-	// Svelte 5 props with bindable for parent access
+	// Svelte 5 props - using callback pattern to prevent layout shift
+	// Parent uses $derived for collapsed state, so we use onToggle callback instead of $bindable
 	interface Props {
 		user: {
 			name: string;
@@ -67,11 +68,12 @@
 			memberships?: MembershipItem[];  // Full membership objects, not just slugs
 		};
 		collapsed?: boolean;
+		onToggle?: (collapsed: boolean) => void;  // Callback for toggle events
 		secondaryNavItems?: SecondaryNavItem[];  // Course-specific secondary nav
 		secondarySidebarTitle?: string;  // Title for secondary sidebar
 	}
 
-	let { user, collapsed = $bindable(false), secondaryNavItems = [], secondarySidebarTitle = '' }: Props = $props();
+	let { user, collapsed = false, onToggle, secondaryNavItems = [], secondarySidebarTitle = '' }: Props = $props();
 
 	// State for expanded submenus in secondary nav
 	let expandedSubmenus = $state<Set<string>>(new Set());
