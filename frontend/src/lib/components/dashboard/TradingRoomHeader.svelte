@@ -216,6 +216,9 @@
 	.btn-xs {
 		padding: 6px 12px;
 		font-size: 12px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
 	}
 
 	.btn-default {

@@ -250,6 +250,10 @@
 	.btn-tiny {
 		padding: 8px 16px;
 		font-size: 13px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	/* Tablet breakpoint */

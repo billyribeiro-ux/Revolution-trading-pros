@@ -560,6 +560,10 @@
 	.btn-tiny {
 		padding: 8px 16px;
 		font-size: 12px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.btn-default {

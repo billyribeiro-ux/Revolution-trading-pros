@@ -312,6 +312,10 @@
 		padding: 10px 24px;
 		font-size: 13px;
 		min-width: 120px;
+		height: 40px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.btn-default {
