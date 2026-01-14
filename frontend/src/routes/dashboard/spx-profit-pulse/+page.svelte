@@ -9,7 +9,6 @@
 	 * @version 2.1.0 - Added Latest Updates section per WordPress reference
 	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 
@@ -23,7 +22,7 @@
 			type: 'Daily Video',
 			title: 'January 13 2026',
 			date: 'January 13, 2026',
-			excerpt: 'With Jonathan McKeever',
+			excerpt: 'With Blly Ribeiro',
 			href: '/dashboard/spx-profit-pulse/alerts/january-13-2026',
 			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
 			isVideo: true
@@ -33,7 +32,7 @@
 			type: 'Daily Video',
 			title: 'January 12 2026',
 			date: 'January 12, 2026',
-			excerpt: 'With Jonathan McKeever',
+			excerpt: 'With Freddie Ferber',
 			href: '/dashboard/spx-profit-pulse/alerts/january-12-2026',
 			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
 			isVideo: true
@@ -43,7 +42,7 @@
 			type: 'Daily Video',
 			title: 'January 9 2026',
 			date: 'January 09, 2026',
-			excerpt: 'With Melissa Beegle',
+			excerpt: 'With Shao Wan',
 			href: '/dashboard/spx-profit-pulse/alerts/january-9-2026',
 			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
 			isVideo: true
@@ -126,7 +125,7 @@
 						<h2 class="card_title_2">Meet the Traders</h2>
 						<p>Here you'll find Strategies and more!</p>
 						<div class="buttons">
-							<a class="aclass" href="/dashboard/spx-profit-pulse/jonathan-mckeever/">Meet Jonathan</a>
+							<a class="aclass" href="/dashboard/spx-profit-pulse/billy-ribeiro/">Meet Billy</a>
 						</div>
 					</div>
 				</div>
@@ -157,9 +156,6 @@
 		</div>
 
 	</div>
-
-	<!-- SIDEBAR - Using TradingRoomSidebar Component -->
-	<TradingRoomSidebar planSlug="spx-profit-pulse" />
 </div>
 
 <style>
@@ -169,13 +165,13 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	
 	.dashboard__content {
-		display: flex;
-		flex-flow: row nowrap;
+		display: block;
+		width: 100%;
 	}
 
 	.dashboard__content-main {
-		flex: 1 1 auto;
-		min-width: 0;
+		width: 100%;
+		max-width: 100%;
 	}
 
 	/* Main Content Section */
@@ -195,9 +191,12 @@
 		}
 	}
 
-	/* Video Container - Exact WordPress Match */
+	/* Video Container - Max width 1024px on large devices */
 	.video-container {
 		margin-bottom: 30px;
+		max-width: 1024px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	.welcome-video {
@@ -209,26 +208,34 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   FEATURED CARDS - Exact WordPress CSS
+	   FEATURED CARDS - 2 on top, 1 centered on bottom
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.featured_cards {
-		display: flex;
-		flex-wrap: wrap;
-		justify-content: center;
+		display: grid;
+		grid-template-columns: 1fr;
 		gap: 20px;
+		max-width: 1024px;
+		margin: 0 auto;
 	}
 
+	/* Mobile: 1 column */
 	.card-col {
 		display: flex;
-		margin-bottom: 20px;
-		min-width: 300px;
-		max-width: 485px;
-		flex: 1 1 300px;
+		width: 100%;
 	}
 
+	/* Tablet and up: 2 columns for first 2 cards */
 	@media screen and (min-width: 768px) {
-		.card-col {
-			min-width: 384px;
+		.featured_cards {
+			grid-template-columns: repeat(2, 1fr);
+		}
+		
+		/* Third card spans both columns and centers */
+		.card-col:nth-child(3) {
+			grid-column: 1 / -1;
+			max-width: 485px;
+			margin: 0 auto;
+			width: 100%;
 		}
 	}
 
