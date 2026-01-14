@@ -42,7 +42,7 @@
 		"@fortawesome/free-brands-svg-icons": "^7.1.0",
 		"@fortawesome/free-solid-svg-icons": "^7.1.0",
 		"@fortawesome/svelte-fontawesome": "^0.2.4",
-		"@tabler/icons-svelte": "^3.35.0",
+		"@tabler/icons-svelte": "^3.36.1",
 		"@threlte/core": "^8.3.1",
 		"@threlte/extras": "^9.7.1",
 		"@vimeo/player": "^2.30.1",
