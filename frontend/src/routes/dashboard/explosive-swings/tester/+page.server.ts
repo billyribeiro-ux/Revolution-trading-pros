@@ -10,6 +10,7 @@
  */
 
 import { env } from '$env/dynamic/private';
+import type { PageServerLoad } from './$types';
 import type { 
 	TradePlanEntry, 
 	RoomAlert, 
@@ -19,7 +20,7 @@ import type {
 
 const ROOM_SLUG = 'explosive-swings';
 
-export async function load({ fetch }) {
+export const load: PageServerLoad = async ({ fetch }) => {
 	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev/api';
 	
 	try {

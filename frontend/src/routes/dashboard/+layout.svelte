@@ -217,9 +217,20 @@
 		'/dashboard/spx-profit-pulse': {
 			title: 'SPX Profit Pulse',
 			items: [
-				{ href: '/dashboard/spx-profit-pulse', icon: 'layout-dashboard', text: 'SPX Profit Pulse Dashboard' },
-				{ href: '/dashboard/spx-profit-pulse/start-here', icon: 'info', text: 'Start Here' },
-				{ href: '/dashboard/spx-profit-pulse/alerts', icon: 'bolt', text: 'Alerts' }
+				{ href: '/dashboard/spx-profit-pulse', icon: 'layout-dashboard', text: 'Tr3ndy SPX Alerts Service Dashboard' },
+				{ href: '/dashboard/spx-profit-pulse/premium-videos', icon: 'video', text: 'Premium Videos' },
+				{ href: '/dashboard/spx-profit-pulse/learning-center', icon: 'school', text: 'Learning Center' },
+				{
+					href: '#',
+					icon: 'users',
+					text: 'Meet Jonathan',
+					submenu: [
+						{ href: '/dashboard/spx-profit-pulse/jonathan-mckeever', icon: '', text: 'Overview' },
+						{ href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trading-strategies', icon: '', text: 'Trading Strategies' },
+						{ href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trader-store', icon: '', text: 'Trader Store' }
+					]
+				},
+				{ href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trader-store', icon: 'shopping-cart', text: 'Trader Store' }
 			]
 		},
 		'/dashboard/explosive-swings': {
