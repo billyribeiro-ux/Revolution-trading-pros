@@ -191,51 +191,58 @@
 		}
 	}
 
-	/* Video Container - Max width 1024px on large devices */
+	/* Video Container - Constrained to 1024x575 max */
 	.video-container {
 		margin-bottom: 30px;
 		max-width: 1024px;
 		margin-left: auto;
 		margin-right: auto;
+		width: 100%;
 	}
 
 	.welcome-video {
 		width: 100%;
+		max-width: 1024px;
+		max-height: 575px;
 		height: auto;
 		display: block;
 		margin: 0 auto;
 		border-radius: 8px;
+		object-fit: contain;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   FEATURED CARDS - 2 on top, 1 centered on bottom
+	   FEATURED CARDS - Centered above video, 2 on top row, 1 centered below
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.featured_cards {
-		display: grid;
-		grid-template-columns: 1fr;
+		display: flex;
+		flex-wrap: wrap;
+		justify-content: center;
 		gap: 20px;
 		max-width: 1024px;
-		margin: 0 auto;
+		margin: 0 auto 30px auto;
 	}
 
-	/* Mobile: 1 column */
+	/* Mobile: 1 column, full width */
 	.card-col {
 		display: flex;
-		width: 100%;
+		flex: 1 1 100%;
+		min-width: 300px;
+		max-width: 485px;
 	}
 
-	/* Tablet and up: 2 columns for first 2 cards */
+	/* Tablet and up: 2 cards on top, 1 centered below */
 	@media screen and (min-width: 768px) {
-		.featured_cards {
-			grid-template-columns: repeat(2, 1fr);
+		.card-col {
+			flex: 1 1 calc(50% - 10px);
+			max-width: 485px;
 		}
 		
-		/* Third card spans both columns and centers */
+		/* Third card: force to new row and center */
 		.card-col:nth-child(3) {
-			grid-column: 1 / -1;
-			max-width: 485px;
-			margin: 0 auto;
-			width: 100%;
+			flex: 0 1 485px;
+			margin-left: auto;
+			margin-right: auto;
 		}
 	}
 
@@ -376,5 +383,24 @@
 
 	.u--background-color-white {
 		background-color: #fff !important;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CRITICAL: Hide sidebar on SPX Profit Pulse page
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:global(.dashboard__content-sidebar) {
+		display: none !important;
+	}
+
+	/* Ensure main content takes full width without sidebar */
+	.dashboard__content {
+		display: block !important;
+		width: 100% !important;
+	}
+
+	.dashboard__content-main {
+		width: 100% !important;
+		max-width: 100% !important;
+		flex: none !important;
 	}
 </style>
