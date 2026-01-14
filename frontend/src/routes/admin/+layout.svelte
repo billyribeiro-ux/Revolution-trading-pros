@@ -147,6 +147,7 @@
 			'popups': 'Popups',
 			'forms': 'Forms',
 			'videos': 'Videos',
+			'resources': 'Resources',
 			'site-health': 'Site Health',
 			'connections': 'API Connections'
 		};
