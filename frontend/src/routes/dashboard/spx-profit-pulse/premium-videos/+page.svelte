@@ -516,4 +516,16 @@
 	:global(.dashboard__content-sidebar) {
 		display: none !important;
 	}
+
+	/* Ensure main content takes full width without sidebar */
+	.dashboard__content {
+		display: block !important;
+		width: 100% !important;
+	}
+
+	.dashboard__content-main {
+		width: 100% !important;
+		max-width: 100% !important;
+		flex: none !important;
+	}
 </style>
