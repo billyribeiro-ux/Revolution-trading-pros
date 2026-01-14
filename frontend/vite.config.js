@@ -90,7 +90,7 @@ export default defineConfig({
 	// SSR configuration to handle CSS properly
 	ssr: {
 		// Ensure external packages with CSS are handled correctly
-		noExternal: ['@tailwindcss/postcss', 'tus-js-client']
+		noExternal: ['tus-js-client']
 	},
 	optimizeDeps: {
 		// Pre-bundle only critical dependencies
