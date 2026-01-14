@@ -90,9 +90,9 @@ const config = {
 			crawl: true,
 			entries: ['*', '/sitemap.xml', '/robots.txt']
 		},
-		// Apple ICT 7 CORB Fix: Aggressively inline CSS to prevent cross-origin blocking
-		// Higher threshold = more CSS inlined = fewer external CSS files = no CORB
-		inlineStyleThreshold: 10240, // 10KB - inline most component CSS
+		// Disable CSS inlining to allow proper Svelte scoped CSS
+		// The aggressive inlining was breaking scoped CSS in production builds
+		inlineStyleThreshold: 0, // Disabled - use separate CSS files
 		csp: {
 			mode: 'auto',
 			directives: {
