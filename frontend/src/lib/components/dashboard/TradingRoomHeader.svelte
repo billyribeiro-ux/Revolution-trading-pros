@@ -221,7 +221,7 @@
 	.btn-default {
 		background-color: #F4F4F4;
 		color: #333333;
-		border: 1px solid transparent;
+		border: 1px solid #F4F4F4;
 	}
 
 	.btn-default:hover {
