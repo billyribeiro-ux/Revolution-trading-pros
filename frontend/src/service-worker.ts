@@ -30,7 +30,11 @@
  *    - Stale-while-revalidate for manifests
  *    - Respects cache headers from CDN
  *
- * @version 3.0.0 (Apple ICT 11+ Principal Engineer - Zero Latency Video)
+ * 5. PRODUCTION SILENT MODE:
+ *    - Zero console noise in production
+ *    - Logs only errors for monitoring
+ *
+ * @version 4.0.0 (Apple ICT 11+ Principal Engineer - Silent Production Mode)
  * @author Revolution Trading Pros
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -38,6 +42,12 @@
 import { build, files, version } from '$service-worker';
 
 const sw = self as unknown as ServiceWorkerGlobalScope;
+
+// ICT 11+ Production Mode: Silent operation (no console noise)
+const IS_PRODUCTION = true; // Set to false for debugging
+const log = (...args: any[]) => !IS_PRODUCTION && console.log(...args);
+const warn = (...args: any[]) => !IS_PRODUCTION && console.warn(...args);
+const error = (...args: any[]) => console.error(...args); // Always log errors
 
 // Cache name includes version to ensure fresh caches on new deployments
 const CACHE_NAME = `cache-${version}`;
@@ -108,12 +118,12 @@ async function cacheAssetsIndividually(cache: Cache, assets: string[]): Promise<
 						await cache.put(asset, response);
 						return true;
 					} else {
-						console.warn(`[SW] Asset returned ${response.status}: ${asset}`);
+						warn(`[SW] Asset returned ${response.status}: ${asset}`);
 						return false;
 					}
-				} catch (error) {
+				} catch (err) {
 					// Log but don't throw - we want to continue caching other assets
-					console.warn(`[SW] Failed to cache asset: ${asset}`, error);
+					warn(`[SW] Failed to cache asset: ${asset}`, err);
 					return false;
 				}
 			})
@@ -129,13 +139,13 @@ async function cacheAssetsIndividually(cache: Cache, assets: string[]): Promise<
 		});
 	}
 	
-	console.log(`[SW] Cached ${successCount}/${assets.length} assets (${failCount} failed)`);
+	log(`[SW] Cached ${successCount}/${assets.length} assets (${failCount} failed)`);
 }
 
 // Install: Cache all assets with resilient individual caching
 sw.addEventListener('install', (event) => {
-	console.log(`[SW] Installing version ${version}`);
-	console.log(`[SW] Preparing to cache ${ASSETS.length} assets`);
+	log(`[SW] Installing version ${version}`);
+	log(`[SW] Preparing to cache ${ASSETS.length} assets`);
 	
 	event.waitUntil(
 		caches.open(CACHE_NAME)
@@ -144,13 +154,13 @@ sw.addEventListener('install', (event) => {
 				await cacheAssetsIndividually(cache, ASSETS);
 			})
 			.then(() => {
-				console.log(`[SW] Installation complete, skipping waiting`);
+				log(`[SW] Installation complete, skipping waiting`);
 				// Skip waiting to activate immediately
 				return sw.skipWaiting();
 			})
-			.catch((error) => {
+			.catch((err) => {
 				// Even if caching fails, still try to activate
-				console.error(`[SW] Installation error (continuing anyway):`, error);
+				error(`[SW] Installation error (continuing anyway):`, err);
 				return sw.skipWaiting();
 			})
 	);
@@ -158,7 +168,7 @@ sw.addEventListener('install', (event) => {
 
 // Activate: Clean up old caches (including video caches)
 sw.addEventListener('activate', (event) => {
-	console.log(`[SW] Activating version ${version}`);
+	log(`[SW] Activating version ${version}`);
 
 	event.waitUntil(
 		caches
@@ -174,7 +184,7 @@ sw.addEventListener('activate', (event) => {
 							return true;
 						})
 						.map((key) => {
-							console.log(`[SW] Deleting old cache: ${key}`);
+							log(`[SW] Deleting old cache: ${key}`);
 							return caches.delete(key);
 						})
 				);
@@ -335,9 +345,9 @@ async function cacheVideoResource(request: Request, response: Response): Promise
 		});
 
 		await cache.put(request, cachedResponse);
-		console.debug(`[SW] Cached video resource: ${url.pathname}`);
-	} catch (error) {
-		console.warn(`[SW] Failed to cache video: ${url.pathname}`, error);
+		// Silent in production
+	} catch (err) {
+		warn(`[SW] Failed to cache video: ${url.pathname}`, err);
 	}
 }
 
@@ -368,8 +378,8 @@ async function getCachedVideo(request: Request): Promise<Response | null> {
 		}
 
 		return cached;
-	} catch (error) {
-		console.warn(`[SW] Cache read error:`, error);
+	} catch (err) {
+		warn(`[SW] Cache read error:`, err);
 		return null;
 	}
 }
@@ -412,9 +422,9 @@ async function handleVideoCDNFetch(event: FetchEvent): Promise<Response> {
 			event.waitUntil(cacheVideoResource(request, response.clone()));
 
 			return response;
-		} catch (error) {
-			console.error(`[SW] Video fetch failed: ${url.pathname}`, error);
-			throw error;
+		} catch (err) {
+			error(`[SW] Video fetch failed: ${url.pathname}`, err);
+			throw err;
 		}
 	}
 
@@ -435,10 +445,10 @@ async function cleanupVideoCaches(): Promise<void> {
 			cacheName !== VIDEO_CACHE_NAME &&
 			cacheName !== VIDEO_THUMBNAIL_CACHE
 		) {
-			console.log(`[SW] Deleting old video cache: ${cacheName}`);
+			log(`[SW] Deleting old video cache: ${cacheName}`);
 			await caches.delete(cacheName);
 		}
 	}
 }
 
-console.log(`[SW] Service worker v${version} loaded (with video caching)`);
+log(`[SW] Service worker v${version} loaded (with video caching)`);
