@@ -8,7 +8,7 @@
  * Supports filtering by category/tags
  */
 
-import type { RequestEvent } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
 const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
 
@@ -55,7 +55,7 @@ const CATEGORY_TAG_MAP: Record<string, string> = {
 	'529': 'trade-setups'
 };
 
-export const load = async ({ url, fetch, cookies }: RequestEvent) => {
+export const load: PageServerLoad = async ({ url, fetch, cookies }) => {
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const category = url.searchParams.get('category');
 	const perPage = 9;

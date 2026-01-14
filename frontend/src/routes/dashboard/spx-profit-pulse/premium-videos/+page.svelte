@@ -16,7 +16,8 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import type { PremiumVideo, PageData } from './+page.server';
+	import type { PageData } from './$types';
+	import type { PremiumVideo } from './+page.server';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
 	// Svelte 5 props with SvelteKit typing

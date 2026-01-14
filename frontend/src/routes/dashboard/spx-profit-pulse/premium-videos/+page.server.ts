@@ -13,7 +13,7 @@
  * @version 1.0.0 - January 2026
  */
 
-import type { RequestEvent } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
 
 // SSR/SSG Configuration - Per SvelteKit Official Docs
 export const ssr = true;      // Enable server-side rendering
@@ -46,7 +46,7 @@ export interface PageData {
 	error?: string;
 }
 
-export const load = async ({ url, fetch, cookies }: RequestEvent) => {
+export const load: PageServerLoad = async ({ url, fetch, cookies }) => {
 	const page = parseInt(url.searchParams.get('page') || '1');
 	const search = url.searchParams.get('search') || '';
 	const perPage = 12;
