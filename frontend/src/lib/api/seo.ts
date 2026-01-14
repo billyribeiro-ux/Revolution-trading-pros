@@ -69,9 +69,10 @@ const ANALYSIS_DEBOUNCE = 2000; // 2 seconds
 const RANK_CHECK_INTERVAL = 3600000; // 1 hour
 const ALERT_CHECK_INTERVAL = 300000; // 5 minutes
 
-// ICT 7 Principal Engineer Pattern: Feature flag for SEO service
-// Set VITE_SEO_ENABLED=true when backend endpoints are ready
-const SEO_ENABLED = import.meta.env['VITE_SEO_ENABLED'] === 'true';
+// ICT 7 Principal Engineer Pattern: Graceful degradation
+// Service enabled by default - missing endpoints handled via try/catch
+// Set VITE_SEO_DISABLED=true to completely disable if needed
+const SEO_DISABLED = import.meta.env['VITE_SEO_DISABLED'] === 'true';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Enhanced Type Definitions
@@ -590,24 +591,25 @@ class SeoManagementService {
 
 	/**
 	 * Initialize service
-	 * ICT 7 Principal Engineer Pattern: Feature-flagged initialization
-	 * Set VITE_SEO_ENABLED=true in .env when backend endpoints are ready
+	 * ICT 7 Principal Engineer Pattern: Graceful degradation
+	 * Service enabled by default - missing endpoints fail silently via try/catch
+	 * Set VITE_SEO_DISABLED=true to completely disable if needed
 	 */
 	private initialize(): void {
 		if (!browser) return;
 
-		if (!SEO_ENABLED) {
-			console.debug('[SeoService] Disabled (set VITE_SEO_ENABLED=true to enable)');
+		if (SEO_DISABLED) {
+			console.debug('[SeoService] Disabled via VITE_SEO_DISABLED');
 			return;
 		}
 
-		// Full initialization when feature is enabled
+		// Full initialization - endpoints that don't exist fail silently
 		this.setupWebSocket();
 		this.startRankTracking();
 		this.startAlertMonitoring();
 		this.loadInitialData();
 
-		console.debug('[SeoService] Initialized');
+		console.debug('[SeoService] Initialized (missing endpoints handled gracefully)');
 	}
 
 	/**
