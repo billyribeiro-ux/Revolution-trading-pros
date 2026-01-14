@@ -10,13 +10,13 @@
  */
 
 import { getLatestWatchlist } from '$lib/server/watchlist';
+import type { PageServerLoad } from './$types';
 
-/** @type {import('./$types').PageServerLoad} */
-export async function load({ fetch }) {
+export const load: PageServerLoad = async ({ fetch }) => {
 	// Pre-fetch latest watchlist for swing-trading-room (or global if none)
 	const watchlist = await getLatestWatchlist('swing-trading-room', fetch);
 
 	return {
 		watchlist
 	};
-}
+};
