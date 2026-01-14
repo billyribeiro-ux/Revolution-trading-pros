@@ -69,6 +69,10 @@ const ANALYSIS_DEBOUNCE = 2000; // 2 seconds
 const RANK_CHECK_INTERVAL = 3600000; // 1 hour
 const ALERT_CHECK_INTERVAL = 300000; // 5 minutes
 
+// ICT 7 Principal Engineer Pattern: Feature flag for SEO service
+// Set VITE_SEO_ENABLED=true when backend endpoints are ready
+const SEO_ENABLED = import.meta.env['VITE_SEO_ENABLED'] === 'true';
+
 // ═══════════════════════════════════════════════════════════════════════════
 // Enhanced Type Definitions
 // ═══════════════════════════════════════════════════════════════════════════
@@ -586,23 +590,24 @@ class SeoManagementService {
 
 	/**
 	 * Initialize service
-	 * ICT 7 FIX: Disabled auto-loading - backend SEO endpoints not implemented
-	 * These features require manual initialization when backend is ready
+	 * ICT 7 Principal Engineer Pattern: Feature-flagged initialization
+	 * Set VITE_SEO_ENABLED=true in .env when backend endpoints are ready
 	 */
 	private initialize(): void {
 		if (!browser) return;
 
-		// ICT 7 FIX: WebSocket, rank tracking, alert monitoring, and data loading
-		// are DISABLED because the backend SEO endpoints don't exist yet.
-		// This prevents 404 errors on every page load.
-		// 
-		// To enable when backend is ready, uncomment:
-		// this.setupWebSocket();
-		// this.startRankTracking();
-		// this.startAlertMonitoring();
-		// this.loadInitialData();
+		if (!SEO_ENABLED) {
+			console.debug('[SeoService] Disabled (set VITE_SEO_ENABLED=true to enable)');
+			return;
+		}
 
-		console.debug('[SeoService] Initialized (backend SEO endpoints pending)');
+		// Full initialization when feature is enabled
+		this.setupWebSocket();
+		this.startRankTracking();
+		this.startAlertMonitoring();
+		this.loadInitialData();
+
+		console.debug('[SeoService] Initialized');
 	}
 
 	/**
