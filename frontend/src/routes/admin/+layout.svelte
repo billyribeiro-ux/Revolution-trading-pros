@@ -233,7 +233,7 @@
 					<IconCommand size={18} />
 				</button>
 
-				<a href="/" class="view-site-btn" title="Open main website in new context" target="_blank" rel="noopener">View Site</a>
+				<a href="/" class="view-site-btn" title="View main website">View Site</a>
 			</div>
 		</header>
 
