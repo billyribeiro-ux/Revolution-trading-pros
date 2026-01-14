@@ -6,7 +6,16 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import * as tus from 'tus-js-client';
+	import { browser } from '$app/environment';
+	
+	// Dynamic import for tus-js-client to avoid SSR issues
+	let tus: any = null;
+	
+	onMount(async () => {
+		if (browser) {
+			tus = await import('tus-js-client');
+		}
+	});
 
 	interface Props {
 		courseId: string;

@@ -83,6 +83,7 @@ export default defineConfig({
 		// Single CSS bundle per route = no unused preload warnings
 		cssCodeSplit: false,
 		rollupOptions: {
+			external: ['tus-js-client'],
 			output: {
 				// Optimized chunk naming for production
 				chunkFileNames: '_app/immutable/chunks/[name]-[hash].js',
@@ -103,7 +104,7 @@ export default defineConfig({
 	// SSR configuration to handle CSS properly
 	ssr: {
 		// Ensure external packages with CSS are handled correctly
-		noExternal: ['@tailwindcss/postcss']
+		noExternal: ['@tailwindcss/postcss', 'tus-js-client']
 	},
 	optimizeDeps: {
 		// Pre-bundle only critical dependencies
