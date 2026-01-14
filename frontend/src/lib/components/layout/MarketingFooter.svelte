@@ -10,7 +10,8 @@
 		IconBrandInstagram,
 		IconBrandYoutube,
 		IconBrandLinkedin,
-		IconBrandDiscord
+		IconBrandDiscord,
+		IconBrandFacebook
 	} from '$lib/icons';
 
 	const currentYear = new Date().getFullYear();
@@ -39,10 +40,13 @@
 	};
 
 	const socialLinks = [
+		{ href: 'https://facebook.com/revolutiontradingpros', icon: IconBrandFacebook, label: 'Facebook' },
 		{ href: 'https://twitter.com/revtradingpros', icon: IconBrandTwitter, label: 'Twitter' },
 		{ href: 'https://instagram.com/revolutiontradingpros', icon: IconBrandInstagram, label: 'Instagram' },
 		{ href: 'https://youtube.com/@RevolutionTradingPros', icon: IconBrandYoutube, label: 'YouTube' },
-		
+		{ href: 'https://linkedin.com/company/revolution-trading-pros', icon: IconBrandLinkedin, label: 'LinkedIn' },
+		{ href: 'https://discord.gg/rtp', icon: IconBrandDiscord, label: 'Discord' }
+	];
 
 <footer class="marketing-footer">
 	<div class="footer-container">
