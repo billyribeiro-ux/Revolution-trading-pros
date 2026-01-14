@@ -219,14 +219,14 @@
 	}
 
 	.btn-default {
-		background-color: #3879F3;
+		background-color: #2a5fd1;
 		color: #fff;
-		border: 1px solid #3879F3;
+		border: 1px solid #2a5fd1;
 	}
 
 	.btn-default:hover {
-		background-color: #2a5fd1;
-		border-color: #2a5fd1;
+		background-color: #3879F3;
+		border-color: #3879F3;
 	}
 
 	.btn-default:active,
