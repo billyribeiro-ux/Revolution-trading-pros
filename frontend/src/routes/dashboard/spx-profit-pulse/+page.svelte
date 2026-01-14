@@ -4,16 +4,81 @@
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
 	 * Matches: Tr3ndy SPX Alerts Service Dashboard
-	 * Reference: frontend/Do's/SPX Tr3ndy/Main Page
+	 * Reference: frontend/Do's/SPX Tr3ndy/SPX-Profit-Pulse
 	 *
-	 * @version 2.0.0 - Pixel-perfect WordPress match
+	 * @version 2.1.0 - Added Latest Updates section per WordPress reference
 	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
+	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 
 	// SSR data from +page.server.ts
 	let { data } = $props();
+
+	// Latest Updates data - matches WordPress reference exactly
+	const latestUpdatesItems = [
+		{
+			id: 1,
+			type: 'Daily Video',
+			title: 'January 13 2026',
+			date: 'January 13, 2026',
+			excerpt: 'With Jonathan McKeever',
+			href: '/dashboard/spx-profit-pulse/alerts/january-13-2026',
+			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			isVideo: true
+		},
+		{
+			id: 2,
+			type: 'Daily Video',
+			title: 'January 12 2026',
+			date: 'January 12, 2026',
+			excerpt: 'With Jonathan McKeever',
+			href: '/dashboard/spx-profit-pulse/alerts/january-12-2026',
+			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			isVideo: true
+		},
+		{
+			id: 3,
+			type: 'Daily Video',
+			title: 'January 9 2026',
+			date: 'January 09, 2026',
+			excerpt: 'With Melissa Beegle',
+			href: '/dashboard/spx-profit-pulse/alerts/january-9-2026',
+			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			isVideo: true
+		},
+		{
+			id: 4,
+			type: 'Daily Video',
+			title: 'January 8 2026',
+			date: 'January 08, 2026',
+			excerpt: 'With Melissa Beegle',
+			href: '/dashboard/spx-profit-pulse/alerts/january-8-2026',
+			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			isVideo: true
+		},
+		{
+			id: 5,
+			type: 'Daily Video',
+			title: 'January 7 2026',
+			date: 'January 07, 2026',
+			excerpt: 'With Jonathan McKeever',
+			href: '/dashboard/spx-profit-pulse/alerts/january-7-2026',
+			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			isVideo: true
+		},
+		{
+			id: 6,
+			type: 'Daily Video',
+			title: 'January 6 2026',
+			date: 'January 06, 2026',
+			excerpt: 'With Jonathan McKeever',
+			href: '/dashboard/spx-profit-pulse/alerts/january-6-2026',
+			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			isVideo: true
+		}
+	];
 </script>
 
 <svelte:head>
@@ -74,6 +139,16 @@
 				</div>
 			</div>
 
+		</section>
+
+		<!-- Latest Updates Section - Exact WordPress Match -->
+		<section class="dashboard__content-section">
+			<LatestUpdates 
+				items={latestUpdatesItems}
+				title="Latest Updates"
+				roomSlug="spx-profit-pulse"
+				buttonText="Watch Now"
+			/>
 		</section>
 
 		<!-- Weekly Watchlist Section -->
