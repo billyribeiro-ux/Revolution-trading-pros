@@ -243,8 +243,8 @@
 
 	.start-card__link {
 		display: inline-block;
-		background: #f4f4f4;
-		color: #333333 !important;
+		background: #143E59;
+		color: #ffffff !important;
 		padding: 10px 16px;
 		border-radius: 4px;
 		text-decoration: none;
@@ -252,23 +252,15 @@
 		font-size: 13px;
 		font-family: 'Open Sans', sans-serif;
 		transition: all 0.2s ease;
-		border: 1px solid transparent;
+		border: 1px solid #143E59;
 		min-height: 44px;
 		line-height: 1.5;
 	}
 
 	.start-card__link:hover {
-		background: #e7e7e7;
-		color: #333333 !important;
-	}
-
-	.start-card__link:active,
-	.start-card__link:focus {
-		background: #e7e7e7;
-		border-color: #9b59b6;
-		box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.2);
-		outline: none;
-		color: #333333 !important;
+		background: #0c2638;
+		border-color: #0c2638;
+		color: #ffffff !important;
 	}
 
 	/* Welcome Heading */
