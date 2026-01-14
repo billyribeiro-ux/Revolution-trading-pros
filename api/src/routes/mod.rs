@@ -92,6 +92,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/realtime", realtime::router())
         .nest("/popups", popups::router())
         .nest("/trading-rooms", trading_rooms::router())
+        .nest("/admin/trading-rooms", trading_rooms::admin_router())
         .nest("/admin/courses", admin_courses::router())
         .nest("/courses", member_courses::public_router())
         .nest("/my/courses", member_courses::member_router())
