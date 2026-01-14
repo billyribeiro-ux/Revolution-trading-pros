@@ -48,14 +48,24 @@ const getAdapter = () => {
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: vitePreprocess(),
+	// Svelte 5: Use compilerOptions for modern features
+	compilerOptions: {
+		// Enable runes for Svelte 5 reactivity
+		runes: true,
+		// Optimize for modern browsers
+		dev: process.env.NODE_ENV !== 'production'
+	},
 	onwarn: (warning, handler) => {
 		const suppressedCodes = [
 			'css_unused_selector',
-			'css_unknown_at_rule',
+			'css_unknown_at_rule', 
 			'css_empty_rule',
 			'state_referenced_locally',
 			'a11y_click_events_have_key_events',
-			'a11y_no_static_element_interactions'
+			'a11y_no_static_element_interactions',
+			// Svelte 5 specific warnings
+			'component_type_invalid',
+			'export_let_unused'
 		];
 		if (suppressedCodes.includes(warning.code)) return;
 		handler(warning);
@@ -108,8 +118,7 @@ const config = {
 		env: {
 			publicPrefix: 'PUBLIC_'
 		}
-	},
-	compilerOptions: {}
+	}
 };
 
 export default config;

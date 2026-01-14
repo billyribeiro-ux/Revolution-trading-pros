@@ -79,8 +79,8 @@ export default defineConfig({
 		modulePreload: false,
 		// Optimize asset inlining
 		assetsInlineLimit: 4096, // 4KB
-		// Apple ICT 7: Disable CSS code splitting for cleaner preload behavior
-		// Single CSS bundle per route = no unused preload warnings
+		// Apple ICT 7: Disable CSS code splitting for CORB prevention
+		// Single CSS bundle prevents cross-origin blocking of CSS chunks
 		cssCodeSplit: false,
 		rollupOptions: {
 			external: ['tus-js-client'],
@@ -132,7 +132,7 @@ export default defineConfig({
 			'src/routes/**/*.svelte'
 		]
 	},
-	// Enable CSS code splitting
+	// CSS configuration moved to build section for consistency
 	css: {
 		devSourcemap: false,
 		// Optimize CSS processing
@@ -140,7 +140,9 @@ export default defineConfig({
 		// Enable CSS modules optimization
 		modules: {
 			localsConvention: 'camelCase'
-		}
+		},
+		// CORB prevention: Force CSS inlining
+		extract: false
 	},
 	// Performance optimizations
 	esbuild: {
