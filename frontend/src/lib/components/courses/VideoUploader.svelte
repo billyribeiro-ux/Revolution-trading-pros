@@ -13,7 +13,7 @@
 	type TusModule = typeof import('tus-js-client');
 	type TusUpload = import('tus-js-client').Upload;
 	
-	let tus: TusModule | null = null;
+	let tus = $state<TusModule | null>(null);
 	
 	onMount(async () => {
 		if (browser) {
@@ -93,6 +93,11 @@
 			const { tus_upload_url, auth_signature, auth_expiry, video_guid, library_id, embed_url, play_url, thumbnail_url } = data.data;
 
 			status = 'uploading';
+
+			// Ensure tus module is loaded
+			if (!tus) {
+				throw new Error('Upload library not initialized. Please wait and try again.');
+			}
 
 			// Create TUS upload
 			const upload = new tus.Upload(file, {
@@ -210,11 +215,11 @@
 						</svg>
 					</button>
 				</div>
-				<button class="btn-upload" onclick={startUpload}>
+				<button class="btn-upload" onclick={startUpload} disabled={!tus}>
 					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>
 					</svg>
-					Upload Video
+					{tus ? 'Upload Video' : 'Loading...'}
 				</button>
 			{/if}
 		</div>
@@ -327,6 +332,11 @@
 		transition: background 0.2s;
 	}
 	.btn-upload:hover { background: #0f2d42; }
+	.btn-upload:disabled {
+		background: #9ca3af;
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
 
 	.error-message {
 		color: #dc2626;
