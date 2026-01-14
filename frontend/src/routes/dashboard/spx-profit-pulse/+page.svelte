@@ -227,20 +227,20 @@
 	.card-col {
 		display: flex;
 		flex: 1 1 100%;
-		min-width: 300px;
-		max-width: 485px;
+		min-width: 280px;
+		max-width: 360px;
 	}
 
 	/* Tablet and up: 2 cards on top, 1 centered below */
 	@media screen and (min-width: 768px) {
 		.card-col {
-			flex: 1 1 calc(50% - 10px);
-			max-width: 485px;
+			flex: 0 1 360px;
+			max-width: 360px;
 		}
 		
 		/* Third card: force to new row and center */
 		.card-col:nth-child(3) {
-			flex: 0 1 485px;
+			flex: 0 1 360px;
 			margin-left: auto;
 			margin-right: auto;
 		}
@@ -251,9 +251,9 @@
 		background-color: #2E88E2;
 		opacity: 0.81;
 		border-radius: 8px 8px 0 0;
-		padding: 20px;
+		padding: 12px 15px;
 		font-weight: 700;
-		font-size: 30px;
+		font-size: 20px;
 		margin: 0;
 		color: #fff;
 	}
@@ -262,9 +262,9 @@
 		background-color: #284556;
 		opacity: 0.81;
 		border-radius: 8px 8px 0 0;
-		padding: 20px;
+		padding: 12px 15px;
 		font-weight: 700;
-		font-size: 30px;
+		font-size: 20px;
 		margin: 0;
 		color: #fff;
 	}
@@ -273,34 +273,40 @@
 		background-color: #062946;
 		border-radius: 8px 8px 0 0;
 		opacity: 0.81;
-		padding: 20px;
+		padding: 12px 15px;
 		font-weight: 700;
-		font-size: 30px;
+		font-size: 20px;
 		margin: 0;
 		color: #fff;
 	}
 
 	/* Card Content Paragraphs */
 	.featured_cards p {
-		padding: 0 20px;
-		margin: 15px 0;
+		padding: 0 15px;
+		margin: 10px 0;
 		color: #fff;
+		font-size: 13px;
+		line-height: 1.4;
 	}
 
 	.featured-desc {
-		min-height: 48px;
+		min-height: 36px;
 	}
 
-	/* Card Buttons - Exact WordPress Match */
+	/* Card Buttons - 150x36 on large devices */
 	.featured_cards a {
 		color: #fff !important;
-		display: inline-block;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		font-family: "Open Sans Condensed", sans-serif;
 		font-weight: 700;
+		font-size: 12px;
 		background: transparent linear-gradient(180deg, #FFB834 0%, #C68000 100%) 0% 0% no-repeat padding-box;
 		border-radius: 50px;
-		padding: 5px 30px;
-		margin-bottom: 20px;
+		width: 150px;
+		height: 36px;
+		margin-bottom: 15px;
 		text-decoration: none;
 		transition: transform 0.2s ease, box-shadow 0.2s ease;
 	}
@@ -314,54 +320,37 @@
 		display: flex;
 		flex-direction: column;
 		align-items: center;
-		gap: 10px;
+		gap: 5px;
 	}
 
 	.buttons .aclass {
-		margin-bottom: 20px;
+		margin-bottom: 15px;
 	}
 
-	/* Card Background Images - Exact WordPress Match */
-	.img_1 {
+	/* Card Background Images - 360x212 on large devices */
+	.img_1, .img_2, .img_3 {
 		width: 100%;
+		height: 212px;
 		border-radius: 8px;
 		background-position: center;
 		background-repeat: no-repeat;
 		background-size: cover;
 		color: #ffffff;
-		background-image: url('https://cdn.simplertrading.com/2021/08/12114451/start-here-top-card-bg.png');
 		text-align: center;
 		display: flex;
 		flex-direction: column;
-		min-height: 280px;
+	}
+
+	.img_1 {
+		background-image: url('https://cdn.simplertrading.com/2021/08/12114451/start-here-top-card-bg.png');
 	}
 
 	.img_2 {
-		width: 100%;
-		border-radius: 8px;
-		background-position: center;
-		background-repeat: no-repeat;
-		background-size: cover;
-		color: #ffffff;
 		background-image: url('https://cdn.simplertrading.com/2021/08/12123709/meet-the-traders-top-card-bg.png');
-		text-align: center;
-		display: flex;
-		flex-direction: column;
-		min-height: 280px;
 	}
 
 	.img_3 {
-		width: 100%;
-		border-radius: 8px;
-		background-position: center;
-		background-repeat: no-repeat;
-		background-size: cover;
-		color: #ffffff;
 		background-image: url('https://cdn.simplertrading.com/2021/08/12123711/continued-ed-top-card-bg.png');
-		text-align: center;
-		display: flex;
-		flex-direction: column;
-		min-height: 280px;
 	}
 
 	/* Weekly Watchlist Section */
