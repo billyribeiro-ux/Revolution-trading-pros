@@ -77,12 +77,9 @@ const ASSETS = [
 	return true;
 });
 
-// ICT 7 FIX: Ensure offline.html is always in the cache list
-// This file is critical for offline functionality
-const OFFLINE_PAGE = '/offline.html';
-if (!ASSETS.includes(OFFLINE_PAGE)) {
-	ASSETS.push(OFFLINE_PAGE);
-}
+// ICT 7 FIX: Removed offline.html dependency
+// Using inline fallback instead to avoid 404 errors during build
+// The inline fallback is more reliable and doesn't require a separate file
 
 // Maximum concurrent cache operations to avoid overwhelming the browser
 const MAX_CONCURRENT_CACHE = 50;
@@ -223,13 +220,9 @@ sw.addEventListener('fetch', (event) => {
 					const cached = await caches.match(event.request);
 					if (cached) return cached;
 					
-					// ICT 7 FIX: Try offline page with graceful inline fallback
-					const offline = await caches.match(OFFLINE_PAGE);
-					if (offline) return offline;
-					
-					// Ultimate fallback: inline offline response
+					// ICT 11+ FIX: Inline offline response (no external file dependency)
 					return new Response(
-						`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline</title><style>body{font-family:system-ui,sans-serif;background:#0a101c;color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0}div{text-align:center;padding:2rem}h1{margin-bottom:1rem}button{background:#facc15;color:#0a101c;border:none;padding:1rem 2rem;border-radius:9999px;font-weight:600;cursor:pointer}</style></head><body><div><h1>You're Offline</h1><p>Please check your connection and try again.</p><button onclick="location.reload()">Retry</button></div></body></html>`,
+						`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline - Revolution Trading Pros</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;background:linear-gradient(135deg,#0a101c 0%,#1a2332 100%);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:2rem}div{text-align:center;max-width:500px}.icon{font-size:5rem;margin-bottom:2rem;opacity:0.8}h1{font-size:2.5rem;margin-bottom:1rem;font-weight:700}p{font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.8);margin-bottom:2rem}button{display:inline-block;padding:1rem 2rem;background:#facc15;color:#0a101c;border:none;border-radius:9999px;font-weight:600;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}button:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(250,204,21,0.3)}</style></head><body><div><div class="icon">📡</div><h1>You're Offline</h1><p>It looks like you've lost your internet connection. Please check your network and try again.</p><button onclick="location.reload()">Try Again</button></div></body></html>`,
 						{ status: 503, headers: { 'Content-Type': 'text/html' } }
 					);
 				})
