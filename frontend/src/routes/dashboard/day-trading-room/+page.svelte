@@ -12,10 +12,10 @@
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
+	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
 
 	// SSR data from +page.server.ts
 	let { data } = $props();
-	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
 
 	// Article data - matches WordPress structure
 	const articles = [
@@ -94,6 +94,13 @@
 			console.warn('Failed to load Google Calendar API');
 		};
 		document.head.appendChild(script);
+
+		// Cleanup function
+		return () => {
+			if (script.parentNode) {
+				script.parentNode.removeChild(script);
+			}
+		};
 	});
 
 	function initCalendar() {

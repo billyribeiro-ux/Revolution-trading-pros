@@ -91,6 +91,13 @@
 			console.warn('Failed to load Google Calendar API');
 		};
 		document.head.appendChild(script);
+
+		// Cleanup function
+		return () => {
+			if (script.parentNode) {
+				script.parentNode.removeChild(script);
+			}
+		};
 	});
 
 	function initCalendar() {
