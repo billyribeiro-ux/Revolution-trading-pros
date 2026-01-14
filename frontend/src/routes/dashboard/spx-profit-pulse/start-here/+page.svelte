@@ -243,22 +243,24 @@
 
 	.start-card__link {
 		display: inline-block;
-		background: linear-gradient(180deg, #FFB834 0%, #C68000 100%);
+		background: #143E59;
 		color: #ffffff !important;
-		padding: 14px 32px;
-		border-radius: 50px;
+		padding: 10px 16px;
+		border-radius: 4px;
 		text-decoration: none;
-		font-weight: 700;
-		font-size: 1rem;
-		font-family: 'Open Sans Condensed', sans-serif;
+		font-weight: 600;
+		font-size: 13px;
+		font-family: 'Open Sans', sans-serif;
 		transition: all 0.2s ease;
-		box-shadow: 0 4px 12px rgba(198, 128, 0, 0.3);
+		border: 1px solid #143E59;
+		min-height: 44px;
+		line-height: 1.5;
 	}
 
 	.start-card__link:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(198, 128, 0, 0.4);
-		background: linear-gradient(180deg, #FFC04D 0%, #D69000 100%);
+		background: #0c2638;
+		border-color: #0c2638;
+		color: #ffffff !important;
 	}
 
 	/* Welcome Heading */
