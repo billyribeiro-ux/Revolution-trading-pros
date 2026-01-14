@@ -121,10 +121,14 @@ const config = {
 		env: {
 			publicPrefix: 'PUBLIC_'
 		},
-		// Apple ICT 7 CORB Fix: Output configuration for optimal CSS bundling
+		// Apple ICT 7 CORB Fix: Output configuration per SvelteKit 2.13+ docs
+		// https://svelte.dev/docs/kit/configuration#output
 		output: {
-			// Preload only JS, not CSS - prevents CORB on CSS chunks
-			preloadStrategy: 'modulepreload'
+			// Preload strategy for modern browsers
+			preloadStrategy: 'modulepreload',
+			// CRITICAL: 'single' creates ONE CSS file instead of chunks
+			// This eliminates CORB by avoiding cross-origin CSS chunk requests
+			bundleStrategy: 'single'
 		}
 	}
 };
