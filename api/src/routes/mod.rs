@@ -38,6 +38,7 @@ pub mod member_courses;
 pub mod member_indicators;
 pub mod admin_courses;
 pub mod admin_indicators;
+pub mod admin_videos;
 pub mod admin_page_layouts;
 pub mod migrate;
 pub mod popups;
@@ -95,6 +96,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/my/courses", member_courses::member_router())
         // Indicator Management System
         .nest("/admin/indicators", admin_indicators::router())
+        // Video Management System (Learning Center, Daily Videos, Weekly Watchlist, Room Archives)
+        .nest("/admin/videos", admin_videos::router())
         .nest("/admin/page-layouts", admin_page_layouts::router())
         // Forms Admin - ICT 7 Grade
         .nest("/admin/forms", forms::admin_router())

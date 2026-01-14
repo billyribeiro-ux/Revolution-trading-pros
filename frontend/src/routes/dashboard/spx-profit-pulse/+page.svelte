@@ -9,6 +9,7 @@
 	 * @version 2.0.0 - Pixel-perfect WordPress match
 	 */
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 
 	// SSR data from +page.server.ts
@@ -82,7 +83,8 @@
 
 	</div>
 
-	<!-- SIDEBAR hidden on this page per WordPress reference -->
+	<!-- SIDEBAR - Using TradingRoomSidebar Component -->
+	<TradingRoomSidebar planSlug="spx-profit-pulse" />
 </div>
 
 <style>
