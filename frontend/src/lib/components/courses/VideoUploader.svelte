@@ -9,7 +9,11 @@
 	import { browser } from '$app/environment';
 	
 	// Dynamic import for tus-js-client to avoid SSR issues
-	let tus: any = null;
+	// Type definition for tus module
+	type TusModule = typeof import('tus-js-client');
+	type TusUpload = import('tus-js-client').Upload;
+	
+	let tus: TusModule | null = null;
 	
 	onMount(async () => {
 		if (browser) {
@@ -39,7 +43,7 @@
 	let progress = $state(0);
 	let status = $state<'idle' | 'preparing' | 'uploading' | 'processing' | 'complete' | 'error'>('idle');
 	let errorMessage = $state('');
-	let uploadInstance = $state<tus.Upload | null>(null);
+	let uploadInstance = $state<TusUpload | null>(null);
 
 	const handleFileSelect = (event: Event) => {
 		const input = event.target as HTMLInputElement;
