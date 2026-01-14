@@ -66,7 +66,7 @@
 			</div>
 
 			<div class="footer-column">
-				<h4 class="footer-heading">Products</h4>
+				<h2 class="footer-heading">Products</h2>
 				<ul class="footer-list">
 					{#each footerLinks.products as link}
 						<li><a href={link.href}>{link.label}</a></li>
@@ -75,7 +75,7 @@
 			</div>
 
 			<div class="footer-column">
-				<h4 class="footer-heading">Company</h4>
+				<h2 class="footer-heading">Company</h2>
 				<ul class="footer-list">
 					{#each footerLinks.company as link}
 						<li><a href={link.href}>{link.label}</a></li>
@@ -84,7 +84,7 @@
 			</div>
 
 			<div class="footer-column">
-				<h4 class="footer-heading">Legal</h4>
+				<h2 class="footer-heading">Legal</h2>
 				<ul class="footer-list">
 					{#each footerLinks.legal as link}
 						<li><a href={link.href}>{link.label}</a></li>
