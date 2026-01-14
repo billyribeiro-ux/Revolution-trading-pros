@@ -42,10 +42,7 @@
 		{ href: 'https://twitter.com/revtradingpros', icon: IconBrandTwitter, label: 'Twitter' },
 		{ href: 'https://instagram.com/revolutiontradingpros', icon: IconBrandInstagram, label: 'Instagram' },
 		{ href: 'https://youtube.com/@RevolutionTradingPros', icon: IconBrandYoutube, label: 'YouTube' },
-		{ href: 'https://linkedin.com/company/revolution-trading-pros', icon: IconBrandLinkedin, label: 'LinkedIn' },
-		{ href: 'https://discord.gg/rtp', icon: IconBrandDiscord, label: 'Discord' }
-	];
-</script>
+		
 
 <footer class="marketing-footer">
 	<div class="footer-container">
@@ -123,147 +120,157 @@
 </footer>
 
 <style>
-	.marketing-footer {
-		/* ICT11+ Fix: Footer MUST use hardcoded dark colors - NEVER theme variables */
-		/* Theme variables get overridden in light mode which would make footer white */
-		background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
-		padding: 4rem 0 2rem;
+	/* ICT 7 Apple Principal Engineer: Use :global() to ensure styles aren't overridden */
+	/* Footer must be bulletproof - no Tailwind or global CSS can break it */
+	
+	footer.marketing-footer {
+		background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
+		border-top: 1px solid rgba(99, 102, 241, 0.1) !important;
+		padding: 4rem 0 2rem !important;
+		width: 100% !important;
+		box-sizing: border-box !important;
 	}
 
-	.footer-container {
-		max-width: 1400px;
-		margin: 0 auto;
-		padding: 0 1rem;
+	footer.marketing-footer .footer-container {
+		max-width: 1400px !important;
+		margin: 0 auto !important;
+		padding: 0 1.5rem !important;
+		box-sizing: border-box !important;
 	}
 
-	.footer-grid {
-		display: grid;
-		grid-template-columns: 2fr 1fr 1fr 1fr;
-		gap: 3rem;
-		margin-bottom: 3rem;
+	footer.marketing-footer .footer-grid {
+		display: grid !important;
+		grid-template-columns: 2fr 1fr 1fr 1fr !important;
+		gap: 3rem !important;
+		margin-bottom: 3rem !important;
 	}
 
 	@media (max-width: 1024px) {
-		.footer-grid {
-			grid-template-columns: 1fr 1fr;
-			gap: 2rem;
+		footer.marketing-footer .footer-grid {
+			grid-template-columns: 1fr 1fr !important;
+			gap: 2rem !important;
 		}
 
-		.footer-brand {
-			grid-column: span 2;
+		footer.marketing-footer .footer-brand {
+			grid-column: span 2 !important;
 		}
 	}
 
 	@media (max-width: 640px) {
-		.footer-grid {
-			grid-template-columns: 1fr;
+		footer.marketing-footer .footer-grid {
+			grid-template-columns: 1fr !important;
 		}
 
-		.footer-brand {
-			grid-column: span 1;
+		footer.marketing-footer .footer-brand {
+			grid-column: span 1 !important;
 		}
 	}
 
-	.footer-brand {
-		max-width: 320px;
+	footer.marketing-footer .footer-brand {
+		max-width: 320px !important;
 	}
 
-	.footer-logo img {
-		height: 40px;
-		width: auto;
-		margin-bottom: 1rem;
+	footer.marketing-footer .footer-logo img {
+		height: 40px !important;
+		width: auto !important;
+		margin-bottom: 1rem !important;
 	}
 
-	.footer-tagline {
-		color: #64748b; /* Hardcoded - footer is always dark */
-		font-size: 0.9375rem;
-		line-height: 1.6;
-		margin-bottom: 1.5rem;
+	footer.marketing-footer .footer-tagline {
+		color: #64748b !important;
+		font-size: 0.9375rem !important;
+		line-height: 1.6 !important;
+		margin-bottom: 1.5rem !important;
 	}
 
-	.social-links {
-		display: flex;
-		gap: 0.75rem;
+	footer.marketing-footer .social-links {
+		display: flex !important;
+		flex-direction: row !important;
+		gap: 0.75rem !important;
 	}
 
-	.social-link {
-		width: 40px;
-		height: 40px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 0.5rem;
-		color: #94a3b8; /* Hardcoded - footer is always dark */
-		transition: all 0.2s;
+	footer.marketing-footer .social-link {
+		width: 40px !important;
+		height: 40px !important;
+		display: flex !important;
+		align-items: center !important;
+		justify-content: center !important;
+		background: rgba(99, 102, 241, 0.1) !important;
+		border: 1px solid rgba(99, 102, 241, 0.2) !important;
+		border-radius: 0.5rem !important;
+		color: #94a3b8 !important;
+		transition: all 0.2s !important;
 	}
 
-	.social-link:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8; /* Hardcoded - footer is always dark */
-		transform: translateY(-2px);
+	footer.marketing-footer .social-link:hover {
+		background: rgba(99, 102, 241, 0.2) !important;
+		color: #818cf8 !important;
+		transform: translateY(-2px) !important;
 	}
 
-	.footer-heading {
-		color: #f1f5f9; /* Hardcoded - footer is always dark */
-		font-size: 0.875rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		margin-bottom: 1.25rem;
+	footer.marketing-footer .footer-column {
+		display: block !important;
 	}
 
-	.footer-list {
-		list-style: none;
-		padding: 0;
-		margin: 0;
+	footer.marketing-footer .footer-heading {
+		color: #f1f5f9 !important;
+		font-size: 0.875rem !important;
+		font-weight: 600 !important;
+		text-transform: uppercase !important;
+		letter-spacing: 0.05em !important;
+		margin-bottom: 1.25rem !important;
 	}
 
-	.footer-list li {
-		margin-bottom: 0.75rem;
+	footer.marketing-footer .footer-list {
+		list-style: none !important;
+		padding: 0 !important;
+		margin: 0 !important;
 	}
 
-	.footer-list a {
-		color: #94a3b8; /* Hardcoded - footer is always dark */
-		text-decoration: none;
-		font-size: 0.9375rem;
-		transition: color 0.2s;
+	footer.marketing-footer .footer-list li {
+		margin-bottom: 0.75rem !important;
+		display: block !important;
 	}
 
-	.footer-list a:hover {
-		color: #f1f5f9; /* Hardcoded - footer is always dark */
+	footer.marketing-footer .footer-list a {
+		color: #94a3b8 !important;
+		text-decoration: none !important;
+		font-size: 0.9375rem !important;
+		transition: color 0.2s !important;
 	}
 
-	.risk-disclaimer {
-		padding: 1.5rem;
-		background: rgba(245, 158, 11, 0.05);
-		border: 1px solid rgba(245, 158, 11, 0.2);
-		border-radius: 0.75rem;
-		margin-bottom: 2rem;
+	footer.marketing-footer .footer-list a:hover {
+		color: #f1f5f9 !important;
 	}
 
-	.risk-disclaimer p {
-		color: #94a3b8; /* Hardcoded - footer is always dark */
-		font-size: 0.8125rem;
-		line-height: 1.6;
-		margin: 0;
+	footer.marketing-footer .risk-disclaimer {
+		padding: 1.5rem !important;
+		background: rgba(245, 158, 11, 0.05) !important;
+		border: 1px solid rgba(245, 158, 11, 0.2) !important;
+		border-radius: 0.75rem !important;
+		margin-bottom: 2rem !important;
 	}
 
-	.risk-disclaimer strong {
-		color: #fbbf24;
+	footer.marketing-footer .risk-disclaimer p {
+		color: #94a3b8 !important;
+		font-size: 0.8125rem !important;
+		line-height: 1.6 !important;
+		margin: 0 !important;
 	}
 
-	.footer-bottom {
-		padding-top: 2rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
-		text-align: center;
+	footer.marketing-footer .risk-disclaimer strong {
+		color: #fbbf24 !important;
 	}
 
-	.footer-bottom p {
-		color: #64748b; /* Hardcoded - footer is always dark */
-		font-size: 0.875rem;
-		margin: 0;
+	footer.marketing-footer .footer-bottom {
+		padding-top: 2rem !important;
+		border-top: 1px solid rgba(99, 102, 241, 0.1) !important;
+		text-align: center !important;
+	}
+
+	footer.marketing-footer .footer-bottom p {
+		color: #64748b !important;
+		font-size: 0.875rem !important;
+		margin: 0 !important;
 	}
 </style>
