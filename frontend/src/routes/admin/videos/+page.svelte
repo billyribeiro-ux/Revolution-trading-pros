@@ -115,9 +115,12 @@
 	// Modal state
 	let showUploadModal = $state(false);
 	let showEditModal = $state(false);
+	let showReplaceModal = $state(false);
 	let editingVideo = $state<Video | null>(null);
+	let replacingVideo = $state<Video | null>(null);
 	let isSaving = $state(false);
 	let isDeleting = $state(false);
+	let newVideoUrl = $state('');
 
 	// Form state
 	let formData = $state({
@@ -274,6 +277,39 @@
 			categories: video.categories || []
 		};
 		showEditModal = true;
+	}
+
+	function openReplaceModal(video: Video) {
+		replacingVideo = video;
+		newVideoUrl = video.video_url;
+		showReplaceModal = true;
+	}
+
+	async function replaceVideo() {
+		if (!replacingVideo || !newVideoUrl) return;
+
+		isSaving = true;
+		error = '';
+
+		try {
+			const response = await tradingRoomApi.videos.update(replacingVideo.id, {
+				video_url: newVideoUrl,
+				video_platform: detectPlatform(newVideoUrl)
+			});
+
+			if (response.success) {
+				showSuccess('Video replaced successfully');
+				showReplaceModal = false;
+				replacingVideo = null;
+				newVideoUrl = '';
+				await loadVideos();
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to replace video';
+			console.error('Error replacing video:', err);
+		} finally {
+			isSaving = false;
+		}
 	}
 
 	async function saveVideo() {
@@ -713,6 +749,9 @@
 							</td>
 							<td>
 								<div class="action-buttons">
+									<button class="btn-icon" title="Replace Video" onclick={() => openReplaceModal(video)}>
+										<IconLink size={16} />
+									</button>
 									<button class="btn-icon" title="Edit" onclick={() => openEditModal(video)}>
 										<IconEdit size={16} />
 									</button>
@@ -880,6 +919,60 @@
 	</div>
 {/if}
 
+<!-- Replace Video Modal -->
+{#if showReplaceModal && replacingVideo}
+	<div
+		class="modal-overlay"
+		role="button"
+		tabindex="0"
+		onclick={() => { showReplaceModal = false; replacingVideo = null; newVideoUrl = ''; }}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showReplaceModal = false, replacingVideo = null, newVideoUrl = '')}
+	>
+		<div class="modal" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
+			<div class="modal-header">
+				<h2>Replace Video</h2>
+				<button class="modal-close" onclick={() => { showReplaceModal = false; replacingVideo = null; newVideoUrl = ''; }} type="button" aria-label="Close">&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="replace-info">
+					<p><strong>Current video:</strong> {replacingVideo.title}</p>
+					<p class="text-muted">All metadata (title, description, categories, featured status) will be kept. Only the video URL will be replaced.</p>
+				</div>
+
+				<div class="form-group">
+					<label for="new-video-url">New Video URL</label>
+					<input
+						type="url"
+						id="new-video-url"
+						placeholder="https://your-video-url.com/video.mp4"
+						bind:value={newVideoUrl}
+						autofocus
+					/>
+					<small class="form-hint">Platform will be auto-detected from URL</small>
+				</div>
+
+				{#if newVideoUrl}
+					<div class="platform-preview">
+						<span>Detected platform: <strong>{detectPlatform(newVideoUrl)}</strong></span>
+					</div>
+				{/if}
+			</div>
+			<div class="modal-footer">
+				<button class="btn-secondary" onclick={() => { showReplaceModal = false; replacingVideo = null; newVideoUrl = ''; }} type="button">Cancel</button>
+				<button class="btn-primary" onclick={replaceVideo} disabled={isSaving || !newVideoUrl}>
+					{#if isSaving}
+						<span class="btn-spinner"></span>
+						Replacing...
+					{:else}
+						<IconLink size={16} />
+						Replace Video
+					{/if}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <style>
 	.videos-page {
 		max-width: 1600px;
@@ -979,6 +1072,50 @@
 	.btn-secondary:hover {
 		background: rgba(99, 102, 241, 0.2);
 		color: #e2e8f0;
+	}
+
+	/* Replace Modal Specific */
+	.replace-info {
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 8px;
+		padding: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.replace-info p {
+		margin: 0.5rem 0;
+		color: #cbd5e1;
+	}
+
+	.replace-info strong {
+		color: #f1f5f9;
+	}
+
+	.text-muted {
+		color: #64748b !important;
+		font-size: 0.875rem;
+	}
+
+	.form-hint {
+		display: block;
+		margin-top: 0.5rem;
+		color: #64748b;
+		font-size: 0.875rem;
+	}
+
+	.platform-preview {
+		background: rgba(34, 197, 94, 0.1);
+		border: 1px solid rgba(34, 197, 94, 0.2);
+		border-radius: 6px;
+		padding: 0.75rem;
+		margin-top: 1rem;
+		color: #4ade80;
+		font-size: 0.875rem;
+	}
+
+	.platform-preview strong {
+		text-transform: uppercase;
 	}
 
 	/* Alert Messages */
