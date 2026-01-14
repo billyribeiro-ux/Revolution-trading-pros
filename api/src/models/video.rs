@@ -198,7 +198,7 @@ pub struct VideoResponse {
     pub created_at: String,
 }
 
-#[derive(Debug, Serialize)]
+#[derive(Debug, Clone, Serialize)]
 pub struct TagDetail {
     pub slug: String,
     pub name: String,
