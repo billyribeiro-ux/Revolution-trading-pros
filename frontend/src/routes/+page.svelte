@@ -37,6 +37,7 @@
 	});
 
 	// Client-side fallback fetch if SSR returned empty
+	// ICT 7: SSR should always fetch from production API - client fetch is backup only
 	onMount(async () => {
 		if (posts.length === 0 && browser) {
 			try {
@@ -45,9 +46,9 @@
 					const json = await res.json();
 					posts = json.data || [];
 				}
-			} catch (e) {
-				// Silently fail - E2E tests expect no console errors
-				// Posts will remain empty and component will handle gracefully
+			} catch {
+				// ICT 7: Network errors handled gracefully - posts remain empty
+				// Component renders without posts (shows empty state or placeholder)
 			}
 		}
 	});

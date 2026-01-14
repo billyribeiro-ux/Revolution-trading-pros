@@ -43,9 +43,11 @@ on:
 env:
   CI: true
   E2E_BASE_URL: http://localhost:5174
-  E2E_API_URL: http://localhost:8000/api
+  # ICT 7: Use production API for E2E tests - no local backend needed
+  E2E_API_URL: https://revolution-trading-pros-api.fly.dev/api
+  VITE_API_URL: https://revolution-trading-pros-api.fly.dev
+  PUBLIC_API_URL: https://revolution-trading-pros-api.fly.dev
   NODE_VERSION: '20'
-  PHP_VERSION: '8.2'
 
 jobs:
   # ========================================
