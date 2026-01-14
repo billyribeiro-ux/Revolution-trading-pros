@@ -98,6 +98,8 @@
 		color: #ffffff;
 		font-size: 14px;
 		line-height: 1.6;
+		text-align: center;
+		margin: 15px 0;
 	}
 
 	.featured_cards a {
@@ -108,7 +110,7 @@
 		background: transparent linear-gradient(180deg, #FFB834 0%, #C68000 100%) 0% 0% no-repeat padding-box;
 		border-radius: 50px;
 		padding: 5px 30px;
-		margin-bottom: 20px;
+		margin: 0 auto 20px auto;
 		text-decoration: none;
 		transition: all 0.2s ease;
 	}
@@ -128,6 +130,7 @@
 		font-size: 30px;
 		color: #ffffff;
 		margin: 0;
+		text-align: center;
 	}
 
 	:global(.card_title_2) {
@@ -139,6 +142,7 @@
 		font-size: 30px;
 		color: #ffffff;
 		margin: 0;
+		text-align: center;
 	}
 
 	:global(.card_title_3) {
@@ -150,6 +154,7 @@
 		font-size: 30px;
 		color: #ffffff;
 		margin: 0;
+		text-align: center;
 	}
 
 	/* Card Background Images - Equal dimensions */
@@ -161,12 +166,14 @@
 		display: flex;
 		flex-direction: column;
 		justify-content: space-between;
+		align-items: center;
 		border-radius: 8px;
 		background-position: center;
 		background-repeat: no-repeat;
 		background-size: cover;
 		color: #ffffff;
 		padding-bottom: 20px;
+		text-align: center;
 	}
 
 	:global(.featured_cards .img_1) {
