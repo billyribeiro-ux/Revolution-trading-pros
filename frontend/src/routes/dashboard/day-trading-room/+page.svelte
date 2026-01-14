@@ -3,10 +3,10 @@
 	 * Day Trading Room Dashboard - Pixel-Perfect WordPress Match
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 *
-	 * Rebuilt to match Frontend/2 (Mastering the Trade) exactly
-	 * Renamed: "Mastering the Trade" → "Day Trading Room"
+	 * ICT 7 Grade - Unified Room Resources System
+	 * All content (videos, PDFs, images) fetched from API
 	 *
-	 * @version 2.1.0 - SSR WeeklyWatchlist
+	 * @version 3.0.0 - Unified Room Resources
 	 * @svelte5 Fully compliant with Svelte 5 runes and SvelteKit best practices
 	 */
 	import { onMount } from 'svelte';
@@ -14,19 +14,41 @@
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
 	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
+	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 	import type { WatchlistResponse } from '$lib/types/watchlist';
+	import type { RoomResource } from '$lib/api/room-resources';
 
 	// Props interface for SSR data - Svelte 5 best practice
 	interface Props {
 		data: {
 			watchlist?: WatchlistResponse;
+			tutorialVideo?: RoomResource | null;
+			latestUpdates?: RoomResource[];
+			documents?: RoomResource[];
+			roomId?: number;
 		};
 	}
 
 	// SSR data from +page.server.ts
 	let { data }: Props = $props();
 
-	// Article data - matches WordPress structure
+	// Derive display items from API or fallback to static
+	const displayUpdates = $derived(
+		data.latestUpdates && data.latestUpdates.length > 0
+			? data.latestUpdates.map(r => ({
+					id: r.id,
+					type: r.content_type === 'daily_video' ? 'Daily Video' : r.content_type.replace('_', ' '),
+					title: r.title,
+					date: r.formatted_date,
+					excerpt: r.description || '',
+					href: `/daily/day-trading-room/${r.slug}`,
+					image: r.thumbnail_url || 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+					isVideo: r.resource_type === 'video'
+				}))
+			: articles
+	);
+
+	// Fallback article data - used when API returns empty
 	const articles = [
 		{
 			id: 1,
@@ -185,16 +207,34 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 
-		<!-- VIDEO TUTORIAL SECTION -->
+		<!-- VIDEO TUTORIAL SECTION - ICT 7: API-driven -->
 		<section class="dashboard__content-section-member">
-			<video controls width="100%" poster="https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg" style="aspect-ratio: 2 / 1;">
-				<source src="https://simpler-options.s3.amazonaws.com/tutorials/MTT_tutorial2025.mp4" type="video/mp4">
-				Your browser does not support the video tag.
-			</video>
+			{#if data.tutorialVideo}
+				{#if data.tutorialVideo.video_platform === 'bunny' && data.tutorialVideo.bunny_video_guid}
+					<BunnyVideoPlayer
+						videoGuid={data.tutorialVideo.bunny_video_guid}
+						libraryId={data.tutorialVideo.bunny_library_id || ''}
+						title={data.tutorialVideo.title}
+						thumbnailUrl={data.tutorialVideo.thumbnail_url}
+						controls={true}
+					/>
+				{:else}
+					<video controls width="100%" poster={data.tutorialVideo.thumbnail_url || ''} style="aspect-ratio: 16 / 9;">
+						<source src={data.tutorialVideo.file_url} type="video/mp4">
+						Your browser does not support the video tag.
+					</video>
+				{/if}
+			{:else}
+				<!-- Fallback to hardcoded video -->
+				<video controls width="100%" poster="https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg" style="aspect-ratio: 2 / 1;">
+					<source src="https://simpler-options.s3.amazonaws.com/tutorials/MTT_tutorial2025.mp4" type="video/mp4">
+					Your browser does not support the video tag.
+				</video>
+			{/if}
 		</section>
 
-		<!-- LATEST UPDATES SECTION -->
-		<LatestUpdates items={articles} title="Latest Updates" roomSlug="day-trading-room" />
+		<!-- LATEST UPDATES SECTION - ICT 7: API-driven with fallback -->
+		<LatestUpdates items={displayUpdates} title="Latest Updates" roomSlug="day-trading-room" />
 
 		<!-- WEEKLY WATCHLIST SECTION - SSR pre-fetched for 0ms loading -->
 		<div class="dashboard__content-section u--background-color-white">

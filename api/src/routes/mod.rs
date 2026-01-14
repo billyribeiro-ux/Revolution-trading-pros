@@ -48,6 +48,7 @@ pub mod email_templates;
 pub mod subscriptions_admin;
 pub mod room_content;
 pub mod watchlist;
+pub mod room_resources;
 
 use axum::Router;
 use crate::AppState;
@@ -114,6 +115,9 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/room-content", room_content::admin_router())
         // Weekly Watchlist
         .nest("/watchlist", watchlist::router())
+        // Room Resources - Unified content management (videos, PDFs, docs, images)
+        .nest("/room-resources", room_resources::public_router())
+        .nest("/admin/room-resources", room_resources::admin_router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())
