@@ -220,7 +220,6 @@
 		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
 		font-size: 1rem;
 		line-height: 1.5;
-		min-height: 100dvh;
 		margin: 0;
 		padding: 0;
 		-webkit-font-smoothing: antialiased;
