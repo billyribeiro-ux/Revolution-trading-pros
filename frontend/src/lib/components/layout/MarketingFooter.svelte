@@ -47,6 +47,7 @@
 		{ href: 'https://linkedin.com/company/revolution-trading-pros', icon: IconBrandLinkedin, label: 'LinkedIn' },
 		{ href: 'https://discord.gg/rtp', icon: IconBrandDiscord, label: 'Discord' }
 	];
+</script>
 
 <footer class="marketing-footer">
 	<div class="footer-container">
