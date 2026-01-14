@@ -101,8 +101,7 @@
 		IconShoppingCart,
 		IconMenu2,
 		IconX,
-		IconChevronDown,
-		IconPhone
+		IconChevronDown
 	} from '$lib/icons';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
 	import { cartItemCount, hasCartItems } from '$lib/stores/cart';
@@ -816,19 +815,15 @@
 			{#if actions}
 				{@render actions()}
 			{:else}
-				<!-- Phone Number - WordPress reference core:2832 -->
-				<a href="tel:5122668659" class="phone-link" aria-label="Call (512) 266-8659">
-					<IconPhone size={16} class="phone-icon" aria-hidden="true" />
-					<span class="phone-text">(512) 266-8659</span>
-				</a>
-
-				<!-- Cart - Always visible per WordPress reference -->
-				<a href="/cart" class="cart-btn" aria-label={cartAriaLabel}>
-					<IconShoppingCart size={22} aria-hidden="true" />
-					{#if $cartItemCount > 0}
-						<span class="cart-badge" aria-hidden="true">{$cartItemCount}</span>
-					{/if}
-				</a>
+				<!-- Cart - Only show if items in cart -->
+				{#if $hasCartItems}
+					<a href="/cart" class="cart-btn" aria-label={cartAriaLabel}>
+						<IconShoppingCart size={22} aria-hidden="true" />
+						{#if $cartItemCount > 0}
+							<span class="cart-badge" aria-hidden="true">{$cartItemCount}</span>
+						{/if}
+					</a>
+				{/if}
 
 				<!-- Auth Buttons -->
 				{#if !$isAuthenticated}
