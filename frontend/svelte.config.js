@@ -48,10 +48,11 @@ const getAdapter = () => {
 /** @type {import('@sveltejs/kit').Config} */
 const config = {
 	preprocess: vitePreprocess(),
-	// Svelte 5: Use compilerOptions for modern features
+	// Svelte 5: Let compiler auto-detect runes mode per-file
+	// This allows third-party libraries using legacy $$props to work
+	// while project files using $state/$derived/$effect use runes mode
 	compilerOptions: {
-		// Explicitly disable runes due to Tabler icons incompatibility
-		runes: false,
+		// Do NOT set runes globally - Svelte 5 auto-detects per file
 		// Optimize for modern browsers
 		dev: process.env.NODE_ENV !== 'production'
 	},
