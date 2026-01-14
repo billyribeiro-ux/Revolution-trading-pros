@@ -72,18 +72,16 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// COMPONENT PROPS - Server data with types
 	// ═══════════════════════════════════════════════════════════════════════════
-	import type { TradePlanEntry as ApiTradePlan, RoomAlert as ApiAlert, WeeklyVideo } from '$lib/api/room-content';
+	import type { WatchlistResponse } from '$lib/types/watchlist';
+	import type { RoomResource } from '$lib/api/room-resources';
+	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 	
 	interface PageData {
-		tradePlan?: ApiTradePlan[];
-		alerts?: ApiAlert[];
-		weeklyVideo?: WeeklyVideo | null;
-		performance?: {
-			winRate: number;
-			weeklyProfit: string;
-			activeTrades: number;
-			closedThisWeek: number;
-		};
+		watchlist?: WatchlistResponse;
+		tutorialVideo?: RoomResource | null;
+		latestUpdates?: RoomResource[];
+		documents?: RoomResource[];
+		roomId?: number;
 	}
 	
 	let { data = {} as PageData } = $props<{ data?: PageData }>();
@@ -119,37 +117,35 @@
 
 	const fallbackStats: QuickStats = { winRate: 82, weeklyProfit: '+$4,850', activeTrades: 4, closedThisWeek: 2 };
 
+	// Derive display items from API or fallback to static
+	const displayUpdates = $derived(
+		data.latestUpdates && data.latestUpdates.length > 0
+			? data.latestUpdates.map(r => ({
+					id: r.id,
+					title: r.title,
+					date: r.formatted_date,
+					excerpt: r.description || '',
+					href: `/daily/explosive-swings/${r.slug}`,
+					image: r.thumbnail_url || 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+					isVideo: r.resource_type === 'video',
+					duration: r.formatted_duration || ''
+				}))
+			: fallbackVideoUpdates
+	);
+
 	// Reactive data derived from server props - use $derived for reactivity
-	const weeklyContent = $derived<WeeklyContent>(data.weeklyVideo ? {
-		title: data.weeklyVideo.week_title,
-		videoTitle: data.weeklyVideo.video_title,
-		videoUrl: data.weeklyVideo.video_url,
-		thumbnail: data.weeklyVideo.thumbnail_url || 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
-		duration: data.weeklyVideo.duration || '',
-		publishedDate: new Date(data.weeklyVideo.published_at).toLocaleString('en-US', { 
-			month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'
-		})
+	const weeklyContent = $derived<WeeklyContent>(data.watchlist?.video ? {
+		title: data.watchlist.week_title || 'This Week',
+		videoTitle: data.watchlist.video.title,
+		videoUrl: data.watchlist.video.video_url,
+		thumbnail: data.watchlist.video.thumbnail_url || 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
+		duration: data.watchlist.video.formatted_duration || '',
+		publishedDate: data.watchlist.video.formatted_date || ''
 	} : fallbackWeeklyContent);
 	
-	// Transform API trade plan to local format or use fallback
-	const tradePlan = $derived<TradePlanEntry[]>((data.tradePlan && data.tradePlan.length > 0) 
-		? data.tradePlan.map((p: ApiTradePlan) => ({
-			ticker: p.ticker,
-			bias: p.bias as 'BULLISH' | 'BEARISH' | 'NEUTRAL',
-			entry: p.entry || '-',
-			target1: p.target1 || '-',
-			target2: p.target2 || '-',
-			target3: p.target3 || '-',
-			runner: p.runner || '-',
-			stop: p.stop || '-',
-			optionsStrike: p.options_strike || '-',
-			optionsExp: p.options_exp ? new Date(p.options_exp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-',
-			notes: p.notes || ''
-		}))
-		: fallbackTradePlan);
-
-	// Stats from API or fallback
-	const stats = $derived<QuickStats>(data.performance || fallbackStats);
+	// Use fallback trade plan and alerts for now (unified API doesn't include these yet)
+	const tradePlan = $derived<TradePlanEntry[]>(fallbackTradePlan);
+	const stats = $derived<QuickStats>(fallbackStats);
 
 	// Fallback alerts
 	const fallbackAlerts: Alert[] = [
@@ -160,19 +156,7 @@
 		{ id: 5, type: 'UPDATE', ticker: 'AMD', title: 'AMD Short Setup Active', time: 'Jan 10 at 2:30 PM', message: 'Bearish setup triggered on AMD. Short at $125 with stop at $132.', isNew: false, notes: 'Bearish breakdown confirmed. Entered short at $125, currently at $123.50 (-1.2%). Stop at $132 gives us 5.6% risk. First target $120, second target $115. Watch for bounce at $120 psychological level.' }
 	];
 
-	// Transform API alerts to local format or use fallback
-	const alerts = $derived<Alert[]>((data.alerts && data.alerts.length > 0) 
-		? data.alerts.map((a: ApiAlert) => ({
-			id: a.id,
-			type: a.alert_type as 'ENTRY' | 'EXIT' | 'UPDATE',
-			ticker: a.ticker,
-			title: a.title,
-			time: new Date(a.published_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
-			message: a.message,
-			isNew: a.is_new,
-			notes: a.notes || ''
-		}))
-		: fallbackAlerts);
+	const alerts = $derived<Alert[]>(fallbackAlerts);
 
 	// Track which alert notes are expanded
 	let expandedNotes = $state<Set<number>>(new Set());

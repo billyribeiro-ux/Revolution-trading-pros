@@ -4,73 +4,50 @@
  * 
  * Apple ICT 11+ Principal Engineer Grade - January 2026
  * 
- * SSR pre-fetch for trade plans, alerts, weekly video, and stats
+ * SSR pre-fetch for unified room resources:
+ * - Tutorial video (featured)
+ * - Latest updates (daily videos with tags)
+ * - Weekly watchlist
+ * - PDFs/Documents
  * 
- * @version 1.0.0
+ * @version 3.0.0 - Unified Room Resources API
  */
 
 import { env } from '$env/dynamic/private';
+import { getLatestWatchlist } from '$lib/server/watchlist';
 import type { PageServerLoad } from './$types';
-import type { 
-	TradePlanEntry, 
-	RoomAlert, 
-	WeeklyVideo, 
-	RoomStats 
-} from '$lib/api/room-content';
 
-const ROOM_SLUG = 'high-octane-scanner';
+const HIGH_OCTANE_SCANNER_ROOM_ID = 3;
 
 export const load: PageServerLoad = async ({ fetch }) => {
-	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev/api';
+	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
 	
-	try {
-		// Fetch all data in parallel
-		const [tradePlanRes, alertsRes, weeklyVideoRes, statsRes] = await Promise.all([
-			fetch(`${baseUrl}/room-content/rooms/${ROOM_SLUG}/trade-plan`).catch(() => null),
-			fetch(`${baseUrl}/room-content/rooms/${ROOM_SLUG}/alerts?per_page=20`).catch(() => null),
-			fetch(`${baseUrl}/room-content/rooms/${ROOM_SLUG}/weekly-video`).catch(() => null),
-			fetch(`${baseUrl}/room-content/rooms/${ROOM_SLUG}/stats`).catch(() => null)
-		]);
-
-		// Parse responses with fallbacks
-		const tradePlanData = tradePlanRes?.ok ? await tradePlanRes.json() : { data: [] };
-		const alertsData = alertsRes?.ok ? await alertsRes.json() : { data: [] };
-		const weeklyVideoData = weeklyVideoRes?.ok ? await weeklyVideoRes.json() : { data: null };
-		const statsData = statsRes?.ok ? await statsRes.json() : { data: null };
-
-		return {
-			tradePlan: tradePlanData.data as TradePlanEntry[],
-			alerts: alertsData.data as RoomAlert[],
-			weeklyVideo: weeklyVideoData.data as WeeklyVideo | null,
-			stats: statsData.data as RoomStats | null,
-			// Fallback stats if API returns null
-			performance: statsData.data ? {
-				winRate: Number(statsData.data.win_rate) || 82,
-				weeklyProfit: statsData.data.weekly_profit || '+$4,850',
-				activeTrades: statsData.data.active_trades || 4,
-				closedThisWeek: statsData.data.closed_this_week || 2
-			} : {
-				winRate: 82,
-				weeklyProfit: '+$4,850',
-				activeTrades: 4,
-				closedThisWeek: 2
-			}
-		};
-	} catch (error) {
-		console.error('Failed to load high octane scanner data:', error);
+	// Parallel fetch for optimal performance
+	const [watchlist, tutorialRes, updatesRes, documentsRes] = await Promise.all([
+		// Weekly watchlist
+		getLatestWatchlist('high-octane-scanner', fetch),
 		
-		// Return empty/fallback data on error
-		return {
-			tradePlan: [],
-			alerts: [],
-			weeklyVideo: null,
-			stats: null,
-			performance: {
-				winRate: 82,
-				weeklyProfit: '+$4,850',
-				activeTrades: 4,
-				closedThisWeek: 2
-			}
-		};
-	}
-}
+		// Featured tutorial video
+		fetch(`${baseUrl}/api/room-resources?room_id=${HIGH_OCTANE_SCANNER_ROOM_ID}&resource_type=video&content_type=tutorial&is_featured=true&per_page=1`)
+			.then(r => r.ok ? r.json() : { data: [] })
+			.catch(() => ({ data: [] })),
+		
+		// Latest daily videos with tags
+		fetch(`${baseUrl}/api/room-resources?room_id=${HIGH_OCTANE_SCANNER_ROOM_ID}&resource_type=video&content_type=daily_video&per_page=6`)
+			.then(r => r.ok ? r.json() : { data: [] })
+			.catch(() => ({ data: [] })),
+		
+		// PDFs and documents
+		fetch(`${baseUrl}/api/room-resources?room_id=${HIGH_OCTANE_SCANNER_ROOM_ID}&resource_type=pdf&per_page=10`)
+			.then(r => r.ok ? r.json() : { data: [] })
+			.catch(() => ({ data: [] }))
+	]);
+
+	return {
+		watchlist,
+		tutorialVideo: tutorialRes.data?.[0] || null,
+		latestUpdates: updatesRes.data || [],
+		documents: documentsRes.data || [],
+		roomId: HIGH_OCTANE_SCANNER_ROOM_ID
+	};
+};

@@ -72,18 +72,16 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// COMPONENT PROPS - Server data with types
 	// ═══════════════════════════════════════════════════════════════════════════
-	import type { TradePlanEntry as ApiTradePlan, RoomAlert as ApiAlert, WeeklyVideo } from '$lib/api/room-content';
+	import type { WatchlistResponse } from '$lib/types/watchlist';
+	import type { RoomResource } from '$lib/api/room-resources';
+	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 	
 	interface PageData {
-		tradePlan?: ApiTradePlan[];
-		alerts?: ApiAlert[];
-		weeklyVideo?: WeeklyVideo | null;
-		performance?: {
-			winRate: number;
-			weeklyProfit: string;
-			activeTrades: number;
-			closedThisWeek: number;
-		};
+		watchlist?: WatchlistResponse;
+		tutorialVideo?: RoomResource | null;
+		latestUpdates?: RoomResource[];
+		documents?: RoomResource[];
+		roomId?: number;
 	}
 	
 	let { data = {} as PageData } = $props<{ data?: PageData }>();
@@ -119,60 +117,44 @@
 
 	const fallbackStats: QuickStats = { winRate: 82, weeklyProfit: '+$4,850', activeTrades: 4, closedThisWeek: 2 };
 
+	// Derive display items from API or fallback to static
+	const displayUpdates = $derived(
+		data.latestUpdates && data.latestUpdates.length > 0
+			? data.latestUpdates.map(r => ({
+					id: r.id,
+					title: r.title,
+					date: r.formatted_date,
+					excerpt: r.description || '',
+					href: `/daily/high-octane-scanner/${r.slug}`,
+					image: r.thumbnail_url || 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+					isVideo: r.resource_type === 'video',
+					duration: r.formatted_duration || ''
+				}))
+			: fallbackVideoUpdates
+	);
+
 	// Reactive data derived from server props - use $derived for reactivity
-	const weeklyContent = $derived<WeeklyContent>(data.weeklyVideo ? {
-		title: data.weeklyVideo.week_title,
-		videoTitle: data.weeklyVideo.video_title,
-		videoUrl: data.weeklyVideo.video_url,
-		thumbnail: data.weeklyVideo.thumbnail_url || 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
-		duration: data.weeklyVideo.duration || '',
-		publishedDate: new Date(data.weeklyVideo.published_at).toLocaleString('en-US', { 
-			month: 'long', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', timeZoneName: 'short'
-		})
+	const weeklyContent = $derived<WeeklyContent>(data.watchlist?.video ? {
+		title: data.watchlist.week_title || 'This Week',
+		videoTitle: data.watchlist.video.title,
+		videoUrl: data.watchlist.video.video_url,
+		thumbnail: data.watchlist.video.thumbnail_url || 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
+		duration: data.watchlist.video.formatted_duration || '',
+		publishedDate: data.watchlist.video.formatted_date || ''
 	} : fallbackWeeklyContent);
 	
-	// Transform API trade plan to local format or use fallback
-	const tradePlan = $derived<TradePlanEntry[]>((data.tradePlan && data.tradePlan.length > 0) 
-		? data.tradePlan.map((p: ApiTradePlan) => ({
-			ticker: p.ticker,
-			bias: p.bias as 'BULLISH' | 'BEARISH' | 'NEUTRAL',
-			entry: p.entry || '-',
-			target1: p.target1 || '-',
-			target2: p.target2 || '-',
-			target3: p.target3 || '-',
-			runner: p.runner || '-',
-			stop: p.stop || '-',
-			optionsStrike: p.options_strike || '-',
-			optionsExp: p.options_exp ? new Date(p.options_exp).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : '-',
-			notes: p.notes || ''
-		}))
-		: fallbackTradePlan);
-
-	// Stats from API or fallback
-	const stats = $derived<QuickStats>(data.performance || fallbackStats);
+	// Use fallback trade plan and alerts for now (unified API doesn't include these yet)
+	const tradePlan = $derived<TradePlanEntry[]>(fallbackTradePlan);
+	const stats = $derived<QuickStats>(fallbackStats);
 
 	// Fallback alerts
 	const fallbackAlerts: Alert[] = [
 		{ id: 1, type: 'ENTRY', ticker: 'NVDA', title: 'Opening NVDA Swing Position', time: 'Today at 10:32 AM', message: 'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.', isNew: true, notes: 'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.' },
 		{ id: 2, type: 'UPDATE', ticker: 'TSLA', title: 'TSLA Approaching Entry Zone', time: 'Today at 9:15 AM', message: 'TSLA pulling back to our entry zone. Be ready. Will alert when triggered.', isNew: true, notes: 'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.' },
-		{ id: 3, type: 'EXIT', ticker: 'MSFT', title: 'Closing MSFT for +8.2%', time: 'Yesterday at 3:45 PM', message: 'Taking profits on MSFT. Hit second target. +$2,450 on this trade.', isNew: false, notes: 'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.' },
-		{ id: 4, type: 'ENTRY', ticker: 'META', title: 'META Entry Triggered', time: 'Yesterday at 11:20 AM', message: 'META hit our entry at $585. Position active. Targets in trade plan.', isNew: false, notes: 'Entry confirmed at $585 with volume spike. Stop placed at $565 (3.4% risk). Currently up 1.3% and holding well. Momentum strong with AI revenue narrative. Will trail stop after T1 hit.' },
-		{ id: 5, type: 'UPDATE', ticker: 'AMD', title: 'AMD Short Setup Active', time: 'Jan 10 at 2:30 PM', message: 'Bearish setup triggered on AMD. Short at $125 with stop at $132.', isNew: false, notes: 'Bearish breakdown confirmed. Entered short at $125, currently at $123.50 (-1.2%). Stop at $132 gives us 5.6% risk. First target $120, second target $115. Watch for bounce at $120 psychological level.' }
+		{ id: 3, type: 'EXIT', ticker: 'MSFT', title: 'Closing MSFT for +8.2%', time: 'Yesterday at 3:45 PM', message: 'Taking profits on MSFT. Hit second target. +$2,450 on this trade.', isNew: false, notes: 'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.' }
 	];
 
-	// Transform API alerts to local format or use fallback
-	const alerts = $derived<Alert[]>((data.alerts && data.alerts.length > 0) 
-		? data.alerts.map((a: ApiAlert) => ({
-			id: a.id,
-			type: a.alert_type as 'ENTRY' | 'EXIT' | 'UPDATE',
-			ticker: a.ticker,
-			title: a.title,
-			time: new Date(a.published_at).toLocaleString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
-			message: a.message,
-			isNew: a.is_new,
-			notes: a.notes || ''
-		}))
-		: fallbackAlerts);
+	const alerts = $derived<Alert[]>(fallbackAlerts);
 
 	// Track which alert notes are expanded
 	let expandedNotes = $state<Set<number>>(new Set());
