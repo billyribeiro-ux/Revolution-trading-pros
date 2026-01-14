@@ -7,15 +7,24 @@
 	 * Customized for Swing Trading Room content
 	 *
 	 * @version 1.0.0 - January 2026
+	 * @svelte5 Fully compliant with Svelte 5 runes and SvelteKit best practices
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
 	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
+	import type { WatchlistResponse } from '$lib/types/watchlist';
+
+	// Props interface for SSR data - Svelte 5 best practice
+	interface Props {
+		data: {
+			watchlist?: WatchlistResponse;
+		};
+	}
 
 	// SSR data from +page.server.ts
-	let { data } = $props();
+	let { data }: Props = $props();
 
 	// Article data - matches WordPress structure
 	const articles = [

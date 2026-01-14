@@ -7,14 +7,20 @@
 	 * Follows Day Trading Room pattern with reusable components
 	 *
 	 * @version 1.0.0
+	 * @svelte5 Fully compliant with Svelte 5 runes and SvelteKit best practices
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
 	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
 
+	// Props interface for SSR data - Svelte 5 best practice
+	interface Props {
+		data: Record<string, unknown>;
+	}
+
 	// SSR data from +page.server.ts
-	let { data } = $props();
+	let { data }: Props = $props();
 
 	// Latest alerts and updates
 	const articles = [
