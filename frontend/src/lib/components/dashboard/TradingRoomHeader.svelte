@@ -233,7 +233,6 @@
 	.btn-default:focus {
 		background-color: #e7e7e7;
 		border: 3px solid #c9a0dc;
-		box-shadow: 0 0 0 3px rgba(229, 172, 255, 0.938);
 		outline: none;
 		color: #0A84AE;
 	}

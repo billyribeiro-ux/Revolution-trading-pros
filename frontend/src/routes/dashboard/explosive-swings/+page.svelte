@@ -11,6 +11,7 @@
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import LatestUpdates from '$lib/components/dashboard/LatestUpdates.svelte';
+	import TradingRoomSidebar from '$lib/components/dashboard/TradingRoomSidebar.svelte';
 
 	// SSR data from +page.server.ts
 	let { data } = $props();
@@ -201,37 +202,8 @@
 
 	</div>
 
-	<!-- SIDEBAR -->
-	<aside class="dashboard__content-sidebar">
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">
-				Alert Schedule
-				<p class="pssubject" style="font-size: 10px;margin-top: 15px;text-transform: initial;text-align: center;">Schedule is subject to change.</p>
-			</h4>
-			<div class="script-container">
-				<div class="room-sched"></div>
-			</div>
-		</section>
-
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">Quick Links</h4>
-			<ul class="link-list">
-				<li><a href="/dashboard/explosive-swings/alerts">View All Alerts</a></li>
-				<li><a href="https://intercom.help/simpler-trading/en/" target="_blank">Support</a></li>
-				<li><a href="/tutorials" target="_blank">Platform Tutorials</a></li>
-				<li><a href="/blog" target="_blank">Trading Blog</a></li>
-			</ul>
-		</section>
-
-		<section class="content-sidebar__section">
-			<h4 class="content-sidebar__heading">Alert Settings</h4>
-			<ul class="link-list">
-				<li><a href="/dashboard/account">Notification Preferences</a></li>
-				<li><a href="/dashboard/account">SMS Alerts</a></li>
-				<li><a href="/dashboard/account">Email Alerts</a></li>
-			</ul>
-		</section>
-	</aside>
+	<!-- SIDEBAR - Using TradingRoomSidebar Component -->
+	<TradingRoomSidebar planSlug="explosive-swings" />
 </div>
 
 <style>
@@ -360,84 +332,7 @@
 		font-weight: 500;
 	}
 
-	.dashboard__content-sidebar {
-		display: block;
-		width: 260px;
-		flex: 0 0 auto;
-		margin-top: -1px;
-		background: #fff;
-		border-right: 1px solid #dbdbdb;
-		border-top: 1px solid #dbdbdb;
-		font-family: 'Open Sans', sans-serif;
-		font-size: 14px;
-		line-height: 1.6;
-	}
-
-	.dashboard__content-sidebar {
-		display: none;
-	}
-
-	@media (min-width: 1080px) {
-		.dashboard__content-sidebar {
-			display: block;
-		}
-	}
-
-	.content-sidebar__section {
-		padding: 20px 30px 20px 20px;
-		border-bottom: 1px solid #dbdbdb;
-	}
-
-	.content-sidebar__heading {
-		padding: 15px 20px;
-		margin: -20px -30px 20px -20px;
-		font-size: 14px;
-		font-weight: 700;
-		font-family: 'Open Sans', sans-serif;
-		letter-spacing: 0.1em;
-		text-transform: uppercase;
-		color: #333;
-		background: #ededed;
-		border-bottom: 1px solid #dbdbdb;
-		line-height: 1.4;
-	}
-
-	.pssubject {
-		font-size: 10px;
-		margin-top: 15px;
-		text-transform: initial;
-	}
-
-	.script-container {
-		margin: 0;
-	}
-
-	.room-sched {
-		margin: 0;
-	}
-
-	.link-list {
-		list-style: none;
-		margin: 0;
-		padding: 0;
-	}
-
-	.link-list li {
-		margin-bottom: 12px;
-	}
-
-	.link-list a {
-		color: #0984ae;
-		text-decoration: none;
-		font-size: 14px;
-		font-family: 'Open Sans', sans-serif;
-		transition: color 0.2s;
-	}
-
-	.link-list a:hover {
-		color: #076787;
-		text-decoration: underline;
-	}
+	/* Sidebar styling handled by TradingRoomSidebar component */
 
 	@media (min-width: 993px) {
 		.dashboard__content {
