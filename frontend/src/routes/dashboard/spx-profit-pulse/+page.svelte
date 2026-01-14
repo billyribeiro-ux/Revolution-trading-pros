@@ -117,14 +117,16 @@
 					<div class="img_1">
 						<h2 class="card_title">Start Here</h2>
 						<p class="featured-desc">Key steps for getting started with your SPX Profit Pulse membership</p>
-						<a href="/dashboard/spx-profit-pulse/start-here">CHECK IT OUT</a>
+						<div class="card-button-wrapper">
+							<a href="/dashboard/spx-profit-pulse/start-here">CHECK IT OUT</a>
+						</div>
 					</div>
 				</div>
 				<div class="card-col">
 					<div class="img_2">
 						<h2 class="card_title_2">Meet the Traders</h2>
 						<p>Here you'll find Strategies and more!</p>
-						<div class="buttons">
+						<div class="card-button-wrapper">
 							<a class="aclass" href="/dashboard/spx-profit-pulse/billy-ribeiro/">Meet Billy</a>
 						</div>
 					</div>
@@ -133,7 +135,9 @@
 					<div class="img_3">
 						<h2 class="card_title_3">Continued Education</h2>
 						<p class="featured-desc">Grow your trading skills and learn to read the market better.</p>
-						<a target="_blank" href="https://www.youtube.com/@Tr3ndyOptions/featured">LEARN MORE</a>
+						<div class="card-button-wrapper">
+							<a target="_blank" href="https://www.youtube.com/@Revolutiontradingpros">LEARN MORE</a>
+						</div>
 					</div>
 				</div>
 			</div>
@@ -316,15 +320,12 @@
 		box-shadow: 0 4px 12px rgba(198, 128, 0, 0.4);
 	}
 
-	.buttons {
+	/* Card Button Wrapper - Centers buttons */
+	.card-button-wrapper {
 		display: flex;
-		flex-direction: column;
+		justify-content: center;
 		align-items: center;
-		gap: 5px;
-	}
-
-	.buttons .aclass {
-		margin-bottom: 15px;
+		padding: 0 15px;
 	}
 
 	/* Card Background Images - 360x212 on large devices */
