@@ -494,7 +494,7 @@
 		font-size: 10px;
 		margin-top: 8px;
 		text-transform: initial;
-		color: #666;
+		color: #999;
 		font-weight: 400;
 		letter-spacing: normal;
 		text-align: center;
