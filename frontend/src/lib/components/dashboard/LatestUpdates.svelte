@@ -1,15 +1,18 @@
 <!--
 	LatestUpdates Component - Reusable Dashboard Section
 	═══════════════════════════════════════════════════════════════════════════
-	Apple ICT 11+ Principal Engineer Implementation
+	Apple ICT 11+ Principal Engineer Implementation - Svelte 5
 	
 	Displays a grid of article/video cards for any trading room dashboard.
-	Accepts different content per room while maintaining consistent styling.
+	Supports both static data (items prop) and dynamic API fetching (apiEndpoint prop).
 	
-	@version 1.0.0 - January 2026
+	@version 2.0.0 - January 2026 - Svelte 5 + API-driven
 	@author Revolution Trading Pros
+	@svelte5 Fully compliant with Nov/Dec 2025 best practices
 -->
 <script lang="ts">
+	import { browser } from '$app/environment';
+
 	/**
 	 * Article/Update item structure
 	 */
@@ -25,34 +28,80 @@
 	}
 
 	interface Props {
-		/** Array of update items to display */
-		items: UpdateItem[];
+		/** Array of update items to display (for static data) */
+		items?: UpdateItem[];
+		/** API endpoint to fetch updates from (for dynamic data) */
+		apiEndpoint?: string;
+		/** Room slug for the API endpoint */
+		roomSlug?: string;
 		/** Section title - defaults to "Latest Updates" */
 		title?: string;
-		/** Room slug for constructing links (optional) */
-		roomSlug?: string;
 		/** Button text for cards - defaults to "Watch Now" */
 		buttonText?: string;
+		/** Maximum number of items to display */
+		maxItems?: number;
 	}
 
 	let { 
 		items = [], 
-		title = 'Latest Updates',
+		apiEndpoint,
 		roomSlug = '',
-		buttonText = 'Watch Now'
+		title = 'Latest Updates',
+		buttonText = 'Watch Now',
+		maxItems = 6
 	}: Props = $props();
+
+	// Svelte 5 $state for dynamic data
+	let dynamicItems = $state<UpdateItem[]>([]);
+	let isLoading = $state(false);
+	let error = $state<string | null>(null);
+
+	// Svelte 5 $derived - compute final items to display
+	let displayItems = $derived(
+		apiEndpoint && dynamicItems.length > 0 
+			? dynamicItems.slice(0, maxItems)
+			: items.slice(0, maxItems)
+	);
+
+	// Svelte 5 $effect - fetch from API if endpoint provided
+	$effect(() => {
+		if (browser && apiEndpoint && roomSlug) {
+			isLoading = true;
+			error = null;
+
+			fetch(apiEndpoint)
+				.then(res => res.ok ? res.json() : Promise.reject('Failed to fetch'))
+				.then(data => {
+					dynamicItems = data.data || data.items || [];
+					isLoading = false;
+				})
+				.catch(err => {
+					console.error('LatestUpdates fetch error:', err);
+					error = 'Failed to load updates';
+					isLoading = false;
+				});
+		}
+	});
 </script>
 
 <section class="latest-updates">
 	<h2 class="section-title">{title}</h2>
 	
-	{#if items.length === 0}
+	{#if isLoading}
+		<div class="empty-state">
+			<p>Loading updates...</p>
+		</div>
+	{:else if error}
+		<div class="empty-state error">
+			<p>{error}</p>
+		</div>
+	{:else if displayItems.length === 0}
 		<div class="empty-state">
 			<p>No updates available at this time.</p>
 		</div>
 	{:else}
 		<div class="updates-grid">
-			{#each items as item (item.id)}
+			{#each displayItems as item (item.id)}
 				<div class="updates-grid__item">
 					<article class="article-card">
 						<figure class="article-card__image" style="background-image: url({item.image});">
@@ -356,5 +405,11 @@
 	.empty-state p {
 		font-size: 1rem;
 		margin: 0;
+	}
+
+	.empty-state.error {
+		background: #fff3f3;
+		border: 1px solid #ffcdd2;
+		color: #c62828;
 	}
 </style>

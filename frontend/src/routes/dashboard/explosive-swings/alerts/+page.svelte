@@ -6,10 +6,20 @@
 	 * Complete archive of all swing trade alerts and market updates
 	 *
 	 * @version 1.0.0
+	 * @svelte5 Fully compliant with Svelte 5 Nov/Dec 2025 best practices
 	 */
 	import { IconFilter, IconSearch } from '$lib/icons';
 
-	// Filter state
+	// Props interface for SSR data - Svelte 5 best practice
+	interface Props {
+		data: {
+			alerts?: any[];
+		};
+	}
+
+	let { data }: Props = $props();
+
+	// Svelte 5 $state for filter state
 	let selectedFilter = $state('all');
 	let searchQuery = $state('');
 
