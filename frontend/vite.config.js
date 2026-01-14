@@ -81,23 +81,10 @@ export default defineConfig({
 		assetsInlineLimit: 4096, // 4KB
 		// NOTE: cssCodeSplit is controlled by SvelteKit, not Vite
 		// CORB prevention is handled via kit.inlineStyleThreshold in svelte.config.js
+		// NOTE: rollupOptions.output.manualChunks removed - incompatible with
+		// SvelteKit's bundleStrategy: 'single' (uses inlineDynamicImports)
 		rollupOptions: {
-			external: ['tus-js-client'],
-			output: {
-				// Optimized chunk naming for production
-				chunkFileNames: '_app/immutable/chunks/[name]-[hash].js',
-				assetFileNames: '_app/immutable/assets/[name]-[hash][extname]',
-				// Apple ICT 7: Aggressive code splitting for optimal caching
-				manualChunks: (id) => {
-					// Vendor chunks by package for granular caching
-					if (id.includes('node_modules')) {
-						// Split large vendor packages into separate chunks
-						if (id.includes('svelte')) return 'vendor-svelte';
-						if (id.includes('@sveltejs')) return 'vendor-sveltekit';
-						return 'vendor';
-					}
-				}
-			}
+			external: ['tus-js-client']
 		}
 	},
 	// SSR configuration to handle CSS properly
