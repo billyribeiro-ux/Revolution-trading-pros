@@ -1,33 +1,16 @@
 <!--
 	URL: /dashboard/spx-profit-pulse/start-here
 	
-	Getting Started with SPX Profit Pulse - Pixel Perfect Match
+	Getting Started with SPX Profit Pulse - 3 Card Layout (2-1 Grid)
 	═══════════════════════════════════════════════════════════════════════════
-	Apple ICT 11+ Principal Engineer Implementation
-	Based on Day Trading Room Start Here pattern - Svelte 5
+	Apple ICT 11+ Principal Engineer Implementation - Svelte 5
+	Responsive card layout: 2 cards top row, 1 centered bottom
 	
-	@version 1.0.0
+	@version 2.0.0 - Card-based layout
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { IconPlus, IconMinus, IconChevronRight } from '$lib/icons';
-
-	// Accordion state management - Svelte 5 runes
-	let openAccordions = $state<Set<number>>(new Set());
-
-	function toggleAccordion(index: number) {
-		if (openAccordions.has(index)) {
-			openAccordions.delete(index);
-			openAccordions = new Set(openAccordions);
-		} else {
-			openAccordions.add(index);
-			openAccordions = new Set(openAccordions);
-		}
-	}
-
-	function isOpen(index: number): boolean {
-		return openAccordions.has(index);
-	}
+	// No state needed for static card layout
 </script>
 
 <svelte:head>
@@ -72,239 +55,63 @@
 				<p class="support-copy">As always, should you have questions or need assistance, please contact our dedicated support team at <a href="mailto:support@revolutiontradingpros.com">support@revolutiontradingpros.com</a> or call 512-266-8659.</p>
 			</div>
 
-			<!-- Click + Intro -->
-			<div class="intro-container">
-				Click <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 123 123">
-					<g transform="translate(-1632 -1126)">
-						<circle cx="61.5" cy="61.5" r="61.5" transform="translate(1632 1126)" fill="#3879f3"/>
-						<g transform="translate(1665.677 1159.678)">
-							<path d="M132.94,149.955H112.434V138.347H132.94V117.688h11.6v20.659H165.05v11.608H144.544v20.4h-11.6Z" transform="translate(-112.434 -117.688)" fill="#fff"/>
-						</g>
-					</g>
-				</svg>
-				below to learn more about the features included in your SPX Profit Pulse Membership:
-			</div>
-
-			<!-- Accordion Sections -->
-			<div id="accordion_options" class="accordion accordion--large">
-				<!-- Accordion 1: What is SPX Profit Pulse -->
-				<div class="accordion__item" class:is-open={isOpen(0)}>
-					<button 
-						class="accordion__button"
-						onclick={() => toggleAccordion(0)}
-						aria-expanded={isOpen(0)}
-					>
-						<span class="accordion__label">
-							What is SPX Profit Pulse? 
-							<span class="accordion__subtitle"><em>Learn about our 0DTE SPX options trading alert service and how it works.</em></span>
-						</span>
-						<span class="accordion__icon">
-							{#if isOpen(0)}
-								<IconMinus size={20} />
-							{:else}
-								<IconPlus size={20} />
-							{/if}
-						</span>
-					</button>
-					{#if isOpen(0)}
-						<div class="accordion__content">
-							<p>SPX Profit Pulse is our premium alert service focused exclusively on 0DTE (Zero Days to Expiration) options trading on the S&P 500 Index (SPX).</p>
-							<p><strong>What You Get:</strong></p>
-							<ul>
-								<li>Real-time trade alerts sent directly to your phone and email</li>
-								<li>Detailed entry and exit instructions for each trade</li>
-								<li>Clear risk management guidelines</li>
-								<li>Technical analysis and market commentary</li>
-								<li>Performance tracking and trade history</li>
-							</ul>
-							<p><strong>Trading Schedule:</strong></p>
-							<ul>
-								<li>Monday - Friday during market hours (9:30 AM - 4:00 PM ET)</li>
-								<li>Alerts sent in real-time as opportunities arise</li>
-								<li>Pre-market analysis available by 8:30 AM ET</li>
-							</ul>
-						</div>
-					{/if}
+			<!-- 3 Card Grid Layout: 2 cards top, 1 centered bottom -->
+			<div class="start-here-cards">
+				<!-- Card 1: Charts & Tools -->
+				<div class="start-card">
+					<div class="start-card__header">
+						<h3 class="start-card__title">Charts, Brokers, & Tools</h3>
+					</div>
+					<div class="start-card__body">
+						<p>Part of being set up for success with trading is having the right tools for the job. There's a wide range here and it can become more to manage than what's really needed. However, there are some basic considerations for every trader to ensure you're stepping into the world of SPX Profit Pulse appropriately equipped.</p>
+						<ul>
+							<li>Options trading approval (Level 2 or higher)</li>
+							<li>Access to SPX index options</li>
+							<li>Real-time market data</li>
+							<li>Fast order execution platform</li>
+						</ul>
+					</div>
+					<div class="start-card__footer">
+						<a href="/dashboard/spx-profit-pulse/learning-center" class="start-card__link">Learn More →</a>
+					</div>
 				</div>
 
-				<!-- Accordion 2: Setting Up Alerts -->
-				<div class="accordion__item" class:is-open={isOpen(1)}>
-					<button 
-						class="accordion__button"
-						onclick={() => toggleAccordion(1)}
-						aria-expanded={isOpen(1)}
-					>
-						<span class="accordion__label">
-							Setting Up Your Alerts 
-							<span class="accordion__subtitle"><em>Configure your notification preferences to receive trade alerts instantly.</em></span>
-						</span>
-						<span class="accordion__icon">
-							{#if isOpen(1)}
-								<IconMinus size={20} />
-							{:else}
-								<IconPlus size={20} />
-							{/if}
-						</span>
-					</button>
-					{#if isOpen(1)}
-						<div class="accordion__content">
-							<p>To ensure you receive all trade alerts in real-time, please configure your notification settings:</p>
-							<p><strong>Step 1: Enable SMS Alerts</strong></p>
-							<ol>
-								<li>Go to your <a href="/dashboard/account">Account Settings</a></li>
-								<li>Navigate to the "Notifications" section</li>
-								<li>Enter and verify your mobile phone number</li>
-								<li>Enable SMS alerts for "SPX Profit Pulse"</li>
-							</ol>
-							<p><strong>Step 2: Enable Email Alerts</strong></p>
-							<ol>
-								<li>Verify your email address is correct in your account settings</li>
-								<li>Enable email notifications for "SPX Profit Pulse"</li>
-								<li>Add <strong>alerts@revolutiontradingpros.com</strong> to your email contacts to prevent spam filtering</li>
-							</ol>
-							<p><strong>Important:</strong> We recommend enabling both SMS and email alerts to ensure you never miss a trade opportunity.</p>
-						</div>
-					{/if}
+				<!-- Card 2: Alerts & Notifications -->
+				<div class="start-card">
+					<div class="start-card__header">
+						<h3 class="start-card__title">Setting Up Your Alerts</h3>
+					</div>
+					<div class="start-card__body">
+						<p>To ensure you receive all trade alerts in real-time, configure your notification settings properly. We recommend enabling both SMS and email alerts to ensure you never miss a trade opportunity.</p>
+						<ul>
+							<li>Enable SMS alerts for instant notifications</li>
+							<li>Configure email notifications</li>
+							<li>Add alerts@revolutiontradingpros.com to contacts</li>
+							<li>Test your notification settings</li>
+						</ul>
+					</div>
+					<div class="start-card__footer">
+						<a href="/dashboard/account" class="start-card__link">Configure Alerts →</a>
+					</div>
 				</div>
 
-				<!-- Accordion 3: Understanding 0DTE Trading -->
-				<div class="accordion__item" class:is-open={isOpen(2)}>
-					<button 
-						class="accordion__button"
-						onclick={() => toggleAccordion(2)}
-						aria-expanded={isOpen(2)}
-					>
-						<span class="accordion__label">
-							Understanding 0DTE Trading 
-							<span class="accordion__subtitle"><em>Learn the basics of zero days to expiration options trading and risk management.</em></span>
-						</span>
-						<span class="accordion__icon">
-							{#if isOpen(2)}
-								<IconMinus size={20} />
-							{:else}
-								<IconPlus size={20} />
-							{/if}
-						</span>
-					</button>
-					{#if isOpen(2)}
-						<div class="accordion__content">
-							<p>0DTE options trading involves buying and selling options contracts that expire on the same day. This strategy offers unique opportunities but requires careful risk management.</p>
-							<p><strong>Key Characteristics:</strong></p>
-							<ul>
-								<li><strong>Time Decay:</strong> Options lose value rapidly as expiration approaches</li>
-								<li><strong>High Leverage:</strong> Small price movements can result in significant gains or losses</li>
-								<li><strong>Defined Risk:</strong> Maximum loss is limited to the premium paid (for buyers)</li>
-								<li><strong>Quick Decisions:</strong> Trades typically last minutes to hours, not days</li>
-							</ul>
-							<p><strong>Risk Management Rules:</strong></p>
-							<ul>
-								<li>Never risk more than 1-2% of your account on a single trade</li>
-								<li>Always use stop losses as specified in alerts</li>
-								<li>Don't hold positions into the final hour of trading unless instructed</li>
-								<li>Start with smaller position sizes until you're comfortable</li>
-							</ul>
-							<p><strong>Recommended Resources:</strong></p>
-							<ul>
-								<li><a href="/learning-center/0dte-basics">0DTE Trading Basics Course</a></li>
-								<li><a href="/learning-center/risk-management">Risk Management Guide</a></li>
-								<li><a href="/learning-center/options-greeks">Understanding Options Greeks</a></li>
-							</ul>
-						</div>
-					{/if}
-				</div>
-
-				<!-- Accordion 4: Broker Requirements -->
-				<div class="accordion__item" class:is-open={isOpen(3)}>
-					<button 
-						class="accordion__button"
-						onclick={() => toggleAccordion(3)}
-						aria-expanded={isOpen(3)}
-					>
-						<span class="accordion__label">
-							Broker Requirements & Setup 
-							<span class="accordion__subtitle"><em>Ensure your brokerage account is properly configured for 0DTE SPX options trading.</em></span>
-						</span>
-						<span class="accordion__icon">
-							{#if isOpen(3)}
-								<IconMinus size={20} />
-							{:else}
-								<IconPlus size={20} />
-							{/if}
-						</span>
-					</button>
-					{#if isOpen(3)}
-						<div class="accordion__content">
-							<p>To trade 0DTE SPX options, you'll need a brokerage account with specific capabilities:</p>
-							<p><strong>Required Account Features:</strong></p>
-							<ul>
-								<li>Options trading approval (Level 2 or higher)</li>
-								<li>Access to SPX index options</li>
-								<li>Real-time market data</li>
-								<li>Fast order execution platform</li>
-							</ul>
-							<p><strong>Recommended Brokers:</strong></p>
-							<div class="charts-columns">
-								<div class="image-column">
-									<img src="https://s3.amazonaws.com/simpler-cdn/dev/wp-content/uploads/2020/06/15142240/thinkorswim.png" alt="ThinkorSwim" width="184" height="71" />
-								</div>
-								<div class="copy-column">
-									<strong>ThinkorSwim by TD Ameritrade/Schwab</strong><br />
-									Excellent platform for options trading with advanced charting and fast execution. Commission-free options trading.
-								</div>
-							</div>
-							<hr />
-							<div class="charts-columns">
-								<div class="image-column">
-									<img src="https://cdn.simplertrading.com/2023/05/02114224/tastytrade2023-300x55.png" alt="tastytrade" width="200" height="37" />
-								</div>
-								<div class="copy-column">
-									<strong>tastytrade</strong><br />
-									Built specifically for options traders. Low fees, fast execution, and excellent mobile app for on-the-go trading.
-								</div>
-							</div>
-							<p><strong>Important:</strong> Make sure you have sufficient buying power in your account. We recommend having at least $5,000-$10,000 available for 0DTE trading.</p>
-						</div>
-					{/if}
-				</div>
-
-				<!-- Accordion 5: Additional Resources -->
-				<div class="accordion__item" class:is-open={isOpen(4)}>
-					<button 
-						class="accordion__button"
-						onclick={() => toggleAccordion(4)}
-						aria-expanded={isOpen(4)}
-					>
-						<span class="accordion__label">
-							Additional Member Resources 
-							<span class="accordion__subtitle"><em>Access our library of educational content, tools, and support resources.</em></span>
-						</span>
-						<span class="accordion__icon">
-							{#if isOpen(4)}
-								<IconMinus size={20} />
-							{:else}
-								<IconPlus size={20} />
-							{/if}
-						</span>
-					</button>
-					{#if isOpen(4)}
-						<div class="accordion__content">
-							<p><strong>Trading Terms Glossary</strong><br />
-							A comprehensive guide to options trading terminology and jargon used in our alerts.</p>
-							<p><a class="resource-link" href="/trading-terms">View Trading Terms Glossary</a></p>
-							
-							<p><strong>Support Knowledge Base</strong><br />
-							Find answers to common questions about the platform, alerts, and trading strategies.</p>
-							<p><a class="resource-link" href="/support">Visit Support Knowledge Base</a></p>
-
-							<p><strong>Performance History</strong><br />
-							Review our complete trade history and performance metrics.</p>
-							<p><a class="resource-link" href="/dashboard/spx-profit-pulse/alerts">View Alert Archive</a></p>
-
-							<p><strong>Community Forum</strong><br />
-							Connect with other SPX Profit Pulse members to share insights and strategies.</p>
-							<p><a class="resource-link" href="/community">Join the Community</a></p>
-						</div>
-					{/if}
+				<!-- Card 3: Understanding 0DTE (Centered Bottom) -->
+				<div class="start-card start-card--centered">
+					<div class="start-card__header">
+						<h3 class="start-card__title">Understanding 0DTE Trading</h3>
+					</div>
+					<div class="start-card__body">
+						<p>0DTE options trading involves buying and selling options contracts that expire on the same day. This strategy offers unique opportunities but requires careful risk management and understanding of key concepts.</p>
+						<ul>
+							<li><strong>Time Decay:</strong> Options lose value rapidly as expiration approaches</li>
+							<li><strong>High Leverage:</strong> Small price movements = significant results</li>
+							<li><strong>Defined Risk:</strong> Maximum loss limited to premium paid</li>
+							<li><strong>Quick Decisions:</strong> Trades last minutes to hours</li>
+						</ul>
+					</div>
+					<div class="start-card__footer">
+						<a href="/dashboard/spx-profit-pulse/learning-center" class="start-card__link">View Resources →</a>
+					</div>
 				</div>
 			</div>
 		</section>
@@ -312,6 +119,148 @@
 </div>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * START HERE CARDS - 2-1 Grid Layout (Responsive)
+	 * 2 cards on top row, 1 centered card on bottom
+	 * Svelte 5 + SvelteKit Best Practices (Nov/Dec 2025)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.start-here-cards {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 30px;
+		margin: 40px 0;
+	}
+
+	/* Tablet: 2 columns */
+	@media (min-width: 768px) {
+		.start-here-cards {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	/* Desktop: 2-1 layout */
+	@media (min-width: 1024px) {
+		.start-here-cards {
+			gap: 40px;
+		}
+	}
+
+	/* Card Styles */
+	.start-card {
+		background: #ffffff;
+		border-radius: 12px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		display: flex;
+		flex-direction: column;
+		overflow: hidden;
+		border: 1px solid #e0e0e0;
+	}
+
+	.start-card:hover {
+		box-shadow: 0 8px 24px rgba(20, 62, 89, 0.15);
+		transform: translateY(-4px);
+		border-color: #143E59;
+	}
+
+	/* Centered bottom card spans 2 columns on desktop */
+	@media (min-width: 768px) {
+		.start-card--centered {
+			grid-column: 1 / -1;
+			max-width: 600px;
+			margin: 0 auto;
+			width: 100%;
+		}
+	}
+
+	.start-card__header {
+		background: linear-gradient(135deg, #143E59 0%, #0f2d41 100%);
+		padding: 30px;
+		text-align: center;
+	}
+
+	.start-card__title {
+		color: #ffffff;
+		font-size: 1.75rem;
+		font-weight: 700;
+		margin: 0;
+		font-family: 'Open Sans', sans-serif;
+		line-height: 1.3;
+	}
+
+	@media (min-width: 768px) {
+		.start-card__title {
+			font-size: 2rem;
+		}
+	}
+
+	.start-card__body {
+		padding: 30px;
+		flex: 1;
+	}
+
+	.start-card__body p {
+		font-size: 1.05rem;
+		line-height: 1.7;
+		color: #555;
+		margin-bottom: 20px;
+	}
+
+	.start-card__body ul {
+		list-style: none;
+		padding: 0;
+		margin: 20px 0 0 0;
+	}
+
+	.start-card__body li {
+		position: relative;
+		padding-left: 28px;
+		margin-bottom: 12px;
+		font-size: 1rem;
+		line-height: 1.6;
+		color: #666;
+	}
+
+	.start-card__body li::before {
+		content: '✓';
+		position: absolute;
+		left: 0;
+		color: #143E59;
+		font-weight: 700;
+		font-size: 1.1rem;
+	}
+
+	.start-card__body li strong {
+		color: #333;
+		font-weight: 600;
+	}
+
+	.start-card__footer {
+		padding: 0 30px 30px;
+		text-align: center;
+	}
+
+	.start-card__link {
+		display: inline-block;
+		background: linear-gradient(180deg, #FFB834 0%, #C68000 100%);
+		color: #ffffff !important;
+		padding: 14px 32px;
+		border-radius: 50px;
+		text-decoration: none;
+		font-weight: 700;
+		font-size: 1rem;
+		font-family: 'Open Sans Condensed', sans-serif;
+		transition: all 0.2s ease;
+		box-shadow: 0 4px 12px rgba(198, 128, 0, 0.3);
+	}
+
+	.start-card__link:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 6px 16px rgba(198, 128, 0, 0.4);
+		background: linear-gradient(180deg, #FFC04D 0%, #D69000 100%);
+	}
+
 	/* Welcome Heading */
 	.page-heading {
 		text-align: center;
@@ -384,168 +333,6 @@
 	@media (max-width: 640px) {
 		.contact-support--container {
 			flex-direction: column;
-			text-align: center;
-		}
-	}
-
-	/* Click + Intro */
-	.intro-container {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		font-size: 1.1rem;
-		color: #676767;
-		margin: 30px 0;
-		flex-wrap: wrap;
-	}
-
-	.intro-container svg {
-		flex-shrink: 0;
-	}
-
-	/* Accordion Styles */
-	.accordion {
-		margin-top: 20px;
-	}
-
-	.accordion__item {
-		background: #ffffff;
-		border: 1px solid #e0e0e0;
-		border-radius: 8px;
-		margin-bottom: 15px;
-		overflow: hidden;
-	}
-
-	.accordion__item.is-open {
-		border-color: #3879F3;
-	}
-
-	.accordion__button {
-		width: 100%;
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		padding: 20px 25px;
-		background: #f8f9fa;
-		border: none;
-		cursor: pointer;
-		text-align: left;
-		transition: background 0.2s ease;
-	}
-
-	.accordion__button:hover {
-		background: #f0f0f0;
-	}
-
-	.accordion__item.is-open .accordion__button {
-		background: #e8f4fd;
-	}
-
-	.accordion__label {
-		flex: 1;
-		font-size: 1.25rem;
-		font-weight: 600;
-		color: #333;
-		font-family: 'Open Sans', sans-serif;
-	}
-
-	.accordion__subtitle {
-		display: block;
-		font-size: 1rem;
-		font-weight: 400;
-		color: #666;
-		margin-top: 8px;
-	}
-
-	.accordion__icon {
-		flex-shrink: 0;
-		color: #3879F3;
-		margin-left: 15px;
-		margin-top: 3px;
-	}
-
-	.accordion__content {
-		padding: 25px;
-		border-top: 1px solid #e0e0e0;
-	}
-
-	.accordion__content p {
-		font-size: 1rem;
-		line-height: 1.8;
-		color: #555;
-		margin-bottom: 15px;
-	}
-
-	.accordion__content ul,
-	.accordion__content ol {
-		margin: 15px 0;
-		padding-left: 25px;
-	}
-
-	.accordion__content li {
-		font-size: 1rem;
-		line-height: 1.8;
-		color: #555;
-		margin-bottom: 8px;
-	}
-
-	.accordion__content hr {
-		border: none;
-		border-top: 1px solid #e0e0e0;
-		margin: 20px 0;
-	}
-
-	.accordion__content a {
-		color: #3879F3;
-		text-decoration: none;
-	}
-
-	.accordion__content a:hover {
-		text-decoration: underline;
-	}
-
-	.resource-link {
-		color: #ffb412 !important;
-		text-decoration: underline !important;
-		font-weight: 600;
-	}
-
-	/* Charts Columns */
-	.charts-columns {
-		display: flex;
-		align-items: flex-start;
-		gap: 20px;
-		margin: 20px 0;
-	}
-
-	.image-column {
-		flex-shrink: 0;
-		width: 200px;
-	}
-
-	.image-column img {
-		max-width: 100%;
-		height: auto;
-	}
-
-	.copy-column {
-		flex: 1;
-		font-size: 1rem;
-		line-height: 1.6;
-		color: #676767;
-	}
-
-	.copy-column strong {
-		color: #555;
-	}
-
-	@media (max-width: 640px) {
-		.charts-columns {
-			flex-direction: column;
-		}
-
-		.image-column {
-			width: 100%;
 			text-align: center;
 		}
 	}
