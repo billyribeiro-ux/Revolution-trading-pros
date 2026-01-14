@@ -33,7 +33,8 @@
 		IconHeartbeat,
 		IconPlugConnected,
 		IconBook,
-		IconFileText
+		IconFileText,
+		IconTrendingUp
 	} from '$lib/icons';
 	interface Props {
 		isOpen?: boolean;
@@ -64,6 +65,7 @@
 			items: [
 				{ icon: IconNews, label: 'Blog Posts', href: '/admin/blog' },
 				{ icon: IconBook, label: 'Courses', href: '/admin/courses' },
+				{ icon: IconTrendingUp, label: 'Indicators', href: '/admin/indicators' },
 				{ icon: IconChartBar, label: 'Trading Rooms', href: '/admin/trading-rooms' },
 				{ icon: IconFileText, label: 'Resources', href: '/admin/resources' },
 				{ icon: IconTag, label: 'Categories', href: '/admin/blog/categories' },

@@ -148,6 +148,7 @@
 			'forms': 'Forms',
 			'videos': 'Videos',
 			'resources': 'Resources',
+			'indicators': 'Indicators',
 			'site-health': 'Site Health',
 			'connections': 'API Connections'
 		};
