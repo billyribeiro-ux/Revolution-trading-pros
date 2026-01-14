@@ -152,21 +152,22 @@
 		border-radius: 8px;
 		overflow: hidden;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 20px rgba(0, 0, 0, 0.06);
-		transition: all 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		display: flex;
 		flex-direction: column;
 		width: 100%;
 		height: 100%;
 		border: 1px solid rgba(0, 0, 0, 0.04);
+		will-change: transform, box-shadow;
 	}
 
 	.article-card:hover {
 		box-shadow: 
-			0 8px 16px rgba(20, 62, 89, 0.12),
-			0 16px 32px rgba(20, 62, 89, 0.08),
-			0 24px 48px rgba(0, 0, 0, 0.06);
-		transform: scale(1.01);
-		border-color: rgba(20, 62, 89, 0.1);
+			0 10px 20px rgba(0, 0, 0, 0.12),
+			0 20px 40px rgba(0, 0, 0, 0.08),
+			0 30px 60px rgba(0, 0, 0, 0.05);
+		transform: translateY(-4px) scale(1.02);
+		border-color: rgba(20, 62, 89, 0.15);
 	}
 
 	.article-card__image {
@@ -177,11 +178,12 @@
 		background-position: center;
 		margin: 0;
 		overflow: hidden;
-		transition: transform 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+		transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+		will-change: transform;
 	}
 
 	.article-card:hover .article-card__image {
-		transform: scale(1.03);
+		transform: scale(1.08);
 	}
 
 	.article-card__image::after {
@@ -191,9 +193,9 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(to bottom, transparent 60%, rgba(0, 0, 0, 0.05) 100%);
+		background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.1) 100%);
 		opacity: 0;
-		transition: opacity 0.35s ease;
+		transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.article-card:hover .article-card__image::after {
@@ -241,7 +243,7 @@
 		font-weight: 700;
 		font-family: 'Open Sans', sans-serif;
 		line-height: 1.4;
-		transition: color 0.25s ease;
+		transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.article-card:hover .article-card__title a {
@@ -249,7 +251,7 @@
 	}
 
 	.article-card__title a:hover {
-		color: #0f2d41;
+		color: #0c2638;
 	}
 
 	.h5 {
@@ -323,16 +325,20 @@
 		color: #fff;
 		border: 1px solid #143E59;
 		box-shadow: none;
+		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+		will-change: transform, box-shadow;
 	}
 
 	.btn-default:hover {
-		background-color: #0f2d41;
-		border-color: #0f2d41;
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
+		background-color: #0c2638;
+		border-color: #0c2638;
+		box-shadow: 0 6px 16px rgba(20, 62, 89, 0.4);
+		transform: translateY(-2px);
 	}
 
 	.article-card:hover .btn-default {
-		box-shadow: 0 2px 8px rgba(20, 62, 89, 0.2);
+		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.25);
+		transform: translateY(-1px);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

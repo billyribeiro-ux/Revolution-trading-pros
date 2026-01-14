@@ -297,20 +297,16 @@
 		min-height: 36px;
 	}
 
-	/* Card Buttons - 150x36 on large devices */
+	/* Card Buttons - Exact WordPress Match */
 	.featured_cards a {
 		color: #fff !important;
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
+		display: inline-block;
 		font-family: "Open Sans Condensed", sans-serif;
 		font-weight: 700;
-		font-size: 12px;
 		background: transparent linear-gradient(180deg, #FFB834 0%, #C68000 100%) 0% 0% no-repeat padding-box;
 		border-radius: 50px;
-		width: 150px;
-		height: 36px;
-		margin-bottom: 15px;
+		padding: 5px 30px;
+		margin-bottom: 20px;
 		text-decoration: none;
 		transition: transform 0.2s ease, box-shadow 0.2s ease;
 	}
