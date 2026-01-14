@@ -76,6 +76,7 @@
 	import type { RoomResource } from '$lib/api/room-resources';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
 	
+	// SvelteKit 2.0+ / Svelte 5: Props interface for type safety
 	interface PageData {
 		watchlist?: WatchlistResponse;
 		tutorialVideo?: RoomResource | null;
@@ -84,7 +85,8 @@
 		roomId?: number;
 	}
 	
-	let { data = {} as PageData } = $props<{ data?: PageData }>();
+	// Svelte 5 $props() rune - the official way to receive page data
+	const { data }: { data: PageData } = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE - Svelte 5 $state runes

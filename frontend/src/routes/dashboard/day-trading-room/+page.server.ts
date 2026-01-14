@@ -2,7 +2,7 @@
  * Day Trading Room Dashboard - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════
  * 
- * Apple ICT 11+ Principal Engineer Grade - January 2026
+ * SvelteKit 2.0+ / Svelte 5 Best Practices - January 2026
  * 
  * SSR pre-fetch for 0ms loading:
  * - Tutorial video (featured)
@@ -10,15 +10,17 @@
  * - Weekly watchlist
  * - PDFs/Documents
  * 
- * @version 2.0.0 - Unified Room Resources
+ * @version 4.0.0 - SvelteKit 2.0+ satisfies pattern
  */
 
 import { env } from '$env/dynamic/private';
 import { getLatestWatchlist } from '$lib/server/watchlist';
+import type { PageServerLoad } from './$types';
+import type { RoomResource } from '$lib/api/room-resources';
 
 const DAY_TRADING_ROOM_ID = 1;
 
-export const load = async ({ fetch }: { fetch: typeof globalThis.fetch }) => {
+export const load = (async ({ fetch }) => {
 	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
 	
 	// Parallel fetch for optimal performance
@@ -44,9 +46,9 @@ export const load = async ({ fetch }: { fetch: typeof globalThis.fetch }) => {
 
 	return {
 		watchlist,
-		tutorialVideo: tutorialRes.data?.[0] || null,
-		latestUpdates: updatesRes.data || [],
-		documents: documentsRes.data || [],
+		tutorialVideo: (tutorialRes.data?.[0] || null) as RoomResource | null,
+		latestUpdates: (updatesRes.data || []) as RoomResource[],
+		documents: (documentsRes.data || []) as RoomResource[],
 		roomId: DAY_TRADING_ROOM_ID
 	};
-};
+}) satisfies PageServerLoad;
