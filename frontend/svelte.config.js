@@ -50,8 +50,8 @@ const config = {
 	preprocess: vitePreprocess(),
 	// Svelte 5: Use compilerOptions for modern features
 	compilerOptions: {
-		// Enable runes for Svelte 5 reactivity
-		runes: true,
+		// Temporarily disable runes due to Tabler icons incompatibility
+		// runes: true,
 		// Optimize for modern browsers
 		dev: process.env.NODE_ENV !== 'production'
 	},
