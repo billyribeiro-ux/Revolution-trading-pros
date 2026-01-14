@@ -3,67 +3,12 @@
  * ═══════════════════════════════════════════════════════════════════════════
  *
  * API client for managing trading rooms, alert services, traders, and videos.
- * Uses SvelteKit API routes with backend fallback for resilient data loading.
+ * Uses centralized API configuration for proper backend URL handling.
  *
- * @version 1.1.0 - December 2025 - Enhanced with SvelteKit fallback
+ * @version 1.2.0 - January 2026 - ICT 7 Fix: Use centralized API_BASE_URL
  */
 
-import { getAuthToken } from '$lib/stores/auth';
-
-// Custom fetch wrapper that uses relative URLs for SvelteKit endpoints
-async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
-	const token = typeof window !== 'undefined' ? getAuthToken() : null;
-
-	const headers: Record<string, string> = {
-		'Content-Type': 'application/json',
-		'Accept': 'application/json',
-		...(options.headers as Record<string, string> || {})
-	};
-
-	if (token) {
-		headers['Authorization'] = `Bearer ${token}`;
-	}
-
-	const response = await fetch(endpoint, {
-		...options,
-		headers
-	});
-
-	if (!response.ok) {
-		const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
-		throw new Error(errorData.message || `API Error: ${response.status}`);
-	}
-
-	return response.json();
-}
-
-// Simple API helper for relative endpoints
-const api = {
-	get: <T>(endpoint: string, params?: Record<string, any>): Promise<T> => {
-		let url = endpoint;
-		if (params) {
-			const queryString = new URLSearchParams(
-				Object.entries(params)
-					.filter(([, v]) => v !== undefined && v !== null)
-					.map(([k, v]) => [k, String(v)])
-			).toString();
-			if (queryString) url += `?${queryString}`;
-		}
-		return apiFetch<T>(url, { method: 'GET' });
-	},
-	post: <T>(endpoint: string, data?: any): Promise<T> => {
-		const options: RequestInit = { method: 'POST' };
-		if (data) options.body = JSON.stringify(data);
-		return apiFetch<T>(endpoint, options);
-	},
-	put: <T>(endpoint: string, data?: any): Promise<T> => {
-		const options: RequestInit = { method: 'PUT' };
-		if (data) options.body = JSON.stringify(data);
-		return apiFetch<T>(endpoint, options);
-	},
-	delete: <T>(endpoint: string): Promise<T> =>
-		apiFetch<T>(endpoint, { method: 'DELETE' })
-};
+import { api } from '$lib/api/config';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
