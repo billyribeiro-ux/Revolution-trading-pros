@@ -220,23 +220,22 @@
 
 	.btn-default {
 		background-color: #F4F4F4;
-		color: #333333;
+		color: #0A84AE;
 		border: 1px solid #F4F4F4;
 	}
 
 	.btn-default:hover {
-		background-color: #e7e7e7;
-		border-color: #9b59b6;
-		color: #333333;
+		background-color: #d0d0d0;
+		color: #0A84AE;
 	}
 
 	.btn-default:active,
 	.btn-default:focus {
 		background-color: #e7e7e7;
-		border-color: #9b59b6;
-		box-shadow: 0 0 0 3px rgba(155, 89, 182, 0.2);
+		border: 2px solid #c9a0dc;
+		box-shadow: 0 0 0 3px rgba(201, 160, 220, 0.3);
 		outline: none;
-		color: #333333;
+		color: #0A84AE;
 	}
 
 	/* Enter Trading Room Button */
