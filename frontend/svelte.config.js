@@ -90,7 +90,9 @@ const config = {
 			crawl: true,
 			entries: ['*', '/sitemap.xml', '/robots.txt']
 		},
-		inlineStyleThreshold: 2048,
+		// Apple ICT 7 CORB Fix: Aggressively inline CSS to prevent cross-origin blocking
+		// Higher threshold = more CSS inlined = fewer external CSS files = no CORB
+		inlineStyleThreshold: 10240, // 10KB - inline most component CSS
 		csp: {
 			mode: 'auto',
 			directives: {
@@ -118,6 +120,11 @@ const config = {
 		},
 		env: {
 			publicPrefix: 'PUBLIC_'
+		},
+		// Apple ICT 7 CORB Fix: Output configuration for optimal CSS bundling
+		output: {
+			// Preload only JS, not CSS - prevents CORB on CSS chunks
+			preloadStrategy: 'modulepreload'
 		}
 	}
 };

@@ -79,9 +79,8 @@ export default defineConfig({
 		modulePreload: false,
 		// Optimize asset inlining
 		assetsInlineLimit: 4096, // 4KB
-		// Apple ICT 7: Disable CSS code splitting for CORB prevention
-		// Single CSS bundle prevents cross-origin blocking of CSS chunks
-		cssCodeSplit: false,
+		// NOTE: cssCodeSplit is controlled by SvelteKit, not Vite
+		// CORB prevention is handled via kit.inlineStyleThreshold in svelte.config.js
 		rollupOptions: {
 			external: ['tus-js-client'],
 			output: {
@@ -132,7 +131,7 @@ export default defineConfig({
 			'src/routes/**/*.svelte'
 		]
 	},
-	// CSS configuration moved to build section for consistency
+	// CSS configuration - CORB prevention handled by SvelteKit's inlineStyleThreshold
 	css: {
 		devSourcemap: false,
 		// Optimize CSS processing
@@ -140,9 +139,7 @@ export default defineConfig({
 		// Enable CSS modules optimization
 		modules: {
 			localsConvention: 'camelCase'
-		},
-		// CORB prevention: Force CSS inlining
-		extract: false
+		}
 	},
 	// Performance optimizations
 	esbuild: {
