@@ -125,10 +125,10 @@
 </footer>
 
 <style>
-	/* ICT 7 Apple Principal Engineer: Use :global() to ensure styles aren't overridden */
-	/* Footer must be bulletproof - no Tailwind or global CSS can break it */
+	/* ICT 7 Apple Principal Engineer: Maximum specificity to override Tailwind preflight */
+	/* The * { margin: 0; padding: 0; } reset in app.css requires !important everywhere */
 	
-	footer.marketing-footer {
+	:global(footer.marketing-footer) {
 		background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%) !important;
 		border-top: 1px solid rgba(99, 102, 241, 0.1) !important;
 		padding: 4rem 0 2rem !important;
@@ -136,14 +136,14 @@
 		box-sizing: border-box !important;
 	}
 
-	footer.marketing-footer .footer-container {
+	:global(footer.marketing-footer .footer-container) {
 		max-width: 1400px !important;
 		margin: 0 auto !important;
 		padding: 0 1.5rem !important;
 		box-sizing: border-box !important;
 	}
 
-	footer.marketing-footer .footer-grid {
+	:global(footer.marketing-footer .footer-grid) {
 		display: grid !important;
 		grid-template-columns: 2fr 1fr 1fr 1fr !important;
 		gap: 3rem !important;
@@ -151,50 +151,50 @@
 	}
 
 	@media (max-width: 1024px) {
-		footer.marketing-footer .footer-grid {
+		:global(footer.marketing-footer .footer-grid) {
 			grid-template-columns: 1fr 1fr !important;
 			gap: 2rem !important;
 		}
 
-		footer.marketing-footer .footer-brand {
+		:global(footer.marketing-footer .footer-brand) {
 			grid-column: span 2 !important;
 		}
 	}
 
 	@media (max-width: 640px) {
-		footer.marketing-footer .footer-grid {
+		:global(footer.marketing-footer .footer-grid) {
 			grid-template-columns: 1fr !important;
 		}
 
-		footer.marketing-footer .footer-brand {
+		:global(footer.marketing-footer .footer-brand) {
 			grid-column: span 1 !important;
 		}
 	}
 
-	footer.marketing-footer .footer-brand {
+	:global(footer.marketing-footer .footer-brand) {
 		max-width: 320px !important;
 	}
 
-	footer.marketing-footer .footer-logo img {
+	:global(footer.marketing-footer .footer-logo img) {
 		height: 40px !important;
 		width: auto !important;
 		margin-bottom: 1rem !important;
 	}
 
-	footer.marketing-footer .footer-tagline {
+	:global(footer.marketing-footer .footer-tagline) {
 		color: #64748b !important;
 		font-size: 0.9375rem !important;
 		line-height: 1.6 !important;
 		margin-bottom: 1.5rem !important;
 	}
 
-	footer.marketing-footer .social-links {
+	:global(footer.marketing-footer .social-links) {
 		display: flex !important;
 		flex-direction: row !important;
 		gap: 0.75rem !important;
 	}
 
-	footer.marketing-footer .social-link {
+	:global(footer.marketing-footer .social-link) {
 		width: 40px !important;
 		height: 40px !important;
 		display: flex !important;
@@ -207,17 +207,17 @@
 		transition: all 0.2s !important;
 	}
 
-	footer.marketing-footer .social-link:hover {
+	:global(footer.marketing-footer .social-link:hover) {
 		background: rgba(99, 102, 241, 0.2) !important;
 		color: #818cf8 !important;
 		transform: translateY(-2px) !important;
 	}
 
-	footer.marketing-footer .footer-column {
+	:global(footer.marketing-footer .footer-column) {
 		display: block !important;
 	}
 
-	footer.marketing-footer .footer-heading {
+	:global(footer.marketing-footer .footer-heading) {
 		color: #f1f5f9 !important;
 		font-size: 0.875rem !important;
 		font-weight: 600 !important;
@@ -226,29 +226,29 @@
 		margin-bottom: 1.25rem !important;
 	}
 
-	footer.marketing-footer .footer-list {
+	:global(footer.marketing-footer .footer-list) {
 		list-style: none !important;
 		padding: 0 !important;
 		margin: 0 !important;
 	}
 
-	footer.marketing-footer .footer-list li {
+	:global(footer.marketing-footer .footer-list li) {
 		margin-bottom: 0.75rem !important;
 		display: block !important;
 	}
 
-	footer.marketing-footer .footer-list a {
+	:global(footer.marketing-footer .footer-list a) {
 		color: #94a3b8 !important;
 		text-decoration: none !important;
 		font-size: 0.9375rem !important;
 		transition: color 0.2s !important;
 	}
 
-	footer.marketing-footer .footer-list a:hover {
+	:global(footer.marketing-footer .footer-list a:hover) {
 		color: #f1f5f9 !important;
 	}
 
-	footer.marketing-footer .risk-disclaimer {
+	:global(footer.marketing-footer .risk-disclaimer) {
 		padding: 1.5rem !important;
 		background: rgba(245, 158, 11, 0.05) !important;
 		border: 1px solid rgba(245, 158, 11, 0.2) !important;
@@ -256,24 +256,24 @@
 		margin-bottom: 2rem !important;
 	}
 
-	footer.marketing-footer .risk-disclaimer p {
+	:global(footer.marketing-footer .risk-disclaimer p) {
 		color: #94a3b8 !important;
 		font-size: 0.8125rem !important;
 		line-height: 1.6 !important;
 		margin: 0 !important;
 	}
 
-	footer.marketing-footer .risk-disclaimer strong {
+	:global(footer.marketing-footer .risk-disclaimer strong) {
 		color: #fbbf24 !important;
 	}
 
-	footer.marketing-footer .footer-bottom {
+	:global(footer.marketing-footer .footer-bottom) {
 		padding-top: 2rem !important;
 		border-top: 1px solid rgba(99, 102, 241, 0.1) !important;
 		text-align: center !important;
 	}
 
-	footer.marketing-footer .footer-bottom p {
+	:global(footer.marketing-footer .footer-bottom p) {
 		color: #64748b !important;
 		font-size: 0.875rem !important;
 		margin: 0 !important;
