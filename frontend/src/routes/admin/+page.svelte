@@ -1077,7 +1077,7 @@
 
 	/* Color accents for metric cards - using RTP semantic colors */
 	.metric-card.blue:hover { border-color: var(--admin-info-border); }
-	.metric-card.purple:hover { border-color: rgba(139, 92, 246, 0.5); }
+	.metric-card.purple:hover { border-color: rgba(230, 184, 0, 0.5); }
 	.metric-card.cyan:hover { border-color: var(--admin-info-border); }
 	.metric-card.green:hover { border-color: var(--admin-success-border); }
 	.metric-card.orange:hover { border-color: var(--admin-warning-border); }
@@ -1097,7 +1097,7 @@
 	.metric-card:hover .metric-glow { opacity: 1; }
 
 	.metric-glow.blue { background: radial-gradient(circle, var(--admin-info-bg) 0%, transparent 70%); }
-	.metric-glow.purple { background: radial-gradient(circle, rgba(139, 92, 246, 0.15) 0%, transparent 70%); }
+	.metric-glow.purple { background: radial-gradient(circle, rgba(230, 184, 0, 0.15) 0%, transparent 70%); }
 	.metric-glow.cyan { background: radial-gradient(circle, var(--admin-info-bg) 0%, transparent 70%); }
 	.metric-glow.green { background: radial-gradient(circle, var(--admin-success-bg) 0%, transparent 70%); }
 	.metric-glow.orange { background: radial-gradient(circle, var(--admin-warning-bg) 0%, transparent 70%); }

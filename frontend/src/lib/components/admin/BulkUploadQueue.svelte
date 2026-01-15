@@ -452,8 +452,8 @@
 
 	.drop-zone:hover,
 	.drop-zone.dragging {
-		border-color: var(--primary, #6366f1);
-		background: var(--primary-alpha, #6366f11a);
+		border-color: var(--primary, #E6B800);
+		background: var(--primary-alpha, #E6B8001a);
 	}
 
 	.drop-zone p {
@@ -530,8 +530,8 @@
 		width: 100%;
 		padding: 0.875rem;
 		margin-top: 1rem;
-		background: var(--primary, #6366f1);
-		color: white;
+		background: var(--primary, #E6B800);
+		color: #0D1117;
 		border: none;
 		border-radius: 8px;
 		font-size: 1rem;
@@ -562,7 +562,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: var(--primary, #6366f1);
+		background: var(--primary, #E6B800);
 		transition: width 0.3s ease;
 	}
 
@@ -646,7 +646,7 @@
 
 	.item-progress-fill {
 		height: 100%;
-		background: var(--primary, #6366f1);
+		background: var(--primary, #E6B800);
 		transition: width 0.3s ease;
 	}
 
@@ -681,8 +681,8 @@
 
 	.btn-done {
 		padding: 0.625rem 1.5rem;
-		background: var(--primary, #6366f1);
-		color: white;
+		background: var(--primary, #E6B800);
+		color: #0D1117;
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;

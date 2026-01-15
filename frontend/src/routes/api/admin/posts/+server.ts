@@ -96,7 +96,7 @@ const mockPosts = [
 		blocks: [],
 		status: 'draft',
 		category_id: 3,
-		category: { id: 3, name: 'Technical Analysis', slug: 'technical-analysis', color: '#6366f1' },
+		category: { id: 3, name: 'Technical Analysis', slug: 'technical-analysis', color: '#E6B800' },
 		tags: ['technical', 'charts', 'patterns'],
 		author: { id: 1, name: 'Admin', avatar: null },
 		featured_image: null,

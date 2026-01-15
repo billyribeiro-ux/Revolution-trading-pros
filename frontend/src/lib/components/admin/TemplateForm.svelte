@@ -185,7 +185,7 @@
 	input:focus,
 	textarea:focus {
 		outline: none;
-		border-color: #6366f1;
+		border-color: #E6B800;
 		background: rgba(15, 23, 42, 0.7);
 	}
 	.actions {
@@ -195,8 +195,8 @@
 		margin-top: 1.5rem;
 	}
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800, #B38F00);
+		color: #0D1117;
 		border: none;
 		padding: 0.5rem 1rem;
 		border-radius: 6px;
