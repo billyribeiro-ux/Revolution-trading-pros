@@ -756,13 +756,6 @@
 		box-shadow: 0 8px 32px var(--admin-accent-glow, rgba(230, 184, 0, 0.3));
 	}
 
-	.header-title h1 {
-		font-size: 2rem;
-		font-weight: 800;
-		color: var(--admin-text-primary);
-		margin: 0;
-	}
-
 	.subtitle {
 		color: #64748b;
 		font-size: 0.875rem;

@@ -634,30 +634,6 @@
 		text-transform: capitalize;
 	}
 
-	.bg-blue-500 {
-		background: #3b82f6;
-	}
-
-	.bg-purple-500 {
-		background: #B38F00;
-	}
-
-	.bg-yellow-500 {
-		background: #eab308;
-	}
-
-	.bg-green-500 {
-		background: #10b981;
-	}
-
-	.product-status .status-badge {
-		padding: 0.25rem 0.75rem;
-		border-radius: 6px;
-		font-size: 0.75rem;
-		font-weight: 600;
-		text-transform: uppercase;
-	}
-
 	.status-badge.active {
 		background: rgba(34, 197, 94, 0.15);
 		color: #22c55e;

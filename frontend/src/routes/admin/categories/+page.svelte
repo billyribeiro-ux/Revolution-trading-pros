@@ -166,12 +166,12 @@
 			const payload = {
 				name: categoryForm.name,
 				slug: categoryForm.slug,
-				description: categoryForm.description || null,
+				description: categoryForm.description || undefined,
 				color: categoryForm.color,
 				is_visible: categoryForm.is_visible,
-				parent_id: categoryForm.parent_id,
-				meta_title: categoryForm.meta_title || null,
-				meta_description: categoryForm.meta_description || null
+				parent_id: categoryForm.parent_id || undefined,
+				meta_title: categoryForm.meta_title || undefined,
+				meta_description: categoryForm.meta_description || undefined
 			};
 
 			if (editingCategory) {
@@ -1499,7 +1499,6 @@
 	}
 
 	.form-group input[type='text'],
-	.form-group input[type='email'],
 	.form-group textarea,
 	.form-group select {
 		padding: 0.75rem 1rem;

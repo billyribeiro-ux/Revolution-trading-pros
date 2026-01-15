@@ -679,11 +679,6 @@
 		margin-bottom: 1.5rem;
 	}
 
-	/* Animations */
-	.spinning {
-		animation: spin 1s linear infinite;
-	}
-
 	@keyframes spin {
 		from {
 			transform: rotate(0deg);

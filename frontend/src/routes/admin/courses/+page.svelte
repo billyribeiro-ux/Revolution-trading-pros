@@ -487,25 +487,6 @@
 		transform: translateY(-1px);
 	}
 
-	.btn-secondary {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
-		padding: 0.5rem 1rem;
-		border-radius: 6px;
-		font-size: 0.875rem;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
-	}
-
 	/* Loading State */
 	.loading, .error-state, .empty-state {
 		display: flex;

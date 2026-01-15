@@ -548,11 +548,6 @@
 		color: #22c55e;
 	}
 
-	.status--archived {
-		background: rgba(100, 116, 139, 0.2);
-		color: #94a3b8;
-	}
-
 	.actions {
 		display: flex;
 		gap: 0.5rem;
