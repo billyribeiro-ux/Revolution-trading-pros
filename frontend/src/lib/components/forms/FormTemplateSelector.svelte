@@ -139,7 +139,7 @@
 		align-items: flex-start;
 		margin-bottom: 2rem;
 		padding-bottom: 1.5rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	h2 {
@@ -157,20 +157,20 @@
 
 	.btn-scratch {
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
 		font-size: 0.9375rem;
 		cursor: pointer;
 		transition: all 0.2s;
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
+		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 	}
 
 	.btn-scratch:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(230, 184, 0, 0.4);
+		box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
 	}
 
 	.search-filter {
@@ -181,7 +181,7 @@
 		width: 100%;
 		padding: 0.875rem 1.25rem;
 		background: #1e293b;
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 10px;
 		color: #e2e8f0;
 		font-size: 0.9375rem;
@@ -190,8 +190,8 @@
 
 	.search-input:focus {
 		outline: none;
-		border-color: rgba(230, 184, 0, 0.5);
-		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.1);
+		border-color: rgba(99, 102, 241, 0.5);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 
 	.search-input::placeholder {
@@ -212,7 +212,7 @@
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
 		background: #1e293b;
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 8px;
 		color: #94a3b8;
 		font-size: 0.875rem;
@@ -223,15 +223,15 @@
 	}
 
 	.category-btn:hover {
-		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
-		border-color: rgba(230, 184, 0, 0.4);
+		background: rgba(99, 102, 241, 0.1);
+		color: #a5b4fc;
+		border-color: rgba(99, 102, 241, 0.4);
 	}
 
 	.category-btn.active {
-		background: linear-gradient(135deg, rgba(230, 184, 0, 0.2), rgba(230, 184, 0, 0.2));
-		color: #E6B800;
-		border-color: rgba(230, 184, 0, 0.5);
+		background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
+		color: #a5b4fc;
+		border-color: rgba(99, 102, 241, 0.5);
 	}
 
 	.category-icon {
@@ -246,7 +246,7 @@
 
 	.template-card {
 		background: #1e293b;
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 12px;
 		padding: 1.5rem;
 		cursor: pointer;
@@ -256,9 +256,9 @@
 	}
 
 	.template-card:hover {
-		border-color: rgba(230, 184, 0, 0.4);
+		border-color: rgba(99, 102, 241, 0.4);
 		transform: translateY(-4px);
-		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.2);
+		box-shadow: 0 8px 24px rgba(99, 102, 241, 0.2);
 	}
 
 	.template-icon {
@@ -302,7 +302,7 @@
 	.template-preview {
 		margin-top: 1.25rem;
 		padding-top: 1.25rem;
-		border-top: 1px solid rgba(230, 184, 0, 0.1);
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.preview-fields {
@@ -325,8 +325,8 @@
 
 	.preview-input {
 		height: 32px;
-		background: rgba(230, 184, 0, 0.05);
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.05);
+		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 6px;
 	}
 

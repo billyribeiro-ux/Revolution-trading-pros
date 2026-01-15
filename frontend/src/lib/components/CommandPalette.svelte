@@ -332,7 +332,7 @@
 		width: 100%;
 		max-width: 640px;
 		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 16px;
 		box-shadow:
 			0 25px 50px -12px rgba(0, 0, 0, 0.5),
@@ -345,7 +345,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 1.25rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.search-icon {
@@ -368,8 +368,8 @@
 
 	.keyboard-hint kbd {
 		padding: 0.25rem 0.5rem;
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 6px;
 		color: #94a3b8;
 		font-size: 0.6875rem;
@@ -392,7 +392,7 @@
 	}
 
 	.results-container::-webkit-scrollbar-thumb {
-		background: rgba(230, 184, 0, 0.3);
+		background: rgba(99, 102, 241, 0.3);
 		border-radius: 3px;
 	}
 
@@ -427,7 +427,7 @@
 
 	.result-item:hover,
 	.result-item.selected {
-		background: rgba(230, 184, 0, 0.15);
+		background: rgba(99, 102, 241, 0.15);
 		color: #f1f5f9;
 	}
 
@@ -437,13 +437,13 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 		border-radius: 8px;
-		color: #FFD11A;
+		color: #818cf8;
 	}
 
 	.result-item.selected .item-icon {
-		background: rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.2);
 	}
 
 	.item-label {
@@ -452,9 +452,9 @@
 
 	.item-action {
 		padding: 0.25rem 0.5rem;
-		background: rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.2);
 		border-radius: 6px;
-		color: #E6B800;
+		color: #a5b4fc;
 	}
 
 	.no-results {
@@ -476,7 +476,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 0.75rem 1.25rem;
-		border-top: 1px solid rgba(230, 184, 0, 0.1);
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
 		background: rgba(15, 23, 42, 0.5);
 	}
 
@@ -500,8 +500,8 @@
 		justify-content: center;
 		min-width: 20px;
 		padding: 0.125rem 0.375rem;
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 4px;
 		color: #94a3b8;
 		font-size: 0.625rem;

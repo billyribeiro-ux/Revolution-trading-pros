@@ -26,10 +26,10 @@
 
 	function getEdgeColor(conditionType: string): string {
 		const colors: Record<string, string> = {
-			always: '#E6B800',
+			always: '#3b82f6',
 			if_true: '#10b981',
 			if_false: '#ef4444',
-			parallel: '#B38F00'
+			parallel: '#8b5cf6'
 		};
 		return colors[conditionType] || '#6b7280';
 	}

@@ -399,7 +399,7 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #E6B800;
+		color: #6366f1;
 		text-decoration: none;
 		margin-bottom: 1rem;
 	}
@@ -886,8 +886,8 @@
 		font-size: 0.6rem;
 		font-weight: 700;
 		padding: 0.2rem 0.4rem;
-		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		background: rgba(139, 92, 246, 0.1);
+		color: #7c3aed;
 		border-radius: 4px;
 	}
 </style>

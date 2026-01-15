@@ -613,8 +613,8 @@
 	.btn-primary,
 	.btn-submit {
 		padding: 0.875rem 2rem;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
-		color: #0D1117;
+		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		color: white;
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -627,7 +627,7 @@
 	.btn-primary:hover,
 	.btn-submit:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
+		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
 	}
 
 	.btn-primary:disabled,
@@ -793,8 +793,8 @@
 
 	.popup-button {
 		padding: 1rem 2rem;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
-		color: #0D1117;
+		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		color: white;
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -805,7 +805,7 @@
 
 	.popup-button:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
+		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
 	}
 
 	.popup-button:disabled {

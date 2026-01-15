@@ -303,7 +303,7 @@
 	.filter-select {
 		padding: 0.5rem 1rem;
 		background: #1e293b;
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 8px;
 		color: #e2e8f0;
 		font-size: 0.875rem;
@@ -329,7 +329,7 @@
 
 	.forms-table-container {
 		overflow-x: auto;
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 10px;
 	}
 
@@ -340,7 +340,7 @@
 	}
 
 	.forms-table thead {
-		background: rgba(230, 184, 0, 0.05);
+		background: rgba(99, 102, 241, 0.05);
 	}
 
 	.forms-table th {
@@ -351,18 +351,18 @@
 		color: #94a3b8;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.forms-table td {
 		padding: 1rem;
 		font-size: 0.875rem;
 		color: #e2e8f0;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.05);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.05);
 	}
 
 	.forms-table tbody tr:hover {
-		background: rgba(230, 184, 0, 0.05);
+		background: rgba(99, 102, 241, 0.05);
 	}
 
 	.form-title {
@@ -450,7 +450,7 @@
 	.btn-page {
 		padding: 0.5rem 1rem;
 		background: #1e293b;
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 8px;
 		color: #e2e8f0;
 		font-size: 0.875rem;
@@ -459,8 +459,8 @@
 	}
 
 	.btn-page:hover:not(:disabled) {
-		background: rgba(230, 184, 0, 0.1);
-		border-color: rgba(230, 184, 0, 0.4);
+		background: rgba(99, 102, 241, 0.1);
+		border-color: rgba(99, 102, 241, 0.4);
 	}
 
 	.btn-page:disabled {

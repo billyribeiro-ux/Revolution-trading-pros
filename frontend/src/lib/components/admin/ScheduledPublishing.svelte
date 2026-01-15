@@ -176,7 +176,7 @@
 			case 'unfeature':
 				return '#6b7280';
 			default:
-				return '#E6B800';
+				return '#6366f1';
 		}
 	}
 </script>
@@ -444,8 +444,8 @@
 		gap: 0.5rem;
 		width: 100%;
 		padding: 0.75rem;
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #6366f1);
+		color: white;
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
@@ -526,8 +526,8 @@
 		justify-content: center;
 		gap: 0.375rem;
 		padding: 0.625rem;
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #6366f1);
+		color: white;
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;

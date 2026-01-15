@@ -49,9 +49,9 @@
 		loading = false,
 		showLegend = true,
 		showTooltip = true,
-		color = '#E6B800',
-		gradientTopColor = 'rgba(230, 184, 0, 0.4)',
-		gradientBottomColor = 'rgba(230, 184, 0, 0.0)',
+		color = '#6366f1',
+		gradientTopColor = 'rgba(99, 102, 241, 0.4)',
+		gradientBottomColor = 'rgba(99, 102, 241, 0.0)',
 		timeVisible = true,
 		priceLineVisible = true,
 		animateOnMount = true,
@@ -78,30 +78,30 @@
 				textColor: '#94a3b8'
 			},
 			grid: {
-				vertLines: { color: 'rgba(230, 184, 0, 0.1)' },
-				horzLines: { color: 'rgba(230, 184, 0, 0.1)' }
+				vertLines: { color: 'rgba(99, 102, 241, 0.1)' },
+				horzLines: { color: 'rgba(99, 102, 241, 0.1)' }
 			},
 			crosshair: {
 				mode: CrosshairMode.Normal,
 				vertLine: {
-					color: '#E6B800',
+					color: '#6366f1',
 					width: 1,
 					style: LineStyle.Dashed,
-					labelBackgroundColor: '#E6B800'
+					labelBackgroundColor: '#6366f1'
 				},
 				horzLine: {
-					color: '#E6B800',
+					color: '#6366f1',
 					width: 1,
 					style: LineStyle.Dashed,
-					labelBackgroundColor: '#E6B800'
+					labelBackgroundColor: '#6366f1'
 				}
 			},
 			rightPriceScale: {
-				borderColor: 'rgba(230, 184, 0, 0.2)',
+				borderColor: 'rgba(99, 102, 241, 0.2)',
 				visible: priceLineVisible
 			},
 			timeScale: {
-				borderColor: 'rgba(230, 184, 0, 0.2)',
+				borderColor: 'rgba(99, 102, 241, 0.2)',
 				timeVisible,
 				secondsVisible: false
 			},

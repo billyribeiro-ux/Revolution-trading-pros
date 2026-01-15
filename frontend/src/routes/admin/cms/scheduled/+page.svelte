@@ -350,7 +350,7 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #E6B800;
+		color: #6366f1;
 		text-decoration: none;
 		margin-bottom: 1rem;
 	}
@@ -463,7 +463,7 @@
 
 	.nav-btn:hover {
 		background: #f1f5f9;
-		color: #E6B800;
+		color: #6366f1;
 	}
 
 	.weekdays {
@@ -524,12 +524,12 @@
 	}
 
 	.day-cell.selected {
-		background: #E6B800;
-		border-color: #E6B800;
+		background: #6366f1;
+		border-color: #6366f1;
 	}
 
 	.day-cell.selected .day-number {
-		color: #0D1117;
+		color: #ffffff;
 	}
 
 	.day-number {

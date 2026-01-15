@@ -394,7 +394,7 @@
 	}
 
 	.section-toggle input {
-		accent-color: var(--primary, #E6B800);
+		accent-color: var(--primary, #6366f1);
 	}
 
 	.edit-section select {
@@ -449,7 +449,7 @@
 
 	.tag-name {
 		padding: 0.125rem 0.375rem;
-		background: var(--tag-color, #E6B800);
+		background: var(--tag-color, #6366f1);
 		border-radius: 4px;
 	}
 
@@ -514,8 +514,8 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.625rem 1rem;
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #6366f1);
+		color: white;
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;

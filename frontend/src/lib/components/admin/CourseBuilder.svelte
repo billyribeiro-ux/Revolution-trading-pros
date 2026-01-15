@@ -883,8 +883,8 @@
 	}
 
 	.tab.active {
-		color: var(--primary, #E6B800);
-		border-bottom-color: var(--primary, #E6B800);
+		color: var(--primary, #6366f1);
+		border-bottom-color: var(--primary, #6366f1);
 	}
 
 	.tab:disabled {
@@ -929,7 +929,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: var(--primary, #E6B800);
+		border-color: var(--primary, #6366f1);
 	}
 
 	.form-row {
@@ -982,8 +982,8 @@
 	}
 
 	.btn-primary {
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #6366f1);
+		color: white;
 	}
 
 	.btn-secondary {
@@ -992,8 +992,8 @@
 	}
 
 	.btn-add {
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #6366f1);
+		color: white;
 	}
 
 	.btn-close {
@@ -1253,7 +1253,7 @@
 	}
 
 	.resource-icon {
-		color: var(--primary, #E6B800);
+		color: var(--primary, #6366f1);
 	}
 
 	/* Modal */

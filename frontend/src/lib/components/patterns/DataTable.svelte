@@ -214,7 +214,7 @@
 <style>
 	.data-table-container {
 		background: var(--color-rtp-surface, rgba(15, 23, 42, 0.6));
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: var(--radius-xl, 1rem);
 		overflow: hidden;
 	}
@@ -247,8 +247,8 @@
 		color: var(--color-rtp-muted, #64748b);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		background: rgba(230, 184, 0, 0.05);
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.05);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 		white-space: nowrap;
 	}
 
@@ -259,11 +259,11 @@
 	}
 
 	.data-table th.sortable:hover {
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 	}
 
 	.data-table th.sorted {
-		color: var(--color-rtp-primary, #FFD11A);
+		color: var(--color-rtp-primary, #818cf8);
 	}
 
 	.th-content {
@@ -289,7 +289,7 @@
 		padding: 1rem;
 		font-size: 0.9rem;
 		color: var(--color-rtp-text, #e2e8f0);
-		border-bottom: 1px solid rgba(230, 184, 0, 0.05);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.05);
 	}
 
 	.data-table tbody tr {
@@ -297,7 +297,7 @@
 	}
 
 	.data-table tbody tr:hover {
-		background: rgba(230, 184, 0, 0.05);
+		background: rgba(99, 102, 241, 0.05);
 	}
 
 	.data-table tbody tr.clickable {
@@ -323,7 +323,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1rem;
-		border-top: 1px solid rgba(230, 184, 0, 0.1);
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
 		flex-wrap: wrap;
 		gap: 1rem;
 	}
@@ -345,7 +345,7 @@
 		align-items: center;
 		justify-content: center;
 		background: transparent;
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: var(--radius-md, 0.5rem);
 		color: var(--color-rtp-muted, #94a3b8);
 		font-size: 0.875rem;
@@ -354,14 +354,14 @@
 	}
 
 	.page-btn:hover:not(:disabled) {
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 		color: var(--color-rtp-text, #f1f5f9);
 	}
 
 	.page-btn.active {
-		background: var(--color-rtp-primary, #E6B800);
-		border-color: var(--color-rtp-primary, #E6B800);
-		color: #0D1117;
+		background: var(--color-rtp-primary, #6366f1);
+		border-color: var(--color-rtp-primary, #6366f1);
+		color: white;
 	}
 
 	.page-btn:disabled {

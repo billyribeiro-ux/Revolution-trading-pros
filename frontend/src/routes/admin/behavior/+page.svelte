@@ -466,7 +466,7 @@
 	}
 
 	.metric-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.metric-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
+	.metric-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
 	.metric-icon.cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
 	.metric-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
 	.metric-icon.orange { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
@@ -693,7 +693,7 @@
 
 	.scroll-bar {
 		height: 100%;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(90deg, #6366f1, #8b5cf6);
 		border-radius: 4px;
 		transition: width 0.5s ease-out;
 	}

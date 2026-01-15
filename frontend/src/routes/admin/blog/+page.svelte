@@ -49,16 +49,16 @@
 		{ id: 'trading-strategies', name: 'Trading Strategies', color: '#10b981' },
 		{ id: 'risk-management', name: 'Risk Management', color: '#ef4444' },
 		{ id: 'options-trading', name: 'Options Trading', color: '#f59e0b' },
-		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#E6B800' },
+		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#6366f1' },
 		{ id: 'fundamental-analysis', name: 'Fundamental Analysis', color: '#ec4899' },
-		{ id: 'psychology', name: 'Psychology', color: '#B38F00' },
+		{ id: 'psychology', name: 'Psychology', color: '#8b5cf6' },
 		{ id: 'education', name: 'Education', color: '#14b8a6' },
 		{ id: 'news', name: 'News & Updates', color: '#06b6d4' },
 		{ id: 'earnings', name: 'Earnings', color: '#f97316' },
 		{ id: 'stocks', name: 'Stocks', color: '#84cc16' },
 		{ id: 'futures', name: 'Futures', color: '#22c55e' },
 		{ id: 'forex', name: 'Forex', color: '#0ea5e9' },
-		{ id: 'crypto', name: 'Crypto', color: '#FFD11A' },
+		{ id: 'crypto', name: 'Crypto', color: '#a855f7' },
 		{ id: 'small-accounts', name: 'Small Accounts', color: '#eab308' },
 		{ id: 'day-trading', name: 'Day Trading', color: '#d946ef' },
 		{ id: 'swing-trading', name: 'Swing Trading', color: '#64748b' },
@@ -974,7 +974,7 @@
 										{#if category}
 											<span
 												class="category-badge"
-												style:--tag-color={category.color || '#E6B800'}
+												style:--tag-color={category.color || '#6366f1'}
 											>
 												{category.name}
 											</span>
@@ -1105,7 +1105,7 @@
 										{#each post.categories.slice(0, 2) as categoryId}
 											{@const category = typeof categoryId === 'string' ? getPredefinedCategoryById(categoryId) : categoryId}
 											{#if category}
-												<span class="category-tag-table" style:--tag-color={category.color || '#E6B800'}>{category.name}</span>
+												<span class="category-tag-table" style:--tag-color={category.color || '#6366f1'}>{category.name}</span>
 											{/if}
 										{/each}
 										{#if post.categories.length > 2}
@@ -1559,8 +1559,8 @@
 	}
 
 	.stat-card.views {
-		background: linear-gradient(135deg, rgba(230, 184, 0, 0.1), rgba(179, 143, 0, 0.05));
-		border-color: rgba(230, 184, 0, 0.3);
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.05));
+		border-color: rgba(59, 130, 246, 0.3);
 	}
 
 	.stat-icon {
@@ -1791,7 +1791,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, rgba(230, 184, 0, 0.2), rgba(179, 143, 0, 0.2));
+		background: linear-gradient(135deg, rgba(59, 130, 246, 0.2), rgba(139, 92, 246, 0.2));
 		color: #94a3b8;
 	}
 
@@ -1918,12 +1918,12 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 0.25rem 0.5rem;
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.7rem;
 		font-weight: 500;
-		color: var(--tag-color, #E6B800);
+		color: var(--tag-color, #6366f1);
 		white-space: nowrap;
 	}
 
@@ -2093,12 +2093,12 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 0.125rem 0.5rem;
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.7rem;
 		font-weight: 500;
-		color: var(--tag-color, #E6B800);
+		color: var(--tag-color, #6366f1);
 		white-space: nowrap;
 	}
 

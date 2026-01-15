@@ -462,9 +462,9 @@ This text discusses key concepts and provides insights into the main topic. The 
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #8b5cf6, #6366f1);
 		border-radius: 10px;
-		color: #0D1117;
+		color: white;
 	}
 
 	.ai-title h3 {
@@ -517,8 +517,8 @@ This text discusses key concepts and provides insights into the main topic. The 
 	}
 
 	.quick-btn:hover {
-		border-color: #E6B800;
-		color: #B38F00;
+		border-color: #8b5cf6;
+		color: #8b5cf6;
 	}
 
 	/* Tabs */
@@ -553,7 +553,7 @@ This text discusses key concepts and provides insights into the main topic. The 
 
 	.ai-tab.active {
 		background: white;
-		color: #B38F00;
+		color: #8b5cf6;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 	}
 
@@ -577,7 +577,7 @@ This text discusses key concepts and provides insights into the main topic. The 
 	}
 
 	.prompt-input textarea:focus {
-		border-color: #E6B800;
+		border-color: #8b5cf6;
 	}
 
 	.options-row {
@@ -614,7 +614,7 @@ This text discusses key concepts and provides insights into the main topic. The 
 	}
 
 	.option-group select:focus {
-		border-color: #E6B800;
+		border-color: #8b5cf6;
 	}
 
 	.help-text {
@@ -629,8 +629,8 @@ This text discusses key concepts and provides insights into the main topic. The 
 		justify-content: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
-		color: #0D1117;
+		background: linear-gradient(135deg, #8b5cf6, #6366f1);
+		color: white;
 		border: none;
 		border-radius: 8px;
 		font-size: 0.9375rem;
@@ -641,7 +641,7 @@ This text discusses key concepts and provides insights into the main topic. The 
 
 	.generate-btn:hover:not(:disabled) {
 		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
+		box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
 	}
 
 	.generate-btn:disabled {

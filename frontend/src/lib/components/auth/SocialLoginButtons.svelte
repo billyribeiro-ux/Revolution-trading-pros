@@ -185,7 +185,7 @@
 	.divider-line {
 		flex: 1;
 		height: 1px;
-		background: var(--auth-card-border, rgba(230, 184, 0, 0.15));
+		background: var(--auth-card-border, rgba(99, 102, 241, 0.15));
 	}
 
 	.divider-text {

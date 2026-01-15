@@ -201,14 +201,14 @@
 	}
 
 	.method-option.selected {
-		border-color: #E6B800;
+		border-color: #2563eb;
 		background-color: #eff6ff;
 	}
 
 	.method-radio {
 		width: 18px;
 		height: 18px;
-		accent-color: #E6B800;
+		accent-color: #2563eb;
 		cursor: pointer;
 	}
 
@@ -240,7 +240,7 @@
 		justify-content: center;
 		width: 24px;
 		height: 24px;
-		background-color: #E6B800;
+		background-color: #2563eb;
 		border-radius: 50%;
 		color: white;
 	}
@@ -249,11 +249,11 @@
 		padding: 1rem;
 		background-color: #f9fafb;
 		border-radius: 0.5rem;
-		border-left: 3px solid #E6B800;
+		border-left: 3px solid #2563eb;
 	}
 
 	.method-details.stripe {
-		border-left-color: #E6B800;
+		border-left-color: #6366f1;
 	}
 
 	.method-details.paypal {

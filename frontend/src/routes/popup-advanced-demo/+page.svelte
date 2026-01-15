@@ -170,7 +170,7 @@
 				type: 'html',
 				data: `
           <p style="font-size: 1.25rem; text-align: center; margin-bottom: 1.5rem;">
-            Join our <strong style="color: #E6B800;">LIVE Trading Masterclass</strong>
+            Join our <strong style="color: #6366f1;">LIVE Trading Masterclass</strong>
           </p>
           <p style="text-align: center; color: #94a3b8;">
             Watch a preview of what you'll learn:
@@ -184,7 +184,7 @@
 				showHours: true,
 				showMinutes: true,
 				showSeconds: true,
-				timerColor: '#E6B800',
+				timerColor: '#6366f1',
 				onExpire: 'hide'
 			},
 			videoEmbed: {
@@ -201,7 +201,7 @@
 					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary',
-					gradient: 'bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-600'
+					gradient: 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500'
 				}
 			],
 			closeButton: true,
@@ -215,10 +215,10 @@
 				textColor: '#f1f5f9',
 				borderRadius: '32px',
 				borderWidth: '2px',
-				borderColor: '#E6B800',
+				borderColor: '#8b5cf6',
 				borderStyle: 'solid',
 				backdropBlur: '24px',
-				boxShadow: '0 30px 60px rgba(230, 184, 0, 0.4)',
+				boxShadow: '0 30px 60px rgba(139, 92, 246, 0.4)',
 				backgroundGradient: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
 			},
 			animation: {
@@ -434,7 +434,7 @@
     showHours: true,
     showMinutes: true,
     showSeconds: true,
-    timerColor: '#E6B800',
+    timerColor: '#6366f1',
     onExpire: 'hide'
   }
 }`}</code
@@ -500,7 +500,7 @@
 		gap: 1rem;
 		font-size: 3rem;
 		font-weight: 700;
-		background: linear-gradient(to right, #E6B800, #B38F00, #FFD11A);
+		background: linear-gradient(to right, #3b82f6, #8b5cf6, #ec4899);
 		background-clip: text;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
@@ -508,7 +508,7 @@
 	}
 
 	:global(.title-icon) {
-		color: #E6B800;
+		color: #3b82f6;
 		-webkit-text-fill-color: initial;
 	}
 
@@ -537,14 +537,14 @@
 	}
 
 	.control-btn.primary {
-		background: linear-gradient(135deg, #E6B800, #B38F00);
-		color: #0D1117;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
 	}
 
 	.control-btn.secondary {
-		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
-		border: 1px solid rgba(230, 184, 0, 0.3);
+		background: rgba(99, 102, 241, 0.2);
+		color: #a5b4fc;
+		border: 1px solid rgba(99, 102, 241, 0.3);
 	}
 
 	.control-btn.danger {
@@ -555,7 +555,7 @@
 
 	.control-btn:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 25px rgba(230, 184, 0, 0.3);
+		box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
 	}
 
 	.demo-grid {
@@ -567,7 +567,7 @@
 
 	.demo-card {
 		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 20px;
 		overflow: hidden;
 		transition: all 0.3s;
@@ -575,13 +575,13 @@
 
 	.demo-card:hover {
 		transform: translateY(-4px);
-		box-shadow: 0 20px 40px rgba(230, 184, 0, 0.2);
-		border-color: rgba(230, 184, 0, 0.4);
+		box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+		border-color: rgba(99, 102, 241, 0.4);
 	}
 
 	.card-header {
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.card-title {
@@ -613,8 +613,8 @@
 	}
 
 	.badge.purple {
-		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		background: rgba(139, 92, 246, 0.2);
+		color: #a78bfa;
 	}
 
 	.card-body {
@@ -630,7 +630,7 @@
 		justify-content: space-between;
 		padding: 0.75rem;
 		margin-bottom: 0.5rem;
-		background: rgba(230, 184, 0, 0.05);
+		background: rgba(99, 102, 241, 0.05);
 		border-radius: 8px;
 	}
 
@@ -655,8 +655,8 @@
 	.test-btn {
 		width: 100%;
 		padding: 1rem;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
-		color: #0D1117;
+		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		color: white;
 		border: none;
 		font-weight: 700;
 		font-size: 1rem;
@@ -665,8 +665,8 @@
 	}
 
 	.test-btn:hover {
-		background: linear-gradient(135deg, #FFD11A, #E6B800);
-		box-shadow: 0 10px 25px rgba(230, 184, 0, 0.4);
+		background: linear-gradient(135deg, #2563eb, #7c3aed);
+		box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
 	}
 
 	.documentation,
@@ -689,8 +689,8 @@
 	}
 
 	.doc-card {
-		background: rgba(230, 184, 0, 0.05);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.05);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 16px;
 		padding: 2rem;
 	}
@@ -698,7 +698,7 @@
 	.doc-card h3 {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #E6B800;
+		color: #a5b4fc;
 		margin-bottom: 1rem;
 	}
 
@@ -719,7 +719,7 @@
 		content: '→';
 		position: absolute;
 		left: 0;
-		color: #E6B800;
+		color: #6366f1;
 	}
 
 	.doc-card strong {
@@ -728,8 +728,8 @@
 
 	.guide-section {
 		margin-bottom: 2rem;
-		background: rgba(230, 184, 0, 0.05);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.05);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 16px;
 		padding: 2rem;
 	}
@@ -737,13 +737,13 @@
 	.guide-section h3 {
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #E6B800;
+		color: #a5b4fc;
 		margin-bottom: 1rem;
 	}
 
 	.code-block {
 		background: #0f172a;
-		border: 1px solid rgba(230, 184, 0, 0.3);
+		border: 1px solid rgba(99, 102, 241, 0.3);
 		border-radius: 12px;
 		padding: 1.5rem;
 		overflow-x: auto;

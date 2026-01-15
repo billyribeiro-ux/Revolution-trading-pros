@@ -256,20 +256,20 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 2rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, var(--btn-color, #3b82f6), color-mix(in srgb, var(--btn-color, #3b82f6), #8b5cf6 50%));
+		color: white;
 		border: none;
 		border-radius: 14px;
 		font-size: 1rem;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
+		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
 	}
 
 	.connect-btn:hover {
 		transform: translateY(-3px);
-		box-shadow: 0 15px 40px rgba(230, 184, 0, 0.4);
+		box-shadow: 0 15px 40px rgba(59, 130, 246, 0.4);
 	}
 
 	.connect-btn:active {
@@ -298,7 +298,7 @@
 		height: 200px;
 		bottom: -50px;
 		right: -50px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
 	}
 
 	.decoration-2 {
@@ -306,7 +306,7 @@
 		height: 150px;
 		top: 20%;
 		left: -30px;
-		background: linear-gradient(135deg, #B38F00, #E6B800);
+		background: linear-gradient(135deg, #8b5cf6, #ec4899);
 	}
 
 	/* Compact Version Styles */

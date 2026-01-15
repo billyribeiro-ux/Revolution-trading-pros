@@ -135,20 +135,20 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 16px;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
 		border: none;
 		border-radius: 50px;
-		color: #0D1117;
+		color: white;
 		font-weight: 600;
 		font-size: 0.875rem;
 		cursor: pointer;
-		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.4);
+		box-shadow: 0 8px 24px rgba(59, 130, 246, 0.4);
 		transition: all 0.3s ease;
 	}
 
 	.floating-toc-toggle:hover {
 		transform: scale(1.05);
-		box-shadow: 0 12px 32px rgba(230, 184, 0, 0.5);
+		box-shadow: 0 12px 32px rgba(59, 130, 246, 0.5);
 	}
 
 	.floating-toc-widget.open .floating-toc-toggle {

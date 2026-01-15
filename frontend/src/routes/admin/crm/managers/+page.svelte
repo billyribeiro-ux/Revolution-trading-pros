@@ -396,7 +396,7 @@
 	}
 
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
+	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
 
 	.stat-content {
 		display: flex;
@@ -503,11 +503,11 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.35rem 0.75rem;
-		background: rgba(230, 184, 0, 0.15);
+		background: rgba(139, 92, 246, 0.15);
 		border-radius: 9999px;
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: #E6B800;
+		color: #a78bfa;
 	}
 
 	.manager-meta {
@@ -572,11 +572,11 @@
 		width: 44px;
 		height: 44px;
 		border-radius: 10px;
-		background: rgba(230, 184, 0, 0.15);
+		background: rgba(139, 92, 246, 0.15);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #E6B800;
+		color: #a78bfa;
 		flex-shrink: 0;
 	}
 

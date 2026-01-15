@@ -126,7 +126,7 @@
 		max-width: 700px;
 		max-height: 80vh;
 		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 20px;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 		overflow: hidden;
@@ -139,7 +139,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1.25rem 1.5rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.header-title {
@@ -161,7 +161,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 		border: none;
 		border-radius: 10px;
 		color: #94a3b8;
@@ -170,7 +170,7 @@
 	}
 
 	.close-btn:hover {
-		background: rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.2);
 		color: #f1f5f9;
 	}
 
@@ -192,12 +192,12 @@
 	}
 
 	.modal-content::-webkit-scrollbar-thumb {
-		background: rgba(230, 184, 0, 0.3);
+		background: rgba(99, 102, 241, 0.3);
 		border-radius: 3px;
 	}
 
 	.shortcut-group {
-		background: rgba(230, 184, 0, 0.05);
+		background: rgba(99, 102, 241, 0.05);
 		border-radius: 12px;
 		padding: 1rem;
 	}
@@ -207,7 +207,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		color: #FFD11A;
+		color: #818cf8;
 		margin: 0 0 0.75rem 0;
 	}
 
@@ -242,10 +242,10 @@
 		justify-content: center;
 		min-width: 24px;
 		padding: 0.25rem 0.5rem;
-		background: rgba(230, 184, 0, 0.15);
-		border: 1px solid rgba(230, 184, 0, 0.3);
+		background: rgba(99, 102, 241, 0.15);
+		border: 1px solid rgba(99, 102, 241, 0.3);
 		border-radius: 6px;
-		color: #E6B800;
+		color: #a5b4fc;
 		font-size: 0.75rem;
 		font-family: inherit;
 		font-weight: 500;
@@ -258,7 +258,7 @@
 
 	.modal-footer {
 		padding: 1rem 1.5rem;
-		border-top: 1px solid rgba(230, 184, 0, 0.1);
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
 		background: rgba(15, 23, 42, 0.5);
 	}
 
@@ -269,8 +269,8 @@
 
 	.footer-hint kbd {
 		padding: 0.125rem 0.375rem;
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 4px;
 		color: #94a3b8;
 		font-size: 0.75rem;

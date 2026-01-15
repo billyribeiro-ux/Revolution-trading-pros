@@ -115,7 +115,7 @@
 		};
 
 		// Draw grid lines
-		ctx.strokeStyle = 'rgba(230, 184, 0, 0.1)';
+		ctx.strokeStyle = 'rgba(99, 102, 241, 0.1)';
 		ctx.lineWidth = 1;
 
 		// Horizontal grid
@@ -170,9 +170,9 @@
 		});
 
 		// Draw moving average line
-		ctx.strokeStyle = 'rgba(230, 184, 0, 0.8)';
+		ctx.strokeStyle = 'rgba(139, 92, 246, 0.8)';
 		ctx.lineWidth = 2;
-		ctx.shadowColor = 'rgba(230, 184, 0, 0.5)';
+		ctx.shadowColor = 'rgba(139, 92, 246, 0.5)';
 		ctx.shadowBlur = 10;
 		ctx.beginPath();
 
@@ -458,7 +458,7 @@
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
 		border-radius: 12px;
-		border: 1px solid var(--auth-card-border, rgba(230, 184, 0, 0.15));
+		border: 1px solid var(--auth-card-border, rgba(99, 102, 241, 0.15));
 		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
 		opacity: 0;
 		transform: translateY(20px);
@@ -519,7 +519,7 @@
 		font-family: var(--font-heading);
 		font-size: 2.5rem;
 		font-weight: 800;
-		background: var(--auth-heading, linear-gradient(135deg, #FFD11A, #E6B800, #B38F00));
+		background: var(--auth-heading, linear-gradient(135deg, #e0e7ff, #c7d2fe, #a5b4fc));
 		-webkit-background-clip: text;
 		background-clip: text;
 		color: transparent;
@@ -572,7 +572,7 @@
 	.trust-divider {
 		width: 1px;
 		height: 40px;
-		background: var(--auth-card-border, rgba(230, 184, 0, 0.15));
+		background: var(--auth-card-border, rgba(99, 102, 241, 0.15));
 	}
 
 	/* Testimonial Section */

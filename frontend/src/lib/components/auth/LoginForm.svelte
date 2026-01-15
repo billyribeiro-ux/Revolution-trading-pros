@@ -747,7 +747,7 @@
 			135deg,
 			rgba(255, 255, 255, 0.1) 0%,
 			transparent 50%,
-			rgba(230, 184, 0, 0.05) 100%
+			rgba(99, 102, 241, 0.05) 100%
 		);
 		pointer-events: none;
 	}
@@ -755,7 +755,7 @@
 	.card-glow {
 		position: absolute;
 		inset: -2px;
-		background: linear-gradient(135deg, #E6B800, #B38F00, #FFD11A);
+		background: linear-gradient(135deg, #6366f1, #8b5cf6, #06b6d4);
 		opacity: 0.15;
 		filter: blur(24px);
 		z-index: -1;
@@ -1063,7 +1063,7 @@
 
 	.password-toggle:hover {
 		color: var(--auth-link);
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 	}
 
 	.password-toggle:disabled {
@@ -1209,7 +1209,7 @@
 	.btn-glow {
 		position: absolute;
 		inset: -2px;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #818cf8, #c084fc);
 		filter: blur(20px);
 		opacity: 0;
 		transition: opacity 0.3s ease;
@@ -1267,7 +1267,7 @@
 			135deg,
 			rgba(255, 255, 255, 0.5) 0%,
 			transparent 50%,
-			rgba(230, 184, 0, 0.02) 100%
+			rgba(79, 70, 229, 0.02) 100%
 		);
 	}
 

@@ -93,8 +93,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, var(--color-rtp-primary, #6366f1), var(--color-rtp-indigo, #8b5cf6));
+		color: white;
 		border: none;
 		border-radius: var(--radius-md, 0.5rem);
 		font-weight: 600;
@@ -104,7 +104,7 @@
 
 	.empty-action:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
+		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 	}
 
 	/* Size variants */

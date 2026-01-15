@@ -17,7 +17,7 @@
 				type: 'html',
 				data: `
           <p style="font-size: 1.125rem; margin-bottom: 1.5rem; line-height: 1.6;">
-            Get <strong style="color: #E6B800;">20% OFF</strong> your first month when you sign up today!
+            Get <strong style="color: #6366f1;">20% OFF</strong> your first month when you sign up today!
           </p>
           <ul style="text-align: left; margin-bottom: 1.5rem; line-height: 1.8;">
             <li>✓ Live trading sessions daily</li>
@@ -32,7 +32,7 @@
 					link: '/live-trading-rooms/day-trading',
 					action: 'custom',
 					style: 'primary',
-					gradient: 'bg-gradient-to-r from-yellow-500 via-amber-500 to-yellow-600'
+					gradient: 'bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500'
 				},
 				{
 					text: 'Maybe Later',
@@ -51,10 +51,10 @@
 				textColor: '#f1f5f9',
 				borderRadius: '32px',
 				borderWidth: '2px',
-				borderColor: '#E6B800',
+				borderColor: '#6366f1',
 				borderStyle: 'solid',
 				backdropBlur: '20px',
-				boxShadow: '0 25px 50px -12px rgba(230, 184, 0, 0.5)',
+				boxShadow: '0 25px 50px -12px rgba(99, 102, 241, 0.5)',
 				backgroundGradient: 'linear-gradient(135deg, #1e293b 0%, #0f172a 100%)'
 			},
 			animation: {
@@ -307,11 +307,11 @@
             </p>
             <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
               <div>
-                <div style="font-size: 2.5rem; font-weight: 700; color: #E6B800;">Day 1</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: #6366f1;">Day 1</div>
                 <div style="font-size: 0.875rem; color: #94a3b8;">Market Analysis</div>
               </div>
               <div>
-                <div style="font-size: 2.5rem; font-weight: 700; color: #B38F00;">Day 2</div>
+                <div style="font-size: 2.5rem; font-weight: 700; color: #8b5cf6;">Day 2</div>
                 <div style="font-size: 0.875rem; color: #94a3b8;">Live Trading</div>
               </div>
               <div>
@@ -609,7 +609,7 @@
 		gap: 1rem;
 		font-size: 3rem;
 		font-weight: 700;
-		background: linear-gradient(to right, #E6B800, #B38F00, #FFD11A);
+		background: linear-gradient(to right, #6366f1, #8b5cf6, #ec4899);
 		-webkit-background-clip: text;
 		background-clip: text;
 		-webkit-text-fill-color: transparent;
@@ -617,7 +617,7 @@
 	}
 
 	:global(.title-icon) {
-		color: #E6B800;
+		color: #6366f1;
 		-webkit-text-fill-color: initial;
 	}
 
@@ -645,8 +645,8 @@
 	}
 
 	.control-btn.primary {
-		background: linear-gradient(135deg, #E6B800, #B38F00);
-		color: #0D1117;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
 	}
 
 	.control-btn.danger {
@@ -657,7 +657,7 @@
 
 	.control-btn:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 25px rgba(230, 184, 0, 0.3);
+		box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
 	}
 
 	.demo-grid {
@@ -669,7 +669,7 @@
 
 	.demo-card {
 		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 20px;
 		overflow: hidden;
 		transition: all 0.3s;
@@ -677,13 +677,13 @@
 
 	.demo-card:hover {
 		transform: translateY(-4px);
-		box-shadow: 0 20px 40px rgba(230, 184, 0, 0.2);
-		border-color: rgba(230, 184, 0, 0.4);
+		box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+		border-color: rgba(99, 102, 241, 0.4);
 	}
 
 	.card-header {
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.card-title {
@@ -732,7 +732,7 @@
 		justify-content: space-between;
 		margin-bottom: 0.75rem;
 		padding-bottom: 0.75rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.info-label {
@@ -763,8 +763,8 @@
 	.test-btn {
 		width: 100%;
 		padding: 1rem;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
-		color: #0D1117;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
 		border: none;
 		font-weight: 700;
 		font-size: 1rem;
@@ -773,8 +773,8 @@
 	}
 
 	.test-btn:hover {
-		background: linear-gradient(135deg, #FFD11A, #E6B800);
-		box-shadow: 0 10px 25px rgba(230, 184, 0, 0.4);
+		background: linear-gradient(135deg, #4f46e5, #7c3aed);
+		box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
 	}
 
 	.features-section {
@@ -796,8 +796,8 @@
 	}
 
 	.feature-card {
-		background: rgba(230, 184, 0, 0.05);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.05);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 16px;
 		padding: 1.5rem;
 	}
@@ -805,7 +805,7 @@
 	.feature-card h3 {
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #E6B800;
+		color: #a5b4fc;
 		margin-bottom: 1rem;
 	}
 
@@ -825,12 +825,12 @@
 		content: '→';
 		position: absolute;
 		left: 0;
-		color: #E6B800;
+		color: #6366f1;
 	}
 
 	.instructions {
-		background: rgba(230, 184, 0, 0.05);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.05);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 16px;
 		padding: 2rem;
 	}
@@ -842,7 +842,7 @@
 	}
 
 	.instructions strong {
-		color: #E6B800;
+		color: #a5b4fc;
 	}
 
 	.note {

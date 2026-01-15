@@ -372,7 +372,7 @@
 	}
 
 	.bg-purple-500 {
-		background: #B38F00;
+		background: #8b5cf6;
 	}
 
 	.bg-yellow-500 {

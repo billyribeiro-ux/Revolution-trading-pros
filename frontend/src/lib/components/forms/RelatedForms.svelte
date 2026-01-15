@@ -88,11 +88,11 @@
 	function getRelationColor(type: string | undefined): string {
 		switch (type) {
 			case 'similar':
-				return '#E6B800';
+				return '#3b82f6';
 			case 'sequel':
 				return '#10b981';
 			case 'category':
-				return '#B38F00';
+				return '#8b5cf6';
 			default:
 				return '#6b7280';
 		}
@@ -230,8 +230,8 @@
 	}
 
 	.tab.active {
-		color: #E6B800;
-		border-bottom-color: #E6B800;
+		color: #3b82f6;
+		border-bottom-color: #3b82f6;
 	}
 
 	.panel-content {
@@ -251,7 +251,7 @@
 		width: 24px;
 		height: 24px;
 		border: 2px solid #e5e7eb;
-		border-top-color: #E6B800;
+		border-top-color: #3b82f6;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -279,7 +279,7 @@
 	}
 
 	.form-card:hover {
-		border-color: #E6B800;
+		border-color: #3b82f6;
 		background: #eff6ff;
 		transform: translateY(-1px);
 	}

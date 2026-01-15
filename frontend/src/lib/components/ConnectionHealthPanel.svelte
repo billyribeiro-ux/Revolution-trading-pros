@@ -344,7 +344,7 @@
 		width: 100%;
 		max-width: 480px;
 		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
-		border-left: 1px solid rgba(230, 184, 0, 0.2);
+		border-left: 1px solid rgba(99, 102, 241, 0.2);
 		display: flex;
 		flex-direction: column;
 		box-shadow: -20px 0 60px rgba(0, 0, 0, 0.4);
@@ -355,7 +355,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1.25rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.header-left {
@@ -409,10 +409,10 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.5rem 0.75rem;
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 8px;
-		color: #E6B800;
+		color: #a5b4fc;
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -420,7 +420,7 @@
 	}
 
 	.refresh-all-btn:hover:not(:disabled) {
-		background: rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.2);
 	}
 
 	.refresh-all-btn:disabled {
@@ -434,7 +434,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 		border: none;
 		border-radius: 10px;
 		color: #94a3b8;
@@ -443,7 +443,7 @@
 	}
 
 	.close-btn:hover {
-		background: rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.2);
 		color: #f1f5f9;
 	}
 
@@ -452,7 +452,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 0.875rem 1.25rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.status-bar.healthy {
@@ -495,7 +495,7 @@
 	.panel-tabs {
 		display: flex;
 		padding: 0 1.25rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.tab {
@@ -518,8 +518,8 @@
 	}
 
 	.tab.active {
-		color: #E6B800;
-		border-bottom-color: #E6B800;
+		color: #a5b4fc;
+		border-bottom-color: #6366f1;
 	}
 
 	.panel-content {
@@ -537,7 +537,7 @@
 	}
 
 	.panel-content::-webkit-scrollbar-thumb {
-		background: rgba(230, 184, 0, 0.3);
+		background: rgba(99, 102, 241, 0.3);
 		border-radius: 3px;
 	}
 
@@ -552,14 +552,14 @@
 		align-items: flex-start;
 		gap: 0.875rem;
 		padding: 1rem;
-		background: rgba(230, 184, 0, 0.05);
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.05);
+		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 14px;
 		transition: all 0.2s;
 	}
 
 	.service-card:hover {
-		background: rgba(230, 184, 0, 0.08);
+		background: rgba(99, 102, 241, 0.08);
 	}
 
 	.service-card.connected {
@@ -576,7 +576,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 		border-radius: 10px;
 		flex-shrink: 0;
 	}
@@ -637,7 +637,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 		border: none;
 		border-radius: 8px;
 		color: #94a3b8;
@@ -647,8 +647,8 @@
 	}
 
 	.action-btn:hover:not(:disabled) {
-		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		background: rgba(99, 102, 241, 0.2);
+		color: #a5b4fc;
 	}
 
 	.action-btn:disabled {
@@ -664,8 +664,8 @@
 
 	.metrics-card {
 		padding: 1rem;
-		background: rgba(230, 184, 0, 0.05);
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.05);
+		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 14px;
 	}
 
@@ -709,7 +709,7 @@
 
 	.metric-bar {
 		height: 4px;
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 		border-radius: 2px;
 		overflow: hidden;
 	}
@@ -726,7 +726,7 @@
 
 	.panel-footer {
 		padding: 1rem 1.25rem;
-		border-top: 1px solid rgba(230, 184, 0, 0.1);
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.view-all-link {
@@ -735,9 +735,9 @@
 		justify-content: center;
 		gap: 0.5rem;
 		padding: 0.75rem;
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 		border-radius: 10px;
-		color: #E6B800;
+		color: #a5b4fc;
 		font-size: 0.875rem;
 		font-weight: 500;
 		text-decoration: none;
@@ -745,7 +745,7 @@
 	}
 
 	.view-all-link:hover {
-		background: rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.2);
 	}
 
 	:global(.spinning) {

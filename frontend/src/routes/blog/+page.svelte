@@ -597,8 +597,8 @@
 
 	.category-tag {
 		padding: 0.25rem 0.75rem;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
-		color: #0D1117;
+		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		color: white;
 		font-size: 0.75rem;
 		font-weight: 600;
 		border-radius: 12px;

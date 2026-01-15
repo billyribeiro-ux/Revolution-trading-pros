@@ -64,11 +64,11 @@
     if (!statistics?.storage_by_type) return [];
 
     const colors: Record<string, string> = {
-      image: '#E6B800',
+      image: '#3b82f6',
       video: '#ef4444',
       document: '#10b981',
       audio: '#f59e0b',
-      archive: '#B38F00',
+      archive: '#8b5cf6',
       other: '#6b7280',
     };
 
@@ -291,7 +291,7 @@
     width: 32px;
     height: 32px;
     border: 3px solid var(--border-color, #e5e7eb);
-    border-top-color: var(--primary-color, #E6B800);
+    border-top-color: var(--primary-color, #3b82f6);
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -302,8 +302,8 @@
 
   .error button {
     padding: 0.5rem 1rem;
-    background: var(--primary-color, #E6B800);
-    color: #0D1117;
+    background: var(--primary-color, #3b82f6);
+    color: white;
     border: none;
     border-radius: 6px;
     cursor: pointer;
@@ -343,18 +343,18 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    background: var(--primary-bg, rgba(230, 184, 0, 0.15));
-    color: var(--primary-color, #E6B800);
+    background: var(--primary-bg, #dbeafe);
+    color: var(--primary-color, #3b82f6);
   }
 
   .card-icon.storage {
-    background: var(--purple-bg, rgba(179, 143, 0, 0.15));
-    color: var(--purple-color, #B38F00);
+    background: var(--purple-bg, #ede9fe);
+    color: var(--purple-color, #7c3aed);
   }
 
   .card-icon.images {
-    background: var(--primary-bg, rgba(230, 184, 0, 0.15));
-    color: var(--primary-color, #E6B800);
+    background: var(--primary-bg, #dbeafe);
+    color: var(--primary-color, #3b82f6);
   }
 
   .card-icon.variants {
@@ -425,7 +425,7 @@
 
   .progress-fill {
     height: 100%;
-    background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+    background: linear-gradient(90deg, var(--primary-color, #3b82f6), var(--success-color, #10b981));
     border-radius: 6px;
     transition: width 0.5s ease;
   }
@@ -446,7 +446,7 @@
 
   .progress-percent {
     font-weight: 700;
-    color: var(--primary-color, #E6B800);
+    color: var(--primary-color, #3b82f6);
   }
 
   .pending-alert {
@@ -538,7 +538,7 @@
   }
 
   .queue-count.processing {
-    color: var(--primary-color, #E6B800);
+    color: var(--primary-color, #3b82f6);
   }
 
   .queue-count.completed {

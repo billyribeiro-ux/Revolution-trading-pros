@@ -173,12 +173,12 @@
 		backdrop-filter: blur(12px);
 		-webkit-backdrop-filter: blur(12px);
 		border-radius: 16px;
-		border: 1px solid var(--auth-card-border, rgba(230, 184, 0, 0.15));
+		border: 1px solid var(--auth-card-border, rgba(99, 102, 241, 0.15));
 	}
 
 	/* Quote Icon */
 	.quote-icon {
-		color: var(--auth-link, #FFD11A);
+		color: var(--auth-link, #818cf8);
 		opacity: 0.5;
 		margin-bottom: 0.75rem;
 	}
@@ -204,8 +204,8 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: var(--auth-btn-primary-bg, linear-gradient(135deg, #E6B800 0%, #B38F00 100%));
-		color: #0D1117;
+		background: var(--auth-btn-primary-bg, linear-gradient(135deg, #6366f1, #8b5cf6));
+		color: white;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -261,7 +261,7 @@
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
-		background: var(--auth-card-border, rgba(230, 184, 0, 0.15));
+		background: var(--auth-card-border, rgba(99, 102, 241, 0.15));
 		border: none;
 		cursor: pointer;
 		padding: 0;
@@ -271,7 +271,7 @@
 	.carousel-dot.active {
 		width: 24px;
 		border-radius: 4px;
-		background: var(--auth-link, #FFD11A);
+		background: var(--auth-link, #818cf8);
 	}
 
 	.carousel-dot:hover:not(.active) {

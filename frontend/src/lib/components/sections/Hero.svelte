@@ -66,7 +66,7 @@
 			description: 'Join structured sessions with clear levels, real-time execution, and disciplined risk management.',
 			primaryCTA: { text: 'Explore Rooms', href: '/live-trading-rooms/day-trading' },
 			secondaryCTA: { text: 'Create Free Account', href: '/signup' },
-			accentColor: 'rgba(230, 184, 0, 0.5)'
+			accentColor: 'rgba(99, 102, 241, 0.5)'
 		},
 		{
 			title: 'SPX Profit Pulse',
@@ -90,7 +90,7 @@
 			description: 'Volume profiles, internals, momentum systems, and tooling built for repeatable institutional logic.',
 			primaryCTA: { text: 'View Indicators', href: '/indicators' },
 			secondaryCTA: { text: 'See All Tools', href: '/store' },
-			accentColor: 'rgba(230, 184, 0, 0.5)'
+			accentColor: 'rgba(139, 92, 246, 0.5)'
 		}
 	]);
 
@@ -784,8 +784,8 @@
 		position: absolute;
 		inset: 0;
 		background:
-			radial-gradient(ellipse 150% 100% at 50% 0%, rgba(230, 184, 0, 0.15) 0%, transparent 50%),
-			radial-gradient(ellipse 100% 60% at 100% 100%, rgba(230, 184, 0, 0.12) 0%, transparent 50%),
+			radial-gradient(ellipse 150% 100% at 50% 0%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+			radial-gradient(ellipse 100% 60% at 100% 100%, rgba(139, 92, 246, 0.12) 0%, transparent 50%),
 			radial-gradient(ellipse 80% 50% at 0% 80%, rgba(52, 211, 153, 0.08) 0%, transparent 50%),
 			radial-gradient(ellipse 60% 40% at 30% 30%, rgba(250, 204, 21, 0.05) 0%, transparent 50%);
 		animation: ambientPulse 8s ease-in-out infinite;
@@ -800,8 +800,8 @@
 		position: absolute;
 		inset: -50px;
 		background-image:
-			linear-gradient(rgba(230, 184, 0, 0.04) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(230, 184, 0, 0.04) 1px, transparent 1px);
+			linear-gradient(rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
 		background-size: 60px 60px;
 		mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 10%, transparent 70%);
 		-webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 50%, black 10%, transparent 70%);
@@ -823,7 +823,7 @@
 		transform: translate(-50%, -50%) scale(1);
 		background: radial-gradient(
 			ellipse 50% 35% at 50% 50%,
-			var(--accent-color, rgba(230, 184, 0, 0.2)) 0%,
+			var(--accent-color, rgba(99, 102, 241, 0.2)) 0%,
 			transparent 70%
 		);
 		transition: background 1.5s ease, transform 0.5s ease, opacity 0.5s ease;
@@ -938,7 +938,7 @@
 		text-shadow:
 			0 0 40px rgba(255, 255, 255, 0.15),
 			0 4px 30px rgba(0, 0, 0, 0.5),
-			0 0 80px rgba(230, 184, 0, 0.2);
+			0 0 80px rgba(99, 102, 241, 0.2);
 		transform: translateZ(0);
 		transform-style: preserve-3d;
 		perspective: 1000px;
@@ -1199,8 +1199,8 @@
 		border-image: linear-gradient(
 			135deg,
 			rgba(255, 255, 255, 0.4),
-			rgba(230, 184, 0, 0.3),
-			rgba(230, 184, 0, 0.3),
+			rgba(139, 92, 246, 0.3),
+			rgba(99, 102, 241, 0.3),
 			rgba(255, 255, 255, 0.2)
 		) 1;
 		border-radius: 9999px;
@@ -1211,7 +1211,7 @@
 		/* 3D Glass shadow layers */
 		box-shadow:
 			/* Outer glow */
-			0 0 30px rgba(230, 184, 0, 0.1),
+			0 0 30px rgba(139, 92, 246, 0.1),
 			/* Floating shadows */
 			0 4px 8px rgba(0, 0, 0, 0.15),
 			0 8px 20px rgba(0, 0, 0, 0.1),
@@ -1239,8 +1239,8 @@
 		background: linear-gradient(
 			135deg,
 			rgba(255, 255, 255, 0.5),
-			rgba(230, 184, 0, 0.4),
-			rgba(230, 184, 0, 0.4),
+			rgba(139, 92, 246, 0.4),
+			rgba(99, 102, 241, 0.4),
 			rgba(52, 211, 153, 0.3),
 			rgba(255, 255, 255, 0.3)
 		);
@@ -1301,8 +1301,8 @@
 
 		box-shadow:
 			/* Outer glow */
-			0 0 50px rgba(230, 184, 0, 0.2),
-			0 0 80px rgba(230, 184, 0, 0.1),
+			0 0 50px rgba(139, 92, 246, 0.2),
+			0 0 80px rgba(99, 102, 241, 0.1),
 			/* Deep floating shadows */
 			0 10px 20px rgba(0, 0, 0, 0.2),
 			0 20px 40px rgba(0, 0, 0, 0.15),
@@ -1325,7 +1325,7 @@
 		transition-duration: 0.1s;
 
 		box-shadow:
-			0 0 30px rgba(230, 184, 0, 0.15),
+			0 0 30px rgba(139, 92, 246, 0.15),
 			0 5px 15px rgba(0, 0, 0, 0.2),
 			0 10px 25px rgba(0, 0, 0, 0.1),
 			inset 0 1px 0 rgba(255, 255, 255, 0.2);

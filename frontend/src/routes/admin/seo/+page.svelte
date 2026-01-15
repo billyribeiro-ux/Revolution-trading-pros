@@ -122,8 +122,8 @@
 			description: 'Generate JSON-LD structured data for better search visibility',
 			icon: IconCode,
 			href: '/admin/seo/schema',
-			color: '#E6B800',
-			gradient: 'linear-gradient(135deg, #E6B800, #B38F00)'
+			color: '#8b5cf6',
+			gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)'
 		},
 		{
 			title: 'Keywords',
@@ -148,8 +148,8 @@
 			description: 'Generate and submit XML sitemaps to search engines',
 			icon: IconSitemap,
 			href: '/admin/seo/sitemap',
-			color: '#E6B800',
-			gradient: 'linear-gradient(135deg, #E6B800, #B38F00)'
+			color: '#6366f1',
+			gradient: 'linear-gradient(135deg, #6366f1, #4f46e5)'
 		},
 		{
 			title: 'News Sitemap',
@@ -566,7 +566,7 @@
 	.blob-3 {
 		width: 350px;
 		height: 350px;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #8b5cf6, #7c3aed);
 		top: 50%;
 		right: 10%;
 		animation-delay: -14s;
@@ -784,7 +784,7 @@
 	}
 
 	.technical .stat-icon {
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #8b5cf6, #7c3aed);
 	}
 
 	.stat-label {

@@ -22,12 +22,12 @@
 
 	let {
 		name,
-		value = '#E6B800',
+		value = '#3b82f6',
 		label = '',
 		placeholder = 'Select a color',
 		required = false,
 		disabled = false,
-		presets = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#E6B800', '#B38F00', '#ec4899', '#000000', '#ffffff'],
+		presets = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#000000', '#ffffff'],
 		showInput = true,
 		format = 'hex',
 		error = '',
@@ -35,7 +35,7 @@
 		onchange
 	}: Props = $props();
 
-	let colorValue = $state('#E6B800');
+	let colorValue = $state('#3b82f6');
 
 	// Sync with prop value changes
 	$effect(() => {
@@ -226,8 +226,8 @@
 
 	.text-input:focus {
 		outline: none;
-		border-color: #E6B800;
-		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.1);
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
 	}
 
 	.presets {
@@ -250,8 +250,8 @@
 	}
 
 	.preset-btn.active {
-		border-color: #E6B800;
-		box-shadow: 0 0 0 2px rgba(230, 184, 0, 0.3);
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 	}
 
 	.help-text {

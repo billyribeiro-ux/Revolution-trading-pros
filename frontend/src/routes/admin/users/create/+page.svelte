@@ -228,7 +228,7 @@
 			key: 'admin',
 			description: 'Full system control with unrestricted access to all features',
 			icon: IconShieldCheck,
-			color: '#E6B800',
+			color: '#8b5cf6',
 			permissions: [
 				'Full admin panel access',
 				'User management',
@@ -247,7 +247,7 @@
 			key: 'trader',
 			description: 'Complete store access with view and manage rights, no creation',
 			icon: IconChartBar,
-			color: '#B38F00',
+			color: '#3b82f6',
 			permissions: [
 				'View all store data',
 				'Manage existing products',

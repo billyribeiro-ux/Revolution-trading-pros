@@ -380,7 +380,7 @@
 
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
 	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
+	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
 	.stat-icon.red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
 
 	.stat-content {

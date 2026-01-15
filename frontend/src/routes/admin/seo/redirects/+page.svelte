@@ -303,12 +303,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: #1a1a1a;
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #94a3b8;
+		color: #666;
 		font-size: 0.95rem;
 	}
 
@@ -326,13 +326,12 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: #3b82f6;
+		color: white;
 	}
 
 	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
+		background: #2563eb;
 	}
 
 	.btn-danger {
@@ -352,21 +351,21 @@
 	}
 
 	.stat-card {
-		background: rgba(30, 41, 59, 0.6);
+		background: white;
 		padding: 1.5rem;
-		border-radius: 14px;
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		border-radius: 8px;
+		border: 1px solid #e5e5e5;
 	}
 
 	.stat-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #f1f5f9;
+		color: #1a1a1a;
 		margin-bottom: 0.5rem;
 	}
 
 	.stat-label {
-		color: #94a3b8;
+		color: #666;
 		font-size: 0.9rem;
 	}
 
@@ -383,10 +382,9 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(230, 184, 0, 0.1);
-		border-radius: 10px;
-		color: #94a3b8;
+		background: white;
+		border: 1px solid #e5e5e5;
+		border-radius: 6px;
 	}
 
 	.search-box input {
@@ -394,8 +392,6 @@
 		border: none;
 		outline: none;
 		font-size: 0.95rem;
-		background: transparent;
-		color: #e2e8f0;
 	}
 
 	.filter-tabs {
@@ -405,30 +401,29 @@
 
 	.filter-tab {
 		padding: 0.625rem 1rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(230, 184, 0, 0.1);
-		border-radius: 8px;
-		color: #94a3b8;
+		background: white;
+		border: 1px solid #e5e5e5;
+		border-radius: 6px;
+		color: #666;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.filter-tab:hover {
-		background: rgba(230, 184, 0, 0.1);
-		border-color: rgba(230, 184, 0, 0.2);
+		background: #f8f9fa;
 	}
 
 	.filter-tab.active {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
-		border-color: transparent;
+		background: #3b82f6;
+		color: white;
+		border-color: #3b82f6;
 	}
 
 	.redirects-table {
-		background: rgba(15, 23, 42, 0.6);
-		border-radius: 14px;
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		background: white;
+		border-radius: 8px;
+		border: 1px solid #e5e5e5;
 		overflow: hidden;
 	}
 
@@ -440,22 +435,21 @@
 	th {
 		text-align: left;
 		padding: 1rem;
-		background: rgba(230, 184, 0, 0.05);
-		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+		background: #f8f9fa;
+		border-bottom: 1px solid #e5e5e5;
 		font-weight: 600;
-		color: #94a3b8;
+		color: #1a1a1a;
 		font-size: 0.9rem;
 	}
 
 	td {
 		padding: 1rem;
-		border-bottom: 1px solid rgba(230, 184, 0, 0.05);
+		border-bottom: 1px solid #f0f0f0;
 		font-size: 0.95rem;
-		color: #e2e8f0;
 	}
 
 	tbody tr:hover {
-		background: rgba(230, 184, 0, 0.05);
+		background: #f8f9fa;
 	}
 
 	.url-cell {
@@ -467,15 +461,15 @@
 	.regex-badge {
 		display: inline-block;
 		padding: 0.125rem 0.5rem;
-		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		background: #eff6ff;
+		color: #3b82f6;
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 600;
 	}
 
 	.destination-url {
-		color: #94a3b8;
+		color: #666;
 		max-width: 300px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -506,8 +500,8 @@
 	}
 
 	.type-badge.type-308 {
-		background: rgba(230, 184, 0, 0.15);
-		color: #E6B800;
+		background: #e0e7ff;
+		color: #6366f1;
 	}
 
 	.type-badge.type-410 {
@@ -521,13 +515,13 @@
 		gap: 0.5rem;
 		background: none;
 		border: none;
-		color: #64748b;
+		color: #999;
 		cursor: pointer;
 		font-size: 0.9rem;
 	}
 
 	.status-toggle.active {
-		color: #4ade80;
+		color: #16a34a;
 	}
 
 	.actions {
@@ -538,16 +532,15 @@
 	.action-btn {
 		padding: 0.5rem;
 		background: none;
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 6px;
-		color: #94a3b8;
+		border: 1px solid #e5e5e5;
+		border-radius: 4px;
+		color: #666;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.action-btn:hover {
-		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		background: #f8f9fa;
 	}
 
 	.action-btn.danger {
@@ -562,22 +555,21 @@
 	.empty-state {
 		text-align: center;
 		padding: 4rem 2rem;
-		color: #64748b;
 	}
 
 	.empty-state h3 {
-		color: #f1f5f9;
+		color: #1a1a1a;
 		margin-bottom: 0.5rem;
 	}
 
 	.empty-state p {
-		color: #94a3b8;
+		color: #666;
 		margin-bottom: 1.5rem;
 	}
 
 	.loading {
 		text-align: center;
 		padding: 3rem;
-		color: #94a3b8;
+		color: #999;
 	}
 </style>

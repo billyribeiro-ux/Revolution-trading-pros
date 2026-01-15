@@ -184,34 +184,34 @@
 		--auth-bg: oklch(0.10 0.02 250);
 		--auth-form-bg: oklch(0.12 0.02 250);
 		--auth-hero-bg: linear-gradient(135deg, oklch(0.08 0.02 250) 0%, oklch(0.12 0.03 270) 100%);
-		--auth-grid-line: rgba(230, 184, 0, 0.04);
-		--auth-spotlight: rgba(230, 184, 0, 0.08);
+		--auth-grid-line: rgba(99, 102, 241, 0.04);
+		--auth-spotlight: rgba(99, 102, 241, 0.08);
 
 		/* Surface Colors */
 		--auth-card-bg: rgba(15, 23, 42, 0.6);
-		--auth-card-border: rgba(230, 184, 0, 0.15);
+		--auth-card-border: rgba(99, 102, 241, 0.15);
 		--auth-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
 
 		/* Input Colors */
 		--auth-input-bg: rgba(15, 23, 42, 0.5);
 		--auth-input-border: rgba(100, 116, 139, 0.3);
-		--auth-input-border-focus: #E6B800;
+		--auth-input-border-focus: #6366f1;
 		--auth-input-text: #f1f5f9;
 		--auth-input-placeholder: #475569;
 
 		/* Text Colors */
-		--auth-heading: linear-gradient(135deg, #FFD11A, #E6B800, #B38F00);
+		--auth-heading: linear-gradient(135deg, #e0e7ff, #c7d2fe, #a5b4fc);
 		--auth-subheading: #94a3b8;
 		--auth-text: #e2e8f0;
 		--auth-muted: #64748b;
-		--auth-link: #FFD11A;
-		--auth-link-hover: #E6B800;
+		--auth-link: #818cf8;
+		--auth-link-hover: #a5b4fc;
 
 		/* Button Colors */
-		--auth-btn-primary-bg: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		--auth-btn-primary-text: #0D1117;
-		--auth-btn-primary-shadow: 0 10px 25px -5px rgba(230, 184, 0, 0.4);
-		--auth-btn-primary-shadow-hover: 0 20px 40px -12px rgba(230, 184, 0, 0.6);
+		--auth-btn-primary-bg: linear-gradient(135deg, #6366f1, #8b5cf6);
+		--auth-btn-primary-text: #ffffff;
+		--auth-btn-primary-shadow: 0 10px 25px -5px rgba(99, 102, 241, 0.4);
+		--auth-btn-primary-shadow-hover: 0 20px 40px -12px rgba(99, 102, 241, 0.6);
 
 		/* Semantic Colors */
 		--auth-error: #f87171;
@@ -227,7 +227,7 @@
 		--auth-bear-soft: rgba(239, 68, 68, 0.15);
 
 		/* Glow Effects */
-		--auth-glow-primary: rgba(230, 184, 0, 0.3);
+		--auth-glow-primary: rgba(99, 102, 241, 0.3);
 		--auth-glow-success: rgba(34, 197, 94, 0.3);
 	}
 
@@ -236,35 +236,35 @@
 	:global(body.light) .login-layout {
 		--auth-bg: #f5f5f7;
 		--auth-form-bg: #ffffff;
-		--auth-hero-bg: linear-gradient(135deg, #f8fafc 0%, #FFF8E1 100%);
-		--auth-grid-line: rgba(230, 184, 0, 0.06);
-		--auth-spotlight: rgba(230, 184, 0, 0.06);
+		--auth-hero-bg: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%);
+		--auth-grid-line: rgba(79, 70, 229, 0.06);
+		--auth-spotlight: rgba(79, 70, 229, 0.06);
 
 		/* Surface Colors */
 		--auth-card-bg: #ffffff;
-		--auth-card-border: rgba(230, 184, 0, 0.15);
+		--auth-card-border: rgba(79, 70, 229, 0.15);
 		--auth-card-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.1);
 
 		/* Input Colors */
 		--auth-input-bg: #ffffff;
 		--auth-input-border: #d2d2d7;
-		--auth-input-border-focus: #B38F00;
+		--auth-input-border-focus: #4f46e5;
 		--auth-input-text: #1d1d1f;
 		--auth-input-placeholder: #86868b;
 
 		/* Text Colors */
-		--auth-heading: linear-gradient(135deg, #B38F00, #E6B800, #B38F00);
+		--auth-heading: linear-gradient(135deg, #1e1b4b, #3730a3, #4338ca);
 		--auth-subheading: #6e6e73;
 		--auth-text: #424245;
 		--auth-muted: #86868b;
-		--auth-link: #B38F00;
-		--auth-link-hover: #8A6F00;
+		--auth-link: #4f46e5;
+		--auth-link-hover: #4338ca;
 
 		/* Button Colors */
-		--auth-btn-primary-bg: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		--auth-btn-primary-text: #0D1117;
-		--auth-btn-primary-shadow: 0 10px 25px -5px rgba(230, 184, 0, 0.3);
-		--auth-btn-primary-shadow-hover: 0 20px 40px -12px rgba(230, 184, 0, 0.4);
+		--auth-btn-primary-bg: linear-gradient(135deg, #4f46e5, #7c3aed);
+		--auth-btn-primary-text: #ffffff;
+		--auth-btn-primary-shadow: 0 10px 25px -5px rgba(79, 70, 229, 0.3);
+		--auth-btn-primary-shadow-hover: 0 20px 40px -12px rgba(79, 70, 229, 0.4);
 
 		/* Semantic Colors */
 		--auth-error: #dc2626;
@@ -280,7 +280,7 @@
 		--auth-bear-soft: rgba(220, 38, 38, 0.1);
 
 		/* Glow Effects */
-		--auth-glow-primary: rgba(230, 184, 0, 0.2);
+		--auth-glow-primary: rgba(79, 70, 229, 0.2);
 		--auth-glow-success: rgba(5, 150, 105, 0.2);
 	}
 </style>

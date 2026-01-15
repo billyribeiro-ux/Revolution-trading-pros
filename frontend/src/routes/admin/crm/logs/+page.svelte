@@ -310,7 +310,7 @@
 		align-items: center;
 		justify-content: center;
 		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 10px;
 		color: #94a3b8;
 		cursor: pointer;
@@ -318,8 +318,8 @@
 	}
 
 	.btn-refresh:hover {
-		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		background: rgba(99, 102, 241, 0.2);
+		color: #818cf8;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -370,7 +370,7 @@
 		gap: 1rem;
 		padding: 1.25rem;
 		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 14px;
 	}
 
@@ -386,7 +386,7 @@
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
 	.stat-icon.red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
 	.stat-icon.yellow { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
+	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
 
 	.stat-content {
 		display: flex;
@@ -418,7 +418,7 @@
 		gap: 0.75rem;
 		padding: 0 1rem;
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 10px;
 		flex: 1;
 		max-width: 400px;
@@ -445,7 +445,7 @@
 	.filter-select {
 		padding: 0.75rem 1rem;
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 10px;
 		color: #e2e8f0;
 		font-size: 0.9rem;
@@ -460,7 +460,7 @@
 
 	.log-entry {
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 10px;
 		padding: 1rem 1.25rem;
 		border-left: 3px solid;
@@ -470,7 +470,7 @@
 	.log-entry.blue { border-left-color: #3b82f6; }
 	.log-entry.yellow { border-left-color: #fbbf24; }
 	.log-entry.red { border-left-color: #ef4444; }
-	.log-entry.purple { border-left-color: #E6B800; }
+	.log-entry.purple { border-left-color: #8b5cf6; }
 
 	.log-header {
 		display: flex;
@@ -492,17 +492,17 @@
 	.log-entry.blue .log-level { color: #60a5fa; }
 	.log-entry.yellow .log-level { color: #fbbf24; }
 	.log-entry.red .log-level { color: #f87171; }
-	.log-entry.purple .log-level { color: #E6B800; }
+	.log-entry.purple .log-level { color: #a78bfa; }
 
 	.log-category {
 		display: flex;
 		align-items: center;
 		gap: 0.25rem;
 		padding: 0.25rem 0.5rem;
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 		border-radius: 4px;
 		font-size: 0.7rem;
-		color: #E6B800;
+		color: #818cf8;
 		text-transform: capitalize;
 	}
 
@@ -524,7 +524,7 @@
 
 	.log-context summary {
 		font-size: 0.8rem;
-		color: #E6B800;
+		color: #818cf8;
 		cursor: pointer;
 	}
 
@@ -541,12 +541,12 @@
 	.log-meta {
 		margin-top: 0.75rem;
 		padding-top: 0.75rem;
-		border-top: 1px solid rgba(230, 184, 0, 0.1);
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
 	.contact-link {
 		font-size: 0.85rem;
-		color: #E6B800;
+		color: #818cf8;
 		text-decoration: none;
 	}
 
@@ -581,8 +581,8 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border: 3px solid rgba(99, 102, 241, 0.2);
+		border-top-color: #6366f1;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

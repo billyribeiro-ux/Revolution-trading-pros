@@ -669,7 +669,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #E6B800, #B38F00);
+		background: linear-gradient(90deg, #3b82f6, #8b5cf6);
 		transition: width 0.3s ease;
 	}
 
@@ -710,13 +710,13 @@
 	}
 
 	.step-dot.visited:not(:disabled):hover {
-		border-color: #E6B800;
-		color: #E6B800;
+		border-color: #3b82f6;
+		color: #3b82f6;
 	}
 
 	.step-dot.active {
-		border-color: #E6B800;
-		background: #E6B800;
+		border-color: #3b82f6;
+		background: #3b82f6;
 		color: white;
 	}
 
@@ -858,12 +858,12 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		color: white;
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.4);
+		box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
 		transform: translateY(-1px);
 	}
 

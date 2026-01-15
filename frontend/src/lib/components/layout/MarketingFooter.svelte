@@ -110,7 +110,7 @@
 <style>
 	.marketing-footer {
 		background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
-		border-top: 1px solid rgba(230, 184, 0, 0.1);
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
 		padding: 4rem 0 2rem;
 		width: 100%;
 		box-sizing: border-box;
@@ -159,16 +159,16 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 0.5rem;
 		color: #94a3b8;
 		transition: all 0.2s;
 	}
 
 	.social-link:hover {
-		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		background: rgba(99, 102, 241, 0.2);
+		color: #818cf8;
 		transform: translateY(-2px);
 	}
 
@@ -228,7 +228,7 @@
 
 	.footer-bottom {
 		padding-top: 2rem;
-		border-top: 1px solid rgba(230, 184, 0, 0.1);
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
 		text-align: center;
 	}
 

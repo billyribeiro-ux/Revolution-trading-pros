@@ -351,8 +351,8 @@
 	}
 
 	.period-btn.active {
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #6366f1);
+		color: white;
 	}
 
 	.btn-refresh,
@@ -423,7 +423,7 @@
 	}
 
 	.stat-icon {
-		color: var(--primary, #E6B800);
+		color: var(--primary, #6366f1);
 		margin-bottom: 0.5rem;
 	}
 
@@ -480,7 +480,7 @@
 
 	.bar {
 		width: 20px;
-		background: var(--primary, #E6B800);
+		background: var(--primary, #6366f1);
 		border-radius: 4px 4px 0 0;
 		min-height: 2px;
 		transition: height 0.3s ease;
@@ -573,7 +573,7 @@
 
 	.device-bar-fill {
 		height: 100%;
-		background: var(--primary, #E6B800);
+		background: var(--primary, #6366f1);
 		border-radius: 4px;
 	}
 

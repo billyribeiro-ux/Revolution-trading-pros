@@ -176,7 +176,7 @@
 		gap: 1rem;
 		padding: 0.875rem 1.25rem;
 		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 16px;
 		box-shadow:
 			0 20px 50px rgba(0, 0, 0, 0.4),
@@ -195,9 +195,9 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.5rem 0.875rem;
-		background: rgba(230, 184, 0, 0.15);
+		background: rgba(99, 102, 241, 0.15);
 		border-radius: 10px;
-		color: #E6B800;
+		color: #a5b4fc;
 	}
 
 	.selection-count .count {
@@ -213,9 +213,9 @@
 	.select-all-btn {
 		padding: 0.5rem 0.875rem;
 		background: transparent;
-		border: 1px solid rgba(230, 184, 0, 0.3);
+		border: 1px solid rgba(99, 102, 241, 0.3);
 		border-radius: 8px;
-		color: #E6B800;
+		color: #a5b4fc;
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -223,8 +223,8 @@
 	}
 
 	.select-all-btn:hover {
-		background: rgba(230, 184, 0, 0.1);
-		border-color: rgba(230, 184, 0, 0.5);
+		background: rgba(99, 102, 241, 0.1);
+		border-color: rgba(99, 102, 241, 0.5);
 	}
 
 	.clear-btn {
@@ -233,7 +233,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(230, 184, 0, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 		border: none;
 		border-radius: 8px;
 		color: #94a3b8;
@@ -242,14 +242,14 @@
 	}
 
 	.clear-btn:hover {
-		background: rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.2);
 		color: #f1f5f9;
 	}
 
 	.divider {
 		width: 1px;
 		height: 32px;
-		background: rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.2);
 	}
 
 	.batch-actions {
@@ -262,10 +262,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 10px;
-		color: #E6B800;
+		color: #a5b4fc;
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -273,7 +273,7 @@
 	}
 
 	.action-btn:hover:not(:disabled) {
-		background: rgba(230, 184, 0, 0.2);
+		background: rgba(99, 102, 241, 0.2);
 		transform: translateY(-1px);
 	}
 
