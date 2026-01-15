@@ -377,17 +377,8 @@
 		border-radius: 4px;
 		cursor: pointer;
 	}
-	.btn-danger {
-		background: rgba(239, 68, 68, 0.2);
-		color: #f87171;
-		border: 1px solid rgba(239, 68, 68, 0.3);
-		padding: 0.4rem 0.6rem;
-		border-radius: 4px;
-		cursor: pointer;
-	}
 	.btn-primary:hover,
-	.btn-secondary:hover,
-	.btn-danger:hover {
+	.btn-secondary:hover {
 		opacity: 0.9;
 	}
 	.alert-error {

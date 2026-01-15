@@ -119,6 +119,9 @@ export interface EmailTemplate {
 	slug: string;
 	subject: string;
 	body: string;
+	body_html?: string;
+	body_text?: string;
+	email_type?: string;
 	variables: string[];
 	is_active: boolean;
 	created_at: string;

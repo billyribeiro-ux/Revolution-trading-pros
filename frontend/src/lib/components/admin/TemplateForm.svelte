@@ -51,8 +51,8 @@
 			subject,
 			email_type,
 			body_html,
-			body_text: body_text || null,
-			variables: variables ? JSON.parse(variables) : null,
+			body_text: body_text || undefined,
+			variables: variables ? JSON.parse(variables) : [],
 			is_active
 		};
 		try {
