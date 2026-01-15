@@ -32,9 +32,10 @@ pub struct User {
 }
 
 impl User {
-    /// ICT 11+: SQL columns to select - includes email_verified_at for auth checks
+    /// ICT 11+: SQL columns to select - ONLY columns guaranteed to exist in production
+    /// Production DB may not have email_verified_at - query only core columns
     pub const SELECT_COLUMNS: &'static str =
-        "id, name, email, password, role, created_at, updated_at, email_verified_at";
+        "id, name, email, password, role, created_at, updated_at";
 
     pub fn is_admin(&self) -> bool {
         self.role == "admin" || self.role == "super-admin"
