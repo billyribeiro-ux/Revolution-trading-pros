@@ -404,18 +404,18 @@
 
 	.tab:hover {
 		color: #e2e8f0;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 	}
 
 	.tab.active {
-		color: #818cf8;
-		background: rgba(99, 102, 241, 0.15);
-		border-color: rgba(99, 102, 241, 0.3);
+		color: #FFD11A;
+		background: rgba(230, 184, 0, 0.15);
+		border-color: rgba(230, 184, 0, 0.3);
 	}
 
 	.settings-content {
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 		padding: 2rem;
 	}
@@ -458,7 +458,7 @@
 		width: 100%;
 		padding: 0.75rem 1rem;
 		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		color: #e2e8f0;
 		font-size: 0.9rem;
@@ -469,7 +469,7 @@
 	.form-group textarea:focus,
 	.form-group select:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	.form-group textarea {
@@ -516,7 +516,7 @@
 	}
 
 	.toggle-label input:checked + .toggle-switch {
-		background: #6366f1;
+		background: #E6B800;
 	}
 
 	.toggle-label input:checked + .toggle-switch::after {
@@ -540,13 +540,13 @@
 	.checkbox-label input {
 		width: 18px;
 		height: 18px;
-		accent-color: #6366f1;
+		accent-color: #E6B800;
 	}
 
 	.form-actions {
 		margin-top: 2rem;
 		padding-top: 1.5rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.btn-primary {
@@ -554,8 +554,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -565,7 +565,7 @@
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-primary:disabled {
@@ -595,8 +595,8 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border: 3px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

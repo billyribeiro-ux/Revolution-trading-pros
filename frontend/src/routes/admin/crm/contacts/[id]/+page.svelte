@@ -589,7 +589,7 @@
 						<div class="tags-list">
 							{#if contact.tags && contact.tags.length > 0}
 								{#each contact.tags as tag}
-									<span class="tag-pill" style="background-color: {tag.color || '#f97316'}20; color: {tag.color || '#f97316'}">
+									<span class="tag-pill" style="background-color: {tag.color || '#E6B800'}20; color: {tag.color || '#E6B800'}">
 										{tag.name}
 										<button class="tag-remove" onclick={() => removeTag(tag.id)}>
 											<IconX size={12} />
@@ -888,8 +888,8 @@
 
 	.back-btn:hover {
 		background: #1e293b;
-		color: #f97316;
-		border-color: #f97316;
+		color: #E6B800;
+		border-color: #E6B800;
 	}
 
 	/* Header */
@@ -916,7 +916,7 @@
 		width: 80px;
 		height: 80px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -996,9 +996,9 @@
 	}
 
 	.btn-icon:hover {
-		background: rgba(249, 115, 22, 0.1);
-		color: #f97316;
-		border-color: rgba(249, 115, 22, 0.3);
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
+		border-color: rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-icon.danger:hover {
@@ -1012,7 +1012,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -1025,7 +1025,7 @@
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-primary:disabled {
@@ -1131,11 +1131,11 @@
 
 	.tab-btn:hover {
 		color: #e2e8f0;
-		background: rgba(249, 115, 22, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 	}
 
 	.tab-btn.active {
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 		color: white;
 	}
 
@@ -1169,7 +1169,7 @@
 	}
 
 	.info-card h3 :global(svg) {
-		color: #f97316;
+		color: #E6B800;
 	}
 
 	.card-header {
@@ -1188,10 +1188,10 @@
 		align-items: center;
 		gap: 6px;
 		padding: 6px 12px;
-		background: rgba(249, 115, 22, 0.1);
-		border: 1px solid rgba(249, 115, 22, 0.3);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 6px;
-		color: #f97316;
+		color: #E6B800;
 		font-size: 0.75rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -1199,7 +1199,7 @@
 	}
 
 	.btn-add:hover {
-		background: rgba(249, 115, 22, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.info-grid {
@@ -1379,7 +1379,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border-radius: 10px;
 		color: white;
 		flex-shrink: 0;
@@ -1503,7 +1503,7 @@
 		width: 12px;
 		height: 12px;
 		border-radius: 50%;
-		background: #f97316;
+		background: #E6B800;
 		flex-shrink: 0;
 		margin-top: 4px;
 	}
@@ -1589,8 +1589,8 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(249, 115, 22, 0.2);
-		border-top-color: #f97316;
+		border: 3px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 16px;
@@ -1613,7 +1613,7 @@
 	.error-state button {
 		margin-top: 16px;
 		padding: 10px 20px;
-		background: #f97316;
+		background: #E6B800;
 		color: white;
 		border: none;
 		border-radius: 8px;
@@ -1701,9 +1701,9 @@
 	}
 
 	.tag-option:hover, .list-option:hover {
-		background: rgba(249, 115, 22, 0.1);
-		border-color: rgba(249, 115, 22, 0.3);
-		color: #f97316;
+		background: rgba(230, 184, 0, 0.1);
+		border-color: rgba(230, 184, 0, 0.3);
+		color: #E6B800;
 	}
 
 	.note-input {
@@ -1721,7 +1721,7 @@
 
 	.note-input:focus {
 		outline: none;
-		border-color: #f97316;
+		border-color: #E6B800;
 	}
 
 	/* Responsive */

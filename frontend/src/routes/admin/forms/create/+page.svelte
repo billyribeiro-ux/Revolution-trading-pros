@@ -133,7 +133,7 @@
 		align-items: flex-start;
 		margin-bottom: 2rem;
 		padding-bottom: 1.5rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.btn-back {
@@ -148,7 +148,7 @@
 	}
 
 	.btn-back:hover {
-		color: #a5b4fc;
+		color: #E6B800;
 	}
 
 	h1 {
@@ -166,9 +166,9 @@
 
 	.btn-theme {
 		padding: 0.875rem 1.5rem;
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		font-weight: 600;
 		font-size: 0.9375rem;
@@ -177,8 +177,8 @@
 	}
 
 	.btn-theme:hover {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.4);
+		background: rgba(230, 184, 0, 0.2);
+		border-color: rgba(230, 184, 0, 0.4);
 	}
 
 	.theme-section {

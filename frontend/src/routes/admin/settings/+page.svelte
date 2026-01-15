@@ -567,7 +567,7 @@
 			case 'pending':
 				return { bg: 'bg-blue-500/15', text: 'text-blue-400', label: 'Pending', dot: 'bg-blue-400' };
 			case 'connecting':
-				return { bg: 'bg-purple-500/15', text: 'text-purple-400', label: 'Connecting...', dot: 'bg-purple-400' };
+				return { bg: 'bg-amber-500/15', text: 'text-amber-400', label: 'Connecting...', dot: 'bg-purple-400' };
 			default:
 				return { bg: 'bg-slate-500/15', text: 'text-slate-400', label: 'Not Connected', dot: 'bg-slate-400' };
 		}
@@ -747,7 +747,7 @@
 								{:else}
 									<button
 										onclick={() => openConnectModal(service)}
-										class="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-blue-500/20"
+										class="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-amber-500/20"
 									>
 										Connect
 									</button>
@@ -766,7 +766,7 @@
 						type="text"
 						placeholder="Search integrations..."
 						bind:value={searchQuery}
-						class="w-full px-5 py-3 pl-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+						class="w-full px-5 py-3 pl-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
 					/>
 					<svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -801,8 +801,8 @@
 			{#if isLoading}
 				<div class="flex items-center justify-center h-64">
 					<div class="relative">
-						<div class="w-16 h-16 border-4 border-purple-500/20 rounded-full"></div>
-						<div class="absolute top-0 left-0 w-16 h-16 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"></div>
+						<div class="w-16 h-16 border-4 border-amber-500/20 rounded-full"></div>
+						<div class="absolute top-0 left-0 w-16 h-16 border-4 border-amber-500 rounded-full animate-spin border-t-transparent"></div>
 					</div>
 				</div>
 			{:else}
@@ -886,7 +886,7 @@
 									{:else}
 										<button
 											onclick={() => openConnectModal(service)}
-											class="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40"
+											class="flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-slate-900 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-amber-500/20 hover:shadow-purple-500/40"
 										>
 											Connect
 										</button>
@@ -935,7 +935,7 @@
 							<input
 								type="text"
 								value="Revolution Trading Pros"
-								class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+								class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50"
 							/>
 						</div>
 
@@ -970,7 +970,7 @@
 						</div>
 
 						<div class="pt-4">
-							<button class="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-purple-500/20">
+							<button class="px-6 py-3 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-slate-900 text-white rounded-xl font-medium transition-all shadow-lg shadow-amber-500/20">
 								Save Settings
 							</button>
 						</div>
@@ -1062,7 +1062,7 @@
 							type={field.type === 'password' ? 'password' : 'text'}
 							placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
 							bind:value={credentialValues[field.key]}
-							class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+							class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
 						/>
 					</div>
 				{/each}
@@ -1114,7 +1114,7 @@
 				<button
 					onclick={connectService}
 					disabled={isConnecting}
-					class="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-purple-500/20 disabled:opacity-50"
+					class="flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-yellow-600 hover:from-amber-400 hover:to-yellow-500 text-slate-900 text-white rounded-xl font-medium transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50"
 				>
 					{#if isConnecting}
 						<span class="flex items-center justify-center gap-2">

@@ -161,8 +161,8 @@
 		margin-right: 0.5rem;
 	}
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		padding: 0.5rem 1rem;
 		border-radius: 6px;
@@ -227,8 +227,8 @@
 	.loader {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border: 3px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

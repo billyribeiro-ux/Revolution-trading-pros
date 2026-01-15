@@ -368,7 +368,7 @@
 		background: rgba(15, 23, 42, 0.8);
 		border-radius: 10px;
 		padding: 4px;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 	}
 
 	.period-selector button {
@@ -388,7 +388,7 @@
 	}
 
 	.period-selector button.active {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		color: white;
 	}
 
@@ -399,7 +399,7 @@
 		align-items: center;
 		justify-content: center;
 		background: rgba(15, 23, 42, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		color: #94a3b8;
 		cursor: pointer;
@@ -407,8 +407,8 @@
 	}
 
 	.btn-refresh:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.2);
+		color: #E6B800;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -447,7 +447,7 @@
 
 	.metric-card {
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 		padding: 1.25rem;
 		display: flex;
@@ -525,7 +525,7 @@
 
 	.panel {
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 16px;
 		overflow: hidden;
 	}
@@ -543,7 +543,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.25rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.panel-header h3 {
@@ -557,17 +557,17 @@
 	}
 
 	.panel-header h3 :global(svg) {
-		color: #818cf8;
+		color: #E6B800;
 	}
 
 	.panel-link {
 		font-size: 0.85rem;
-		color: #818cf8;
+		color: #E6B800;
 		text-decoration: none;
 	}
 
 	.panel-link:hover {
-		color: #a5b4fc;
+		color: #FFD11A;
 	}
 
 	.panel-content {
@@ -610,7 +610,7 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 0.75rem;
-		background: rgba(99, 102, 241, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 		border-radius: 10px;
 	}
 
@@ -620,11 +620,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: #818cf8;
+		color: #E6B800;
 	}
 
 	.click-info {
@@ -646,7 +646,7 @@
 
 	.click-count {
 		font-weight: 600;
-		color: #818cf8;
+		color: #E6B800;
 	}
 
 	/* Scroll List */
@@ -686,7 +686,7 @@
 	.scroll-bar-wrap {
 		flex: 1;
 		height: 8px;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border-radius: 4px;
 		overflow: hidden;
 	}
@@ -702,7 +702,7 @@
 		width: 50px;
 		text-align: right;
 		font-weight: 600;
-		color: #818cf8;
+		color: #E6B800;
 	}
 
 	/* Recordings */
@@ -717,20 +717,20 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1rem;
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 12px;
 	}
 
 	.recording-preview {
 		width: 60px;
 		height: 45px;
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #818cf8;
+		color: #E6B800;
 	}
 
 	.recording-info {
@@ -760,10 +760,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: rgba(99, 102, 241, 0.2);
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 8px;
-		color: #818cf8;
+		color: #E6B800;
 		font-size: 0.85rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -771,6 +771,6 @@
 	}
 
 	.btn-play:hover {
-		background: rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.3);
 	}
 </style>

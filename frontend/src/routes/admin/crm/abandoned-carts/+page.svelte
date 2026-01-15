@@ -396,7 +396,7 @@
 		align-items: center;
 		justify-content: center;
 		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		color: #94a3b8;
 		cursor: pointer;
@@ -404,8 +404,8 @@
 	}
 
 	.btn-refresh:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.2);
+		color: #FFD11A;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -427,7 +427,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
 		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		color: #e2e8f0;
 		border-radius: 10px;
 		font-weight: 600;
@@ -437,8 +437,8 @@
 	}
 
 	.btn-secondary:hover {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.4);
+		background: rgba(230, 184, 0, 0.2);
+		border-color: rgba(230, 184, 0, 0.4);
 	}
 
 	.stats-grid {
@@ -466,7 +466,7 @@
 		gap: 1rem;
 		padding: 1.25rem;
 		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 	}
 
@@ -492,8 +492,8 @@
 		color: #f87171;
 	}
 	.stat-icon.purple {
-		background: rgba(139, 92, 246, 0.15);
-		color: #a78bfa;
+		background: rgba(230, 184, 0, 0.15);
+		color: #E6B800;
 	}
 
 	.stat-content {
@@ -550,7 +550,7 @@
 		gap: 0.75rem;
 		padding: 0 1rem;
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		flex: 1;
 		max-width: 400px;
@@ -577,7 +577,7 @@
 	.filter-select {
 		padding: 0.75rem 1rem;
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		color: #e2e8f0;
 		font-size: 0.9rem;
@@ -604,7 +604,7 @@
 
 	.table-container {
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 		overflow: hidden;
 	}
@@ -618,7 +618,7 @@
 	.carts-table td {
 		padding: 1rem;
 		text-align: left;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.carts-table th {
@@ -655,11 +655,11 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #818cf8;
+		color: #FFD11A;
 	}
 
 	.customer-info {
@@ -733,7 +733,7 @@
 		align-items: center;
 		justify-content: center;
 		background: transparent;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		color: #94a3b8;
 		cursor: pointer;
@@ -742,8 +742,8 @@
 	}
 
 	.btn-icon:hover {
-		background: rgba(99, 102, 241, 0.1);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.1);
+		color: #FFD11A;
 	}
 
 	.btn-icon.danger:hover {
@@ -781,8 +781,8 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border: 3px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

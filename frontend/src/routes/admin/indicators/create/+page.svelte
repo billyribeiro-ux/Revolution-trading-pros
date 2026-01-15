@@ -367,7 +367,7 @@
 		inset: 0;
 		border-radius: 20px;
 		padding: 2px;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+		background: linear-gradient(135deg, #E6B800, #B38F00, #FFD11A);
 		-webkit-mask:
 			linear-gradient(#fff 0 0) content-box,
 			linear-gradient(#fff 0 0);
@@ -383,8 +383,8 @@
 	.product-card:hover {
 		transform: translateY(-8px) scale(1.02);
 		box-shadow:
-			0 25px 50px -12px rgba(99, 102, 241, 0.4),
-			0 0 0 1px rgba(99, 102, 241, 0.1),
+			0 25px 50px -12px rgba(230, 184, 0, 0.4),
+			0 0 0 1px rgba(230, 184, 0, 0.1),
 			inset 0 1px 0 rgba(255, 255, 255, 0.1);
 	}
 
@@ -408,8 +408,8 @@
 		position: absolute;
 		inset: 0;
 		background:
-			radial-gradient(circle at 20% 50%, rgba(99, 102, 241, 0.3) 0%, transparent 50%),
-			radial-gradient(circle at 80% 80%, rgba(139, 92, 246, 0.3) 0%, transparent 50%);
+			radial-gradient(circle at 20% 50%, rgba(230, 184, 0, 0.3) 0%, transparent 50%),
+			radial-gradient(circle at 80% 80%, rgba(230, 184, 0, 0.3) 0%, transparent 50%);
 		animation: shimmer 3s ease-in-out infinite;
 	}
 
@@ -467,7 +467,7 @@
 	.price {
 		font-size: 2rem;
 		font-weight: 700;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6, #a855f7);
+		background: linear-gradient(135deg, #E6B800, #B38F00, #FFD11A);
 		background-size: 200% 200%;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
@@ -480,7 +480,7 @@
 		content: attr(data-price);
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		-webkit-background-clip: text;
 		background-clip: text;
 		-webkit-text-fill-color: transparent;
@@ -503,8 +503,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -518,7 +518,7 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(135deg, #8b5cf6, #a855f7);
+		background: linear-gradient(135deg, #B38F00, #FFD11A);
 		opacity: 0;
 		transition: opacity 0.3s;
 	}
@@ -526,8 +526,8 @@
 	.buy-btn:hover:not(:disabled) {
 		transform: translateY(-2px);
 		box-shadow:
-			0 12px 24px rgba(99, 102, 241, 0.4),
-			0 0 20px rgba(139, 92, 246, 0.3);
+			0 12px 24px rgba(230, 184, 0, 0.4),
+			0 0 20px rgba(230, 184, 0, 0.3);
 	}
 
 	.buy-btn:hover:not(:disabled)::before {
@@ -549,7 +549,7 @@
 		background: linear-gradient(135deg, #1e293b 0%, #1a2332 100%);
 		border-radius: 20px;
 		padding: 2rem;
-		border: 1px solid rgba(99, 102, 241, 0.15);
+		border: 1px solid rgba(230, 184, 0, 0.15);
 		box-shadow:
 			0 4px 6px rgba(0, 0, 0, 0.1),
 			inset 0 1px 0 rgba(255, 255, 255, 0.05);
@@ -574,7 +574,7 @@
 		padding: 0.75rem 1rem;
 		background: rgba(15, 23, 42, 0.8);
 		backdrop-filter: blur(10px);
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 10px;
 		color: #f1f5f9;
 		font-size: 0.9375rem;
@@ -590,11 +590,11 @@
 	.form-group input:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #6366f1;
+		border-color: #E6B800;
 		background: rgba(15, 23, 42, 0.8);
 		box-shadow:
-			0 0 0 3px rgba(99, 102, 241, 0.15),
-			0 4px 12px rgba(99, 102, 241, 0.1);
+			0 0 0 3px rgba(230, 184, 0, 0.15),
+			0 4px 12px rgba(230, 184, 0, 0.1);
 		transform: translateY(-1px);
 	}
 
@@ -612,7 +612,7 @@
 	.price-input .currency {
 		position: absolute;
 		left: 1rem;
-		color: #6366f1;
+		color: #E6B800;
 		font-weight: 600;
 		font-size: 1.125rem;
 	}
@@ -663,18 +663,18 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 8px;
-		color: #a5b4fc;
+		color: #FFD11A;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.upload-btn:hover {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.5);
+		background: rgba(230, 184, 0, 0.2);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	.upload-btn.uploading {
@@ -739,7 +739,7 @@
 		justify-content: flex-end;
 		margin-top: 2rem;
 		padding-top: 2rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.btn-secondary,
@@ -755,16 +755,16 @@
 	}
 
 	.btn-secondary {
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.1);
+		color: #FFD11A;
+		border: 1px solid rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-secondary::before {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		opacity: 0;
 		transition: opacity 0.3s;
 	}
@@ -774,20 +774,20 @@
 	}
 
 	.btn-secondary:hover {
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 		transform: translateY(-1px);
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-primary::before {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(135deg, #8b5cf6, #a855f7);
+		background: linear-gradient(135deg, #B38F00, #FFD11A);
 		opacity: 0;
 		transition: opacity 0.3s;
 	}
@@ -795,8 +795,8 @@
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
 		box-shadow:
-			0 12px 24px rgba(99, 102, 241, 0.4),
-			0 0 20px rgba(139, 92, 246, 0.3);
+			0 12px 24px rgba(230, 184, 0, 0.4),
+			0 0 20px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-primary:hover:not(:disabled)::before {

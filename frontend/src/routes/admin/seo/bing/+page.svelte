@@ -594,8 +594,8 @@ https://yourdomain.com/page-3"
 		color: #34d399;
 	}
 	.stat-icon.purple {
-		background: rgba(139, 92, 246, 0.15);
-		color: #a78bfa;
+		background: rgba(230, 184, 0, 0.15);
+		color: #E6B800;
 	}
 	.stat-icon.yellow {
 		background: rgba(251, 191, 36, 0.15);
@@ -975,12 +975,13 @@ https://yourdomain.com/page-3"
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-primary.bing {
 		background: linear-gradient(135deg, #008373, #00a99d);
+		color: white;
 	}
 
 	.btn-secondary {

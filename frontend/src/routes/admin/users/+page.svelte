@@ -209,13 +209,13 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-secondary {
@@ -240,7 +240,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(148, 163, 184, 0.1);
-		border-top-color: #3b82f6;
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin: 0 auto 1rem;
@@ -310,7 +310,7 @@
 	}
 
 	tbody tr:hover {
-		background: rgba(59, 130, 246, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	td {
@@ -328,7 +328,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -407,9 +407,9 @@
 	}
 
 	.action-btn.edit:hover {
-		background: rgba(59, 130, 246, 0.1);
-		border-color: rgba(59, 130, 246, 0.3);
-		color: #60a5fa;
+		background: rgba(230, 184, 0, 0.1);
+		border-color: rgba(230, 184, 0, 0.3);
+		color: #E6B800;
 	}
 
 	.action-btn.delete:hover {

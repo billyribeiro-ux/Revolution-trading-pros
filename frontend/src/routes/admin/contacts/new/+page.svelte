@@ -114,7 +114,7 @@
 		margin-bottom: 1rem;
 	}
 
-	.back-link:hover { color: #818cf8; }
+	.back-link:hover { color: #E6B800; }
 
 	.page-header h1 {
 		font-size: 1.75rem;
@@ -125,7 +125,7 @@
 
 	.contact-form {
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 16px;
 		padding: 2rem;
 	}
@@ -152,7 +152,7 @@
 		width: 100%;
 		padding: 0.75rem 1rem;
 		background: rgba(15, 23, 42, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		color: #e2e8f0;
 		font-size: 0.95rem;
@@ -160,7 +160,7 @@
 
 	.form-group input:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	.form-actions {
@@ -169,7 +169,7 @@
 		gap: 1rem;
 		margin-top: 2rem;
 		padding-top: 1.5rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.btn-primary {
@@ -177,8 +177,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -188,7 +188,7 @@
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-primary:disabled {
@@ -198,9 +198,9 @@
 
 	.btn-secondary {
 		padding: 0.75rem 1.5rem;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		color: #94a3b8;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		font-weight: 600;
 		text-decoration: none;
@@ -208,7 +208,7 @@
 	}
 
 	.btn-secondary:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		color: #e2e8f0;
 	}
 

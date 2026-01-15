@@ -992,7 +992,7 @@
 	.blob-1 {
 		width: 400px;
 		height: 400px;
-		background: linear-gradient(135deg, #ec4899, #db2777);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		top: -100px;
 		right: -100px;
 		animation-delay: 0s;
@@ -1062,10 +1062,10 @@
 		justify-content: center;
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #ec4899, #db2777);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border-radius: 16px;
 		color: white;
-		box-shadow: 0 8px 24px rgba(236, 72, 153, 0.3);
+		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.3);
 	}
 
 	.header-text h1 {
@@ -1139,15 +1139,15 @@
 	}
 
 	.action-btn.run-tests {
-		background: linear-gradient(135deg, #ec4899, #db2777);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border: none;
 		color: white;
-		box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
 	}
 
 	.action-btn.run-tests:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
+		box-shadow: 0 6px 16px rgba(230, 184, 0, 0.4);
 	}
 
 	.action-btn.refresh {
@@ -1196,7 +1196,7 @@
 		width: 48px;
 		height: 48px;
 		border: 3px solid rgba(148, 163, 184, 0.2);
-		border-top-color: #ec4899;
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
@@ -1377,7 +1377,7 @@
 	}
 
 	.tab.active {
-		background: rgba(236, 72, 153, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		color: #f9a8d4;
 	}
 
@@ -1835,7 +1835,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #ec4899, #db2777);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border: none;
 		border-radius: 12px;
 		color: white;
@@ -1847,7 +1847,7 @@
 
 	.run-tests-btn:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
 	}
 
 	.run-tests-btn:disabled {
