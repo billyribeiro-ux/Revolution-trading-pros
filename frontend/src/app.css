@@ -2178,376 +2178,207 @@ body.light .hero-gradient-text {
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ─────────────────────────────────────────────────────────────────────────────
- * FINTECH LIGHT THEME - Clean, Professional, Trustworthy
- * High-contrast design optimized for data-heavy interfaces
+ * RTP ADMIN THEME - GitHub-Inspired Professional Dashboard (Single Theme)
+ * Gold/Amber primary accent with Slate Blue secondary
+ * Optimized for data-heavy trading interfaces
  * ───────────────────────────────────────────────────────────────────────────── */
 :root,
+html,
+body,
 html.light,
-body.light {
-	/* ═══ FINTECH PRIMARY PALETTE ═══ */
-	/* Core Brand - Deep Teal/Cyan (Trust, Stability, Finance) */
-	--admin-accent-primary: #0891b2;
-	--admin-accent-primary-hover: #0e7490;
-	--admin-accent-primary-soft: rgba(8, 145, 178, 0.08);
-	--admin-accent-primary-muted: rgba(8, 145, 178, 0.15);
-
-	/* Secondary Accent - Rich Navy (Authority, Professionalism) */
-	--admin-accent-secondary: #1e3a5f;
-	--admin-accent-secondary-hover: #0f2744;
-
-	/* Tertiary Accent - Gold/Amber (Premium, Success) */
-	--admin-accent-tertiary: #d4a012;
-	--admin-accent-tertiary-hover: #b8860b;
-
-	/* ═══ SURFACE COLORS ═══ */
-	/* Background Hierarchy - Clean, Professional Whites */
-	--admin-bg: #f8fafc;
-	--admin-bg-subtle: #ffffff;
-	--admin-bg-muted: #f1f5f9;
-
-	/* Surface Colors - Elevated Cards */
-	--admin-surface: #ffffff;
-	--admin-surface-raised: #ffffff;
-	--admin-surface-sunken: #f1f5f9;
-	--admin-surface-overlay: rgba(255, 255, 255, 0.98);
-
-	/* Sidebar - Professional Gradient */
-	--admin-sidebar-bg: linear-gradient(180deg, #1e3a5f 0%, #0f2744 100%);
-	--admin-sidebar-border: rgba(255, 255, 255, 0.1);
-	--admin-sidebar-text: #e2e8f0;
-	--admin-sidebar-text-muted: #94a3b8;
-	--admin-sidebar-hover: rgba(255, 255, 255, 0.08);
-	--admin-sidebar-active: rgba(8, 145, 178, 0.2);
-
-	/* Header - Clean with Subtle Depth */
-	--admin-header-bg: rgba(255, 255, 255, 0.95);
-	--admin-header-border: #e2e8f0;
-	--admin-header-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
-
-	/* ═══ TEXT COLORS ═══ */
-	--admin-text-primary: #0f172a;
-	--admin-text-secondary: #334155;
-	--admin-text-muted: #64748b;
-	--admin-text-placeholder: #94a3b8;
-	--admin-text-disabled: #cbd5e1;
-
-	/* ═══ BORDER COLORS ═══ */
-	--admin-border: #e2e8f0;
-	--admin-border-light: #f1f5f9;
-	--admin-border-focus: #0891b2;
-	--admin-border-interactive: rgba(8, 145, 178, 0.4);
-
-	/* ═══ BUTTON STYLES ═══ */
-	--admin-btn-bg: #ffffff;
-	--admin-btn-bg-hover: #f8fafc;
-	--admin-btn-bg-active: #f1f5f9;
-	--admin-btn-border: #e2e8f0;
-	--admin-btn-border-hover: #cbd5e1;
-	--admin-btn-text: #334155;
-	--admin-btn-text-hover: #0f172a;
-
-	/* Primary Button */
-	--admin-btn-primary-bg: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
-	--admin-btn-primary-bg-hover: linear-gradient(135deg, #0e7490 0%, #0c5c73 100%);
-	--admin-btn-primary-text: #ffffff;
-
-	/* ═══ KEYBOARD SHORTCUTS ═══ */
-	--admin-kbd-bg: #f1f5f9;
-	--admin-kbd-border: #e2e8f0;
-	--admin-kbd-text: #64748b;
-
-	/* ═══ NAVIGATION ═══ */
-	--admin-nav-text: #64748b;
-	--admin-nav-text-hover: #0f172a;
-	--admin-nav-text-active: #0891b2;
-	--admin-nav-bg-hover: rgba(8, 145, 178, 0.06);
-	--admin-nav-bg-active: rgba(8, 145, 178, 0.1);
-	--admin-nav-border-active: #0891b2;
-	--admin-nav-section-title: #94a3b8;
-
-	/* ═══ SEMANTIC COLORS - FINTECH OPTIMIZED ═══ */
-	/* Success - Profitable Green */
-	--admin-success: #059669;
-	--admin-success-bg: rgba(5, 150, 105, 0.08);
-	--admin-success-border: rgba(5, 150, 105, 0.25);
-	--admin-success-text: #047857;
-
-	/* Warning - Caution Amber */
-	--admin-warning: #d97706;
-	--admin-warning-bg: rgba(217, 119, 6, 0.08);
-	--admin-warning-border: rgba(217, 119, 6, 0.25);
-	--admin-warning-text: #b45309;
-
-	/* Error - Loss Red */
-	--admin-error: #dc2626;
-	--admin-error-bg: rgba(220, 38, 38, 0.08);
-	--admin-error-border: rgba(220, 38, 38, 0.25);
-	--admin-error-text: #b91c1c;
-
-	/* Info - Data Blue */
-	--admin-info: #0284c7;
-	--admin-info-bg: rgba(2, 132, 199, 0.08);
-	--admin-info-border: rgba(2, 132, 199, 0.25);
-	--admin-info-text: #0369a1;
-
-	/* ═══ FOCUS STATES ═══ */
-	--admin-focus-ring: 0 0 0 3px rgba(8, 145, 178, 0.25);
-
-	/* ═══ SHADOWS - Professional Depth ═══ */
-	--admin-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
-	--admin-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
-	--admin-shadow-lg: 0 10px 40px rgba(15, 23, 42, 0.1);
-	--admin-shadow-xl: 0 25px 50px rgba(15, 23, 42, 0.15);
-
-	/* ═══ CARDS & WIDGETS ═══ */
-	--admin-card-bg: #ffffff;
-	--admin-card-border: #e2e8f0;
-	--admin-card-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
-	--admin-card-shadow-hover: 0 10px 40px rgba(15, 23, 42, 0.1);
-
-	/* ═══ WIDGET COLORS - Fintech Data Visualization ═══ */
-	/* Primary Metrics - Teal */
-	--admin-widget-primary-bg: rgba(8, 145, 178, 0.08);
-	--admin-widget-primary-icon: #0891b2;
-	--admin-widget-primary-border: rgba(8, 145, 178, 0.2);
-
-	/* Revenue/Profit - Green */
-	--admin-widget-green-bg: rgba(5, 150, 105, 0.08);
-	--admin-widget-green-icon: #059669;
-	--admin-widget-green-border: rgba(5, 150, 105, 0.2);
-
-	/* Users/Growth - Blue */
-	--admin-widget-blue-bg: rgba(2, 132, 199, 0.08);
-	--admin-widget-blue-icon: #0284c7;
-	--admin-widget-blue-border: rgba(2, 132, 199, 0.2);
-
-	/* Premium/Value - Gold */
-	--admin-widget-gold-bg: rgba(212, 160, 18, 0.08);
-	--admin-widget-gold-icon: #d4a012;
-	--admin-widget-gold-border: rgba(212, 160, 18, 0.2);
-
-	/* Alerts/Attention - Orange */
-	--admin-widget-orange-bg: rgba(234, 88, 12, 0.08);
-	--admin-widget-orange-icon: #ea580c;
-	--admin-widget-orange-border: rgba(234, 88, 12, 0.2);
-
-	/* Critical/Loss - Red */
-	--admin-widget-red-bg: rgba(220, 38, 38, 0.08);
-	--admin-widget-red-icon: #dc2626;
-	--admin-widget-red-border: rgba(220, 38, 38, 0.2);
-
-	/* Legacy compatibility */
-	--admin-widget-purple-bg: rgba(124, 58, 237, 0.08);
-	--admin-widget-purple-icon: #7c3aed;
-	--admin-widget-cyan-bg: rgba(8, 145, 178, 0.08);
-	--admin-widget-cyan-icon: #0891b2;
-
-	/* ═══ TABLE STYLES ═══ */
-	--admin-table-header-bg: #f8fafc;
-	--admin-table-row-hover: rgba(8, 145, 178, 0.04);
-	--admin-table-row-stripe: #fafbfc;
-	--admin-table-border: #e2e8f0;
-
-	/* ═══ INPUT STYLES ═══ */
-	--admin-input-bg: #ffffff;
-	--admin-input-border: #e2e8f0;
-	--admin-input-border-focus: #0891b2;
-	--admin-input-placeholder: #94a3b8;
-
-	/* ═══ CHARTS - Fintech Data Visualization ═══ */
-	--admin-chart-grid: rgba(15, 23, 42, 0.06);
-	--admin-chart-text: #64748b;
-	--admin-chart-axis: #e2e8f0;
-	--admin-chart-positive: #059669;
-	--admin-chart-negative: #dc2626;
-	--admin-chart-neutral: #0891b2;
-}
-
-/* ─────────────────────────────────────────────────────────────────────────────
- * DARK THEME - Professional Fintech Aesthetic
- * Deep navy with teal accents - Bloomberg Terminal inspired
- * ───────────────────────────────────────────────────────────────────────────── */
+body.light,
 html.dark,
 body.dark {
-	/* ═══ FINTECH PRIMARY PALETTE - DARK MODE ═══ */
-	/* Matching the light theme's fintech identity */
-
-	/* Primary Background Colors - Deep navy hierarchy */
-	--admin-bg: #0a1628;
-	--admin-bg-subtle: #0f1e32;
-	--admin-bg-muted: #152238;
+	/* ═══ BACKGROUND SYSTEM - GitHub Inspired ═══ */
+	--admin-bg: #0D1117;
+	--admin-bg-subtle: #161B22;
+	--admin-bg-muted: #1C2128;
 
 	/* Surface Colors - Elevated dark surfaces */
-	--admin-surface: #1a2d47;
-	--admin-surface-raised: #213654;
-	--admin-surface-sunken: #060e1a;
-	--admin-surface-overlay: rgba(26, 45, 71, 0.98);
+	--admin-surface: #1C2128;
+	--admin-surface-raised: #252B33;
+	--admin-surface-sunken: #0D1117;
+	--admin-surface-overlay: rgba(22, 27, 34, 0.98);
 
-	/* Sidebar - Professional Navy Gradient */
-	--admin-sidebar-bg: linear-gradient(180deg, #0f2744 0%, #0a1628 100%);
-	--admin-sidebar-border: rgba(8, 145, 178, 0.15);
-	--admin-sidebar-text: #e2e8f0;
-	--admin-sidebar-text-muted: #94a3b8;
-	--admin-sidebar-hover: rgba(8, 145, 178, 0.12);
-	--admin-sidebar-active: rgba(8, 145, 178, 0.25);
+	/* Hover/Active States */
+	--admin-bg-hover: #252B33;
+	--admin-bg-active: #2D333B;
 
-	/* Header - Translucent with blur effect */
-	--admin-header-bg: rgba(10, 22, 40, 0.92);
-	--admin-header-border: rgba(8, 145, 178, 0.12);
+	/* Sidebar - Dark gradient */
+	--admin-sidebar-bg: linear-gradient(180deg, #161B22 0%, #0D1117 100%);
+	--admin-sidebar-border: #30363D;
+	--admin-sidebar-text: #F0F6FC;
+	--admin-sidebar-text-muted: #8B949E;
+	--admin-sidebar-hover: #252B33;
+	--admin-sidebar-active: rgba(230, 184, 0, 0.15);
+
+	/* Header */
+	--admin-header-bg: rgba(13, 17, 23, 0.95);
+	--admin-header-border: #30363D;
 	--admin-header-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 
-	/* Text Colors - High contrast for dark backgrounds */
-	--admin-text-primary: #f1f5f9;
-	--admin-text-secondary: #cbd5e1;
-	--admin-text-muted: #94a3b8;
-	--admin-text-placeholder: #64748b;
-	--admin-text-disabled: #475569;
+	/* ═══ TEXT SYSTEM ═══ */
+	--admin-text-primary: #F0F6FC;
+	--admin-text-secondary: #8B949E;
+	--admin-text-muted: #6E7681;
+	--admin-text-placeholder: #484F58;
+	--admin-text-disabled: #484F58;
 
-	/* ═══ ACCENT COLORS - FINTECH TEAL ═══ */
-	/* Core Brand - Bright Teal (Trust, Stability, Finance) */
-	--admin-accent-primary: #22d3ee;
-	--admin-accent-primary-hover: #67e8f9;
-	--admin-accent-primary-soft: rgba(34, 211, 238, 0.12);
-	--admin-accent-primary-muted: rgba(34, 211, 238, 0.2);
+	/* ═══ PRIMARY - GOLD/AMBER (Your Signature) ═══ */
+	--admin-accent-primary: #E6B800;
+	--admin-accent-primary-hover: #FFD11A;
+	--admin-accent-primary-soft: rgba(230, 184, 0, 0.15);
+	--admin-accent-primary-muted: rgba(230, 184, 0, 0.25);
 
-	/* Secondary Accent - Lighter Navy */
-	--admin-accent-secondary: #3b82f6;
-	--admin-accent-secondary-hover: #60a5fa;
+	/* ═══ SECONDARY - SLATE BLUE ═══ */
+	--admin-accent-secondary: #3D5A99;
+	--admin-accent-secondary-hover: #7995CA;
 
-	/* Tertiary Accent - Gold/Amber */
-	--admin-accent-tertiary: #fbbf24;
-	--admin-accent-tertiary-hover: #fcd34d;
+	/* Tertiary - Keeping Gold variants */
+	--admin-accent-tertiary: #FFD11A;
+	--admin-accent-tertiary-hover: #FFDB4D;
 
-	/* Border Colors - Teal glow */
-	--admin-border: rgba(8, 145, 178, 0.2);
-	--admin-border-light: rgba(8, 145, 178, 0.1);
-	--admin-border-focus: #22d3ee;
-	--admin-border-interactive: rgba(34, 211, 238, 0.4);
+	/* ═══ BORDER SYSTEM ═══ */
+	--admin-border: #30363D;
+	--admin-border-light: #21262D;
+	--admin-border-focus: #E6B800;
+	--admin-border-interactive: rgba(230, 184, 0, 0.4);
+	--admin-border-emphasis: #8B949E;
 
-	/* Button Styles */
-	--admin-btn-bg: rgba(8, 145, 178, 0.12);
-	--admin-btn-bg-hover: rgba(8, 145, 178, 0.2);
-	--admin-btn-bg-active: rgba(8, 145, 178, 0.28);
-	--admin-btn-border: rgba(8, 145, 178, 0.25);
-	--admin-btn-border-hover: rgba(34, 211, 238, 0.4);
-	--admin-btn-text: #e2e8f0;
-	--admin-btn-text-hover: #ffffff;
+	/* ═══ BUTTON STYLES ═══ */
+	--admin-btn-bg: #1C2128;
+	--admin-btn-bg-hover: #252B33;
+	--admin-btn-bg-active: #2D333B;
+	--admin-btn-border: #30363D;
+	--admin-btn-border-hover: #8B949E;
+	--admin-btn-text: #F0F6FC;
+	--admin-btn-text-hover: #FFFFFF;
 
-	/* Primary Button - Teal Gradient */
-	--admin-btn-primary-bg: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
-	--admin-btn-primary-bg-hover: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);
-	--admin-btn-primary-text: #ffffff;
+	/* Primary Button - Gold */
+	--admin-btn-primary-bg: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+	--admin-btn-primary-bg-hover: linear-gradient(135deg, #FFD11A 0%, #E6B800 100%);
+	--admin-btn-primary-text: #0D1117;
 
-	/* Keyboard Shortcuts */
-	--admin-kbd-bg: rgba(8, 145, 178, 0.15);
-	--admin-kbd-border: rgba(8, 145, 178, 0.25);
-	--admin-kbd-text: #94a3b8;
+	/* ═══ KEYBOARD SHORTCUTS ═══ */
+	--admin-kbd-bg: #252B33;
+	--admin-kbd-border: #30363D;
+	--admin-kbd-text: #8B949E;
 
-	/* Navigation */
-	--admin-nav-text: #94a3b8;
-	--admin-nav-text-hover: #f1f5f9;
-	--admin-nav-text-active: #22d3ee;
-	--admin-nav-bg-hover: rgba(8, 145, 178, 0.1);
-	--admin-nav-bg-active: rgba(8, 145, 178, 0.18);
-	--admin-nav-border-active: rgba(34, 211, 238, 0.5);
-	--admin-nav-section-title: #64748b;
+	/* ═══ NAVIGATION ═══ */
+	--admin-nav-text: #8B949E;
+	--admin-nav-text-hover: #F0F6FC;
+	--admin-nav-text-active: #FFD11A;
+	--admin-nav-bg-hover: #252B33;
+	--admin-nav-bg-active: rgba(230, 184, 0, 0.12);
+	--admin-nav-border-active: rgba(230, 184, 0, 0.4);
+	--admin-nav-section-title: #6E7681;
 
-	/* ═══ SEMANTIC COLORS - FINTECH OPTIMIZED ═══ */
-	/* Success - Profitable Green */
-	--admin-success: #10b981;
-	--admin-success-bg: rgba(16, 185, 129, 0.15);
-	--admin-success-border: rgba(16, 185, 129, 0.35);
-	--admin-success-text: #34d399;
+	/* ═══ SEMANTIC COLORS ═══ */
+	/* Success */
+	--admin-success: #2EA043;
+	--admin-success-bg: rgba(46, 160, 67, 0.15);
+	--admin-success-border: rgba(46, 160, 67, 0.3);
+	--admin-success-text: #3FB950;
 
-	/* Warning - Caution Amber */
-	--admin-warning: #f59e0b;
-	--admin-warning-bg: rgba(245, 158, 11, 0.15);
-	--admin-warning-border: rgba(245, 158, 11, 0.35);
-	--admin-warning-text: #fbbf24;
+	/* Warning */
+	--admin-warning: #BB8009;
+	--admin-warning-bg: rgba(187, 128, 9, 0.15);
+	--admin-warning-border: rgba(187, 128, 9, 0.3);
+	--admin-warning-text: #D29922;
 
-	/* Error - Loss Red */
-	--admin-error: #ef4444;
-	--admin-error-bg: rgba(239, 68, 68, 0.15);
-	--admin-error-border: rgba(239, 68, 68, 0.35);
-	--admin-error-text: #f87171;
+	/* Error */
+	--admin-error: #DA3633;
+	--admin-error-bg: rgba(218, 54, 51, 0.15);
+	--admin-error-border: rgba(218, 54, 51, 0.3);
+	--admin-error-text: #F85149;
 
-	/* Info - Data Blue */
-	--admin-info: #3b82f6;
-	--admin-info-bg: rgba(59, 130, 246, 0.15);
-	--admin-info-border: rgba(59, 130, 246, 0.35);
-	--admin-info-text: #60a5fa;
+	/* Info */
+	--admin-info: #388BFD;
+	--admin-info-bg: rgba(56, 139, 253, 0.15);
+	--admin-info-border: rgba(56, 139, 253, 0.3);
+	--admin-info-text: #58A6FF;
 
-	/* Focus States - Teal glow */
-	--admin-focus-ring: 0 0 0 3px rgba(34, 211, 238, 0.35);
+	/* ═══ FOCUS STATES ═══ */
+	--admin-focus-ring: 0 0 0 3px rgba(230, 184, 0, 0.35);
 
-	/* Shadows - Subtle depth for dark theme */
+	/* ═══ SHADOWS ═══ */
 	--admin-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
 	--admin-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
 	--admin-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.6);
 	--admin-shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.7);
 
-	/* Cards & Widgets */
-	--admin-card-bg: #1a2d47;
-	--admin-card-border: rgba(8, 145, 178, 0.15);
+	/* ═══ CARDS & WIDGETS ═══ */
+	--admin-card-bg: #161B22;
+	--admin-card-border: #30363D;
 	--admin-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-	--admin-card-shadow-hover: 0 12px 40px rgba(34, 211, 238, 0.12);
+	--admin-card-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.5);
 
-	/* ═══ WIDGET COLORS - Fintech Data Visualization ═══ */
-	/* Primary Metrics - Teal */
-	--admin-widget-primary-bg: rgba(34, 211, 238, 0.12);
-	--admin-widget-primary-icon: #22d3ee;
-	--admin-widget-primary-border: rgba(34, 211, 238, 0.25);
+	/* ═══ WIDGET COLORS - Unified Palette ═══ */
+	/* Primary - Gold (main accent) */
+	--admin-widget-primary-bg: rgba(230, 184, 0, 0.15);
+	--admin-widget-primary-icon: #FFD11A;
+	--admin-widget-primary-border: rgba(230, 184, 0, 0.25);
+
+	/* Secondary - Slate Blue */
+	--admin-widget-secondary-bg: rgba(61, 90, 153, 0.2);
+	--admin-widget-secondary-icon: #7995CA;
+	--admin-widget-secondary-border: rgba(61, 90, 153, 0.3);
 
 	/* Revenue/Profit - Green */
-	--admin-widget-green-bg: rgba(16, 185, 129, 0.15);
-	--admin-widget-green-icon: #34d399;
-	--admin-widget-green-border: rgba(16, 185, 129, 0.3);
+	--admin-widget-green-bg: rgba(46, 160, 67, 0.15);
+	--admin-widget-green-icon: #3FB950;
+	--admin-widget-green-border: rgba(46, 160, 67, 0.25);
 
-	/* Users/Growth - Blue */
-	--admin-widget-blue-bg: rgba(59, 130, 246, 0.15);
-	--admin-widget-blue-icon: #60a5fa;
-	--admin-widget-blue-border: rgba(59, 130, 246, 0.3);
+	/* Users/Growth - Blue (Info) */
+	--admin-widget-blue-bg: rgba(56, 139, 253, 0.15);
+	--admin-widget-blue-icon: #58A6FF;
+	--admin-widget-blue-border: rgba(56, 139, 253, 0.25);
 
 	/* Premium/Value - Gold */
-	--admin-widget-gold-bg: rgba(251, 191, 36, 0.12);
-	--admin-widget-gold-icon: #fbbf24;
-	--admin-widget-gold-border: rgba(251, 191, 36, 0.25);
+	--admin-widget-gold-bg: rgba(230, 184, 0, 0.15);
+	--admin-widget-gold-icon: #FFD11A;
+	--admin-widget-gold-border: rgba(230, 184, 0, 0.25);
 
-	/* Alerts/Attention - Orange */
-	--admin-widget-orange-bg: rgba(249, 115, 22, 0.15);
-	--admin-widget-orange-icon: #fb923c;
-	--admin-widget-orange-border: rgba(249, 115, 22, 0.3);
+	/* Alerts/Attention - Warning Amber */
+	--admin-widget-orange-bg: rgba(187, 128, 9, 0.15);
+	--admin-widget-orange-icon: #D29922;
+	--admin-widget-orange-border: rgba(187, 128, 9, 0.25);
 
 	/* Critical/Loss - Red */
-	--admin-widget-red-bg: rgba(239, 68, 68, 0.15);
-	--admin-widget-red-icon: #f87171;
-	--admin-widget-red-border: rgba(239, 68, 68, 0.3);
+	--admin-widget-red-bg: rgba(218, 54, 51, 0.15);
+	--admin-widget-red-icon: #F85149;
+	--admin-widget-red-border: rgba(218, 54, 51, 0.25);
+
+	/* Muted - Neutral */
+	--admin-widget-muted-bg: #252B33;
+	--admin-widget-muted-icon: #8B949E;
+	--admin-widget-muted-border: #30363D;
 
 	/* Legacy compatibility */
 	--admin-widget-purple-bg: rgba(139, 92, 246, 0.15);
 	--admin-widget-purple-icon: #a78bfa;
-	--admin-widget-cyan-bg: rgba(34, 211, 238, 0.12);
-	--admin-widget-cyan-icon: #22d3ee;
+	--admin-widget-cyan-bg: rgba(56, 139, 253, 0.15);
+	--admin-widget-cyan-icon: #58A6FF;
 
-	/* Table Styles */
-	--admin-table-header-bg: #152238;
-	--admin-table-row-hover: rgba(8, 145, 178, 0.1);
-	--admin-table-row-stripe: rgba(8, 145, 178, 0.04);
-	--admin-table-border: rgba(8, 145, 178, 0.12);
+	/* ═══ TABLE STYLES ═══ */
+	--admin-table-header-bg: #1C2128;
+	--admin-table-row-hover: #252B33;
+	--admin-table-row-stripe: rgba(48, 54, 61, 0.3);
+	--admin-table-border: #30363D;
 
-	/* Input Styles */
-	--admin-input-bg: #1a2d47;
-	--admin-input-border: rgba(8, 145, 178, 0.25);
-	--admin-input-border-focus: #22d3ee;
-	--admin-input-placeholder: #64748b;
+	/* ═══ INPUT STYLES ═══ */
+	--admin-input-bg: #0D1117;
+	--admin-input-border: #30363D;
+	--admin-input-border-focus: #E6B800;
+	--admin-input-placeholder: #6E7681;
 
-	/* Charts - Dark theme fintech */
-	--admin-chart-grid: rgba(8, 145, 178, 0.1);
-	--admin-chart-text: #94a3b8;
-	--admin-chart-axis: rgba(8, 145, 178, 0.2);
-	--admin-chart-positive: #34d399;
-	--admin-chart-negative: #f87171;
-	--admin-chart-neutral: #22d3ee;
+	/* ═══ CHARTS ═══ */
+	--admin-chart-grid: rgba(48, 54, 61, 0.5);
+	--admin-chart-text: #8B949E;
+	--admin-chart-axis: #30363D;
+	--admin-chart-positive: #3FB950;
+	--admin-chart-negative: #F85149;
+	--admin-chart-neutral: #58A6FF;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -2750,13 +2581,13 @@ body.dark {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * Admin Premium Buttons - Fintech Styling
+ * Admin Premium Buttons - RTP Gold Styling
  * ═══════════════════════════════════════════════════════════════════════════ */
 
-/* Premium Admin Button - Primary (Teal) */
+/* Premium Admin Button - Primary (Gold) */
 .admin-btn-primary {
-	background: var(--admin-btn-primary-bg, linear-gradient(135deg, #0891b2 0%, #0e7490 100%));
-	color: var(--admin-btn-primary-text, white);
+	background: var(--admin-btn-primary-bg, linear-gradient(135deg, #E6B800 0%, #B38F00 100%));
+	color: var(--admin-btn-primary-text, #0D1117);
 	border: none;
 	padding: 0.625rem 1.25rem;
 	border-radius: var(--radius-md, 0.5rem);
@@ -2766,23 +2597,23 @@ body.dark {
 	letter-spacing: 0.01em;
 	cursor: pointer;
 	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-	box-shadow: 0 2px 8px rgba(8, 145, 178, 0.25);
+	box-shadow: 0 2px 8px rgba(230, 184, 0, 0.25);
 }
 
 .admin-btn-primary:hover {
-	background: var(--admin-btn-primary-bg-hover, linear-gradient(135deg, #0e7490 0%, #0c5c73 100%));
+	background: var(--admin-btn-primary-bg-hover, linear-gradient(135deg, #FFD11A 0%, #E6B800 100%));
 	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(8, 145, 178, 0.35);
+	box-shadow: 0 4px 16px rgba(230, 184, 0, 0.35);
 }
 
 .admin-btn-primary:active {
 	transform: translateY(0);
-	box-shadow: 0 2px 8px rgba(8, 145, 178, 0.25);
+	box-shadow: 0 2px 8px rgba(230, 184, 0, 0.25);
 }
 
 .admin-btn-primary:focus-visible {
 	outline: none;
-	box-shadow: var(--admin-focus-ring), 0 2px 8px rgba(8, 145, 178, 0.25);
+	box-shadow: var(--admin-focus-ring), 0 2px 8px rgba(230, 184, 0, 0.25);
 }
 
 /* Admin Button - Secondary */
@@ -2811,10 +2642,10 @@ body.dark {
 	box-shadow: var(--admin-focus-ring);
 }
 
-/* Admin Button - Gold/Premium */
+/* Admin Button - Gold/Premium (same as primary for RTP) */
 .admin-btn-gold {
-	background: linear-gradient(135deg, var(--admin-accent-tertiary) 0%, var(--admin-accent-tertiary-hover) 100%);
-	color: #0f172a;
+	background: linear-gradient(135deg, #FFD11A 0%, #E6B800 100%);
+	color: #0D1117;
 	border: none;
 	padding: 0.625rem 1.25rem;
 	border-radius: var(--radius-md, 0.5rem);
@@ -2824,12 +2655,34 @@ body.dark {
 	letter-spacing: 0.01em;
 	cursor: pointer;
 	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-	box-shadow: 0 2px 8px rgba(212, 160, 18, 0.25);
+	box-shadow: 0 2px 8px rgba(230, 184, 0, 0.3);
 }
 
 .admin-btn-gold:hover {
 	transform: translateY(-1px);
-	box-shadow: 0 4px 12px rgba(212, 160, 18, 0.35);
+	box-shadow: 0 4px 16px rgba(230, 184, 0, 0.4);
+}
+
+/* Admin Button - Slate Blue (Secondary accent) */
+.admin-btn-slate {
+	background: linear-gradient(135deg, #3D5A99 0%, #233557 100%);
+	color: #F0F6FC;
+	border: none;
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	box-shadow: 0 2px 8px rgba(61, 90, 153, 0.3);
+}
+
+.admin-btn-slate:hover {
+	background: linear-gradient(135deg, #7995CA 0%, #3D5A99 100%);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 16px rgba(61, 90, 153, 0.4);
 }
 
 /* Admin Button - Danger/Destructive */
