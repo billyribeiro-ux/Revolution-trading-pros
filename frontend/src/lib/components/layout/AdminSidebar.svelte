@@ -265,13 +265,31 @@
 		font-weight: 500;
 		letter-spacing: 0.01em;
 		margin-bottom: 0.25rem;
-		border: 1px solid transparent;
+		position: relative;
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	/* Gold left border indicator for active/hover states */
+	.nav-item::before {
+		content: '';
+		position: absolute;
+		left: 0;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 3px;
+		height: 0;
+		background: var(--admin-accent-primary, #E6B800);
+		border-radius: 0 2px 2px 0;
+		transition: height 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.nav-item:hover {
 		background: var(--admin-nav-bg-hover);
 		color: var(--admin-nav-text-hover);
+	}
+
+	.nav-item:hover::before {
+		height: 50%;
 	}
 
 	.nav-item:focus-visible {
@@ -282,8 +300,12 @@
 	.nav-item.active {
 		background: var(--admin-nav-bg-active);
 		color: var(--admin-nav-text-active);
-		border-color: var(--admin-nav-border-active);
 		font-weight: 600;
+	}
+
+	.nav-item.active::before {
+		height: 60%;
+		background: var(--admin-accent-primary-hover, #FFD11A);
 	}
 
 	/* Sidebar Footer */

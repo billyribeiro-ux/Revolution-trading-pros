@@ -1457,7 +1457,7 @@
 		gap: 0.75rem;
 	}
 
-	/* Buttons */
+	/* Buttons - Using RTP Admin Color System */
 	.btn-primary,
 	.btn-secondary,
 	.btn-ghost,
@@ -1470,45 +1470,61 @@
 		font-weight: 500;
 		border: none;
 		cursor: pointer;
-		transition: all 0.2s;
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 		text-decoration: none;
-		background: white;
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-		color: white;
+		background: var(--admin-btn-primary-bg);
+		color: var(--admin-btn-primary-text);
+		box-shadow: 0 2px 8px rgba(230, 184, 0, 0.25);
 	}
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(59, 130, 246, 0.4);
+		box-shadow: 0 8px 20px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-secondary {
-		background: rgba(148, 163, 184, 0.1);
-		color: #f1f5f9;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--admin-btn-bg);
+		color: var(--admin-text-primary);
+		border: 1px solid var(--admin-border);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(148, 163, 184, 0.2);
+		background: var(--admin-btn-bg-hover);
+		border-color: var(--admin-border-interactive);
 	}
 
 	.btn-ghost {
 		background: transparent;
-		color: #94a3b8;
+		color: var(--admin-text-secondary);
+	}
+
+	.btn-ghost:hover {
+		background: var(--admin-btn-bg-hover);
+		color: var(--admin-text-primary);
 	}
 
 	.btn-icon {
 		padding: 0.5rem;
-		background: rgba(148, 163, 184, 0.1);
+		background: var(--admin-btn-bg);
+		color: var(--admin-text-secondary);
+	}
+
+	.btn-icon:hover {
+		background: var(--admin-btn-bg-hover);
+		color: var(--admin-accent-primary);
 	}
 
 	.btn-secondary.danger {
-		background: rgba(239, 68, 68, 0.1);
-		border-color: rgba(239, 68, 68, 0.3);
-		color: #f87171;
+		background: var(--admin-error-bg);
+		border-color: var(--admin-error-border);
+		color: var(--admin-error-text);
+	}
+
+	.btn-secondary.danger:hover {
+		background: rgba(218, 54, 51, 0.25);
 	}
 
 	/* Stats Grid */
