@@ -98,7 +98,8 @@ impl DeveloperSettings {
         if is_production && self.enabled {
             return Err(
                 "SECURITY VIOLATION: Developer mode cannot be enabled in production. \
-                Set DEVELOPER_MODE=false or APP_ENV to non-production value.".to_string()
+                Set DEVELOPER_MODE=false or APP_ENV to non-production value."
+                    .to_string(),
             );
         }
 
@@ -173,12 +174,11 @@ impl AppConfig {
                 secret: env::var("JWT_SECRET").expect("JWT_SECRET must be set"),
                 // ICT 7 SECURITY: Separate refresh token secret - falls back to main secret if not set
                 // Apple Principal Engineer Grade: Defense in depth - recommend setting separate secret
-                refresh_secret: env::var("JWT_REFRESH_SECRET")
-                    .unwrap_or_else(|_| {
-                        let main_secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
-                        // Derive a different secret by appending suffix (still recommend separate env var)
-                        format!("{}_refresh_v1", main_secret)
-                    }),
+                refresh_secret: env::var("JWT_REFRESH_SECRET").unwrap_or_else(|_| {
+                    let main_secret = env::var("JWT_SECRET").expect("JWT_SECRET must be set");
+                    // Derive a different secret by appending suffix (still recommend separate env var)
+                    format!("{}_refresh_v1", main_secret)
+                }),
                 access_token_expires_in: env::var("JWT_ACCESS_TOKEN_EXPIRES_IN")
                     .unwrap_or_else(|_| "15m".to_string()),
                 refresh_token_expires_in: env::var("JWT_REFRESH_TOKEN_EXPIRES_IN")

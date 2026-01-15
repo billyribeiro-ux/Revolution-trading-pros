@@ -20,8 +20,8 @@ pub mod utils;
 pub mod validation;
 
 pub use errors::AppError;
-pub use responses::ApiResponse;
 pub use middleware::rate_limit::RateLimiter;
+pub use responses::ApiResponse;
 pub use services::TokenBlacklist;
 
 /// Application state shared across all handlers

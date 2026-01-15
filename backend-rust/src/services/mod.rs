@@ -12,5 +12,7 @@ mod user_service;
 pub use auth_service::*;
 pub use order_service::*;
 pub use subscription_service::*;
-pub use token_blacklist::{TokenBlacklist, new_token_blacklist, revoke_token, is_token_revoked, start_cleanup_task};
+pub use token_blacklist::{
+    is_token_revoked, new_token_blacklist, revoke_token, start_cleanup_task, TokenBlacklist,
+};
 pub use user_service::*;

@@ -23,7 +23,10 @@ mod rate_limit_tests {
     async fn test_rate_limit_blocks_after_max_attempts() {
         // Rate limiter should block after 5 attempts within 5 minutes
         // This is tested at the middleware level
-        assert!(true, "Rate limiting implemented in middleware/rate_limit.rs");
+        assert!(
+            true,
+            "Rate limiting implemented in middleware/rate_limit.rs"
+        );
     }
 
     /// ICT 7: Test that rate limit resets after window expires
@@ -73,7 +76,10 @@ mod token_secret_tests {
     #[tokio::test]
     async fn test_separate_token_secrets() {
         // Access tokens should not be decodable with refresh secret and vice versa
-        assert!(true, "Separate secrets implemented in config and auth_service");
+        assert!(
+            true,
+            "Separate secrets implemented in config and auth_service"
+        );
     }
 
     /// ICT 7: Test that refresh token cannot be used as access token
@@ -136,7 +142,10 @@ async fn test_register_success() {
 async fn test_register_validation_error() {
     // Test registration with invalid data
     // Expected: 422 Unprocessable Entity with validation errors
-    assert!(true, "Register validation test - requires database connection");
+    assert!(
+        true,
+        "Register validation test - requires database connection"
+    );
 }
 
 #[tokio::test]
@@ -183,7 +192,10 @@ async fn test_login_invalid_password() {
 async fn test_login_nonexistent_user() {
     // Test login with non-existent email
     // Expected: 401 Unauthorized (same as invalid password to prevent enumeration)
-    assert!(true, "Non-existent user test - requires database connection");
+    assert!(
+        true,
+        "Non-existent user test - requires database connection"
+    );
 }
 
 #[tokio::test]

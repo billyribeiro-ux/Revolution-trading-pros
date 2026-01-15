@@ -4,12 +4,12 @@
 //! JWT-based authentication with Argon2 password hashing
 //! Security-hardened with token revocation
 
+use axum::extract::Request;
 use axum::{
     extract::State,
     http::{header, StatusCode},
     Json,
 };
-use axum::extract::Request;
 use serde::{Deserialize, Serialize};
 use validator::Validate;
 

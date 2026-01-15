@@ -2,10 +2,7 @@
 //! ICT 7 Principal Engineer Grade - Platform Settings API
 
 use crate::{errors::AppError, extractors::AuthUser, responses::ApiResponse, AppState};
-use axum::{
-    extract::State,
-    Json,
-};
+use axum::{extract::State, Json};
 use serde::{Deserialize, Serialize};
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
