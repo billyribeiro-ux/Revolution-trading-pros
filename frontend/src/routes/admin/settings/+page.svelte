@@ -734,7 +734,7 @@
 				toastStore.success('Settings saved successfully');
 			} else {
 				settingsError = data.error || 'Failed to save settings';
-				toastStore.error(settingsError);
+				toastStore.error(settingsError ?? 'Failed to save settings');
 			}
 		} catch (error) {
 			if (error instanceof AdminApiError) {
@@ -911,10 +911,12 @@
 		settingsChanged = true;
 	}
 
-	// Toggle boolean setting
+	// Toggle boolean setting - uses type-safe approach
 	function toggleSetting(key: keyof GeneralSettings) {
-		if (typeof generalSettings[key] === 'boolean') {
-			(generalSettings as Record<string, boolean>)[key] = !generalSettings[key];
+		const value = generalSettings[key];
+		if (typeof value === 'boolean') {
+			// Type-safe toggle using object spread
+			generalSettings = { ...generalSettings, [key]: !value };
 			markSettingsChanged();
 		}
 	}
