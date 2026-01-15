@@ -39,6 +39,7 @@ pub struct RoomResource {
     pub description: Option<String>,
     pub resource_type: String,
     pub content_type: String,
+    pub section: Option<String>, // ICT 7: Section field for organization
     pub file_url: String,
     pub file_path: Option<String>,
     pub mime_type: Option<String>,
@@ -82,6 +83,7 @@ pub struct ResourceListQuery {
     pub room_slug: Option<String>,
     pub resource_type: Option<String>,
     pub content_type: Option<String>,
+    pub section: Option<String>, // ICT 7: Filter by section
     pub is_featured: Option<bool>,
     pub is_published: Option<bool>,
     pub tags: Option<String>,
@@ -111,6 +113,7 @@ pub struct CreateResourceRequest {
     pub is_published: Option<bool>,
     pub is_featured: Option<bool>,
     pub is_pinned: Option<bool>,
+    pub section: Option<String>, // ICT 7: Section for organization
     pub category: Option<String>,
     pub tags: Option<Vec<String>>,
     pub difficulty_level: Option<String>,
@@ -137,6 +140,7 @@ pub struct UpdateResourceRequest {
     pub is_published: Option<bool>,
     pub is_featured: Option<bool>,
     pub is_pinned: Option<bool>,
+    pub section: Option<String>, // ICT 7: Section for organization
     pub category: Option<String>,
     pub tags: Option<Vec<String>>,
     pub difficulty_level: Option<String>,
@@ -173,6 +177,7 @@ pub struct ResourceResponse {
     pub difficulty_level: Option<String>,
     pub views_count: i32,
     pub downloads_count: i32,
+    pub section: Option<String>, // ICT 7: Section field
     pub created_at: String,
 }
 
@@ -300,6 +305,7 @@ fn resource_to_response(resource: RoomResource) -> ResourceResponse {
         difficulty_level: resource.difficulty_level.clone(),
         views_count: resource.views_count,
         downloads_count: resource.downloads_count,
+        section: resource.section.clone(), // ICT 7: Include section in response
         created_at: resource.created_at.format("%Y-%m-%dT%H:%M:%S").to_string(),
     }
 }
@@ -355,6 +361,13 @@ async fn list_resources(
     // Difficulty filter
     if let Some(ref difficulty) = query.difficulty_level {
         let filter = format!(" AND difficulty_level = '{}'", difficulty.replace('\'', "''"));
+        sql.push_str(&filter);
+        count_sql.push_str(&filter);
+    }
+
+    // ICT 7: Section filter
+    if let Some(ref section) = query.section {
+        let filter = format!(" AND section = '{}'", section.replace('\'', "''"));
         sql.push_str(&filter);
         count_sql.push_str(&filter);
     }
@@ -496,6 +509,13 @@ async fn admin_list_resources(
     // Published filter
     if let Some(is_published) = query.is_published {
         let filter = format!(" AND is_published = {}", is_published);
+        sql.push_str(&filter);
+        count_sql.push_str(&filter);
+    }
+
+    // ICT 7: Section filter for admin
+    if let Some(ref section) = query.section {
+        let filter = format!(" AND section = '{}'", section.replace('\'', "''"));
         sql.push_str(&filter);
         count_sql.push_str(&filter);
     }

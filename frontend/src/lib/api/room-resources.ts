@@ -20,9 +20,11 @@ import { API_BASE_URL } from './config';
 export type ResourceType = 'video' | 'pdf' | 'document' | 'image' | 'spreadsheet' | 'archive' | 'other';
 
 export type ContentType = 
+	| 'introduction' // ICT 7: Main videos
 	| 'tutorial' 
 	| 'daily_video' 
 	| 'weekly_watchlist' 
+	| 'weekly_alert' // ICT 7: Explosive Swings
 	| 'trade_plan' 
 	| 'guide' 
 	| 'chart' 
@@ -31,6 +33,15 @@ export type ContentType =
 	| 'cheat_sheet' 
 	| 'archive' 
 	| 'other';
+
+// ICT 7: Section types for dashboard organization
+export type SectionType = 
+	| 'introduction'
+	| 'latest_updates'
+	| 'premium_daily_videos'
+	| 'watchlist'
+	| 'weekly_alerts'
+	| 'learning_center';
 
 export type VideoPlatform = 'bunny' | 'vimeo' | 'youtube' | 'wistia' | 'direct';
 
@@ -43,6 +54,7 @@ export interface RoomResource {
 	description?: string;
 	resource_type: ResourceType;
 	content_type: ContentType;
+	section?: SectionType; // ICT 7: Section for dashboard organization
 	file_url: string;
 	embed_url: string;
 	mime_type?: string;
@@ -90,6 +102,7 @@ export interface CreateResourceRequest {
 	is_published?: boolean;
 	is_featured?: boolean;
 	is_pinned?: boolean;
+	section?: SectionType; // ICT 7: Section for organization
 	category?: string;
 	tags?: string[];
 	difficulty_level?: DifficultyLevel;
@@ -438,9 +451,11 @@ export function formatResourceForDisplay(resource: RoomResource): {
 	};
 
 	const contentLabels: Record<ContentType, string> = {
+		introduction: 'Introduction', // ICT 7: Main videos
 		tutorial: 'Tutorial',
 		daily_video: 'Daily Video',
 		weekly_watchlist: 'Weekly Watchlist',
+		weekly_alert: 'Weekly Alert', // ICT 7: Explosive Swings
 		trade_plan: 'Trade Plan',
 		guide: 'Guide',
 		chart: 'Chart',

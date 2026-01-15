@@ -66,9 +66,11 @@
 	];
 
 	const CONTENT_TYPES: { id: ContentType; name: string; resourceTypes: ResourceType[] }[] = [
+		{ id: 'introduction', name: 'Introduction', resourceTypes: ['video'] }, // ICT 7: Main videos
 		{ id: 'tutorial', name: 'Tutorial', resourceTypes: ['video'] },
 		{ id: 'daily_video', name: 'Daily Video', resourceTypes: ['video'] },
 		{ id: 'weekly_watchlist', name: 'Weekly Watchlist', resourceTypes: ['video'] },
+		{ id: 'weekly_alert', name: 'Weekly Alert', resourceTypes: ['video'] }, // ICT 7: Explosive Swings
 		{ id: 'trade_plan', name: 'Trade Plan', resourceTypes: ['pdf', 'document'] },
 		{ id: 'guide', name: 'Guide', resourceTypes: ['pdf', 'document', 'video'] },
 		{ id: 'chart', name: 'Chart', resourceTypes: ['image', 'pdf'] },
@@ -76,6 +78,16 @@
 		{ id: 'template', name: 'Template', resourceTypes: ['document', 'spreadsheet'] },
 		{ id: 'cheat_sheet', name: 'Cheat Sheet', resourceTypes: ['pdf', 'image'] },
 		{ id: 'other', name: 'Other', resourceTypes: ['video', 'pdf', 'document', 'image', 'spreadsheet', 'archive', 'other'] }
+	];
+
+	// ICT 7: Section definitions for dashboard organization
+	const ROOM_SECTIONS = [
+		{ id: 'introduction', name: 'Introduction', icon: IconVideo, description: 'Main welcome and overview videos' },
+		{ id: 'latest_updates', name: 'Latest Updates', icon: IconRefresh, description: 'Recent announcements and updates' },
+		{ id: 'premium_daily_videos', name: 'Premium Daily Videos', icon: IconVideo, description: 'Daily trading analysis' },
+		{ id: 'watchlist', name: 'Watchlist', icon: IconFileText, description: 'Weekly stock watchlist' },
+		{ id: 'weekly_alerts', name: 'Weekly Alerts', icon: IconAlertCircle, description: 'Weekly alert summaries', roomsOnly: ['explosive-swings'] },
+		{ id: 'learning_center', name: 'Learning Center', icon: IconFileText, description: 'Educational content' }
 	];
 
 	const VIDEO_PLATFORMS: { id: VideoPlatform; name: string }[] = [
@@ -124,6 +136,7 @@
 	let searchQuery = $state('');
 	let selectedResourceType = $state<ResourceType | 'all'>('all');
 	let selectedContentType = $state<ContentType | 'all'>('all');
+	let selectedSection = $state<string>('all'); // ICT 7: Section filter
 
 	// Modal state
 	let showCreateModal = $state(false);
@@ -140,6 +153,7 @@
 		description: '',
 		resource_type: 'video',
 		content_type: 'daily_video',
+		section: 'latest_updates', // ICT 7: Default section
 		file_url: '',
 		mime_type: '',
 		video_platform: 'direct',
@@ -164,9 +178,25 @@
 		
 		const matchesType = selectedResourceType === 'all' || resource.resource_type === selectedResourceType;
 		const matchesContent = selectedContentType === 'all' || resource.content_type === selectedContentType;
+		const matchesSection = selectedSection === 'all' || resource.section === selectedSection; // ICT 7: Section filter
 		
-		return matchesSearch && matchesType && matchesContent;
+		return matchesSearch && matchesType && matchesContent && matchesSection;
 	}));
+
+	// ICT 7: Get available sections for the selected room
+	const availableSections = $derived(
+		ROOM_SECTIONS.filter(section => {
+			// Check if section is restricted to specific rooms
+			if (section.roomsOnly && selectedRoom) {
+				return section.roomsOnly.includes(selectedRoom.slug);
+			}
+			// Check if room has this section in available_sections
+			if (selectedRoom?.available_sections) {
+				return selectedRoom.available_sections.includes(section.id);
+			}
+			return true;
+		})
+	);
 
 	const availableContentTypes = $derived(
 		CONTENT_TYPES.filter(ct => 
@@ -190,11 +220,14 @@
 	// API FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	// ICT 7 CORB Fix: Hardcoded fallback data when backend is unavailable
+	// ICT 7: All 6 trading rooms in correct order
 	const FALLBACK_ROOMS: TradingRoom[] = [
-		{ id: 1, name: 'Day Trading Room', slug: 'day-trading-room', type: 'trading_room', is_active: true, is_featured: true, sort_order: 1, created_at: '', updated_at: '' },
-		{ id: 2, name: 'Explosive Swings', slug: 'explosive-swings', type: 'trading_room', is_active: true, is_featured: false, sort_order: 2, created_at: '', updated_at: '' },
-		{ id: 3, name: 'High Octane Scanner', slug: 'high-octane-scanner', type: 'trading_room', is_active: true, is_featured: false, sort_order: 3, created_at: '', updated_at: '' }
+		{ id: 1, name: 'Day Trading Room', slug: 'day-trading-room', type: 'trading_room', is_active: true, is_featured: true, sort_order: 1, icon: 'chart-line', color: '#3b82f6', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'watchlist', 'learning_center'], created_at: '', updated_at: '' },
+		{ id: 2, name: 'Swing Trading Room', slug: 'swing-trading-room', type: 'trading_room', is_active: true, is_featured: false, sort_order: 2, icon: 'trending-up', color: '#10b981', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'watchlist', 'learning_center'], created_at: '', updated_at: '' },
+		{ id: 3, name: 'Small Account Mentorship', slug: 'small-account-mentorship', type: 'mentorship', is_active: true, is_featured: false, sort_order: 3, icon: 'wallet', color: '#f59e0b', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'learning_center'], created_at: '', updated_at: '' },
+		{ id: 4, name: 'Explosive Swings', slug: 'explosive-swings', type: 'alert_service', is_active: true, is_featured: false, sort_order: 4, icon: 'rocket', color: '#ef4444', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'watchlist', 'weekly_alerts', 'learning_center'], created_at: '', updated_at: '' },
+		{ id: 5, name: 'SPX Profit Pulse', slug: 'spx-profit-pulse', type: 'alert_service', is_active: true, is_featured: false, sort_order: 5, icon: 'activity', color: '#8b5cf6', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'learning_center'], created_at: '', updated_at: '' },
+		{ id: 6, name: 'High Octane Scanner', slug: 'high-octane-scanner', type: 'alert_service', is_active: true, is_featured: false, sort_order: 6, icon: 'radar', color: '#06b6d4', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'learning_center'], created_at: '', updated_at: '' }
 	];
 
 	async function loadRoomsAndTraders() {

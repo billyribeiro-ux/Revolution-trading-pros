@@ -18,17 +18,20 @@ export interface TradingRoom {
 	id: number;
 	name: string;
 	slug: string;
-	type: 'trading_room' | 'alert_service';
+	type: 'trading_room' | 'alert_service' | 'mentorship';
 	description?: string;
 	short_description?: string;
 	icon?: string;
 	color?: string;
 	image_url?: string;
 	logo_url?: string;
+	banner_url?: string;
 	is_active: boolean;
 	is_featured: boolean;
+	is_public?: boolean;
 	sort_order: number;
 	features?: string[];
+	available_sections?: string[]; // ICT 7: Section configuration
 	schedule?: Record<string, any>;
 	metadata?: Record<string, any>;
 	traders?: Trader[];
@@ -37,6 +40,20 @@ export interface TradingRoom {
 	archives_count?: number;
 	created_at: string;
 	updated_at: string;
+}
+
+// ICT 7: Room Section definition
+export interface RoomSection {
+	id: number;
+	section_key: string;
+	name: string;
+	description?: string;
+	icon?: string;
+	sort_order: number;
+	is_active: boolean;
+	allowed_resource_types?: string[];
+	max_items?: number | null;
+	restricted_to_rooms?: string[] | null;
 }
 
 export interface Trader {
@@ -148,11 +165,13 @@ const ENDPOINTS = {
 	roomBySlug: (slug: string) => `/api/trading-rooms/${slug}`,
 	roomVideos: (slug: string) => `/api/trading-rooms/${slug}/videos`,
 	traders: '/api/trading-rooms/traders',
+	sections: '/api/trading-rooms/sections', // ICT 7: Sections endpoint
 
 	// Admin routes
 	admin: {
 		rooms: '/api/admin/trading-rooms',
 		roomById: (id: number) => `/api/admin/trading-rooms/${id}`,
+		sections: '/api/admin/trading-rooms/sections', // ICT 7: Admin sections
 		traders: '/api/admin/trading-rooms/traders',
 		traderById: (id: number) => `/api/admin/trading-rooms/traders/${id}`,
 		videos: '/api/admin/trading-rooms/videos',
@@ -205,6 +224,13 @@ export const tradingRoomsApi = {
 	 */
 	delete: async (id: number): Promise<ApiResponse<void>> => {
 		return api.delete(ENDPOINTS.admin.roomById(id));
+	},
+
+	/**
+	 * ICT 7: List all available sections
+	 */
+	listSections: async (): Promise<ApiResponse<RoomSection[]>> => {
+		return api.get(ENDPOINTS.sections);
 	}
 };
 
