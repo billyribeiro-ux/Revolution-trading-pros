@@ -20,6 +20,8 @@
 	let uploading = $state(false);
 	let saving = $state(false);
 	let uploadError = $state('');
+	let formError = $state('');
+	let successMessage = $state('');
 
 	function generateSlug() {
 		if (!indicator.slug && indicator.name) {
@@ -135,8 +137,11 @@
 	}
 
 	async function saveIndicator() {
+		formError = '';
+		successMessage = '';
+
 		if (!indicator.name || !indicator.price) {
-			alert('Please fill in name and price');
+			formError = 'Please fill in the required fields: Name and Price';
 			return;
 		}
 
@@ -146,10 +151,11 @@
 				method: 'POST',
 				body: JSON.stringify(indicator)
 			});
-			goto('/admin/indicators');
-		} catch (error) {
+			successMessage = 'Indicator created successfully! Redirecting...';
+			setTimeout(() => goto('/admin/indicators'), 1500);
+		} catch (error: any) {
 			console.error('Failed to save indicator:', error);
-			alert('Failed to save indicator');
+			formError = error.message || 'Failed to save indicator. Please try again.';
 		} finally {
 			saving = false;
 		}
@@ -281,6 +287,14 @@
 						<span>Active (visible to customers)</span>
 					</label>
 				</div>
+
+				{#if formError}
+					<div class="form-error">{formError}</div>
+				{/if}
+
+				{#if successMessage}
+					<div class="form-success">{successMessage}</div>
+				{/if}
 
 				<div class="form-actions">
 					<button class="btn-secondary" onclick={() => goto('/admin/indicators')}> Cancel </button>
@@ -672,13 +686,29 @@
 		display: none;
 	}
 
-	.upload-error {
+	.upload-error,
+	.form-error {
 		margin-top: 0.5rem;
 		padding: 0.75rem 1rem;
 		background: rgba(239, 68, 68, 0.15);
 		border: 1px solid rgba(239, 68, 68, 0.3);
 		border-radius: 8px;
 		color: #fca5a5;
+		font-size: 0.875rem;
+	}
+
+	.form-error {
+		margin-bottom: 1rem;
+	}
+
+	.form-success {
+		margin-top: 0.5rem;
+		margin-bottom: 1rem;
+		padding: 0.75rem 1rem;
+		background: rgba(34, 197, 94, 0.15);
+		border: 1px solid rgba(34, 197, 94, 0.3);
+		border-radius: 8px;
+		color: #86efac;
 		font-size: 0.875rem;
 	}
 

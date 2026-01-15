@@ -809,19 +809,13 @@
 				analysis.suggestedPrice = 797;
 			}
 
-			alert(
-				`📊 AI Pricing Analysis Complete\n\n` +
-					`Your Course: ${course.duration_hours} hours of content\n` +
-					`Market Average: $${analysis.marketAverage}\n\n` +
-					`Competitor Analysis:\n` +
-					analysis.competitors.map((c) => `• ${c.name}: $${c.price} (${c.hours}h)`).join('\n') +
-					`\n\n💡 Recommended Price: $${analysis.suggestedPrice}\n\n` +
-					`Consider these pricing strategies:\n` +
-					`• One-time: $${analysis.suggestedPrice}\n` +
-					`• Payment plan: 3 x $${Math.ceil((analysis.suggestedPrice / 3) * 1.1)}\n` +
-					`• Subscription: $${Math.ceil(analysis.suggestedPrice / 6)}/month\n` +
-					`• Early bird: $${Math.ceil(analysis.suggestedPrice * 0.7)} (30% off)`
-			);
+			// Show pricing analysis in-app instead of alert
+			pricingAnalysis = {
+				show: true,
+				marketAverage: analysis.marketAverage,
+				suggestedPrice: analysis.suggestedPrice,
+				competitors: analysis.competitors
+			};
 
 			analyzing = false;
 		}, 2000);
@@ -833,6 +827,15 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let uploadError = $state('');
+	let formError = $state('');
+	let successMessage = $state('');
+	let pricingAnalysis = $state<{
+		show: boolean;
+		marketAverage: number;
+		suggestedPrice: number;
+		competitors: { name: string; price: number; hours: number }[];
+	} | null>(null);
+	let showPublishWarning = $state(false);
 
 	/**
 	 * Resize image to max dimensions while maintaining aspect ratio
@@ -1277,21 +1280,24 @@
 	}
 
 	async function saveCourse() {
+		formError = '';
+		successMessage = '';
+
 		// Final validation
 		if (!course.name) {
-			alert('Please enter a course title');
+			formError = 'Please enter a course title';
 			activeTab = 'basic';
 			return;
 		}
 
 		if (course.pricing_model !== 'free' && !course.price) {
-			alert('Please set a price for your course');
+			formError = 'Please set a price for your course';
 			activeTab = 'pricing';
 			return;
 		}
 
 		if (course.modules.length === 0) {
-			alert('Please add at least one module');
+			formError = 'Please add at least one module';
 			activeTab = 'curriculum';
 			return;
 		}
@@ -1379,28 +1385,29 @@
 			localStorage.removeItem('course-draft');
 			localStorage.removeItem('course-draft-date');
 
-			// Redirect to courses list
-			goto('/admin/courses');
-		} catch (error) {
+			// Show success and redirect
+			successMessage = 'Course created successfully! Redirecting...';
+			setTimeout(() => goto('/admin/courses'), 1500);
+		} catch (error: any) {
 			if (error instanceof AdminApiError) {
 				if (error.status === 401) {
 					goto('/login');
 					return;
 				}
 
-				if (error.isValidationError && error.response?.errors) {
-					const firstField = Object.keys(error.response.errors)[0];
+				if (error.isValidationError && error.errors) {
+					const firstField = Object.keys(error.errors)[0];
 					if (firstField) {
-						const firstMessage = error.response.errors[firstField]?.[0];
-						alert(firstMessage || error.message);
+						const firstMessage = error.errors[firstField]?.[0];
+						formError = firstMessage || error.message;
 					} else {
-						alert(error.message);
+						formError = error.message;
 					}
 				} else {
-					alert(error.message);
+					formError = error.message;
 				}
 			} else {
-				alert('Failed to save course. Please try again.');
+				formError = error.message || 'Failed to save course. Please try again.';
 			}
 			console.error('Save error:', error);
 		} finally {
@@ -1410,13 +1417,22 @@
 
 	async function publishCourse() {
 		if (overallScore < 70) {
-			if (!confirm('Your course quality score is below 70%. Are you sure you want to publish?')) {
-				return;
-			}
+			showPublishWarning = true;
+			return;
 		}
 
 		course.is_active = true;
 		await saveCourse();
+	}
+
+	async function confirmPublish() {
+		showPublishWarning = false;
+		course.is_active = true;
+		await saveCourse();
+	}
+
+	function cancelPublish() {
+		showPublishWarning = false;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1543,7 +1559,71 @@
 	<title>Create Course | Enterprise Admin</title>
 </svelte:head>
 
+<!-- Modals and Notifications -->
+{#if showPublishWarning}
+	<div class="modal-overlay">
+		<div class="modal-content">
+			<h3>Publish Warning</h3>
+			<p>Your course quality score is below 70%. Are you sure you want to publish?</p>
+			<div class="modal-actions">
+				<button class="btn-secondary" onclick={cancelPublish}>Cancel</button>
+				<button class="btn-primary" onclick={confirmPublish}>Publish Anyway</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+{#if pricingAnalysis?.show}
+	<div class="modal-overlay">
+		<div class="modal-content pricing-modal">
+			<h3>AI Pricing Analysis Complete</h3>
+			<div class="pricing-details">
+				<p><strong>Your Course:</strong> {course.duration_hours} hours of content</p>
+				<p><strong>Market Average:</strong> ${pricingAnalysis.marketAverage}</p>
+
+				<h4>Competitor Analysis</h4>
+				<ul>
+					{#each pricingAnalysis.competitors as comp}
+						<li>{comp.name}: ${comp.price} ({comp.hours}h)</li>
+					{/each}
+				</ul>
+
+				<div class="suggested-price">
+					<span>Recommended Price:</span>
+					<strong>${pricingAnalysis.suggestedPrice}</strong>
+				</div>
+
+				<h4>Pricing Strategies</h4>
+				<ul>
+					<li>One-time: ${pricingAnalysis.suggestedPrice}</li>
+					<li>Payment plan: 3 × ${Math.ceil((pricingAnalysis.suggestedPrice / 3) * 1.1)}</li>
+					<li>Subscription: ${Math.ceil(pricingAnalysis.suggestedPrice / 6)}/month</li>
+					<li>Early bird: ${Math.ceil(pricingAnalysis.suggestedPrice * 0.7)} (30% off)</li>
+				</ul>
+			</div>
+			<div class="modal-actions">
+				<button class="btn-primary" onclick={() => (pricingAnalysis = null)}>Got it</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
 <div class="create-page">
+	<!-- Form Messages -->
+	{#if formError}
+		<div class="form-error-banner">
+			<IconAlertCircle size={20} />
+			<span>{formError}</span>
+			<button onclick={() => (formError = '')}><IconX size={16} /></button>
+		</div>
+	{/if}
+
+	{#if successMessage}
+		<div class="form-success-banner">
+			<IconCheck size={20} />
+			<span>{successMessage}</span>
+		</div>
+	{/if}
 	<!-- Header with Progress -->
 	<div class="page-header">
 		<div class="header-content">
@@ -2873,6 +2953,127 @@
 		box-sizing: border-box;
 		margin: 0;
 		padding: 0;
+	}
+
+	/* Modal Overlay */
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.7);
+		backdrop-filter: blur(4px);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+	}
+
+	.modal-content {
+		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+		border: 1px solid rgba(99, 102, 241, 0.3);
+		border-radius: 16px;
+		padding: 2rem;
+		max-width: 500px;
+		width: 90%;
+		box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+	}
+
+	.modal-content h3 {
+		color: #f1f5f9;
+		font-size: 1.25rem;
+		margin-bottom: 1rem;
+	}
+
+	.modal-content p {
+		color: #94a3b8;
+		margin-bottom: 1.5rem;
+		line-height: 1.6;
+	}
+
+	.modal-actions {
+		display: flex;
+		gap: 1rem;
+		justify-content: flex-end;
+	}
+
+	.pricing-modal {
+		max-width: 600px;
+	}
+
+	.pricing-details h4 {
+		color: #a5b4fc;
+		font-size: 1rem;
+		margin: 1.5rem 0 0.75rem;
+	}
+
+	.pricing-details ul {
+		list-style: none;
+		color: #94a3b8;
+	}
+
+	.pricing-details li {
+		padding: 0.5rem 0;
+		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.suggested-price {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1rem;
+		background: rgba(99, 102, 241, 0.15);
+		border-radius: 8px;
+		margin: 1rem 0;
+	}
+
+	.suggested-price span {
+		color: #94a3b8;
+	}
+
+	.suggested-price strong {
+		color: #86efac;
+		font-size: 1.5rem;
+	}
+
+	/* Form Message Banners */
+	.form-error-banner,
+	.form-success-banner {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 1rem 1.5rem;
+		border-radius: 12px;
+		margin-bottom: 1.5rem;
+		font-size: 0.9375rem;
+	}
+
+	.form-error-banner {
+		background: rgba(239, 68, 68, 0.15);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		color: #fca5a5;
+	}
+
+	.form-error-banner button {
+		margin-left: auto;
+		background: none;
+		border: none;
+		color: #fca5a5;
+		cursor: pointer;
+		padding: 0.25rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		border-radius: 4px;
+		transition: background 0.2s;
+	}
+
+	.form-error-banner button:hover {
+		background: rgba(239, 68, 68, 0.2);
+	}
+
+	.form-success-banner {
+		background: rgba(34, 197, 94, 0.15);
+		border: 1px solid rgba(34, 197, 94, 0.3);
+		color: #86efac;
 	}
 
 	.create-page {
