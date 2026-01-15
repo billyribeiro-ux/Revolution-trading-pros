@@ -674,7 +674,9 @@
 
 <!-- Edit Plan Modal -->
 {#if showEditModal && editingPlan}
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
 	<div class="modal-overlay" onclick={() => (showEditModal = false)} onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)} role="dialog" aria-modal="true" tabindex="-1">
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
 		<div
 			class="modal modal-large"
 			onclick={(e) => e.stopPropagation()}
@@ -808,7 +810,9 @@
 
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal && deletingPlan}
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
 	<div class="modal-overlay" onclick={() => (showDeleteModal = false)} onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)} role="dialog" aria-modal="true" tabindex="-1">
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
 		<div
 			class="modal modal-small"
 			onclick={(e) => e.stopPropagation()}
@@ -847,7 +851,9 @@
 
 <!-- Preview Modal -->
 {#if showPreviewModal && previewingPlan}
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
 	<div class="modal-overlay" onclick={() => (showPreviewModal = false)} onkeydown={(e) => e.key === 'Escape' && (showPreviewModal = false)} role="dialog" aria-modal="true" tabindex="-1">
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
 		<div
 			class="modal modal-preview"
 			onclick={(e) => e.stopPropagation()}
