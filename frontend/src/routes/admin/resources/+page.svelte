@@ -615,6 +615,13 @@
 					<option value={type.id}>{type.name}</option>
 				{/each}
 			</select>
+			<!-- ICT 7: Section filter -->
+			<select bind:value={selectedSection}>
+				<option value="all">All Sections</option>
+				{#each availableSections as section}
+					<option value={section.id}>{section.name}</option>
+				{/each}
+			</select>
 		</div>
 	</div>
 
@@ -745,6 +752,17 @@
 							{/each}
 						</select>
 					</div>
+				</div>
+
+				<!-- ICT 7: Section Selection -->
+				<div class="form-group">
+					<label for="section">Dashboard Section</label>
+					<select id="section" bind:value={formData.section}>
+						{#each availableSections as section}
+							<option value={section.id}>{section.name}</option>
+						{/each}
+					</select>
+					<small class="form-hint">Where this resource appears in the trading room dashboard</small>
 				</div>
 
 				<!-- File URL -->

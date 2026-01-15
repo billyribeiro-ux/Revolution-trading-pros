@@ -15,11 +15,18 @@
 	 */
 
 	interface Props {
-		onUploadComplete?: (data: { video_url: string; embed_url: string; video_guid: string }) => void;
+		onUploadComplete?: (data: { video_url: string; embed_url: string; video_guid: string; thumbnail_url: string; duration?: number }) => void;
 		onError?: (error: string) => void;
+		libraryId?: number;
+		apiBase?: string;
 	}
 
-	let { onUploadComplete, onError }: Props = $props();
+	let { 
+		onUploadComplete, 
+		onError, 
+		libraryId = 389539, // Default Bunny library ID
+		apiBase = '/api/admin/bunny' 
+	}: Props = $props();
 
 	// State
 	let isDragging = $state(false);
@@ -94,8 +101,41 @@
 		isGettingUrl = true;
 
 		try {
-			// TODO: Implement new video upload approach
-			throw new Error('Video upload functionality temporarily disabled - new implementation needed');
+			// Step 1: Create video entry and get upload URL from our API
+			const createResponse = await fetch(`${apiBase}/create-video`, {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					title: videoFile.name.replace(/\.[^/.]+$/, ''),
+					library_id: libraryId
+				})
+			});
+
+			if (!createResponse.ok) {
+				const errorData = await createResponse.json().catch(() => ({}));
+				throw new Error(errorData.error || 'Failed to create video entry');
+			}
+
+			const { video_guid, upload_url, video_url, embed_url } = await createResponse.json();
+			isGettingUrl = false;
+
+			// Step 2: Upload to Bunny.net
+			uploadStatus = 'uploading';
+			await uploadToBunny(upload_url, videoFile);
+
+			// Step 3: Wait for processing
+			uploadStatus = 'processing';
+			const finalData = await waitForProcessing(video_guid);
+
+			// Step 4: Complete
+			uploadStatus = 'complete';
+			onUploadComplete?.({
+				video_url: finalData.video_url || video_url,
+				embed_url: finalData.embed_url || embed_url,
+				video_guid,
+				thumbnail_url: finalData.thumbnail_url || '',
+				duration: finalData.duration
+			});
 
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Upload failed';
@@ -106,6 +146,29 @@
 			isUploading = false;
 			isGettingUrl = false;
 		}
+	}
+
+	async function waitForProcessing(videoGuid: string, maxAttempts = 30): Promise<any> {
+		for (let i = 0; i < maxAttempts; i++) {
+			await new Promise(resolve => setTimeout(resolve, 2000));
+			
+			try {
+				const response = await fetch(`${apiBase}/video-status/${videoGuid}`);
+				if (response.ok) {
+					const data = await response.json();
+					if (data.status === 'ready' || data.status === 4) {
+						return data;
+					}
+					if (data.status === 'failed' || data.status === 5) {
+						throw new Error('Video processing failed');
+					}
+				}
+			} catch (e) {
+				// Continue waiting
+			}
+		}
+		// Return basic data if processing takes too long
+		return {};
 	}
 
 	async function uploadToBunny(uploadUrl: string, file: File): Promise<void> {

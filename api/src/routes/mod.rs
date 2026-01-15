@@ -49,6 +49,7 @@ pub mod subscriptions_admin;
 pub mod room_content;
 pub mod watchlist;
 pub mod room_resources;
+pub mod bunny_upload; // ICT 7: Bunny.net video upload API
 
 use axum::Router;
 use crate::AppState;
@@ -119,6 +120,8 @@ pub fn api_router() -> Router<AppState> {
         // Room Resources - Unified content management (videos, PDFs, docs, images)
         .nest("/room-resources", room_resources::public_router())
         .nest("/admin/room-resources", room_resources::admin_router())
+        // Bunny.net Video Upload - ICT 7 Grade
+        .nest("/admin/bunny", bunny_upload::admin_router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())
