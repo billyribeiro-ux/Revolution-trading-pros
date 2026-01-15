@@ -8,64 +8,37 @@
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
+	// ICT 7 FIX: Match actual backend schema (admin_indicators.rs)
 	interface Indicator {
-		id: string;
+		id: number; // Backend uses i64
 		name: string;
 		slug: string;
-		tagline?: string;
-		description?: string;
-		price_cents: number;
-		is_free?: boolean;
-		logo_url?: string;
-		card_image_url?: string;
-		short_description?: string;
+		description?: string; // Backend uses 'description' not 'tagline'
 		long_description?: string;
-		features?: string[];
-		requirements?: string[];
-		supported_platforms?: string[];
+		price?: number; // Backend uses price (float dollars), not price_cents
+		is_active?: boolean; // Backend uses 'is_active' not 'status'
+		thumbnail?: string; // Backend uses 'thumbnail' not 'logo_url'
+		platform?: string;
 		version?: string;
-		status?: string;
-		is_published?: boolean;
+		download_url?: string;
+		documentation_url?: string;
+		features?: any; // JSON value in backend
+		requirements?: any; // JSON value in backend
+		screenshots?: any; // JSON value in backend
 		meta_title?: string;
 		meta_description?: string;
+		created_at?: string;
+		updated_at?: string;
 	}
 
-	interface IndicatorFile {
-		id: number;
-		file_name: string;
-		platform: string;
-		file_size_bytes?: number;
-		version?: string;
-		display_name?: string;
-		download_count?: number;
-		is_active?: boolean;
-	}
-
-	interface IndicatorVideo {
-		id: number;
-		title: string;
-		bunny_video_guid: string;
-		embed_url?: string;
-		thumbnail_url?: string;
-		duration_seconds?: number;
-		is_featured?: boolean;
-		is_preview?: boolean;
-	}
-
-	interface TradingPlatform {
-		id: number;
-		slug: string;
-		display_name: string;
-		file_extension?: string;
-	}
+	// ICT 7 NOTE: Files/Videos/Platforms endpoints don't exist in backend yet
+	// These features are planned but not implemented in admin_indicators.rs
 
 	let indicator = $state<Indicator | null>(null);
-	let files = $state<IndicatorFile[]>([]);
-	let videos = $state<IndicatorVideo[]>([]);
-	let platforms = $state<TradingPlatform[]>([]);
 	let loading = $state(true);
 	let saving = $state(false);
-	let activeTab = $state<'details' | 'files' | 'videos' | 'seo'>('details');
+	// ICT 7 FIX: Remove tabs for non-existent backend features
+	let activeTab = $state<'details' | 'seo'>('details');
 	let error = $state('');
 	let success = $state('');
 
@@ -81,20 +54,12 @@
 	const fetchIndicator = async () => {
 		loading = true;
 		try {
-			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
-			const [indicatorData, platformsData] = await Promise.all([
-				adminFetch(`/api/admin/indicators/${indicatorId}`),
-				adminFetch('/api/admin/indicators/platforms')
-			]);
+			// ICT 7 FIX: Backend returns indicator directly in data, not data.indicator
+			const indicatorData = await adminFetch(`/api/admin/indicators/${indicatorId}`);
 
 			if (indicatorData.success) {
-				indicator = indicatorData.data.indicator;
-				files = indicatorData.data.files || [];
-				videos = indicatorData.data.videos || [];
-			}
-
-			if (platformsData.success) {
-				platforms = platformsData.data;
+				// Backend returns { success: true, data: <indicator> }
+				indicator = indicatorData.data;
 			}
 		} catch (e) {
 			error = 'Failed to load indicator';
@@ -131,48 +96,23 @@
 		}
 	};
 
-	const publishIndicator = async () => {
+	// ICT 7 FIX: Backend uses /toggle endpoint, not /publish
+	const toggleIndicator = async () => {
 		if (!indicator) return;
 		try {
-			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
-			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/publish`, { method: 'POST' });
+			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/toggle`, { method: 'POST' });
 			if (data.success) {
 				indicator = data.data;
-				success = 'Indicator published!';
+				success = indicator.is_active ? 'Indicator activated!' : 'Indicator deactivated!';
+				setTimeout(() => success = '', 3000);
 			}
 		} catch (e) {
-			error = 'Failed to publish';
+			error = 'Failed to toggle status';
 		}
 	};
 
-	const deleteFile = async (fileId: number) => {
-		if (!confirm('Delete this file?')) return;
-		try {
-			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
-			await adminFetch(`/api/admin/indicators/${indicatorId}/files/${fileId}`, { method: 'DELETE' });
-			files = files.filter(f => f.id !== fileId);
-		} catch (e) {
-			error = 'Failed to delete file';
-		}
-	};
-
-	const deleteVideo = async (videoId: number) => {
-		if (!confirm('Delete this video?')) return;
-		try {
-			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
-			await adminFetch(`/api/admin/indicators/${indicatorId}/videos/${videoId}`, { method: 'DELETE' });
-			videos = videos.filter(v => v.id !== videoId);
-		} catch (e) {
-			error = 'Failed to delete video';
-		}
-	};
-
-	const formatFileSize = (bytes?: number) => {
-		if (!bytes) return '-';
-		if (bytes < 1024) return `${bytes} B`;
-		if (bytes < 1048576) return `${(bytes / 1024).toFixed(1)} KB`;
-		return `${(bytes / 1048576).toFixed(1)} MB`;
-	};
+	// ICT 7 NOTE: File/Video management endpoints don't exist in backend yet
+	// These will need to be implemented in admin_indicators.rs
 </script>
 
 <svelte:head>
@@ -195,13 +135,17 @@
 			<div class="header-left">
 				<a href="/admin/indicators" class="back-link">← Back</a>
 				<h1>{indicator.name}</h1>
-				<span class="status status--{indicator.status || 'draft'}">{indicator.status || 'draft'}</span>
+					<!-- ICT 7 FIX: Use is_active instead of status -->
+				<span class="status" class:status--published={indicator.is_active} class:status--draft={!indicator.is_active}>
+					{indicator.is_active ? 'Active' : 'Inactive'}
+				</span>
 			</div>
 			<div class="header-actions">
 				<a href="/indicators/{indicator.slug}" target="_blank" class="btn-secondary">Preview</a>
-				{#if !indicator.is_published}
-					<button class="btn-success" onclick={publishIndicator}>Publish</button>
-				{/if}
+				<!-- ICT 7 FIX: Use toggle endpoint instead of publish -->
+				<button class="btn-success" onclick={toggleIndicator}>
+					{indicator.is_active ? 'Deactivate' : 'Activate'}
+				</button>
 				<button class="btn-primary" onclick={saveIndicator} disabled={saving}>
 					{saving ? 'Saving...' : 'Save Changes'}
 				</button>
@@ -215,14 +159,9 @@
 			<div class="alert alert-success">{success}</div>
 		{/if}
 
+		<!-- ICT 7 FIX: Remove Files/Videos tabs - endpoints don't exist in backend yet -->
 		<nav class="tabs">
 			<button class:active={activeTab === 'details'} onclick={() => activeTab = 'details'}>Details</button>
-			<button class:active={activeTab === 'files'} onclick={() => activeTab = 'files'}>
-				Files <span class="badge">{files.length}</span>
-			</button>
-			<button class:active={activeTab === 'videos'} onclick={() => activeTab = 'videos'}>
-				Videos <span class="badge">{videos.length}</span>
-			</button>
 			<button class:active={activeTab === 'seo'} onclick={() => activeTab = 'seo'}>SEO</button>
 		</nav>
 
@@ -239,46 +178,44 @@
 							<label for="slug">Slug</label>
 							<input type="text" id="slug" bind:value={indicator.slug} />
 						</div>
-						<div class="form-group full-width">
-							<label for="tagline">Tagline</label>
-							<input type="text" id="tagline" bind:value={indicator.tagline} placeholder="Short description for cards" />
-						</div>
+						<!-- ICT 7 FIX: Match backend fields -->
 						<div class="form-group">
 							<label for="price">Price (USD)</label>
-							<input type="number" id="price" step="0.01" value={(indicator!.price_cents / 100).toFixed(2)} onchange={(e) => indicator!.price_cents = Math.round(parseFloat(e.currentTarget.value) * 100)} />
+							<input type="number" id="price" step="0.01" bind:value={indicator.price} />
 						</div>
 						<div class="form-group">
-							<label for="is_free">Free?</label>
-							<select id="is_free" bind:value={indicator.is_free}>
-								<option value={false}>Paid</option>
-								<option value={true}>Free</option>
-							</select>
+							<label for="platform">Platform</label>
+							<input type="text" id="platform" bind:value={indicator.platform} placeholder="thinkorswim, tradingview, etc." />
 						</div>
 						<div class="form-group">
 							<label for="version">Version</label>
 							<input type="text" id="version" bind:value={indicator.version} placeholder="1.0" />
 						</div>
 						<div class="form-group">
-							<label for="status">Status</label>
-							<select id="status" bind:value={indicator.status}>
-								<option value="draft">Draft</option>
-								<option value="published">Published</option>
-								<option value="archived">Archived</option>
+							<label for="is_active">Status</label>
+							<select id="is_active" bind:value={indicator.is_active}>
+								<option value={true}>Active</option>
+								<option value={false}>Inactive</option>
 							</select>
 						</div>
 					</div>
 				</div>
 
+				<!-- ICT 7 FIX: Match backend fields -->
 				<div class="form-section">
-					<h2>Images</h2>
+					<h2>Images & URLs</h2>
 					<div class="form-grid">
 						<div class="form-group">
-							<label for="logo_url">Logo URL</label>
-							<input type="url" id="logo_url" bind:value={indicator.logo_url} placeholder="https://..." />
+							<label for="thumbnail">Thumbnail URL</label>
+							<input type="url" id="thumbnail" bind:value={indicator.thumbnail} placeholder="https://..." />
 						</div>
 						<div class="form-group">
-							<label for="card_image_url">Card Image URL</label>
-							<input type="url" id="card_image_url" bind:value={indicator.card_image_url} placeholder="https://..." />
+							<label for="download_url">Download URL</label>
+							<input type="url" id="download_url" bind:value={indicator.download_url} placeholder="https://..." />
+						</div>
+						<div class="form-group full-width">
+							<label for="documentation_url">Documentation URL</label>
+							<input type="url" id="documentation_url" bind:value={indicator.documentation_url} placeholder="https://..." />
 						</div>
 					</div>
 				</div>
@@ -286,8 +223,8 @@
 				<div class="form-section">
 					<h2>Description</h2>
 					<div class="form-group full-width">
-						<label for="short_description">Short Description</label>
-						<textarea id="short_description" rows="3" bind:value={indicator.short_description}></textarea>
+						<label for="description">Short Description</label>
+						<textarea id="description" rows="3" bind:value={indicator.description}></textarea>
 					</div>
 					<div class="form-group full-width">
 						<label for="long_description">Long Description</label>
@@ -295,113 +232,7 @@
 					</div>
 				</div>
 
-			{:else if activeTab === 'files'}
-				<div class="form-section">
-					<div class="section-header">
-						<h2>Platform Downloads</h2>
-						<a href="/admin/indicators/{indicatorId}/files/upload" class="btn-primary">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/>
-							</svg>
-							Upload File
-						</a>
-					</div>
-
-					{#if files.length === 0}
-						<div class="empty-state">
-							<p>No files uploaded yet</p>
-							<p class="hint">Upload indicator files for each trading platform</p>
-						</div>
-					{:else}
-						<div class="files-table">
-							<table>
-								<thead>
-									<tr>
-										<th>Platform</th>
-										<th>File</th>
-										<th>Size</th>
-										<th>Version</th>
-										<th>Downloads</th>
-										<th>Status</th>
-										<th>Actions</th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each files as file}
-										<tr>
-											<td class="platform">{file.platform}</td>
-											<td class="file-name">{file.display_name || file.file_name}</td>
-											<td>{formatFileSize(file.file_size_bytes)}</td>
-											<td>{file.version || '1.0'}</td>
-											<td>{file.download_count || 0}</td>
-											<td>
-												<span class="file-status" class:active={file.is_active !== false}>
-													{file.is_active !== false ? 'Active' : 'Inactive'}
-												</span>
-											</td>
-											<td>
-												<button class="btn-icon btn-danger" onclick={() => deleteFile(file.id)} aria-label="Delete file">
-													<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-														<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-													</svg>
-												</button>
-											</td>
-										</tr>
-									{/each}
-								</tbody>
-							</table>
-						</div>
-					{/if}
-				</div>
-
-			{:else if activeTab === 'videos'}
-				<div class="form-section">
-					<div class="section-header">
-						<h2>Demo Videos</h2>
-						<a href="/admin/indicators/{indicatorId}/videos/upload" class="btn-primary">
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/>
-								<rect x="2" y="6" width="14" height="12" rx="2"/>
-							</svg>
-							Upload Video
-						</a>
-					</div>
-
-					{#if videos.length === 0}
-						<div class="empty-state">
-							<p>No videos uploaded yet</p>
-							<p class="hint">Upload tutorial and demo videos</p>
-						</div>
-					{:else}
-						<div class="videos-grid">
-							{#each videos as video}
-								<div class="video-card">
-									{#if video.thumbnail_url}
-										<img src={video.thumbnail_url} alt={video.title} class="thumbnail" />
-									{:else}
-										<div class="thumbnail-placeholder">
-											<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-												<polygon points="5 3 19 12 5 21 5 3"/>
-											</svg>
-										</div>
-									{/if}
-									<div class="video-info">
-										<h3>{video.title}</h3>
-										<div class="video-meta">
-											{#if video.is_featured}<span class="tag">Featured</span>{/if}
-											{#if video.is_preview}<span class="tag">Preview</span>{/if}
-										</div>
-									</div>
-									<button class="btn-icon btn-danger" onclick={() => deleteVideo(video.id)} aria-label="Delete video">
-										<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-											<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/>
-										</svg>
-									</button>
-								</div>
-							{/each}
-						</div>
-					{/if}
-				</div>
+			<!-- ICT 7 FIX: Removed files/videos tabs - endpoints don't exist in backend -->
 
 			{:else if activeTab === 'seo'}
 				<div class="form-section">

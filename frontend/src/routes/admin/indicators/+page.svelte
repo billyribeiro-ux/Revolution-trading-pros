@@ -7,17 +7,17 @@
 	import { onMount } from 'svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
+	// ICT 7 FIX: Match actual backend schema (admin_indicators.rs)
 	interface IndicatorListItem {
-		id: string;
+		id: number; // Backend uses i64, not string
 		name: string;
 		slug: string;
-		tagline?: string;
-		price_cents: number;
-		is_free?: boolean;
-		logo_url?: string;
-		status?: string;
-		is_published?: boolean;
-		download_count?: number;
+		description?: string; // Backend uses 'description' not 'tagline'
+		price?: number; // Backend uses price (float dollars), not price_cents
+		is_active?: boolean; // Backend uses 'is_active' not 'status'
+		thumbnail?: string; // Backend uses 'thumbnail' not 'logo_url'
+		platform?: string;
+		version?: string;
 		created_at?: string;
 	}
 
@@ -38,7 +38,8 @@
 				per_page: perPage.toString()
 			});
 			if (search) params.set('search', search);
-			if (statusFilter) params.set('status', statusFilter);
+			// ICT 7 FIX: Backend uses 'is_active' not 'status'
+			if (statusFilter) params.set('is_active', statusFilter);
 
 			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
 			const data = await adminFetch(`/api/admin/indicators?${params}`);
@@ -53,9 +54,10 @@
 		}
 	};
 
-	const deleteIndicator = async (id: string, name: string) => {
+	// ICT 7 FIX: id is number, not string
+	const deleteIndicator = async (id: number, name: string) => {
 		if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
-		deleting = id;
+		deleting = id.toString();
 		try {
 			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
 			const data = await adminFetch(`/api/admin/indicators/${id}`, { method: 'DELETE' });
@@ -70,9 +72,10 @@
 		}
 	};
 
-	const formatPrice = (cents: number, isFree?: boolean) => {
-		if (isFree) return 'Free';
-		return `$${(cents / 100).toFixed(2)}`;
+	// ICT 7 FIX: Backend uses price in dollars, not cents
+	const formatPrice = (price?: number) => {
+		if (!price || price === 0) return 'Free';
+		return `$${price.toFixed(2)}`;
 	};
 
 	const formatDate = (date?: string) => {
@@ -121,11 +124,11 @@
 				onkeyup={(e) => e.key === 'Enter' && fetchIndicators()}
 			/>
 		</div>
-		<select bind:value={statusFilter} onchange={fetchIndicators}>
+			<!-- ICT 7 FIX: Backend uses is_active boolean, not status string -->
+			<select bind:value={statusFilter} onchange={fetchIndicators}>
 			<option value="">All Status</option>
-			<option value="draft">Draft</option>
-			<option value="published">Published</option>
-			<option value="archived">Archived</option>
+			<option value="true">Active</option>
+			<option value="false">Inactive</option>
 		</select>
 		<button class="btn-secondary" onclick={fetchIndicators}>
 			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -157,7 +160,7 @@
 						<th>Indicator</th>
 						<th>Price</th>
 						<th>Status</th>
-						<th>Downloads</th>
+						<th>Platform</th>
 						<th>Created</th>
 						<th>Actions</th>
 					</tr>
@@ -166,8 +169,8 @@
 					{#each indicators as indicator}
 						<tr>
 							<td class="indicator-cell">
-								{#if indicator.logo_url}
-									<img src={indicator.logo_url} alt="" class="logo" />
+								{#if indicator.thumbnail}
+									<img src={indicator.thumbnail} alt="" class="logo" />
 								{:else}
 									<div class="logo-placeholder">
 										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -177,18 +180,18 @@
 								{/if}
 								<div class="indicator-info">
 									<a href="/admin/indicators/{indicator.id}" class="name">{indicator.name}</a>
-									{#if indicator.tagline}
-										<span class="tagline">{indicator.tagline}</span>
+									{#if indicator.description}
+										<span class="tagline">{indicator.description.slice(0, 60)}{indicator.description.length > 60 ? '...' : ''}</span>
 									{/if}
 								</div>
 							</td>
-							<td class="price">{formatPrice(indicator.price_cents, indicator.is_free)}</td>
+							<td class="price">{formatPrice(indicator.price)}</td>
 							<td>
-								<span class="status status--{indicator.status || 'draft'}">
-									{indicator.status || 'draft'}
+								<span class="status" class:status--published={indicator.is_active} class:status--draft={!indicator.is_active}>
+									{indicator.is_active ? 'Active' : 'Inactive'}
 								</span>
 							</td>
-							<td class="downloads">{indicator.download_count || 0}</td>
+							<td class="platform">{indicator.platform || '-'}</td>
 							<td class="date">{formatDate(indicator.created_at)}</td>
 							<td class="actions">
 								<a href="/admin/indicators/{indicator.id}" class="btn-icon" title="Edit" aria-label="Edit {indicator.name}">
