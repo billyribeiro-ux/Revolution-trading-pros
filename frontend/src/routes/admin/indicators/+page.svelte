@@ -98,18 +98,18 @@
 	<title>Indicators | Admin</title>
 </svelte:head>
 
-<div class="admin-page">
+<div class="page">
 	<header class="page-header">
-		<div class="header-left">
-			<h1>Indicators</h1>
-			<span class="count">{total} total</span>
+		<h1>Indicators</h1>
+		<p class="subtitle">{total} total indicators</p>
+		<div class="actions-row">
+			<a href="/admin/indicators/create" class="btn-primary">
+				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/>
+				</svg>
+				New Indicator
+			</a>
 		</div>
-		<a href="/admin/indicators/create" class="btn-primary">
-			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/>
-			</svg>
-			New Indicator
-		</a>
 	</header>
 
 	<div class="filters">
@@ -251,69 +251,373 @@
 </div>
 
 <style>
-	.admin-page { padding: 24px; max-width: 1400px; margin: 0 auto; }
+	/* Page wrapper - Email Templates Style */
+	.page {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
+	}
 
-	.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; }
-	.header-left { display: flex; align-items: center; gap: 12px; }
-	.header-left h1 { font-size: 24px; font-weight: 600; color: #1f2937; margin: 0; }
-	.count { font-size: 14px; color: #6b7280; background: #f3f4f6; padding: 4px 12px; border-radius: 20px; }
+	/* Header CENTERED */
+	.page-header {
+		text-align: center;
+		margin-bottom: 2rem;
+	}
 
-	/* Buttons - RTP Admin Color System */
-	.btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--admin-btn-primary-bg); color: var(--admin-btn-primary-text); border: none; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 2px 8px rgba(230, 184, 0, 0.25); }
-	.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(230, 184, 0, 0.4); }
+	.page-header h1 {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin: 0 0 0.5rem 0;
+	}
 
-	.btn-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--admin-btn-bg); color: var(--admin-text-secondary); border: 1px solid var(--admin-border); border-radius: 6px; font-size: 14px; cursor: pointer; transition: all 0.2s; }
-	.btn-secondary:hover { background: var(--admin-btn-bg-hover); border-color: var(--admin-border-interactive); color: var(--admin-text-primary); }
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin: 0 0 1rem 0;
+	}
 
-	.filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
-	.search-box { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; flex: 1; min-width: 200px; max-width: 400px; }
-	.search-box svg { color: #9ca3af; flex-shrink: 0; }
-	.search-box input { border: none; outline: none; flex: 1; font-size: 14px; }
+	/* Actions row centered */
+	.actions-row {
+		display: flex;
+		justify-content: center;
+		gap: 0.75rem;
+	}
 
-	.filters select { padding: 8px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; background: #fff; }
+	/* Buttons - Email Templates Style */
+	.btn-primary {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1.25rem;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+		border: none;
+		border-radius: 8px;
+		font-size: 0.875rem;
+		font-weight: 500;
+		text-decoration: none;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
 
-	.loading, .empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px; text-align: center; }
-	.empty-state svg { color: #d1d5db; margin-bottom: 16px; }
-	.empty-state h3 { font-size: 18px; color: #1f2937; margin: 0 0 8px; }
-	.empty-state p { color: #6b7280; margin: 0 0 20px; }
+	.btn-primary:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+	}
 
-	.spinner { width: 40px; height: 40px; border: 3px solid #e5e7eb; border-top-color: #143e59; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
-	.spinner-small { width: 16px; height: 16px; border: 2px solid #e5e7eb; border-top-color: #143e59; border-radius: 50%; animation: spin 1s linear infinite; }
-	@keyframes spin { to { transform: rotate(360deg); } }
+	.btn-secondary {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.375rem;
+		padding: 0.5rem 1rem;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 6px;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
 
-	.table-container { background: #fff; border-radius: 12px; border: 1px solid #e5e7eb; overflow: hidden; }
-	table { width: 100%; border-collapse: collapse; }
-	thead { background: #f9fafb; }
-	th { padding: 12px 16px; text-align: left; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; letter-spacing: 0.05em; }
-	td { padding: 16px; border-top: 1px solid #f3f4f6; vertical-align: middle; }
-	tbody tr:hover { background: #f9fafb; }
+	.btn-secondary:hover {
+		background: rgba(100, 116, 139, 0.3);
+		color: #f1f5f9;
+	}
 
-	.indicator-cell { display: flex; align-items: center; gap: 12px; }
-	.logo { width: 48px; height: 48px; border-radius: 8px; object-fit: cover; }
-	.logo-placeholder { width: 48px; height: 48px; background: #f3f4f6; border-radius: 8px; display: flex; align-items: center; justify-content: center; color: #9ca3af; }
-	.indicator-info { display: flex; flex-direction: column; gap: 2px; }
-	.name { font-weight: 500; color: #1f2937; text-decoration: none; }
-	.name:hover { color: #143e59; }
-	.tagline { font-size: 13px; color: #6b7280; }
+	/* Filters - Dark styling */
+	.filters {
+		display: flex;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
 
-	.price { font-weight: 600; color: #143e59; }
-	.downloads { color: #6b7280; }
-	.date { color: #9ca3af; font-size: 13px; }
+	.search-box {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 0.75rem;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 8px;
+		flex: 1;
+		min-width: 200px;
+		max-width: 400px;
+	}
 
-	.status { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; text-transform: capitalize; }
-	.status--draft { background: #fef3c7; color: #92400e; }
-	.status--published { background: #d1fae5; color: #065f46; }
-	.status--archived { background: #f3f4f6; color: #6b7280; }
+	.search-box svg {
+		color: #64748b;
+		flex-shrink: 0;
+	}
 
-	.actions { display: flex; gap: 8px; }
-	.btn-icon { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: none; background: #f3f4f6; border-radius: 6px; color: #6b7280; cursor: pointer; text-decoration: none; transition: all 0.2s; }
-	.btn-icon:hover { background: #e5e7eb; color: #1f2937; }
-	.btn-danger:hover { background: #fee2e2; color: #dc2626; }
-	.btn-icon:disabled { opacity: 0.5; cursor: not-allowed; }
+	.search-box input {
+		border: none;
+		outline: none;
+		flex: 1;
+		font-size: 0.875rem;
+		background: transparent;
+		color: #f1f5f9;
+	}
 
-	.pagination { display: flex; justify-content: center; align-items: center; gap: 16px; margin-top: 24px; }
-	.btn-page { padding: 8px 16px; background: #fff; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; cursor: pointer; }
-	.btn-page:hover:not(:disabled) { background: #f3f4f6; }
-	.btn-page:disabled { opacity: 0.5; cursor: not-allowed; }
-	.page-info { font-size: 14px; color: #6b7280; }
+	.search-box input::placeholder {
+		color: #64748b;
+	}
+
+	.filters select {
+		padding: 0.5rem 0.75rem;
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 6px;
+		font-size: 0.875rem;
+		background: rgba(30, 41, 59, 0.6);
+		color: #f1f5f9;
+		cursor: pointer;
+	}
+
+	.filters select option {
+		background: #1e293b;
+		color: #f1f5f9;
+	}
+
+	/* Loading and Empty State */
+	.loading, .empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 4rem;
+		text-align: center;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
+	}
+
+	.empty-state svg {
+		color: #64748b;
+		margin-bottom: 1rem;
+	}
+
+	.empty-state h3 {
+		font-size: 1.125rem;
+		color: #f1f5f9;
+		margin: 0 0 0.5rem;
+	}
+
+	.empty-state p {
+		color: #64748b;
+		margin: 0 0 1.25rem;
+	}
+
+	.spinner {
+		width: 2.5rem;
+		height: 2.5rem;
+		border: 3px solid rgba(100, 116, 139, 0.3);
+		border-top-color: #6366f1;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+		margin-bottom: 1rem;
+	}
+
+	.spinner-small {
+		width: 1rem;
+		height: 1rem;
+		border: 2px solid rgba(100, 116, 139, 0.3);
+		border-top-color: #6366f1;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
+	}
+
+	/* Table - Dark styling */
+	.table-container {
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
+		border: 1px solid rgba(100, 116, 139, 0.2);
+		overflow: hidden;
+	}
+
+	table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+
+	thead {
+		background: rgba(30, 41, 59, 0.6);
+	}
+
+	th {
+		padding: 0.75rem 1rem;
+		text-align: left;
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: #94a3b8;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	td {
+		padding: 1rem;
+		border-top: 1px solid rgba(100, 116, 139, 0.15);
+		vertical-align: middle;
+	}
+
+	tbody tr:hover {
+		background: rgba(100, 116, 139, 0.1);
+	}
+
+	.indicator-cell {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.logo {
+		width: 3rem;
+		height: 3rem;
+		border-radius: 8px;
+		object-fit: cover;
+	}
+
+	.logo-placeholder {
+		width: 3rem;
+		height: 3rem;
+		background: rgba(100, 116, 139, 0.2);
+		border-radius: 8px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #64748b;
+	}
+
+	.indicator-info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.125rem;
+	}
+
+	.name {
+		font-weight: 500;
+		color: #f1f5f9;
+		text-decoration: none;
+	}
+
+	.name:hover {
+		color: #a5b4fc;
+	}
+
+	.tagline {
+		font-size: 0.8125rem;
+		color: #64748b;
+	}
+
+	.price {
+		font-weight: 600;
+		color: #a5b4fc;
+	}
+
+	.platform {
+		color: #94a3b8;
+	}
+
+	.date {
+		color: #64748b;
+		font-size: 0.8125rem;
+	}
+
+	.status {
+		display: inline-block;
+		padding: 0.25rem 0.625rem;
+		border-radius: 1.25rem;
+		font-size: 0.75rem;
+		font-weight: 500;
+		text-transform: capitalize;
+	}
+
+	.status--draft {
+		background: rgba(251, 191, 36, 0.15);
+		color: #fbbf24;
+	}
+
+	.status--published {
+		background: rgba(34, 197, 94, 0.15);
+		color: #22c55e;
+	}
+
+	.status--archived {
+		background: rgba(100, 116, 139, 0.2);
+		color: #94a3b8;
+	}
+
+	.actions {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.btn-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		border: none;
+		background: rgba(100, 116, 139, 0.2);
+		border-radius: 6px;
+		color: #94a3b8;
+		cursor: pointer;
+		text-decoration: none;
+		transition: all 0.2s ease;
+	}
+
+	.btn-icon:hover {
+		background: rgba(100, 116, 139, 0.3);
+		color: #f1f5f9;
+	}
+
+	.btn-danger:hover {
+		background: rgba(239, 68, 68, 0.2);
+		color: #ef4444;
+	}
+
+	.btn-icon:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	/* Pagination */
+	.pagination {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 1rem;
+		margin-top: 1.5rem;
+	}
+
+	.btn-page {
+		padding: 0.5rem 1rem;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 6px;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.btn-page:hover:not(:disabled) {
+		background: rgba(100, 116, 139, 0.3);
+		color: #f1f5f9;
+	}
+
+	.btn-page:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	.page-info {
+		font-size: 0.875rem;
+		color: #64748b;
+	}
 </style>

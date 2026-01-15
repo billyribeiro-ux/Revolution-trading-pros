@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { Card, Button, Input, Select } from '$lib/components/ui';
+	import { Card, Input, Select } from '$lib/components/ui';
 	import { addToast } from '$lib/utils/toast';
 	import { popupsApi, type Popup } from '$lib/api/popups';
 
@@ -159,11 +159,12 @@
 	<title>Create Popup | Revolution Admin</title>
 </svelte:head>
 
-<div class="max-w-5xl mx-auto">
+<div class="page">
 	<!-- Header -->
-	<div class="mb-6">
-		<h1 class="text-3xl font-bold text-gray-900">Create New Popup</h1>
-		<p class="text-gray-600 mt-1">Design and configure your popup</p>
+	<div class="page-header">
+		<a href="/admin/popups" class="back-btn">Back to Popups</a>
+		<h1>Create New Popup</h1>
+		<p class="subtitle">Design and configure your popup</p>
 	</div>
 
 	<form onsubmit={handleSubmit}>
@@ -600,14 +601,196 @@
 			</Card>
 
 			<!-- Actions -->
-			<div class="flex justify-end gap-3">
-				<Button type="button" variant="ghost" onclick={handleCancel} disabled={loading}>
+			<div class="form-actions">
+				<button type="button" class="btn-secondary" onclick={handleCancel} disabled={loading}>
 					Cancel
-				</Button>
-				<Button type="submit" disabled={loading}>
+				</button>
+				<button type="submit" class="btn-primary" disabled={loading}>
 					{loading ? 'Creating...' : 'Create Popup'}
-				</Button>
+				</button>
 			</div>
 		</div>
 	</form>
 </div>
+
+<style>
+	.page {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
+	}
+
+	.page-header {
+		text-align: center;
+		margin-bottom: 2rem;
+	}
+
+	.page-header h1 {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin: 0.75rem 0 0.25rem 0;
+	}
+
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin: 0;
+	}
+
+	.back-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.4rem 0.75rem;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border-radius: 6px;
+		text-decoration: none;
+		font-size: 0.875rem;
+		transition: all 0.2s;
+		border: 1px solid rgba(100, 116, 139, 0.3);
+	}
+
+	.back-btn:hover {
+		background: rgba(100, 116, 139, 0.3);
+	}
+
+	.form-actions {
+		display: flex;
+		justify-content: center;
+		gap: 0.75rem;
+		margin-top: 2rem;
+	}
+
+	.btn-primary {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+		font-weight: 600;
+		border-radius: 6px;
+		border: none;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-primary:hover:not(:disabled) {
+		opacity: 0.9;
+	}
+
+	.btn-primary:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.btn-secondary {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		font-weight: 500;
+		border-radius: 6px;
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-secondary:hover:not(:disabled) {
+		opacity: 0.9;
+	}
+
+	.btn-secondary:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	/* Override Card component styles for dark theme */
+	:global(.page .space-y-6 > div) {
+		background: rgba(30, 41, 59, 0.4) !important;
+		border: 1px solid rgba(148, 163, 184, 0.1) !important;
+		border-radius: 8px !important;
+	}
+
+	/* Form labels and text */
+	:global(.page label),
+	:global(.page .text-sm.font-medium) {
+		color: #e2e8f0 !important;
+	}
+
+	:global(.page .text-gray-700),
+	:global(.page .text-gray-600),
+	:global(.page .text-gray-500) {
+		color: #94a3b8 !important;
+	}
+
+	:global(.page .text-gray-900),
+	:global(.page .text-gray-800) {
+		color: #f1f5f9 !important;
+	}
+
+	:global(.page h2) {
+		color: #f1f5f9 !important;
+	}
+
+	:global(.page h3) {
+		color: #e2e8f0 !important;
+	}
+
+	/* Form inputs */
+	:global(.page input[type="text"]),
+	:global(.page input[type="number"]),
+	:global(.page input[type="color"]),
+	:global(.page textarea),
+	:global(.page select) {
+		background: rgba(15, 23, 42, 0.6) !important;
+		border: 1px solid rgba(148, 163, 184, 0.2) !important;
+		border-radius: 6px !important;
+		color: #f1f5f9 !important;
+	}
+
+	:global(.page input:focus),
+	:global(.page textarea:focus),
+	:global(.page select:focus) {
+		border-color: rgba(99, 102, 241, 0.5) !important;
+		outline: none !important;
+	}
+
+	/* Checkboxes */
+	:global(.page input[type="checkbox"]) {
+		accent-color: #6366f1;
+	}
+
+	/* Info boxes */
+	:global(.page .bg-blue-50) {
+		background: rgba(99, 102, 241, 0.1) !important;
+		border-color: rgba(99, 102, 241, 0.3) !important;
+	}
+
+	:global(.page .text-blue-800) {
+		color: #a5b4fc !important;
+	}
+
+	/* Error states */
+	:global(.page .text-red-600) {
+		color: #f87171 !important;
+	}
+
+	:global(.page .border-red-500) {
+		border-color: rgba(239, 68, 68, 0.5) !important;
+	}
+
+	@media (max-width: 768px) {
+		.page {
+			padding: 1rem;
+		}
+
+		.form-actions {
+			flex-direction: column;
+		}
+	}
+</style>

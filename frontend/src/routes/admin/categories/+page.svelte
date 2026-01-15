@@ -426,16 +426,14 @@
 	</div>
 {/if}
 
-<div class="categories-page">
+<div class="page">
 	<!-- Header -->
 	<header class="page-header">
-		<div class="header-left">
-			<h1>
-				<IconFolder size={28} />
-				Categories
-			</h1>
-			<p class="page-description">Organize products and content with categories</p>
-		</div>
+		<h1>
+			<IconFolder size={28} />
+			Categories
+		</h1>
+		<p class="subtitle">Organize products and content with categories</p>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadCategories()} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
@@ -875,42 +873,42 @@
 
 <style>
 	/* Page Layout */
-	.categories-page {
+	.page {
 		max-width: 1400px;
-		padding: 0;
+		margin: 0 auto;
+		padding: 2rem;
 	}
 
-	/* Header */
+	/* Header - CENTERED */
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+		text-align: center;
 		margin-bottom: 2rem;
-		flex-wrap: wrap;
-		gap: 1rem;
 	}
 
-	.header-left h1 {
-		display: flex;
+	.page-header h1 {
+		display: inline-flex;
 		align-items: center;
+		justify-content: center;
 		gap: 12px;
-		margin: 0 0 0.25rem 0;
+		margin: 0 0 0.5rem 0;
 		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
 	}
 
-	.header-left h1 :global(svg) {
+	.page-header h1 :global(svg) {
 		color: #6366f1;
 	}
 
-	.page-description {
+	.subtitle {
 		color: #64748b;
-		margin: 0;
+		font-size: 0.875rem;
+		margin: 0 0 1.5rem 0;
 	}
 
 	.header-actions {
 		display: flex;
+		justify-content: center;
 		gap: 0.75rem;
 	}
 
@@ -921,9 +919,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(30, 41, 59, 0.8);
+		background: rgba(100, 116, 139, 0.2);
 		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 10px;
+		border-radius: 8px;
 		color: #94a3b8;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -956,7 +954,7 @@
 		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		color: white;
 		border: none;
-		border-radius: 10px;
+		border-radius: 8px;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -978,17 +976,17 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: rgba(30, 41, 59, 0.8);
+		background: rgba(100, 116, 139, 0.2);
 		border: 1px solid rgba(99, 102, 241, 0.2);
-		color: #e2e8f0;
-		border-radius: 10px;
+		color: #cbd5e1;
+		border-radius: 8px;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.btn-secondary:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(100, 116, 139, 0.3);
 		border-color: rgba(99, 102, 241, 0.4);
 	}
 
@@ -1005,9 +1003,9 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1.25rem;
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 14px;
+		border-radius: 8px;
 	}
 
 	.stat-icon {
@@ -1055,9 +1053,9 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0 1rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 10px;
+		border-radius: 8px;
 		flex: 1;
 		max-width: 400px;
 	}
@@ -1082,9 +1080,9 @@
 
 	.filter-select {
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 10px;
+		border-radius: 8px;
 		color: #e2e8f0;
 		font-size: 0.9rem;
 		cursor: pointer;
@@ -1107,7 +1105,7 @@
 		padding: 1rem 1.25rem;
 		background: rgba(99, 102, 241, 0.1);
 		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 10px;
+		border-radius: 8px;
 		margin-bottom: 1rem;
 	}
 
@@ -1153,9 +1151,9 @@
 
 	/* Categories Container */
 	.categories-container {
-		background: rgba(15, 23, 42, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 14px;
+		border-radius: 8px;
 		overflow: hidden;
 	}
 
@@ -1283,11 +1281,11 @@
 	.count-badge {
 		display: inline-block;
 		padding: 0.25rem 0.625rem;
-		background: rgba(59, 130, 246, 0.15);
+		background: rgba(99, 102, 241, 0.15);
 		border-radius: 12px;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #60a5fa;
+		color: #818cf8;
 	}
 
 	.visibility-badge {
@@ -1301,13 +1299,13 @@
 	}
 
 	.visibility-badge.visible {
-		background: rgba(34, 197, 94, 0.15);
-		color: #4ade80;
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
 	}
 
 	.visibility-badge.hidden {
-		background: rgba(245, 158, 11, 0.15);
-		color: #fbbf24;
+		background: rgba(99, 102, 241, 0.1);
+		color: #6366f1;
 	}
 
 	.date-cell {
@@ -1412,9 +1410,9 @@
 	}
 
 	.modal {
-		background: #1e293b;
+		background: rgba(30, 41, 59, 0.95);
 		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 16px;
+		border-radius: 8px;
 		width: 100%;
 		max-width: 600px;
 		max-height: 90vh;
@@ -1503,9 +1501,9 @@
 	.form-group textarea,
 	.form-group select {
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 10px;
+		border-radius: 8px;
 		color: #e2e8f0;
 		font-size: 0.9rem;
 		font-family: inherit;
@@ -1535,7 +1533,7 @@
 		height: 48px;
 		padding: 0;
 		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 10px;
+		border-radius: 8px;
 		cursor: pointer;
 		background: transparent;
 	}
@@ -1578,7 +1576,7 @@
 		padding: 1rem;
 		background: rgba(239, 68, 68, 0.1);
 		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 10px;
+		border-radius: 8px;
 		color: #f87171;
 		margin-bottom: 1rem;
 	}
@@ -1605,9 +1603,9 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 1.25rem;
-		background: #1e293b;
+		background: rgba(30, 41, 59, 0.95);
 		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 12px;
+		border-radius: 8px;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 		z-index: 2000;
 		min-width: 300px;

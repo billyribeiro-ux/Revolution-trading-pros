@@ -577,22 +577,16 @@
 	<title>Leads | CRM - Admin Dashboard</title>
 </svelte:head>
 
-<div class="leads-page">
-	<!-- Apple ICT7 Grade Header -->
-	<header class="grade-header">
-		<div class="grade-header-content">
-			<div class="grade-badge">
-				<IconTarget size={16} />
-				<span>ICT 7</span>
-			</div>
-			<h1>
-				<IconUsers size={28} />
-				Lead Management
-			</h1>
-			<p class="header-subtitle">
-				Track, qualify, and convert leads through your sales pipeline
-			</p>
-		</div>
+<div class="page">
+	<!-- Header - CENTERED -->
+	<header class="page-header">
+		<h1>
+			<IconUsers size={28} />
+			Lead Management
+		</h1>
+		<p class="subtitle">
+			Track, qualify, and convert leads through your sales pipeline
+		</p>
 	</header>
 
 	{#if connectionLoading}
@@ -1267,65 +1261,40 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   LEADS PAGE - Apple ICT 7 Principal Engineer Grade
+	   LEADS PAGE - Email Templates Style
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.leads-page {
-		max-width: 1600px;
+	.page {
+		max-width: 1400px;
 		margin: 0 auto;
-		padding: 24px;
+		padding: 2rem;
 	}
 
-	/* Apple ICT7 Grade Header */
-	.grade-header {
-		margin-bottom: 24px;
-		padding: 24px 28px;
-		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-		border: 1px solid #334155;
-		border-radius: 16px;
-		border-left: 4px solid #f97316;
+	/* Header - CENTERED */
+	.page-header {
+		text-align: center;
+		margin-bottom: 2rem;
 	}
 
-	.grade-header-content {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
-	}
-
-	.grade-badge {
+	.page-header h1 {
 		display: inline-flex;
 		align-items: center;
-		gap: 6px;
-		padding: 4px 10px;
-		background: rgba(249, 115, 22, 0.15);
-		border: 1px solid rgba(249, 115, 22, 0.3);
-		border-radius: 20px;
-		color: #f97316;
-		font-size: 0.7rem;
-		font-weight: 700;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		width: fit-content;
-	}
-
-	.grade-header h1 {
-		display: flex;
-		align-items: center;
+		justify-content: center;
 		gap: 12px;
-		margin: 0;
+		margin: 0 0 0.5rem;
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: white;
+		color: #f1f5f9;
 	}
 
-	.grade-header h1 :global(svg) {
-		color: #f97316;
+	.page-header h1 :global(svg) {
+		color: #6366f1;
 	}
 
-	.header-subtitle {
+	.subtitle {
 		margin: 0;
-		font-size: 0.95rem;
 		color: #64748b;
+		font-size: 0.875rem;
 	}
 
 	/* Stats Grid */
@@ -1341,20 +1310,20 @@
 		align-items: center;
 		gap: 16px;
 		padding: 20px;
-		background: #1e293b;
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid #334155;
-		border-radius: 12px;
+		border-radius: 8px;
 		transition: all 0.2s;
 	}
 
 	.stat-card:hover {
-		border-color: rgba(249, 115, 22, 0.3);
+		border-color: rgba(99, 102, 241, 0.3);
 		transform: translateY(-2px);
 	}
 
 	.stat-card.highlight {
-		background: linear-gradient(135deg, rgba(249, 115, 22, 0.1) 0%, #1e293b 100%);
-		border-color: rgba(249, 115, 22, 0.3);
+		background: linear-gradient(135deg, rgba(99, 102, 241, 0.1) 0%, #1e293b 100%);
+		border-color: rgba(99, 102, 241, 0.3);
 	}
 
 	.stat-icon {
@@ -1422,8 +1391,8 @@
 	}
 
 	.search-box:focus-within {
-		border-color: #f97316;
-		box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+		border-color: #6366f1;
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 
 	.search-box :global(svg) {
@@ -1485,16 +1454,16 @@
 
 	.selected-count {
 		font-size: 0.85rem;
-		color: #f97316;
+		color: #818cf8;
 		font-weight: 600;
 	}
 
 	.btn-bulk {
 		padding: 8px 14px;
-		background: rgba(249, 115, 22, 0.1);
-		border: 1px solid rgba(249, 115, 22, 0.3);
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.3);
 		border-radius: 8px;
-		color: #f97316;
+		color: #818cf8;
 		font-size: 0.8rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -1502,7 +1471,7 @@
 	}
 
 	.btn-bulk:hover {
-		background: rgba(249, 115, 22, 0.2);
+		background: rgba(99, 102, 241, 0.2);
 	}
 
 	.btn-bulk.danger {
@@ -1547,11 +1516,11 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		padding: 12px 20px;
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		padding: 0.75rem 1.25rem;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		color: white;
 		border: none;
-		border-radius: 10px;
+		border-radius: 8px;
 		font-weight: 600;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -1560,7 +1529,7 @@
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 	}
 
 	.btn-primary:disabled {
@@ -1608,7 +1577,7 @@
 
 	.filter-group select:focus {
 		outline: none;
-		border-color: #f97316;
+		border-color: #6366f1;
 	}
 
 	.btn-clear-filters {
@@ -1629,9 +1598,9 @@
 
 	/* Table */
 	.table-container {
-		background: #1e293b;
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid #334155;
-		border-radius: 14px;
+		border-radius: 8px;
 		overflow: hidden;
 	}
 
@@ -1664,11 +1633,11 @@
 	}
 
 	.data-table tbody tr:hover {
-		background: rgba(249, 115, 22, 0.05);
+		background: rgba(99, 102, 241, 0.05);
 	}
 
 	.data-table tbody tr.selected {
-		background: rgba(249, 115, 22, 0.1);
+		background: rgba(99, 102, 241, 0.1);
 	}
 
 	.checkbox-col {
@@ -1804,7 +1773,7 @@
 
 	.score-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #f97316, #fbbf24);
+		background: linear-gradient(90deg, #6366f1, #8b5cf6);
 		border-radius: 3px;
 		transition: width 0.3s;
 	}
@@ -1848,8 +1817,8 @@
 	}
 
 	.btn-icon:hover {
-		background: rgba(249, 115, 22, 0.1);
-		color: #f97316;
+		background: rgba(99, 102, 241, 0.1);
+		color: #818cf8;
 	}
 
 	.btn-icon.convert:hover {
@@ -1937,8 +1906,8 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(249, 115, 22, 0.2);
-		border-top-color: #f97316;
+		border: 3px solid rgba(99, 102, 241, 0.2);
+		border-top-color: #6366f1;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 16px;
@@ -1989,7 +1958,7 @@
 	}
 
 	.modal-header h3 :global(svg) {
-		color: #f97316;
+		color: #6366f1;
 	}
 
 	.modal-close {
@@ -2056,7 +2025,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #f97316;
+		border-color: #6366f1;
 	}
 
 	.form-group textarea {
@@ -2088,21 +2057,22 @@
 	.btn-secondary {
 		display: flex;
 		align-items: center;
+		justify-content: center;
 		gap: 8px;
-		padding: 10px 20px;
-		background: #0f172a;
-		border: 1px solid #334155;
-		color: #e2e8f0;
-		border-radius: 10px;
-		font-weight: 600;
+		padding: 0.75rem 1rem;
+		background: rgba(100, 116, 139, 0.2);
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 8px;
+		color: #cbd5e1;
+		font-weight: 500;
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.btn-secondary:hover {
-		background: #1e293b;
-		border-color: #475569;
+		background: rgba(100, 116, 139, 0.3);
+		border-color: rgba(100, 116, 139, 0.5);
 	}
 
 	.btn-danger {
@@ -2148,16 +2118,12 @@
 	}
 
 	@media (max-width: 768px) {
-		.leads-page {
-			padding: 16px;
+		.page {
+			padding: 1rem;
 		}
 
-		.grade-header {
-			padding: 20px;
-		}
-
-		.grade-header h1 {
-			font-size: 1.4rem;
+		.page-header h1 {
+			font-size: 1.5rem;
 		}
 
 		.stats-grid {

@@ -78,26 +78,22 @@
 	}
 </script>
 
-<div class="creator-page">
+<div class="page">
 	<!-- Header -->
 	<div class="page-header">
-		<div class="header-left">
-			<a href="/admin/popups" class="back-btn">
-				<IconArrowLeft size={20} />
-				<span>Back</span>
-			</a>
-			<div>
-				<h1 class="page-title">Create Popup</h1>
-				<p class="page-subtitle">Design a custom popup for your site</p>
-			</div>
-		</div>
+		<a href="/admin/popups" class="back-btn">
+			<IconArrowLeft size={18} />
+			<span>Back</span>
+		</a>
+		<h1>Create Popup</h1>
+		<p class="subtitle">Design a custom popup for your site</p>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={() => (showPreview = !showPreview)}>
-				<IconEye size={20} />
+				<IconEye size={18} />
 				<span>{showPreview ? 'Hide' : 'Show'} Preview</span>
 			</button>
 			<button class="btn-primary" onclick={handleSave} disabled={saving}>
-				<IconDeviceFloppy size={20} />
+				<IconDeviceFloppy size={18} />
 				<span>{saving ? 'Saving...' : 'Save Popup'}</span>
 			</button>
 		</div>
@@ -645,27 +641,32 @@
 </div>
 
 <style>
-	.creator-page {
-		max-width: 100%;
-		height: 100%;
+	.page {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
 	}
 
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		text-align: center;
 		margin-bottom: 2rem;
-		gap: 2rem;
 	}
 
-	.header-left {
-		display: flex;
-		align-items: center;
-		gap: 1.5rem;
+	.page-header h1 {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin: 0.75rem 0 0.25rem 0;
+	}
+
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin: 0 0 1rem 0;
 	}
 
 	.back-btn {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
@@ -673,7 +674,9 @@
 		color: #E6B800;
 		border-radius: 8px;
 		text-decoration: none;
+		font-size: 0.875rem;
 		transition: all 0.2s;
+		border: 1px solid rgba(100, 116, 139, 0.3);
 	}
 
 	.back-btn:hover {
@@ -694,20 +697,21 @@
 
 	.header-actions {
 		display: flex;
-		gap: 1rem;
+		justify-content: center;
+		gap: 0.75rem;
 	}
 
 	.btn-primary,
 	.btn-secondary {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
+		padding: 0.5rem 1rem;
 		font-weight: 600;
-		border-radius: 12px;
+		border-radius: 6px;
 		border: none;
 		cursor: pointer;
-		transition: all 0.3s;
+		transition: all 0.2s;
 	}
 
 	.btn-primary {
@@ -981,6 +985,16 @@
 
 		.preview-panel {
 			position: static;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.page {
+			padding: 1rem;
+		}
+
+		.header-actions {
+			flex-direction: column;
 		}
 	}
 </style>

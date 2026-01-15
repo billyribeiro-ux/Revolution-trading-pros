@@ -239,7 +239,7 @@
 	<title>Members Management | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="members-page">
+<div class="page">
 	<!-- Error Banner -->
 	{#if initError}
 		<div class="error-banner">
@@ -251,34 +251,25 @@
 
 	<!-- Header -->
 	<div class="page-header">
-		<div class="header-content">
-			<div class="header-title">
-				<div class="title-icon">
-					<IconUsers size={32} />
-				</div>
-				<div>
-					<h1>Members Command Center</h1>
-					<p>Comprehensive member management and analytics</p>
-				</div>
-			</div>
-			<div class="header-actions">
-				<button class="btn-secondary" onclick={() => (showImportModal = true)}>
-					<IconUpload size={18} />
-					Import
-				</button>
-				<button class="btn-secondary" onclick={handleExport} disabled={exporting}>
-					<IconDownload size={18} />
-					{exporting ? 'Exporting...' : 'Export'}
-				</button>
-				<button class="btn-secondary" onclick={() => goto('/admin/members/churned')}>
-					<IconAlertTriangle size={18} />
-					Win-Back
-				</button>
-				<button class="btn-primary" onclick={handleRefresh}>
-					<IconRefresh size={18} />
-					Refresh
-				</button>
-			</div>
+		<h1>Members Command Center</h1>
+		<p class="subtitle">Comprehensive member management and analytics</p>
+		<div class="header-actions">
+			<button class="btn-secondary" onclick={() => (showImportModal = true)}>
+				<IconUpload size={18} />
+				Import
+			</button>
+			<button class="btn-secondary" onclick={handleExport} disabled={exporting}>
+				<IconDownload size={18} />
+				{exporting ? 'Exporting...' : 'Export'}
+			</button>
+			<button class="btn-secondary" onclick={() => goto('/admin/members/churned')}>
+				<IconAlertTriangle size={18} />
+				Win-Back
+			</button>
+			<button class="btn-primary" onclick={handleRefresh}>
+				<IconRefresh size={18} />
+				Refresh
+			</button>
 		</div>
 	</div>
 
@@ -725,15 +716,17 @@
 {/if}
 
 <style>
-	.members-page {
-		padding: 2rem;
-		max-width: 1600px;
+	/* Page wrapper - email templates style */
+	.page {
+		max-width: 1400px;
 		margin: 0 auto;
+		padding: 2rem;
 		min-height: 100vh;
 	}
 
-	/* Header */
+	/* Header - CENTERED */
 	.page-header {
+		text-align: center;
 		margin-bottom: 2rem;
 	}
 
@@ -768,14 +761,15 @@
 		margin: 0;
 	}
 
-	.header-title p {
-		color: var(--admin-text-muted);
-		font-size: 0.9375rem;
-		margin: 0.25rem 0 0;
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin: 0 0 1.5rem;
 	}
 
 	.header-actions {
 		display: flex;
+		justify-content: center;
 		gap: 0.75rem;
 	}
 
@@ -788,12 +782,12 @@
 	}
 
 	.stat-card {
-		background: var(--admin-card-bg);
-		border-radius: 20px;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
 		padding: 1.5rem;
 		position: relative;
 		overflow: hidden;
-		border: 1px solid var(--admin-card-border);
+		border: 1px solid rgba(148, 163, 184, 0.1);
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
@@ -939,9 +933,9 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 1.5rem;
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 12px;
+		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.2s;
 		min-width: 200px;
@@ -997,9 +991,9 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 12px;
+		border-radius: 8px;
 		color: #94a3b8;
 	}
 
@@ -1028,10 +1022,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 10px;
-		color: #94a3b8;
+		background: rgba(100, 116, 139, 0.2);
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 8px;
+		color: #cbd5e1;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -1060,9 +1054,9 @@
 		display: flex;
 		gap: 1rem;
 		padding: 1rem;
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 12px;
+		border-radius: 8px;
 		margin-bottom: 1rem;
 	}
 
@@ -1083,7 +1077,7 @@
 	.filter-group select {
 		width: 100%;
 		padding: 0.625rem 0.875rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 8px;
 		color: #f1f5f9;
@@ -1093,20 +1087,26 @@
 
 	.clear-filters {
 		padding: 0.625rem 1rem;
-		background: rgba(239, 68, 68, 0.1);
-		border: 1px solid rgba(239, 68, 68, 0.2);
+		background: rgba(100, 116, 139, 0.2);
+		border: 1px solid rgba(100, 116, 139, 0.3);
 		border-radius: 8px;
-		color: #f87171;
+		color: #cbd5e1;
 		font-weight: 500;
 		cursor: pointer;
 		align-self: flex-end;
 	}
 
+	.clear-filters:hover {
+		background: rgba(239, 68, 68, 0.15);
+		border-color: rgba(239, 68, 68, 0.3);
+		color: #f87171;
+	}
+
 	/* Members Table */
 	.members-table-container {
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 16px;
+		border-radius: 8px;
 		overflow: hidden;
 	}
 
@@ -1358,9 +1358,9 @@
 	}
 
 	.modal-content {
-		background: #1e293b;
+		background: rgba(30, 41, 59, 0.95);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 20px;
+		border-radius: 8px;
 		width: 100%;
 		max-width: 600px;
 		max-height: 90vh;
@@ -1451,9 +1451,9 @@
 	.form-group textarea {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 10px;
+		border-radius: 8px;
 		color: #f1f5f9;
 		font-size: 0.9375rem;
 		font-family: inherit;
@@ -1474,41 +1474,40 @@
 		border-top: 1px solid rgba(148, 163, 184, 0.1);
 	}
 
-	/* Buttons - RTP Admin Color System */
+	/* Buttons - Email Templates Style */
 	.btn-secondary,
 	.btn-primary {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		border-radius: 10px;
+		border-radius: 8px;
 		font-weight: 600;
 		cursor: pointer;
-		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		transition: all 0.2s ease;
 		border: none;
 	}
 
 	.btn-secondary {
-		background: var(--admin-btn-bg);
-		color: var(--admin-text-secondary);
-		border: 1px solid var(--admin-border);
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border: 1px solid rgba(100, 116, 139, 0.3);
 	}
 
 	.btn-secondary:hover {
-		background: var(--admin-btn-bg-hover);
-		border-color: var(--admin-border-interactive);
-		color: var(--admin-text-primary);
+		background: rgba(100, 116, 139, 0.3);
+		color: #f1f5f9;
 	}
 
 	.btn-primary {
-		background: var(--admin-btn-primary-bg);
-		color: var(--admin-btn-primary-text);
-		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+		box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
 	}
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.4);
+		box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
 	}
 
 	.btn-primary:disabled {
@@ -1524,14 +1523,12 @@
 	}
 
 	@media (max-width: 768px) {
-		.members-page {
+		.page {
 			padding: 1rem;
 		}
 
-		.header-content {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 1rem;
+		.header-actions {
+			flex-wrap: wrap;
 		}
 
 		.stats-grid {
@@ -1561,9 +1558,9 @@
 
 	/* Import Modal */
 	.import-instructions {
-		background: rgba(15, 23, 42, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 12px;
+		border-radius: 8px;
 		padding: 1rem 1.25rem;
 		margin-bottom: 1.5rem;
 	}
@@ -1601,9 +1598,9 @@
 		align-items: center;
 		justify-content: center;
 		padding: 2rem;
-		background: rgba(15, 23, 42, 0.4);
+		background: rgba(30, 41, 59, 0.4);
 		border: 2px dashed rgba(148, 163, 184, 0.3);
-		border-radius: 12px;
+		border-radius: 8px;
 		cursor: pointer;
 		color: #94a3b8;
 		text-align: center;
@@ -1647,7 +1644,7 @@
 		padding: 1rem 1.5rem;
 		background: rgba(239, 68, 68, 0.1);
 		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 12px;
+		border-radius: 8px;
 		color: #f87171;
 		margin-bottom: 1.5rem;
 	}

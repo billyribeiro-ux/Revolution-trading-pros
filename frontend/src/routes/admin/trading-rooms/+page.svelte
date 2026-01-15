@@ -64,13 +64,11 @@
 	<title>Trading Rooms Content | Admin</title>
 </svelte:head>
 
-<div class="admin-page">
+<div class="page">
 	<!-- Header -->
 	<header class="page-header">
-		<div class="header-content">
-			<h1>Trading Rooms Content</h1>
-			<p>Manage trade plans, alerts, and weekly videos for each trading room</p>
-		</div>
+		<h1>Trading Rooms Content</h1>
+		<p class="subtitle">Manage trade plans, alerts, and weekly videos for each trading room</p>
 	</header>
 
 	<!-- Room Cards Grid -->
@@ -134,18 +132,22 @@
 </div>
 
 <style>
-	.admin-page {
-		padding: 32px;
+	/* Page wrapper - email templates style */
+	.page {
 		max-width: 1400px;
 		margin: 0 auto;
+		padding: 2rem;
 	}
 
+	/* Header CENTERED - email templates style */
 	.page-header {
-		margin-bottom: 40px;
+		text-align: center;
+		margin-bottom: 2rem;
 	}
 
-	.header-content h1 {
-		font-size: 32px;
+	/* Title - email templates style */
+	.page-header h1 {
+		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
 		margin: 0 0 8px 0;
@@ -161,10 +163,11 @@
 	.rooms-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fill, minmax(360px, 1fr));
-		gap: 24px;
-		margin-bottom: 48px;
+		gap: 1.5rem;
+		margin-bottom: 2rem;
 	}
 
+	/* Room cards - email templates style */
 	.room-card {
 		display: flex;
 		flex-direction: column;
@@ -182,34 +185,34 @@
 
 	.room-card:hover {
 		border-color: var(--room-color);
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.1);
-		transform: translateY(-4px);
+		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+		transform: translateY(-2px);
 	}
 
 	.room-icon {
-		width: 64px;
-		height: 64px;
-		border-radius: 16px;
+		width: 56px;
+		height: 56px;
+		border-radius: 12px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		color: #fff;
-		margin-bottom: 20px;
+		margin-bottom: 1rem;
 	}
 
 	.room-info {
-		margin-bottom: 20px;
+		margin-bottom: 1rem;
 	}
 
 	.room-info h2 {
-		font-size: 22px;
+		font-size: 1.25rem;
 		font-weight: 700;
 		color: #f1f5f9;
 		margin: 0 0 6px 0;
 	}
 
 	.room-type {
-		font-size: 13px;
+		font-size: 0.75rem;
 		font-weight: 600;
 		color: #94a3b8;
 		text-transform: uppercase;
@@ -219,8 +222,8 @@
 	.room-features {
 		display: flex;
 		flex-wrap: wrap;
-		gap: 12px;
-		margin-bottom: 16px;
+		gap: 0.75rem;
+		margin-bottom: 1rem;
 	}
 
 	.feature {
@@ -237,10 +240,10 @@
 
 	.room-arrow {
 		position: absolute;
-		right: 24px;
+		right: 1.5rem;
 		top: 50%;
 		transform: translateY(-50%);
-		color: #cbd5e1;
+		color: #64748b;
 		transition: all 0.3s ease;
 	}
 
@@ -249,7 +252,7 @@
 		transform: translateY(-50%) translateX(4px);
 	}
 
-	/* Quick Stats */
+	/* Quick Stats Section */
 	.quick-stats {
 		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.2);
@@ -258,16 +261,18 @@
 	}
 
 	.quick-stats h2 {
-		font-size: 20px;
+		font-size: 1.125rem;
 		font-weight: 700;
 		color: #f1f5f9;
 		margin: 0 0 24px 0;
 	}
 
+	/* Actions centered - email templates style */
 	.action-cards {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-		gap: 20px;
+		display: flex;
+		justify-content: center;
+		flex-wrap: wrap;
+		gap: 0.75rem;
 	}
 
 	.action-card {
@@ -280,6 +285,7 @@
 		border-radius: 12px;
 		text-decoration: none;
 		transition: all 0.2s ease;
+		min-width: 200px;
 	}
 
 	.action-card:hover {
@@ -293,7 +299,7 @@
 	}
 
 	.action-card span {
-		font-size: 16px;
+		font-size: 0.9375rem;
 		font-weight: 600;
 		color: #f1f5f9;
 		margin-bottom: 4px;
@@ -303,11 +309,17 @@
 		font-size: 14px;
 		color: #94a3b8;
 		margin: 0;
+		text-align: center;
+		transition: color 0.2s ease;
+	}
+
+	.action-card:hover p {
+		color: rgba(255, 255, 255, 0.8);
 	}
 
 	@media (max-width: 768px) {
-		.admin-page {
-			padding: 20px;
+		.page {
+			padding: 1rem;
 		}
 
 		.rooms-grid {
@@ -316,6 +328,15 @@
 
 		.room-arrow {
 			display: none;
+		}
+
+		.action-cards {
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.action-card {
+			min-width: unset;
 		}
 	}
 </style>

@@ -85,17 +85,17 @@
 	}));
 </script>
 
-<div class="popups-page">
+<div class="page">
 	<!-- Header -->
 	<div class="page-header">
-		<div>
-			<h1 class="page-title">Popup Manager</h1>
-			<p class="page-subtitle">Create and manage custom popups for your site</p>
+		<h1>Popup Manager</h1>
+		<p class="subtitle">Create and manage custom popups for your site</p>
+		<div class="header-actions">
+			<a href="/admin/popups/create" class="btn-primary">
+				<IconPlus size={18} />
+				<span>Create Popup</span>
+			</a>
 		</div>
-		<a href="/admin/popups/create" class="btn-primary">
-			<IconPlus size={20} />
-			<span>Create Popup</span>
-		</a>
 	</div>
 
 	<!-- Tabs -->
@@ -137,11 +137,11 @@
 		</div>
 	{:else if filteredPopups.length === 0}
 		<div class="empty-state">
-			<IconSettings size={64} class="empty-icon" />
+			<IconSettings size={48} />
 			<h3>No popups found</h3>
 			<p>Create your first popup to get started</p>
 			<a href="/admin/popups/create" class="btn-primary">
-				<IconPlus size={20} />
+				<IconPlus size={18} />
 				<span>Create Popup</span>
 			</a>
 		</div>
@@ -232,44 +232,49 @@
 </div>
 
 <style>
-	.popups-page {
+	.page {
 		max-width: 1400px;
 		margin: 0 auto;
+		padding: 2rem;
 	}
 
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		text-align: center;
 		margin-bottom: 2rem;
-		gap: 2rem;
 	}
 
-	.page-title {
-		font-size: 2rem;
+	.page-header h1 {
+		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
-		margin-bottom: 0.5rem;
+		margin: 0 0 0.25rem 0;
 	}
 
-	.page-subtitle {
-		font-size: 1.125rem;
+	.subtitle {
 		color: #64748b;
+		font-size: 0.875rem;
+		margin: 0 0 1rem 0;
+	}
+
+	.header-actions {
+		display: flex;
+		justify-content: center;
+		gap: 0.75rem;
 	}
 
 	.btn-primary {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
 		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		color: #0D1117;
 		font-weight: 600;
-		border-radius: 12px;
+		border-radius: 6px;
 		border: none;
 		cursor: pointer;
 		text-decoration: none;
-		transition: all 0.3s;
+		transition: all 0.2s;
 	}
 
 	.btn-primary:hover {
@@ -318,7 +323,7 @@
 		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 16px;
 		overflow: hidden;
-		transition: all 0.3s;
+		transition: all 0.2s;
 	}
 
 	.popup-card:hover {
@@ -336,22 +341,17 @@
 	}
 
 	.status-badge {
-		padding: 0.375rem 0.75rem;
+		padding: 0.25rem 0.5rem;
 		border-radius: 6px;
 		font-size: 0.75rem;
-		font-weight: 600;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
+		font-weight: 500;
+		background: rgba(148, 163, 184, 0.15);
+		color: #94a3b8;
 	}
 
 	.status-badge.active {
-		background: rgba(34, 197, 94, 0.2);
-		color: #4ade80;
-	}
-
-	.status-badge:not(.active) {
-		background: rgba(100, 116, 139, 0.2);
-		color: #94a3b8;
+		background: rgba(34, 197, 94, 0.15);
+		color: #22c55e;
 	}
 
 	.icon-btn {
@@ -497,27 +497,30 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: 4rem;
+		padding: 4rem 2rem;
 		text-align: center;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		color: #94a3b8;
 	}
 
 	.empty-state h3 {
-		font-size: 1.5rem;
-		font-weight: 700;
+		font-size: 1.25rem;
+		font-weight: 600;
 		color: #f1f5f9;
-		margin-bottom: 0.5rem;
+		margin: 1rem 0 0.5rem 0;
 	}
 
 	.empty-state p {
 		color: #94a3b8;
-		margin-bottom: 2rem;
+		margin-bottom: 1.5rem;
 	}
 
 	/* Responsive */
 	@media (max-width: 768px) {
-		.page-header {
-			flex-direction: column;
-			align-items: flex-start;
+		.page {
+			padding: 1rem;
 		}
 
 		.popups-grid {
@@ -527,6 +530,10 @@
 		.tabs {
 			overflow-x: auto;
 			-webkit-overflow-scrolling: touch;
+		}
+
+		.header-actions {
+			flex-direction: column;
 		}
 	}
 </style>

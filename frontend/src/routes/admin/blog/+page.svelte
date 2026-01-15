@@ -650,12 +650,10 @@
 
 	<!-- Header -->
 	<header class="page-header">
-		<div>
-			<h1>Blog Posts</h1>
-			<p>
-				Create and manage blog posts • {posts.length} posts • Last updated: {new Date().toLocaleTimeString()}
-			</p>
-		</div>
+		<h1>Blog Posts</h1>
+		<p class="subtitle">
+			Create and manage blog posts • {posts.length} posts • Last updated: {new Date().toLocaleTimeString()}
+		</p>
 		<div class="header-actions">
 			<button
 				class="btn-icon"
@@ -1382,7 +1380,7 @@
 <style>
 	.blog-page {
 		padding: 2rem;
-		max-width: 1600px;
+		max-width: 1400px;
 		margin: 0 auto;
 		background: var(--admin-bg);
 		min-height: 100vh;
@@ -1434,30 +1432,30 @@
 
 	/* Header */
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		text-align: center;
 		margin-bottom: 2rem;
 	}
 
 	.page-header h1 {
-		font-size: 2rem;
+		font-size: 1.75rem;
 		font-weight: 700;
-		color: var(--admin-text-primary);
+		color: #f1f5f9;
 		margin-bottom: 0.5rem;
 	}
 
-	.page-header p {
-		color: var(--admin-text-muted);
-		font-size: 0.95rem;
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin-bottom: 1rem;
 	}
 
 	.header-actions {
 		display: flex;
+		justify-content: center;
 		gap: 0.75rem;
 	}
 
-	/* Buttons - Using RTP Admin Color System */
+	/* Buttons - Email Templates Style */
 	.btn-primary,
 	.btn-secondary,
 	.btn-ghost,
@@ -1475,25 +1473,25 @@
 	}
 
 	.btn-primary {
-		background: var(--admin-btn-primary-bg);
-		color: var(--admin-btn-primary-text);
-		box-shadow: 0 2px 8px rgba(230, 184, 0, 0.25);
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
 	}
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(230, 184, 0, 0.4);
+		box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
 	}
 
 	.btn-secondary {
-		background: var(--admin-btn-bg);
-		color: var(--admin-text-primary);
-		border: 1px solid var(--admin-border);
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border: 1px solid rgba(100, 116, 139, 0.3);
 	}
 
 	.btn-secondary:hover {
-		background: var(--admin-btn-bg-hover);
-		border-color: var(--admin-border-interactive);
+		background: rgba(100, 116, 139, 0.3);
+		border-color: rgba(100, 116, 139, 0.5);
 	}
 
 	.btn-ghost {
@@ -1536,10 +1534,10 @@
 	}
 
 	.stat-card {
-		background: var(--admin-card-bg);
-		border: 1px solid var(--admin-card-border);
+		background: rgba(30, 41, 59, 0.4);
+		border: 1px solid rgba(148, 163, 184, 0.2);
 		padding: 1.5rem;
-		border-radius: 12px;
+		border-radius: 8px;
 		display: flex;
 		gap: 1rem;
 		transition: all 0.3s;
@@ -1611,7 +1609,7 @@
 		flex-wrap: wrap;
 		padding: 1rem;
 		background: rgba(30, 41, 59, 0.4);
-		border-radius: 12px;
+		border-radius: 8px;
 	}
 
 	.controls-left {
@@ -1736,9 +1734,9 @@
 	}
 
 	.post-card {
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 12px;
+		border-radius: 8px;
 		overflow: hidden;
 		transition: all 0.3s;
 		position: relative;
@@ -2031,9 +2029,9 @@
 
 	/* Table View */
 	.posts-table-container {
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 12px;
+		border-radius: 8px;
 		overflow: hidden;
 	}
 

@@ -348,13 +348,11 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class="templates-page" role="main" aria-label="Email Templates">
+<div class="page" role="main" aria-label="Email Templates">
 	<!-- Header -->
 	<header class="page-header">
-		<div>
-			<h1>Email Templates</h1>
-			<p class="page-description">Create and manage reusable email templates for campaigns and automations</p>
-		</div>
+		<h1>Email Templates</h1>
+		<p class="subtitle">Create and manage reusable email templates for campaigns and automations</p>
 		<div class="header-actions">
 			<button
 				class="btn-refresh"
@@ -815,37 +813,36 @@
 	/* =====================================================
 	   Layout & Container
 	   ===================================================== */
-	.templates-page {
-		max-width: 1600px;
+	.page {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
 	}
 
 	/* =====================================================
-	   Page Header
+	   Page Header - CENTERED
 	   ===================================================== */
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+		text-align: center;
 		margin-bottom: 2rem;
-		flex-wrap: wrap;
-		gap: 1rem;
 	}
 
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
-		margin: 0 0 0.25rem 0;
+		margin: 0 0 0.5rem 0;
 	}
 
-	.page-description {
+	.subtitle {
 		color: #64748b;
-		margin: 0;
-		font-size: 0.95rem;
+		font-size: 0.875rem;
+		margin: 0 0 1.25rem 0;
 	}
 
 	.header-actions {
 		display: flex;
+		justify-content: center;
 		gap: 0.75rem;
 		flex-wrap: wrap;
 	}
@@ -1753,17 +1750,18 @@
 	   Responsive Adjustments
 	   ===================================================== */
 	@media (max-width: 768px) {
-		.page-header {
-			flex-direction: column;
+		.page {
+			padding: 1rem;
 		}
 
 		.header-actions {
+			flex-direction: column;
 			width: 100%;
 		}
 
 		.header-actions .btn-primary,
 		.header-actions .btn-secondary {
-			flex: 1;
+			width: 100%;
 			justify-content: center;
 		}
 

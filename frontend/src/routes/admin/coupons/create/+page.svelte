@@ -63,7 +63,6 @@
 		AdminApiError
 	} from '$lib/api/admin';
 	import {
-		IconTicket,
 		IconCheck,
 		IconX,
 		IconPlus,
@@ -967,46 +966,43 @@
 	<title>Create Coupon | Enterprise Admin</title>
 </svelte:head>
 
-<div class="admin-page">
-	<!-- Header -->
+<div class="page">
+	<!-- Header - CENTERED -->
 	<div class="page-header">
-		<div class="header-content">
-			<div class="header-main">
-				<h1>
-					<IconTicket size={32} />
-					Create Coupon
-				</h1>
-				<p>Configure advanced discount rules and distribution</p>
-			</div>
-
-			{#if couponPreview}
-				<div class="preview-badge">
-					<span class="preview-value">{discountDisplay}</span>
-					<span class="preview-impact">~${couponPreview.revenue_impact} impact</span>
-				</div>
-			{/if}
-		</div>
-
-		<div class="header-actions">
-			<button class="btn-ghost" onclick={() => goto('/admin/coupons')}>
-				<IconX size={18} />
-				Cancel
-			</button>
-			<button class="btn-secondary" onclick={testCoupon} disabled={testing || !formData.code}>
-				<IconTestPipe size={18} />
-				Test
-			</button>
-			<button class="btn-primary" onclick={handleSubmit} disabled={saving}>
-				{#if saving}
-					<IconRefresh size={18} class="spinning" />
-					Creating...
-				{:else}
-					<IconCheck size={18} />
-					Create Coupon
-				{/if}
-			</button>
-		</div>
+		<h1>Create Coupon</h1>
+		<p class="subtitle">Configure advanced discount rules and distribution</p>
 	</div>
+
+	<!-- Actions Row - CENTERED -->
+	<div class="actions-row">
+		<button class="btn-secondary" onclick={() => goto('/admin/coupons')}>
+			<IconX size={18} />
+			Cancel
+		</button>
+		<button class="btn-secondary" onclick={testCoupon} disabled={testing || !formData.code}>
+			<IconTestPipe size={18} />
+			Test
+		</button>
+		<button class="btn-primary" onclick={handleSubmit} disabled={saving}>
+			{#if saving}
+				<IconRefresh size={18} class="spinning" />
+				Creating...
+			{:else}
+				<IconCheck size={18} />
+				Create Coupon
+			{/if}
+		</button>
+	</div>
+
+	<!-- Preview Badge -->
+	{#if couponPreview}
+		<div class="preview-badge-row">
+			<div class="preview-badge">
+				<span class="preview-value">{discountDisplay}</span>
+				<span class="preview-impact">~${couponPreview.revenue_impact} impact</span>
+			</div>
+		</div>
+	{/if}
 
 	<!-- Validation Errors -->
 	{#if errors.length > 0}
@@ -1797,48 +1793,44 @@
 </div>
 
 <style>
-	.admin-page {
-		max-width: 1200px;
+	.page {
+		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
-		background: #0f172a;
-		min-height: 100vh;
 	}
 
+	/* Header Styles - CENTERED */
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+		text-align: center;
 		margin-bottom: 2rem;
-		padding-bottom: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 	}
 
-	.header-content {
-		flex: 1;
-	}
-
-	.header-main {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-		margin-bottom: 0.5rem;
-	}
-
-	.header-main h1 {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		font-size: 2rem;
+	.page-header h1 {
+		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
+		margin: 0 0 0.5rem 0;
+	}
+
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
 		margin: 0;
 	}
 
-	.header-main p {
-		color: #94a3b8;
-		font-size: 0.95rem;
-		margin: 0;
+	/* Actions Row - CENTERED */
+	.actions-row {
+		display: flex;
+		justify-content: center;
+		gap: 0.75rem;
+		margin-bottom: 2rem;
+	}
+
+	/* Preview Badge */
+	.preview-badge-row {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 1.5rem;
 	}
 
 	.preview-badge {
@@ -1863,14 +1855,10 @@
 		color: #94a3b8;
 	}
 
-	.header-actions {
-		display: flex;
-		gap: 0.75rem;
-	}
-
 	/* Tabs */
 	.tabs {
 		display: flex;
+		justify-content: center;
 		gap: 0.5rem;
 		margin-bottom: 2rem;
 		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
@@ -1962,9 +1950,9 @@
 	}
 
 	.form-section {
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 12px;
+		border-radius: 8px;
 		padding: 2rem;
 		margin-bottom: 1.5rem;
 	}
@@ -2016,7 +2004,7 @@
 	.input {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.8);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 8px;
 		color: #f1f5f9;
@@ -2080,7 +2068,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		border-radius: 8px;
+		border-radius: 6px;
 		font-weight: 600;
 		border: none;
 		cursor: pointer;
@@ -2098,13 +2086,13 @@
 	}
 
 	.btn-secondary {
-		background: rgba(148, 163, 184, 0.1);
+		background: rgba(100, 116, 139, 0.2);
 		color: #cbd5e1;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		border: 1px solid rgba(100, 116, 139, 0.3);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(148, 163, 184, 0.2);
+		background: rgba(100, 116, 139, 0.3);
 	}
 
 	.btn-ghost {
@@ -2368,14 +2356,12 @@
 
 	/* Responsive */
 	@media (max-width: 768px) {
-		.page-header {
-			flex-direction: column;
-			gap: 1rem;
+		.page {
+			padding: 1rem;
 		}
 
-		.header-actions {
-			width: 100%;
-			justify-content: flex-end;
+		.actions-row {
+			flex-wrap: wrap;
 		}
 
 		.tabs {

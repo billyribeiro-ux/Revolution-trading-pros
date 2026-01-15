@@ -319,16 +319,11 @@
 <!-- Handle escape key for modal -->
 <svelte:window onkeydown={showSendEmailModal ? handleModalKeydown : undefined} />
 
-<div class="sequences-page">
+<div class="page">
 	<!-- Header -->
-	<div class="page-header">
-		<div>
-			<h1>
-				<IconMail size={28} class="header-icon" />
-				Email Sequences
-			</h1>
-			<p class="page-description">Create automated drip campaigns for your contacts</p>
-		</div>
+	<header class="page-header">
+		<h1>Email Sequences</h1>
+		<p class="subtitle">Create automated drip campaigns for your contacts</p>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadSequences()} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
@@ -338,7 +333,7 @@
 				New Sequence
 			</a>
 		</div>
-	</div>
+	</header>
 
 	<!-- Stats Cards -->
 	<div class="stats-grid">
@@ -614,42 +609,39 @@
 {/if}
 
 <style>
-	.sequences-page {
-		max-width: 1600px;
-		padding: 24px;
+	/* =====================================================
+	   Layout & Container
+	   ===================================================== */
+	.page {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
 	}
 
-	/* Header */
+	/* =====================================================
+	   Page Header - CENTERED
+	   ===================================================== */
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+		text-align: center;
 		margin-bottom: 2rem;
-		flex-wrap: wrap;
-		gap: 1rem;
 	}
 
 	.page-header h1 {
-		display: flex;
-		align-items: center;
-		gap: 12px;
 		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
-		margin: 0 0 0.25rem 0;
+		margin: 0 0 0.5rem 0;
 	}
 
-	.page-header h1 :global(.header-icon) {
-		color: #6366f1;
-	}
-
-	.page-description {
+	.subtitle {
 		color: #64748b;
-		margin: 0;
+		font-size: 0.875rem;
+		margin: 0 0 1.25rem 0;
 	}
 
 	.header-actions {
 		display: flex;
+		justify-content: center;
 		gap: 0.75rem;
 	}
 
@@ -717,9 +709,9 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		color: #e2e8f0;
+		background: rgba(100, 116, 139, 0.2);
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		color: #cbd5e1;
 		border-radius: 10px;
 		font-weight: 600;
 		cursor: pointer;
@@ -727,8 +719,8 @@
 	}
 
 	.btn-secondary:hover:not(:disabled) {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.4);
+		background: rgba(100, 116, 139, 0.3);
+		border-color: rgba(100, 116, 139, 0.5);
 	}
 
 	.btn-secondary:disabled {
@@ -750,7 +742,7 @@
 
 	@media (max-width: 640px) {
 		.stats-grid { grid-template-columns: 1fr; }
-		.sequences-page { padding: 16px; }
+		.page { padding: 1rem; }
 	}
 
 	.stat-card {

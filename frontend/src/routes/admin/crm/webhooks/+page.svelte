@@ -190,13 +190,11 @@
 	<title>Webhooks - FluentCRM Pro</title>
 </svelte:head>
 
-<div class="webhooks-page">
+<div class="page">
 	<!-- Header -->
 	<div class="page-header">
-		<div>
-			<h1>Webhooks</h1>
-			<p class="page-description">Send real-time notifications to external services</p>
-		</div>
+		<h1>Webhooks</h1>
+		<p class="subtitle">Send real-time notifications to external services</p>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadWebhooks()} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
@@ -438,33 +436,34 @@
 {/if}
 
 <style>
-	.webhooks-page {
-		max-width: 1200px;
+	.page {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
 	}
 
+	/* Header - Centered */
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+		text-align: center;
 		margin-bottom: 2rem;
-		flex-wrap: wrap;
-		gap: 1rem;
 	}
 
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
-		margin: 0 0 0.25rem 0;
+		margin: 0 0 0.5rem 0;
 	}
 
-	.page-description {
+	.subtitle {
 		color: #64748b;
-		margin: 0;
+		font-size: 0.875rem;
+		margin: 0 0 1rem 0;
 	}
 
 	.header-actions {
 		display: flex;
+		justify-content: center;
 		gap: 0.75rem;
 	}
 

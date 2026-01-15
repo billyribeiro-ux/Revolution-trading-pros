@@ -204,12 +204,10 @@
 	<title>Add New Indicator | Admin</title>
 </svelte:head>
 
-<div class="create-page">
+<div class="page">
 	<div class="page-header">
-		<div>
-			<h1><IconSparkles size={32} /> Add New Indicator</h1>
-			<p>Create a new trading indicator for your platform</p>
-		</div>
+		<h1><IconSparkles size={28} /> Add New Indicator</h1>
+		<p class="subtitle">Create a new trading indicator for your platform</p>
 	</div>
 
 	<div class="content-container">
@@ -401,29 +399,34 @@
 </div>
 
 <style>
-	.create-page {
-		padding: 2rem;
+	/* Page wrapper - Email Templates Style */
+	.page {
 		max-width: 1400px;
 		margin: 0 auto;
+		padding: 2rem;
 	}
 
+	/* Header CENTERED */
 	.page-header {
+		text-align: center;
 		margin-bottom: 2rem;
 	}
 
 	.page-header h1 {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
+		justify-content: center;
 		gap: 0.75rem;
-		font-size: 2rem;
+		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
-		margin-bottom: 0.5rem;
+		margin: 0 0 0.5rem 0;
 	}
 
-	.page-header p {
-		color: #94a3b8;
-		font-size: 1rem;
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin: 0;
 	}
 
 	.content-container {
