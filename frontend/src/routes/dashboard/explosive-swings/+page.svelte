@@ -119,6 +119,13 @@
 
 	const fallbackStats: QuickStats = { winRate: 82, weeklyProfit: '+$4,850', activeTrades: 4, closedThisWeek: 2 };
 
+	// Fallback video updates for latest content section
+	const fallbackVideoUpdates: VideoUpdate[] = [
+		{ id: 1, title: 'Weekly Swing Setup Review', date: 'January 13, 2026', excerpt: 'Top setups for the week ahead', href: '/daily/explosive-swings/weekly-review', image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg', isVideo: true, duration: '18:42' },
+		{ id: 2, title: 'NVDA Breakout Analysis', date: 'January 12, 2026', excerpt: 'Breaking down the NVDA trade setup', href: '/daily/explosive-swings/nvda-analysis', image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg', isVideo: true, duration: '12:15' },
+		{ id: 3, title: 'Market Momentum Update', date: 'January 10, 2026', excerpt: 'Current market conditions and outlook', href: '/daily/explosive-swings/market-update', image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg', isVideo: true, duration: '15:30' }
+	];
+
 	// Derive display items from API or fallback to static
 	const displayUpdates = $derived(
 		data.latestUpdates && data.latestUpdates.length > 0
@@ -136,14 +143,18 @@
 	);
 
 	// Reactive data derived from server props - use $derived for reactivity
-	const weeklyContent = $derived<WeeklyContent>(data.watchlist?.video ? {
-		title: data.watchlist.week_title || 'This Week',
-		videoTitle: data.watchlist.video.title,
-		videoUrl: data.watchlist.video.video_url,
-		thumbnail: data.watchlist.video.thumbnail_url || 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
-		duration: data.watchlist.video.formatted_duration || '',
-		publishedDate: data.watchlist.video.formatted_date || ''
-	} : fallbackWeeklyContent);
+	// WatchlistResponse has entries[] and total - extract latest entry for weekly content
+	const latestWatchlistEntry = $derived(data.watchlist?.entries?.[0]);
+	const weeklyContent = $derived<WeeklyContent>(
+		latestWatchlistEntry ? {
+			title: `Week of ${latestWatchlistEntry.weekOf}`,
+			videoTitle: latestWatchlistEntry.title,
+			videoUrl: latestWatchlistEntry.videoUrl,
+			thumbnail: latestWatchlistEntry.poster || 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
+			duration: '',
+			publishedDate: latestWatchlistEntry.publishedAt || ''
+		} : fallbackWeeklyContent
+	);
 	
 	// Use fallback trade plan and alerts for now (unified API doesn't include these yet)
 	const tradePlan = $derived<TradePlanEntry[]>(fallbackTradePlan);
