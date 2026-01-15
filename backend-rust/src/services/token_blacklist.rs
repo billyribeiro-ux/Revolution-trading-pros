@@ -18,7 +18,7 @@ use tokio::sync::RwLock;
 
 /// Token blacklist entry
 #[derive(Clone)]
-struct BlacklistEntry {
+pub struct BlacklistEntry {
     /// When the token expires (no need to keep after expiry)
     expires_at: Instant,
 }

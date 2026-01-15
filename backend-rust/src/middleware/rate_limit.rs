@@ -50,7 +50,7 @@ impl Default for RateLimitConfig {
 
 /// Rate limit entry for a single IP
 #[derive(Clone)]
-struct RateLimitEntry {
+pub struct RateLimitEntry {
     count: u32,
     window_start: Instant,
     locked_until: Option<Instant>,
