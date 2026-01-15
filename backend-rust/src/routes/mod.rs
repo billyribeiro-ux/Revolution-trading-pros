@@ -269,6 +269,51 @@ fn admin_routes(state: AppState) -> Router<AppState> {
             "/coupons/user/available",
             get(handlers::admin::coupons::user_coupons),
         )
+        // Connections management (ICT 7)
+        .route("/connections", get(handlers::admin::connections::index))
+        .route(
+            "/connections/{service_key}/connect",
+            post(handlers::admin::connections::connect),
+        )
+        .route(
+            "/connections/{service_key}/disconnect",
+            post(handlers::admin::connections::disconnect),
+        )
+        .route(
+            "/connections/{service_key}/test",
+            post(handlers::admin::connections::test),
+        )
+        // Analytics dashboard (ICT 7)
+        .route(
+            "/analytics/dashboard",
+            get(handlers::admin::analytics::dashboard),
+        )
+        // Settings management (ICT 7)
+        .route("/settings", get(handlers::admin::settings::index))
+        .route(
+            "/settings/general",
+            put(handlers::admin::settings::update_general),
+        )
+        .route(
+            "/settings/notifications",
+            put(handlers::admin::settings::update_notifications),
+        )
+        .route(
+            "/settings/email",
+            put(handlers::admin::settings::update_email),
+        )
+        .route(
+            "/settings/backup",
+            put(handlers::admin::settings::update_backup),
+        )
+        .route(
+            "/settings/performance",
+            put(handlers::admin::settings::update_performance),
+        )
+        .route(
+            "/settings/cache/clear",
+            post(handlers::admin::settings::clear_cache),
+        )
         // Apply admin middleware
         .layer(middleware::from_fn_with_state(
             state.clone(),
