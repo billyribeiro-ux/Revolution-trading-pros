@@ -240,6 +240,7 @@
 </svelte:head>
 
 <div class="page">
+	<div class="admin-page-container">
 	<!-- Error Banner -->
 	{#if initError}
 		<div class="error-banner">
@@ -604,6 +605,7 @@
 			{/if}
 		{/if}
 	</div>
+	</div><!-- End admin-page-container -->
 </div>
 
 <!-- Email Modal -->
