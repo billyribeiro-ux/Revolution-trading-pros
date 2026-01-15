@@ -234,13 +234,14 @@
 		overflow-y: auto;
 	}
 
-	/* Section Title */
+	/* Section Title - Montserrat 600 for overlines/small headings */
 	.nav-section-title {
-		font-size: 0.7rem;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		font-size: 0.6875rem;
 		font-weight: 600;
 		color: var(--admin-nav-section-title);
 		text-transform: uppercase;
-		letter-spacing: 0.5px;
+		letter-spacing: 0.08em;
 		padding: 1rem 0.5rem 0.5rem;
 		margin-top: 0.5rem;
 	}
@@ -250,7 +251,7 @@
 		padding-top: 0.5rem;
 	}
 
-	/* Navigation Item */
+	/* Navigation Item - Roboto 500 for nav items */
 	.nav-item {
 		display: flex;
 		align-items: center;
@@ -259,8 +260,10 @@
 		color: var(--admin-nav-text);
 		text-decoration: none;
 		border-radius: var(--radius-md, 0.5rem);
-		font-size: 0.9rem;
+		font-family: var(--font-body), 'Roboto', sans-serif;
+		font-size: 0.875rem;
 		font-weight: 500;
+		letter-spacing: 0.01em;
 		margin-bottom: 0.25rem;
 		border: 1px solid transparent;
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
@@ -323,8 +326,9 @@
 	}
 
 	.user-name {
-		font-weight: 600;
-		font-size: 0.9375rem;
+		font-family: var(--font-body), 'Roboto', sans-serif;
+		font-weight: 500;
+		font-size: 0.875rem;
 		color: var(--admin-text-primary);
 		white-space: nowrap;
 		overflow: hidden;
@@ -332,24 +336,29 @@
 	}
 
 	.user-role {
-		font-size: 0.8125rem;
+		font-family: var(--font-body), 'Roboto', sans-serif;
+		font-size: 0.75rem;
+		font-weight: 400;
 		color: var(--admin-text-muted);
 	}
 
-	/* Exit Button */
+	/* Exit Button - Roboto 500 */
 	.exit-btn {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 0.75rem;
 		width: 100%;
-		padding: 0.75rem 1rem;
+		padding: 0.625rem 1rem;
 		background: transparent;
 		border: 1px solid var(--admin-error-border);
 		border-radius: var(--radius-md, 0.5rem);
 		color: var(--admin-text-muted);
 		text-decoration: none;
+		font-family: var(--font-body), 'Roboto', sans-serif;
 		font-weight: 500;
+		font-size: 0.875rem;
+		letter-spacing: 0.01em;
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 

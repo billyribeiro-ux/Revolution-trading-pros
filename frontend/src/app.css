@@ -109,10 +109,21 @@
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Font Families
+	 * Fintech Professional Typography System
+	 * Montserrat: Headings, Navigation, Buttons (modern, authoritative)
+	 * Roboto: Body text, Paragraphs (clean, readable)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	--font-heading: 'Montserrat', system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
-	--font-body: 'Open Sans', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-	--font-mono: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, monospace;
+	--font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--font-body: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+	/* Font Weights */
+	--font-weight-light: 300;
+	--font-weight-normal: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+	--font-weight-extrabold: 800;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -2158,176 +2169,232 @@ body.light .hero-gradient-text {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * ADMIN DASHBOARD THEME SYSTEM - Apple ICT 11+ Principal Engineer
- * Comprehensive design tokens for the admin panel with full light/dark support
- * Premium, refined aesthetic inspired by Apple's Human Interface Guidelines
+ * FINTECH ADMIN DASHBOARD THEME SYSTEM
+ * Apple ICT 7+ Principal Engineer - Professional Trading Platform Aesthetic
+ * Inspired by Bloomberg Terminal, Stripe Dashboard, and Robinhood Pro
+ *
+ * Typography: Montserrat (headings) + Roboto (body)
+ * Colors: Professional fintech palette with consistent token usage
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ─────────────────────────────────────────────────────────────────────────────
- * LIGHT THEME (Default) - Apple-Inspired Clean Aesthetic
- * Emphasizes readability, clarity, and professional appearance
+ * FINTECH LIGHT THEME - Clean, Professional, Trustworthy
+ * High-contrast design optimized for data-heavy interfaces
  * ───────────────────────────────────────────────────────────────────────────── */
 :root,
 html.light,
 body.light {
-	/* Primary Background Colors - Apple's signature off-white hierarchy */
-	--admin-bg: #f5f5f7;
-	--admin-bg-subtle: #fafafa;
-	--admin-bg-muted: #f0f0f2;
+	/* ═══ FINTECH PRIMARY PALETTE ═══ */
+	/* Core Brand - Deep Teal/Cyan (Trust, Stability, Finance) */
+	--admin-accent-primary: #0891b2;
+	--admin-accent-primary-hover: #0e7490;
+	--admin-accent-primary-soft: rgba(8, 145, 178, 0.08);
+	--admin-accent-primary-muted: rgba(8, 145, 178, 0.15);
 
-	/* Surface Colors - Clean whites with subtle depth */
+	/* Secondary Accent - Rich Navy (Authority, Professionalism) */
+	--admin-accent-secondary: #1e3a5f;
+	--admin-accent-secondary-hover: #0f2744;
+
+	/* Tertiary Accent - Gold/Amber (Premium, Success) */
+	--admin-accent-tertiary: #d4a012;
+	--admin-accent-tertiary-hover: #b8860b;
+
+	/* ═══ SURFACE COLORS ═══ */
+	/* Background Hierarchy - Clean, Professional Whites */
+	--admin-bg: #f8fafc;
+	--admin-bg-subtle: #ffffff;
+	--admin-bg-muted: #f1f5f9;
+
+	/* Surface Colors - Elevated Cards */
 	--admin-surface: #ffffff;
 	--admin-surface-raised: #ffffff;
-	--admin-surface-sunken: #f8f9fa;
+	--admin-surface-sunken: #f1f5f9;
 	--admin-surface-overlay: rgba(255, 255, 255, 0.98);
 
-	/* Sidebar - Subtle off-white for visual hierarchy */
-	--admin-sidebar-bg: linear-gradient(180deg, #fafbfc 0%, #f5f6f8 100%);
-	--admin-sidebar-border: #e5e7eb;
+	/* Sidebar - Professional Gradient */
+	--admin-sidebar-bg: linear-gradient(180deg, #1e3a5f 0%, #0f2744 100%);
+	--admin-sidebar-border: rgba(255, 255, 255, 0.1);
+	--admin-sidebar-text: #e2e8f0;
+	--admin-sidebar-text-muted: #94a3b8;
+	--admin-sidebar-hover: rgba(255, 255, 255, 0.08);
+	--admin-sidebar-active: rgba(8, 145, 178, 0.2);
 
-	/* Header - Clean white with subtle border */
-	--admin-header-bg: rgba(255, 255, 255, 0.92);
-	--admin-header-border: #e5e7eb;
-	--admin-header-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+	/* Header - Clean with Subtle Depth */
+	--admin-header-bg: rgba(255, 255, 255, 0.95);
+	--admin-header-border: #e2e8f0;
+	--admin-header-shadow: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
 
-	/* Text Colors - High contrast Apple typography */
-	--admin-text-primary: #1d1d1f;
-	--admin-text-secondary: #424245;
-	--admin-text-muted: #6e6e73;
-	--admin-text-placeholder: #86868b;
-	--admin-text-disabled: #aeaeb2;
+	/* ═══ TEXT COLORS ═══ */
+	--admin-text-primary: #0f172a;
+	--admin-text-secondary: #334155;
+	--admin-text-muted: #64748b;
+	--admin-text-placeholder: #94a3b8;
+	--admin-text-disabled: #cbd5e1;
 
-	/* Border Colors - Subtle but visible */
-	--admin-border: #e5e7eb;
-	--admin-border-light: #f3f4f6;
-	--admin-border-focus: #4f46e5;
-	--admin-border-interactive: rgba(79, 70, 229, 0.3);
+	/* ═══ BORDER COLORS ═══ */
+	--admin-border: #e2e8f0;
+	--admin-border-light: #f1f5f9;
+	--admin-border-focus: #0891b2;
+	--admin-border-interactive: rgba(8, 145, 178, 0.4);
 
-	/* Primary Accent - Vibrant Indigo */
-	--admin-accent-primary: #4f46e5;
-	--admin-accent-primary-hover: #4338ca;
-	--admin-accent-primary-soft: rgba(79, 70, 229, 0.08);
-	--admin-accent-primary-muted: rgba(79, 70, 229, 0.15);
-
-	/* Button Styles */
+	/* ═══ BUTTON STYLES ═══ */
 	--admin-btn-bg: #ffffff;
-	--admin-btn-bg-hover: #f9fafb;
-	--admin-btn-bg-active: #f3f4f6;
-	--admin-btn-border: #e5e7eb;
-	--admin-btn-border-hover: #d1d5db;
-	--admin-btn-text: #374151;
-	--admin-btn-text-hover: #1f2937;
+	--admin-btn-bg-hover: #f8fafc;
+	--admin-btn-bg-active: #f1f5f9;
+	--admin-btn-border: #e2e8f0;
+	--admin-btn-border-hover: #cbd5e1;
+	--admin-btn-text: #334155;
+	--admin-btn-text-hover: #0f172a;
 
-	/* Keyboard Shortcuts */
-	--admin-kbd-bg: #f3f4f6;
-	--admin-kbd-border: #e5e7eb;
-	--admin-kbd-text: #6b7280;
+	/* Primary Button */
+	--admin-btn-primary-bg: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+	--admin-btn-primary-bg-hover: linear-gradient(135deg, #0e7490 0%, #0c5c73 100%);
+	--admin-btn-primary-text: #ffffff;
 
-	/* Navigation */
-	--admin-nav-text: #4b5563;
-	--admin-nav-text-hover: #1f2937;
-	--admin-nav-text-active: #4f46e5;
-	--admin-nav-bg-hover: rgba(79, 70, 229, 0.06);
-	--admin-nav-bg-active: rgba(79, 70, 229, 0.1);
-	--admin-nav-border-active: rgba(79, 70, 229, 0.2);
-	--admin-nav-section-title: #9ca3af;
+	/* ═══ KEYBOARD SHORTCUTS ═══ */
+	--admin-kbd-bg: #f1f5f9;
+	--admin-kbd-border: #e2e8f0;
+	--admin-kbd-text: #64748b;
 
-	/* Semantic Colors - Success */
+	/* ═══ NAVIGATION ═══ */
+	--admin-nav-text: #64748b;
+	--admin-nav-text-hover: #0f172a;
+	--admin-nav-text-active: #0891b2;
+	--admin-nav-bg-hover: rgba(8, 145, 178, 0.06);
+	--admin-nav-bg-active: rgba(8, 145, 178, 0.1);
+	--admin-nav-border-active: #0891b2;
+	--admin-nav-section-title: #94a3b8;
+
+	/* ═══ SEMANTIC COLORS - FINTECH OPTIMIZED ═══ */
+	/* Success - Profitable Green */
 	--admin-success: #059669;
 	--admin-success-bg: rgba(5, 150, 105, 0.08);
-	--admin-success-border: rgba(5, 150, 105, 0.2);
+	--admin-success-border: rgba(5, 150, 105, 0.25);
 	--admin-success-text: #047857;
 
-	/* Semantic Colors - Warning */
+	/* Warning - Caution Amber */
 	--admin-warning: #d97706;
 	--admin-warning-bg: rgba(217, 119, 6, 0.08);
-	--admin-warning-border: rgba(217, 119, 6, 0.2);
+	--admin-warning-border: rgba(217, 119, 6, 0.25);
 	--admin-warning-text: #b45309;
 
-	/* Semantic Colors - Error */
+	/* Error - Loss Red */
 	--admin-error: #dc2626;
 	--admin-error-bg: rgba(220, 38, 38, 0.08);
-	--admin-error-border: rgba(220, 38, 38, 0.2);
+	--admin-error-border: rgba(220, 38, 38, 0.25);
 	--admin-error-text: #b91c1c;
 
-	/* Semantic Colors - Info */
-	--admin-info: #2563eb;
-	--admin-info-bg: rgba(37, 99, 235, 0.08);
-	--admin-info-border: rgba(37, 99, 235, 0.2);
-	--admin-info-text: #1d4ed8;
+	/* Info - Data Blue */
+	--admin-info: #0284c7;
+	--admin-info-bg: rgba(2, 132, 199, 0.08);
+	--admin-info-border: rgba(2, 132, 199, 0.25);
+	--admin-info-text: #0369a1;
 
-	/* Focus States */
-	--admin-focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.25);
+	/* ═══ FOCUS STATES ═══ */
+	--admin-focus-ring: 0 0 0 3px rgba(8, 145, 178, 0.25);
 
-	/* Shadows - Subtle depth for light theme */
-	--admin-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.04);
-	--admin-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.06);
-	--admin-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.08);
-	--admin-shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.1);
+	/* ═══ SHADOWS - Professional Depth ═══ */
+	--admin-shadow-sm: 0 1px 2px rgba(15, 23, 42, 0.04);
+	--admin-shadow-md: 0 4px 12px rgba(15, 23, 42, 0.06);
+	--admin-shadow-lg: 0 10px 40px rgba(15, 23, 42, 0.1);
+	--admin-shadow-xl: 0 25px 50px rgba(15, 23, 42, 0.15);
 
-	/* Cards & Widgets */
+	/* ═══ CARDS & WIDGETS ═══ */
 	--admin-card-bg: #ffffff;
-	--admin-card-border: #e5e7eb;
-	--admin-card-shadow: 0 1px 3px rgba(0, 0, 0, 0.05), 0 1px 2px rgba(0, 0, 0, 0.03);
-	--admin-card-shadow-hover: 0 10px 40px rgba(0, 0, 0, 0.08);
+	--admin-card-border: #e2e8f0;
+	--admin-card-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+	--admin-card-shadow-hover: 0 10px 40px rgba(15, 23, 42, 0.1);
 
-	/* Widget Colors - Vibrant accents for stats cards */
-	--admin-widget-blue-bg: rgba(59, 130, 246, 0.1);
-	--admin-widget-blue-icon: #3b82f6;
-	--admin-widget-green-bg: rgba(16, 185, 129, 0.1);
-	--admin-widget-green-icon: #10b981;
-	--admin-widget-purple-bg: rgba(139, 92, 246, 0.1);
-	--admin-widget-purple-icon: #8b5cf6;
-	--admin-widget-orange-bg: rgba(249, 115, 22, 0.1);
-	--admin-widget-orange-icon: #f97316;
-	--admin-widget-red-bg: rgba(239, 68, 68, 0.1);
-	--admin-widget-red-icon: #ef4444;
-	--admin-widget-cyan-bg: rgba(6, 182, 212, 0.1);
-	--admin-widget-cyan-icon: #06b6d4;
+	/* ═══ WIDGET COLORS - Fintech Data Visualization ═══ */
+	/* Primary Metrics - Teal */
+	--admin-widget-primary-bg: rgba(8, 145, 178, 0.08);
+	--admin-widget-primary-icon: #0891b2;
+	--admin-widget-primary-border: rgba(8, 145, 178, 0.2);
 
-	/* Table Styles */
-	--admin-table-header-bg: #f9fafb;
-	--admin-table-row-hover: #f5f7fa;
+	/* Revenue/Profit - Green */
+	--admin-widget-green-bg: rgba(5, 150, 105, 0.08);
+	--admin-widget-green-icon: #059669;
+	--admin-widget-green-border: rgba(5, 150, 105, 0.2);
+
+	/* Users/Growth - Blue */
+	--admin-widget-blue-bg: rgba(2, 132, 199, 0.08);
+	--admin-widget-blue-icon: #0284c7;
+	--admin-widget-blue-border: rgba(2, 132, 199, 0.2);
+
+	/* Premium/Value - Gold */
+	--admin-widget-gold-bg: rgba(212, 160, 18, 0.08);
+	--admin-widget-gold-icon: #d4a012;
+	--admin-widget-gold-border: rgba(212, 160, 18, 0.2);
+
+	/* Alerts/Attention - Orange */
+	--admin-widget-orange-bg: rgba(234, 88, 12, 0.08);
+	--admin-widget-orange-icon: #ea580c;
+	--admin-widget-orange-border: rgba(234, 88, 12, 0.2);
+
+	/* Critical/Loss - Red */
+	--admin-widget-red-bg: rgba(220, 38, 38, 0.08);
+	--admin-widget-red-icon: #dc2626;
+	--admin-widget-red-border: rgba(220, 38, 38, 0.2);
+
+	/* Legacy compatibility */
+	--admin-widget-purple-bg: rgba(124, 58, 237, 0.08);
+	--admin-widget-purple-icon: #7c3aed;
+	--admin-widget-cyan-bg: rgba(8, 145, 178, 0.08);
+	--admin-widget-cyan-icon: #0891b2;
+
+	/* ═══ TABLE STYLES ═══ */
+	--admin-table-header-bg: #f8fafc;
+	--admin-table-row-hover: rgba(8, 145, 178, 0.04);
 	--admin-table-row-stripe: #fafbfc;
-	--admin-table-border: #e5e7eb;
+	--admin-table-border: #e2e8f0;
 
-	/* Input Styles */
+	/* ═══ INPUT STYLES ═══ */
 	--admin-input-bg: #ffffff;
-	--admin-input-border: #d1d5db;
-	--admin-input-border-focus: #4f46e5;
-	--admin-input-placeholder: #9ca3af;
+	--admin-input-border: #e2e8f0;
+	--admin-input-border-focus: #0891b2;
+	--admin-input-placeholder: #94a3b8;
 
-	/* Charts - Light theme optimized */
-	--admin-chart-grid: rgba(0, 0, 0, 0.06);
-	--admin-chart-text: #6b7280;
-	--admin-chart-axis: #e5e7eb;
+	/* ═══ CHARTS - Fintech Data Visualization ═══ */
+	--admin-chart-grid: rgba(15, 23, 42, 0.06);
+	--admin-chart-text: #64748b;
+	--admin-chart-axis: #e2e8f0;
+	--admin-chart-positive: #059669;
+	--admin-chart-negative: #dc2626;
+	--admin-chart-neutral: #0891b2;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
- * DARK THEME - Premium Netflix/Stripe Aesthetic
- * Deep, rich colors with vibrant accents
+ * DARK THEME - Professional Fintech Aesthetic
+ * Deep navy with teal accents - Bloomberg Terminal inspired
  * ───────────────────────────────────────────────────────────────────────────── */
 html.dark,
 body.dark {
+	/* ═══ FINTECH PRIMARY PALETTE - DARK MODE ═══ */
+	/* Matching the light theme's fintech identity */
+
 	/* Primary Background Colors - Deep navy hierarchy */
-	--admin-bg: #0f172a;
-	--admin-bg-subtle: #131c31;
-	--admin-bg-muted: #1a2744;
+	--admin-bg: #0a1628;
+	--admin-bg-subtle: #0f1e32;
+	--admin-bg-muted: #152238;
 
 	/* Surface Colors - Elevated dark surfaces */
-	--admin-surface: #1e293b;
-	--admin-surface-raised: #263548;
-	--admin-surface-sunken: #0c1322;
-	--admin-surface-overlay: rgba(30, 41, 59, 0.98);
+	--admin-surface: #1a2d47;
+	--admin-surface-raised: #213654;
+	--admin-surface-sunken: #060e1a;
+	--admin-surface-overlay: rgba(26, 45, 71, 0.98);
 
-	/* Sidebar - Gradient for depth */
-	--admin-sidebar-bg: linear-gradient(180deg, #1a2744 0%, #0f172a 100%);
-	--admin-sidebar-border: rgba(99, 102, 241, 0.1);
+	/* Sidebar - Professional Navy Gradient */
+	--admin-sidebar-bg: linear-gradient(180deg, #0f2744 0%, #0a1628 100%);
+	--admin-sidebar-border: rgba(8, 145, 178, 0.15);
+	--admin-sidebar-text: #e2e8f0;
+	--admin-sidebar-text-muted: #94a3b8;
+	--admin-sidebar-hover: rgba(8, 145, 178, 0.12);
+	--admin-sidebar-active: rgba(8, 145, 178, 0.25);
 
 	/* Header - Translucent with blur effect */
-	--admin-header-bg: rgba(15, 23, 42, 0.85);
-	--admin-header-border: rgba(99, 102, 241, 0.1);
-	--admin-header-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+	--admin-header-bg: rgba(10, 22, 40, 0.92);
+	--admin-header-border: rgba(8, 145, 178, 0.12);
+	--admin-header-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 
 	/* Text Colors - High contrast for dark backgrounds */
 	--admin-text-primary: #f1f5f9;
@@ -2336,110 +2403,151 @@ body.dark {
 	--admin-text-placeholder: #64748b;
 	--admin-text-disabled: #475569;
 
-	/* Border Colors - Subtle glow */
-	--admin-border: rgba(99, 102, 241, 0.15);
-	--admin-border-light: rgba(99, 102, 241, 0.08);
-	--admin-border-focus: #6366f1;
-	--admin-border-interactive: rgba(99, 102, 241, 0.4);
+	/* ═══ ACCENT COLORS - FINTECH TEAL ═══ */
+	/* Core Brand - Bright Teal (Trust, Stability, Finance) */
+	--admin-accent-primary: #22d3ee;
+	--admin-accent-primary-hover: #67e8f9;
+	--admin-accent-primary-soft: rgba(34, 211, 238, 0.12);
+	--admin-accent-primary-muted: rgba(34, 211, 238, 0.2);
 
-	/* Primary Accent - Vibrant Indigo */
-	--admin-accent-primary: #6366f1;
-	--admin-accent-primary-hover: #818cf8;
-	--admin-accent-primary-soft: rgba(99, 102, 241, 0.15);
-	--admin-accent-primary-muted: rgba(99, 102, 241, 0.25);
+	/* Secondary Accent - Lighter Navy */
+	--admin-accent-secondary: #3b82f6;
+	--admin-accent-secondary-hover: #60a5fa;
+
+	/* Tertiary Accent - Gold/Amber */
+	--admin-accent-tertiary: #fbbf24;
+	--admin-accent-tertiary-hover: #fcd34d;
+
+	/* Border Colors - Teal glow */
+	--admin-border: rgba(8, 145, 178, 0.2);
+	--admin-border-light: rgba(8, 145, 178, 0.1);
+	--admin-border-focus: #22d3ee;
+	--admin-border-interactive: rgba(34, 211, 238, 0.4);
 
 	/* Button Styles */
-	--admin-btn-bg: rgba(99, 102, 241, 0.1);
-	--admin-btn-bg-hover: rgba(99, 102, 241, 0.2);
-	--admin-btn-bg-active: rgba(99, 102, 241, 0.25);
-	--admin-btn-border: rgba(99, 102, 241, 0.2);
-	--admin-btn-border-hover: rgba(99, 102, 241, 0.4);
+	--admin-btn-bg: rgba(8, 145, 178, 0.12);
+	--admin-btn-bg-hover: rgba(8, 145, 178, 0.2);
+	--admin-btn-bg-active: rgba(8, 145, 178, 0.28);
+	--admin-btn-border: rgba(8, 145, 178, 0.25);
+	--admin-btn-border-hover: rgba(34, 211, 238, 0.4);
 	--admin-btn-text: #e2e8f0;
 	--admin-btn-text-hover: #ffffff;
 
+	/* Primary Button - Teal Gradient */
+	--admin-btn-primary-bg: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);
+	--admin-btn-primary-bg-hover: linear-gradient(135deg, #22d3ee 0%, #0891b2 100%);
+	--admin-btn-primary-text: #ffffff;
+
 	/* Keyboard Shortcuts */
-	--admin-kbd-bg: rgba(99, 102, 241, 0.15);
-	--admin-kbd-border: rgba(99, 102, 241, 0.2);
+	--admin-kbd-bg: rgba(8, 145, 178, 0.15);
+	--admin-kbd-border: rgba(8, 145, 178, 0.25);
 	--admin-kbd-text: #94a3b8;
 
 	/* Navigation */
 	--admin-nav-text: #94a3b8;
 	--admin-nav-text-hover: #f1f5f9;
-	--admin-nav-text-active: #6366f1;
-	--admin-nav-bg-hover: rgba(99, 102, 241, 0.1);
-	--admin-nav-bg-active: rgba(99, 102, 241, 0.15);
-	--admin-nav-border-active: rgba(99, 102, 241, 0.3);
+	--admin-nav-text-active: #22d3ee;
+	--admin-nav-bg-hover: rgba(8, 145, 178, 0.1);
+	--admin-nav-bg-active: rgba(8, 145, 178, 0.18);
+	--admin-nav-border-active: rgba(34, 211, 238, 0.5);
 	--admin-nav-section-title: #64748b;
 
-	/* Semantic Colors - Success */
+	/* ═══ SEMANTIC COLORS - FINTECH OPTIMIZED ═══ */
+	/* Success - Profitable Green */
 	--admin-success: #10b981;
 	--admin-success-bg: rgba(16, 185, 129, 0.15);
-	--admin-success-border: rgba(16, 185, 129, 0.3);
+	--admin-success-border: rgba(16, 185, 129, 0.35);
 	--admin-success-text: #34d399;
 
-	/* Semantic Colors - Warning */
+	/* Warning - Caution Amber */
 	--admin-warning: #f59e0b;
 	--admin-warning-bg: rgba(245, 158, 11, 0.15);
-	--admin-warning-border: rgba(245, 158, 11, 0.3);
+	--admin-warning-border: rgba(245, 158, 11, 0.35);
 	--admin-warning-text: #fbbf24;
 
-	/* Semantic Colors - Error */
+	/* Error - Loss Red */
 	--admin-error: #ef4444;
 	--admin-error-bg: rgba(239, 68, 68, 0.15);
-	--admin-error-border: rgba(239, 68, 68, 0.3);
+	--admin-error-border: rgba(239, 68, 68, 0.35);
 	--admin-error-text: #f87171;
 
-	/* Semantic Colors - Info */
+	/* Info - Data Blue */
 	--admin-info: #3b82f6;
 	--admin-info-bg: rgba(59, 130, 246, 0.15);
-	--admin-info-border: rgba(59, 130, 246, 0.3);
+	--admin-info-border: rgba(59, 130, 246, 0.35);
 	--admin-info-text: #60a5fa;
 
-	/* Focus States */
-	--admin-focus-ring: 0 0 0 3px rgba(99, 102, 241, 0.4);
+	/* Focus States - Teal glow */
+	--admin-focus-ring: 0 0 0 3px rgba(34, 211, 238, 0.35);
 
-	/* Shadows - Glowing effect for dark theme */
-	--admin-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
-	--admin-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.4);
-	--admin-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.5);
-	--admin-shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.6);
+	/* Shadows - Subtle depth for dark theme */
+	--admin-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
+	--admin-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
+	--admin-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.6);
+	--admin-shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.7);
 
 	/* Cards & Widgets */
-	--admin-card-bg: #1e293b;
-	--admin-card-border: rgba(99, 102, 241, 0.1);
-	--admin-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-	--admin-card-shadow-hover: 0 12px 40px rgba(99, 102, 241, 0.15);
+	--admin-card-bg: #1a2d47;
+	--admin-card-border: rgba(8, 145, 178, 0.15);
+	--admin-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+	--admin-card-shadow-hover: 0 12px 40px rgba(34, 211, 238, 0.12);
 
-	/* Widget Colors - Vibrant neon accents */
-	--admin-widget-blue-bg: rgba(59, 130, 246, 0.15);
-	--admin-widget-blue-icon: #60a5fa;
+	/* ═══ WIDGET COLORS - Fintech Data Visualization ═══ */
+	/* Primary Metrics - Teal */
+	--admin-widget-primary-bg: rgba(34, 211, 238, 0.12);
+	--admin-widget-primary-icon: #22d3ee;
+	--admin-widget-primary-border: rgba(34, 211, 238, 0.25);
+
+	/* Revenue/Profit - Green */
 	--admin-widget-green-bg: rgba(16, 185, 129, 0.15);
 	--admin-widget-green-icon: #34d399;
-	--admin-widget-purple-bg: rgba(139, 92, 246, 0.15);
-	--admin-widget-purple-icon: #a78bfa;
+	--admin-widget-green-border: rgba(16, 185, 129, 0.3);
+
+	/* Users/Growth - Blue */
+	--admin-widget-blue-bg: rgba(59, 130, 246, 0.15);
+	--admin-widget-blue-icon: #60a5fa;
+	--admin-widget-blue-border: rgba(59, 130, 246, 0.3);
+
+	/* Premium/Value - Gold */
+	--admin-widget-gold-bg: rgba(251, 191, 36, 0.12);
+	--admin-widget-gold-icon: #fbbf24;
+	--admin-widget-gold-border: rgba(251, 191, 36, 0.25);
+
+	/* Alerts/Attention - Orange */
 	--admin-widget-orange-bg: rgba(249, 115, 22, 0.15);
 	--admin-widget-orange-icon: #fb923c;
+	--admin-widget-orange-border: rgba(249, 115, 22, 0.3);
+
+	/* Critical/Loss - Red */
 	--admin-widget-red-bg: rgba(239, 68, 68, 0.15);
 	--admin-widget-red-icon: #f87171;
-	--admin-widget-cyan-bg: rgba(6, 182, 212, 0.15);
+	--admin-widget-red-border: rgba(239, 68, 68, 0.3);
+
+	/* Legacy compatibility */
+	--admin-widget-purple-bg: rgba(139, 92, 246, 0.15);
+	--admin-widget-purple-icon: #a78bfa;
+	--admin-widget-cyan-bg: rgba(34, 211, 238, 0.12);
 	--admin-widget-cyan-icon: #22d3ee;
 
 	/* Table Styles */
-	--admin-table-header-bg: #1a2744;
-	--admin-table-row-hover: rgba(99, 102, 241, 0.08);
-	--admin-table-row-stripe: rgba(99, 102, 241, 0.03);
-	--admin-table-border: rgba(99, 102, 241, 0.1);
+	--admin-table-header-bg: #152238;
+	--admin-table-row-hover: rgba(8, 145, 178, 0.1);
+	--admin-table-row-stripe: rgba(8, 145, 178, 0.04);
+	--admin-table-border: rgba(8, 145, 178, 0.12);
 
 	/* Input Styles */
-	--admin-input-bg: #1e293b;
-	--admin-input-border: rgba(99, 102, 241, 0.2);
-	--admin-input-border-focus: #6366f1;
+	--admin-input-bg: #1a2d47;
+	--admin-input-border: rgba(8, 145, 178, 0.25);
+	--admin-input-border-focus: #22d3ee;
 	--admin-input-placeholder: #64748b;
 
-	/* Charts - Dark theme optimized */
-	--admin-chart-grid: rgba(99, 102, 241, 0.08);
+	/* Charts - Dark theme fintech */
+	--admin-chart-grid: rgba(8, 145, 178, 0.1);
 	--admin-chart-text: #94a3b8;
-	--admin-chart-axis: rgba(99, 102, 241, 0.15);
+	--admin-chart-axis: rgba(8, 145, 178, 0.2);
+	--admin-chart-positive: #34d399;
+	--admin-chart-negative: #f87171;
+	--admin-chart-neutral: #22d3ee;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -2460,26 +2568,306 @@ body.dark {
 	transform: translateY(-2px);
 }
 
-/* Premium Admin Button */
-.admin-btn-primary {
-	background: linear-gradient(135deg, var(--admin-accent-primary) 0%, var(--admin-accent-primary-hover) 100%);
-	color: white;
-	border: none;
-	padding: 0.75rem 1.5rem;
-	border-radius: var(--radius-md, 0.5rem);
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Admin Typography System - Fintech Professional
+ *
+ * Montserrat: Headings, Navigation (500-600 weights only)
+ * Roboto: Body text, Labels, Buttons (400-500 weights only)
+ *
+ * Performance-friendly: Only load Montserrat 500,600 + Roboto 400,500
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Admin Page Headings - Montserrat */
+.admin-heading,
+.admin h1,
+.admin h2,
+.admin h3,
+.admin h4,
+.admin h5,
+.admin h6 {
+	font-family: var(--font-heading), 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+	color: var(--admin-text-primary);
+	margin: 0;
+	line-height: 1.25;
+}
+
+/* H1 / Page title: 600 (SemiBold) - Strong anchor without landing page feel */
+.admin h1, .admin-heading-1 {
+	font-size: 1.75rem;
 	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+/* H2 / Section title: 600 (SemiBold) - Consistent with H1, size does the work */
+.admin h2, .admin-heading-2 {
+	font-size: 1.375rem;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+}
+
+/* H3 / Card title / Panel title: 600 or 500 - Dense UI needs clear separation */
+.admin h3, .admin-heading-3 {
+	font-size: 1.125rem;
+	font-weight: 600;
+}
+
+/* H4 / Field group label / Subsection: 500 (Medium) */
+.admin h4, .admin-heading-4 {
+	font-size: 1rem;
+	font-weight: 500;
+}
+
+/* H5 / Small headings: 500 (Medium) */
+.admin h5, .admin-heading-5 {
+	font-size: 0.9375rem;
+	font-weight: 500;
+}
+
+/* H6 / Overlines / Small headings: 600 (SemiBold) at small size for contrast */
+.admin h6, .admin-heading-6 {
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--admin-text-muted);
+}
+
+/* Admin Body Text - Roboto 400 (Regular) */
+.admin-body,
+.admin p,
+.admin span:not(.admin-label),
+.admin li {
+	font-family: var(--font-body), 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+	font-weight: 400;
+	color: var(--admin-text-secondary);
+	line-height: 1.6;
+}
+
+.admin p {
+	margin: 0 0 1rem;
+	font-size: 0.9375rem;
+}
+
+/* Admin Labels - Roboto 500 (Medium) - Standard admin pattern */
+.admin-label,
+.admin label {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	color: var(--admin-text-secondary);
+	letter-spacing: 0.01em;
+	display: block;
+	margin-bottom: 0.5rem;
+}
+
+/* Admin Input Text - Roboto 400 */
+.admin input,
+.admin textarea,
+.admin select {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-size: 0.9375rem;
+	font-weight: 400;
+	color: var(--admin-text-primary);
+}
+
+/* Admin Placeholder Text - Roboto 400, color handles contrast */
+.admin input::placeholder,
+.admin textarea::placeholder {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 400;
+	color: var(--admin-text-placeholder);
+}
+
+/* Admin Navigation Text - Roboto 500 (Medium) */
+.admin-nav-text,
+.admin nav a,
+.admin .sidebar-link {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-size: 0.875rem;
+	font-weight: 500;
+	letter-spacing: 0.01em;
+}
+
+/* Admin Button Text - Roboto 500 (Medium) */
+.admin button,
+.admin .btn,
+.admin [role="button"] {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	letter-spacing: 0.02em;
+}
+
+/* Admin Meta/Caption Text - Roboto 400, color handles muted state */
+.admin-meta,
+.admin-caption,
+.admin small,
+.admin .text-muted {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-size: 0.8125rem;
+	font-weight: 400;
+	color: var(--admin-text-muted);
+	line-height: 1.5;
+}
+
+/* Inline emphasis - Roboto 500 (prefer over 700 for inline) */
+.admin strong,
+.admin b,
+.admin .text-emphasis {
+	font-weight: 500;
+}
+
+/* Admin Table Headers - Montserrat 600 (extra contrast for dense tables) */
+.admin-table th,
+.admin th {
+	font-family: var(--font-heading), 'Montserrat', sans-serif;
+	font-weight: 600;
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+/* Admin Table Cells - Roboto 400 */
+.admin-table td,
+.admin td {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 400;
+}
+
+/* Admin Chips/Tags/Metadata - Roboto 500 */
+.admin-chip,
+.admin-tag,
+.admin .badge {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.75rem;
+}
+
+/* Admin Tabs - Roboto 500 */
+.admin-tab,
+.admin [role="tab"] {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Admin Premium Buttons - Fintech Styling
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Premium Admin Button - Primary (Teal) */
+.admin-btn-primary {
+	background: var(--admin-btn-primary-bg, linear-gradient(135deg, #0891b2 0%, #0e7490 100%));
+	color: var(--admin-btn-primary-text, white);
+	border: none;
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	letter-spacing: 0.01em;
 	cursor: pointer;
 	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-	box-shadow: 0 2px 8px rgba(79, 70, 229, 0.3);
+	box-shadow: 0 2px 8px rgba(8, 145, 178, 0.25);
 }
 
 .admin-btn-primary:hover {
+	background: var(--admin-btn-primary-bg-hover, linear-gradient(135deg, #0e7490 0%, #0c5c73 100%));
 	transform: translateY(-1px);
-	box-shadow: 0 4px 16px rgba(79, 70, 229, 0.4);
+	box-shadow: 0 4px 12px rgba(8, 145, 178, 0.35);
 }
 
 .admin-btn-primary:active {
 	transform: translateY(0);
+	box-shadow: 0 2px 8px rgba(8, 145, 178, 0.25);
+}
+
+.admin-btn-primary:focus-visible {
+	outline: none;
+	box-shadow: var(--admin-focus-ring), 0 2px 8px rgba(8, 145, 178, 0.25);
+}
+
+/* Admin Button - Secondary */
+.admin-btn-secondary {
+	background: var(--admin-btn-bg);
+	color: var(--admin-btn-text);
+	border: 1px solid var(--admin-btn-border);
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-btn-secondary:hover {
+	background: var(--admin-btn-bg-hover);
+	border-color: var(--admin-btn-border-hover);
+	color: var(--admin-btn-text-hover);
+}
+
+.admin-btn-secondary:focus-visible {
+	outline: none;
+	box-shadow: var(--admin-focus-ring);
+}
+
+/* Admin Button - Gold/Premium */
+.admin-btn-gold {
+	background: linear-gradient(135deg, var(--admin-accent-tertiary) 0%, var(--admin-accent-tertiary-hover) 100%);
+	color: #0f172a;
+	border: none;
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	box-shadow: 0 2px 8px rgba(212, 160, 18, 0.25);
+}
+
+.admin-btn-gold:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(212, 160, 18, 0.35);
+}
+
+/* Admin Button - Danger/Destructive */
+.admin-btn-danger {
+	background: var(--admin-error);
+	color: white;
+	border: none;
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-btn-danger:hover {
+	filter: brightness(1.1);
+}
+
+/* Admin Button - Ghost/Text */
+.admin-btn-ghost {
+	background: transparent;
+	color: var(--admin-text-secondary);
+	border: none;
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-btn-ghost:hover {
+	background: var(--admin-btn-bg-hover);
+	color: var(--admin-text-primary);
 }
 
 /* Premium Stats Widget */

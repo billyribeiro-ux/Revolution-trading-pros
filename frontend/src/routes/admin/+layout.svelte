@@ -161,7 +161,7 @@
 	<title>Admin Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="admin-layout">
+<div class="admin-layout admin">
 	<!-- Sidebar Component -->
 	<AdminSidebar isOpen={isSidebarOpen} onclose={closeSidebar} />
 
@@ -317,14 +317,15 @@
 		outline: none;
 	}
 
-	/* Header Title */
+	/* Header Title - Montserrat 600 */
 	.header-title h1 {
-		font-size: 1.5rem;
-		font-weight: 700;
+		font-family: var(--font-heading), 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+		font-size: 1.375rem;
+		font-weight: 600;
 		color: var(--admin-text-primary);
 		text-transform: capitalize;
 		margin: 0;
-		letter-spacing: -0.01em;
+		letter-spacing: -0.005em;
 	}
 
 	/* Header Actions Container */
@@ -366,10 +367,12 @@
 		transform: scale(0.98);
 	}
 
-	/* Button Label */
+	/* Button Label - Roboto 500 */
 	.btn-label {
+		font-family: var(--font-body), 'Roboto', sans-serif;
 		font-size: 0.8125rem;
 		font-weight: 500;
+		letter-spacing: 0.01em;
 	}
 
 	/* Keyboard Shortcut Indicator - Uses CSS variables from app.css */
@@ -434,6 +437,7 @@
 	}
 
 	.theme-label {
+		font-family: var(--font-body), 'Roboto', sans-serif;
 		font-size: 0.8125rem;
 		font-weight: 500;
 	}
@@ -443,15 +447,17 @@
 		display: inline-flex;
 	}
 
-	/* View Site Button - Accent styled */
+	/* View Site Button - Accent styled with Roboto 500 */
 	.view-site-btn {
-		padding: 0.625rem 1.25rem;
+		padding: 0.5rem 1rem;
 		background: var(--admin-accent-primary-soft);
 		color: var(--admin-accent-primary);
 		text-decoration: none;
 		border-radius: var(--radius-md, 0.5rem);
-		font-weight: 600;
-		font-size: 0.9375rem;
+		font-family: var(--font-body), 'Roboto', sans-serif;
+		font-weight: 500;
+		font-size: 0.875rem;
+		letter-spacing: 0.01em;
 		border: 1px solid var(--admin-border-interactive);
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
