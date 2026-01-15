@@ -1510,13 +1510,32 @@
 		cursor: not-allowed;
 	}
 
-	/* Responsive */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE BREAKPOINTS - Apple ICT7 Principal Engineer Grade
+	 * Mobile-first approach with progressive enhancement
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Tablet Landscape (< 1200px) */
 	@media (max-width: 1200px) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
+	/* Tablet Portrait (< 1024px) */
+	@media (max-width: 1024px) {
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 0.75rem;
+		}
+
+		.header-actions {
+			flex-wrap: wrap;
+			gap: 0.5rem;
+		}
+	}
+
+	/* Mobile Landscape (< 768px) */
 	@media (max-width: 768px) {
 		.page {
 			padding: 1rem;
@@ -1532,6 +1551,7 @@
 
 		.toolbar {
 			flex-direction: column;
+			gap: 0.75rem;
 		}
 
 		.search-box {
@@ -1544,10 +1564,193 @@
 
 		.members-table-container {
 			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
 		}
 
 		.members-table {
 			min-width: 800px;
+		}
+	}
+
+	/* Mobile Portrait (< 640px) */
+	@media (max-width: 640px) {
+		.page {
+			padding: 0.75rem;
+		}
+
+		.page-header h1 {
+			font-size: 1.5rem;
+		}
+
+		.stats-grid {
+			gap: 0.5rem;
+		}
+
+		.stat-card {
+			padding: 1rem;
+		}
+
+		.stat-value {
+			font-size: 1.25rem;
+		}
+
+		.btn-primary,
+		.btn-secondary {
+			padding: 0.5rem 0.75rem;
+			font-size: 0.8125rem;
+		}
+	}
+
+	/* Extra Small Mobile (< 380px) - iPhone SE, Galaxy Fold */
+	@media (max-width: 380px) {
+		.page {
+			padding: 0.5rem;
+		}
+
+		.page-header h1 {
+			font-size: 1.25rem;
+		}
+
+		.page-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 0.75rem;
+		}
+
+		.header-actions {
+			width: 100%;
+		}
+
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.stat-card {
+			padding: 0.75rem;
+		}
+
+		.stat-value {
+			font-size: 1.125rem;
+		}
+
+		.toolbar {
+			padding: 0.75rem;
+		}
+
+		.modal-content {
+			padding: 1rem;
+			margin: 0.5rem;
+			max-width: calc(100vw - 1rem);
+		}
+	}
+
+	/* Touch Device Optimizations - Apple HIG 44pt minimum */
+	@media (hover: none) and (pointer: coarse) {
+		.btn-primary,
+		.btn-secondary,
+		.btn-icon {
+			min-height: 44px;
+			min-width: 44px;
+		}
+
+		.search-input,
+		.filter-select {
+			min-height: 48px;
+			font-size: 16px; /* Prevents iOS zoom */
+		}
+
+		.members-table td,
+		.members-table th {
+			padding: 0.875rem 1rem;
+		}
+
+		.stat-card {
+			min-height: 80px;
+		}
+
+		/* Larger touch targets for checkboxes */
+		.member-checkbox {
+			width: 20px;
+			height: 20px;
+		}
+	}
+
+	/* Reduced Motion - Accessibility */
+	@media (prefers-reduced-motion: reduce) {
+		.btn-primary,
+		.btn-secondary,
+		.stat-card,
+		.member-row {
+			transition: none;
+		}
+
+		.btn-primary:hover,
+		.stat-card:hover {
+			transform: none;
+		}
+	}
+
+	/* High Contrast Mode - Accessibility */
+	@media (prefers-contrast: high) {
+		.stat-card,
+		.toolbar,
+		.members-table,
+		.modal-content {
+			border-width: 2px;
+		}
+
+		.stat-value,
+		.page-header h1 {
+			font-weight: 800;
+		}
+
+		.member-row:hover {
+			outline: 2px solid currentColor;
+		}
+	}
+
+	/* Print Styles */
+	@media print {
+		.page {
+			background: white;
+			color: black;
+		}
+
+		.header-actions,
+		.toolbar,
+		.pagination {
+			display: none !important;
+		}
+
+		.members-table {
+			min-width: 100%;
+			box-shadow: none;
+			border: 1px solid #ccc;
+		}
+
+		.stat-card {
+			break-inside: avoid;
+			box-shadow: none;
+			border: 1px solid #ccc;
+		}
+	}
+
+	/* Landscape Mode - Short viewport */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.page {
+			padding: 0.5rem 1rem;
+		}
+
+		.page-header {
+			margin-bottom: 0.75rem;
+		}
+
+		.stats-grid {
+			gap: 0.5rem;
+		}
+
+		.stat-card {
+			padding: 0.75rem;
 		}
 	}
 

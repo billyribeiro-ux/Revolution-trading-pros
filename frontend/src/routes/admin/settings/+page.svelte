@@ -3124,4 +3124,294 @@
 	:global(::-webkit-scrollbar-thumb:hover) {
 		background: var(--border-emphasis, #8B949E);
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE BREAKPOINTS - Apple ICT7 Principal Engineer Grade
+	 * Mobile-first approach with progressive enhancement
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Extra Small Mobile (< 380px) - iPhone SE, Galaxy Fold */
+	@media (max-width: 380px) {
+		:global(.p-6) {
+			padding: 0.75rem !important;
+		}
+
+		:global(.p-8) {
+			padding: 1rem !important;
+		}
+
+		:global(.gap-6) {
+			gap: 0.75rem !important;
+		}
+
+		:global(.mb-8) {
+			margin-bottom: 1rem !important;
+		}
+
+		:global(.text-3xl) {
+			font-size: 1.5rem !important;
+		}
+
+		:global(.text-xl) {
+			font-size: 1rem !important;
+		}
+
+		:global(.rounded-2xl) {
+			border-radius: 0.75rem !important;
+		}
+
+		:global(.rounded-3xl) {
+			border-radius: 1rem !important;
+		}
+
+		/* Tab switcher - horizontal scroll on tiny screens */
+		:global(.flex.gap-1.p-1) {
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+			scrollbar-width: none;
+		}
+
+		:global(.flex.gap-1.p-1::-webkit-scrollbar) {
+			display: none;
+		}
+
+		/* Reduce button padding */
+		:global(.px-4.py-2) {
+			padding: 0.375rem 0.625rem !important;
+			font-size: 0.75rem !important;
+		}
+
+		/* Grid layouts - single column */
+		:global(.grid.grid-cols-2),
+		:global(.grid.lg\:grid-cols-5),
+		:global(.grid.md\:grid-cols-2),
+		:global(.grid.xl\:grid-cols-4) {
+			grid-template-columns: 1fr !important;
+		}
+
+		/* Modal sizing */
+		:global(.max-w-lg),
+		:global(.max-w-md) {
+			max-width: calc(100vw - 1rem) !important;
+			margin: 0.5rem !important;
+		}
+	}
+
+	/* Small Mobile (381px - 480px) */
+	@media (min-width: 381px) and (max-width: 480px) {
+		:global(.p-6) {
+			padding: 1rem !important;
+		}
+
+		:global(.p-8) {
+			padding: 1.25rem !important;
+		}
+
+		:global(.gap-6) {
+			gap: 1rem !important;
+		}
+
+		:global(.text-3xl) {
+			font-size: 1.75rem !important;
+		}
+
+		/* Grid - 1 column on small mobile */
+		:global(.grid.grid-cols-2),
+		:global(.grid.lg\:grid-cols-5) {
+			grid-template-columns: 1fr !important;
+		}
+
+		/* Settings form rows - stack vertically */
+		:global(.grid.md\:grid-cols-3) {
+			grid-template-columns: 1fr !important;
+		}
+
+		:global(.md\:col-span-2) {
+			grid-column: span 1 !important;
+		}
+	}
+
+	/* Mobile Landscape / Large Mobile (481px - 640px) */
+	@media (min-width: 481px) and (max-width: 640px) {
+		:global(.p-6) {
+			padding: 1.25rem !important;
+		}
+
+		/* Grid - 2 columns for cards */
+		:global(.grid.lg\:grid-cols-5) {
+			grid-template-columns: repeat(2, 1fr) !important;
+		}
+
+		:global(.grid.xl\:grid-cols-4) {
+			grid-template-columns: repeat(2, 1fr) !important;
+		}
+
+		/* Settings rows still stack */
+		:global(.grid.md\:grid-cols-3) {
+			grid-template-columns: 1fr !important;
+		}
+	}
+
+	/* Tablet Portrait (641px - 768px) */
+	@media (min-width: 641px) and (max-width: 768px) {
+		/* Grid - 2-3 columns */
+		:global(.grid.lg\:grid-cols-5) {
+			grid-template-columns: repeat(3, 1fr) !important;
+		}
+
+		:global(.grid.xl\:grid-cols-4) {
+			grid-template-columns: repeat(2, 1fr) !important;
+		}
+
+		/* Settings form - side by side */
+		:global(.grid.md\:grid-cols-3) {
+			grid-template-columns: 1fr 2fr !important;
+		}
+	}
+
+	/* Tablet Landscape (769px - 1024px) */
+	@media (min-width: 769px) and (max-width: 1024px) {
+		:global(.grid.lg\:grid-cols-5) {
+			grid-template-columns: repeat(4, 1fr) !important;
+		}
+
+		:global(.grid.xl\:grid-cols-4) {
+			grid-template-columns: repeat(3, 1fr) !important;
+		}
+	}
+
+	/* Touch Device Optimizations - Apple HIG 44pt minimum */
+	@media (hover: none) and (pointer: coarse) {
+		/* Toggle switches - larger touch targets */
+		:global(.w-14.h-8) {
+			min-width: 56px !important;
+			min-height: 32px !important;
+		}
+
+		/* Buttons - 44px minimum */
+		:global(button) {
+			min-height: 44px;
+		}
+
+		/* Input fields - comfortable touch */
+		:global(input),
+		:global(select),
+		:global(textarea) {
+			min-height: 48px !important;
+			font-size: 16px !important; /* Prevents iOS zoom */
+		}
+
+		/* Tab buttons */
+		:global(.px-4.py-2\.5) {
+			padding: 0.75rem 1rem !important;
+		}
+
+		/* Card tap targets */
+		:global(.rounded-2xl.p-5),
+		:global(.rounded-2xl.p-6) {
+			padding: 1rem !important;
+		}
+
+		/* Adequate spacing between interactive elements */
+		:global(.grid.gap-4) {
+			gap: 0.75rem !important;
+		}
+
+		:global(.grid.gap-5) {
+			gap: 1rem !important;
+		}
+	}
+
+	/* Reduced Motion - Accessibility */
+	@media (prefers-reduced-motion: reduce) {
+		:global(*) {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+		}
+
+		:global(.hover\:-translate-y-1:hover) {
+			transform: none !important;
+		}
+	}
+
+	/* High Contrast Mode - Accessibility */
+	@media (prefers-contrast: high) {
+		:global(.border-white\/10),
+		:global(.border-white\/20) {
+			border-width: 2px !important;
+			border-color: currentColor !important;
+		}
+
+		:global(.text-slate-400),
+		:global(.text-slate-500) {
+			color: var(--text-secondary) !important;
+			opacity: 1 !important;
+		}
+
+		:global(button),
+		:global(input),
+		:global(select) {
+			border-width: 2px !important;
+		}
+
+		:global(.font-semibold),
+		:global(.font-bold) {
+			font-weight: 800 !important;
+		}
+	}
+
+	/* Print Styles */
+	@media print {
+		:global(.fixed) {
+			display: none !important;
+		}
+
+		:global(.bg-gradient-to-br) {
+			background: white !important;
+			color: black !important;
+		}
+
+		:global(.rounded-2xl),
+		:global(.rounded-3xl) {
+			box-shadow: none !important;
+			border: 1px solid #ccc !important;
+			break-inside: avoid;
+		}
+
+		:global(button:not([type="submit"])) {
+			display: none !important;
+		}
+	}
+
+	/* Landscape Mode - Short viewport */
+	@media (max-height: 500px) and (orientation: landscape) {
+		:global(.p-6) {
+			padding: 0.75rem 1rem !important;
+		}
+
+		:global(.mb-8) {
+			margin-bottom: 0.75rem !important;
+		}
+
+		:global(.gap-6) {
+			gap: 0.5rem !important;
+		}
+
+		/* Reduce vertical spacing */
+		:global(.space-y-6 > * + *) {
+			margin-top: 0.75rem !important;
+		}
+	}
+
+	/* Large Desktop (1440px+) - Enhanced spacing */
+	@media (min-width: 1440px) {
+		:global(.max-w-4xl) {
+			max-width: 56rem !important;
+		}
+
+		:global(.max-w-\[1800px\]) {
+			max-width: 2000px !important;
+		}
+	}
 </style>

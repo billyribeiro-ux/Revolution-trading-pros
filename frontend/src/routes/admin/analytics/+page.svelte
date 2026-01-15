@@ -1110,7 +1110,12 @@
 		background: rgba(255, 255, 255, 0.02);
 	}
 
-	/* Responsive */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE BREAKPOINTS - Apple ICT7 Principal Engineer Grade
+	 * Mobile-first approach with progressive enhancement
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Tablet Landscape (< 1024px) */
 	@media (max-width: 1024px) {
 		.grid-row {
 			grid-template-columns: 1fr;
@@ -1123,6 +1128,7 @@
 		}
 	}
 
+	/* Mobile Landscape (< 768px) */
 	@media (max-width: 768px) {
 		.header-content {
 			flex-direction: column;
@@ -1142,6 +1148,168 @@
 
 		.services-grid {
 			grid-template-columns: 1fr;
+		}
+	}
+
+	/* Mobile Portrait (< 640px) */
+	@media (max-width: 640px) {
+		.dashboard-header,
+		.dashboard-content {
+			padding: 0.75rem;
+		}
+
+		.dashboard-header h1 {
+			font-size: 1.5rem;
+		}
+
+		.metric-card,
+		.chart-card {
+			padding: 1rem;
+		}
+
+		.metric-value {
+			font-size: 1.25rem;
+		}
+
+		.btn-primary,
+		.btn-secondary {
+			padding: 0.5rem 0.75rem;
+			font-size: 0.8125rem;
+		}
+
+		.attribution-table {
+			font-size: 0.8125rem;
+		}
+	}
+
+	/* Extra Small Mobile (< 380px) - iPhone SE, Galaxy Fold */
+	@media (max-width: 380px) {
+		.dashboard-header,
+		.dashboard-content {
+			padding: 0.5rem;
+		}
+
+		.dashboard-header h1 {
+			font-size: 1.25rem;
+		}
+
+		.header-content {
+			gap: 0.75rem;
+		}
+
+		.metric-card {
+			padding: 0.75rem;
+		}
+
+		.metric-value {
+			font-size: 1.125rem;
+		}
+
+		.chart-card {
+			padding: 0.75rem;
+		}
+
+		.attribution-table th,
+		.attribution-table td {
+			padding: 0.5rem;
+		}
+	}
+
+	/* Touch Device Optimizations - Apple HIG 44pt minimum */
+	@media (hover: none) and (pointer: coarse) {
+		.btn-primary,
+		.btn-secondary,
+		.btn-icon {
+			min-height: 44px;
+			min-width: 44px;
+		}
+
+		.metric-card,
+		.chart-card {
+			min-height: 80px;
+		}
+
+		.attribution-table td,
+		.attribution-table th {
+			padding: 0.75rem 1rem;
+		}
+
+		select,
+		input {
+			min-height: 48px;
+			font-size: 16px; /* Prevents iOS zoom */
+		}
+	}
+
+	/* Reduced Motion - Accessibility */
+	@media (prefers-reduced-motion: reduce) {
+		.btn-primary,
+		.btn-secondary,
+		.metric-card,
+		.chart-card {
+			transition: none;
+		}
+
+		.metric-card:hover,
+		.chart-card:hover {
+			transform: none;
+		}
+	}
+
+	/* High Contrast Mode - Accessibility */
+	@media (prefers-contrast: high) {
+		.metric-card,
+		.chart-card,
+		.dashboard-header,
+		.attribution-table {
+			border-width: 2px;
+		}
+
+		.dashboard-header h1,
+		.metric-value {
+			font-weight: 800;
+		}
+	}
+
+	/* Print Styles */
+	@media print {
+		.dashboard-header,
+		.dashboard-content {
+			background: white;
+			color: black;
+		}
+
+		.header-actions {
+			display: none !important;
+		}
+
+		.metric-card,
+		.chart-card {
+			break-inside: avoid;
+			box-shadow: none;
+			border: 1px solid #ccc;
+		}
+
+		.attribution-table {
+			box-shadow: none;
+			border: 1px solid #ccc;
+		}
+	}
+
+	/* Landscape Mode - Short viewport */
+	@media (max-height: 500px) and (orientation: landscape) {
+		.dashboard-header,
+		.dashboard-content {
+			padding: 0.5rem 1rem;
+		}
+
+		.grid-row,
+		.charts-row {
+			gap: 0.5rem;
+		}
+
+		.metric-card {
+			padding: 0.75rem;
 		}
 	}
 </style>
