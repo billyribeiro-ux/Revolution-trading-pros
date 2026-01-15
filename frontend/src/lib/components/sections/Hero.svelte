@@ -128,7 +128,18 @@
 	async function initChart(): Promise<void> {
 		if (!browser || !chartContainer || !heroSection || chartReady) return;
 
-		const { createChart, CandlestickSeries, CrosshairMode, ColorType } = await import('lightweight-charts');
+		// ICT 7: Wrap dynamic import in try-catch to prevent unhandled promise rejection
+		let createChart, CandlestickSeries, CrosshairMode, ColorType;
+		try {
+			const chartModule = await import('lightweight-charts');
+			createChart = chartModule.createChart;
+			CandlestickSeries = chartModule.CandlestickSeries;
+			CrosshairMode = chartModule.CrosshairMode;
+			ColorType = chartModule.ColorType;
+		} catch {
+			// Chart library failed to load - hero will display without chart background
+			return;
+		}
 
 		const width = heroSection.clientWidth || window.innerWidth;
 		const height = heroSection.clientHeight || window.innerHeight;
@@ -598,7 +609,12 @@
 		}
 
 		if (chartContainer && heroSection) {
-			initChart();
+			// ICT 7: Await the async function to properly handle any rejections
+			try {
+				await initChart();
+			} catch {
+				// Chart initialization failed - continue without chart
+			}
 		}
 
 		try {
