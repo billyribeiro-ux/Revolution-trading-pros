@@ -526,6 +526,7 @@
 </svelte:head>
 
 <div class="page">
+	<div class="admin-page-container">
 	<!-- Alerts -->
 	{#if successMessage}
 		<div class="alert alert-success">
@@ -739,6 +740,7 @@
 			{/each}
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <!-- Create/Edit Modal -->

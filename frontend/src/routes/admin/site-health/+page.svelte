@@ -306,6 +306,7 @@
 </svelte:head>
 
 <div class="page">
+	<div class="admin-page-container">
 	<!-- Header Section - Centered -->
 	<header class="page-header" in:fly={{ y: -20, duration: 500, delay: 100 }}>
 		<h1>Site Health</h1>
@@ -940,6 +941,7 @@
 			</div>
 		{/if}
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>
