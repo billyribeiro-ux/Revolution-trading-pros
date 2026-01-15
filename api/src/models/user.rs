@@ -124,7 +124,7 @@ pub struct MessageResponse {
 impl From<User> for UserResponse {
     fn from(user: User) -> Self {
         let role = user.role.clone().unwrap_or_else(|| "user".to_string());
-        let is_admin = role == "admin" || role == "super_admin";
+        let is_admin = role == "admin" || role == "super_admin" || role == "developer";
         
         // Parse name into first/last name
         let name_parts: Vec<&str> = user.name.split_whitespace().collect();
