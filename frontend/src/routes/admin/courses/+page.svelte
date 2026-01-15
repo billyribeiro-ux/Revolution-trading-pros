@@ -381,10 +381,11 @@
 	.header-content h1 { font-size: 28px; font-weight: 700; color: #1f2937; margin: 0; }
 	.subtitle { color: #6b7280; margin: 4px 0 0; font-size: 14px; }
 
-	.btn-primary, .btn-create { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: #143e59; color: #fff; border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s; border: none; cursor: pointer; }
-	.btn-primary:hover, .btn-create:hover { background: #0f2d42; }
-	.btn-create { background: linear-gradient(135deg, #143E59 0%, #1E73BE 100%); }
-	.btn-create:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3); }
+	/* Buttons - RTP Admin Color System */
+	.btn-primary, .btn-create { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--admin-btn-primary-bg); color: var(--admin-btn-primary-text); border-radius: 8px; text-decoration: none; font-weight: 500; font-size: 14px; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); border: none; cursor: pointer; box-shadow: 0 2px 8px rgba(230, 184, 0, 0.25); }
+	.btn-primary:hover, .btn-create:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(230, 184, 0, 0.4); }
+	.btn-create { background: var(--admin-btn-primary-bg); }
+	.btn-create:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(230, 184, 0, 0.4); }
 
 	.filters { display: flex; gap: 12px; margin-bottom: 24px; }
 	.search-box { flex: 1; max-width: 400px; position: relative; }

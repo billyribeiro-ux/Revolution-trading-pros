@@ -1474,7 +1474,7 @@
 		border-top: 1px solid rgba(148, 163, 184, 0.1);
 	}
 
-	/* Buttons */
+	/* Buttons - RTP Admin Color System */
 	.btn-secondary,
 	.btn-primary {
 		display: inline-flex;
@@ -1484,29 +1484,31 @@
 		border-radius: 10px;
 		font-weight: 600;
 		cursor: pointer;
-		transition: all 0.2s;
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 		border: none;
 	}
 
 	.btn-secondary {
-		background: rgba(148, 163, 184, 0.1);
-		color: #94a3b8;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: var(--admin-btn-bg);
+		color: var(--admin-text-secondary);
+		border: 1px solid var(--admin-border);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(148, 163, 184, 0.2);
+		background: var(--admin-btn-bg-hover);
+		border-color: var(--admin-border-interactive);
+		color: var(--admin-text-primary);
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
-		box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+		background: var(--admin-btn-primary-bg);
+		color: var(--admin-btn-primary-text);
+		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-primary:disabled {

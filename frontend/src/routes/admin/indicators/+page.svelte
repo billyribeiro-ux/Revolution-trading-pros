@@ -254,11 +254,12 @@
 	.header-left h1 { font-size: 24px; font-weight: 600; color: #1f2937; margin: 0; }
 	.count { font-size: 14px; color: #6b7280; background: #f3f4f6; padding: 4px 12px; border-radius: 20px; }
 
-	.btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: #143e59; color: #fff; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; cursor: pointer; transition: background 0.2s; }
-	.btn-primary:hover { background: #0f2d42; }
+	/* Buttons - RTP Admin Color System */
+	.btn-primary { display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; background: var(--admin-btn-primary-bg); color: var(--admin-btn-primary-text); border: none; border-radius: 8px; font-size: 14px; font-weight: 500; text-decoration: none; cursor: pointer; transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1); box-shadow: 0 2px 8px rgba(230, 184, 0, 0.25); }
+	.btn-primary:hover { transform: translateY(-1px); box-shadow: 0 4px 16px rgba(230, 184, 0, 0.4); }
 
-	.btn-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; cursor: pointer; }
-	.btn-secondary:hover { background: #e5e7eb; }
+	.btn-secondary { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; background: var(--admin-btn-bg); color: var(--admin-text-secondary); border: 1px solid var(--admin-border); border-radius: 6px; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+	.btn-secondary:hover { background: var(--admin-btn-bg-hover); border-color: var(--admin-border-interactive); color: var(--admin-text-primary); }
 
 	.filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
 	.search-box { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: #fff; border: 1px solid #e5e7eb; border-radius: 8px; flex: 1; min-width: 200px; max-width: 400px; }
