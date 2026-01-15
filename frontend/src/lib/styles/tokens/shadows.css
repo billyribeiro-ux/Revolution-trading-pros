@@ -1,0 +1,28 @@
+/**
+ * RTP Admin Design System - Shadow Tokens
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Dark theme optimized
+ * @version 1.0.0
+ */
+
+:root {
+    /* Elevation shadows */
+    --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3);
+    --shadow-md: 0 4px 8px rgba(0, 0, 0, 0.3);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.35);
+    --shadow-xl: 0 12px 40px rgba(0, 0, 0, 0.4);
+    --shadow-2xl: 0 24px 48px rgba(0, 0, 0, 0.45);
+    
+    /* Colored shadows */
+    --shadow-primary: 0 4px 16px rgba(230, 184, 0, 0.3);
+    --shadow-primary-lg: 0 8px 32px rgba(230, 184, 0, 0.35);
+    
+    /* Glow effects */
+    --glow-primary: 0 0 20px rgba(230, 184, 0, 0.2);
+    --glow-primary-strong: 0 0 40px rgba(230, 184, 0, 0.3);
+    
+    /* Card hover effect */
+    --shadow-card-hover: 
+        0 20px 40px rgba(0, 0, 0, 0.4),
+        0 0 80px rgba(230, 184, 0, 0.1);
+}

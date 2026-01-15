@@ -318,8 +318,10 @@
 </script>
 
 <div class="page">
-	<!-- Header - Centered Style -->
-	<header class="page-header" in:fly={{ y: -20, duration: 400 }}>
+	<!-- Outer Container with Thin Border -->
+	<div class="admin-page-container">
+		<!-- Header - Centered Style -->
+		<header class="page-header" in:fly={{ y: -20, duration: 400 }}>
 		<h1>Analytics Dashboard</h1>
 		<p class="subtitle">
 			Real-time insights and performance metrics
@@ -719,6 +721,7 @@
 			{/each}
 		</div>
 	</section>
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>
