@@ -1162,17 +1162,14 @@
 			font-size: 1.5rem;
 		}
 
-		.metric-card,
-		.chart-card {
+		.widget-large,
+		.widget-small,
+		.data-table {
 			padding: 1rem;
 		}
 
-		.metric-value {
-			font-size: 1.25rem;
-		}
-
 		.btn-primary,
-		.btn-secondary {
+		.btn-retry {
 			padding: 0.5rem 0.75rem;
 			font-size: 0.8125rem;
 		}
@@ -1197,15 +1194,12 @@
 			gap: 0.75rem;
 		}
 
-		.metric-card {
+		.widget-large,
+		.widget-small {
 			padding: 0.75rem;
 		}
 
-		.metric-value {
-			font-size: 1.125rem;
-		}
-
-		.chart-card {
+		.data-table {
 			padding: 0.75rem;
 		}
 
@@ -1218,14 +1212,15 @@
 	/* Touch Device Optimizations - Apple HIG 44pt minimum */
 	@media (hover: none) and (pointer: coarse) {
 		.btn-primary,
-		.btn-secondary,
-		.btn-icon {
+		.btn-retry,
+		.tab-btn {
 			min-height: 44px;
 			min-width: 44px;
 		}
 
-		.metric-card,
-		.chart-card {
+		.widget-large,
+		.widget-small,
+		.data-table {
 			min-height: 80px;
 		}
 
@@ -1234,8 +1229,7 @@
 			padding: 0.75rem 1rem;
 		}
 
-		select,
-		input {
+		select {
 			min-height: 48px;
 			font-size: 16px; /* Prevents iOS zoom */
 		}
@@ -1244,29 +1238,28 @@
 	/* Reduced Motion - Accessibility */
 	@media (prefers-reduced-motion: reduce) {
 		.btn-primary,
-		.btn-secondary,
-		.metric-card,
-		.chart-card {
+		.btn-retry,
+		.service-card,
+		.action-link {
 			transition: none;
 		}
 
-		.metric-card:hover,
-		.chart-card:hover {
+		.service-card:hover,
+		.action-link:hover {
 			transform: none;
 		}
 	}
 
 	/* High Contrast Mode - Accessibility */
 	@media (prefers-contrast: high) {
-		.metric-card,
-		.chart-card,
+		.data-table,
+		.widget-large,
 		.dashboard-header,
 		.attribution-table {
 			border-width: 2px;
 		}
 
-		.dashboard-header h1,
-		.metric-value {
+		.dashboard-header h1 {
 			font-weight: 800;
 		}
 	}
@@ -1283,8 +1276,9 @@
 			display: none !important;
 		}
 
-		.metric-card,
-		.chart-card {
+		.widget-large,
+		.widget-small,
+		.data-table {
 			break-inside: avoid;
 			box-shadow: none;
 			border: 1px solid #ccc;
@@ -1308,7 +1302,8 @@
 			gap: 0.5rem;
 		}
 
-		.metric-card {
+		.widget-large,
+		.widget-small {
 			padding: 0.75rem;
 		}
 	}
