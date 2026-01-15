@@ -169,6 +169,7 @@
 </svelte:head>
 
 <div class="analytics-dashboard">
+	<div class="admin-page-container">
 	<!-- Animated Background -->
 	<div class="bg-effects">
 		<div class="bg-blob bg-blob-1"></div>
@@ -519,6 +520,7 @@
 			</div>
 		{/if}
 	</main>
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>

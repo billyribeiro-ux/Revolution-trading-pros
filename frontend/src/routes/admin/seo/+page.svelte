@@ -319,6 +319,7 @@
 </svelte:head>
 
 <div class="seo-dashboard">
+	<div class="admin-page-container">
 	<!-- Animated Background -->
 	<div class="animated-bg">
 		<div class="blob blob-1"></div>
@@ -509,6 +510,7 @@
 			<span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>
