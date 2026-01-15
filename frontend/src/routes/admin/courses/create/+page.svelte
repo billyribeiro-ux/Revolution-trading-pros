@@ -38,6 +38,7 @@
 		IconChevronDown
 	} from '$lib/icons';
 	import { productsApi, AdminApiError } from '$lib/api/admin';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions & Interfaces
@@ -842,34 +843,50 @@
 			return;
 		}
 
-		// Validate file size (max 5MB)
-		if (file.size > 5 * 1024 * 1024) {
-			alert('Image must be less than 5MB');
+		// Validate file size (max 50MB)
+		if (file.size > 50 * 1024 * 1024) {
+			alert('Image must be less than 50MB');
 			return;
 		}
 
 		uploading = true;
 
-		// Simulate upload with progress
-		setTimeout(() => {
-			const url = URL.createObjectURL(file);
+		try {
+			const formData = new FormData();
+			formData.append('file', file);
 
-			switch (type) {
-				case 'thumbnail':
-					course.thumbnail = url;
-					break;
-				case 'gallery':
-					course.gallery = [...course.gallery, url];
-					break;
-				case 'og':
-					course.og_image = url;
-					break;
+			const response = await adminFetch('/api/admin/media/upload', {
+				method: 'POST',
+				body: formData
+			});
+
+			// The response contains an array of uploaded files
+			if (response.success && response.data && response.data.length > 0) {
+				const url = response.data[0].url;
+
+				switch (type) {
+					case 'thumbnail':
+						course.thumbnail = url;
+						break;
+					case 'gallery':
+						course.gallery = [...course.gallery, url];
+						break;
+					case 'og':
+						course.og_image = url;
+						break;
+				}
+
+				hasUnsavedChanges = true;
+				validateAll();
+			} else {
+				throw new Error('Upload failed - no URL returned');
 			}
-
+		} catch (error) {
+			console.error('Failed to upload image:', error);
+			alert('Failed to upload image. Please try again.');
+		} finally {
 			uploading = false;
-			hasUnsavedChanges = true;
-			validateAll();
-		}, 1000);
+		}
 	}
 
 	async function handleVideoUpload(event: Event) {
@@ -882,13 +899,36 @@
 			return;
 		}
 
+		// Validate file size (max 50MB for direct upload)
+		if (file.size > 50 * 1024 * 1024) {
+			alert('Video must be less than 50MB');
+			return;
+		}
+
 		uploading = true;
 
-		setTimeout(() => {
-			course.promo_video = URL.createObjectURL(file);
+		try {
+			const formData = new FormData();
+			formData.append('file', file);
+
+			const response = await adminFetch('/api/admin/media/upload', {
+				method: 'POST',
+				body: formData
+			});
+
+			// The response contains an array of uploaded files
+			if (response.success && response.data && response.data.length > 0) {
+				course.promo_video = response.data[0].url;
+				hasUnsavedChanges = true;
+			} else {
+				throw new Error('Upload failed - no URL returned');
+			}
+		} catch (error) {
+			console.error('Failed to upload video:', error);
+			alert('Failed to upload video. Please try again.');
+		} finally {
 			uploading = false;
-			hasUnsavedChanges = true;
-		}, 1500);
+		}
 	}
 
 	function removeFromGallery(index: number) {

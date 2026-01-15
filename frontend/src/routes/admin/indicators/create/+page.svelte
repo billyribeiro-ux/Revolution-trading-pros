@@ -35,18 +35,37 @@
 
 		if (!file) return;
 
+		// Validate file type
+		if (!file.type.startsWith('image/')) {
+			alert('Please select an image file');
+			return;
+		}
+
+		// Validate file size (max 50MB)
+		if (file.size > 50 * 1024 * 1024) {
+			alert('Image must be less than 50MB');
+			return;
+		}
+
 		uploading = true;
 		try {
 			const formData = new FormData();
 			formData.append('file', file);
 
-			const data = await adminFetch('/api/uploads/file', {
+			const response = await adminFetch('/api/admin/media/upload', {
 				method: 'POST',
 				body: formData
 			});
-			indicator.thumbnail = data.url;
+
+			// The response contains an array of uploaded files
+			if (response.success && response.data && response.data.length > 0) {
+				indicator.thumbnail = response.data[0].url;
+			} else {
+				throw new Error('Upload failed - no URL returned');
+			}
 		} catch (error) {
 			console.error('Failed to upload image:', error);
+			alert('Failed to upload image. Please try again.');
 		} finally {
 			uploading = false;
 		}
