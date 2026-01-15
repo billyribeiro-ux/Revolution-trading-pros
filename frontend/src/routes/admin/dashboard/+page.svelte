@@ -196,6 +196,7 @@
 </svelte:head>
 
 <div class="dashboard-container">
+	<div class="admin-page-container">
 	<!-- Ambient Background Effects - Theme aware -->
 	<div class="ambient-effects">
 		<div class="ambient-blob ambient-blob-purple"></div>
@@ -661,6 +662,7 @@
 			</a>
 		</div>
 	</div>
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>

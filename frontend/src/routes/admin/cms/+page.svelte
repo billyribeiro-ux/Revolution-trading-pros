@@ -214,6 +214,7 @@
 </script>
 
 <div class="cms-dashboard" class:mounted>
+	<div class="admin-page-container">
 	<!-- Premium Hero Header -->
 	<header class="hero-header" in:fly={{ y: -30, duration: 600, easing: cubicOut }}>
 		<div class="hero-content">
@@ -512,6 +513,7 @@
 			{/each}
 		</div>
 	</footer>
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>
