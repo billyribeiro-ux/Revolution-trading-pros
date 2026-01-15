@@ -10,6 +10,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { CourseCard } from '$lib/components/courses';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	interface Course {
 		id: string;
@@ -76,9 +77,9 @@
 		quickCreateError = null;
 
 		try {
-			const res = await fetch('/api/admin/courses', {
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch('/api/admin/courses', {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					title: quickCreateTitle.trim(),
 					slug: quickCreateSlug || generateSlug(quickCreateTitle),
@@ -89,8 +90,6 @@
 					status: 'draft'
 				})
 			});
-
-			const data = await res.json();
 
 			if (data.success && data.data?.id) {
 				// Redirect to page builder with new course
@@ -134,8 +133,8 @@
 			if (searchQuery) params.set('search', searchQuery);
 			if (statusFilter !== 'all') params.set('status', statusFilter);
 
-			const res = await fetch(`/api/admin/courses?${params}`);
-			const data = await res.json();
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/courses?${params}`);
 
 			if (data.success) {
 				courses = data.data.courses;
@@ -160,8 +159,8 @@
 		if (!confirm('Are you sure you want to delete this course? This action cannot be undone.')) return;
 
 		try {
-			const res = await fetch(`/api/admin/courses/${courseId}`, { method: 'DELETE' });
-			const data = await res.json();
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/courses/${courseId}`, { method: 'DELETE' });
 			if (data.success) {
 				courses = courses.filter(c => c.id !== courseId);
 				total -= 1;
@@ -176,8 +175,8 @@
 	const handlePublish = async (course: Course) => {
 		const endpoint = course.is_published ? 'unpublish' : 'publish';
 		try {
-			const res = await fetch(`/api/admin/courses/${course.id}/${endpoint}`, { method: 'POST' });
-			const data = await res.json();
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/courses/${course.id}/${endpoint}`, { method: 'POST' });
 			if (data.success) {
 				course.is_published = !course.is_published;
 				course.status = course.is_published ? 'published' : 'draft';

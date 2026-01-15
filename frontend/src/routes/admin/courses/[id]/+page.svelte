@@ -6,6 +6,7 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	interface Module {
 		id: number;
@@ -86,8 +87,8 @@
 	const fetchCourse = async () => {
 		loading = true;
 		try {
-			const res = await fetch(`/api/admin/courses/${courseId}`);
-			const data = await res.json();
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/courses/${courseId}`);
 			if (data.success) {
 				course = data.data.course;
 				modules = data.data.modules || [];
@@ -105,12 +106,11 @@
 		if (!course) return;
 		saving = true;
 		try {
-			const res = await fetch(`/api/admin/courses/${courseId}`, {
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/courses/${courseId}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(course)
 			});
-			const data = await res.json();
 			if (data.success) {
 				course = data.data;
 			} else {
@@ -127,8 +127,8 @@
 		if (!course) return;
 		try {
 			const endpoint = course.is_published ? 'unpublish' : 'publish';
-			const res = await fetch(`/api/admin/courses/${courseId}/${endpoint}`, { method: 'POST' });
-			const data = await res.json();
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/courses/${courseId}/${endpoint}`, { method: 'POST' });
 			if (data.success) {
 				course = data.data;
 			}
@@ -141,12 +141,11 @@
 		const title = prompt('Enter module title:');
 		if (!title) return;
 		try {
-			const res = await fetch(`/api/admin/courses/${courseId}/modules`, {
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/courses/${courseId}/modules`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ title })
 			});
-			const data = await res.json();
 			if (data.success) {
 				modules = [...modules, { ...data.data, lessons: [] }];
 			}
@@ -158,7 +157,8 @@
 	const deleteModule = async (moduleId: number) => {
 		if (!confirm('Delete this module? Lessons will be unassigned.')) return;
 		try {
-			await fetch(`/api/admin/courses/${courseId}/modules/${moduleId}`, { method: 'DELETE' });
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			await adminFetch(`/api/admin/courses/${courseId}/modules/${moduleId}`, { method: 'DELETE' });
 			modules = modules.filter(m => m.id !== moduleId);
 		} catch {
 			alert('Failed to delete module');
@@ -169,12 +169,11 @@
 		const title = prompt('Enter lesson title:');
 		if (!title) return;
 		try {
-			const res = await fetch(`/api/admin/courses/${courseId}/lessons`, {
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/courses/${courseId}/lessons`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ title, module_id: moduleId })
 			});
-			const data = await res.json();
 			if (data.success) {
 				if (moduleId) {
 					const mod = modules.find(m => m.id === moduleId);
@@ -197,13 +196,11 @@
 
 		uploading = true;
 		try {
-			// Get upload URL from backend
-			const urlRes = await fetch(`/api/admin/courses/${courseId}/upload-url`, {
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const urlData = await adminFetch(`/api/admin/courses/${courseId}/upload-url`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({ file_name: file.name, content_type: file.type })
 			});
-			const urlData = await urlRes.json();
 			
 			if (!urlData.success) {
 				alert(urlData.error || 'Failed to get upload URL');
@@ -225,10 +222,9 @@
 				return;
 			}
 
-			// Create download record in database
-			const createRes = await fetch(`/api/admin/courses/${courseId}/downloads`, {
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const createData = await adminFetch(`/api/admin/courses/${courseId}/downloads`, {
 				method: 'POST',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify({
 					title: file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' '),
 					file_name: file.name,
@@ -240,8 +236,6 @@
 					category: 'resource'
 				})
 			});
-
-			const createData = await createRes.json();
 			if (createData.success) {
 				downloads = [...downloads, createData.data];
 			} else {
@@ -260,7 +254,8 @@
 	const deleteDownload = async (downloadId: number) => {
 		if (!confirm('Delete this download?')) return;
 		try {
-			await fetch(`/api/admin/courses/${courseId}/downloads/${downloadId}`, { method: 'DELETE' });
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			await adminFetch(`/api/admin/courses/${courseId}/downloads/${downloadId}`, { method: 'DELETE' });
 			downloads = downloads.filter(d => d.id !== downloadId);
 		} catch {
 			alert('Failed to delete download');
@@ -278,7 +273,8 @@
 	const deleteLesson = async (lessonId: string, moduleId?: number) => {
 		if (!confirm('Delete this lesson?')) return;
 		try {
-			await fetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, { method: 'DELETE' });
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			await adminFetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, { method: 'DELETE' });
 			if (moduleId) {
 				const mod = modules.find(m => m.id === moduleId);
 				if (mod) mod.lessons = mod.lessons.filter(l => l.id !== lessonId);

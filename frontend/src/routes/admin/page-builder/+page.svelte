@@ -10,6 +10,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { createBuilderStore } from '$lib/page-builder';
+	import { adminFetch } from '$lib/utils/adminFetch';
 	import ComponentPalette from '$lib/page-builder/components/ComponentPalette.svelte';
 	import BuilderCanvas from '$lib/page-builder/components/BuilderCanvas.svelte';
 	import ConfigPanel from '$lib/page-builder/components/ConfigPanel.svelte';
@@ -45,9 +46,8 @@
 		errorMessage = null;
 
 		try {
-			// Fetch course details
-			const courseRes = await fetch(`/api/admin/courses/${id}`);
-			const courseData = await courseRes.json();
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const courseData = await adminFetch(`/api/admin/courses/${id}`);
 
 			if (courseData.success && courseData.data?.course) {
 				const course = courseData.data.course;
@@ -58,14 +58,17 @@
 				});
 			}
 
-			// Try to load existing layout for this course
-			const layoutRes = await fetch(`/api/admin/page-layouts/course/${id}`);
-			const layoutData = await layoutRes.json();
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			try {
+				const layoutData = await adminFetch(`/api/admin/page-layouts/course/${id}`);
 
-			if (layoutData.success && layoutData.data) {
-				// Load existing layout
-				layoutId = layoutData.data.id;
-				store.importLayout(layoutData.data);
+				if (layoutData.success && layoutData.data) {
+					// Load existing layout
+					layoutId = layoutData.data.id;
+					store.importLayout(layoutData.data);
+				}
+			} catch {
+				// Layout not found is OK - will create new one
 			}
 		} catch (e) {
 			console.error('Failed to load course data:', e);
@@ -88,13 +91,12 @@
 				layout.courseId = courseId;
 			}
 
-			let res: Response;
-			
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			let data;
 			if (layoutId) {
 				// Update existing layout
-				res = await fetch(`/api/admin/page-layouts/${layoutId}`, {
+				data = await adminFetch(`/api/admin/page-layouts/${layoutId}`, {
 					method: 'PUT',
-					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						title: layout.title,
 						blocks: layout.blocks,
@@ -103,9 +105,8 @@
 				});
 			} else {
 				// Create new layout
-				res = await fetch('/api/admin/page-layouts', {
+				data = await adminFetch('/api/admin/page-layouts', {
 					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
 					body: JSON.stringify({
 						course_id: courseId,
 						title: layout.title || 'Untitled Layout',
@@ -113,8 +114,6 @@
 					})
 				});
 			}
-
-			const data = await res.json();
 			
 			if (data.success) {
 				if (!layoutId && data.data?.id) {
@@ -144,10 +143,10 @@
 		if (layoutId) {
 			saving = true;
 			try {
-				const res = await fetch(`/api/admin/page-layouts/${layoutId}/publish`, {
+				// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+				const data = await adminFetch(`/api/admin/page-layouts/${layoutId}/publish`, {
 					method: 'POST'
 				});
-				const data = await res.json();
 				
 				if (data.success) {
 					store.updateLayoutMeta({ status: 'published' });

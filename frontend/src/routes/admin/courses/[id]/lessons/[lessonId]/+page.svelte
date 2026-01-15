@@ -6,6 +6,7 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	interface Lesson {
 		id: string;
@@ -58,13 +59,11 @@
 	const fetchLesson = async () => {
 		loading = true;
 		try {
-			const [lessonRes, modulesRes] = await Promise.all([
-				fetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`),
-				fetch(`/api/admin/courses/${courseId}/modules`)
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const [lessonData, modulesData] = await Promise.all([
+				adminFetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`),
+				adminFetch(`/api/admin/courses/${courseId}/modules`)
 			]);
-			
-			const lessonData = await lessonRes.json();
-			const modulesData = await modulesRes.json();
 
 			if (lessonData.success) {
 				lesson = lessonData.data.lesson;
@@ -84,12 +83,11 @@
 		if (!lesson) return;
 		saving = true;
 		try {
-			const res = await fetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, {
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(lesson)
 			});
-			const data = await res.json();
 			if (data.success) {
 				lesson = data.data;
 			} else {
@@ -105,7 +103,8 @@
 	const deleteLesson = async () => {
 		if (!confirm('Are you sure you want to delete this lesson?')) return;
 		try {
-			await fetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, { method: 'DELETE' });
+			// ICT 7 FIX: Use adminFetch for absolute URL on Pages.dev
+			await adminFetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, { method: 'DELETE' });
 			goto(`/admin/courses/${courseId}`);
 		} catch {
 			alert('Failed to delete lesson');
