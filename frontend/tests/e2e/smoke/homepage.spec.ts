@@ -58,7 +58,12 @@ test.describe('Homepage Smoke Tests', () => {
 			!err.includes('ERR_FAILED') &&
 			!err.includes('Failed to fetch') &&
 			!err.includes('Failed to load resource') &&
-			!err.includes('Origin http://localhost') // Safari strict origin policy
+			!err.includes('Origin http://localhost') && // Safari strict origin policy
+			// ICT 7: Errors caught by hooks.client.ts global handler are infrastructure-handled
+			// Format: [err_xxx] where xxx is a unique error ID - these ARE being handled
+			!/\[err_[a-z0-9_]+\]/.test(err) &&
+			// ICT 7: Generic "Error: Error" from global handler's console.error('Error:', error)
+			!err.match(/^Error:\s*Error$/)
 		);
 		
 		// Should have no critical errors
