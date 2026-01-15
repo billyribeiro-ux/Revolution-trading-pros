@@ -1123,8 +1123,8 @@
 
 	.version-badge {
 		padding: 0.25rem 0.5rem;
-		background: var(--primary, #6366f1);
-		color: white;
+		background: var(--primary, #E6B800);
+		color: #0D1117;
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -1174,8 +1174,8 @@
 	}
 
 	.tab.active {
-		color: var(--primary, #6366f1);
-		border-bottom-color: var(--primary, #6366f1);
+		color: var(--primary, #E6B800);
+		border-bottom-color: var(--primary, #E6B800);
 	}
 
 	.tab:disabled {
@@ -1220,7 +1220,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: var(--primary, #6366f1);
+		border-color: var(--primary, #E6B800);
 	}
 
 	.form-row {
@@ -1278,8 +1278,8 @@
 	}
 
 	.btn-primary {
-		background: var(--primary, #6366f1);
-		color: white;
+		background: var(--primary, #E6B800);
+		color: #0D1117;
 	}
 
 	.btn-secondary {
@@ -1288,8 +1288,8 @@
 	}
 
 	.btn-add {
-		background: var(--primary, #6366f1);
-		color: white;
+		background: var(--primary, #E6B800);
+		color: #0D1117;
 	}
 
 	.btn-close {
@@ -1435,8 +1435,8 @@
 	}
 
 	.btn-upload:hover {
-		border-color: var(--primary, #6366f1);
-		color: var(--primary, #6366f1);
+		border-color: var(--primary, #E6B800);
+		color: var(--primary, #E6B800);
 	}
 
 	.download-stats {
@@ -1451,7 +1451,7 @@
 		display: block;
 		font-size: 2rem;
 		font-weight: 600;
-		color: var(--primary, #6366f1);
+		color: var(--primary, #E6B800);
 	}
 
 	.stat-label {
@@ -1563,7 +1563,7 @@
 	}
 
 	.doc-icon {
-		color: var(--primary, #6366f1);
+		color: var(--primary, #E6B800);
 	}
 
 	.doc-info {
@@ -1626,7 +1626,7 @@
 
 	.tv-username {
 		font-weight: 600;
-		color: var(--primary, #6366f1);
+		color: var(--primary, #E6B800);
 		display: block;
 	}
 

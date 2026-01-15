@@ -425,8 +425,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: var(--primary, #6366f1);
-		color: white;
+		background: var(--primary, #E6B800);
+		color: #0D1117;
 		border-radius: 50%;
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -533,8 +533,8 @@
 	}
 
 	.btn-save {
-		background: var(--primary, #6366f1);
-		color: white;
+		background: var(--primary, #E6B800);
+		color: #0D1117;
 	}
 
 	.btn-cancel {
@@ -574,8 +574,8 @@
 		gap: 0.375rem;
 		width: 100%;
 		padding: 0.625rem;
-		background: var(--primary, #6366f1);
-		color: white;
+		background: var(--primary, #E6B800);
+		color: #0D1117;
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;
