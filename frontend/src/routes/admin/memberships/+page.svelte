@@ -674,16 +674,13 @@
 
 <!-- Edit Plan Modal -->
 {#if showEditModal && editingPlan}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
-	<div class="modal-overlay" onclick={() => (showEditModal = false)} onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)} role="dialog" aria-modal="true" tabindex="-1">
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
+	<div class="modal-overlay" onclick={(e) => { if (e.target === e.currentTarget) showEditModal = false; }} onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)} role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="edit-modal-title">
 		<div
 			class="modal modal-large"
-			onclick={(e) => e.stopPropagation()}
 			role="document"
 		>
 			<div class="modal-header">
-				<h3>
+				<h3 id="edit-modal-title">
 					<IconEdit size={20} />
 					Edit Membership Plan
 				</h3>
@@ -810,16 +807,13 @@
 
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal && deletingPlan}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
-	<div class="modal-overlay" onclick={() => (showDeleteModal = false)} onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)} role="dialog" aria-modal="true" tabindex="-1">
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
+	<div class="modal-overlay" onclick={(e) => { if (e.target === e.currentTarget) showDeleteModal = false; }} onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)} role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="delete-modal-title">
 		<div
 			class="modal modal-small"
-			onclick={(e) => e.stopPropagation()}
 			role="document"
 		>
 			<div class="modal-header">
-				<h3>
+				<h3 id="delete-modal-title">
 					<IconTrash size={20} />
 					Delete Plan
 				</h3>
@@ -851,16 +845,13 @@
 
 <!-- Preview Modal -->
 {#if showPreviewModal && previewingPlan}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
-	<div class="modal-overlay" onclick={() => (showPreviewModal = false)} onkeydown={(e) => e.key === 'Escape' && (showPreviewModal = false)} role="dialog" aria-modal="true" tabindex="-1">
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_click_events_have_key_events -->
+	<div class="modal-overlay" onclick={(e) => { if (e.target === e.currentTarget) showPreviewModal = false; }} onkeydown={(e) => e.key === 'Escape' && (showPreviewModal = false)} role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="preview-modal-title">
 		<div
 			class="modal modal-preview"
-			onclick={(e) => e.stopPropagation()}
 			role="document"
 		>
 			<div class="modal-header">
-				<h3>
+				<h3 id="preview-modal-title">
 					<IconEye size={20} />
 					Plan Preview
 				</h3>
