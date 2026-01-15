@@ -15,13 +15,15 @@
 	import { browser } from '$app/environment';
 	import { untrack } from 'svelte';
 	import { getRoomById, type Room } from '$lib/config/rooms';
-	import { 
-		tradePlanApi, 
-		alertsApi, 
+	import {
+		tradePlanApi,
+		alertsApi,
 		weeklyVideoApi,
-		type TradePlanEntry, 
+		roomStatsApi,
+		type TradePlanEntry,
 		type RoomAlert,
 		type WeeklyVideo,
+		type RoomStats,
 		type Bias,
 		type AlertType
 	} from '$lib/api/room-content';
@@ -35,30 +37,42 @@
 	import IconTrash from '@tabler/icons-svelte/icons/trash';
 	import IconCheck from '@tabler/icons-svelte/icons/check';
 	import IconX from '@tabler/icons-svelte/icons/x';
-	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
 	import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconArrowUp from '@tabler/icons-svelte/icons/arrow-up';
-	import IconArrowDown from '@tabler/icons-svelte/icons/arrow-down';
+	import IconPin from '@tabler/icons-svelte/icons/pin';
+	import IconPinFilled from '@tabler/icons-svelte/icons/pin-filled';
+	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
-	// STATE
+	// TYPES
 	// ═══════════════════════════════════════════════════════════════════════════════
-	
+
+	type Tab = 'trade-plan' | 'alerts' | 'weekly-video';
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// ROUTE DERIVED STATE
+	// ═══════════════════════════════════════════════════════════════════════════════
+
 	const slug = $derived(page.params.slug);
 	const room = $derived(getRoomById(slug));
-	
-	type Tab = 'trade-plan' | 'alerts' | 'weekly-video';
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// UI STATE
+	// ═══════════════════════════════════════════════════════════════════════════════
+
 	let activeTab = $state<Tab>('trade-plan');
-	
-	// Trade Plan state
+	let successMessage = $state('');
+	let errorMessage = $state('');
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// TRADE PLAN STATE
+	// ═══════════════════════════════════════════════════════════════════════════════
+
 	let tradePlanEntries = $state<TradePlanEntry[]>([]);
 	let isLoadingTradePlan = $state(true);
 	let showTradePlanModal = $state(false);
 	let editingTradePlan = $state<TradePlanEntry | null>(null);
 	let isSavingTradePlan = $state(false);
-	
-	// Trade Plan form
+
 	let tradePlanForm = $state({
 		ticker: '',
 		bias: 'BULLISH' as Bias,
@@ -72,15 +86,17 @@
 		options_exp: '',
 		notes: ''
 	});
-	
-	// Alerts state
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// ALERTS STATE
+	// ═══════════════════════════════════════════════════════════════════════════════
+
 	let alerts = $state<RoomAlert[]>([]);
 	let isLoadingAlerts = $state(true);
 	let showAlertModal = $state(false);
 	let editingAlert = $state<RoomAlert | null>(null);
 	let isSavingAlert = $state(false);
-	
-	// Alert form
+
 	let alertForm = $state({
 		alert_type: 'ENTRY' as AlertType,
 		ticker: '',
@@ -90,15 +106,17 @@
 		is_new: true,
 		is_published: true
 	});
-	
-	// Weekly Video state
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// WEEKLY VIDEO STATE
+	// ═══════════════════════════════════════════════════════════════════════════════
+
 	let currentVideo = $state<WeeklyVideo | null>(null);
 	let archivedVideos = $state<WeeklyVideo[]>([]);
 	let isLoadingVideo = $state(true);
 	let showVideoModal = $state(false);
 	let isSavingVideo = $state(false);
-	
-	// Weekly Video form
+
 	let videoForm = $state({
 		week_of: new Date().toISOString().split('T')[0],
 		week_title: '',
@@ -109,10 +127,71 @@
 		duration: '',
 		description: ''
 	});
-	
-	// Messages
-	let successMessage = $state('');
-	let errorMessage = $state('');
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// ROOM STATS STATE
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	let roomStats = $state<RoomStats | null>(null);
+	let isLoadingStats = $state(true);
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// DERIVED COMPUTED VALUES
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	/** Sorted alerts with pinned items first, then by published date descending */
+	const sortedAlerts = $derived(
+		[...alerts].sort((a, b) => {
+			if (a.is_pinned && !b.is_pinned) return -1;
+			if (!a.is_pinned && b.is_pinned) return 1;
+			return new Date(b.published_at).getTime() - new Date(a.published_at).getTime();
+		})
+	);
+
+	/** Count of trade plan entries for tab badge */
+	const tradePlanCount = $derived(tradePlanEntries.length);
+
+	/** Count of alerts for tab badge */
+	const alertsCount = $derived(alerts.length);
+
+	/** Whether any data is currently loading */
+	const isLoadingAny = $derived(
+		isLoadingTradePlan || isLoadingAlerts || isLoadingVideo || isLoadingStats
+	);
+
+	/** Whether a save operation is in progress */
+	const isSavingAny = $derived(
+		isSavingTradePlan || isSavingAlert || isSavingVideo
+	);
+
+	/** Trade plan form validation */
+	const isTradePlanFormValid = $derived(
+		tradePlanForm.ticker.trim() !== '' && tradePlanForm.bias !== null
+	);
+
+	/** Alert form validation */
+	const isAlertFormValid = $derived(
+		alertForm.ticker.trim() !== '' &&
+		alertForm.title.trim() !== '' &&
+		alertForm.message.trim() !== ''
+	);
+
+	/** Video form validation */
+	const isVideoFormValid = $derived(
+		videoForm.video_url.trim() !== '' && videoForm.video_title.trim() !== ''
+	);
+
+	/** Whether room has a current video */
+	const hasCurrentVideo = $derived(currentVideo !== null);
+
+	/** Whether there are trade plan entries */
+	const hasTradePlanEntries = $derived(tradePlanEntries.length > 0);
+
+	/** Whether there are alerts */
+	const hasAlerts = $derived(alerts.length > 0);
+
+	/** Whether there are archived videos */
+	const hasArchivedVideos = $derived(archivedVideos.length > 0);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DATA FETCHING
@@ -120,11 +199,12 @@
 	
 	$effect(() => {
 		if (!browser || !slug) return;
-		
+
 		untrack(() => {
 			loadTradePlan();
 			loadAlerts();
 			loadWeeklyVideo();
+			loadRoomStats();
 		});
 	});
 	
@@ -170,6 +250,18 @@
 		}
 	}
 
+	async function loadRoomStats() {
+		isLoadingStats = true;
+		try {
+			const response = await roomStatsApi.get(slug);
+			roomStats = response.data;
+		} catch (err) {
+			console.error('Failed to load room stats:', err);
+		} finally {
+			isLoadingStats = false;
+		}
+	}
+
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE PLAN HANDLERS
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -211,11 +303,11 @@
 	}
 	
 	async function saveTradePlan() {
-		if (!tradePlanForm.ticker || !tradePlanForm.bias) {
+		if (!isTradePlanFormValid) {
 			errorMessage = 'Ticker and Bias are required';
 			return;
 		}
-		
+
 		isSavingTradePlan = true;
 		errorMessage = '';
 		
@@ -284,11 +376,11 @@
 	}
 	
 	async function saveAlert() {
-		if (!alertForm.ticker || !alertForm.title || !alertForm.message) {
+		if (!isAlertFormValid) {
 			errorMessage = 'Ticker, Title, and Message are required';
 			return;
 		}
-		
+
 		isSavingAlert = true;
 		errorMessage = '';
 		
@@ -314,13 +406,33 @@
 	
 	async function deleteAlert(alert: RoomAlert) {
 		if (!confirm(`Delete alert "${alert.title}"?`)) return;
-		
+
 		try {
 			await alertsApi.delete(alert.id);
 			successMessage = 'Alert deleted';
 			await loadAlerts();
 		} catch (err: any) {
 			errorMessage = err.message || 'Failed to delete alert';
+		}
+	}
+
+	async function toggleAlertPin(alert: RoomAlert) {
+		try {
+			await alertsApi.update(alert.id, { is_pinned: !alert.is_pinned });
+			successMessage = alert.is_pinned ? 'Alert unpinned' : 'Alert pinned';
+			await loadAlerts();
+		} catch (err: any) {
+			errorMessage = err.message || 'Failed to update alert';
+		}
+	}
+
+	async function toggleAlertNew(alert: RoomAlert) {
+		try {
+			await alertsApi.update(alert.id, { is_new: !alert.is_new });
+			successMessage = alert.is_new ? 'Alert marked as read' : 'Alert marked as new';
+			await loadAlerts();
+		} catch (err: any) {
+			errorMessage = err.message || 'Failed to update alert';
 		}
 	}
 
@@ -346,11 +458,11 @@
 	}
 	
 	async function saveVideo() {
-		if (!videoForm.video_url || !videoForm.video_title) {
+		if (!isVideoFormValid) {
 			errorMessage = 'Video URL and Title are required';
 			return;
 		}
-		
+
 		isSavingVideo = true;
 		errorMessage = '';
 		
@@ -373,6 +485,14 @@
 	$effect(() => {
 		if (successMessage) {
 			const timeout = setTimeout(() => successMessage = '', 3000);
+			return () => clearTimeout(timeout);
+		}
+		return undefined;
+	});
+
+	$effect(() => {
+		if (errorMessage) {
+			const timeout = setTimeout(() => errorMessage = '', 5000);
 			return () => clearTimeout(timeout);
 		}
 		return undefined;
@@ -410,14 +530,36 @@
 			<IconChevronLeft size={20} />
 			<span>All Trading Rooms</span>
 		</a>
-		<div class="header-content">
-			<div class="room-badge" style="background: {room?.color || '#143E59'}">
-				{room?.icon || '📊'}
+		<div class="header-row">
+			<div class="header-content">
+				<div class="room-badge" style="background: {room?.color || '#143E59'}">
+					{room?.icon || '📊'}
+				</div>
+				<div>
+					<h1>{room?.name || 'Trading Room'}</h1>
+					<p>Manage trade plans, alerts, and weekly videos</p>
+				</div>
 			</div>
-			<div>
-				<h1>{room?.name || 'Trading Room'}</h1>
-				<p>Manage trade plans, alerts, and weekly videos</p>
-			</div>
+			{#if roomStats && !isLoadingStats}
+				<div class="stats-panel">
+					<div class="stat-item">
+						<span class="stat-value" style="color: #22c55e">{roomStats.win_rate ?? '-'}%</span>
+						<span class="stat-label">Win Rate</span>
+					</div>
+					<div class="stat-item">
+						<span class="stat-value">{roomStats.active_trades ?? 0}</span>
+						<span class="stat-label">Active</span>
+					</div>
+					<div class="stat-item">
+						<span class="stat-value">{roomStats.closed_this_week ?? 0}</span>
+						<span class="stat-label">This Week</span>
+					</div>
+					<div class="stat-item">
+						<span class="stat-value">{roomStats.total_trades ?? 0}</span>
+						<span class="stat-label">Total</span>
+					</div>
+				</div>
+			{/if}
 		</div>
 	</header>
 	
@@ -438,31 +580,34 @@
 	
 	<!-- Tabs -->
 	<nav class="tabs">
-		<button 
-			class="tab" 
+		<button
+			class="tab"
 			class:active={activeTab === 'trade-plan'}
 			onclick={() => activeTab = 'trade-plan'}
 		>
 			<IconTable size={20} />
 			<span>Trade Plan</span>
-			<span class="badge">{tradePlanEntries.length}</span>
+			<span class="badge">{tradePlanCount}</span>
 		</button>
-		<button 
-			class="tab" 
+		<button
+			class="tab"
 			class:active={activeTab === 'alerts'}
 			onclick={() => activeTab = 'alerts'}
 		>
 			<IconBell size={20} />
 			<span>Alerts</span>
-			<span class="badge">{alerts.length}</span>
+			<span class="badge">{alertsCount}</span>
 		</button>
-		<button 
-			class="tab" 
+		<button
+			class="tab"
 			class:active={activeTab === 'weekly-video'}
 			onclick={() => activeTab = 'weekly-video'}
 		>
 			<IconVideo size={20} />
 			<span>Weekly Video</span>
+			{#if hasCurrentVideo}
+				<span class="badge active">1</span>
+			{/if}
 		</button>
 	</nav>
 	
@@ -482,7 +627,7 @@
 			
 			{#if isLoadingTradePlan}
 				<div class="loading">Loading trade plan...</div>
-			{:else if tradePlanEntries.length === 0}
+			{:else if !hasTradePlanEntries}
 				<div class="empty-state">
 					<IconTable size={48} />
 					<h3>No Trade Plan Entries</h3>
@@ -562,7 +707,7 @@
 			
 			{#if isLoadingAlerts}
 				<div class="loading">Loading alerts...</div>
-			{:else if alerts.length === 0}
+			{:else if !hasAlerts}
 				<div class="empty-state">
 					<IconBell size={48} />
 					<h3>No Alerts</h3>
@@ -574,17 +719,40 @@
 				</div>
 			{:else}
 				<div class="alerts-list">
-					{#each alerts as alert}
-						<div class="alert-card" class:is-new={alert.is_new}>
+					{#each sortedAlerts as alert}
+						<div class="alert-card" class:is-new={alert.is_new} class:is-pinned={alert.is_pinned}>
 							<div class="alert-header">
 								<div class="alert-meta">
 									<span class="alert-type" style="background: {getAlertTypeColor(alert.alert_type)}">{alert.alert_type}</span>
 									<span class="alert-ticker">{alert.ticker}</span>
+									{#if alert.is_pinned}
+										<span class="pinned-badge">PINNED</span>
+									{/if}
 									{#if alert.is_new}
 										<span class="new-badge">NEW</span>
 									{/if}
 								</div>
 								<div class="alert-actions">
+									<button
+										class="icon-btn"
+										class:active={alert.is_pinned}
+										onclick={() => toggleAlertPin(alert)}
+										title={alert.is_pinned ? 'Unpin' : 'Pin'}
+									>
+										{#if alert.is_pinned}
+											<IconPinFilled size={16} />
+										{:else}
+											<IconPin size={16} />
+										{/if}
+									</button>
+									<button
+										class="icon-btn"
+										class:active={alert.is_new}
+										onclick={() => toggleAlertNew(alert)}
+										title={alert.is_new ? 'Mark as read' : 'Mark as new'}
+									>
+										<IconCheck size={16} />
+									</button>
 									<button class="icon-btn" onclick={() => openEditAlert(alert)} title="Edit">
 										<IconEdit size={16} />
 									</button>
@@ -658,7 +826,7 @@
 				{/if}
 				
 				<!-- Archived Videos -->
-				{#if archivedVideos.length > 0}
+				{#if hasArchivedVideos}
 					<div class="archived-section">
 						<h3>Archive</h3>
 						<div class="archived-list">
@@ -765,7 +933,7 @@
 				
 				<div class="modal-actions">
 					<button type="button" class="btn-secondary" onclick={() => showTradePlanModal = false}>Cancel</button>
-					<button type="submit" class="btn-primary" disabled={isSavingTradePlan}>
+					<button type="submit" class="btn-primary" disabled={isSavingTradePlan || !isTradePlanFormValid}>
 						{isSavingTradePlan ? 'Saving...' : (editingTradePlan ? 'Update' : 'Add Entry')}
 					</button>
 				</div>
@@ -847,7 +1015,7 @@
 				
 				<div class="modal-actions">
 					<button type="button" class="btn-secondary" onclick={() => showAlertModal = false}>Cancel</button>
-					<button type="submit" class="btn-primary" disabled={isSavingAlert}>
+					<button type="submit" class="btn-primary" disabled={isSavingAlert || !isAlertFormValid}>
 						{isSavingAlert ? 'Saving...' : (editingAlert ? 'Update' : 'Create Alert')}
 					</button>
 				</div>
@@ -918,7 +1086,7 @@
 				
 				<div class="modal-actions">
 					<button type="button" class="btn-secondary" onclick={() => showVideoModal = false}>Cancel</button>
-					<button type="submit" class="btn-primary" disabled={isSavingVideo}>
+					<button type="submit" class="btn-primary" disabled={isSavingVideo || !isVideoFormValid}>
 						{isSavingVideo ? 'Publishing...' : 'Publish Video'}
 					</button>
 				</div>
@@ -939,7 +1107,7 @@
 	.page-header {
 		margin-bottom: 32px;
 	}
-	
+
 	.back-link {
 		display: inline-flex;
 		align-items: center;
@@ -951,17 +1119,25 @@
 		margin-bottom: 16px;
 		transition: color 0.2s;
 	}
-	
+
 	.back-link:hover {
 		color: #143E59;
 	}
-	
+
+	.header-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 24px;
+		flex-wrap: wrap;
+	}
+
 	.header-content {
 		display: flex;
 		align-items: center;
 		gap: 20px;
 	}
-	
+
 	.room-badge {
 		width: 64px;
 		height: 64px;
@@ -971,18 +1147,51 @@
 		justify-content: center;
 		font-size: 32px;
 	}
-	
+
 	.header-content h1 {
 		font-size: 28px;
 		font-weight: 700;
 		color: #1e293b;
 		margin: 0 0 4px 0;
 	}
-	
+
 	.header-content p {
 		font-size: 15px;
 		color: #64748b;
 		margin: 0;
+	}
+
+	/* Stats Panel */
+	.stats-panel {
+		display: flex;
+		gap: 24px;
+		background: #f8fafc;
+		padding: 16px 24px;
+		border-radius: 12px;
+		border: 1px solid #e2e8f0;
+	}
+
+	.stat-item {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		min-width: 60px;
+	}
+
+	.stat-value {
+		font-size: 24px;
+		font-weight: 700;
+		color: #1e293b;
+		line-height: 1;
+	}
+
+	.stat-label {
+		font-size: 11px;
+		font-weight: 600;
+		color: #64748b;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-top: 4px;
 	}
 	
 	/* Messages */
@@ -1058,6 +1267,11 @@
 	
 	.tab.active .badge {
 		background: #143E59;
+		color: #fff;
+	}
+
+	.tab .badge.active {
+		background: #22c55e;
 		color: #fff;
 	}
 	
@@ -1142,6 +1356,11 @@
 	.icon-btn.danger:hover {
 		background: #fef2f2;
 		color: #dc2626;
+	}
+
+	.icon-btn.active {
+		background: #dbeafe;
+		color: #2563eb;
 	}
 	
 	/* Loading & Empty States */
@@ -1287,6 +1506,11 @@
 	.alert-card.is-new {
 		border-left: 4px solid #22c55e;
 	}
+
+	.alert-card.is-pinned {
+		border-left: 4px solid #2563eb;
+		background: #fafbff;
+	}
 	
 	.alert-header {
 		display: flex;
@@ -1318,6 +1542,15 @@
 	.new-badge {
 		background: #dcfce7;
 		color: #166534;
+		padding: 3px 8px;
+		border-radius: 4px;
+		font-size: 10px;
+		font-weight: 700;
+	}
+
+	.pinned-badge {
+		background: #dbeafe;
+		color: #1d4ed8;
 		padding: 3px 8px;
 		border-radius: 4px;
 		font-size: 10px;
@@ -1647,19 +1880,29 @@
 		.admin-page {
 			padding: 20px;
 		}
-		
+
+		.header-row {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.stats-panel {
+			width: 100%;
+			justify-content: space-between;
+		}
+
 		.form-row {
 			flex-direction: column;
 		}
-		
+
 		.form-row.targets {
 			grid-template-columns: repeat(2, 1fr);
 		}
-		
+
 		.video-content {
 			flex-direction: column;
 		}
-		
+
 		.video-thumbnail {
 			width: 100%;
 			height: 200px;

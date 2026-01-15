@@ -9,7 +9,7 @@
 	const popupId = parseInt(page.params['id'] ?? '0');
 
 	// Form state
-	let formData: Partial<Popup> = {
+	let formData = $state<Partial<Popup>>({
 		name: '',
 		type: 'exit_intent',
 		status: 'draft',
@@ -35,16 +35,16 @@
 			buttonColor: '#3b82f6',
 			buttonTextColor: '#ffffff'
 		}
-	};
+	});
 
-	let loading = false;
-	let initialLoading = true;
-	let errors: Record<string, string> = {};
+	let loading = $state(false);
+	let initialLoading = $state(true);
+	let errors = $state<Record<string, string>>({});
 
 	// Trigger rules based on type
-	let timedDelay = 5000;
-	let scrollDepth = 50;
-	let clickSelector = '[data-popup-trigger]';
+	let timedDelay = $state(5000);
+	let scrollDepth = $state(50);
+	let clickSelector = $state('[data-popup-trigger]');
 
 	// Options (same as create page)
 	const frequencyOptions = [

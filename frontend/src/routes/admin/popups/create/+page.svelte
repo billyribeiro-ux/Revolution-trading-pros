@@ -8,12 +8,12 @@
 	} from '$lib/stores/popups';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
 
-	let activeTab: 'content' | 'design' | 'display' | 'buttons' | 'form' = 'content';
-	let showPreview = false;
-	let saving = false;
+	let activeTab = $state<'content' | 'design' | 'display' | 'buttons' | 'form'>('content');
+	let showPreview = $state(false);
+	let saving = $state(false);
 
 	// Initialize with default config - use Required for properties we know are defined
-	let popup = {
+	let popup = $state({
 		...JSON.parse(JSON.stringify(defaultPopupConfig)),
 		name: '',
 		title: '',
@@ -21,9 +21,9 @@
 			type: 'html',
 			data: '<p>Your popup content goes here...</p>'
 		},
-		buttons: [],
-		formFields: []
-	} as Partial<Popup> & { displayRules: NonNullable<Popup['displayRules']> };
+		buttons: [] as any[],
+		formFields: [] as any[]
+	} as Partial<Popup> & { displayRules: NonNullable<Popup['displayRules']> });
 
 	async function handleSave() {
 		if (!popup.name) {

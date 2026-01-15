@@ -5,14 +5,15 @@
 	import { seoApi, type Error404 } from '$lib/api/seo';
 	import { IconAlertCircle, IconTrash } from '$lib/icons';
 
-	let errors: Error404[] = [];
-	let loading = true;
-	let stats = {
+	// State using Svelte 5 runes
+	let errors = $state<Error404[]>([]);
+	let loading = $state(true);
+	let stats = $state({
 		total: 0,
 		resolved: 0,
 		unresolved: 0,
 		total_hits: 0
-	};
+	});
 
 	onMount(async () => {
 		await loadErrors();

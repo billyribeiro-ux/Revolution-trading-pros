@@ -1,15 +1,15 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { usersApi, AdminApiError } from '$lib/api/admin';
 	import { IconPlus, IconUser, IconEdit, IconTrash, IconShield } from '$lib/icons';
 
-	let loading = true;
-	let users: any[] = [];
-	let error = '';
+	let loading = $state(true);
+	let users = $state<any[]>([]);
+	let error = $state('');
 
-	onMount(async () => {
-		await loadUsers();
+	// Load users on mount
+	$effect(() => {
+		loadUsers();
 	});
 
 	async function loadUsers() {

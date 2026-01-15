@@ -38,9 +38,8 @@
 	let editingCategory = $state<Category | null>(null);
 	let editingTag = $state<Tag | null>(null);
 
-	// Search & Filter
+	// Search & Filter (unified search for both categories and tags)
 	let categorySearch = $state('');
-	let tagSearch = $state('');
 	let showHidden = $state(false);
 
 	// Selection for bulk operations
@@ -123,7 +122,8 @@
 		});
 
 		filteredTags = tags.filter((tag) => {
-			const matchesSearch = tag.name.toLowerCase().includes(tagSearch.toLowerCase());
+			// Use categorySearch for unified search across both categories and tags
+			const matchesSearch = tag.name.toLowerCase().includes(categorySearch.toLowerCase());
 			const matchesVisibility = showHidden || tag.is_visible;
 			return matchesSearch && matchesVisibility;
 		});
@@ -131,8 +131,8 @@
 
 	// Effect to apply filters when search/filter changes
 	$effect(() => {
+		// Track dependencies - accessing these state values triggers re-run on change
 		categorySearch;
-		tagSearch;
 		showHidden;
 		applyFilters();
 	});

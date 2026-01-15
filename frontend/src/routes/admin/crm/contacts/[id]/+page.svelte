@@ -170,6 +170,24 @@
 	let availableTags = $state<{ id: string; name: string; color?: string }[]>([]);
 	let availableLists = $state<{ id: string; name: string }[]>([]);
 
+	// Send Email Modal State
+	interface EmailTemplateOption {
+		id: string | number;
+		name: string;
+		subject: string;
+		body_html?: string;
+		body_text?: string;
+	}
+	let availableEmailTemplates = $state<EmailTemplateOption[]>([]);
+	let emailSubject = $state('');
+	let emailBody = $state('');
+	let selectedTemplateId = $state<string | number | null>(null);
+	let sendingEmail = $state(false);
+	let loadingTemplates = $state(false);
+
+	// Toast notification state (inline for component isolation)
+	let toastMessage = $state<{ type: 'success' | 'error'; text: string } | null>(null);
+
 	let contactId = $derived(page.params.id as string);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -289,6 +307,144 @@
 		} catch (e) {
 			console.error('Failed to delete contact', e);
 		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// SEND EMAIL FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Loads available email templates for the template selector.
+	 * Handles API errors gracefully with fallback to empty state.
+	 */
+	async function loadEmailTemplates(): Promise<void> {
+		if (availableEmailTemplates.length > 0) return; // Cache check
+		loadingTemplates = true;
+		try {
+			const response = await api.get('/api/admin/email/templates');
+			const templates = response?.data || response || [];
+			availableEmailTemplates = Array.isArray(templates)
+				? templates.map((t: any) => ({
+						id: t.id,
+						name: t.name || t.title || 'Untitled Template',
+						subject: t.subject || '',
+						body_html: t.body_html || t.body || '',
+						body_text: t.body_text || ''
+					}))
+				: [];
+		} catch (e) {
+			console.error('Failed to load email templates:', e);
+			availableEmailTemplates = [];
+		} finally {
+			loadingTemplates = false;
+		}
+	}
+
+	/**
+	 * Handles template selection and auto-populates subject/body fields.
+	 * Preserves user edits if they've modified the content.
+	 */
+	function handleTemplateSelect(templateId: string | number | null): void {
+		selectedTemplateId = templateId;
+		if (!templateId) return;
+
+		const template = availableEmailTemplates.find((t) => String(t.id) === String(templateId));
+		if (template) {
+			// Only auto-populate if fields are empty (preserve user edits)
+			if (!emailSubject.trim()) {
+				emailSubject = template.subject || '';
+			}
+			if (!emailBody.trim()) {
+				// Prefer plain text for textarea, fallback to HTML
+				emailBody = template.body_text || template.body_html || '';
+			}
+		}
+	}
+
+	/**
+	 * Sends an email to the current contact.
+	 * Implements comprehensive error handling and user feedback.
+	 */
+	async function sendEmail(): Promise<void> {
+		// Validation
+		if (!contact?.email) {
+			showToast('error', 'Contact does not have a valid email address');
+			return;
+		}
+		if (!emailSubject.trim()) {
+			showToast('error', 'Please enter an email subject');
+			return;
+		}
+		if (!emailBody.trim()) {
+			showToast('error', 'Please enter an email body');
+			return;
+		}
+
+		sendingEmail = true;
+		try {
+			const payload = {
+				contact_id: contactId,
+				to_email: contact.email,
+				subject: emailSubject.trim(),
+				body: emailBody.trim(),
+				body_html: emailBody.trim(), // Fallback for APIs expecting HTML
+				template_id: selectedTemplateId || undefined
+			};
+
+			await api.post(`/api/admin/crm/contacts/${contactId}/send-email`, payload);
+
+			showToast('success', `Email sent successfully to ${contact.email}`);
+			resetEmailForm();
+			showSendEmailModal = false;
+
+			// Refresh email history
+			await loadContact();
+		} catch (e: unknown) {
+			const errorMessage =
+				e instanceof Error
+					? e.message
+					: 'Failed to send email. Please try again.';
+			console.error('Failed to send email:', e);
+			showToast('error', errorMessage);
+		} finally {
+			sendingEmail = false;
+		}
+	}
+
+	/**
+	 * Resets the email form to initial state.
+	 */
+	function resetEmailForm(): void {
+		emailSubject = '';
+		emailBody = '';
+		selectedTemplateId = null;
+	}
+
+	/**
+	 * Opens the send email modal and initializes required data.
+	 */
+	function openSendEmailModal(): void {
+		resetEmailForm();
+		showSendEmailModal = true;
+		loadEmailTemplates();
+	}
+
+	/**
+	 * Closes the send email modal with cleanup.
+	 */
+	function closeSendEmailModal(): void {
+		showSendEmailModal = false;
+		resetEmailForm();
+	}
+
+	/**
+	 * Displays a toast notification with auto-dismiss.
+	 */
+	function showToast(type: 'success' | 'error', text: string): void {
+		toastMessage = { type, text };
+		setTimeout(() => {
+			toastMessage = null;
+		}, 5000);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -420,7 +576,7 @@
 				<button class="btn-icon" onclick={() => loadContact()} title="Refresh">
 					<IconRefresh size={18} />
 				</button>
-				<button class="btn-secondary" onclick={() => showSendEmailModal = true}>
+				<button class="btn-secondary" onclick={openSendEmailModal}>
 					<IconSend size={18} />
 					Send Email
 				</button>
@@ -874,6 +1030,141 @@
 				</button>
 			</div>
 		</div>
+	</div>
+{/if}
+
+<!-- Send Email Modal -->
+{#if showSendEmailModal}
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_interactive_supports_focus -->
+	<div
+		class="modal-overlay"
+		onclick={closeSendEmailModal}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closeSendEmailModal()}
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="send-email-title"
+		tabindex="-1"
+	>
+		<div
+			class="modal modal-large"
+			role="document"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		>
+			<div class="modal-header">
+				<div class="modal-title-section">
+					<h3 id="send-email-title">
+						<IconMailFast size={22} />
+						Send Email
+					</h3>
+					{#if contact}
+						<span class="email-recipient">
+							To: <strong>{contact.full_name}</strong> ({contact.email})
+						</span>
+					{/if}
+				</div>
+				<button class="modal-close" onclick={closeSendEmailModal} aria-label="Close modal">
+					<IconX size={20} />
+				</button>
+			</div>
+
+			<div class="modal-body email-form">
+				<!-- Template Selector -->
+				<div class="form-group">
+					<label for="email-template" class="form-label">
+						<IconList size={16} />
+						Email Template
+						<span class="label-optional">(optional)</span>
+					</label>
+					<select
+						id="email-template"
+						class="form-select"
+						value={selectedTemplateId ?? ''}
+						onchange={(e) => handleTemplateSelect((e.target as HTMLSelectElement).value || null)}
+						disabled={loadingTemplates}
+					>
+						<option value="">
+							{loadingTemplates ? 'Loading templates...' : '-- Select a template --'}
+						</option>
+						{#each availableEmailTemplates as template}
+							<option value={template.id}>{template.name}</option>
+						{/each}
+					</select>
+					{#if availableEmailTemplates.length === 0 && !loadingTemplates}
+						<p class="form-hint">No templates available. You can compose a custom email below.</p>
+					{/if}
+				</div>
+
+				<!-- Subject Line -->
+				<div class="form-group">
+					<label for="email-subject" class="form-label required">
+						<IconTag size={16} />
+						Subject Line
+					</label>
+					<input
+						id="email-subject"
+						type="text"
+						class="form-input"
+						placeholder="Enter email subject..."
+						bind:value={emailSubject}
+						disabled={sendingEmail}
+					/>
+				</div>
+
+				<!-- Email Body -->
+				<div class="form-group">
+					<label for="email-body" class="form-label required">
+						<IconNotes size={16} />
+						Email Body
+					</label>
+					<textarea
+						id="email-body"
+						class="form-textarea"
+						placeholder="Compose your email message here..."
+						bind:value={emailBody}
+						rows="10"
+						disabled={sendingEmail}
+					></textarea>
+					<p class="form-hint">
+						You can use basic text formatting. HTML tags will be preserved.
+					</p>
+				</div>
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn-secondary" onclick={closeSendEmailModal} disabled={sendingEmail}>
+					Cancel
+				</button>
+				<button
+					class="btn-primary send-btn"
+					onclick={sendEmail}
+					disabled={sendingEmail || !emailSubject.trim() || !emailBody.trim()}
+				>
+					{#if sendingEmail}
+						<div class="btn-spinner"></div>
+						Sending...
+					{:else}
+						<IconSend size={18} />
+						Send Email
+					{/if}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Toast Notification -->
+{#if toastMessage}
+	<div class="toast toast-{toastMessage.type}" role="alert" aria-live="polite">
+		{#if toastMessage.type === 'success'}
+			<IconCheck size={18} />
+		{:else}
+			<IconX size={18} />
+		{/if}
+		<span>{toastMessage.text}</span>
+		<button class="toast-close" onclick={() => toastMessage = null} aria-label="Dismiss">
+			<IconX size={14} />
+		</button>
 	</div>
 {/if}
 
@@ -1771,6 +2062,289 @@
 
 		.tabs-nav {
 			justify-content: flex-start;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SEND EMAIL MODAL STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.modal-large {
+		max-width: 680px;
+	}
+
+	.modal-title-section {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+
+	.modal-title-section h3 {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin: 0;
+		font-size: 1.15rem;
+		font-weight: 600;
+		color: white;
+	}
+
+	.modal-title-section h3 :global(svg) {
+		color: #f97316;
+	}
+
+	.email-recipient {
+		font-size: 0.8rem;
+		color: #64748b;
+	}
+
+	.email-recipient strong {
+		color: #94a3b8;
+	}
+
+	.email-form {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.form-label {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 0.85rem;
+		font-weight: 600;
+		color: #e2e8f0;
+	}
+
+	.form-label :global(svg) {
+		color: #64748b;
+	}
+
+	.form-label.required::after {
+		content: '*';
+		color: #f87171;
+		margin-left: 2px;
+	}
+
+	.label-optional {
+		font-weight: 400;
+		color: #64748b;
+		font-size: 0.75rem;
+	}
+
+	.form-select {
+		width: 100%;
+		padding: 12px 14px;
+		background: #0f172a;
+		border: 1px solid #334155;
+		border-radius: 10px;
+		color: #e2e8f0;
+		font-size: 0.9rem;
+		font-family: inherit;
+		cursor: pointer;
+		transition: all 0.2s;
+		appearance: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right 12px center;
+		padding-right: 40px;
+	}
+
+	.form-select:hover:not(:disabled) {
+		border-color: #475569;
+	}
+
+	.form-select:focus {
+		outline: none;
+		border-color: #f97316;
+		box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+	}
+
+	.form-select:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.form-input {
+		width: 100%;
+		padding: 12px 14px;
+		background: #0f172a;
+		border: 1px solid #334155;
+		border-radius: 10px;
+		color: #e2e8f0;
+		font-size: 0.9rem;
+		font-family: inherit;
+		transition: all 0.2s;
+	}
+
+	.form-input:hover:not(:disabled) {
+		border-color: #475569;
+	}
+
+	.form-input:focus {
+		outline: none;
+		border-color: #f97316;
+		box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+	}
+
+	.form-input:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.form-input::placeholder {
+		color: #475569;
+	}
+
+	.form-textarea {
+		width: 100%;
+		padding: 14px;
+		background: #0f172a;
+		border: 1px solid #334155;
+		border-radius: 10px;
+		color: #e2e8f0;
+		font-size: 0.9rem;
+		font-family: inherit;
+		resize: vertical;
+		min-height: 180px;
+		line-height: 1.6;
+		transition: all 0.2s;
+	}
+
+	.form-textarea:hover:not(:disabled) {
+		border-color: #475569;
+	}
+
+	.form-textarea:focus {
+		outline: none;
+		border-color: #f97316;
+		box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+	}
+
+	.form-textarea:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.form-textarea::placeholder {
+		color: #475569;
+	}
+
+	.form-hint {
+		font-size: 0.75rem;
+		color: #64748b;
+		margin: 0;
+	}
+
+	.send-btn {
+		min-width: 140px;
+		justify-content: center;
+	}
+
+	.btn-spinner {
+		width: 16px;
+		height: 16px;
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		border-top-color: white;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   TOAST NOTIFICATION STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.toast {
+		position: fixed;
+		bottom: 24px;
+		right: 24px;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 14px 18px;
+		border-radius: 12px;
+		font-size: 0.9rem;
+		font-weight: 500;
+		box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+		z-index: 2000;
+		animation: slideIn 0.3s ease-out;
+	}
+
+	.toast-success {
+		background: linear-gradient(135deg, #065f46, #047857);
+		border: 1px solid #10b981;
+		color: #ecfdf5;
+	}
+
+	.toast-success :global(svg) {
+		color: #34d399;
+	}
+
+	.toast-error {
+		background: linear-gradient(135deg, #7f1d1d, #991b1b);
+		border: 1px solid #f87171;
+		color: #fef2f2;
+	}
+
+	.toast-error :global(svg) {
+		color: #fca5a5;
+	}
+
+	.toast-close {
+		display: flex;
+		padding: 4px;
+		margin-left: 8px;
+		background: rgba(255, 255, 255, 0.1);
+		border: none;
+		border-radius: 6px;
+		color: inherit;
+		cursor: pointer;
+		transition: background 0.2s;
+	}
+
+	.toast-close:hover {
+		background: rgba(255, 255, 255, 0.2);
+	}
+
+	@keyframes slideIn {
+		from {
+			opacity: 0;
+			transform: translateY(20px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	/* Responsive adjustments for modal */
+	@media (max-width: 720px) {
+		.modal-large {
+			max-width: 100%;
+			margin: 16px;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.toast {
+			left: 16px;
+			right: 16px;
+			bottom: 16px;
+		}
+
+		.modal-title-section h3 {
+			font-size: 1rem;
+		}
+
+		.form-textarea {
+			min-height: 140px;
 		}
 	}
 </style>

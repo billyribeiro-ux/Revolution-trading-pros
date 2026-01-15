@@ -7,13 +7,32 @@
 	import { IconPhoto, IconX, IconSparkles, IconCheck } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
-	let indicator = $state({
+	// ICT 7 FIX: Match backend CreateIndicatorRequest schema
+	interface IndicatorForm {
+		name: string;
+		slug: string;
+		description: string;
+		long_description: string;
+		price: number | null;
+		thumbnail: string;
+		platform: string;
+		version: string;
+		download_url: string;
+		documentation_url: string;
+		is_active: boolean;
+	}
+
+	let indicator = $state<IndicatorForm>({
 		name: '',
 		slug: '',
 		description: '',
-		price: '',
+		long_description: '',
+		price: null,
 		thumbnail: '',
-		type: 'indicator',
+		platform: '',
+		version: '1.0',
+		download_url: '',
+		documentation_url: '',
 		is_active: true
 	});
 
@@ -140,19 +159,38 @@
 		formError = '';
 		successMessage = '';
 
-		if (!indicator.name || !indicator.price) {
-			formError = 'Please fill in the required fields: Name and Price';
+		if (!indicator.name) {
+			formError = 'Please fill in the required field: Name';
 			return;
 		}
 
 		saving = true;
 		try {
-			await adminFetch('/api/admin/products', {
+			// ICT 7 FIX: Use correct indicators API endpoint
+			const payload = {
+				name: indicator.name,
+				slug: indicator.slug || undefined,
+				description: indicator.description || undefined,
+				long_description: indicator.long_description || undefined,
+				price: indicator.price ?? 0,
+				thumbnail: indicator.thumbnail || undefined,
+				platform: indicator.platform || undefined,
+				version: indicator.version || undefined,
+				download_url: indicator.download_url || undefined,
+				documentation_url: indicator.documentation_url || undefined
+			};
+
+			const response = await adminFetch('/api/admin/indicators', {
 				method: 'POST',
-				body: JSON.stringify(indicator)
+				body: JSON.stringify(payload)
 			});
-			successMessage = 'Indicator created successfully! Redirecting...';
-			setTimeout(() => goto('/admin/indicators'), 1500);
+
+			if (response.success) {
+				successMessage = 'Indicator created successfully! Redirecting...';
+				setTimeout(() => goto('/admin/indicators'), 1500);
+			} else {
+				formError = response.error || 'Failed to create indicator';
+			}
 		} catch (error: any) {
 			console.error('Failed to save indicator:', error);
 			formError = error.message || 'Failed to save indicator. Please try again.';
@@ -230,17 +268,72 @@
 				</div>
 
 				<div class="form-group">
-					<label for="description">Description</label>
+					<label for="description">Short Description</label>
 					<textarea
 						id="description"
 						bind:value={indicator.description}
-						placeholder="Describe what makes this indicator special..."
-						rows="4"
+						placeholder="Brief description for listings..."
+						rows="2"
 					></textarea>
 				</div>
 
 				<div class="form-group">
-					<label for="price">Price (USD) *</label>
+					<label for="long_description">Full Description</label>
+					<textarea
+						id="long_description"
+						bind:value={indicator.long_description}
+						placeholder="Detailed description of the indicator, features, usage..."
+						rows="6"
+					></textarea>
+				</div>
+
+				<div class="form-row">
+					<div class="form-group">
+						<label for="platform">Platform</label>
+						<select id="platform" bind:value={indicator.platform}>
+							<option value="">Select Platform</option>
+							<option value="thinkorswim">thinkorswim</option>
+							<option value="tradingview">TradingView</option>
+							<option value="metatrader4">MetaTrader 4</option>
+							<option value="metatrader5">MetaTrader 5</option>
+							<option value="ninjatrader">NinjaTrader</option>
+							<option value="tradestation">TradeStation</option>
+						</select>
+					</div>
+
+					<div class="form-group">
+						<label for="version">Version</label>
+						<input
+							id="version"
+							type="text"
+							bind:value={indicator.version}
+							placeholder="1.0"
+						/>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="download_url">Download URL</label>
+					<input
+						id="download_url"
+						type="url"
+						bind:value={indicator.download_url}
+						placeholder="https://..."
+					/>
+				</div>
+
+				<div class="form-group">
+					<label for="documentation_url">Documentation URL</label>
+					<input
+						id="documentation_url"
+						type="url"
+						bind:value={indicator.documentation_url}
+						placeholder="https://docs.example.com/..."
+					/>
+				</div>
+
+				<div class="form-group">
+					<label for="price">Price (USD)</label>
 					<div class="price-input">
 						<span class="currency">$</span>
 						<input
@@ -559,6 +652,17 @@
 		margin-bottom: 1.5rem;
 	}
 
+	.form-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.form-row .form-group {
+		margin-bottom: 0;
+	}
+
 	.form-group label {
 		display: block;
 		font-weight: 500;
@@ -569,6 +673,8 @@
 
 	.form-group input[type='text'],
 	.form-group input[type='number'],
+	.form-group input[type='url'],
+	.form-group select,
 	.form-group textarea {
 		width: 100%;
 		padding: 0.75rem 1rem;
@@ -581,6 +687,21 @@
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
+	.form-group select {
+		cursor: pointer;
+		appearance: none;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2394a3b8' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+		background-repeat: no-repeat;
+		background-position: right 0.75rem center;
+		background-size: 1rem;
+		padding-right: 2.5rem;
+	}
+
+	.form-group select option {
+		background: #1e293b;
+		color: #f1f5f9;
+	}
+
 	.form-group input::placeholder,
 	.form-group textarea::placeholder {
 		color: #64748b;
@@ -588,6 +709,7 @@
 	}
 
 	.form-group input:focus,
+	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
 		border-color: #E6B800;

@@ -332,6 +332,9 @@ class MediaApiClient {
 		file_type?: string;
 		search?: string;
 		tags?: string[];
+		optimized?: boolean;
+		needs_optimization?: boolean;
+		processing_status?: 'pending' | 'processing' | 'completed' | 'failed';
 		sort?: string;
 		order?: 'asc' | 'desc';
 		page?: number;
@@ -755,6 +758,7 @@ class MediaApiClient {
 		collection?: string;
 		optimized?: boolean;
 		needs_optimization?: boolean;
+		processing_status?: 'pending' | 'processing' | 'completed' | 'failed';
 		sort_by?: string;
 		sort_dir?: 'asc' | 'desc';
 	} = {}): Promise<{ data: MediaFile[]; meta: { current_page: number; last_page: number; total: number } }> {
@@ -763,6 +767,9 @@ class MediaApiClient {
 			...(params.per_page !== undefined && { per_page: params.per_page }),
 			...(params.search !== undefined && { search: params.search }),
 			...(params.type !== undefined && { file_type: params.type }),
+			...(params.optimized !== undefined && { optimized: params.optimized }),
+			...(params.needs_optimization !== undefined && { needs_optimization: params.needs_optimization }),
+			...(params.processing_status !== undefined && { processing_status: params.processing_status }),
 			...(params.sort_by !== undefined && { sort: params.sort_by }),
 			...(params.sort_dir !== undefined && { order: params.sort_dir })
 		});

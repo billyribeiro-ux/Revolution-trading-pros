@@ -1,39 +1,50 @@
 <!--
 	/admin/crm/smart-links - Action Link Management
 	Apple Principal Engineer ICT 7 Grade - January 2026
-	
+
 	Features:
 	- Smart link CRUD with automation triggers
 	- Click tracking (total/unique)
 	- Copy to clipboard functionality
-	- Active/inactive filtering
+	- Active/inactive filtering with API integration
 	- Short URL display
-	- Full Svelte 5 $state/$derived reactivity
+	- Full Svelte 5 $state/$derived/$effect reactivity
+	- Debounced search with server-side filtering
+	- Toggle link status via API
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { untrack } from 'svelte';
 	import {
 		IconLink,
 		IconPlus,
 		IconSearch,
 		IconEdit,
 		IconTrash,
-		IconEye,
 		IconCopy,
 		IconRefresh,
 		IconClick,
 		IconChartBar,
-		IconExternalLink
+		IconExternalLink,
+		IconToggleLeft,
+		IconToggleRight,
+		IconCheck
 	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { SmartLink, SmartLinkFilters } from '$lib/crm/types';
 
+	// Reactive state using Svelte 5 runes
 	let smartLinks = $state<SmartLink[]>([]);
 	let isLoading = $state(true);
 	let error = $state('');
 	let searchQuery = $state('');
 	let filterActive = $state<boolean | 'all'>('all');
+	let copySuccess = $state<string | null>(null);
+	let togglingId = $state<string | null>(null);
+
+	// Debounced search query for API calls
+	let debouncedSearch = $state('');
+	let searchTimeout: ReturnType<typeof setTimeout> | null = null;
 
 	let stats = $state({
 		total: 0,
@@ -42,51 +53,15 @@
 		uniqueClicks: 0
 	});
 
-	async function loadSmartLinks() {
-		isLoading = true;
-		error = '';
+	// Derived statistics from loaded data
+	let computedStats = $derived({
+		total: smartLinks.length,
+		active: smartLinks.filter(l => l.is_active).length,
+		totalClicks: smartLinks.reduce((sum, l) => sum + (l.click_count || 0), 0),
+		uniqueClicks: smartLinks.reduce((sum, l) => sum + (l.unique_clicks || 0), 0)
+	});
 
-		try {
-			const filters: SmartLinkFilters = {
-				search: searchQuery || undefined,
-				is_active: filterActive !== 'all' ? filterActive : undefined
-			};
-
-			const response = await crmAPI.getSmartLinks(filters);
-			smartLinks = response.data || [];
-
-			stats = {
-				total: smartLinks.length,
-				active: smartLinks.filter(l => l.is_active).length,
-				totalClicks: smartLinks.reduce((sum, l) => sum + l.click_count, 0),
-				uniqueClicks: smartLinks.reduce((sum, l) => sum + l.unique_clicks, 0)
-			};
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to load smart links';
-		} finally {
-			isLoading = false;
-		}
-	}
-
-	async function deleteSmartLink(id: string) {
-		if (!confirm('Are you sure you want to delete this smart link?')) return;
-
-		try {
-			await crmAPI.deleteSmartLink(id);
-			await loadSmartLinks();
-		} catch (err) {
-			error = err instanceof Error ? err.message : 'Failed to delete smart link';
-		}
-	}
-
-	function copyToClipboard(text: string) {
-		navigator.clipboard.writeText(text);
-	}
-
-	function formatNumber(num: number): string {
-		return num.toLocaleString();
-	}
-
+	// Filtered links for display (client-side filtering for immediate feedback)
 	let filteredLinks = $derived(
 		smartLinks.filter(link => {
 			const matchesSearch = !searchQuery ||
@@ -97,8 +72,124 @@
 		})
 	);
 
-	onMount(() => {
-		loadSmartLinks();
+	// Load smart links from API
+	async function loadSmartLinks() {
+		isLoading = true;
+		error = '';
+
+		try {
+			const filters: SmartLinkFilters = {
+				search: debouncedSearch || undefined,
+				is_active: filterActive !== 'all' ? filterActive : undefined
+			};
+
+			const response = await crmAPI.getSmartLinks(filters);
+			smartLinks = response.data || [];
+
+			// Update stats from computed values
+			stats = computedStats;
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to load smart links';
+			smartLinks = [];
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	// Toggle smart link active status via API
+	async function toggleLinkStatus(link: SmartLink) {
+		togglingId = link.id;
+		error = '';
+
+		try {
+			const updated = await crmAPI.updateSmartLink(link.id, {
+				is_active: !link.is_active
+			});
+
+			// Update local state optimistically
+			smartLinks = smartLinks.map(l =>
+				l.id === link.id ? { ...l, is_active: updated.is_active } : l
+			);
+
+			// Update stats
+			stats = computedStats;
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to update smart link status';
+		} finally {
+			togglingId = null;
+		}
+	}
+
+	// Delete smart link with confirmation
+	async function deleteSmartLink(id: string) {
+		if (!confirm('Are you sure you want to delete this smart link? This action cannot be undone.')) return;
+
+		try {
+			await crmAPI.deleteSmartLink(id);
+			// Remove from local state immediately
+			smartLinks = smartLinks.filter(l => l.id !== id);
+			stats = computedStats;
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to delete smart link';
+		}
+	}
+
+	// Copy URL to clipboard with feedback
+	async function copyToClipboard(text: string, linkId: string) {
+		try {
+			await navigator.clipboard.writeText(text);
+			copySuccess = linkId;
+			setTimeout(() => {
+				copySuccess = null;
+			}, 2000);
+		} catch (err) {
+			error = 'Failed to copy to clipboard';
+		}
+	}
+
+	// Format numbers with locale
+	function formatNumber(num: number): string {
+		return (num || 0).toLocaleString();
+	}
+
+	// Debounce search input - triggers API reload
+	$effect(() => {
+		const query = searchQuery;
+
+		if (searchTimeout) {
+			clearTimeout(searchTimeout);
+		}
+
+		searchTimeout = setTimeout(() => {
+			untrack(() => {
+				debouncedSearch = query;
+			});
+		}, 300);
+
+		return () => {
+			if (searchTimeout) {
+				clearTimeout(searchTimeout);
+			}
+		};
+	});
+
+	// Reload data when debounced search or filter changes (also handles initial load)
+	$effect(() => {
+		// Track dependencies - this effect runs on mount and when these change
+		const _search = debouncedSearch;
+		const _filter = filterActive;
+
+		// Load data (untrack to prevent infinite loops)
+		untrack(() => {
+			loadSmartLinks();
+		});
+
+		// Cleanup function (runs on destroy)
+		return () => {
+			if (searchTimeout) {
+				clearTimeout(searchTimeout);
+			}
+		};
 	});
 </script>
 
@@ -227,15 +318,35 @@
 								</div>
 							</td>
 							<td>
-								<span class="status-badge {link.is_active ? 'active' : 'inactive'}">
-									{link.is_active ? 'Active' : 'Inactive'}
-								</span>
+								<button
+									class="status-toggle {link.is_active ? 'active' : 'inactive'}"
+									onclick={() => toggleLinkStatus(link)}
+									disabled={togglingId === link.id}
+									title={link.is_active ? 'Click to deactivate' : 'Click to activate'}
+								>
+									{#if togglingId === link.id}
+										<span class="toggle-loading"></span>
+									{:else if link.is_active}
+										<IconToggleRight size={18} />
+									{:else}
+										<IconToggleLeft size={18} />
+									{/if}
+									<span>{link.is_active ? 'Active' : 'Inactive'}</span>
+								</button>
 							</td>
 							<td>
 								<div class="url-cell">
 									<code class="short-url">{link.short}</code>
-									<button class="btn-copy" onclick={() => copyToClipboard(link.short_url || link.short)} title="Copy">
-										<IconCopy size={14} />
+									<button
+										class="btn-copy {copySuccess === link.id ? 'copied' : ''}"
+										onclick={() => copyToClipboard(link.short_url || link.short, link.id)}
+										title={copySuccess === link.id ? 'Copied!' : 'Copy URL'}
+									>
+										{#if copySuccess === link.id}
+											<IconCheck size={14} />
+										{:else}
+											<IconCopy size={14} />
+										{/if}
 									</button>
 								</div>
 							</td>
@@ -556,6 +667,11 @@
 		color: #E6B800;
 	}
 
+	.btn-copy.copied {
+		background: rgba(34, 197, 94, 0.2);
+		color: #4ade80;
+	}
+
 	.target-url {
 		font-size: 0.8rem;
 		color: #94a3b8;
@@ -566,23 +682,50 @@
 		font-size: 0.85rem;
 	}
 
-	.status-badge {
-		display: inline-block;
-		padding: 0.25rem 0.75rem;
+	.status-toggle {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.35rem 0.75rem;
 		border-radius: 20px;
 		font-size: 0.75rem;
 		font-weight: 500;
 		text-transform: capitalize;
+		border: none;
+		cursor: pointer;
+		transition: all 0.2s;
 	}
 
-	.status-badge.active {
+	.status-toggle.active {
 		background: rgba(34, 197, 94, 0.2);
 		color: #4ade80;
 	}
 
-	.status-badge.inactive {
+	.status-toggle.active:hover:not(:disabled) {
+		background: rgba(34, 197, 94, 0.3);
+	}
+
+	.status-toggle.inactive {
 		background: rgba(148, 163, 184, 0.2);
 		color: #94a3b8;
+	}
+
+	.status-toggle.inactive:hover:not(:disabled) {
+		background: rgba(148, 163, 184, 0.3);
+	}
+
+	.status-toggle:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.toggle-loading {
+		width: 14px;
+		height: 14px;
+		border: 2px solid currentColor;
+		border-top-color: transparent;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
 	}
 
 	.action-buttons {

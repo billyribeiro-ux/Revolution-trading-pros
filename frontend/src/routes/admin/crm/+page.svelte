@@ -46,7 +46,8 @@
 		IconPlayerPlay,
 		IconExternalLink,
 		IconLink,
-		IconRobot
+		IconRobot,
+		IconTarget
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
 	import { connections, isCrmConnected } from '$lib/stores/connections';
@@ -95,6 +96,7 @@
 
 	const sidebarNav = [
 		{ name: 'Contacts', href: '/admin/crm', icon: IconUsers, active: true },
+		{ name: 'Leads', href: '/admin/crm/leads', icon: IconTarget },
 		{ name: 'Lists', href: '/admin/crm/lists', icon: IconListDetails },
 		{ name: 'Tags', href: '/admin/crm/tags', icon: IconTag },
 		{ name: 'Segments', href: '/admin/crm/segments', icon: IconFilter },

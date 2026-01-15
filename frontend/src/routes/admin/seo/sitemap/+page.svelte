@@ -7,11 +7,12 @@
 		IconFileText
 	} from '$lib/icons';
 
-	let stats: any = null;
-	let generating = false;
-	let submitting = false;
-	let showSitemapXml = false;
-	let sitemapContent = '';
+	// State using Svelte 5 runes
+	let stats = $state<any>(null);
+	let generating = $state(false);
+	let submitting = $state(false);
+	let showSitemapXml = $state(false);
+	let sitemapContent = $state('');
 
 	onMount(() => {
 		loadStats();

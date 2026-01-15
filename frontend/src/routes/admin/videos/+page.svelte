@@ -39,7 +39,11 @@
 	import IconTag from '@tabler/icons-svelte/icons/tag';
 	import IconTags from '@tabler/icons-svelte/icons/tags';
 	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconCloudUpload from '@tabler/icons-svelte/icons/cloud-upload';
+	import IconFileUpload from '@tabler/icons-svelte/icons/file-upload';
+	import IconProgressCheck from '@tabler/icons-svelte/icons/progress-check';
 	import { tradingRoomApi, type TradingRoom, type Trader, type DailyVideo } from '$lib/api/trading-rooms';
+	import { bulkUploadApi, analyticsApi, videoOpsApi, type AnalyticsDashboard, type BatchStatus } from '$lib/api/video-advanced';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LOCAL TYPES (extending API types)
@@ -136,6 +140,20 @@
 		is_featured: false,
 		categories: [] as string[] // Mapped to 'tags' when sending to API
 	});
+
+	// Bunny.net Direct Upload State
+	let showBunnyUploadModal = $state(false);
+	let bunnyUploadFiles = $state<File[]>([]);
+	let bunnyUploadBatchId = $state<string | null>(null);
+	let bunnyUploadStatus = $state<BatchStatus | null>(null);
+	let isUploadingToBunny = $state(false);
+	let bunnyUploadProgress = $state(0);
+
+	// Analytics State
+	let showAnalyticsPanel = $state(false);
+	let analyticsData = $state<AnalyticsDashboard | null>(null);
+	let isLoadingAnalytics = $state(false);
+	let analyticsPeriod = $state<'7d' | '30d' | '90d'>('30d');
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// CATEGORY SELECTION
@@ -394,6 +412,203 @@
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// BUNNY.NET DIRECT UPLOAD
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function openBunnyUploadModal() {
+		bunnyUploadFiles = [];
+		bunnyUploadBatchId = null;
+		bunnyUploadStatus = null;
+		bunnyUploadProgress = 0;
+		showBunnyUploadModal = true;
+	}
+
+	function handleBunnyFileSelect(event: Event) {
+		const input = event.target as HTMLInputElement;
+		if (input.files) {
+			bunnyUploadFiles = Array.from(input.files).filter(f =>
+				f.type.startsWith('video/') || f.name.endsWith('.mp4') || f.name.endsWith('.mov') || f.name.endsWith('.webm')
+			);
+		}
+	}
+
+	function handleBunnyFileDrop(event: DragEvent) {
+		event.preventDefault();
+		if (event.dataTransfer?.files) {
+			bunnyUploadFiles = Array.from(event.dataTransfer.files).filter(f =>
+				f.type.startsWith('video/') || f.name.endsWith('.mp4') || f.name.endsWith('.mov') || f.name.endsWith('.webm')
+			);
+		}
+	}
+
+	function removeBunnyFile(index: number) {
+		bunnyUploadFiles = bunnyUploadFiles.filter((_, i) => i !== index);
+	}
+
+	async function startBunnyUpload() {
+		if (bunnyUploadFiles.length === 0 || !selectedRoom) return;
+
+		isUploadingToBunny = true;
+		error = '';
+
+		try {
+			// Initialize bulk upload with Bunny.net
+			const response = await bulkUploadApi.init({
+				files: bunnyUploadFiles.map(f => ({
+					filename: f.name,
+					file_size_bytes: f.size,
+					content_type: f.type,
+					title: f.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ')
+				})),
+				default_metadata: {
+					content_type: 'daily_video',
+					video_date: new Date().toISOString().split('T')[0],
+					room_ids: [selectedRoom.id],
+					is_published: false,
+					tags: []
+				}
+			});
+
+			if (response.success && response.data) {
+				bunnyUploadBatchId = response.data.batch_id;
+
+				// Upload each file to its respective Bunny upload URL
+				for (let i = 0; i < response.data.uploads.length; i++) {
+					const uploadItem = response.data.uploads[i];
+					const file = bunnyUploadFiles[i];
+
+					try {
+						// Upload to Bunny CDN
+						await uploadFileToBunny(uploadItem.upload_url, file, uploadItem.id);
+						bunnyUploadProgress = Math.round(((i + 1) / response.data.uploads.length) * 100);
+					} catch (uploadErr) {
+						console.error(`Failed to upload ${file.name}:`, uploadErr);
+						await bulkUploadApi.updateItemStatus(uploadItem.id, {
+							status: 'failed',
+							error_message: uploadErr instanceof Error ? uploadErr.message : 'Upload failed'
+						});
+					}
+				}
+
+				// Poll for batch status
+				await pollBatchStatus(response.data.batch_id);
+				showSuccess(`Successfully uploaded ${bunnyUploadFiles.length} video(s) to Bunny.net`);
+				await loadVideos();
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to initialize Bunny upload';
+			console.error('Bunny upload error:', err);
+		} finally {
+			isUploadingToBunny = false;
+		}
+	}
+
+	async function uploadFileToBunny(uploadUrl: string, file: File, itemId: number): Promise<void> {
+		return new Promise((resolve, reject) => {
+			const xhr = new XMLHttpRequest();
+
+			xhr.upload.addEventListener('progress', async (e) => {
+				if (e.lengthComputable) {
+					const progress = Math.round((e.loaded / e.total) * 100);
+					await bulkUploadApi.updateItemStatus(itemId, {
+						status: 'uploading',
+						progress_percent: progress
+					});
+				}
+			});
+
+			xhr.addEventListener('load', async () => {
+				if (xhr.status >= 200 && xhr.status < 300) {
+					await bulkUploadApi.updateItemStatus(itemId, {
+						status: 'completed',
+						progress_percent: 100
+					});
+					resolve();
+				} else {
+					reject(new Error(`Upload failed with status ${xhr.status}`));
+				}
+			});
+
+			xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
+			xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
+
+			xhr.open('PUT', uploadUrl);
+			xhr.setRequestHeader('Content-Type', file.type || 'video/mp4');
+			xhr.send(file);
+		});
+	}
+
+	async function pollBatchStatus(batchId: string): Promise<void> {
+		let attempts = 0;
+		const maxAttempts = 60; // 5 minutes with 5-second intervals
+
+		while (attempts < maxAttempts) {
+			const response = await bulkUploadApi.getBatchStatus(batchId);
+			if (response.success && response.data) {
+				bunnyUploadStatus = response.data;
+
+				if (response.data.pending === 0 && response.data.in_progress === 0) {
+					return; // All uploads complete
+				}
+			}
+
+			await new Promise(resolve => setTimeout(resolve, 5000));
+			attempts++;
+		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// VIDEO ANALYTICS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function loadAnalytics() {
+		isLoadingAnalytics = true;
+		error = '';
+
+		try {
+			const response = await analyticsApi.getDashboard({
+				period: analyticsPeriod,
+				room_id: selectedRoom?.id
+			});
+
+			if (response.success && response.data) {
+				analyticsData = response.data;
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to load analytics';
+			console.error('Analytics error:', err);
+		} finally {
+			isLoadingAnalytics = false;
+		}
+	}
+
+	function toggleAnalyticsPanel() {
+		showAnalyticsPanel = !showAnalyticsPanel;
+		if (showAnalyticsPanel && !analyticsData) {
+			loadAnalytics();
+		}
+	}
+
+	async function fetchVideoDuration(videoId: number) {
+		try {
+			const response = await videoOpsApi.fetchDuration(videoId);
+			if (response.success && response.data) {
+				showSuccess(`Duration fetched: ${response.data.formatted_duration}`);
+				await loadVideos();
+			}
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to fetch duration';
+		}
+	}
+
+	// Reload analytics when period changes
+	$effect(() => {
+		if (showAnalyticsPanel && analyticsPeriod) {
+			loadAnalytics();
+		}
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// HELPERS
 	// ═══════════════════════════════════════════════════════════════════════════
 
@@ -460,7 +675,7 @@
 	const publishedCount = $derived(videos.filter(v => v.is_published).length);
 
 	// Get unique categories used in current videos
-	const usedCategories = $derived(() => {
+	const usedCategories = $derived.by(() => {
 		const categoryIds = new Set<string>();
 		videos.forEach(v => v.categories.forEach(c => categoryIds.add(c)));
 		return Array.from(categoryIds).map(id => getCategoryById(id)).filter(Boolean) as VideoCategory[];
@@ -517,6 +732,14 @@
 			<p class="page-description">Manage daily videos with category tags for each room and service</p>
 		</div>
 		<div class="header-actions">
+			<button class="btn-secondary" onclick={toggleAnalyticsPanel} title="View Analytics">
+				<IconChartBar size={18} />
+				Analytics
+			</button>
+			<button class="btn-bunny" onclick={openBunnyUploadModal} disabled={!selectedRoom} title="Upload to Bunny.net">
+				<IconCloudUpload size={18} />
+				Bunny Upload
+			</button>
 			<button class="btn-refresh" onclick={() => loadVideos()} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
@@ -611,6 +834,85 @@
 					<span class="stat-label">Published</span>
 				</div>
 			</div>
+		</div>
+	{/if}
+
+	<!-- Analytics Panel -->
+	{#if showAnalyticsPanel}
+		<div class="analytics-panel">
+			<div class="analytics-header">
+				<h3><IconChartBar size={20} /> Video Analytics</h3>
+				<div class="analytics-controls">
+					<label for="analytics-period" class="sr-only">Analytics period</label>
+					<select id="analytics-period" class="filter-select" bind:value={analyticsPeriod}>
+						<option value="7d">Last 7 days</option>
+						<option value="30d">Last 30 days</option>
+						<option value="90d">Last 90 days</option>
+					</select>
+					<button class="btn-icon" onclick={() => showAnalyticsPanel = false} title="Close">
+						<IconX size={18} />
+					</button>
+				</div>
+			</div>
+
+			{#if isLoadingAnalytics}
+				<div class="analytics-loading">
+					<div class="spinner"></div>
+					<p>Loading analytics...</p>
+				</div>
+			{:else if analyticsData}
+				<div class="analytics-grid">
+					<div class="analytics-stat">
+						<span class="stat-value">{formatViews(analyticsData.total_views)}</span>
+						<span class="stat-label">Total Views</span>
+					</div>
+					<div class="analytics-stat">
+						<span class="stat-value">{analyticsData.unique_viewers.toLocaleString()}</span>
+						<span class="stat-label">Unique Viewers</span>
+					</div>
+					<div class="analytics-stat">
+						<span class="stat-value">{analyticsData.total_watch_time_hours.toFixed(1)}h</span>
+						<span class="stat-label">Watch Time</span>
+					</div>
+					<div class="analytics-stat">
+						<span class="stat-value">{(analyticsData.avg_completion_rate * 100).toFixed(0)}%</span>
+						<span class="stat-label">Avg Completion</span>
+					</div>
+				</div>
+
+				{#if analyticsData.top_videos && analyticsData.top_videos.length > 0}
+					<div class="top-videos-section">
+						<h4>Top Performing Videos</h4>
+						<div class="top-videos-list">
+							{#each analyticsData.top_videos.slice(0, 5) as topVideo, index}
+								<div class="top-video-item">
+									<span class="rank">#{index + 1}</span>
+									<span class="title">{topVideo.title}</span>
+									<span class="views">{formatViews(topVideo.views)} views</span>
+								</div>
+							{/each}
+						</div>
+					</div>
+				{/if}
+
+				<!-- Used Categories Quick Stats -->
+				{#if usedCategories.length > 0}
+					<div class="categories-stats-section">
+						<h4>Categories in Use</h4>
+						<div class="used-categories-tags">
+							{#each usedCategories as category}
+								<span class="category-tag" style:--tag-color={category.color}>
+									{category.name}
+								</span>
+							{/each}
+						</div>
+					</div>
+				{/if}
+			{:else}
+				<div class="analytics-empty">
+					<p>No analytics data available yet.</p>
+				</div>
+			{/if}
 		</div>
 	{/if}
 
@@ -966,6 +1268,105 @@
 					{:else}
 						<IconLink size={16} />
 						Replace Video
+					{/if}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
+
+<!-- Bunny.net Direct Upload Modal -->
+{#if showBunnyUploadModal}
+	<div
+		class="modal-overlay"
+		role="button"
+		tabindex="0"
+		onclick={() => { if (!isUploadingToBunny) { showBunnyUploadModal = false; bunnyUploadFiles = []; } }}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && !isUploadingToBunny && (showBunnyUploadModal = false, bunnyUploadFiles = [])}
+	>
+		<div class="modal modal-large" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
+			<div class="modal-header bunny-header">
+				<h2>
+					<IconCloudUpload size={24} />
+					Upload to Bunny.net
+				</h2>
+				<button class="modal-close" onclick={() => { if (!isUploadingToBunny) { showBunnyUploadModal = false; bunnyUploadFiles = []; } }} type="button" aria-label="Close" disabled={isUploadingToBunny}>&times;</button>
+			</div>
+			<div class="modal-body">
+				<div class="bunny-info">
+					<p>Upload video files directly to Bunny.net CDN for fast, reliable streaming.</p>
+					<p class="text-muted">Videos will be uploaded to: <strong>{selectedRoom?.name}</strong></p>
+				</div>
+
+				<!-- Drop Zone -->
+				<div
+					class="bunny-dropzone"
+					class:has-files={bunnyUploadFiles.length > 0}
+					ondragover={(e: DragEvent) => e.preventDefault()}
+					ondrop={handleBunnyFileDrop}
+					role="button"
+					tabindex="0"
+					aria-label="Drop video files here or click to select"
+				>
+					{#if bunnyUploadFiles.length === 0}
+						<IconFileUpload size={48} />
+						<p>Drag and drop video files here</p>
+						<p class="text-muted">or</p>
+						<label class="btn-secondary">
+							Browse Files
+							<input type="file" accept="video/*,.mp4,.mov,.webm" multiple onchange={handleBunnyFileSelect} hidden />
+						</label>
+						<p class="file-types">Supported: MP4, MOV, WebM</p>
+					{:else}
+						<div class="selected-files">
+							<h4><IconProgressCheck size={20} /> {bunnyUploadFiles.length} file(s) selected</h4>
+							<ul class="file-list">
+								{#each bunnyUploadFiles as file, index}
+									<li>
+										<span class="file-name">{file.name}</span>
+										<span class="file-size">{(file.size / (1024 * 1024)).toFixed(1)} MB</span>
+										{#if !isUploadingToBunny}
+											<button class="btn-remove" onclick={() => removeBunnyFile(index)} aria-label="Remove {file.name}">
+												<IconX size={14} />
+											</button>
+										{/if}
+									</li>
+								{/each}
+							</ul>
+						</div>
+					{/if}
+				</div>
+
+				<!-- Upload Progress -->
+				{#if isUploadingToBunny}
+					<div class="upload-progress">
+						<div class="progress-bar">
+							<div class="progress-fill" style:width="{bunnyUploadProgress}%"></div>
+						</div>
+						<p class="progress-text">Uploading... {bunnyUploadProgress}%</p>
+
+						{#if bunnyUploadStatus}
+							<div class="batch-status">
+								<span class="status-item completed">Completed: {bunnyUploadStatus.completed}</span>
+								<span class="status-item in-progress">In Progress: {bunnyUploadStatus.in_progress}</span>
+								<span class="status-item pending">Pending: {bunnyUploadStatus.pending}</span>
+								{#if bunnyUploadStatus.failed > 0}
+									<span class="status-item failed">Failed: {bunnyUploadStatus.failed}</span>
+								{/if}
+							</div>
+						{/if}
+					</div>
+				{/if}
+			</div>
+			<div class="modal-footer">
+				<button class="btn-secondary" onclick={() => { showBunnyUploadModal = false; bunnyUploadFiles = []; }} type="button" disabled={isUploadingToBunny}>Cancel</button>
+				<button class="btn-bunny" onclick={startBunnyUpload} disabled={isUploadingToBunny || bunnyUploadFiles.length === 0}>
+					{#if isUploadingToBunny}
+						<span class="btn-spinner"></span>
+						Uploading...
+					{:else}
+						<IconCloudUpload size={16} />
+						Upload to Bunny.net
 					{/if}
 				</button>
 			</div>
@@ -1841,6 +2242,297 @@
 		border-width: 0;
 	}
 
+	/* Bunny.net Button */
+	.btn-bunny {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.25rem;
+		background: linear-gradient(135deg, #ff9500, #ff7b00);
+		color: white;
+		border: none;
+		border-radius: 10px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-bunny:hover:not(:disabled) {
+		transform: translateY(-2px);
+		box-shadow: 0 4px 15px rgba(255, 149, 0, 0.4);
+	}
+
+	.btn-bunny:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+		transform: none;
+	}
+
+	/* Analytics Panel */
+	.analytics-panel {
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 14px;
+		padding: 1.5rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.analytics-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 1.5rem;
+	}
+
+	.analytics-header h3 {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		font-size: 1.1rem;
+		font-weight: 600;
+		color: #f1f5f9;
+		margin: 0;
+	}
+
+	.analytics-controls {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.analytics-loading, .analytics-empty {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 2rem;
+		color: #64748b;
+	}
+
+	.analytics-grid {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.analytics-stat {
+		text-align: center;
+		padding: 1rem;
+		background: rgba(99, 102, 241, 0.1);
+		border-radius: 10px;
+	}
+
+	.analytics-stat .stat-value {
+		display: block;
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin-bottom: 0.25rem;
+	}
+
+	.analytics-stat .stat-label {
+		font-size: 0.8rem;
+		color: #64748b;
+	}
+
+	.top-videos-section, .categories-stats-section {
+		margin-top: 1.5rem;
+		padding-top: 1.5rem;
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
+	}
+
+	.top-videos-section h4, .categories-stats-section h4 {
+		font-size: 0.9rem;
+		font-weight: 600;
+		color: #94a3b8;
+		margin: 0 0 1rem 0;
+	}
+
+	.top-videos-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.top-video-item {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.75rem;
+		background: rgba(15, 23, 42, 0.6);
+		border-radius: 8px;
+	}
+
+	.top-video-item .rank {
+		font-weight: 700;
+		color: #fbbf24;
+		min-width: 24px;
+	}
+
+	.top-video-item .title {
+		flex: 1;
+		color: #e2e8f0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.top-video-item .views {
+		color: #64748b;
+		font-size: 0.85rem;
+	}
+
+	.used-categories-tags {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	/* Bunny Upload Modal */
+	.bunny-header h2 {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.bunny-info {
+		margin-bottom: 1.5rem;
+	}
+
+	.bunny-info p {
+		margin: 0.5rem 0;
+		color: #cbd5e1;
+	}
+
+	.bunny-dropzone {
+		border: 2px dashed rgba(255, 149, 0, 0.3);
+		border-radius: 14px;
+		padding: 3rem 2rem;
+		text-align: center;
+		transition: all 0.2s;
+		background: rgba(255, 149, 0, 0.05);
+	}
+
+	.bunny-dropzone:hover, .bunny-dropzone:focus {
+		border-color: rgba(255, 149, 0, 0.5);
+		background: rgba(255, 149, 0, 0.1);
+	}
+
+	.bunny-dropzone.has-files {
+		padding: 1.5rem;
+		border-style: solid;
+	}
+
+	.bunny-dropzone :global(svg) {
+		color: #ff9500;
+		margin-bottom: 1rem;
+	}
+
+	.bunny-dropzone p {
+		color: #94a3b8;
+		margin: 0.5rem 0;
+	}
+
+	.bunny-dropzone .file-types {
+		font-size: 0.75rem;
+		color: #64748b;
+		margin-top: 1rem;
+	}
+
+	.selected-files h4 {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		color: #4ade80;
+		margin: 0 0 1rem 0;
+	}
+
+	.file-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		text-align: left;
+	}
+
+	.file-list li {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 0.75rem;
+		background: rgba(15, 23, 42, 0.6);
+		border-radius: 8px;
+		margin-bottom: 0.5rem;
+	}
+
+	.file-list .file-name {
+		flex: 1;
+		color: #e2e8f0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	.file-list .file-size {
+		color: #64748b;
+		font-size: 0.85rem;
+	}
+
+	.btn-remove {
+		padding: 0.375rem;
+		background: rgba(239, 68, 68, 0.1);
+		border: 1px solid rgba(239, 68, 68, 0.2);
+		border-radius: 4px;
+		color: #f87171;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-remove:hover {
+		background: rgba(239, 68, 68, 0.2);
+	}
+
+	.upload-progress {
+		margin-top: 1.5rem;
+	}
+
+	.progress-bar {
+		height: 8px;
+		background: rgba(255, 149, 0, 0.2);
+		border-radius: 4px;
+		overflow: hidden;
+	}
+
+	.progress-fill {
+		height: 100%;
+		background: linear-gradient(90deg, #ff9500, #ff7b00);
+		border-radius: 4px;
+		transition: width 0.3s ease;
+	}
+
+	.progress-text {
+		text-align: center;
+		color: #ff9500;
+		font-weight: 600;
+		margin: 0.75rem 0;
+	}
+
+	.batch-status {
+		display: flex;
+		justify-content: center;
+		gap: 1.5rem;
+		flex-wrap: wrap;
+	}
+
+	.status-item {
+		font-size: 0.85rem;
+	}
+
+	.status-item.completed { color: #4ade80; }
+	.status-item.in-progress { color: #fbbf24; }
+	.status-item.pending { color: #94a3b8; }
+	.status-item.failed { color: #f87171; }
+
 	@media (max-width: 768px) {
 		.room-tabs {
 			flex-direction: column;
@@ -1876,6 +2568,14 @@
 		.categories-grid {
 			max-height: 200px;
 			overflow-y: auto;
+		}
+
+		.analytics-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+
+		.header-actions {
+			flex-wrap: wrap;
 		}
 	}
 </style>

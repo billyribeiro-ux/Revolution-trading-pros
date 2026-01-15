@@ -5,7 +5,7 @@
 	import { popupsApi, type Popup } from '$lib/api/popups';
 
 	// Form state
-	let formData: Partial<Popup> = {
+	let formData = $state<Partial<Popup>>({
 		name: '',
 		type: 'exit_intent',
 		status: 'draft',
@@ -34,15 +34,15 @@
 			buttonShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
 			buttonPadding: '0.875rem 1.5rem'
 		}
-	};
+	});
 
-	let loading = false;
-	let errors: Record<string, string> = {};
+	let loading = $state(false);
+	let errors = $state<Record<string, string>>({});
 
 	// Trigger rules based on type
-	let timedDelay = 5000;
-	let scrollDepth = 50;
-	let clickSelector = '[data-popup-trigger]';
+	let timedDelay = $state(5000);
+	let scrollDepth = $state(50);
+	let clickSelector = $state('[data-popup-trigger]');
 
 	// Frequency options
 	const frequencyOptions = [

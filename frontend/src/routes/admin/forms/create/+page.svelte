@@ -10,11 +10,12 @@
 	import type { Form } from '$lib/api/forms';
 	import type { FormTemplate, FormTheme } from '$lib/data/formTemplates';
 
-	let showTemplateSelector = true;
-	let selectedTemplate: FormTemplate | null = null;
-	let formData: Partial<Form> | null = null;
-	let selectedTheme: FormTheme | null = null;
-	let showThemeCustomizer = false;
+	// Svelte 5 runes for reactive state
+	let showTemplateSelector = $state(true);
+	let selectedTemplate = $state<FormTemplate | null>(null);
+	let formData = $state<Partial<Form> | null>(null);
+	let selectedTheme = $state<FormTheme | null>(null);
+	let showThemeCustomizer = $state(false);
 
 	function handleTemplateSelect(template: FormTemplate) {
 		// Svelte 5: Callback props receive the value directly

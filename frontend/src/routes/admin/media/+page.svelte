@@ -1,19 +1,26 @@
 <script lang="ts">
   /**
-   * Media Library - Apple HIG Quality Admin Interface
+   * Media Library - Apple ICT 7 Grade Enterprise Dashboard
    * ═══════════════════════════════════════════════════════════════════════════
    *
-   * Enterprise-grade media management with:
+   * Principal Engineer Grade implementation featuring:
    * - AI-powered image analysis and alt text generation
    * - Smart cropping with subject detection
-   * - Drag-and-drop uploads with progress tracking
-   * - Grid/List view with smooth transitions
-   * - Keyboard navigation and accessibility
-   * - Real-time optimization statistics
+   * - Drag-and-drop uploads with XHR progress tracking
+   * - Grid/List view with fluid Svelte 5 transitions
+   * - Full keyboard navigation (arrow keys, Enter, Space, Cmd+A)
+   * - Real-time optimization statistics with tweened animations
+   * - Bulk operations (optimize, download, delete)
+   * - Context menu with all actions
+   * - Responsive preview for multiple breakpoints
    *
-   * @version 2.0.0
+   * Svelte 5 Runes: $state, $derived, $effect
+   *
+   * @version 3.0.0
+   * @author Revolution Trading Pros
+   * @since January 2026
    */
-  import { onMount, onDestroy } from 'svelte';
+  import { browser } from '$app/environment';
   import { fly, fade, scale, slide } from 'svelte/transition';
   import { tweened } from 'svelte/motion';
   import { cubicOut } from 'svelte/easing';
@@ -78,18 +85,25 @@
   const statsProgress = tweened(0, { duration: 1000, easing: cubicOut });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // Lifecycle
+  // Lifecycle - Svelte 5 $effect rune
   // ═══════════════════════════════════════════════════════════════════════════
 
-  onMount(async () => {
-    await Promise.all([loadMedia(), loadStatistics(), checkAIStatus()]);
+  // Initialize on mount using $effect
+  $effect(() => {
+    if (!browser) return;
+
+    // Load initial data
+    Promise.all([loadMedia(), loadStatistics(), checkAIStatus()]);
+
+    // Setup keyboard and click listeners
     document.addEventListener('keydown', handleKeydown);
     document.addEventListener('click', handleClickOutside);
-  });
 
-  onDestroy(() => {
-    document.removeEventListener('keydown', handleKeydown);
-    document.removeEventListener('click', handleClickOutside);
+    // Cleanup on unmount
+    return () => {
+      document.removeEventListener('keydown', handleKeydown);
+      document.removeEventListener('click', handleClickOutside);
+    };
   });
 
   // ═══════════════════════════════════════════════════════════════════════════
@@ -105,7 +119,8 @@
         ...(searchQuery && { search: searchQuery }),
         ...(filterType !== 'all' && { type: filterType }),
         ...(filterStatus === 'optimized' && { optimized: true }),
-        ...(filterStatus === 'pending' && { optimized: false }),
+        ...(filterStatus === 'pending' && { needs_optimization: true }),
+        ...(filterStatus === 'processing' && { processing_status: 'processing' }),
         sort_by: sortBy,
         sort_dir: sortDir,
       });
@@ -698,6 +713,14 @@
           </svg>
         </button>
       </div>
+
+      <!-- Analytics Link -->
+      <a href="/admin/media/analytics" class="btn-analytics" title="View bandwidth analytics">
+        <svg viewBox="0 0 20 20" fill="currentColor">
+          <path d="M2 11a1 1 0 011-1h2a1 1 0 011 1v5a1 1 0 01-1 1H3a1 1 0 01-1-1v-5zM8 7a1 1 0 011-1h2a1 1 0 011 1v9a1 1 0 01-1 1H9a1 1 0 01-1-1V7zM14 4a1 1 0 011-1h2a1 1 0 011 1v12a1 1 0 01-1 1h-2a1 1 0 01-1-1V4z"/>
+        </svg>
+        Analytics
+      </a>
 
       <!-- Upload Button -->
       <button class="btn-upload" onclick={() => (showUploadPanel = !showUploadPanel)}>
@@ -1563,6 +1586,31 @@
   }
 
   .btn-upload svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .btn-analytics {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 16px;
+    background: #f5f5f7;
+    color: #1d1d1f;
+    border: none;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .btn-analytics:hover {
+    background: #e8e8ed;
+  }
+
+  .btn-analytics svg {
     width: 16px;
     height: 16px;
   }
