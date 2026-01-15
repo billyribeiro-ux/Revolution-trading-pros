@@ -164,6 +164,7 @@
 					<div class="flex items-center bg-slate-800/50 rounded-xl border border-white/10 p-1">
 						<button
 							onclick={() => (viewMode = 'grid')}
+							aria-label="Grid view"
 							class="p-2 rounded-lg transition-all {viewMode === 'grid' ? 'bg-white/10 text-white' : 'text-slate-400 hover:text-white'}"
 						>
 							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -172,6 +173,7 @@
 						</button>
 						<button
 							onclick={() => (viewMode = 'list')}
+							aria-label="List view"
 							class="p-2 rounded-lg transition-all {viewMode === 'list' ? 'bg-white/10 text-white' : 'text-slate-400 hover:text-white'}"
 						>
 							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -262,9 +264,12 @@
 				<!-- Grid View -->
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					{#each segments as segment}
-						<button
+						<div
+							role="button"
+							tabindex="0"
 							onclick={() => (selectedSegment = segment)}
-							class="text-left bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 hover:border-cyan-500/30 transition-all
+							onkeydown={(e) => e.key === 'Enter' && (selectedSegment = segment)}
+							class="text-left bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 hover:border-cyan-500/30 transition-all cursor-pointer
 								{selectedSegment?.key === segment.key ? 'ring-2 ring-cyan-500 border-cyan-500/50' : ''}"
 						>
 							<div class="flex items-start justify-between mb-4">
@@ -278,6 +283,7 @@
 								{:else}
 									<button
 										onclick={(e) => { e.stopPropagation(); deleteSegment(segment.key); }}
+										aria-label="Delete segment"
 										class="p-1.5 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 									>
 										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -303,7 +309,7 @@
 								</div>
 								<p class="text-xs text-slate-500 mt-1">{segment.percentage.toFixed(1)}% of total users</p>
 							{/if}
-						</button>
+						</div>
 					{/each}
 				</div>
 			{:else}
@@ -355,6 +361,7 @@
 										{#if !segment.is_system}
 											<button
 												onclick={(e) => { e.stopPropagation(); deleteSegment(segment.key); }}
+												aria-label="Delete segment"
 												class="p-2 text-slate-500 hover:text-red-400 hover:bg-red-500/10 rounded-lg transition-colors"
 											>
 												<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -382,6 +389,7 @@
 					<h2 class="text-xl font-bold text-white">Create Segment</h2>
 					<button
 						onclick={() => (showCreateModal = false)}
+						aria-label="Close modal"
 						class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
 					>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -483,6 +491,7 @@
 								{#if newSegment.rules.length > 1}
 									<button
 										onclick={() => removeRule(index)}
+										aria-label="Remove rule"
 										class="p-2 text-red-400 hover:text-red-300 hover:bg-red-500/10 rounded-lg transition-colors"
 									>
 										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
