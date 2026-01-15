@@ -296,33 +296,6 @@
 				</a>
 			{/each}
 		</nav>
-	{/if}
-
-	<!-- Main Content -->
-	<main class="crm-main">
-		<!-- Header with Search -->
-			<header class="crm-header">
-				<div class="header-left">
-					<h1>
-						<IconUsers size={28} />
-						Contacts
-					</h1>
-				</div>
-
-				<!-- Search with Quick Links Dropdown (FluentCRM Pro Style) -->
-				<div class="search-container">
-					<div class="search-box" class:focused={searchInputFocused}>
-						<IconSearch size={18} />
-						<input
-							type="text"
-							placeholder="Search Contacts"
-							bind:value={searchQuery}
-							onfocus={handleSearchFocus}
-							onblur={handleSearchBlur}
-						/>
-					</div>
-				</div>
-			</header>
 
 		<!-- Stats Cards -->
 		<section class="stats-grid">
@@ -500,7 +473,7 @@
 				</div>
 			{/if}
 		</div>
-	</main>
+	{/if}
 </div>
 
 <style>
@@ -524,24 +497,14 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #E6B800;
+		color: #f1f5f9;
+		margin: 0 0 0.5rem 0;
 	}
 
 	.subtitle {
 		color: #64748b;
 		font-size: 0.875rem;
-		font-weight: 500;
-		transition: all 0.2s;
-	}
-
-	.nav-item:hover {
-		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
-	}
-
-	.nav-item.active {
-		background: rgba(230, 184, 0, 0.15);
-		color: #E6B800;
+		margin: 0 0 1.5rem 0;
 	}
 
 	.header-actions {
@@ -561,43 +524,6 @@
 		padding: 0.75rem 1.25rem;
 		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		color: white;
-	}
-
-	.header-left h1 :global(svg) {
-		color: #E6B800;
-	}
-
-	/* Search Container with Dropdown */
-	.search-container {
-		position: relative;
-		flex: 1;
-		max-width: 400px;
-	}
-
-	.search-box {
-		display: flex;
-		align-items: center;
-		gap: 10px;
-		padding: 0 16px;
-		background: white;
-		border: 2px solid #e2e8f0;
-		border-radius: 8px;
-		transition: all 0.2s;
-	}
-
-	.search-box.focused {
-		border-color: #3b82f6;
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
-	}
-
-	.search-box :global(svg) {
-		color: #64748b;
-	}
-
-	.search-box input {
-		flex: 1;
-		padding: 12px 0;
-		background: transparent;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -661,11 +587,10 @@
 	.quick-link-item {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		padding: 12px 20px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
-		border: none;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: rgba(30, 41, 59, 0.4);
+		border: 1px solid rgba(99, 102, 241, 0.1);
 		border-radius: 8px;
 		color: #94a3b8;
 		text-decoration: none;
@@ -674,9 +599,10 @@
 		transition: all 0.2s;
 	}
 
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
+	.quick-link-item:hover {
+		background: rgba(99, 102, 241, 0.15);
+		color: #c7d2fe;
+		border-color: rgba(99, 102, 241, 0.3);
 	}
 
 	/* =====================================================
@@ -716,7 +642,7 @@
 
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
 	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
+	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
 	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
 
 	.stat-content {
@@ -759,9 +685,9 @@
 		transition: all 0.2s;
 	}
 
-	.filter-select:focus {
-		outline: none;
-		border-color: #E6B800;
+	.search-box:focus-within {
+		border-color: rgba(99, 102, 241, 0.4);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 
 	.search-box :global(svg) {
@@ -836,7 +762,7 @@
 	}
 
 	.data-table tbody tr:hover {
-		background: rgba(230, 184, 0, 0.05);
+		background: rgba(99, 102, 241, 0.05);
 	}
 
 	.checkbox {
@@ -856,7 +782,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -912,11 +838,11 @@
 	}
 
 	.tag-pill {
-		padding: 2px 8px;
-		background: rgba(230, 184, 0, 0.1);
+		padding: 0.125rem 0.5rem;
+		background: rgba(99, 102, 241, 0.1);
 		border-radius: 4px;
 		font-size: 0.7rem;
-		color: #E6B800;
+		color: #818cf8;
 	}
 
 	.tag-more {
@@ -952,8 +878,8 @@
 	}
 
 	.btn-icon:hover {
-		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		background: rgba(99, 102, 241, 0.1);
+		color: #818cf8;
 	}
 
 	/* =====================================================
@@ -1039,8 +965,8 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border: 3px solid rgba(99, 102, 241, 0.2);
+		border-top-color: #6366f1;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
