@@ -7,7 +7,7 @@
 	import { IconPhoto, IconX, IconSparkles, IconCheck } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
-	let indicator = {
+	let indicator = $state({
 		name: '',
 		slug: '',
 		description: '',
@@ -15,10 +15,11 @@
 		thumbnail: '',
 		type: 'indicator',
 		is_active: true
-	};
+	});
 
-	let uploading = false;
-	let saving = false;
+	let uploading = $state(false);
+	let saving = $state(false);
+	let uploadError = $state('');
 
 	function generateSlug() {
 		if (!indicator.slug && indicator.name) {
@@ -29,28 +30,86 @@
 		}
 	}
 
+	/**
+	 * Resize image to max dimensions while maintaining aspect ratio
+	 * Converts to optimized format for faster uploads
+	 */
+	async function resizeImage(file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.85): Promise<Blob> {
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			const canvas = document.createElement('canvas');
+			const ctx = canvas.getContext('2d');
+
+			img.onload = () => {
+				let { width, height } = img;
+
+				// Calculate new dimensions maintaining aspect ratio
+				if (width > maxWidth || height > maxHeight) {
+					const ratio = Math.min(maxWidth / width, maxHeight / height);
+					width = Math.round(width * ratio);
+					height = Math.round(height * ratio);
+				}
+
+				canvas.width = width;
+				canvas.height = height;
+
+				if (ctx) {
+					// Use high-quality image smoothing
+					ctx.imageSmoothingEnabled = true;
+					ctx.imageSmoothingQuality = 'high';
+					ctx.drawImage(img, 0, 0, width, height);
+
+					canvas.toBlob(
+						(blob) => {
+							if (blob) {
+								resolve(blob);
+							} else {
+								reject(new Error('Failed to create blob from canvas'));
+							}
+						},
+						'image/jpeg',
+						quality
+					);
+				} else {
+					reject(new Error('Could not get canvas context'));
+				}
+			};
+
+			img.onerror = () => reject(new Error('Failed to load image'));
+			img.src = URL.createObjectURL(file);
+		});
+	}
+
 	async function handleImageUpload(e: Event) {
 		const target = e.target as HTMLInputElement;
 		const file = target.files?.[0];
 
 		if (!file) return;
 
+		uploadError = '';
+
 		// Validate file type
 		if (!file.type.startsWith('image/')) {
-			alert('Please select an image file');
+			uploadError = 'Please select an image file (JPEG, PNG, WebP, etc.)';
 			return;
 		}
 
-		// Validate file size (max 50MB)
+		// Validate file size (max 50MB before resize)
 		if (file.size > 50 * 1024 * 1024) {
-			alert('Image must be less than 50MB');
+			uploadError = 'Image must be less than 50MB';
 			return;
 		}
 
 		uploading = true;
 		try {
+			// Resize image before upload (max 1200px, converts to JPEG)
+			const resizedBlob = await resizeImage(file, 1200, 1200, 0.85);
+			const resizedFile = new File([resizedBlob], file.name.replace(/\.[^.]+$/, '.jpg'), {
+				type: 'image/jpeg'
+			});
+
 			const formData = new FormData();
-			formData.append('file', file);
+			formData.append('file', resizedFile);
 
 			const response = await adminFetch('/api/admin/media/upload', {
 				method: 'POST',
@@ -60,12 +119,16 @@
 			// The response contains an array of uploaded files
 			if (response.success && response.data && response.data.length > 0) {
 				indicator.thumbnail = response.data[0].url;
+				uploadError = '';
 			} else {
-				throw new Error('Upload failed - no URL returned');
+				throw new Error(response.message || 'Upload failed - no URL returned');
 			}
-		} catch (error) {
+		} catch (error: any) {
 			console.error('Failed to upload image:', error);
-			alert('Failed to upload image. Please try again.');
+			uploadError = error.message || 'Failed to upload image. Please try again.';
+
+			// Fallback: Use local preview if server upload fails
+			indicator.thumbnail = URL.createObjectURL(file);
 		} finally {
 			uploading = false;
 		}
@@ -197,7 +260,7 @@
 					{/if}
 					<label for="thumbnail-upload" class="upload-btn" class:uploading>
 						<IconPhoto size={20} />
-						{uploading ? 'Uploading...' : 'Upload Image'}
+						{uploading ? 'Uploading & Resizing...' : 'Upload Image'}
 						<input
 							id="thumbnail-upload"
 							type="file"
@@ -206,6 +269,10 @@
 							disabled={uploading}
 						/>
 					</label>
+					{#if uploadError}
+						<div class="upload-error">{uploadError}</div>
+					{/if}
+					<div class="upload-hint">Images will be automatically resized to max 1200px</div>
 				</div>
 
 				<div class="form-group">
@@ -491,13 +558,19 @@
 	.form-group textarea {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
+		background: rgba(15, 23, 42, 0.8);
 		backdrop-filter: blur(10px);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(99, 102, 241, 0.3);
 		border-radius: 10px;
 		color: #f1f5f9;
 		font-size: 0.9375rem;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.form-group input::placeholder,
+	.form-group textarea::placeholder {
+		color: #64748b;
+		opacity: 1;
 	}
 
 	.form-group input:focus,
@@ -597,6 +670,23 @@
 
 	.upload-btn input {
 		display: none;
+	}
+
+	.upload-error {
+		margin-top: 0.5rem;
+		padding: 0.75rem 1rem;
+		background: rgba(239, 68, 68, 0.15);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		border-radius: 8px;
+		color: #fca5a5;
+		font-size: 0.875rem;
+	}
+
+	.upload-hint {
+		margin-top: 0.5rem;
+		color: #64748b;
+		font-size: 0.8125rem;
+		font-style: italic;
 	}
 
 	.checkbox-label {
