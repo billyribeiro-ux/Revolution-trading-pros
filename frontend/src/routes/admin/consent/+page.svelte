@@ -91,6 +91,7 @@
 </svelte:head>
 
 <div class="dashboard">
+	<div class="admin-page-container">
 	<header class="header">
 		<div class="header-content">
 			<h1>Consent Analytics Dashboard</h1>
@@ -425,6 +426,7 @@
 			</section>
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>
