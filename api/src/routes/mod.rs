@@ -79,7 +79,6 @@ pub fn api_router() -> Router<AppState> {
         .nest("/analytics", analytics::router())
         .nest("/contacts", contacts::router())
         .nest("/coupons", coupons::router())
-        .nest("/admin/coupons", coupons::router()) // Frontend compatibility
         .nest("/security", security::router())
         .nest("/schedules", schedules::router())
         .nest("/admin/schedules", schedules::admin_router())
