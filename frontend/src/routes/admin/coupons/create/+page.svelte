@@ -1835,8 +1835,8 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(139, 92, 246, 0.1));
-		border: 1px solid rgba(59, 130, 246, 0.3);
+		background: linear-gradient(135deg, rgba(230, 184, 0, 0.1), rgba(179, 143, 0, 0.1));
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 12px;
 		margin-top: 1rem;
 	}
@@ -1844,7 +1844,7 @@
 	.preview-value {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #3b82f6;
+		color: #E6B800;
 	}
 
 	.preview-impact {
@@ -1887,8 +1887,8 @@
 	}
 
 	.tab.active {
-		color: #3b82f6;
-		border-bottom-color: #3b82f6;
+		color: #E6B800;
+		border-bottom-color: #E6B800;
 	}
 
 	.tab-highlight {
@@ -2015,8 +2015,8 @@
 
 	.input:focus {
 		outline: none;
-		border-color: rgba(59, 130, 246, 0.5);
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+		border-color: rgba(230, 184, 0, 0.5);
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.1);
 	}
 
 	.input.error {
@@ -2077,13 +2077,13 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800, #B38F00);
+		color: #0D1117;
 	}
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-secondary {
@@ -2171,7 +2171,7 @@
 	}
 
 	.toggle-checkbox:checked + .toggle-switch {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 		border-color: transparent;
 	}
 
@@ -2266,11 +2266,11 @@
 	}
 
 	.channel-option:hover {
-		border-color: rgba(59, 130, 246, 0.3);
+		border-color: rgba(230, 184, 0, 0.3);
 	}
 
 	.channel-option input[type='checkbox']:checked + .channel-label {
-		color: #3b82f6;
+		color: #E6B800;
 	}
 
 	.channel-label {

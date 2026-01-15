@@ -345,13 +345,13 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-primary:disabled {
@@ -422,7 +422,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(148, 163, 184, 0.1);
-		border-top-color: #3b82f6;
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin: 0 auto 1rem;
@@ -490,8 +490,8 @@
 
 	.input:focus {
 		outline: none;
-		border-color: rgba(59, 130, 246, 0.5);
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+		border-color: rgba(230, 184, 0, 0.5);
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.1);
 	}
 
 	.help-text {
@@ -531,8 +531,8 @@
 	}
 
 	.role-checkbox input[type='checkbox']:checked + .role-card {
-		border-color: #3b82f6;
-		background: rgba(59, 130, 246, 0.1);
+		border-color: #E6B800;
+		background: rgba(230, 184, 0, 0.1);
 	}
 
 	.role-checkbox:hover .role-card {
@@ -550,13 +550,13 @@
 	}
 
 	.role-icon.admin {
-		background: rgba(59, 130, 246, 0.2);
-		color: #3b82f6;
+		background: rgba(230, 184, 0, 0.2);
+		color: #E6B800;
 	}
 
 	.role-icon.super-admin {
-		background: rgba(139, 92, 246, 0.2);
-		color: #8b5cf6;
+		background: rgba(179, 143, 0, 0.2);
+		color: #B38F00;
 	}
 
 	.role-info {

@@ -3256,7 +3256,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
-		color: #a78bfa;
+		color: #E6B800;
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -3493,7 +3493,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
-		color: #a78bfa;
+		color: #E6B800;
 		cursor: pointer;
 		transition: all 0.2s;
 		display: inline-flex;

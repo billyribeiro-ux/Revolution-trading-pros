@@ -271,7 +271,7 @@
 	.schema-type {
 		font-size: 0.85rem;
 		font-weight: 600;
-		color: #8b5cf6;
+		color: #B38F00;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
@@ -387,8 +387,8 @@
 	}
 
 	.type-card:hover {
-		border-color: #8b5cf6;
-		box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+		border-color: #B38F00;
+		box-shadow: 0 2px 8px rgba(230, 184, 0, 0.1);
 	}
 
 	.type-name {
@@ -399,7 +399,7 @@
 
 	.use-template {
 		font-size: 0.85rem;
-		color: #8b5cf6;
+		color: #B38F00;
 		text-decoration: none;
 	}
 

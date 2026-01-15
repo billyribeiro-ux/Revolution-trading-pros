@@ -1432,7 +1432,7 @@
 	}
 
 	.overview-card.database .card-icon {
-		background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 	}
 
 	.overview-card.server .card-icon {
@@ -1755,7 +1755,7 @@
 
 	.metric-progress {
 		height: 100%;
-		background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(90deg, #E6B800, #FFD11A);
 		border-radius: 3px;
 		transition: width 0.5s ease-out;
 	}
