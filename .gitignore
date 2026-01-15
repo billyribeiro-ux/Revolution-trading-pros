@@ -89,6 +89,7 @@ oauth*.json
 
 # Exception: Allow migration files
 !api/migrations/*.sql
+!backend-rust/migrations/*.sql
 
 # AWS/Cloud credentials
 .aws/

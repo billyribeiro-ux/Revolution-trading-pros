@@ -2,6 +2,9 @@
 //!
 //! ICT 11+ Principal Engineer Grade
 
+// Allow unused imports - these will be used when tests are fully implemented
+#![allow(unused_imports)]
+
 use axum::{
     body::Body,
     http::{Request, StatusCode},
