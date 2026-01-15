@@ -48,14 +48,17 @@ test.describe('Homepage Smoke Tests', () => {
 		await page.waitForLoadState('networkidle');
 		
 		// Filter out known non-critical errors (CORS, extensions, API failures during tests, etc.)
+		// ICT 7: These are infrastructure/browser errors, not application bugs
 		const criticalErrors = errors.filter(err => 
 			!err.includes('favicon') &&
 			!err.includes('CORS') &&
+			!err.includes('Access-Control-Allow-Origin') && // Safari CORS messages
 			!err.includes('extension') &&
 			!err.includes('third-party') &&
-			!err.includes('ERR_FAILED') && // Network failures during tests are expected
-			!err.includes('Failed to fetch') && // API may not be available during E2E tests
-			!err.includes('Failed to load resource') // Resource loading failures are non-critical
+			!err.includes('ERR_FAILED') &&
+			!err.includes('Failed to fetch') &&
+			!err.includes('Failed to load resource') &&
+			!err.includes('Origin http://localhost') // Safari strict origin policy
 		);
 		
 		// Should have no critical errors

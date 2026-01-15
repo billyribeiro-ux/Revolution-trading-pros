@@ -88,14 +88,15 @@ impl Config {
 
             cors_origins: std::env::var("CORS_ORIGINS")
                 .unwrap_or_else(|_| {
-                    // Include localhost origins for development
+                    // ICT 7: Include all localhost origins for development and E2E testing
                     let origins = vec![
-                        "https://revolution-trading-pros.pages.dev",
                         "https://revolution-trading-pros.pages.dev",
                         "https://www.revolution-trading-pros.pages.dev",
                         "http://localhost:5173",
+                        "http://localhost:5174", // Playwright E2E tests
                         "http://localhost:3000",
                         "http://127.0.0.1:5173",
+                        "http://127.0.0.1:5174", // Playwright E2E tests
                         "http://127.0.0.1:3000",
                     ];
                     origins.join(",")
