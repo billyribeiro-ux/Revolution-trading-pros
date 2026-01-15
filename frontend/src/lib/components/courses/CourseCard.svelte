@@ -55,7 +55,8 @@
 		return `$${(cents / 100).toFixed(2)}`;
 	};
 
-	const defaultImage = '/logos/revolution-logo.png';
+	// ICT 11+ FIX: Use existing logo file that actually exists
+	const defaultImage = '/revolution-trading-pros.png';
 	const imageUrl = $derived(course.card_image_url || defaultImage);
 	const linkHref = $derived(href || `/classes/${course.slug}`);
 </script>

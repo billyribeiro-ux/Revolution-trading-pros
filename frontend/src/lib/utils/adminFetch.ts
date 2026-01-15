@@ -12,6 +12,7 @@
 import { getAuthToken } from '$lib/stores/auth';
 import { goto } from '$app/navigation';
 import { browser } from '$app/environment';
+import { API_BASE_URL } from '$lib/api/config';
 
 /**
  * Response type for API calls
@@ -73,8 +74,15 @@ export async function adminFetch<T = any>(
 		requestHeaders['Authorization'] = `Bearer ${token}`;
 	}
 	
+	// ICT 11+ FIX: Build absolute URL for Pages.dev compatibility (no proxy)
+	const url = endpoint.startsWith('http') 
+		? endpoint 
+		: endpoint.startsWith('/api/') 
+			? `${API_BASE_URL}${endpoint}` 
+			: `${API_BASE_URL}/api${endpoint}`;
+	
 	try {
-		const response = await fetch(endpoint, {
+		const response = await fetch(url, {
 			...fetchOptions,
 			headers: requestHeaders
 		});

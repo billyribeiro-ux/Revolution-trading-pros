@@ -6,6 +6,7 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	interface Indicator {
 		id: string;
@@ -80,13 +81,11 @@
 	const fetchIndicator = async () => {
 		loading = true;
 		try {
-			const [indicatorRes, platformsRes] = await Promise.all([
-				fetch(`/api/admin/indicators/${indicatorId}`),
-				fetch('/api/admin/indicators/platforms')
+			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
+			const [indicatorData, platformsData] = await Promise.all([
+				adminFetch(`/api/admin/indicators/${indicatorId}`),
+				adminFetch('/api/admin/indicators/platforms')
 			]);
-
-			const indicatorData = await indicatorRes.json();
-			const platformsData = await platformsRes.json();
 
 			if (indicatorData.success) {
 				indicator = indicatorData.data.indicator;
@@ -112,13 +111,12 @@
 		success = '';
 
 		try {
-			const res = await fetch(`/api/admin/indicators/${indicatorId}`, {
+			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/indicators/${indicatorId}`, {
 				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(indicator)
 			});
 
-			const data = await res.json();
 			if (data.success) {
 				indicator = data.data;
 				success = 'Indicator saved successfully';
@@ -136,8 +134,8 @@
 	const publishIndicator = async () => {
 		if (!indicator) return;
 		try {
-			const res = await fetch(`/api/admin/indicators/${indicatorId}/publish`, { method: 'POST' });
-			const data = await res.json();
+			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/publish`, { method: 'POST' });
 			if (data.success) {
 				indicator = data.data;
 				success = 'Indicator published!';
@@ -150,7 +148,8 @@
 	const deleteFile = async (fileId: number) => {
 		if (!confirm('Delete this file?')) return;
 		try {
-			await fetch(`/api/admin/indicators/${indicatorId}/files/${fileId}`, { method: 'DELETE' });
+			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
+			await adminFetch(`/api/admin/indicators/${indicatorId}/files/${fileId}`, { method: 'DELETE' });
 			files = files.filter(f => f.id !== fileId);
 		} catch (e) {
 			error = 'Failed to delete file';
@@ -160,7 +159,8 @@
 	const deleteVideo = async (videoId: number) => {
 		if (!confirm('Delete this video?')) return;
 		try {
-			await fetch(`/api/admin/indicators/${indicatorId}/videos/${videoId}`, { method: 'POST' });
+			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
+			await adminFetch(`/api/admin/indicators/${indicatorId}/videos/${videoId}`, { method: 'DELETE' });
 			videos = videos.filter(v => v.id !== videoId);
 		} catch (e) {
 			error = 'Failed to delete video';

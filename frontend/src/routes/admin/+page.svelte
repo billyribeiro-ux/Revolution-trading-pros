@@ -48,15 +48,29 @@
 	} from '$lib/icons';
 	import { browser } from '$app/environment';
 	import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections';
+	import { API_BASE_URL } from '$lib/api/config';
+	import { getAuthToken } from '$lib/stores/auth';
 
-	// Local fetch wrapper for SvelteKit API routes (avoids CORS issues)
+	// ICT 11+ FIX: Use absolute API URL for Pages.dev compatibility (no proxy)
 	async function localFetch<T = any>(endpoint: string): Promise<T> {
-		const response = await fetch(endpoint, {
+		const url = endpoint.startsWith('http') 
+			? endpoint 
+			: endpoint.startsWith('/api/') 
+				? `${API_BASE_URL}${endpoint}` 
+				: `${API_BASE_URL}/api${endpoint}`;
+		
+		const token = getAuthToken();
+		const headers: Record<string, string> = {
+			'Content-Type': 'application/json',
+			'Accept': 'application/json'
+		};
+		if (token) {
+			headers['Authorization'] = `Bearer ${token}`;
+		}
+		
+		const response = await fetch(url, {
 			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				'Accept': 'application/json'
-			},
+			headers,
 			credentials: 'include'
 		});
 		if (!response.ok) {

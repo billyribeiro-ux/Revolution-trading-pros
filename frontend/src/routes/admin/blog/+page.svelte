@@ -3,6 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { fly, slide, scale } from 'svelte/transition';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import { WS_URL } from '$lib/api/config';
 	import {
 		IconPlus,
 		IconSearch,
@@ -187,7 +188,8 @@
 
 	function setupWebSocket() {
 		try {
-			ws = new WebSocket('wss://your-api/posts');
+			// ICT 11+ FIX: Use WS_URL from config instead of placeholder
+		ws = new WebSocket(`${WS_URL}/posts`);
 
 			ws.onmessage = (event) => {
 				const update = JSON.parse(event.data);

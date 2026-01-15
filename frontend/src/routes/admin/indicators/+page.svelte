@@ -5,6 +5,7 @@
 	 */
 
 	import { onMount } from 'svelte';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	interface IndicatorListItem {
 		id: string;
@@ -39,8 +40,8 @@
 			if (search) params.set('search', search);
 			if (statusFilter) params.set('status', statusFilter);
 
-			const res = await fetch(`/api/admin/indicators?${params}`);
-			const data = await res.json();
+			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/indicators?${params}`);
 			if (data.success) {
 				indicators = data.data.indicators;
 				total = data.data.total;
@@ -56,8 +57,8 @@
 		if (!confirm(`Delete "${name}"? This cannot be undone.`)) return;
 		deleting = id;
 		try {
-			const res = await fetch(`/api/admin/indicators/${id}`, { method: 'DELETE' });
-			const data = await res.json();
+			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
+			const data = await adminFetch(`/api/admin/indicators/${id}`, { method: 'DELETE' });
 			if (data.success) {
 				indicators = indicators.filter(i => i.id !== id);
 				total--;
