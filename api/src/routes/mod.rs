@@ -50,6 +50,7 @@ pub mod room_content;
 pub mod watchlist;
 pub mod room_resources;
 pub mod bunny_upload; // ICT 7: Bunny.net video upload API
+pub mod crm; // ICT 7: CRM Admin Routes - FluentCRM Pro equivalent
 
 use axum::Router;
 use crate::AppState;
@@ -122,6 +123,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/room-resources", room_resources::admin_router())
         // Bunny.net Video Upload - ICT 7 Grade
         .nest("/admin/bunny", bunny_upload::admin_router())
+        // CRM Admin - ICT 7 Grade (FluentCRM Pro equivalent)
+        .nest("/admin/crm", crm::router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())
