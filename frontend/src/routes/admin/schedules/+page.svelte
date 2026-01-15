@@ -620,6 +620,7 @@
 </svelte:head>
 
 <div class="admin-schedules">
+	<div class="admin-page-container">
 	<!-- Header -->
 	<header class="page-header">
 		<div class="header-content">
@@ -917,6 +918,7 @@
 			</details>
 		{/if}
 	</div>
+	</div><!-- End admin-page-container -->
 </div>
 
 <!-- Create/Edit Modal -->

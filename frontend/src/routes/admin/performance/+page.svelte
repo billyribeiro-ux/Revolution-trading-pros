@@ -111,6 +111,7 @@
 </svelte:head>
 
 <div class="performance-page">
+	<div class="admin-page-container">
 	<!-- Header -->
 	<div class="page-header">
 		<div class="header-content">
@@ -382,6 +383,7 @@
 			{/if}
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>

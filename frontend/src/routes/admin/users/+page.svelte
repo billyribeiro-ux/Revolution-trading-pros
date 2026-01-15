@@ -62,6 +62,7 @@
 </svelte:head>
 
 <div class="admin-page">
+	<div class="admin-page-container">
 	<div class="page-header">
 		<div>
 			<h1>Users Management</h1>
@@ -164,6 +165,7 @@
 			</table>
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>
