@@ -246,6 +246,7 @@
 </svelte:head>
 
 <div class="admin-page">
+	<div class="admin-page-container">
 	<!-- Header -->
 	<header class="page-header">
 		<div class="header-left">
@@ -457,6 +458,7 @@
 			</table>
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <!-- Create Modal -->

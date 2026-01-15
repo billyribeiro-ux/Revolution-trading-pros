@@ -93,6 +93,7 @@
 </svelte:head>
 
 <div class="behavior-page">
+	<div class="admin-page-container">
 	<!-- Header -->
 	<div class="page-header">
 		<div>
@@ -330,6 +331,7 @@
 		</div>
 	</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>

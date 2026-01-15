@@ -93,6 +93,7 @@
 </svelte:head>
 
 <div class="contacts-page">
+	<div class="admin-page-container">
 	<!-- Header -->
 	<div class="page-header">
 		<div>
@@ -223,6 +224,7 @@
 			</div>
 		{/if}
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>
