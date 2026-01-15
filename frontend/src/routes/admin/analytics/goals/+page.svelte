@@ -284,7 +284,7 @@
 										</span>
 									</div>
 								</div>
-								<button class="text-slate-400 hover:text-white">
+								<button class="text-slate-400 hover:text-white" aria-label="More options">
 									<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
 										<path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
 									</svg>
@@ -331,6 +331,7 @@
 					<button
 						onclick={() => (showCreateModal = false)}
 						class="w-8 h-8 rounded-lg bg-white/5 hover:bg-white/10 flex items-center justify-center text-slate-400 hover:text-white transition-colors"
+						aria-label="Close modal"
 					>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />

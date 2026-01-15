@@ -300,26 +300,7 @@
 
 	<!-- Main Content -->
 	<main class="crm-main">
-		<!-- Connection Check -->
-		{#if connectionLoading}
-			<SkeletonLoader variant="dashboard" />
-		{:else if !$isCrmConnected}
-			<ApiNotConnected
-				serviceName="CRM"
-				description="Connect to manage contacts, track deals, and streamline customer relationships."
-				serviceKey="hubspot"
-				icon="👥"
-				color="#E6B800"
-				features={[
-					'Centralized contact management',
-					'Email sequences and automations',
-					'Dynamic contact segments',
-					'Campaign management',
-					'Smart link tracking'
-				]}
-			/>
-		{:else}
-			<!-- Header with Search -->
+		<!-- Header with Search -->
 			<header class="crm-header">
 				<div class="header-left">
 					<h1>
@@ -340,6 +321,8 @@
 							onblur={handleSearchBlur}
 						/>
 					</div>
+				</div>
+			</header>
 
 		<!-- Stats Cards -->
 		<section class="stats-grid">
@@ -517,7 +500,7 @@
 				</div>
 			{/if}
 		</div>
-	{/if}
+	</main>
 </div>
 
 <style>
