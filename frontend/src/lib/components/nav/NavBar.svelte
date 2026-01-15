@@ -1535,52 +1535,6 @@
 		pointer-events: none;
 	}
 
-	/* Phone Link - WordPress reference core:2832 */
-	.phone-link {
-		display: none;
-		align-items: center;
-		gap: 0.375rem;
-		color: var(--nav-text);
-		font-size: 0.75rem;
-		font-weight: 600;
-		font-family: var(--nav-font);
-		text-decoration: none;
-		transition: color 150ms cubic-bezier(0.4, 0, 0.2, 1);
-	}
-
-	@media (min-width: 1024px) {
-		.phone-link {
-			display: flex;
-		}
-	}
-
-	.phone-link:hover,
-	.phone-link:focus-visible {
-		color: var(--nav-primary);
-	}
-
-	.phone-link:focus-visible {
-		outline: 2px solid var(--nav-primary);
-		outline-offset: 2px;
-		border-radius: 4px;
-	}
-
-	/* Rotate phone icon 90 degrees like WordPress fa-cust-rotate-90 */
-	.phone-link :global(.phone-icon) {
-		transform: rotate(90deg);
-		color: #0984ae;
-	}
-
-	.phone-text {
-		color: inherit;
-	}
-
-	@media (max-width: 1279px) {
-		.phone-text {
-			display: none;
-		}
-	}
-
 	.login-btn {
 		display: none;
 		align-items: center;
