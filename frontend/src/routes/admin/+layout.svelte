@@ -12,13 +12,9 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth';
-	import { themeStore, type Theme } from '$lib/stores/theme';
 	import { unreadCount } from '$lib/stores/notifications';
 	import { keyboard } from '$lib/stores/keyboard';
 	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
-	import IconSunHigh from '@tabler/icons-svelte/icons/sun-high';
-	import IconMoon from '@tabler/icons-svelte/icons/moon';
-	import IconDeviceDesktop from '@tabler/icons-svelte/icons/device-desktop';
 	import IconBell from '@tabler/icons-svelte/icons/bell';
 	import IconSearch from '@tabler/icons-svelte/icons/search';
 	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
@@ -34,23 +30,6 @@
 	import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
 	import type { Snippet } from 'svelte';
 
-	// Theme icon mapping
-	function getThemeIcon(theme: Theme) {
-		switch (theme) {
-			case 'light': return IconSunHigh;
-			case 'dark': return IconMoon;
-			case 'auto': return IconDeviceDesktop;
-		}
-	}
-
-	function getThemeLabel(theme: Theme) {
-		switch (theme) {
-			case 'light': return 'Light';
-			case 'dark': return 'Dark';
-			case 'auto': return 'Auto';
-		}
-	}
-
 	// Svelte 5: Props with children snippet
 	let { children }: { children: Snippet } = $props();
 
@@ -60,9 +39,6 @@
 	let isNotificationCenterOpen = $state(false);
 	let isKeyboardHelpOpen = $state(false);
 	let isConnectionHealthOpen = $state(false);
-
-	// Derived theme icon component
-	let ThemeIcon = $derived(getThemeIcon($themeStore));
 
 	// Check if user is admin - Svelte 5 effect
 	$effect(() => {
@@ -213,17 +189,6 @@
 
 				<!-- Rate Limit Indicator -->
 				<RateLimitIndicator />
-
-				<!-- Theme Toggle -->
-				<button
-					class="theme-toggle"
-					onclick={() => themeStore.cycle()}
-					title="Theme: {getThemeLabel($themeStore)} (click to cycle)"
-					aria-label="Toggle theme, currently {getThemeLabel($themeStore)}"
-				>
-					<ThemeIcon size={20} />
-					<span class="theme-label desktop-only">{getThemeLabel($themeStore)}</span>
-				</button>
 
 				<!-- Keyboard Shortcuts -->
 				<button
@@ -411,37 +376,6 @@
 		box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
 	}
 
-	/* Theme Toggle Button */
-	.theme-toggle {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 0.875rem;
-		background: var(--admin-btn-bg);
-		border: 1px solid var(--admin-btn-border);
-		border-radius: var(--radius-md, 0.5rem);
-		color: var(--admin-btn-text);
-		cursor: pointer;
-		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-	}
-
-	.theme-toggle:hover {
-		background: var(--admin-btn-bg-hover);
-		border-color: var(--admin-btn-border-hover);
-		color: var(--admin-btn-text-hover);
-	}
-
-	.theme-toggle:focus-visible {
-		box-shadow: var(--admin-focus-ring);
-		outline: none;
-	}
-
-	.theme-label {
-		font-family: var(--font-body), 'Roboto', sans-serif;
-		font-size: 0.8125rem;
-		font-weight: 500;
-	}
-
 	/* Desktop-only elements */
 	.desktop-only {
 		display: inline-flex;
@@ -538,14 +472,6 @@
 		.header-actions {
 			gap: 0.375rem;
 		}
-
-		.theme-toggle {
-			padding: 0.5rem;
-		}
-
-		.theme-label {
-			display: none;
-		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -585,7 +511,6 @@
 	@media (hover: none) and (pointer: coarse) {
 		.header-btn,
 		.mobile-menu-btn,
-		.theme-toggle,
 		.view-site-btn {
 			min-height: 44px;
 			min-width: 44px;
@@ -611,7 +536,6 @@
 		.admin-header,
 		.header-btn,
 		.mobile-menu-btn,
-		.theme-toggle,
 		.view-site-btn {
 			transition: none;
 		}
@@ -632,7 +556,6 @@
 		}
 
 		.header-btn,
-		.theme-toggle,
 		.view-site-btn {
 			border-width: 2px;
 		}
