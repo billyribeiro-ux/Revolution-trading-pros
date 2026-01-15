@@ -433,6 +433,7 @@
 </svelte:head>
 
 <div class="page">
+	<div class="admin-page-container">
 	<!-- Page Header - Centered -->
 	<div class="page-header">
 		<h1>Membership Plans</h1>
@@ -668,6 +669,7 @@
 			</div>
 		{/if}
 	</div>
+	</div><!-- End admin-page-container -->
 </div>
 
 <!-- Edit Plan Modal -->
