@@ -149,7 +149,7 @@
 			</div>
 		</div>
 		<div class="stat-card">
-			<div class="stat-icon purple">
+			<div class="stat-icon gold">
 				<IconFolder size={24} />
 			</div>
 			<div class="stat-content">
@@ -377,7 +377,7 @@
 	}
 
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+	.stat-icon.gold { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
 
 	.stat-content {
 		display: flex;

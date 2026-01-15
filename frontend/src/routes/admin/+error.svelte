@@ -57,7 +57,7 @@
 			title: 'Admin Page Not Found',
 			description:
 				'This admin page does not exist. It may have been moved or removed.',
-			color: '#6366f1',
+			color: '#E6B800',
 			showDebug: false
 		},
 		500: {
@@ -78,7 +78,7 @@
 			title: 'Service Maintenance',
 			description:
 				'The admin panel is currently undergoing maintenance. Please try again shortly.',
-			color: '#8b5cf6',
+			color: '#B38F00',
 			showDebug: false
 		}
 	};
@@ -371,13 +371,13 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #f97316, #ea580c);
-		color: #fff;
+		background: linear-gradient(135deg, #E6B800, #B38F00);
+		color: #0D1117;
 	}
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 20px rgba(249, 115, 22, 0.3);
+		box-shadow: 0 10px 20px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-secondary {
@@ -402,7 +402,7 @@
 	}
 
 	.error-footer a {
-		color: #f97316;
+		color: #E6B800;
 		text-decoration: none;
 	}
 

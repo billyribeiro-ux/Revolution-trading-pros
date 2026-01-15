@@ -65,7 +65,7 @@
 		{ id: 'options-strategies', name: 'Options Strategies', color: '#f59e0b' },
 		{ id: 'macro-structure', name: 'Macro Structure', color: '#10b981' },
 		{ id: 'micro-structure', name: 'Micro Structure', color: '#06b6d4' },
-		{ id: 'psychology', name: 'Psychology', color: '#8b5cf6' },
+		{ id: 'psychology', name: 'Psychology', color: '#B38F00' },
 		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#3b82f6' },
 		{ id: 'fundamentals', name: 'Fundamentals', color: '#ec4899' },
 		{ id: 'trade-setups', name: 'Trade Setups', color: '#14b8a6' },
@@ -575,7 +575,7 @@
 						<button
 							class="room-tab"
 							class:active={selectedRoom?.id === service.id}
-							style:--room-color={service.color || '#8b5cf6'}
+							style:--room-color={service.color || '#B38F00'}
 							onclick={() => selectRoom(service)}
 						>
 							<span class="room-name">{service.name}</span>

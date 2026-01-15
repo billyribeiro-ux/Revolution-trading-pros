@@ -145,7 +145,7 @@
 			</div>
 		</div>
 		<div class="stat-card">
-			<div class="stat-icon purple">
+			<div class="stat-icon gold">
 				<IconClick size={24} />
 			</div>
 			<div class="stat-content">
@@ -388,7 +388,7 @@
 
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
 	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+	.stat-icon.gold { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
 	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
 
 	.stat-content {

@@ -465,7 +465,7 @@
 
 	.version-timeline-dot.emerald { background: #10b981; color: rgba(16, 185, 129, 0.3); }
 	.version-timeline-dot.blue { background: #3b82f6; color: rgba(59, 130, 246, 0.3); }
-	.version-timeline-dot.purple { background: #8b5cf6; color: rgba(139, 92, 246, 0.3); }
+	.version-timeline-dot.purple { background: #B38F00; color: rgba(230, 184, 0, 0.3); }
 	.version-timeline-dot.amber { background: #f59e0b; color: rgba(245, 158, 11, 0.3); }
 	.version-timeline-dot.red { background: #ef4444; color: rgba(239, 68, 68, 0.3); }
 	.version-timeline-dot.slate { background: #64748b; color: rgba(100, 116, 139, 0.3); }
@@ -491,7 +491,7 @@
 
 	.change-badge.emerald { background: rgba(16, 185, 129, 0.12); color: #059669; }
 	.change-badge.blue { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
-	.change-badge.purple { background: rgba(139, 92, 246, 0.12); color: #7c3aed; }
+	.change-badge.purple { background: rgba(230, 184, 0, 0.12); color: #B38F00; }
 	.change-badge.amber { background: rgba(245, 158, 11, 0.12); color: #b45309; }
 	.change-badge.red { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
 	.change-badge.slate { background: rgba(100, 116, 139, 0.12); color: #475569; }

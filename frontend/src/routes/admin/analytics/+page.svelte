@@ -97,7 +97,7 @@
 	const analyticsServices = FEATURE_SERVICES['analytics']?.map((key) => {
 		const serviceConfig: Record<string, { name: string; icon: string; color: string }> = {
 			[SERVICE_KEYS.GOOGLE_ANALYTICS]: { name: 'Google Analytics', icon: '📊', color: '#E6B800' },
-			[SERVICE_KEYS.MIXPANEL]: { name: 'Mixpanel', icon: '📈', color: '#8b5cf6' },
+			[SERVICE_KEYS.MIXPANEL]: { name: 'Mixpanel', icon: '📈', color: '#B38F00' },
 			[SERVICE_KEYS.AMPLITUDE]: { name: 'Amplitude', icon: '📉', color: '#3b82f6' },
 			[SERVICE_KEYS.SEGMENT]: { name: 'Segment', icon: '🔗', color: '#10b981' },
 			[SERVICE_KEYS.PLAUSIBLE]: { name: 'Plausible', icon: '🌿', color: '#14b8a6' }
@@ -559,7 +559,7 @@
 		height: 500px;
 		bottom: -150px;
 		left: -150px;
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(135deg, #3b82f6, #B38F00);
 		animation: float 25s ease-in-out infinite reverse;
 	}
 
