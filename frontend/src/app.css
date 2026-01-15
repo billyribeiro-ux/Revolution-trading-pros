@@ -2192,129 +2192,134 @@ html.light,
 body.light,
 html.dark,
 body.dark {
-	/* ═══ BACKGROUND SYSTEM - GitHub Inspired ═══ */
-	--admin-bg: #0D1117;
-	--admin-bg-subtle: #161B22;
-	--admin-bg-muted: #1C2128;
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * ADMIN VARIABLES - Mapped to RTP Design System Tokens
+	 * See: src/lib/styles/tokens/colors.css for token definitions
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Surface Colors - Elevated dark surfaces */
-	--admin-surface: #1C2128;
-	--admin-surface-raised: #252B33;
-	--admin-surface-sunken: #0D1117;
+	/* ═══ BACKGROUND SYSTEM ═══ */
+	--admin-bg: var(--bg-base);
+	--admin-bg-subtle: var(--bg-elevated);
+	--admin-bg-muted: var(--bg-surface);
+
+	/* Surface Colors */
+	--admin-surface: var(--bg-surface);
+	--admin-surface-raised: var(--bg-hover);
+	--admin-surface-sunken: var(--bg-base);
 	--admin-surface-overlay: rgba(22, 27, 34, 0.98);
 
 	/* Hover/Active States */
-	--admin-bg-hover: #252B33;
-	--admin-bg-active: #2D333B;
+	--admin-bg-hover: var(--bg-hover);
+	--admin-bg-active: var(--bg-active);
 
-	/* Sidebar - Dark gradient */
-	--admin-sidebar-bg: linear-gradient(180deg, #161B22 0%, #0D1117 100%);
-	--admin-sidebar-border: #30363D;
-	--admin-sidebar-text: #F0F6FC;
-	--admin-sidebar-text-muted: #8B949E;
-	--admin-sidebar-hover: #252B33;
-	--admin-sidebar-active: rgba(230, 184, 0, 0.15);
+	/* Sidebar */
+	--admin-sidebar-bg: linear-gradient(180deg, var(--sidebar-bg) 0%, var(--bg-base) 100%);
+	--admin-sidebar-border: var(--sidebar-border);
+	--admin-sidebar-text: var(--sidebar-text);
+	--admin-sidebar-text-muted: var(--sidebar-text-muted);
+	--admin-sidebar-hover: var(--sidebar-hover);
+	--admin-sidebar-active: var(--sidebar-active);
 
 	/* Header */
 	--admin-header-bg: rgba(13, 17, 23, 0.95);
-	--admin-header-border: #30363D;
-	--admin-header-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+	--admin-header-border: var(--border-default);
+	--admin-header-shadow: var(--shadow-lg);
 
 	/* ═══ TEXT SYSTEM ═══ */
-	--admin-text-primary: #F0F6FC;
-	--admin-text-secondary: #8B949E;
-	--admin-text-muted: #6E7681;
-	--admin-text-placeholder: #484F58;
-	--admin-text-disabled: #484F58;
+	--admin-text-primary: var(--text-primary);
+	--admin-text-secondary: var(--text-secondary);
+	--admin-text-muted: var(--text-tertiary);
+	--admin-text-placeholder: var(--text-muted);
+	--admin-text-disabled: var(--text-muted);
 
-	/* ═══ PRIMARY - GOLD/AMBER (Your Signature) ═══ */
-	--admin-accent-primary: #E6B800;
-	--admin-accent-primary-hover: #FFD11A;
+	/* ═══ PRIMARY - GOLD/AMBER (Brand Signature) ═══ */
+	--admin-accent-primary: var(--primary-500);
+	--admin-accent-primary-hover: var(--primary-400);
 	--admin-accent-primary-soft: rgba(230, 184, 0, 0.15);
 	--admin-accent-primary-muted: rgba(230, 184, 0, 0.25);
 
 	/* ═══ SECONDARY - SLATE BLUE ═══ */
-	--admin-accent-secondary: #3D5A99;
-	--admin-accent-secondary-hover: #7995CA;
+	--admin-accent-secondary: var(--secondary-500);
+	--admin-accent-secondary-hover: var(--secondary-300);
 
-	/* Tertiary - Keeping Gold variants */
-	--admin-accent-tertiary: #FFD11A;
-	--admin-accent-tertiary-hover: #FFDB4D;
+	/* Tertiary - Gold variants */
+	--admin-accent-tertiary: var(--primary-400);
+	--admin-accent-tertiary-hover: var(--primary-300);
 
 	/* ═══ BORDER SYSTEM ═══ */
-	--admin-border: #30363D;
-	--admin-border-light: #21262D;
-	--admin-border-focus: #E6B800;
+	--admin-border: var(--border-default);
+	--admin-border-light: var(--border-muted);
+	--admin-border-focus: var(--primary-500);
 	--admin-border-interactive: rgba(230, 184, 0, 0.4);
-	--admin-border-emphasis: #8B949E;
+	--admin-border-emphasis: var(--border-emphasis);
 
 	/* ═══ BUTTON STYLES ═══ */
-	--admin-btn-bg: #1C2128;
-	--admin-btn-bg-hover: #252B33;
-	--admin-btn-bg-active: #2D333B;
-	--admin-btn-border: #30363D;
-	--admin-btn-border-hover: #8B949E;
-	--admin-btn-text: #F0F6FC;
+	--admin-btn-bg: var(--bg-surface);
+	--admin-btn-bg-hover: var(--bg-hover);
+	--admin-btn-bg-active: var(--bg-active);
+	--admin-btn-border: var(--border-default);
+	--admin-btn-border-hover: var(--border-emphasis);
+	--admin-btn-text: var(--text-primary);
 	--admin-btn-text-hover: #FFFFFF;
 
 	/* Primary Button - Gold */
-	--admin-btn-primary-bg: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-	--admin-btn-primary-bg-hover: linear-gradient(135deg, #FFD11A 0%, #E6B800 100%);
-	--admin-btn-primary-text: #0D1117;
+	--admin-btn-primary-bg: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+	--admin-btn-primary-bg-hover: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+	--admin-btn-primary-text: var(--bg-base);
 
 	/* ═══ KEYBOARD SHORTCUTS ═══ */
-	--admin-kbd-bg: #252B33;
-	--admin-kbd-border: #30363D;
-	--admin-kbd-text: #8B949E;
+	--admin-kbd-bg: var(--bg-hover);
+	--admin-kbd-border: var(--border-default);
+	--admin-kbd-text: var(--text-secondary);
 
 	/* ═══ NAVIGATION ═══ */
-	--admin-nav-text: #8B949E;
-	--admin-nav-text-hover: #F0F6FC;
-	--admin-nav-text-active: #FFD11A;
-	--admin-nav-bg-hover: #252B33;
+	--admin-nav-text: var(--text-secondary);
+	--admin-nav-text-hover: var(--text-primary);
+	--admin-nav-text-active: var(--primary-400);
+	--admin-nav-bg-hover: var(--bg-hover);
 	--admin-nav-bg-active: rgba(230, 184, 0, 0.12);
 	--admin-nav-border-active: rgba(230, 184, 0, 0.4);
-	--admin-nav-section-title: #6E7681;
+	--admin-nav-section-title: var(--text-tertiary);
 
 	/* ═══ SEMANTIC COLORS ═══ */
 	/* Success */
-	--admin-success: #2EA043;
-	--admin-success-bg: rgba(46, 160, 67, 0.15);
+	--admin-success: var(--success-base);
+	--admin-success-bg: var(--success-soft);
 	--admin-success-border: rgba(46, 160, 67, 0.3);
-	--admin-success-text: #3FB950;
+	--admin-success-text: var(--success-emphasis);
 
 	/* Warning */
-	--admin-warning: #BB8009;
-	--admin-warning-bg: rgba(187, 128, 9, 0.15);
+	--admin-warning: var(--warning-base);
+	--admin-warning-bg: var(--warning-soft);
 	--admin-warning-border: rgba(187, 128, 9, 0.3);
-	--admin-warning-text: #D29922;
+	--admin-warning-text: var(--warning-emphasis);
 
 	/* Error */
-	--admin-error: #DA3633;
-	--admin-error-bg: rgba(218, 54, 51, 0.15);
+	--admin-error: var(--error-base);
+	--admin-error-bg: var(--error-soft);
 	--admin-error-border: rgba(218, 54, 51, 0.3);
-	--admin-error-text: #F85149;
+	--admin-error-text: var(--error-emphasis);
 
 	/* Info */
-	--admin-info: #388BFD;
-	--admin-info-bg: rgba(56, 139, 253, 0.15);
+	--admin-info: var(--info-base);
+	--admin-info-bg: var(--info-soft);
 	--admin-info-border: rgba(56, 139, 253, 0.3);
-	--admin-info-text: #58A6FF;
+	--admin-info-text: var(--info-emphasis);
 
 	/* ═══ FOCUS STATES ═══ */
 	--admin-focus-ring: 0 0 0 3px rgba(230, 184, 0, 0.35);
 
 	/* ═══ SHADOWS ═══ */
-	--admin-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.4);
-	--admin-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.5);
-	--admin-shadow-lg: 0 10px 40px rgba(0, 0, 0, 0.6);
-	--admin-shadow-xl: 0 25px 50px rgba(0, 0, 0, 0.7);
+	--admin-shadow-sm: var(--shadow-sm);
+	--admin-shadow-md: var(--shadow-md);
+	--admin-shadow-lg: var(--shadow-lg);
+	--admin-shadow-xl: var(--shadow-xl);
 
 	/* ═══ CARDS & WIDGETS ═══ */
-	--admin-card-bg: #161B22;
-	--admin-card-border: #30363D;
-	--admin-card-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-	--admin-card-shadow-hover: 0 8px 32px rgba(0, 0, 0, 0.5);
+	--admin-card-bg: var(--bg-elevated);
+	--admin-card-border: var(--border-default);
+	--admin-card-shadow: var(--shadow-md);
+	--admin-card-shadow-hover: var(--shadow-lg);
 
 	/* ═══ WIDGET COLORS - Unified Palette ═══ */
 	/* Primary - Gold (main accent) */
