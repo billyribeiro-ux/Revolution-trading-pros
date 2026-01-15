@@ -707,6 +707,7 @@
 </svelte:head>
 
 <div class="videos-page">
+	<div class="admin-page-container">
 	<!-- Success/Error Messages -->
 	{#if successMessage}
 		<div class="alert alert-success">
@@ -1069,6 +1070,7 @@
 			</table>
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <!-- Upload/Edit Modal -->
