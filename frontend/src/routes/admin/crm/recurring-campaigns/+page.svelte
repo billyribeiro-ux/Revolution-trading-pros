@@ -1,3 +1,16 @@
+<!--
+	/admin/crm/recurring-campaigns - Recurring Newsletter Campaigns
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Scheduled recurring campaign management
+	- Status filtering (draft, active, paused)
+	- Schedule settings display
+	- Revenue and email tracking stats
+	- Duplicate and delete functionality
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import IconCalendarEvent from '@tabler/icons-svelte/icons/calendar-event';

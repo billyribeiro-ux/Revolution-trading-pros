@@ -1,3 +1,16 @@
+<!--
+	/admin/crm/smart-links - Action Link Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Smart link CRUD with automation triggers
+	- Click tracking (total/unique)
+	- Copy to clipboard functionality
+	- Active/inactive filtering
+	- Short URL display
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import {

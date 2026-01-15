@@ -1,3 +1,17 @@
+<!--
+	/admin/crm/contacts/[id] - Contact Detail Profile
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Full contact profile with scoring
+	- Lists, Tags, and Segments management
+	- Activity Timeline display
+	- Email History tracking
+	- Notes section with add/edit
+	- Quick actions (edit, delete, send email)
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	/**
 	 * Contact Detail Page - FluentCRM Pro Style

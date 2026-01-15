@@ -1,3 +1,16 @@
+<!--
+	/admin/crm/sequences - Email Drip Sequences
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Automated email sequence management
+	- Status filtering (draft, active, paused, completed)
+	- Open/click rate tracking
+	- Subscriber count per sequence
+	- Duplicate and delete functionality
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import IconMail from '@tabler/icons-svelte/icons/mail';

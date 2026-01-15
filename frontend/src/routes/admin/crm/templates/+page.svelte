@@ -1,3 +1,16 @@
+<!--
+	/admin/crm/templates - Email Template Library
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Visual and HTML template management
+	- Category-based organization
+	- Template preview and thumbnail display
+	- Duplicate and delete functionality
+	- Pre-built template library access
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import IconTemplate from '@tabler/icons-svelte/icons/template';

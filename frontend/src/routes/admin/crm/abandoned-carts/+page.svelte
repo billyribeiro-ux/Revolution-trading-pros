@@ -1,3 +1,15 @@
+<!--
+	/admin/crm/abandoned-carts - Abandoned Cart Recovery
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Cart tracking with stats dashboard
+	- Bulk delete functionality
+	- Status filtering (draft, processing, recovered, lost, opt_out)
+	- Recovery URL tracking
+	- Automation integration warning
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import IconShoppingCart from '@tabler/icons-svelte/icons/shopping-cart';

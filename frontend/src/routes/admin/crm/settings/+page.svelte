@@ -1,3 +1,15 @@
+<!--
+	/admin/crm/settings - CRM Settings Configuration
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Double opt-in configuration
+	- Email preferences page settings
+	- Toggle switches for features
+	- Form validation and save feedback
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';

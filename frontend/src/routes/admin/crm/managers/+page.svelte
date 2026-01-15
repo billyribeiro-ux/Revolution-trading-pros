@@ -1,3 +1,15 @@
+<!--
+	/admin/crm/managers - Manager Permissions & Roles
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Manager user management with roles
+	- Role CRUD with permission configuration
+	- Tab-based navigation (Managers/Roles)
+	- Permission badges and counts
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import IconUsers from '@tabler/icons-svelte/icons/users';

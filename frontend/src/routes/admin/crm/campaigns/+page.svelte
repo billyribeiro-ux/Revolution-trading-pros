@@ -1,3 +1,15 @@
+<!--
+	/admin/crm/campaigns - Email Campaign Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- One-time email broadcasts with stats tracking
+	- Status filtering (draft, scheduled, sending, sent, paused, failed)
+	- Open/click rate analytics
+	- Duplicate and delete functionality
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	/**
 	 * Email Campaigns - FluentCRM Pro Style

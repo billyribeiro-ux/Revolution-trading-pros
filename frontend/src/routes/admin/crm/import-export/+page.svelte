@@ -1,3 +1,15 @@
+<!--
+	/admin/crm/import-export - Import/Export Data Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Import contacts, tags, lists, sequences, campaigns, automations, templates
+	- Export with download functionality
+	- Job status tracking with progress
+	- File type cards with icons
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import IconUpload from '@tabler/icons-svelte/icons/upload';

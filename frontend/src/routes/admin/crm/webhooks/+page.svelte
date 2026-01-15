@@ -1,3 +1,15 @@
+<!--
+	/admin/crm/webhooks - Webhook Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Webhook CRUD with event subscriptions
+	- Test webhook functionality
+	- Trigger/failure count tracking
+	- Event badges display
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import IconWebhook from '@tabler/icons-svelte/icons/webhook';

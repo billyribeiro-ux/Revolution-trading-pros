@@ -1,3 +1,14 @@
+<!--
+	/admin/crm/tags - Contact Tag Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Tag CRUD with color support
+	- Contact count per tag
+	- Search filtering
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import IconTag from '@tabler/icons-svelte/icons/tag';

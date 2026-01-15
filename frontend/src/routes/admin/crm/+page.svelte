@@ -1,3 +1,15 @@
+<!--
+	/admin/crm - CRM Dashboard & Contact Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Contact listing with search and filtering
+	- Quick Links dropdown (Segments, Sequences, Campaigns)
+	- Stats dashboard (contacts, deals, scores)
+	- Sidebar navigation to all CRM modules
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	/**
 	 * CRM Admin - FluentCRM Pro Identical Implementation

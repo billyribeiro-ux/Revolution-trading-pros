@@ -1,3 +1,15 @@
+<!--
+	/admin/crm/companies - B2B Company Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Company CRUD with logo support
+	- Industry and size filtering
+	- Contact and deal tracking per company
+	- Total deal value aggregation
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import {

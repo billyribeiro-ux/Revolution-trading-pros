@@ -1,3 +1,15 @@
+<!--
+	/admin/crm/segments - Dynamic Contact Segments
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Condition-based dynamic segmentation
+	- Auto-sync contact matching
+	- Duplicate and refresh functionality
+	- Match type (all/any conditions)
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	/**
 	 * Dynamic Segments - FluentCRM Pro Style

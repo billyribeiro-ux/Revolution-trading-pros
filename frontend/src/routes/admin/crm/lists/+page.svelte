@@ -1,3 +1,14 @@
+<!--
+	/admin/crm/lists - Contact List Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Contact list CRUD with public/private toggle
+	- Contact count per list
+	- Search filtering
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import {

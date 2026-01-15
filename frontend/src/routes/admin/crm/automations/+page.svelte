@@ -1,3 +1,15 @@
+<!--
+	/admin/crm/automations - Automation Funnels Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+	
+	Features:
+	- Automation funnel CRUD with stats dashboard
+	- Trigger-based filtering (contact_created, tag_applied, etc.)
+	- Status filtering (draft, active, paused)
+	- Duplicate, export, delete functionality
+	- Completion rate tracking
+-->
+
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import IconRoute from '@tabler/icons-svelte/icons/route';
