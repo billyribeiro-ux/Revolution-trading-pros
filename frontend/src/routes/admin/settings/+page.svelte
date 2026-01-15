@@ -2883,11 +2883,221 @@
 {/if}
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * ADMIN SETTINGS - Design System Override
+	 * ICT 7 Apple Principal Engineer Grade - Uses admin color hierarchy
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	.line-clamp-2 {
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
 		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
+	}
+
+	/* Main container override - use design system colors */
+	:global(.min-h-screen.bg-gradient-to-br) {
+		background: var(--bg-base, #0D1117) !important;
+	}
+
+	/* Card backgrounds - use elevated surface */
+	:global(.bg-white\/5),
+	:global(.bg-black\/20),
+	:global(.bg-slate-800\/50),
+	:global(.bg-slate-900) {
+		background: var(--bg-elevated, #161B22) !important;
+		border-color: var(--border-default, #30363D) !important;
+	}
+
+	/* Text colors - use design system hierarchy */
+	:global(.text-white) {
+		color: var(--text-primary, #F0F6FC) !important;
+	}
+
+	:global(.text-slate-400),
+	:global(.text-slate-300) {
+		color: var(--text-secondary, #8B949E) !important;
+	}
+
+	:global(.text-slate-500) {
+		color: var(--text-tertiary, #6E7681) !important;
+	}
+
+	/* Primary accent colors - use gold/amber brand color */
+	:global(.from-amber-500),
+	:global(.to-yellow-600),
+	:global(.bg-amber-500),
+	:global(.text-amber-400) {
+		--tw-gradient-from: var(--primary-500, #E6B800) !important;
+		--tw-gradient-to: var(--primary-600, #B38F00) !important;
+		background-color: var(--primary-500, #E6B800) !important;
+		color: var(--primary-400, #FFD11A) !important;
+	}
+
+	/* Border colors - use design system borders */
+	:global(.border-white\/10),
+	:global(.border-white\/20) {
+		border-color: var(--border-default, #30363D) !important;
+	}
+
+	/* Tab switcher background */
+	:global(.bg-white\/5.backdrop-blur-xl) {
+		background: var(--bg-surface, #1C2128) !important;
+		border: 1px solid var(--border-default, #30363D) !important;
+	}
+
+	/* Active tab styling */
+	:global(.bg-white.text-slate-900) {
+		background: var(--primary-500, #E6B800) !important;
+		color: var(--bg-base, #0D1117) !important;
+	}
+
+	/* Card/Section containers */
+	:global(.rounded-2xl),
+	:global(.rounded-3xl) {
+		border: 1px solid var(--border-default, #30363D) !important;
+	}
+
+	/* Success states */
+	:global(.text-emerald-400),
+	:global(.bg-emerald-500) {
+		color: var(--success-emphasis, #3FB950) !important;
+	}
+
+	:global(.bg-emerald-500\/10),
+	:global(.bg-emerald-500\/15) {
+		background: var(--success-soft, rgba(46, 160, 67, 0.15)) !important;
+	}
+
+	/* Error states */
+	:global(.text-red-400),
+	:global(.bg-red-500) {
+		color: var(--error-emphasis, #F85149) !important;
+	}
+
+	:global(.bg-red-500\/10),
+	:global(.bg-red-500\/15) {
+		background: var(--error-soft, rgba(218, 54, 51, 0.15)) !important;
+	}
+
+	/* Warning states */
+	:global(.text-amber-400) {
+		color: var(--warning-emphasis, #D29922) !important;
+	}
+
+	:global(.bg-amber-500\/10),
+	:global(.bg-amber-500\/15) {
+		background: var(--warning-soft, rgba(187, 128, 9, 0.15)) !important;
+	}
+
+	/* Input fields */
+	:global(input),
+	:global(select),
+	:global(textarea) {
+		background: var(--bg-surface, #1C2128) !important;
+		border: 1px solid var(--border-default, #30363D) !important;
+		color: var(--text-primary, #F0F6FC) !important;
+	}
+
+	:global(input:focus),
+	:global(select:focus),
+	:global(textarea:focus) {
+		border-color: var(--primary-500, #E6B800) !important;
+		box-shadow: 0 0 0 2px rgba(230, 184, 0, 0.2) !important;
+	}
+
+	:global(input::placeholder) {
+		color: var(--text-muted, #484F58) !important;
+	}
+
+	/* Toggle switches - connected state */
+	:global(.bg-emerald-500) {
+		background: var(--success-base, #2EA043) !important;
+	}
+
+	/* Toggle switches - disconnected state */
+	:global(.bg-slate-700) {
+		background: var(--bg-active, #2D333B) !important;
+	}
+
+	/* Primary buttons */
+	:global(.bg-gradient-to-r.from-amber-500),
+	:global(.from-orange-600) {
+		background: linear-gradient(135deg, var(--primary-500, #E6B800), var(--primary-600, #B38F00)) !important;
+		border: none !important;
+		color: var(--bg-base, #0D1117) !important;
+	}
+
+	:global(.bg-gradient-to-r.from-amber-500:hover),
+	:global(.from-orange-600:hover) {
+		background: linear-gradient(135deg, var(--primary-400, #FFD11A), var(--primary-500, #E6B800)) !important;
+	}
+
+	/* Secondary/Ghost buttons */
+	:global(.bg-white\/5:hover),
+	:global(.hover\:bg-white\/10:hover) {
+		background: var(--bg-hover, #252B33) !important;
+	}
+
+	/* Modal backgrounds */
+	:global(.bg-slate-900.border) {
+		background: var(--bg-elevated, #161B22) !important;
+		border: 1px solid var(--border-default, #30363D) !important;
+	}
+
+	/* Ambient blob effects - use brand colors */
+	:global(.bg-purple-500\/10) {
+		background: rgba(99, 102, 241, 0.08) !important;
+	}
+
+	:global(.bg-blue-500\/10) {
+		background: rgba(59, 130, 246, 0.08) !important;
+	}
+
+	:global(.bg-emerald-500\/5) {
+		background: rgba(16, 185, 129, 0.05) !important;
+	}
+
+	/* Grade badge */
+	:global(.from-purple-500\/20) {
+		background: linear-gradient(135deg, rgba(99, 102, 241, 0.15), rgba(59, 130, 246, 0.15)) !important;
+		border-color: rgba(99, 102, 241, 0.25) !important;
+	}
+
+	/* Section headers */
+	:global(h1),
+	:global(h2),
+	:global(h3) {
+		color: var(--text-primary, #F0F6FC) !important;
+	}
+
+	/* Service cards */
+	:global(.group:hover) {
+		border-color: var(--primary-500, #E6B800) !important;
+	}
+
+	/* Status badges */
+	:global(.bg-slate-500\/15) {
+		background: rgba(100, 116, 139, 0.15) !important;
+	}
+
+	/* Scrollbar styling */
+	:global(::-webkit-scrollbar) {
+		width: 8px;
+		height: 8px;
+	}
+
+	:global(::-webkit-scrollbar-track) {
+		background: var(--bg-base, #0D1117);
+	}
+
+	:global(::-webkit-scrollbar-thumb) {
+		background: var(--border-default, #30363D);
+		border-radius: 4px;
+	}
+
+	:global(::-webkit-scrollbar-thumb:hover) {
+		background: var(--border-emphasis, #8B949E);
 	}
 </style>
