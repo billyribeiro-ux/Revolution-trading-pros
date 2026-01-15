@@ -305,25 +305,11 @@
 	<title>Site Health | Admin</title>
 </svelte:head>
 
-<div class="site-health-dashboard">
-	<!-- Animated Background -->
-	<div class="animated-bg">
-		<div class="blob blob-1"></div>
-		<div class="blob blob-2"></div>
-		<div class="blob blob-3"></div>
-	</div>
-
-	<!-- Header Section -->
-	<header class="dashboard-header" in:fly={{ y: -20, duration: 500, delay: 100 }}>
-		<div class="header-content">
-			<div class="header-icon">
-				<IconHeartbeat size={32} />
-			</div>
-			<div class="header-text">
-				<h1>Site Health</h1>
-				<p>Monitor your site's performance, security, and overall health</p>
-			</div>
-		</div>
+<div class="page">
+	<!-- Header Section - Centered -->
+	<header class="page-header" in:fly={{ y: -20, duration: 500, delay: 100 }}>
+		<h1>Site Health</h1>
+		<p class="subtitle">Monitor your site's performance, security, and overall health</p>
 
 		<div class="header-actions">
 			<!-- API Connections Status -->
@@ -344,17 +330,18 @@
 				{/if}
 			</div>
 
-			<button class="action-btn run-tests" onclick={runHealthTests} disabled={isRunningTests}>
+			<button class="btn-primary" onclick={runHealthTests} disabled={isRunningTests}>
 				<span class="icon-wrapper" class:spinning={isRunningTests}>
 					<IconPlayerPlay size={18} />
 				</span>
 				<span>{isRunningTests ? 'Running...' : 'Run Tests'}</span>
 			</button>
 
-			<button class="action-btn refresh" onclick={handleRefresh} disabled={isRefreshing}>
+			<button class="btn-secondary" onclick={handleRefresh} disabled={isRefreshing}>
 				<span class="icon-wrapper" class:spinning={isRefreshing}>
 					<IconRefresh size={18} />
 				</span>
+				<span>Refresh</span>
 			</button>
 		</div>
 	</header>
@@ -957,135 +944,43 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	   Base Layout
+	   Base Layout - Email Templates Style
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
-	.site-health-dashboard {
-		position: relative;
-		min-height: 100vh;
-		padding: 2rem;
-		max-width: 1600px;
+	.page {
+		max-width: 1400px;
 		margin: 0 auto;
-		background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-		overflow: hidden;
+		padding: 2rem;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	   Animated Background
+	   Header - CENTERED
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
-	.animated-bg {
-		position: absolute;
-		inset: 0;
-		overflow: hidden;
-		pointer-events: none;
-	}
-
-	.blob {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(80px);
-		opacity: 0.4;
-		animation: float 20s ease-in-out infinite;
-	}
-
-	.blob-1 {
-		width: 400px;
-		height: 400px;
-		background: linear-gradient(135deg, #ec4899, #db2777);
-		top: -100px;
-		right: -100px;
-		animation-delay: 0s;
-	}
-
-	.blob-2 {
-		width: 300px;
-		height: 300px;
-		background: linear-gradient(135deg, #10b981, #059669);
-		bottom: 20%;
-		left: -50px;
-		animation-delay: -7s;
-	}
-
-	.blob-3 {
-		width: 350px;
-		height: 350px;
-		background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-		top: 50%;
-		right: 20%;
-		animation-delay: -14s;
-	}
-
-	@keyframes float {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		25% {
-			transform: translate(30px, -30px) scale(1.05);
-		}
-		50% {
-			transform: translate(-20px, 20px) scale(0.95);
-		}
-		75% {
-			transform: translate(20px, 30px) scale(1.02);
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	   Header
-	   ═══════════════════════════════════════════════════════════════════════════════ */
-
-	.dashboard-header {
-		position: relative;
-		z-index: 10;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+	.page-header {
+		text-align: center;
 		margin-bottom: 2rem;
-		padding: 1.5rem 2rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 20px;
-		backdrop-filter: blur(20px);
 	}
 
-	.header-content {
-		display: flex;
-		align-items: center;
-		gap: 1.25rem;
-	}
-
-	.header-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 56px;
-		height: 56px;
-		background: linear-gradient(135deg, #ec4899, #db2777);
-		border-radius: 16px;
-		color: white;
-		box-shadow: 0 8px 24px rgba(236, 72, 153, 0.3);
-	}
-
-	.header-text h1 {
+	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
 		margin: 0 0 0.25rem 0;
-		letter-spacing: -0.02em;
 	}
 
-	.header-text p {
-		font-size: 0.9rem;
-		color: #94a3b8;
-		margin: 0;
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin: 0 0 1.5rem 0;
 	}
 
 	.header-actions {
 		display: flex;
+		justify-content: center;
 		align-items: center;
-		gap: 1rem;
+		gap: 0.75rem;
+		flex-wrap: wrap;
 	}
 
 	.connections-status {
@@ -1101,7 +996,7 @@
 		padding: 0.5rem 0.875rem;
 		background: rgba(239, 68, 68, 0.15);
 		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 10px;
+		border-radius: 6px;
 		color: #fca5a5;
 		font-size: 0.75rem;
 		font-weight: 500;
@@ -1120,48 +1015,61 @@
 		padding: 0.5rem 0.875rem;
 		background: rgba(245, 158, 11, 0.15);
 		border: 1px solid rgba(245, 158, 11, 0.3);
-		border-radius: 10px;
+		border-radius: 6px;
 		color: #fbbf24;
 		font-size: 0.75rem;
 		font-weight: 500;
 	}
 
-	.action-btn {
+	/* ═══════════════════════════════════════════════════════════════════════════════
+	   Buttons - Email Templates Style
+	   ═══════════════════════════════════════════════════════════════════════════════ */
+
+	.btn-primary {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.625rem 1.25rem;
-		border-radius: 12px;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+		border: none;
+		padding: 0.5rem 1rem;
+		border-radius: 6px;
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
 
-	.action-btn.run-tests {
-		background: linear-gradient(135deg, #ec4899, #db2777);
-		border: none;
-		color: white;
-		box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+	.btn-primary:hover:not(:disabled) {
+		opacity: 0.9;
+		transform: translateY(-1px);
 	}
 
-	.action-btn.run-tests:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(236, 72, 153, 0.4);
+	.btn-primary:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
-	.action-btn.refresh {
-		background: rgba(148, 163, 184, 0.1);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		color: #e2e8f0;
-		padding: 0.625rem;
+	.btn-secondary {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		padding: 0.5rem 1rem;
+		border-radius: 6px;
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
 	}
 
-	.action-btn.refresh:hover:not(:disabled) {
-		background: rgba(148, 163, 184, 0.2);
+	.btn-secondary:hover:not(:disabled) {
+		background: rgba(100, 116, 139, 0.3);
 	}
 
-	.action-btn:disabled {
+	.btn-secondary:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
 	}
@@ -1188,36 +1096,33 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: 4rem;
+		padding: 4rem 2rem;
 		color: #94a3b8;
 	}
 
 	.loading-spinner {
-		width: 48px;
-		height: 48px;
-		border: 3px solid rgba(148, 163, 184, 0.2);
-		border-top-color: #ec4899;
+		width: 40px;
+		height: 40px;
+		border: 3px solid rgba(99, 102, 241, 0.2);
+		border-top-color: #6366f1;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	   Score Section
+	   Score Section - Email Templates Style
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
 	.score-section {
-		position: relative;
-		z-index: 10;
 		display: flex;
 		align-items: center;
-		gap: 3rem;
-		padding: 2rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+		gap: 2rem;
+		padding: 1.5rem;
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 24px;
-		backdrop-filter: blur(20px);
-		margin-bottom: 2rem;
+		border-radius: 8px;
+		margin-bottom: 1.5rem;
 	}
 
 	.score-card {
@@ -1304,10 +1209,10 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 0.375rem;
-		padding: 1rem 1.5rem;
-		background: rgba(0, 0, 0, 0.2);
-		border-radius: 14px;
-		min-width: 100px;
+		padding: 0.75rem 1rem;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
+		min-width: 80px;
 	}
 
 	.stat-item.good {
@@ -1338,37 +1243,36 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	   Tabs
+	   Tabs - Email Templates Style
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
 	.tabs-section {
-		position: relative;
-		z-index: 10;
-		margin-bottom: 2rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.tabs {
 		display: flex;
 		gap: 0.5rem;
-		padding: 0.5rem;
-		background: rgba(30, 41, 59, 0.6);
-		border-radius: 16px;
-		backdrop-filter: blur(10px);
+		padding: 0.375rem;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
+		overflow-x: auto;
 	}
 
 	.tab {
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.75rem 1.25rem;
+		padding: 0.5rem 1rem;
 		background: transparent;
 		border: none;
-		border-radius: 12px;
+		border-radius: 6px;
 		color: #94a3b8;
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s ease;
+		white-space: nowrap;
 	}
 
 	.tab:hover {
@@ -1377,33 +1281,31 @@
 	}
 
 	.tab.active {
-		background: rgba(236, 72, 153, 0.2);
-		color: #f9a8d4;
+		background: rgba(99, 102, 241, 0.15);
+		color: #a5b4fc;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	   Tab Content
+	   Tab Content - Email Templates Style
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
 	.tab-content {
-		position: relative;
-		z-index: 10;
+		/* No special positioning needed */
 	}
 
 	/* Overview Grid */
 	.overview-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-		gap: 1.25rem;
-		margin-bottom: 2rem;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.overview-card {
-		padding: 1.5rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+		padding: 1.25rem;
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 20px;
-		backdrop-filter: blur(10px);
+		border-radius: 8px;
 	}
 
 	.card-header {
@@ -1417,9 +1319,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 44px;
-		height: 44px;
-		border-radius: 12px;
+		width: 40px;
+		height: 40px;
+		border-radius: 8px;
 		color: white;
 	}
 
@@ -1500,10 +1402,10 @@
 		justify-content: center;
 		gap: 0.5rem;
 		width: 100%;
-		padding: 0.625rem;
+		padding: 0.5rem;
 		background: rgba(148, 163, 184, 0.1);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 10px;
+		border-radius: 6px;
 		color: #e2e8f0;
 		font-size: 0.8125rem;
 		font-weight: 500;
@@ -1534,10 +1436,10 @@
 	}
 
 	.api-health-card {
-		padding: 1.25rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+		padding: 1rem;
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 16px;
+		border-radius: 8px;
 	}
 
 	.api-health-card.has-errors {
@@ -1565,7 +1467,7 @@
 		padding: 0.375rem 0.75rem;
 		background: rgba(148, 163, 184, 0.1);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
+		border-radius: 6px;
 		color: #e2e8f0;
 		font-size: 0.75rem;
 		font-weight: 500;
@@ -1619,10 +1521,10 @@
 		display: flex;
 		align-items: center;
 		gap: 1rem;
-		padding: 1rem 1.25rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+		padding: 0.875rem 1rem;
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 14px;
+		border-radius: 8px;
 		transition: all 0.2s ease;
 	}
 
@@ -1667,10 +1569,10 @@
 		display: flex;
 		align-items: center;
 		gap: 0.375rem;
-		padding: 0.5rem 0.875rem;
+		padding: 0.375rem 0.75rem;
 		background: rgba(148, 163, 184, 0.1);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
+		border-radius: 6px;
 		color: #e2e8f0;
 		font-size: 0.75rem;
 		font-weight: 500;
@@ -1705,20 +1607,20 @@
 		display: flex;
 		align-items: flex-start;
 		gap: 1rem;
-		padding: 1.5rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.9), rgba(15, 23, 42, 0.95));
+		padding: 1.25rem;
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 18px;
+		border-radius: 8px;
 	}
 
 	.metric-card .metric-icon {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 48px;
-		height: 48px;
+		width: 44px;
+		height: 44px;
 		background: rgba(148, 163, 184, 0.1);
-		border-radius: 14px;
+		border-radius: 8px;
 		color: #94a3b8;
 	}
 
@@ -1800,16 +1702,16 @@
 		color: #10b981;
 	}
 
-	/* Empty State */
+	/* Empty State - Email Templates Style */
 	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		padding: 4rem 2rem;
-		background: linear-gradient(135deg, rgba(30, 41, 59, 0.8), rgba(15, 23, 42, 0.9));
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 20px;
+		border-radius: 8px;
 		text-align: center;
 		color: #64748b;
 	}
@@ -1834,20 +1736,20 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #ec4899, #db2777);
+		padding: 0.5rem 1rem;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		border: none;
-		border-radius: 12px;
+		border-radius: 6px;
 		color: white;
-		font-size: 0.9rem;
-		font-weight: 600;
+		font-size: 0.875rem;
+		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
 
 	.run-tests-btn:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(236, 72, 153, 0.3);
+		opacity: 0.9;
+		transform: translateY(-1px);
 	}
 
 	.run-tests-btn:disabled {
@@ -1857,13 +1759,11 @@
 
 	/* Last Updated */
 	.last-updated {
-		position: relative;
-		z-index: 10;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		gap: 0.5rem;
-		margin-top: 2rem;
+		margin-top: 1.5rem;
 		font-size: 0.75rem;
 		color: #64748b;
 	}
@@ -1873,22 +1773,6 @@
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
 	@media (max-width: 1024px) {
-		.dashboard-header {
-			flex-direction: column;
-			gap: 1.5rem;
-			text-align: center;
-		}
-
-		.header-content {
-			flex-direction: column;
-		}
-
-		.header-actions {
-			width: 100%;
-			justify-content: center;
-			flex-wrap: wrap;
-		}
-
 		.score-section {
 			flex-direction: column;
 			text-align: center;
@@ -1905,28 +1789,22 @@
 	}
 
 	@media (max-width: 768px) {
-		.site-health-dashboard {
+		.page {
 			padding: 1rem;
 		}
 
-		.dashboard-header {
-			padding: 1.25rem;
-			border-radius: 16px;
-		}
-
-		.header-text h1 {
+		.page-header h1 {
 			font-size: 1.5rem;
 		}
 
-		.tabs {
-			overflow-x: auto;
-			-webkit-overflow-scrolling: touch;
+		.header-actions {
+			flex-direction: column;
+			gap: 0.5rem;
 		}
 
-		.tab {
-			white-space: nowrap;
-			padding: 0.625rem 1rem;
-			font-size: 0.8125rem;
+		.connections-status {
+			flex-direction: column;
+			gap: 0.5rem;
 		}
 
 		.overview-grid {
@@ -1946,12 +1824,8 @@
 		}
 
 		.stat-item {
-			min-width: 80px;
-			padding: 0.75rem 1rem;
-		}
-
-		.connections-status {
-			flex-direction: column;
+			min-width: 70px;
+			padding: 0.5rem 0.75rem;
 		}
 	}
 </style>

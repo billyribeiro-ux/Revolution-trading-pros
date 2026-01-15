@@ -138,16 +138,6 @@
 		return typeMap[type] || IconShoppingCart;
 	}
 
-	function getTypeColor(type: string) {
-		const colorMap: Record<string, string> = {
-			course: 'bg-blue-500',
-			indicator: 'bg-purple-500',
-			membership: 'bg-yellow-500',
-			bundle: 'bg-green-500'
-		};
-		return colorMap[type] || 'bg-gray-500';
-	}
-
 	function formatPrice(price: number, salePrice?: number | null) {
 		if (salePrice && salePrice < price) {
 			return { original: `$${price.toFixed(2)}`, sale: `$${salePrice.toFixed(2)}` };
@@ -170,34 +160,34 @@
 	<title>Products Management | Admin</title>
 </svelte:head>
 
-<div class="admin-page">
+<div class="page">
 	<div class="page-header">
-		<div>
-			<h1>Products Management</h1>
-			<p>Manage courses, indicators, and memberships</p>
-		</div>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={() => loadProducts()} disabled={loading}>
-				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
-				Refresh
-			</button>
-			<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
-				<IconPlus size={18} />
-				Add Product
-			</button>
-		</div>
+		<h1>Products Management</h1>
+		<p class="subtitle">Manage courses, indicators, and memberships</p>
 	</div>
 
-	<!-- Search and Filter Bar -->
-	<div class="filter-bar">
+	<!-- Actions row below header centered -->
+	<div class="actions-row">
 		<div class="search-box">
-			<IconSearch size={20} />
+			<IconSearch size={18} />
 			<input
 				type="text"
 				placeholder="Search products..."
 				bind:value={searchQuery}
 			/>
 		</div>
+		<button class="btn-secondary" onclick={() => loadProducts()} disabled={loading}>
+			<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+			Refresh
+		</button>
+		<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
+			<IconPlus size={18} />
+			Add Product
+		</button>
+	</div>
+
+	<!-- Type Filter Bar -->
+	<div class="filter-bar">
 		<div class="type-filter">
 			{#each productTypes as type}
 				{@const Icon = type.icon}
@@ -206,7 +196,7 @@
 					class:active={selectedType === type.value}
 					onclick={() => (selectedType = type.value)}
 				>
-					<Icon size={20} />
+					<Icon size={18} />
 					{type.label}
 					{#if type.value !== 'all' && productCountByType[type.value]}
 						<span class="count-badge">{productCountByType[type.value]}</span>
@@ -263,8 +253,8 @@
 				{@const pricing = formatPrice(product.price, product.sale_price)}
 				<div class="product-card" class:deleting={deleting === product.id}>
 					<div class="product-header">
-						<div class="product-type {getTypeColor(product.type)}">
-							<TypeIcon size={16} />
+						<div class="product-type-badge">
+							<TypeIcon size={14} />
 							{product.type}
 						</div>
 						<button
@@ -298,7 +288,7 @@
 								<span class="original-price">{pricing.original}</span>
 								<span class="sale-price">{pricing.sale}</span>
 							{:else}
-								<span class="current-price">{pricing.original}</span>
+								<span class="price-badge">{pricing.original}</span>
 							{/if}
 						</div>
 					</div>
@@ -333,38 +323,36 @@
 </div>
 
 <style>
-	.admin-page {
+	.page {
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
-		background: #0f172a;
-		min-height: 100vh;
 	}
 
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		text-align: center;
 		margin-bottom: 2rem;
 	}
 
 	.page-header h1 {
-		font-size: 2rem;
+		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
 		margin-bottom: 0.5rem;
 	}
 
-	.page-header p {
-		color: #94a3b8;
-		font-size: 0.95rem;
-		font-family: 'Open Sans Pro', 'Open Sans', sans-serif;
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
 	}
 
-	.header-actions {
+	/* Actions row below header centered */
+	.actions-row {
 		display: flex;
-		gap: 1rem;
-		align-items: center;
+		justify-content: center;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+		flex-wrap: wrap;
 	}
 
 	.btn-primary,
@@ -372,8 +360,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
-		border-radius: 8px;
+		padding: 0.625rem 1.25rem;
 		font-weight: 600;
 		border: none;
 		cursor: pointer;
@@ -381,24 +368,26 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		color: white;
+		border-radius: 6px;
 	}
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+		box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
 	}
 
 	.btn-secondary {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		background: rgba(100, 116, 139, 0.2);
 		color: #cbd5e1;
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 6px;
 	}
 
 	.btn-secondary:hover:not(:disabled) {
-		background: rgba(30, 41, 59, 0.8);
-		border-color: rgba(148, 163, 184, 0.4);
+		background: rgba(100, 116, 139, 0.3);
+		border-color: rgba(100, 116, 139, 0.5);
 	}
 
 	.btn-secondary:disabled,
@@ -407,23 +396,16 @@
 		cursor: not-allowed;
 	}
 
-	/* Filter Bar */
-	.filter-bar {
-		display: flex;
-		flex-direction: column;
-		gap: 1rem;
-		margin-bottom: 1.5rem;
-	}
-
+	/* Search Box */
 	.search-box {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
-		padding: 0.75rem 1rem;
+		gap: 0.5rem;
+		padding: 0.625rem 1rem;
 		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 8px;
-		max-width: 400px;
+		min-width: 250px;
 	}
 
 	.search-box :global(svg) {
@@ -436,7 +418,7 @@
 		background: transparent;
 		border: none;
 		color: #f1f5f9;
-		font-size: 0.95rem;
+		font-size: 0.875rem;
 		outline: none;
 	}
 
@@ -444,33 +426,42 @@
 		color: #64748b;
 	}
 
+	/* Filter Bar */
+	.filter-bar {
+		display: flex;
+		justify-content: center;
+		margin-bottom: 1.5rem;
+	}
+
 	.type-filter {
 		display: flex;
 		gap: 0.75rem;
 		flex-wrap: wrap;
+		justify-content: center;
 	}
 
 	.type-btn {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.625rem 1.25rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
+		padding: 0.5rem 1rem;
+		background: rgba(100, 116, 139, 0.2);
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 6px;
 		color: #cbd5e1;
 		font-weight: 500;
+		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.type-btn:hover {
-		background: rgba(30, 41, 59, 0.8);
-		border-color: rgba(148, 163, 184, 0.4);
+		background: rgba(100, 116, 139, 0.3);
+		border-color: rgba(100, 116, 139, 0.5);
 	}
 
 	.type-btn.active {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		border-color: transparent;
 		color: white;
 	}
@@ -478,33 +469,34 @@
 	.count-badge {
 		background: rgba(255, 255, 255, 0.2);
 		padding: 0.125rem 0.5rem;
-		border-radius: 12px;
+		border-radius: 10px;
 		font-size: 0.75rem;
 		font-weight: 600;
 	}
 
 	.results-summary {
-		color: #94a3b8;
+		text-align: center;
+		color: #64748b;
 		font-size: 0.875rem;
-		margin-bottom: 1rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.search-term {
-		color: #60a5fa;
+		color: #a5b4fc;
 	}
 
 	.loading,
 	.empty-state {
 		text-align: center;
 		padding: 4rem 2rem;
-		color: #94a3b8;
+		color: #64748b;
 	}
 
 	.loading .spinner {
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(148, 163, 184, 0.1);
-		border-top-color: #3b82f6;
+		border-top-color: #6366f1;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin: 0 auto 1rem;
@@ -524,7 +516,8 @@
 	.empty-state h3 {
 		color: #f1f5f9;
 		margin-bottom: 0.5rem;
-		font-size: 1.5rem;
+		font-size: 1.25rem;
+		font-weight: 600;
 	}
 
 	.empty-state p {
@@ -574,9 +567,9 @@
 	}
 
 	.product-card {
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 12px;
+		border-radius: 8px;
 		overflow: hidden;
 		transition: all 0.3s;
 	}
@@ -596,8 +589,8 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		padding: 1rem 1.5rem;
-		background: rgba(15, 23, 42, 0.8);
+		padding: 1rem 1.25rem;
+		background: rgba(15, 23, 42, 0.6);
 		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 	}
 
@@ -625,35 +618,22 @@
 		transform: scale(1.05);
 	}
 
-	.product-type {
+	/* Product type badge - matches Price/Type badges style */
+	.product-type-badge {
 		display: inline-flex;
 		align-items: center;
-		gap: 0.5rem;
+		gap: 0.375rem;
 		padding: 0.375rem 0.75rem;
+		background: rgba(99, 102, 241, 0.15);
+		color: #a5b4fc;
 		border-radius: 6px;
-		font-size: 0.875rem;
+		font-size: 0.75rem;
 		font-weight: 600;
 		text-transform: capitalize;
-		color: white;
 	}
 
-	.bg-blue-500 {
-		background: #3b82f6;
-	}
-
-	.bg-purple-500 {
-		background: #8b5cf6;
-	}
-
-	.bg-yellow-500 {
-		background: #eab308;
-	}
-
-	.bg-green-500 {
-		background: #10b981;
-	}
-
-	.product-status .status-badge {
+	/* Status badges */
+	.status-badge {
 		padding: 0.25rem 0.75rem;
 		border-radius: 6px;
 		font-size: 0.75rem;
@@ -662,8 +642,8 @@
 	}
 
 	.status-badge.active {
-		background: rgba(16, 185, 129, 0.2);
-		color: #34d399;
+		background: rgba(34, 197, 94, 0.15);
+		color: #22c55e;
 	}
 
 	.status-badge.inactive {
@@ -672,11 +652,11 @@
 	}
 
 	.product-content {
-		padding: 1.5rem;
+		padding: 1.25rem;
 	}
 
 	.product-content h3 {
-		font-size: 1.25rem;
+		font-size: 1.125rem;
 		font-weight: 600;
 		color: #f1f5f9;
 		margin-bottom: 0.25rem;
@@ -694,7 +674,6 @@
 		font-size: 0.875rem;
 		line-height: 1.5;
 		margin-bottom: 1rem;
-		font-family: 'Open Sans Pro', 'Open Sans', sans-serif;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
 		line-clamp: 2;
@@ -708,29 +687,38 @@
 		gap: 0.75rem;
 	}
 
-	.current-price {
-		font-size: 1.5rem;
+	/* Price badge - matches Price/Type badges style */
+	.price-badge {
+		display: inline-block;
+		padding: 0.375rem 0.75rem;
+		background: rgba(99, 102, 241, 0.15);
+		color: #a5b4fc;
+		border-radius: 6px;
+		font-size: 1rem;
 		font-weight: 700;
-		color: #3b82f6;
 	}
 
 	.original-price {
-		font-size: 1rem;
+		font-size: 0.875rem;
 		color: #64748b;
 		text-decoration: line-through;
 	}
 
 	.sale-price {
-		font-size: 1.5rem;
+		display: inline-block;
+		padding: 0.375rem 0.75rem;
+		background: rgba(34, 197, 94, 0.15);
+		color: #22c55e;
+		border-radius: 6px;
+		font-size: 1rem;
 		font-weight: 700;
-		color: #10b981;
 	}
 
 	.product-actions {
 		display: flex;
 		gap: 0.5rem;
-		padding: 1rem 1.5rem;
-		background: rgba(15, 23, 42, 0.4);
+		padding: 1rem 1.25rem;
+		background: rgba(15, 23, 42, 0.6);
 		border-top: 1px solid rgba(148, 163, 184, 0.1);
 	}
 
@@ -740,7 +728,7 @@
 		align-items: center;
 		justify-content: center;
 		gap: 0.5rem;
-		padding: 0.625rem 1rem;
+		padding: 0.5rem 0.75rem;
 		border-radius: 6px;
 		font-weight: 500;
 		border: none;
@@ -750,14 +738,14 @@
 	}
 
 	.action-btn.edit {
-		background: rgba(59, 130, 246, 0.1);
-		color: #60a5fa;
-		border: 1px solid rgba(59, 130, 246, 0.3);
+		background: rgba(99, 102, 241, 0.15);
+		color: #a5b4fc;
+		border: 1px solid rgba(99, 102, 241, 0.3);
 	}
 
 	.action-btn.edit:hover {
-		background: rgba(59, 130, 246, 0.2);
-		border-color: rgba(59, 130, 246, 0.5);
+		background: rgba(99, 102, 241, 0.25);
+		border-color: rgba(99, 102, 241, 0.5);
 	}
 
 	.action-btn.delete {
@@ -786,10 +774,18 @@
 	}
 
 	@media (max-width: 768px) {
-		.page-header {
+		.page {
+			padding: 1rem;
+		}
+
+		.actions-row {
 			flex-direction: column;
-			align-items: flex-start;
-			gap: 1rem;
+			align-items: center;
+		}
+
+		.search-box {
+			width: 100%;
+			min-width: unset;
 		}
 
 		.products-grid {

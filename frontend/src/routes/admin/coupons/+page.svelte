@@ -142,23 +142,23 @@
 	}
 </script>
 
-<div class="admin-page">
+<div class="page">
 	<!-- Page Header -->
 	<div class="page-header">
-		<div class="header-content">
-			<h1>Coupons Management</h1>
-			<p class="header-subtitle">Manage discount codes and promotional offers</p>
-		</div>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={loadCoupons} disabled={loading}>
-				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
-				Refresh
-			</button>
-			<button class="btn-primary" onclick={() => goto('/admin/coupons/create')}>
-				<IconPlus size={18} />
-				Create Coupon
-			</button>
-		</div>
+		<h1>Coupons Management</h1>
+		<p class="subtitle">Manage discount codes and promotional offers</p>
+	</div>
+
+	<!-- Actions Row -->
+	<div class="actions-row">
+		<button class="btn-secondary" onclick={loadCoupons} disabled={loading}>
+			<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+			Refresh
+		</button>
+		<button class="btn-primary" onclick={() => goto('/admin/coupons/create')}>
+			<IconPlus size={18} />
+			Create Coupon
+		</button>
 	</div>
 
 	<!-- Stats Bar -->
@@ -313,40 +313,37 @@
 </div>
 
 <style>
-	.admin-page {
+	.page {
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
-		min-height: 100vh;
-		background: #0f172a;
 	}
 
-	/* Header Styles */
+	/* Header Styles - CENTERED */
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+		text-align: center;
 		margin-bottom: 2rem;
-		padding-bottom: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
 	}
 
-	.header-content h1 {
-		font-size: 2rem;
+	.page-header h1 {
+		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
 		margin: 0 0 0.5rem 0;
 	}
 
-	.header-subtitle {
-		color: #94a3b8;
-		font-size: 0.95rem;
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
 		margin: 0;
 	}
 
-	.header-actions {
+	/* Actions Row - CENTERED */
+	.actions-row {
 		display: flex;
+		justify-content: center;
 		gap: 0.75rem;
+		margin-bottom: 2rem;
 	}
 
 	/* Button Styles */
@@ -356,7 +353,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		border-radius: 8px;
+		border-radius: 6px;
 		font-weight: 600;
 		border: none;
 		cursor: pointer;
@@ -364,23 +361,23 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		color: white;
 	}
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+		box-shadow: 0 10px 30px rgba(99, 102, 241, 0.3);
 	}
 
 	.btn-secondary {
-		background: rgba(148, 163, 184, 0.1);
+		background: rgba(100, 116, 139, 0.2);
 		color: #cbd5e1;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		border: 1px solid rgba(100, 116, 139, 0.3);
 	}
 
 	.btn-secondary:hover:not(:disabled) {
-		background: rgba(148, 163, 184, 0.2);
+		background: rgba(100, 116, 139, 0.3);
 	}
 
 	button:disabled {
@@ -391,11 +388,12 @@
 	/* Stats Bar */
 	.stats-bar {
 		display: flex;
+		justify-content: center;
 		gap: 2rem;
 		padding: 1.25rem 1.5rem;
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 12px;
+		border-radius: 8px;
 		margin-bottom: 1.5rem;
 	}
 
@@ -447,6 +445,11 @@
 		color: #94a3b8;
 	}
 
+	.search-box:focus-within {
+		border-color: rgba(99, 102, 241, 0.5);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+	}
+
 	.search-box input {
 		flex: 1;
 		background: transparent;
@@ -482,9 +485,9 @@
 	}
 
 	.filter-tab.active {
-		background: rgba(59, 130, 246, 0.15);
-		border-color: rgba(59, 130, 246, 0.4);
-		color: #60a5fa;
+		background: rgba(99, 102, 241, 0.15);
+		border-color: rgba(99, 102, 241, 0.4);
+		color: #818cf8;
 	}
 
 	/* Coupons Grid */
@@ -495,15 +498,15 @@
 	}
 
 	.coupon-card {
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 12px;
+		border-radius: 8px;
 		padding: 1.5rem;
 		transition: all 0.2s;
 	}
 
 	.coupon-card:hover {
-		border-color: rgba(59, 130, 246, 0.4);
+		border-color: rgba(99, 102, 241, 0.4);
 		transform: translateY(-2px);
 	}
 
@@ -522,7 +525,7 @@
 	.coupon-code {
 		font-size: 1.35rem;
 		font-weight: 700;
-		color: #60a5fa;
+		color: #818cf8;
 		font-family: monospace;
 		letter-spacing: 0.05em;
 	}
@@ -544,8 +547,8 @@
 	}
 
 	.coupon-value {
-		background: rgba(59, 130, 246, 0.1);
-		color: #60a5fa;
+		background: rgba(99, 102, 241, 0.1);
+		color: #818cf8;
 		font-weight: 600;
 	}
 
@@ -618,9 +621,9 @@
 	}
 
 	.action-btn.edit:hover:not(:disabled) {
-		background: rgba(59, 130, 246, 0.1);
-		border-color: rgba(59, 130, 246, 0.3);
-		color: #60a5fa;
+		background: rgba(99, 102, 241, 0.1);
+		border-color: rgba(99, 102, 241, 0.3);
+		color: #818cf8;
 	}
 
 	.action-btn.delete:hover:not(:disabled) {
@@ -690,18 +693,17 @@
 
 	/* Responsive */
 	@media (max-width: 768px) {
-		.page-header {
-			flex-direction: column;
-			gap: 1rem;
+		.page {
+			padding: 1rem;
 		}
 
-		.header-actions {
-			width: 100%;
-			justify-content: flex-end;
+		.actions-row {
+			flex-wrap: wrap;
 		}
 
 		.stats-bar {
 			flex-wrap: wrap;
+			justify-content: center;
 		}
 
 		.filters-bar {

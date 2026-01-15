@@ -168,15 +168,13 @@
 	<title>Contact Tags - FluentCRM Pro</title>
 </svelte:head>
 
-<div class="tags-page">
+<div class="page">
 	<!-- Header -->
 	<div class="page-header">
-		<div>
-			<h1>Contact Tags</h1>
-			<p class="page-description">Label and categorize your contacts with tags</p>
-		</div>
+		<h1>Contact Tags</h1>
+		<p class="subtitle">Label and categorize your contacts with tags</p>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={() => loadTags()} disabled={isLoading}>
+			<button class="btn-secondary" onclick={() => loadTags()} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
 			<button class="btn-primary" onclick={openCreateModal}>
@@ -354,56 +352,62 @@
 {/if}
 
 <style>
-	.tags-page {
-		max-width: 1600px;
+	.page {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
 	}
 
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+		text-align: center;
 		margin-bottom: 2rem;
-		flex-wrap: wrap;
-		gap: 1rem;
 	}
 
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
-		margin: 0 0 0.25rem 0;
+		margin: 0 0 0.5rem 0;
 	}
 
-	.page-description {
+	.subtitle {
 		color: #64748b;
-		margin: 0;
+		font-size: 0.875rem;
+		margin: 0 0 1.5rem 0;
 	}
 
 	.header-actions {
 		display: flex;
+		justify-content: center;
 		gap: 0.75rem;
 	}
 
-	.btn-refresh {
-		width: 42px;
-		height: 42px;
+	.btn-secondary {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 10px;
-		color: #94a3b8;
+		gap: 0.5rem;
+		padding: 0.75rem 1.25rem;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border: none;
+		border-radius: 8px;
+		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
-	.btn-refresh:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8;
+	.btn-secondary:hover {
+		background: rgba(100, 116, 139, 0.3);
+		color: #e2e8f0;
 	}
 
-	.btn-refresh :global(.spinning) {
+	.btn-secondary:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.btn-secondary :global(.spinning) {
 		animation: spin 1s linear infinite;
 	}
 
@@ -420,7 +424,7 @@
 		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		color: white;
 		border: none;
-		border-radius: 10px;
+		border-radius: 8px;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -438,6 +442,8 @@
 		gap: 1rem;
 		margin-bottom: 2rem;
 		max-width: 600px;
+		margin-left: auto;
+		margin-right: auto;
 	}
 
 	@media (max-width: 640px) {
@@ -449,9 +455,8 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1.25rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 14px;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
 	}
 
 	.stat-icon {
@@ -526,9 +531,8 @@
 	}
 
 	.tag-card {
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 14px;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
 		padding: 1.25rem;
 		display: flex;
 		flex-direction: column;
@@ -832,29 +836,6 @@
 		padding-top: 1rem;
 		border-top: 1px solid rgba(99, 102, 241, 0.1);
 		margin-top: 0.5rem;
-	}
-
-	.btn-secondary {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1.25rem;
-		background: rgba(30, 41, 59, 0.8);
-		color: #e2e8f0;
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 10px;
-		font-weight: 500;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-secondary:hover {
-		background: rgba(99, 102, 241, 0.1);
-	}
-
-	.btn-secondary:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
 	}
 
 	.btn-spinner {

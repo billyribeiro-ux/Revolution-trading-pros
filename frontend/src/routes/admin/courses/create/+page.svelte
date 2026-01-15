@@ -1624,77 +1624,67 @@
 			<span>{successMessage}</span>
 		</div>
 	{/if}
-	<!-- Header with Progress -->
+	<!-- Centered Page Header -->
 	<div class="page-header">
-		<div class="header-content">
-			<div class="header-main">
-				<h1>
-					<IconBook size={32} />
-					Create New Course
-				</h1>
-				<p>
-					Build a comprehensive educational trading course • {course.modules.length} modules • {course.duration_hours}
-					hours
-				</p>
-			</div>
+		<h1>Create New Course</h1>
+		<p class="subtitle">Build a comprehensive educational trading course</p>
+	</div>
 
-			<div class="completion-progress">
-				<div class="progress-bar">
-					<div class="progress-fill" style="width: {completionStatus.percentage}%"></div>
-				</div>
-				<div class="progress-details">
-					<span class="progress-text">{completionStatus.percentage}% Complete</span>
-					<span class="progress-items"
-						>{completionStatus.completed}/{completionStatus.total} items</span
-					>
-				</div>
-			</div>
+	<!-- Actions Row - Centered -->
+	<div class="header-actions">
+		{#if hasUnsavedChanges}
+			<span class="unsaved-indicator">
+				<IconAlertCircle size={16} />
+				Unsaved
+			</span>
+		{/if}
+
+		{#if lastSaved}
+			<span class="save-status">
+				<IconCheck size={16} />
+				Saved {lastSaved.toLocaleTimeString()}
+			</span>
+		{/if}
+
+		<button class="btn-secondary" onclick={saveDraft} disabled={!hasUnsavedChanges}>
+			<IconDownload size={18} />
+			Save Draft
+		</button>
+
+		<button
+			class="btn-secondary"
+			onclick={() => window.open(`/preview/course/${course.slug || 'preview'}`, '_blank')}
+		>
+			<IconEye size={18} />
+			Preview
+		</button>
+
+		<button
+			class="btn-primary"
+			onclick={publishCourse}
+			disabled={saving || completionStatus.percentage < 30}
+			title={completionStatus.percentage < 30
+				? 'Complete at least 30% to publish'
+				: 'Publish course'}
+		>
+			{#if saving}
+				<IconRefresh size={18} class="spinning" />
+				Publishing...
+			{:else}
+				<IconRocket size={18} />
+				Publish Course
+			{/if}
+		</button>
+	</div>
+
+	<!-- Progress Bar -->
+	<div class="completion-progress">
+		<div class="progress-bar">
+			<div class="progress-fill" style="width: {completionStatus.percentage}%"></div>
 		</div>
-
-		<div class="header-actions">
-			{#if hasUnsavedChanges}
-				<span class="unsaved-indicator">
-					<IconAlertCircle size={16} />
-					Unsaved changes
-				</span>
-			{/if}
-
-			{#if lastSaved}
-				<span class="save-status">
-					<IconCheck size={16} />
-					Saved {lastSaved.toLocaleTimeString()}
-				</span>
-			{/if}
-
-			<button class="btn-ghost" onclick={saveDraft} disabled={!hasUnsavedChanges}>
-				<IconDownload size={18} />
-				Save Draft
-			</button>
-
-			<button
-				class="btn-secondary"
-				onclick={() => window.open(`/preview/course/${course.slug || 'preview'}`, '_blank')}
-			>
-				<IconEye size={18} />
-				Preview
-			</button>
-
-			<button
-				class="btn-primary"
-				onclick={publishCourse}
-				disabled={saving || completionStatus.percentage < 30}
-				title={completionStatus.percentage < 30
-					? 'Complete at least 30% to publish'
-					: 'Publish course'}
-			>
-				{#if saving}
-					<IconRefresh size={18} class="spinning" />
-					Publishing...
-				{:else}
-					<IconRocket size={18} />
-					Publish Course
-				{/if}
-			</button>
+		<div class="progress-details">
+			<span class="progress-text">{completionStatus.percentage}% Complete</span>
+			<span class="progress-items">{completionStatus.completed}/{completionStatus.total} items • {course.modules.length} modules • {course.duration_hours}h</span>
 		</div>
 	</div>
 
@@ -3078,46 +3068,61 @@
 
 	.create-page {
 		padding: 2rem;
-		max-width: 1600px;
+		max-width: 1400px;
 		margin: 0 auto;
-		background: #0f172a;
 		min-height: 100vh;
 		font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
 	}
 
-	/* Header Styles */
+	/* Centered Header - Email Templates Style */
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 2rem;
-		padding-bottom: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		text-align: center;
+		margin-bottom: 1.5rem;
 	}
 
-	.header-content {
-		flex: 1;
-	}
-
-	.header-main h1 {
-		display: flex;
-		align-items: center;
-		gap: 0.75rem;
-		font-size: 2rem;
+	.page-header h1 {
+		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
-		margin: 0 0 0.5rem 0;
-	}
-
-	.header-main p {
-		color: #94a3b8;
 		margin: 0;
-		font-size: 0.95rem;
 	}
 
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin: 0.25rem 0 0;
+	}
+
+	/* Actions Row - Centered */
+	.header-actions {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.unsaved-indicator {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		color: #f59e0b;
+		font-size: 0.8125rem;
+		font-weight: 500;
+	}
+
+	.save-status {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+		color: #10b981;
+		font-size: 0.8125rem;
+	}
+
+	/* Progress Bar */
 	.completion-progress {
-		max-width: 400px;
-		margin-top: 1rem;
+		max-width: 500px;
+		margin: 0 auto 1.5rem;
 	}
 
 	.progress-bar {
@@ -3130,38 +3135,15 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #10b981, #059669);
+		background: linear-gradient(90deg, #6366f1, #8b5cf6);
 		transition: width 0.5s ease;
 	}
 
 	.progress-details {
 		display: flex;
 		justify-content: space-between;
-		font-size: 0.875rem;
-		color: #94a3b8;
-	}
-
-	.header-actions {
-		display: flex;
-		gap: 1rem;
-		align-items: center;
-	}
-
-	.unsaved-indicator {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		color: #f59e0b;
-		font-size: 0.875rem;
-		font-weight: 500;
-	}
-
-	.save-status {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		color: #10b981;
-		font-size: 0.875rem;
+		font-size: 0.8125rem;
+		color: #64748b;
 	}
 
 	/* Layout */
@@ -3194,12 +3176,12 @@
 		align-items: center;
 		gap: 0.75rem;
 		width: 100%;
-		padding: 0.875rem 1rem;
+		padding: 0.75rem 1rem;
 		background: transparent;
 		border: none;
 		border-radius: 8px;
 		color: #94a3b8;
-		font-size: 0.95rem;
+		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -3213,15 +3195,15 @@
 	}
 
 	.nav-item.active {
-		background: rgba(16, 185, 129, 0.1);
-		color: #10b981;
-		border: 1px solid rgba(16, 185, 129, 0.2);
+		background: rgba(99, 102, 241, 0.1);
+		color: #a5b4fc;
+		border: 1px solid rgba(99, 102, 241, 0.2);
 	}
 
 	.nav-item :global(.check) {
 		position: absolute;
 		right: 1rem;
-		color: #10b981;
+		color: #22c55e;
 	}
 
 	/* AI Assistant */
@@ -3363,12 +3345,12 @@
 		gap: 1.5rem;
 	}
 
-	/* Form Cards */
+	/* Form Cards - Email Templates Style */
 	.form-card {
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 12px;
-		padding: 2rem;
+		border-radius: 8px;
+		padding: 1.5rem;
 		backdrop-filter: blur(10px);
 	}
 
@@ -3376,22 +3358,22 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		font-size: 1.375rem;
+		font-size: 1.25rem;
 		font-weight: 600;
 		color: #f1f5f9;
-		margin: 0 0 1.75rem 0;
+		margin: 0 0 1.5rem 0;
 	}
 
 	.form-card h3 {
-		font-size: 1.125rem;
+		font-size: 1rem;
 		font-weight: 600;
 		color: #f1f5f9;
-		margin: 1.5rem 0 1rem 0;
+		margin: 1.25rem 0 0.875rem 0;
 	}
 
 	/* Form Elements */
 	.form-group {
-		margin-bottom: 1.5rem;
+		margin-bottom: 1.25rem;
 		position: relative;
 	}
 
@@ -3400,21 +3382,21 @@
 		align-items: center;
 		gap: 0.5rem;
 		font-weight: 500;
-		color: #f1f5f9;
-		margin-bottom: 0.625rem;
-		font-size: 0.95rem;
+		color: #cbd5e1;
+		margin-bottom: 0.5rem;
+		font-size: 0.875rem;
 	}
 
 	.form-group input,
 	.form-group textarea,
 	.form-group select {
 		width: 100%;
-		padding: 0.875rem 1.125rem;
-		background: rgba(15, 23, 42, 0.8);
+		padding: 0.625rem 1rem;
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 8px;
 		color: #f1f5f9;
-		font-size: 0.95rem;
+		font-size: 0.875rem;
 		transition: all 0.2s;
 		font-family: inherit;
 	}
@@ -3423,8 +3405,8 @@
 	.form-group textarea:focus,
 	.form-group select:focus {
 		outline: none;
-		border-color: rgba(16, 185, 129, 0.5);
-		box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.1);
+		border-color: rgba(99, 102, 241, 0.5);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 
 	.form-group textarea {
@@ -3433,26 +3415,26 @@
 	}
 
 	.input-large {
-		font-size: 1.125rem;
+		font-size: 1rem;
 		font-weight: 500;
-		padding: 1rem 1.25rem;
+		padding: 0.875rem 1rem;
 	}
 
 	.input-group {
 		display: flex;
 		align-items: center;
-		background: rgba(15, 23, 42, 0.8);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 8px;
 		overflow: hidden;
 	}
 
 	.input-prefix {
-		padding: 0.875rem 1rem;
-		background: rgba(148, 163, 184, 0.1);
-		color: #94a3b8;
+		padding: 0.625rem 0.875rem;
+		background: rgba(15, 23, 42, 0.6);
+		color: #64748b;
 		border-right: 1px solid rgba(148, 163, 184, 0.2);
-		font-size: 0.95rem;
+		font-size: 0.875rem;
 	}
 
 	.input-group input {
@@ -4482,31 +4464,30 @@
 		color: #10b981;
 	}
 
-	/* Buttons */
+	/* Buttons - Email Templates Style */
 	.btn-primary,
 	.btn-secondary,
 	.btn-ghost {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.875rem 1.5rem;
-		border-radius: 8px;
-		font-weight: 600;
+		padding: 0.5rem 1rem;
+		border-radius: 6px;
+		font-weight: 500;
 		border: none;
 		cursor: pointer;
 		transition: all 0.2s;
-		font-size: 0.95rem;
+		font-size: 0.875rem;
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #10b981, #059669);
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		color: white;
-		box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+		opacity: 0.9;
+		transform: translateY(-1px);
 	}
 
 	.btn-primary:disabled {
@@ -4516,14 +4497,18 @@
 	}
 
 	.btn-secondary {
-		background: rgba(148, 163, 184, 0.1);
+		background: rgba(100, 116, 139, 0.2);
 		color: #cbd5e1;
-		border: 1px solid rgba(148, 163, 184, 0.2);
+		border: 1px solid rgba(100, 116, 139, 0.3);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(148, 163, 184, 0.2);
-		transform: translateY(-1px);
+		background: rgba(100, 116, 139, 0.3);
+	}
+
+	.btn-secondary:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
 	}
 
 	.btn-ghost {

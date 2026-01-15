@@ -427,7 +427,7 @@
 	<title>Member Segments | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="segments-page">
+<div class="page">
 	<!-- Header -->
 	<div class="page-header">
 		<button class="back-btn" onclick={() => goto('/admin/members')}>
@@ -435,27 +435,18 @@
 			Back to Members
 		</button>
 
-		<div class="header-content">
-			<div class="header-title">
-				<div class="title-icon">
-					<IconFilter size={28} />
-				</div>
-				<div>
-					<h1>Member Segments</h1>
-					<p class="subtitle">Organize members with segments, tags, and filters</p>
-				</div>
-			</div>
+		<h1>Member Segments</h1>
+		<p class="subtitle">Organize members with segments, tags, and filters</p>
 
-			<div class="header-actions">
-				<button class="btn-secondary" onclick={loadData}>
-					<IconRefresh size={18} />
-					Refresh
-				</button>
-				<button class="btn-secondary" onclick={() => (showSaveFilterModal = true)}>
-					<IconDownload size={18} />
-					Save Filter
-				</button>
-			</div>
+		<div class="header-actions">
+			<button class="btn-secondary" onclick={loadData}>
+				<IconRefresh size={18} />
+				Refresh
+			</button>
+			<button class="btn-secondary" onclick={() => (showSaveFilterModal = true)}>
+				<IconDownload size={18} />
+				Save Filter
+			</button>
 		</div>
 	</div>
 
@@ -875,13 +866,18 @@
 {/if}
 
 <style>
-	.segments-page {
-		padding: 2rem;
+	.page {
 		max-width: 1400px;
 		margin: 0 auto;
+		padding: 2rem;
 	}
 
 	/* Header */
+	.page-header {
+		text-align: center;
+		margin-bottom: 2rem;
+	}
+
 	.back-btn {
 		display: inline-flex;
 		align-items: center;
@@ -900,31 +896,7 @@
 		color: #a5b4fc;
 	}
 
-	.header-content {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		margin-bottom: 2rem;
-	}
-
-	.header-title {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.title-icon {
-		width: 56px;
-		height: 56px;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		border-radius: 16px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: white;
-	}
-
-	.header-title h1 {
+	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
@@ -933,12 +905,15 @@
 
 	.subtitle {
 		color: #64748b;
+		font-size: 0.875rem;
 		margin: 0.25rem 0 0;
 	}
 
 	.header-actions {
 		display: flex;
+		justify-content: center;
 		gap: 0.75rem;
+		margin-top: 1rem;
 	}
 
 	/* Tabs */
@@ -989,9 +964,9 @@
 	}
 
 	.segment-card {
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 16px;
+		border-radius: 8px;
 		padding: 1.5rem;
 	}
 
@@ -1121,9 +1096,9 @@
 	}
 
 	.tag-card {
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 16px;
+		border-radius: 8px;
 		padding: 1.25rem;
 	}
 
@@ -1172,9 +1147,9 @@
 		display: flex;
 		align-items: center;
 		gap: 1.5rem;
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 16px;
+		border-radius: 8px;
 		padding: 1.25rem 1.5rem;
 	}
 
@@ -1237,8 +1212,8 @@
 	}
 
 	.btn-secondary {
-		background: rgba(148, 163, 184, 0.1);
-		color: #94a3b8;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
 		border: 1px solid rgba(148, 163, 184, 0.2);
 	}
 

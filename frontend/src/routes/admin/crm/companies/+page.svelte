@@ -150,23 +150,22 @@
 	<title>CRM Companies - FluentCRM Pro</title>
 </svelte:head>
 
-<div class="companies-page">
-	<!-- Header -->
-	<div class="page-header">
-		<div>
-			<h1>CRM Companies</h1>
-			<p class="page-description">Manage B2B company accounts and their contacts</p>
-		</div>
+<div class="page">
+	<!-- Page Header - CENTERED -->
+	<header class="page-header">
+		<h1>CRM Companies</h1>
+		<p class="subtitle">Manage B2B company accounts and their contacts</p>
 		<div class="header-actions">
-			<button class="btn-refresh" onclick={() => loadCompanies()} disabled={isLoading}>
+			<button class="btn-secondary" onclick={() => loadCompanies()} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				Refresh
 			</button>
 			<a href="/admin/crm/companies/new" class="btn-primary">
 				<IconPlus size={18} />
 				New Company
 			</a>
 		</div>
-	</div>
+	</header>
 
 	<!-- Stats Cards -->
 	<div class="stats-grid">
@@ -318,64 +317,46 @@
 </div>
 
 <style>
-	.companies-page {
-		max-width: 1600px;
+	/* =====================================================
+	   Page Layout - Email Templates Style
+	   ===================================================== */
+	.page {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
 	}
 
+	/* =====================================================
+	   Page Header - CENTERED
+	   ===================================================== */
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+		text-align: center;
 		margin-bottom: 2rem;
-		flex-wrap: wrap;
-		gap: 1rem;
 	}
 
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
-		margin: 0 0 0.25rem 0;
+		margin: 0 0 0.5rem 0;
 	}
 
-	.page-description {
+	.subtitle {
 		color: #64748b;
-		margin: 0;
+		font-size: 0.875rem;
+		margin: 0 0 1.5rem 0;
 	}
 
 	.header-actions {
 		display: flex;
-		gap: 0.75rem;
-	}
-
-	.btn-refresh {
-		width: 42px;
-		height: 42px;
-		display: flex;
-		align-items: center;
 		justify-content: center;
-		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 10px;
-		color: #94a3b8;
-		cursor: pointer;
-		transition: all 0.2s;
+		gap: 0.75rem;
+		flex-wrap: wrap;
 	}
 
-	.btn-refresh:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8;
-	}
-
-	.btn-refresh :global(.spinning) {
-		animation: spin 1s linear infinite;
-	}
-
-	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
-	}
-
+	/* =====================================================
+	   Buttons - Email Templates Style
+	   ===================================================== */
 	.btn-primary {
 		display: flex;
 		align-items: center;
@@ -386,9 +367,10 @@
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
+		font-size: 0.9rem;
+		text-decoration: none;
 		cursor: pointer;
 		transition: all 0.2s;
-		text-decoration: none;
 	}
 
 	.btn-primary:hover {
@@ -396,6 +378,44 @@
 		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
 	}
 
+	.btn-secondary {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.25rem;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 10px;
+		font-weight: 600;
+		font-size: 0.9rem;
+		text-decoration: none;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-secondary:hover:not(:disabled) {
+		background: rgba(99, 102, 241, 0.2);
+		color: #e2e8f0;
+	}
+
+	.btn-secondary:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.btn-secondary :global(.spinning) {
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		from { transform: rotate(0deg); }
+		to { transform: rotate(360deg); }
+	}
+
+	/* =====================================================
+	   Stats Grid
+	   ===================================================== */
 	.stats-grid {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
@@ -403,22 +423,19 @@
 		margin-bottom: 2rem;
 	}
 
-	@media (max-width: 1200px) {
-		.stats-grid { grid-template-columns: repeat(2, 1fr); }
-	}
-
-	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
-	}
-
 	.stat-card {
 		display: flex;
 		align-items: center;
 		gap: 1rem;
 		padding: 1.25rem;
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 14px;
+		border-radius: 8px;
+		transition: all 0.2s;
+	}
+
+	.stat-card:hover {
+		border-color: rgba(99, 102, 241, 0.25);
 	}
 
 	.stat-icon {
@@ -428,6 +445,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		flex-shrink: 0;
 	}
 
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
@@ -452,6 +470,9 @@
 		color: #64748b;
 	}
 
+	/* =====================================================
+	   Filters Bar
+	   ===================================================== */
 	.filters-bar {
 		display: flex;
 		gap: 1rem;
@@ -466,13 +487,20 @@
 		padding: 0 1rem;
 		background: rgba(15, 23, 42, 0.6);
 		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 10px;
+		border-radius: 8px;
 		flex: 1;
 		max-width: 400px;
+		transition: all 0.2s;
+	}
+
+	.search-box:focus-within {
+		border-color: rgba(99, 102, 241, 0.4);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 
 	.search-box :global(svg) {
 		color: #64748b;
+		flex-shrink: 0;
 	}
 
 	.search-box input {
@@ -483,6 +511,7 @@
 		color: #e2e8f0;
 		font-size: 0.9rem;
 		outline: none;
+		min-width: 0;
 	}
 
 	.search-box input::placeholder {
@@ -493,16 +522,26 @@
 		padding: 0.75rem 1rem;
 		background: rgba(15, 23, 42, 0.6);
 		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 10px;
+		border-radius: 8px;
 		color: #e2e8f0;
 		font-size: 0.9rem;
 		cursor: pointer;
+		transition: all 0.2s;
 	}
 
+	.filter-select:focus {
+		outline: none;
+		border-color: rgba(99, 102, 241, 0.4);
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+	}
+
+	/* =====================================================
+	   Table Container
+	   ===================================================== */
 	.table-container {
-		background: rgba(15, 23, 42, 0.6);
+		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 14px;
+		border-radius: 8px;
 		overflow: hidden;
 	}
 
@@ -544,7 +583,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 10px;
-		background: linear-gradient(135deg, #0ea5e9, #0284c7);
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -574,7 +613,7 @@
 		align-items: center;
 		gap: 0.25rem;
 		font-size: 0.75rem;
-		color: #60a5fa;
+		color: #818cf8;
 		text-decoration: none;
 	}
 
@@ -623,6 +662,9 @@
 		border-color: rgba(239, 68, 68, 0.3);
 	}
 
+	/* =====================================================
+	   States
+	   ===================================================== */
 	.loading-state, .error-state, .empty-state {
 		display: flex;
 		flex-direction: column;
@@ -633,18 +675,23 @@
 		color: #64748b;
 	}
 
+	.error-state :global(svg),
 	.empty-state :global(svg) {
 		color: #475569;
 		margin-bottom: 1rem;
 	}
 
+	.error-state h3,
 	.empty-state h3 {
 		color: #e2e8f0;
 		margin: 0 0 0.5rem 0;
+		font-size: 1.25rem;
 	}
 
+	.error-state p,
 	.empty-state p {
 		margin: 0 0 1.5rem 0;
+		max-width: 400px;
 	}
 
 	.spinner {
@@ -655,5 +702,36 @@
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
+	}
+
+	/* =====================================================
+	   Responsive
+	   ===================================================== */
+	@media (max-width: 1200px) {
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (max-width: 768px) {
+		.page {
+			padding: 1rem;
+		}
+
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.filters-bar {
+			flex-direction: column;
+		}
+
+		.search-box {
+			max-width: none;
+		}
+
+		.filter-select {
+			width: 100%;
+		}
 	}
 </style>

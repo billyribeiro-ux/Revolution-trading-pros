@@ -727,10 +727,8 @@
 
 	<!-- Header -->
 	<div class="page-header">
-		<div>
-			<h1>Trading Room Videos</h1>
-			<p class="page-description">Manage daily videos with category tags for each room and service</p>
-		</div>
+		<h1>Trading Room Videos</h1>
+		<p class="subtitle">Manage daily videos with category tags for each room and service</p>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={toggleAnalyticsPanel} title="View Analytics">
 				<IconChartBar size={18} />
@@ -1376,17 +1374,15 @@
 
 <style>
 	.videos-page {
-		max-width: 1600px;
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
 	}
 
-	/* Header */
+	/* Header - Centered */
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
-		margin-bottom: 1.5rem;
-		flex-wrap: wrap;
-		gap: 1rem;
+		text-align: center;
+		margin-bottom: 2rem;
 	}
 
 	.page-header h1 {
@@ -1396,33 +1392,34 @@
 		margin: 0 0 0.25rem 0;
 	}
 
-	.page-description {
+	.subtitle {
 		color: #64748b;
-		margin: 0;
+		font-size: 0.875rem;
+		margin: 0.25rem 0 1rem 0;
 	}
 
 	.header-actions {
 		display: flex;
+		justify-content: center;
 		gap: 0.75rem;
 	}
 
 	.btn-refresh {
-		width: 42px;
-		height: 42px;
+		width: 36px;
+		height: 36px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 10px;
+		background: rgba(100, 116, 139, 0.2);
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 6px;
 		color: #94a3b8;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.btn-refresh:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8;
+		opacity: 0.9;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -1438,41 +1435,41 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.75rem 1.25rem;
+		padding: 0.5rem 1rem;
 		background: linear-gradient(135deg, #6366f1, #8b5cf6);
 		color: white;
 		border: none;
-		border-radius: 10px;
+		border-radius: 6px;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+		opacity: 0.9;
 	}
 
 	.btn-primary:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
-		transform: none;
 	}
 
 	.btn-secondary {
-		padding: 0.75rem 1.25rem;
-		background: rgba(99, 102, 241, 0.1);
-		color: #94a3b8;
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 10px;
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.5rem 1rem;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 6px;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.btn-secondary:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #e2e8f0;
+		opacity: 0.9;
 	}
 
 	/* Replace Modal Specific */
@@ -1563,7 +1560,8 @@
 		gap: 1rem;
 		margin-bottom: 1.5rem;
 		padding: 1.25rem;
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
 	}
 
 	.room-selector.loading,
@@ -1586,10 +1584,6 @@
 		padding: 0.5rem;
 	}
 
-	.room-selector:not(.loading):not(.empty) {
-		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 14px;
-	}
 
 	.room-group-title {
 		display: flex;
@@ -1653,9 +1647,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.25rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 14px;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
 		margin-bottom: 1.5rem;
 		border-left: 4px solid var(--room-color, #6366f1);
 	}
@@ -1700,6 +1693,7 @@
 	/* Filters */
 	.filters-bar {
 		display: flex;
+		justify-content: center;
 		gap: 1rem;
 		margin-bottom: 1.5rem;
 		flex-wrap: wrap;
@@ -1710,9 +1704,9 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 10px;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 8px;
 		flex: 1;
 		max-width: 400px;
 	}
@@ -1723,11 +1717,11 @@
 
 	.search-box input {
 		flex: 1;
-		padding: 0.75rem 0;
+		padding: 0.625rem 0;
 		background: transparent;
 		border: none;
-		color: #e2e8f0;
-		font-size: 0.9rem;
+		color: #f1f5f9;
+		font-size: 0.875rem;
 		outline: none;
 	}
 
@@ -1735,21 +1729,29 @@
 		color: #64748b;
 	}
 
+	.search-box input:focus {
+		outline: none;
+	}
+
 	.filter-select {
-		padding: 0.75rem 1rem;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 10px;
-		color: #e2e8f0;
-		font-size: 0.9rem;
+		padding: 0.625rem 1rem;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 8px;
+		color: #f1f5f9;
+		font-size: 0.875rem;
 		cursor: pointer;
+	}
+
+	.filter-select:focus {
+		outline: none;
+		border-color: rgba(99, 102, 241, 0.5);
 	}
 
 	/* Videos Table */
 	.videos-table-wrapper {
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 14px;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
 		overflow: hidden;
 	}
 
@@ -1760,28 +1762,19 @@
 
 	.videos-table th {
 		text-align: left;
-		padding: 1rem 1.25rem;
-		background: rgba(30, 41, 59, 0.6);
-		font-size: 0.8rem;
+		padding: 0.75rem 1rem;
+		background: rgba(15, 23, 42, 0.6);
 		font-weight: 600;
-		color: #64748b;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
-	}
-
-	.videos-table td {
-		padding: 1rem 1.25rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.05);
 		color: #e2e8f0;
 	}
 
-	.videos-table tr:last-child td {
-		border-bottom: none;
+	.videos-table td {
+		padding: 0.75rem 1rem;
+		color: #e2e8f0;
 	}
 
-	.videos-table tr:hover td {
-		background: rgba(99, 102, 241, 0.05);
+	.videos-table tr:nth-child(even) {
+		background: rgba(15, 23, 42, 0.3);
 	}
 
 	.video-cell {
@@ -1907,12 +1900,12 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.375rem 0.75rem;
-		background: rgba(245, 158, 11, 0.15);
-		border: 1px solid rgba(245, 158, 11, 0.3);
+		background: rgba(148, 163, 184, 0.15);
+		border: 1px solid rgba(148, 163, 184, 0.3);
 		border-radius: 20px;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #fbbf24;
+		color: #94a3b8;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -1920,7 +1913,13 @@
 	.status-toggle.published {
 		background: rgba(34, 197, 94, 0.15);
 		border-color: rgba(34, 197, 94, 0.3);
-		color: #4ade80;
+		color: #22c55e;
+	}
+
+	.status-toggle.processing {
+		background: rgba(245, 158, 11, 0.15);
+		border-color: rgba(245, 158, 11, 0.3);
+		color: #fbbf24;
 	}
 
 	.action-buttons {
@@ -1954,14 +1953,22 @@
 	}
 
 	/* States */
-	.loading-state, .error-state, .empty-state {
+	.loading-state, .error-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
 		padding: 4rem 2rem;
 		text-align: center;
-		color: #64748b;
+		color: #94a3b8;
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 4rem 2rem;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
+		border: 1px solid rgba(148, 163, 184, 0.1);
 	}
 
 	.empty-state :global(svg) {
@@ -1975,6 +1982,7 @@
 	}
 
 	.empty-state p {
+		color: #94a3b8;
 		margin: 0 0 1.5rem 0;
 	}
 
@@ -2264,9 +2272,8 @@
 
 	/* Analytics Panel */
 	.analytics-panel {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 14px;
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
 		padding: 1.5rem;
 		margin-bottom: 1.5rem;
 	}

@@ -78,26 +78,22 @@
 	}
 </script>
 
-<div class="creator-page">
+<div class="page">
 	<!-- Header -->
 	<div class="page-header">
-		<div class="header-left">
-			<a href="/admin/popups" class="back-btn">
-				<IconArrowLeft size={20} />
-				<span>Back</span>
-			</a>
-			<div>
-				<h1 class="page-title">Create Popup</h1>
-				<p class="page-subtitle">Design a custom popup for your site</p>
-			</div>
-		</div>
+		<a href="/admin/popups" class="back-btn">
+			<IconArrowLeft size={18} />
+			<span>Back</span>
+		</a>
+		<h1>Create Popup</h1>
+		<p class="subtitle">Design a custom popup for your site</p>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={() => (showPreview = !showPreview)}>
-				<IconEye size={20} />
+				<IconEye size={18} />
 				<span>{showPreview ? 'Hide' : 'Show'} Preview</span>
 			</button>
 			<button class="btn-primary" onclick={handleSave} disabled={saving}>
-				<IconDeviceFloppy size={20} />
+				<IconDeviceFloppy size={18} />
 				<span>{saving ? 'Saving...' : 'Save Popup'}</span>
 			</button>
 		</div>
@@ -645,69 +641,65 @@
 </div>
 
 <style>
-	.creator-page {
-		max-width: 100%;
-		height: 100%;
+	.page {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
 	}
 
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		text-align: center;
 		margin-bottom: 2rem;
-		gap: 2rem;
 	}
 
-	.header-left {
-		display: flex;
-		align-items: center;
-		gap: 1.5rem;
+	.page-header h1 {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin: 0.75rem 0 0.25rem 0;
+	}
+
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin: 0 0 1rem 0;
 	}
 
 	.back-btn {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.625rem 1rem;
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
-		border-radius: 8px;
+		padding: 0.4rem 0.75rem;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border-radius: 6px;
 		text-decoration: none;
+		font-size: 0.875rem;
 		transition: all 0.2s;
+		border: 1px solid rgba(100, 116, 139, 0.3);
 	}
 
 	.back-btn:hover {
-		background: rgba(99, 102, 241, 0.2);
-	}
-
-	.page-title {
-		font-size: 2rem;
-		font-weight: 700;
-		color: #f1f5f9;
-		margin-bottom: 0.25rem;
-	}
-
-	.page-subtitle {
-		font-size: 1rem;
-		color: #64748b;
+		background: rgba(100, 116, 139, 0.3);
 	}
 
 	.header-actions {
 		display: flex;
-		gap: 1rem;
+		justify-content: center;
+		gap: 0.75rem;
 	}
 
 	.btn-primary,
 	.btn-secondary {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
+		padding: 0.5rem 1rem;
 		font-weight: 600;
-		border-radius: 12px;
+		border-radius: 6px;
 		border: none;
 		cursor: pointer;
-		transition: all 0.3s;
+		transition: all 0.2s;
 	}
 
 	.btn-primary {
@@ -716,8 +708,7 @@
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+		opacity: 0.9;
 	}
 
 	.btn-primary:disabled {
@@ -726,12 +717,13 @@
 	}
 
 	.btn-secondary {
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border: 1px solid rgba(100, 116, 139, 0.3);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(99, 102, 241, 0.2);
+		opacity: 0.9;
 	}
 
 	.creator-layout {
@@ -742,9 +734,9 @@
 	}
 
 	.editor-panel {
-		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 16px;
+		background: rgba(30, 41, 59, 0.4);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 8px;
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
@@ -931,10 +923,10 @@
 
 	/* Preview Panel */
 	.preview-panel {
-		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-		border: 1px solid rgba(99, 102, 241, 0.1);
-		border-radius: 16px;
-		padding: 2rem;
+		background: rgba(30, 41, 59, 0.4);
+		border: 1px solid rgba(148, 163, 184, 0.1);
+		border-radius: 8px;
+		padding: 1.5rem;
 		position: sticky;
 		top: 2rem;
 		height: fit-content;
@@ -981,6 +973,16 @@
 
 		.preview-panel {
 			position: static;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.page {
+			padding: 1rem;
+		}
+
+		.header-actions {
+			flex-direction: column;
 		}
 	}
 </style>

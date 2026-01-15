@@ -87,29 +87,29 @@
 	<title>Create Form - Admin Dashboard</title>
 </svelte:head>
 
-<div class="create-form-page">
+<div class="page">
 	{#if showTemplateSelector}
 		<FormTemplateSelector onSelect={handleTemplateSelect} onCancel={handleStartFromScratch} />
 	{:else}
 		<div class="page-header">
-			<div>
-				<button class="btn-back" onclick={handleCancel}>
-					← Back {selectedTemplate ? 'to Templates' : ''}
+			<h1>Create New Form</h1>
+			<p class="subtitle">
+				{#if selectedTemplate}
+					Using template: {selectedTemplate.name}
+				{:else}
+					Build a custom form with conditional logic and validation
+				{/if}
+			</p>
+			<div class="actions">
+				<button class="btn-secondary" onclick={handleCancel}>
+					Back {selectedTemplate ? 'to Templates' : ''}
 				</button>
-				<h1>Create New Form</h1>
-				<p class="page-description">
-					{#if selectedTemplate}
-						Using template: {selectedTemplate.name}
-					{:else}
-						Build a custom form with conditional logic and validation
-					{/if}
-				</p>
+				{#if selectedTheme}
+					<button class="btn-secondary" onclick={toggleThemeCustomizer}>
+						{showThemeCustomizer ? 'Hide' : 'Customize'} Theme
+					</button>
+				{/if}
 			</div>
-			{#if selectedTheme}
-				<button class="btn-theme" onclick={toggleThemeCustomizer}>
-					🎨 {showThemeCustomizer ? 'Hide' : 'Customize'} Theme
-				</button>
-			{/if}
 		</div>
 
 		{#if showThemeCustomizer && selectedTheme}
@@ -123,76 +123,70 @@
 </div>
 
 <style>
-	.create-form-page {
-		max-width: 1200px;
+	.page {
+		max-width: 1400px;
 		margin: 0 auto;
+		padding: 2rem;
 	}
 
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: flex-start;
+		text-align: center;
 		margin-bottom: 2rem;
-		padding-bottom: 1.5rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
-	}
-
-	.btn-back {
-		background: none;
-		border: none;
-		color: #94a3b8;
-		font-size: 0.875rem;
-		cursor: pointer;
-		padding: 0.5rem 0;
-		margin-bottom: 0.75rem;
-		transition: color 0.2s;
-	}
-
-	.btn-back:hover {
-		color: #a5b4fc;
 	}
 
 	h1 {
-		font-size: 2rem;
+		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
 		margin: 0 0 0.5rem 0;
 	}
 
-	.page-description {
-		color: #94a3b8;
-		font-size: 0.9375rem;
-		margin: 0;
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin: 0 0 1rem 0;
 	}
 
-	.btn-theme {
-		padding: 0.875rem 1.5rem;
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		border-radius: 10px;
+	.actions {
+		display: flex;
+		justify-content: center;
+		gap: 0.75rem;
+	}
+
+	.btn-secondary {
+		padding: 0.75rem 1.25rem;
+		background: rgba(100, 116, 139, 0.2);
+		color: #cbd5e1;
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 8px;
 		font-weight: 600;
-		font-size: 0.9375rem;
+		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
-	.btn-theme:hover {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.4);
+	.btn-secondary:hover {
+		background: rgba(100, 116, 139, 0.3);
+		border-color: rgba(100, 116, 139, 0.5);
 	}
 
 	.theme-section {
+		background: rgba(30, 41, 59, 0.4);
+		border-radius: 8px;
+		padding: 1.5rem;
 		margin-bottom: 2rem;
 	}
 
 	@media (max-width: 768px) {
-		.page-header {
-			flex-direction: column;
-			gap: 1rem;
+		.page {
+			padding: 1rem;
 		}
 
-		.btn-theme {
+		.actions {
+			flex-direction: column;
+		}
+
+		.btn-secondary {
 			width: 100%;
 		}
 	}
