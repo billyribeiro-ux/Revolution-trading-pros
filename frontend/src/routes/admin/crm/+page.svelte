@@ -296,7 +296,7 @@
 				</a>
 			{/each}
 		</nav>
-	</aside>
+	{/if}
 
 	<!-- Main Content -->
 	<main class="crm-main">

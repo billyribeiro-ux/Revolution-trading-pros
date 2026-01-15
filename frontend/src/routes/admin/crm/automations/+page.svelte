@@ -476,6 +476,7 @@
 			}, 3000);
 			return () => clearTimeout(timeout);
 		}
+		return undefined;
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -737,9 +738,11 @@
 	<div
 		class="modal-backdrop"
 		onclick={handleModalBackdropClick}
+		onkeydown={(e) => e.key === 'Escape' && closeImportModal()}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="import-modal-title"
+		tabindex="-1"
 	>
 		<div class="modal-container">
 			<div class="modal-header">
@@ -835,9 +838,11 @@
 	<div
 		class="modal-backdrop"
 		onclick={handleModalBackdropClick}
+		onkeydown={(e) => e.key === 'Escape' && closeAddContactsModal()}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="add-contacts-modal-title"
+		tabindex="-1"
 	>
 		<div class="modal-container">
 			<div class="modal-header">
@@ -1494,7 +1499,6 @@ contact_789"
 		border-color: rgba(99, 102, 241, 0.5);
 	}
 
-	.form-group input.error,
 	.form-group textarea.error {
 		border-color: rgba(239, 68, 68, 0.5);
 	}
