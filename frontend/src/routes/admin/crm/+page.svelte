@@ -246,6 +246,7 @@
 </svelte:head>
 
 <div class="page">
+	<div class="admin-page-container">
 	<!-- Page Header - Centered -->
 	<header class="page-header">
 		<h1>CRM Contacts</h1>
@@ -474,6 +475,7 @@
 			{/if}
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>

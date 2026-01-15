@@ -143,6 +143,7 @@
 </script>
 
 <div class="page">
+	<div class="admin-page-container">
 	<!-- Page Header -->
 	<div class="page-header">
 		<h1>Coupons Management</h1>
@@ -310,6 +311,7 @@
 			{/each}
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>

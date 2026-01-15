@@ -195,6 +195,7 @@
 </svelte:head>
 
 <div class="page">
+	<div class="admin-page-container">
 	<header class="page-header">
 		<h1>Courses</h1>
 		<p class="subtitle">Manage your courses and learning content</p>
@@ -289,6 +290,7 @@
 			</div>
 		{/if}
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <!-- QuickCreate Modal -->

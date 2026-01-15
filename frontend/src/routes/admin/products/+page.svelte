@@ -161,6 +161,7 @@
 </svelte:head>
 
 <div class="page">
+	<div class="admin-page-container">
 	<div class="page-header">
 		<h1>Products Management</h1>
 		<p class="subtitle">Manage courses, indicators, and memberships</p>
@@ -320,6 +321,7 @@
 			{/each}
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>
