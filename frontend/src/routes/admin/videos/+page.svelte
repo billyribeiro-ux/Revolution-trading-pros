@@ -64,21 +64,21 @@
 		{ id: 'risk-management', name: 'Risk Management', color: '#ef4444' },
 		{ id: 'options-strategies', name: 'Options Strategies', color: '#f59e0b' },
 		{ id: 'macro-structure', name: 'Macro Structure', color: '#10b981' },
-		{ id: 'micro-structure', name: 'Micro Structure', color: '#06b6d4' },
-		{ id: 'psychology', name: 'Psychology', color: '#8b5cf6' },
-		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#3b82f6' },
-		{ id: 'fundamentals', name: 'Fundamentals', color: '#ec4899' },
+		{ id: 'micro-structure', name: 'Micro Structure', color: '#E6B800' },
+		{ id: 'psychology', name: 'Psychology', color: '#E6B800' },
+		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#FFD11A' },
+		{ id: 'fundamentals', name: 'Fundamentals', color: '#E6B800' },
 		{ id: 'trade-setups', name: 'Trade Setups', color: '#14b8a6' },
 		{ id: 'market-review', name: 'Market Review', color: '#E6B800' },
 		{ id: 'earnings', name: 'Earnings', color: '#f97316' },
 		{ id: 'futures', name: 'Futures', color: '#84cc16' },
 		{ id: 'forex', name: 'Forex', color: '#22c55e' },
-		{ id: 'crypto', name: 'Crypto', color: '#a855f7' },
+		{ id: 'crypto', name: 'Crypto', color: '#B38F00' },
 		{ id: 'small-accounts', name: 'Small Accounts', color: '#eab308' },
-		{ id: 'position-sizing', name: 'Position Sizing', color: '#0ea5e9' },
-		{ id: 'entry-exit', name: 'Entry & Exit', color: '#d946ef' },
+		{ id: 'position-sizing', name: 'Position Sizing', color: '#FFD11A' },
+		{ id: 'entry-exit', name: 'Entry & Exit', color: '#FFD11A' },
 		{ id: 'scanner-setups', name: 'Scanner Setups', color: '#64748b' },
-		{ id: 'indicators', name: 'Indicators', color: '#fb7185' }
+		{ id: 'indicators', name: 'Indicators', color: '#B38F00' }
 	];
 
 	// Helper to get category by ID
@@ -575,7 +575,7 @@
 						<button
 							class="room-tab"
 							class:active={selectedRoom?.id === service.id}
-							style:--room-color={service.color || '#8b5cf6'}
+							style:--room-color={service.color || '#B38F00'}
 							onclick={() => selectRoom(service)}
 						>
 							<span class="room-name">{service.name}</span>

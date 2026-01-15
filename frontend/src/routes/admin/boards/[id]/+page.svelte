@@ -402,7 +402,7 @@
 					</a>
 					{#if board}
 						<div class="flex items-center gap-3">
-							<div class="w-3 h-8 rounded" style="background-color: {board.background_color || '#6366f1'}"></div>
+							<div class="w-3 h-8 rounded" style="background-color: {board.background_color || '#E6B800'}"></div>
 							<div>
 								<h1 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
 									{board.title}
@@ -436,7 +436,7 @@
 							type="text"
 							placeholder="Search tasks..."
 							bind:value={searchQuery}
-							class="pl-9 pr-4 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white w-48 focus:w-64 transition-all focus:ring-2 focus:ring-indigo-500"
+							class="pl-9 pr-4 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white w-48 focus:w-64 transition-all focus:ring-2 focus:ring-[#E6B800]"
 						/>
 					</div>
 
@@ -452,7 +452,7 @@
 					<!-- Members -->
 					<div class="flex items-center -space-x-2">
 						{#each members.slice(0, 4) as member}
-							<div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm font-medium border-2 border-white dark:border-gray-800" title={member.name}>
+							<div class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-white text-sm font-medium border-2 border-white dark:border-gray-800" title={member.name}>
 								{member.name.charAt(0).toUpperCase()}
 							</div>
 						{/each}
@@ -525,7 +525,7 @@
 	<div class="flex-1 overflow-x-auto p-4">
 		{#if loading}
 			<div class="flex items-center justify-center h-64">
-				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E6B800]"></div>
 			</div>
 		{:else}
 			<div class="flex gap-4 h-full min-h-[calc(100vh-180px)]">
@@ -562,7 +562,7 @@
 									ondragover={(e: DragEvent) => handleDragOver(e, stage.id, index)}
 									role="button"
 									tabindex="0"
-									class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 cursor-pointer hover:shadow-md transition-shadow {draggedTask?.id === task.id ? 'opacity-50' : ''} {dragOverStage === stage.id && dragOverPosition === index ? 'border-t-2 border-indigo-500' : ''}"
+									class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 cursor-pointer hover:shadow-md transition-shadow {draggedTask?.id === task.id ? 'opacity-50' : ''} {dragOverStage === stage.id && dragOverPosition === index ? 'border-t-2 border-[#E6B800]' : ''}"
 									onclick={() => openTaskModal(task)}
 									onkeydown={(e: KeyboardEvent) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -625,7 +625,7 @@
 													{#each task.assignees.slice(0, 2) as assigneeId}
 														{@const assignee = members.find(m => m.user_id === assigneeId)}
 														{#if assignee}
-															<div class="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs border border-white dark:border-gray-800" title={assignee.name}>
+															<div class="w-6 h-6 rounded-full bg-[#E6B800] flex items-center justify-center text-white text-xs border border-white dark:border-gray-800" title={assignee.name}>
 																{assignee.name.charAt(0).toUpperCase()}
 															</div>
 														{/if}
@@ -639,7 +639,7 @@
 
 							<!-- Drop zone indicator -->
 							{#if dragOverStage === stage.id && dragOverPosition === (tasksByStage[stage.id]?.length || 0)}
-								<div class="h-1 bg-indigo-500 rounded"></div>
+								<div class="h-1 bg-[#E6B800] rounded"></div>
 							{/if}
 
 							<!-- Add Task Input -->
@@ -666,7 +666,7 @@
 											<button
 												onclick={() => createTask(stage.id)}
 												disabled={!newTaskTitle.trim()}
-												class="px-3 py-1 text-xs bg-indigo-600 hover:bg-indigo-700 text-white rounded disabled:opacity-50 disabled:cursor-not-allowed"
+												class="px-3 py-1 text-xs bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded disabled:opacity-50 disabled:cursor-not-allowed"
 											>
 												Add
 											</button>
@@ -715,7 +715,7 @@
 								<button
 									onclick={createStage}
 									disabled={!newStageTitle.trim()}
-									class="px-3 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50"
+									class="px-3 py-1.5 text-sm bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50"
 								>
 									Add Stage
 								</button>
@@ -754,12 +754,12 @@
 								value={selectedTask.title}
 								onblur={(e: FocusEvent) => { updateTask({ title: (e.currentTarget as HTMLInputElement).value }); editingTaskTitle = false; }}
 								onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter') { updateTask({ title: (e.currentTarget as HTMLInputElement).value }); editingTaskTitle = false; } }}
-								class="w-full text-xl font-semibold bg-transparent border-b border-indigo-500 focus:outline-none text-gray-900 dark:text-white"
+								class="w-full text-xl font-semibold bg-transparent border-b border-[#E6B800] focus:outline-none text-gray-900 dark:text-white"
 							/>
 						{:else}
 							<button
 								type="button"
-								class="text-xl font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-indigo-600 dark:hover:text-indigo-400 text-left w-full bg-transparent border-0 p-0"
+								class="text-xl font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-[#E6B800] dark:hover:text-[#FFD11A] text-left w-full bg-transparent border-0 p-0"
 								onclick={() => editingTaskTitle = true}
 							>
 								{selectedTask?.title}
@@ -863,7 +863,7 @@
 									<button
 										onclick={addSubtask}
 										disabled={!newSubtaskTitle.trim()}
-										class="px-3 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50"
+										class="px-3 py-1.5 text-sm bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50"
 									>
 										Add
 									</button>
@@ -880,7 +880,7 @@
 							<div class="space-y-3">
 								{#each taskComments as comment}
 									<div class="flex gap-3">
-										<div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm flex-shrink-0">
+										<div class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-white text-sm flex-shrink-0">
 											{comment.author?.name?.charAt(0).toUpperCase() || 'U'}
 										</div>
 										<div class="flex-1">
@@ -906,7 +906,7 @@
 										<button
 											onclick={addComment}
 											disabled={!newComment.trim()}
-											class="mt-2 px-3 py-1.5 text-sm bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50"
+											class="mt-2 px-3 py-1.5 text-sm bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50"
 										>
 											Comment
 										</button>
@@ -923,7 +923,7 @@
 							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Time Tracking</h4>
 							<div class="flex items-center gap-2">
 								{#if activeTimer?.taskId === selectedTask.id}
-									<span class="text-lg font-mono text-indigo-600">{timerDisplay}</span>
+									<span class="text-lg font-mono text-[#E6B800]">{timerDisplay}</span>
 									<button
 										onclick={stopTimer}
 										class="p-1.5 text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 rounded"
@@ -950,14 +950,14 @@
 									{@const assignee = members.find(m => m.user_id === assigneeId)}
 									{#if assignee}
 										<div class="flex items-center gap-2 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full">
-											<div class="w-5 h-5 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs">
+											<div class="w-5 h-5 rounded-full bg-[#E6B800] flex items-center justify-center text-white text-xs">
 												{assignee.name.charAt(0).toUpperCase()}
 											</div>
 											<span class="text-xs text-gray-700 dark:text-gray-300">{assignee.name}</span>
 										</div>
 									{/if}
 								{/each}
-								<button class="px-2 py-1 text-xs text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-full">
+								<button class="px-2 py-1 text-xs text-[#E6B800] hover:bg-[rgba(230,184,0,0.1)] dark:hover:bg-[rgba(230,184,0,0.15)] rounded-full">
 									+ Add
 								</button>
 							</div>
@@ -1002,7 +1002,7 @@
 										{label.title}
 									</span>
 								{/each}
-								<button class="px-2 py-0.5 text-xs text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded">
+								<button class="px-2 py-0.5 text-xs text-[#E6B800] hover:bg-[rgba(230,184,0,0.1)] dark:hover:bg-[rgba(230,184,0,0.15)] rounded">
 									+ Add
 								</button>
 							</div>
@@ -1022,7 +1022,7 @@
 										<span class="truncate">{attachment.original_filename}</span>
 									</a>
 								{/each}
-								<button class="w-full px-2 py-1.5 text-xs text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded flex items-center gap-2">
+								<button class="w-full px-2 py-1.5 text-xs text-[#E6B800] hover:bg-[rgba(230,184,0,0.1)] dark:hover:bg-[rgba(230,184,0,0.15)] rounded flex items-center gap-2">
 									<IconPlus class="w-3.5 h-3.5" />
 									Add attachment
 								</button>

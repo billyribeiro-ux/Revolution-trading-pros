@@ -1250,8 +1250,8 @@
 	}
 
 	.tab.active {
-		color: var(--primary, #3b82f6);
-		border-bottom: 2px solid var(--primary, #3b82f6);
+		color: var(--primary, #E6B800);
+		border-bottom: 2px solid var(--primary, #E6B800);
 		margin-bottom: -1px;
 	}
 
@@ -1338,8 +1338,8 @@
 	.field select:focus,
 	.field textarea:focus {
 		outline: none;
-		border-color: var(--primary, #3b82f6);
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+		border-color: var(--primary, #E6B800);
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.1);
 	}
 
 	.field-row {
@@ -1403,9 +1403,9 @@
 
 	.icon-btn.active,
 	.text-btn.active {
-		background: var(--primary, #3b82f6);
-		color: white;
-		border-color: var(--primary, #3b82f6);
+		background: var(--primary, #E6B800);
+		color: #0D1117;
+		border-color: var(--primary, #E6B800);
 	}
 
 	.color-picker-trigger {
@@ -1540,7 +1540,7 @@
 		-webkit-appearance: none;
 		width: 16px;
 		height: 16px;
-		background: var(--primary, #3b82f6);
+		background: var(--primary, #E6B800);
 		border-radius: 50%;
 		cursor: pointer;
 	}
@@ -1583,7 +1583,7 @@
 		-webkit-appearance: none;
 		width: 12px;
 		height: 12px;
-		background: var(--primary, #3b82f6);
+		background: var(--primary, #E6B800);
 		border-radius: 50%;
 		cursor: pointer;
 	}
@@ -1610,7 +1610,7 @@
 	.checkbox-label input[type="checkbox"] {
 		width: 16px;
 		height: 16px;
-		accent-color: var(--primary, #3b82f6);
+		accent-color: var(--primary, #E6B800);
 	}
 
 	.device-icon {
@@ -1652,8 +1652,8 @@
 
 	/* Heading Level Selector */
 	.heading-level-section {
-		background: linear-gradient(135deg, #3b82f610 0%, #8b5cf610 100%);
-		border-color: #3b82f630;
+		background: linear-gradient(135deg, rgba(230, 184, 0, 0.1) 0%, rgba(179, 143, 0, 0.1) 100%);
+		border-color: rgba(230, 184, 0, 0.3);
 	}
 
 	.heading-level-buttons {
@@ -1684,8 +1684,8 @@
 	}
 
 	.heading-level-buttons .level-btn.active {
-		background: #3b82f6;
-		border-color: #3b82f6;
-		color: white;
+		background: #E6B800;
+		border-color: #E6B800;
+		color: #0D1117;
 	}
 </style>

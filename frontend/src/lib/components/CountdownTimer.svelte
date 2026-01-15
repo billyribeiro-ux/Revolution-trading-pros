@@ -136,10 +136,10 @@
 		showSeparators = true,
 		compactMode = false,
 		leadingZeros = true,
-		timerColor = '#6366f1',
+		timerColor = '#E6B800',
 		warningColor = '#f59e0b',
 		dangerColor = '#ef4444',
-		backgroundColor = 'rgba(99, 102, 241, 0.1)',
+		backgroundColor = 'rgba(230, 184, 0, 0.1)',
 		textColor = 'currentColor',
 		labelColor = '#94a3b8',
 		size = 'medium',
@@ -215,7 +215,7 @@
 	let elapsedPauseTime: number = 0;
 	let lastPauseTime: number = 0;
 	let lastUpdateTime: number = 0;
-	let currentColor: string = $state('#6366f1');
+	let currentColor: string = $state('#E6B800');
 	let previousValues: Partial<TimeData> = {};
 	let milestonesReached: Set<number> = new Set();
 
@@ -1292,7 +1292,7 @@
 	/* Dark Mode Support */
 	@media (prefers-color-scheme: dark) {
 		.countdown-timer {
-			--bg-color: rgba(99, 102, 241, 0.2);
+			--bg-color: rgba(230, 184, 0, 0.2);
 			--label-color: #cbd5e1;
 		}
 	}

@@ -63,7 +63,7 @@
 	// Colors
 	const bullColor = new THREE.Color('#22c55e');
 	const bearColor = new THREE.Color('#ef4444');
-	const gridColor = new THREE.Color('#6366f1');
+	const gridColor = new THREE.Color('#E6B800');
 
 	// Camera rotation
 	let cameraAngle = $state(0);
@@ -94,13 +94,13 @@
 </T.PerspectiveCamera>
 
 <!-- Ambient Light -->
-<T.AmbientLight intensity={0.4} color="#c7d2fe" />
+<T.AmbientLight intensity={0.4} color="#FFE680" />
 
 <!-- Main Directional Light -->
 <T.DirectionalLight position={[20, 40, 20]} intensity={1} color="#ffffff" castShadow />
 
 <!-- Fill Light -->
-<T.PointLight position={[-20, 20, -20]} intensity={0.5} color="#818cf8" />
+<T.PointLight position={[-20, 20, -20]} intensity={0.5} color="#FFD11A" />
 
 <!-- Grid Floor -->
 <T.GridHelper args={[100, 40, gridColor, new THREE.Color('#1e1b4b')]} position.y={-20} />
@@ -201,7 +201,7 @@
 			}}
 		/>
 	</T.BufferGeometry>
-	<T.LineBasicMaterial color="#8b5cf6" linewidth={2} />
+	<T.LineBasicMaterial color="#B38F00" linewidth={2} />
 </T.Line>
 
 <!-- Fog for Depth -->

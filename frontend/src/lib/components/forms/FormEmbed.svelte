@@ -323,8 +323,8 @@
 
 <style>
 	.form-embed {
-		--fe-primary: #6366f1;
-		--fe-primary-hover: #4f46e5;
+		--fe-primary: #E6B800;
+		--fe-primary-hover: #B38F00;
 		--fe-success: #10b981;
 		--fe-error: #ef4444;
 		--fe-text: #1f2937;
@@ -405,7 +405,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
 		background: var(--fe-primary);
-		color: white;
+		color: #0D1117;
 		border: none;
 		border-radius: var(--fe-radius);
 		font-size: 1rem;

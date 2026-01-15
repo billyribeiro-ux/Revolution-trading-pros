@@ -26,7 +26,7 @@
 		],
 		default_labels: [
 			{ title: 'Bug', color: '#ef4444' },
-			{ title: 'Feature', color: '#8b5cf6' },
+			{ title: 'Feature', color: '#B38F00' },
 			{ title: 'Improvement', color: '#06b6d4' }
 		],
 		time_tracking_enabled: true,
@@ -145,8 +145,8 @@
 					<IconArrowLeft class="w-5 h-5" />
 				</a>
 				<div class="flex items-center gap-3">
-					<div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-						<IconSettings class="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+					<div class="p-2 bg-[rgba(230,184,0,0.15)] dark:bg-[rgba(230,184,0,0.2)] rounded-lg">
+						<IconSettings class="w-6 h-6 text-[#E6B800] dark:text-[#FFD11A]" />
 					</div>
 					<div>
 						<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Board Settings</h1>
@@ -160,7 +160,7 @@
 	<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		{#if loading}
 			<div class="flex items-center justify-center py-12">
-				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E6B800]"></div>
 			</div>
 		{:else}
 			<div class="flex gap-8">
@@ -169,35 +169,35 @@
 					<nav class="space-y-1">
 						<button
 							onclick={() => activeTab = 'general'}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'general' ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'general' ? 'bg-[rgba(230,184,0,0.1)] dark:bg-[rgba(230,184,0,0.2)] text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconLayoutKanban class="w-4 h-4" />
 							General
 						</button>
 						<button
 							onclick={() => activeTab = 'stages'}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'stages' ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'stages' ? 'bg-[rgba(230,184,0,0.1)] dark:bg-[rgba(230,184,0,0.2)] text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconPalette class="w-4 h-4" />
 							Default Stages
 						</button>
 						<button
 							onclick={() => activeTab = 'labels'}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'labels' ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'labels' ? 'bg-[rgba(230,184,0,0.1)] dark:bg-[rgba(230,184,0,0.2)] text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconPalette class="w-4 h-4" />
 							Default Labels
 						</button>
 						<button
 							onclick={() => activeTab = 'time'}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'time' ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'time' ? 'bg-[rgba(230,184,0,0.1)] dark:bg-[rgba(230,184,0,0.2)] text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconClock class="w-4 h-4" />
 							Time Tracking
 						</button>
 						<button
 							onclick={() => activeTab = 'storage'}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'storage' ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'storage' ? 'bg-[rgba(230,184,0,0.1)] dark:bg-[rgba(230,184,0,0.2)] text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconCloud class="w-4 h-4" />
 							Cloud Storage
@@ -234,7 +234,7 @@
 									</div>
 									<label class="relative inline-flex items-center cursor-pointer">
 										<input type="checkbox" bind:checked={settings.webhooks_enabled} class="sr-only peer" />
-										<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+										<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[rgba(230,184,0,0.3)] dark:peer-focus:ring-[rgba(230,184,0,0.3)] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#E6B800]"></div>
 									</label>
 								</div>
 							</div>
@@ -289,7 +289,7 @@
 								<button
 									onclick={addStage}
 									disabled={!newStage.title.trim()}
-									class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg disabled:opacity-50"
+									class="px-3 py-1.5 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] text-sm rounded-lg disabled:opacity-50"
 								>
 									<IconPlus class="w-4 h-4" />
 								</button>
@@ -343,7 +343,7 @@
 								<button
 									onclick={addLabel}
 									disabled={!newLabel.title.trim()}
-									class="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm rounded-lg disabled:opacity-50"
+									class="px-3 py-1.5 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] text-sm rounded-lg disabled:opacity-50"
 								>
 									<IconPlus class="w-4 h-4" />
 								</button>
@@ -360,7 +360,7 @@
 									</div>
 									<label class="relative inline-flex items-center cursor-pointer">
 										<input type="checkbox" bind:checked={settings.time_tracking_enabled} class="sr-only peer" />
-										<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-indigo-300 dark:peer-focus:ring-indigo-800 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-indigo-600"></div>
+										<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[rgba(230,184,0,0.3)] dark:peer-focus:ring-[rgba(230,184,0,0.3)] rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#E6B800]"></div>
 									</label>
 								</div>
 
@@ -497,7 +497,7 @@
 										<button
 											onclick={testStorageConnection}
 											disabled={testingStorage}
-											class="px-4 py-2 text-indigo-600 hover:bg-indigo-50 dark:hover:bg-indigo-900/20 rounded-lg flex items-center gap-2 disabled:opacity-50"
+											class="px-4 py-2 text-[#E6B800] hover:bg-[rgba(230,184,0,0.1)] dark:hover:bg-[rgba(230,184,0,0.15)] rounded-lg flex items-center gap-2 disabled:opacity-50"
 										>
 											{#if testingStorage}
 												<IconRefresh class="w-4 h-4 animate-spin" />
@@ -521,7 +521,7 @@
 									<button
 										onclick={saveStorageConfig}
 										disabled={saving}
-										class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50"
+										class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50"
 									>
 										Save Storage Config
 									</button>
@@ -535,7 +535,7 @@
 								<button
 									onclick={saveSettings}
 									disabled={saving}
-									class="px-6 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50 flex items-center gap-2"
+									class="px-6 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50 flex items-center gap-2"
 								>
 									{#if saving}
 										<IconRefresh class="w-4 h-4 animate-spin" />

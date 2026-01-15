@@ -196,8 +196,8 @@
 <style>
 	.embed-generator {
 		padding: 2rem;
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 	}
 
@@ -235,7 +235,7 @@
 		gap: 0.5rem;
 		padding: 1rem;
 		background: #1e293b;
-		border: 2px solid rgba(99, 102, 241, 0.2);
+		border: 2px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		color: #94a3b8;
 		cursor: pointer;
@@ -243,14 +243,14 @@
 	}
 
 	.type-btn:hover {
-		border-color: rgba(99, 102, 241, 0.4);
-		background: rgba(99, 102, 241, 0.05);
+		border-color: rgba(230, 184, 0, 0.4);
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.type-btn.active {
-		border-color: #6366f1;
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
+		border-color: #E6B800;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 	}
 
 	.type-btn .icon {
@@ -265,7 +265,7 @@
 	.code-section,
 	.additional-section {
 		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 8px;
 		padding: 1.5rem;
 		margin-bottom: 1.5rem;
@@ -281,8 +281,8 @@
 	.copy-btn,
 	.copy-btn-small {
 		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 6px;
 		font-size: 0.75rem;
@@ -294,7 +294,7 @@
 	.copy-btn:hover,
 	.copy-btn-small:hover {
 		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
 	}
 
 	.copy-btn-small {
@@ -304,7 +304,7 @@
 
 	.code-block {
 		background: #0f172a;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
 		padding: 1rem;
 		overflow-x: auto;
@@ -322,13 +322,13 @@
 	}
 
 	.code-block code {
-		color: #a5b4fc;
+		color: #E6B800;
 	}
 
 	.usage-instructions {
 		margin-top: 1rem;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.usage-instructions p {
@@ -355,7 +355,7 @@
 
 	.urls-section {
 		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 8px;
 		padding: 1.5rem;
 	}
@@ -382,11 +382,11 @@
 		flex: 1;
 		padding: 0.5rem 0.75rem;
 		background: #0f172a;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
 		font-family: monospace;
 		font-size: 0.75rem;
-		color: #a5b4fc;
+		color: #E6B800;
 		overflow-x: auto;
 		white-space: nowrap;
 	}

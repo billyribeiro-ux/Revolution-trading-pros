@@ -96,7 +96,7 @@
 	.app-sidebar {
 		width: 260px;
 		background: linear-gradient(180deg, var(--color-rtp-surface, #1e293b) 0%, var(--color-rtp-bg, #0f172a) 100%);
-		border-right: 1px solid rgba(99, 102, 241, 0.1);
+		border-right: 1px solid rgba(230, 184, 0, 0.1);
 		display: flex;
 		flex-direction: column;
 		position: fixed;
@@ -109,7 +109,7 @@
 
 	.sidebar-header {
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -132,8 +132,8 @@
 	}
 
 	.close-btn:hover {
-		background: rgba(99, 102, 241, 0.1);
-		color: var(--color-rtp-primary, #818cf8);
+		background: rgba(230, 184, 0, 0.1);
+		color: var(--color-rtp-primary, #E6B800);
 	}
 
 	.sidebar-nav {
@@ -157,19 +157,19 @@
 	}
 
 	.nav-item:hover {
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		color: var(--color-rtp-text, #f1f5f9);
 	}
 
 	.nav-item.active {
-		background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-		color: var(--color-rtp-primary, #a5b4fc);
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		background: linear-gradient(135deg, rgba(230, 184, 0, 0.2), rgba(179, 143, 0, 0.2));
+		color: var(--color-rtp-primary, #E6B800);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 	}
 
 	.sidebar-footer {
 		padding: 1rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.user-info {
@@ -177,7 +177,7 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem;
-		background: rgba(99, 102, 241, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 		border-radius: var(--radius-lg, 0.75rem);
 		margin-bottom: 0.75rem;
 	}
@@ -186,13 +186,13 @@
 		width: 40px;
 		height: 40px;
 		border-radius: var(--radius-md, 0.5rem);
-		background: linear-gradient(135deg, var(--color-rtp-primary, #6366f1), var(--color-rtp-indigo, #8b5cf6));
+		background: linear-gradient(135deg, var(--color-rtp-primary, #E6B800), var(--color-rtp-indigo, #B38F00));
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-weight: 700;
 		font-size: 1rem;
-		color: white;
+		color: #0D1117;
 	}
 
 	.user-details {

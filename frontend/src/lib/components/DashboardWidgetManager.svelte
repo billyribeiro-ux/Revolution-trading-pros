@@ -91,7 +91,7 @@
 		analytics: '#3b82f6',
 		content: '#10b981',
 		commerce: '#f59e0b',
-		system: '#8b5cf6'
+		system: '#B38F00'
 	};
 
 	function close() {
@@ -369,7 +369,7 @@
 		max-width: 600px;
 		max-height: 80vh;
 		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 20px;
 		box-shadow:
 			0 25px 80px rgba(0, 0, 0, 0.5),
@@ -384,7 +384,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 1.25rem 1.5rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.header-left {
@@ -406,7 +406,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border: none;
 		border-radius: 10px;
 		color: #94a3b8;
@@ -415,14 +415,14 @@
 	}
 
 	.close-btn:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		color: #f1f5f9;
 	}
 
 	.manager-tabs {
 		display: flex;
 		padding: 0 1.5rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.tab {
@@ -445,8 +445,8 @@
 	}
 
 	.tab.active {
-		color: #a5b4fc;
-		border-bottom-color: #6366f1;
+		color: #E6B800;
+		border-bottom-color: #E6B800;
 	}
 
 	.manager-content {
@@ -464,7 +464,7 @@
 	}
 
 	.manager-content::-webkit-scrollbar-thumb {
-		background: rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.3);
 		border-radius: 3px;
 	}
 
@@ -485,14 +485,14 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem;
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 12px;
 		transition: all 0.2s;
 	}
 
 	.widget-item:hover {
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 	}
 
 	.widget-item.dragging {
@@ -501,8 +501,8 @@
 	}
 
 	.widget-item.drag-over {
-		border-color: #6366f1;
-		background: rgba(99, 102, 241, 0.15);
+		border-color: #E6B800;
+		background: rgba(230, 184, 0, 0.15);
 	}
 
 	.drag-handle {
@@ -553,10 +553,10 @@
 
 	.size-btn {
 		padding: 0.375rem 0.625rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
-		color: #a5b4fc;
+		color: #E6B800;
 		font-size: 0.75rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -564,7 +564,7 @@
 	}
 
 	.size-btn:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.move-btn,
@@ -574,7 +574,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border: none;
 		border-radius: 6px;
 		color: #94a3b8;
@@ -584,8 +584,8 @@
 
 	.move-btn:hover:not(:disabled),
 	.hide-btn:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.2);
+		color: #E6B800;
 	}
 
 	.move-btn:disabled {
@@ -667,8 +667,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		color: #94a3b8;
 		font-size: 0.875rem;
@@ -678,13 +678,13 @@
 	}
 
 	.layout-btn:hover {
-		background: rgba(99, 102, 241, 0.15);
+		background: rgba(230, 184, 0, 0.15);
 	}
 
 	.layout-btn.active {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.4);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.2);
+		border-color: rgba(230, 184, 0, 0.4);
+		color: #E6B800;
 	}
 
 	.toggle-row {
@@ -692,7 +692,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 0.75rem;
-		background: rgba(99, 102, 241, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 		border-radius: 10px;
 	}
 
@@ -704,7 +704,7 @@
 	.toggle-switch {
 		width: 44px;
 		height: 24px;
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		border: none;
 		border-radius: 12px;
 		cursor: pointer;
@@ -713,7 +713,7 @@
 	}
 
 	.toggle-switch.active {
-		background: #6366f1;
+		background: #E6B800;
 	}
 
 	.toggle-knob {
@@ -753,17 +753,17 @@
 
 	.manager-footer {
 		padding: 1rem 1.5rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 		display: flex;
 		justify-content: flex-end;
 	}
 
 	.done-btn {
 		padding: 0.75rem 2rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border: none;
 		border-radius: 10px;
-		color: white;
+		color: #0D1117;
 		font-size: 0.875rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -772,7 +772,7 @@
 
 	.done-btn:hover {
 		transform: translateY(-1px);
-		box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 8px 25px rgba(230, 184, 0, 0.3);
 	}
 
 	@media (max-width: 640px) {

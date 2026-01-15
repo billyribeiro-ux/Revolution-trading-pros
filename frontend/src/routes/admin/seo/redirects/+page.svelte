@@ -303,12 +303,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: #f1f5f9;
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #666;
+		color: #94a3b8;
 		font-size: 0.95rem;
 	}
 
@@ -326,12 +326,13 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-primary:hover {
-		background: #2563eb;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-danger {
@@ -351,21 +352,21 @@
 	}
 
 	.stat-card {
-		background: white;
+		background: rgba(30, 41, 59, 0.6);
 		padding: 1.5rem;
-		border-radius: 8px;
-		border: 1px solid #e5e5e5;
+		border-radius: 14px;
+		border: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.stat-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: #f1f5f9;
 		margin-bottom: 0.5rem;
 	}
 
 	.stat-label {
-		color: #666;
+		color: #94a3b8;
 		font-size: 0.9rem;
 	}
 
@@ -382,9 +383,10 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
-		background: white;
-		border: 1px solid #e5e5e5;
-		border-radius: 6px;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(230, 184, 0, 0.1);
+		border-radius: 10px;
+		color: #94a3b8;
 	}
 
 	.search-box input {
@@ -392,6 +394,8 @@
 		border: none;
 		outline: none;
 		font-size: 0.95rem;
+		background: transparent;
+		color: #e2e8f0;
 	}
 
 	.filter-tabs {
@@ -401,29 +405,30 @@
 
 	.filter-tab {
 		padding: 0.625rem 1rem;
-		background: white;
-		border: 1px solid #e5e5e5;
-		border-radius: 6px;
-		color: #666;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(230, 184, 0, 0.1);
+		border-radius: 8px;
+		color: #94a3b8;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.filter-tab:hover {
-		background: #f8f9fa;
+		background: rgba(230, 184, 0, 0.1);
+		border-color: rgba(230, 184, 0, 0.2);
 	}
 
 	.filter-tab.active {
-		background: #3b82f6;
-		color: white;
-		border-color: #3b82f6;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
+		border-color: transparent;
 	}
 
 	.redirects-table {
-		background: white;
-		border-radius: 8px;
-		border: 1px solid #e5e5e5;
+		background: rgba(15, 23, 42, 0.6);
+		border-radius: 14px;
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		overflow: hidden;
 	}
 
@@ -435,21 +440,22 @@
 	th {
 		text-align: left;
 		padding: 1rem;
-		background: #f8f9fa;
-		border-bottom: 1px solid #e5e5e5;
+		background: rgba(230, 184, 0, 0.05);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 		font-weight: 600;
-		color: #1a1a1a;
+		color: #94a3b8;
 		font-size: 0.9rem;
 	}
 
 	td {
 		padding: 1rem;
-		border-bottom: 1px solid #f0f0f0;
+		border-bottom: 1px solid rgba(230, 184, 0, 0.05);
 		font-size: 0.95rem;
+		color: #e2e8f0;
 	}
 
 	tbody tr:hover {
-		background: #f8f9fa;
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.url-cell {
@@ -461,15 +467,15 @@
 	.regex-badge {
 		display: inline-block;
 		padding: 0.125rem 0.5rem;
-		background: #eff6ff;
-		color: #3b82f6;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 600;
 	}
 
 	.destination-url {
-		color: #666;
+		color: #94a3b8;
 		max-width: 300px;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -500,8 +506,8 @@
 	}
 
 	.type-badge.type-308 {
-		background: #e0e7ff;
-		color: #6366f1;
+		background: rgba(230, 184, 0, 0.15);
+		color: #E6B800;
 	}
 
 	.type-badge.type-410 {
@@ -515,13 +521,13 @@
 		gap: 0.5rem;
 		background: none;
 		border: none;
-		color: #999;
+		color: #64748b;
 		cursor: pointer;
 		font-size: 0.9rem;
 	}
 
 	.status-toggle.active {
-		color: #16a34a;
+		color: #4ade80;
 	}
 
 	.actions {
@@ -532,15 +538,16 @@
 	.action-btn {
 		padding: 0.5rem;
 		background: none;
-		border: 1px solid #e5e5e5;
-		border-radius: 4px;
-		color: #666;
+		border: 1px solid rgba(230, 184, 0, 0.2);
+		border-radius: 6px;
+		color: #94a3b8;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.action-btn:hover {
-		background: #f8f9fa;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 	}
 
 	.action-btn.danger {
@@ -555,21 +562,22 @@
 	.empty-state {
 		text-align: center;
 		padding: 4rem 2rem;
+		color: #64748b;
 	}
 
 	.empty-state h3 {
-		color: #1a1a1a;
+		color: #f1f5f9;
 		margin-bottom: 0.5rem;
 	}
 
 	.empty-state p {
-		color: #666;
+		color: #94a3b8;
 		margin-bottom: 1.5rem;
 	}
 
 	.loading {
 		text-align: center;
 		padding: 3rem;
-		color: #999;
+		color: #94a3b8;
 	}
 </style>

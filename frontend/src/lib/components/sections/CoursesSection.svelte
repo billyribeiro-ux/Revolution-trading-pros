@@ -86,7 +86,7 @@
             badge: 'Advanced',
             badgeColor: 'bg-violet-500',
             features: ['Greeks Mastery', 'Spreads & Straddles', 'Volatility Trading'],
-            imagePattern: 'radial-gradient(circle at 50% 50%, rgba(139, 92, 246, 0.1) 0%, transparent 25%)'
+            imagePattern: 'radial-gradient(circle at 50% 50%, rgba(230, 184, 0, 0.1) 0%, transparent 25%)'
         },
         {
             id: 'risk-management',
@@ -293,7 +293,7 @@
         >
             <div 
                 class="pointer-events-none absolute -inset-px opacity-0 md:opacity-100 transition-opacity duration-300 z-0 rounded-3xl"
-                style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(139, 92, 246, 0.08), transparent 40%);"
+                style="background: radial-gradient(800px circle at var(--mouse-x) var(--mouse-y), rgba(230, 184, 0, 0.08), transparent 40%);"
             ></div>
 
             {#each courses as course}

@@ -29,20 +29,20 @@
 	}
 
 	const predefinedCategories: BlogCategory[] = [
-		{ id: 'market-analysis', name: 'Market Analysis', color: '#3b82f6' },
+		{ id: 'market-analysis', name: 'Market Analysis', color: '#E6B800' },
 		{ id: 'trading-strategies', name: 'Trading Strategies', color: '#10b981' },
 		{ id: 'risk-management', name: 'Risk Management', color: '#ef4444' },
 		{ id: 'options-trading', name: 'Options Trading', color: '#f59e0b' },
-		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#6366f1' },
+		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#E6B800' },
 		{ id: 'fundamental-analysis', name: 'Fundamental Analysis', color: '#ec4899' },
-		{ id: 'psychology', name: 'Psychology', color: '#8b5cf6' },
+		{ id: 'psychology', name: 'Psychology', color: '#B38F00' },
 		{ id: 'education', name: 'Education', color: '#14b8a6' },
 		{ id: 'news', name: 'News & Updates', color: '#06b6d4' },
 		{ id: 'earnings', name: 'Earnings', color: '#f97316' },
 		{ id: 'stocks', name: 'Stocks', color: '#84cc16' },
 		{ id: 'futures', name: 'Futures', color: '#22c55e' },
 		{ id: 'forex', name: 'Forex', color: '#0ea5e9' },
-		{ id: 'crypto', name: 'Crypto', color: '#a855f7' },
+		{ id: 'crypto', name: 'Crypto', color: '#FFD11A' },
 		{ id: 'small-accounts', name: 'Small Accounts', color: '#eab308' },
 		{ id: 'day-trading', name: 'Day Trading', color: '#d946ef' },
 		{ id: 'swing-trading', name: 'Swing Trading', color: '#64748b' },
@@ -668,12 +668,12 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: #E6B800;
+		color: #0D1117;
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		background: #2563eb;
+		background: #B38F00;
 	}
 
 	.btn-primary:disabled {
@@ -734,7 +734,7 @@
 	}
 
 	.title-input:focus {
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.1);
 	}
 
 	.slug-input {
@@ -778,7 +778,7 @@
 
 	textarea:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: #E6B800;
 	}
 
 	.panel {
@@ -861,8 +861,8 @@
 	}
 
 	.upload-box:hover {
-		border-color: #3b82f6;
-		color: #3b82f6;
+		border-color: #E6B800;
+		color: #E6B800;
 	}
 
 	.upload-box span {
@@ -954,15 +954,15 @@
 	}
 
 	.category-btn:hover {
-		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
-		border-color: color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
-		color: var(--tag-color, #6366f1);
+		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
+		border-color: color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
+		color: var(--tag-color, #E6B800);
 	}
 
 	.category-btn.selected {
-		background: color-mix(in srgb, var(--tag-color, #6366f1) 20%, transparent);
-		border-color: var(--tag-color, #6366f1);
-		color: var(--tag-color, #6366f1);
+		background: color-mix(in srgb, var(--tag-color, #E6B800) 20%, transparent);
+		border-color: var(--tag-color, #E6B800);
+		color: var(--tag-color, #E6B800);
 	}
 
 	.selected-categories {
@@ -988,12 +988,12 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.375rem 0.625rem;
-		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: var(--tag-color, #6366f1);
+		color: var(--tag-color, #E6B800);
 	}
 
 	.selected-tag button {
@@ -1055,15 +1055,15 @@
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		background: #3b82f6;
-		color: white;
+		background: #E6B800;
+		color: #0D1117;
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;
 	}
 
 	.btn-add-tag:hover {
-		background: #2563eb;
+		background: #B38F00;
 	}
 
 	.upload-loading {
@@ -1072,7 +1072,7 @@
 		align-items: center;
 		justify-content: center;
 		padding: 3rem 1rem;
-		color: #3b82f6;
+		color: #E6B800;
 	}
 
 	.upload-loading span {
@@ -1120,7 +1120,7 @@
 
 	.sidebar-panel textarea:focus {
 		outline: none;
-		border-color: #3b82f6;
+		border-color: #E6B800;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1185,7 +1185,7 @@
 
 	.toolbar-btn:hover {
 		background: #f0f0f0;
-		color: #3b82f6;
+		color: #E6B800;
 	}
 
 	/* Make BlockEditor take full height */

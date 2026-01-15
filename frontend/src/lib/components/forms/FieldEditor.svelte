@@ -440,7 +440,7 @@
 		width: 100%;
 		padding: 0.625rem 0.875rem;
 		background: #0f172a;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-size: 0.875rem;
 		color: #e2e8f0;
@@ -448,8 +448,8 @@
 
 	.form-input:focus {
 		outline: none;
-		border-color: #6366f1;
-		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+		border-color: #E6B800;
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.1);
 	}
 
 	.form-row {
@@ -478,8 +478,8 @@
 	}
 
 	.form-section {
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		padding: 1.5rem;
 		border-radius: 10px;
 	}
@@ -540,9 +540,9 @@
 	.btn-add-rule {
 		align-self: flex-start;
 		padding: 0.5rem 1rem;
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-size: 0.75rem;
 		font-weight: 500;
@@ -551,7 +551,7 @@
 	}
 
 	.btn-add-rule:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.editor-actions {
@@ -560,7 +560,7 @@
 		gap: 1rem;
 		margin-top: 2rem;
 		padding-top: 2rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.btn {
@@ -574,23 +574,23 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-primary:hover {
 		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-secondary {
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
+		border: 1px solid rgba(230, 184, 0, 0.2);
 	}
 
 	.btn-secondary:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.sr-only {

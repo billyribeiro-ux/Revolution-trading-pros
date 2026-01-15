@@ -242,21 +242,21 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border: none;
 		border-radius: 12px;
-		color: white;
+		color: #0D1117;
 		font-size: 0.875rem;
 		font-weight: 600;
 		cursor: pointer;
-		box-shadow: 0 8px 25px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 8px 25px rgba(230, 184, 0, 0.4);
 		transition: all 0.2s;
 		z-index: 1000;
 	}
 
 	.sync-float-btn:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 12px 30px rgba(99, 102, 241, 0.5);
+		box-shadow: 0 12px 30px rgba(230, 184, 0, 0.5);
 	}
 
 	.sync-details {
@@ -265,7 +265,7 @@
 		right: 1.5rem;
 		width: 280px;
 		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 14px;
 		box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
 		z-index: 1000;
@@ -277,7 +277,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 0.875rem 1rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 		color: #f1f5f9;
 		font-weight: 600;
 		font-size: 0.875rem;
@@ -289,7 +289,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border: none;
 		border-radius: 6px;
 		color: #94a3b8;
@@ -298,7 +298,7 @@
 	}
 
 	.close-details:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		color: #f1f5f9;
 	}
 
@@ -319,10 +319,10 @@
 		gap: 0.5rem;
 		width: 100%;
 		padding: 0.75rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border: none;
 		border-radius: 10px;
-		color: white;
+		color: #0D1117;
 		font-size: 0.875rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -331,7 +331,7 @@
 
 	.sync-all-btn:hover:not(:disabled) {
 		transform: translateY(-1px);
-		box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 8px 20px rgba(230, 184, 0, 0.3);
 	}
 
 	.sync-all-btn:disabled {

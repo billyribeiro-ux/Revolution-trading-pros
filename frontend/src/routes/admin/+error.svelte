@@ -57,7 +57,7 @@
 			title: 'Admin Page Not Found',
 			description:
 				'This admin page does not exist. It may have been moved or removed.',
-			color: '#6366f1',
+			color: '#E6B800',
 			showDebug: false
 		},
 		500: {
@@ -78,7 +78,7 @@
 			title: 'Service Maintenance',
 			description:
 				'The admin panel is currently undergoing maintenance. Please try again shortly.',
-			color: '#8b5cf6',
+			color: '#B38F00',
 			showDebug: false
 		}
 	};

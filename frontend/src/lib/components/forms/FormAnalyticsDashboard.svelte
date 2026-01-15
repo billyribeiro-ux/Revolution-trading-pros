@@ -361,7 +361,7 @@
 				<div class="donut-chart">
 					{#each Object.entries(deviceBreakdown) as [device, percentage], i}
 						<div class="donut-item">
-							<span class="donut-color" style="background: {['#2563eb', '#16a34a', '#f59e0b'][i]}"></span>
+							<span class="donut-color" style="background: {['#E6B800', '#16a34a', '#f59e0b'][i]}"></span>
 							<span class="donut-label">{device}</span>
 							<span class="donut-value">{percentage}%</span>
 						</div>
@@ -377,7 +377,7 @@
 						<div class="donut-item">
 							<span
 								class="donut-color"
-								style="background: {['#2563eb', '#16a34a', '#f59e0b', '#ef4444', '#8b5cf6'][i]}"
+								style="background: {['#E6B800', '#16a34a', '#f59e0b', '#ef4444', '#B38F00'][i]}"
 							></span>
 							<span class="donut-label">{browser}</span>
 							<span class="donut-value">{percentage}%</span>
@@ -394,7 +394,7 @@
 						<div class="donut-item">
 							<span
 								class="donut-color"
-								style="background: {['#2563eb', '#16a34a', '#f59e0b', '#ef4444', '#8b5cf6'][i]}"
+								style="background: {['#E6B800', '#16a34a', '#f59e0b', '#ef4444', '#B38F00'][i]}"
 							></span>
 							<span class="donut-label">{source}</span>
 							<span class="donut-value">{percentage}%</span>
@@ -518,8 +518,8 @@
 	}
 
 	.stat-card.primary {
-		background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.stat-card.success {
@@ -604,14 +604,14 @@
 
 	.bar {
 		width: 100%;
-		background: linear-gradient(180deg, #2563eb 0%, #1d4ed8 100%);
+		background: linear-gradient(180deg, #E6B800 0%, #B38F00 100%);
 		border-radius: 2px 2px 0 0;
 		min-height: 2px;
 		transition: height 0.3s ease;
 	}
 
 	.bar:hover {
-		background: #1d4ed8;
+		background: #B38F00;
 	}
 
 	.bar-label {
@@ -797,7 +797,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #e5e7eb;
-		border-top-color: #2563eb;
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}

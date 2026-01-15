@@ -117,7 +117,7 @@
 	}
 
 	function getBarColor(index: number): string {
-		const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899', '#06b6d4'];
+		const colors = ['#E6B800', '#10b981', '#f59e0b', '#ef4444', '#B38F00', '#ec4899', '#06b6d4'];
 		return colors[index % colors.length];
 	}
 
@@ -384,10 +384,10 @@
 		color: white;
 	}
 
-	.stat-icon.submissions { background-color: #3b82f6; }
+	.stat-icon.submissions { background-color: #E6B800; }
 	.stat-icon.conversion { background-color: #10b981; }
 	.stat-icon.time { background-color: #f59e0b; }
-	.stat-icon.fields { background-color: #8b5cf6; }
+	.stat-icon.fields { background-color: #B38F00; }
 
 	.stat-value {
 		font-size: 1.5rem;
@@ -435,8 +435,8 @@
 	}
 
 	.field-tab.active {
-		background-color: #3b82f6;
-		border-color: #3b82f6;
+		background-color: #E6B800;
+		border-color: #E6B800;
 		color: white;
 	}
 
@@ -542,7 +542,7 @@
 	.source-count {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #3b82f6;
+		color: #E6B800;
 	}
 
 	/* States */
@@ -561,7 +561,7 @@
 
 	.retry-btn {
 		padding: 0.5rem 1rem;
-		background-color: #3b82f6;
+		background-color: #E6B800;
 		color: white;
 		border: none;
 		border-radius: 0.375rem;
@@ -571,8 +571,8 @@
 	.spinner {
 		width: 24px;
 		height: 24px;
-		border: 3px solid rgba(59, 130, 246, 0.2);
-		border-top-color: #3b82f6;
+		border: 3px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}

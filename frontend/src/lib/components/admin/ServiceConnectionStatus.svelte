@@ -167,7 +167,7 @@
 			name: serviceName || 'Service',
 			description: description || 'Connect this service to enable features',
 			icon: icon || '🔌',
-			color: color || '#6366f1',
+			color: color || '#E6B800',
 			features: [],
 			primaryService: serviceKey
 		};
@@ -395,7 +395,7 @@
 		transform: translateX(-50%);
 		width: 400px;
 		height: 400px;
-		background: radial-gradient(circle, var(--glow-color, #6366f1) 0%, transparent 70%);
+		background: radial-gradient(circle, var(--glow-color, #E6B800) 0%, transparent 70%);
 		opacity: 0.08;
 		pointer-events: none;
 	}
@@ -403,7 +403,7 @@
 	.decorative-orb {
 		position: absolute;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--orb-color, #6366f1), transparent);
+		background: linear-gradient(135deg, var(--orb-color, #E6B800), transparent);
 		opacity: 0.03;
 		pointer-events: none;
 	}
@@ -561,20 +561,20 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 2rem;
-		background: linear-gradient(135deg, var(--btn-color, #6366f1), color-mix(in srgb, var(--btn-color, #6366f1), #8b5cf6 40%));
-		color: white;
+		background: linear-gradient(135deg, var(--btn-color, #E6B800), color-mix(in srgb, var(--btn-color, #E6B800), #B38F00 40%));
+		color: #0D1117;
 		border: none;
 		border-radius: 16px;
 		font-size: 1rem;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: 0 10px 30px color-mix(in srgb, var(--btn-color, #6366f1) 30%, transparent);
+		box-shadow: 0 10px 30px color-mix(in srgb, var(--btn-color, #E6B800) 30%, transparent);
 	}
 
 	.connect-button:hover {
 		transform: translateY(-3px);
-		box-shadow: 0 15px 40px color-mix(in srgb, var(--btn-color, #6366f1) 40%, transparent);
+		box-shadow: 0 15px 40px color-mix(in srgb, var(--btn-color, #E6B800) 40%, transparent);
 	}
 
 	.connect-button:active {
@@ -799,10 +799,10 @@
 	}
 
 	.service-status-minimal:hover {
-		background: color-mix(in srgb, var(--btn-color, #6366f1) 10%, transparent);
-		border-color: color-mix(in srgb, var(--btn-color, #6366f1) 40%, transparent);
+		background: color-mix(in srgb, var(--btn-color, #E6B800) 10%, transparent);
+		border-color: color-mix(in srgb, var(--btn-color, #E6B800) 40%, transparent);
 		border-style: solid;
-		color: var(--btn-color, #6366f1);
+		color: var(--btn-color, #E6B800);
 	}
 
 	.plug-icon {

@@ -236,10 +236,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
-		color: #a5b4fc;
+		color: #E6B800;
 		font-size: 0.875rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -247,13 +247,13 @@
 	}
 
 	.export-btn:hover:not(.disabled) {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.4);
+		background: rgba(230, 184, 0, 0.2);
+		border-color: rgba(230, 184, 0, 0.4);
 	}
 
 	.export-btn.open {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.4);
+		background: rgba(230, 184, 0, 0.2);
+		border-color: rgba(230, 184, 0, 0.4);
 	}
 
 	.export-btn.disabled {
@@ -284,7 +284,7 @@
 		right: 0;
 		min-width: 180px;
 		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 12px;
 		padding: 0.5rem;
 		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
@@ -309,7 +309,7 @@
 	}
 
 	.dropdown-item:hover:not(:disabled) {
-		background: rgba(99, 102, 241, 0.15);
+		background: rgba(230, 184, 0, 0.15);
 		color: #f1f5f9;
 	}
 

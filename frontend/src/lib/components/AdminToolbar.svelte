@@ -987,13 +987,13 @@
 		width: 28px;
 		height: 28px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		font-size: 0.75rem;
 		font-weight: 700;
-		color: white;
+		color: #0D1117;
 		flex-shrink: 0;
 	}
 
@@ -1124,11 +1124,11 @@
 
 	.role-badge {
 		padding: 0.125rem 0.375rem;
-		background: rgba(59, 130, 246, 0.2);
-		border: 1px solid rgba(59, 130, 246, 0.4);
+		background: rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.4);
 		border-radius: 4px;
 		font-size: 0.6875rem;
-		color: var(--accent-hover);
+		color: #E6B800;
 		font-weight: 600;
 		text-transform: uppercase;
 	}
@@ -1152,8 +1152,8 @@
 	}
 
 	.dropdown-item:hover:not(:disabled) {
-		background: rgba(59, 130, 246, 0.1);
-		color: var(--accent-hover);
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 	}
 
 	.dropdown-item:focus-visible {

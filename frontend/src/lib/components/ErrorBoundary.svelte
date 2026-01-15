@@ -234,8 +234,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -245,7 +245,7 @@
 
 	.btn-retry:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-home {

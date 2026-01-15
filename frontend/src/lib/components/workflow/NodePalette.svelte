@@ -29,14 +29,14 @@
 			name: 'Action',
 			description: 'Perform an action',
 			icon: '⚙️',
-			color: '#3b82f6'
+			color: '#E6B800'
 		},
 		{
 			type: 'delay',
 			name: 'Delay',
 			description: 'Wait for time period',
 			icon: '⏱️',
-			color: '#8b5cf6'
+			color: '#B38F00'
 		},
 		{
 			type: 'branch',

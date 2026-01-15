@@ -292,7 +292,7 @@
 <style>
 	.theme-customizer {
 		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 12px;
 		padding: 1.5rem;
 	}
@@ -335,7 +335,7 @@
 
 	.theme-card {
 		background: #0f172a;
-		border: 2px solid rgba(99, 102, 241, 0.1);
+		border: 2px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		padding: 0.75rem;
 		cursor: pointer;
@@ -343,13 +343,13 @@
 	}
 
 	.theme-card:hover {
-		border-color: rgba(99, 102, 241, 0.3);
+		border-color: rgba(230, 184, 0, 0.3);
 		transform: translateY(-2px);
 	}
 
 	.theme-card.active {
-		border-color: #6366f1;
-		box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.2);
+		border-color: #E6B800;
+		box-shadow: 0 0 0 2px rgba(230, 184, 0, 0.2);
 	}
 
 	.theme-preview {
@@ -393,9 +393,9 @@
 	.btn-customize {
 		width: 100%;
 		padding: 0.875rem;
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-weight: 600;
 		font-size: 0.9375rem;
@@ -404,8 +404,8 @@
 	}
 
 	.btn-customize:hover {
-		background: rgba(99, 102, 241, 0.2);
-		border-color: rgba(99, 102, 241, 0.4);
+		background: rgba(230, 184, 0, 0.2);
+		border-color: rgba(230, 184, 0, 0.4);
 	}
 
 	.custom-controls {
@@ -450,7 +450,7 @@
 	.color-input-wrapper input[type='color'] {
 		width: 40px;
 		height: 40px;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
 		cursor: pointer;
 		background: transparent;
@@ -478,14 +478,14 @@
 	}
 
 	.radio-label input[type='radio'] {
-		accent-color: #6366f1;
+		accent-color: #E6B800;
 	}
 
 	.custom-actions {
 		display: flex;
 		gap: 1rem;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.btn-cancel,
@@ -502,23 +502,23 @@
 	.btn-cancel {
 		background: transparent;
 		color: #94a3b8;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 	}
 
 	.btn-cancel:hover {
-		background: rgba(99, 102, 241, 0.05);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.05);
+		color: #E6B800;
 	}
 
 	.btn-apply {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 	}
 
 	.btn-apply:hover {
 		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
 	}
 
 	.theme-preview-section h4 {
@@ -531,7 +531,7 @@
 	}
 
 	.live-preview {
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		padding: 2rem;
 		min-height: 300px;

@@ -88,13 +88,13 @@
 		gap: 1rem;
 		padding: 1.25rem;
 		background: var(--color-rtp-surface, rgba(30, 41, 59, 0.6));
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: var(--radius-xl, 1rem);
 		transition: all 0.2s;
 	}
 
 	.stat-card:hover {
-		border-color: rgba(99, 102, 241, 0.2);
+		border-color: rgba(230, 184, 0, 0.2);
 		transform: translateY(-2px);
 	}
 
@@ -167,7 +167,7 @@
 	.skeleton-value {
 		height: 2rem;
 		width: 60%;
-		background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 25%, rgba(99, 102, 241, 0.2) 50%, rgba(99, 102, 241, 0.1) 75%);
+		background: linear-gradient(90deg, rgba(230, 184, 0, 0.1) 25%, rgba(230, 184, 0, 0.2) 50%, rgba(230, 184, 0, 0.1) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: var(--radius-md, 0.5rem);
@@ -177,7 +177,7 @@
 		height: 1rem;
 		width: 40%;
 		margin-top: 0.5rem;
-		background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 25%, rgba(99, 102, 241, 0.2) 50%, rgba(99, 102, 241, 0.1) 75%);
+		background: linear-gradient(90deg, rgba(230, 184, 0, 0.1) 25%, rgba(230, 184, 0, 0.2) 50%, rgba(230, 184, 0, 0.1) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: var(--radius-sm, 0.375rem);

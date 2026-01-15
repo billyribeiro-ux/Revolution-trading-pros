@@ -59,11 +59,11 @@
 		const colors: Record<string, string> = {
 			trigger: '#10b981',
 			condition: '#f59e0b',
-			action: '#3b82f6',
-			delay: '#8b5cf6',
+			action: '#E6B800',
+			delay: '#B38F00',
 			branch: '#ec4899',
 			parallel: '#06b6d4',
-			merge: '#6366f1',
+			merge: '#E6B800',
 			end: '#ef4444'
 		};
 		return colors[type] || '#6b7280';
@@ -157,7 +157,7 @@
 	}
 
 	.workflow-node.selected {
-		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.3);
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.3);
 		z-index: 20;
 	}
 
@@ -235,7 +235,7 @@
 		width: 12px;
 		height: 12px;
 		background: white;
-		border: 2px solid #3b82f6;
+		border: 2px solid #E6B800;
 		border-radius: 50%;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -245,7 +245,7 @@
 		width: 16px;
 		height: 16px;
 		margin: -2px;
-		background: #3b82f6;
+		background: #E6B800;
 	}
 
 	.connection-point.input {

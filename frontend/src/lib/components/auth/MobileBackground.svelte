@@ -132,7 +132,7 @@
 		position: absolute;
 		width: 4px;
 		height: 4px;
-		background: rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.3);
 		border-radius: 50%;
 		animation: float var(--duration) ease-in-out infinite;
 		animation-delay: var(--delay);
@@ -154,8 +154,8 @@
 		position: absolute;
 		inset: 0;
 		background-image:
-			linear-gradient(rgba(99, 102, 241, 0.03) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(99, 102, 241, 0.03) 1px, transparent 1px);
+			linear-gradient(rgba(230, 184, 0, 0.03) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(230, 184, 0, 0.03) 1px, transparent 1px);
 		background-size: 40px 40px;
 		opacity: 0.5;
 	}
@@ -183,13 +183,13 @@
 
 	:global(html.light) .dot,
 	:global(body.light) .dot {
-		background: rgba(79, 70, 229, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	:global(html.light) .grid-pattern,
 	:global(body.light) .grid-pattern {
 		background-image:
-			linear-gradient(rgba(79, 70, 229, 0.04) 1px, transparent 1px),
-			linear-gradient(90deg, rgba(79, 70, 229, 0.04) 1px, transparent 1px);
+			linear-gradient(rgba(230, 184, 0, 0.04) 1px, transparent 1px),
+			linear-gradient(90deg, rgba(230, 184, 0, 0.04) 1px, transparent 1px);
 	}
 </style>

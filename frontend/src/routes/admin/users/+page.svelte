@@ -363,12 +363,12 @@
 		align-items: center;
 		gap: 0.25rem;
 		padding: 0.25rem 0.75rem;
-		background: rgba(139, 92, 246, 0.1);
-		border: 1px solid rgba(139, 92, 246, 0.3);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 6px;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #a78bfa;
+		color: #E6B800;
 		text-transform: uppercase;
 	}
 

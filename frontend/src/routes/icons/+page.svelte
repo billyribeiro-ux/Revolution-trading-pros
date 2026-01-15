@@ -52,9 +52,9 @@
         { type: 'line', name: 'Line Chart', color: '#3b82f6' },
         { type: 'line', name: 'Smooth Line', color: '#ef4444' },
         { type: 'line', name: 'Multi-Line', color: '#06b6d4' },
-        { type: 'line', name: 'Step Chart', color: '#8b5cf6' },
+        { type: 'line', name: 'Step Chart', color: '#B38F00' },
         { type: 'line', name: 'Curved Line', color: '#10b981' },
-        { type: 'area', name: 'Area Chart', color: '#8b5cf6' },
+        { type: 'area', name: 'Area Chart', color: '#B38F00' },
         { type: 'area', name: 'Gradient Area', color: '#f59e0b' },
         { type: 'area', name: 'Stream Graph', color: '#06b6d4' },
         { type: 'area', name: 'Stacked Area', color: '#10b981' },
@@ -69,7 +69,7 @@
         { type: 'pie', name: 'Donut Chart', color: '#f472b6' },
         { type: 'scatter', name: 'Scatter Plot', color: '#06b6d4' },
         { type: 'scatter', name: 'Bubble Chart', color: '#a855f7' },
-        { type: 'heatmap', name: 'Heatmap', color: '#8b5cf6' },
+        { type: 'heatmap', name: 'Heatmap', color: '#B38F00' },
         { type: 'radar', name: 'Radar Chart', color: '#10b981' }
     ] as const;
 

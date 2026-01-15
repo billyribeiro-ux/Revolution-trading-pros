@@ -279,23 +279,23 @@
 	}
 
 	.drop-zone {
-		border: 2px dashed rgba(99, 102, 241, 0.3);
+		border: 2px dashed rgba(230, 184, 0, 0.3);
 		border-radius: 12px;
 		padding: 2.5rem 2rem;
 		text-align: center;
 		cursor: pointer;
 		transition: all 0.2s;
-		background: rgba(99, 102, 241, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.drop-zone:hover,
 	.drop-zone.dragging {
-		border-color: #6366f1;
-		background: rgba(99, 102, 241, 0.1);
+		border-color: #E6B800;
+		background: rgba(230, 184, 0, 0.1);
 	}
 
 	.drop-zone:focus {
-		outline: 2px solid #6366f1;
+		outline: 2px solid #E6B800;
 		outline-offset: 2px;
 	}
 
@@ -309,7 +309,7 @@
 	.upload-icon {
 		width: 48px;
 		height: 48px;
-		color: #6366f1;
+		color: #E6B800;
 		margin-bottom: 0.5rem;
 	}
 
@@ -417,7 +417,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #6366f1, #8b5cf6);
+		background: linear-gradient(90deg, #E6B800, #B38F00);
 		transition: width 0.3s;
 		border-radius: 4px;
 	}
@@ -427,9 +427,9 @@
 		animation: indeterminate 1.5s infinite ease-in-out;
 		background: linear-gradient(
 			90deg,
-			rgba(99, 102, 241, 0.3) 0%,
-			#6366f1 50%,
-			rgba(99, 102, 241, 0.3) 100%
+			rgba(230, 184, 0, 0.3) 0%,
+			#E6B800 50%,
+			rgba(230, 184, 0, 0.3) 100%
 		);
 		background-size: 200% 100%;
 	}
@@ -459,10 +459,10 @@
 		width: 100%;
 		margin-top: 1rem;
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 		border: none;
 		border-radius: 8px;
-		color: white;
+		color: #0D1117;
 		font-size: 0.9375rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -471,7 +471,7 @@
 
 	.btn-upload:hover {
 		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-upload svg {
@@ -510,14 +510,14 @@
 	.btn-link {
 		background: transparent;
 		border: none;
-		color: #818cf8;
+		color: #FFD11A;
 		font-size: 0.875rem;
 		cursor: pointer;
 		text-decoration: underline;
 	}
 
 	.btn-link:hover {
-		color: #a5b4fc;
+		color: #E6B800;
 	}
 
 	.error-message {

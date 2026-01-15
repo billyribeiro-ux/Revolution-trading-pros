@@ -1130,7 +1130,7 @@
 		background-clip: text;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
-		background-image: linear-gradient(to right, #3b82f6, #6366f1);
+		background-image: linear-gradient(to right, #E6B800, #B38F00);
 	}
 
 	/* Animation: Ticker */

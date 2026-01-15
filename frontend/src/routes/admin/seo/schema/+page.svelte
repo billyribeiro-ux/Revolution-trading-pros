@@ -214,12 +214,12 @@
 	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		color: #1a1a1a;
+		color: #f1f5f9;
 		margin-bottom: 0.5rem;
 	}
 
 	.page-header p {
-		color: #666;
+		color: #94a3b8;
 		font-size: 0.95rem;
 	}
 
@@ -228,16 +228,17 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: #3b82f6;
-		color: white;
-		border-radius: 6px;
-		font-weight: 500;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
+		border-radius: 10px;
+		font-weight: 600;
 		text-decoration: none;
-		transition: background 0.2s;
+		transition: all 0.2s;
 	}
 
 	.btn-primary:hover {
-		background: #2563eb;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
 	}
 
 	.schema-grid {
@@ -248,15 +249,16 @@
 	}
 
 	.schema-card {
-		background: white;
-		border: 1px solid #e5e5e5;
-		border-radius: 8px;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(230, 184, 0, 0.1);
+		border-radius: 14px;
 		overflow: hidden;
-		transition: box-shadow 0.2s;
+		transition: all 0.2s;
 	}
 
 	.schema-card:hover {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		border-color: rgba(230, 184, 0, 0.3);
+		transform: translateY(-2px);
 	}
 
 	.card-header {
@@ -264,14 +266,14 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1rem;
-		background: #f8f9fa;
-		border-bottom: 1px solid #e5e5e5;
+		background: rgba(230, 184, 0, 0.05);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.schema-type {
 		font-size: 0.85rem;
 		font-weight: 600;
-		color: #8b5cf6;
+		color: #E6B800;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
@@ -283,16 +285,17 @@
 
 	.action-btn {
 		padding: 0.5rem;
-		background: white;
-		border: 1px solid #e5e5e5;
-		border-radius: 4px;
-		color: #666;
+		background: transparent;
+		border: 1px solid rgba(230, 184, 0, 0.2);
+		border-radius: 6px;
+		color: #94a3b8;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.action-btn:hover {
-		background: #f0f0f0;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 	}
 
 	.action-btn.danger {
@@ -311,26 +314,26 @@
 	.card-body h4 {
 		font-size: 1.1rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: #f1f5f9;
 		margin-bottom: 0.5rem;
 	}
 
 	.meta {
 		font-size: 0.85rem;
-		color: #666;
+		color: #94a3b8;
 	}
 
 	.meta strong {
-		color: #1a1a1a;
+		color: #e2e8f0;
 	}
 
 	.card-footer {
 		padding: 1rem 1.5rem;
-		border-top: 1px solid #f0f0f0;
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.edit-link {
-		color: #3b82f6;
+		color: #E6B800;
 		text-decoration: none;
 		font-weight: 500;
 		font-size: 0.9rem;
@@ -344,16 +347,16 @@
 		grid-column: 1 / -1;
 		text-align: center;
 		padding: 4rem 2rem;
-		color: #999;
+		color: #64748b;
 	}
 
 	.empty-state h3 {
-		color: #1a1a1a;
+		color: #f1f5f9;
 		margin: 1rem 0 0.5rem;
 	}
 
 	.empty-state p {
-		color: #666;
+		color: #94a3b8;
 		margin-bottom: 1.5rem;
 	}
 
@@ -364,7 +367,7 @@
 	.templates-section h2 {
 		font-size: 1.5rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: #f1f5f9;
 		margin-bottom: 1.5rem;
 	}
 
@@ -376,9 +379,9 @@
 
 	.type-card {
 		padding: 1.25rem;
-		background: white;
-		border: 1px solid #e5e5e5;
-		border-radius: 6px;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(230, 184, 0, 0.1);
+		border-radius: 10px;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -387,19 +390,19 @@
 	}
 
 	.type-card:hover {
-		border-color: #8b5cf6;
-		box-shadow: 0 2px 8px rgba(139, 92, 246, 0.1);
+		border-color: rgba(230, 184, 0, 0.3);
+		box-shadow: 0 2px 8px rgba(230, 184, 0, 0.1);
 	}
 
 	.type-name {
 		font-weight: 600;
-		color: #1a1a1a;
+		color: #f1f5f9;
 		margin-bottom: 0.75rem;
 	}
 
 	.use-template {
 		font-size: 0.85rem;
-		color: #8b5cf6;
+		color: #E6B800;
 		text-decoration: none;
 	}
 
@@ -411,7 +414,7 @@
 		grid-column: 1 / -1;
 		text-align: center;
 		padding: 3rem;
-		color: #999;
+		color: #94a3b8;
 	}
 
 	.modal-overlay {
@@ -429,8 +432,9 @@
 	}
 
 	.modal {
-		background: white;
-		border-radius: 12px;
+		background: #1e293b;
+		border: 1px solid rgba(230, 184, 0, 0.2);
+		border-radius: 16px;
 		width: 100%;
 		max-width: 700px;
 		max-height: 90vh;
@@ -443,7 +447,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.modal-header h3 {
@@ -452,7 +456,7 @@
 		gap: 0.5rem;
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #1a1a1a;
+		color: #f1f5f9;
 		margin: 0;
 	}
 
@@ -466,23 +470,23 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: #3b82f6;
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
-		border-radius: 6px;
+		border-radius: 8px;
 		cursor: pointer;
-		font-weight: 500;
+		font-weight: 600;
 	}
 
 	.btn-copy:hover {
-		background: #2563eb;
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
 	}
 
 	.close-btn {
 		background: none;
 		border: none;
 		font-size: 2rem;
-		color: #666;
+		color: #94a3b8;
 		cursor: pointer;
 		line-height: 1;
 	}

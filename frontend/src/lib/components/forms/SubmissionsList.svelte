@@ -345,8 +345,8 @@
 	}
 
 	.stat-card {
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		padding: 1.5rem;
 		text-align: center;
@@ -355,7 +355,7 @@
 	.stat-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #a5b4fc;
+		color: #E6B800;
 		margin-bottom: 0.5rem;
 	}
 
@@ -385,7 +385,7 @@
 	.filter-select {
 		padding: 0.5rem 1rem;
 		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		color: #e2e8f0;
 		font-size: 0.875rem;
@@ -405,10 +405,10 @@
 
 	.btn-bulk {
 		padding: 0.5rem 0.875rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
-		color: #a5b4fc;
+		color: #E6B800;
 		font-size: 0.75rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -416,7 +416,7 @@
 	}
 
 	.btn-bulk:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.btn-bulk.btn-danger {
@@ -431,8 +431,8 @@
 
 	.btn-export {
 		padding: 0.625rem 1.25rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -443,7 +443,7 @@
 
 	.btn-export:hover {
 		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
 	}
 
 	.loading,
@@ -460,7 +460,7 @@
 
 	.table-container {
 		overflow-x: auto;
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 	}
 
@@ -471,7 +471,7 @@
 	}
 
 	.submissions-table thead {
-		background: rgba(99, 102, 241, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.submissions-table th {
@@ -482,22 +482,22 @@
 		color: #94a3b8;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.submissions-table td {
 		padding: 1rem;
 		font-size: 0.875rem;
 		color: #e2e8f0;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.05);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.05);
 	}
 
 	.submissions-table tbody tr:hover {
-		background: rgba(99, 102, 241, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.submissions-table tbody tr.selected {
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 	}
 
 	.submission-id {
@@ -555,7 +555,7 @@
 	}
 
 	.field-more {
-		color: #6366f1;
+		color: #E6B800;
 		font-size: 0.7rem;
 	}
 
@@ -568,7 +568,7 @@
 	.status-select {
 		padding: 0.375rem 0.625rem;
 		background: #0f172a;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
 		color: #e2e8f0;
 		font-size: 0.75rem;
@@ -600,7 +600,7 @@
 	.btn-page {
 		padding: 0.5rem 1rem;
 		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		color: #e2e8f0;
 		font-size: 0.875rem;
@@ -609,8 +609,8 @@
 	}
 
 	.btn-page:hover:not(:disabled) {
-		background: rgba(99, 102, 241, 0.1);
-		border-color: rgba(99, 102, 241, 0.4);
+		background: rgba(230, 184, 0, 0.1);
+		border-color: rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-page:disabled {

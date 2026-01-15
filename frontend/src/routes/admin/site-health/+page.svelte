@@ -1010,7 +1010,7 @@
 	.blob-3 {
 		width: 350px;
 		height: 350px;
-		background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+		background: linear-gradient(135deg, #FFD11A, #E6B800);
 		top: 50%;
 		right: 20%;
 		animation-delay: -14s;
@@ -1378,7 +1378,7 @@
 
 	.tab.active {
 		background: rgba(230, 184, 0, 0.2);
-		color: #f9a8d4;
+		color: #E6B800;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
@@ -1424,7 +1424,7 @@
 	}
 
 	.overview-card.performance .card-icon {
-		background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 	}
 
 	.overview-card.security .card-icon {
@@ -1432,7 +1432,7 @@
 	}
 
 	.overview-card.database .card-icon {
-		background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 	}
 
 	.overview-card.server .card-icon {
@@ -1755,7 +1755,7 @@
 
 	.metric-progress {
 		height: 100%;
-		background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(90deg, #E6B800, #B38F00);
 		border-radius: 3px;
 		transition: width 0.5s ease-out;
 	}

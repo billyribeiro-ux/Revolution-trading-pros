@@ -453,8 +453,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: #3b82f6;
-		color: white;
+		background: #E6B800;
+		color: #0D1117;
 		border: none;
 		border-radius: 8px;
 		font-weight: 500;
@@ -463,7 +463,7 @@
 	}
 
 	.scan-button:hover:not(:disabled) {
-		background: #2563eb;
+		background: #B38F00;
 	}
 
 	.scan-button:disabled {
@@ -486,7 +486,7 @@
 
 	.progress-bar {
 		height: 100%;
-		background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		transition: width 0.3s ease;
 	}
 
@@ -520,8 +520,8 @@
 	}
 
 	.card-icon.groups {
-		background: #dbeafe;
-		color: #3b82f6;
+		background: rgba(230, 184, 0, 0.15);
+		color: #E6B800;
 	}
 
 	.card-icon.files {
@@ -628,8 +628,8 @@
 		width: 3rem;
 		height: 3rem;
 		border-width: 3px;
-		border-color: rgba(59, 130, 246, 0.2);
-		border-top-color: #3b82f6;
+		border-color: rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		margin-bottom: 1rem;
 	}
 
@@ -743,8 +743,8 @@
 	.usage-badge {
 		display: inline-block;
 		padding: 0.125rem 0.5rem;
-		background: #dbeafe;
-		color: #3b82f6;
+		background: rgba(230, 184, 0, 0.15);
+		color: #E6B800;
 		font-size: 0.625rem;
 		font-weight: 500;
 		border-radius: 9999px;
@@ -856,8 +856,8 @@
 	}
 
 	.file-option.selected .file-option-content {
-		border-color: #3b82f6;
-		background: #eff6ff;
+		border-color: #E6B800;
+		background: rgba(230, 184, 0, 0.1);
 	}
 
 	.file-option-thumbnail {
@@ -894,7 +894,7 @@
 
 	.file-option-usage {
 		font-size: 0.75rem;
-		color: #3b82f6;
+		color: #E6B800;
 	}
 
 	.keep-badge {

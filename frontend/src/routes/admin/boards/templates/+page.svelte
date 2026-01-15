@@ -48,7 +48,7 @@
 			],
 			labels: [
 				{ title: 'Bug', color: '#ef4444' },
-				{ title: 'Feature', color: '#8b5cf6' },
+				{ title: 'Feature', color: '#B38F00' },
 				{ title: 'Enhancement', color: '#06b6d4' }
 			],
 			custom_fields: [],
@@ -62,7 +62,7 @@
 			category: 'software',
 			stages: [
 				{ title: 'Backlog', color: '#6b7280', position: 1, auto_complete: false },
-				{ title: 'Sprint Planning', color: '#8b5cf6', position: 2, auto_complete: false },
+				{ title: 'Sprint Planning', color: '#B38F00', position: 2, auto_complete: false },
 				{ title: 'In Development', color: '#3b82f6', position: 3, auto_complete: false },
 				{ title: 'Code Review', color: '#f59e0b', position: 4, auto_complete: false },
 				{ title: 'QA Testing', color: '#ec4899', position: 5, auto_complete: false },
@@ -70,7 +70,7 @@
 			],
 			labels: [
 				{ title: 'Bug', color: '#ef4444' },
-				{ title: 'Feature', color: '#8b5cf6' },
+				{ title: 'Feature', color: '#B38F00' },
 				{ title: 'Tech Debt', color: '#f59e0b' },
 				{ title: 'Documentation', color: '#06b6d4' },
 				{ title: 'Critical', color: '#dc2626' }
@@ -85,7 +85,7 @@
 			description: 'Track content from ideation to publication',
 			category: 'marketing',
 			stages: [
-				{ title: 'Ideas', color: '#8b5cf6', position: 1, auto_complete: false },
+				{ title: 'Ideas', color: '#B38F00', position: 1, auto_complete: false },
 				{ title: 'Research', color: '#3b82f6', position: 2, auto_complete: false },
 				{ title: 'Writing', color: '#f59e0b', position: 3, auto_complete: false },
 				{ title: 'Editing', color: '#ec4899', position: 4, auto_complete: false },
@@ -97,7 +97,7 @@
 				{ title: 'Blog', color: '#3b82f6' },
 				{ title: 'Social', color: '#ec4899' },
 				{ title: 'Video', color: '#ef4444' },
-				{ title: 'Newsletter', color: '#8b5cf6' }
+				{ title: 'Newsletter', color: '#B38F00' }
 			],
 			custom_fields: [],
 			is_default: false,
@@ -110,7 +110,7 @@
 			category: 'education',
 			stages: [
 				{ title: 'Planning', color: '#6b7280', position: 1, auto_complete: false },
-				{ title: 'Scripting', color: '#8b5cf6', position: 2, auto_complete: false },
+				{ title: 'Scripting', color: '#B38F00', position: 2, auto_complete: false },
 				{ title: 'Recording', color: '#3b82f6', position: 3, auto_complete: false },
 				{ title: 'Editing', color: '#f59e0b', position: 4, auto_complete: false },
 				{ title: 'Review', color: '#ec4899', position: 5, auto_complete: false },
@@ -118,7 +118,7 @@
 			],
 			labels: [
 				{ title: 'Video', color: '#ef4444' },
-				{ title: 'Quiz', color: '#8b5cf6' },
+				{ title: 'Quiz', color: '#B38F00' },
 				{ title: 'Resource', color: '#06b6d4' },
 				{ title: 'Assignment', color: '#f59e0b' }
 			],
@@ -136,7 +136,7 @@
 				{ title: 'Development', color: '#3b82f6', position: 2, auto_complete: false },
 				{ title: 'Testing', color: '#f59e0b', position: 3, auto_complete: false },
 				{ title: 'Marketing Prep', color: '#ec4899', position: 4, auto_complete: false },
-				{ title: 'Pre-Launch', color: '#8b5cf6', position: 5, auto_complete: false },
+				{ title: 'Pre-Launch', color: '#B38F00', position: 5, auto_complete: false },
 				{ title: 'Launched', color: '#22c55e', position: 6, auto_complete: true }
 			],
 			labels: [
@@ -157,7 +157,7 @@
 			stages: [
 				{ title: 'Lead', color: '#6b7280', position: 1, auto_complete: false },
 				{ title: 'Contacted', color: '#3b82f6', position: 2, auto_complete: false },
-				{ title: 'Qualified', color: '#8b5cf6', position: 3, auto_complete: false },
+				{ title: 'Qualified', color: '#B38F00', position: 3, auto_complete: false },
 				{ title: 'Proposal', color: '#f59e0b', position: 4, auto_complete: false },
 				{ title: 'Negotiation', color: '#ec4899', position: 5, auto_complete: false },
 				{ title: 'Won', color: '#22c55e', position: 6, auto_complete: true },
@@ -167,7 +167,7 @@
 				{ title: 'Hot Lead', color: '#ef4444' },
 				{ title: 'Warm Lead', color: '#f59e0b' },
 				{ title: 'Cold Lead', color: '#3b82f6' },
-				{ title: 'Enterprise', color: '#8b5cf6' }
+				{ title: 'Enterprise', color: '#B38F00' }
 			],
 			custom_fields: [],
 			is_default: false,
@@ -264,8 +264,8 @@
 						<IconArrowLeft class="w-5 h-5" />
 					</a>
 					<div class="flex items-center gap-3">
-						<div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-							<IconTemplate class="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+						<div class="p-2 bg-[rgba(230,184,0,0.15)] dark:bg-[rgba(230,184,0,0.2)] rounded-lg">
+							<IconTemplate class="w-6 h-6 text-[#E6B800] dark:text-[#FFD11A]" />
 						</div>
 						<div>
 							<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Board Templates</h1>
@@ -286,21 +286,21 @@
 					type="text"
 					placeholder="Search templates..."
 					bind:value={searchQuery}
-					class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+					class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
 				/>
 			</div>
 
 			<div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
 				<button
 					onclick={() => selectedCategory = null}
-					class="px-4 py-2 text-sm whitespace-nowrap rounded-lg {selectedCategory === null ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}"
+					class="px-4 py-2 text-sm whitespace-nowrap rounded-lg {selectedCategory === null ? 'bg-[#E6B800] text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}"
 				>
 					All
 				</button>
 				{#each categories as category}
 					<button
 						onclick={() => selectedCategory = category.id}
-						class="px-4 py-2 text-sm whitespace-nowrap rounded-lg flex items-center gap-2 {selectedCategory === category.id ? 'bg-indigo-600 text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}"
+						class="px-4 py-2 text-sm whitespace-nowrap rounded-lg flex items-center gap-2 {selectedCategory === category.id ? 'bg-[#E6B800] text-white' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}"
 					>
 						<category.icon class="w-4 h-4" />
 						{category.name}
@@ -312,7 +312,7 @@
 		<!-- Templates Grid -->
 		{#if loading}
 			<div class="flex items-center justify-center py-12">
-				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E6B800]"></div>
 			</div>
 		{:else if filteredTemplates.length === 0}
 			<div class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -326,7 +326,7 @@
 					{@const CategoryIcon = getCategoryIcon(template.category)}
 					<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow">
 						<!-- Preview Header -->
-						<div class="h-32 bg-gradient-to-br from-indigo-500 to-purple-600 p-4 flex items-end">
+						<div class="h-32 bg-gradient-to-br from-[#E6B800] to-[#B38F00] p-4 flex items-end">
 							<div class="flex gap-2">
 								{#each template.stages.slice(0, 4) as stage}
 									<div
@@ -356,7 +356,7 @@
 								<CategoryIcon class="w-4 h-4 text-gray-400" />
 								<span class="text-xs text-gray-500 dark:text-gray-400 capitalize">{template.category}</span>
 								{#if template.is_default}
-									<span class="text-xs bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400 px-2 py-0.5 rounded">Default</span>
+									<span class="text-xs bg-[rgba(230,184,0,0.15)] dark:bg-[rgba(230,184,0,0.2)] text-[#E6B800] dark:text-[#FFD11A] px-2 py-0.5 rounded">Default</span>
 								{/if}
 							</div>
 							<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{template.title}</h3>
@@ -390,7 +390,7 @@
 							<button
 								onclick={() => useTemplate(template)}
 								disabled={creatingBoard === template.id}
-								class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center justify-center gap-2 disabled:opacity-50"
+								class="w-full px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg flex items-center justify-center gap-2 disabled:opacity-50"
 							>
 								{#if creatingBoard === template.id}
 									<div class="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
@@ -407,15 +407,15 @@
 		{/if}
 
 		<!-- Create Custom Template -->
-		<div class="mt-8 p-6 bg-indigo-50 dark:bg-indigo-900/20 border border-indigo-200 dark:border-indigo-800 rounded-xl">
+		<div class="mt-8 p-6 bg-[rgba(230,184,0,0.1)] dark:bg-[rgba(230,184,0,0.15)] border border-[rgba(230,184,0,0.3)] dark:border-[rgba(230,184,0,0.3)] rounded-xl">
 			<div class="flex items-center justify-between">
 				<div>
-					<h3 class="text-lg font-semibold text-indigo-900 dark:text-indigo-100">Create Custom Template</h3>
-					<p class="text-sm text-indigo-700 dark:text-indigo-300">Save any board as a template to reuse later</p>
+					<h3 class="text-lg font-semibold text-[#B38F00] dark:text-[#FFD11A]">Create Custom Template</h3>
+					<p class="text-sm text-[#E6B800] dark:text-[#FFD11A]">Save any board as a template to reuse later</p>
 				</div>
 				<a
 					href="/admin/boards"
-					class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg"
+					class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg"
 				>
 					Go to Boards
 				</a>

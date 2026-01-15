@@ -64,7 +64,7 @@
 		font-weight: 300;
 		opacity: 1;
 		animation: blink 0.7s infinite;
-		color: var(--auth-link, #818cf8);
+		color: var(--auth-link, #FFD11A);
 	}
 
 	@keyframes blink {

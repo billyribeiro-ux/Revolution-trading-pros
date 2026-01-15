@@ -54,8 +54,8 @@
 			category: 'Volatility',
 			description: 'Master volatility squeezes and explosive breakouts.',
 			icon: IconChartLine,
-			color: '#8b5cf6',
-			gradient: 'from-violet-500 to-purple-400',
+			color: '#B38F00',
+			gradient: 'from-yellow-500 to-amber-400',
 			href: '/indicators/bollinger-bands'
 		},
 		{

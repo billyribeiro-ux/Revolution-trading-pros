@@ -469,8 +469,8 @@
 
 	.category-badge {
 		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800, #B38F00);
+		color: #0D1117;
 		font-size: 0.875rem;
 		font-weight: 600;
 		border-radius: 16px;

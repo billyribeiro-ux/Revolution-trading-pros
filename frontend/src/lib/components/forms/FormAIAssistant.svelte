@@ -381,8 +381,8 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1.25rem;
-		background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.header-icon {
@@ -425,8 +425,8 @@
 	}
 
 	.tab.active {
-		color: #8b5cf6;
-		border-bottom-color: #8b5cf6;
+		color: #E6B800;
+		border-bottom-color: #E6B800;
 	}
 
 	.assistant-content {
@@ -462,8 +462,8 @@
 
 	.prompt-input:focus {
 		outline: none;
-		border-color: #8b5cf6;
-		box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+		border-color: #E6B800;
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.1);
 	}
 
 	.example-prompts {
@@ -499,8 +499,8 @@
 	.btn-analyze {
 		width: 100%;
 		padding: 0.75rem;
-		background: linear-gradient(135deg, #8b5cf6 0%, #6366f1 100%);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 0.5rem;
 		font-size: 0.875rem;
@@ -655,8 +655,8 @@
 
 	.btn-add-field {
 		padding: 0.375rem 0.75rem;
-		background: #8b5cf6;
-		color: white;
+		background: #E6B800;
+		color: #0D1117;
 		border: none;
 		border-radius: 0.25rem;
 		font-size: 0.75rem;
@@ -666,7 +666,7 @@
 	}
 
 	.btn-add-field:hover {
-		background: #7c3aed;
+		background: #B38F00;
 	}
 
 	.empty-suggestions,

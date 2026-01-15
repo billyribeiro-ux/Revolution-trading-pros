@@ -311,20 +311,20 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1.5rem;
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		transition: all 0.2s;
 	}
 
 	.metric-card:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.2);
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.2);
 	}
 
 	.metric-card.primary {
-		background: linear-gradient(135deg, rgba(99, 102, 241, 0.2), rgba(139, 92, 246, 0.2));
-		border-color: rgba(99, 102, 241, 0.3);
+		background: linear-gradient(135deg, rgba(230, 184, 0, 0.2), rgba(179, 143, 0, 0.2));
+		border-color: rgba(230, 184, 0, 0.3);
 	}
 
 	.metric-icon {
@@ -349,7 +349,7 @@
 
 	.chart-card {
 		background: #1e293b;
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		padding: 1.5rem;
 		margin-bottom: 2rem;
@@ -403,7 +403,7 @@
 
 	.bar-track {
 		height: 8px;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border-radius: 4px;
 		overflow: hidden;
 	}
@@ -445,7 +445,7 @@
 
 	.trend-bar .bar {
 		width: 100%;
-		background: linear-gradient(180deg, #6366f1, #8b5cf6);
+		background: linear-gradient(180deg, #E6B800, #B38F00);
 		border-radius: 4px 4px 0 0;
 		transition: height 0.3s ease;
 		min-height: 5px;
@@ -459,7 +459,7 @@
 	.trend-summary {
 		margin-top: 1rem;
 		padding-top: 1rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 		font-size: 0.875rem;
 		color: #94a3b8;
 		text-align: center;
@@ -489,14 +489,14 @@
 	.completion-bar {
 		position: relative;
 		height: 24px;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border-radius: 12px;
 		overflow: hidden;
 	}
 
 	.completion-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #6366f1, #8b5cf6);
+		background: linear-gradient(90deg, #E6B800, #B38F00);
 		border-radius: 12px;
 		transition: width 0.3s ease;
 	}
@@ -518,8 +518,8 @@
 	}
 
 	.performance-card {
-		background: rgba(99, 102, 241, 0.05);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		padding: 1.5rem;
 		text-align: center;
@@ -536,7 +536,7 @@
 	.performance-value {
 		font-size: 2rem;
 		font-weight: 700;
-		color: #a5b4fc;
+		color: #E6B800;
 		margin-bottom: 0.5rem;
 	}
 

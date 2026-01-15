@@ -76,7 +76,7 @@
 	}
 
 	.breadcrumb-link:hover {
-		color: var(--color-rtp-primary, #818cf8);
+		color: var(--color-rtp-primary, #FFD11A);
 	}
 
 	.breadcrumb-separator {
