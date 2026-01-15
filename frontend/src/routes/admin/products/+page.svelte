@@ -3,9 +3,9 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { productsApi, AdminApiError } from '$lib/api/admin';
+	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
 	import {
 		IconPlus,
 		IconEdit,
@@ -13,30 +13,60 @@
 		IconBook,
 		IconChartLine,
 		IconCrown,
-		IconShoppingCart
+		IconShoppingCart,
+		IconRefresh,
+		IconSearch
 	} from '$lib/icons';
 
+	// Svelte 5 state runes
 	let loading = $state(true);
-	let products = $state<any[]>([]);
+	let products = $state<Product[]>([]);
 	let error = $state('');
 	let selectedType = $state('all');
+	let searchQuery = $state('');
+	let deleting = $state<number | null>(null);
 
+	// Product type configuration
 	const productTypes = [
 		{ value: 'all', label: 'All Products', icon: IconShoppingCart },
 		{ value: 'course', label: 'Courses', icon: IconBook },
 		{ value: 'indicator', label: 'Indicators', icon: IconChartLine },
 		{ value: 'membership', label: 'Memberships', icon: IconCrown }
-	];
+	] as const;
 
-	onMount(async () => {
-		await loadProducts();
-	});
+	// Derived state for filtered products (client-side search)
+	let filteredProducts = $derived(
+		products.filter((product) => {
+			if (!searchQuery.trim()) return true;
+			const query = searchQuery.toLowerCase();
+			return (
+				product.name.toLowerCase().includes(query) ||
+				product.description?.toLowerCase().includes(query) ||
+				product.slug.toLowerCase().includes(query)
+			);
+		})
+	);
 
+	// Product count by type (derived)
+	let productCountByType = $derived(
+		products.reduce(
+			(acc, product) => {
+				acc[product.type] = (acc[product.type] || 0) + 1;
+				return acc;
+			},
+			{} as Record<string, number>
+		)
+	);
+
+	// Total count for display
+	let totalCount = $derived(filteredProducts.length);
+
+	// Load products from API
 	async function loadProducts() {
 		loading = true;
 		error = '';
 		try {
-			const params: any = {};
+			const params: Record<string, string> = {};
 			if (selectedType !== 'all') {
 				params.type = selectedType;
 			}
@@ -58,19 +88,48 @@
 		}
 	}
 
+	// Delete product with confirmation
 	async function deleteProduct(id: number, name: string) {
 		if (!confirm(`Delete "${name}"? This action cannot be undone.`)) return;
+
+		deleting = id;
 		try {
 			await productsApi.delete(id);
-			await loadProducts();
+			// Remove from local state immediately for better UX
+			products = products.filter((p) => p.id !== id);
 		} catch (err) {
-			alert('Failed to delete product');
+			if (err instanceof AdminApiError) {
+				error = `Failed to delete: ${err.message}`;
+			} else {
+				error = 'Failed to delete product';
+			}
+			console.error('Delete failed:', err);
+		} finally {
+			deleting = null;
+		}
+	}
+
+	// Toggle product active status
+	async function toggleActive(product: Product) {
+		try {
+			const response = await productsApi.update(product.id, {
+				is_active: !product.is_active
+			});
+			// Update local state
+			const index = products.findIndex((p) => p.id === product.id);
+			if (index !== -1) {
+				products[index] = { ...products[index], is_active: !product.is_active };
+				products = [...products]; // Trigger reactivity
+			}
+		} catch (err) {
+			error = 'Failed to update product status';
 			console.error(err);
 		}
 	}
 
+	// Helper functions
 	function getTypeIcon(type: string) {
-		const typeMap: any = {
+		const typeMap: Record<string, typeof IconBook> = {
 			course: IconBook,
 			indicator: IconChartLine,
 			membership: IconCrown,
@@ -80,7 +139,7 @@
 	}
 
 	function getTypeColor(type: string) {
-		const colorMap: any = {
+		const colorMap: Record<string, string> = {
 			course: 'bg-blue-500',
 			indicator: 'bg-purple-500',
 			membership: 'bg-yellow-500',
@@ -89,11 +148,21 @@
 		return colorMap[type] || 'bg-gray-500';
 	}
 
-	// Reload products when type filter changes
-	$effect(() => {
-		if (selectedType) {
-			loadProducts();
+	function formatPrice(price: number, salePrice?: number | null) {
+		if (salePrice && salePrice < price) {
+			return { original: `$${price.toFixed(2)}`, sale: `$${salePrice.toFixed(2)}` };
 		}
+		return { original: `$${price.toFixed(2)}`, sale: null };
+	}
+
+	// Effect: Load products when type filter changes
+	$effect(() => {
+		// Track selectedType for reactivity
+		const type = selectedType;
+		// Use untrack to avoid infinite loops when updating products
+		untrack(() => {
+			loadProducts();
+		});
 	});
 </script>
 
@@ -107,87 +176,154 @@
 			<h1>Products Management</h1>
 			<p>Manage courses, indicators, and memberships</p>
 		</div>
-		<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
-			<IconPlus size={18} />
-			Add Product
-		</button>
+		<div class="header-actions">
+			<button class="btn-secondary" onclick={() => loadProducts()} disabled={loading}>
+				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+				Refresh
+			</button>
+			<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
+				<IconPlus size={18} />
+				Add Product
+			</button>
+		</div>
 	</div>
 
-	<!-- Type Filter -->
-	<div class="type-filter">
-		{#each productTypes as type}
-			{@const Icon = type.icon}
-			<button
-				class="type-btn"
-				class:active={selectedType === type.value}
-				onclick={() => (selectedType = type.value)}
-			>
-				<Icon size={20} />
-				{type.label}
-			</button>
-		{/each}
+	<!-- Search and Filter Bar -->
+	<div class="filter-bar">
+		<div class="search-box">
+			<IconSearch size={20} />
+			<input
+				type="text"
+				placeholder="Search products..."
+				bind:value={searchQuery}
+			/>
+		</div>
+		<div class="type-filter">
+			{#each productTypes as type}
+				{@const Icon = type.icon}
+				<button
+					class="type-btn"
+					class:active={selectedType === type.value}
+					onclick={() => (selectedType = type.value)}
+				>
+					<Icon size={20} />
+					{type.label}
+					{#if type.value !== 'all' && productCountByType[type.value]}
+						<span class="count-badge">{productCountByType[type.value]}</span>
+					{/if}
+				</button>
+			{/each}
+		</div>
 	</div>
+
+	<!-- Results summary -->
+	{#if !loading && products.length > 0}
+		<div class="results-summary">
+			Showing {totalCount} of {products.length} products
+			{#if searchQuery}
+				<span class="search-term">matching "{searchQuery}"</span>
+			{/if}
+		</div>
+	{/if}
+
+	<!-- Error Alert -->
+	{#if error}
+		<div class="alert error">
+			<span>{error}</span>
+			<button class="alert-dismiss" onclick={() => (error = '')}>Dismiss</button>
+		</div>
+	{/if}
 
 	{#if loading}
 		<div class="loading">
 			<div class="spinner"></div>
 			<p>Loading products...</p>
 		</div>
-	{:else if error}
-		<div class="alert error">
-			{error}
-		</div>
-	{:else if products.length === 0}
+	{:else if filteredProducts.length === 0}
 		<div class="empty-state">
 			<IconShoppingCart size={64} stroke={1} />
 			<h3>No products found</h3>
-			<p>Create your first {selectedType === 'all' ? 'product' : selectedType}</p>
-			<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
-				<IconPlus size={18} />
-				Add Product
-			</button>
+			{#if searchQuery}
+				<p>No products match your search "{searchQuery}"</p>
+				<button class="btn-secondary" onclick={() => (searchQuery = '')}>
+					Clear Search
+				</button>
+			{:else}
+				<p>Create your first {selectedType === 'all' ? 'product' : selectedType}</p>
+				<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
+					<IconPlus size={18} />
+					Add Product
+				</button>
+			{/if}
 		</div>
 	{:else}
 		<div class="products-grid">
-			{#each products as product}
+			{#each filteredProducts as product (product.id)}
 				{@const TypeIcon = getTypeIcon(product.type)}
-				<div class="product-card">
+				{@const pricing = formatPrice(product.price, product.sale_price)}
+				<div class="product-card" class:deleting={deleting === product.id}>
 					<div class="product-header">
 						<div class="product-type {getTypeColor(product.type)}">
 							<TypeIcon size={16} />
 							{product.type}
 						</div>
-						<div class="product-status">
+						<button
+							class="status-toggle"
+							class:active={product.is_active}
+							onclick={() => toggleActive(product)}
+							title={product.is_active ? 'Click to deactivate' : 'Click to activate'}
+						>
 							{#if product.is_active}
 								<span class="status-badge active">Active</span>
 							{:else}
 								<span class="status-badge inactive">Inactive</span>
 							{/if}
-						</div>
+						</button>
 					</div>
+
+					{#if product.thumbnail}
+						<div class="product-thumbnail">
+							<img src={product.thumbnail} alt={product.name} />
+						</div>
+					{/if}
 
 					<div class="product-content">
 						<h3>{product.name}</h3>
+						<p class="slug">/{product.slug}</p>
 						{#if product.description}
 							<p class="description">{product.description}</p>
 						{/if}
-						<div class="product-price">${product.price}</div>
+						<div class="product-price">
+							{#if pricing.sale}
+								<span class="original-price">{pricing.original}</span>
+								<span class="sale-price">{pricing.sale}</span>
+							{:else}
+								<span class="current-price">{pricing.original}</span>
+							{/if}
+						</div>
 					</div>
 
 					<div class="product-actions">
 						<button
 							class="action-btn edit"
-							onclick={() => goto(`/admin/products/edit/${product.id}`)}
+							onclick={() => goto(`/admin/products/${product.id}/edit`)}
 							title="Edit"
 						>
 							<IconEdit size={16} />
+							Edit
 						</button>
 						<button
 							class="action-btn delete"
 							onclick={() => deleteProduct(product.id, product.name)}
+							disabled={deleting === product.id}
 							title="Delete"
 						>
-							<IconTrash size={16} />
+							{#if deleting === product.id}
+								<div class="btn-spinner"></div>
+							{:else}
+								<IconTrash size={16} />
+							{/if}
+							Delete
 						</button>
 					</div>
 				</div>
@@ -225,7 +361,14 @@
 		font-family: 'Open Sans Pro', 'Open Sans', sans-serif;
 	}
 
-	.btn-primary {
+	.header-actions {
+		display: flex;
+		gap: 1rem;
+		align-items: center;
+	}
+
+	.btn-primary,
+	.btn-secondary {
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
@@ -235,19 +378,75 @@
 		border: none;
 		cursor: pointer;
 		transition: all 0.2s;
+	}
+
+	.btn-primary {
 		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
 		color: white;
 	}
 
-	.btn-primary:hover {
+	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
 		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
 	}
 
+	.btn-secondary {
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		color: #cbd5e1;
+	}
+
+	.btn-secondary:hover:not(:disabled) {
+		background: rgba(30, 41, 59, 0.8);
+		border-color: rgba(148, 163, 184, 0.4);
+	}
+
+	.btn-secondary:disabled,
+	.btn-primary:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	/* Filter Bar */
+	.filter-bar {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.search-box {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.75rem 1rem;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 8px;
+		max-width: 400px;
+	}
+
+	.search-box :global(svg) {
+		color: #64748b;
+		flex-shrink: 0;
+	}
+
+	.search-box input {
+		flex: 1;
+		background: transparent;
+		border: none;
+		color: #f1f5f9;
+		font-size: 0.95rem;
+		outline: none;
+	}
+
+	.search-box input::placeholder {
+		color: #64748b;
+	}
+
 	.type-filter {
 		display: flex;
-		gap: 1rem;
-		margin-bottom: 2rem;
+		gap: 0.75rem;
 		flex-wrap: wrap;
 	}
 
@@ -255,7 +454,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.75rem 1.5rem;
+		padding: 0.625rem 1.25rem;
 		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 8px;
@@ -274,6 +473,24 @@
 		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
 		border-color: transparent;
 		color: white;
+	}
+
+	.count-badge {
+		background: rgba(255, 255, 255, 0.2);
+		padding: 0.125rem 0.5rem;
+		border-radius: 12px;
+		font-size: 0.75rem;
+		font-weight: 600;
+	}
+
+	.results-summary {
+		color: #94a3b8;
+		font-size: 0.875rem;
+		margin-bottom: 1rem;
+	}
+
+	.search-term {
+		color: #60a5fa;
 	}
 
 	.loading,
@@ -315,6 +532,9 @@
 	}
 
 	.alert {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 		padding: 1rem 1.5rem;
 		border-radius: 8px;
 		margin-bottom: 1.5rem;
@@ -324,6 +544,27 @@
 		background: rgba(239, 68, 68, 0.1);
 		border: 1px solid rgba(239, 68, 68, 0.3);
 		color: #f87171;
+	}
+
+	.alert-dismiss {
+		background: transparent;
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		color: #f87171;
+		padding: 0.375rem 0.75rem;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 0.75rem;
+		font-weight: 500;
+		transition: all 0.2s;
+	}
+
+	.alert-dismiss:hover {
+		background: rgba(239, 68, 68, 0.2);
+	}
+
+	/* Spinning animation for refresh */
+	:global(.spinning) {
+		animation: spin 1s linear infinite;
 	}
 
 	.products-grid {
@@ -346,6 +587,11 @@
 		border-color: rgba(148, 163, 184, 0.4);
 	}
 
+	.product-card.deleting {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+
 	.product-header {
 		display: flex;
 		justify-content: space-between;
@@ -353,6 +599,30 @@
 		padding: 1rem 1.5rem;
 		background: rgba(15, 23, 42, 0.8);
 		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+	}
+
+	.product-thumbnail {
+		height: 160px;
+		overflow: hidden;
+		background: rgba(15, 23, 42, 0.5);
+	}
+
+	.product-thumbnail img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.status-toggle {
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		padding: 0;
+		transition: all 0.2s;
+	}
+
+	.status-toggle:hover {
+		transform: scale(1.05);
 	}
 
 	.product-type {
@@ -409,7 +679,14 @@
 		font-size: 1.25rem;
 		font-weight: 600;
 		color: #f1f5f9;
+		margin-bottom: 0.25rem;
+	}
+
+	.slug {
+		font-size: 0.75rem;
+		color: #64748b;
 		margin-bottom: 0.75rem;
+		font-family: monospace;
 	}
 
 	.description {
@@ -426,9 +703,27 @@
 	}
 
 	.product-price {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.current-price {
 		font-size: 1.5rem;
 		font-weight: 700;
 		color: #3b82f6;
+	}
+
+	.original-price {
+		font-size: 1rem;
+		color: #64748b;
+		text-decoration: line-through;
+	}
+
+	.sale-price {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: #10b981;
 	}
 
 	.product-actions {
@@ -471,9 +766,23 @@
 		border: 1px solid rgba(239, 68, 68, 0.3);
 	}
 
-	.action-btn.delete:hover {
+	.action-btn.delete:hover:not(:disabled) {
 		background: rgba(239, 68, 68, 0.2);
 		border-color: rgba(239, 68, 68, 0.5);
+	}
+
+	.action-btn:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.btn-spinner {
+		width: 16px;
+		height: 16px;
+		border: 2px solid rgba(248, 113, 113, 0.3);
+		border-top-color: #f87171;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
 	}
 
 	@media (max-width: 768px) {

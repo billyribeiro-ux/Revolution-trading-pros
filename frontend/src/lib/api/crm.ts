@@ -476,6 +476,10 @@ export class CrmAPI {
 		return apiClient.delete(`/admin/crm/companies/${id}`);
 	}
 
+	async duplicateCompany(id: string): Promise<CrmCompany> {
+		return apiClient.post(`/admin/crm/companies/${id}/duplicate`);
+	}
+
 	async getCompanyContacts(id: string, filters?: { per_page?: number }): Promise<{ data: Contact[]; meta: any }> {
 		return apiClient.get(`/admin/crm/companies/${id}/contacts`, { params: filters });
 	}

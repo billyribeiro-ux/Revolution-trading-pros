@@ -23,9 +23,11 @@
 		IconUsers,
 		IconCurrencyDollar,
 		IconBriefcase,
-		IconWorld
+		IconWorld,
+		IconCopy
 	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
+	import { toastStore } from '$lib/stores/toast';
 	import type { CrmCompany, CompanyFilters, CompanyIndustry, CompanySize } from '$lib/crm/types';
 
 	let companies = $state<CrmCompany[]>([]);
@@ -100,6 +102,18 @@
 			await loadCompanies();
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to delete company';
+		}
+	}
+
+	async function duplicateCompany(company: CrmCompany) {
+		try {
+			await crmAPI.duplicateCompany(company.id);
+			toastStore.success(`Company "${company.name}" duplicated successfully`);
+			await loadCompanies();
+		} catch (err) {
+			const message = err instanceof Error ? err.message : 'Failed to duplicate company';
+			toastStore.error(message);
+			error = message;
 		}
 	}
 
@@ -287,6 +301,9 @@
 									<a href="/admin/crm/companies/{company.id}/edit" class="btn-icon" title="Edit">
 										<IconEdit size={16} />
 									</a>
+									<button class="btn-icon" title="Duplicate" onclick={() => duplicateCompany(company)}>
+										<IconCopy size={16} />
+									</button>
 									<button class="btn-icon danger" title="Delete" onclick={() => deleteCompany(company.id)}>
 										<IconTrash size={16} />
 									</button>

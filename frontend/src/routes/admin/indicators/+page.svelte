@@ -207,11 +207,11 @@
 								<button
 									class="btn-icon btn-danger"
 									onclick={() => deleteIndicator(indicator.id, indicator.name)}
-									disabled={deleting === indicator.id}
+									disabled={deleting === indicator.id.toString()}
 									title="Delete"
 									aria-label="Delete {indicator.name}"
 								>
-									{#if deleting === indicator.id}
+									{#if deleting === indicator.id.toString()}
 										<div class="spinner-small"></div>
 									{:else}
 										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

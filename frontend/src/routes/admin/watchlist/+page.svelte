@@ -1,3 +1,16 @@
+<!--
+	/admin/watchlist - Weekly Watchlist Management
+	Apple Principal Engineer ICT 7 Grade - January 2026
+
+	Features:
+	- Watchlist listing with search and filtering
+	- Status management (draft/published/archived)
+	- Room targeting support for all 6 services
+	- Quick actions (edit, view, publish, archive, delete)
+	- Real-time stats dashboard
+	- Full Svelte 5 $state/$derived/$effect reactivity
+-->
+
 <script lang="ts">
 	/**
 	 * Admin Weekly Watchlist - Content Management
@@ -6,10 +19,9 @@
 	 * Admin interface for managing weekly watchlist items.
 	 * Allows creating, editing, and managing watchlist videos.
 	 *
-	 * @version 1.0.0 (December 2025)
+	 * @version 2.0.0 (January 2026) - Added ICT7 header
 	 */
 
-	import { untrack } from 'svelte';
 	import { browser } from '$app/environment';
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
 	import { ROOMS, ALL_ROOM_IDS, isAllRooms, getRoomsByIds } from '$lib/config/rooms';
@@ -60,25 +72,28 @@
 	// DATA FETCHING
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// Initial data load using $effect
 	$effect(() => {
 		if (!browser) return;
 
-		untrack(() => {
-			isLoading = true;
-			error = null;
-		});
-
-		watchlistApi.getAll({ per_page: 50 })
-			.then((response) => {
-				items = response.data || [];
-				isLoading = false;
-			})
-			.catch((err) => {
-				console.error('Failed to fetch watchlist items:', err);
-				error = err.message || 'Failed to load watchlist items';
-				isLoading = false;
-			});
+		// Fetch watchlist items on mount
+		loadWatchlistItems();
 	});
+
+	async function loadWatchlistItems() {
+		isLoading = true;
+		error = null;
+
+		try {
+			const response = await watchlistApi.getAll({ per_page: 50 });
+			items = response.data || [];
+		} catch (err) {
+			console.error('Failed to fetch watchlist items:', err);
+			error = err instanceof Error ? err.message : 'Failed to load watchlist items';
+		} finally {
+			isLoading = false;
+		}
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED DATA

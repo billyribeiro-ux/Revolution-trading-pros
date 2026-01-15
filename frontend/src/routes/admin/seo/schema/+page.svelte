@@ -2,10 +2,11 @@
 	import { onMount } from 'svelte';
 	import { IconPlus, IconCode, IconEye, IconTrash, IconCopy } from '$lib/icons';
 
-	let schemas: any[] = [];
-	let templates: any = {};
-	let loading = false;
-	let showPreview: any = null;
+	// State using Svelte 5 runes
+	let schemas = $state<any[]>([]);
+	let templates = $state<any>({});
+	let loading = $state(false);
+	let showPreview = $state<any>(null);
 
 	const schemaTypes = [
 		'Article',

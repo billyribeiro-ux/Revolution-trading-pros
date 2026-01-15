@@ -320,6 +320,7 @@
 			description: '',
 			resource_type: 'video',
 			content_type: 'daily_video',
+			section: 'latest_updates', // ICT 7: Default to Latest Updates section
 			file_url: '',
 			mime_type: '',
 			video_platform: 'direct',
@@ -342,6 +343,7 @@
 			description: resource.description || '',
 			resource_type: resource.resource_type,
 			content_type: resource.content_type,
+			section: resource.section || 'latest_updates', // ICT 7: Include section for editing
 			file_url: resource.file_url,
 			mime_type: resource.mime_type || '',
 			video_platform: resource.video_platform || 'direct',
@@ -451,6 +453,16 @@
 		}
 	}
 
+	async function togglePinned(resource: RoomResource) {
+		try {
+			await roomResourcesApi.update(resource.id, { is_pinned: !resource.is_pinned });
+			resource.is_pinned = !resource.is_pinned;
+			showSuccess(resource.is_pinned ? 'Pinned to top' : 'Unpinned');
+		} catch (err) {
+			error = err instanceof Error ? err.message : 'Failed to update';
+		}
+	}
+
 	function getResourceIcon(type: ResourceType) {
 		const iconMap = {
 			video: IconVideo,
@@ -494,9 +506,17 @@
 		}
 	});
 
+	// ICT 7: Track previous room to prevent duplicate API calls
+	let previousRoomId = $state<number | null>(null);
+
 	$effect(() => {
-		if (selectedRoom && !isLoadingRooms) {
+		// Only load if room changed and not during initial load
+		// selectRoom() handles its own loadResources() call
+		if (selectedRoom && !isLoadingRooms && previousRoomId !== null && previousRoomId !== selectedRoom.id) {
 			loadResources();
+		}
+		if (selectedRoom) {
+			previousRoomId = selectedRoom.id;
 		}
 	});
 </script>
@@ -644,7 +664,7 @@
 	{:else}
 		<div class="resources-grid">
 			{#each filteredResources as resource}
-				<div class="resource-card" class:featured={resource.is_featured} class:unpublished={!resource.is_published}>
+				<div class="resource-card" class:featured={resource.is_featured} class:pinned={resource.is_pinned} class:unpublished={!resource.is_published}>
 					<!-- Thumbnail -->
 					<div class="resource-thumbnail">
 						{#if resource.thumbnail_url}
@@ -663,6 +683,9 @@
 						<!-- Featured/Pinned indicators -->
 						{#if resource.is_featured}
 							<span class="featured-badge"><IconStarFilled size={14} /></span>
+						{/if}
+						{#if resource.is_pinned}
+							<span class="pinned-badge"><IconPinFilled size={14} /></span>
 						{/if}
 					</div>
 
@@ -698,6 +721,13 @@
 								<IconStarFilled size={16} />
 							{:else}
 								<IconStar size={16} />
+							{/if}
+						</button>
+						<button class="btn-icon" title={resource.is_pinned ? 'Unpin' : 'Pin to top'} onclick={() => togglePinned(resource)}>
+							{#if resource.is_pinned}
+								<IconPinFilled size={16} />
+							{:else}
+								<IconPin size={16} />
 							{/if}
 						</button>
 						<button class="btn-icon" class:active={resource.is_published} title={resource.is_published ? 'Unpublish' : 'Publish'} onclick={() => togglePublished(resource)}>
@@ -1155,6 +1185,10 @@
 		border-color: rgba(234, 179, 8, 0.5);
 	}
 
+	.resource-card.pinned {
+		border-color: rgba(6, 182, 212, 0.5);
+	}
+
 	.resource-card.unpublished {
 		opacity: 0.6;
 	}
@@ -1210,6 +1244,13 @@
 		top: 0.75rem;
 		right: 0.75rem;
 		color: #eab308;
+	}
+
+	.pinned-badge {
+		position: absolute;
+		top: 0.75rem;
+		right: 2rem;
+		color: #06b6d4;
 	}
 
 	.resource-content {

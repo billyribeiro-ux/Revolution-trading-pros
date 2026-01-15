@@ -1,15 +1,28 @@
+<!--
+	/admin/watchlist/[slug]/edit - Edit Weekly Watchlist Entry
+	Apple Principal Engineer ICT 7 Grade - January 2026
+
+	Features:
+	- Full watchlist editing with real-time preview
+	- Room targeting support for all 6 services
+	- Video and spreadsheet media management
+	- Status management (draft/published/archived)
+	- Delete with confirmation
+	- Full Svelte 5 $state/$derived reactivity
+-->
+
 <script lang="ts">
 	/**
 	 * Admin Weekly Watchlist - Edit Page
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Edit existing watchlist items with room targeting
-	 * @version 1.0.0 - December 2025
+	 * @version 2.0.0 (January 2026) - Added ICT7 header
 	 */
 
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { onMount } from 'svelte';
+	import { untrack } from 'svelte';
 	import { watchlistApi, type WatchlistItem } from '$lib/api/watchlist';
 	import { ALL_ROOM_IDS } from '$lib/config/rooms';
 	import RoomSelector from '$lib/components/admin/RoomSelector.svelte';
@@ -18,7 +31,7 @@
 	import IconTrash from '@tabler/icons-svelte/icons/trash';
 	import IconEye from '@tabler/icons-svelte/icons/eye';
 
-	// Get slug from URL
+	// Get slug from URL using Svelte 5 $derived
 	const slug = $derived(page.params.slug);
 
 	// State
@@ -43,17 +56,32 @@
 
 	let originalItem = $state<WatchlistItem | null>(null);
 
-	// Load existing item
-	onMount(async () => {
+	// Load existing item when slug changes (Svelte 5 $effect pattern)
+	$effect(() => {
+		if (!browser) return;
+
+		// Track slug dependency
+		const currentSlug = slug;
+
+		// Use untrack to avoid infinite loops when setting state
+		untrack(() => {
+			loadWatchlistItem(currentSlug);
+		});
+	});
+
+	async function loadWatchlistItem(itemSlug: string) {
+		isLoading = true;
+		error = null;
+
 		try {
-			const response = await watchlistApi.getBySlug(slug);
+			const response = await watchlistApi.getBySlug(itemSlug);
 			if (response.success && response.data) {
 				originalItem = response.data;
 				formData = {
 					title: response.data.title,
 					trader: response.data.trader,
 					traderImage: response.data.traderImage || '',
-					weekOf: response.data.weekOf,
+					weekOf: formatDateForInput(response.data.weekOf),
 					description: response.data.description || '',
 					videoSrc: response.data.video?.src || '',
 					videoPoster: response.data.video?.poster || '',
@@ -64,21 +92,24 @@
 			}
 		} catch (err) {
 			console.error('Failed to load watchlist:', err);
-			error = 'Failed to load watchlist item';
+			error = err instanceof Error ? err.message : 'Failed to load watchlist item';
 		} finally {
 			isLoading = false;
 		}
-	});
+	}
 
 	// Save changes
 	async function handleSave() {
+		// Clear previous errors
+		error = null;
+
 		if (!formData.title || !formData.trader || !formData.weekOf) {
-			alert('Please fill in all required fields');
+			error = 'Please fill in all required fields';
 			return;
 		}
 
 		if (formData.rooms.length === 0) {
-			alert('Please select at least one room');
+			error = 'Please select at least one room';
 			return;
 		}
 
@@ -98,7 +129,7 @@
 			await goto('/admin/watchlist');
 		} catch (err) {
 			console.error('Failed to save:', err);
-			alert('Failed to save changes');
+			error = err instanceof Error ? err.message : 'Failed to save changes';
 		} finally {
 			isSaving = false;
 		}
@@ -111,7 +142,8 @@
 			await goto('/admin/watchlist');
 		} catch (err) {
 			console.error('Failed to delete:', err);
-			alert('Failed to delete item');
+			error = err instanceof Error ? err.message : 'Failed to delete item';
+			showDeleteModal = false;
 		}
 	}
 
@@ -165,12 +197,19 @@
 			<div class="loading-spinner"></div>
 			<p>Loading watchlist...</p>
 		</div>
-	{:else if error}
+	{:else if error && !originalItem}
 		<div class="error-state">
 			<p>{error}</p>
 			<a href="/admin/watchlist" class="btn-secondary">Back to List</a>
 		</div>
 	{:else}
+		<!-- Error Alert (for validation/save errors when form is loaded) -->
+		{#if error}
+			<div class="alert alert-error">
+				<span>{error}</span>
+				<button type="button" class="alert-dismiss" onclick={() => error = null}>Dismiss</button>
+			</div>
+		{/if}
 		<!-- Edit Form -->
 		<div class="form-container">
 			<form onsubmit={(e) => { e.preventDefault(); handleSave(); }}>
@@ -205,8 +244,7 @@
 							<input
 								id="weekOf"
 								type="date"
-								value={formatDateForInput(formData.weekOf)}
-								onchange={(e) => formData.weekOf = e.currentTarget.value}
+								bind:value={formData.weekOf}
 								required
 							/>
 						</div>
@@ -458,6 +496,38 @@
 
 	@keyframes spin {
 		to { transform: rotate(360deg); }
+	}
+
+	/* Alert */
+	.alert {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		gap: 12px;
+		padding: 14px 18px;
+		border-radius: 8px;
+		margin-bottom: 24px;
+		font-size: 0.875rem;
+	}
+
+	.alert-error {
+		background: rgba(239, 68, 68, 0.1);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		color: #ef4444;
+	}
+
+	.alert-dismiss {
+		background: none;
+		border: none;
+		color: inherit;
+		opacity: 0.7;
+		cursor: pointer;
+		font-size: 0.8rem;
+		padding: 4px 8px;
+	}
+
+	.alert-dismiss:hover {
+		opacity: 1;
 	}
 
 	/* Form Container */

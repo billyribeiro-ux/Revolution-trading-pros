@@ -50,7 +50,6 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { fade, fly, slide, scale } from 'svelte/transition';
 	import { usersApi, teamsApi, departmentsApi, AdminApiError } from '$lib/api/admin';
@@ -291,35 +290,36 @@
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// State Management
+	// State Management (Svelte 5 Runes)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let saving = false;
-	let validating = false;
-	let checkingUsername = false;
-	let checkingEmail = false;
-	let loadingManagers = false;
-	let errors: ValidationError[] = [];
-	let activeStep:
+	let saving = $state(false);
+	let validating = $state(false);
+	let checkingUsername = $state(false);
+	let checkingEmail = $state(false);
+	let loadingManagers = $state(false);
+	let errors = $state<ValidationError[]>([]);
+	let activeStep = $state<
 		| 'identity'
 		| 'security'
 		| 'role'
 		| 'organization'
 		| 'preferences'
 		| 'compliance'
-		| 'review' = 'identity';
-	let passwordVisible = false;
-	let confirmPasswordVisible = false;
-	let passwordStrength: PasswordStrength | null = null;
-	let usernameAvailable: boolean | null = null;
-	let emailAvailable: boolean | null = null;
-	let showAdvancedSecurity = false;
-	let showPermissionDetails = false;
-	let profilePhotoFile: File | null = null;
-	let profilePhotoPreview: string | null = null;
+		| 'review'
+	>('identity');
+	let passwordVisible = $state(false);
+	let confirmPasswordVisible = $state(false);
+	let passwordStrength = $state<PasswordStrength | null>(null);
+	let usernameAvailable = $state<boolean | null>(null);
+	let emailAvailable = $state<boolean | null>(null);
+	let showAdvancedSecurity = $state(false);
+	let showPermissionDetails = $state(false);
+	let profilePhotoFile = $state<File | null>(null);
+	let profilePhotoPreview = $state<string | null>(null);
 
-	// Form Data with defaults
-	let formData: UserFormData = {
+	// Form Data with defaults (Svelte 5 $state)
+	let formData = $state<UserFormData>({
 		first_name: '',
 		last_name: '',
 		username: '',
@@ -389,15 +389,15 @@
 		notes: '',
 		tags: [],
 		custom_fields: {}
-	};
+	});
 
-	// Lookup data
-	let departments: any[] = [];
-	let teams: any[] = [];
-	let managers: any[] = [];
-	let locations: any[] = [];
-	let trainingModules: any[] = [];
-	let onboardingPlans: any[] = [];
+	// Lookup data (Svelte 5 $state)
+	let departments = $state<any[]>([]);
+	let teams = $state<any[]>([]);
+	let managers = $state<any[]>([]);
+	let locations = $state<any[]>([]);
+	let trainingModules = $state<any[]>([]);
+	let onboardingPlans = $state<any[]>([]);
 
 	// Progress calculation
 	let completionPercentage = $derived(calculateCompletion());
@@ -405,11 +405,12 @@
 	let canProceed = $derived(validateCurrentStep());
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// Lifecycle
+	// Lifecycle (Svelte 5 $effect)
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
-		await loadLookupData();
+	// Initialize on mount
+	$effect(() => {
+		loadLookupData();
 		initializeDefaults();
 		setupRealtimeValidation();
 	});

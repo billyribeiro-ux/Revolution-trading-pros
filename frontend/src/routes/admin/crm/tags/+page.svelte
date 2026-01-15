@@ -1,24 +1,29 @@
 <!--
 	/admin/crm/tags - Contact Tag Management
 	Apple Principal Engineer ICT 7 Grade - January 2026
-	
+
 	Features:
 	- Tag CRUD with color support
 	- Contact count per tag
 	- Search filtering
-	- Full Svelte 5 $state/$derived reactivity
+	- Inline tag creation modal
+	- Full Svelte 5 $state/$derived/$effect reactivity
 -->
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import IconTag from '@tabler/icons-svelte/icons/tag';
-	import IconPlus from '@tabler/icons-svelte/icons/plus';
-	import IconSearch from '@tabler/icons-svelte/icons/search';
-	import IconEdit from '@tabler/icons-svelte/icons/edit';
-	import IconTrash from '@tabler/icons-svelte/icons/trash';
-	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
-	import IconUsers from '@tabler/icons-svelte/icons/users';
-	import IconPalette from '@tabler/icons-svelte/icons/palette';
+	import {
+		IconTag,
+		IconPlus,
+		IconSearch,
+		IconEdit,
+		IconTrash,
+		IconRefresh,
+		IconUsers,
+		IconPalette,
+		IconX,
+		IconCheck
+	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
 	import type { ContactTag } from '$lib/crm/types';
 
@@ -31,6 +36,82 @@
 		total: 0,
 		totalContacts: 0
 	});
+
+	// Modal state for create/edit
+	let showModal = $state(false);
+	let editingTag = $state<ContactTag | null>(null);
+	let isSaving = $state(false);
+	let formError = $state('');
+	let formData = $state({
+		title: '',
+		description: '',
+		color: '#6366f1'
+	});
+
+	// Predefined color palette
+	const colorPalette = [
+		'#6366f1', '#8b5cf6', '#a855f7', '#d946ef',
+		'#ec4899', '#f43f5e', '#ef4444', '#f97316',
+		'#f59e0b', '#eab308', '#84cc16', '#22c55e',
+		'#10b981', '#14b8a6', '#06b6d4', '#0ea5e9',
+		'#3b82f6', '#6366f1', '#64748b', '#475569'
+	];
+
+	function openCreateModal() {
+		editingTag = null;
+		formData = { title: '', description: '', color: '#6366f1' };
+		formError = '';
+		showModal = true;
+	}
+
+	function openEditModal(tag: ContactTag) {
+		editingTag = tag;
+		formData = {
+			title: tag.title,
+			description: tag.description || '',
+			color: tag.color || '#6366f1'
+		};
+		formError = '';
+		showModal = true;
+	}
+
+	function closeModal() {
+		showModal = false;
+		editingTag = null;
+		formError = '';
+	}
+
+	async function saveTag() {
+		if (!formData.title.trim()) {
+			formError = 'Tag title is required';
+			return;
+		}
+
+		isSaving = true;
+		formError = '';
+
+		try {
+			if (editingTag) {
+				await crmAPI.updateContactTag(editingTag.id, {
+					title: formData.title.trim(),
+					description: formData.description.trim() || undefined,
+					color: formData.color
+				});
+			} else {
+				await crmAPI.createContactTag({
+					title: formData.title.trim(),
+					description: formData.description.trim() || undefined,
+					color: formData.color
+				});
+			}
+			closeModal();
+			await loadTags();
+		} catch (err) {
+			formError = err instanceof Error ? err.message : 'Failed to save tag';
+		} finally {
+			isSaving = false;
+		}
+	}
 
 	async function loadTags() {
 		isLoading = true;
@@ -98,10 +179,10 @@
 			<button class="btn-refresh" onclick={() => loadTags()} disabled={isLoading}>
 				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 			</button>
-			<a href="/admin/crm/tags/new" class="btn-primary">
+			<button class="btn-primary" onclick={openCreateModal}>
 				<IconPlus size={18} />
 				New Tag
-			</a>
+			</button>
 		</div>
 	</div>
 
@@ -151,10 +232,10 @@
 			<IconTag size={48} />
 			<h3>No tags found</h3>
 			<p>Create your first tag to label your contacts</p>
-			<a href="/admin/crm/tags/new" class="btn-primary">
+			<button class="btn-primary" onclick={openCreateModal}>
 				<IconPlus size={18} />
 				Create Tag
-			</a>
+			</button>
 		</div>
 	{:else}
 		<div class="tags-grid">
@@ -182,9 +263,9 @@
 						<a href="/admin/crm/tags/{tag.id}" class="btn-icon" title="View Contacts">
 							<IconUsers size={16} />
 						</a>
-						<a href="/admin/crm/tags/{tag.id}/edit" class="btn-icon" title="Edit">
+						<button class="btn-icon" title="Edit" onclick={() => openEditModal(tag)}>
 							<IconEdit size={16} />
-						</a>
+						</button>
 						<button class="btn-icon danger" title="Delete" onclick={() => deleteTag(tag.id)}>
 							<IconTrash size={16} />
 						</button>
@@ -194,6 +275,83 @@
 		</div>
 	{/if}
 </div>
+
+<!-- Create/Edit Modal -->
+{#if showModal}
+	<div class="modal-overlay" onclick={closeModal}>
+		<div class="modal-content" onclick={(e) => e.stopPropagation()}>
+			<div class="modal-header">
+				<h2>{editingTag ? 'Edit Tag' : 'Create Tag'}</h2>
+				<button class="modal-close" onclick={closeModal}>
+					<IconX size={20} />
+				</button>
+			</div>
+			<form class="modal-body" onsubmit={(e) => { e.preventDefault(); saveTag(); }}>
+				{#if formError}
+					<div class="form-error">
+						{formError}
+					</div>
+				{/if}
+				<div class="form-group">
+					<label for="tag-title">Title <span class="required">*</span></label>
+					<input
+						type="text"
+						id="tag-title"
+						bind:value={formData.title}
+						placeholder="Enter tag title"
+						disabled={isSaving}
+					/>
+				</div>
+				<div class="form-group">
+					<label for="tag-description">Description</label>
+					<textarea
+						id="tag-description"
+						bind:value={formData.description}
+						placeholder="Optional description"
+						rows="3"
+						disabled={isSaving}
+					></textarea>
+				</div>
+				<div class="form-group">
+					<label>Color</label>
+					<div class="color-picker">
+						<div class="color-preview" style="background-color: {formData.color}"></div>
+						<div class="color-palette">
+							{#each colorPalette as color}
+								<button
+									type="button"
+									class="color-swatch"
+									class:selected={formData.color === color}
+									style="background-color: {color}"
+									onclick={() => formData.color = color}
+									disabled={isSaving}
+								>
+									{#if formData.color === color}
+										<IconCheck size={12} />
+									{/if}
+								</button>
+							{/each}
+						</div>
+					</div>
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn-secondary" onclick={closeModal} disabled={isSaving}>
+						Cancel
+					</button>
+					<button type="submit" class="btn-primary" disabled={isSaving}>
+						{#if isSaving}
+							<span class="btn-spinner"></span>
+							Saving...
+						{:else}
+							<IconCheck size={18} />
+							{editingTag ? 'Update Tag' : 'Create Tag'}
+						{/if}
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{/if}
 
 <style>
 	.tags-page {
@@ -494,5 +652,217 @@
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
+	}
+
+	/* Modal Styles */
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.75);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+		padding: 1rem;
+		backdrop-filter: blur(4px);
+	}
+
+	.modal-content {
+		background: linear-gradient(135deg, rgba(30, 41, 59, 0.98), rgba(15, 23, 42, 0.98));
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 16px;
+		width: 100%;
+		max-width: 480px;
+		max-height: 90vh;
+		overflow-y: auto;
+		box-shadow: 0 25px 50px rgba(0, 0, 0, 0.5);
+	}
+
+	.modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 1.25rem 1.5rem;
+		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+	}
+
+	.modal-header h2 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		color: #f1f5f9;
+		margin: 0;
+	}
+
+	.modal-close {
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: transparent;
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 8px;
+		color: #94a3b8;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.modal-close:hover {
+		background: rgba(239, 68, 68, 0.1);
+		color: #f87171;
+		border-color: rgba(239, 68, 68, 0.3);
+	}
+
+	.modal-body {
+		padding: 1.5rem;
+	}
+
+	.form-error {
+		padding: 0.75rem 1rem;
+		background: rgba(239, 68, 68, 0.1);
+		border: 1px solid rgba(239, 68, 68, 0.3);
+		border-radius: 8px;
+		color: #f87171;
+		font-size: 0.875rem;
+		margin-bottom: 1rem;
+	}
+
+	.form-group {
+		margin-bottom: 1.25rem;
+	}
+
+	.form-group label {
+		display: block;
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: #e2e8f0;
+		margin-bottom: 0.5rem;
+	}
+
+	.form-group .required {
+		color: #f87171;
+	}
+
+	.form-group input,
+	.form-group textarea {
+		width: 100%;
+		padding: 0.75rem 1rem;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 10px;
+		color: #e2e8f0;
+		font-size: 0.9rem;
+		transition: all 0.2s;
+		outline: none;
+	}
+
+	.form-group input:focus,
+	.form-group textarea:focus {
+		border-color: #6366f1;
+		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+	}
+
+	.form-group input::placeholder,
+	.form-group textarea::placeholder {
+		color: #64748b;
+	}
+
+	.form-group input:disabled,
+	.form-group textarea:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.form-group textarea {
+		resize: vertical;
+		min-height: 80px;
+	}
+
+	.color-picker {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.color-preview {
+		width: 48px;
+		height: 48px;
+		border-radius: 12px;
+		border: 2px solid rgba(255, 255, 255, 0.2);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+	}
+
+	.color-palette {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.color-swatch {
+		width: 28px;
+		height: 28px;
+		border-radius: 6px;
+		border: 2px solid transparent;
+		cursor: pointer;
+		transition: all 0.2s;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: white;
+	}
+
+	.color-swatch:hover {
+		transform: scale(1.1);
+	}
+
+	.color-swatch.selected {
+		border-color: white;
+		box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+	}
+
+	.color-swatch:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.modal-footer {
+		display: flex;
+		gap: 0.75rem;
+		justify-content: flex-end;
+		padding-top: 1rem;
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		margin-top: 0.5rem;
+	}
+
+	.btn-secondary {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.25rem;
+		background: rgba(30, 41, 59, 0.8);
+		color: #e2e8f0;
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 10px;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-secondary:hover {
+		background: rgba(99, 102, 241, 0.1);
+	}
+
+	.btn-secondary:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+
+	.btn-spinner {
+		width: 16px;
+		height: 16px;
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		border-top-color: white;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
 	}
 </style>

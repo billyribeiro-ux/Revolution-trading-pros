@@ -51,7 +51,7 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { untrack } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { fade, slide } from 'svelte/transition';
@@ -312,10 +312,21 @@
 	// Events: Component callbacks can be passed as props in Svelte 5
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// Lifecycle
+	// Lifecycle - Svelte 5 $effect
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	onMount(async () => {
+	let initialized = $state(false);
+
+	$effect(() => {
+		if (!initialized) {
+			untrack(() => {
+				initializeComponent();
+			});
+			initialized = true;
+		}
+	});
+
+	async function initializeComponent() {
 		await loadLookupData();
 
 		if (duplicateFrom) {
@@ -332,7 +343,7 @@
 
 		// Initialize A/B test variants
 		initializeABVariants();
-	});
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Data Loading

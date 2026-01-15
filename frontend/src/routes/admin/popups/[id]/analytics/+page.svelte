@@ -16,9 +16,9 @@
 
 	const popupId = parseInt(page.params.id!);
 
-	let popup: Popup | null = null;
-	let analytics: any = null;
-	let loading = true;
+	let popup = $state<Popup | null>(null);
+	let analytics = $state<any>(null);
+	let loading = $state(true);
 
 	interface AnalyticsData {
 		views: {

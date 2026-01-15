@@ -2,11 +2,18 @@
 	/**
 	 * Admin Lesson Editor Page
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
+	 *
+	 * Features:
+	 * - Full Svelte 5 runes ($state, $derived, $effect)
+	 * - Complete Bunny.net video upload integration
+	 * - CRUD operations for lessons and downloads
+	 * - Real-time validation and auto-save
 	 */
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import BunnyVideoUploader from '$lib/components/admin/BunnyVideoUploader.svelte';
 
 	interface Lesson {
 		id: string;
@@ -54,7 +61,6 @@
 	let modules = $state<Module[]>([]);
 	let loading = $state(true);
 	let saving = $state(false);
-	let uploading = $state(false);
 
 	const fetchLesson = async () => {
 		loading = true;
@@ -111,19 +117,71 @@
 		}
 	};
 
-	const handleVideoUpload = async (event: Event) => {
-		const input = event.target as HTMLInputElement;
-		const file = input.files?.[0];
-		if (!file) return;
+	// State for video uploader modal
+	let showVideoUploader = $state(false);
 
-		uploading = true;
+	// Handle successful video upload from BunnyVideoUploader
+	const handleVideoUploadComplete = (data: {
+		video_url: string;
+		embed_url: string;
+		video_guid: string;
+		thumbnail_url: string;
+		duration?: number
+	}) => {
+		if (!lesson) return;
+
+		lesson.bunny_video_guid = data.video_guid;
+		lesson.thumbnail_url = data.thumbnail_url || lesson.thumbnail_url;
+		if (data.duration) {
+			lesson.duration_minutes = Math.ceil(data.duration / 60);
+		}
+
+		showVideoUploader = false;
+		saveLesson();
+	};
+
+	// Handle video upload error
+	const handleVideoUploadError = (error: string) => {
+		alert(`Video upload failed: ${error}`);
+	};
+
+	// Add download to lesson
+	const addDownload = async () => {
+		const title = prompt('Enter download title:');
+		if (!title) return;
+
+		const fileUrl = prompt('Enter file URL (or leave empty to use course downloads):');
+
 		try {
-			// TODO: Implement new video upload approach
-			throw new Error('Video upload functionality temporarily disabled - new implementation needed');
-		} catch (e) {
-			alert('Failed to create video upload');
-		} finally {
-			uploading = false;
+			const data = await adminFetch(`/api/admin/courses/${courseId}/lessons/${lessonId}/downloads`, {
+				method: 'POST',
+				body: JSON.stringify({
+					title,
+					file_url: fileUrl || undefined
+				})
+			});
+
+			if (data.success) {
+				downloads = [...downloads, data.data];
+			} else {
+				alert(data.error || 'Failed to add download');
+			}
+		} catch {
+			alert('Failed to add download');
+		}
+	};
+
+	// Remove download from lesson
+	const removeDownload = async (downloadId: number) => {
+		if (!confirm('Remove this download?')) return;
+
+		try {
+			await adminFetch(`/api/admin/courses/${courseId}/lessons/${lessonId}/downloads/${downloadId}`, {
+				method: 'DELETE'
+			});
+			downloads = downloads.filter(d => d.id !== downloadId);
+		} catch {
+			alert('Failed to remove download');
 		}
 	};
 </script>
@@ -216,20 +274,30 @@
 							</div>
 						{:else}
 							<div class="upload-area">
-								<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
-								<p>Upload a video or enter a Bunny.net Video GUID</p>
-								<input
-									type="file"
-									accept="video/*"
-									onchange={handleVideoUpload}
-									disabled={uploading}
-								/>
-								<span class="divider">or</span>
-								<input
-									type="text"
-									placeholder="Enter Bunny Video GUID"
-									bind:value={lesson.bunny_video_guid}
-								/>
+								{#if showVideoUploader}
+									<div class="video-uploader-container">
+										<BunnyVideoUploader
+											onUploadComplete={handleVideoUploadComplete}
+											onError={handleVideoUploadError}
+										/>
+										<button type="button" class="btn-cancel-upload" onclick={() => showVideoUploader = false}>
+											Cancel
+										</button>
+									</div>
+								{:else}
+									<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+									<p>Upload a video or enter a Bunny.net Video GUID</p>
+									<button type="button" class="btn-upload-video" onclick={() => showVideoUploader = true}>
+										<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+										Upload Video
+									</button>
+									<span class="divider">or</span>
+									<input
+										type="text"
+										placeholder="Enter Bunny Video GUID"
+										bind:value={lesson.bunny_video_guid}
+									/>
+								{/if}
 							</div>
 						{/if}
 					</div>
@@ -280,13 +348,16 @@
 					{:else}
 						<ul class="downloads-list">
 							{#each downloads as dl}
-								<li>
-									<span>{dl.title}</span>
+								<li class="download-item">
+									<span class="download-title">{dl.title}</span>
+									<button type="button" class="btn-remove-download" onclick={() => removeDownload(dl.id)} aria-label="Remove download">
+										<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" x2="6" y1="6" y2="18"/><line x1="6" x2="18" y1="6" y2="18"/></svg>
+									</button>
 								</li>
 							{/each}
 						</ul>
 					{/if}
-					<button class="btn-add">+ Add Download</button>
+					<button class="btn-add" onclick={addDownload}>+ Add Download</button>
 				</section>
 			</aside>
 		</div>
@@ -340,8 +411,16 @@
 	.upload-area svg { color: #9ca3af; }
 	.upload-area p { color: #6b7280; margin: 0; }
 	.upload-area input[type="file"] { cursor: pointer; }
-	.upload-area input[type="text"] { width: 100%; max-width: 300px; }
+	.upload-area input[type="text"] { width: 100%; max-width: 300px; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; }
+	.upload-area input[type="text"]:focus { outline: none; border-color: #143e59; }
 	.divider { color: #9ca3af; font-size: 12px; }
+
+	/* Video Uploader Container */
+	.video-uploader-container { width: 100%; max-width: 500px; }
+	.btn-upload-video { display: flex; align-items: center; justify-content: center; gap: 8px; padding: 12px 24px; background: linear-gradient(135deg, #143E59 0%, #1E73BE 100%); border: none; border-radius: 8px; color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
+	.btn-upload-video:hover { transform: translateY(-1px); box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3); }
+	.btn-cancel-upload { margin-top: 12px; padding: 8px 16px; background: #f3f4f6; border: none; border-radius: 6px; color: #6b7280; font-size: 13px; cursor: pointer; }
+	.btn-cancel-upload:hover { background: #e5e7eb; }
 
 	.side-panel { display: flex; flex-direction: column; gap: 16px; }
 	.panel-section { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 16px; }
@@ -357,6 +436,10 @@
 	.empty-text { color: #9ca3af; font-size: 13px; margin: 0; }
 	.downloads-list { list-style: none; margin: 0 0 12px; padding: 0; }
 	.downloads-list li { padding: 8px; background: #f9fafb; border-radius: 4px; margin-bottom: 4px; font-size: 13px; }
+	.download-item { display: flex; align-items: center; justify-content: space-between; }
+	.download-title { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+	.btn-remove-download { background: none; border: none; color: #9ca3af; cursor: pointer; padding: 4px; border-radius: 4px; flex-shrink: 0; }
+	.btn-remove-download:hover { background: #fee2e2; color: #dc2626; }
 	.btn-add { width: 100%; padding: 8px; background: #f3f4f6; border: 1px dashed #d1d5db; border-radius: 6px; color: #6b7280; font-size: 13px; cursor: pointer; }
 	.btn-add:hover { background: #e5e7eb; }
 

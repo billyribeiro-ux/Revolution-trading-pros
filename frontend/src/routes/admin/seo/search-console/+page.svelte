@@ -8,10 +8,11 @@
 		IconPlugConnectedX
 	} from '$lib/icons';
 
-	let status: any = null;
-	let sites: any[] = [];
-	let loading = false;
-	let importing = false;
+	// State using Svelte 5 runes
+	let status = $state<any>(null);
+	let sites = $state<any[]>([]);
+	let loading = $state(false);
+	let importing = $state(false);
 
 	onMount(() => {
 		checkStatus();

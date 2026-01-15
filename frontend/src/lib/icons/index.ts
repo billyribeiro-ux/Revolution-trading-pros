@@ -350,6 +350,7 @@ import IconUpload from '@tabler/icons-svelte/icons/upload';
 import IconUser from '@tabler/icons-svelte/icons/user';
 import IconUserCheck from '@tabler/icons-svelte/icons/user-check';
 import IconUserCircle from '@tabler/icons-svelte/icons/user-circle';
+import IconUserMinus from '@tabler/icons-svelte/icons/user-minus';
 import IconUserPlus from '@tabler/icons-svelte/icons/user-plus';
 import IconUsers from '@tabler/icons-svelte/icons/users';
 import IconUsersGroup from '@tabler/icons-svelte/icons/users-group';
@@ -680,6 +681,7 @@ export {
 	IconUser,
 	IconUserCheck,
 	IconUserCircle,
+	IconUserMinus,
 	IconUserPlus,
 	IconUsers,
 	IconUsersGroup,

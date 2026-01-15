@@ -1,49 +1,71 @@
 <!--
 	Admin Schedule Management - Trading Room Schedules CMS
-	ICT 11+ Apple Principal Engineer Grade
-	January 2026
-	
+	═══════════════════════════════════════════════════════════════════════════════════
+	Apple Principal Engineer ICT 11+ Grade - January 2026
+
 	Features:
-	- Per-room schedule management
-	- Weekly calendar view
+	- Per-room schedule management with ROOMS config integration
+	- Weekly calendar view with navigation
 	- CRUD operations for schedule events
 	- Exception handling (holidays, cancellations)
-	- Bulk operations
-	
-	@version 1.0.0
+	- Bulk operations and conflict detection
+	- Full Svelte 5 runes implementation
+
+	@version 2.0.0
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
+	import { goto } from '$app/navigation';
+	import { ROOMS, type Room } from '$lib/config/rooms';
+	import { AdminApiError } from '$lib/api/admin';
+	import IconCalendar from '@tabler/icons-svelte/icons/calendar';
+	import IconPlus from '@tabler/icons-svelte/icons/plus';
+	import IconEdit from '@tabler/icons-svelte/icons/edit';
+	import IconTrash from '@tabler/icons-svelte/icons/trash';
+	import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
+	import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
+	import IconClock from '@tabler/icons-svelte/icons/clock';
+	import IconUser from '@tabler/icons-svelte/icons/user';
+	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
+	import IconCheck from '@tabler/icons-svelte/icons/check';
+	import IconX from '@tabler/icons-svelte/icons/x';
+	import IconCopy from '@tabler/icons-svelte/icons/copy';
+	import IconRefresh from '@tabler/icons-svelte/icons/refresh';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	interface TradingRoom {
-		id: number;
-		name: string;
-		slug: string;
-		type: string | null;
-	}
-
 	interface ScheduleEvent {
 		id: number;
-		plan_id: number;
+		room_id: string;
 		title: string;
 		description: string | null;
 		trader_name: string | null;
-		day_of_week: number;
-		start_time: string;
+		day_of_week: number; // 0 = Sunday, 1 = Monday, etc.
+		start_time: string; // HH:MM format
 		end_time: string;
 		timezone: string;
 		is_active: boolean;
-		room_type: string | null;
+		room_type: 'live' | 'recorded' | 'hybrid';
+		recurrence: 'weekly' | 'biweekly' | 'monthly' | null;
+		exceptions: ScheduleException[];
+		created_at: string;
+		updated_at: string;
+	}
+
+	interface ScheduleException {
+		id: number;
+		schedule_id: number;
+		date: string; // YYYY-MM-DD
+		type: 'cancelled' | 'rescheduled' | 'holiday';
+		reason: string | null;
+		new_start_time?: string;
+		new_end_time?: string;
 	}
 
 	interface ScheduleForm {
-		plan_id: number;
+		room_id: string;
 		title: string;
 		description: string;
 		trader_name: string;
@@ -51,73 +73,288 @@
 		start_time: string;
 		end_time: string;
 		timezone: string;
-		room_type: string;
+		room_type: 'live' | 'recorded' | 'hybrid';
+		recurrence: 'weekly' | 'biweekly' | 'monthly' | null;
+		is_active: boolean;
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// STATE
+	// STATE - Svelte 5 Runes
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let tradingRooms = $state<TradingRoom[]>([]);
-	let selectedRoom = $state<TradingRoom | null>(null);
+	// Room selection state
+	let selectedRoomId = $state<string>(ROOMS[0]?.id || '');
+
+	// Data state
 	let schedules = $state<ScheduleEvent[]>([]);
 	let loading = $state(true);
 	let saving = $state(false);
 	let error = $state<string | null>(null);
 	let success = $state<string | null>(null);
 
+	// Calendar navigation
+	let currentWeekStart = $state(getStartOfWeek(new Date()));
+
 	// Modal state
 	let showModal = $state(false);
 	let editingSchedule = $state<ScheduleEvent | null>(null);
-	let formData = $state<ScheduleForm>({
-		plan_id: 0,
-		title: '',
-		description: '',
-		trader_name: '',
-		day_of_week: 1,
-		start_time: '09:00',
-		end_time: '10:00',
-		timezone: 'America/New_York',
-		room_type: 'live'
+	let formData = $state<ScheduleForm>(getDefaultFormData());
+
+	// Bulk selection
+	let selectedIds = $state<Set<number>>(new Set());
+	let showBulkActions = $state(false);
+
+	// Filter state
+	let filterActive = $state<'all' | 'active' | 'inactive'>('all');
+	let filterDay = $state<number | null>(null);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// CONSTANTS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+	const SHORT_DAYS = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+
+	const TIMEZONES = [
+		{ value: 'America/New_York', label: 'Eastern (ET)' },
+		{ value: 'America/Chicago', label: 'Central (CT)' },
+		{ value: 'America/Denver', label: 'Mountain (MT)' },
+		{ value: 'America/Los_Angeles', label: 'Pacific (PT)' },
+		{ value: 'UTC', label: 'UTC' }
+	];
+
+	const ROOM_TYPES = [
+		{ value: 'live', label: 'Live Session' },
+		{ value: 'recorded', label: 'Recorded' },
+		{ value: 'hybrid', label: 'Hybrid' }
+	];
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DERIVED STATE - Svelte 5 $derived
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Currently selected room from ROOMS config
+	 */
+	const selectedRoom = $derived(
+		ROOMS.find(r => r.id === selectedRoomId) || ROOMS[0]
+	);
+
+	/**
+	 * Filtered schedules based on active/inactive filter
+	 */
+	const filteredSchedules = $derived.by(() => {
+		let result = schedules;
+
+		if (filterActive === 'active') {
+			result = result.filter(s => s.is_active);
+		} else if (filterActive === 'inactive') {
+			result = result.filter(s => !s.is_active);
+		}
+
+		if (filterDay !== null) {
+			result = result.filter(s => s.day_of_week === filterDay);
+		}
+
+		return result;
 	});
 
-	// Day names for display
-	const DAYS = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+	/**
+	 * Schedules grouped by day of week
+	 */
+	const schedulesByDay = $derived.by(() => {
+		const grouped: Record<number, ScheduleEvent[]> = {};
+		for (let i = 0; i < 7; i++) {
+			grouped[i] = [];
+		}
+
+		for (const schedule of filteredSchedules) {
+			if (grouped[schedule.day_of_week]) {
+				grouped[schedule.day_of_week].push(schedule);
+			}
+		}
+
+		// Sort each day by start time
+		for (const day of Object.keys(grouped)) {
+			grouped[Number(day)].sort((a, b) => a.start_time.localeCompare(b.start_time));
+		}
+
+		return grouped;
+	});
+
+	/**
+	 * Check if there are any schedules
+	 */
+	const hasSchedules = $derived(schedules.length > 0);
+
+	/**
+	 * Total schedule count for current room
+	 */
+	const totalSchedules = $derived(schedules.length);
+
+	/**
+	 * Active schedule count
+	 */
+	const activeSchedules = $derived(schedules.filter(s => s.is_active).length);
+
+	/**
+	 * Week dates for calendar header
+	 */
+	const weekDates = $derived.by(() => {
+		const dates: Date[] = [];
+		for (let i = 0; i < 7; i++) {
+			const date = new Date(currentWeekStart);
+			date.setDate(date.getDate() + i);
+			dates.push(date);
+		}
+		return dates;
+	});
+
+	/**
+	 * Format week range for display
+	 */
+	const weekRangeText = $derived.by(() => {
+		const start = weekDates[0];
+		const end = weekDates[6];
+		const options: Intl.DateTimeFormatOptions = { month: 'short', day: 'numeric' };
+		return `${start.toLocaleDateString('en-US', options)} - ${end.toLocaleDateString('en-US', options)}, ${end.getFullYear()}`;
+	});
+
+	/**
+	 * Check if all visible schedules are selected
+	 */
+	const allSelected = $derived(
+		filteredSchedules.length > 0 &&
+		filteredSchedules.every(s => selectedIds.has(s.id))
+	);
+
+	/**
+	 * Detect schedule conflicts (overlapping times on same day)
+	 */
+	const conflicts = $derived.by(() => {
+		const conflictPairs: Array<[ScheduleEvent, ScheduleEvent]> = [];
+
+		for (const day of Object.keys(schedulesByDay)) {
+			const daySchedules = schedulesByDay[Number(day)];
+			for (let i = 0; i < daySchedules.length; i++) {
+				for (let j = i + 1; j < daySchedules.length; j++) {
+					const a = daySchedules[i];
+					const b = daySchedules[j];
+
+					// Check for overlap
+					if (a.start_time < b.end_time && b.start_time < a.end_time) {
+						conflictPairs.push([a, b]);
+					}
+				}
+			}
+		}
+
+		return conflictPairs;
+	});
+
+	const hasConflicts = $derived(conflicts.length > 0);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// EFFECTS - Svelte 5 $effect
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Load schedules when selected room changes
+	 */
+	$effect(() => {
+		if (selectedRoomId) {
+			loadSchedules();
+		}
+	});
+
+	/**
+	 * Clear success message after delay
+	 */
+	$effect(() => {
+		if (!success) return;
+
+		const timeout = setTimeout(() => {
+			success = null;
+		}, 3000);
+
+		return () => clearTimeout(timeout);
+	});
+
+	/**
+	 * Update bulk actions visibility
+	 */
+	$effect(() => {
+		showBulkActions = selectedIds.size > 0;
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// HELPER FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function getStartOfWeek(date: Date): Date {
+		const d = new Date(date);
+		const day = d.getDay();
+		const diff = d.getDate() - day;
+		d.setDate(diff);
+		d.setHours(0, 0, 0, 0);
+		return d;
+	}
+
+	function getDefaultFormData(): ScheduleForm {
+		return {
+			room_id: selectedRoomId || ROOMS[0]?.id || '',
+			title: '',
+			description: '',
+			trader_name: '',
+			day_of_week: 1,
+			start_time: '09:00',
+			end_time: '10:00',
+			timezone: 'America/New_York',
+			room_type: 'live',
+			recurrence: 'weekly',
+			is_active: true
+		};
+	}
+
+	function formatTime(time: string): string {
+		const [hours, minutes] = time.split(':');
+		const h = parseInt(hours);
+		const ampm = h >= 12 ? 'PM' : 'AM';
+		const displayHour = h % 12 || 12;
+		return `${displayHour}:${minutes} ${ampm}`;
+	}
+
+	function formatDate(date: Date): string {
+		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	async function fetchTradingRooms() {
-		try {
-			const response = await fetch('/api/schedules/rooms', {
-				credentials: 'include'
-			});
-			if (!response.ok) throw new Error('Failed to fetch trading rooms');
-			const data = await response.json();
-			tradingRooms = data.rooms || [];
-			
-			// Auto-select first room
-			if (tradingRooms.length > 0 && !selectedRoom) {
-				selectRoom(tradingRooms[0]);
-			}
-		} catch (e) {
-			error = e instanceof Error ? e.message : 'Failed to fetch trading rooms';
-		}
-	}
-
-	async function fetchSchedules(planId: number) {
+	async function loadSchedules() {
 		loading = true;
 		error = null;
+
 		try {
-			const response = await fetch(`/api/admin/schedules/plan/${planId}`, {
+			const response = await fetch(`/api/admin/schedules?room_id=${selectedRoomId}`, {
 				credentials: 'include'
 			});
-			if (!response.ok) throw new Error('Failed to fetch schedules');
+
+			if (!response.ok) {
+				if (response.status === 401) {
+					goto('/login');
+					return;
+				}
+				throw new Error('Failed to load schedules');
+			}
+
 			const data = await response.json();
-			schedules = data.schedules || [];
+			schedules = data.data || data.schedules || [];
 		} catch (e) {
-			error = e instanceof Error ? e.message : 'Failed to fetch schedules';
+			console.error('Failed to load schedules:', e);
+			error = e instanceof Error ? e.message : 'Failed to load schedules';
+			schedules = [];
 		} finally {
 			loading = false;
 		}
@@ -127,7 +364,6 @@
 		if (!selectedRoom) return;
 		saving = true;
 		error = null;
-		success = null;
 
 		try {
 			const response = await fetch('/api/admin/schedules', {
@@ -136,19 +372,18 @@
 				credentials: 'include',
 				body: JSON.stringify({
 					...formData,
-					plan_id: selectedRoom.id
+					room_id: selectedRoomId
 				})
 			});
 
 			if (!response.ok) {
 				const data = await response.json();
-				throw new Error(data.error || 'Failed to create schedule');
+				throw new Error(data.error || data.message || 'Failed to create schedule');
 			}
 
 			success = 'Schedule created successfully';
-			showModal = false;
-			resetForm();
-			await fetchSchedules(selectedRoom.id);
+			closeModal();
+			await loadSchedules();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to create schedule';
 		} finally {
@@ -157,10 +392,9 @@
 	}
 
 	async function updateSchedule() {
-		if (!editingSchedule || !selectedRoom) return;
+		if (!editingSchedule) return;
 		saving = true;
 		error = null;
-		success = null;
 
 		try {
 			const response = await fetch(`/api/admin/schedules/${editingSchedule.id}`, {
@@ -172,14 +406,12 @@
 
 			if (!response.ok) {
 				const data = await response.json();
-				throw new Error(data.error || 'Failed to update schedule');
+				throw new Error(data.error || data.message || 'Failed to update schedule');
 			}
 
 			success = 'Schedule updated successfully';
-			showModal = false;
-			editingSchedule = null;
-			resetForm();
-			await fetchSchedules(selectedRoom.id);
+			closeModal();
+			await loadSchedules();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to update schedule';
 		} finally {
@@ -189,7 +421,6 @@
 
 	async function deleteSchedule(id: number) {
 		if (!confirm('Are you sure you want to delete this schedule?')) return;
-		if (!selectedRoom) return;
 
 		try {
 			const response = await fetch(`/api/admin/schedules/${id}`, {
@@ -200,9 +431,96 @@
 			if (!response.ok) throw new Error('Failed to delete schedule');
 
 			success = 'Schedule deleted successfully';
-			await fetchSchedules(selectedRoom.id);
+			selectedIds.delete(id);
+			selectedIds = new Set(selectedIds);
+			await loadSchedules();
 		} catch (e) {
 			error = e instanceof Error ? e.message : 'Failed to delete schedule';
+		}
+	}
+
+	async function toggleScheduleActive(schedule: ScheduleEvent) {
+		try {
+			const response = await fetch(`/api/admin/schedules/${schedule.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({ is_active: !schedule.is_active })
+			});
+
+			if (!response.ok) throw new Error('Failed to update schedule');
+
+			success = `Schedule ${schedule.is_active ? 'deactivated' : 'activated'}`;
+			await loadSchedules();
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Failed to update schedule';
+		}
+	}
+
+	async function duplicateSchedule(schedule: ScheduleEvent) {
+		try {
+			const response = await fetch('/api/admin/schedules', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({
+					...schedule,
+					id: undefined,
+					title: `${schedule.title} (Copy)`,
+					created_at: undefined,
+					updated_at: undefined
+				})
+			});
+
+			if (!response.ok) throw new Error('Failed to duplicate schedule');
+
+			success = 'Schedule duplicated successfully';
+			await loadSchedules();
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Failed to duplicate schedule';
+		}
+	}
+
+	async function bulkDelete() {
+		if (!confirm(`Delete ${selectedIds.size} selected schedules?`)) return;
+
+		try {
+			const response = await fetch('/api/admin/schedules/bulk-delete', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({ ids: Array.from(selectedIds) })
+			});
+
+			if (!response.ok) throw new Error('Failed to delete schedules');
+
+			success = `${selectedIds.size} schedules deleted`;
+			selectedIds = new Set();
+			await loadSchedules();
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Failed to delete schedules';
+		}
+	}
+
+	async function bulkToggleActive(active: boolean) {
+		try {
+			const response = await fetch('/api/admin/schedules/bulk-update', {
+				method: 'POST',
+				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
+				body: JSON.stringify({
+					ids: Array.from(selectedIds),
+					data: { is_active: active }
+				})
+			});
+
+			if (!response.ok) throw new Error('Failed to update schedules');
+
+			success = `${selectedIds.size} schedules ${active ? 'activated' : 'deactivated'}`;
+			selectedIds = new Set();
+			await loadSchedules();
+		} catch (e) {
+			error = e instanceof Error ? e.message : 'Failed to update schedules';
 		}
 	}
 
@@ -210,29 +528,31 @@
 	// UI FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function selectRoom(room: TradingRoom) {
-		selectedRoom = room;
-		fetchSchedules(room.id);
+	function selectRoom(roomId: string) {
+		selectedRoomId = roomId;
+		selectedIds = new Set();
 	}
 
 	function openCreateModal() {
 		editingSchedule = null;
-		resetForm();
+		formData = getDefaultFormData();
 		showModal = true;
 	}
 
 	function openEditModal(schedule: ScheduleEvent) {
 		editingSchedule = schedule;
 		formData = {
-			plan_id: schedule.plan_id,
+			room_id: schedule.room_id,
 			title: schedule.title,
 			description: schedule.description || '',
 			trader_name: schedule.trader_name || '',
 			day_of_week: schedule.day_of_week,
 			start_time: schedule.start_time,
 			end_time: schedule.end_time,
-			timezone: schedule.timezone || 'America/New_York',
-			room_type: schedule.room_type || 'live'
+			timezone: schedule.timezone,
+			room_type: schedule.room_type,
+			recurrence: schedule.recurrence,
+			is_active: schedule.is_active
 		};
 		showModal = true;
 	}
@@ -240,11 +560,10 @@
 	function closeModal() {
 		showModal = false;
 		editingSchedule = null;
-		resetForm();
+		formData = getDefaultFormData();
 	}
 
 	function handleOverlayClick(e: MouseEvent) {
-		// Only close if clicking directly on overlay, not on modal content
 		if (e.target === e.currentTarget) {
 			closeModal();
 		}
@@ -256,20 +575,6 @@
 		}
 	}
 
-	function resetForm() {
-		formData = {
-			plan_id: selectedRoom?.id || 0,
-			title: '',
-			description: '',
-			trader_name: '',
-			day_of_week: 1,
-			start_time: '09:00',
-			end_time: '10:00',
-			timezone: 'America/New_York',
-			room_type: 'live'
-		};
-	}
-
 	function handleSubmit() {
 		if (editingSchedule) {
 			updateSchedule();
@@ -278,20 +583,36 @@
 		}
 	}
 
-	// Group schedules by day
-	function getSchedulesByDay(day: number): ScheduleEvent[] {
-		return schedules
-			.filter(s => s.day_of_week === day)
-			.sort((a, b) => a.start_time.localeCompare(b.start_time));
+	function navigateWeek(direction: number) {
+		const newDate = new Date(currentWeekStart);
+		newDate.setDate(newDate.getDate() + (direction * 7));
+		currentWeekStart = newDate;
 	}
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
+	function goToCurrentWeek() {
+		currentWeekStart = getStartOfWeek(new Date());
+	}
 
-	onMount(() => {
-		fetchTradingRooms();
-	});
+	function toggleSelection(id: number) {
+		if (selectedIds.has(id)) {
+			selectedIds.delete(id);
+		} else {
+			selectedIds.add(id);
+		}
+		selectedIds = new Set(selectedIds);
+	}
+
+	function toggleSelectAll() {
+		if (allSelected) {
+			selectedIds = new Set();
+		} else {
+			selectedIds = new Set(filteredSchedules.map(s => s.id));
+		}
+	}
+
+	function isConflicting(scheduleId: number): boolean {
+		return conflicts.some(([a, b]) => a.id === scheduleId || b.id === scheduleId);
+	}
 </script>
 
 <svelte:head>
@@ -300,160 +621,328 @@
 
 <div class="admin-schedules">
 	<!-- Header -->
-	<header class="admin-header">
+	<header class="page-header">
 		<div class="header-content">
-			<h1>Trading Room Schedules</h1>
-			<p class="subtitle">Manage weekly schedules for each trading room and mentorship service</p>
+			<div class="header-title">
+				<IconCalendar size={32} />
+				<div>
+					<h1>Trading Room Schedules</h1>
+					<p class="subtitle">Manage weekly schedules for each trading room and service</p>
+				</div>
+			</div>
+			<div class="header-actions">
+				{#if hasConflicts}
+					<div class="conflict-warning">
+						<IconAlertCircle size={18} />
+						<span>{conflicts.length} time conflict{conflicts.length !== 1 ? 's' : ''}</span>
+					</div>
+				{/if}
+				<button class="btn btn-primary" onclick={openCreateModal}>
+					<IconPlus size={18} />
+					Add Schedule
+				</button>
+			</div>
 		</div>
-		{#if selectedRoom}
-			<button class="btn btn-primary" onclick={openCreateModal}>
-				+ Add Schedule Event
-			</button>
-		{/if}
 	</header>
 
 	<!-- Alerts -->
 	{#if error}
-		<div class="alert alert-error">
+		<div class="alert alert-error" role="alert">
+			<IconAlertCircle size={18} />
 			<span>{error}</span>
-			<button onclick={() => error = null}>×</button>
+			<button onclick={() => error = null} aria-label="Dismiss">
+				<IconX size={18} />
+			</button>
 		</div>
 	{/if}
 
 	{#if success}
-		<div class="alert alert-success">
+		<div class="alert alert-success" role="status">
+			<IconCheck size={18} />
 			<span>{success}</span>
-			<button onclick={() => success = null}>×</button>
+			<button onclick={() => success = null} aria-label="Dismiss">
+				<IconX size={18} />
+			</button>
 		</div>
 	{/if}
 
-	<!-- Room Selector -->
+	<!-- Room Selector Tabs -->
 	<div class="room-selector">
-		<h3>Select Trading Room</h3>
-		<div class="room-tabs">
-			{#each tradingRooms as room}
+		<div class="room-tabs" role="tablist">
+			{#each ROOMS as room}
 				<button
 					class="room-tab"
-					class:active={selectedRoom?.id === room.id}
-					onclick={() => selectRoom(room)}
+					class:active={selectedRoomId === room.id}
+					onclick={() => selectRoom(room.id)}
+					role="tab"
+					aria-selected={selectedRoomId === room.id}
+					style="--room-color: {room.color}"
 				>
-					<span class="room-name">{room.name}</span>
-					<span class="room-type">{room.type || 'trading-room'}</span>
+					<span class="room-icon">{room.icon}</span>
+					<span class="room-name">{room.shortName}</span>
 				</button>
 			{/each}
 		</div>
+
+		<div class="room-info">
+			{#if selectedRoom}
+				<span class="room-full-name" style="color: {selectedRoom.color}">{selectedRoom.name}</span>
+				<span class="room-stats">
+					{activeSchedules} active / {totalSchedules} total
+				</span>
+			{/if}
+		</div>
 	</div>
 
-	<!-- Schedule Grid -->
-	{#if selectedRoom}
-		<div class="schedule-container">
-			<h2 class="schedule-title">
-				{selectedRoom.name} - Weekly Schedule
-			</h2>
+	<!-- Toolbar -->
+	<div class="toolbar">
+		<!-- Week Navigation -->
+		<div class="week-nav">
+			<button class="btn btn-icon" onclick={() => navigateWeek(-1)} title="Previous week">
+				<IconChevronLeft size={20} />
+			</button>
+			<span class="week-label">{weekRangeText}</span>
+			<button class="btn btn-icon" onclick={() => navigateWeek(1)} title="Next week">
+				<IconChevronRight size={20} />
+			</button>
+			<button class="btn btn-text" onclick={goToCurrentWeek}>Today</button>
+		</div>
 
-			{#if loading}
-				<div class="loading">Loading schedules...</div>
-			{:else if schedules.length === 0}
-				<div class="empty-state">
-					<p>No schedules configured for this trading room.</p>
-					<button class="btn btn-primary" onclick={openCreateModal}>
-						Create First Schedule
-					</button>
-				</div>
-			{:else}
-				<div class="weekly-grid">
-					{#each [1, 2, 3, 4, 5] as day}
-						<div class="day-column">
-							<h4 class="day-header">{DAYS[day]}</h4>
-							<div class="day-events">
-								{#each getSchedulesByDay(day) as event}
-									<div class="event-card" class:inactive={!event.is_active}>
+		<!-- Filters -->
+		<div class="filters">
+			<select bind:value={filterActive} class="filter-select">
+				<option value="all">All Schedules</option>
+				<option value="active">Active Only</option>
+				<option value="inactive">Inactive Only</option>
+			</select>
+
+			<select bind:value={filterDay} class="filter-select">
+				<option value={null}>All Days</option>
+				{#each DAYS as day, index}
+					<option value={index}>{day}</option>
+				{/each}
+			</select>
+
+			<button class="btn btn-icon" onclick={loadSchedules} title="Refresh">
+				<IconRefresh size={18} />
+			</button>
+		</div>
+	</div>
+
+	<!-- Bulk Actions Bar -->
+	{#if showBulkActions}
+		<div class="bulk-actions">
+			<span class="bulk-count">{selectedIds.size} selected</span>
+			<button class="btn btn-sm" onclick={() => bulkToggleActive(true)}>
+				<IconCheck size={16} />
+				Activate
+			</button>
+			<button class="btn btn-sm" onclick={() => bulkToggleActive(false)}>
+				<IconX size={16} />
+				Deactivate
+			</button>
+			<button class="btn btn-sm btn-danger" onclick={bulkDelete}>
+				<IconTrash size={16} />
+				Delete
+			</button>
+			<button class="btn btn-sm btn-text" onclick={() => selectedIds = new Set()}>
+				Clear
+			</button>
+		</div>
+	{/if}
+
+	<!-- Schedule Grid -->
+	<div class="schedule-container">
+		{#if loading}
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<p>Loading schedules...</p>
+			</div>
+		{:else if !hasSchedules}
+			<div class="empty-state">
+				<IconCalendar size={64} stroke={1} />
+				<h3>No Schedules Yet</h3>
+				<p>Create your first schedule for {selectedRoom?.name || 'this room'}</p>
+				<button class="btn btn-primary" onclick={openCreateModal}>
+					<IconPlus size={18} />
+					Create Schedule
+				</button>
+			</div>
+		{:else}
+			<!-- Weekly Calendar Grid -->
+			<div class="weekly-grid">
+				{#each [1, 2, 3, 4, 5] as dayIndex}
+					{@const daySchedules = schedulesByDay[dayIndex] || []}
+					{@const dayDate = weekDates[dayIndex]}
+					<div class="day-column">
+						<div class="day-header">
+							<span class="day-name">{DAYS[dayIndex]}</span>
+							<span class="day-date">{formatDate(dayDate)}</span>
+						</div>
+						<div class="day-events">
+							{#each daySchedules as event}
+								<div
+									class="event-card"
+									class:inactive={!event.is_active}
+									class:selected={selectedIds.has(event.id)}
+									class:conflict={isConflicting(event.id)}
+								>
+									<div class="event-checkbox">
+										<input
+											type="checkbox"
+											checked={selectedIds.has(event.id)}
+											onchange={() => toggleSelection(event.id)}
+											aria-label="Select schedule"
+										/>
+									</div>
+									<div class="event-content">
 										<div class="event-time">
-											{event.start_time} - {event.end_time}
+											<IconClock size={14} />
+											{formatTime(event.start_time)} - {formatTime(event.end_time)}
 										</div>
 										<div class="event-title">{event.title}</div>
 										{#if event.trader_name}
-											<div class="event-trader">with {event.trader_name}</div>
+											<div class="event-trader">
+												<IconUser size={12} />
+												{event.trader_name}
+											</div>
 										{/if}
+										<div class="event-badges">
+											<span class="badge badge-{event.room_type}">{event.room_type}</span>
+											{#if !event.is_active}
+												<span class="badge badge-inactive">Inactive</span>
+											{/if}
+										</div>
+									</div>
+									<div class="event-actions">
+										<button
+											class="btn-icon"
+											onclick={() => toggleScheduleActive(event)}
+											title={event.is_active ? 'Deactivate' : 'Activate'}
+										>
+											{#if event.is_active}
+												<IconCheck size={16} />
+											{:else}
+												<IconX size={16} />
+											{/if}
+										</button>
+										<button
+											class="btn-icon"
+											onclick={() => duplicateSchedule(event)}
+											title="Duplicate"
+										>
+											<IconCopy size={16} />
+										</button>
+										<button
+											class="btn-icon"
+											onclick={() => openEditModal(event)}
+											title="Edit"
+										>
+											<IconEdit size={16} />
+										</button>
+										<button
+											class="btn-icon btn-danger"
+											onclick={() => deleteSchedule(event.id)}
+											title="Delete"
+										>
+											<IconTrash size={16} />
+										</button>
+									</div>
+								</div>
+							{/each}
+							{#if daySchedules.length === 0}
+								<div class="no-events">
+									<span>No events</span>
+									<button class="btn-link" onclick={() => { formData.day_of_week = dayIndex; openCreateModal(); }}>
+										+ Add
+									</button>
+								</div>
+							{/if}
+						</div>
+					</div>
+				{/each}
+			</div>
+
+			<!-- Weekend Section -->
+			<details class="weekend-section">
+				<summary>
+					<span>Weekend Schedule</span>
+					<span class="weekend-count">
+						{(schedulesByDay[0]?.length || 0) + (schedulesByDay[6]?.length || 0)} events
+					</span>
+				</summary>
+				<div class="weekend-grid">
+					{#each [6, 0] as dayIndex}
+						{@const daySchedules = schedulesByDay[dayIndex] || []}
+						<div class="day-column">
+							<div class="day-header">
+								<span class="day-name">{DAYS[dayIndex]}</span>
+							</div>
+							<div class="day-events">
+								{#each daySchedules as event}
+									<div
+										class="event-card"
+										class:inactive={!event.is_active}
+									>
+										<div class="event-content">
+											<div class="event-time">
+												<IconClock size={14} />
+												{formatTime(event.start_time)} - {formatTime(event.end_time)}
+											</div>
+											<div class="event-title">{event.title}</div>
+											{#if event.trader_name}
+												<div class="event-trader">
+													<IconUser size={12} />
+													{event.trader_name}
+												</div>
+											{/if}
+										</div>
 										<div class="event-actions">
-											<button class="btn-icon" onclick={() => openEditModal(event)} title="Edit">
-												✏️
+											<button class="btn-icon" onclick={() => openEditModal(event)}>
+												<IconEdit size={16} />
 											</button>
-											<button class="btn-icon btn-danger" onclick={() => deleteSchedule(event.id)} title="Delete">
-												🗑️
+											<button class="btn-icon btn-danger" onclick={() => deleteSchedule(event.id)}>
+												<IconTrash size={16} />
 											</button>
 										</div>
 									</div>
 								{/each}
-								{#if getSchedulesByDay(day).length === 0}
-									<div class="no-events">No events</div>
+								{#if daySchedules.length === 0}
+									<div class="no-events">No weekend events</div>
 								{/if}
 							</div>
 						</div>
 					{/each}
 				</div>
-
-				<!-- Weekend (collapsed) -->
-				<details class="weekend-section">
-					<summary>Weekend Schedule (Saturday & Sunday)</summary>
-					<div class="weekend-grid">
-						{#each [6, 0] as day}
-							<div class="day-column">
-								<h4 class="day-header">{DAYS[day]}</h4>
-								<div class="day-events">
-									{#each getSchedulesByDay(day) as event}
-										<div class="event-card">
-											<div class="event-time">
-												{event.start_time} - {event.end_time}
-											</div>
-											<div class="event-title">{event.title}</div>
-											{#if event.trader_name}
-												<div class="event-trader">with {event.trader_name}</div>
-											{/if}
-											<div class="event-actions">
-												<button class="btn-icon" onclick={() => openEditModal(event)}>✏️</button>
-												<button class="btn-icon btn-danger" onclick={() => deleteSchedule(event.id)}>🗑️</button>
-											</div>
-										</div>
-									{/each}
-									{#if getSchedulesByDay(day).length === 0}
-										<div class="no-events">No events</div>
-									{/if}
-								</div>
-							</div>
-						{/each}
-					</div>
-				</details>
-			{/if}
-		</div>
-	{:else}
-		<div class="empty-state">
-			<p>Select a trading room to manage its schedule.</p>
-		</div>
-	{/if}
+			</details>
+		{/if}
+	</div>
 </div>
 
-<!-- Modal -->
+<!-- Create/Edit Modal -->
 {#if showModal}
-	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div 
-		class="modal-overlay" 
-		role="dialog" 
-		aria-modal="true" 
-		aria-labelledby="modal-title" 
+	<div
+		class="modal-overlay"
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="modal-title"
 		tabindex="-1"
 		onclick={handleOverlayClick}
 		onkeydown={handleOverlayKeydown}
 	>
 		<div class="modal" role="document">
 			<div class="modal-header">
-				<h3 id="modal-title">{editingSchedule ? 'Edit Schedule Event' : 'Create Schedule Event'}</h3>
-				<button class="modal-close" onclick={closeModal}>×</button>
+				<h3 id="modal-title">
+					{editingSchedule ? 'Edit Schedule' : 'Create Schedule'}
+				</h3>
+				<button class="modal-close" onclick={closeModal} aria-label="Close">
+					<IconX size={24} />
+				</button>
 			</div>
 
 			<form class="modal-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
 				<div class="form-group">
-					<label for="title">Event Title *</label>
+					<label for="title">Event Title <span class="required">*</span></label>
 					<input
 						type="text"
 						id="title"
@@ -463,19 +952,30 @@
 					/>
 				</div>
 
-				<div class="form-group">
-					<label for="trader_name">Trader Name</label>
-					<input
-						type="text"
-						id="trader_name"
-						bind:value={formData.trader_name}
-						placeholder="e.g., Taylor Horton"
-					/>
+				<div class="form-row">
+					<div class="form-group">
+						<label for="trader_name">Trader/Host</label>
+						<input
+							type="text"
+							id="trader_name"
+							bind:value={formData.trader_name}
+							placeholder="e.g., Taylor Horton"
+						/>
+					</div>
+
+					<div class="form-group">
+						<label for="room_type">Session Type</label>
+						<select id="room_type" bind:value={formData.room_type}>
+							{#each ROOM_TYPES as type}
+								<option value={type.value}>{type.label}</option>
+							{/each}
+						</select>
+					</div>
 				</div>
 
 				<div class="form-row">
 					<div class="form-group">
-						<label for="day_of_week">Day of Week *</label>
+						<label for="day_of_week">Day of Week <span class="required">*</span></label>
 						<select id="day_of_week" bind:value={formData.day_of_week} required>
 							{#each DAYS as day, index}
 								<option value={index}>{day}</option>
@@ -484,18 +984,19 @@
 					</div>
 
 					<div class="form-group">
-						<label for="room_type">Room Type</label>
-						<select id="room_type" bind:value={formData.room_type}>
-							<option value="live">Live</option>
-							<option value="recorded">Recorded</option>
-							<option value="hybrid">Hybrid</option>
+						<label for="recurrence">Recurrence</label>
+						<select id="recurrence" bind:value={formData.recurrence}>
+							<option value="weekly">Weekly</option>
+							<option value="biweekly">Bi-weekly</option>
+							<option value="monthly">Monthly</option>
+							<option value={null}>One-time</option>
 						</select>
 					</div>
 				</div>
 
 				<div class="form-row">
 					<div class="form-group">
-						<label for="start_time">Start Time *</label>
+						<label for="start_time">Start Time <span class="required">*</span></label>
 						<input
 							type="time"
 							id="start_time"
@@ -505,7 +1006,7 @@
 					</div>
 
 					<div class="form-group">
-						<label for="end_time">End Time *</label>
+						<label for="end_time">End Time <span class="required">*</span></label>
 						<input
 							type="time"
 							id="end_time"
@@ -518,10 +1019,9 @@
 				<div class="form-group">
 					<label for="timezone">Timezone</label>
 					<select id="timezone" bind:value={formData.timezone}>
-						<option value="America/New_York">Eastern (ET)</option>
-						<option value="America/Chicago">Central (CT)</option>
-						<option value="America/Denver">Mountain (MT)</option>
-						<option value="America/Los_Angeles">Pacific (PT)</option>
+						{#each TIMEZONES as tz}
+							<option value={tz.value}>{tz.label}</option>
+						{/each}
 					</select>
 				</div>
 
@@ -530,9 +1030,16 @@
 					<textarea
 						id="description"
 						bind:value={formData.description}
-						placeholder="Optional description..."
+						placeholder="Optional description of the session..."
 						rows="3"
 					></textarea>
+				</div>
+
+				<div class="form-group form-checkbox">
+					<label>
+						<input type="checkbox" bind:checked={formData.is_active} />
+						<span>Active (visible to members)</span>
+					</label>
 				</div>
 
 				<div class="modal-actions">
@@ -540,7 +1047,12 @@
 						Cancel
 					</button>
 					<button type="submit" class="btn btn-primary" disabled={saving}>
-						{saving ? 'Saving...' : (editingSchedule ? 'Update' : 'Create')}
+						{#if saving}
+							<span class="spinner-sm"></span>
+							Saving...
+						{:else}
+							{editingSchedule ? 'Update Schedule' : 'Create Schedule'}
+						{/if}
 					</button>
 				</div>
 			</form>
@@ -550,44 +1062,78 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * ADMIN SCHEDULES - ICT 11+ Styling
+	 * ADMIN SCHEDULES - Apple ICT 11+ Grade Styling
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.admin-schedules {
 		padding: 24px;
-		max-width: 1400px;
+		max-width: 1600px;
 		margin: 0 auto;
 		font-family: 'Montserrat', var(--font-body), sans-serif;
 	}
 
 	/* Header */
-	.admin-header {
+	.page-header {
+		margin-bottom: 24px;
+		padding-bottom: 24px;
+		border-bottom: 1px solid #e2e8f0;
+	}
+
+	.header-content {
 		display: flex;
 		justify-content: space-between;
 		align-items: flex-start;
-		margin-bottom: 24px;
-		padding-bottom: 24px;
-		border-bottom: 1px solid #e5e5e5;
+		gap: 24px;
 	}
 
-	.admin-header h1 {
+	.header-title {
+		display: flex;
+		align-items: flex-start;
+		gap: 16px;
+	}
+
+	.header-title :global(svg) {
+		color: #143E59;
+		flex-shrink: 0;
+		margin-top: 4px;
+	}
+
+	.header-title h1 {
 		font-size: 28px;
 		font-weight: 700;
-		color: #143E59;
-		margin: 0 0 8px 0;
+		color: #1e293b;
+		margin: 0 0 4px 0;
 	}
 
 	.subtitle {
-		color: #666;
+		color: #64748b;
 		font-size: 14px;
 		margin: 0;
+	}
+
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.conflict-warning {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		padding: 8px 12px;
+		background: #fef3c7;
+		color: #b45309;
+		border-radius: 6px;
+		font-size: 13px;
+		font-weight: 500;
 	}
 
 	/* Alerts */
 	.alert {
 		display: flex;
-		justify-content: space-between;
 		align-items: center;
+		gap: 12px;
 		padding: 12px 16px;
 		border-radius: 8px;
 		margin-bottom: 16px;
@@ -595,117 +1141,202 @@
 	}
 
 	.alert-error {
-		background: #fee2e2;
+		background: #fef2f2;
 		color: #dc2626;
 		border: 1px solid #fecaca;
 	}
 
 	.alert-success {
-		background: #dcfce7;
+		background: #f0fdf4;
 		color: #16a34a;
 		border: 1px solid #bbf7d0;
 	}
 
 	.alert button {
+		margin-left: auto;
 		background: none;
 		border: none;
-		font-size: 20px;
 		cursor: pointer;
 		opacity: 0.7;
+		padding: 4px;
+		display: flex;
+	}
+
+	.alert button:hover {
+		opacity: 1;
 	}
 
 	/* Room Selector */
 	.room-selector {
-		margin-bottom: 24px;
-	}
-
-	.room-selector h3 {
-		font-size: 14px;
-		font-weight: 600;
-		color: #666;
-		margin: 0 0 12px 0;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
+		margin-bottom: 20px;
 	}
 
 	.room-tabs {
 		display: flex;
-		gap: 12px;
+		gap: 8px;
 		flex-wrap: wrap;
+		margin-bottom: 12px;
 	}
 
 	.room-tab {
 		display: flex;
-		flex-direction: column;
-		align-items: flex-start;
-		padding: 12px 20px;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 16px;
 		background: #fff;
-		border: 2px solid #e5e5e5;
+		border: 2px solid #e2e8f0;
 		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.2s ease;
+		font-size: 14px;
+		font-weight: 600;
 	}
 
 	.room-tab:hover {
-		border-color: #143E59;
+		border-color: var(--room-color, #143E59);
+		background: #f8fafc;
 	}
 
 	.room-tab.active {
-		background: #143E59;
-		border-color: #143E59;
+		background: var(--room-color, #143E59);
+		border-color: var(--room-color, #143E59);
 		color: #fff;
 	}
 
-	.room-name {
-		font-weight: 600;
-		font-size: 14px;
+	.room-icon {
+		font-size: 18px;
 	}
 
-	.room-type {
-		font-size: 11px;
-		opacity: 0.7;
-		text-transform: capitalize;
+	.room-info {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.room-full-name {
+		font-size: 16px;
+		font-weight: 600;
+	}
+
+	.room-stats {
+		font-size: 13px;
+		color: #64748b;
+	}
+
+	/* Toolbar */
+	.toolbar {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		gap: 16px;
+		margin-bottom: 20px;
+		padding: 12px 16px;
+		background: #f8fafc;
+		border-radius: 8px;
+		flex-wrap: wrap;
+	}
+
+	.week-nav {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.week-label {
+		font-size: 15px;
+		font-weight: 600;
+		color: #1e293b;
+		min-width: 180px;
+		text-align: center;
+	}
+
+	.filters {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.filter-select {
+		padding: 8px 12px;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		font-size: 13px;
+		background: #fff;
+		cursor: pointer;
+	}
+
+	.filter-select:focus {
+		outline: none;
+		border-color: #143E59;
+	}
+
+	/* Bulk Actions */
+	.bulk-actions {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 12px 16px;
+		background: #143E59;
+		border-radius: 8px;
+		margin-bottom: 16px;
+	}
+
+	.bulk-count {
+		color: #fff;
+		font-size: 14px;
+		font-weight: 500;
+		margin-right: auto;
+	}
+
+	.bulk-actions .btn-sm {
+		padding: 6px 12px;
+		font-size: 13px;
 	}
 
 	/* Schedule Container */
 	.schedule-container {
 		background: #fff;
 		border-radius: 12px;
-		padding: 24px;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-	}
-
-	.schedule-title {
-		font-size: 20px;
-		font-weight: 700;
-		color: #333;
-		margin: 0 0 24px 0;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+		overflow: hidden;
 	}
 
 	/* Weekly Grid */
 	.weekly-grid {
 		display: grid;
 		grid-template-columns: repeat(5, 1fr);
-		gap: 16px;
+		gap: 1px;
+		background: #e2e8f0;
 	}
 
 	.day-column {
-		background: #f9fafb;
-		border-radius: 8px;
-		padding: 16px;
-		min-height: 200px;
+		background: #fff;
+		min-height: 300px;
 	}
 
 	.day-header {
+		padding: 12px 16px;
+		background: #f8fafc;
+		border-bottom: 1px solid #e2e8f0;
+		text-align: center;
+	}
+
+	.day-name {
+		display: block;
 		font-size: 14px;
 		font-weight: 700;
 		color: #143E59;
-		margin: 0 0 12px 0;
-		padding-bottom: 8px;
-		border-bottom: 2px solid #143E59;
+	}
+
+	.day-date {
+		display: block;
+		font-size: 12px;
+		color: #64748b;
+		margin-top: 2px;
 	}
 
 	.day-events {
+		padding: 12px;
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
@@ -714,17 +1345,53 @@
 	/* Event Card */
 	.event-card {
 		background: #fff;
-		border: 1px solid #e5e5e5;
-		border-radius: 6px;
+		border: 1px solid #e2e8f0;
+		border-radius: 8px;
 		padding: 12px;
 		position: relative;
+		transition: all 0.2s ease;
+	}
+
+	.event-card:hover {
+		border-color: #94a3b8;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 	}
 
 	.event-card.inactive {
-		opacity: 0.5;
+		opacity: 0.6;
+		background: #f8fafc;
+	}
+
+	.event-card.selected {
+		border-color: #143E59;
+		background: #f0f9ff;
+	}
+
+	.event-card.conflict {
+		border-color: #f59e0b;
+		background: #fffbeb;
+	}
+
+	.event-checkbox {
+		position: absolute;
+		top: 8px;
+		left: 8px;
+	}
+
+	.event-checkbox input {
+		width: 16px;
+		height: 16px;
+		cursor: pointer;
+	}
+
+	.event-content {
+		padding-left: 28px;
 	}
 
 	.event-time {
+		display: flex;
+		align-items: center;
+		gap: 4px;
 		font-size: 12px;
 		font-weight: 600;
 		color: #143E59;
@@ -734,13 +1401,52 @@
 	.event-title {
 		font-size: 13px;
 		font-weight: 600;
-		color: #333;
+		color: #1e293b;
 		margin-bottom: 4px;
 	}
 
 	.event-trader {
+		display: flex;
+		align-items: center;
+		gap: 4px;
 		font-size: 11px;
-		color: #666;
+		color: #64748b;
+		margin-bottom: 8px;
+	}
+
+	.event-badges {
+		display: flex;
+		gap: 4px;
+		flex-wrap: wrap;
+	}
+
+	.badge {
+		display: inline-block;
+		padding: 2px 6px;
+		font-size: 10px;
+		font-weight: 600;
+		border-radius: 4px;
+		text-transform: uppercase;
+	}
+
+	.badge-live {
+		background: #dcfce7;
+		color: #16a34a;
+	}
+
+	.badge-recorded {
+		background: #e0e7ff;
+		color: #4f46e5;
+	}
+
+	.badge-hybrid {
+		background: #fef3c7;
+		color: #b45309;
+	}
+
+	.badge-inactive {
+		background: #f1f5f9;
+		color: #64748b;
 	}
 
 	.event-actions {
@@ -748,68 +1454,117 @@
 		gap: 4px;
 		margin-top: 8px;
 		padding-top: 8px;
-		border-top: 1px solid #f0f0f0;
-	}
-
-	.btn-icon {
-		background: none;
-		border: none;
-		cursor: pointer;
-		padding: 4px;
-		font-size: 14px;
-		opacity: 0.7;
-		transition: opacity 0.2s;
-	}
-
-	.btn-icon:hover {
-		opacity: 1;
+		border-top: 1px solid #f1f5f9;
 	}
 
 	.no-events {
-		font-size: 12px;
-		color: #999;
-		text-align: center;
-		padding: 20px 0;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 8px;
+		padding: 32px 16px;
+		color: #94a3b8;
+		font-size: 13px;
+	}
+
+	.btn-link {
+		background: none;
+		border: none;
+		color: #143E59;
+		font-size: 13px;
+		font-weight: 500;
+		cursor: pointer;
+		text-decoration: underline;
+	}
+
+	.btn-link:hover {
+		color: #0d2a3d;
 	}
 
 	/* Weekend Section */
 	.weekend-section {
-		margin-top: 24px;
-		padding-top: 24px;
-		border-top: 1px solid #e5e5e5;
+		margin-top: 1px;
+		border-top: 1px solid #e2e8f0;
 	}
 
 	.weekend-section summary {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 16px 20px;
+		background: #f8fafc;
+		cursor: pointer;
 		font-size: 14px;
 		font-weight: 600;
-		color: #666;
-		cursor: pointer;
-		padding: 8px 0;
+		color: #475569;
+	}
+
+	.weekend-section summary:hover {
+		background: #f1f5f9;
+	}
+
+	.weekend-count {
+		font-size: 12px;
+		color: #94a3b8;
+		font-weight: 400;
 	}
 
 	.weekend-grid {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
-		gap: 16px;
-		margin-top: 16px;
+		gap: 1px;
+		background: #e2e8f0;
 	}
 
-	/* Empty State */
+	/* States */
+	.loading-state,
 	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 80px 20px;
 		text-align: center;
-		padding: 60px 20px;
-		color: #666;
 	}
 
+	.loading-state p,
 	.empty-state p {
-		margin-bottom: 16px;
+		color: #64748b;
+		margin: 8px 0 20px;
 	}
 
-	/* Loading */
-	.loading {
-		text-align: center;
-		padding: 40px;
-		color: #666;
+	.empty-state h3 {
+		font-size: 20px;
+		font-weight: 700;
+		color: #1e293b;
+		margin: 16px 0 8px;
+	}
+
+	.empty-state :global(svg) {
+		color: #cbd5e1;
+	}
+
+	.spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e2e8f0;
+		border-top-color: #143E59;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.spinner-sm {
+		width: 16px;
+		height: 16px;
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		border-top-color: #fff;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+		display: inline-block;
+	}
+
+	@keyframes spin {
+		to { transform: rotate(360deg); }
 	}
 
 	/* Buttons */
@@ -817,10 +1572,11 @@
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
+		gap: 8px;
 		padding: 10px 20px;
 		font-size: 14px;
 		font-weight: 600;
-		border-radius: 6px;
+		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.2s ease;
 		border: none;
@@ -841,12 +1597,60 @@
 	}
 
 	.btn-secondary {
-		background: #f3f4f6;
-		color: #333;
+		background: #f1f5f9;
+		color: #475569;
 	}
 
 	.btn-secondary:hover {
-		background: #e5e7eb;
+		background: #e2e8f0;
+	}
+
+	.btn-danger {
+		background: #fef2f2;
+		color: #dc2626;
+	}
+
+	.btn-danger:hover {
+		background: #fee2e2;
+	}
+
+	.btn-icon {
+		padding: 8px;
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: all 0.2s;
+	}
+
+	.btn-icon:hover {
+		background: #f1f5f9;
+		border-color: #cbd5e1;
+	}
+
+	.btn-icon.btn-danger {
+		background: #fff;
+		border-color: #fecaca;
+	}
+
+	.btn-icon.btn-danger:hover {
+		background: #fef2f2;
+	}
+
+	.btn-text {
+		background: none;
+		border: none;
+		color: #143E59;
+		font-weight: 600;
+		cursor: pointer;
+		padding: 8px 12px;
+	}
+
+	.btn-text:hover {
+		text-decoration: underline;
 	}
 
 	/* Modal */
@@ -861,16 +1665,17 @@
 		align-items: center;
 		justify-content: center;
 		z-index: 1000;
+		padding: 20px;
 	}
 
 	.modal {
 		background: #fff;
-		border-radius: 12px;
+		border-radius: 16px;
 		width: 100%;
-		max-width: 500px;
+		max-width: 560px;
 		max-height: 90vh;
 		overflow-y: auto;
-		box-shadow: 0 20px 40px rgba(0, 0, 0, 0.2);
+		box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
 	}
 
 	.modal-header {
@@ -878,22 +1683,29 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 20px 24px;
-		border-bottom: 1px solid #e5e5e5;
+		border-bottom: 1px solid #e2e8f0;
 	}
 
 	.modal-header h3 {
-		font-size: 18px;
+		font-size: 20px;
 		font-weight: 700;
-		color: #333;
+		color: #1e293b;
 		margin: 0;
 	}
 
 	.modal-close {
 		background: none;
 		border: none;
-		font-size: 24px;
 		cursor: pointer;
-		color: #666;
+		color: #64748b;
+		padding: 4px;
+		display: flex;
+		border-radius: 6px;
+	}
+
+	.modal-close:hover {
+		background: #f1f5f9;
+		color: #1e293b;
 	}
 
 	.modal-form {
@@ -901,26 +1713,31 @@
 	}
 
 	.form-group {
-		margin-bottom: 16px;
+		margin-bottom: 20px;
 	}
 
 	.form-group label {
 		display: block;
 		font-size: 13px;
 		font-weight: 600;
-		color: #333;
+		color: #475569;
 		margin-bottom: 6px;
+	}
+
+	.required {
+		color: #dc2626;
 	}
 
 	.form-group input,
 	.form-group select,
 	.form-group textarea {
 		width: 100%;
-		padding: 10px 12px;
+		padding: 10px 14px;
 		font-size: 14px;
-		border: 1px solid #e5e5e5;
-		border-radius: 6px;
-		transition: border-color 0.2s;
+		border: 1px solid #e2e8f0;
+		border-radius: 8px;
+		transition: border-color 0.2s, box-shadow 0.2s;
+		background: #fff;
 	}
 
 	.form-group input:focus,
@@ -928,6 +1745,12 @@
 	.form-group textarea:focus {
 		outline: none;
 		border-color: #143E59;
+		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.1);
+	}
+
+	.form-group textarea {
+		resize: vertical;
+		min-height: 80px;
 	}
 
 	.form-row {
@@ -936,13 +1759,37 @@
 		gap: 16px;
 	}
 
+	.form-checkbox {
+		display: flex;
+		align-items: center;
+	}
+
+	.form-checkbox label {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		cursor: pointer;
+		margin: 0;
+	}
+
+	.form-checkbox input[type="checkbox"] {
+		width: 18px;
+		height: 18px;
+		cursor: pointer;
+	}
+
+	.form-checkbox span {
+		font-weight: 400;
+		color: #1e293b;
+	}
+
 	.modal-actions {
 		display: flex;
 		justify-content: flex-end;
 		gap: 12px;
 		margin-top: 24px;
-		padding-top: 24px;
-		border-top: 1px solid #e5e5e5;
+		padding-top: 20px;
+		border-top: 1px solid #e2e8f0;
 	}
 
 	/* Responsive */
@@ -952,10 +1799,19 @@
 		}
 	}
 
+	@media (max-width: 900px) {
+		.weekly-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
 	@media (max-width: 768px) {
-		.admin-header {
+		.admin-schedules {
+			padding: 16px;
+		}
+
+		.header-content {
 			flex-direction: column;
-			gap: 16px;
 		}
 
 		.weekly-grid {
@@ -966,12 +1822,27 @@
 			grid-template-columns: 1fr;
 		}
 
-		.room-tabs {
+		.toolbar {
 			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.week-nav {
+			justify-content: center;
+		}
+
+		.filters {
+			justify-content: center;
 		}
 
 		.form-row {
 			grid-template-columns: 1fr;
+		}
+
+		.room-tabs {
+			overflow-x: auto;
+			flex-wrap: nowrap;
+			padding-bottom: 8px;
 		}
 	}
 </style>

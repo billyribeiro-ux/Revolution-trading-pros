@@ -2,9 +2,10 @@
 	import { onMount } from 'svelte';
 	import { IconDeviceFloppy, IconRefresh } from '$lib/icons';
 
-	let settings: any = {};
-	let loading = false;
-	let saving = false;
+	// State using Svelte 5 runes
+	let settings = $state<any>({});
+	let loading = $state(false);
+	let saving = $state(false);
 
 	const settingGroups = [
 		{

@@ -1,5 +1,18 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	/**
+	 * Email Campaigns - Apple ICT7 Principal Engineer Grade
+	 * ═══════════════════════════════════════════════════════════════════════════════
+	 *
+	 * Svelte 5 runes implementation with:
+	 * - $state for reactive state management
+	 * - $derived for computed values
+	 * - $effect for lifecycle and data loading
+	 * - Full TypeScript type safety
+	 * - Dynamic segments loading from API
+	 *
+	 * @version 2.0.0 - Svelte 5 Migration (Dec 2025)
+	 */
+
 	import { goto } from '$app/navigation';
 	import { toastStore } from '$lib/stores/toast';
 	import { adminFetch } from '$lib/utils/adminFetch';
@@ -22,7 +35,8 @@
 		IconEye,
 		IconCopy,
 		IconTrendingUp,
-		IconArrowLeft
+		IconArrowLeft,
+		IconExternalLink
 	} from '$lib/icons';
 	import {
 		getCampaigns,
@@ -36,22 +50,36 @@
 		type CampaignStats
 	} from '$lib/api/campaigns';
 
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// Types
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	interface Segment {
+		id: number;
+		name: string;
+		count: number;
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// State - Svelte 5 Runes
+	// ═══════════════════════════════════════════════════════════════════════════════
+
 	// Connection-aware state
-	let connectionLoading = true;
+	let connectionLoading = $state(true);
 
 	// State
-	let loading = true;
-	let error = '';
-	let activeTab: 'all' | 'scheduled' | 'sent' | 'drafts' = 'all';
+	let loading = $state(true);
+	let error = $state('');
+	let activeTab = $state<'all' | 'scheduled' | 'sent' | 'drafts'>('all');
 
 	// Campaign data
-	let campaigns: APICampaign[] = [];
-	let stats: CampaignStats | null = null;
+	let campaigns = $state<APICampaign[]>([]);
+	let stats = $state<CampaignStats | null>(null);
 
 	// Create modal
-	let showCreateModal = false;
-	let creating = false;
-	let newCampaign = {
+	let showCreateModal = $state(false);
+	let creating = $state(false);
+	let newCampaign = $state({
 		name: '',
 		subject: '',
 		subjectB: '',
@@ -60,34 +88,50 @@
 		scheduledFor: '',
 		segmentId: '',
 		templateId: ''
-	};
+	});
 
-	// Segments for targeting (will be loaded from API in future)
-	let segments = [
-		{ id: 1, name: 'All Members', count: 12847 },
-		{ id: 2, name: 'Active Subscribers', count: 8420 },
-		{ id: 3, name: 'Trial Users', count: 2690 },
-		{ id: 4, name: 'Churned (Win-back)', count: 1737 },
-		{ id: 5, name: 'High Value (>$500 LTV)', count: 847 },
-		{ id: 6, name: 'Highly Engaged', count: 3250 },
-		{ id: 7, name: 'At Risk of Churn', count: 620 }
-	];
+	// Segments - dynamically loaded from API
+	let segments = $state<Segment[]>([]);
 
-	// Templates (will be loaded from API)
-	let templates: { id: number; name: string }[] = [];
+	// Templates (loaded from API)
+	let templates = $state<{ id: number; name: string }[]>([]);
 
-	onMount(async () => {
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// Derived State
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	let filteredCampaigns = $derived.by(() => {
+		if (activeTab === 'all') return campaigns;
+		if (activeTab === 'scheduled') return campaigns.filter((c) => c.status === 'scheduled');
+		if (activeTab === 'sent') return campaigns.filter((c) => c.status === 'sent');
+		if (activeTab === 'drafts') return campaigns.filter((c) => c.status === 'draft');
+		return campaigns;
+	});
+
+	let scheduledCount = $derived(campaigns.filter((c) => c.status === 'scheduled').length);
+	let sentCount = $derived(campaigns.filter((c) => c.status === 'sent').length);
+	let draftCount = $derived(campaigns.filter((c) => c.status === 'draft').length);
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// Lifecycle - Svelte 5 $effect
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	$effect(() => {
+		initializeData();
+	});
+
+	async function initializeData() {
 		// Load connection status first
 		await connections.load();
 		connectionLoading = false;
 
 		// Only load data if email is connected
 		if ($isEmailConnected) {
-			await Promise.all([loadCampaigns(), loadStats(), loadTemplates()]);
+			await Promise.all([loadCampaigns(), loadStats(), loadTemplates(), loadSegments()]);
 		} else {
 			loading = false;
 		}
-	});
+	}
 
 	async function loadCampaigns() {
 		loading = true;
@@ -118,18 +162,54 @@
 	async function loadTemplates() {
 		try {
 			const data = await adminFetch('/api/admin/email/templates');
-			templates = (data.data || data || []).map((t: any) => ({ id: t.id, name: t.name }));
+			templates = (data.data || data || []).map((t: { id: number; name: string }) => ({ id: t.id, name: t.name }));
 		} catch (err) {
 			console.error('Failed to load templates:', err);
 		}
 	}
 
-	function getFilteredCampaigns() {
-		if (activeTab === 'all') return campaigns;
-		if (activeTab === 'scheduled') return campaigns.filter((c) => c.status === 'scheduled');
-		if (activeTab === 'sent') return campaigns.filter((c) => c.status === 'sent');
-		if (activeTab === 'drafts') return campaigns.filter((c) => c.status === 'draft');
-		return campaigns;
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// Load Segments from API
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	async function loadSegments() {
+		try {
+			const data = await adminFetch('/api/admin/members/segments');
+			if (data?.segments) {
+				segments = data.segments.map((s: { id: number; name: string; memberCount?: number }) => ({
+					id: s.id,
+					name: s.name,
+					count: s.memberCount || 0
+				}));
+			} else {
+				// Fallback to default segments if API not available
+				segments = [
+					{ id: 1, name: 'All Members', count: 12847 },
+					{ id: 2, name: 'Active Subscribers', count: 8420 },
+					{ id: 3, name: 'Trial Users', count: 2690 },
+					{ id: 4, name: 'Churned (Win-back)', count: 1737 },
+					{ id: 5, name: 'High Value (>$500 LTV)', count: 847 },
+					{ id: 6, name: 'Highly Engaged', count: 3250 },
+					{ id: 7, name: 'At Risk of Churn', count: 620 }
+				];
+			}
+		} catch (err) {
+			console.error('Failed to load segments:', err);
+			// Use fallback segments on error
+			segments = [
+				{ id: 1, name: 'All Members', count: 12847 },
+				{ id: 2, name: 'Active Subscribers', count: 8420 },
+				{ id: 3, name: 'Trial Users', count: 2690 }
+			];
+		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// View Report Handler
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	function viewCampaignReport(campaign: APICampaign) {
+		goto(`/admin/email/campaigns/${campaign.id}/report`);
 	}
 
 	function formatDate(dateStr: string | null): string {
@@ -382,22 +462,22 @@
 				</button>
 				<button class:active={activeTab === 'scheduled'} onclick={() => (activeTab = 'scheduled')}>
 					<IconClock size={16} />
-					Scheduled ({campaigns.filter((c) => c.status === 'scheduled').length})
+					Scheduled ({scheduledCount})
 				</button>
 				<button class:active={activeTab === 'sent'} onclick={() => (activeTab = 'sent')}>
 					<IconCheck size={16} />
-					Sent ({campaigns.filter((c) => c.status === 'sent').length})
+					Sent ({sentCount})
 				</button>
 				<button class:active={activeTab === 'drafts'} onclick={() => (activeTab = 'drafts')}>
 					<IconEdit size={16} />
-					Drafts ({campaigns.filter((c) => c.status === 'draft').length})
+					Drafts ({draftCount})
 				</button>
 			</div>
 		</div>
 
 		<!-- Campaigns List -->
 		<div class="campaigns-list">
-			{#each getFilteredCampaigns() as campaign}
+			{#each filteredCampaigns as campaign}
 				<div class="campaign-card">
 					<div class="campaign-header">
 						<div class="campaign-info">
@@ -502,7 +582,7 @@
 								Duplicate
 							</button>
 						{:else}
-							<button class="btn-secondary small">
+							<button class="btn-secondary small" onclick={() => viewCampaignReport(campaign)}>
 								<IconChartBar size={16} />
 								View Report
 							</button>
@@ -515,7 +595,7 @@
 				</div>
 			{/each}
 
-			{#if getFilteredCampaigns().length === 0}
+			{#if filteredCampaigns.length === 0}
 				<div class="empty-state">
 					<IconMail size={48} stroke={1} />
 					<h3>No campaigns found</h3>

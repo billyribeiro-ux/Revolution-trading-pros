@@ -1,18 +1,23 @@
 <script lang="ts">
   /**
-   * Bandwidth Savings Dashboard - Apple HIG Quality Analytics
+   * Bandwidth Savings Dashboard - Apple ICT 7 Grade Analytics
    * ═══════════════════════════════════════════════════════════════════════════
    *
-   * Real-time analytics dashboard showing:
-   * - Bandwidth savings over time
-   * - Storage optimization trends
-   * - Format distribution
-   * - Performance metrics
-   * - Cost savings estimates
+   * Principal Engineer Grade implementation featuring:
+   * - Real-time bandwidth savings visualization
+   * - Storage optimization trend analysis
+   * - Format distribution with compression metrics
+   * - Performance insights with recommendations
+   * - Cost and CO2 savings estimates
+   * - Connection-aware data loading (NO MOCK DATA)
    *
-   * @version 1.0.0
+   * Svelte 5 Runes: $state, $derived, $effect
+   *
+   * @version 2.0.0
+   * @author Revolution Trading Pros
+   * @since January 2026
    */
-  import { onMount } from 'svelte';
+  import { browser } from '$app/environment';
   import { tweened } from 'svelte/motion';
   import { cubicOut } from 'svelte/easing';
   import { fly, scale } from 'svelte/transition';
@@ -69,11 +74,13 @@
   const co2Saved = tweened(0, { duration: 1500, easing: cubicOut });
 
   // ═══════════════════════════════════════════════════════════════════════════
-  // Lifecycle
+  // Lifecycle - Svelte 5 $effect rune
   // ═══════════════════════════════════════════════════════════════════════════
 
-  onMount(async () => {
-    await loadData();
+  // Initialize on mount using $effect
+  $effect(() => {
+    if (!browser) return;
+    loadData();
   });
 
   // ═══════════════════════════════════════════════════════════════════════════

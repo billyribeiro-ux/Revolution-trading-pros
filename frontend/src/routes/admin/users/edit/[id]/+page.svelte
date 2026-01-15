@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { IconCheck, IconX, IconUser } from '$lib/icons';
@@ -9,7 +8,7 @@
 	let error = $state('');
 	let success = $state('');
 
-	let formData = {
+	let formData = $state({
 		name: '',
 		first_name: '',
 		last_name: '',
@@ -17,12 +16,13 @@
 		password: '',
 		password_confirmation: '',
 		roles: [] as string[]
-	};
+	});
 
 	let userId = $derived(parseInt(page.params.id!));
 
-	onMount(async () => {
-		await loadUser();
+	// Load user on mount
+	$effect(() => {
+		loadUser();
 	});
 
 	async function loadUser() {
