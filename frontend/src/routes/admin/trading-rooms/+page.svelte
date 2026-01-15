@@ -155,12 +155,6 @@
 		margin: 0 0 8px 0;
 	}
 
-	.header-content p {
-		font-size: 16px;
-		color: #94a3b8;
-		margin: 0;
-	}
-
 	/* Room Cards Grid */
 	.rooms-grid {
 		display: grid;

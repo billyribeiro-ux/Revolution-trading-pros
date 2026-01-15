@@ -521,32 +521,32 @@
 	{#if showFilters}
 		<div class="filters-panel">
 			<div class="filter-group">
-				<label>Status</label>
-				<select bind:value={selectedStatus}>
+				<label for="filter-status">Status</label>
+				<select id="filter-status" bind:value={selectedStatus}>
 					{#each statusOptions as option}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
 			</div>
 			<div class="filter-group">
-				<label>Billing Cycle</label>
-				<select bind:value={selectedCycle}>
+				<label for="filter-cycle">Billing Cycle</label>
+				<select id="filter-cycle" bind:value={selectedCycle}>
 					{#each cycleOptions as option}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
 			</div>
 			<div class="filter-group">
-				<label>Sort By</label>
-				<select bind:value={sortBy}>
+				<label for="filter-sort">Sort By</label>
+				<select id="filter-sort" bind:value={sortBy}>
 					{#each sortOptions as option}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
 			</div>
 			<div class="filter-group">
-				<label>Order</label>
-				<select bind:value={sortOrder}>
+				<label for="filter-order">Order</label>
+				<select id="filter-order" bind:value={sortOrder}>
 					<option value="desc">Highest First</option>
 					<option value="asc">Lowest First</option>
 				</select>
@@ -674,11 +674,10 @@
 
 <!-- Edit Plan Modal -->
 {#if showEditModal && editingPlan}
-	<div class="modal-overlay" onclick={() => (showEditModal = false)} role="dialog" aria-modal="true">
+	<div class="modal-overlay" onclick={() => (showEditModal = false)} onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)} role="dialog" aria-modal="true" tabindex="-1">
 		<div
 			class="modal modal-large"
 			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)}
 			role="document"
 		>
 			<div class="modal-header">
@@ -750,7 +749,7 @@
 					<!-- Features Section -->
 					<div class="form-group full-width">
 						<div class="features-header">
-							<label>Features</label>
+							<span class="label-text">Features</span>
 							<button type="button" class="btn-add-feature" onclick={addFeature}>
 								<IconPlus size={14} />
 								Add Feature
@@ -809,11 +808,10 @@
 
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal && deletingPlan}
-	<div class="modal-overlay" onclick={() => (showDeleteModal = false)} role="dialog" aria-modal="true">
+	<div class="modal-overlay" onclick={() => (showDeleteModal = false)} onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)} role="dialog" aria-modal="true" tabindex="-1">
 		<div
 			class="modal modal-small"
 			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)}
 			role="document"
 		>
 			<div class="modal-header">
@@ -849,11 +847,10 @@
 
 <!-- Preview Modal -->
 {#if showPreviewModal && previewingPlan}
-	<div class="modal-overlay" onclick={() => (showPreviewModal = false)} role="dialog" aria-modal="true">
+	<div class="modal-overlay" onclick={() => (showPreviewModal = false)} onkeydown={(e) => e.key === 'Escape' && (showPreviewModal = false)} role="dialog" aria-modal="true" tabindex="-1">
 		<div
 			class="modal modal-preview"
 			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.key === 'Escape' && (showPreviewModal = false)}
 			role="document"
 		>
 			<div class="modal-header">

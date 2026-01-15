@@ -79,19 +79,6 @@
 		gap: 0.75rem;
 	}
 
-	.btn-create {
-		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
-		border: none;
-		border-radius: 8px;
-		font-weight: 600;
-		font-size: 0.875rem;
-		cursor: pointer;
-		transition: all 0.2s;
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
-	}
-
 	.btn-primary:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 6px 20px rgba(230, 184, 0, 0.4);

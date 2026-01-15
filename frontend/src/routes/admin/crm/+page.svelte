@@ -951,7 +951,6 @@
 		margin-bottom: 1rem;
 	}
 
-	.error-state h3,
 	.empty-state h3 {
 		color: #e2e8f0;
 		margin: 0 0 0.5rem 0;
