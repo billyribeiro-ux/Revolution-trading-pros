@@ -145,7 +145,7 @@
 	};
 
 	const tagColors = [
-		'#6366f1', '#8b5cf6', '#ec4899', '#ef4444', '#f97316',
+		'#E6B800', '#B38F00', '#ec4899', '#ef4444', '#f97316',
 		'#eab308', '#22c55e', '#14b8a6', '#06b6d4', '#3b82f6'
 	];
 
@@ -351,7 +351,7 @@
 
 		tags = [...tags, tag];
 		showCreateTagModal = false;
-		newTag = { name: '', color: '#6366f1' };
+		newTag = { name: '', color: '#E6B800' };
 		toastStore.success('Tag created successfully');
 	}
 
@@ -897,7 +897,7 @@
 	}
 
 	.back-btn:hover {
-		color: #a5b4fc;
+		color: #FFD11A;
 	}
 
 	.header-content {
@@ -916,7 +916,7 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
@@ -972,13 +972,13 @@
 	}
 
 	.tabs button:hover {
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.1);
+		color: #FFD11A;
 	}
 
 	.tabs button.active {
-		background: rgba(99, 102, 241, 0.15);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.15);
+		color: #FFD11A;
 	}
 
 	/* Segments Grid */
@@ -996,7 +996,7 @@
 	}
 
 	.segment-card.system {
-		border-color: rgba(99, 102, 241, 0.2);
+		border-color: rgba(230, 184, 0, 0.2);
 	}
 
 	.segment-header {
@@ -1021,8 +1021,8 @@
 
 	.system-badge {
 		padding: 0.25rem 0.5rem;
-		background: rgba(99, 102, 241, 0.2);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.2);
+		color: #FFD11A;
 		font-size: 0.6875rem;
 		font-weight: 600;
 		border-radius: 6px;
@@ -1035,7 +1035,7 @@
 		gap: 0.375rem;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #a5b4fc;
+		color: #FFD11A;
 	}
 
 	.segment-description {
@@ -1106,11 +1106,11 @@
 		gap: 0.5rem;
 		margin-top: 0.75rem;
 		padding: 0.75rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-size: 0.8125rem;
-		color: #a5b4fc;
+		color: #FFD11A;
 	}
 
 	/* Tags Grid */
@@ -1204,11 +1204,11 @@
 
 	.filter-pill {
 		padding: 0.375rem 0.75rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-size: 0.75rem;
-		color: #a5b4fc;
+		color: #FFD11A;
 	}
 
 	.filter-actions {
@@ -1232,8 +1232,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-secondary {
@@ -1263,9 +1263,9 @@
 	}
 
 	.btn-icon:hover {
-		background: rgba(99, 102, 241, 0.15);
-		border-color: rgba(99, 102, 241, 0.3);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.15);
+		border-color: rgba(230, 184, 0, 0.3);
+		color: #FFD11A;
 	}
 
 	.btn-icon.danger:hover {
@@ -1408,7 +1408,7 @@
 
 	.form-group input:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	/* Conditions */
@@ -1462,7 +1462,7 @@
 	.condition-row select:focus,
 	.condition-row input:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	/* Color Picker */
@@ -1487,7 +1487,7 @@
 
 	.color-option.selected {
 		border-color: white;
-		box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.5);
+		box-shadow: 0 0 0 2px rgba(230, 184, 0, 0.5);
 	}
 
 	/* Tag Preview */

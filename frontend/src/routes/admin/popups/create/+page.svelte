@@ -669,15 +669,15 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 		border-radius: 8px;
 		text-decoration: none;
 		transition: all 0.2s;
 	}
 
 	.back-btn:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.page-title {
@@ -711,13 +711,13 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 10px 25px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-primary:disabled {
@@ -726,12 +726,12 @@
 	}
 
 	.btn-secondary {
-		background: rgba(99, 102, 241, 0.1);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 	}
 
 	.btn-secondary:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.creator-layout {
@@ -743,7 +743,7 @@
 
 	.editor-panel {
 		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 16px;
 		overflow: hidden;
 		display: flex;
@@ -752,7 +752,7 @@
 
 	.tabs {
 		display: flex;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 		background: rgba(0, 0, 0, 0.2);
 	}
 
@@ -773,9 +773,9 @@
 	}
 
 	.tab.active {
-		color: #6366f1;
-		border-bottom-color: #6366f1;
-		background: rgba(99, 102, 241, 0.05);
+		color: #E6B800;
+		border-bottom-color: #E6B800;
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.tab-content {
@@ -809,8 +809,8 @@
 
 	.btn-add {
 		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -835,7 +835,7 @@
 		width: 100%;
 		padding: 0.75rem 1rem;
 		background: rgba(0, 0, 0, 0.3);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		color: #f1f5f9;
 		font-size: 1rem;
@@ -849,7 +849,7 @@
 	.form-input:focus,
 	.form-textarea:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	.form-textarea {
@@ -884,7 +884,7 @@
 
 	.button-config {
 		background: rgba(0, 0, 0, 0.3);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 12px;
 		padding: 1.5rem;
 		margin-bottom: 1rem;
@@ -932,7 +932,7 @@
 	/* Preview Panel */
 	.preview-panel {
 		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 16px;
 		padding: 2rem;
 		position: sticky;

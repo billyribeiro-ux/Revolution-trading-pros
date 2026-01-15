@@ -56,7 +56,7 @@
 		align-items: flex-start;
 		margin-bottom: 2rem;
 		padding-bottom: 1.5rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	h1 {
@@ -74,20 +74,20 @@
 
 	.btn-create {
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
 		font-size: 0.9375rem;
 		cursor: pointer;
 		transition: all 0.2s;
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-create:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 6px 20px rgba(230, 184, 0, 0.4);
 	}
 
 	@media (max-width: 768px) {

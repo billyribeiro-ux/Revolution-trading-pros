@@ -370,7 +370,7 @@
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+		box-shadow: 0 4px 16px rgba(230, 184, 0, 0.35);
 	}
 
 	.btn-secondary {
@@ -503,7 +503,7 @@
 	}
 
 	.coupon-card:hover {
-		border-color: rgba(59, 130, 246, 0.4);
+		border-color: rgba(230, 184, 0, 0.4);
 		transform: translateY(-2px);
 	}
 

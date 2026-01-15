@@ -387,7 +387,7 @@
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+		box-shadow: 0 4px 16px rgba(230, 184, 0, 0.35);
 	}
 
 	.btn-secondary {
@@ -470,9 +470,9 @@
 	}
 
 	.type-btn.active {
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		background: var(--admin-btn-primary-bg, linear-gradient(135deg, #E6B800 0%, #B38F00 100%));
 		border-color: transparent;
-		color: white;
+		color: var(--admin-btn-primary-text, #0D1117);
 	}
 
 	.count-badge {
@@ -504,7 +504,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(148, 163, 184, 0.1);
-		border-top-color: #3b82f6;
+		border-top-color: var(--admin-accent-primary, #E6B800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin: 0 auto 1rem;
@@ -642,7 +642,7 @@
 	}
 
 	.bg-purple-500 {
-		background: #8b5cf6;
+		background: #B38F00;
 	}
 
 	.bg-yellow-500 {
@@ -711,7 +711,7 @@
 	.current-price {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #3b82f6;
+		color: var(--admin-accent-primary, #E6B800);
 	}
 
 	.original-price {

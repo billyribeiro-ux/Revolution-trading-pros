@@ -224,8 +224,8 @@
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-3">
-					<div class="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-						<IconLayoutKanban class="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+					<div class="p-2 bg-[#E6B800]/10 dark:bg-[#E6B800]/20 rounded-lg">
+						<IconLayoutKanban class="w-6 h-6 text-[#E6B800] dark:text-[#FFD11A]" />
 					</div>
 					<div>
 						<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Project Boards</h1>
@@ -257,7 +257,7 @@
 					</a>
 					<button
 						onclick={() => showCreateModal = true}
-						class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg flex items-center gap-2"
+						class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg flex items-center gap-2"
 					>
 						<IconPlus class="w-4 h-4" />
 						New Board
@@ -295,7 +295,7 @@
 				<div class="text-sm text-gray-500 dark:text-gray-400">Due Today</div>
 			</div>
 			<div class="bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-200 dark:border-gray-700">
-				<div class="text-2xl font-bold text-purple-600">{stats.tasks_due_this_week}</div>
+				<div class="text-2xl font-bold text-[#E6B800]">{stats.tasks_due_this_week}</div>
 				<div class="text-sm text-gray-500 dark:text-gray-400">Due This Week</div>
 			</div>
 		</div>
@@ -344,7 +344,7 @@
 					<div class="space-y-1">
 						<button
 							onclick={() => selectedFolder = null}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {selectedFolder === null ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {selectedFolder === null ? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconLayoutKanban class="w-4 h-4" />
 							All Boards
@@ -353,7 +353,7 @@
 						{#each folders as folder}
 							<button
 								onclick={() => selectedFolder = folder.id}
-								class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {selectedFolder === folder.id ? 'bg-indigo-50 dark:bg-indigo-900/30 text-indigo-600 dark:text-indigo-400' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+								class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {selectedFolder === folder.id ? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 							>
 								<IconFolder class="w-4 h-4" style="color: {folder.color}" />
 								{folder.title}
@@ -416,19 +416,19 @@
 							type="text"
 							placeholder="Search boards..."
 							bind:value={searchQuery}
-							class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+							class="w-full pl-10 pr-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
 						/>
 					</div>
 					<div class="flex items-center gap-2">
 						<button
 							onclick={() => viewMode = 'grid'}
-							class="p-2 rounded-lg {viewMode === 'grid' ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class="p-2 rounded-lg {viewMode === 'grid' ? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800]' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconLayoutGrid class="w-5 h-5" />
 						</button>
 						<button
 							onclick={() => viewMode = 'list'}
-							class="p-2 rounded-lg {viewMode === 'list' ? 'bg-indigo-100 dark:bg-indigo-900/30 text-indigo-600' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							class="p-2 rounded-lg {viewMode === 'list' ? 'bg-[#E6B800]/10 dark:bg-[#E6B800]/20 text-[#E6B800]' : 'text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconList class="w-5 h-5" />
 						</button>
@@ -460,11 +460,11 @@
 							{#each favoriteBoards as board}
 								<a
 									href="/admin/boards/{board.id}"
-									class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-indigo-300 dark:hover:border-indigo-700 transition-all"
-									style="border-left: 4px solid {board.background_color || '#6366f1'}"
+									class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 hover:shadow-lg hover:border-[#E6B800] dark:hover:border-[#FFD11A] transition-all"
+									style="border-left: 4px solid {board.background_color || '#E6B800'}"
 								>
 									<div class="flex items-start justify-between mb-3">
-										<h4 class="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">{board.title}</h4>
+										<h4 class="font-semibold text-gray-900 dark:text-white group-hover:text-[#E6B800] dark:group-hover:text-[#FFD11A]">{board.title}</h4>
 										<button
 											onclick={(e: MouseEvent) => { e.preventDefault(); e.stopPropagation(); toggleFavorite(board); }}
 											class="text-yellow-500 hover:text-yellow-600"
@@ -493,7 +493,7 @@
 
 					{#if loading}
 						<div class="flex items-center justify-center py-12">
-							<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
+							<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E6B800]"></div>
 						</div>
 					{:else if filteredBoards.length === 0}
 						<div class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
@@ -502,7 +502,7 @@
 							<p class="text-gray-500 dark:text-gray-400 mb-4">Create your first board to start managing projects</p>
 							<button
 								onclick={() => showCreateModal = true}
-								class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg"
+								class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg"
 							>
 								Create Board
 							</button>
@@ -510,14 +510,14 @@
 					{:else if viewMode === 'grid'}
 						<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
 							{#each filteredBoards as board}
-								<div class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:border-indigo-300 dark:hover:border-indigo-700 transition-all overflow-hidden">
+								<div class="group bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 hover:shadow-lg hover:border-[#E6B800] dark:hover:border-[#FFD11A] transition-all overflow-hidden">
 									<a
 										href="/admin/boards/{board.id}"
 										class="block p-4"
-										style="border-left: 4px solid {board.background_color || '#6366f1'}"
+										style="border-left: 4px solid {board.background_color || '#E6B800'}"
 									>
 										<div class="flex items-start justify-between mb-3">
-											<h4 class="font-semibold text-gray-900 dark:text-white group-hover:text-indigo-600 dark:group-hover:text-indigo-400">
+											<h4 class="font-semibold text-gray-900 dark:text-white group-hover:text-[#E6B800] dark:group-hover:text-[#FFD11A]">
 												{board.title}
 												{#if board.is_archived}
 													<span class="ml-2 text-xs bg-gray-200 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded">Archived</span>
@@ -598,7 +598,7 @@
 										<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
 											<td class="px-4 py-3">
 												<a href="/admin/boards/{board.id}" class="flex items-center gap-3">
-													<div class="w-2 h-8 rounded" style="background-color: {board.background_color || '#6366f1'}"></div>
+													<div class="w-2 h-8 rounded" style="background-color: {board.background_color || '#E6B800'}"></div>
 													<div>
 														<div class="font-medium text-gray-900 dark:text-white flex items-center gap-2">
 															{board.title}
@@ -676,7 +676,7 @@
 							id="board-title"
 							bind:value={newBoard.title}
 							placeholder="Enter board title..."
-							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
 						/>
 					</div>
 					<div>
@@ -686,7 +686,7 @@
 							bind:value={newBoard.description}
 							placeholder="Enter description..."
 							rows="3"
-							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
 						></textarea>
 					</div>
 					<div>
@@ -694,7 +694,7 @@
 						<select
 							id="board-type"
 							bind:value={newBoard.type}
-							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
 						>
 							<option value="kanban">Kanban Board</option>
 							<option value="list">List View</option>
@@ -708,7 +708,7 @@
 							<select
 								id="board-folder"
 								bind:value={newBoard.folder_id}
-								class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+								class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
 							>
 								<option value={null}>No folder</option>
 								{#each folders as folder}
@@ -728,7 +728,7 @@
 					<button
 						onclick={createBoard}
 						disabled={!newBoard.title.trim()}
-						class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+						class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						Create Board
 					</button>
@@ -752,7 +752,7 @@
 							id="folder-name"
 							bind:value={newFolder.title}
 							placeholder="Enter folder name..."
-							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-indigo-500"
+							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
 						/>
 					</div>
 					<div>
@@ -775,7 +775,7 @@
 					<button
 						onclick={createFolder}
 						disabled={!newFolder.title.trim()}
-						class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
+						class="px-4 py-2 bg-[#E6B800] hover:bg-[#B38F00] text-[#0D1117] rounded-lg disabled:opacity-50 disabled:cursor-not-allowed"
 					>
 						Create Folder
 					</button>

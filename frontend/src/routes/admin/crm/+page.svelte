@@ -277,7 +277,7 @@
 				description="Connect to manage contacts, track deals, and streamline customer relationships."
 				serviceKey="hubspot"
 				icon="👥"
-				color="#f97316"
+				color="#E6B800"
 				features={[
 					'Centralized contact management',
 					'Email sequences and automations',
@@ -552,7 +552,7 @@
 		margin: 0;
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #f97316;
+		color: #E6B800;
 	}
 
 	.sidebar-nav {
@@ -573,13 +573,13 @@
 	}
 
 	.nav-item:hover {
-		background: rgba(249, 115, 22, 0.1);
-		color: #f97316;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 	}
 
 	.nav-item.active {
-		background: rgba(249, 115, 22, 0.15);
-		color: #f97316;
+		background: rgba(230, 184, 0, 0.15);
+		color: #E6B800;
 	}
 
 	/* Main Content */
@@ -608,7 +608,7 @@
 	}
 
 	.header-left h1 :global(svg) {
-		color: #f97316;
+		color: #E6B800;
 	}
 
 	/* Search Container with Dropdown */
@@ -748,8 +748,8 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 20px;
-		background: linear-gradient(135deg, #f97316, #ea580c);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -761,7 +761,7 @@
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(249, 115, 22, 0.4);
+		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
 	}
 
 	/* Stats Grid */
@@ -793,7 +793,7 @@
 
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
 	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
 	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
 
 	.stat-content {
@@ -833,7 +833,7 @@
 
 	.filter-select:focus {
 		outline: none;
-		border-color: #f97316;
+		border-color: #E6B800;
 	}
 
 	.btn-load {
@@ -888,7 +888,7 @@
 	}
 
 	.data-table tbody tr:hover {
-		background: rgba(249, 115, 22, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.checkbox {
@@ -908,7 +908,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -965,10 +965,10 @@
 
 	.tag-pill {
 		padding: 2px 8px;
-		background: rgba(249, 115, 22, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border-radius: 4px;
 		font-size: 0.7rem;
-		color: #f97316;
+		color: #E6B800;
 	}
 
 	.tag-more {
@@ -1004,8 +1004,8 @@
 	}
 
 	.btn-icon:hover {
-		background: rgba(249, 115, 22, 0.1);
-		color: #f97316;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 	}
 
 	/* Table Footer */
@@ -1081,8 +1081,8 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(249, 115, 22, 0.2);
-		border-top-color: #f97316;
+		border: 3px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 16px;

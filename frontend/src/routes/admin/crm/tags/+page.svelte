@@ -198,7 +198,7 @@
 			</div>
 		</div>
 		<div class="stat-card">
-			<div class="stat-icon purple">
+			<div class="stat-icon gold">
 				<IconUsers size={24} />
 			</div>
 			<div class="stat-content">
@@ -242,7 +242,7 @@
 			{#each filteredTags as tag}
 				<div class="tag-card">
 					<div class="tag-header">
-						<div class="tag-color" style="background-color: {tag.color || '#6366f1'}"></div>
+						<div class="tag-color" style="background-color: {tag.color || '#E6B800'}"></div>
 						<div class="tag-info">
 							<h3 class="tag-title">{tag.title}</h3>
 							{#if tag.description}
@@ -391,7 +391,7 @@
 		align-items: center;
 		justify-content: center;
 		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		color: #94a3b8;
 		cursor: pointer;
@@ -399,8 +399,8 @@
 	}
 
 	.btn-refresh:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.2);
+		color: #E6B800;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -417,8 +417,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -429,7 +429,7 @@
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
 	}
 
 	.stats-grid {
@@ -450,7 +450,7 @@
 		gap: 1rem;
 		padding: 1.25rem;
 		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 	}
 
@@ -464,7 +464,7 @@
 	}
 
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+	.stat-icon.gold { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
 
 	.stat-content {
 		display: flex;
@@ -495,7 +495,7 @@
 		gap: 0.75rem;
 		padding: 0 1rem;
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		flex: 1;
 		max-width: 400px;
@@ -527,7 +527,7 @@
 
 	.tag-card {
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 		padding: 1.25rem;
 		display: flex;
@@ -572,7 +572,7 @@
 		justify-content: space-between;
 		align-items: center;
 		padding-top: 0.75rem;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.tag-stat {
@@ -601,7 +601,7 @@
 		align-items: center;
 		justify-content: center;
 		background: transparent;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		color: #94a3b8;
 		cursor: pointer;
@@ -610,8 +610,8 @@
 	}
 
 	.btn-icon:hover {
-		background: rgba(99, 102, 241, 0.1);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 	}
 
 	.btn-icon.danger:hover {
@@ -647,8 +647,8 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border: 3px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

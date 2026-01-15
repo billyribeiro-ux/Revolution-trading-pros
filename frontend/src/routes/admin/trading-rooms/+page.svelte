@@ -147,13 +147,13 @@
 	.header-content h1 {
 		font-size: 32px;
 		font-weight: 700;
-		color: #1e293b;
+		color: #f1f5f9;
 		margin: 0 0 8px 0;
 	}
 
 	.header-content p {
 		font-size: 16px;
-		color: #64748b;
+		color: #94a3b8;
 		margin: 0;
 	}
 
@@ -170,8 +170,8 @@
 		flex-direction: column;
 		align-items: flex-start;
 		padding: 28px;
-		background: #fff;
-		border: 2px solid #e2e8f0;
+		background: rgba(30, 41, 59, 0.6);
+		border: 2px solid rgba(148, 163, 184, 0.2);
 		border-radius: 16px;
 		cursor: pointer;
 		transition: all 0.3s ease;
@@ -204,14 +204,14 @@
 	.room-info h2 {
 		font-size: 22px;
 		font-weight: 700;
-		color: #1e293b;
+		color: #f1f5f9;
 		margin: 0 0 6px 0;
 	}
 
 	.room-type {
 		font-size: 13px;
 		font-weight: 600;
-		color: #64748b;
+		color: #94a3b8;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -228,11 +228,11 @@
 		align-items: center;
 		gap: 6px;
 		padding: 8px 14px;
-		background: #f1f5f9;
+		background: rgba(230, 184, 0, 0.1);
 		border-radius: 8px;
 		font-size: 13px;
 		font-weight: 500;
-		color: #475569;
+		color: #cbd5e1;
 	}
 
 	.room-arrow {
@@ -251,7 +251,8 @@
 
 	/* Quick Stats */
 	.quick-stats {
-		background: #f8fafc;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 16px;
 		padding: 32px;
 	}
@@ -259,7 +260,7 @@
 	.quick-stats h2 {
 		font-size: 20px;
 		font-weight: 700;
-		color: #1e293b;
+		color: #f1f5f9;
 		margin: 0 0 24px 0;
 	}
 
@@ -274,33 +275,33 @@
 		flex-direction: column;
 		align-items: flex-start;
 		padding: 24px;
-		background: #fff;
-		border: 1px solid #e2e8f0;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 12px;
 		text-decoration: none;
 		transition: all 0.2s ease;
 	}
 
 	.action-card:hover {
-		border-color: #143E59;
-		box-shadow: 0 4px 20px rgba(20, 62, 89, 0.1);
+		border-color: #E6B800;
+		box-shadow: 0 4px 20px rgba(230, 184, 0, 0.2);
 	}
 
 	.action-card :global(svg) {
-		color: #143E59;
+		color: #E6B800;
 		margin-bottom: 12px;
 	}
 
 	.action-card span {
 		font-size: 16px;
 		font-weight: 600;
-		color: #1e293b;
+		color: #f1f5f9;
 		margin-bottom: 4px;
 	}
 
 	.action-card p {
 		font-size: 14px;
-		color: #64748b;
+		color: #94a3b8;
 		margin: 0;
 	}
 

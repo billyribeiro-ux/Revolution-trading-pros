@@ -96,8 +96,8 @@
 	// Analytics services that can be connected - dynamically generated from FEATURE_SERVICES
 	const analyticsServices = FEATURE_SERVICES['analytics']?.map((key) => {
 		const serviceConfig: Record<string, { name: string; icon: string; color: string }> = {
-			[SERVICE_KEYS.GOOGLE_ANALYTICS]: { name: 'Google Analytics', icon: '📊', color: '#f97316' },
-			[SERVICE_KEYS.MIXPANEL]: { name: 'Mixpanel', icon: '📈', color: '#8b5cf6' },
+			[SERVICE_KEYS.GOOGLE_ANALYTICS]: { name: 'Google Analytics', icon: '📊', color: '#E6B800' },
+			[SERVICE_KEYS.MIXPANEL]: { name: 'Mixpanel', icon: '📈', color: '#B38F00' },
 			[SERVICE_KEYS.AMPLITUDE]: { name: 'Amplitude', icon: '📉', color: '#3b82f6' },
 			[SERVICE_KEYS.SEGMENT]: { name: 'Segment', icon: '🔗', color: '#10b981' },
 			[SERVICE_KEYS.PLAUSIBLE]: { name: 'Plausible', icon: '🌿', color: '#14b8a6' }
@@ -245,7 +245,7 @@
 					serviceName="Analytics"
 					description="Connect an analytics service to view real-time data, track user behavior, and measure conversions."
 					icon="📊"
-					color="#f97316"
+					color="#E6B800"
 					features={[
 						'Real-time visitor tracking',
 						'User behavior analytics',
@@ -550,7 +550,7 @@
 		height: 600px;
 		top: -200px;
 		right: -200px;
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 		animation: float 20s ease-in-out infinite;
 	}
 
@@ -559,7 +559,7 @@
 		height: 500px;
 		bottom: -150px;
 		left: -150px;
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+		background: linear-gradient(135deg, #3b82f6, #B38F00);
 		animation: float 25s ease-in-out infinite reverse;
 	}
 
@@ -606,7 +606,7 @@
 	.title-icon {
 		width: 48px;
 		height: 48px;
-		background: linear-gradient(135deg, #f97316, #ea580c);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 		border-radius: 12px;
 		display: flex;
 		align-items: center;
@@ -641,8 +641,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #f97316, #ea580c);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 10px;
 		font-size: 0.875rem;
@@ -654,7 +654,7 @@
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(249, 115, 22, 0.3);
+		box-shadow: 0 10px 30px rgba(230, 184, 0, 0.3);
 	}
 
 	/* Connection Status */
@@ -711,8 +711,8 @@
 	}
 
 	.tab-btn.active {
-		color: #f97316;
-		border-bottom-color: #f97316;
+		color: #E6B800;
+		border-bottom-color: #E6B800;
 	}
 
 	.tab-icon {
@@ -741,8 +741,8 @@
 	.loading-spinner {
 		width: 48px;
 		height: 48px;
-		border: 3px solid rgba(249, 115, 22, 0.2);
-		border-top-color: #f97316;
+		border: 3px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -795,7 +795,7 @@
 
 	.service-card:hover {
 		background: rgba(30, 41, 59, 0.8);
-		border-color: var(--service-color, #f97316);
+		border-color: var(--service-color, #E6B800);
 		transform: translateY(-2px);
 	}
 
@@ -814,7 +814,7 @@
 	}
 
 	.service-card:hover :global(.service-arrow) {
-		color: var(--service-color, #f97316);
+		color: var(--service-color, #E6B800);
 		transform: translateX(4px);
 	}
 

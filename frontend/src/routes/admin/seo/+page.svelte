@@ -122,8 +122,8 @@
 			description: 'Generate JSON-LD structured data for better search visibility',
 			icon: IconCode,
 			href: '/admin/seo/schema',
-			color: '#8b5cf6',
-			gradient: 'linear-gradient(135deg, #8b5cf6, #7c3aed)'
+			color: '#E6B800',
+			gradient: 'linear-gradient(135deg, #E6B800, #B38F00)'
 		},
 		{
 			title: 'Keywords',
@@ -148,8 +148,8 @@
 			description: 'Generate and submit XML sitemaps to search engines',
 			icon: IconSitemap,
 			href: '/admin/seo/sitemap',
-			color: '#6366f1',
-			gradient: 'linear-gradient(135deg, #6366f1, #4f46e5)'
+			color: '#E6B800',
+			gradient: 'linear-gradient(135deg, #E6B800, #B38F00)'
 		},
 		{
 			title: 'News Sitemap',
@@ -566,7 +566,7 @@
 	.blob-3 {
 		width: 350px;
 		height: 350px;
-		background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 		top: 50%;
 		right: 10%;
 		animation-delay: -14s;
@@ -618,10 +618,10 @@
 		justify-content: center;
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #10b981, #059669);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border-radius: 16px;
-		color: white;
-		box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+		color: #0D1117;
+		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.3);
 	}
 
 	.header-text h1 {
@@ -659,9 +659,9 @@
 	}
 
 	.connection-badge.connected {
-		background: rgba(16, 185, 129, 0.15);
-		border-color: rgba(16, 185, 129, 0.3);
-		color: #6ee7b7;
+		background: rgba(230, 184, 0, 0.15);
+		border-color: rgba(230, 184, 0, 0.3);
+		color: #FFD11A;
 	}
 
 	.refresh-btn {
@@ -719,7 +719,7 @@
 		width: 48px;
 		height: 48px;
 		border: 3px solid rgba(148, 163, 184, 0.2);
-		border-top-color: #10b981;
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
@@ -772,7 +772,7 @@
 	}
 
 	.visibility .stat-icon {
-		background: linear-gradient(135deg, #10b981, #059669);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 	}
 
 	.keywords .stat-icon {
@@ -784,7 +784,7 @@
 	}
 
 	.technical .stat-icon {
-		background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+		background: linear-gradient(135deg, #E6B800, #B38F00);
 	}
 
 	.stat-label {
@@ -821,7 +821,7 @@
 	}
 
 	.stat-change.positive {
-		color: #10b981;
+		color: #4ade80;
 	}
 
 	.stat-detail {
@@ -836,7 +836,7 @@
 	}
 
 	.detail-item.positive {
-		color: #10b981;
+		color: #4ade80;
 	}
 
 	.detail-item.negative {
@@ -869,8 +869,8 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1rem 1.5rem;
-		background: rgba(16, 185, 129, 0.1);
-		border: 1px solid rgba(16, 185, 129, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 14px;
 		flex-wrap: wrap;
 	}
@@ -878,7 +878,7 @@
 	.connected-services h3 {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #6ee7b7;
+		color: #FFD11A;
 		margin: 0;
 	}
 
@@ -894,10 +894,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.375rem 0.75rem;
-		background: rgba(16, 185, 129, 0.15);
+		background: rgba(230, 184, 0, 0.15);
 		border-radius: 8px;
 		font-size: 0.8125rem;
-		color: #a7f3d0;
+		color: #FFD11A;
 	}
 
 	.service-icon-small {
@@ -905,7 +905,7 @@
 	}
 
 	:global(.check-icon) {
-		color: #10b981;
+		color: #E6B800;
 	}
 
 	.manage-connections-btn {
@@ -913,10 +913,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: rgba(16, 185, 129, 0.2);
-		border: 1px solid rgba(16, 185, 129, 0.3);
+		background: rgba(230, 184, 0, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 8px;
-		color: #6ee7b7;
+		color: #FFD11A;
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -924,7 +924,7 @@
 	}
 
 	.manage-connections-btn:hover {
-		background: rgba(16, 185, 129, 0.3);
+		background: rgba(230, 184, 0, 0.3);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════

@@ -736,7 +736,7 @@
 	}
 
 	.back-btn:hover {
-		color: #a5b4fc;
+		color: #E6B800;
 	}
 
 	.header-content {
@@ -852,7 +852,7 @@
 	.metric-card.total .metric-icon { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
 	.metric-card.recovered .metric-icon { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 	.metric-card.pending .metric-icon { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-	.metric-card.average .metric-icon { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+	.metric-card.average .metric-icon { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
 
 	.metric-label {
 		font-size: 0.75rem;
@@ -938,7 +938,7 @@
 
 	.stage-icon.pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
 	.stage-icon.sent { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-	.stage-icon.clicked { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+	.stage-icon.clicked { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
 	.stage-icon.recovered { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 
 	.stage-info {
@@ -975,7 +975,7 @@
 
 	.stage-fill.pending { background: #fbbf24; }
 	.stage-fill.sent { background: #38bdf8; }
-	.stage-fill.clicked { background: #818cf8; }
+	.stage-fill.clicked { background: #FFD11A; }
 	.stage-fill.recovered { background: #34d399; }
 
 	.pipeline-connector {
@@ -1246,9 +1246,9 @@
 	}
 
 	.status-primary {
-		background: rgba(99, 102, 241, 0.15);
-		color: #818cf8;
-		border-color: rgba(99, 102, 241, 0.3);
+		background: rgba(230, 184, 0, 0.15);
+		color: #FFD11A;
+		border-color: rgba(230, 184, 0, 0.3);
 	}
 
 	.status-success {

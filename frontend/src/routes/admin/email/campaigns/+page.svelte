@@ -393,7 +393,7 @@
 			description="Connect an email marketing service to create and manage email campaigns, track opens, clicks, and subscriber engagement."
 			serviceKey="mailchimp"
 			icon="📧"
-			color="#6366f1"
+			color="#E6B800"
 			features={[
 				'Create and schedule email campaigns',
 				'A/B test subject lines',
@@ -757,7 +757,7 @@
 	}
 
 	.back-btn:hover {
-		color: #a5b4fc;
+		color: #E6B800;
 	}
 
 	.header-content {
@@ -776,12 +776,12 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
+		color: #0D1117;
 	}
 
 	.header-title h1 {
@@ -828,7 +828,7 @@
 		justify-content: center;
 	}
 
-	.stat-icon.purple { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
 	.stat-icon.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
 	.stat-icon.yellow { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
@@ -872,12 +872,12 @@
 	}
 
 	.tabs button:hover {
-		color: #a5b4fc;
+		color: #E6B800;
 	}
 
 	.tabs button.active {
-		color: #a5b4fc;
-		border-bottom-color: #6366f1;
+		color: #E6B800;
+		border-bottom-color: #E6B800;
 	}
 
 	/* Campaign List */
@@ -1040,7 +1040,7 @@
 
 	.variant-label {
 		font-weight: 600;
-		color: #a5b4fc;
+		color: #E6B800;
 	}
 
 	.variant-subject {
@@ -1084,8 +1084,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-secondary {
@@ -1272,7 +1272,7 @@
 	.form-group input:focus,
 	.form-group select:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	.form-group small {
@@ -1294,7 +1294,7 @@
 	.checkbox-label input[type="checkbox"] {
 		width: 18px;
 		height: 18px;
-		accent-color: #6366f1;
+		accent-color: #E6B800;
 	}
 
 	.checkbox-label span {
@@ -1312,7 +1312,7 @@
 
 	input[type="range"] {
 		width: 100%;
-		accent-color: #6366f1;
+		accent-color: #E6B800;
 	}
 
 	@media (max-width: 768px) {
