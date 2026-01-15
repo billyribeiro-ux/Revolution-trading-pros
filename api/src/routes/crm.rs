@@ -1578,8 +1578,48 @@ async fn get_system_logs(
 // ROUTER
 // ═══════════════════════════════════════════════════════════════════════════
 
+/// GET /admin/crm/stats - CRM dashboard statistics
+async fn get_crm_stats(
+    State(_state): State<AppState>,
+    _user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    Ok(Json(json!({
+        "total_contacts": 0,
+        "active_contacts": 0,
+        "new_this_month": 0,
+        "total_deals": 0,
+        "deals_value": 0.0,
+        "open_deals": 0,
+        "won_deals": 0,
+        "lost_deals": 0,
+        "email_sent": 0,
+        "email_opened": 0,
+        "email_clicked": 0
+    })))
+}
+
+/// GET /admin/crm/deals - List all deals
+async fn list_deals(
+    State(_state): State<AppState>,
+    _user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    Ok(Json(json!({
+        "deals": [],
+        "pagination": {
+            "total": 0,
+            "per_page": 25,
+            "current_page": 1,
+            "last_page": 1
+        }
+    })))
+}
+
 pub fn router() -> Router<AppState> {
     Router::new()
+        // Dashboard Stats
+        .route("/stats", get(get_crm_stats))
+        // Deals
+        .route("/deals", get(list_deals))
         // Contacts
         .route("/contacts", get(list_contacts).post(create_contact))
         .route("/contacts/:id", get(get_contact).put(update_contact).delete(delete_contact))
