@@ -13,6 +13,7 @@
  */
 
 import { getAuthToken } from '$lib/stores/auth';
+import { API_BASE_URL } from '$lib/api/config';
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS
@@ -189,7 +190,8 @@ export interface ListParams {
 // API CLIENT
 // ═══════════════════════════════════════════════════════════════════════════════════
 
-const API_BASE = '/api';
+// ICT 7 FIX: Use full API URL for Pages.dev compatibility (no proxy)
+const API_BASE = `${API_BASE_URL}/api`;
 
 async function apiFetch<T>(
 	endpoint: string,
