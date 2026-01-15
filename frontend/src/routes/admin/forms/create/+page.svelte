@@ -132,6 +132,23 @@
 	.page-header {
 		text-align: center;
 		margin-bottom: 2rem;
+		padding-bottom: 1.5rem;
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
+	}
+
+	.btn-back {
+		background: none;
+		border: none;
+		color: #94a3b8;
+		font-size: 0.875rem;
+		cursor: pointer;
+		padding: 0.5rem 0;
+		margin-bottom: 0.75rem;
+		transition: color 0.2s;
+	}
+
+	.btn-back:hover {
+		color: #E6B800;
 	}
 
 	h1 {
@@ -153,21 +170,21 @@
 		gap: 0.75rem;
 	}
 
-	.btn-secondary {
-		padding: 0.75rem 1.25rem;
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
-		border-radius: 8px;
+	.btn-theme {
+		padding: 0.875rem 1.5rem;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
+		border: 1px solid rgba(230, 184, 0, 0.2);
+		border-radius: 10px;
 		font-weight: 600;
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
-	.btn-secondary:hover {
-		background: rgba(100, 116, 139, 0.3);
-		border-color: rgba(100, 116, 139, 0.5);
+	.btn-theme:hover {
+		background: rgba(230, 184, 0, 0.2);
+		border-color: rgba(230, 184, 0, 0.4);
 	}
 
 	.theme-section {

@@ -758,7 +758,7 @@
         </div>
 
         <div class="stat-card">
-          <div class="stat-icon purple">
+          <div class="stat-icon gold">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <path d="M21 16V8a2 2 0 00-1-1.73l-7-4a2 2 0 00-2 0l-7 4A2 2 0 003 8v8a2 2 0 001 1.73l7 4a2 2 0 002 0l7-4A2 2 0 0021 16z"/>
             </svg>
@@ -1558,11 +1558,11 @@
     height: 20px;
   }
 
-  .stat-icon.blue { background: rgba(99, 102, 241, 0.2); color: #a5b4fc; }
-  .stat-icon.green { background: rgba(34, 197, 94, 0.2); color: #86efac; }
-  .stat-icon.orange { background: rgba(245, 158, 11, 0.2); color: #fcd34d; }
-  .stat-icon.purple { background: rgba(139, 92, 246, 0.2); color: #c4b5fd; }
-  .stat-icon.emerald { background: rgba(16, 185, 129, 0.2); color: #6ee7b7; }
+  .stat-icon.blue { background: #dbeafe; color: #2563eb; }
+  .stat-icon.green { background: #d1fae5; color: #059669; }
+  .stat-icon.orange { background: #fef3c7; color: #d97706; }
+  .stat-icon.gold { background: #FFF8E0; color: #B38F00; }
+  .stat-icon.emerald { background: #d1fae5; color: #10b981; }
 
   .stat-info {
     display: flex;

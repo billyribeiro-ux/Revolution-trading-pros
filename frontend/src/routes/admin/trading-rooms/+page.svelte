@@ -150,13 +150,12 @@
 		font-size: 1.75rem;
 		font-weight: 700;
 		color: #f1f5f9;
-		margin: 0 0 0.5rem 0;
+		margin: 0 0 8px 0;
 	}
 
-	/* Subtitle - email templates style */
-	.subtitle {
-		color: #64748b;
-		font-size: 0.875rem;
+	.header-content p {
+		font-size: 16px;
+		color: #94a3b8;
 		margin: 0;
 	}
 
@@ -173,10 +172,10 @@
 		display: flex;
 		flex-direction: column;
 		align-items: flex-start;
-		padding: 1.5rem;
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		padding: 28px;
+		background: rgba(30, 41, 59, 0.6);
+		border: 2px solid rgba(148, 163, 184, 0.2);
+		border-radius: 16px;
 		cursor: pointer;
 		transition: all 0.3s ease;
 		position: relative;
@@ -209,13 +208,13 @@
 		font-size: 1.25rem;
 		font-weight: 700;
 		color: #f1f5f9;
-		margin: 0 0 0.375rem 0;
+		margin: 0 0 6px 0;
 	}
 
 	.room-type {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #64748b;
+		color: #94a3b8;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -230,11 +229,11 @@
 	.feature {
 		display: flex;
 		align-items: center;
-		gap: 0.375rem;
-		padding: 0.5rem 0.75rem;
-		background: rgba(100, 116, 139, 0.2);
-		border-radius: 6px;
-		font-size: 0.8125rem;
+		gap: 6px;
+		padding: 8px 14px;
+		background: rgba(230, 184, 0, 0.1);
+		border-radius: 8px;
+		font-size: 13px;
 		font-weight: 500;
 		color: #cbd5e1;
 	}
@@ -255,18 +254,17 @@
 
 	/* Quick Stats Section */
 	.quick-stats {
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
-		padding: 1.5rem;
+		background: rgba(30, 41, 59, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 16px;
+		padding: 32px;
 	}
 
 	.quick-stats h2 {
 		font-size: 1.125rem;
 		font-weight: 700;
 		color: #f1f5f9;
-		margin: 0 0 1.5rem 0;
-		text-align: center;
+		margin: 0 0 24px 0;
 	}
 
 	/* Actions centered - email templates style */
@@ -280,47 +278,36 @@
 	.action-card {
 		display: flex;
 		flex-direction: column;
-		align-items: center;
-		padding: 1.25rem 1.5rem;
-		background: rgba(100, 116, 139, 0.2);
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		align-items: flex-start;
+		padding: 24px;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 12px;
 		text-decoration: none;
 		transition: all 0.2s ease;
 		min-width: 200px;
 	}
 
 	.action-card:hover {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		border-color: transparent;
-		box-shadow: 0 4px 20px rgba(99, 102, 241, 0.3);
+		border-color: #E6B800;
+		box-shadow: 0 4px 20px rgba(230, 184, 0, 0.2);
 	}
 
 	.action-card :global(svg) {
-		color: #8b5cf6;
-		margin-bottom: 0.75rem;
-		transition: color 0.2s ease;
-	}
-
-	.action-card:hover :global(svg) {
-		color: #fff;
+		color: #E6B800;
+		margin-bottom: 12px;
 	}
 
 	.action-card span {
 		font-size: 0.9375rem;
 		font-weight: 600;
 		color: #f1f5f9;
-		margin-bottom: 0.25rem;
-		transition: color 0.2s ease;
-	}
-
-	.action-card:hover span {
-		color: #fff;
+		margin-bottom: 4px;
 	}
 
 	.action-card p {
-		font-size: 0.8125rem;
-		color: #64748b;
+		font-size: 14px;
+		color: #94a3b8;
 		margin: 0;
 		text-align: center;
 		transition: color 0.2s ease;

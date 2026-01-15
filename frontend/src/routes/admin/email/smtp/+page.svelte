@@ -265,7 +265,7 @@
 		background: rgba(30, 41, 59, 0.5);
 		backdrop-filter: blur(10px);
 		border-radius: 16px;
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		padding: 2rem;
 	}
 
@@ -306,7 +306,7 @@
 	input:focus,
 	select:focus {
 		outline: none;
-		border-color: #6366f1;
+		border-color: #E6B800;
 		background: rgba(15, 23, 42, 0.7);
 	}
 
@@ -328,13 +328,13 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 20px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 10px 20px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-secondary {

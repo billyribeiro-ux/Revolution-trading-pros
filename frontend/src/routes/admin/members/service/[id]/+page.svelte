@@ -394,7 +394,7 @@
 	}
 
 	.back-btn:hover {
-		color: #a5b4fc;
+		color: #E6B800;
 	}
 
 	.header-content {
@@ -413,7 +413,7 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
@@ -460,7 +460,7 @@
 		margin: 0 auto 0.75rem;
 	}
 
-	.stat-icon.purple { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
 	.stat-icon.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
 	.stat-icon.red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
@@ -550,8 +550,8 @@
 	.loader {
 		width: 48px;
 		height: 48px;
-		border: 4px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border: 4px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -590,11 +590,11 @@
 	}
 
 	.members-table tbody tr:hover {
-		background: rgba(99, 102, 241, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.members-table tbody tr.selected {
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 	}
 
 	.members-table td {
@@ -622,7 +622,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -651,7 +651,7 @@
 	}
 
 	.plan-name {
-		color: #a5b4fc;
+		color: #E6B800;
 	}
 
 	.revenue {
@@ -684,9 +684,9 @@
 	}
 
 	.action-btn:hover {
-		background: rgba(99, 102, 241, 0.15);
-		border-color: rgba(99, 102, 241, 0.3);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.15);
+		border-color: rgba(230, 184, 0, 0.3);
+		color: #E6B800;
 	}
 
 	/* Pagination */
@@ -724,9 +724,9 @@
 	}
 
 	.page-btn:hover:not(:disabled) {
-		background: rgba(99, 102, 241, 0.15);
-		border-color: rgba(99, 102, 241, 0.3);
-		color: #a5b4fc;
+		background: rgba(230, 184, 0, 0.15);
+		border-color: rgba(230, 184, 0, 0.3);
+		color: #E6B800;
 	}
 
 	.page-btn:disabled {
@@ -816,10 +816,10 @@
 
 	.template-btn {
 		padding: 0.5rem 1rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
-		color: #a5b4fc;
+		color: #E6B800;
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -827,7 +827,7 @@
 	}
 
 	.template-btn:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.form-group {
@@ -884,8 +884,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-primary:disabled {

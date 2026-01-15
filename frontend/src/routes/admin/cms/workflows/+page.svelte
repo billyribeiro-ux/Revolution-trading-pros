@@ -389,7 +389,7 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #6366f1;
+		color: #E6B800;
 		text-decoration: none;
 		margin-bottom: 1rem;
 	}
@@ -441,7 +441,7 @@
 
 	.stat-pill.slate { background: rgba(100, 116, 139, 0.1); color: #475569; }
 	.stat-pill.amber { background: rgba(245, 158, 11, 0.1); color: #b45309; }
-	.stat-pill.purple { background: rgba(139, 92, 246, 0.1); color: #7c3aed; }
+	.stat-pill.purple { background: rgba(230, 184, 0, 0.1); color: #B38F00; }
 	.stat-pill.emerald { background: rgba(16, 185, 129, 0.1); color: #059669; }
 	.stat-pill.blue { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
 	.stat-pill.red { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
@@ -507,7 +507,7 @@
 
 	.stage-tab.active.slate { background: #475569; border-color: #475569; }
 	.stage-tab.active.amber { background: #d97706; border-color: #d97706; }
-	.stage-tab.active.purple { background: #7c3aed; border-color: #7c3aed; }
+	.stage-tab.active.purple { background: #B38F00; border-color: #B38F00; }
 	.stage-tab.active.emerald { background: #059669; border-color: #059669; }
 	.stage-tab.active.blue { background: #2563eb; border-color: #2563eb; }
 	.stage-tab.active.red { background: #dc2626; border-color: #dc2626; }
@@ -538,7 +538,7 @@
 	}
 
 	.workflow-card:hover {
-		border-color: rgba(99, 102, 241, 0.25);
+		border-color: rgba(230, 184, 0, 0.25);
 		transform: translateY(-2px);
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
 	}
@@ -560,7 +560,7 @@
 
 	.stage-badge.slate { background: rgba(100, 116, 139, 0.12); color: #475569; }
 	.stage-badge.amber { background: rgba(245, 158, 11, 0.12); color: #b45309; }
-	.stage-badge.purple { background: rgba(139, 92, 246, 0.12); color: #7c3aed; }
+	.stage-badge.purple { background: rgba(230, 184, 0, 0.12); color: #B38F00; }
 	.stage-badge.emerald { background: rgba(16, 185, 129, 0.12); color: #059669; }
 	.stage-badge.blue { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
 	.stage-badge.red { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
@@ -702,7 +702,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #f1f5f9;
-		border-top-color: #6366f1;
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -822,8 +822,8 @@
 	}
 
 	.stage-item.active .stage-dot {
-		background: #6366f1;
-		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.2);
+		background: #E6B800;
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.2);
 	}
 
 	.stage-item.completed .stage-dot {
@@ -831,7 +831,7 @@
 	}
 
 	.stage-item.active .stage-name {
-		color: #6366f1;
+		color: #E6B800;
 		font-weight: 600;
 	}
 

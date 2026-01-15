@@ -317,6 +317,23 @@ async fn send_test_email(
     })))
 }
 
+/// GET /admin/email/settings - Get email configuration settings
+async fn get_email_settings(
+    State(_state): State<AppState>,
+    AdminUser(_user): AdminUser,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    Ok(Json(json!({
+        "provider": "fluent_smtp",
+        "from_name": "Revolution Trading Pros",
+        "from_email": "noreply@revolutiontradingpros.com",
+        "reply_to": "support@revolutiontradingpros.com",
+        "smtp_configured": true,
+        "daily_limit": 10000,
+        "sent_today": 0,
+        "templates_count": 5
+    })))
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // ROUTER
 // ═══════════════════════════════════════════════════════════════════════════
@@ -327,4 +344,5 @@ pub fn admin_router() -> Router<AppState> {
         .route("/:id", get(get_template).put(update_template).delete(delete_template))
         .route("/:id/preview", post(preview_template))
         .route("/:id/test", post(send_test_email))
+        .route("/settings", get(get_email_settings))
 }

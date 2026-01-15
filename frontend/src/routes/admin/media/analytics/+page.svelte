@@ -451,14 +451,14 @@
           <path d={getChartArea(bandwidthData, 'optimized')} fill="url(#optimizedGradient)" opacity="0.5"/>
 
           <!-- Lines -->
-          <path d={getChartPath(bandwidthData, 'original')} fill="none" stroke="#6366f1" stroke-width="0.5"/>
+          <path d={getChartPath(bandwidthData, 'original')} fill="none" stroke="#E6B800" stroke-width="0.5"/>
           <path d={getChartPath(bandwidthData, 'optimized')} fill="none" stroke="#10b981" stroke-width="0.5"/>
 
           <!-- Gradients -->
           <defs>
             <linearGradient id="originalGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stop-color="#6366f1"/>
-              <stop offset="100%" stop-color="#6366f1" stop-opacity="0"/>
+              <stop offset="0%" stop-color="#E6B800"/>
+              <stop offset="100%" stop-color="#E6B800" stop-opacity="0"/>
             </linearGradient>
             <linearGradient id="optimizedGradient" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stop-color="#10b981"/>
@@ -868,8 +868,8 @@
   }
 
   .hero-card.eco {
-    background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
-    color: white;
+    background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+    color: #0D1117;
   }
 
   .hero-icon {
@@ -981,7 +981,7 @@
 
   .stat-icon.blue { background: #dbeafe; color: #2563eb; }
   .stat-icon.green { background: #d1fae5; color: #059669; }
-  .stat-icon.purple { background: #ede9fe; color: #7c3aed; }
+  .stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
   .stat-icon.orange { background: #fef3c7; color: #d97706; }
   .stat-icon.cyan { background: #cffafe; color: #0891b2; }
 
@@ -1043,7 +1043,7 @@
     border-radius: 50%;
   }
 
-  .legend-item.original .dot { background: #6366f1; }
+  .legend-item.original .dot { background: #E6B800; }
   .legend-item.optimized .dot { background: #10b981; }
   .legend-item.savings .dot { background: #f59e0b; }
 
@@ -1147,7 +1147,7 @@
   }
 
   .bar-original {
-    background: rgba(99, 102, 241, 0.2);
+    background: rgba(230, 184, 0, 0.2);
     width: 100%;
   }
 

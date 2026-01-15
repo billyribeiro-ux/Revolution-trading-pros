@@ -21,7 +21,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::state::AppState;
+use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -172,7 +172,7 @@ async fn get_video_status(
     }
 
     // Get library ID from database or use default
-    let library_id: i64 = sqlx::query_scalar(
+    let library_id: i64 = sqlx::query_scalar::<_, i64>(
         "SELECT library_id FROM bunny_uploads WHERE video_guid = $1"
     )
     .bind(&video_guid)
@@ -261,7 +261,7 @@ async fn list_uploads(
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let uploads: Vec<(String, i64, String, String, Option<i32>, Option<String>, chrono::NaiveDateTime)> = 
-        sqlx::query_as(
+        sqlx::query_as::<_, (String, i64, String, String, Option<i32>, Option<String>, chrono::NaiveDateTime)>(
             r#"
             SELECT video_guid, library_id, title, status, duration_seconds, thumbnail_url, upload_started_at
             FROM bunny_uploads

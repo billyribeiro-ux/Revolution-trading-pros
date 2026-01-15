@@ -326,12 +326,12 @@
 	}
 
 	.btn-primary {
-		background: #3b82f6;
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-primary:hover {
-		background: #2563eb;
+		background: linear-gradient(135deg, #FFD11A 0%, #E6B800 100%);
 	}
 
 	.btn-danger {
@@ -415,9 +415,9 @@
 	}
 
 	.filter-tab.active {
-		background: #3b82f6;
-		color: white;
-		border-color: #3b82f6;
+		background: #E6B800;
+		color: #0D1117;
+		border-color: #E6B800;
 	}
 
 	.redirects-table {
@@ -461,8 +461,8 @@
 	.regex-badge {
 		display: inline-block;
 		padding: 0.125rem 0.5rem;
-		background: #eff6ff;
-		color: #3b82f6;
+		background: rgba(230, 184, 0, 0.15);
+		color: #E6B800;
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -500,8 +500,8 @@
 	}
 
 	.type-badge.type-308 {
-		background: #e0e7ff;
-		color: #6366f1;
+		background: rgba(230, 184, 0, 0.15);
+		color: #E6B800;
 	}
 
 	.type-badge.type-410 {

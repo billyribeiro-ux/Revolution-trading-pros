@@ -51,6 +51,8 @@ pub mod watchlist;
 pub mod room_resources;
 pub mod bunny_upload; // ICT 7: Bunny.net video upload API
 pub mod admin_members; // ICT 7: Member segments, tags, and filters
+pub mod crm; // ICT 7: CRM Admin Routes - FluentCRM Pro equivalent
+pub mod connections; // ICT 7: Service connection status
 
 use axum::Router;
 use crate::AppState;
@@ -107,6 +109,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/forms", forms::admin_router())
         // Email Templates Admin - ICT 7 Grade
         .nest("/admin/email/templates", email_templates::admin_router())
+        // Email Settings - frontend compatibility
+        .nest("/admin/email", email_templates::admin_router())
         // Subscriptions Admin - ICT 7 Grade
         .nest("/admin/subscriptions", subscriptions_admin::subscriptions_router())
         .nest("/admin/subscriptions/plans", subscriptions_admin::plans_router())
@@ -123,8 +127,10 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/room-resources", room_resources::admin_router())
         // Bunny.net Video Upload - ICT 7 Grade
         .nest("/admin/bunny", bunny_upload::admin_router())
-        // Member Segments, Tags, Filters - ICT 7 Grade
-        .nest("/admin/members", admin_members::router())
+        // CRM Admin - ICT 7 Grade (FluentCRM Pro equivalent)
+        .nest("/admin/crm", crm::router())
+        // Connections Status - ICT 7 Grade
+        .nest("/admin/connections", connections::admin_router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())

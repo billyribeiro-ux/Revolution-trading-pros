@@ -563,7 +563,7 @@
 	}
 
 	.back-btn:hover {
-		color: #a5b4fc;
+		color: #FFD11A;
 	}
 
 	.header-content {
@@ -582,7 +582,7 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
@@ -643,8 +643,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-secondary {
@@ -737,8 +737,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		font-size: 0.875rem;
 		font-weight: 600;
 		border-radius: 10px;
@@ -748,7 +748,7 @@
 
 	.btn-connect:hover {
 		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-retry {
@@ -838,7 +838,7 @@
 		justify-content: center;
 	}
 
-	.metric-icon.purple { background: rgba(99, 102, 241, 0.15); color: #818cf8; }
+	.metric-icon.purple { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
 	.metric-icon.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; }
 	.metric-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
 	.metric-icon.red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
@@ -925,7 +925,7 @@
 		border-radius: 50%;
 	}
 
-	.legend-dot.purple { background: #818cf8; }
+	.legend-dot.purple { background: #FFD11A; }
 	.legend-dot.emerald { background: #34d399; }
 	.legend-dot.red { background: #f87171; }
 
@@ -965,7 +965,7 @@
 
 	.bar-members {
 		width: 60%;
-		background: linear-gradient(180deg, #818cf8, #6366f1);
+		background: linear-gradient(180deg, #FFD11A, #E6B800);
 	}
 
 	.bar-mini-group {
@@ -1041,7 +1041,7 @@
 	.cohort-name {
 		text-align: left;
 		font-weight: 500;
-		color: #a5b4fc;
+		color: #FFD11A;
 	}
 
 	/* Bottom Grid */

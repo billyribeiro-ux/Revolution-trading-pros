@@ -375,7 +375,7 @@
 
 	.btn-primary:hover:not(:disabled) {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 20px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 4px 16px rgba(230, 184, 0, 0.35);
 	}
 
 	.btn-secondary {
@@ -461,9 +461,9 @@
 	}
 
 	.type-btn.active {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: var(--admin-btn-primary-bg, linear-gradient(135deg, #E6B800 0%, #B38F00 100%));
 		border-color: transparent;
-		color: white;
+		color: var(--admin-btn-primary-text, #0D1117);
 	}
 
 	.count-badge {
@@ -496,7 +496,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(148, 163, 184, 0.1);
-		border-top-color: #6366f1;
+		border-top-color: var(--admin-accent-primary, #E6B800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin: 0 auto 1rem;
@@ -632,8 +632,23 @@
 		text-transform: capitalize;
 	}
 
-	/* Status badges */
-	.status-badge {
+	.bg-blue-500 {
+		background: #3b82f6;
+	}
+
+	.bg-purple-500 {
+		background: #B38F00;
+	}
+
+	.bg-yellow-500 {
+		background: #eab308;
+	}
+
+	.bg-green-500 {
+		background: #10b981;
+	}
+
+	.product-status .status-badge {
 		padding: 0.25rem 0.75rem;
 		border-radius: 6px;
 		font-size: 0.75rem;
@@ -696,6 +711,7 @@
 		border-radius: 6px;
 		font-size: 1rem;
 		font-weight: 700;
+		color: var(--admin-accent-primary, #E6B800);
 	}
 
 	.original-price {

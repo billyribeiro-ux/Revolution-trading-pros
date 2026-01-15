@@ -1075,13 +1075,13 @@
 		background: rgba(30, 41, 59, 0.5);
 	}
 
-	/* Color accents for metric cards */
-	.metric-card.blue:hover { border-color: rgba(59, 130, 246, 0.3); }
-	.metric-card.purple:hover { border-color: rgba(139, 92, 246, 0.3); }
-	.metric-card.cyan:hover { border-color: rgba(6, 182, 212, 0.3); }
-	.metric-card.green:hover { border-color: rgba(34, 197, 94, 0.3); }
-	.metric-card.orange:hover { border-color: rgba(234, 179, 8, 0.3); }
-	.metric-card.pink:hover { border-color: rgba(236, 72, 153, 0.3); }
+	/* Color accents for metric cards - using RTP semantic colors */
+	.metric-card.blue:hover { border-color: var(--admin-info-border); }
+	.metric-card.purple:hover { border-color: rgba(230, 184, 0, 0.5); }
+	.metric-card.cyan:hover { border-color: var(--admin-info-border); }
+	.metric-card.green:hover { border-color: var(--admin-success-border); }
+	.metric-card.orange:hover { border-color: var(--admin-warning-border); }
+	.metric-card.pink:hover { border-color: rgba(236, 72, 153, 0.5); }
 
 	.metric-glow {
 		position: absolute;
@@ -1096,12 +1096,12 @@
 
 	.metric-card:hover .metric-glow { opacity: 1; }
 
-	.metric-glow.blue { background: radial-gradient(circle, rgba(59, 130, 246, 0.1) 0%, transparent 70%); }
-	.metric-glow.purple { background: radial-gradient(circle, rgba(139, 92, 246, 0.1) 0%, transparent 70%); }
-	.metric-glow.cyan { background: radial-gradient(circle, rgba(6, 182, 212, 0.1) 0%, transparent 70%); }
-	.metric-glow.green { background: radial-gradient(circle, rgba(34, 197, 94, 0.1) 0%, transparent 70%); }
-	.metric-glow.orange { background: radial-gradient(circle, rgba(234, 179, 8, 0.1) 0%, transparent 70%); }
-	.metric-glow.pink { background: radial-gradient(circle, rgba(236, 72, 153, 0.1) 0%, transparent 70%); }
+	.metric-glow.blue { background: radial-gradient(circle, var(--admin-info-bg) 0%, transparent 70%); }
+	.metric-glow.purple { background: radial-gradient(circle, rgba(230, 184, 0, 0.15) 0%, transparent 70%); }
+	.metric-glow.cyan { background: radial-gradient(circle, var(--admin-info-bg) 0%, transparent 70%); }
+	.metric-glow.green { background: radial-gradient(circle, var(--admin-success-bg) 0%, transparent 70%); }
+	.metric-glow.orange { background: radial-gradient(circle, var(--admin-warning-bg) 0%, transparent 70%); }
+	.metric-glow.pink { background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%); }
 
 	.metric-icon-wrap {
 		width: 36px;

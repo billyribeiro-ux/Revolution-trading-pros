@@ -230,6 +230,102 @@ pub async fn stats(
     })))
 }
 
+/// GET /admin/members/services - Get all services/products for filtering
+#[tracing::instrument(skip(state))]
+pub async fn services(
+    State(state): State<AppState>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    // Get distinct products/services that members can subscribe to
+    let services: Vec<(i64, Option<String>, Option<String>, Option<f64>, i64)> = sqlx::query_as(
+        r#"
+        SELECT 
+            COALESCE(us.product_id, us.id) as id,
+            us.product_name as name,
+            'subscription' as type,
+            us.price,
+            COUNT(DISTINCT us.user_id) as members_count
+        FROM user_subscriptions us
+        WHERE us.status = 'active'
+        GROUP BY COALESCE(us.product_id, us.id), us.product_name, us.price
+        ORDER BY members_count DESC
+        LIMIT 50
+        "#
+    )
+    .fetch_all(state.db.pool())
+    .await
+    .unwrap_or_default();
+
+    let services_json: Vec<serde_json::Value> = services.into_iter().map(|(id, name, svc_type, price, count)| {
+        serde_json::json!({
+            "id": id,
+            "name": name.unwrap_or_else(|| format!("Service {}", id)),
+            "type": svc_type.unwrap_or_else(|| "subscription".to_string()),
+            "price": price.unwrap_or(0.0),
+            "is_active": true,
+            "members_count": count
+        })
+    }).collect();
+
+    Ok(Json(serde_json::json!({
+        "services": services_json
+    })))
+}
+
+/// GET /admin/members/email-templates - Get email templates for member communications
+#[tracing::instrument(skip(_state))]
+pub async fn email_templates(
+    State(_state): State<AppState>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    // Return preset templates for member communications
+    let preset_templates = vec![
+        serde_json::json!({
+            "id": "welcome",
+            "name": "Welcome Email",
+            "subject": "Welcome to Revolution Trading Pros!",
+            "category": "onboarding",
+            "is_active": true,
+            "is_preset": true
+        }),
+        serde_json::json!({
+            "id": "winback",
+            "name": "Win-back Campaign",
+            "subject": "We miss you! Come back with 20% off",
+            "category": "retention",
+            "is_active": true,
+            "is_preset": true
+        }),
+        serde_json::json!({
+            "id": "renewal_reminder",
+            "name": "Renewal Reminder",
+            "subject": "Your subscription is expiring soon",
+            "category": "billing",
+            "is_active": true,
+            "is_preset": true
+        }),
+        serde_json::json!({
+            "id": "promo",
+            "name": "Promotional Offer",
+            "subject": "Special offer just for you!",
+            "category": "marketing",
+            "is_active": true,
+            "is_preset": true
+        }),
+        serde_json::json!({
+            "id": "free_trial",
+            "name": "Free Trial Invitation",
+            "subject": "Try our premium features free for 14 days",
+            "category": "acquisition",
+            "is_active": true,
+            "is_preset": true
+        })
+    ];
+
+    Ok(Json(serde_json::json!({
+        "templates": [],
+        "preset_templates": preset_templates
+    })))
+}
+
 /// GET /admin/members/:id - Get single member details
 #[tracing::instrument(skip(state))]
 pub async fn show(
@@ -286,5 +382,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/admin/members", get(index))
         .route("/admin/members/stats", get(stats))
+        .route("/admin/members/services", get(services))
+        .route("/admin/members/email-templates", get(email_templates))
         .route("/admin/members/:id", get(show))
 }

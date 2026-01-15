@@ -33,9 +33,9 @@
 		{ id: 'trading-strategies', name: 'Trading Strategies', color: '#10b981' },
 		{ id: 'risk-management', name: 'Risk Management', color: '#ef4444' },
 		{ id: 'options-trading', name: 'Options Trading', color: '#f59e0b' },
-		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#6366f1' },
+		{ id: 'technical-analysis', name: 'Technical Analysis', color: '#E6B800' },
 		{ id: 'fundamental-analysis', name: 'Fundamental Analysis', color: '#ec4899' },
-		{ id: 'psychology', name: 'Psychology', color: '#8b5cf6' },
+		{ id: 'psychology', name: 'Psychology', color: '#B38F00' },
 		{ id: 'education', name: 'Education', color: '#14b8a6' },
 		{ id: 'news', name: 'News & Updates', color: '#06b6d4' },
 		{ id: 'earnings', name: 'Earnings', color: '#f97316' },
@@ -954,15 +954,15 @@
 	}
 
 	.category-btn:hover {
-		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
-		border-color: color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
-		color: var(--tag-color, #6366f1);
+		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
+		border-color: color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
+		color: var(--tag-color, #E6B800);
 	}
 
 	.category-btn.selected {
-		background: color-mix(in srgb, var(--tag-color, #6366f1) 20%, transparent);
-		border-color: var(--tag-color, #6366f1);
-		color: var(--tag-color, #6366f1);
+		background: color-mix(in srgb, var(--tag-color, #E6B800) 20%, transparent);
+		border-color: var(--tag-color, #E6B800);
+		color: var(--tag-color, #E6B800);
 	}
 
 	.selected-categories {
@@ -988,12 +988,12 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.375rem 0.625rem;
-		background: color-mix(in srgb, var(--tag-color, #6366f1) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #6366f1) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: var(--tag-color, #6366f1);
+		color: var(--tag-color, #E6B800);
 	}
 
 	.selected-tag button {

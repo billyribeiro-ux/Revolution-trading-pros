@@ -669,10 +669,10 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		padding: 0.4rem 0.75rem;
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border-radius: 6px;
+		padding: 0.625rem 1rem;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
+		border-radius: 8px;
 		text-decoration: none;
 		font-size: 0.875rem;
 		transition: all 0.2s;
@@ -680,7 +680,19 @@
 	}
 
 	.back-btn:hover {
-		background: rgba(100, 116, 139, 0.3);
+		background: rgba(230, 184, 0, 0.2);
+	}
+
+	.page-title {
+		font-size: 2rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin-bottom: 0.25rem;
+	}
+
+	.page-subtitle {
+		font-size: 1rem;
+		color: #64748b;
 	}
 
 	.header-actions {
@@ -703,12 +715,13 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		opacity: 0.9;
+		transform: translateY(-2px);
+		box-shadow: 0 10px 25px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-primary:disabled {
@@ -717,13 +730,12 @@
 	}
 
 	.btn-secondary {
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 	}
 
 	.btn-secondary:hover {
-		opacity: 0.9;
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.creator-layout {
@@ -734,9 +746,9 @@
 	}
 
 	.editor-panel {
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+		border: 1px solid rgba(230, 184, 0, 0.1);
+		border-radius: 16px;
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
@@ -744,7 +756,7 @@
 
 	.tabs {
 		display: flex;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 		background: rgba(0, 0, 0, 0.2);
 	}
 
@@ -765,9 +777,9 @@
 	}
 
 	.tab.active {
-		color: #6366f1;
-		border-bottom-color: #6366f1;
-		background: rgba(99, 102, 241, 0.05);
+		color: #E6B800;
+		border-bottom-color: #E6B800;
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.tab-content {
@@ -801,8 +813,8 @@
 
 	.btn-add {
 		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -827,7 +839,7 @@
 		width: 100%;
 		padding: 0.75rem 1rem;
 		background: rgba(0, 0, 0, 0.3);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		color: #f1f5f9;
 		font-size: 1rem;
@@ -841,7 +853,7 @@
 	.form-input:focus,
 	.form-textarea:focus {
 		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
+		border-color: rgba(230, 184, 0, 0.5);
 	}
 
 	.form-textarea {
@@ -876,7 +888,7 @@
 
 	.button-config {
 		background: rgba(0, 0, 0, 0.3);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 12px;
 		padding: 1.5rem;
 		margin-bottom: 1rem;
@@ -923,10 +935,10 @@
 
 	/* Preview Panel */
 	.preview-panel {
-		background: rgba(30, 41, 59, 0.4);
-		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
-		padding: 1.5rem;
+		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+		border: 1px solid rgba(230, 184, 0, 0.1);
+		border-radius: 16px;
+		padding: 2rem;
 		position: sticky;
 		top: 2rem;
 		height: fit-content;

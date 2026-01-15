@@ -1214,7 +1214,17 @@ class EnterpriseApiClient {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	private buildUrl(endpoint: string, params?: Record<string, any>): string {
-		const url = `${API_BASE_URL}${endpoint}`;
+		// ICT 7 Fix: Add /api prefix for endpoints that don't already have it
+		let url: string;
+		if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
+			url = endpoint;
+		} else if (endpoint.startsWith('/api/')) {
+			url = `${API_BASE_URL}${endpoint}`;
+		} else if (endpoint.startsWith('/')) {
+			url = `${API_BASE_URL}/api${endpoint}`;
+		} else {
+			url = `${API_BASE_URL}/api/${endpoint}`;
+		}
 
 		if (!params || Object.keys(params).length === 0) {
 			return url;

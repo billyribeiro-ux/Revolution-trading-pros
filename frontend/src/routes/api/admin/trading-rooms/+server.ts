@@ -112,7 +112,7 @@ const mockTradingRooms = [
 		description: 'High-probability swing trade alerts for explosive moves.',
 		short_description: 'Explosive swing trade alerts',
 		icon: 'st-icon-explosive',
-		color: '#8b5cf6',
+		color: '#B38F00',
 		image_url: null,
 		logo_url: null,
 		is_active: true,
