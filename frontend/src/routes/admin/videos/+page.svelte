@@ -1248,7 +1248,6 @@
 						id="new-video-url"
 						placeholder="https://your-video-url.com/video.mp4"
 						bind:value={newVideoUrl}
-						autofocus
 					/>
 					<small class="form-hint">Platform will be auto-detected from URL</small>
 				</div>
@@ -1930,12 +1929,6 @@
 		background: rgba(34, 197, 94, 0.15);
 		border-color: rgba(34, 197, 94, 0.3);
 		color: #22c55e;
-	}
-
-	.status-toggle.processing {
-		background: rgba(245, 158, 11, 0.15);
-		border-color: rgba(245, 158, 11, 0.3);
-		color: #fbbf24;
 	}
 
 	.action-buttons {

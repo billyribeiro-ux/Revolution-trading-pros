@@ -956,67 +956,6 @@
 		overflow: hidden;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════════
-	   Animated Background
-	   ═══════════════════════════════════════════════════════════════════════════════ */
-
-	.animated-bg {
-		position: absolute;
-		inset: 0;
-		overflow: hidden;
-		pointer-events: none;
-	}
-
-	.blob {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(80px);
-		opacity: 0.4;
-		animation: float 20s ease-in-out infinite;
-	}
-
-	.blob-1 {
-		width: 400px;
-		height: 400px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		top: -100px;
-		right: -100px;
-		animation-delay: 0s;
-	}
-
-	.blob-2 {
-		width: 300px;
-		height: 300px;
-		background: linear-gradient(135deg, #10b981, #059669);
-		bottom: 20%;
-		left: -50px;
-		animation-delay: -7s;
-	}
-
-	.blob-3 {
-		width: 350px;
-		height: 350px;
-		background: linear-gradient(135deg, #3b82f6, #1d4ed8);
-		top: 50%;
-		right: 20%;
-		animation-delay: -14s;
-	}
-
-	@keyframes float {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		25% {
-			transform: translate(30px, -30px) scale(1.05);
-		}
-		50% {
-			transform: translate(-20px, 20px) scale(0.95);
-		}
-		75% {
-			transform: translate(20px, 30px) scale(1.02);
-		}
-	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
 	   Header - CENTERED
@@ -1030,24 +969,6 @@
 		border: 1px solid rgba(148, 163, 184, 0.1);
 		border-radius: 20px;
 		backdrop-filter: blur(20px);
-	}
-
-	.header-content {
-		display: flex;
-		align-items: center;
-		gap: 1.25rem;
-	}
-
-	.header-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 56px;
-		height: 56px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		border-radius: 16px;
-		color: white;
-		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.3);
 	}
 
 	.page-header h1 {
@@ -1126,18 +1047,6 @@
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s ease;
-	}
-
-	.action-btn.run-tests {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		border: none;
-		color: white;
-		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
-	}
-
-	.action-btn.run-tests:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 6px 16px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-secondary {
@@ -1378,10 +1287,6 @@
 	/* ═══════════════════════════════════════════════════════════════════════════════
 	   Tab Content - Email Templates Style
 	   ═══════════════════════════════════════════════════════════════════════════════ */
-
-	.tab-content {
-		/* No special positioning needed */
-	}
 
 	/* Overview Grid */
 	.overview-grid {
