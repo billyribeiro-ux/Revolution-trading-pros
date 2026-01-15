@@ -86,6 +86,7 @@
 </script>
 
 <div class="page">
+	<div class="admin-page-container">
 	<!-- Header -->
 	<div class="page-header">
 		<h1>Popup Manager</h1>
@@ -229,6 +230,7 @@
 			{/each}
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>

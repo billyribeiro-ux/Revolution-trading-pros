@@ -29,6 +29,7 @@
 </svelte:head>
 
 <div class="page">
+	<div class="admin-page-container">
 	<div class="page-header">
 		<h1>Forms</h1>
 		<p class="subtitle">Create and manage your forms</p>
@@ -42,6 +43,7 @@
 		onViewSubmissions={handleViewSubmissions}
 		onViewAnalytics={handleViewAnalytics}
 	/>
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>

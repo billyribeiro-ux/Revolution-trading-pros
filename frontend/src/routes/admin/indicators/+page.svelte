@@ -99,6 +99,7 @@
 </svelte:head>
 
 <div class="page">
+	<div class="admin-page-container">
 	<header class="page-header">
 		<h1>Indicators</h1>
 		<p class="subtitle">{total} total indicators</p>
@@ -248,6 +249,7 @@
 			</div>
 		{/if}
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>

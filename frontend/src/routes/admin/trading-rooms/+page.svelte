@@ -65,6 +65,7 @@
 </svelte:head>
 
 <div class="page">
+	<div class="admin-page-container">
 	<!-- Header -->
 	<header class="page-header">
 		<h1>Trading Rooms Content</h1>
@@ -129,6 +130,7 @@
 			</a>
 		</div>
 	</section>
+	</div><!-- End admin-page-container -->
 </div>
 
 <style>
