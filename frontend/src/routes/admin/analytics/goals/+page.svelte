@@ -55,8 +55,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -66,7 +66,7 @@
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
 	}
 
 	.empty-state {
@@ -77,7 +77,7 @@
 		padding: 4rem 2rem;
 		text-align: center;
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 16px;
 	}
 

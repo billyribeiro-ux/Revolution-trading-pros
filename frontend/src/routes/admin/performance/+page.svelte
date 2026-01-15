@@ -560,8 +560,8 @@
 	}
 
 	.metric-icon.server {
-		background: rgba(99, 102, 241, 0.15);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.15);
+		color: #FFD11A;
 	}
 	.metric-icon.database {
 		background: rgba(16, 185, 129, 0.15);
@@ -603,7 +603,7 @@
 
 	.metric-bar {
 		height: 100%;
-		background: linear-gradient(90deg, #6366f1, #8b5cf6);
+		background: linear-gradient(90deg, #E6B800, #B38F00);
 		border-radius: 4px;
 		transition: width 0.3s;
 	}

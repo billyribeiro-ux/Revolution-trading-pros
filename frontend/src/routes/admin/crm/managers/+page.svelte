@@ -319,7 +319,7 @@
 		align-items: center;
 		justify-content: center;
 		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		color: #94a3b8;
 		cursor: pointer;
@@ -327,8 +327,8 @@
 	}
 
 	.btn-refresh:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.2);
+		color: #E6B800;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -345,7 +345,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -357,7 +357,7 @@
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-secondary {
@@ -365,9 +365,9 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: rgba(99, 102, 241, 0.1);
-		border: 1px solid rgba(99, 102, 241, 0.2);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
+		color: #E6B800;
 		border-radius: 8px;
 		font-weight: 600;
 		cursor: pointer;
@@ -377,7 +377,7 @@
 	}
 
 	.btn-secondary:hover {
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 	}
 
 	.stats-grid {
@@ -394,7 +394,7 @@
 		gap: 1rem;
 		padding: 1.25rem;
 		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 	}
 
@@ -431,7 +431,7 @@
 		display: flex;
 		gap: 0.5rem;
 		margin-bottom: 2rem;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 		padding-bottom: 1rem;
 	}
 
@@ -450,13 +450,13 @@
 	}
 
 	.tab:hover {
-		color: #818cf8;
+		color: #E6B800;
 	}
 
 	.tab.active {
-		background: rgba(99, 102, 241, 0.1);
-		border-color: rgba(99, 102, 241, 0.3);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.1);
+		border-color: rgba(230, 184, 0, 0.3);
+		color: #E6B800;
 	}
 
 	.managers-list {
@@ -471,7 +471,7 @@
 		gap: 1rem;
 		padding: 1.25rem;
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 	}
 
@@ -479,11 +479,11 @@
 		width: 48px;
 		height: 48px;
 		border-radius: 50%;
-		background: rgba(99, 102, 241, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #818cf8;
+		color: #E6B800;
 		overflow: hidden;
 	}
 
@@ -539,7 +539,7 @@
 		align-items: center;
 		justify-content: center;
 		background: transparent;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		color: #94a3b8;
 		cursor: pointer;
@@ -548,8 +548,8 @@
 	}
 
 	.btn-icon:hover {
-		background: rgba(99, 102, 241, 0.1);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.1);
+		color: #E6B800;
 	}
 
 	.btn-icon.danger:hover {
@@ -566,7 +566,7 @@
 
 	.role-card {
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 		padding: 1.5rem;
 		display: flex;
@@ -622,8 +622,8 @@
 		display: flex;
 		gap: 1.5rem;
 		padding: 0.75rem 0;
-		border-top: 1px solid rgba(99, 102, 241, 0.1);
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		border-top: 1px solid rgba(230, 184, 0, 0.1);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.role-stats .stat {
@@ -653,10 +653,10 @@
 
 	.permission-tag {
 		padding: 0.25rem 0.5rem;
-		background: rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.1);
 		border-radius: 4px;
 		font-size: 0.7rem;
-		color: #818cf8;
+		color: #E6B800;
 	}
 
 	.permission-more {
@@ -697,8 +697,8 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border: 3px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

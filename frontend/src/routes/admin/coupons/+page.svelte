@@ -122,8 +122,8 @@
 
 	.btn-primary {
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-		color: white;
+		background: var(--admin-btn-primary-bg, linear-gradient(135deg, #E6B800 0%, #B38F00 100%));
+		color: var(--admin-btn-primary-text, #0D1117);
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -133,7 +133,7 @@
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+		box-shadow: 0 4px 16px rgba(230, 184, 0, 0.35);
 	}
 
 	.coupons-grid {
@@ -151,7 +151,7 @@
 	}
 
 	.coupon-card:hover {
-		border-color: rgba(59, 130, 246, 0.4);
+		border-color: rgba(230, 184, 0, 0.4);
 		transform: translateY(-2px);
 	}
 
@@ -165,7 +165,7 @@
 	.coupon-code {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #60a5fa;
+		color: var(--admin-accent-primary, #E6B800);
 	}
 
 	.coupon-details {
@@ -228,9 +228,9 @@
 	}
 
 	.action-btn.edit:hover {
-		background: rgba(59, 130, 246, 0.1);
-		border-color: rgba(59, 130, 246, 0.3);
-		color: #60a5fa;
+		background: rgba(230, 184, 0, 0.1);
+		border-color: rgba(230, 184, 0, 0.3);
+		color: var(--admin-accent-primary, #E6B800);
 	}
 
 	.action-btn.delete:hover {

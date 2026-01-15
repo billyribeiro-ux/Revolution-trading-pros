@@ -280,14 +280,14 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #6366f1;
+		color: #E6B800;
 		text-decoration: none;
 		margin-bottom: 1rem;
 		transition: color 0.2s;
 	}
 
 	.back-link:hover {
-		color: #4f46e5;
+		color: #B38F00;
 	}
 
 	.header-title {
@@ -303,8 +303,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, rgba(99, 102, 241, 0.12) 0%, rgba(99, 102, 241, 0.06) 100%);
-		color: #6366f1;
+		background: linear-gradient(135deg, rgba(230, 184, 0, 0.12) 0%, rgba(230, 184, 0, 0.06) 100%);
+		color: #E6B800;
 	}
 
 	.header-title h1 {
@@ -396,9 +396,9 @@
 	}
 
 	.filter-chip.active {
-		background: rgba(99, 102, 241, 0.1);
-		border-color: rgba(99, 102, 241, 0.3);
-		color: #6366f1;
+		background: rgba(230, 184, 0, 0.1);
+		border-color: rgba(230, 184, 0, 0.3);
+		color: #E6B800;
 	}
 
 	/* Versions Timeline */
@@ -425,7 +425,7 @@
 		top: 0;
 		bottom: 0;
 		width: 2px;
-		background: linear-gradient(180deg, rgba(99, 102, 241, 0.3) 0%, rgba(99, 102, 241, 0.05) 100%);
+		background: linear-gradient(180deg, rgba(230, 184, 0, 0.3) 0%, rgba(230, 184, 0, 0.05) 100%);
 		border-radius: 1px;
 	}
 
@@ -443,13 +443,13 @@
 	}
 
 	.version-card:hover {
-		border-color: rgba(99, 102, 241, 0.2);
-		background: linear-gradient(135deg, rgba(99, 102, 241, 0.04) 0%, rgba(255, 255, 255, 0.8) 100%);
+		border-color: rgba(230, 184, 0, 0.2);
+		background: linear-gradient(135deg, rgba(230, 184, 0, 0.04) 0%, rgba(255, 255, 255, 0.8) 100%);
 	}
 
 	.version-card.selected {
-		border-color: rgba(99, 102, 241, 0.4);
-		box-shadow: 0 4px 20px rgba(99, 102, 241, 0.1);
+		border-color: rgba(230, 184, 0, 0.4);
+		box-shadow: 0 4px 20px rgba(230, 184, 0, 0.1);
 	}
 
 	.version-timeline-dot {
@@ -562,8 +562,8 @@
 
 	.action-btn:hover {
 		background: #f8fafc;
-		color: #6366f1;
-		border-color: rgba(99, 102, 241, 0.3);
+		color: #E6B800;
+		border-color: rgba(230, 184, 0, 0.3);
 	}
 
 	.action-btn.rollback:hover {
@@ -586,7 +586,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #f1f5f9;
-		border-top-color: #6366f1;
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -709,19 +709,19 @@
 		gap: 0.5rem;
 		width: 100%;
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		border: none;
 		border-radius: 12px;
 		font-size: 0.9rem;
 		font-weight: 600;
-		color: #ffffff;
+		color: #0D1117;
 		cursor: pointer;
 		transition: all 0.25s;
 	}
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 8px 25px rgba(99, 102, 241, 0.3);
+		box-shadow: 0 8px 25px rgba(230, 184, 0, 0.3);
 	}
 
 	@media (max-width: 768px) {

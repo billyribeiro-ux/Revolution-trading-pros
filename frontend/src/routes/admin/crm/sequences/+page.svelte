@@ -329,7 +329,7 @@
 		align-items: center;
 		justify-content: center;
 		background: rgba(30, 41, 59, 0.8);
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		color: #94a3b8;
 		cursor: pointer;
@@ -337,8 +337,8 @@
 	}
 
 	.btn-refresh:hover {
-		background: rgba(99, 102, 241, 0.2);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.2);
+		color: #FFD11A;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -355,8 +355,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		color: #0D1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -367,7 +367,7 @@
 
 	.btn-primary:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 4px 15px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 4px 15px rgba(230, 184, 0, 0.4);
 	}
 
 	.stats-grid {
@@ -391,7 +391,7 @@
 		gap: 1rem;
 		padding: 1.25rem;
 		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 	}
 
@@ -406,7 +406,7 @@
 
 	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
 	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
 	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
 
 	.stat-content {
@@ -439,7 +439,7 @@
 		gap: 0.75rem;
 		padding: 0 1rem;
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		flex: 1;
 		max-width: 400px;
@@ -466,7 +466,7 @@
 	.filter-select {
 		padding: 0.75rem 1rem;
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 10px;
 		color: #e2e8f0;
 		font-size: 0.9rem;
@@ -475,7 +475,7 @@
 
 	.table-container {
 		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 		overflow: hidden;
 	}
@@ -493,19 +493,19 @@
 		color: #64748b;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		background: rgba(99, 102, 241, 0.05);
-		border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+		background: rgba(230, 184, 0, 0.05);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
 	.data-table td {
 		padding: 1rem;
 		font-size: 0.9rem;
 		color: #e2e8f0;
-		border-bottom: 1px solid rgba(99, 102, 241, 0.05);
+		border-bottom: 1px solid rgba(230, 184, 0, 0.05);
 	}
 
 	.data-table tbody tr:hover {
-		background: rgba(99, 102, 241, 0.05);
+		background: rgba(230, 184, 0, 0.05);
 	}
 
 	.sequence-cell {
@@ -518,7 +518,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 10px;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -565,7 +565,7 @@
 		align-items: center;
 		justify-content: center;
 		background: transparent;
-		border: 1px solid rgba(99, 102, 241, 0.2);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		color: #94a3b8;
 		cursor: pointer;
@@ -574,8 +574,8 @@
 	}
 
 	.btn-icon:hover {
-		background: rgba(99, 102, 241, 0.1);
-		color: #818cf8;
+		background: rgba(230, 184, 0, 0.1);
+		color: #FFD11A;
 	}
 
 	.btn-icon.danger:hover {
@@ -611,8 +611,8 @@
 	.spinner {
 		width: 40px;
 		height: 40px;
-		border: 3px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border: 3px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #E6B800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

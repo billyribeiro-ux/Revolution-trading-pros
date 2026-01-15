@@ -2969,7 +2969,7 @@
 
 	.modal-content {
 		background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
-		border: 1px solid rgba(99, 102, 241, 0.3);
+		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 16px;
 		padding: 2rem;
 		max-width: 500px;
@@ -3000,7 +3000,7 @@
 	}
 
 	.pricing-details h4 {
-		color: #a5b4fc;
+		color: #E6B800;
 		font-size: 1rem;
 		margin: 1.5rem 0 0.75rem;
 	}
@@ -3020,7 +3020,7 @@
 		align-items: center;
 		gap: 1rem;
 		padding: 1rem;
-		background: rgba(99, 102, 241, 0.15);
+		background: rgba(230, 184, 0, 0.15);
 		border-radius: 8px;
 		margin: 1rem 0;
 	}
@@ -3226,8 +3226,8 @@
 
 	/* AI Assistant */
 	.ai-assistant {
-		background: linear-gradient(135deg, rgba(139, 92, 246, 0.1), rgba(59, 130, 246, 0.1));
-		border: 1px solid rgba(139, 92, 246, 0.2);
+		background: linear-gradient(135deg, rgba(230, 184, 0, 0.1), rgba(59, 130, 246, 0.1));
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 12px;
 		padding: 1.25rem;
 		backdrop-filter: blur(10px);
@@ -3253,8 +3253,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 0.875rem;
-		background: rgba(139, 92, 246, 0.1);
-		border: 1px solid rgba(139, 92, 246, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
 		color: #a78bfa;
 		font-size: 0.875rem;
@@ -3265,7 +3265,7 @@
 	}
 
 	.ai-actions button:hover:not(:disabled) {
-		background: rgba(139, 92, 246, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		transform: translateX(2px);
 	}
 
@@ -3490,8 +3490,8 @@
 	.ai-btn,
 	.ai-btn-large {
 		padding: 0.375rem 0.625rem;
-		background: rgba(139, 92, 246, 0.1);
-		border: 1px solid rgba(139, 92, 246, 0.2);
+		background: rgba(230, 184, 0, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
 		color: #a78bfa;
 		cursor: pointer;
@@ -3510,7 +3510,7 @@
 
 	.ai-btn:hover:not(:disabled),
 	.ai-btn-large:hover:not(:disabled) {
-		background: rgba(139, 92, 246, 0.2);
+		background: rgba(230, 184, 0, 0.2);
 		transform: translateY(-1px);
 	}
 

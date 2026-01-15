@@ -59,7 +59,7 @@
 		background: rgba(30, 41, 59, 0.4);
 		padding: 1.5rem;
 		border-radius: 8px;
-		border: 1px solid rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(230, 184, 0, 0.1);
 	}
 	.text-muted {
 		color: #94a3b8;
