@@ -660,6 +660,7 @@
 </svelte:head>
 
 <div class="media-page" class:details-open={showDetailsPanel}>
+  <div class="admin-page-container">
   <!-- ═══════════════════════════════════════════════════════════════════════ -->
   <!-- Header - Centered Layout -->
   <!-- ═══════════════════════════════════════════════════════════════════════ -->
@@ -1376,6 +1377,7 @@
       </div>
     {/each}
   </div>
+  </div><!-- End admin-page-container -->
 </div>
 
 <!-- Crop Modal -->

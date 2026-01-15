@@ -632,6 +632,7 @@
 </svelte:head>
 
 <div class="blog-page">
+	<div class="admin-page-container">
 	<!-- Notifications -->
 	<div class="notifications">
 		{#each notifications as notification (notification.id)}
@@ -1366,6 +1367,7 @@
 			</div>
 		</div>
 	{/if}
+	</div><!-- End admin-page-container -->
 </div>
 
 <!-- Keyboard Shortcuts Helper -->
