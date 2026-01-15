@@ -291,10 +291,10 @@
 					</div>
 				</div>
 				<div class="stat-sparkline">
-					{#each stats.growth_trend.slice(-6) as point}
+					{#each (stats.growth_trend || []).slice(-6) as point}
 						<div
 							class="sparkline-bar"
-							style="height: {(point.new / Math.max(...stats.growth_trend.map((p) => p.new))) * 100}%"
+							style="height: {(point.new / Math.max(...(stats.growth_trend || []).map((p) => p.new))) * 100}%"
 						></div>
 					{/each}
 				</div>
