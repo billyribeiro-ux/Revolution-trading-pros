@@ -38,6 +38,7 @@
 		IconChevronDown
 	} from '$lib/icons';
 	import { productsApi, AdminApiError } from '$lib/api/admin';
+	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Type Definitions & Interfaces
@@ -831,29 +832,122 @@
 	// Complete File Upload System
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	let uploadError = $state('');
+
+	/**
+	 * Resize image to max dimensions while maintaining aspect ratio
+	 * Converts to optimized JPEG format for faster uploads
+	 */
+	async function resizeImage(file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.85): Promise<Blob> {
+		return new Promise((resolve, reject) => {
+			const img = new Image();
+			const canvas = document.createElement('canvas');
+			const ctx = canvas.getContext('2d');
+
+			img.onload = () => {
+				let { width, height } = img;
+
+				// Calculate new dimensions maintaining aspect ratio
+				if (width > maxWidth || height > maxHeight) {
+					const ratio = Math.min(maxWidth / width, maxHeight / height);
+					width = Math.round(width * ratio);
+					height = Math.round(height * ratio);
+				}
+
+				canvas.width = width;
+				canvas.height = height;
+
+				if (ctx) {
+					// Use high-quality image smoothing
+					ctx.imageSmoothingEnabled = true;
+					ctx.imageSmoothingQuality = 'high';
+					ctx.drawImage(img, 0, 0, width, height);
+
+					canvas.toBlob(
+						(blob) => {
+							if (blob) {
+								resolve(blob);
+							} else {
+								reject(new Error('Failed to create blob from canvas'));
+							}
+						},
+						'image/jpeg',
+						quality
+					);
+				} else {
+					reject(new Error('Could not get canvas context'));
+				}
+			};
+
+			img.onerror = () => reject(new Error('Failed to load image'));
+			img.src = URL.createObjectURL(file);
+		});
+	}
+
 	async function handleImageUpload(event: Event, type: 'thumbnail' | 'gallery' | 'og') {
 		const target = event.target as HTMLInputElement;
 		const file = target.files?.[0];
 		if (!file) return;
 
+		uploadError = '';
+
 		// Validate file type
 		if (!file.type.startsWith('image/')) {
-			alert('Please select an image file');
+			uploadError = 'Please select an image file (JPEG, PNG, WebP, etc.)';
 			return;
 		}
 
-		// Validate file size (max 5MB)
-		if (file.size > 5 * 1024 * 1024) {
-			alert('Image must be less than 5MB');
+		// Validate file size (max 50MB before resize)
+		if (file.size > 50 * 1024 * 1024) {
+			uploadError = 'Image must be less than 50MB';
 			return;
 		}
 
 		uploading = true;
 
-		// Simulate upload with progress
-		setTimeout(() => {
-			const url = URL.createObjectURL(file);
+		try {
+			// Resize image before upload (max 1200px, converts to JPEG)
+			const resizedBlob = await resizeImage(file, 1200, 1200, 0.85);
+			const resizedFile = new File([resizedBlob], file.name.replace(/\.[^.]+$/, '.jpg'), {
+				type: 'image/jpeg'
+			});
 
+			const formData = new FormData();
+			formData.append('file', resizedFile);
+
+			const response = await adminFetch('/api/admin/media/upload', {
+				method: 'POST',
+				body: formData
+			});
+
+			// The response contains an array of uploaded files
+			if (response.success && response.data && response.data.length > 0) {
+				const url = response.data[0].url;
+
+				switch (type) {
+					case 'thumbnail':
+						course.thumbnail = url;
+						break;
+					case 'gallery':
+						course.gallery = [...course.gallery, url];
+						break;
+					case 'og':
+						course.og_image = url;
+						break;
+				}
+
+				hasUnsavedChanges = true;
+				uploadError = '';
+				validateAll();
+			} else {
+				throw new Error(response.message || 'Upload failed - no URL returned');
+			}
+		} catch (error: any) {
+			console.error('Failed to upload image:', error);
+			uploadError = error.message || 'Failed to upload image. Please try again.';
+
+			// Fallback: Use local preview if server upload fails
+			const url = URL.createObjectURL(file);
 			switch (type) {
 				case 'thumbnail':
 					course.thumbnail = url;
@@ -865,11 +959,10 @@
 					course.og_image = url;
 					break;
 			}
-
-			uploading = false;
 			hasUnsavedChanges = true;
-			validateAll();
-		}, 1000);
+		} finally {
+			uploading = false;
+		}
 	}
 
 	async function handleVideoUpload(event: Event) {
@@ -877,18 +970,48 @@
 		const file = target.files?.[0];
 		if (!file) return;
 
+		uploadError = '';
+
 		if (!file.type.startsWith('video/')) {
-			alert('Please select a video file');
+			uploadError = 'Please select a video file (MP4, WebM, etc.)';
+			return;
+		}
+
+		// Validate file size (max 50MB for direct upload)
+		if (file.size > 50 * 1024 * 1024) {
+			uploadError = 'Video must be less than 50MB for direct upload';
 			return;
 		}
 
 		uploading = true;
 
-		setTimeout(() => {
+		try {
+			const formData = new FormData();
+			formData.append('file', file);
+
+			const response = await adminFetch('/api/admin/media/upload', {
+				method: 'POST',
+				body: formData
+			});
+
+			// The response contains an array of uploaded files
+			if (response.success && response.data && response.data.length > 0) {
+				course.promo_video = response.data[0].url;
+				hasUnsavedChanges = true;
+				uploadError = '';
+			} else {
+				throw new Error(response.message || 'Upload failed - no URL returned');
+			}
+		} catch (error: any) {
+			console.error('Failed to upload video:', error);
+			uploadError = error.message || 'Failed to upload video. Please try again.';
+
+			// Fallback: Use local preview if server upload fails
 			course.promo_video = URL.createObjectURL(file);
-			uploading = false;
 			hasUnsavedChanges = true;
-		}, 1500);
+		} finally {
+			uploading = false;
+		}
 	}
 
 	function removeFromGallery(index: number) {
