@@ -556,7 +556,8 @@ function createAuthStore() {
 						method: 'POST',
 						headers,
 						credentials: 'include', // Clear httpOnly cookie
-						signal: controller.signal
+						signal: controller.signal,
+						body: JSON.stringify({ session_id: sessionId || null })
 					});
 
 					clearTimeout(timeoutId);

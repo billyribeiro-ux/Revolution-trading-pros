@@ -273,6 +273,9 @@
 
 		isLoading = true;
 		const startTime = performance.now();
+		if (browser && 'performance' in window) {
+			performance.mark('admin-toolbar-logout-start');
+		}
 
 		try {
 			// Track logout event
