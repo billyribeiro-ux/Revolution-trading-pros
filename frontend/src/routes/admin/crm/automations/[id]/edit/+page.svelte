@@ -588,15 +588,18 @@
 	<div
 		class="modal-backdrop"
 		onclick={handleModalBackdropClick}
+		onkeydown={handleModalKeydown}
 		role="dialog"
 		aria-modal="true"
+		aria-labelledby="action-modal-title"
+		tabindex="-1"
 	>
 		<div class="modal-container large">
 			<div class="modal-header">
-				<h2>
+				<h2 id="action-modal-title">
 					{editingAction ? 'Edit Action' : 'Add Action'}
 				</h2>
-				<button class="modal-close" onclick={closeActionModal}>
+				<button class="modal-close" onclick={closeActionModal} aria-label="Close modal">
 					<IconX size={20} />
 				</button>
 			</div>
@@ -654,9 +657,10 @@
 
 						<!-- Delay Settings -->
 						<div class="form-group">
-							<label>Delay Before This Action</label>
+							<label for="action-delay">Delay Before This Action</label>
 							<div class="delay-inputs">
 								<input
+									id="action-delay"
 									type="number"
 									min="0"
 									bind:value={actionForm.delay_seconds}
