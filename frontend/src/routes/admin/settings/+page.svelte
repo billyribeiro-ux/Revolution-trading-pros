@@ -1373,7 +1373,7 @@
 				{/if}
 			{/if}
 
-		{:else}
+		{:else if activeTab === 'general'}
 			<div class="max-w-4xl space-y-6" in:fly={{ y: 20, duration: 600, easing: quintOut }}>
 				<!-- Unsaved Changes Banner -->
 				{#if settingsChanged}
