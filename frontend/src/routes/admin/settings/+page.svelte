@@ -1735,6 +1735,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle email alerts"
 								onclick={() => { notificationSettings.email_alerts = !notificationSettings.email_alerts; notificationsChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {notificationSettings.email_alerts ? 'bg-blue-500' : 'bg-slate-700'}"
 							>
@@ -1750,6 +1751,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle push notifications"
 								onclick={() => { notificationSettings.push_notifications = !notificationSettings.push_notifications; notificationsChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {notificationSettings.push_notifications ? 'bg-blue-500' : 'bg-slate-700'}"
 							>
@@ -1765,6 +1767,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle SMS notifications"
 								onclick={() => { notificationSettings.sms_notifications = !notificationSettings.sms_notifications; notificationsChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {notificationSettings.sms_notifications ? 'bg-blue-500' : 'bg-slate-700'}"
 							>
@@ -1817,6 +1820,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle new user registration alerts"
 								onclick={() => { notificationSettings.alert_on_new_users = !notificationSettings.alert_on_new_users; notificationsChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {notificationSettings.alert_on_new_users ? 'bg-emerald-500' : 'bg-slate-700'}"
 							>
@@ -1831,6 +1835,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle payment event alerts"
 								onclick={() => { notificationSettings.alert_on_payments = !notificationSettings.alert_on_payments; notificationsChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {notificationSettings.alert_on_payments ? 'bg-emerald-500' : 'bg-slate-700'}"
 							>
@@ -1845,6 +1850,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle error alerts"
 								onclick={() => { notificationSettings.alert_on_errors = !notificationSettings.alert_on_errors; notificationsChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {notificationSettings.alert_on_errors ? 'bg-red-500' : 'bg-slate-700'}"
 							>
@@ -1859,6 +1865,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle security alerts"
 								onclick={() => { notificationSettings.alert_on_security = !notificationSettings.alert_on_security; notificationsChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {notificationSettings.alert_on_security ? 'bg-red-500' : 'bg-slate-700'}"
 							>
@@ -1890,6 +1897,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle quiet hours"
 								onclick={() => { notificationSettings.quiet_hours_enabled = !notificationSettings.quiet_hours_enabled; notificationsChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {notificationSettings.quiet_hours_enabled ? 'bg-purple-500' : 'bg-slate-700'}"
 							>
@@ -2123,6 +2131,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle email queue"
 								onclick={() => { emailSettings.email_queue_enabled = !emailSettings.email_queue_enabled; emailChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {emailSettings.email_queue_enabled ? 'bg-purple-500' : 'bg-slate-700'}"
 							>
@@ -2137,6 +2146,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle email tracking"
 								onclick={() => { emailSettings.email_tracking_enabled = !emailSettings.email_tracking_enabled; emailChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {emailSettings.email_tracking_enabled ? 'bg-purple-500' : 'bg-slate-700'}"
 							>
@@ -2207,7 +2217,7 @@
 						<div class="flex items-center gap-4">
 							<div class="w-14 h-14 bg-emerald-500/20 rounded-2xl flex items-center justify-center">
 								<svg class="w-7 h-7 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4" />
 								</svg>
 							</div>
 							<div>
@@ -2254,6 +2264,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle auto backup"
 								onclick={() => { backupSettings.auto_backup_enabled = !backupSettings.auto_backup_enabled; backupChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {backupSettings.auto_backup_enabled ? 'bg-blue-500' : 'bg-slate-700'}"
 							>
@@ -2332,6 +2343,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle database backup"
 								onclick={() => { backupSettings.include_database = !backupSettings.include_database; backupChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {backupSettings.include_database ? 'bg-purple-500' : 'bg-slate-700'}"
 							>
@@ -2346,6 +2358,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle uploaded files backup"
 								onclick={() => { backupSettings.include_uploads = !backupSettings.include_uploads; backupChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {backupSettings.include_uploads ? 'bg-purple-500' : 'bg-slate-700'}"
 							>
@@ -2360,6 +2373,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle log files backup"
 								onclick={() => { backupSettings.include_logs = !backupSettings.include_logs; backupChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {backupSettings.include_logs ? 'bg-purple-500' : 'bg-slate-700'}"
 							>
@@ -2374,6 +2388,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle backup compression"
 								onclick={() => { backupSettings.compression_enabled = !backupSettings.compression_enabled; backupChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {backupSettings.compression_enabled ? 'bg-emerald-500' : 'bg-slate-700'}"
 							>
@@ -2388,6 +2403,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle backup encryption"
 								onclick={() => { backupSettings.encryption_enabled = !backupSettings.encryption_enabled; backupChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {backupSettings.encryption_enabled ? 'bg-emerald-500' : 'bg-slate-700'}"
 							>
@@ -2468,6 +2484,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle cache"
 								onclick={() => { performanceSettings.cache_enabled = !performanceSettings.cache_enabled; performanceChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {performanceSettings.cache_enabled ? 'bg-orange-500' : 'bg-slate-700'}"
 							>
@@ -2530,6 +2547,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle CDN"
 								onclick={() => { performanceSettings.cdn_enabled = !performanceSettings.cdn_enabled; performanceChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {performanceSettings.cdn_enabled ? 'bg-blue-500' : 'bg-slate-700'}"
 							>
@@ -2575,6 +2593,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle image optimization"
 								onclick={() => { performanceSettings.image_optimization = !performanceSettings.image_optimization; performanceChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {performanceSettings.image_optimization ? 'bg-emerald-500' : 'bg-slate-700'}"
 							>
@@ -2589,6 +2608,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle lazy loading"
 								onclick={() => { performanceSettings.lazy_loading = !performanceSettings.lazy_loading; performanceChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {performanceSettings.lazy_loading ? 'bg-emerald-500' : 'bg-slate-700'}"
 							>
@@ -2603,6 +2623,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle CSS minification"
 								onclick={() => { performanceSettings.minify_css = !performanceSettings.minify_css; performanceChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {performanceSettings.minify_css ? 'bg-emerald-500' : 'bg-slate-700'}"
 							>
@@ -2617,6 +2638,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle JavaScript minification"
 								onclick={() => { performanceSettings.minify_js = !performanceSettings.minify_js; performanceChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {performanceSettings.minify_js ? 'bg-emerald-500' : 'bg-slate-700'}"
 							>
@@ -2631,6 +2653,7 @@
 							</div>
 							<button
 								type="button"
+								aria-label="Toggle gzip compression"
 								onclick={() => { performanceSettings.gzip_enabled = !performanceSettings.gzip_enabled; performanceChanged = true; }}
 								class="relative w-14 h-8 rounded-full transition-colors {performanceSettings.gzip_enabled ? 'bg-emerald-500' : 'bg-slate-700'}"
 							>
