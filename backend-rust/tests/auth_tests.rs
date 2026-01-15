@@ -9,6 +9,9 @@
 //! - Separate token secrets
 //! - XSS prevention (no localStorage tokens)
 
+// Allow unused imports - these will be used when tests are fully implemented
+#![allow(unused_imports)]
+
 use std::time::Duration;
 
 // =============================================================================
