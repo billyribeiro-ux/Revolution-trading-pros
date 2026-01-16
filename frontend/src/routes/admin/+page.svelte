@@ -152,14 +152,11 @@
 		seoConnected = true; // Platform has built-in SEO
 
 		try {
-			// Use local SvelteKit API routes to avoid CORS issues
-			// These routes proxy to Laravel backend server-side
-			const [membersRes, subscriptionsRes, couponsRes, postsRes, productsRes, analyticsRes] = await Promise.allSettled([
-				localFetch('/api/admin/members/stats'),
-				localFetch('/api/admin/subscriptions/plans/stats'),
+			// ICT 7: Use existing backend endpoints only
+			const [membersRes, subscriptionsRes, couponsRes, analyticsRes] = await Promise.allSettled([
+				localFetch('/api/admin/members'),
+				localFetch('/api/admin/subscriptions'),
 				localFetch('/api/admin/coupons'),
-				localFetch('/api/admin/posts/stats'),
-				localFetch('/api/admin/products/stats'),
 				localFetch(`/api/admin/analytics/dashboard?period=${selectedPeriod}`)
 			]);
 

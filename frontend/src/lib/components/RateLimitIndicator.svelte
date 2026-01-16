@@ -42,7 +42,7 @@
 	async function fetchRateLimits(): Promise<RateLimitInfo[]> {
 		try {
 			// ICT11+ Pattern: Use adminFetch for authenticated admin API calls
-			const data = await adminFetch('/api/admin/connections/status', { skipAuthRedirect: true });
+			const data = await adminFetch('/api/admin/connections', { skipAuthRedirect: true });
 			const limits: RateLimitInfo[] = [];
 
 			// Transform connection status to rate limit info
