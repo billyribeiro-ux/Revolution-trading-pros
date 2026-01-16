@@ -102,26 +102,22 @@ ON CONFLICT (slug) DO UPDATE SET
     updated_at = NOW();
 
 -- ═══════════════════════════════════════════════════════════════════════════
--- GRANT ALL MEMBERSHIPS TO SUPER ADMIN
--- Note: This grants all memberships to the super admin user (welberribeirodrums@gmail.com)
+-- ICT 11+: NO HARDCODED EMAILS IN MIGRATIONS
+-- Super admin memberships are granted via the bootstrap_developer() function
+-- which reads from DEVELOPER_BOOTSTRAP_EMAIL environment variable
 -- ═══════════════════════════════════════════════════════════════════════════
 
--- First, ensure the super admin user exists with correct role
-UPDATE users
-SET role = 'super-admin', is_active = true
-WHERE email = 'welberribeirodrums@gmail.com';
-
--- Insert memberships for super admin (if user exists)
+-- Grant all memberships to users with super_admin or super-admin role
 INSERT INTO user_memberships (user_id, plan_id, starts_at, expires_at, status, current_period_start, current_period_end)
 SELECT
     u.id,
     p.id,
     NOW(),
-    NOW() + INTERVAL '100 years',  -- Lifetime access for super admin
+    NOW() + INTERVAL '100 years',
     'active',
     NOW(),
     NOW() + INTERVAL '100 years'
 FROM users u
 CROSS JOIN membership_plans p
-WHERE u.email = 'welberribeirodrums@gmail.com'
+WHERE u.role IN ('super_admin', 'super-admin', 'developer')
 ON CONFLICT DO NOTHING;

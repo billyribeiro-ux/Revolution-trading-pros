@@ -29,7 +29,7 @@ ON CONFLICT (slug) DO UPDATE SET
     trial_days = EXCLUDED.trial_days,
     updated_at = NOW();
 
--- Grant Weekly Watchlist to super admin
+-- ICT 11+: Grant Weekly Watchlist to all super admins/developers (no hardcoded emails)
 INSERT INTO user_memberships (user_id, plan_id, starts_at, expires_at, status, current_period_start, current_period_end)
 SELECT
     u.id,
@@ -41,6 +41,6 @@ SELECT
     NOW() + INTERVAL '100 years'
 FROM users u
 CROSS JOIN membership_plans p
-WHERE u.email = 'welberribeirodrums@gmail.com'
+WHERE u.role IN ('super_admin', 'super-admin', 'developer')
   AND p.slug = 'weekly-watchlist'
 ON CONFLICT DO NOTHING;

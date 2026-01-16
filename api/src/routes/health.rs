@@ -100,68 +100,75 @@ async fn setup_db(
             )
         })?;
 
-    // First, try to update existing superadmin
-    let update_result = sqlx::query(
-        r#"
-        UPDATE users 
-        SET password_hash = '$2b$10$ZVtDbp8nFLBzi4LTpMiiqe33JlwMdDmPf9.yguzf09cH1iDthQi16',
-            role = 'super_admin',
-            email_verified_at = COALESCE(email_verified_at, NOW()),
-            updated_at = NOW()
-        WHERE email = 'welberribeirodrums@gmail.com'
-        "#,
-    )
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| {
-        tracing::error!("Failed to update superadmin: {}", e);
-        (
-            axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-            Json(SetupResponse {
-                success: false,
-                message: format!("Failed to update superadmin: {}", e),
-            }),
-        )
-    })?;
-
-    // If no rows were updated, insert a new superadmin
-    if update_result.rows_affected() == 0 {
-        sqlx::query(
+    // ICT 11+: NO HARDCODED VALUES - use environment variables for bootstrap user
+    // Only create/update bootstrap user if DEVELOPER_BOOTSTRAP_EMAIL is configured
+    if let (Some(bootstrap_email), Some(bootstrap_password_hash), Some(bootstrap_name)) = (
+        &state.config.developer_bootstrap_email,
+        &state.config.developer_bootstrap_password_hash,
+        &state.config.developer_bootstrap_name,
+    ) {
+        // First, try to update existing user
+        let update_result = sqlx::query(
             r#"
-            INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
-            VALUES (
-                'welberribeirodrums@gmail.com',
-                '$2b$10$ZVtDbp8nFLBzi4LTpMiiqe33JlwMdDmPf9.yguzf09cH1iDthQi16',
-                'Welber Ribeiro',
-                'super_admin',
-                NOW(),
-                NOW(),
-                NOW()
-            )
+            UPDATE users 
+            SET password_hash = $1,
+                role = 'super_admin',
+                email_verified_at = COALESCE(email_verified_at, NOW()),
+                updated_at = NOW()
+            WHERE email = $2
             "#,
         )
+        .bind(bootstrap_password_hash)
+        .bind(bootstrap_email)
         .execute(&state.db.pool)
         .await
         .map_err(|e| {
-            tracing::error!("Failed to create superadmin: {}", e);
+            tracing::error!("Failed to update bootstrap user: {}", e);
             (
                 axum::http::StatusCode::INTERNAL_SERVER_ERROR,
                 Json(SetupResponse {
                     success: false,
-                    message: format!("Failed to create superadmin: {}", e),
+                    message: format!("Failed to update bootstrap user: {}", e),
                 }),
             )
         })?;
-        tracing::info!("Created new superadmin user");
+
+        // If no rows were updated, insert a new user
+        if update_result.rows_affected() == 0 {
+            sqlx::query(
+                r#"
+                INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
+                VALUES ($1, $2, $3, 'super_admin', NOW(), NOW(), NOW())
+                "#,
+            )
+            .bind(bootstrap_email)
+            .bind(bootstrap_password_hash)
+            .bind(bootstrap_name)
+            .execute(&state.db.pool)
+            .await
+            .map_err(|e| {
+                tracing::error!("Failed to create bootstrap user: {}", e);
+                (
+                    axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(SetupResponse {
+                        success: false,
+                        message: format!("Failed to create bootstrap user: {}", e),
+                    }),
+                )
+            })?;
+            tracing::info!("Created new bootstrap user from environment config");
+        } else {
+            tracing::info!("Updated existing bootstrap user from environment config");
+        }
     } else {
-        tracing::info!("Updated existing superadmin user");
+        tracing::info!("No DEVELOPER_BOOTSTRAP_EMAIL configured - skipping bootstrap user creation");
     }
 
     tracing::info!("Database setup completed successfully");
 
     Ok(Json(SetupResponse {
         success: true,
-        message: "Database setup completed: email_verification_tokens table created, superadmin user configured".to_string(),
+        message: "Database setup completed: email_verification_tokens table created".to_string(),
     }))
 }
 

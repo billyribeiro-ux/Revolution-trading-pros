@@ -17,23 +17,10 @@ CREATE INDEX idx_email_verification_user ON email_verification_tokens(user_id);
 CREATE INDEX idx_email_verification_token ON email_verification_tokens(token);
 CREATE INDEX idx_email_verification_expires ON email_verification_tokens(expires_at);
 
--- Create superadmin user (password: Jesusforever01!)
--- BCrypt hash with cost 10
-INSERT INTO users (email, password, name, role, email_verified_at, created_at, updated_at)
-VALUES (
-    'welberribeirodrums@gmail.com',
-    '$2b$10$phx6SlBNC.zOAjORaWe7nuib4xKmD9YQrmC.sMpbt0.PLwIF2aLrq',
-    'Welber Ribeiro',
-    'super_admin',
-    NOW(),
-    NOW(),
-    NOW()
-)
-ON CONFLICT (email) DO UPDATE SET
-    role = 'super_admin',
-    email_verified_at = COALESCE(users.email_verified_at, NOW()),
-    password = EXCLUDED.password,
-    updated_at = NOW();
+-- ICT 11+: NO HARDCODED CREDENTIALS IN MIGRATIONS
+-- Bootstrap user creation is handled via DEVELOPER_BOOTSTRAP_* environment variables
+-- See: api/src/db/mod.rs bootstrap_developer() function
+-- Run: cargo run --bin bootstrap_dev to securely set up admin user
 
 -- Ensure password_resets table has expires_at column
 DO $$
