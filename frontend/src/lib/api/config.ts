@@ -302,6 +302,7 @@ export async function apiFetch<T>(
 			const response = await fetchFn(url, {
 				...options,
 				headers,
+				credentials: 'include', // ICT 11+ CORB Fix: Required when backend CORS has allow_credentials(true)
 				signal: controller.signal
 			});
 

@@ -578,9 +578,11 @@ class EnterpriseApiClient {
 		}
 
 		// Configure request
+		// ICT 11+ CORB Fix: Must include credentials when backend has allow_credentials(true)
 		const requestConfig: RequestInit = {
 			method: config.method || 'GET',
 			headers,
+			credentials: 'include',
 			signal: this.createAbortSignal(config.timeout)
 		};
 
