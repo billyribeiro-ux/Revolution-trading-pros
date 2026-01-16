@@ -1,0 +1,196 @@
+// Missing Icon Imports - Add these to index.ts
+
+import IconAB from '@tabler/icons-svelte/icons/a-b';
+import IconAB2 from '@tabler/icons-svelte/icons/a-b-2';
+import IconActivityHeartbeat from '@tabler/icons-svelte/icons/activity-heartbeat';
+import IconAdjustmentsAlt from '@tabler/icons-svelte/icons/adjustments-alt';
+import IconAntenna from '@tabler/icons-svelte/icons/antenna';
+import IconApiApp from '@tabler/icons-svelte/icons/api-app';
+import IconArrowDownRight from '@tabler/icons-svelte/icons/arrow-down-right';
+import IconArrowsLeftRight from '@tabler/icons-svelte/icons/arrows-left-right';
+import IconArrowsSort from '@tabler/icons-svelte/icons/arrows-sort';
+import IconArrowsUpDown from '@tabler/icons-svelte/icons/arrows-up-down';
+import IconBadge from '@tabler/icons-svelte/icons/badge';
+import IconBox from '@tabler/icons-svelte/icons/box';
+import IconBrackets from '@tabler/icons-svelte/icons/brackets';
+import IconBrandMedium from '@tabler/icons-svelte/icons/brand-medium';
+import IconBrandReddit from '@tabler/icons-svelte/icons/brand-reddit';
+import IconBrandTiktok from '@tabler/icons-svelte/icons/brand-tiktok';
+import IconBrandTradingview from '@tabler/icons-svelte/icons/brand-tradingview';
+import IconBroadcast from '@tabler/icons-svelte/icons/broadcast';
+import IconBullseye from '@tabler/icons-svelte/icons/bullseye';
+import IconCaretDown from '@tabler/icons-svelte/icons/caret-down';
+import IconCaretUp from '@tabler/icons-svelte/icons/caret-up';
+import IconCashBanknote from '@tabler/icons-svelte/icons/cash-banknote';
+import IconChartArcs from '@tabler/icons-svelte/icons/chart-arcs';
+import IconChartArea from '@tabler/icons-svelte/icons/chart-area';
+import IconChartDots from '@tabler/icons-svelte/icons/chart-dots';
+import IconChartHistogram from '@tabler/icons-svelte/icons/chart-histogram';
+import IconChartInfographic from '@tabler/icons-svelte/icons/chart-infographic';
+import IconChartRadar from '@tabler/icons-svelte/icons/chart-radar';
+import IconChip from '@tabler/icons-svelte/icons/chip';
+import IconCompass from '@tabler/icons-svelte/icons/compass';
+import IconCurrencyBitcoin from '@tabler/icons-svelte/icons/currency-bitcoin';
+import IconCurrencyEthereum from '@tabler/icons-svelte/icons/currency-ethereum';
+import IconCurrencyEuro from '@tabler/icons-svelte/icons/currency-euro';
+import IconDeviceAnalytics from '@tabler/icons-svelte/icons/device-analytics';
+import IconDeviceDesktopAnalytics from '@tabler/icons-svelte/icons/device-desktop-analytics';
+import IconDiamond from '@tabler/icons-svelte/icons/diamond';
+import IconExclamationCircle from '@tabler/icons-svelte/icons/exclamation-circle';
+import IconEyeCheck from '@tabler/icons-svelte/icons/eye-check';
+import IconFileCode from '@tabler/icons-svelte/icons/file-code';
+import IconFileDownload from '@tabler/icons-svelte/icons/file-download';
+import IconFileUpload from '@tabler/icons-svelte/icons/file-upload';
+import IconFlag from '@tabler/icons-svelte/icons/flag';
+import IconFlask from '@tabler/icons-svelte/icons/flask';
+import IconFocus from '@tabler/icons-svelte/icons/focus';
+import IconFocusCentered from '@tabler/icons-svelte/icons/focus-centered';
+import IconFolderPlus from '@tabler/icons-svelte/icons/folder-plus';
+import IconGitMerge from '@tabler/icons-svelte/icons/git-merge';
+import IconGraph from '@tabler/icons-svelte/icons/graph';
+import IconHomeDollar from '@tabler/icons-svelte/icons/home-dollar';
+import IconHourglass from '@tabler/icons-svelte/icons/hourglass';
+import IconLayersLinked from '@tabler/icons-svelte/icons/layers-linked';
+import IconLayoutDashboard from '@tabler/icons-svelte/icons/layout-dashboard';
+import IconLayoutDistributeHorizontal from '@tabler/icons-svelte/icons/layout-distribute-horizontal';
+import IconLayoutNavbarCollapse from '@tabler/icons-svelte/icons/layout-navbar-collapse';
+import IconLayoutSidebar from '@tabler/icons-svelte/icons/layout-sidebar';
+import IconLayoutSidebarRight from '@tabler/icons-svelte/icons/layout-sidebar-right';
+import IconListTree from '@tabler/icons-svelte/icons/list-tree';
+import IconLive from '@tabler/icons-svelte/icons/live';
+import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
+import IconLocation from '@tabler/icons-svelte/icons/location';
+import IconLockSquare from '@tabler/icons-svelte/icons/lock-square';
+import IconMailCheck from '@tabler/icons-svelte/icons/mail-check';
+import IconMailFast from '@tabler/icons-svelte/icons/mail-fast';
+import IconMailOpen from '@tabler/icons-svelte/icons/mail-open';
+import IconMedal from '@tabler/icons-svelte/icons/medal';
+import IconMoneybag from '@tabler/icons-svelte/icons/moneybag';
+import IconMouse from '@tabler/icons-svelte/icons/mouse';
+import IconNotes from '@tabler/icons-svelte/icons/notes';
+import IconPhotoFilled from '@tabler/icons-svelte/icons/photo-filled';
+import IconPigMoney from '@tabler/icons-svelte/icons/pig-money';
+import IconPin from '@tabler/icons-svelte/icons/pin';
+import IconPinFilled from '@tabler/icons-svelte/icons/pin-filled';
+import IconPlugOff from '@tabler/icons-svelte/icons/plug-off';
+import IconProgressCheck from '@tabler/icons-svelte/icons/progress-check';
+import IconProps from '@tabler/icons-svelte/icons/props';
+import IconRadar from '@tabler/icons-svelte/icons/radar';
+import IconRadar2 from '@tabler/icons-svelte/icons/radar-2';
+import IconReceiptTax from '@tabler/icons-svelte/icons/receipt-tax';
+import IconReportAnalytics from '@tabler/icons-svelte/icons/report-analytics';
+import IconScan from '@tabler/icons-svelte/icons/scan';
+import IconSeedling from '@tabler/icons-svelte/icons/seedling';
+import IconSignal from '@tabler/icons-svelte/icons/signal';
+import IconSliders from '@tabler/icons-svelte/icons/sliders';
+import IconSpacingVertical from '@tabler/icons-svelte/icons/spacing-vertical';
+import IconSpeedboat from '@tabler/icons-svelte/icons/speedboat';
+import IconSquare from '@tabler/icons-svelte/icons/square';
+import IconSquareCheck from '@tabler/icons-svelte/icons/square-check';
+import IconTargetArrow from '@tabler/icons-svelte/icons/target-arrow';
+import IconTrendingDown2 from '@tabler/icons-svelte/icons/trending-down-2';
+import IconTrendingDown3 from '@tabler/icons-svelte/icons/trending-down-3';
+import IconTrendingUp2 from '@tabler/icons-svelte/icons/trending-up-2';
+import IconTrendingUp3 from '@tabler/icons-svelte/icons/trending-up-3';
+import IconWallet from '@tabler/icons-svelte/icons/wallet';
+import IconWorldWww from '@tabler/icons-svelte/icons/world-www';
+import IconZoomCheck from '@tabler/icons-svelte/icons/zoom-check';
+import IconZoomMoney from '@tabler/icons-svelte/icons/zoom-money';
+
+// Export additions for the export block:
+IconAB,
+IconAB2,
+IconActivityHeartbeat,
+IconAdjustmentsAlt,
+IconAntenna,
+IconApiApp,
+IconArrowDownRight,
+IconArrowsLeftRight,
+IconArrowsSort,
+IconArrowsUpDown,
+IconBadge,
+IconBox,
+IconBrackets,
+IconBrandMedium,
+IconBrandReddit,
+IconBrandTiktok,
+IconBrandTradingview,
+IconBroadcast,
+IconBullseye,
+IconCaretDown,
+IconCaretUp,
+IconCashBanknote,
+IconChartArcs,
+IconChartArea,
+IconChartDots,
+IconChartHistogram,
+IconChartInfographic,
+IconChartRadar,
+IconChip,
+IconCompass,
+IconCurrencyBitcoin,
+IconCurrencyEthereum,
+IconCurrencyEuro,
+IconDeviceAnalytics,
+IconDeviceDesktopAnalytics,
+IconDiamond,
+IconExclamationCircle,
+IconEyeCheck,
+IconFileCode,
+IconFileDownload,
+IconFileUpload,
+IconFlag,
+IconFlask,
+IconFocus,
+IconFocusCentered,
+IconFolderPlus,
+IconGitMerge,
+IconGraph,
+IconHomeDollar,
+IconHourglass,
+IconLayersLinked,
+IconLayoutDashboard,
+IconLayoutDistributeHorizontal,
+IconLayoutNavbarCollapse,
+IconLayoutSidebar,
+IconLayoutSidebarRight,
+IconListTree,
+IconLive,
+IconLoader2,
+IconLocation,
+IconLockSquare,
+IconMailCheck,
+IconMailFast,
+IconMailOpen,
+IconMedal,
+IconMoneybag,
+IconMouse,
+IconNotes,
+IconPhotoFilled,
+IconPigMoney,
+IconPin,
+IconPinFilled,
+IconPlugOff,
+IconProgressCheck,
+IconProps,
+IconRadar,
+IconRadar2,
+IconReceiptTax,
+IconReportAnalytics,
+IconScan,
+IconSeedling,
+IconSignal,
+IconSliders,
+IconSpacingVertical,
+IconSpeedboat,
+IconSquare,
+IconSquareCheck,
+IconTargetArrow,
+IconTrendingDown2,
+IconTrendingDown3,
+IconTrendingUp2,
+IconTrendingUp3,
+IconWallet,
+IconWorldWww,
+IconZoomCheck,
+IconZoomMoney,

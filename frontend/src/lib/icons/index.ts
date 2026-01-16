@@ -10,12 +10,18 @@
  */
 
 // Core UI Icons
+import IconAB from '@tabler/icons-svelte/icons/a-b';
+import IconAB2 from '@tabler/icons-svelte/icons/a-b-2';
 import IconActivity from '@tabler/icons-svelte/icons/activity';
+import IconActivityHeartbeat from '@tabler/icons-svelte/icons/activity-heartbeat';
 import IconAdjustments from '@tabler/icons-svelte/icons/adjustments';
+import IconAdjustmentsAlt from '@tabler/icons-svelte/icons/adjustments-alt';
 import IconAdjustmentsHorizontal from '@tabler/icons-svelte/icons/adjustments-horizontal';
 import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
 import IconAlertTriangle from '@tabler/icons-svelte/icons/alert-triangle';
+import IconAntenna from '@tabler/icons-svelte/icons/antenna';
 import IconApi from '@tabler/icons-svelte/icons/api';
+import IconApiApp from '@tabler/icons-svelte/icons/api-app';
 import IconApps from '@tabler/icons-svelte/icons/apps';
 import IconArchive from '@tabler/icons-svelte/icons/archive';
 
@@ -28,6 +34,7 @@ import IconAlignRight from '@tabler/icons-svelte/icons/align-right';
 // Arrow Icons
 import IconArrowBackUp from '@tabler/icons-svelte/icons/arrow-back-up';
 import IconArrowDown from '@tabler/icons-svelte/icons/arrow-down';
+import IconArrowDownRight from '@tabler/icons-svelte/icons/arrow-down-right';
 import IconArrowForwardUp from '@tabler/icons-svelte/icons/arrow-forward-up';
 import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
 import IconArrowNarrowLeft from '@tabler/icons-svelte/icons/arrow-narrow-left';
@@ -35,10 +42,14 @@ import IconArrowNarrowRight from '@tabler/icons-svelte/icons/arrow-narrow-right'
 import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
 import IconArrowUp from '@tabler/icons-svelte/icons/arrow-up';
 import IconArrowUpRight from '@tabler/icons-svelte/icons/arrow-up-right';
+import IconArrowsLeftRight from '@tabler/icons-svelte/icons/arrows-left-right';
+import IconArrowsSort from '@tabler/icons-svelte/icons/arrows-sort';
+import IconArrowsUpDown from '@tabler/icons-svelte/icons/arrows-up-down';
 
 // Content Icons
 import IconArticle from '@tabler/icons-svelte/icons/article';
 import IconAward from '@tabler/icons-svelte/icons/award';
+import IconBadge from '@tabler/icons-svelte/icons/badge';
 import IconBell from '@tabler/icons-svelte/icons/bell';
 import IconBellRinging from '@tabler/icons-svelte/icons/bell-ringing';
 import IconBlockquote from '@tabler/icons-svelte/icons/blockquote';
@@ -46,6 +57,8 @@ import IconBold from '@tabler/icons-svelte/icons/bold';
 import IconBolt from '@tabler/icons-svelte/icons/bolt';
 import IconBook from '@tabler/icons-svelte/icons/book';
 import IconBookmark from '@tabler/icons-svelte/icons/bookmark';
+import IconBox from '@tabler/icons-svelte/icons/box';
+import IconBrackets from '@tabler/icons-svelte/icons/brackets';
 import IconBrain from '@tabler/icons-svelte/icons/brain';
 import IconBriefcase from '@tabler/icons-svelte/icons/briefcase';
 import IconBriefcase2 from '@tabler/icons-svelte/icons/briefcase-2';
@@ -66,27 +79,42 @@ import IconBrandGithub from '@tabler/icons-svelte/icons/brand-github';
 import IconBrandGoogle from '@tabler/icons-svelte/icons/brand-google';
 import IconBrandInstagram from '@tabler/icons-svelte/icons/brand-instagram';
 import IconBrandLinkedin from '@tabler/icons-svelte/icons/brand-linkedin';
+import IconBrandMedium from '@tabler/icons-svelte/icons/brand-medium';
 import IconBrandOpenai from '@tabler/icons-svelte/icons/brand-openai';
 import IconBrandPaypal from '@tabler/icons-svelte/icons/brand-paypal';
+import IconBrandReddit from '@tabler/icons-svelte/icons/brand-reddit';
 import IconBrandTelegram from '@tabler/icons-svelte/icons/brand-telegram';
+import IconBrandTiktok from '@tabler/icons-svelte/icons/brand-tiktok';
+import IconBrandTradingview from '@tabler/icons-svelte/icons/brand-tradingview';
 import IconBrandTrello from '@tabler/icons-svelte/icons/brand-trello';
 import IconBrandTwitter from '@tabler/icons-svelte/icons/brand-twitter';
 import IconBrandX from '@tabler/icons-svelte/icons/brand-x';
 import IconBrandYoutube from '@tabler/icons-svelte/icons/brand-youtube';
+import IconBroadcast from '@tabler/icons-svelte/icons/broadcast';
+import IconBullseye from '@tabler/icons-svelte/icons/bullseye';
 
 // Calendar/Clock Icons
 import IconCalculator from '@tabler/icons-svelte/icons/calculator';
 import IconCalendar from '@tabler/icons-svelte/icons/calendar';
 import IconCalendarEvent from '@tabler/icons-svelte/icons/calendar-event';
+import IconCaretDown from '@tabler/icons-svelte/icons/caret-down';
+import IconCaretUp from '@tabler/icons-svelte/icons/caret-up';
 import IconCash from '@tabler/icons-svelte/icons/cash';
+import IconCashBanknote from '@tabler/icons-svelte/icons/cash-banknote';
 import IconCertificate from '@tabler/icons-svelte/icons/certificate';
 
 // Chart Icons
+import IconChartArcs from '@tabler/icons-svelte/icons/chart-arcs';
+import IconChartArea from '@tabler/icons-svelte/icons/chart-area';
 import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
 import IconChartCandle from '@tabler/icons-svelte/icons/chart-candle';
 import IconChartDonut from '@tabler/icons-svelte/icons/chart-donut';
+import IconChartDots from '@tabler/icons-svelte/icons/chart-dots';
+import IconChartHistogram from '@tabler/icons-svelte/icons/chart-histogram';
+import IconChartInfographic from '@tabler/icons-svelte/icons/chart-infographic';
 import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
 import IconChartPie from '@tabler/icons-svelte/icons/chart-pie';
+import IconChartRadar from '@tabler/icons-svelte/icons/chart-radar';
 
 // Check/Status Icons
 import IconCheck from '@tabler/icons-svelte/icons/check';
@@ -98,6 +126,7 @@ import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
 import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
 import IconChevronUp from '@tabler/icons-svelte/icons/chevron-up';
+import IconChip from '@tabler/icons-svelte/icons/chip';
 
 // Misc Icons
 import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
@@ -110,7 +139,8 @@ import IconCloud from '@tabler/icons-svelte/icons/cloud';
 import IconCloudUpload from '@tabler/icons-svelte/icons/cloud-upload';
 import IconCode from '@tabler/icons-svelte/icons/code';
 import IconCoin from '@tabler/icons-svelte/icons/coin';
-import IconCoins from '@tabler/icons-svelte/icons/coins';
+import IconColorPicker from '@tabler/icons-svelte/icons/color-picker';
+import IconCompass from '@tabler/icons-svelte/icons/compass';
 import IconColumns from '@tabler/icons-svelte/icons/columns';
 import IconCommand from '@tabler/icons-svelte/icons/command';
 import IconCopy from '@tabler/icons-svelte/icons/copy';
@@ -125,9 +155,12 @@ import IconCurrencyDollar from '@tabler/icons-svelte/icons/currency-dollar';
 // Dashboard/Device Icons
 import IconDashboard from '@tabler/icons-svelte/icons/dashboard';
 import IconDatabase from '@tabler/icons-svelte/icons/database';
+import IconDeviceAnalytics from '@tabler/icons-svelte/icons/device-analytics';
+import IconDeviceDesktopAnalytics from '@tabler/icons-svelte/icons/device-desktop-analytics';
 import IconDeviceDesktop from '@tabler/icons-svelte/icons/device-desktop';
 import IconDeviceFloppy from '@tabler/icons-svelte/icons/device-floppy';
 import IconDeviceMobile from '@tabler/icons-svelte/icons/device-mobile';
+import IconDiamond from '@tabler/icons-svelte/icons/diamond';
 import IconDeviceTablet from '@tabler/icons-svelte/icons/device-tablet';
 import IconDevices from '@tabler/icons-svelte/icons/devices';
 import IconDiscount from '@tabler/icons-svelte/icons/discount';
@@ -150,9 +183,12 @@ import IconFileAnalytics from '@tabler/icons-svelte/icons/file-analytics';
 import IconFileDescription from '@tabler/icons-svelte/icons/file-description';
 import IconFileExport from '@tabler/icons-svelte/icons/file-export';
 import IconFileSpreadsheet from '@tabler/icons-svelte/icons/file-spreadsheet';
-import IconFileText from '@tabler/icons-svelte/icons/file-text';
 import IconFilter from '@tabler/icons-svelte/icons/filter';
+import IconFlag from '@tabler/icons-svelte/icons/flag';
 import IconFlame from '@tabler/icons-svelte/icons/flame';
+import IconFlask from '@tabler/icons-svelte/icons/flask';
+import IconFocus from '@tabler/icons-svelte/icons/focus';
+import IconFocusCentered from '@tabler/icons-svelte/icons/focus-centered';
 import IconFingerprint from '@tabler/icons-svelte/icons/fingerprint';
 import IconFingerprintScan from '@tabler/icons-svelte/icons/fingerprint-scan';
 import IconFolder from '@tabler/icons-svelte/icons/folder';
@@ -175,6 +211,8 @@ import IconHeartbeat from '@tabler/icons-svelte/icons/heartbeat';
 import IconHelp from '@tabler/icons-svelte/icons/help';
 import IconHistory from '@tabler/icons-svelte/icons/history';
 import IconHome from '@tabler/icons-svelte/icons/home';
+import IconHomeDollar from '@tabler/icons-svelte/icons/home-dollar';
+import IconHourglass from '@tabler/icons-svelte/icons/hourglass';
 
 // ID/Inbox Icons
 import IconId from '@tabler/icons-svelte/icons/id';
@@ -202,15 +240,23 @@ import IconList from '@tabler/icons-svelte/icons/list';
 import IconListCheck from '@tabler/icons-svelte/icons/list-check';
 import IconListDetails from '@tabler/icons-svelte/icons/list-details';
 import IconListNumbers from '@tabler/icons-svelte/icons/list-numbers';
+import IconListTree from '@tabler/icons-svelte/icons/list-tree';
+import IconLive from '@tabler/icons-svelte/icons/live';
 import IconLoader from '@tabler/icons-svelte/icons/loader';
+import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
+import IconLocation from '@tabler/icons-svelte/icons/location';
 import IconLock from '@tabler/icons-svelte/icons/lock';
 import IconLockOpen from '@tabler/icons-svelte/icons/lock-open';
+import IconLockSquare from '@tabler/icons-svelte/icons/lock-square';
 import IconLogin from '@tabler/icons-svelte/icons/login';
 import IconLogout from '@tabler/icons-svelte/icons/logout';
 
 // Mail Icons
 import IconMail from '@tabler/icons-svelte/icons/mail';
+import IconMailCheck from '@tabler/icons-svelte/icons/mail-check';
+import IconMailFast from '@tabler/icons-svelte/icons/mail-fast';
 import IconMailForward from '@tabler/icons-svelte/icons/mail-forward';
+import IconMailOpen from '@tabler/icons-svelte/icons/mail-open';
 import IconMailOpened from '@tabler/icons-svelte/icons/mail-opened';
 
 // Map Icons
@@ -221,19 +267,23 @@ import IconMapPins from '@tabler/icons-svelte/icons/map-pins';
 
 // Maximize/Media Icons
 import IconMaximize from '@tabler/icons-svelte/icons/maximize';
+import IconMedal from '@tabler/icons-svelte/icons/medal';
 import IconMenu from '@tabler/icons-svelte/icons/menu';
 import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
 import IconMessage from '@tabler/icons-svelte/icons/message';
 import IconMessageCircle from '@tabler/icons-svelte/icons/message-circle';
 import IconMinimize from '@tabler/icons-svelte/icons/minimize';
 import IconMinus from '@tabler/icons-svelte/icons/minus';
+import IconMoneybag from '@tabler/icons-svelte/icons/moneybag';
 import IconMoodSmile from '@tabler/icons-svelte/icons/mood-smile';
 import IconMoon from '@tabler/icons-svelte/icons/moon';
+import IconMouse from '@tabler/icons-svelte/icons/mouse';
 
 // Network/News Icons
 import IconNetwork from '@tabler/icons-svelte/icons/network';
 import IconNews from '@tabler/icons-svelte/icons/news';
 import IconNote from '@tabler/icons-svelte/icons/note';
+import IconNotes from '@tabler/icons-svelte/icons/notes';
 
 // Package/Palette Icons
 import IconPackage from '@tabler/icons-svelte/icons/package';
@@ -244,6 +294,10 @@ import IconPencil from '@tabler/icons-svelte/icons/pencil';
 import IconPercentage from '@tabler/icons-svelte/icons/percentage';
 import IconPhone from '@tabler/icons-svelte/icons/phone';
 import IconPhoto from '@tabler/icons-svelte/icons/photo';
+import IconPhotoFilled from '@tabler/icons-svelte/icons/photo-filled';
+import IconPigMoney from '@tabler/icons-svelte/icons/pig-money';
+import IconPin from '@tabler/icons-svelte/icons/pin';
+import IconPinFilled from '@tabler/icons-svelte/icons/pin-filled';
 import IconPlay from '@tabler/icons-svelte/icons/player-play';
 import IconPointer from '@tabler/icons-svelte/icons/pointer';
 import IconPictureInPicture from '@tabler/icons-svelte/icons/picture-in-picture';
@@ -255,12 +309,17 @@ import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
 import IconPlayerStop from '@tabler/icons-svelte/icons/player-stop';
 import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
 import IconPlugConnectedX from '@tabler/icons-svelte/icons/plug-connected-x';
+import IconPlugOff from '@tabler/icons-svelte/icons/plug-off';
 import IconPlus from '@tabler/icons-svelte/icons/plus';
 import IconProgress from '@tabler/icons-svelte/icons/progress';
+import IconProgressCheck from '@tabler/icons-svelte/icons/progress-check';
+import IconProps from '@tabler/icons-svelte/icons/props';
 
 // Qr/Question Icons
 import IconQrcode from '@tabler/icons-svelte/icons/qrcode';
 import IconQuestionMark from '@tabler/icons-svelte/icons/question-mark';
+import IconRadar from '@tabler/icons-svelte/icons/radar';
+import IconRadar2 from '@tabler/icons-svelte/icons/radar-2';
 
 // Rotate Icons
 import IconRotate from '@tabler/icons-svelte/icons/rotate';
@@ -273,22 +332,28 @@ import IconQuote from '@tabler/icons-svelte/icons/quote';
 
 // Receipt Icons
 import IconReceipt from '@tabler/icons-svelte/icons/receipt';
+import IconReceiptTax from '@tabler/icons-svelte/icons/receipt-tax';
 import IconRefresh from '@tabler/icons-svelte/icons/refresh';
 import IconReload from '@tabler/icons-svelte/icons/reload';
 import IconRepeat from '@tabler/icons-svelte/icons/repeat';
+import IconReportAnalytics from '@tabler/icons-svelte/icons/report-analytics';
 import IconRobot from '@tabler/icons-svelte/icons/robot';
 import IconRocket from '@tabler/icons-svelte/icons/rocket';
 import IconRoute from '@tabler/icons-svelte/icons/route';
 
 // Scale/Scan Icons
+import IconScan from '@tabler/icons-svelte/icons/scan';
 import IconScale from '@tabler/icons-svelte/icons/scale';
 import IconSchool from '@tabler/icons-svelte/icons/school';
 import IconSearch from '@tabler/icons-svelte/icons/search';
+import IconSeedling from '@tabler/icons-svelte/icons/seedling';
 import IconSend from '@tabler/icons-svelte/icons/send';
 import IconSeo from '@tabler/icons-svelte/icons/seo';
 import IconServer from '@tabler/icons-svelte/icons/server';
 import IconSettings from '@tabler/icons-svelte/icons/settings';
 import IconShare from '@tabler/icons-svelte/icons/share';
+import IconSignal from '@tabler/icons-svelte/icons/signal';
+import IconSliders from '@tabler/icons-svelte/icons/sliders';
 
 // Shield Icons
 import IconShield from '@tabler/icons-svelte/icons/shield';
@@ -300,10 +365,14 @@ import IconSitemap from '@tabler/icons-svelte/icons/sitemap';
 // Sort Icons
 import IconSortAscending from '@tabler/icons-svelte/icons/sort-ascending';
 import IconSortDescending from '@tabler/icons-svelte/icons/sort-descending';
+import IconSpacingVertical from '@tabler/icons-svelte/icons/spacing-vertical';
 import IconSparkles from '@tabler/icons-svelte/icons/sparkles';
 import IconSpeakerphone from '@tabler/icons-svelte/icons/speakerphone';
+import IconSpeedboat from '@tabler/icons-svelte/icons/speedboat';
 
 // Square Icons
+import IconSquare from '@tabler/icons-svelte/icons/square';
+import IconSquareCheck from '@tabler/icons-svelte/icons/square-check';
 import IconSquareRounded from '@tabler/icons-svelte/icons/square-rounded';
 import IconSquareRoundedCheck from '@tabler/icons-svelte/icons/square-rounded-check';
 import IconSquareRoundedCheckFilled from '@tabler/icons-svelte/icons/square-rounded-check-filled';
@@ -325,6 +394,7 @@ import IconTable from '@tabler/icons-svelte/icons/table';
 import IconTag from '@tabler/icons-svelte/icons/tag';
 import IconTags from '@tabler/icons-svelte/icons/tags';
 import IconTarget from '@tabler/icons-svelte/icons/target';
+import IconTargetArrow from '@tabler/icons-svelte/icons/target-arrow';
 import IconTemplate from '@tabler/icons-svelte/icons/template';
 import IconTerminal from '@tabler/icons-svelte/icons/terminal';
 import IconTestPipe from '@tabler/icons-svelte/icons/test-pipe';
@@ -341,7 +411,11 @@ import IconTrash from '@tabler/icons-svelte/icons/trash';
 
 // Trending Icons
 import IconTrendingDown from '@tabler/icons-svelte/icons/trending-down';
+import IconTrendingDown2 from '@tabler/icons-svelte/icons/trending-down-2';
+import IconTrendingDown3 from '@tabler/icons-svelte/icons/trending-down-3';
 import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
+import IconTrendingUp2 from '@tabler/icons-svelte/icons/trending-up-2';
+import IconTrendingUp3 from '@tabler/icons-svelte/icons/trending-up-3';
 import IconTrophy from '@tabler/icons-svelte/icons/trophy';
 import IconUnderline from '@tabler/icons-svelte/icons/underline';
 import IconUpload from '@tabler/icons-svelte/icons/upload';
@@ -361,15 +435,19 @@ import IconVolume from '@tabler/icons-svelte/icons/volume';
 import IconVolumeOff from '@tabler/icons-svelte/icons/volume-off';
 
 // Wand/World Icons
+import IconWallet from '@tabler/icons-svelte/icons/wallet';
 import IconWand from '@tabler/icons-svelte/icons/wand';
 import IconWaveSine from '@tabler/icons-svelte/icons/wave-sine';
 import IconWebhook from '@tabler/icons-svelte/icons/webhook';
 import IconWifi from '@tabler/icons-svelte/icons/wifi';
 import IconWorld from '@tabler/icons-svelte/icons/world';
+import IconWorldWww from '@tabler/icons-svelte/icons/world-www';
 import IconX from '@tabler/icons-svelte/icons/x';
 
 // Zoom Icons
+import IconZoomCheck from '@tabler/icons-svelte/icons/zoom-check';
 import IconZoomIn from '@tabler/icons-svelte/icons/zoom-in';
+import IconZoomMoney from '@tabler/icons-svelte/icons/zoom-money';
 import IconZoomOut from '@tabler/icons-svelte/icons/zoom-out';
 
 // Re-export all icons
@@ -380,17 +458,24 @@ export {
 	IconAlignLeft,
 	IconAlignRight,
 	// Core UI Icons
+	IconAB,
+	IconAB2,
 	IconActivity,
+	IconActivityHeartbeat,
 	IconAdjustments,
+	IconAdjustmentsAlt,
 	IconAdjustmentsHorizontal,
 	IconAlertCircle,
 	IconAlertTriangle,
+	IconAntenna,
 	IconApi,
+	IconApiApp,
 	IconApps,
 	IconArchive,
 	// Arrow Icons
 	IconArrowBackUp,
 	IconArrowDown,
+	IconArrowDownRight,
 	IconArrowForwardUp,
 	IconArrowForwardUp as IconArrowForward,
 	IconArrowLeft,
@@ -399,9 +484,13 @@ export {
 	IconArrowRight,
 	IconArrowUp,
 	IconArrowUpRight,
+	IconArrowsLeftRight,
+	IconArrowsSort,
+	IconArrowsUpDown,
 	// Content Icons
 	IconArticle,
 	IconAward,
+	IconBadge,
 	IconBell,
 	IconBellRinging,
 	IconBlockquote,
@@ -409,6 +498,8 @@ export {
 	IconBolt,
 	IconBook,
 	IconBookmark,
+	IconBox,
+	IconBrackets,
 	IconBrain,
 	IconBriefcase,
 	IconBriefcase2,
@@ -428,25 +519,40 @@ export {
 	IconBrandGoogle,
 	IconBrandInstagram,
 	IconBrandLinkedin,
+	IconBrandMedium,
 	IconBrandOpenai,
 	IconBrandPaypal,
+	IconBrandReddit,
 	IconBrandTelegram,
+	IconBrandTiktok,
+	IconBrandTradingview,
 	IconBrandTrello,
 	IconBrandTwitter,
 	IconBrandX,
 	IconBrandYoutube,
+	IconBroadcast,
+	IconBullseye,
 	// Calendar/Clock Icons
 	IconCalculator,
 	IconCalendar,
 	IconCalendarEvent,
+	IconCaretDown,
+	IconCaretUp,
 	IconCash,
+	IconCashBanknote,
 	IconCertificate,
 	// Chart Icons
+	IconChartArcs,
+	IconChartArea,
 	IconChartBar,
 	IconChartCandle,
 	IconChartDonut,
+	IconChartDots,
+	IconChartHistogram,
+	IconChartInfographic,
 	IconChartLine,
 	IconChartPie,
+	IconChartRadar,
 	// Check/Status Icons
 	IconCheck,
 	IconChecklist,
@@ -457,6 +563,7 @@ export {
 	IconChevronLeft,
 	IconChevronRight,
 	IconChevronUp,
+	IconChip,
 	// Misc Icons
 	IconCircleCheck,
 	IconCircleCheckFilled,
@@ -468,9 +575,10 @@ export {
 	IconCloudUpload,
 	IconCode,
 	IconCoin,
-	IconCoins,
+	IconColorPicker,
 	IconColumns,
 	IconCommand,
+	IconCompass,
 	IconCopy,
 	IconCpu,
 	IconCreditCard,
@@ -478,16 +586,22 @@ export {
 	IconCursor,
 	IconCursorText,
 	IconCsv,
+	IconCurrencyBitcoin,
 	IconCurrencyDollar,
+	IconCurrencyEthereum,
+	IconCurrencyEuro,
 	// Dashboard/Device Icons
 	IconDashboard,
 	IconDatabase,
+	IconDeviceAnalytics,
 	IconDeviceDesktop,
+	IconDeviceDesktopAnalytics,
 	IconDeviceFloppy,
 	IconDeviceFloppy as IconSave,
 	IconDeviceMobile,
 	IconDeviceTablet,
 	IconDevices,
+	IconDiamond,
 	IconDiscount,
 	IconDots,
 	IconDotsVertical,
@@ -495,27 +609,41 @@ export {
 	// Edit Icons
 	IconEdit,
 	IconError404,
+	IconExclamationCircle,
 	IconExternalLink,
 	// Eye Icons
 	IconEye,
+	IconEyeCheck,
 	IconEyeOff,
 	// File Icons
 	IconFile,
 	IconFileAnalytics,
+	IconFileCheck,
+	IconFileCode,
 	IconFileDescription,
+	IconFileDownload,
 	IconFileExport,
 	IconFileSpreadsheet,
-	IconFileText,
+	IconFileUpload,
 	IconFilter,
-	IconFlame,
 	IconFingerprint,
 	IconFingerprintScan,
+	IconFlag,
+	IconFlame,
+	IconFlask,
+	IconFocus,
+	IconFocusCentered,
 	IconFolder,
+	IconFolderOpen,
+	IconFolderPlus,
 	IconForms,
 	// Gauge/Gift Icons
 	IconGauge,
 	IconGif,
 	IconGift,
+	IconGitBranch,
+	IconGitMerge,
+	IconGraph,
 	IconGridDots,
 	IconGripVertical,
 	// Heading Icons
@@ -528,6 +656,8 @@ export {
 	IconHelp,
 	IconHistory,
 	IconHome,
+	IconHomeDollar,
+	IconHourglass,
 	// ID/Inbox Icons
 	IconId,
 	IconInbox,
@@ -539,11 +669,19 @@ export {
 	IconKeyboard,
 	// Language/Layout Icons
 	IconLanguage,
+	IconLayers,
+	IconLayersLinked,
+	IconLayout,
 	IconLayout2,
+	IconLayoutDashboard,
+	IconLayoutDistributeHorizontal,
 	IconLayoutGrid,
 	IconLayoutGridAdd,
 	IconLayoutKanban,
+	IconLayoutNavbarCollapse,
 	IconLayoutRows,
+	IconLayoutSidebar,
+	IconLayoutSidebarRight,
 	IconLeaf,
 	IconLink,
 	// List Icons
@@ -551,14 +689,22 @@ export {
 	IconListCheck,
 	IconListDetails,
 	IconListNumbers,
+	IconListTree,
+	IconLive,
 	IconLoader,
+	IconLoader2,
+	IconLocation,
 	IconLock,
 	IconLockOpen,
+	IconLockSquare,
 	IconLogin,
 	IconLogout,
 	// Mail Icons
 	IconMail,
+	IconMailCheck,
+	IconMailFast,
 	IconMailForward,
+	IconMailOpen,
 	IconMailOpened,
 	// Map Icons
 	IconMap,
@@ -567,18 +713,22 @@ export {
 	IconMapPins,
 	// Maximize/Media Icons
 	IconMaximize,
+	IconMedal,
 	IconMenu,
 	IconMenu2,
 	IconMessage,
 	IconMessageCircle,
 	IconMinimize,
 	IconMinus,
+	IconMoneybag,
 	IconMoodSmile,
 	IconMoon,
+	IconMouse,
 	// Network/News Icons
 	IconNetwork,
 	IconNews,
 	IconNote,
+	IconNotes,
 	// Package/Palette Icons
 	IconPackage,
 	IconPalette,
@@ -588,21 +738,30 @@ export {
 	IconPercentage,
 	IconPhone,
 	IconPhoto,
-	IconPlay,
-	IconPointer,
+	IconPhotoFilled,
 	IconPictureInPicture,
 	IconPictureInPictureOn,
+	IconPigMoney,
+	IconPin,
+	IconPinFilled,
+	IconPlay,
+	IconPointer,
 	// Player Icons
 	IconPlayerPause,
 	IconPlayerPlay,
 	IconPlayerStop,
 	IconPlugConnected,
 	IconPlugConnectedX,
+	IconPlugOff,
 	IconPlus,
 	IconProgress,
+	IconProgressCheck,
+	IconProps,
 	// Qr/Question Icons
 	IconQrcode,
 	IconQuestionMark,
+	IconRadar,
+	IconRadar2,
 	// Rotate Icons
 	IconRotate,
 	IconRotateClockwise,
@@ -612,21 +771,27 @@ export {
 	IconQuote,
 	// Receipt Icons
 	IconReceipt,
+	IconReceiptTax,
 	IconRefresh,
 	IconReload,
 	IconRepeat,
+	IconReportAnalytics,
 	IconRobot,
 	IconRocket,
 	IconRoute,
 	// Scale/Scan Icons
+	IconScan,
 	IconScale,
 	IconSchool,
 	IconSearch,
+	IconSeedling,
 	IconSend,
 	IconSeo,
 	IconServer,
 	IconSettings,
 	IconShare,
+	IconSignal,
+	IconSliders,
 	// Shield Icons
 	IconShield,
 	IconShieldCheck,
@@ -636,9 +801,13 @@ export {
 	// Sort Icons
 	IconSortAscending,
 	IconSortDescending,
+	IconSpacingVertical,
 	IconSparkles,
 	IconSpeakerphone,
+	IconSpeedboat,
 	// Square Icons
+	IconSquare,
+	IconSquareCheck,
 	IconSquareRounded,
 	IconSquareRoundedCheck,
 	IconSquareRoundedCheckFilled,
@@ -658,6 +827,7 @@ export {
 	IconTag,
 	IconTags,
 	IconTarget,
+	IconTargetArrow,
 	IconTemplate,
 	IconTerminal,
 	IconTestPipe,
@@ -673,7 +843,11 @@ export {
 	IconTrash,
 	// Trending Icons
 	IconTrendingDown,
+	IconTrendingDown2,
+	IconTrendingDown3,
 	IconTrendingUp,
+	IconTrendingUp2,
+	IconTrendingUp3,
 	IconTrophy,
 	IconUnderline,
 	IconUpload,
@@ -690,14 +864,18 @@ export {
 	IconVolume,
 	IconVolumeOff,
 	// Wand/World Icons
+	IconWallet,
 	IconWand,
 	IconWaveSine,
 	IconWebhook,
 	IconWifi,
 	IconWorld,
+	IconWorldWww,
 	IconX,
 	// Zoom Icons
+	IconZoomCheck,
 	IconZoomIn,
+	IconZoomMoney,
 	IconZoomOut
 };
 
