@@ -12,6 +12,7 @@
 
 <script lang="ts">
 	import { page } from '$app/state';
+	import { goto } from '$app/navigation';
 	import {
 		IconTag,
 		IconUsers,
@@ -241,7 +242,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							{#each filteredContacts as contact}
+							{#each filteredContacts as contact (contact.id)}
 								<tr>
 									<td>
 										<div class="contact-cell">

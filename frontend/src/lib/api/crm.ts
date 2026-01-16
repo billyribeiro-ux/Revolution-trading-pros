@@ -436,7 +436,7 @@ export class CrmAPI {
 		return apiClient.delete(`/admin/crm/contact-tags/${id}`);
 	}
 
-	async getTagContacts(id: string, filters?: { per_page?: number }): Promise<{ data: Contact[]; meta: any }> {
+	async getTagContacts(id: string, filters?: { per_page?: number; page?: number }): Promise<{ data: Contact[]; meta: any }> {
 		return apiClient.get(`/admin/crm/contact-tags/${id}/contacts`, { params: filters });
 	}
 
