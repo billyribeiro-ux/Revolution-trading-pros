@@ -552,6 +552,7 @@ function createAuthStore() {
 					const controller = new AbortController();
 					const timeoutId = setTimeout(() => controller.abort(), 5000);
 
+					// ICT7 FIX: Use /api/logout which has a frontend proxy at /api/logout/+server.ts
 					await fetch('/api/logout', {
 						method: 'POST',
 						headers,

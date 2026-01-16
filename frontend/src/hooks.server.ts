@@ -65,6 +65,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		// Not a protected route - but still try to get user if token exists
 		if (token) {
 			try {
+				// ICT7 FIX: Backend /me endpoint is under /auth router
 				const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
 					method: 'GET',
 					headers: {
@@ -103,6 +104,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 		
+		// ICT7 FIX: Backend /me endpoint is under /auth router
 		const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
 			method: 'GET',
 			headers: {
@@ -166,7 +168,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 					maxAge: refreshData.expires_in || 3600
 				});
 
-				// Fetch user data with new token
+				// ICT7 FIX: Fetch user data with new token - /me is under /auth router
 				const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
 					method: 'GET',
 					headers: {

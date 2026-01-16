@@ -45,7 +45,7 @@ export const API_ENDPOINTS = {
 		loginMfa: '/api/auth/login/mfa',
 		loginBiometric: '/api/auth/login/biometric',
 		register: '/api/auth/register',
-		logout: '/api/logout',
+		logout: '/api/logout', // ICT7 FIX: Matches frontend proxy at /api/logout/+server.ts
 		refresh: '/api/auth/refresh',
 		forgotPassword: '/api/auth/forgot-password',
 		resetPassword: '/api/auth/reset-password',
@@ -55,22 +55,22 @@ export const API_ENDPOINTS = {
 	},
 
 	// Current User (me) - Rust API routes
-	// ICT 7 FIX: Backend has /me under /api/auth namespace
+	// ICT7 FIX: Backend has /me under /auth router (api/src/routes/auth.rs:1033)
 	me: {
 		profile: '/api/auth/me',
 		update: '/api/auth/me',
-		password: '/api/me/password',
-		memberships: '/api/me/memberships',
-		products: '/api/me/products',
-		indicators: '/api/me/indicators',
-		sessions: '/api/me/sessions',
-		session: (id: string) => `/api/me/sessions/${id}`,
-		logoutAll: '/api/me/sessions/logout-all',
-		securityEvents: '/api/me/security-events',
+		password: '/api/auth/me/password',
+		memberships: '/api/auth/me/memberships',
+		products: '/api/auth/me/products',
+		indicators: '/api/auth/me/indicators',
+		sessions: '/api/auth/me/sessions',
+		session: (id: string) => `/api/auth/me/sessions/${id}`,
+		logoutAll: '/api/auth/me/sessions/logout-all',
+		securityEvents: '/api/auth/me/security-events',
 		mfa: {
-			enable: '/api/me/mfa/enable',
-			verify: '/api/me/mfa/verify',
-			disable: '/api/me/mfa/disable'
+			enable: '/api/auth/me/mfa/enable',
+			verify: '/api/auth/me/mfa/verify',
+			disable: '/api/auth/me/mfa/disable'
 		}
 	},
 

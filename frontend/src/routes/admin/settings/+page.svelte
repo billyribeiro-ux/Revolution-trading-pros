@@ -599,15 +599,15 @@
 </svelte:head>
 
 <!-- Apple-grade Settings Dashboard -->
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 text-white">
+<div class="settings-container">
     <!-- Ambient Background Effects -->
-    <div class="fixed inset-0 overflow-hidden pointer-events-none">
-        <div class="absolute -top-40 -right-40 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute -bottom-40 -left-40 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl"></div>
-        <div class="absolute top-1/3 left-1/2 w-64 h-64 bg-emerald-500/5 rounded-full blur-3xl"></div>
+    <div class="ambient-effects">
+        <div class="ambient-glow ambient-glow-1"></div>
+        <div class="ambient-glow ambient-glow-2"></div>
+        <div class="ambient-glow ambient-glow-3"></div>
     </div>
 
-    <div class="relative z-10 p-6 lg:p-8 max-w-[1800px] mx-auto">
+    <div class="settings-content">
         <!-- Header -->
         <header class="mb-8" in:fly={{ y: -20, duration: 600, easing: quintOut }}>
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -755,6 +755,8 @@
                 <!-- Search -->
                 <div class="relative flex-1 max-w-md">
                     <input
+                        id="search-integrations"
+                        name="search"
                         type="text"
                         placeholder="Search integrations..."
                         bind:value={searchQuery}
@@ -925,6 +927,8 @@
                                 <p class="text-sm text-slate-400">Your website display name</p>
                             </div>
                             <input
+                                id="site-name"
+                                name="site_name"
                                 type="text"
                                 value="Revolution Trading Pros"
                                 class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
@@ -1051,9 +1055,11 @@
                         </label>
                         <input
                             id="field-{field.key}"
+                            name={field.key}
                             type={field.type === 'password' ? 'password' : 'text'}
                             placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
                             bind:value={credentialValues[field.key]}
+                            autocomplete={field.type === 'password' ? 'current-password' : 'off'}
                             class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
                         />
                     </div>
@@ -1182,6 +1188,64 @@
      * Color Hierarchy: #143E59 (dark teal/navy) primary accent
      * ═══════════════════════════════════════════════════════════════════════════ */
 
+    /* Container - works within admin layout */
+    .settings-container {
+        position: relative;
+        min-height: 100%;
+        background: linear-gradient(135deg, rgb(2 6 23) 0%, rgb(15 23 42) 50%, rgb(2 6 23) 100%);
+        color: white;
+        margin: -2rem;
+        padding: 2rem;
+    }
+
+    /* Ambient effects - absolute within container, not fixed */
+    .ambient-effects {
+        position: absolute;
+        inset: 0;
+        overflow: hidden;
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    .ambient-glow {
+        position: absolute;
+        border-radius: 50%;
+        filter: blur(80px);
+        opacity: 0.15;
+    }
+
+    .ambient-glow-1 {
+        top: -10rem;
+        right: -10rem;
+        width: 24rem;
+        height: 24rem;
+        background: rgb(168 85 247 / 0.4);
+    }
+
+    .ambient-glow-2 {
+        bottom: -10rem;
+        left: -10rem;
+        width: 24rem;
+        height: 24rem;
+        background: rgb(59 130 246 / 0.4);
+    }
+
+    .ambient-glow-3 {
+        top: 33%;
+        left: 50%;
+        width: 16rem;
+        height: 16rem;
+        background: rgb(16 185 129 / 0.2);
+    }
+
+    /* Content wrapper */
+    .settings-content {
+        position: relative;
+        z-index: 10;
+        max-width: 1800px;
+        margin: 0 auto;
+    }
+
     .line-clamp-2 {
         display: -webkit-box;
         -webkit-line-clamp: 2;
@@ -1235,8 +1299,28 @@
      * RESPONSIVE BREAKPOINTS - Apple ICT7 Principal Engineer Grade
      * ═══════════════════════════════════════════════════════════════════════════ */
 
+    /* Tablet and below - adjust container padding */
+    @media (max-width: 1024px) {
+        .settings-container {
+            margin: -1.5rem;
+            padding: 1.5rem;
+        }
+    }
+
+    /* Mobile portrait */
+    @media (max-width: 640px) {
+        .settings-container {
+            margin: -1rem;
+            padding: 1rem;
+        }
+    }
+
     /* Extra Small Mobile (< 380px) */
     @media (max-width: 380px) {
+        .settings-container {
+            margin: -0.75rem;
+            padding: 0.75rem;
+        }
         :global(.p-6) { padding: 0.75rem !important; }
         :global(.gap-4) { gap: 0.5rem !important; }
         :global(.text-3xl) { font-size: 1.5rem !important; }
