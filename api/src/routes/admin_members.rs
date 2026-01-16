@@ -93,6 +93,7 @@ async fn list_segments(
 
     let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
 
+    // Gracefully handle missing table - return empty array instead of 500 error
     let segments: Vec<MemberSegment> = sqlx::query_as(
         r#"
         SELECT id, name, slug, description, rules, member_count, is_active, created_at, updated_at
@@ -109,12 +110,12 @@ async fn list_segments(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| {
-        tracing::error!("Database error in list_segments: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error", "details": e.to_string()})))
-    })?;
+    .unwrap_or_else(|e| {
+        tracing::warn!("Database query failed in list_segments (table may not exist): {}", e);
+        Vec::new()
+    });
 
-    let total: (i64,) = sqlx::query_as(
+    let total: i64 = sqlx::query_as::<_, (i64,)>(
         r#"
         SELECT COUNT(*)
         FROM member_segments
@@ -126,18 +127,16 @@ async fn list_segments(
     .bind(query.is_active)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| {
-        tracing::error!("Database error in list_segments count: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
-    })?;
+    .map(|r| r.0)
+    .unwrap_or(0);
 
     Ok(Json(json!({
-        "data": segments,
+        "segments": segments,
         "meta": {
             "current_page": page,
             "per_page": per_page,
-            "total": total.0,
-            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
+            "total": total,
+            "total_pages": (total as f64 / per_page as f64).ceil() as i64
         }
     })))
 }
@@ -355,6 +354,7 @@ async fn list_member_tags(
 
     let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
 
+    // Gracefully handle missing table - return empty array instead of 500 error
     let tags: Vec<MemberTag> = sqlx::query_as(
         r#"
         SELECT id, name, slug, color, description, member_count, created_at, updated_at
@@ -369,12 +369,12 @@ async fn list_member_tags(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| {
-        tracing::error!("Database error in list_member_tags: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error", "details": e.to_string()})))
-    })?;
+    .unwrap_or_else(|e| {
+        tracing::warn!("Database query failed in list_member_tags (table may not exist): {}", e);
+        Vec::new()
+    });
 
-    let total: (i64,) = sqlx::query_as(
+    let total: i64 = sqlx::query_as::<_, (i64,)>(
         r#"
         SELECT COUNT(*)
         FROM member_tags
@@ -384,18 +384,16 @@ async fn list_member_tags(
     .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| {
-        tracing::error!("Database error in list_member_tags count: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
-    })?;
+    .map(|r| r.0)
+    .unwrap_or(0);
 
     Ok(Json(json!({
-        "data": tags,
+        "tags": tags,
         "meta": {
             "current_page": page,
             "per_page": per_page,
-            "total": total.0,
-            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
+            "total": total,
+            "total_pages": (total as f64 / per_page as f64).ceil() as i64
         }
     })))
 }
@@ -608,6 +606,7 @@ async fn list_member_filters(
 
     let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
 
+    // Gracefully handle missing table - return empty array instead of 500 error
     let filters: Vec<MemberFilter> = sqlx::query_as(
         r#"
         SELECT id, name, description, filters, is_default, is_public, created_by, created_at, updated_at
@@ -624,12 +623,12 @@ async fn list_member_filters(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| {
-        tracing::error!("Database error in list_member_filters: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error", "details": e.to_string()})))
-    })?;
+    .unwrap_or_else(|e| {
+        tracing::warn!("Database query failed in list_member_filters (table may not exist): {}", e);
+        Vec::new()
+    });
 
-    let total: (i64,) = sqlx::query_as(
+    let total: i64 = sqlx::query_as::<_, (i64,)>(
         r#"
         SELECT COUNT(*)
         FROM member_filters
@@ -641,18 +640,16 @@ async fn list_member_filters(
     .bind(query.is_public)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| {
-        tracing::error!("Database error in list_member_filters count: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
-    })?;
+    .map(|r| r.0)
+    .unwrap_or(0);
 
     Ok(Json(json!({
-        "data": filters,
+        "filters": filters,
         "meta": {
             "current_page": page,
             "per_page": per_page,
-            "total": total.0,
-            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
+            "total": total,
+            "total_pages": (total as f64 / per_page as f64).ceil() as i64
         }
     })))
 }
