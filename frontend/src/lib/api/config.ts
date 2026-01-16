@@ -45,7 +45,7 @@ export const API_ENDPOINTS = {
 		loginMfa: '/api/auth/login/mfa',
 		loginBiometric: '/api/auth/login/biometric',
 		register: '/api/auth/register',
-		logout: '/api/auth/logout',
+		logout: '/api/logout',
 		refresh: '/api/auth/refresh',
 		forgotPassword: '/api/auth/forgot-password',
 		resetPassword: '/api/auth/reset-password',
@@ -55,10 +55,10 @@ export const API_ENDPOINTS = {
 	},
 
 	// Current User (me) - Rust API routes
-	// ICT 7: Backend has /me under /api namespace (not /api/auth)
+	// ICT 7 FIX: Backend has /me under /api/auth namespace
 	me: {
-		profile: '/api/me',
-		update: '/api/me',
+		profile: '/api/auth/me',
+		update: '/api/auth/me',
 		password: '/api/me/password',
 		memberships: '/api/me/memberships',
 		products: '/api/me/products',

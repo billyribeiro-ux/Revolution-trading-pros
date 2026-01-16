@@ -65,7 +65,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		// Not a protected route - but still try to get user if token exists
 		if (token) {
 			try {
-				const response = await fetch(`${API_BASE_URL}/api/me`, {
+				const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
 					method: 'GET',
 					headers: {
 						'Authorization': `Bearer ${token}`,
@@ -103,7 +103,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
 		
-		const response = await fetch(`${API_BASE_URL}/api/me`, {
+		const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
 			method: 'GET',
 			headers: {
 				'Authorization': `Bearer ${token || refreshToken}`,
@@ -167,7 +167,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				});
 
 				// Fetch user data with new token
-				const userResponse = await fetch(`${API_BASE_URL}/api/me`, {
+				const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
 					method: 'GET',
 					headers: {
 						'Authorization': `Bearer ${newToken}`,
