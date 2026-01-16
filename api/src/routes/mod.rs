@@ -141,6 +141,5 @@ pub fn api_router() -> Router<AppState> {
         .merge(categories::router())
         .merge(tags::router())
         .merge(redirects::router())
-        .merge(media::router())
         .merge(members::router())
 }
