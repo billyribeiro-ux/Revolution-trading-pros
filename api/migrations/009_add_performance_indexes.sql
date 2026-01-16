@@ -36,7 +36,8 @@ CREATE INDEX IF NOT EXISTS idx_products_active_type ON products(is_active, type)
 -- Created at for recent products, sorting
 CREATE INDEX IF NOT EXISTS idx_products_created_at ON products(created_at DESC);
 
--- Search optimization (name contains)
+-- Search optimization (name contains) - requires pg_trgm extension
+CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE INDEX IF NOT EXISTS idx_products_name_trgm ON products USING gin(name gin_trgm_ops);
 
 -- ═══════════════════════════════════════════════════════════════════════════
