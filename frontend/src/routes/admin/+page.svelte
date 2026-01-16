@@ -184,15 +184,8 @@
 					: couponsData?.total || 0;
 			}
 
-			if (postsRes.status === 'fulfilled') {
-				const postsData = postsRes.value;
-				stats.totalPosts = postsData?.total || postsData?.data?.total || postsData?.posts?.length || 0;
-			}
-
-			if (productsRes.status === 'fulfilled') {
-				const productsData = productsRes.value;
-				stats.totalProducts = productsData?.total || productsData?.data?.total || 0;
-			}
+			// Posts and products stats removed - endpoints don't exist in backend yet
+			// TODO: Implement /api/admin/posts/stats and /api/admin/products/stats in backend
 
 			// Process analytics data from built-in analytics system
 			if (analyticsRes.status === 'fulfilled') {
