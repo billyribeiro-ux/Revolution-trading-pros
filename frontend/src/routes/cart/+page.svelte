@@ -9,7 +9,7 @@
 	import { goto } from '$app/navigation';
 	import { cartStore, cartItemCount, cartTotal } from '$lib/stores/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
-	import { isAuthenticated } from '$lib/stores/auth';
+	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import NonMemberCheckout from '$lib/components/cart/NonMemberCheckout.svelte';
 	import IconX from '@tabler/icons-svelte/icons/x';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';

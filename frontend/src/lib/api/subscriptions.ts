@@ -50,7 +50,7 @@
 
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
-import { getAuthToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth.svelte';
 import type {
 	Subscription,
 	SubscriptionStatus,

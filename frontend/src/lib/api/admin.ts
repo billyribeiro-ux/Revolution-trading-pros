@@ -38,8 +38,8 @@
  * @license MIT
  */
 
-import { authStore } from '$lib/stores/auth';
-import type { User } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/auth.svelte';
+import type { User } from '$lib/stores/auth.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration

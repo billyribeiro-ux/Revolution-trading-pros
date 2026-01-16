@@ -19,7 +19,7 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
-	import { user, isAuthenticated, isInitializing } from '$lib/stores/auth';
+	import { user, isAuthenticated, isInitializing } from '$lib/stores/auth.svelte';
 	import { getUserMemberships, type UserMembershipsResponse } from '$lib/api/user-memberships';
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';

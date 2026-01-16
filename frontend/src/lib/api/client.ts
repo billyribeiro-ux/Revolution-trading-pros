@@ -49,7 +49,7 @@
  */
 
 import { writable, derived } from 'svelte/store';
-import { getAuthToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration

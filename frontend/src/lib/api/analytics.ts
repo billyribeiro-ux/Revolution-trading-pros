@@ -8,7 +8,7 @@
  * @version 1.0.0
  */
 
-import { authStore } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/auth.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration

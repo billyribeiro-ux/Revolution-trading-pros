@@ -14,7 +14,7 @@
 
 import { browser } from '$app/environment';
 import { get as _get } from 'svelte/store';
-import { authStore } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/auth.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration

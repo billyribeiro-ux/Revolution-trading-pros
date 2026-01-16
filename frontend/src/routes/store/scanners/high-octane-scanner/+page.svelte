@@ -12,7 +12,7 @@
 -->
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import { isAuthenticated } from '$lib/stores/auth';
+	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import { addToCart } from '$lib/stores/cart';
 	import { IconCheck, IconShoppingCart, IconChartLine, IconBell, IconFilter, IconClock } from '$lib/icons';
 

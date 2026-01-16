@@ -13,7 +13,7 @@
 	 */
 
 	import { cartStore, type CartItem } from '$lib/stores/cart';
-	import { isAuthenticated } from '$lib/stores/auth';
+	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import {
 		checkProductOwnership,
 		type MembershipType,

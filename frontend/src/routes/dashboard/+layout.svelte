@@ -25,7 +25,7 @@
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { onMount, type Snippet } from 'svelte';
-	import { authStore, isAuthenticated, user } from '$lib/stores/auth';
+	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
 	import { getUserMemberships, type UserMembershipsResponse, type MembershipType } from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';

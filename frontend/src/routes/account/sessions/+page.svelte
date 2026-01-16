@@ -10,7 +10,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { authStore, isAuthenticated, sessionInvalidated, type UserSession } from '$lib/stores/auth';
+	import { authStore, isAuthenticated, sessionInvalidated, type UserSession } from '$lib/stores/auth.svelte';
 	import authService from '$lib/api/auth';
 
 	// Redirect if not authenticated - use replaceState to prevent history pollution

@@ -13,7 +13,7 @@
 	 * @version 1.0.0
 	 */
 
-	import { getAuthToken } from '$lib/stores/auth';
+	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	interface Props {
 		formId: number;

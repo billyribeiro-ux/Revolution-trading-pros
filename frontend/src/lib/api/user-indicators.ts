@@ -8,7 +8,7 @@
  */
 
 import { browser } from '$app/environment';
-import { authStore } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/auth.svelte';
 import { apiCache, buildCacheKey, invalidateCache } from './cache';
 
 // ═══════════════════════════════════════════════════════════════════════════

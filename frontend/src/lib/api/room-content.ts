@@ -12,7 +12,7 @@
  * @version 1.0.0
  */
 
-import { getAuthToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth.svelte';
 import { API_BASE_URL } from '$lib/api/config';
 
 // ═══════════════════════════════════════════════════════════════════════════════════

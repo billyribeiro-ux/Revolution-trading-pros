@@ -4,7 +4,7 @@
  * Enhanced with better type safety and error handling
  */
 
-import { getAuthToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth.svelte';
 
 // ICT11+ PRODUCTION DEPLOYMENT: Always use deployed URLs
 // Backend is deployed on Fly.io (Rust + Axum)

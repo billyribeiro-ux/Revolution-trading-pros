@@ -14,7 +14,7 @@
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { user, isAuthenticated } from '$lib/stores/auth';
+	import { user, isAuthenticated } from '$lib/stores/auth.svelte';
 	import { cartStore, cartTotal } from '$lib/stores/cart';
 	import { createCheckoutSession } from '$lib/api/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';

@@ -9,7 +9,7 @@
  * @version 1.0.0
  */
 
-import { getAuthToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth.svelte';
 
 // Production fallback - NEVER use localhost in production
 // NOTE: No /api suffix - endpoints already include /api prefix

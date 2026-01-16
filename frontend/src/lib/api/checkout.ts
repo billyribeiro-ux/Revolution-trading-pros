@@ -6,7 +6,7 @@
  */
 
 import { browser } from '$app/environment';
-import { authStore } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/auth.svelte';
 
 // Updated for Rust API - December 2025
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)

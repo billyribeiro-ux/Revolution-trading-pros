@@ -4,7 +4,7 @@
  */
 
 import { apiClient } from './client';
-import { getAuthToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth.svelte';
 
 // Types
 export interface Member {

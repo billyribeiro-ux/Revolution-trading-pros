@@ -9,7 +9,7 @@
  */
 
 import { browser } from '$app/environment';
-import { authStore } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/auth.svelte';
 
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
 const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';

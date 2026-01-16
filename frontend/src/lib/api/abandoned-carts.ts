@@ -6,7 +6,7 @@
  * @author Revolution Trading Pros
  */
 
-import { authStore } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/auth.svelte';
 
 const API_BASE = '/api/admin/abandoned-carts';
 

@@ -51,7 +51,7 @@
 import { browser } from '$app/environment';
 import { writable, derived as _derived, get } from 'svelte/store';
 import type { FormTheme } from '$lib/data/formTemplates';
-import { getAuthToken, getSessionId as _getAuthSessionId } from '$lib/stores/auth';
+import { getAuthToken, getSessionId as _getAuthSessionId } from '$lib/stores/auth.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration
@@ -558,7 +558,7 @@ class FormsService {
 				if (response.status === 401) {
 					// Try to refresh token before giving up
 					try {
-						const { authStore } = await import('$lib/stores/auth');
+						const { authStore } = await import('$lib/stores/auth.svelte');
 						const refreshed = await authStore.refreshToken();
 						if (refreshed && retriesLeft > 0) {
 							// Token refreshed, retry the request
@@ -853,7 +853,7 @@ class FormsService {
 		if (!browser) return;
 		// Import and use the auth store's logout method
 		// This properly clears the secure memory-only token and handles redirect
-		const { authStore } = await import('$lib/stores/auth');
+		const { authStore } = await import('$lib/stores/auth.svelte');
 		await authStore.logout('/login');
 	}
 

@@ -34,9 +34,8 @@
  * @license MIT
  */
 
-import { get } from 'svelte/store';
-import { authStore } from '$lib/stores/auth';
-import type { User } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/auth.svelte';
+import type { User } from '$lib/stores/auth.svelte';
 import { browser } from '$app/environment';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -134,7 +133,7 @@ export interface AuthResponse {
 }
 
 export interface SessionsResponse {
-	sessions: import('$lib/stores/auth').UserSession[];
+	sessions: import('$lib/stores/auth.svelte').UserSession[];
 	count: number;
 }
 
@@ -412,12 +411,11 @@ class AuthenticationService {
 	private async getValidToken(): Promise<string | null> {
 		// Use the secure getter from auth store
 		const token = authStore.getToken();
-		const auth = get(authStore);
 
 		if (!token) return null;
 
 		// Check if token needs refresh
-		if (this.isTokenExpiringSoon(auth.tokenExpiry ?? undefined)) {
+		if (this.isTokenExpiringSoon(authStore.tokenExpiry ?? undefined)) {
 			try {
 				await this.refreshToken();
 				return authStore.getToken();
@@ -711,7 +709,7 @@ class AuthenticationService {
 			});
 
 			// Track logout
-			const user = get(authStore).user;
+			const user = authStore.user;
 			if (user?.email) {
 				this.trackEvent('user_logged_out', { email: user.email });
 			}
@@ -1056,11 +1054,10 @@ class AuthenticationService {
 
 		// Get the updated token info
 		const token = authStore.getToken();
-		const auth = get(authStore);
 
 		// Schedule next refresh
-		if (auth.tokenExpiry) {
-			const expiresIn = auth.tokenExpiry - Date.now();
+		if (authStore.tokenExpiry) {
+			const expiresIn = authStore.tokenExpiry - Date.now();
 			if (expiresIn > 0) {
 				this.scheduleTokenRefresh(expiresIn);
 			}
@@ -1071,7 +1068,7 @@ class AuthenticationService {
 		return {
 			token: token || '',
 			refresh_token: '',
-			expires_in: auth.tokenExpiry ? Math.floor((auth.tokenExpiry - Date.now()) / 1000) : 3600
+			expires_in: authStore.tokenExpiry ? Math.floor((authStore.tokenExpiry - Date.now()) / 1000) : 3600
 		};
 	}
 

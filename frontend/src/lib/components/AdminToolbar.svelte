@@ -41,8 +41,8 @@
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
-	import { authStore, user as userStore } from '$lib/stores/auth';
-	import type { User } from '$lib/stores/auth';
+	import { authStore, user as userStore } from '$lib/stores/auth.svelte';
+	import type { User } from '$lib/stores/auth.svelte';
 	import { isSuperadmin, isAdmin as checkIsAdmin, hasPermission } from '$lib/config/roles';
 	import { getUser, logout as apiLogout } from '$lib/api/auth';
 	// Individual Tabler icon imports (Svelte 5 compatible)

@@ -7,7 +7,7 @@
 	 * Signup Page - Svelte 5 Runes Implementation
 	 * @version 2.0.0 - November 2025
 	 */
-	import { authStore } from '$lib/stores/auth';
+	import { authStore } from '$lib/stores/auth.svelte';
 	import { registerAndLogin } from '$lib/api/auth';
 	import { goto } from '$app/navigation';
 	import SEOHead from '$lib/components/SEOHead.svelte';

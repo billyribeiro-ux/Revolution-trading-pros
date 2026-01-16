@@ -14,7 +14,7 @@
 	import { browser } from '$app/environment';
 	import { goto } from '$app/navigation';
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	import { authStore, isAdminUser } from '$lib/stores/auth';
+	import { authStore, isAdminUser } from '$lib/stores/auth.svelte';
 	import {
 		IconAlertTriangle,
 		IconLock,

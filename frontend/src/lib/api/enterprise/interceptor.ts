@@ -146,7 +146,7 @@ export async function executeErrorInterceptors(
 // Built-in Interceptors
 // ═══════════════════════════════════════════════════════════════════════════════
 
-import { getAuthToken, authStore } from '$lib/stores/auth';
+import { getAuthToken, authStore } from '$lib/stores/auth.svelte';
 import { getTraceHeaders, log } from './tracing';
 import { getCsrfHeaders, csrfResponseInterceptor } from './csrf';
 import { createApiError, ErrorCodes } from './errors';

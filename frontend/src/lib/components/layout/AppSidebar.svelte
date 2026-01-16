@@ -6,7 +6,7 @@
 	 * @author Revolution Trading Pros
 	 */
 	import { page } from '$app/state';
-	import { user } from '$lib/stores/auth';
+	import { user } from '$lib/stores/auth.svelte';
 	import {
 		IconSchool,
 		IconChartLine,

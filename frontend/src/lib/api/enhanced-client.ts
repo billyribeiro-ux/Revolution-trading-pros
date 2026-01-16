@@ -14,7 +14,7 @@
  */
 
 import { browser } from '$app/environment';
-import { getAuthToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth.svelte';
 import { getCircuitBreaker, type CircuitBreaker as _CircuitBreaker } from '../resilience/circuit-breaker';
 import { retryNetworkRequest, withIdempotency, generateIdempotencyKey } from '../resilience/retry';
 import {

@@ -49,7 +49,7 @@
 	import { browser } from '$app/environment';
 	import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections';
 	import { API_BASE_URL } from '$lib/api/config';
-	import { getAuthToken } from '$lib/stores/auth';
+	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	// ICT 11+ FIX: Use absolute API URL for Pages.dev compatibility (no proxy)
 	async function localFetch<T = any>(endpoint: string): Promise<T> {

@@ -14,7 +14,7 @@
 
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
-import { getAuthToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Types

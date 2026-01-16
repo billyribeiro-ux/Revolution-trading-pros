@@ -12,10 +12,9 @@
  */
 
 import { browser } from '$app/environment';
-import { authStore } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/auth.svelte';
 import { apiCache, buildCacheKey, invalidateCache } from './cache';
 import { isSuperadminEmail, isDeveloperEmail } from '$lib/config/roles';
-import { get } from 'svelte/store';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CONSTANTS
@@ -238,7 +237,7 @@ export async function getUserMemberships(options?: {
 	// On page refresh, token may not be in memory yet but cookies are still valid
 	// The fetch call includes credentials: 'include' so cookies will be sent
 	const token = authStore.getToken();
-	const { user: storeUser } = get(authStore);
+	const storeUser = authStore.user;
 
 	// If no token AND no user in store, we're truly not authenticated
 	// But if we have a user (from server sync), try the API with cookies

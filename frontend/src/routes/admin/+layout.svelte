@@ -11,7 +11,7 @@
 	 */
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { isAuthenticated } from '$lib/stores/auth';
+	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import { unreadCount } from '$lib/stores/notifications';
 	import { keyboard } from '$lib/stores/keyboard';
 	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';

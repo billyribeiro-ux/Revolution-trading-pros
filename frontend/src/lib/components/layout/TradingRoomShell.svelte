@@ -9,7 +9,7 @@
 	 * @author Revolution Trading Pros
 	 */
 
-	import { user } from '$lib/stores/auth';
+	import { user } from '$lib/stores/auth.svelte';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
 	import IconMaximize from '@tabler/icons-svelte/icons/maximize';
 	import IconMinimize from '@tabler/icons-svelte/icons/minimize';

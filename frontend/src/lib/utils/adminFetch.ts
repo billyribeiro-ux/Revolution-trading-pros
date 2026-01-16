@@ -9,7 +9,7 @@
  * @author Revolution Trading Pros
  */
 
-import { getAuthToken } from '$lib/stores/auth';
+import { getAuthToken } from '$lib/stores/auth.svelte';
 import { goto } from '$app/navigation';
 import { browser } from '$app/environment';
 import { API_BASE_URL } from '$lib/api/config';

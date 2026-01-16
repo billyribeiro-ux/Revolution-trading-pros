@@ -1,6 +1,6 @@
 import { browser } from '$app/environment';
 import { redirect } from '@sveltejs/kit';
-import { authStore } from '$lib/stores/auth';
+import { authStore } from '$lib/stores/auth.svelte';
 import { getUser } from '$lib/api/auth';
 import type { Load } from '@sveltejs/kit';
 

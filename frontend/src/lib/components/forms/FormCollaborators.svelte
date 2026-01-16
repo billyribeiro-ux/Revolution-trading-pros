@@ -13,7 +13,7 @@
 	 */
 
 	import { onMount, onDestroy } from 'svelte';
-	import { getAuthToken } from '$lib/stores/auth';
+	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	interface Props {
 		formId: number;
