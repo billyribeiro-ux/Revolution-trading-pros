@@ -13,7 +13,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
-	import { goto } from '$app/navigation';
 	import {
 		IconTag,
 		IconUsers,
