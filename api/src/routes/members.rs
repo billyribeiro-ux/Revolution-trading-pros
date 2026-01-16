@@ -22,8 +22,6 @@ pub struct Member {
     pub id: i64,
     pub name: Option<String>,
     pub email: String,
-    pub first_name: Option<String>,
-    pub last_name: Option<String>,
     pub created_at: Option<NaiveDateTime>,
     pub updated_at: Option<NaiveDateTime>,
 }
@@ -71,7 +69,7 @@ pub async fn index(
     Query(params): Query<MemberQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     let mut query = String::from(
-        "SELECT id, name, email, first_name, last_name, created_at, updated_at 
+        "SELECT id, name, email, created_at, updated_at 
          FROM users WHERE 1=1"
     );
     let mut conditions = Vec::new();
@@ -82,8 +80,8 @@ pub async fn index(
         // Limit search length to prevent DoS
         if escaped.len() <= 100 {
             conditions.push(format!(
-                "(name ILIKE '%{}%' OR email ILIKE '%{}%' OR first_name ILIKE '%{}%' OR last_name ILIKE '%{}%')",
-                escaped, escaped, escaped, escaped
+                "(name ILIKE '%{}%' OR email ILIKE '%{}%')",
+                escaped, escaped
             ));
         }
     }
@@ -105,7 +103,7 @@ pub async fn index(
     }
 
     // Sorting
-    let allowed_columns = ["created_at", "updated_at", "name", "email", "first_name", "last_name", "id"];
+    let allowed_columns = ["created_at", "updated_at", "name", "email", "id"];
     let sort_by = params.sort_by.as_deref().unwrap_or("created_at");
     let sort_dir = params.sort_dir.as_deref().unwrap_or("desc");
 
@@ -398,7 +396,7 @@ pub async fn members_by_service(
 
     // Get members
     let members: Vec<Member> = sqlx::query_as(&format!(
-        "SELECT DISTINCT u.id, u.name, u.email, u.first_name, u.last_name, u.created_at, u.updated_at
+        "SELECT DISTINCT u.id, u.name, u.email, u.created_at, u.updated_at
          FROM users u
          JOIN user_memberships us ON u.id = us.user_id
          WHERE {}
@@ -513,7 +511,7 @@ pub async fn churned_members(
 
     // Get churned members (have cancelled/expired subs, no active subs)
     let members: Vec<Member> = sqlx::query_as(&format!(
-        "SELECT DISTINCT u.id, u.name, u.email, u.first_name, u.last_name, u.created_at, u.updated_at
+        "SELECT DISTINCT u.id, u.name, u.email, u.created_at, u.updated_at
          FROM users u
          JOIN user_memberships us ON u.id = us.user_id
          WHERE us.status IN ('cancelled', 'expired')
@@ -608,7 +606,7 @@ pub async fn export_members(
     };
 
     let members: Vec<Member> = sqlx::query_as(&format!(
-        "SELECT u.id, u.name, u.email, u.first_name, u.last_name, u.created_at, u.updated_at
+        "SELECT u.id, u.name, u.email, u.created_at, u.updated_at
          FROM users u
          WHERE {}
          ORDER BY u.created_at DESC
@@ -620,15 +618,13 @@ pub async fn export_members(
     .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     // Build CSV
-    let mut csv = String::from("id,name,email,first_name,last_name,created_at,updated_at\n");
+    let mut csv = String::from("id,name,email,created_at,updated_at\n");
     for m in members {
         csv.push_str(&format!(
-            "{},{},{},{},{},{},{}\n",
+            "{},{},{},{},{}\n",
             m.id,
             m.name.as_deref().unwrap_or("").replace(',', ";"),
             m.email.replace(',', ";"),
-            m.first_name.as_deref().unwrap_or("").replace(',', ";"),
-            m.last_name.as_deref().unwrap_or("").replace(',', ";"),
             m.created_at.map(|d| d.to_string()).unwrap_or_default(),
             m.updated_at.map(|d| d.to_string()).unwrap_or_default()
         ));
@@ -652,7 +648,7 @@ pub async fn show(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     let member: Option<Member> = sqlx::query_as(
-        "SELECT id, name, email, first_name, last_name, created_at, updated_at 
+        "SELECT id, name, email, created_at, updated_at 
          FROM users WHERE id = $1"
     )
     .bind(id)

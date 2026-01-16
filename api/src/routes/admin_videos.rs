@@ -25,6 +25,7 @@ use crate::models::video::{
     VideoResponse, VideoStats, VideoStatsResponse, VideoTypeStats, get_all_tags,
     get_content_types, get_difficulty_levels, get_platforms,
 };
+use crate::middleware::admin::AdminUser;
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -176,6 +177,7 @@ fn video_to_response(video: UnifiedVideoRow, trader: Option<TraderInfo>, rooms: 
 
 /// List videos with filtering and pagination
 async fn list_videos(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Query(query): Query<VideoListQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -272,6 +274,7 @@ async fn list_videos(
 
 /// Get single video by ID
 async fn get_video(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -305,6 +308,7 @@ async fn get_video(
 
 /// Create new video
 async fn create_video(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<CreateVideoRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -397,6 +401,7 @@ async fn create_video(
 
 /// Update video
 async fn update_video(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
     Json(input): Json<UpdateVideoRequest>,
@@ -494,6 +499,7 @@ async fn update_video(
 
 /// Delete video (soft delete)
 async fn delete_video(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -516,6 +522,7 @@ async fn delete_video(
 
 /// Get video statistics
 async fn get_stats(
+    _admin: AdminUser,
     State(state): State<AppState>,
 ) -> Result<Json<VideoStatsResponse>, (StatusCode, Json<serde_json::Value>)> {
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL")
@@ -573,6 +580,7 @@ async fn get_stats(
 
 /// Get video options (tags, platforms, content types, etc.)
 async fn get_options(
+    _admin: AdminUser,
     State(_state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     Ok(Json(json!({
@@ -590,6 +598,7 @@ async fn get_options(
 
 /// Bulk publish/unpublish videos
 async fn bulk_publish(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<BulkPublishRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -620,6 +629,7 @@ async fn bulk_publish(
 
 /// Bulk delete videos
 async fn bulk_delete(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<BulkDeleteRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -650,6 +660,7 @@ async fn bulk_delete(
 
 /// Bulk assign videos to rooms
 async fn bulk_assign(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<BulkAssignRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {

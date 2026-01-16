@@ -24,15 +24,9 @@ pub struct Category {
     pub name: String,
     pub slug: String,
     pub description: Option<String>,
-    pub color: String,
-    pub is_visible: bool,
-    pub is_active: bool,
     pub parent_id: Option<i64>,
-    pub order: i32,
-    pub meta_title: Option<String>,
-    pub meta_description: Option<String>,
-    pub created_at: DateTime<Utc>,
-    pub updated_at: DateTime<Utc>,
+    pub created_at: Option<chrono::NaiveDateTime>,
+    pub updated_at: Option<chrono::NaiveDateTime>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -52,11 +46,7 @@ pub struct CreateCategory {
     pub name: String,
     pub slug: String,
     pub description: Option<String>,
-    pub color: String,
-    pub is_visible: Option<bool>,
     pub parent_id: Option<i64>,
-    pub meta_title: Option<String>,
-    pub meta_description: Option<String>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -64,12 +54,7 @@ pub struct UpdateCategory {
     pub name: Option<String>,
     pub slug: Option<String>,
     pub description: Option<String>,
-    pub color: Option<String>,
-    pub is_visible: Option<bool>,
     pub parent_id: Option<i64>,
-    pub order: Option<i32>,
-    pub meta_title: Option<String>,
-    pub meta_description: Option<String>,
 }
 
 /// GET /admin/categories - List all categories
@@ -106,15 +91,14 @@ pub async fn index(
     }
 
     // Sort with whitelist validation
-    let allowed_columns = ["order", "name", "slug", "created_at", "updated_at", "id"];
-    let sort_by = params.sort_by.as_deref().unwrap_or("order");
+    let allowed_columns = ["name", "slug", "created_at", "updated_at", "id"];
+    let sort_by = params.sort_by.as_deref().unwrap_or("name");
     let sort_dir = params.sort_dir.as_deref().unwrap_or("asc");
 
-    // Quote "order" as it's a SQL reserved word
     let sort_column = if allowed_columns.contains(&sort_by) {
-        if sort_by == "order" { "\"order\"" } else { sort_by }
+        sort_by
     } else {
-        "\"order\""
+        "name"
     };
 
     let sort_direction = if sort_dir.eq_ignore_ascii_case("desc") {
@@ -177,11 +161,6 @@ pub async fn store(
         return Err(ApiError::validation_error("Slug must contain only lowercase letters, numbers, and hyphens"));
     }
 
-    // Validate color format
-    if !payload.color.starts_with('#') || payload.color.len() != 7 {
-        return Err(ApiError::validation_error("Color must be in #RRGGBB format"));
-    }
-
     // Check if slug already exists
     let exists: bool = sqlx::query_scalar(
         "SELECT EXISTS(SELECT 1 FROM categories WHERE slug = $1)"
@@ -195,30 +174,15 @@ pub async fn store(
         return Err(ApiError::validation_error("Slug already exists"));
     }
 
-    // Get max order for new category
-    let max_order: Option<i32> = sqlx::query_scalar(
-        "SELECT MAX(\"order\") FROM categories"
-    )
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
-
-    let new_order = max_order.unwrap_or(0) + 1;
-
     let category: Category = sqlx::query_as(
-        "INSERT INTO categories (name, slug, description, color, is_visible, parent_id, \"order\", meta_title, meta_description, created_at, updated_at)
-         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
+        "INSERT INTO categories (name, slug, description, parent_id, created_at, updated_at)
+         VALUES ($1, $2, $3, $4, NOW(), NOW())
          RETURNING *"
     )
     .bind(&payload.name)
     .bind(&payload.slug)
     .bind(&payload.description)
-    .bind(&payload.color)
-    .bind(payload.is_visible.unwrap_or(true))
     .bind(payload.parent_id)
-    .bind(new_order)
-    .bind(&payload.meta_title)
-    .bind(&payload.meta_description)
     .fetch_one(state.db.pool())
     .await
     .map_err(|e| ApiError::database_error(&e.to_string()))?;
@@ -267,13 +231,6 @@ pub async fn update(
         }
     }
 
-    // Validate color if provided
-    if let Some(color) = &payload.color {
-        if !color.starts_with('#') || color.len() != 7 {
-            return Err(ApiError::validation_error("Color must be in #RRGGBB format"));
-        }
-    }
-
     // Build dynamic update query
     let mut updates = Vec::new();
     let mut param_count = 1;
@@ -281,12 +238,7 @@ pub async fn update(
     if payload.name.is_some() { updates.push(format!("name = ${}", param_count)); param_count += 1; }
     if payload.slug.is_some() { updates.push(format!("slug = ${}", param_count)); param_count += 1; }
     if payload.description.is_some() { updates.push(format!("description = ${}", param_count)); param_count += 1; }
-    if payload.color.is_some() { updates.push(format!("color = ${}", param_count)); param_count += 1; }
-    if payload.is_visible.is_some() { updates.push(format!("is_visible = ${}", param_count)); param_count += 1; }
     if payload.parent_id.is_some() { updates.push(format!("parent_id = ${}", param_count)); param_count += 1; }
-    if payload.order.is_some() { updates.push(format!("\"order\" = ${}", param_count)); param_count += 1; }
-    if payload.meta_title.is_some() { updates.push(format!("meta_title = ${}", param_count)); param_count += 1; }
-    if payload.meta_description.is_some() { updates.push(format!("meta_description = ${}", param_count)); param_count += 1; }
 
     updates.push(format!("updated_at = ${}", param_count));
 
@@ -301,14 +253,9 @@ pub async fn update(
     if let Some(name) = payload.name { query = query.bind(name); }
     if let Some(slug) = payload.slug { query = query.bind(slug); }
     if let Some(description) = payload.description { query = query.bind(description); }
-    if let Some(color) = payload.color { query = query.bind(color); }
-    if let Some(is_visible) = payload.is_visible { query = query.bind(is_visible); }
     if let Some(parent_id) = payload.parent_id { query = query.bind(parent_id); }
-    if let Some(order) = payload.order { query = query.bind(order); }
-    if let Some(meta_title) = payload.meta_title { query = query.bind(meta_title); }
-    if let Some(meta_description) = payload.meta_description { query = query.bind(meta_description); }
 
-    query = query.bind(Utc::now());
+    query = query.bind(chrono::Utc::now().naive_utc());
     query = query.bind(id);
 
     let category = query

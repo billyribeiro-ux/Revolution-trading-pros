@@ -15,6 +15,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
+use crate::middleware::admin::AdminUser;
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -110,6 +111,7 @@ fn slugify(s: &str) -> String {
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 async fn list_indicators(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Query(params): Query<IndicatorQueryParams>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -169,6 +171,7 @@ async fn list_indicators(
 }
 
 async fn get_indicator(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -203,6 +206,7 @@ async fn get_indicator(
 }
 
 async fn create_indicator(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<CreateIndicatorRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -266,6 +270,7 @@ async fn create_indicator(
 }
 
 async fn update_indicator(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
     Json(input): Json<UpdateIndicatorRequest>,
@@ -324,6 +329,7 @@ async fn update_indicator(
 }
 
 async fn delete_indicator(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -345,6 +351,7 @@ async fn delete_indicator(
 }
 
 async fn toggle_indicator(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {

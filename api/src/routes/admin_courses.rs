@@ -18,6 +18,7 @@ use crate::models::course::{
     ReorderRequest, UpdateCourseRequest, UpdateDownloadRequest, UpdateLessonRequest,
     UpdateModuleRequest,
 };
+use crate::middleware::admin::AdminUser;
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -25,6 +26,7 @@ use crate::AppState;
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 async fn list_courses(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Query(params): Query<CourseQueryParams>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -130,6 +132,7 @@ async fn list_courses(
 }
 
 async fn get_course(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -236,6 +239,7 @@ async fn get_course(
 }
 
 async fn create_course(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(input): Json<CreateCourseRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -310,6 +314,7 @@ async fn create_course(
 }
 
 async fn update_course(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
     Json(input): Json<UpdateCourseRequest>,
@@ -439,6 +444,7 @@ async fn update_course(
 }
 
 async fn delete_course(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -460,6 +466,7 @@ async fn delete_course(
 }
 
 async fn publish_course(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -489,6 +496,7 @@ async fn publish_course(
 }
 
 async fn unpublish_course(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -522,6 +530,7 @@ async fn unpublish_course(
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 async fn list_modules(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(course_id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -549,6 +558,7 @@ async fn list_modules(
 }
 
 async fn create_module(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(course_id): Path<Uuid>,
     Json(input): Json<CreateModuleRequest>,
@@ -594,6 +604,7 @@ async fn create_module(
 }
 
 async fn update_module(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path((course_id, module_id)): Path<(Uuid, i64)>,
     Json(input): Json<UpdateModuleRequest>,
@@ -637,6 +648,7 @@ async fn update_module(
 }
 
 async fn delete_module(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path((course_id, module_id)): Path<(Uuid, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -665,6 +677,7 @@ async fn delete_module(
 }
 
 async fn reorder_modules(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(course_id): Path<Uuid>,
     Json(input): Json<ReorderRequest>,
@@ -693,6 +706,7 @@ async fn reorder_modules(
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 async fn list_lessons(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(course_id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -723,6 +737,7 @@ async fn list_lessons(
 }
 
 async fn get_lesson(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path((course_id, lesson_id)): Path<(Uuid, Uuid)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -768,6 +783,7 @@ async fn get_lesson(
 }
 
 async fn create_lesson(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(course_id): Path<Uuid>,
     Json(input): Json<CreateLessonRequest>,
@@ -828,6 +844,7 @@ async fn create_lesson(
 }
 
 async fn update_lesson(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path((course_id, lesson_id)): Path<(Uuid, Uuid)>,
     Json(input): Json<UpdateLessonRequest>,
@@ -887,6 +904,7 @@ async fn update_lesson(
 }
 
 async fn delete_lesson(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path((course_id, lesson_id)): Path<(Uuid, Uuid)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -909,6 +927,7 @@ async fn delete_lesson(
 }
 
 async fn reorder_lessons(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(course_id): Path<Uuid>,
     Json(input): Json<ReorderRequest>,
@@ -939,6 +958,7 @@ async fn reorder_lessons(
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 async fn list_downloads(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(course_id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -966,6 +986,7 @@ async fn list_downloads(
 }
 
 async fn create_download(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(course_id): Path<Uuid>,
     Json(input): Json<CreateDownloadRequest>,
@@ -1010,6 +1031,7 @@ async fn create_download(
 }
 
 async fn update_download(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path((course_id, download_id)): Path<(Uuid, i64)>,
     Json(input): Json<UpdateDownloadRequest>,
@@ -1051,6 +1073,7 @@ async fn update_download(
 }
 
 async fn delete_download(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path((course_id, download_id)): Path<(Uuid, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
@@ -1079,6 +1102,7 @@ async fn delete_download(
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 async fn create_video_upload(
+    _admin: AdminUser,
     State(_state): State<AppState>,
     Path(course_id): Path<Uuid>,
     Json(input): Json<serde_json::Value>,
@@ -1159,6 +1183,7 @@ async fn create_video_upload(
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 async fn get_upload_url(
+    _admin: AdminUser,
     State(_state): State<AppState>,
     Path(course_id): Path<Uuid>,
     Json(input): Json<serde_json::Value>,

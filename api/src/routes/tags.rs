@@ -14,6 +14,7 @@ use sqlx::FromRow;
 // Minimal schema - production tags only has id, name, slug
 
 use crate::{
+    middleware::admin::AdminUser,
     utils::errors::ApiError,
     AppState,
 };
@@ -48,8 +49,9 @@ pub struct UpdateTag {
 }
 
 /// GET /admin/tags - List all tags
-#[tracing::instrument(skip(state))]
+#[tracing::instrument(skip(state, _admin))]
 pub async fn index(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Query(params): Query<TagQuery>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
@@ -113,8 +115,9 @@ pub async fn index(
 }
 
 /// GET /admin/tags/:id - Get a single tag
-#[tracing::instrument(skip(state))]
+#[tracing::instrument(skip(state, _admin))]
 pub async fn show(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
@@ -130,8 +133,9 @@ pub async fn show(
 }
 
 /// POST /admin/tags - Create a new tag
-#[tracing::instrument(skip(state))]
+#[tracing::instrument(skip(state, _admin))]
 pub async fn store(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Json(payload): Json<CreateTag>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
@@ -168,8 +172,9 @@ pub async fn store(
 }
 
 /// PUT /admin/tags/:id - Update a tag
-#[tracing::instrument(skip(state))]
+#[tracing::instrument(skip(state, _admin))]
 pub async fn update(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
     Json(payload): Json<UpdateTag>,
@@ -240,8 +245,9 @@ pub async fn update(
 }
 
 /// DELETE /admin/tags/:id - Delete a tag
-#[tracing::instrument(skip(state))]
+#[tracing::instrument(skip(state, _admin))]
 pub async fn destroy(
+    _admin: AdminUser,
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
