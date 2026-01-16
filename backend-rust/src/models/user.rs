@@ -38,7 +38,7 @@ impl User {
         "id, name, email, password_hash, role, created_at, updated_at";
 
     pub fn is_admin(&self) -> bool {
-        self.role == "admin" || self.role == "super-admin"
+        self.role == "admin" || self.role == "super-admin" || self.role == "developer"
     }
 
     pub fn is_verified(&self) -> bool {
