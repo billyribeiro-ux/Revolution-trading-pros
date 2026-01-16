@@ -23,8 +23,8 @@
 /* Import Simpler Trading Icon Font */
 @import './lib/styles/simpler-icons.css';
 
-/* RTP Admin Design System - Color Tokens, Typography, Spacing, etc. */
-@import './lib/styles/main.css';
+/* NOTE: Admin Design System (main.css) is imported directly in admin/dashboard layouts
+ * to avoid overriding marketing page styles. DO NOT import it here globally. */
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * Tailwind v4 Theme Configuration

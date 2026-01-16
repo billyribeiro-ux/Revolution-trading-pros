@@ -21,6 +21,9 @@
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
+	// Dashboard Design System - Only loaded in dashboard area, not globally
+	import '$lib/styles/main.css';
+	
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
