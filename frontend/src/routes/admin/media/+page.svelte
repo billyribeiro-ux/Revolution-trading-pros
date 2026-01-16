@@ -153,7 +153,9 @@
 
   async function checkAIStatus() {
     try {
-      const response = await fetch('/api/media/ai/status');
+      // ICT 11+ Fix: Use full API URL instead of relative path (pages.dev doesn't proxy)
+      const { API_BASE_URL } = await import('$lib/api/config');
+      const response = await fetch(`${API_BASE_URL}/api/media/ai/status`);
       if (response.ok) {
         aiStatus = await response.json();
         aiEnabled = aiStatus?.enabled || false;

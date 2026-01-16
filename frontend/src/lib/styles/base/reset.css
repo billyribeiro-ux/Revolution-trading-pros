@@ -17,7 +17,10 @@ html {
     text-rendering: optimizeLegibility;
 }
 
-body {
+/* Body styles scoped to admin areas only */
+[data-admin-area],
+.admin-layout,
+.dashboard-layout {
     min-height: 100vh;
     line-height: var(--leading-normal);
 }
@@ -47,11 +50,19 @@ ul, ol {
     list-style: none;
 }
 
-h1, h2, h3, h4, h5, h6 {
+/* Typography scoped to admin areas - marketing pages define their own */
+[data-admin-area] h1, [data-admin-area] h2, [data-admin-area] h3,
+[data-admin-area] h4, [data-admin-area] h5, [data-admin-area] h6,
+.admin-layout h1, .admin-layout h2, .admin-layout h3,
+.admin-layout h4, .admin-layout h5, .admin-layout h6,
+.dashboard-layout h1, .dashboard-layout h2, .dashboard-layout h3,
+.dashboard-layout h4, .dashboard-layout h5, .dashboard-layout h6 {
     font-weight: var(--font-semibold);
     line-height: var(--leading-tight);
 }
 
-p {
+[data-admin-area] p,
+.admin-layout p,
+.dashboard-layout p {
     line-height: var(--leading-relaxed);
 }

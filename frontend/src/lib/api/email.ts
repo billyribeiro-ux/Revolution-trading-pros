@@ -253,7 +253,9 @@ class EmailAPI {
 		// Use secure getter from auth store
 		const token = authStore.getToken();
 
-		const url = new URL(`${API_BASE}${endpoint}`);
+		// ICT 11+ Fix: Add /api prefix if endpoint doesn't already have it
+		const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
+		const url = new URL(`${API_BASE}${apiEndpoint}`);
 		if (params) {
 			Object.entries(params).forEach(([key, value]) => {
 				if (value !== undefined && value !== null) {

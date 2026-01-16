@@ -5,44 +5,61 @@
  * @version 1.0.0
  */
 
-:root {
+/* ═══════════════════════════════════════════════════════════════════════════
+ * SCOPED TO ADMIN/DASHBOARD AREAS ONLY
+ * Marketing pages have their own page-specific styles
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Admin-specific root styles - scoped via data attribute or class */
+[data-admin-area],
+.admin-layout,
+.dashboard-layout {
     font-family: var(--font-sans);
     font-size: 16px;
     color-scheme: dark;
-}
-
-body {
     background-color: var(--bg-base);
     color: var(--text-primary);
-    font-size: var(--text-base);
 }
 
-::selection {
+/* Admin area selection and focus styles */
+[data-admin-area] ::selection,
+.admin-layout ::selection,
+.dashboard-layout ::selection {
     background-color: var(--primary-500);
     color: var(--bg-base);
 }
 
-:focus-visible {
+[data-admin-area] :focus-visible,
+.admin-layout :focus-visible,
+.dashboard-layout :focus-visible {
     outline: 2px solid var(--primary-500);
     outline-offset: 2px;
 }
 
-/* Scrollbar Styling */
-::-webkit-scrollbar {
+/* Scrollbar Styling - scoped to admin areas */
+[data-admin-area]::-webkit-scrollbar,
+.admin-layout ::-webkit-scrollbar,
+.dashboard-layout ::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
 
-::-webkit-scrollbar-track {
+[data-admin-area]::-webkit-scrollbar-track,
+.admin-layout ::-webkit-scrollbar-track,
+.dashboard-layout ::-webkit-scrollbar-track {
     background: var(--bg-surface);
 }
 
-::-webkit-scrollbar-thumb {
+[data-admin-area]::-webkit-scrollbar-thumb,
+.admin-layout ::-webkit-scrollbar-thumb,
+.dashboard-layout ::-webkit-scrollbar-thumb {
     background: var(--border-default);
     border-radius: var(--radius-full);
 }
 
-::-webkit-scrollbar-thumb:hover {
+[data-admin-area]::-webkit-scrollbar-thumb:hover,
+.admin-layout ::-webkit-scrollbar-thumb:hover,
+.dashboard-layout ::-webkit-scrollbar-thumb:hover {
     background: var(--border-emphasis);
 }
 

@@ -349,7 +349,9 @@ class AnalyticsApiClient {
 		body?: any,
 		params?: Record<string, any>
 	): Promise<T> {
-		let url = `${API_BASE_URL}${endpoint}`;
+		// ICT 11+ Fix: Add /api prefix if endpoint doesn't already have it
+		const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
+		let url = `${API_BASE_URL}${apiEndpoint}`;
 
 		if (params) {
 			const searchParams = new URLSearchParams();

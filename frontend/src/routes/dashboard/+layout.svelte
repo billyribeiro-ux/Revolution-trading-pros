@@ -302,7 +302,7 @@
 <DashboardBreadcrumbs />
 
 <!-- Dashboard Content - Flex layout matching WordPress exactly -->
-<div class="dashboard">
+<div class="dashboard dashboard-layout">
 	<!-- Sidebar Navigation (LEFT) -->
 	<DashboardSidebar
 		user={userData}
