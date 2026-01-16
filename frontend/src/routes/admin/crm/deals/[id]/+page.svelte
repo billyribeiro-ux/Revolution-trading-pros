@@ -699,6 +699,7 @@
 		aria-modal="true"
 		tabindex="-1"
 	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header success">
 				<IconTrophy size={24} />
@@ -749,6 +750,7 @@
 		aria-modal="true"
 		tabindex="-1"
 	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header danger">
 				<IconX size={24} />
@@ -800,6 +802,7 @@
 		aria-modal="true"
 		tabindex="-1"
 	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<IconArrowRight size={24} />
@@ -857,6 +860,7 @@
 		aria-modal="true"
 		tabindex="-1"
 	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<IconNotes size={24} />
