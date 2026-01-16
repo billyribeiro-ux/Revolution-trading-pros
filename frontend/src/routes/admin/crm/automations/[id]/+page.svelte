@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { onMount } from 'svelte';
 	import IconShare from '@tabler/icons-svelte/icons/share';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
@@ -60,7 +60,7 @@
 
 	let activeTab = $state<'overview' | 'workflow' | 'subscribers'>('overview');
 
-	const funnelId = $page.params.id;
+	const funnelId = page.params.id;
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS

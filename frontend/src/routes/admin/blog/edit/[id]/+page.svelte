@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import IconDeviceFloppy from '@tabler/icons-svelte/icons/device-floppy';
@@ -57,7 +57,7 @@
 	}
 
 	// Get post ID from URL params
-	const postId = $derived($page.params.id);
+	const postId = $derived(page.params.id);
 
 	let post = $state({
 		id: 0,

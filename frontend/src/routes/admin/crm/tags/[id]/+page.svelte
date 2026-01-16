@@ -12,7 +12,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import {
 		IconTag,
@@ -33,7 +33,7 @@
 	import type { ContactTag, Contact } from '$lib/crm/types';
 
 	// Get tag ID from route params
-	let tagId = $derived($page.params.id);
+	let tagId = $derived(page.params.id);
 
 	// State
 	let tag = $state<ContactTag | null>(null);

@@ -12,7 +12,7 @@
 -->
 
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import IconShare from '@tabler/icons-svelte/icons/share';
@@ -71,7 +71,7 @@
 	let availableLists = $state<{ id: string; title: string }[]>([]);
 	let availableSequences = $state<{ id: string; title: string }[]>([]);
 
-	const funnelId = $page.params.id;
+	const funnelId = page.params.id;
 
 	const actionTypeOptions = [
 		{

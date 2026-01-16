@@ -4,7 +4,7 @@
 -->
 
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { untrack } from 'svelte';
 	import { productsApi, AdminApiError, type Product } from '$lib/api/admin';
@@ -26,7 +26,7 @@
 	type ProductType = 'course' | 'indicator' | 'membership' | 'bundle';
 
 	// Get product ID from route params
-	let productId = $derived(Number($page.params.id));
+	let productId = $derived(Number(page.params.id));
 
 	// Loading states
 	let loading = $state(true);

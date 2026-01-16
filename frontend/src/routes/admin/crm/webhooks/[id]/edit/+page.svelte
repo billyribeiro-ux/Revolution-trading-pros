@@ -11,7 +11,7 @@
 -->
 
 <script lang="ts">
-	import { page } from '$app/stores';
+	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import IconWebhook from '@tabler/icons-svelte/icons/webhook';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
@@ -31,7 +31,7 @@
 	// STATE MANAGEMENT - Svelte 5 Runes
 	// =====================================================
 
-	let webhookId = $derived($page.params.id);
+	let webhookId = $derived(page.params.id);
 	let originalWebhook = $state<Webhook | null>(null);
 
 	let name = $state('');
