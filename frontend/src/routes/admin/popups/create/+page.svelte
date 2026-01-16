@@ -683,6 +683,7 @@
 		background: rgba(230, 184, 0, 0.2);
 	}
 
+	/* Unused - keeping for future use
 	.page-title {
 		font-size: 2rem;
 		font-weight: 700;
@@ -693,7 +694,7 @@
 	.page-subtitle {
 		font-size: 1rem;
 		color: #64748b;
-	}
+	}*/
 
 	.header-actions {
 		display: flex;

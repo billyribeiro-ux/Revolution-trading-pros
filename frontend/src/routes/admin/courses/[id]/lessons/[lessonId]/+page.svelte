@@ -410,7 +410,7 @@
 	.upload-area { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 32px; background: #f9fafb; border: 2px dashed #d1d5db; border-radius: 8px; text-align: center; }
 	.upload-area svg { color: #9ca3af; }
 	.upload-area p { color: #6b7280; margin: 0; }
-	.upload-area input[type="file"] { cursor: pointer; }
+	/* .upload-area input[type="file"] { cursor: pointer; } - Unused */
 	.upload-area input[type="text"] { width: 100%; max-width: 300px; padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; }
 	.upload-area input[type="text"]:focus { outline: none; border-color: #143e59; }
 	.divider { color: #9ca3af; font-size: 12px; }

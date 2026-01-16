@@ -371,6 +371,7 @@
 		transition: all 0.2s;
 	}
 
+	/* Unused - keeping for future use
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
 		color: #FFD11A;
@@ -378,7 +379,7 @@
 
 	.btn-refresh :global(.spinning) {
 		animation: spin 1s linear infinite;
-	}
+	}*/
 
 	@keyframes spin {
 		from { transform: rotate(0deg); }
@@ -683,12 +684,12 @@
 		margin-bottom: 1rem;
 	}
 
-	.error-state h3,
+	/* .error-state h3,
 	.empty-state h3 {
 		color: #e2e8f0;
 		margin: 0 0 0.5rem 0;
 		font-size: 1.25rem;
-	}
+	}*/
 
 	.error-state p,
 	.empty-state p {

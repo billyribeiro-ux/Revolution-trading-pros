@@ -396,14 +396,15 @@
 		transition: all 0.2s;
 	}
 
+	/* Unused - keeping for future use
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
 		color: #E6B800;
 	}
 
-	.btn-secondary :global(.spinning) {
+	.btn-refresh :global(.spinning) {
 		animation: spin 1s linear infinite;
-	}
+	}*/
 
 	@keyframes spin {
 		from { transform: rotate(0deg); }
