@@ -102,7 +102,8 @@
 		{/if}
 	</div>
 {:else}
-	<div class="min-h-screen bg-white text-[#666666]" class:has-admin-toolbar={isAdmin}>
+	<!-- Marketing pages control their own backgrounds - wrapper is neutral -->
+	<div class="min-h-screen" class:has-admin-toolbar={isAdmin}>
 		<!-- ICT9+ Hydration-Safe: Only render AdminToolbar after client mount -->
 		{#if mounted}
 			<AdminToolbar />

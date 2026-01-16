@@ -551,9 +551,9 @@ body.dark,
 		vertical-align: middle;
 	}
 
-	/* Lazy loading placeholder */
+	/* Lazy loading placeholder - use transparent to work with any theme */
 	img[loading='lazy'] {
-		background-color: rgb(243 244 246);
+		background-color: transparent;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -579,33 +579,10 @@ body.dark,
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Scrollbar Styling (Webkit)
+	 * Scrollbar Styling - REMOVED FROM GLOBAL
+	 * Each page/section defines its own scrollbar colors to match its theme
+	 * Admin/Dashboard scrollbars are in main.css (imported only in those layouts)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	::-webkit-scrollbar {
-		width: 8px;
-		height: 8px;
-	}
-
-	::-webkit-scrollbar-track {
-		background: rgb(243 244 246);
-		border-radius: 4px;
-	}
-
-	::-webkit-scrollbar-thumb {
-		background: rgb(156 163 175);
-		border-radius: 4px;
-	}
-
-	::-webkit-scrollbar-thumb:hover {
-		background: rgb(107 114 128);
-	}
-
-	/* Firefox scrollbar */
-	* {
-		scrollbar-width: thin;
-		scrollbar-color: rgb(156 163 175) rgb(243 244 246);
-	}
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
