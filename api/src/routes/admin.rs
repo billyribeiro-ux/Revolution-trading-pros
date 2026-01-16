@@ -1362,8 +1362,6 @@ pub fn router() -> Router<AppState> {
         .route("/posts/stats", get(posts_stats))
         // Site health - ICT 7 FIX
         .route("/site-health", get(site_health))
-        // Connections - ICT 7 FIX
-        .route("/connections", get(connections_status))
         // Products stats
         .route("/products/stats", get(products_stats))
         // Users
