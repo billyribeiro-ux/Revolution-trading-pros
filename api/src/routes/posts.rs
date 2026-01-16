@@ -321,6 +321,12 @@ async fn delete_post(
 
 pub fn router() -> Router<AppState> {
     Router::new()
+        .route("/", get(list_posts))
+        .route("/:slug", get(get_post))
+}
+
+pub fn admin_router() -> Router<AppState> {
+    Router::new()
         .route("/", get(list_posts).post(create_post))
-        .route("/:slug", get(get_post).put(update_post).delete(delete_post))
+        .route("/:id", get(get_post).put(update_post).delete(delete_post))
 }

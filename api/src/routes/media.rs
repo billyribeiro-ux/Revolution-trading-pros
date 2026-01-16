@@ -619,13 +619,14 @@ pub async fn direct_upload(
     })))
 }
 
-/// Build the media router
-pub fn router() -> Router<AppState> {
+/// Build the media admin router
+pub fn admin_router() -> Router<AppState> {
     Router::new()
-        .route("/admin/media", get(index))
-        .route("/admin/media/upload", post(direct_upload))
-        .route("/admin/media/presigned-upload", post(presigned_upload))
-        .route("/admin/media/confirm-upload", post(confirm_upload))
-        .route("/admin/media/statistics", get(statistics))
-        .route("/admin/media/:id", get(show).put(update).delete(destroy))
+        .route("/", get(index))
+        .route("/files", get(index))  // Frontend uses /admin/media/files
+        .route("/upload", post(direct_upload))
+        .route("/presigned-upload", post(presigned_upload))
+        .route("/confirm-upload", post(confirm_upload))
+        .route("/statistics", get(statistics))
+        .route("/:id", get(show).put(update).delete(destroy))
 }

@@ -70,6 +70,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/products", products::router())
         // .nest("/indicators", indicators::router()) // Removed - replaced by member_indicators
         .nest("/posts", posts::router())
+        .nest("/admin/posts", posts::admin_router())
         .nest("/subscriptions", subscriptions::router())
         .nest("/newsletter", newsletter::router())
         .nest("/admin", admin::router())
@@ -105,6 +106,8 @@ pub fn api_router() -> Router<AppState> {
         // Video Management System (Learning Center, Daily Videos, Weekly Watchlist, Room Archives)
         .nest("/admin/videos", admin_videos::router())
         .nest("/admin/page-layouts", admin_page_layouts::router())
+        // Media Admin - ICT 7 Grade
+        .nest("/admin/media", media::admin_router())
         // Forms Admin - ICT 7 Grade
         .nest("/admin/forms", forms::admin_router())
         // Email Templates Admin - ICT 7 Grade
