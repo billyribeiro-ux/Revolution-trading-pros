@@ -134,8 +134,17 @@ CREATE INDEX IF NOT EXISTS idx_jobs_status ON jobs(status) WHERE status = 'pendi
 -- Job type filtering
 CREATE INDEX IF NOT EXISTS idx_jobs_type ON jobs(job_type);
 
--- Scheduled job execution
-CREATE INDEX IF NOT EXISTS idx_jobs_scheduled ON jobs(scheduled_for) WHERE scheduled_for IS NOT NULL;
+-- Scheduled job execution (conditional - column may not exist in all schemas)
+DO $$
+BEGIN
+    IF EXISTS (
+        SELECT 1 FROM information_schema.columns 
+        WHERE table_name = 'jobs' AND column_name = 'scheduled_for'
+    ) THEN
+        CREATE INDEX IF NOT EXISTS idx_jobs_scheduled ON jobs(scheduled_for) WHERE scheduled_for IS NOT NULL;
+    END IF;
+END
+$$;
 
 -- ═══════════════════════════════════════════════════════════════════════════
 -- Enable pg_trgm extension for text search (if not already enabled)
