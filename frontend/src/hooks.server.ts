@@ -417,9 +417,30 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 /**
  * Performance & Caching Handler
  * Implements optimal caching strategies for different resource types
+ * 
+ * ICT 7 FIX (Svelte 5 / SvelteKit 2.x Best Practice):
+ * Uses the official `preload` option in ResolveOptions to control what gets preloaded.
+ * 
+ * Root cause: SvelteKit eagerly preloads CSS for all anticipated routes, but due to
+ * conditional rendering ({#if mounted} blocks) and complex layout branches, the CSS
+ * may not be consumed within the browser's ~3 second timeout window.
+ * 
+ * Solution: Use SvelteKit's native preload callback to disable CSS preloading.
+ * CSS still loads via <link rel="stylesheet"> - just without <link rel="preload">.
+ * HTTP/2 multiplexing ensures efficient loading without preload hints.
+ * 
+ * @see https://svelte.dev/docs/kit/@sveltejs-kit#ResolveOptions
  */
 const performanceHandler: Handle = async ({ event, resolve }) => {
 	const response = await resolve(event, {
+		// SvelteKit 2.x preload callback - control what gets preloaded in <head>
+		// By default, js and css are preloaded. We disable CSS preloading to prevent
+		// "preloaded but not used" browser warnings on pages with conditional rendering.
+		preload: ({ type }) => {
+			// Only preload JS modules, not CSS
+			// CSS will still load via stylesheet links, just without preload hints
+			return type === 'js';
+		},
 		// Transform HTML for performance optimizations
 		transformPageChunk: ({ html }) => {
 			// Minify HTML in production (remove extra whitespace)
