@@ -977,7 +977,7 @@
 
 							{#if post.categories && post.categories.length > 0}
 								<div class="post-categories">
-									{#each post.categories.slice(0, 3) as categoryId}
+									{#each (post.categories || []).slice(0, 3) as categoryId}
 										{@const category = typeof categoryId === 'string' ? getPredefinedCategoryById(categoryId) : categoryId}
 										{#if category}
 											<span
@@ -1110,7 +1110,7 @@
 							<td>
 								{#if post.categories?.length > 0}
 									<div class="table-category-tags">
-										{#each post.categories.slice(0, 2) as categoryId}
+										{#each (post.categories || []).slice(0, 2) as categoryId}
 											{@const category = typeof categoryId === 'string' ? getPredefinedCategoryById(categoryId) : categoryId}
 											{#if category}
 												<span class="category-tag-table" style:--tag-color={category.color || '#E6B800'}>{category.name}</span>

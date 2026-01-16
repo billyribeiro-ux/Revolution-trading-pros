@@ -642,7 +642,7 @@
 							{/if}
 
 							<div class="plan-features">
-								{#each plan.features.slice(0, 3) as feature}
+								{#each (plan.features || []).slice(0, 3) as feature}
 									<div class="feature-item">
 										<IconCheck size={14} />
 										<span>{feature.feature_name}</span>

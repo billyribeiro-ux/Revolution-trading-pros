@@ -1006,7 +1006,7 @@
 							</td>
 							<td class="categories-cell">
 								<div class="category-tags">
-									{#each video.categories.slice(0, 3) as categoryId}
+									{#each (video.categories || []).slice(0, 3) as categoryId}
 										{@const category = getCategoryById(categoryId)}
 										{#if category}
 											<span class="category-tag" style:--tag-color={category.color}>

@@ -698,7 +698,7 @@
 						</div>
 						{#if resource.tags && resource.tags.length > 0}
 							<div class="resource-tags">
-								{#each resource.tags.slice(0, 3) as tagId}
+								{#each (resource.tags || []).slice(0, 3) as tagId}
 									{@const tag = getCategoryById(tagId)}
 									{#if tag}
 										<span class="tag" style:--tag-color={tag.color}>{tag.name}</span>

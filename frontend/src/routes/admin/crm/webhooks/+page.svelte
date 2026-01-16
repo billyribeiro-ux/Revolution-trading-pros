@@ -340,7 +340,7 @@
 					<div class="webhook-events">
 						<span class="events-label">Events:</span>
 						<div class="events-list">
-							{#each webhook.events.slice(0, 3) as event}
+							{#each (webhook.events || []).slice(0, 3) as event}
 								<span class="event-badge">{event.replace(/_/g, ' ')}</span>
 							{/each}
 							{#if webhook.events.length > 3}
