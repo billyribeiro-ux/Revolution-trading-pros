@@ -282,7 +282,7 @@
 										<td>{formatDate(file.created_at)}</td>
 										<td>
 											<div class="tags">
-												{#each file.tags.slice(0, 3) as tag}
+												{#each (file.tags || []).slice(0, 3) as tag}
 													<span class="tag">{tag}</span>
 												{/each}
 											</div>
