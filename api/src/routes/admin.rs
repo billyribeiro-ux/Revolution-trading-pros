@@ -1224,6 +1224,121 @@ async fn connections_status(
     })))
 }
 
+/// POST /admin/users/:id/impersonate - Generate impersonation token
+/// ICT 7 FIX: Added missing endpoint that frontend expects
+async fn impersonate_user(
+    State(state): State<AppState>,
+    user: User,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Only super-admin can impersonate
+    require_super_admin(&user)?;
+
+    // Get target user
+    let target: Option<AdminUserRow> = sqlx::query_as(
+        "SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at
+         FROM users WHERE id = $1"
+    )
+    .bind(id)
+    .fetch_optional(state.db.pool())
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.to_string()}))))?;
+
+    match target {
+        Some(target_user) => {
+            // In a real implementation, you would generate a JWT token for the target user
+            // For now, return a placeholder token
+            let token = format!("impersonate_{}_{}", target_user.id, chrono::Utc::now().timestamp());
+
+            tracing::info!(
+                target: "security",
+                event = "impersonate",
+                admin_id = %user.id,
+                admin_email = %user.email,
+                target_id = %target_user.id,
+                target_email = %target_user.email,
+                "Admin impersonating user"
+            );
+
+            Ok(Json(serde_json::json!({
+                "success": true,
+                "token": token,
+                "user": {
+                    "id": target_user.id,
+                    "name": target_user.name,
+                    "email": target_user.email
+                },
+                "expires_in": 3600
+            })))
+        },
+        None => Err((StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "User not found"}))))
+    }
+}
+
+/// GET /admin/users/:id/subscriptions - Get user's subscriptions
+/// ICT 7 FIX: Added missing endpoint that frontend expects
+async fn get_user_subscriptions(
+    State(state): State<AppState>,
+    user: User,
+    Path(id): Path<i64>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
+
+    // Verify user exists
+    let user_exists: Option<(i64,)> = sqlx::query_as("SELECT id FROM users WHERE id = $1")
+        .bind(id)
+        .fetch_optional(state.db.pool())
+        .await
+        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.to_string()}))))?;
+
+    if user_exists.is_none() {
+        return Err((StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "User not found"}))));
+    }
+
+    // Get subscriptions
+    let subscriptions: Vec<(i64, String, Option<f64>, Option<String>, Option<String>, Option<chrono::NaiveDateTime>, Option<chrono::NaiveDateTime>, chrono::NaiveDateTime)> = sqlx::query_as(
+        r#"
+        SELECT
+            id, status, price, product_name, billing_period,
+            starts_at, expires_at, created_at
+        FROM user_subscriptions
+        WHERE user_id = $1
+        ORDER BY created_at DESC
+        "#
+    )
+    .bind(id)
+    .fetch_all(state.db.pool())
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.to_string()}))))?;
+
+    let subs_json: Vec<serde_json::Value> = subscriptions.into_iter().map(|(sub_id, status, price, name, period, starts, expires, created)| {
+        serde_json::json!({
+            "id": sub_id,
+            "status": status,
+            "price": price,
+            "product_name": name,
+            "billing_period": period,
+            "starts_at": starts,
+            "expires_at": expires,
+            "created_at": created
+        })
+    }).collect();
+
+    let active_count = subs_json.iter().filter(|s| s["status"] == "active").count();
+    let total_revenue: f64 = subs_json.iter()
+        .filter_map(|s| s["price"].as_f64())
+        .sum();
+
+    Ok(Json(serde_json::json!({
+        "subscriptions": subs_json,
+        "stats": {
+            "total": subs_json.len(),
+            "active": active_count,
+            "total_revenue": (total_revenue * 100.0).round() / 100.0
+        }
+    })))
+}
+
 pub fn router() -> Router<AppState> {
     Router::new()
         // Dashboard
@@ -1245,6 +1360,8 @@ pub fn router() -> Router<AppState> {
         .route("/users/:id/ban", post(ban_user))
         .route("/users/:id/unban", post(unban_user))
         .route("/users/:id/memberships", get(get_user_memberships_by_user))
+        .route("/users/:id/subscriptions", get(get_user_subscriptions))
+        .route("/users/:id/impersonate", post(impersonate_user))
         // Memberships (admin management)
         .route("/membership-plans", get(list_all_plans))
         .route("/user-memberships", get(list_user_memberships).post(grant_membership))

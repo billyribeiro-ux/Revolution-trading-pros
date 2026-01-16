@@ -326,6 +326,296 @@ pub async fn email_templates(
     })))
 }
 
+/// GET /admin/members/service/:id - Get members by service/product ID
+/// ICT 7 FIX: Added missing endpoint that frontend expects
+#[tracing::instrument(skip(state))]
+pub async fn members_by_service(
+    State(state): State<AppState>,
+    Path(service_id): Path<i64>,
+    Query(params): Query<MemberQuery>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    // Get service info
+    let service_info: Option<(i64, Option<String>, Option<String>)> = sqlx::query_as(
+        "SELECT DISTINCT COALESCE(product_id, id) as id, product_name, 'subscription' as type
+         FROM user_subscriptions WHERE COALESCE(product_id, id) = $1 LIMIT 1"
+    )
+    .bind(service_id)
+    .fetch_optional(state.db.pool())
+    .await
+    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    let (svc_id, svc_name, svc_type) = service_info.unwrap_or((service_id, None, None));
+
+    // Build query for members with this service
+    let per_page = params.per_page.unwrap_or(25).min(100);
+    let page = params.page.unwrap_or(1).max(1);
+    let offset = (page - 1) * per_page;
+
+    let mut conditions = vec![format!("us.product_id = {} OR us.id = {}", service_id, service_id)];
+
+    if let Some(status) = &params.status {
+        conditions.push(format!("us.status = '{}'", status.replace('\'', "''")));
+    }
+
+    if let Some(search) = &params.search {
+        let escaped = search.replace('\'', "''");
+        conditions.push(format!(
+            "(u.name ILIKE '%{}%' OR u.email ILIKE '%{}%')",
+            escaped, escaped
+        ));
+    }
+
+    let where_clause = conditions.join(" AND ");
+
+    // Get members
+    let members: Vec<Member> = sqlx::query_as(&format!(
+        "SELECT DISTINCT u.id, u.name, u.email, u.first_name, u.last_name, u.created_at, u.updated_at
+         FROM users u
+         JOIN user_subscriptions us ON u.id = us.user_id
+         WHERE {}
+         ORDER BY u.created_at DESC
+         LIMIT {} OFFSET {}",
+        where_clause, per_page, offset
+    ))
+    .fetch_all(state.db.pool())
+    .await
+    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    // Get total count
+    let total: i64 = sqlx::query_scalar(&format!(
+        "SELECT COUNT(DISTINCT u.id)
+         FROM users u
+         JOIN user_subscriptions us ON u.id = us.user_id
+         WHERE {}",
+        where_clause
+    ))
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0);
+
+    // Get stats
+    let active_count: i64 = sqlx::query_scalar(&format!(
+        "SELECT COUNT(DISTINCT u.id) FROM users u
+         JOIN user_subscriptions us ON u.id = us.user_id
+         WHERE ({}) AND us.status = 'active'",
+        where_clause
+    ))
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0);
+
+    let trial_count: i64 = sqlx::query_scalar(&format!(
+        "SELECT COUNT(DISTINCT u.id) FROM users u
+         JOIN user_subscriptions us ON u.id = us.user_id
+         WHERE ({}) AND us.status = 'trial'",
+        where_clause
+    ))
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0);
+
+    let total_revenue: f64 = sqlx::query_scalar(&format!(
+        "SELECT COALESCE(SUM(us.price), 0) FROM user_subscriptions us
+         WHERE {}",
+        conditions[0] // Just the service filter
+    ))
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0.0);
+
+    let last_page = (total as f64 / per_page as f64).ceil() as i64;
+
+    Ok(Json(serde_json::json!({
+        "service": {
+            "id": svc_id,
+            "name": svc_name.unwrap_or_else(|| format!("Service {}", svc_id)),
+            "type": svc_type.unwrap_or_else(|| "subscription".to_string())
+        },
+        "stats": {
+            "total_members": total,
+            "active_members": active_count,
+            "trial_members": trial_count,
+            "churned_members": total - active_count - trial_count,
+            "total_revenue": (total_revenue * 100.0).round() / 100.0
+        },
+        "members": members,
+        "pagination": {
+            "total": total,
+            "per_page": per_page,
+            "current_page": page,
+            "last_page": last_page.max(1)
+        }
+    })))
+}
+
+/// GET /admin/members/churned - Get churned/past members
+/// ICT 7 FIX: Added missing endpoint that frontend expects
+#[tracing::instrument(skip(state))]
+pub async fn churned_members(
+    State(state): State<AppState>,
+    Query(params): Query<MemberQuery>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    let per_page = params.per_page.unwrap_or(25).min(100);
+    let page = params.page.unwrap_or(1).max(1);
+    let offset = (page - 1) * per_page;
+
+    let mut conditions = Vec::new();
+
+    if let Some(search) = &params.search {
+        let escaped = search.replace('\'', "''");
+        conditions.push(format!(
+            "(u.name ILIKE '%{}%' OR u.email ILIKE '%{}%')",
+            escaped, escaped
+        ));
+    }
+
+    if let Some(date_from) = &params.date_from {
+        conditions.push(format!("us.cancelled_at >= '{}'", date_from.replace('\'', "''")));
+    }
+    if let Some(date_to) = &params.date_to {
+        conditions.push(format!("us.cancelled_at <= '{}'", date_to.replace('\'', "''")));
+    }
+
+    let extra_conditions = if conditions.is_empty() {
+        String::new()
+    } else {
+        format!(" AND {}", conditions.join(" AND "))
+    };
+
+    // Get churned members (have cancelled/expired subs, no active subs)
+    let members: Vec<Member> = sqlx::query_as(&format!(
+        "SELECT DISTINCT u.id, u.name, u.email, u.first_name, u.last_name, u.created_at, u.updated_at
+         FROM users u
+         JOIN user_subscriptions us ON u.id = us.user_id
+         WHERE us.status IN ('cancelled', 'expired')
+         AND u.id NOT IN (
+             SELECT DISTINCT user_id FROM user_subscriptions WHERE status = 'active'
+         ){}
+         ORDER BY us.cancelled_at DESC NULLS LAST, u.created_at DESC
+         LIMIT {} OFFSET {}",
+        extra_conditions, per_page, offset
+    ))
+    .fetch_all(state.db.pool())
+    .await
+    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    // Get total count
+    let total: i64 = sqlx::query_scalar(&format!(
+        "SELECT COUNT(DISTINCT u.id)
+         FROM users u
+         JOIN user_subscriptions us ON u.id = us.user_id
+         WHERE us.status IN ('cancelled', 'expired')
+         AND u.id NOT IN (
+             SELECT DISTINCT user_id FROM user_subscriptions WHERE status = 'active'
+         ){}",
+        extra_conditions
+    ))
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0);
+
+    // Stats
+    let this_month: i64 = sqlx::query_scalar(
+        "SELECT COUNT(DISTINCT user_id) FROM user_subscriptions
+         WHERE status IN ('cancelled', 'expired')
+         AND cancelled_at >= date_trunc('month', CURRENT_DATE)"
+    )
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0);
+
+    let lost_revenue: f64 = sqlx::query_scalar(
+        "SELECT COALESCE(SUM(price), 0) FROM user_subscriptions
+         WHERE status IN ('cancelled', 'expired')"
+    )
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0.0);
+
+    let last_page = (total as f64 / per_page as f64).ceil() as i64;
+
+    Ok(Json(serde_json::json!({
+        "stats": {
+            "total_churned": total,
+            "churned_this_month": this_month,
+            "lost_revenue": (lost_revenue * 100.0).round() / 100.0,
+            "avg_lifetime_days": 0 // Would need more complex calculation
+        },
+        "members": members,
+        "pagination": {
+            "total": total,
+            "per_page": per_page,
+            "current_page": page,
+            "last_page": last_page.max(1)
+        }
+    })))
+}
+
+/// GET /admin/members/export - Export members as CSV
+/// ICT 7 FIX: Added missing endpoint that frontend expects
+#[tracing::instrument(skip(state))]
+pub async fn export_members(
+    State(state): State<AppState>,
+    Query(params): Query<MemberQuery>,
+) -> Result<axum::response::Response, ApiError> {
+    use axum::response::IntoResponse;
+    use axum::http::header;
+
+    let mut conditions = Vec::new();
+
+    if let Some(status) = &params.status {
+        match status.as_str() {
+            "active" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_subscriptions WHERE status = 'active')".to_string()),
+            "churned" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_subscriptions WHERE status IN ('cancelled', 'expired')) AND u.id NOT IN (SELECT DISTINCT user_id FROM user_subscriptions WHERE status = 'active')".to_string()),
+            "trial" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_subscriptions WHERE status = 'trial')".to_string()),
+            _ => {}
+        }
+    }
+
+    let where_clause = if conditions.is_empty() {
+        "1=1".to_string()
+    } else {
+        conditions.join(" AND ")
+    };
+
+    let members: Vec<Member> = sqlx::query_as(&format!(
+        "SELECT u.id, u.name, u.email, u.first_name, u.last_name, u.created_at, u.updated_at
+         FROM users u
+         WHERE {}
+         ORDER BY u.created_at DESC
+         LIMIT 10000",
+        where_clause
+    ))
+    .fetch_all(state.db.pool())
+    .await
+    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+    // Build CSV
+    let mut csv = String::from("id,name,email,first_name,last_name,created_at,updated_at\n");
+    for m in members {
+        csv.push_str(&format!(
+            "{},{},{},{},{},{},{}\n",
+            m.id,
+            m.name.as_deref().unwrap_or("").replace(',', ";"),
+            m.email.replace(',', ";"),
+            m.first_name.as_deref().unwrap_or("").replace(',', ";"),
+            m.last_name.as_deref().unwrap_or("").replace(',', ";"),
+            m.created_at.map(|d| d.to_string()).unwrap_or_default(),
+            m.updated_at.map(|d| d.to_string()).unwrap_or_default()
+        ));
+    }
+
+    let response = (
+        [
+            (header::CONTENT_TYPE, "text/csv"),
+            (header::CONTENT_DISPOSITION, "attachment; filename=\"members.csv\""),
+        ],
+        csv
+    );
+
+    Ok(response.into_response())
+}
+
 /// GET /admin/members/:id - Get single member details
 #[tracing::instrument(skip(state))]
 pub async fn show(
@@ -383,6 +673,9 @@ pub fn router() -> Router<AppState> {
         .route("/admin/members", get(index))
         .route("/admin/members/stats", get(stats))
         .route("/admin/members/services", get(services))
+        .route("/admin/members/churned", get(churned_members))
+        .route("/admin/members/export", get(export_members))
         .route("/admin/members/email-templates", get(email_templates))
+        .route("/admin/members/service/:id", get(members_by_service))
         .route("/admin/members/:id", get(show))
 }

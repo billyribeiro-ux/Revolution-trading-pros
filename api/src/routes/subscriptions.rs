@@ -283,12 +283,97 @@ async fn get_metrics(
     })))
 }
 
+/// GET /subscriptions/export - Export subscriptions as CSV
+/// ICT 7 FIX: Added missing endpoint that frontend expects
+async fn export_subscriptions(
+    State(state): State<AppState>,
+    axum::extract::Query(params): axum::extract::Query<std::collections::HashMap<String, String>>,
+) -> Result<axum::response::Response, (StatusCode, Json<serde_json::Value>)> {
+    use axum::response::IntoResponse;
+    use axum::http::header;
+
+    let format = params.get("format").map(|s| s.as_str()).unwrap_or("csv");
+
+    // Fetch subscriptions with user info
+    let subscriptions: Vec<(i64, i64, Option<String>, String, Option<chrono::NaiveDateTime>, Option<chrono::NaiveDateTime>, Option<f64>, Option<String>, Option<String>)> = sqlx::query_as(
+        r#"
+        SELECT
+            us.id,
+            us.user_id,
+            u.email,
+            us.status,
+            us.starts_at,
+            us.expires_at,
+            us.price,
+            us.product_name,
+            us.billing_period
+        FROM user_subscriptions us
+        LEFT JOIN users u ON us.user_id = u.id
+        ORDER BY us.created_at DESC
+        LIMIT 10000
+        "#
+    )
+    .fetch_all(state.db.pool())
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    if format == "json" {
+        let json_data: Vec<serde_json::Value> = subscriptions.iter().map(|(id, user_id, email, status, starts, expires, price, name, period)| {
+            json!({
+                "id": id,
+                "user_id": user_id,
+                "email": email,
+                "status": status,
+                "starts_at": starts,
+                "expires_at": expires,
+                "price": price,
+                "product_name": name,
+                "billing_period": period
+            })
+        }).collect();
+
+        let response = (
+            [(header::CONTENT_TYPE, "application/json")],
+            serde_json::to_string(&json_data).unwrap_or_default()
+        );
+        return Ok(response.into_response());
+    }
+
+    // CSV format
+    let mut csv = String::from("id,user_id,email,status,starts_at,expires_at,price,product_name,billing_period\n");
+    for (id, user_id, email, status, starts, expires, price, name, period) in subscriptions {
+        csv.push_str(&format!(
+            "{},{},{},{},{},{},{},{},{}\n",
+            id,
+            user_id,
+            email.as_deref().unwrap_or("").replace(',', ";"),
+            status,
+            starts.map(|d| d.to_string()).unwrap_or_default(),
+            expires.map(|d| d.to_string()).unwrap_or_default(),
+            price.unwrap_or(0.0),
+            name.as_deref().unwrap_or("").replace(',', ";"),
+            period.as_deref().unwrap_or("")
+        ));
+    }
+
+    let response = (
+        [
+            (header::CONTENT_TYPE, "text/csv"),
+            (header::CONTENT_DISPOSITION, "attachment; filename=\"subscriptions.csv\""),
+        ],
+        csv
+    );
+
+    Ok(response.into_response())
+}
+
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/plans", get(list_plans))
         .route("/plans/:slug", get(get_plan))
         .route("/my", get(get_my_subscriptions))
         .route("/my/active", get(get_active_subscription))
+        .route("/export", get(export_subscriptions))
         .route("/", post(create_subscription))
         .route("/:id/cancel", post(cancel_subscription))
         .route("/metrics", get(get_metrics))
