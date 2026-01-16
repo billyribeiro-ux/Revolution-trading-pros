@@ -61,6 +61,8 @@ export interface RoomResource {
 	file_size?: number;
 	formatted_size: string;
 	video_platform?: VideoPlatform;
+	bunny_video_guid?: string;
+	bunny_library_id?: string;
 	duration?: number;
 	formatted_duration: string;
 	thumbnail_url?: string;

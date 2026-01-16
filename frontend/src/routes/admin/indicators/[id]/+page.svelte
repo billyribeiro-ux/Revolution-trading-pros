@@ -103,7 +103,7 @@
 			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/toggle`, { method: 'POST' });
 			if (data.success) {
 				indicator = data.data;
-				success = indicator.is_active ? 'Indicator activated!' : 'Indicator deactivated!';
+				success = indicator?.is_active ? 'Indicator activated!' : 'Indicator deactivated!';
 				setTimeout(() => success = '', 3000);
 			}
 		} catch (e) {

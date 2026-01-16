@@ -110,7 +110,7 @@
 
 	let stageProgress = $derived(() => {
 		if (!pipeline?.stages || !deal) return 0;
-		const stageIndex = pipeline.stages.findIndex(s => s.id === deal.stage_id);
+		const stageIndex = pipeline.stages.findIndex(s => s.id === deal?.stage_id);
 		return stageIndex >= 0 ? ((stageIndex + 1) / pipeline.stages.length) * 100 : 0;
 	});
 
@@ -449,8 +449,8 @@
 				<h3>Stage Progress</h3>
 				<div class="stages-row">
 					{#each pipeline.stages.filter(s => !s.is_closed_won && !s.is_closed_lost) as stage (stage.id)}
-						{@const isCurrent = stage.id === deal.stage_id}
-						{@const isPast = pipeline.stages.findIndex(s => s.id === stage.id) < pipeline.stages.findIndex(s => s.id === deal.stage_id)}
+						{@const isCurrent = stage.id === deal?.stage_id}
+						{@const isPast = pipeline.stages.findIndex(s => s.id === stage.id) < pipeline.stages.findIndex(s => s.id === deal?.stage_id)}
 						<button
 							class="stage-item"
 							class:current={isCurrent}

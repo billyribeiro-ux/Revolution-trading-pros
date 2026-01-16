@@ -27,4 +27,5 @@ export * from './interceptor';
 export * from './csrf';
 export * from './tracing';
 export * from './errors';
-export * from '../client.svelte';
+// Note: client.svelte exports are available via direct import from '$lib/api/client.svelte'
+// Not re-exported here to avoid duplicate type definitions with ./types

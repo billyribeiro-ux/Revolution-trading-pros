@@ -32,24 +32,8 @@
 	// SSR data from +page.server.ts
 	let { data }: Props = $props();
 
-	// Derive display items from API or fallback to static
-	const displayUpdates = $derived(
-		data.latestUpdates && data.latestUpdates.length > 0
-			? data.latestUpdates.map(r => ({
-					id: r.id,
-					type: r.content_type === 'daily_video' ? 'Daily Video' : r.content_type.replace('_', ' '),
-					title: r.title,
-					date: r.formatted_date,
-					excerpt: r.description || '',
-					href: `/daily/day-trading-room/${r.slug}`,
-					image: r.thumbnail_url || 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-					isVideo: r.resource_type === 'video'
-				}))
-			: articles
-	);
-
-	// Fallback article data - used when API returns empty
-	const articles = [
+	// Fallback article data - used when API returns empty (declared before $derived that uses it)
+	const fallbackArticles = [
 		{
 			id: 1,
 			type: 'Daily Video',
@@ -111,6 +95,22 @@
 			isVideo: false
 		}
 	];
+
+	// Derive display items from API or fallback to static
+	const displayUpdates = $derived(
+		data.latestUpdates && data.latestUpdates.length > 0
+			? data.latestUpdates.map(r => ({
+					id: r.id,
+					type: r.content_type === 'daily_video' ? 'Daily Video' : r.content_type.replace('_', ' '),
+					title: r.title,
+					date: r.formatted_date,
+					excerpt: r.description || '',
+					href: `/daily/day-trading-room/${r.slug}`,
+					image: r.thumbnail_url || 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+					isVideo: r.resource_type === 'video'
+				}))
+			: fallbackArticles
+	);
 
 	// Google Calendar integration
 	onMount(() => {

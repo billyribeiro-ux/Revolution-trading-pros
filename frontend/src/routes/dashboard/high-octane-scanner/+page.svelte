@@ -120,6 +120,11 @@
 
 	const fallbackStats: QuickStats = { winRate: 82, weeklyProfit: '+$4,850', activeTrades: 4, closedThisWeek: 2 };
 
+	const fallbackVideoUpdates: VideoUpdate[] = [
+		{ id: 1, title: 'Market Analysis & Trading Strategies', date: 'January 13, 2026', excerpt: 'Weekly breakdown of top swing setups', href: '/daily/high-octane-scanner/market-analysis', image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg', isVideo: true, duration: '24:35' },
+		{ id: 2, title: 'Technical Setup Review', date: 'January 12, 2026', excerpt: 'Key levels and entry points', href: '/daily/high-octane-scanner/technical-setup', image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg', isVideo: true, duration: '18:20' }
+	];
+
 	// Derive display items from API or fallback to static
 	const displayUpdates = $derived(
 		data.latestUpdates && data.latestUpdates.length > 0

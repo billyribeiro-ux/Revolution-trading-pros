@@ -37,7 +37,17 @@ export interface CreateWatchlistRequest {
 	watchlistDates?: WatchlistDate[];
 }
 
+export interface WatchlistVideo {
+	title: string;
+	video_url: string;
+	thumbnail_url?: string;
+	formatted_duration?: string;
+	formatted_date?: string;
+}
+
 export interface WatchlistResponse {
 	entries: WatchlistEntry[];
 	total: number;
+	video?: WatchlistVideo;
+	week_title?: string;
 }

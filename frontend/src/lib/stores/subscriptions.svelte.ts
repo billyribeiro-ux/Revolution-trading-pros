@@ -4,6 +4,7 @@ import { writable, derived } from 'svelte/store';
 export type SubscriptionStatus =
 	| 'active' // Subscription is active and payments are processing
 	| 'pending' // Waiting for first payment
+	| 'trial' // Trial period
 	| 'on-hold' // Paused due to payment failure or manual hold
 	| 'cancelled' // Cancelled by user or admin
 	| 'expired' // Subscription period ended

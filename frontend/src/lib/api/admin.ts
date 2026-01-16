@@ -350,6 +350,10 @@ export class AdminApiError extends Error {
 		return this.response?.errors;
 	}
 
+	get errors(): Record<string, string[]> | undefined {
+		return this.response?.errors;
+	}
+
 	get isClientError(): boolean {
 		return this.status >= 400 && this.status < 500;
 	}
