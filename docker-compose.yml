@@ -10,7 +10,7 @@ services:
   # ==========================================================================
   api:
     build:
-      context: ./backend-rust
+      context: ./api
       dockerfile: Dockerfile
     container_name: rtp-api
     ports:
