@@ -85,13 +85,11 @@ import IconBrandPaypal from '@tabler/icons-svelte/icons/brand-paypal';
 import IconBrandReddit from '@tabler/icons-svelte/icons/brand-reddit';
 import IconBrandTelegram from '@tabler/icons-svelte/icons/brand-telegram';
 import IconBrandTiktok from '@tabler/icons-svelte/icons/brand-tiktok';
-import IconBrandTradingview from '@tabler/icons-svelte/icons/brand-tradingview';
 import IconBrandTrello from '@tabler/icons-svelte/icons/brand-trello';
 import IconBrandTwitter from '@tabler/icons-svelte/icons/brand-twitter';
 import IconBrandX from '@tabler/icons-svelte/icons/brand-x';
 import IconBrandYoutube from '@tabler/icons-svelte/icons/brand-youtube';
 import IconBroadcast from '@tabler/icons-svelte/icons/broadcast';
-import IconBullseye from '@tabler/icons-svelte/icons/bullseye';
 
 // Calendar/Clock Icons
 import IconCalculator from '@tabler/icons-svelte/icons/calculator';
@@ -126,7 +124,6 @@ import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 import IconChevronLeft from '@tabler/icons-svelte/icons/chevron-left';
 import IconChevronRight from '@tabler/icons-svelte/icons/chevron-right';
 import IconChevronUp from '@tabler/icons-svelte/icons/chevron-up';
-import IconChip from '@tabler/icons-svelte/icons/chip';
 
 // Misc Icons
 import IconCircleCheck from '@tabler/icons-svelte/icons/circle-check';
@@ -242,7 +239,6 @@ import IconListCheck from '@tabler/icons-svelte/icons/list-check';
 import IconListDetails from '@tabler/icons-svelte/icons/list-details';
 import IconListNumbers from '@tabler/icons-svelte/icons/list-numbers';
 import IconListTree from '@tabler/icons-svelte/icons/list-tree';
-import IconLive from '@tabler/icons-svelte/icons/live';
 import IconLoader from '@tabler/icons-svelte/icons/loader';
 import IconLoader2 from '@tabler/icons-svelte/icons/loader-2';
 import IconLocation from '@tabler/icons-svelte/icons/location';
@@ -257,7 +253,6 @@ import IconMail from '@tabler/icons-svelte/icons/mail';
 import IconMailCheck from '@tabler/icons-svelte/icons/mail-check';
 import IconMailFast from '@tabler/icons-svelte/icons/mail-fast';
 import IconMailForward from '@tabler/icons-svelte/icons/mail-forward';
-import IconMailOpen from '@tabler/icons-svelte/icons/mail-open';
 import IconMailOpened from '@tabler/icons-svelte/icons/mail-opened';
 
 // Map Icons
@@ -314,7 +309,6 @@ import IconPlugOff from '@tabler/icons-svelte/icons/plug-off';
 import IconPlus from '@tabler/icons-svelte/icons/plus';
 import IconProgress from '@tabler/icons-svelte/icons/progress';
 import IconProgressCheck from '@tabler/icons-svelte/icons/progress-check';
-import IconProps from '@tabler/icons-svelte/icons/props';
 
 // Qr/Question Icons
 import IconQrcode from '@tabler/icons-svelte/icons/qrcode';
@@ -328,7 +322,6 @@ import IconRotateClockwise from '@tabler/icons-svelte/icons/rotate-clockwise';
 
 // Diff Icons
 import IconFileDiff from '@tabler/icons-svelte/icons/file-diff';
-import IconGitBranch from '@tabler/icons-svelte/icons/git-branch';
 import IconQuote from '@tabler/icons-svelte/icons/quote';
 
 // Receipt Icons
@@ -353,8 +346,6 @@ import IconSeo from '@tabler/icons-svelte/icons/seo';
 import IconServer from '@tabler/icons-svelte/icons/server';
 import IconSettings from '@tabler/icons-svelte/icons/settings';
 import IconShare from '@tabler/icons-svelte/icons/share';
-import IconSignal from '@tabler/icons-svelte/icons/signal';
-import IconSliders from '@tabler/icons-svelte/icons/sliders';
 
 // Shield Icons
 import IconShield from '@tabler/icons-svelte/icons/shield';
@@ -526,13 +517,11 @@ export {
 	IconBrandReddit,
 	IconBrandTelegram,
 	IconBrandTiktok,
-	IconBrandTradingview,
 	IconBrandTrello,
 	IconBrandTwitter,
 	IconBrandX,
 	IconBrandYoutube,
 	IconBroadcast,
-	IconBullseye,
 	// Calendar/Clock Icons
 	IconCalculator,
 	IconCalendar,
@@ -564,7 +553,6 @@ export {
 	IconChevronLeft,
 	IconChevronRight,
 	IconChevronUp,
-	IconChip,
 	// Misc Icons
 	IconCircleCheck,
 	IconCircleCheckFilled,
@@ -670,7 +658,6 @@ export {
 	IconListDetails,
 	IconListNumbers,
 	IconListTree,
-	IconLive,
 	IconLoader,
 	IconLoader2,
 	IconLocation,
@@ -684,7 +671,6 @@ export {
 	IconMailCheck,
 	IconMailFast,
 	IconMailForward,
-	IconMailOpen,
 	IconMailOpened,
 	// Map Icons
 	IconMap,
@@ -736,7 +722,6 @@ export {
 	IconPlus,
 	IconProgress,
 	IconProgressCheck,
-	IconProps,
 	// Qr/Question Icons
 	IconQrcode,
 	IconQuestionMark,
@@ -769,8 +754,6 @@ export {
 	IconServer,
 	IconSettings,
 	IconShare,
-	IconSignal,
-	IconSliders,
 	// Shield Icons
 	IconShield,
 	IconShieldCheck,
