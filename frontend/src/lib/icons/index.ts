@@ -183,6 +183,7 @@ import IconFileAnalytics from '@tabler/icons-svelte/icons/file-analytics';
 import IconFileDescription from '@tabler/icons-svelte/icons/file-description';
 import IconFileExport from '@tabler/icons-svelte/icons/file-export';
 import IconFileSpreadsheet from '@tabler/icons-svelte/icons/file-spreadsheet';
+import IconFileText from '@tabler/icons-svelte/icons/file-text';
 import IconFilter from '@tabler/icons-svelte/icons/filter';
 import IconFlag from '@tabler/icons-svelte/icons/flag';
 import IconFlame from '@tabler/icons-svelte/icons/flame';
@@ -586,10 +587,7 @@ export {
 	IconCursor,
 	IconCursorText,
 	IconCsv,
-	IconCurrencyBitcoin,
 	IconCurrencyDollar,
-	IconCurrencyEthereum,
-	IconCurrencyEuro,
 	// Dashboard/Device Icons
 	IconDashboard,
 	IconDatabase,
@@ -609,22 +607,17 @@ export {
 	// Edit Icons
 	IconEdit,
 	IconError404,
-	IconExclamationCircle,
 	IconExternalLink,
 	// Eye Icons
 	IconEye,
-	IconEyeCheck,
 	IconEyeOff,
 	// File Icons
 	IconFile,
 	IconFileAnalytics,
-	IconFileCheck,
-	IconFileCode,
 	IconFileDescription,
-	IconFileDownload,
 	IconFileExport,
 	IconFileSpreadsheet,
-	IconFileUpload,
+	IconFileText,
 	IconFilter,
 	IconFingerprint,
 	IconFingerprintScan,
@@ -634,16 +627,11 @@ export {
 	IconFocus,
 	IconFocusCentered,
 	IconFolder,
-	IconFolderOpen,
-	IconFolderPlus,
 	IconForms,
 	// Gauge/Gift Icons
 	IconGauge,
 	IconGif,
 	IconGift,
-	IconGitBranch,
-	IconGitMerge,
-	IconGraph,
 	IconGridDots,
 	IconGripVertical,
 	// Heading Icons
@@ -669,19 +657,11 @@ export {
 	IconKeyboard,
 	// Language/Layout Icons
 	IconLanguage,
-	IconLayers,
-	IconLayersLinked,
-	IconLayout,
 	IconLayout2,
-	IconLayoutDashboard,
-	IconLayoutDistributeHorizontal,
 	IconLayoutGrid,
 	IconLayoutGridAdd,
 	IconLayoutKanban,
-	IconLayoutNavbarCollapse,
 	IconLayoutRows,
-	IconLayoutSidebar,
-	IconLayoutSidebarRight,
 	IconLeaf,
 	IconLink,
 	// List Icons
@@ -767,7 +747,6 @@ export {
 	IconRotateClockwise,
 	// Diff Icons
 	IconFileDiff,
-	IconGitBranch,
 	IconQuote,
 	// Receipt Icons
 	IconReceipt,
