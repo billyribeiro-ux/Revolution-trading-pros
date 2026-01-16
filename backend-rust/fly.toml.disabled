@@ -1,0 +1,134 @@
+# Revolution Trading Pros - Rust API
+# Fly.io Deployment Configuration
+# ICT 7 Principal Engineer Grade Production Settings
+
+app = "revolution-trading-pros-api"
+primary_region = "iad"
+
+[build]
+dockerfile = "Dockerfile"
+
+# =============================================================================
+# Environment Configuration
+# =============================================================================
+[env]
+RUST_LOG = "info,sqlx=warn,tower_http=debug"
+RUST_BACKTRACE = "1"
+HOST = "0.0.0.0"
+PORT = "8080"
+APP_ENV = "production"
+# CORS: Allow both Cloudflare Pages subdomain and local development origins
+# These origins are verified correct for the production frontend deployment
+CORS_ALLOWED_ORIGINS = "https://revolution-trading-pros.pages.dev,http://localhost:5173,http://localhost:3000"
+CORS_MAX_AGE = "3600"
+# Frontend URL for email links and redirects
+FRONTEND_URL = "https://revolution-trading-pros.pages.dev"
+
+# =============================================================================
+# HTTP Service Configuration
+# auto_stop_machines=false ensures always-on availability
+# min_machines_running=2 provides redundancy and load distribution
+# =============================================================================
+[http_service]
+internal_port = 8080
+force_https = true
+auto_stop_machines = false
+auto_start_machines = true
+min_machines_running = 2
+
+# Concurrency limits tuned for Rust's efficient async handling
+# Hard limit prevents overload, soft limit triggers scaling
+[http_service.concurrency]
+type = "requests"
+hard_limit = 1000
+soft_limit = 800
+
+# =============================================================================
+# Services Configuration (Legacy format, kept for compatibility)
+# =============================================================================
+[[services]]
+internal_port = 8080
+protocol = "tcp"
+
+[[services.ports]]
+handlers = ["http"]
+port = 80
+force_https = true
+
+[[services.ports]]
+handlers = ["tls", "http"]
+port = 443
+
+# HTTP health check with extended grace period for Rust cold starts
+# 30s grace_period accounts for binary loading and connection pool init
+[[services.http_checks]]
+interval = "10s"
+timeout = "2s"
+grace_period = "30s"
+method = "GET"
+path = "/api/health/live"
+restart_limit = 3
+
+# TCP connectivity check with extended grace period
+[[services.tcp_checks]]
+interval = "15s"
+timeout = "2s"
+grace_period = "30s"
+restart_limit = 3
+
+# =============================================================================
+# Health Checks Configuration
+# Extended grace_period (30s) accommodates Rust cold start time including:
+# - Binary loading and initialization
+# - Database connection pool establishment
+# - Redis connection setup
+# restart_limit=3 enables automatic recovery from transient failures
+# =============================================================================
+[checks]
+[checks.health]
+port = 8080
+type = "http"
+interval = "10s"
+timeout = "2s"
+grace_period = "30s"
+method = "GET"
+path = "/api/health/ready"
+restart_limit = 3
+
+# =============================================================================
+# Metrics Configuration
+# Prometheus-compatible metrics endpoint for observability
+# =============================================================================
+[metrics]
+port = 9091
+path = "/metrics"
+
+# =============================================================================
+# VM Configuration - ICT 7 Principal Engineer Grade
+# Upgraded to shared-cpu-4x with 1GB RAM for production performance:
+# - 4x CPU shares handle concurrent request processing
+# - 1GB memory supports larger connection pools and caching
+# - Optimized for Rust's efficient memory usage patterns
+# =============================================================================
+[[vm]]
+size = "shared-cpu-4x"
+memory = "1024mb"
+cpus = 4
+
+# =============================================================================
+# Deployment Strategy
+# Rolling deployment ensures zero-downtime updates
+# =============================================================================
+[deploy]
+release_command = "echo 'Deployment starting...'"
+strategy = "rolling"
+
+# =============================================================================
+# Secrets (set via fly secrets set)
+# These are configured separately for security
+# =============================================================================
+# DATABASE_URL
+# JWT_SECRET
+# STRIPE_SECRET_KEY
+# STRIPE_WEBHOOK_SECRET
+# REDIS_URL
