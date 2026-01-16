@@ -5,17 +5,33 @@
 
 use axum::{
     extract::State,
+    http::StatusCode,
     routing::get,
     Json, Router,
 };
 use serde_json::json;
 
-use crate::AppState;
+use crate::{models::User, AppState};
+
+/// Check if user has admin privileges
+fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
+    let role = user.role.as_deref().unwrap_or("user");
+    if role == "admin" || role == "super-admin" || role == "super_admin" {
+        Ok(())
+    } else {
+        Err((StatusCode::FORBIDDEN, Json(json!({
+            "error": "Access denied",
+            "message": "This action requires admin privileges"
+        }))))
+    }
+}
 
 /// GET /admin/connections/status - Get status of all service integrations
 async fn get_connections_status(
     State(_state): State<AppState>,
-) -> Json<serde_json::Value> {
+    user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    require_admin(&user)?;
     // Return built-in services as connected, external services as pending configuration
     let connections = vec![
         json!({
@@ -83,10 +99,10 @@ async fn get_connections_status(
         })
     ];
 
-    Json(json!({
+    Ok(Json(json!({
         "success": true,
         "connections": connections
-    }))
+    })))
 }
 
 /// Build the connections admin router

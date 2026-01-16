@@ -187,9 +187,16 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function setupWebSocket() {
+		// ICT 11+ FIX: Only attempt WebSocket if VITE_WS_URL is explicitly configured
+		// Fly.io doesn't support WebSockets by default - this is optional functionality
+		const configuredWsUrl = import.meta.env['VITE_WS_URL'];
+		if (!configuredWsUrl) {
+			// Silently skip - WebSocket is optional, use polling instead
+			return;
+		}
+
 		try {
-			// ICT 11+ FIX: Use WS_URL from config instead of placeholder
-		ws = new WebSocket(`${WS_URL}/posts`);
+			ws = new WebSocket(`${configuredWsUrl}/posts`);
 
 			ws.onmessage = (event) => {
 				const update = JSON.parse(event.data);
@@ -212,11 +219,11 @@
 				}
 			};
 
-			ws.onerror = (error) => {
-				console.error('WebSocket error:', error);
+			ws.onerror = () => {
+				// Silently handle - WebSocket is optional
 			};
-		} catch (error) {
-			console.error('Failed to setup WebSocket:', error);
+		} catch {
+			// Silently handle - WebSocket is optional
 		}
 	}
 

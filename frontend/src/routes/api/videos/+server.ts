@@ -108,7 +108,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			throw error(400, 'Video URL is required');
 		}
 
-		const response = await fetch(`${BACKEND_URL}/admin/videos`, {
+		const response = await fetch(`${BACKEND_URL}/api/admin/videos`, {
 			method: 'POST',
 			headers: getAuthHeaders(request),
 			body: JSON.stringify({

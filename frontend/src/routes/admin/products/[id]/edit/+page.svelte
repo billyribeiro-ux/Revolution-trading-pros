@@ -655,7 +655,7 @@
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
 		<div class="modal-overlay" onclick={() => (showDeleteConfirm = false)} role="dialog" aria-modal="true" tabindex="-1">
 			<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_no_noninteractive_element_interactions -->
-			<div class="modal" onclick={(e) => e.stopPropagation()} role="document">
+			<div class="modal" onclick={(e) => e.stopPropagation()} role="document" tabindex="-1">
 				<h3>Delete Product?</h3>
 				<p>Are you sure you want to delete <strong>{originalProduct?.name}</strong>? This action cannot be undone.</p>
 				<div class="modal-actions">

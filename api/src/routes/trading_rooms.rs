@@ -494,6 +494,154 @@ async fn list_traders(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// VIDEO HANDLERS (Admin) - ICT 7 FIX: Add /admin/trading-rooms/videos routes
+// ═══════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, Deserialize)]
+pub struct VideosQuery {
+    pub page: Option<i64>,
+    pub per_page: Option<i64>,
+    pub room_slug: Option<String>,
+    pub content_type: Option<String>,
+    pub is_published: Option<bool>,
+}
+
+/// List videos for trading rooms (admin)
+async fn list_videos(
+    State(state): State<AppState>,
+    Query(query): Query<VideosQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let page = query.page.unwrap_or(1).max(1);
+    let per_page = query.per_page.unwrap_or(20).min(100);
+    let offset = (page - 1) * per_page;
+
+    // Query videos with optional room filter
+    let videos: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, String, Option<String>, String, Option<String>, Option<i32>, String, bool, chrono::NaiveDateTime)>(
+        r#"
+        SELECT v.id, v.title, v.slug, v.description, v.video_url, v.thumbnail_url, 
+               v.duration, v.content_type, v.is_published, v.created_at
+        FROM unified_videos v
+        WHERE v.deleted_at IS NULL
+          AND ($1::text IS NULL OR v.content_type = $1)
+          AND ($2::boolean IS NULL OR v.is_published = $2)
+        ORDER BY v.created_at DESC
+        LIMIT $3 OFFSET $4
+        "#
+    )
+    .bind(&query.content_type)
+    .bind(query.is_published)
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(&state.db.pool)
+    .await
+    .map(|rows| rows.into_iter().map(|r| json!({
+        "id": r.0,
+        "title": r.1,
+        "slug": r.2,
+        "description": r.3,
+        "video_url": r.4,
+        "thumbnail_url": r.5,
+        "duration": r.6,
+        "content_type": r.7,
+        "is_published": r.8,
+        "created_at": r.9.to_string()
+    })).collect())
+    .unwrap_or_default();
+
+    let total: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL"
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or(0);
+
+    Ok(Json(json!({
+        "success": true,
+        "data": videos,
+        "meta": {
+            "current_page": page,
+            "per_page": per_page,
+            "total": total,
+            "total_pages": (total as f64 / per_page as f64).ceil() as i64
+        }
+    })))
+}
+
+/// List videos for a specific trading room by slug (admin)
+async fn list_videos_by_room(
+    State(state): State<AppState>,
+    Path(slug): Path<String>,
+    Query(query): Query<VideosQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let page = query.page.unwrap_or(1).max(1);
+    let per_page = query.per_page.unwrap_or(20).min(100);
+    let offset = (page - 1) * per_page;
+
+    // Get room ID from slug
+    let room_id: Option<i64> = sqlx::query_scalar(
+        "SELECT id FROM trading_rooms WHERE slug = $1"
+    )
+    .bind(&slug)
+    .fetch_optional(&state.db.pool)
+    .await
+    .ok()
+    .flatten();
+
+    let videos: Vec<serde_json::Value> = if let Some(rid) = room_id {
+        sqlx::query_as::<_, (i64, String, String, Option<String>, String, Option<String>, Option<i32>, String, bool, chrono::NaiveDateTime)>(
+            r#"
+            SELECT v.id, v.title, v.slug, v.description, v.video_url, v.thumbnail_url, 
+                   v.duration, v.content_type, v.is_published, v.created_at
+            FROM unified_videos v
+            JOIN video_room_assignments vra ON v.id = vra.video_id
+            WHERE vra.trading_room_id = $1
+              AND v.deleted_at IS NULL
+              AND ($2::text IS NULL OR v.content_type = $2)
+              AND ($3::boolean IS NULL OR v.is_published = $3)
+            ORDER BY v.created_at DESC
+            LIMIT $4 OFFSET $5
+            "#
+        )
+        .bind(rid)
+        .bind(&query.content_type)
+        .bind(query.is_published)
+        .bind(per_page)
+        .bind(offset)
+        .fetch_all(&state.db.pool)
+        .await
+        .map(|rows| rows.into_iter().map(|r| json!({
+            "id": r.0,
+            "title": r.1,
+            "slug": r.2,
+            "description": r.3,
+            "video_url": r.4,
+            "thumbnail_url": r.5,
+            "duration": r.6,
+            "content_type": r.7,
+            "is_published": r.8,
+            "created_at": r.9.to_string()
+        })).collect())
+        .unwrap_or_default()
+    } else {
+        vec![]
+    };
+
+    let total = videos.len() as i64;
+
+    Ok(Json(json!({
+        "success": true,
+        "data": videos,
+        "room_slug": slug,
+        "meta": {
+            "current_page": page,
+            "per_page": per_page,
+            "total": total,
+            "total_pages": (total as f64 / per_page as f64).ceil().max(1.0) as i64
+        }
+    })))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // ROUTERS
 // ═══════════════════════════════════════════════════════════════════════════
 
@@ -513,4 +661,7 @@ pub fn admin_router() -> Router<AppState> {
         .route("/sections", get(list_sections))
         .route("/:slug", get(get_trading_room))
         .route("/traders", get(list_traders))
+        // ICT 7 FIX: Add videos routes for frontend compatibility
+        .route("/videos", get(list_videos))
+        .route("/videos/:slug", get(list_videos_by_room))
 }

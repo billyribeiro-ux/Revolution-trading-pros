@@ -244,6 +244,7 @@
 					</div>
 
 					<div class="form-group">
+						<!-- svelte-ignore a11y_label_has_associated_control -->
 						<label>Auto-Generated Slug</label>
 						<div class="preview-field">
 							<code>{slug || 'Will be generated...'}</code>
@@ -252,6 +253,7 @@
 					</div>
 
 					<div class="form-group">
+						<!-- svelte-ignore a11y_label_has_associated_control -->
 						<label>Auto-Generated Title</label>
 						<div class="preview-field">
 							{title || 'Will be generated...'}

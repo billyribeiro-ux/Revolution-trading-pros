@@ -131,6 +131,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/crm", crm::router())
         // Connections Status - ICT 7 Grade
         .nest("/admin/connections", connections::admin_router())
+        // Admin Members - Segments, Tags, Filters - ICT 7 Grade
+        .nest("/admin/members", admin_members::router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())

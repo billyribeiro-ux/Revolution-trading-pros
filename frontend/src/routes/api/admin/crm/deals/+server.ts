@@ -53,7 +53,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		if (owner_id) queryParams.set('owner_id', owner_id);
 		if (contact_id) queryParams.set('contact_id', contact_id);
 
-		const backendUrl = `${BACKEND_URL}/admin/crm/deals${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+		const backendUrl = `${BACKEND_URL}/api/admin/crm/deals${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
 
 		const response = await fetch(backendUrl, {
 			method: 'GET',
@@ -104,7 +104,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			throw error(400, 'Deal name is required');
 		}
 
-		const response = await fetch(`${BACKEND_URL}/admin/crm/deals`, {
+		const response = await fetch(`${BACKEND_URL}/api/admin/crm/deals`, {
 			method: 'POST',
 			headers: getAuthHeaders(request),
 			body: JSON.stringify({

@@ -55,7 +55,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		if (sort_by) queryParams.set('sort_by', sort_by);
 		if (sort_order) queryParams.set('sort_order', sort_order);
 
-		const backendUrl = `${BACKEND_URL}/admin/crm/contacts${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
+		const backendUrl = `${BACKEND_URL}/api/admin/crm/contacts${queryParams.toString() ? '?' + queryParams.toString() : ''}`;
 
 		const response = await fetch(backendUrl, {
 			method: 'GET',
@@ -106,7 +106,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			throw error(400, 'Email is required');
 		}
 
-		const response = await fetch(`${BACKEND_URL}/admin/crm/contacts`, {
+		const response = await fetch(`${BACKEND_URL}/api/admin/crm/contacts`, {
 			method: 'POST',
 			headers: getAuthHeaders(request),
 			body: JSON.stringify({

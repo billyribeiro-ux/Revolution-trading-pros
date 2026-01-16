@@ -614,7 +614,18 @@
 	.form-group input[type='text'],
 	.form-group input[type='number'],
 	.form-group input[type='url'],
-	.form-group textarea,
+	.form-group textarea {
+		width: 100%;
+		padding: 0.75rem 1rem;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(148, 163, 184, 0.25);
+		border-radius: 8px;
+		color: #f1f5f9;
+		font-size: 0.9375rem;
+		transition: all 0.2s;
+	}
+
+	/* Unused - keeping for future use
 	.form-group select {
 		width: 100%;
 		padding: 0.75rem 1rem;
@@ -626,9 +637,14 @@
 		transition: all 0.2s;
 	}
 
-	.form-group input:focus,
-	.form-group textarea:focus,
 	.form-group select:focus {
+		outline: none;
+		border-color: #3b82f6;
+		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+	}*/
+
+	.form-group input:focus,
+	.form-group textarea:focus {
 		outline: none;
 		border-color: #3b82f6;
 		box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
