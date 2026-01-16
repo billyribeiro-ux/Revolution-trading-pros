@@ -307,7 +307,7 @@ async fn export_subscriptions(
             us.price,
             us.product_name,
             us.billing_period
-        FROM user_subscriptions us
+        FROM user_memberships us
         LEFT JOIN users u ON us.user_id = u.id
         ORDER BY us.created_at DESC
         LIMIT 10000

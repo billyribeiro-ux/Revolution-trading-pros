@@ -42,6 +42,28 @@ pub struct MemberQuery {
     pub page: Option<i64>,
 }
 
+/// Sanitize user input to prevent SQL injection
+/// ICT 7 SECURITY FIX: Proper escaping for dynamic SQL queries
+fn sanitize_sql_string(input: &str) -> String {
+    input
+        .replace('\\', "\\\\")  // Escape backslashes first
+        .replace('\'', "''")     // Escape single quotes (SQL standard)
+        .replace('\0', "")       // Remove null bytes
+        .replace('\n', " ")      // Remove newlines
+        .replace('\r', " ")      // Remove carriage returns
+        .chars()
+        .filter(|c| !c.is_control())  // Remove other control characters
+        .collect()
+}
+
+/// Validate date format (YYYY-MM-DD) to prevent injection via date fields
+fn is_valid_date_format(date: &str) -> bool {
+    let parts: Vec<&str> = date.split('-').collect();
+    if parts.len() != 3 { return false; }
+    parts[0].len() == 4 && parts[1].len() == 2 && parts[2].len() == 2 &&
+    parts.iter().all(|p| p.chars().all(|c| c.is_ascii_digit()))
+}
+
 /// GET /admin/members - List all members with filtering
 #[tracing::instrument(skip(state))]
 pub async fn index(
@@ -54,21 +76,28 @@ pub async fn index(
     );
     let mut conditions = Vec::new();
 
-    // Search filter
+    // Search filter - ICT 7 SECURITY: Use sanitize function
     if let Some(search) = &params.search {
-        let escaped = search.replace('\'', "''");
-        conditions.push(format!(
-            "(name ILIKE '%{}%' OR email ILIKE '%{}%' OR first_name ILIKE '%{}%' OR last_name ILIKE '%{}%')",
-            escaped, escaped, escaped, escaped
-        ));
+        let escaped = sanitize_sql_string(search);
+        // Limit search length to prevent DoS
+        if escaped.len() <= 100 {
+            conditions.push(format!(
+                "(name ILIKE '%{}%' OR email ILIKE '%{}%' OR first_name ILIKE '%{}%' OR last_name ILIKE '%{}%')",
+                escaped, escaped, escaped, escaped
+            ));
+        }
     }
 
-    // Date range filters
+    // Date range filters - ICT 7 SECURITY: Validate date format
     if let Some(date_from) = &params.date_from {
-        conditions.push(format!("created_at >= '{}'", date_from.replace('\'', "''")));
+        if is_valid_date_format(date_from) {
+            conditions.push(format!("created_at >= '{}'", date_from));
+        }
     }
     if let Some(date_to) = &params.date_to {
-        conditions.push(format!("created_at <= '{}'", date_to.replace('\'', "''")));
+        if is_valid_date_format(date_to) {
+            conditions.push(format!("created_at <= '{}'", date_to));
+        }
     }
 
     if !conditions.is_empty() {
@@ -163,7 +192,7 @@ pub async fn stats(
 
     // Active subscribers (users with active subscriptions)
     let active_subscribers: i64 = sqlx::query_scalar(
-        "SELECT COUNT(DISTINCT user_id) FROM user_subscriptions WHERE status = 'active'"
+        "SELECT COUNT(DISTINCT user_id) FROM user_memberships WHERE status = 'active'"
     )
         .fetch_one(state.db.pool())
         .await
@@ -171,7 +200,7 @@ pub async fn stats(
 
     // Trial members
     let trial_members: i64 = sqlx::query_scalar(
-        "SELECT COUNT(DISTINCT user_id) FROM user_subscriptions WHERE status = 'trial'"
+        "SELECT COUNT(DISTINCT user_id) FROM user_memberships WHERE status = 'trial'"
     )
         .fetch_one(state.db.pool())
         .await
@@ -179,9 +208,9 @@ pub async fn stats(
 
     // Churned members
     let churned_members: i64 = sqlx::query_scalar(
-        "SELECT COUNT(DISTINCT user_id) FROM user_subscriptions 
+        "SELECT COUNT(DISTINCT user_id) FROM user_memberships 
          WHERE status IN ('cancelled', 'expired')
-         AND user_id NOT IN (SELECT DISTINCT user_id FROM user_subscriptions WHERE status = 'active')"
+         AND user_id NOT IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')"
     )
         .fetch_one(state.db.pool())
         .await
@@ -195,7 +224,7 @@ pub async fn stats(
                 WHEN billing_period = 'quarterly' THEN price / 3
                 ELSE price
             END
-        ), 0) FROM user_subscriptions WHERE status = 'active'"
+        ), 0) FROM user_memberships WHERE status = 'active'"
     )
         .fetch_one(state.db.pool())
         .await
@@ -203,7 +232,7 @@ pub async fn stats(
 
     // Total revenue
     let total_revenue: f64 = sqlx::query_scalar(
-        "SELECT COALESCE(SUM(price), 0) FROM user_subscriptions"
+        "SELECT COALESCE(SUM(price), 0) FROM user_memberships"
     )
         .fetch_one(state.db.pool())
         .await
@@ -244,7 +273,7 @@ pub async fn services(
             'subscription' as type,
             us.price,
             COUNT(DISTINCT us.user_id) as members_count
-        FROM user_subscriptions us
+        FROM user_memberships us
         WHERE us.status = 'active'
         GROUP BY COALESCE(us.product_id, us.id), us.product_name, us.price
         ORDER BY members_count DESC
@@ -337,7 +366,7 @@ pub async fn members_by_service(
     // Get service info
     let service_info: Option<(i64, Option<String>, Option<String>)> = sqlx::query_as(
         "SELECT DISTINCT COALESCE(product_id, id) as id, product_name, 'subscription' as type
-         FROM user_subscriptions WHERE COALESCE(product_id, id) = $1 LIMIT 1"
+         FROM user_memberships WHERE COALESCE(product_id, id) = $1 LIMIT 1"
     )
     .bind(service_id)
     .fetch_optional(state.db.pool())
@@ -371,7 +400,7 @@ pub async fn members_by_service(
     let members: Vec<Member> = sqlx::query_as(&format!(
         "SELECT DISTINCT u.id, u.name, u.email, u.first_name, u.last_name, u.created_at, u.updated_at
          FROM users u
-         JOIN user_subscriptions us ON u.id = us.user_id
+         JOIN user_memberships us ON u.id = us.user_id
          WHERE {}
          ORDER BY u.created_at DESC
          LIMIT {} OFFSET {}",
@@ -385,7 +414,7 @@ pub async fn members_by_service(
     let total: i64 = sqlx::query_scalar(&format!(
         "SELECT COUNT(DISTINCT u.id)
          FROM users u
-         JOIN user_subscriptions us ON u.id = us.user_id
+         JOIN user_memberships us ON u.id = us.user_id
          WHERE {}",
         where_clause
     ))
@@ -396,7 +425,7 @@ pub async fn members_by_service(
     // Get stats
     let active_count: i64 = sqlx::query_scalar(&format!(
         "SELECT COUNT(DISTINCT u.id) FROM users u
-         JOIN user_subscriptions us ON u.id = us.user_id
+         JOIN user_memberships us ON u.id = us.user_id
          WHERE ({}) AND us.status = 'active'",
         where_clause
     ))
@@ -406,7 +435,7 @@ pub async fn members_by_service(
 
     let trial_count: i64 = sqlx::query_scalar(&format!(
         "SELECT COUNT(DISTINCT u.id) FROM users u
-         JOIN user_subscriptions us ON u.id = us.user_id
+         JOIN user_memberships us ON u.id = us.user_id
          WHERE ({}) AND us.status = 'trial'",
         where_clause
     ))
@@ -415,7 +444,7 @@ pub async fn members_by_service(
     .unwrap_or(0);
 
     let total_revenue: f64 = sqlx::query_scalar(&format!(
-        "SELECT COALESCE(SUM(us.price), 0) FROM user_subscriptions us
+        "SELECT COALESCE(SUM(us.price), 0) FROM user_memberships us
          WHERE {}",
         conditions[0] // Just the service filter
     ))
@@ -486,10 +515,10 @@ pub async fn churned_members(
     let members: Vec<Member> = sqlx::query_as(&format!(
         "SELECT DISTINCT u.id, u.name, u.email, u.first_name, u.last_name, u.created_at, u.updated_at
          FROM users u
-         JOIN user_subscriptions us ON u.id = us.user_id
+         JOIN user_memberships us ON u.id = us.user_id
          WHERE us.status IN ('cancelled', 'expired')
          AND u.id NOT IN (
-             SELECT DISTINCT user_id FROM user_subscriptions WHERE status = 'active'
+             SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active'
          ){}
          ORDER BY us.cancelled_at DESC NULLS LAST, u.created_at DESC
          LIMIT {} OFFSET {}",
@@ -503,10 +532,10 @@ pub async fn churned_members(
     let total: i64 = sqlx::query_scalar(&format!(
         "SELECT COUNT(DISTINCT u.id)
          FROM users u
-         JOIN user_subscriptions us ON u.id = us.user_id
+         JOIN user_memberships us ON u.id = us.user_id
          WHERE us.status IN ('cancelled', 'expired')
          AND u.id NOT IN (
-             SELECT DISTINCT user_id FROM user_subscriptions WHERE status = 'active'
+             SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active'
          ){}",
         extra_conditions
     ))
@@ -516,7 +545,7 @@ pub async fn churned_members(
 
     // Stats
     let this_month: i64 = sqlx::query_scalar(
-        "SELECT COUNT(DISTINCT user_id) FROM user_subscriptions
+        "SELECT COUNT(DISTINCT user_id) FROM user_memberships
          WHERE status IN ('cancelled', 'expired')
          AND cancelled_at >= date_trunc('month', CURRENT_DATE)"
     )
@@ -525,7 +554,7 @@ pub async fn churned_members(
     .unwrap_or(0);
 
     let lost_revenue: f64 = sqlx::query_scalar(
-        "SELECT COALESCE(SUM(price), 0) FROM user_subscriptions
+        "SELECT COALESCE(SUM(price), 0) FROM user_memberships
          WHERE status IN ('cancelled', 'expired')"
     )
     .fetch_one(state.db.pool())
@@ -565,9 +594,9 @@ pub async fn export_members(
 
     if let Some(status) = &params.status {
         match status.as_str() {
-            "active" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_subscriptions WHERE status = 'active')".to_string()),
-            "churned" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_subscriptions WHERE status IN ('cancelled', 'expired')) AND u.id NOT IN (SELECT DISTINCT user_id FROM user_subscriptions WHERE status = 'active')".to_string()),
-            "trial" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_subscriptions WHERE status = 'trial')".to_string()),
+            "active" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')".to_string()),
+            "churned" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status IN ('cancelled', 'expired')) AND u.id NOT IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'active')".to_string()),
+            "trial" => conditions.push("u.id IN (SELECT DISTINCT user_id FROM user_memberships WHERE status = 'trial')".to_string()),
             _ => {}
         }
     }
@@ -636,7 +665,7 @@ pub async fn show(
             // Get subscription info
             let subscriptions: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, Option<f64>, Option<String>, Option<NaiveDateTime>)>(
                 "SELECT id, status, price, billing_period, created_at 
-                 FROM user_subscriptions WHERE user_id = $1 ORDER BY created_at DESC"
+                 FROM user_memberships WHERE user_id = $1 ORDER BY created_at DESC"
             )
             .bind(id)
             .fetch_all(state.db.pool())

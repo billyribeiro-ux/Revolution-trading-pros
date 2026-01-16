@@ -1301,7 +1301,7 @@ async fn get_user_subscriptions(
         SELECT
             id, status, price, product_name, billing_period,
             starts_at, expires_at, created_at
-        FROM user_subscriptions
+        FROM user_memberships
         WHERE user_id = $1
         ORDER BY created_at DESC
         "#

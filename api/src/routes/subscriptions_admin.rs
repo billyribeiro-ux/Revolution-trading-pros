@@ -128,7 +128,7 @@ async fn list_subscriptions(
         r#"
         SELECT id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
-        FROM user_subscriptions
+        FROM user_memberships
         WHERE ($1::text IS NULL OR status = $1)
           AND ($2::bigint IS NULL OR user_id = $2)
           AND ($3::bigint IS NULL OR plan_id = $3)
@@ -150,7 +150,7 @@ async fn list_subscriptions(
 
     let total: (i64,) = sqlx::query_as(
         r#"
-        SELECT COUNT(*) FROM user_subscriptions
+        SELECT COUNT(*) FROM user_memberships
         WHERE ($1::text IS NULL OR status = $1)
           AND ($2::bigint IS NULL OR user_id = $2)
           AND ($3::bigint IS NULL OR plan_id = $3)
@@ -184,7 +184,7 @@ async fn get_subscription(
         r#"
         SELECT id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
-        FROM user_subscriptions WHERE id = $1
+        FROM user_memberships WHERE id = $1
         "#
     )
     .bind(id)
@@ -215,7 +215,7 @@ async fn create_subscription(
 
     let subscription: SubscriptionRow = sqlx::query_as(
         r#"
-        INSERT INTO user_subscriptions (user_id, plan_id, status, starts_at, expires_at, created_at, updated_at)
+        INSERT INTO user_memberships (user_id, plan_id, status, starts_at, expires_at, created_at, updated_at)
         VALUES ($1, $2, $3, COALESCE($4::timestamp, NOW()), $5::timestamp, NOW(), NOW())
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
@@ -253,7 +253,7 @@ async fn update_subscription(
 
     let subscription: SubscriptionRow = sqlx::query_as(
         r#"
-        UPDATE user_subscriptions SET
+        UPDATE user_memberships SET
             status = COALESCE($2, status),
             plan_id = COALESCE($3, plan_id),
             starts_at = COALESCE($4::timestamp, starts_at),
@@ -291,7 +291,7 @@ async fn delete_subscription(
         "Admin deleting subscription"
     );
 
-    let result = sqlx::query("DELETE FROM user_subscriptions WHERE id = $1")
+    let result = sqlx::query("DELETE FROM user_memberships WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
@@ -314,7 +314,7 @@ async fn cancel_subscription(
 
     let subscription: SubscriptionRow = sqlx::query_as(
         r#"
-        UPDATE user_subscriptions SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW()
+        UPDATE user_memberships SET status = 'cancelled', cancelled_at = NOW(), updated_at = NOW()
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
@@ -339,7 +339,7 @@ async fn pause_subscription(
 
     let subscription: SubscriptionRow = sqlx::query_as(
         r#"
-        UPDATE user_subscriptions SET status = 'paused', updated_at = NOW()
+        UPDATE user_memberships SET status = 'paused', updated_at = NOW()
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
@@ -364,7 +364,7 @@ async fn resume_subscription(
 
     let subscription: SubscriptionRow = sqlx::query_as(
         r#"
-        UPDATE user_subscriptions SET status = 'active', updated_at = NOW()
+        UPDATE user_memberships SET status = 'active', updated_at = NOW()
         WHERE id = $1
         RETURNING id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                   payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
@@ -389,7 +389,7 @@ async fn renew_subscription(
 
     let subscription: SubscriptionRow = sqlx::query_as(
         r#"
-        UPDATE user_subscriptions SET 
+        UPDATE user_memberships SET 
             status = 'active', 
             starts_at = NOW(),
             expires_at = NOW() + INTERVAL '1 month',
@@ -617,7 +617,7 @@ async fn plan_stats(
         .await
         .unwrap_or((0,));
 
-    let total_subscriptions: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_subscriptions WHERE status = 'active'")
+    let total_subscriptions: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE status = 'active'")
         .fetch_one(&state.db.pool)
         .await
         .unwrap_or((0,));
