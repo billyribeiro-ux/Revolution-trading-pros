@@ -209,6 +209,9 @@ async fn main() -> anyhow::Result<()> {
 
     // Build router with security layers
     // ICT 11+ Enhancement: Add metrics middleware to track all requests
+    // ICT 11+ CORB Fix: Content-Type middleware MUST come before security headers
+    // This ensures all responses have Content-Type set before X-Content-Type-Options: nosniff
+    // is applied. Without this, CORB blocks cross-origin responses when using credentials.
     let app = Router::new()
         .merge(routes::health::router())
         .nest("/api", routes::api_router())
@@ -218,6 +221,7 @@ async fn main() -> anyhow::Result<()> {
             metrics.clone(),
             monitoring::metrics_middleware,
         ))
+        .layer(axum_middleware::from_fn(middleware::ensure_content_type))
         .layer(security_headers)
         .layer(cors)
         .layer(CompressionLayer::new())

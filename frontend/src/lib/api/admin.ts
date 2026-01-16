@@ -540,7 +540,9 @@ async function makeRequest<T = any>(
 		throw new AdminApiError('Not authenticated', 401);
 	}
 
-	const url = `${API_BASE_URL}${endpoint}`;
+	// ICT 11+ Fix: Add /api prefix if endpoint doesn't already have it
+	const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
+	const url = `${API_BASE_URL}${apiEndpoint}`;
 	const {
 		skipCache = false,
 		cacheTTL = CACHE_TTL,

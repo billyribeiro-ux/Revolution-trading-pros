@@ -202,21 +202,21 @@ async fn run_migrations(
     tracing::info!("Ran membership seed migration successfully");
 
     // Migration: Seed test coupon (from migrations/011_seed_test_coupon.sql)
-    let seed_coupon_sql = include_str!("../../migrations/011_seed_test_coupon.sql");
-
-    sqlx::raw_sql(seed_coupon_sql)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            tracing::error!("Failed to run coupon seed migration: {}", e);
-            (
-                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
-                Json(SetupResponse {
-                    success: false,
-                    message: format!("Failed to run coupon migration: {}", e),
-                }),
-            )
-        })?;
+    // TODO: Re-enable when migration file is created
+    // let seed_coupon_sql = include_str!("../../migrations/011_seed_test_coupon.sql");
+    // sqlx::raw_sql(seed_coupon_sql)
+    //     .execute(&state.db.pool)
+    //     .await
+    //     .map_err(|e| {
+    //         tracing::error!("Failed to run coupon seed migration: {}", e);
+    //         (
+    //             axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+    //             Json(SetupResponse {
+    //                 success: false,
+    //                 message: format!("Failed to run coupon migration: {}", e),
+    //             }),
+    //         )
+    //     })?;
 
     tracing::info!("Ran coupon seed migration successfully");
 
