@@ -25,12 +25,25 @@ use crate::{
 /// Check if user has admin privileges (admin, super-admin, or developer role)
 fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let role = user.role.as_deref().unwrap_or("user");
-    if role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer" {
+    let is_admin = role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer";
+    
+    // ICT 11+ DEBUG: Log role check for troubleshooting 403 issues
+    tracing::info!(
+        target: "auth_debug",
+        user_id = user.id,
+        email = %user.email,
+        role = %role,
+        is_admin = is_admin,
+        "require_admin check"
+    );
+    
+    if is_admin {
         Ok(())
     } else {
         Err((StatusCode::FORBIDDEN, Json(json!({
             "error": "Access denied",
-            "message": "This action requires admin privileges"
+            "message": "This action requires admin privileges",
+            "your_role": role
         }))))
     }
 }
