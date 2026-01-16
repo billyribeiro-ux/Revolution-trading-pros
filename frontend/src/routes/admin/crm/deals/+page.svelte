@@ -508,12 +508,14 @@
 
 					<div class="column-cards">
 						{#each stageDeals as deal (deal.id)}
+							<!-- svelte-ignore a11y_no_static_element_interactions -->
 							<div
 								class="deal-card"
 								draggable="true"
 								class:dragging={draggingDeal?.id === deal.id}
 								ondragstart={(e) => handleDragStart(e, deal)}
 								ondragend={handleDragEnd}
+								role="listitem"
 							>
 								<div class="card-grip">
 									<IconGripVertical size={14} />

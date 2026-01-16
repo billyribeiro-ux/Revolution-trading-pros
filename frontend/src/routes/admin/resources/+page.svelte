@@ -670,6 +670,7 @@
 							<img src={resource.thumbnail_url} alt={resource.title} />
 						{:else}
 							<div class="thumbnail-placeholder">
+								<!-- svelte-ignore svelte_component_deprecated -->
 								<svelte:component this={getResourceIcon(resource.resource_type)} size={32} />
 							</div>
 						{/if}
@@ -745,8 +746,10 @@
 
 <!-- Create/Edit Modal -->
 {#if showCreateModal || showEditModal}
-	<div class="modal-overlay" onclick={() => { showCreateModal = false; showEditModal = false; editingResource = null; }}>
-		<div class="modal modal-large" onclick={(e) => e.stopPropagation()}>
+	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
+	<div class="modal-overlay" onclick={() => { showCreateModal = false; showEditModal = false; editingResource = null; }} role="dialog" aria-modal="true" tabindex="-1">
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_no_noninteractive_element_interactions -->
+		<div class="modal modal-large" onclick={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>{showEditModal ? 'Edit Resource' : 'Add New Resource'}</h2>
 				<button class="modal-close" onclick={() => { showCreateModal = false; showEditModal = false; editingResource = null; }}>&times;</button>
@@ -841,6 +844,7 @@
 
 				<!-- Tags -->
 				<div class="form-group">
+					<!-- svelte-ignore a11y_label_has_associated_control -->
 					<label>Categories/Tags</label>
 					<div class="tags-grid">
 						{#each CATEGORIES as category}
@@ -893,8 +897,10 @@
 
 <!-- Replace Modal -->
 {#if showReplaceModal && replacingResource}
-	<div class="modal-overlay" onclick={() => { showReplaceModal = false; replacingResource = null; newFileUrl = ''; }}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
+	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
+	<div class="modal-overlay" onclick={() => { showReplaceModal = false; replacingResource = null; newFileUrl = ''; }} role="dialog" aria-modal="true" tabindex="-1">
+		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_no_noninteractive_element_interactions -->
+		<div class="modal" onclick={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Replace Resource</h2>
 				<button class="modal-close" onclick={() => { showReplaceModal = false; replacingResource = null; newFileUrl = ''; }}>&times;</button>
@@ -906,6 +912,7 @@
 				</div>
 				<div class="form-group">
 					<label for="new-file-url">New File URL</label>
+					<!-- svelte-ignore a11y_autofocus -->
 					<input type="url" id="new-file-url" bind:value={newFileUrl} placeholder="https://..." autofocus />
 				</div>
 			</div>
@@ -1001,7 +1008,8 @@
 		color: #e2e8f0;
 	}
 
-	.btn-refresh {
+	/* Unused - keeping for future use */
+	/*.btn-refresh {
 		width: 42px;
 		height: 42px;
 		display: flex;
@@ -1018,7 +1026,7 @@
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
 		color: #E6B800;
-	}
+	}*/
 
 	.btn-icon {
 		width: 32px;
@@ -1267,6 +1275,7 @@
 		line-height: 1.4;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}

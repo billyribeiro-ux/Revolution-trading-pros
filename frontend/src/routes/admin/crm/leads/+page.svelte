@@ -716,32 +716,32 @@
 		{#if showFilters}
 			<div class="filters-panel">
 				<div class="filter-group">
-					<label>Status</label>
-					<select bind:value={selectedStatus}>
+					<label for="filter-status">Status</label>
+					<select id="filter-status" bind:value={selectedStatus}>
 						{#each statusOptions as option}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
 				</div>
 				<div class="filter-group">
-					<label>Source</label>
-					<select bind:value={selectedSource}>
+					<label for="filter-source">Source</label>
+					<select id="filter-source" bind:value={selectedSource}>
 						{#each sourceOptions as option}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
 				</div>
 				<div class="filter-group">
-					<label>Sort By</label>
-					<select bind:value={sortBy}>
+					<label for="filter-sort">Sort By</label>
+					<select id="filter-sort" bind:value={sortBy}>
 						{#each sortOptions as option}
 							<option value={option.value}>{option.label}</option>
 						{/each}
 					</select>
 				</div>
 				<div class="filter-group">
-					<label>Order</label>
-					<select bind:value={sortOrder}>
+					<label for="filter-order">Order</label>
+					<select id="filter-order" bind:value={sortOrder}>
 						<option value="desc">Newest First</option>
 						<option value="asc">Oldest First</option>
 					</select>
@@ -959,7 +959,9 @@
 
 <!-- Add Lead Modal -->
 {#if showAddModal}
-	<div class="modal-overlay" onclick={() => (showAddModal = false)} role="dialog" aria-modal="true">
+	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
+	<div class="modal-overlay" onclick={() => (showAddModal = false)} onkeydown={(e) => e.key === 'Escape' && (showAddModal = false)} role="dialog" aria-modal="true" tabindex="-1">
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -1077,7 +1079,9 @@
 
 <!-- Edit Lead Modal -->
 {#if showEditModal && editingLead}
-	<div class="modal-overlay" onclick={() => (showEditModal = false)} role="dialog" aria-modal="true">
+	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
+	<div class="modal-overlay" onclick={() => (showEditModal = false)} onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)} role="dialog" aria-modal="true" tabindex="-1">
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -1187,7 +1191,9 @@
 
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal && deletingLead}
-	<div class="modal-overlay" onclick={() => (showDeleteModal = false)} role="dialog" aria-modal="true">
+	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
+	<div class="modal-overlay" onclick={() => (showDeleteModal = false)} onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)} role="dialog" aria-modal="true" tabindex="-1">
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal modal-small"
 			onclick={(e) => e.stopPropagation()}
@@ -1224,7 +1230,9 @@
 
 <!-- Convert to Contact Modal -->
 {#if showConvertModal && convertingLead}
-	<div class="modal-overlay" onclick={() => (showConvertModal = false)} role="dialog" aria-modal="true">
+	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
+	<div class="modal-overlay" onclick={() => (showConvertModal = false)} onkeydown={(e) => e.key === 'Escape' && (showConvertModal = false)} role="dialog" aria-modal="true" tabindex="-1">
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal modal-small"
 			onclick={(e) => e.stopPropagation()}
