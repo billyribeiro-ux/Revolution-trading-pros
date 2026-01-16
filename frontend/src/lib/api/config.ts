@@ -55,22 +55,22 @@ export const API_ENDPOINTS = {
 	},
 
 	// Current User (me) - Rust API routes
-	// ICT 7 FIX: Backend has /me under /auth namespace
+	// ICT 7: Backend has /me under /api namespace (not /api/auth)
 	me: {
-		profile: '/api/auth/me',
-		update: '/api/auth/me',
-		password: '/api/auth/me/password',
-		memberships: '/api/user/memberships',
-		products: '/api/products/my',
-		indicators: '/api/indicators/my',
-		sessions: '/api/auth/me/sessions',
-		session: (id: string) => `/api/auth/me/sessions/${id}`,
-		logoutAll: '/api/auth/me/sessions/logout-all',
-		securityEvents: '/api/auth/me/security-events',
+		profile: '/api/me',
+		update: '/api/me',
+		password: '/api/me/password',
+		memberships: '/api/me/memberships',
+		products: '/api/me/products',
+		indicators: '/api/me/indicators',
+		sessions: '/api/me/sessions',
+		session: (id: string) => `/api/me/sessions/${id}`,
+		logoutAll: '/api/me/sessions/logout-all',
+		securityEvents: '/api/me/security-events',
 		mfa: {
-			enable: '/api/auth/me/mfa/enable',
-			verify: '/api/auth/me/mfa/verify',
-			disable: '/api/auth/me/mfa/disable'
+			enable: '/api/me/mfa/enable',
+			verify: '/api/me/mfa/verify',
+			disable: '/api/me/mfa/disable'
 		}
 	},
 
