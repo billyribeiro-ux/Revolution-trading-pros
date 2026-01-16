@@ -23,9 +23,6 @@
 /* Import Simpler Trading Icon Font */
 @import './lib/styles/simpler-icons.css';
 
-/* RTP Admin Design System - Color Tokens, Typography, Spacing, etc. */
-@import './lib/styles/main.css';
-
 /* ═══════════════════════════════════════════════════════════════════════════
  * Tailwind v4 Theme Configuration
  * This @theme block registers custom colors as utility classes
