@@ -126,9 +126,9 @@ function getCurrentUser() {
 		// Ignore
 	}
 	return {
-		id: 'admin',
-		name: 'Admin User',
-		email: 'admin@example.com'
+		id: 'unknown',
+		name: 'Unknown User',
+		email: 'unknown'
 	};
 }
 
