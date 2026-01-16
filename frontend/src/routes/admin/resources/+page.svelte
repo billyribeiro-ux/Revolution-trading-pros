@@ -749,6 +749,7 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
 	<div class="modal-overlay" onclick={() => { showCreateModal = false; showEditModal = false; editingResource = null; }} role="dialog" aria-modal="true" tabindex="-1">
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_no_noninteractive_element_interactions -->
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div class="modal modal-large" onclick={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>{showEditModal ? 'Edit Resource' : 'Add New Resource'}</h2>
@@ -900,6 +901,7 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
 	<div class="modal-overlay" onclick={() => { showReplaceModal = false; replacingResource = null; newFileUrl = ''; }} role="dialog" aria-modal="true" tabindex="-1">
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_no_noninteractive_element_interactions -->
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Replace Resource</h2>

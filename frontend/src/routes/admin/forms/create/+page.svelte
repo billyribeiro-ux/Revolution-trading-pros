@@ -136,6 +136,7 @@
 		border-bottom: 1px solid rgba(230, 184, 0, 0.1);
 	}
 
+	/* Unused - keeping for future use
 	.btn-back {
 		background: none;
 		border: none;
@@ -149,7 +150,7 @@
 
 	.btn-back:hover {
 		color: #E6B800;
-	}
+	}*/
 
 	h1 {
 		font-size: 1.75rem;
@@ -170,6 +171,7 @@
 		gap: 0.75rem;
 	}
 
+	/* Unused - keeping for future use
 	.btn-theme {
 		padding: 0.875rem 1.5rem;
 		background: rgba(230, 184, 0, 0.1);
@@ -180,12 +182,12 @@
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s;
-	}
+	}*/
 
-	.btn-theme:hover {
+	/* .btn-theme:hover {
 		background: rgba(230, 184, 0, 0.2);
 		border-color: rgba(230, 184, 0, 0.4);
-	}
+	}*/
 
 	.theme-section {
 		background: rgba(30, 41, 59, 0.4);

@@ -896,6 +896,7 @@
 		color: #FFD11A;
 	}
 
+	/* Unused - keeping for future use
 	.header-content {
 		display: flex;
 		justify-content: space-between;
@@ -925,7 +926,7 @@
 		font-weight: 700;
 		color: #f1f5f9;
 		margin: 0;
-	}
+	}*/
 
 	.subtitle {
 		color: #64748b;

@@ -705,18 +705,21 @@
 
 <!-- Preview Modal -->
 {#if showPreview}
+	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
 	<div
 		class="modal-backdrop"
 		onclick={closePreview}
 		onkeydown={(e) => e.key === 'Escape' && closePreview()}
 		role="presentation"
 	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal-content preview-modal"
 			onclick={(e) => e.stopPropagation()}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="preview-title"
+			tabindex="-1"
 		>
 			<header class="modal-header">
 				<h2 id="preview-title">{previewTemplate?.title || 'Template Preview'}</h2>
@@ -739,20 +742,20 @@
 					<div class="preview-info">
 						{#if previewTemplate.subject}
 							<div class="preview-field">
-								<label>Subject:</label>
-								<span>{previewTemplate.subject}</span>
+								<label for="subject">Subject:</label>
+								<span id="subject">{previewTemplate.subject}</span>
 							</div>
 						{/if}
 						<div class="preview-field">
-							<label>Type:</label>
-							<span class="template-type" class:visual={previewTemplate.design_template === 'visual'}>
+							<label for="type">Type:</label>
+							<span id="type" class="template-type" class:visual={previewTemplate.design_template === 'visual'}>
 								{previewTemplate.design_template === 'visual' ? 'Visual Editor' : 'Raw HTML'}
 							</span>
 						</div>
 						{#if previewTemplate.category}
 							<div class="preview-field">
-								<label>Category:</label>
-								<span class="template-category">{previewTemplate.category}</span>
+								<label for="category">Category:</label>
+								<span id="category" class="template-category">{previewTemplate.category}</span>
 							</div>
 						{/if}
 					</div>

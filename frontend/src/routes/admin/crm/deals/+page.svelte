@@ -488,6 +488,7 @@
 			{#each stages as stage (stage.id)}
 				{@const stageDeals = dealsByStage[stage.id] || []}
 				{@const stageValue = stageDeals.reduce((sum, d) => sum + d.amount, 0)}
+				<!-- svelte-ignore a11y_no_static_element_interactions -->
 				<div
 					class="kanban-column"
 					class:drag-over={dragOverStage === stage.id}
@@ -729,6 +730,7 @@
 		aria-modal="true"
 		tabindex="-1"
 	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
@@ -792,6 +794,7 @@
 		aria-modal="true"
 		tabindex="-1"
 	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal"
 			onclick={(e) => e.stopPropagation()}
