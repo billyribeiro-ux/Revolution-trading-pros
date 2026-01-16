@@ -4,16 +4,17 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 
 /// ICT 11+: User model matching PRODUCTION database schema
-/// Production DB uses INT8 for id and TIMESTAMP (not TIMESTAMPTZ) for dates
+/// Production DB uses password_hash column (not password)
 #[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct User {
-    pub id: i64, // Production DB uses INT8, not UUID
+    pub id: i64,
     pub name: String,
     pub email: String,
     #[serde(skip_serializing)]
-    pub password: String,
+    #[sqlx(rename = "password_hash")]
+    pub password: String, // Maps to password_hash in DB
     pub role: String,
-    pub created_at: NaiveDateTime, // Production uses TIMESTAMP, not TIMESTAMPTZ
+    pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     // Optional columns that may or may not exist
     #[sqlx(default)]
@@ -32,10 +33,9 @@ pub struct User {
 }
 
 impl User {
-    /// ICT 11+: SQL columns to select - ONLY columns guaranteed to exist in production
-    /// Production DB may not have email_verified_at - query only core columns
+    /// ICT 11+: SQL columns to select - PRODUCTION uses password_hash not password
     pub const SELECT_COLUMNS: &'static str =
-        "id, name, email, password, role, created_at, updated_at";
+        "id, name, email, password_hash, role, created_at, updated_at";
 
     pub fn is_admin(&self) -> bool {
         self.role == "admin" || self.role == "super-admin"

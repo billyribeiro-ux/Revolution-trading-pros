@@ -101,7 +101,7 @@ impl<'a> AuthService<'a> {
 
         let user = sqlx::query_as::<_, User>(&format!(
             r#"
-            INSERT INTO users (name, email, password, role, created_at, updated_at)
+            INSERT INTO users (name, email, password_hash, role, created_at, updated_at)
             VALUES ($1, $2, $3, 'user', $4, $4)
             RETURNING {}
             "#,
@@ -191,7 +191,7 @@ impl<'a> AuthService<'a> {
 
                 sqlx::query_as::<_, User>(
                     &format!(r#"
-                    INSERT INTO users (name, email, password, role, email_verified_at, created_at, updated_at)
+                    INSERT INTO users (name, email, password_hash, role, email_verified_at, created_at, updated_at)
                     VALUES ($1, $2, $3, 'super-admin', $4, $4, $4)
                     RETURNING {}
                     "#, User::SELECT_COLUMNS)
