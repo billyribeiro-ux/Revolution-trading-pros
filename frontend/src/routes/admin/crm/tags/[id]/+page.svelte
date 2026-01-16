@@ -11,7 +11,6 @@
 -->
 
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import {
 		IconTag,
@@ -81,7 +80,7 @@
 		isLoadingContacts = true;
 
 		try {
-			const response = await crmAPI.getTagContacts(tagId, { per_page: perPage });
+			const response = await crmAPI.getTagContacts(tagId, { per_page: perPage, page: currentPage });
 			contacts = response.data || [];
 			if (response.meta) {
 				totalPages = Math.ceil(response.meta.total / perPage) || 1;
@@ -113,12 +112,14 @@
 	}
 
 	function getInitials(name: string): string {
+		if (!name) return 'U';
 		return name
 			.split(' ')
+			.filter(n => n.length > 0)
 			.map(n => n[0])
 			.join('')
 			.toUpperCase()
-			.slice(0, 2);
+			.slice(0, 2) || 'U';
 	}
 
 	function getStatusColor(status: string): string {
@@ -132,11 +133,7 @@
 		return colors[status] || '#64748b';
 	}
 
-	onMount(() => {
-		loadTag();
-	});
-
-	// Reload when tagId changes
+	// Load tag when tagId changes (handles both initial mount and navigation)
 	$effect(() => {
 		if (tagId) {
 			loadTag();
