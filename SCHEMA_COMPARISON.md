@@ -125,20 +125,37 @@ WHERE table_name = 'users'
 ORDER BY ordinal_position;
 ```
 
-## 7. NEXT STEPS
+## 7. RESOLUTION - FIXED ✅
 
-1. **Query production DB** to get actual schema
-2. **Update User model** to match production column names
-3. **Test login** with correct column mapping
-4. **Document** actual production schema for future reference
+### Changes Made
+1. **Updated User model** (`backend-rust/src/models/user.rs`):
+   - Added `#[sqlx(rename = "password_hash")]` to password field
+   - Updated `SELECT_COLUMNS` to use `password_hash`
 
-## 8. PRODUCTION DATABASE ACCESS
+2. **Fixed INSERT queries** (`backend-rust/src/services/auth_service.rs`):
+   - Changed `INSERT INTO users (..., password, ...)` to `password_hash`
+   - Fixed both register and developer user creation queries
 
-**Connection String:** `postgres://postgres:vOUkDxw1Git2UQo@revolution-db.flycast:5432/postgres`
-
-**Access Method:**
+### Test Results
 ```bash
-flyctl ssh console -a revolution-trading-pros-api
-# Install psql in container
-# Query actual schema
+# Registration - SUCCESS ✅
+curl -X POST https://revolution-trading-pros-api.fly.dev/api/auth/register
+HTTP 201 - User created with ID 372
+
+# Login - SUCCESS ✅
+curl -X POST https://revolution-trading-pros-api.fly.dev/api/auth/login
+HTTP 200 - Returns access_token, refresh_token, user data
 ```
+
+### Root Cause Summary
+- **Production DB** uses Laravel convention: `password_hash` column
+- **Rust backend** was expecting: `password` column
+- **Fix**: Map Rust field to correct DB column name via SQLx attributes
+
+## 8. PRODUCTION DATABASE SCHEMA (CONFIRMED)
+
+**Column Name:** `password_hash` (NOT `password`)
+**Source:** Legacy Laravel/PHP migrations in `/api/migrations/`
+**Connection:** `postgres://postgres:***@revolution-db.flycast:5432/postgres`
+
+**Lesson Learned:** Always verify production schema matches code expectations, especially when migrating from different frameworks (Laravel → Rust).
