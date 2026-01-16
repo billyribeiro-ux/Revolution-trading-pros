@@ -37,8 +37,7 @@
 	let indicator = $state<Indicator | null>(null);
 	let loading = $state(true);
 	let saving = $state(false);
-	// ICT 7 FIX: Remove tabs for non-existent backend features
-	let activeTab = $state<'details' | 'seo'>('details');
+	let activeTab = $state<'details' | 'files' | 'videos' | 'seo'>('details');
 	let error = $state('');
 	let success = $state('');
 
@@ -111,8 +110,9 @@
 		}
 	};
 
-	// ICT 7 NOTE: File/Video management endpoints don't exist in backend yet
-	// These will need to be implemented in admin_indicators.rs
+	// Placeholder data for files and videos (backend endpoints to be implemented)
+	let files = $state<Array<{id: number; platform: string; filename: string; version: string; is_active: boolean}>>([]);
+	let videos = $state<Array<{id: number; title: string; thumbnail?: string; duration?: string; platform: string}>>([]);
 </script>
 
 <svelte:head>
@@ -159,9 +159,10 @@
 			<div class="alert alert-success">{success}</div>
 		{/if}
 
-		<!-- ICT 7 FIX: Remove Files/Videos tabs - endpoints don't exist in backend yet -->
 		<nav class="tabs">
 			<button class:active={activeTab === 'details'} onclick={() => activeTab = 'details'}>Details</button>
+			<button class:active={activeTab === 'files'} onclick={() => activeTab = 'files'}>Files <span class="badge">{files.length}</span></button>
+			<button class:active={activeTab === 'videos'} onclick={() => activeTab = 'videos'}>Videos <span class="badge">{videos.length}</span></button>
 			<button class:active={activeTab === 'seo'} onclick={() => activeTab = 'seo'}>SEO</button>
 		</nav>
 
@@ -232,7 +233,80 @@
 					</div>
 				</div>
 
-			<!-- ICT 7 FIX: Removed files/videos tabs - endpoints don't exist in backend -->
+			{:else if activeTab === 'files'}
+				<div class="form-section">
+					<div class="section-header">
+						<h2>Indicator Files</h2>
+						<button class="btn-primary">Upload File</button>
+					</div>
+					{#if files.length === 0}
+						<div class="empty-state">
+							<p>No files uploaded yet</p>
+							<p class="hint">Upload indicator files for different trading platforms</p>
+						</div>
+					{:else}
+						<div class="files-table">
+							<table>
+								<thead>
+									<tr>
+										<th>Platform</th>
+										<th>File</th>
+										<th>Version</th>
+										<th>Status</th>
+										<th>Actions</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each files as file}
+										<tr>
+											<td class="platform">{file.platform}</td>
+											<td class="file-name">{file.filename}</td>
+											<td>{file.version}</td>
+											<td><span class="file-status" class:active={file.is_active}>{file.is_active ? 'Active' : 'Inactive'}</span></td>
+											<td>
+												<button class="btn-icon btn-danger">Delete</button>
+											</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					{/if}
+				</div>
+
+			{:else if activeTab === 'videos'}
+				<div class="form-section">
+					<div class="section-header">
+						<h2>Tutorial Videos</h2>
+						<button class="btn-primary">Add Video</button>
+					</div>
+					{#if videos.length === 0}
+						<div class="empty-state">
+							<p>No videos added yet</p>
+							<p class="hint">Add tutorial videos to help users learn the indicator</p>
+						</div>
+					{:else}
+						<div class="videos-grid">
+							{#each videos as video}
+								<div class="video-card">
+									{#if video.thumbnail}
+										<img src={video.thumbnail} alt={video.title} class="thumbnail" />
+									{:else}
+										<div class="thumbnail-placeholder">No Thumbnail</div>
+									{/if}
+									<div class="video-info">
+										<h3>{video.title}</h3>
+										<div class="video-meta">
+											<span class="tag">{video.platform}</span>
+											{#if video.duration}<span class="tag">{video.duration}</span>{/if}
+										</div>
+									</div>
+									<button class="btn-icon btn-danger">×</button>
+								</div>
+							{/each}
+						</div>
+					{/if}
+				</div>
 
 			{:else if activeTab === 'seo'}
 				<div class="form-section">
