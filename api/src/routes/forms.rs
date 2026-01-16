@@ -510,8 +510,138 @@ async fn delete_submission(
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// PUBLIC HANDLERS (for /api/forms - frontend compatibility)
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// List published forms (public) - GET /forms
+async fn list_public_forms(
+    State(state): State<AppState>,
+    Query(query): Query<FormListQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let page = query.page.unwrap_or(1).max(1);
+    let per_page = query.per_page.unwrap_or(20).min(100);
+    let offset = (page - 1) * per_page;
+
+    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s));
+
+    let forms: Vec<FormRow> = sqlx::query_as(
+        r#"
+        SELECT id, name, slug, description, fields, settings, is_published, submission_count, created_at, updated_at
+        FROM forms
+        WHERE is_published = true
+          AND ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
+        ORDER BY created_at DESC
+        LIMIT $2 OFFSET $3
+        "#
+    )
+    .bind(search_pattern.as_deref())
+    .bind(per_page)
+    .bind(offset)
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
+
+    let total: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM forms WHERE is_published = true AND ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)"
+    )
+    .bind(search_pattern.as_deref())
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or(0);
+
+    Ok(Json(json!({
+        "success": true,
+        "data": {
+            "data": forms,
+            "total": total,
+            "per_page": per_page,
+            "current_page": page
+        },
+        "forms": forms,
+        "total": total
+    })))
+}
+
+/// Get a single published form by ID or slug (public)
+async fn get_public_form(
+    State(state): State<AppState>,
+    Path(id_or_slug): Path<String>,
+) -> Result<Json<FormRow>, (StatusCode, Json<serde_json::Value>)> {
+    let form: Option<FormRow> = if let Ok(id) = id_or_slug.parse::<i64>() {
+        sqlx::query_as("SELECT * FROM forms WHERE id = $1 AND is_published = true")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten()
+    } else {
+        sqlx::query_as("SELECT * FROM forms WHERE slug = $1 AND is_published = true")
+            .bind(&id_or_slug)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten()
+    };
+
+    form.map(Json).ok_or_else(|| {
+        (StatusCode::NOT_FOUND, Json(json!({"error": "Form not found"})))
+    })
+}
+
+/// Submit a form (public) - POST /forms/:slug/submit
+async fn submit_form(
+    State(state): State<AppState>,
+    Path(slug): Path<String>,
+    Json(data): Json<serde_json::Value>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Find form by slug
+    let form: Option<FormRow> = sqlx::query_as(
+        "SELECT * FROM forms WHERE slug = $1 AND is_published = true"
+    )
+    .bind(&slug)
+    .fetch_optional(&state.db.pool)
+    .await
+    .ok()
+    .flatten();
+
+    let form = form.ok_or_else(|| {
+        (StatusCode::NOT_FOUND, Json(json!({"error": "Form not found"})))
+    })?;
+
+    // Insert submission
+    sqlx::query(
+        "INSERT INTO form_submissions (form_id, data, created_at) VALUES ($1, $2, NOW())"
+    )
+    .bind(form.id)
+    .bind(&data)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+
+    // Update submission count
+    sqlx::query("UPDATE forms SET submission_count = submission_count + 1 WHERE id = $1")
+        .bind(form.id)
+        .execute(&state.db.pool)
+        .await
+        .ok();
+
+    Ok(Json(json!({
+        "success": true,
+        "message": "Form submitted successfully"
+    })))
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
 // ROUTER
 // ═══════════════════════════════════════════════════════════════════════════
+
+/// Public forms router - /api/forms (frontend compatibility)
+pub fn public_router() -> Router<AppState> {
+    Router::new()
+        .route("/", get(list_public_forms))
+        .route("/:id", get(get_public_form))
+        .route("/:slug/submit", post(submit_form))
+}
 
 pub fn admin_router() -> Router<AppState> {
     Router::new()
