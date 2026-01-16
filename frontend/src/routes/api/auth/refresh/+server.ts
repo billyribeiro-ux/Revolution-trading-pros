@@ -100,7 +100,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 					httpOnly: true,
 					secure: true,
 					sameSite: 'lax',
-					maxAge: 60 * 60 * 24 * 7 // 7 days
+					maxAge: 60 * 60 * 24 * 30 // 30 days (matches login proxy)
 				});
 				console.debug(`[Refresh:${requestId}] Refresh token cookie rotated`);
 			}

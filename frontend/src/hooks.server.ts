@@ -26,7 +26,7 @@ const API_BASE_URL = process.env.VITE_API_URL || 'https://revolution-trading-pro
  * Protected routes that require authentication
  * These routes will redirect to login if user is not authenticated
  */
-const PROTECTED_ROUTES = ['/dashboard', '/account', '/checkout', '/trading-room'];
+const PROTECTED_ROUTES = ['/dashboard', '/account', '/checkout', '/trading-room', '/admin'];
 
 /**
  * Authentication Handler - ICT 11+ Server-Side Pattern
@@ -78,7 +78,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 					const json = await response.json();
 					const userData = json.data || json;
 					event.locals.user = {
-						id: String(userData.id),
+						id: userData.id,
 						email: userData.email,
 						name: userData.name,
 						role: userData.role
@@ -125,7 +125,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 
 			// Set user in locals for use in load functions
 			event.locals.user = {
-				id: String(userData.id),
+				id: userData.id,
 				email: userData.email,
 				name: userData.name,
 				role: userData.role
@@ -143,7 +143,15 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				throw redirect(303, `/login?redirect=${returnUrl}`);
 			}
 			
-			// Token expired - try to refresh
+			// SERVER-SIDE TOKEN REFRESH
+			//
+			// This is one of THREE token refresh implementations:
+			// 1. /src/lib/stores/auth.ts: Client-side refresh
+			// 2. /src/lib/api/auth.ts: Delegates to store
+			// 3. HERE: Server-side refresh for SSR requests
+			//
+			// All three MUST use consistent token handling.
+			// If modifying refresh logic, update all three locations.
 			const refreshResponse = await fetch(`${API_BASE_URL}/api/auth/refresh`, {
 				method: 'POST',
 				headers: {
@@ -182,7 +190,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 					// ICT11+ Fix: Backend wraps response in { success: true, data: {...} }
 					const userData = userJson.data || userJson;
 					event.locals.user = {
-						id: String(userData.id),
+						id: userData.id,
 						email: userData.email,
 						name: userData.name,
 						role: userData.role
@@ -247,7 +255,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 						
 						// ICT 7: Set user from token payload (offline validation)
 						event.locals.user = {
-							id: String(payload.sub || payload.id || payload.user_id || 'unknown'),
+							id: Number(payload.sub || payload.id || payload.user_id || 0),
 							email: payload.email || 'unknown@temp.local',
 							name: payload.name || payload.username || 'User',
 							role: payload.role || 'user'
@@ -263,7 +271,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			// Fallback: If token decode fails, still preserve session with minimal data
 			// This prevents logout during transient failures
 			event.locals.user = {
-				id: 'session_preserved',
+				id: 0,  // Fallback ID for transient failures
 				email: 'session@preserved.local',
 				name: 'Session Preserved',
 				role: 'user'

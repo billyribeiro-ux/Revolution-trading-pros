@@ -416,8 +416,15 @@ function createAuthStore() {
 		},
 
 		/**
-		 * ICT 7 SECURITY: Refresh access token using httpOnly cookies
-		 * Apple Principal Engineer Grade: Tokens never exposed to JavaScript
+		 * CLIENT-SIDE TOKEN REFRESH
+		 *
+		 * This is one of THREE token refresh implementations:
+		 * 1. HERE: Client-side refresh via /api/auth/refresh proxy
+		 * 2. /src/lib/api/auth.ts: Delegates to this store
+		 * 3. /src/hooks.server.ts: Server-side refresh for SSR
+		 *
+		 * All three MUST use the same proxy endpoint and cookie handling.
+		 * If modifying refresh logic, update all three locations.
 		 *
 		 * SECURITY ARCHITECTURE:
 		 * 1. Refresh token stored in httpOnly cookie (set by server)

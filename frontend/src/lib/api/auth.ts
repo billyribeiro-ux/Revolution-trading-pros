@@ -632,31 +632,8 @@ class AuthenticationService {
 			response.refresh_token
 		);
 
-		// ICT11+ Pattern: Set httpOnly cookies for server-side auth
-		// This enables SSR auth checks in hooks.server.ts
-		// CRITICAL: Must complete before redirect or hooks.server.ts will redirect back to login
-		if (browser) {
-			try {
-				const sessionResponse = await fetch('/api/auth/set-session', {
-					method: 'POST',
-					headers: { 'Content-Type': 'application/json' },
-					body: JSON.stringify({
-						accessToken: accessToken,
-						refreshToken: response.refresh_token,
-						expiresIn: response.expires_in
-					})
-				});
-				
-				if (!sessionResponse.ok) {
-					console.error('[AuthService] Failed to set session cookies:', await sessionResponse.text());
-				} else {
-					console.log('[AuthService] Session cookies set successfully');
-				}
-			} catch (cookieError) {
-				console.error('[AuthService] Failed to set session cookies:', cookieError);
-				// Continue anyway - client-side auth will still work
-			}
-		}
+		// NOTE: httpOnly cookies are set by the login proxy (/api/auth/login/+server.ts)
+		// No need to call /api/auth/set-session here - it's redundant
 
 		// Schedule token refresh
 		if (response.expires_in) {
@@ -1053,7 +1030,13 @@ class AuthenticationService {
 	}
 
 	/**
-	 * Perform token refresh
+	 * API CLIENT TOKEN REFRESH
+	 *
+	 * Delegates to authStore.refreshToken() for actual refresh.
+	 * See /src/lib/stores/auth.ts for implementation.
+	 *
+	 * Part of THREE refresh implementations - see auth store for full list.
+	 *
 	 * @security Uses httpOnly cookies for refresh token (server-side)
 	 */
 	private async performTokenRefresh(): Promise<TokenResponse> {
