@@ -36,7 +36,7 @@ use crate::{
 
 fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let role = user.role.as_deref().unwrap_or("user");
-    if role == "admin" || role == "super-admin" || role == "super_admin" {
+    if role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer" {
         Ok(())
     } else {
         Err((StatusCode::FORBIDDEN, Json(json!({

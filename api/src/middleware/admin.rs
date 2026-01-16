@@ -8,7 +8,7 @@ use axum::{
 
 use crate::{models::User, AppState};
 
-/// Admin user extractor - requires admin or super_admin role
+/// Admin user extractor - requires admin, super_admin, or developer role
 pub struct AdminUser(pub User);
 
 #[axum::async_trait]
@@ -22,10 +22,11 @@ impl FromRequestParts<AppState> for AdminUser {
         // First, authenticate the user
         let user = User::from_request_parts(parts, state).await?;
 
-        // Check if user has admin role
+        // Check if user has admin role (includes developer)
         let is_admin = user.role.as_deref() == Some("admin") 
             || user.role.as_deref() == Some("super_admin")
-            || user.role.as_deref() == Some("super-admin");
+            || user.role.as_deref() == Some("super-admin")
+            || user.role.as_deref() == Some("developer");
 
         // Also check if email is in superadmin list
         let is_superadmin = state.config.is_superadmin_email(&user.email);

@@ -88,8 +88,8 @@ jobs:
             echo "site_url=https://revolution-trading-pros.pages.dev" >> $GITHUB_OUTPUT
           fi
         env:
-          # yamllint disable-line rule:line-length
-          SITE_URL: ${{ vars.SITE_URL || '' }} # Optional: defaults to pages.dev URL if not set
+          # IDE Warning Expected: var may not exist (safe - validated in shell with fallback)
+          SITE_URL: ${{ vars.SITE_URL || '' }}
         if: always()
 
       - name: Build for Cloudflare
