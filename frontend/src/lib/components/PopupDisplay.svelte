@@ -2,7 +2,7 @@
 	import { onMount, onDestroy } from 'svelte';
 	import { browser } from '$app/environment';
 	import { popupsApi } from '$lib/api/popups';
-	import type { Popup } from '$lib/stores/popups';
+	import type { Popup } from '$lib/stores/popups.svelte';
 	import { IconX } from '$lib/icons';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
 

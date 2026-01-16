@@ -5,7 +5,7 @@
 	import {
 		defaultPopupConfig,
 		type Popup
-	} from '$lib/stores/popups';
+	} from '$lib/stores/popups.svelte';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
 
 	let activeTab = $state<'content' | 'design' | 'display' | 'buttons' | 'form'>('content');

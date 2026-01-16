@@ -21,8 +21,8 @@
     import { onMount, onDestroy } from 'svelte';
     import { fade, fly, scale, slide } from 'svelte/transition';
     import { quintOut, backOut } from 'svelte/easing';
-    import { toastStore } from '$lib/stores/toast';
-    import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections';
+    import { toastStore } from '$lib/stores/toast.svelte';
+    import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections.svelte';
     import { adminFetch } from '$lib/utils/adminFetch';
 
     // Types

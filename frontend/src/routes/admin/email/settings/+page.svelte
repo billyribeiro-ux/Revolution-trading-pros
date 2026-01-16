@@ -14,7 +14,7 @@
 
 	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api/config';
-	import { connections, isEmailConnected } from '$lib/stores/connections';
+	import { connections, isEmailConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════

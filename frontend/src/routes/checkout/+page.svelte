@@ -15,7 +15,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { user, isAuthenticated } from '$lib/stores/auth.svelte';
-	import { cartStore, cartTotal } from '$lib/stores/cart';
+	import { cartStore, cartTotal } from '$lib/stores/cart.svelte';
 	import { createCheckoutSession } from '$lib/api/cart';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';

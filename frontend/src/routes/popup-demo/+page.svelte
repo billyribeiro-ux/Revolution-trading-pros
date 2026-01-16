@@ -3,7 +3,7 @@
 -->
 
 <script lang="ts">
-	import { popupStore, type Popup } from '$lib/stores/popups';
+	import { popupStore, type Popup } from '$lib/stores/popups.svelte';
 	import { IconRocket } from '$lib/icons';
 
 	// Demo popup templates

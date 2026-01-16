@@ -47,7 +47,7 @@
 		IconPlugConnected
 	} from '$lib/icons';
 	import { browser } from '$app/environment';
-	import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections';
+	import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections.svelte';
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 

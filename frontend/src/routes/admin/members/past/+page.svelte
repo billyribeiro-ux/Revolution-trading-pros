@@ -47,7 +47,7 @@
 		IconCheck,
 		IconAlertTriangle
 	} from '$lib/icons';
-	import { toastStore } from '$lib/stores/toast';
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import type { PastMembersPageData } from './+page';
 
 	// ═══════════════════════════════════════════════════════════════════════════

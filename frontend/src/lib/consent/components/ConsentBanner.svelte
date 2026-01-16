@@ -23,7 +23,7 @@
 		consentStore,
 		showConsentBanner,
 		openPreferencesModal,
-	} from '../store';
+	} from '../store.svelte';
 	// Template store imported by BannerRenderer
 	import BannerRenderer from '../templates/BannerRenderer.svelte';
 

@@ -51,7 +51,7 @@
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
-import type { CartItem } from '$lib/stores/cart';
+import type { CartItem } from '$lib/stores/cart.svelte';
 import { websocketService, type CartUpdatePayload } from '$lib/services/websocket';
 
 // ═══════════════════════════════════════════════════════════════════════════

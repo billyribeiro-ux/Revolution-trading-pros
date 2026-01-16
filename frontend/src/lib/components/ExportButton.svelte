@@ -20,7 +20,7 @@
 		IconCheck,
 		IconLoader
 	} from '$lib/icons';
-	import { toastStore } from '$lib/stores/toast';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	interface Props {
 		/** Data to export (array of objects) */

@@ -25,7 +25,7 @@
 		unreadCount,
 		type Notification,
 		type NotificationType
-	} from '$lib/stores/notifications';
+	} from '$lib/stores/notifications.svelte';
 
 	interface Props {
 		position?: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left';

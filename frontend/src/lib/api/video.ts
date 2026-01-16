@@ -3,7 +3,7 @@
  * Handles video management and analytics tracking
  */
 
-import { apiClient } from './client';
+import { apiClient } from './client.svelte';
 
 export interface Video {
 	id: number;

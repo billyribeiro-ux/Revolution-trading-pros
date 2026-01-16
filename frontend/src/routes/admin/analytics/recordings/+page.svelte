@@ -7,7 +7,7 @@
 	 * through recorded session playback.
 	 */
 	import { analyticsApi } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected } from '$lib/stores/connections';
+	import { connections, isAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { membersStore, emailStore } from '$lib/stores/members';
+	import { membersStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member, MemberFilters } from '$lib/api/members';
 	import {
 		IconUsers,
@@ -26,7 +26,7 @@
 		IconUpload
 	} from '$lib/icons';
 	import { membersApi } from '$lib/api/members';
-	import { toastStore } from '$lib/stores/toast';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// Reactive state from stores
 	let members = $derived($membersStore.members);

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
-	import { churnedStore, emailStore } from '$lib/stores/members';
+	import { churnedStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member } from '$lib/api/members';
 	import {
 		IconArrowLeft,

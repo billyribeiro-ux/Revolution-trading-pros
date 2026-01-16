@@ -7,7 +7,7 @@
 	 * based on behavior, attributes, and rules.
 	 */
 	import { analyticsApi, type Segment } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected } from '$lib/stores/connections';
+	import { connections, isAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	// Svelte 5 Runes - State

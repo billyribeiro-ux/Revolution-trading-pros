@@ -7,7 +7,7 @@
 	 * filtering, grouping, and visualization capabilities.
 	 */
 	import { analyticsApi, type AnalyticsEvent } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected } from '$lib/stores/connections';
+	import { connections, isAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';
 

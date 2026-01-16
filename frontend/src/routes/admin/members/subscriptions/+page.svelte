@@ -14,7 +14,7 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { toastStore } from '$lib/stores/toast';
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
 		IconRefresh,
 		IconSearch,

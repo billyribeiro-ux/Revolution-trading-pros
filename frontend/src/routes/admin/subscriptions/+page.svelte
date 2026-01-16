@@ -15,8 +15,8 @@
 		Subscription,
 		SubscriptionStatus,
 		SubscriptionStats
-	} from '$lib/stores/subscriptions';
-	import { connections, isPaymentConnected } from '$lib/stores/connections';
+	} from '$lib/stores/subscriptions.svelte';
+	import { connections, isPaymentConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	// State

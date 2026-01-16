@@ -23,7 +23,7 @@
 		autoRefreshEnabled,
 		type DashboardWidget,
 		type WidgetSize
-	} from '$lib/stores/widgets';
+	} from '$lib/stores/widgets.svelte';
 	import IconX from '@tabler/icons-svelte/icons/x';
 	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
 	import IconEye from '@tabler/icons-svelte/icons/eye';

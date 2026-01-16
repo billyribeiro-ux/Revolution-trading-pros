@@ -50,7 +50,7 @@
 
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
-import { api, type ApiResponse } from './client';
+import { api, type ApiResponse } from './client.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration

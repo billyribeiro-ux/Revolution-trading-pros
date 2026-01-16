@@ -12,8 +12,8 @@
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
-	import { unreadCount } from '$lib/stores/notifications';
-	import { keyboard } from '$lib/stores/keyboard';
+	import { unreadCount } from '$lib/stores/notifications.svelte';
+	import { keyboard } from '$lib/stores/keyboard.svelte';
 	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
 	import IconBell from '@tabler/icons-svelte/icons/bell';
 	import IconSearch from '@tabler/icons-svelte/icons/search';

@@ -3,7 +3,7 @@
  * Revolution Trading Pros - L8+ Google Enterprise Grade
  */
 
-import { apiClient } from './client';
+import { apiClient } from './client.svelte';
 import { getAuthToken } from '$lib/stores/auth.svelte';
 
 // Types

@@ -13,7 +13,7 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
-	import { addToCart } from '$lib/stores/cart';
+	import { addToCart } from '$lib/stores/cart.svelte';
 	import { IconCheck, IconShoppingCart, IconChartLine, IconBell, IconFilter, IconClock } from '$lib/icons';
 
 	// Product configuration

@@ -12,7 +12,7 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { cartStore, cartTotal } from '$lib/stores/cart';
+	import { cartStore, cartTotal } from '$lib/stores/cart.svelte';
 	import { login, register } from '$lib/api/auth';
 	import IconArrowLeft from '@tabler/icons-svelte/icons/arrow-left';
 	import IconTicket from '@tabler/icons-svelte/icons/ticket';

@@ -13,7 +13,7 @@
 		dashboard,
 		isLoading,
 		selectedPeriod
-	} from '$lib/stores/analytics';
+	} from '$lib/stores/analytics.svelte';
 	import {
 		KpiGrid,
 		RealTimeWidget,

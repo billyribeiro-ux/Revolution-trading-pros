@@ -14,7 +14,7 @@
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { analyticsApi, type DashboardData } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected, FEATURE_SERVICES, SERVICE_KEYS } from '$lib/stores/connections';
+	import { connections, isAnalyticsConnected, FEATURE_SERVICES, SERVICE_KEYS } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import KpiGrid from '$lib/components/analytics/KpiGrid.svelte';
 	import FunnelChart from '$lib/components/analytics/FunnelChart.svelte';

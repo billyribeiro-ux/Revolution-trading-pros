@@ -27,4 +27,4 @@ export * from './interceptor';
 export * from './csrf';
 export * from './tracing';
 export * from './errors';
-export * from './client';
+export * from '../client.svelte';

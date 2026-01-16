@@ -7,7 +7,7 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { cartStore, cartItemCount, cartTotal } from '$lib/stores/cart';
+	import { cartStore, cartItemCount, cartTotal } from '$lib/stores/cart.svelte';
 	import { validateCoupon, type CouponType } from '$lib/api/coupons';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import NonMemberCheckout from '$lib/components/cart/NonMemberCheckout.svelte';

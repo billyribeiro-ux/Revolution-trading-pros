@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { workflowCanvas } from '$lib/stores/workflow';
+	import { workflowCanvas } from '$lib/stores/workflow.svelte';
 	import type { WorkflowNode } from '$lib/types/workflow';
 
 	interface Props {

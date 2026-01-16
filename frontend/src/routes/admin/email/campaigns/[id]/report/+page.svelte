@@ -25,7 +25,7 @@
 	import { cubicOut, quintOut } from 'svelte/easing';
 	import { goto } from '$app/navigation';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import { toastStore } from '$lib/stores/toast';
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import ExportButton from '$lib/components/ExportButton.svelte';
 	import {
 		IconMail,

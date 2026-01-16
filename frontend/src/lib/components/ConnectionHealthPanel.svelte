@@ -18,7 +18,7 @@
 		connections,
 		allConnectionStatuses,
 		type ConnectionState
-	} from '$lib/stores/connections';
+	} from '$lib/stores/connections.svelte';
 	import {
 		IconX,
 		IconPlugConnected,

@@ -13,8 +13,8 @@
 	import { fly, scale } from 'svelte/transition';
 	import { quintOut, backOut } from 'svelte/easing';
 	import { flip } from 'svelte/animate';
-	import { toasts, toastStore } from '$lib/stores/toast';
-	import type { Toast } from '$lib/stores/toast';
+	import { toasts, toastStore } from '$lib/stores/toast.svelte';
+	import type { Toast } from '$lib/stores/toast.svelte';
 	import { IconCheck, IconX, IconAlertTriangle, IconInfoCircle, IconLoader } from '$lib/icons';
 
 	function getIcon(type: Toast['type']) {

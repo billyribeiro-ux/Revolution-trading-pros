@@ -9,7 +9,7 @@ import type {
 	FrictionPoint,
 	IntentSignal
 } from '$lib/behavior/types';
-import { apiClient } from './client';
+import { apiClient } from './client.svelte';
 
 export class BehaviorAPI {
 	async sendEvents(batch: BehaviorEventBatch): Promise<void> {

@@ -57,7 +57,7 @@ import type {
 	SubscriptionFilters,
 	SubscriptionStats,
 	SubscriptionPayment
-} from '$lib/stores/subscriptions';
+} from '$lib/stores/subscriptions.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration

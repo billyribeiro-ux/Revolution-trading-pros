@@ -13,7 +13,7 @@
 
 import { browser } from '$app/environment';
 import type { ConsentState } from './types';
-import { consentStore } from './store';
+import { consentStore } from './store.svelte';
 import { loadConsent } from './storage';
 
 /**

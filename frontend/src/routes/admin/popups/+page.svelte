@@ -12,7 +12,7 @@
 		IconSettings
 	} from '$lib/icons';
 	import { getAllPopups, deletePopup, togglePopupStatus, duplicatePopup } from '$lib/api/popups';
-	import type { Popup } from '$lib/stores/popups';
+	import type { Popup } from '$lib/stores/popups.svelte';
 
 	let popups = $state<Popup[]>([]);
 	let loading = $state(true);

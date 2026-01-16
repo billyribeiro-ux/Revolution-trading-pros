@@ -54,7 +54,7 @@
 	import { onMount, onDestroy, tick } from 'svelte';
 	import { scale, fade } from 'svelte/transition';
 	import { spring, tweened } from 'svelte/motion';
-	import { popupStore, activePopup, type Popup } from '$lib/stores/popups';
+	import { popupStore, activePopup, type Popup } from '$lib/stores/popups.svelte';
 	import { browser } from '$app/environment';
 	import { page } from '$app/state';
 	import { IconX, IconLoader, IconCheck, IconAlertCircle } from '$lib/icons';

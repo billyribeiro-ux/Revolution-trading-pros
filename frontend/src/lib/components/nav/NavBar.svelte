@@ -104,7 +104,7 @@
 		IconChevronDown
 	} from '$lib/icons';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
-	import { cartItemCount, hasCartItems } from '$lib/stores/cart';
+	import { cartItemCount, hasCartItems } from '$lib/stores/cart.svelte';
 	import { logout as logoutApi } from '$lib/api/auth';
 
 	// ═══════════════════════════════════════════════════════════════════════════

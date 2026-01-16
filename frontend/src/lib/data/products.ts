@@ -8,7 +8,7 @@
  * @version 1.0.0 (December 2025)
  */
 
-import type { CartItem } from '$lib/stores/cart';
+import type { CartItem } from '$lib/stores/cart.svelte';
 
 export interface Product {
 	id: string;

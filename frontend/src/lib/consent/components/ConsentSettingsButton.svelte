@@ -11,7 +11,7 @@
 
 	import { fade, fly } from 'svelte/transition';
 	import { browser } from '$app/environment';
-	import { consentStore, showPreferencesModal, openPreferencesModal } from '../store';
+	import { consentStore, showPreferencesModal, openPreferencesModal } from '../store.svelte';
 
 	// Svelte 5: Props using $props() rune
 	interface Props {

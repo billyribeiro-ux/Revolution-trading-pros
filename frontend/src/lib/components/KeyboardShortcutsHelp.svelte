@@ -10,7 +10,7 @@
 
 	import { fade, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import { keyboard } from '$lib/stores/keyboard';
+	import { keyboard } from '$lib/stores/keyboard.svelte';
 	import IconCommand from '@tabler/icons-svelte/icons/command';
 	import IconX from '@tabler/icons-svelte/icons/x';
 

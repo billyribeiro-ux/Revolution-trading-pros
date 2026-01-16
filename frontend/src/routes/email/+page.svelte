@@ -7,7 +7,7 @@
 
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { emailStore, isLoading } from '$lib/stores/email';
+	import { emailStore, isLoading } from '$lib/stores/email.svelte';
 	import {
 		IconMail,
 		IconSend,

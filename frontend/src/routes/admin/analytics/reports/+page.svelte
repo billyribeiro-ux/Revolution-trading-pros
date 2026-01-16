@@ -7,7 +7,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { analyticsApi } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected } from '$lib/stores/connections';
+	import { connections, isAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	interface Report {

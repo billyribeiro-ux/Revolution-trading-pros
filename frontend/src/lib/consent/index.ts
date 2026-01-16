@@ -89,7 +89,7 @@ export {
 	openPreferencesModal,
 	closePreferencesModal,
 	onConsentChange,
-} from './store';
+} from './store.svelte';
 
 // =============================================================================
 // STORAGE
@@ -506,7 +506,7 @@ export {
 // =============================================================================
 
 import { browser } from '$app/environment';
-import { consentStore } from './store';
+import { consentStore } from './store.svelte';
 import { applyConsentMode } from './google-consent-mode';
 import { applyBingConsentMode } from './bing-consent-mode';
 import { applyUrlPassthrough, captureUrlParameters } from './url-passthrough';

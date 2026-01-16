@@ -12,7 +12,7 @@
 	 * @version 1.0.0 (Svelte 5 / December 2025)
 	 */
 
-	import { cartStore, type CartItem } from '$lib/stores/cart';
+	import { cartStore, type CartItem } from '$lib/stores/cart.svelte';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import {
 		checkProductOwnership,

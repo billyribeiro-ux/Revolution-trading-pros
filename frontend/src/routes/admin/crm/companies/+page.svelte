@@ -27,7 +27,7 @@
 		IconCopy
 	} from '$lib/icons';
 	import { crmAPI } from '$lib/api/crm';
-	import { toastStore } from '$lib/stores/toast';
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import type { CrmCompany, CompanyFilters, CompanyIndustry, CompanySize } from '$lib/crm/types';
 
 	let companies = $state<CrmCompany[]>([]);

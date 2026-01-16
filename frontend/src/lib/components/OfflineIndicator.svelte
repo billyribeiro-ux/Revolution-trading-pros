@@ -16,7 +16,7 @@
 		hasPendingActions,
 		pendingActionsCount,
 		isSyncing
-	} from '$lib/stores/offline';
+	} from '$lib/stores/offline.svelte';
 	import {
 		IconWifi,
 		IconUpload,

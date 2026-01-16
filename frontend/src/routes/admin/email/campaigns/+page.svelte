@@ -14,9 +14,9 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import { toastStore } from '$lib/stores/toast';
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import { adminFetch } from '$lib/utils/adminFetch';
-	import { connections, isEmailConnected } from '$lib/stores/connections';
+	import { connections, isEmailConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 	import {

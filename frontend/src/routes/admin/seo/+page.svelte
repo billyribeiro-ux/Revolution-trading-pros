@@ -47,7 +47,7 @@
 		connections,
 		isSeoConnected,
 		SERVICE_KEYS
-	} from '$lib/stores/connections';
+	} from '$lib/stores/connections.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State

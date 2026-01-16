@@ -16,7 +16,7 @@
 		IconClick
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
-	import { connections, isBehaviorConnected } from '$lib/stores/connections';
+	import { connections, isBehaviorConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 

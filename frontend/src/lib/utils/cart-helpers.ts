@@ -1,4 +1,4 @@
-import { cartStore, type CartItem } from '$lib/stores/cart';
+import { cartStore, type CartItem } from '$lib/stores/cart.svelte';
 import { addToCart as addToCartApi } from '$lib/api/cart';
 import { goto } from '$app/navigation';
 

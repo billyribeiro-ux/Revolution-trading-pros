@@ -51,8 +51,8 @@
 		connectedCount,
 		overallHealth,
 		servicesWithErrors
-	} from '$lib/stores/connections';
-	import { toastStore } from '$lib/stores/toast';
+	} from '$lib/stores/connections.svelte';
+	import { toastStore } from '$lib/stores/toast.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// Types

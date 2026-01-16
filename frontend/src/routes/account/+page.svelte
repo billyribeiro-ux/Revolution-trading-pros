@@ -3,7 +3,7 @@
 	import { goto } from '$app/navigation';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import apiClient, { type Membership, type Product } from '$lib/api/client';
+	import apiClient, { type Membership, type Product } from '$lib/api/client.svelte';
 
 	// Only redirect on client-side - use replaceState to prevent history pollution
 	$effect(() => {

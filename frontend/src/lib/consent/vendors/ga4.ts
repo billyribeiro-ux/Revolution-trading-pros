@@ -35,7 +35,7 @@ import { browser } from '$app/environment';
 import type { VendorConfig } from '../types';
 import { injectScript } from '../vendor-loader';
 import { applyConsentMode } from '../google-consent-mode';
-import { consentStore } from '../store';
+import { consentStore } from '../store.svelte';
 
 // Use environment variable (optional at build time)
 const PUBLIC_GA4_MEASUREMENT_ID = import.meta.env['PUBLIC_GA4_MEASUREMENT_ID'] || '';

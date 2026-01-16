@@ -21,7 +21,7 @@
  * @author Revolution Trading Pros
  */
 
-import { apiClient } from './client';
+import { apiClient } from './client.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Type Definitions

@@ -7,7 +7,7 @@
 		IconRefresh,
 		IconCalendar
 	} from '$lib/icons';
-	import { connections, isSeoConnected } from '$lib/stores/connections';
+	import { connections, isSeoConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 
 	let connectionLoading = $state(true);

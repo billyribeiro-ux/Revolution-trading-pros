@@ -9,7 +9,7 @@
 	 *
 	 * @component
 	 */
-	import { consentStore, openPreferencesModal } from '../store';
+	import { consentStore, openPreferencesModal } from '../store.svelte';
 	import { t } from '../i18n';
 	import type { ConsentCategory } from '../types';
 	import type { Snippet } from 'svelte';

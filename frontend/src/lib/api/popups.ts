@@ -51,10 +51,10 @@
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
-import type { Popup } from '$lib/stores/popups';
+import type { Popup } from '$lib/stores/popups.svelte';
 
 // Re-export Popup type for convenience
-export type { Popup } from '$lib/stores/popups';
+export type { Popup } from '$lib/stores/popups.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Configuration

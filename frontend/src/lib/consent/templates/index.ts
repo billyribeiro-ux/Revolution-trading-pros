@@ -60,7 +60,7 @@ export {
 	getCurrentTemplate,
 	exportTemplateConfig,
 	importTemplateConfig,
-} from './store';
+} from './store.svelte';
 
 // Components
 export { default as BannerRenderer } from './BannerRenderer.svelte';

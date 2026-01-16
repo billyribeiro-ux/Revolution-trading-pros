@@ -7,7 +7,7 @@
 	 * cohort-based retention matrices.
 	 */
 	import { analyticsApi } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected } from '$lib/stores/connections';
+	import { connections, isAnalyticsConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
 	import CohortMatrix from '$lib/components/analytics/CohortMatrix.svelte';
 	import PeriodSelector from '$lib/components/analytics/PeriodSelector.svelte';

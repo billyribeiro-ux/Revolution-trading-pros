@@ -56,7 +56,7 @@
 		IconUpload
 	} from '$lib/icons';
 	import { api } from '$lib/api/config';
-	import { connections, isCrmConnected } from '$lib/stores/connections';
+	import { connections, isCrmConnected } from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import SkeletonLoader from '$lib/components/SkeletonLoader.svelte';
 

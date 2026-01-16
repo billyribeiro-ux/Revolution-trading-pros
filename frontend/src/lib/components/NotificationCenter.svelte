@@ -20,7 +20,7 @@
 		notifications,
 		unreadCount,
 		type Notification
-	} from '$lib/stores/notifications';
+	} from '$lib/stores/notifications.svelte';
 	import {
 		IconBell,
 		IconX,

@@ -73,7 +73,7 @@ import type {
 	Campaign,
 	CampaignStats
 } from '$lib/crm/types';
-import { apiClient } from './client';
+import { apiClient } from './client.svelte';
 
 export class CrmAPI {
 	// Contacts

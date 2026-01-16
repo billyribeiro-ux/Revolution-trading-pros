@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { workflowCanvas } from '$lib/stores/workflow';
+	import { workflowCanvas } from '$lib/stores/workflow.svelte';
 	import WorkflowNode from './WorkflowNode.svelte';
 	import WorkflowEdge from './WorkflowEdge.svelte';
 	import type { NodeType } from '$lib/types/workflow';

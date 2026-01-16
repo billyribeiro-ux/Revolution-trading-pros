@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
-	import { serviceMembersStore, emailStore } from '$lib/stores/members';
+	import { serviceMembersStore, emailStore } from '$lib/stores/members.svelte';
 	import type { Member } from '$lib/api/members';
 	import {
 		IconArrowLeft,

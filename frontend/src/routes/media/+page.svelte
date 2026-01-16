@@ -14,7 +14,7 @@
 		selectedCount,
 		viewMode,
 		isLoading
-	} from '$lib/stores/media';
+	} from '$lib/stores/media.svelte';
 	import UploadDropzone from '$lib/components/media/UploadDropzone.svelte';
 	import FolderTree from '$lib/components/media/FolderTree.svelte';
 	import {

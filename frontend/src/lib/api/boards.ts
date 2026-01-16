@@ -36,7 +36,7 @@ import type {
 	StorageConfig,
 	WebhookEvent
 } from '$lib/boards/types';
-import { apiClient } from './client';
+import { apiClient } from './client.svelte';
 
 export class BoardsAPI {
 	// =====================================================

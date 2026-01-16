@@ -3,7 +3,7 @@
  * Apple Principal Engineer ICT 7 Grade - January 2026
  */
 
-import { apiClient } from './client';
+import { apiClient } from './client.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS

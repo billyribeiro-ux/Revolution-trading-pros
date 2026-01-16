@@ -4,7 +4,7 @@
 	import { goto } from '$app/navigation';
 	import { membersApi } from '$lib/api/members';
 	import type { Member, Subscription, Order } from '$lib/api/members';
-	import { toastStore } from '$lib/stores/toast';
+	import { toastStore } from '$lib/stores/toast.svelte';
 	import {
 		IconArrowLeft,
 		IconMail,

@@ -23,7 +23,7 @@
 		consentStore,
 		showPreferencesModal,
 		closePreferencesModal,
-	} from '../store';
+	} from '../store.svelte';
 	import { getVendorsByCategory } from '../vendors';
 
 	/**

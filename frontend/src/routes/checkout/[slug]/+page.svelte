@@ -16,7 +16,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
-	import { cartStore } from '$lib/stores/cart';
+	import { cartStore } from '$lib/stores/cart.svelte';
 	import { getProductBySlug, productToCartItem } from '$lib/data/products';
 
 	// Get the product slug from the URL
