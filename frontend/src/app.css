@@ -23,8 +23,8 @@
 /* Import Simpler Trading Icon Font */
 @import './lib/styles/simpler-icons.css';
 
-/* NOTE: Admin Design System (main.css) is imported directly in admin/dashboard layouts
- * to avoid overriding marketing page styles. DO NOT import it here globally. */
+/* RTP Admin Design System - Color Tokens, Typography, Spacing, etc. */
+@import './lib/styles/main.css';
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * Tailwind v4 Theme Configuration
@@ -551,9 +551,9 @@ body.dark,
 		vertical-align: middle;
 	}
 
-	/* Lazy loading placeholder - use transparent to work with any theme */
+	/* Lazy loading placeholder */
 	img[loading='lazy'] {
-		background-color: transparent;
+		background-color: rgb(243 244 246);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -579,10 +579,33 @@ body.dark,
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Scrollbar Styling - REMOVED FROM GLOBAL
-	 * Each page/section defines its own scrollbar colors to match its theme
-	 * Admin/Dashboard scrollbars are in main.css (imported only in those layouts)
+	 * Scrollbar Styling (Webkit)
 	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: rgb(243 244 246);
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: rgb(156 163 175);
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: rgb(107 114 128);
+	}
+
+	/* Firefox scrollbar */
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: rgb(156 163 175) rgb(243 244 246);
+	}
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════

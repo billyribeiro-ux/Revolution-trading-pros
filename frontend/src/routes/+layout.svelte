@@ -102,14 +102,16 @@
 		{/if}
 	</div>
 {:else}
-	<!-- Marketing pages control their own structure (main, footer, etc.) -->
-	<div class="min-h-screen" class:has-admin-toolbar={isAdmin}>
+	<div class="min-h-screen bg-white text-[#666666]" class:has-admin-toolbar={isAdmin}>
 		<!-- ICT9+ Hydration-Safe: Only render AdminToolbar after client mount -->
 		{#if mounted}
 			<AdminToolbar />
 		{/if}
 		<NavBar />
-		{@render children()}
+		<main>
+			{@render children()}
+		</main>
+		<MarketingFooter />
 		<!-- ICT9+ Hydration-Safe: Only render consent components after client mount -->
 		{#if mounted}
 			<ConsentBanner />
