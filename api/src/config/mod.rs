@@ -114,16 +114,20 @@ impl Config {
                 .unwrap_or_else(|_| "http://localhost:7700".to_string()),
             meilisearch_api_key: std::env::var("MEILISEARCH_API_KEY").unwrap_or_default(),
 
+            // ICT 11+: NO HARDCODED EMAILS - must be set via environment variables
             superadmin_emails: std::env::var("SUPERADMIN_EMAILS")
-                .unwrap_or_else(|_| "welberribeirodrums@gmail.com".to_string())
+                .unwrap_or_default()
                 .split(',')
                 .map(|s| s.trim().to_lowercase())
+                .filter(|s| !s.is_empty())
                 .collect(),
 
+            // ICT 11+: NO HARDCODED EMAILS - must be set via environment variables
             developer_emails: std::env::var("DEVELOPER_EMAILS")
-                .unwrap_or_else(|_| "welberribeirodrums@gmail.com".to_string())
+                .unwrap_or_default()
                 .split(',')
                 .map(|s| s.trim().to_lowercase())
+                .filter(|s| !s.is_empty())
                 .collect(),
 
             developer_mode: std::env::var("DEVELOPER_MODE")
