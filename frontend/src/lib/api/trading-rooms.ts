@@ -8,7 +8,7 @@
  * @version 1.2.0 - January 2026 - ICT 7 Fix: Use centralized API_BASE_URL
  */
 
-import { api } from '$lib/api/config';
+import { apiClient } from './client.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -195,42 +195,42 @@ export const tradingRoomsApi = {
 		with_traders?: boolean;
 		with_counts?: boolean;
 	}): Promise<ApiResponse<TradingRoom[]>> => {
-		return api.get(ENDPOINTS.rooms, params);
+		return apiClient.get(ENDPOINTS.rooms, { params });
 	},
 
 	/**
 	 * Get a single trading room by slug
 	 */
 	getBySlug: async (slug: string): Promise<ApiResponse<TradingRoom>> => {
-		return api.get(ENDPOINTS.roomBySlug(slug));
+		return apiClient.get(ENDPOINTS.roomBySlug(slug));
 	},
 
 	/**
 	 * Create a new trading room (admin)
 	 */
 	create: async (data: Partial<TradingRoom>): Promise<ApiResponse<TradingRoom>> => {
-		return api.post(ENDPOINTS.admin.rooms, data);
+		return apiClient.post(ENDPOINTS.admin.rooms, data);
 	},
 
 	/**
 	 * Update a trading room (admin)
 	 */
 	update: async (id: number, data: Partial<TradingRoom>): Promise<ApiResponse<TradingRoom>> => {
-		return api.put(ENDPOINTS.admin.roomById(id), data);
+		return apiClient.put(ENDPOINTS.admin.roomById(id), data);
 	},
 
 	/**
 	 * Delete a trading room (admin)
 	 */
 	delete: async (id: number): Promise<ApiResponse<void>> => {
-		return api.delete(ENDPOINTS.admin.roomById(id));
+		return apiClient.delete(ENDPOINTS.admin.roomById(id));
 	},
 
 	/**
 	 * ICT 7: List all available sections
 	 */
 	listSections: async (): Promise<ApiResponse<RoomSection[]>> => {
-		return api.get(ENDPOINTS.sections);
+		return apiClient.get(ENDPOINTS.sections);
 	}
 };
 
@@ -246,28 +246,28 @@ export const tradersApi = {
 		room_slug?: string;
 		active_only?: boolean;
 	}): Promise<ApiResponse<Trader[]>> => {
-		return api.get(ENDPOINTS.admin.traders, params);
+		return apiClient.get(ENDPOINTS.admin.traders, { params });
 	},
 
 	/**
 	 * Create a new trader (admin)
 	 */
 	create: async (data: Partial<Trader> & { trading_room_ids?: number[] }): Promise<ApiResponse<Trader>> => {
-		return api.post(ENDPOINTS.admin.traders, data);
+		return apiClient.post(ENDPOINTS.admin.traders, data);
 	},
 
 	/**
 	 * Update a trader (admin)
 	 */
 	update: async (id: number, data: Partial<Trader> & { trading_room_ids?: number[] }): Promise<ApiResponse<Trader>> => {
-		return api.put(ENDPOINTS.admin.traderById(id), data);
+		return apiClient.put(ENDPOINTS.admin.traderById(id), data);
 	},
 
 	/**
 	 * Delete a trader (admin)
 	 */
 	delete: async (id: number): Promise<ApiResponse<void>> => {
-		return api.delete(ENDPOINTS.admin.traderById(id));
+		return apiClient.delete(ENDPOINTS.admin.traderById(id));
 	}
 };
 
@@ -289,7 +289,7 @@ export const dailyVideosApi = {
 			page?: number;
 		}
 	): Promise<PaginatedResponse<DailyVideo>> => {
-		return api.get(ENDPOINTS.roomVideos(roomSlug), params);
+		return apiClient.get(ENDPOINTS.roomVideos(roomSlug), { params });
 	},
 
 	/**
@@ -305,7 +305,7 @@ export const dailyVideosApi = {
 			page?: number;
 		}
 	): Promise<PaginatedResponse<DailyVideo>> => {
-		return api.get(ENDPOINTS.admin.videosByRoom(roomSlug), params);
+		return apiClient.get(ENDPOINTS.admin.videosByRoom(roomSlug), { params });
 	},
 
 	/**
@@ -327,7 +327,7 @@ export const dailyVideosApi = {
 		tags?: string[]; // Categories sent as tags
 		metadata?: Record<string, any>;
 	}): Promise<ApiResponse<DailyVideo>> => {
-		return api.post(ENDPOINTS.admin.videos, data);
+		return apiClient.post(ENDPOINTS.admin.videos, data);
 	},
 
 	/**
@@ -349,14 +349,14 @@ export const dailyVideosApi = {
 		tags: string[];
 		metadata: Record<string, any>;
 	}>): Promise<ApiResponse<DailyVideo>> => {
-		return api.put(ENDPOINTS.admin.videoById(id), data);
+		return apiClient.put(ENDPOINTS.admin.videoById(id), data);
 	},
 
 	/**
 	 * Delete a video (admin)
 	 */
 	delete: async (id: number): Promise<ApiResponse<void>> => {
-		return api.delete(ENDPOINTS.admin.videoById(id));
+		return apiClient.delete(ENDPOINTS.admin.videoById(id));
 	},
 
 	/**
@@ -373,7 +373,7 @@ export const dailyVideosApi = {
 		is_published?: boolean;
 		tags?: string[];
 	}>): Promise<ApiResponse<DailyVideo[]>> => {
-		return api.post(ENDPOINTS.admin.videosBulk, { videos });
+		return apiClient.post(ENDPOINTS.admin.videosBulk, { videos });
 	}
 };
 

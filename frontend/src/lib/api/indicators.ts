@@ -10,7 +10,7 @@
  * - Ownership verification
  */
 
-import { api } from './config';
+import { apiClient } from './client.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -263,14 +263,14 @@ export const indicatorsApi = {
 		per_page?: number;
 		page?: number;
 	}): Promise<PaginatedResponse<Indicator>> => {
-		return api.get(ENDPOINTS.list, params);
+		return apiClient.get(ENDPOINTS.list, { params });
 	},
 
 	/**
 	 * Get a single indicator by slug
 	 */
 	getBySlug: async (slug: string): Promise<ApiResponse<Indicator>> => {
-		return api.get(ENDPOINTS.single(slug));
+		return apiClient.get(ENDPOINTS.single(slug));
 	},
 
 };
@@ -288,7 +288,7 @@ export const userIndicatorsApi = {
 		status?: 'active' | 'expiring' | 'expired';
 		search?: string;
 	}): Promise<ApiResponse<PurchasedIndicator[]>> => {
-		return api.get(ENDPOINTS.my, params);
+		return apiClient.get(ENDPOINTS.my, { params });
 	},
 
 	/**
@@ -299,7 +299,7 @@ export const userIndicatorsApi = {
 		documentation_url: string;
 		version: string;
 	}>> => {
-		return api.get(ENDPOINTS.download(indicatorId));
+		return apiClient.get(ENDPOINTS.download(indicatorId));
 	},
 
 	/**
@@ -309,7 +309,7 @@ export const userIndicatorsApi = {
 		download_url: string;
 		expires_in: number;
 	}>> => {
-		return api.get(ENDPOINTS.download(indicatorId));
+		return apiClient.get(ENDPOINTS.download(indicatorId));
 	}
 };
 
@@ -328,35 +328,35 @@ export const adminIndicatorsApi = {
 		per_page?: number;
 		page?: number;
 	}): Promise<PaginatedResponse<Indicator>> => {
-		return api.get(ENDPOINTS.admin.list, params);
+		return apiClient.get(ENDPOINTS.admin.list, { params });
 	},
 
 	/**
 	 * Get a single indicator (admin)
 	 */
 	get: async (slug: string): Promise<ApiResponse<Indicator>> => {
-		return api.get(ENDPOINTS.admin.single(slug));
+		return apiClient.get(ENDPOINTS.admin.single(slug));
 	},
 
 	/**
 	 * Create a new indicator (admin)
 	 */
 	create: async (data: Partial<Indicator>): Promise<ApiResponse<Indicator>> => {
-		return api.post(ENDPOINTS.admin.create, data);
+		return apiClient.post(ENDPOINTS.admin.create, data);
 	},
 
 	/**
 	 * Update an indicator (admin)
 	 */
 	update: async (slug: string, data: Partial<Indicator>): Promise<ApiResponse<Indicator>> => {
-		return api.put(ENDPOINTS.admin.update(slug), data);
+		return apiClient.put(ENDPOINTS.admin.update(slug), data);
 	},
 
 	/**
 	 * Delete an indicator (admin)
 	 */
 	delete: async (slug: string): Promise<ApiResponse<void>> => {
-		return api.delete(ENDPOINTS.admin.delete(slug));
+		return apiClient.delete(ENDPOINTS.admin.delete(slug));
 	}
 };
 

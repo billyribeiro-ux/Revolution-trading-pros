@@ -8,7 +8,7 @@
  * @version 1.0.0 - December 2025
  */
 
-import { api } from './config';
+import { apiClient } from './client.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -57,14 +57,14 @@ export interface AccessibleRoomsResponse {
  * Get all accessible trading rooms for the current user
  */
 export async function getAccessibleRooms(): Promise<AccessibleRoomsResponse> {
-	return api.get('/api/trading-rooms/sso/accessible');
+	return apiClient.get('/api/trading-rooms/sso/accessible');
 }
 
 /**
  * Generate SSO token for a specific trading room
  */
 export async function generateSSOToken(roomSlug: string): Promise<SSOTokenResponse> {
-	return api.post(`/api/trading-rooms/${roomSlug}/sso`);
+	return apiClient.post(`/api/trading-rooms/${roomSlug}/sso`);
 }
 
 /**

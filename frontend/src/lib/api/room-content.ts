@@ -12,8 +12,7 @@
  * @version 1.0.0
  */
 
-import { getAuthToken } from '$lib/stores/auth.svelte';
-import { API_BASE_URL } from '$lib/api/config';
+import { apiClient } from './client.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS
@@ -187,43 +186,6 @@ export interface ListParams {
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
-// API CLIENT
-// ═══════════════════════════════════════════════════════════════════════════════════
-
-// ICT 7 FIX: Use full API URL for Pages.dev compatibility (no proxy)
-const API_BASE = `${API_BASE_URL}/api`;
-
-async function apiFetch<T>(
-	endpoint: string,
-	options: RequestInit = {}
-): Promise<T> {
-	const token = typeof window !== 'undefined' ? getAuthToken() : null;
-
-	const headers: Record<string, string> = {
-		'Content-Type': 'application/json',
-		Accept: 'application/json',
-		...((options.headers as Record<string, string>) || {})
-	};
-
-	if (token) {
-		headers['Authorization'] = `Bearer ${token}`;
-	}
-
-	const response = await fetch(`${API_BASE}${endpoint}`, {
-		...options,
-		headers,
-		credentials: 'include'
-	});
-
-	if (!response.ok) {
-		const errorData = await response.json().catch(() => ({ message: 'Request failed' }));
-		throw new Error(errorData.message || errorData.error || `API Error: ${response.status}`);
-	}
-
-	return response.json();
-}
-
-// ═══════════════════════════════════════════════════════════════════════════════════
 // TRADE PLAN API
 // ═══════════════════════════════════════════════════════════════════════════════════
 
@@ -231,49 +193,32 @@ export const tradePlanApi = {
 	/**
 	 * List trade plan entries for a room
 	 */
-	list: (roomSlug: string, params?: ListParams): Promise<PaginatedResponse<TradePlanEntry>> => {
-		const queryParams = new URLSearchParams();
-		if (params?.page) queryParams.set('page', params.page.toString());
-		if (params?.per_page) queryParams.set('per_page', params.per_page.toString());
-		if (params?.week_of) queryParams.set('week_of', params.week_of);
-		const query = queryParams.toString();
-		return apiFetch(`/room-content/rooms/${roomSlug}/trade-plan${query ? `?${query}` : ''}`);
-	},
+	list: (roomSlug: string, params?: ListParams): Promise<PaginatedResponse<TradePlanEntry>> =>
+		apiClient.get(`/room-content/rooms/${roomSlug}/trade-plan`, { params }),
 
 	/**
 	 * Create a new trade plan entry
 	 */
 	create: (data: CreateTradePlanRequest): Promise<TradePlanEntry> =>
-		apiFetch('/admin/room-content/trade-plan', {
-			method: 'POST',
-			body: JSON.stringify(data)
-		}),
+		apiClient.post('/admin/room-content/trade-plan', data),
 
 	/**
 	 * Update a trade plan entry
 	 */
 	update: (id: number, data: UpdateTradePlanRequest): Promise<TradePlanEntry> =>
-		apiFetch(`/admin/room-content/trade-plan/${id}`, {
-			method: 'PUT',
-			body: JSON.stringify(data)
-		}),
+		apiClient.put(`/admin/room-content/trade-plan/${id}`, data),
 
 	/**
 	 * Delete a trade plan entry
 	 */
 	delete: (id: number): Promise<{ success: boolean; message: string }> =>
-		apiFetch(`/admin/room-content/trade-plan/${id}`, {
-			method: 'DELETE'
-		}),
+		apiClient.delete(`/admin/room-content/trade-plan/${id}`),
 
 	/**
 	 * Reorder trade plan entries
 	 */
 	reorder: (roomSlug: string, items: ReorderRequest['items']): Promise<{ success: boolean }> =>
-		apiFetch(`/admin/room-content/rooms/${roomSlug}/trade-plan/reorder`, {
-			method: 'PUT',
-			body: JSON.stringify({ items })
-		})
+		apiClient.put(`/admin/room-content/rooms/${roomSlug}/trade-plan/reorder`, { items })
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -284,47 +229,32 @@ export const alertsApi = {
 	/**
 	 * List alerts for a room
 	 */
-	list: (roomSlug: string, params?: ListParams): Promise<PaginatedResponse<RoomAlert>> => {
-		const queryParams = new URLSearchParams();
-		if (params?.page) queryParams.set('page', params.page.toString());
-		if (params?.per_page) queryParams.set('per_page', params.per_page.toString());
-		const query = queryParams.toString();
-		return apiFetch(`/room-content/rooms/${roomSlug}/alerts${query ? `?${query}` : ''}`);
-	},
+	list: (roomSlug: string, params?: ListParams): Promise<PaginatedResponse<RoomAlert>> =>
+		apiClient.get(`/room-content/rooms/${roomSlug}/alerts`, { params }),
 
 	/**
 	 * Create a new alert
 	 */
 	create: (data: CreateAlertRequest): Promise<RoomAlert> =>
-		apiFetch('/admin/room-content/alerts', {
-			method: 'POST',
-			body: JSON.stringify(data)
-		}),
+		apiClient.post('/admin/room-content/alerts', data),
 
 	/**
 	 * Update an alert
 	 */
 	update: (id: number, data: UpdateAlertRequest): Promise<RoomAlert> =>
-		apiFetch(`/admin/room-content/alerts/${id}`, {
-			method: 'PUT',
-			body: JSON.stringify(data)
-		}),
+		apiClient.put(`/admin/room-content/alerts/${id}`, data),
 
 	/**
 	 * Delete an alert
 	 */
 	delete: (id: number): Promise<{ success: boolean; message: string }> =>
-		apiFetch(`/admin/room-content/alerts/${id}`, {
-			method: 'DELETE'
-		}),
+		apiClient.delete(`/admin/room-content/alerts/${id}`),
 
 	/**
 	 * Mark alert as read (not new)
 	 */
 	markRead: (id: number): Promise<{ success: boolean }> =>
-		apiFetch(`/room-content/rooms/any/alerts/${id}/read`, {
-			method: 'POST'
-		})
+		apiClient.post(`/room-content/rooms/any/alerts/${id}/read`)
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -336,27 +266,19 @@ export const weeklyVideoApi = {
 	 * Get current weekly video for a room
 	 */
 	getCurrent: (roomSlug: string): Promise<{ data: WeeklyVideo | null }> =>
-		apiFetch(`/room-content/rooms/${roomSlug}/weekly-video`),
+		apiClient.get(`/room-content/rooms/${roomSlug}/weekly-video`),
 
 	/**
 	 * List all weekly videos (including archived)
 	 */
-	list: (roomSlug: string, params?: ListParams): Promise<PaginatedResponse<WeeklyVideo>> => {
-		const queryParams = new URLSearchParams();
-		if (params?.page) queryParams.set('page', params.page.toString());
-		if (params?.per_page) queryParams.set('per_page', params.per_page.toString());
-		const query = queryParams.toString();
-		return apiFetch(`/room-content/rooms/${roomSlug}/weekly-videos${query ? `?${query}` : ''}`);
-	},
+	list: (roomSlug: string, params?: ListParams): Promise<PaginatedResponse<WeeklyVideo>> =>
+		apiClient.get(`/room-content/rooms/${roomSlug}/weekly-videos`, { params }),
 
 	/**
 	 * Create/publish a new weekly video (archives previous)
 	 */
 	create: (data: CreateWeeklyVideoRequest): Promise<WeeklyVideo> =>
-		apiFetch('/admin/room-content/weekly-video', {
-			method: 'POST',
-			body: JSON.stringify(data)
-		})
+		apiClient.post('/admin/room-content/weekly-video', data)
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -368,7 +290,7 @@ export const roomStatsApi = {
 	 * Get room stats
 	 */
 	get: (roomSlug: string): Promise<{ data: RoomStats | null }> =>
-		apiFetch(`/room-content/rooms/${roomSlug}/stats`)
+		apiClient.get(`/room-content/rooms/${roomSlug}/stats`)
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════

@@ -1,4 +1,5 @@
-import { API_ENDPOINTS, apiFetch } from './config';
+import { apiClient } from './client.svelte';
+import { API_ENDPOINTS } from './config';
 
 export type TimerEventType =
 	| 'start'
@@ -24,8 +25,5 @@ export interface TimerEventPayload {
  * Record a timer lifecycle or analytics event on the backend.
  */
 export async function recordTimerEvent(event: TimerEventPayload): Promise<void> {
-	await apiFetch<{ status: string }>(API_ENDPOINTS.timers.events, {
-		method: 'POST',
-		body: JSON.stringify(event)
-	});
+	await apiClient.post<{ status: string }>(API_ENDPOINTS.timers.events, event);
 }
