@@ -102,8 +102,9 @@ async fn get_memberships(
     // Fetch plan details for each subscription
     let mut memberships = Vec::new();
     for sub in subscriptions {
+        // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
         let plan: Option<MembershipPlanDbRow> = sqlx::query_as(
-            "SELECT id, name, slug, price, billing_cycle, metadata, features FROM membership_plans WHERE id = $1"
+            "SELECT id, name, slug, price::FLOAT8 as price, billing_cycle, metadata, features FROM membership_plans WHERE id = $1"
         )
         .bind(sub.plan_id)
         .fetch_optional(&state.db.pool)
@@ -267,8 +268,9 @@ async fn get_membership_details(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Membership not found"}))))?;
 
+    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: MembershipPlanDbRow = sqlx::query_as(
-        "SELECT id, name, slug, price, billing_cycle, metadata, features FROM membership_plans WHERE id = $1"
+        "SELECT id, name, slug, price::FLOAT8 as price, billing_cycle, metadata, features FROM membership_plans WHERE id = $1"
     )
     .bind(subscription.plan_id)
     .fetch_optional(&state.db.pool)

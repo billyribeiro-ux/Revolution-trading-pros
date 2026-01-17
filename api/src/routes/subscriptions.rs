@@ -69,16 +69,20 @@ pub struct CancelSubscriptionRequest {
 async fn list_plans(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<MembershipPlanRow>>, (StatusCode, Json<serde_json::Value>)> {
-    let plans: Vec<MembershipPlanRow> =
-        sqlx::query_as("SELECT * FROM membership_plans WHERE is_active = true ORDER BY price ASC")
-            .fetch_all(&state.db.pool)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": e.to_string()})),
-                )
-            })?;
+    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
+    let plans: Vec<MembershipPlanRow> = sqlx::query_as(
+        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+           is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
+           FROM membership_plans WHERE is_active = true ORDER BY price ASC"#,
+    )
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(plans))
 }
@@ -88,22 +92,27 @@ async fn get_plan(
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<MembershipPlanRow>, (StatusCode, Json<serde_json::Value>)> {
-    let plan: MembershipPlanRow = sqlx::query_as("SELECT * FROM membership_plans WHERE slug = $1")
-        .bind(&slug)
-        .fetch_optional(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?
-        .ok_or_else(|| {
-            (
-                StatusCode::NOT_FOUND,
-                Json(json!({"error": "Plan not found"})),
-            )
-        })?;
+    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
+    let plan: MembershipPlanRow = sqlx::query_as(
+        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+           is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
+           FROM membership_plans WHERE slug = $1"#,
+    )
+    .bind(&slug)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Plan not found"})),
+        )
+    })?;
 
     Ok(Json(plan))
 }
@@ -166,23 +175,27 @@ async fn create_subscription(
     Json(input): Json<CreateSubscriptionRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get the plan
-    let plan: MembershipPlanRow =
-        sqlx::query_as("SELECT * FROM membership_plans WHERE id = $1 AND is_active = true")
-            .bind(input.plan_id)
-            .fetch_optional(&state.db.pool)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": e.to_string()})),
-                )
-            })?
-            .ok_or_else(|| {
-                (
-                    StatusCode::NOT_FOUND,
-                    Json(json!({"error": "Plan not found or inactive"})),
-                )
-            })?;
+    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
+    let plan: MembershipPlanRow = sqlx::query_as(
+        r#"SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle,
+           is_active, metadata, stripe_price_id, features, trial_days, created_at, updated_at
+           FROM membership_plans WHERE id = $1 AND is_active = true"#,
+    )
+    .bind(input.plan_id)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Plan not found or inactive"})),
+        )
+    })?;
 
     // Check if user already has active subscription
     let existing: Option<(i64,)> =

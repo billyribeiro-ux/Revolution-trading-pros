@@ -111,8 +111,9 @@ async fn create_checkout(
         }
 
         if let Some(plan_id) = item.plan_id {
+            // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
             let plan: PlanPrice = sqlx::query_as(
-                "SELECT id, name, price FROM membership_plans WHERE id = $1 AND is_active = true",
+                "SELECT id, name, price::FLOAT8 as price FROM membership_plans WHERE id = $1 AND is_active = true",
             )
             .bind(plan_id)
             .fetch_optional(&state.db.pool)

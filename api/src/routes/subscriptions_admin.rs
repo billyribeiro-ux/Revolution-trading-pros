@@ -454,9 +454,10 @@ async fn list_plans(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
+    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plans: Vec<SubscriptionPlanRow> = sqlx::query_as(
         r#"
-        SELECT id, name, slug, description, price, billing_cycle, is_active,
+        SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active,
                stripe_price_id, features, trial_days, created_at, updated_at
         FROM membership_plans
         WHERE ($1::boolean IS NULL OR is_active = $1)
@@ -502,9 +503,10 @@ async fn get_plan(
     AdminUser(_user): AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: SubscriptionPlanRow = sqlx::query_as(
         r#"
-        SELECT id, name, slug, description, price, billing_cycle, is_active,
+        SELECT id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active,
                stripe_price_id, features, trial_days, created_at, updated_at
         FROM membership_plans WHERE id = $1
         "#,
@@ -545,11 +547,12 @@ async fn create_plan(
     let slug = slug::slugify(&input.name);
     let features = input.features.unwrap_or(json!([]));
 
+    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: SubscriptionPlanRow = sqlx::query_as(
         r#"
         INSERT INTO membership_plans (name, slug, description, price, billing_cycle, is_active, stripe_price_id, features, trial_days, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, NOW(), NOW())
-        RETURNING id, name, slug, description, price, billing_cycle, is_active, stripe_price_id, features, trial_days, created_at, updated_at
+        RETURNING id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active, stripe_price_id, features, trial_days, created_at, updated_at
         "#
     )
     .bind(&input.name)
@@ -588,6 +591,7 @@ async fn update_plan(
         "Admin updating subscription plan"
     );
 
+    // ICT 11+ Fix: Cast DECIMAL price to FLOAT8 for SQLx f64 compatibility
     let plan: SubscriptionPlanRow = sqlx::query_as(
         r#"
         UPDATE membership_plans SET
@@ -602,7 +606,7 @@ async fn update_plan(
             trial_days = COALESCE($9, trial_days),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, slug, description, price, billing_cycle, is_active, stripe_price_id, features, trial_days, created_at, updated_at
+        RETURNING id, name, slug, description, price::FLOAT8 as price, billing_cycle, is_active, stripe_price_id, features, trial_days, created_at, updated_at
         "#
     )
     .bind(id)
