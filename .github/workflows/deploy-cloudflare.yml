@@ -249,6 +249,8 @@ jobs:
           path: frontend/.svelte-kit
           retention-days: 1
           if-no-files-found: error
+          # .svelte-kit starts with a dot (hidden), must include hidden files
+          include-hidden-files: true
 
   # ═══════════════════════════════════════════════════════════════════════════
   # DEPLOY TO CLOUDFLARE PAGES
