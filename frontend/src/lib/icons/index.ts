@@ -416,10 +416,15 @@ import IconUpload from '@tabler/icons-svelte/icons/upload';
 import IconUser from '@tabler/icons-svelte/icons/user';
 import IconUserCheck from '@tabler/icons-svelte/icons/user-check';
 import IconUserCircle from '@tabler/icons-svelte/icons/user-circle';
+import IconUserEdit from '@tabler/icons-svelte/icons/user-edit';
 import IconUserMinus from '@tabler/icons-svelte/icons/user-minus';
 import IconUserPlus from '@tabler/icons-svelte/icons/user-plus';
+import IconUserOff from '@tabler/icons-svelte/icons/user-off';
 import IconUsers from '@tabler/icons-svelte/icons/users';
 import IconUsersGroup from '@tabler/icons-svelte/icons/users-group';
+
+// Ban/Block Icons
+import IconBan from '@tabler/icons-svelte/icons/ban';
 
 // Video/Volume Icons
 import IconVideo from '@tabler/icons-svelte/icons/video';
@@ -817,10 +822,14 @@ export {
 	IconUser,
 	IconUserCheck,
 	IconUserCircle,
+	IconUserEdit,
 	IconUserMinus,
+	IconUserOff,
 	IconUserPlus,
 	IconUsers,
 	IconUsersGroup,
+	// Ban/Block Icons
+	IconBan,
 	// Video/Volume Icons
 	IconVideo,
 	IconVolume,

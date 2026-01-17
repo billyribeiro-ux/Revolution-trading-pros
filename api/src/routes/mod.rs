@@ -36,6 +36,7 @@ pub mod videos;
 // pub mod indicators_admin; // TODO: Fix SQLx tuple decoding issues
 pub mod admin_courses;
 pub mod admin_indicators;
+pub mod admin_member_management; // ICT 11+: Full member CRUD, ban, export
 pub mod admin_members; // ICT 7: Member segments, tags, and filters
 pub mod admin_page_layouts;
 pub mod admin_videos;
@@ -143,6 +144,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/connections", connections::admin_router())
         // Admin Members - Segments, Tags, Filters - ICT 7 Grade
         .nest("/admin/members", admin_members::router())
+        // Admin Member Management - Full CRUD, Ban, Export - ICT 11+ Grade
+        .nest("/admin/member-management", admin_member_management::router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())
