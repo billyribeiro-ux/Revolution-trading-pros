@@ -171,26 +171,21 @@
 	 * Source: https://my.simplertrading.com/indicators/volume-max-i
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* 1. BODY BACKGROUND - White columns on sides */
-	:global(html),
-	:global(body) {
-		background-color: #FFFFFF !important;
+	/* 1. PAGE WRAPPER - scoped styles (no global leaks) */
+	#page {
+		padding: 0;
+		max-width: 100%;
+		background-color: #FFFFFF;
 		color: #666666;
 		font-family: "Open Sans", sans-serif;
 	}
 
-	:global(a), :global(a:visited) {
+	#page a, #page a:visited {
 		color: #1e73be;
 	}
 
-	:global(a:hover), :global(a:focus), :global(a:active) {
+	#page a:hover, #page a:focus, #page a:active {
 		color: #000000;
-	}
-
-	/* 2. PAGE WRAPPER - WordPress structure */
-	#page {
-		padding: 0;
-		max-width: 100%;
 	}
 
 	#content.site-content {

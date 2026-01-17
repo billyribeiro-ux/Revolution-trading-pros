@@ -204,53 +204,36 @@
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * BASE STYLES
-	 * ───────────────────────────────────────────────────────────────────────────── */
-	:global(html) {
-		font-size: 100%;
-		-webkit-text-size-adjust: 100%;
-		text-size-adjust: 100%;
-		scroll-behavior: smooth;
-	}
-
-	:global(html),
-	:global(body) {
-		background-color: #EFEFEF !important;
-		color: #666666;
-		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-		font-size: 1rem;
-		line-height: 1.5;
-		min-height: 100dvh;
-		margin: 0;
-		padding: 0;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-	}
-
-	:global(a), :global(a:visited) {
-		color: #1e73be;
-		text-decoration: none;
-		transition: color 150ms ease-out;
-	}
-
-	:global(a:hover), :global(a:focus) {
-		color: #000000;
-	}
-
-	:global(a:focus-visible) {
-		outline: 2px solid #1e73be;
-		outline-offset: 2px;
-		border-radius: 4px;
-	}
-
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * PAGE WRAPPER
+	 * PAGE WRAPPER (scoped styles - no global leaks)
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	#page {
 		max-width: 100%;
 		margin: 0;
 		padding: 0;
 		background-color: #EFEFEF;
+		color: #666666;
+		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+		font-size: 1rem;
+		line-height: 1.5;
+		min-height: 100dvh;
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+	}
+
+	#page a, #page a:visited {
+		color: #1e73be;
+		text-decoration: none;
+		transition: color 150ms ease-out;
+	}
+
+	#page a:hover, #page a:focus {
+		color: #000000;
+	}
+
+	#page a:focus-visible {
+		outline: 2px solid #1e73be;
+		outline-offset: 2px;
+		border-radius: 4px;
 	}
 
 	#content {
@@ -480,7 +463,7 @@
 
 	/* Print */
 	@media print {
-		:global(body) {
+		#page {
 			background-color: white !important;
 		}
 
