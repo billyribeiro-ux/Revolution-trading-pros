@@ -18,7 +18,7 @@ import {
 	DEFAULT_CONSENT_STATE,
 	DEFAULT_CONSENT_EXPIRY_DAYS,
 	generateConsentId,
-	CONSENT_EVENTS,
+	CONSENT_EVENTS
 } from './types';
 import { loadConsent, saveConsent } from './storage';
 import { detectPrivacySignals, getSignalBasedDefaults } from './privacy-signals';
@@ -66,7 +66,7 @@ function createConsentStore() {
 				stored = {
 					...stored,
 					...defaults,
-					privacySignals,
+					privacySignals
 				};
 			}
 
@@ -102,7 +102,7 @@ function createConsentStore() {
 					hasInteracted: true,
 					updatedAt: new Date().toISOString(),
 					consentId: state.consentId || generateConsentId(),
-					consentMethod: 'modal',
+					consentMethod: 'modal'
 				};
 
 				// Add expiry
@@ -142,7 +142,7 @@ function createConsentStore() {
 					consentMethod: method,
 					strictMode: privacySignals?.requiresStrictConsent || false,
 					...(privacySignals?.region && { countryCode: privacySignals.region }),
-					...(privacySignals && { privacySignals }),
+					...(privacySignals && { privacySignals })
 				};
 
 				// Add expiry
@@ -161,7 +161,7 @@ function createConsentStore() {
 				trackConsentInteraction('accept_all', {
 					analytics: true,
 					marketing: true,
-					preferences: true,
+					preferences: true
 				});
 
 				// Dispatch event
@@ -190,7 +190,7 @@ function createConsentStore() {
 					consentMethod: method,
 					strictMode: privacySignals?.requiresStrictConsent || false,
 					...(privacySignals?.region && { countryCode: privacySignals.region }),
-					...(privacySignals && { privacySignals }),
+					...(privacySignals && { privacySignals })
 				};
 
 				// Add expiry
@@ -209,7 +209,7 @@ function createConsentStore() {
 				trackConsentInteraction('reject_all', {
 					analytics: false,
 					marketing: false,
-					preferences: false,
+					preferences: false
 				});
 
 				// Dispatch event
@@ -239,7 +239,7 @@ function createConsentStore() {
 					consentMethod: method,
 					strictMode: privacySignals?.requiresStrictConsent || false,
 					...(privacySignals?.region && { countryCode: privacySignals.region }),
-					...(privacySignals && { privacySignals }),
+					...(privacySignals && { privacySignals })
 				};
 
 				// Add expiry
@@ -272,7 +272,7 @@ function createConsentStore() {
 			const resetState: ConsentState = {
 				...DEFAULT_CONSENT_STATE,
 				updatedAt: new Date().toISOString(),
-				...(privacySignals && { privacySignals }),
+				...(privacySignals && { privacySignals })
 			};
 
 			set(resetState);
@@ -330,7 +330,7 @@ function createConsentStore() {
 			const diff = expiry.getTime() - now.getTime();
 
 			return Math.ceil(diff / (1000 * 60 * 60 * 24));
-		},
+		}
 	};
 }
 
@@ -351,8 +351,8 @@ function dispatchConsentEvent(previous: ConsentState, current: ConsentState): vo
 				previous,
 				current,
 				changed,
-				source: 'user',
-			},
+				source: 'user'
+			}
 		})
 	);
 }
@@ -414,9 +414,7 @@ export function closePreferencesModal(): void {
 /**
  * Listen for consent changes.
  */
-export function onConsentChange(
-	callback: (event: CustomEvent) => void
-): () => void {
+export function onConsentChange(callback: (event: CustomEvent) => void): () => void {
 	if (!browser) return () => {};
 
 	window.addEventListener(CONSENT_EVENTS.CONSENT_UPDATED, callback as EventListener);

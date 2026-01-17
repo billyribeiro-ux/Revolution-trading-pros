@@ -40,7 +40,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// MODULE CONTEXT - Shared across all instances
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	/**
 	 * Navigation item with optional submenu
 	 */
@@ -97,12 +97,7 @@
 	import { onMount, tick, type Snippet } from 'svelte';
 	import { page } from '$app/state';
 	import { goto, beforeNavigate, afterNavigate } from '$app/navigation';
-	import {
-		IconShoppingCart,
-		IconMenu2,
-		IconX,
-		IconChevronDown
-	} from '$lib/icons';
+	import { IconShoppingCart, IconMenu2, IconX, IconChevronDown } from '$lib/icons';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
 	import { cartItemCount, hasCartItems } from '$lib/stores/cart.svelte';
 	import { logout as logoutApi } from '$lib/api/auth';
@@ -110,7 +105,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DEFAULT CONFIGURATION (Must be before Props destructuring)
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	const DEFAULT_NAV_ITEMS: readonly NavMenuItem[] = [
 		{
 			id: 'live',
@@ -163,7 +158,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS API
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	interface Props {
 		/** Navigation items configuration */
 		items?: readonly NavMenuItem[];
@@ -219,7 +214,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EVENT HELPERS (Svelte 5 callback pattern)
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	function dispatch(event: keyof NavBarEvents, detail?: NavBarEvents[keyof NavBarEvents]) {
 		switch (event) {
 			case 'nav:click':
@@ -246,7 +241,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE MACHINE
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	let mobileMenuState = $state<MenuState>('idle');
 	let activeDropdown = $state<string | null>(null);
 	let mobileExpandedSection = $state<string | null>(null);
@@ -273,10 +268,10 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	const currentPath = $derived(page?.url?.pathname ?? '/');
 	const isMobileMenuOpen = $derived(mobileMenuState === 'open' || mobileMenuState === 'opening');
-	
+
 	const cartAriaLabel = $derived.by(() => {
 		const count = $cartItemCount;
 		if (count === 0) return 'Shopping cart is empty';
@@ -285,9 +280,7 @@
 	});
 
 	const userInitial = $derived(
-		$user?.name?.[0]?.toUpperCase() || 
-		$user?.email?.[0]?.toUpperCase() || 
-		'U'
+		$user?.name?.[0]?.toUpperCase() || $user?.email?.[0]?.toUpperCase() || 'U'
 	);
 
 	// CSS custom properties from theme
@@ -305,9 +298,9 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// UTILITY FUNCTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	function isSubmenuActive(submenu: readonly NavSubMenuItem[] | undefined): boolean {
-		return submenu?.some(item => currentPath === item.href) ?? false;
+		return submenu?.some((item) => currentPath === item.href) ?? false;
 	}
 
 	function announce(message: string): void {
@@ -322,7 +315,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// FOCUS MANAGEMENT (WCAG 2.1 AAA)
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	const FOCUSABLE_SELECTOR = [
 		'a[href]:not([disabled]):not([tabindex="-1"])',
 		'button:not([disabled]):not([tabindex="-1"])',
@@ -357,7 +350,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// MOBILE MENU STATE MACHINE TRANSITIONS
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	async function openMobileMenu(): Promise<void> {
 		if (mobileMenuState !== 'idle') return;
 
@@ -396,7 +389,7 @@
 
 		// Wait for animation
 		const duration = prefersReducedMotion || disableTransitions ? 0 : 250;
-		await new Promise(resolve => setTimeout(resolve, duration));
+		await new Promise((resolve) => setTimeout(resolve, duration));
 
 		mobileMenuState = 'idle';
 
@@ -425,10 +418,10 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DROPDOWN HANDLERS
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	function openDropdown(id: string): void {
 		if (activeDropdown === id) return;
-		
+
 		activeDropdown = id;
 		focusedDropdownIndex = -1;
 		dispatch('nav:dropdown-open', { id });
@@ -436,7 +429,7 @@
 
 	function closeDropdown(): void {
 		if (!activeDropdown) return;
-		
+
 		const id = activeDropdown;
 		activeDropdown = null;
 		focusedDropdownIndex = -1;
@@ -454,7 +447,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// KEYBOARD NAVIGATION (Roving Tabindex Pattern)
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	function handleDropdownKeydown(event: KeyboardEvent, submenu: readonly NavSubMenuItem[]): void {
 		switch (event.key) {
 			case 'ArrowDown':
@@ -487,14 +480,14 @@
 					}
 				}
 				break;
-			}
 		}
+	}
 
-		// ═══════════════════════════════════════════════════════════════════════════
-		// NAVIGATION HANDLERS
-		// ═══════════════════════════════════════════════════════════════════════════
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+	// NAVIGATION HANDLERS
+	// ═══════════════════════════════════════════════════════════════════════════
+	// ═══════════════════════════════════════════════════════════════════════════
+
 	function handleNavClick(href: string, label: string): void {
 		dispatch('nav:click', { href, label });
 		closeMobileMenu();
@@ -521,10 +514,10 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// GLOBAL EVENT HANDLERS
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	function handleClickOutside(event: MouseEvent): void {
 		const target = event.target as HTMLElement;
-		
+
 		if (activeDropdown && !target.closest('[data-dropdown]')) {
 			closeDropdown();
 		}
@@ -547,7 +540,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// INTERSECTION OBSERVER (Scroll Detection - 60fps)
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	let scrollObserver: IntersectionObserver | null = null;
 
 	function setupScrollObserver(): void {
@@ -570,7 +563,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// NAVIGATION LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	beforeNavigate(() => {
 		isNavigating = true;
 		closeMobileMenu();
@@ -584,7 +577,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	onMount(() => {
 		// Media queries for user preferences
 		const motionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
@@ -627,20 +620,18 @@
 </script>
 
 <!-- Scroll Sentinel (Intersection Observer target) -->
-<div 
-	bind:this={scrollSentinelRef}
-	class="scroll-sentinel" 
-	aria-hidden="true"
-></div>
+<div bind:this={scrollSentinelRef} class="scroll-sentinel" aria-hidden="true"></div>
 
 <!-- Live Region for Screen Reader Announcements -->
-<div 
+<div
 	bind:this={announcerRef}
 	class="sr-announcer"
-	role="status" 
-	aria-live="polite" 
+	role="status"
+	aria-live="polite"
 	aria-atomic="true"
->{announcement}</div>
+>
+	{announcement}
+</div>
 
 <!-- ═══════════════════════════════════════════════════════════════════════════
      MAIN NAVBAR
@@ -663,11 +654,7 @@
 		{#if logo}
 			{@render logo()}
 		{:else}
-			<a 
-				href={logoHref} 
-				class="logo" 
-				aria-label="{logoAlt} - Home"
-			>
+			<a href={logoHref} class="logo" aria-label="{logoAlt} - Home">
 				<img
 					src={logoSrc}
 					alt=""
@@ -686,34 +673,28 @@
 		<nav class="desktop-nav" aria-label="Main navigation">
 			{#each items as item (item.id)}
 				{#if item.submenu}
-					<div 
-						class="dropdown" 
-						data-dropdown={item.id}
-					>
+					<div class="dropdown" data-dropdown={item.id}>
 						<button
 							class="dropdown-trigger"
 							class:active={isSubmenuActive(item.submenu)}
 							class:open={activeDropdown === item.id}
 							onclick={() => toggleDropdown(item.id)}
-							onkeydown={(e: KeyboardEvent) => activeDropdown === item.id && handleDropdownKeydown(e, item.submenu!)}
+							onkeydown={(e: KeyboardEvent) =>
+								activeDropdown === item.id && handleDropdownKeydown(e, item.submenu!)}
 							aria-expanded={activeDropdown === item.id}
 							aria-haspopup="menu"
 							aria-controls="dropdown-{item.id}"
 							type="button"
 						>
 							<span>{item.label}</span>
-							<IconChevronDown 
-								size={14} 
-								class="chevron"
-								aria-hidden="true"
-							/>
+							<IconChevronDown size={14} class="chevron" aria-hidden="true" />
 						</button>
 
 						{#if activeDropdown === item.id}
-							<ul 
+							<ul
 								id="dropdown-{item.id}"
-								class="dropdown-menu" 
-								role="menu" 
+								class="dropdown-menu"
+								role="menu"
 								aria-label="{item.label} submenu"
 							>
 								{#each item.submenu as sub, idx (sub.href)}
@@ -755,10 +736,12 @@
 				<div class="dropdown" data-dropdown="dashboard">
 					<button
 						class="dropdown-trigger"
-						class:active={currentPath.startsWith('/dashboard') || currentPath.startsWith('/account')}
+						class:active={currentPath.startsWith('/dashboard') ||
+							currentPath.startsWith('/account')}
 						class:open={activeDropdown === 'dashboard'}
 						onclick={() => toggleDropdown('dashboard')}
-						onkeydown={(e: KeyboardEvent) => activeDropdown === 'dashboard' && handleDropdownKeydown(e, dashboardItems)}
+						onkeydown={(e: KeyboardEvent) =>
+							activeDropdown === 'dashboard' && handleDropdownKeydown(e, dashboardItems)}
 						aria-expanded={activeDropdown === 'dashboard'}
 						aria-haspopup="menu"
 						aria-controls="dropdown-dashboard"
@@ -921,11 +904,7 @@
 							type="button"
 						>
 							<span>{item.label}</span>
-							<IconChevronDown 
-								size={18} 
-								class="chevron"
-								aria-hidden="true"
-							/>
+							<IconChevronDown size={18} class="chevron" aria-hidden="true" />
 						</button>
 
 						{#if mobileExpandedSection === item.id}
@@ -1015,11 +994,13 @@
 			{/if}
 
 			{#if $isAuthenticated}
-				<button class="mobile-logout" onclick={handleLogout} type="button">
-					Logout
-				</button>
+				<button class="mobile-logout" onclick={handleLogout} type="button"> Logout </button>
 			{:else}
-				<a href="/get-started" class="mobile-cta" onclick={() => handleNavClick('/get-started', 'Get Started')}>
+				<a
+					href="/get-started"
+					class="mobile-cta"
+					onclick={() => handleNavClick('/get-started', 'Get Started')}
+				>
 					Get Started
 				</a>
 				<a href="/login" class="mobile-login" onclick={() => handleNavClick('/login', 'Login')}>
@@ -1030,7 +1011,6 @@
 	</div>
 {/if}
 
-
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   DESIGN TOKENS
@@ -1039,12 +1019,12 @@
 	.navbar {
 		--nav-height: 80px;
 		--nav-padding-inline: 1rem;
-		--nav-primary: #0E6AC4;
+		--nav-primary: #0e6ac4;
 		--nav-primary-dark: #0a4d8a;
 		--nav-primary-light: rgba(14, 106, 196, 0.1);
 		--nav-primary-glow: rgba(14, 106, 196, 0.4);
-		--nav-bg: #151F31;
-		--nav-bg-scrolled: #151F31;
+		--nav-bg: #151f31;
+		--nav-bg-scrolled: #151f31;
 		--nav-border: rgba(255, 255, 255, 0.1);
 		--nav-text: #ffffff;
 		--nav-text-secondary: rgba(255, 255, 255, 0.9);
@@ -1094,7 +1074,9 @@
 		backdrop-filter: blur(20px) saturate(180%);
 		-webkit-backdrop-filter: blur(20px) saturate(180%);
 		border-block-end: 1px solid var(--nav-border);
-		transition: background-color 300ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition:
+			background-color 300ms cubic-bezier(0.4, 0, 0.2, 1),
+			box-shadow 300ms cubic-bezier(0.4, 0, 0.2, 1);
 		contain: layout style;
 	}
 
@@ -1236,7 +1218,11 @@
 		border: 1px solid rgba(14, 106, 196, 0.2);
 		border-radius: var(--nav-radius);
 		cursor: pointer;
-		transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition:
+			background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+			box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+			border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+			transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	/* ICT11+ Fix: Progressive enhancement for larger screens */
@@ -1317,7 +1303,11 @@
 		border: 1px solid rgba(14, 106, 196, 0.2);
 		border-radius: var(--nav-radius);
 		cursor: pointer;
-		transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition:
+			background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+			box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+			border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+			transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	/* ICT11+ Fix: Progressive enhancement for larger screens */
@@ -1382,7 +1372,9 @@
 		background: linear-gradient(to bottom, rgba(20, 34, 62, 0.98), rgba(10, 22, 40, 0.98));
 		border: 1px solid rgba(14, 106, 196, 0.2);
 		border-radius: 0.75rem;
-		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5), 0 0 20px rgba(14, 106, 196, 0.1);
+		box-shadow:
+			0 10px 40px rgba(0, 0, 0, 0.5),
+			0 0 20px rgba(14, 106, 196, 0.1);
 		backdrop-filter: blur(10px);
 		-webkit-backdrop-filter: blur(10px);
 		overflow: hidden;
@@ -1411,7 +1403,10 @@
 		font-family: var(--nav-font);
 		text-decoration: none;
 		white-space: nowrap;
-		transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1), padding-inline-start 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition:
+			background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+			color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+			padding-inline-start 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.dropdown-item::before {
@@ -1503,7 +1498,10 @@
 		border: 1px solid rgba(14, 106, 196, 0.2);
 		border-radius: var(--nav-radius);
 		text-decoration: none;
-		transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition:
+			background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+			box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+			transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.cart-btn:hover,
@@ -1550,7 +1548,11 @@
 		background-color: var(--nav-primary-light);
 		border: 1px solid rgba(14, 106, 196, 0.2);
 		border-radius: var(--nav-radius);
-		transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1), border-color 200ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition:
+			background-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+			box-shadow 200ms cubic-bezier(0.4, 0, 0.2, 1),
+			border-color 200ms cubic-bezier(0.4, 0, 0.2, 1),
+			transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	@media (min-width: 1024px) {
@@ -1612,7 +1614,10 @@
 		background: linear-gradient(135deg, var(--nav-primary) 0%, var(--nav-primary-dark) 100%);
 		border: none;
 		border-radius: var(--nav-radius);
-		transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1), background 200ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition:
+			transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+			box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1),
+			background 200ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	@media (min-width: 1024px) {
@@ -1649,7 +1654,9 @@
 
 	.cta-btn:hover,
 	.cta-btn:focus-visible {
-		background: linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%), var(--nav-primary-light);
+		background:
+			linear-gradient(to bottom right, var(--nav-primary) 0%, transparent 30%),
+			var(--nav-primary-light);
 		box-shadow: 0 0 20px var(--nav-primary-glow);
 		transform: translateY(-2px);
 	}
@@ -1692,7 +1699,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: opacity 150ms cubic-bezier(0.4, 0, 0.2, 1), transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition:
+			opacity 150ms cubic-bezier(0.4, 0, 0.2, 1),
+			transform 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.hamburger-icon.open {
@@ -1744,13 +1753,21 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	@keyframes fadeOut {
-		from { opacity: 1; }
-		to { opacity: 0; }
+		from {
+			opacity: 1;
+		}
+		to {
+			opacity: 0;
+		}
 	}
 
 	.mobile-panel {
@@ -1792,13 +1809,21 @@
 	}
 
 	@keyframes slideIn {
-		from { transform: translateX(100%); }
-		to { transform: translateX(0); }
+		from {
+			transform: translateX(100%);
+		}
+		to {
+			transform: translateX(0);
+		}
 	}
 
 	@keyframes slideOut {
-		from { transform: translateX(0); }
-		to { transform: translateX(100%); }
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(100%);
+		}
 	}
 
 	.mobile-panel.rtl {
@@ -1810,13 +1835,21 @@
 	}
 
 	@keyframes slideInRTL {
-		from { transform: translateX(-100%); }
-		to { transform: translateX(0); }
+		from {
+			transform: translateX(-100%);
+		}
+		to {
+			transform: translateX(0);
+		}
 	}
 
 	@keyframes slideOutRTL {
-		from { transform: translateX(0); }
-		to { transform: translateX(-100%); }
+		from {
+			transform: translateX(0);
+		}
+		to {
+			transform: translateX(-100%);
+		}
 	}
 
 	.mobile-header {
@@ -1857,7 +1890,7 @@
 	}
 
 	.mobile-close:focus-visible {
-		outline: 3px solid #0E6AC4;
+		outline: 3px solid #0e6ac4;
 		outline-offset: 2px;
 	}
 
@@ -1876,7 +1909,7 @@
 		justify-content: center;
 		width: 44px;
 		height: 44px;
-		background: linear-gradient(135deg, #0E6AC4, #0a4d8a);
+		background: linear-gradient(135deg, #0e6ac4, #0a4d8a);
 		color: #ffffff;
 		font-size: 1.125rem;
 		font-weight: 700;
@@ -1950,12 +1983,12 @@
 	}
 
 	.mobile-nav-item:focus-visible {
-		outline: 3px solid #0E6AC4;
+		outline: 3px solid #0e6ac4;
 		outline-offset: -2px;
 	}
 
 	.mobile-nav-item.active {
-		color: #0E6AC4;
+		color: #0e6ac4;
 	}
 
 	.mobile-nav-item :global(.chevron) {
@@ -1987,24 +2020,27 @@
 		background: rgba(20, 34, 62, 0.4);
 		border-inline-start: 2px solid rgba(14, 106, 196, 0.3);
 		border-radius: 0.375rem;
-		transition: background-color 150ms cubic-bezier(0.4, 0, 0.2, 1), color 150ms cubic-bezier(0.4, 0, 0.2, 1), border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition:
+			background-color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+			color 150ms cubic-bezier(0.4, 0, 0.2, 1),
+			border-color 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.mobile-submenu-item:hover,
 	.mobile-submenu-item:focus-visible {
 		background: rgba(14, 106, 196, 0.15);
 		color: #ffffff;
-		border-inline-start-color: #0E6AC4;
+		border-inline-start-color: #0e6ac4;
 	}
 
 	.mobile-submenu-item:focus-visible {
-		outline: 3px solid #0E6AC4;
+		outline: 3px solid #0e6ac4;
 		outline-offset: -2px;
 	}
 
 	.mobile-submenu-item.active {
-		color: #0E6AC4;
-		border-inline-start-color: #0E6AC4;
+		color: #0e6ac4;
+		border-inline-start-color: #0e6ac4;
 	}
 
 	.mobile-divider {
@@ -2029,7 +2065,7 @@
 		justify-content: center;
 		gap: 0.5rem;
 		height: 48px;
-		color: #0E6AC4;
+		color: #0e6ac4;
 		font-size: 0.9375rem;
 		font-weight: 600;
 		font-family: var(--nav-font);
@@ -2046,7 +2082,7 @@
 	}
 
 	.mobile-cart:focus-visible {
-		outline: 3px solid #0E6AC4;
+		outline: 3px solid #0e6ac4;
 		outline-offset: 2px;
 	}
 
@@ -2054,7 +2090,7 @@
 		min-width: 22px;
 		height: 22px;
 		padding: 0 6px;
-		background: #0E6AC4;
+		background: #0e6ac4;
 		color: #ffffff;
 		font-size: 0.75rem;
 		font-weight: 700;
@@ -2074,7 +2110,7 @@
 		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
 		text-decoration: none;
-		background: linear-gradient(to bottom right, #0E6AC4 0%, transparent 30%);
+		background: linear-gradient(to bottom right, #0e6ac4 0%, transparent 30%);
 		background-color: rgba(14, 106, 196, 0.1);
 		border: 1px solid rgba(14, 106, 196, 0.2);
 		border-radius: 0.5rem;
@@ -2087,7 +2123,7 @@
 	}
 
 	.mobile-login:focus-visible {
-		outline: 3px solid #0E6AC4;
+		outline: 3px solid #0e6ac4;
 		outline-offset: 2px;
 	}
 
@@ -2102,9 +2138,11 @@
 		font-family: var(--nav-font);
 		letter-spacing: 0.02em;
 		text-decoration: none;
-		background: linear-gradient(135deg, #0E6AC4 0%, #0a4d8a 100%);
+		background: linear-gradient(135deg, #0e6ac4 0%, #0a4d8a 100%);
 		border-radius: 0.5rem;
-		transition: transform 150ms cubic-bezier(0.4, 0, 0.2, 1), box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		transition:
+			transform 150ms cubic-bezier(0.4, 0, 0.2, 1),
+			box-shadow 150ms cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	.mobile-cta:hover,

@@ -144,7 +144,6 @@
 			currency: currency
 		}).format(amount);
 	}
-
 </script>
 
 <div class="razorpay-payment" class:disabled class:has-error={error || paymentError}>
@@ -162,12 +161,7 @@
 		<p class="payment-error">{paymentError}</p>
 	{/if}
 
-	<button
-		type="button"
-		class="pay-button"
-		onclick={handlePayment}
-		disabled={disabled || loading}
-	>
+	<button type="button" class="pay-button" onclick={handlePayment} disabled={disabled || loading}>
 		{#if loading}
 			<svg class="button-spinner" viewBox="0 0 24 24">
 				<circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="3" fill="none" />
@@ -274,8 +268,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.payment-methods {

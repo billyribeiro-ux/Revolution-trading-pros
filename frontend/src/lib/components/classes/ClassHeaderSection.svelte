@@ -14,7 +14,7 @@
 		subtitle?: string;
 		description?: string;
 	}
-	
+
 	let { title, subtitle = '', description = '' }: Props = $props();
 </script>
 

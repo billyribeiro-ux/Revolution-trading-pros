@@ -66,7 +66,7 @@
 	let showPassword = $state(false);
 	let errors = $state<Record<string, string[]>>({});
 	let generalError = $state('');
-	let emailNotVerified = $state(false);  // ICT 11+: Track email verification error
+	let emailNotVerified = $state(false); // ICT 11+: Track email verification error
 	let isLoading = $state(false);
 	let isSuccess = $state(false);
 	let touched = $state<Record<string, boolean>>({ email: false, password: false });
@@ -138,13 +138,13 @@
 
 	/**
 	 * ICT 11+ Security: Validate Redirect URL
-	 * 
+	 *
 	 * Prevents:
 	 * - Open redirect attacks (e.g., //evil.com)
 	 * - XSS via javascript: protocol
 	 * - Path traversal attacks
 	 * - Protocol smuggling
-	 * 
+	 *
 	 * @param url - Raw redirect URL from query parameter
 	 * @returns Validated safe URL or default fallback
 	 */
@@ -158,7 +158,7 @@
 		try {
 			// Decode URL-encoded characters
 			const decoded = decodeURIComponent(url.trim());
-			
+
 			// ICT 11+ Security Checks:
 			// 1. Must start with / (relative path)
 			// 2. Must NOT start with // (protocol-relative URL)
@@ -166,7 +166,7 @@
 			// 4. Must NOT contain \ (Windows path separator)
 			// 5. Must NOT contain null bytes
 			// 6. Must NOT contain newlines (CRLF injection)
-			const isValid = 
+			const isValid =
 				decoded.startsWith('/') &&
 				!decoded.startsWith('//') &&
 				!decoded.includes(':') &&
@@ -174,20 +174,19 @@
 				!decoded.includes('\0') &&
 				!decoded.includes('\n') &&
 				!decoded.includes('\r');
-			
+
 			if (isValid) {
 				// Additional check: ensure it's a valid path format
 				if (/^\/([-\w\/]*)(\?.*)?$/.test(decoded)) {
 					return decoded;
 				}
 			}
-			
+
 			console.warn('[LoginForm:ICT11] Redirect URL failed validation:', {
 				original: url,
 				decoded: decoded,
 				reason: 'Security checks failed'
 			});
-			
 		} catch (decodeError) {
 			// Handle malformed URL encoding
 			console.error('[LoginForm:ICT11] URL decode failed:', {
@@ -195,7 +194,7 @@
 				error: decodeError instanceof Error ? decodeError.message : String(decodeError)
 			});
 		}
-		
+
 		// ICT 11+ Fallback: Always return safe default
 		return '/dashboard';
 	}
@@ -302,14 +301,14 @@
 
 	/**
 	 * ICT 11+ Redirect Handler
-	 * 
+	 *
 	 * Handles post-authentication navigation with:
 	 * - URL parameter validation (XSS/open redirect prevention)
 	 * - Browser environment checks
 	 * - SvelteKit navigation with full data invalidation
 	 * - Graceful fallback to native navigation
 	 * - Comprehensive error tracking
-	 * 
+	 *
 	 * @throws Never - all errors are caught and handled gracefully
 	 */
 	async function performRedirect(): Promise<void> {
@@ -323,13 +322,13 @@
 			// Extract and validate redirect parameter
 			const urlParams = new URLSearchParams(window.location.search);
 			const rawRedirect = urlParams.get('redirect');
-			
+
 			// ICT 11+: Default to dashboard, never to root to prevent redirect loops
 			const targetUrl = rawRedirect || '/dashboard';
-			
+
 			// Security validation: prevent open redirects and XSS
 			const validatedUrl = validateRedirectUrl(targetUrl);
-			
+
 			console.log('[LoginForm:ICT11] Redirect flow:', {
 				raw: rawRedirect,
 				target: targetUrl,
@@ -340,28 +339,31 @@
 			// ICT 11+ Pattern: Use SvelteKit navigation with full invalidation
 			// invalidateAll ensures all load functions re-run with new auth state
 			// replaceState prevents back button from returning to login
-			await goto(validatedUrl, { 
-				replaceState: true, 
+			await goto(validatedUrl, {
+				replaceState: true,
 				invalidateAll: true,
 				noScroll: false // Allow natural scroll to top
 			});
-			
+
 			console.log('[LoginForm:ICT11] Navigation completed successfully');
-			
 		} catch (navigationError) {
 			// ICT 11+ Error Recovery: Log error and use native navigation as fallback
 			console.error('[LoginForm:ICT11] SvelteKit navigation failed:', {
 				error: navigationError,
-				type: navigationError instanceof Error ? navigationError.constructor.name : typeof navigationError,
-				message: navigationError instanceof Error ? navigationError.message : String(navigationError)
+				type:
+					navigationError instanceof Error
+						? navigationError.constructor.name
+						: typeof navigationError,
+				message:
+					navigationError instanceof Error ? navigationError.message : String(navigationError)
 			});
-			
+
 			// Fallback: Use native browser navigation
 			// This ensures redirect always succeeds even if SvelteKit router fails
 			const fallbackUrl = validateRedirectUrl(
 				new URLSearchParams(window.location.search).get('redirect') || '/dashboard'
 			);
-			
+
 			console.log('[LoginForm:ICT11] Using native navigation fallback:', fallbackUrl);
 			window.location.href = fallbackUrl;
 		}
@@ -386,7 +388,7 @@
 		if (emailError || passwordError) {
 			// ICT 11+ Debug: Log validation failures
 			console.log('[LoginForm:ICT11] Validation failed', { emailError, passwordError });
-			
+
 			// ICT 11+ Svelte 5 Fix: Create complete object in single assignment
 			// Mutating after assignment may not trigger reactivity in Svelte 5
 			errors = {
@@ -427,10 +429,10 @@
 				rememberMe,
 				timestamp: new Date().toISOString()
 			});
-			
+
 			// Execute login with comprehensive error handling in auth service
 			const user = await login({ email, password, remember: rememberMe });
-			
+
 			console.log('[LoginForm:ICT11] Authentication successful', {
 				userId: user?.id,
 				email: user?.email?.substring(0, 3) + '***',
@@ -452,7 +454,7 @@
 			// - Too slow (>600ms): Feels sluggish
 			// - 400ms: Sweet spot for recognition without impatience
 			console.log('[LoginForm:ICT11] Scheduling redirect (400ms delay for UX)');
-			
+
 			// ICT 11+: Fire-and-forget timer pattern
 			// Timer ID intentionally not stored - component will unmount during navigation
 			// No cleanup needed as navigation replaces the entire page context
@@ -497,7 +499,7 @@
 
 			// ICT 7 Fix: Simplified error handling to ensure generalError is always set
 			let errorMessage = 'Unable to sign in. Please check your credentials and try again.';
-			
+
 			if (error instanceof Error) {
 				errorMessage = error.message;
 			} else if (error && typeof error === 'object') {
@@ -508,10 +510,12 @@
 					errorMessage = errorObj.error;
 				}
 			}
-			
+
 			// Check for email verification error
-			if (errorMessage.toLowerCase().includes('verify your email') || 
-				(error && typeof error === 'object' && (error as any).code === 'EMAIL_NOT_VERIFIED')) {
+			if (
+				errorMessage.toLowerCase().includes('verify your email') ||
+				(error && typeof error === 'object' && (error as any).code === 'EMAIL_NOT_VERIFIED')
+			) {
 				emailNotVerified = true;
 				generalError = '';
 			} else {
@@ -566,7 +570,9 @@
 					<IconMail size={20} />
 					<div class="verification-content">
 						<p class="verification-title">Email Not Verified</p>
-						<p class="verification-text">Please check your inbox and click the verification link to activate your account.</p>
+						<p class="verification-text">
+							Please check your inbox and click the verification link to activate your account.
+						</p>
 						<a href="/verify-email" class="verification-link">Resend verification email →</a>
 					</div>
 				</div>
@@ -852,8 +858,15 @@
 	}
 
 	@keyframes pulse-glow {
-		0%, 100% { opacity: 0.4; transform: scale(1); }
-		50% { opacity: 0.7; transform: scale(1.1); }
+		0%,
+		100% {
+			opacity: 0.4;
+			transform: scale(1);
+		}
+		50% {
+			opacity: 0.7;
+			transform: scale(1.1);
+		}
 	}
 
 	.logo-icon {
@@ -1016,7 +1029,9 @@
 		font-family: var(--font-body);
 		font-size: 1rem;
 		font-weight: 500;
-		transition: border-color 0.2s ease, background 0.2s ease;
+		transition:
+			border-color 0.2s ease,
+			background 0.2s ease;
 		outline: none;
 	}
 
@@ -1057,7 +1072,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: color 0.2s ease, background 0.2s ease;
+		transition:
+			color 0.2s ease,
+			background 0.2s ease;
 		z-index: 2;
 	}
 
@@ -1176,7 +1193,9 @@
 		font-weight: 700;
 		cursor: pointer;
 		overflow: hidden;
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			transform 0.2s ease,
+			box-shadow 0.2s ease;
 		box-shadow: var(--auth-btn-primary-shadow);
 	}
 
@@ -1233,8 +1252,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Footer */

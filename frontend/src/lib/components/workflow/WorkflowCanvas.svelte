@@ -188,10 +188,7 @@
 
 	<!-- Canvas controls -->
 	<div class="canvas-controls">
-		<button
-			onclick={() => workflowCanvas.setZoom($workflowCanvas.zoom + 0.1)}
-			aria-label="Zoom in"
-		>
+		<button onclick={() => workflowCanvas.setZoom($workflowCanvas.zoom + 0.1)} aria-label="Zoom in">
 			<svg
 				width="20"
 				height="20"

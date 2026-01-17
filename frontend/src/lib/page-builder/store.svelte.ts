@@ -1,7 +1,7 @@
 /**
  * Page Builder Store - Svelte 5 Runes
  * Apple Principal Engineer ICT 7 Grade - January 2026
- * 
+ *
  * Reactive state management for the page builder using Svelte 5 runes.
  * Handles layout, drag state, selection, and persistence.
  */
@@ -23,11 +23,13 @@ function generateId(): string {
 
 export function createBuilderStore(initialLayout?: PageLayout) {
 	// Layout state
-	let layout = $state<PageLayout>(initialLayout ?? {
-		title: 'Untitled Course',
-		blocks: [],
-		status: 'draft'
-	});
+	let layout = $state<PageLayout>(
+		initialLayout ?? {
+			title: 'Untitled Course',
+			blocks: [],
+			status: 'draft'
+		}
+	);
 
 	// Selection state
 	let selectedBlockId = $state<string | null>(null);
@@ -49,13 +51,9 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const selectedBlock = $derived(
-		layout.blocks.find(b => b.id === selectedBlockId) ?? null
-	);
+	const selectedBlock = $derived(layout.blocks.find((b) => b.id === selectedBlockId) ?? null);
 
-	const sortedBlocks = $derived(
-		[...layout.blocks].sort((a, b) => a.order - b.order)
-	);
+	const sortedBlocks = $derived([...layout.blocks].sort((a, b) => a.order - b.order));
 
 	const blockCount = $derived(layout.blocks.length);
 
@@ -65,7 +63,7 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 
 	function addBlock(type: ComponentType, atIndex?: number): PageBlock {
 		const insertIndex = atIndex ?? layout.blocks.length;
-		
+
 		const newBlock: PageBlock = {
 			id: generateId(),
 			type,
@@ -74,7 +72,7 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 		};
 
 		// Shift existing blocks
-		layout.blocks = layout.blocks.map(block => ({
+		layout.blocks = layout.blocks.map((block) => ({
 			...block,
 			order: block.order >= insertIndex ? block.order + 1 : block.order
 		}));
@@ -87,15 +85,15 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 	}
 
 	function removeBlock(blockId: string): void {
-		const block = layout.blocks.find(b => b.id === blockId);
+		const block = layout.blocks.find((b) => b.id === blockId);
 		if (!block) return;
 
 		const removedOrder = block.order;
-		
+
 		// Remove and reorder
 		layout.blocks = layout.blocks
-			.filter(b => b.id !== blockId)
-			.map(b => ({
+			.filter((b) => b.id !== blockId)
+			.map((b) => ({
 				...b,
 				order: b.order > removedOrder ? b.order - 1 : b.order
 			}));
@@ -107,7 +105,7 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 	}
 
 	function duplicateBlock(blockId: string): PageBlock | null {
-		const block = layout.blocks.find(b => b.id === blockId);
+		const block = layout.blocks.find((b) => b.id === blockId);
 		if (!block) return null;
 
 		const newBlock: PageBlock = {
@@ -118,7 +116,7 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 		};
 
 		// Shift blocks after
-		layout.blocks = layout.blocks.map(b => ({
+		layout.blocks = layout.blocks.map((b) => ({
 			...b,
 			order: b.order > block.order ? b.order + 1 : b.order
 		}));
@@ -131,13 +129,13 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 	}
 
 	function moveBlock(blockId: string, newIndex: number): void {
-		const block = layout.blocks.find(b => b.id === blockId);
+		const block = layout.blocks.find((b) => b.id === blockId);
 		if (!block) return;
 
 		const oldIndex = block.order;
 		if (oldIndex === newIndex) return;
 
-		layout.blocks = layout.blocks.map(b => {
+		layout.blocks = layout.blocks.map((b) => {
 			if (b.id === blockId) {
 				return { ...b, order: newIndex };
 			}
@@ -159,7 +157,7 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 	}
 
 	function updateBlockConfig(blockId: string, config: Partial<ComponentConfig>): void {
-		layout.blocks = layout.blocks.map(b => {
+		layout.blocks = layout.blocks.map((b) => {
 			if (b.id === blockId) {
 				return { ...b, config: { ...b.config, ...config } };
 			}
@@ -246,7 +244,9 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 		hasUnsavedChanges = false;
 	}
 
-	function updateLayoutMeta(meta: Partial<Pick<PageLayout, 'title' | 'courseId' | 'courseSlug' | 'status'>>): void {
+	function updateLayoutMeta(
+		meta: Partial<Pick<PageLayout, 'title' | 'courseId' | 'courseSlug' | 'status'>>
+	): void {
 		layout = { ...layout, ...meta };
 		hasUnsavedChanges = true;
 	}
@@ -261,10 +261,15 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 		hasUnsavedChanges = true;
 	}
 
-	function importLayout(data: { title?: string; blocks?: unknown; status?: string; course_id?: string }): void {
+	function importLayout(data: {
+		title?: string;
+		blocks?: unknown;
+		status?: string;
+		course_id?: string;
+	}): void {
 		layout = {
 			title: data.title || 'Untitled Course',
-			blocks: Array.isArray(data.blocks) ? data.blocks as PageBlock[] : [],
+			blocks: Array.isArray(data.blocks) ? (data.blocks as PageBlock[]) : [],
 			status: (data.status as 'draft' | 'published') || 'draft',
 			courseId: data.course_id
 		};
@@ -301,15 +306,33 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 
 	return {
 		// State (getters)
-		get layout() { return layout; },
-		get selectedBlockId() { return selectedBlockId; },
-		get selectedBlock() { return selectedBlock; },
-		get sortedBlocks() { return sortedBlocks; },
-		get blockCount() { return blockCount; },
-		get dragState() { return dragState; },
-		get isPreviewMode() { return isPreviewMode; },
-		get isSaving() { return isSaving; },
-		get hasUnsavedChanges() { return hasUnsavedChanges; },
+		get layout() {
+			return layout;
+		},
+		get selectedBlockId() {
+			return selectedBlockId;
+		},
+		get selectedBlock() {
+			return selectedBlock;
+		},
+		get sortedBlocks() {
+			return sortedBlocks;
+		},
+		get blockCount() {
+			return blockCount;
+		},
+		get dragState() {
+			return dragState;
+		},
+		get isPreviewMode() {
+			return isPreviewMode;
+		},
+		get isSaving() {
+			return isSaving;
+		},
+		get hasUnsavedChanges() {
+			return hasUnsavedChanges;
+		},
 
 		// Block operations
 		addBlock,

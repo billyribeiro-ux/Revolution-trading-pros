@@ -58,11 +58,7 @@
 
 {#if compact}
 	<!-- Compact Inline Version -->
-	<div
-		class="api-not-connected-compact"
-		in:fade={{ duration: 300 }}
-		role="alert"
-	>
+	<div class="api-not-connected-compact" in:fade={{ duration: 300 }} role="alert">
 		<div class="compact-icon">
 			<IconPlugConnected size={18} />
 		</div>
@@ -74,11 +70,7 @@
 	</div>
 {:else}
 	<!-- Full Card Version -->
-	<div
-		class="api-not-connected"
-		in:scale={{ duration: 400, start: 0.95 }}
-		role="alert"
-	>
+	<div class="api-not-connected" in:scale={{ duration: 400, start: 0.95 }} role="alert">
 		<!-- Background Glow -->
 		<div class="glow" style="--glow-color: {color}"></div>
 
@@ -256,7 +248,11 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 2rem;
-		background: linear-gradient(135deg, var(--btn-color, #3b82f6), color-mix(in srgb, var(--btn-color, #3b82f6), #8b5cf6 50%));
+		background: linear-gradient(
+			135deg,
+			var(--btn-color, #3b82f6),
+			color-mix(in srgb, var(--btn-color, #3b82f6), #8b5cf6 50%)
+		);
 		color: white;
 		border: none;
 		border-radius: 14px;

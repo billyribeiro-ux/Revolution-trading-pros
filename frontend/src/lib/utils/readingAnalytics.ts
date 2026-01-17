@@ -41,7 +41,7 @@ const DEFAULT_OPTIONS: ReadingAnalyticsOptions = {
 	endpoint: '/api/analytics/reading',
 	minTime: 5000,
 	milestones: [25, 50, 75, 100],
-	debug: false,
+	debug: false
 };
 
 /**
@@ -104,7 +104,7 @@ export function initReadingAnalytics(config: {
 		timeOnPage: 0,
 		readCompletion: 0,
 		engagementScore: 0,
-		milestones: new Set(),
+		milestones: new Set()
 	};
 
 	const startTime = Date.now();
@@ -177,7 +177,7 @@ export function initReadingAnalytics(config: {
 				if (opts.debug) {
 					console.log(`[Reading Analytics] Milestone reached: ${milestone}%`, {
 						timeOnPage: `${(metrics.timeOnPage / 1000).toFixed(1)}s`,
-						engagement: metrics.engagementScore,
+						engagement: metrics.engagementScore
 					});
 				}
 
@@ -206,7 +206,7 @@ export function initReadingAnalytics(config: {
 			console.log('[Reading Analytics] Read completed!', {
 				timeOnPage: `${(metrics.timeOnPage / 1000).toFixed(1)}s`,
 				engagement: metrics.engagementScore,
-				completion: metrics.readCompletion,
+				completion: metrics.readCompletion
 			});
 		}
 
@@ -214,7 +214,7 @@ export function initReadingAnalytics(config: {
 		sendEvent('completion', {
 			timeOnPage: metrics.timeOnPage,
 			engagementScore: metrics.engagementScore,
-			readCompletion: metrics.readCompletion,
+			readCompletion: metrics.readCompletion
 		});
 	}
 
@@ -230,7 +230,7 @@ export function initReadingAnalytics(config: {
 			slug: metrics.slug,
 			...data,
 			timestamp: Date.now(),
-			url: window.location.href,
+			url: window.location.href
 		};
 
 		// Use sendBeacon for reliability
@@ -243,7 +243,7 @@ export function initReadingAnalytics(config: {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				body: JSON.stringify(payload),
-				keepalive: true,
+				keepalive: true
 			}).catch(() => {});
 		}
 	}
@@ -271,7 +271,7 @@ export function initReadingAnalytics(config: {
 				timeOnPage: metrics.timeOnPage,
 				engagementScore: metrics.engagementScore,
 				readCompletion: metrics.readCompletion,
-				milestonesReached: Array.from(metrics.milestones),
+				milestonesReached: Array.from(metrics.milestones)
 			});
 		}
 	}
@@ -302,7 +302,7 @@ export function initReadingAnalytics(config: {
 				timeOnPage: metrics.timeOnPage,
 				engagementScore: metrics.engagementScore,
 				readCompletion: metrics.readCompletion,
-				milestonesReached: Array.from(metrics.milestones),
+				milestonesReached: Array.from(metrics.milestones)
 			});
 		}
 	};

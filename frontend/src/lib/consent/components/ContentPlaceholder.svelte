@@ -45,7 +45,7 @@
 		twitter: { icon: '🐦', name: 'Twitter/X Post', category: 'marketing' },
 		facebook: { icon: '📘', name: 'Facebook Post', category: 'marketing' },
 		instagram: { icon: '📷', name: 'Instagram Post', category: 'marketing' },
-		custom: { icon: '🔒', name: 'External Content', category: 'marketing' },
+		custom: { icon: '🔒', name: 'External Content', category: 'marketing' }
 	};
 
 	// Svelte 5: Derived state
@@ -83,7 +83,8 @@
 			<div class="icon">{displayIcon}</div>
 			<h3 class="title">{$t.contentBlocked}</h3>
 			<p class="description">
-				{displayTitle} {$t.contentBlockedDescription}
+				{displayTitle}
+				{$t.contentBlockedDescription}
 			</p>
 			<button class="enable-btn" onclick={handleEnableCookies}>
 				<svg

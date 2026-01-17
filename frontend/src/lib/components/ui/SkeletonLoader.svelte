@@ -32,7 +32,9 @@
 		{#each Array(lines) as _, i}
 			<div
 				class="skeleton-text rounded {animated ? 'animate-shimmer' : ''}"
-				style="width: {i === lines - 1 && lines > 1 ? '75%' : '100%'}; height: {height === 'auto' ? '1em' : height};"
+				style="width: {i === lines - 1 && lines > 1 ? '75%' : '100%'}; height: {height === 'auto'
+					? '1em'
+					: height};"
 			></div>
 		{/each}
 	</div>
@@ -58,7 +60,9 @@
 	</div>
 {:else if variant === 'card'}
 	<div class="skeleton-card p-6 rounded-2xl border border-slate-700/50 bg-slate-800/50 {className}">
-		<div class="skeleton-rect w-full h-40 rounded-xl mb-4 {animated ? 'animate-shimmer' : ''}"></div>
+		<div
+			class="skeleton-rect w-full h-40 rounded-xl mb-4 {animated ? 'animate-shimmer' : ''}"
+		></div>
 		<div class="skeleton-text w-3/4 h-6 rounded mb-2 {animated ? 'animate-shimmer' : ''}"></div>
 		<div class="skeleton-text w-full h-4 rounded mb-1 {animated ? 'animate-shimmer' : ''}"></div>
 		<div class="skeleton-text w-2/3 h-4 rounded {animated ? 'animate-shimmer' : ''}"></div>

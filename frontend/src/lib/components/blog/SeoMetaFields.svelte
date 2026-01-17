@@ -1,12 +1,12 @@
 <script lang="ts">
 	import { IconX, IconPlus } from '$lib/icons';
-	
+
 	interface Props {
 		meta: any;
 	}
 
 	let { meta = $bindable() }: Props = $props();
-	
+
 	let newKeyword = $state('');
 
 	// Initialize keywords array if not present

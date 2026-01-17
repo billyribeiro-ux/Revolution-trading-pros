@@ -80,31 +80,28 @@
 			{#if item.href}
 				<!-- Linked breadcrumb item -->
 				<li class="item-home">
-					<a 
-						class="breadcrumb-link breadcrumb-home" 
-						href={item.href}
-						title={item.name}
-					>
+					<a class="breadcrumb-link breadcrumb-home" href={item.href} title={item.name}>
 						{item.name}
 					</a>
 				</li>
 			{:else}
 				<!-- Current page (no link) -->
 				<li class="item-current item-{page.route?.id?.replace(/\//g, '-') ?? 'page'}">
-					<strong class="breadcrumb-current breadcrumb-{page.route?.id?.replace(/\//g, '-') ?? 'page'}">
+					<strong
+						class="breadcrumb-current breadcrumb-{page.route?.id?.replace(/\//g, '-') ?? 'page'}"
+					>
 						{item.name}
 					</strong>
 				</li>
 			{/if}
-
-			{/each}
+		{/each}
 	</ul>
 </nav>
 
 <style>
 	/* Breadcrumbs styles are defined in dashboard.css */
 	/* This component uses the design specifications from DASHBOARD_DESIGN_SPECIFICATIONS.md */
-	
+
 	/* Component-specific overrides if needed */
 	.breadcrumbs {
 		padding: 12px 20px;

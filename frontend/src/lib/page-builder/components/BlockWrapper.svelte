@@ -2,7 +2,7 @@
 	/**
 	 * Block Wrapper - Individual Block Container
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
-	 * 
+	 *
 	 * Wraps each block with selection, drag handles, and action buttons.
 	 */
 
@@ -104,47 +104,103 @@
 
 		<!-- Drag Handle -->
 		<div class="drag-handle" aria-hidden="true">
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-				<circle cx="9" cy="5" r="1.5"/>
-				<circle cx="15" cy="5" r="1.5"/>
-				<circle cx="9" cy="12" r="1.5"/>
-				<circle cx="15" cy="12" r="1.5"/>
-				<circle cx="9" cy="19" r="1.5"/>
-				<circle cx="15" cy="19" r="1.5"/>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="currentColor"
+			>
+				<circle cx="9" cy="5" r="1.5" />
+				<circle cx="15" cy="5" r="1.5" />
+				<circle cx="9" cy="12" r="1.5" />
+				<circle cx="15" cy="12" r="1.5" />
+				<circle cx="9" cy="19" r="1.5" />
+				<circle cx="15" cy="19" r="1.5" />
 			</svg>
 		</div>
 
 		<!-- Action Buttons (visible on hover/select) -->
 		<div class="block-actions">
-			<button 
-				class="action-btn" 
-				onclick={(e) => { e.stopPropagation(); handleMoveUp(); }}
+			<button
+				class="action-btn"
+				onclick={(e) => {
+					e.stopPropagation();
+					handleMoveUp();
+				}}
 				disabled={block.order === 0}
 				title="Move up"
 			>
-				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"><path d="m18 15-6-6-6 6" /></svg
+				>
 			</button>
-			<button 
-				class="action-btn" 
-				onclick={(e) => { e.stopPropagation(); handleMoveDown(); }}
+			<button
+				class="action-btn"
+				onclick={(e) => {
+					e.stopPropagation();
+					handleMoveDown();
+				}}
 				disabled={block.order === store.blockCount - 1}
 				title="Move down"
 			>
-				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"><path d="m6 9 6 6 6-6" /></svg
+				>
 			</button>
-			<button 
-				class="action-btn" 
-				onclick={(e) => { e.stopPropagation(); handleDuplicate(); }}
+			<button
+				class="action-btn"
+				onclick={(e) => {
+					e.stopPropagation();
+					handleDuplicate();
+				}}
 				title="Duplicate"
 			>
-				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/></svg>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					><rect width="14" height="14" x="8" y="8" rx="2" /><path
+						d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"
+					/></svg
+				>
 			</button>
-			<button 
-				class="action-btn delete" 
-				onclick={(e) => { e.stopPropagation(); handleDelete(); }}
+			<button
+				class="action-btn delete"
+				onclick={(e) => {
+					e.stopPropagation();
+					handleDelete();
+				}}
 				title="Delete"
 			>
-				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					><path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path
+						d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+					/></svg
+				>
 			</button>
 		</div>
 	{/if}
@@ -171,11 +227,11 @@
 	}
 
 	.block-wrapper:hover:not(.preview) {
-		border-color: #E5E7EB;
+		border-color: #e5e7eb;
 	}
 
 	.block-wrapper.selected {
-		border-color: #143E59;
+		border-color: #143e59;
 		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.1);
 	}
 
@@ -189,7 +245,7 @@
 	}
 
 	.block-wrapper:focus-visible {
-		border-color: #143E59;
+		border-color: #143e59;
 		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.2);
 	}
 
@@ -202,7 +258,7 @@
 		align-items: center;
 		gap: 4px;
 		padding: 2px 8px;
-		background: #143E59;
+		background: #143e59;
 		color: white;
 		font-size: 10px;
 		font-weight: 600;
@@ -234,7 +290,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #9CA3AF;
+		color: #9ca3af;
 		cursor: grab;
 		opacity: 0;
 		transition: opacity 0.15s ease;
@@ -274,18 +330,18 @@
 		justify-content: center;
 		width: 24px;
 		height: 24px;
-		background: #FFFFFF;
-		border: 1px solid #E5E7EB;
+		background: #ffffff;
+		border: 1px solid #e5e7eb;
 		border-radius: 4px;
-		color: #6B7280;
+		color: #6b7280;
 		cursor: pointer;
 		transition: all 0.1s ease;
 	}
 
 	.action-btn:hover:not(:disabled) {
-		background: #F3F4F6;
-		border-color: #143E59;
-		color: #143E59;
+		background: #f3f4f6;
+		border-color: #143e59;
+		color: #143e59;
 	}
 
 	.action-btn:disabled {
@@ -294,9 +350,9 @@
 	}
 
 	.action-btn.delete:hover:not(:disabled) {
-		background: #FEE2E2;
-		border-color: #DC2626;
-		color: #DC2626;
+		background: #fee2e2;
+		border-color: #dc2626;
+		color: #dc2626;
 	}
 
 	/* Block Content */

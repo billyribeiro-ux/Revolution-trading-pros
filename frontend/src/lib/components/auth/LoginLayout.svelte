@@ -52,10 +52,7 @@
 	});
 </script>
 
-<div
-	class="login-layout"
-	style="--mouse-x: {mouseX}%; --mouse-y: {mouseY}%;"
->
+<div class="login-layout" style="--mouse-x: {mouseX}%; --mouse-y: {mouseY}%;">
 	<!-- Mobile Background (shown on mobile only) -->
 	{#if isMobile}
 		<MobileBackground />
@@ -181,7 +178,7 @@
 
 	/* Dark Theme (Default) */
 	.login-layout {
-		--auth-bg: oklch(0.10 0.02 250);
+		--auth-bg: oklch(0.1 0.02 250);
 		--auth-form-bg: oklch(0.12 0.02 250);
 		--auth-hero-bg: linear-gradient(135deg, oklch(0.08 0.02 250) 0%, oklch(0.12 0.03 270) 100%);
 		--auth-grid-line: rgba(99, 102, 241, 0.04);

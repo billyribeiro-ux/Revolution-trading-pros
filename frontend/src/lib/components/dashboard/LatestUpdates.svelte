@@ -42,8 +42,8 @@
 		maxItems?: number;
 	}
 
-	let { 
-		items = [], 
+	let {
+		items = [],
 		apiEndpoint,
 		roomSlug = '',
 		title = 'Latest Updates',
@@ -58,7 +58,7 @@
 
 	// Svelte 5 $derived - compute final items to display
 	let displayItems = $derived(
-		apiEndpoint && dynamicItems.length > 0 
+		apiEndpoint && dynamicItems.length > 0
 			? dynamicItems.slice(0, maxItems)
 			: items.slice(0, maxItems)
 	);
@@ -70,12 +70,12 @@
 			error = null;
 
 			fetch(apiEndpoint)
-				.then(res => res.ok ? res.json() : Promise.reject('Failed to fetch'))
-				.then(data => {
+				.then((res) => (res.ok ? res.json() : Promise.reject('Failed to fetch')))
+				.then((data) => {
 					dynamicItems = data.data || data.items || [];
 					isLoading = false;
 				})
-				.catch(err => {
+				.catch((err) => {
 					console.error('LatestUpdates fetch error:', err);
 					error = 'Failed to load updates';
 					isLoading = false;
@@ -86,7 +86,7 @@
 
 <section class="latest-updates">
 	<h2 class="section-title">{title}</h2>
-	
+
 	{#if isLoading}
 		<div class="empty-state">
 			<p>Loading updates...</p>
@@ -107,25 +107,25 @@
 						<figure class="article-card__image" style="background-image: url({item.image});">
 							<img src={item.image} alt={item.title} loading="lazy" />
 						</figure>
-						
+
 						{#if item.isVideo && item.type}
 							<div class="article-card__type">
 								<span class="label label--info">{item.type}</span>
 							</div>
 						{/if}
-						
+
 						<h4 class="h5 article-card__title">
 							<a href={item.href}>{item.title}</a>
 						</h4>
-						
+
 						<span class="article-card__meta">
 							<small>{item.date}</small>
 						</span>
-						
+
 						<div class="article-card__excerpt u--hide-read-more">
 							<p>{item.excerpt}</p>
 						</div>
-						
+
 						<a href={item.href} class="btn btn-tiny btn-default">{buttonText}</a>
 					</article>
 				</div>
@@ -200,7 +200,9 @@
 		background: #fff;
 		border-radius: 8px;
 		overflow: hidden;
-		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 20px rgba(0, 0, 0, 0.06);
+		box-shadow:
+			0 2px 8px rgba(0, 0, 0, 0.08),
+			0 4px 20px rgba(0, 0, 0, 0.06);
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		display: flex;
 		flex-direction: column;
@@ -211,7 +213,7 @@
 	}
 
 	.article-card:hover {
-		box-shadow: 
+		box-shadow:
 			0 10px 20px rgba(0, 0, 0, 0.12),
 			0 20px 40px rgba(0, 0, 0, 0.08),
 			0 30px 60px rgba(0, 0, 0, 0.05);
@@ -276,7 +278,7 @@
 	}
 
 	.label--info {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -296,7 +298,7 @@
 	}
 
 	.article-card:hover .article-card__title a {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.article-card__title a:hover {
@@ -370,9 +372,9 @@
 	}
 
 	.btn-default {
-		background-color: #143E59;
+		background-color: #143e59;
 		color: #fff;
-		border: 1px solid #143E59;
+		border: 1px solid #143e59;
 		box-shadow: none;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 		will-change: transform, box-shadow;

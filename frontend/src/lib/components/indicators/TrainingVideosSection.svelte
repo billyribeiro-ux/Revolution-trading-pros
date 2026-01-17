@@ -26,16 +26,16 @@
 				<div class="current-vid">
 					<div class="video-container current">
 						<div class="video-overlay"></div>
-						<div id="{video.id}" class="video-player"></div>
-						<video 
-							id="{video.id}" 
-							controls 
-							width="100%" 
-							poster="{video.posterUrl}"
-							style="aspect-ratio: 16/9;" 
-							title="{video.title}"
+						<div id={video.id} class="video-player"></div>
+						<video
+							id={video.id}
+							controls
+							width="100%"
+							poster={video.posterUrl}
+							style="aspect-ratio: 16/9;"
+							title={video.title}
 						>
-							<source src="{video.videoUrl}" type="video/mp4">
+							<source src={video.videoUrl} type="video/mp4" />
 							Your browser does not support the video tag.
 						</video>
 					</div>

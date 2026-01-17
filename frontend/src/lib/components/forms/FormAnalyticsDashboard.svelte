@@ -361,7 +361,8 @@
 				<div class="donut-chart">
 					{#each Object.entries(deviceBreakdown) as [device, percentage], i}
 						<div class="donut-item">
-							<span class="donut-color" style="background: {['#2563eb', '#16a34a', '#f59e0b'][i]}"></span>
+							<span class="donut-color" style="background: {['#2563eb', '#16a34a', '#f59e0b'][i]}"
+							></span>
 							<span class="donut-label">{device}</span>
 							<span class="donut-value">{percentage}%</span>
 						</div>

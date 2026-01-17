@@ -15,7 +15,7 @@
 		id: number | string;
 		title: string;
 		slug: string;
-		
+
 		// Optional display properties
 		description?: string | null;
 		thumbnail_url?: string | null;
@@ -24,7 +24,7 @@
 		formatted_date?: string;
 		duration?: number | null;
 		formatted_duration?: string;
-		
+
 		// Allow any additional properties from API responses
 		video_url?: string;
 		embed_url?: string;
@@ -37,7 +37,7 @@
 		views_count?: number;
 		rooms?: Array<{ id: number; name: string; slug: string }>;
 		created_at?: string;
-		
+
 		// Catch-all for any other properties
 		[key: string]: unknown;
 	}
@@ -49,57 +49,52 @@
 		showDuration?: boolean;
 	}
 
-	let { 
-		video, 
+	let {
+		video,
 		basePath = '/learning-center',
 		showDate = false,
 		showDuration = false
 	}: Props = $props();
 
-	const defaultThumbnail = 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg';
+	const defaultThumbnail =
+		'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg';
 </script>
 
 <article class="article-card">
-		<figure 
-			class="article-card__image" 
-			style="background-image: url({video.thumbnail_url || defaultThumbnail});"
-		>
-			<img 
-				src={defaultThumbnail}
-				alt={video.title}
-				loading="lazy"
-			/>
-			{#if showDuration && video.formatted_duration}
-				<span class="article-card__duration">{video.formatted_duration}</span>
-			{/if}
-		</figure>
-		
-		<div class="article-card__type">
-			{#each video.tag_details || [] as tag}
-				<span class="label label--info" style="background-color: {tag.color}">{tag.name}</span>
-			{/each}
-		</div>
-		
-		<h4 class="h5 article-card__title">
-			<a href="{basePath}/{video.slug}">{video.title}</a>
-		</h4>
-		
-		<div class="u--margin-top-0">
-			{#if video.trader}
-				<span class="trader_name"><i>With {video.trader.name}</i></span>
-			{/if}
-			{#if showDate && video.formatted_date}
-				<span class="video-date">{video.formatted_date}</span>
-			{/if}
-		</div>
-		
-		<div class="article-card__excerpt u--hide-read-more">
-			<p>{video.description || ''}</p>
-		</div>
-		
-		<a href="{basePath}/{video.slug}" class="btn btn-tiny btn-default watch-now-btn">
-			Watch Now
-		</a>
+	<figure
+		class="article-card__image"
+		style="background-image: url({video.thumbnail_url || defaultThumbnail});"
+	>
+		<img src={defaultThumbnail} alt={video.title} loading="lazy" />
+		{#if showDuration && video.formatted_duration}
+			<span class="article-card__duration">{video.formatted_duration}</span>
+		{/if}
+	</figure>
+
+	<div class="article-card__type">
+		{#each video.tag_details || [] as tag}
+			<span class="label label--info" style="background-color: {tag.color}">{tag.name}</span>
+		{/each}
+	</div>
+
+	<h4 class="h5 article-card__title">
+		<a href="{basePath}/{video.slug}">{video.title}</a>
+	</h4>
+
+	<div class="u--margin-top-0">
+		{#if video.trader}
+			<span class="trader_name"><i>With {video.trader.name}</i></span>
+		{/if}
+		{#if showDate && video.formatted_date}
+			<span class="video-date">{video.formatted_date}</span>
+		{/if}
+	</div>
+
+	<div class="article-card__excerpt u--hide-read-more">
+		<p>{video.description || ''}</p>
+	</div>
+
+	<a href="{basePath}/{video.slug}" class="btn btn-tiny btn-default watch-now-btn"> Watch Now </a>
 </article>
 
 <style>

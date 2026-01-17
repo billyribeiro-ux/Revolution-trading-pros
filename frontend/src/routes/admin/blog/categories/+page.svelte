@@ -486,11 +486,7 @@
 								</div>
 							</div>
 							<div class="item-actions">
-								<button
-									class="action-btn"
-									onclick={() => openCategoryModal(category)}
-									title="Edit"
-								>
+								<button class="action-btn" onclick={() => openCategoryModal(category)} title="Edit">
 									<IconEdit size={18} />
 								</button>
 								<button
@@ -1300,7 +1296,12 @@
 	/* Loading States */
 	.skeleton-card {
 		height: 80px;
-		background: linear-gradient(90deg, rgba(148, 163, 184, 0.1) 25%, rgba(148, 163, 184, 0.2) 50%, rgba(148, 163, 184, 0.1) 75%);
+		background: linear-gradient(
+			90deg,
+			rgba(148, 163, 184, 0.1) 25%,
+			rgba(148, 163, 184, 0.2) 50%,
+			rgba(148, 163, 184, 0.1) 75%
+		);
 		background-size: 200% 100%;
 		animation: loading 1.5s infinite;
 		border-radius: 8px;

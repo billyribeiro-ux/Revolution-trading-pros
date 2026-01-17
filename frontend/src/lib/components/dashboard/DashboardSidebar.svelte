@@ -65,15 +65,21 @@
 		user: {
 			name: string;
 			avatar: string | null;
-			memberships?: MembershipItem[];  // Full membership objects, not just slugs
+			memberships?: MembershipItem[]; // Full membership objects, not just slugs
 		};
 		collapsed?: boolean;
-		onToggle?: (collapsed: boolean) => void;  // Callback for toggle events
-		secondaryNavItems?: SecondaryNavItem[];  // Course-specific secondary nav
-		secondarySidebarTitle?: string;  // Title for secondary sidebar
+		onToggle?: (collapsed: boolean) => void; // Callback for toggle events
+		secondaryNavItems?: SecondaryNavItem[]; // Course-specific secondary nav
+		secondarySidebarTitle?: string; // Title for secondary sidebar
 	}
 
-	let { user, collapsed = false, onToggle, secondaryNavItems = [], secondarySidebarTitle = '' }: Props = $props();
+	let {
+		user,
+		collapsed = false,
+		onToggle,
+		secondaryNavItems = [],
+		secondarySidebarTitle = ''
+	}: Props = $props();
 
 	// State for expanded submenus in secondary nav
 	let expandedSubmenus = $state<Set<string>>(new Set());
@@ -96,7 +102,7 @@
 	// Check if submenu has active item
 	function hasActiveSubmenuItem(submenu: SecondaryNavSubItem[] | undefined): boolean {
 		if (!submenu) return false;
-		return submenu.some(item => isActive(item.href));
+		return submenu.some((item) => isActive(item.href));
 	}
 
 	// Svelte 5 state
@@ -116,15 +122,12 @@
 		if (href === '/dashboard/' || href === '/dashboard') {
 			return currentPath === '/dashboard' || currentPath === '/dashboard/';
 		}
-		
+
 		// Normalize paths (remove trailing slashes)
-		const normalizedCurrent = currentPath.endsWith('/') && currentPath !== '/' 
-			? currentPath.slice(0, -1) 
-			: currentPath;
-		const normalizedHref = href.endsWith('/') && href !== '/' 
-			? href.slice(0, -1) 
-			: href;
-		
+		const normalizedCurrent =
+			currentPath.endsWith('/') && currentPath !== '/' ? currentPath.slice(0, -1) : currentPath;
+		const normalizedHref = href.endsWith('/') && href !== '/' ? href.slice(0, -1) : href;
+
 		// ONLY exact match - no parent path matching
 		return normalizedCurrent === normalizedHref;
 	}
@@ -201,8 +204,10 @@
 
 		for (const membership of memberships) {
 			// Show all scanners (type: 'scanner') and High Octane indicator
-			if (membership.type === 'scanner' || 
-			    (membership.type === 'indicator' && membership.slug === 'high-octane-scanner')) {
+			if (
+				membership.type === 'scanner' ||
+				(membership.type === 'indicator' && membership.slug === 'high-octane-scanner')
+			) {
 				links.push({
 					href: `/dashboard/${membership.slug}/`,
 					icon: membership.icon ?? 'chart-candle',
@@ -216,7 +221,12 @@
 
 	const toolsLinks: NavLink[] = [
 		{ href: '/dashboard/weekly-watchlist/', icon: 'calendar', text: 'Weekly Watchlist' },
-		{ href: 'https://support.revolutiontradingpros.com/', icon: 'support', text: 'Support', external: true }
+		{
+			href: 'https://support.revolutiontradingpros.com/',
+			icon: 'support',
+			text: 'Support',
+			external: true
+		}
 	];
 
 	const accountLinks: NavLink[] = [
@@ -249,7 +259,8 @@
 				<a href="/dashboard/account" class="dashboard__profile-nav-item" aria-label={user.name}>
 					<span
 						class="dashboard__profile-photo"
-						style="background-image: url({user.avatar || 'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g'});"
+						style="background-image: url({user.avatar ||
+							'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g'});"
 					></span>
 				</a>
 			</Tooltip>
@@ -257,7 +268,8 @@
 			<a href="/dashboard/account" class="dashboard__profile-nav-item">
 				<span
 					class="dashboard__profile-photo"
-					style="background-image: url({user.avatar || 'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g'});"
+					style="background-image: url({user.avatar ||
+						'https://secure.gravatar.com/avatar/?s=32&d=mm&r=g'});"
 				></span>
 				<span class="dashboard__profile-name">{user.name}</span>
 			</a>
@@ -282,7 +294,8 @@
 								<span class="dashboard__nav-item-icon">
 									<RtpIcon name={link.icon} size={32} />
 								</span>
-								<span class="dashboard__nav-item-text" class:font-bold={link.bold}>{link.text}</span>
+								<span class="dashboard__nav-item-text" class:font-bold={link.bold}>{link.text}</span
+								>
 							</a>
 						{/if}
 					</li>
@@ -455,29 +468,37 @@
 		<nav class="dashboard__nav-secondary" aria-label="{secondarySidebarTitle} navigation">
 			<ul>
 				{#each secondaryNavItems as item}
-					<li 
+					<li
 						class:has-submenu={item.submenu && item.submenu.length > 0}
-						onmouseenter={() => item.submenu && item.submenu.length > 0 && !expandedSubmenus.has(item.text) && toggleSubmenu(item.text)}
-						onmouseleave={() => item.submenu && item.submenu.length > 0 && expandedSubmenus.has(item.text) && toggleSubmenu(item.text)}
+						onmouseenter={() =>
+							item.submenu &&
+							item.submenu.length > 0 &&
+							!expandedSubmenus.has(item.text) &&
+							toggleSubmenu(item.text)}
+						onmouseleave={() =>
+							item.submenu &&
+							item.submenu.length > 0 &&
+							expandedSubmenus.has(item.text) &&
+							toggleSubmenu(item.text)}
 					>
 						{#if item.submenu && item.submenu.length > 0}
 							<!-- Item with submenu - opens on HOVER -->
-						<span
-							class="dashboard__nav-secondary-item"
-							class:is-active={hasActiveSubmenuItem(item.submenu)}
-							class:is-expanded={expandedSubmenus.has(item.text)}
-							role="button"
-							tabindex="0"
-							aria-expanded={expandedSubmenus.has(item.text)}
-						>
-							{#if item.icon}
-								<span class="dashboard__nav-secondary-icon">
-									<RtpIcon name={item.icon} size={24} />
-								</span>
-							{/if}
-							<span class="dashboard__nav-secondary-text">{item.text}</span>
-							<span class="dashboard__nav-secondary-chevron">›</span>
-						</span>
+							<span
+								class="dashboard__nav-secondary-item"
+								class:is-active={hasActiveSubmenuItem(item.submenu)}
+								class:is-expanded={expandedSubmenus.has(item.text)}
+								role="button"
+								tabindex="0"
+								aria-expanded={expandedSubmenus.has(item.text)}
+							>
+								{#if item.icon}
+									<span class="dashboard__nav-secondary-icon">
+										<RtpIcon name={item.icon} size={24} />
+									</span>
+								{/if}
+								<span class="dashboard__nav-secondary-text">{item.text}</span>
+								<span class="dashboard__nav-secondary-chevron">›</span>
+							</span>
 
 							{#if expandedSubmenus.has(item.text)}
 								<ul class="dashboard__nav-submenu">
@@ -490,18 +511,18 @@
 							{/if}
 						{:else}
 							<!-- Regular item -->
-						<a
-							class="dashboard__nav-secondary-item"
-							class:is-active={isActive(item.href)}
-							href={item.href}
-						>
-							{#if item.icon}
-								<span class="dashboard__nav-secondary-icon">
-									<RtpIcon name={item.icon} size={24} />
-								</span>
-							{/if}
-							<span class="dashboard__nav-secondary-text">{item.text}</span>
-						</a>
+							<a
+								class="dashboard__nav-secondary-item"
+								class:is-active={isActive(item.href)}
+								href={item.href}
+							>
+								{#if item.icon}
+									<span class="dashboard__nav-secondary-icon">
+										<RtpIcon name={item.icon} size={24} />
+									</span>
+								{/if}
+								<span class="dashboard__nav-secondary-text">{item.text}</span>
+							</a>
 						{/if}
 					</li>
 				{/each}
@@ -640,7 +661,9 @@
 		visibility: hidden;
 		width: 0;
 		overflow: hidden;
-		transition: opacity 0.2s ease, visibility 0.2s ease;
+		transition:
+			opacity 0.2s ease,
+			visibility 0.2s ease;
 	}
 
 	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item,
@@ -734,7 +757,9 @@
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		line-height: 1.4;
 		white-space: nowrap;
-		transition: opacity 0.3s ease, visibility 0.3s ease;
+		transition:
+			opacity 0.3s ease,
+			visibility 0.3s ease;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -750,7 +775,9 @@
 		margin: 0;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		white-space: nowrap;
-		transition: opacity 0.15s ease-in-out, visibility 0.15s ease-in-out;
+		transition:
+			opacity 0.15s ease-in-out,
+			visibility 0.15s ease-in-out;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -907,7 +934,7 @@
 	.dashboard__sidebar.is-collapsed .dash_main_links li a:before {
 		position: absolute;
 		display: block;
-		content: "";
+		content: '';
 		top: 50%;
 		left: 50%;
 		width: 50px;
@@ -934,7 +961,7 @@
 	/* Icon scales down on hover */
 	.dashboard__sidebar.is-collapsed .dash_main_links li a:hover .dashboard__nav-item-icon,
 	.dashboard__sidebar.is-collapsed .dashboard__profile-nav-item:hover .dashboard__profile-photo {
-		transform: scale(.9);
+		transform: scale(0.9);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1002,7 +1029,7 @@
 
 	/* Circular background on hover for tooltip-wrapped links - EXACT MATCH */
 	:global(.dashboard__sidebar.is-collapsed .tooltip-trigger a::before) {
-		content: "";
+		content: '';
 		position: absolute;
 		top: 50%;
 		left: 50%;
@@ -1023,7 +1050,9 @@
 	}
 
 	/* Active state indicator for tooltip-wrapped links */
-	:global(.dashboard__sidebar.is-collapsed .dash_main_links li.is-active .tooltip-trigger a::after) {
+	:global(
+		.dashboard__sidebar.is-collapsed .dash_main_links li.is-active .tooltip-trigger a::after
+	) {
 		content: '';
 		position: absolute;
 		top: 0;
@@ -1039,7 +1068,13 @@
 	}
 
 	/* Active state icon color */
-	:global(.dashboard__sidebar.is-collapsed .dash_main_links li.is-active .tooltip-trigger .dashboard__nav-item-icon) {
+	:global(
+		.dashboard__sidebar.is-collapsed
+			.dash_main_links
+			li.is-active
+			.tooltip-trigger
+			.dashboard__nav-item-icon
+	) {
 		color: #fff;
 	}
 
@@ -1334,7 +1369,9 @@
 		align-items: center;
 		justify-content: center;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-		transition: opacity 0.3s ease, visibility 0.3s ease;
+		transition:
+			opacity 0.3s ease,
+			visibility 0.3s ease;
 	}
 
 	.dashboard__mobile-trigger.is-hidden {
@@ -1372,7 +1409,9 @@
 		z-index: 99;
 		opacity: 0;
 		visibility: hidden;
-		transition: opacity 0.3s ease, visibility 0.3s ease;
+		transition:
+			opacity 0.3s ease,
+			visibility 0.3s ease;
 	}
 
 	.dashboard__overlay.is-active {

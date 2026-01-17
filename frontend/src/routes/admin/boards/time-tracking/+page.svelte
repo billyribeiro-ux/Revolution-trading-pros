@@ -54,8 +54,13 @@
 
 			// Calculate stats
 			const totalMinutes = timeEntries.reduce((sum, e) => sum + e.minutes, 0);
-			const billableMinutes = timeEntries.filter(e => e.is_billable).reduce((sum, e) => sum + e.minutes, 0);
-			const totalCost = timeEntries.reduce((sum, e) => sum + (e.minutes / 60) * (e.hourly_rate || 0), 0);
+			const billableMinutes = timeEntries
+				.filter((e) => e.is_billable)
+				.reduce((sum, e) => sum + e.minutes, 0);
+			const totalCost = timeEntries.reduce(
+				(sum, e) => sum + (e.minutes / 60) * (e.hourly_rate || 0),
+				0
+			);
 
 			stats = {
 				total_minutes: totalMinutes,
@@ -161,7 +166,9 @@
 						</div>
 						<div>
 							<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Time Tracking</h1>
-							<p class="text-sm text-gray-500 dark:text-gray-400">Track and analyze time spent on tasks</p>
+							<p class="text-sm text-gray-500 dark:text-gray-400">
+								Track and analyze time spent on tasks
+							</p>
 						</div>
 					</div>
 				</div>
@@ -173,7 +180,9 @@
 					>
 						<IconRefresh class="w-5 h-5" />
 					</button>
-					<button class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2">
+					<button
+						class="px-4 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2"
+					>
 						<IconDownload class="w-4 h-4" />
 						Export
 					</button>
@@ -186,64 +195,77 @@
 		<!-- Stats Cards -->
 		{#if stats}
 			<div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
 					<div class="flex items-center gap-3 mb-2">
 						<div class="p-2 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
 							<IconClock class="w-5 h-5 text-blue-600 dark:text-blue-400" />
 						</div>
 						<span class="text-sm text-gray-500 dark:text-gray-400">Total Time</span>
 					</div>
-					<div class="text-2xl font-bold text-gray-900 dark:text-white">{formatMinutes(stats.total_minutes)}</div>
+					<div class="text-2xl font-bold text-gray-900 dark:text-white">
+						{formatMinutes(stats.total_minutes)}
+					</div>
 				</div>
 
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
 					<div class="flex items-center gap-3 mb-2">
 						<div class="p-2 bg-green-100 dark:bg-green-900/30 rounded-lg">
 							<IconCurrencyDollar class="w-5 h-5 text-green-600 dark:text-green-400" />
 						</div>
 						<span class="text-sm text-gray-500 dark:text-gray-400">Billable Time</span>
 					</div>
-					<div class="text-2xl font-bold text-gray-900 dark:text-white">{formatMinutes(stats.billable_minutes)}</div>
+					<div class="text-2xl font-bold text-gray-900 dark:text-white">
+						{formatMinutes(stats.billable_minutes)}
+					</div>
 				</div>
 
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
 					<div class="flex items-center gap-3 mb-2">
 						<div class="p-2 bg-gray-100 dark:bg-gray-700 rounded-lg">
 							<IconClock class="w-5 h-5 text-gray-600 dark:text-gray-400" />
 						</div>
 						<span class="text-sm text-gray-500 dark:text-gray-400">Non-Billable</span>
 					</div>
-					<div class="text-2xl font-bold text-gray-900 dark:text-white">{formatMinutes(stats.non_billable_minutes)}</div>
+					<div class="text-2xl font-bold text-gray-900 dark:text-white">
+						{formatMinutes(stats.non_billable_minutes)}
+					</div>
 				</div>
 
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
 					<div class="flex items-center gap-3 mb-2">
 						<div class="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-lg">
 							<IconCurrencyDollar class="w-5 h-5 text-purple-600 dark:text-purple-400" />
 						</div>
 						<span class="text-sm text-gray-500 dark:text-gray-400">Total Cost</span>
 					</div>
-					<div class="text-2xl font-bold text-gray-900 dark:text-white">${stats.total_cost.toFixed(2)}</div>
+					<div class="text-2xl font-bold text-gray-900 dark:text-white">
+						${stats.total_cost.toFixed(2)}
+					</div>
 				</div>
 			</div>
 		{/if}
 
 		<!-- Filters -->
-		<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-6">
+		<div
+			class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-4 mb-6"
+		>
 			<div class="flex flex-wrap items-center gap-4">
 				<!-- Date Presets -->
 				<div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-700 rounded-lg p-1">
-					{#each [
-						{ value: 'today', label: 'Today' },
-						{ value: 'yesterday', label: 'Yesterday' },
-						{ value: 'this_week', label: 'This Week' },
-						{ value: 'last_week', label: 'Last Week' },
-						{ value: 'this_month', label: 'This Month' },
-						{ value: 'last_month', label: 'Last Month' }
-					] as preset}
+					{#each [{ value: 'today', label: 'Today' }, { value: 'yesterday', label: 'Yesterday' }, { value: 'this_week', label: 'This Week' }, { value: 'last_week', label: 'Last Week' }, { value: 'this_month', label: 'This Month' }, { value: 'last_month', label: 'Last Month' }] as preset}
 						<button
 							onclick={() => setDatePreset(preset.value)}
-							class="px-3 py-1.5 text-sm rounded-md {datePreset === preset.value ? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}"
+							class="px-3 py-1.5 text-sm rounded-md {datePreset === preset.value
+								? 'bg-white dark:bg-gray-600 text-gray-900 dark:text-white shadow-sm'
+								: 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}"
 						>
 							{preset.label}
 						</button>
@@ -278,14 +300,20 @@
 					<input
 						type="date"
 						bind:value={filterDateFrom}
-						onchange={() => { datePreset = ''; loadData(); }}
+						onchange={() => {
+							datePreset = '';
+							loadData();
+						}}
 						class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 					/>
 					<span class="text-gray-500">to</span>
 					<input
 						type="date"
 						bind:value={filterDateTo}
-						onchange={() => { datePreset = ''; loadData(); }}
+						onchange={() => {
+							datePreset = '';
+							loadData();
+						}}
 						class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 					/>
 				</div>
@@ -293,7 +321,9 @@
 		</div>
 
 		<!-- Time Entries Table -->
-		<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden">
+		<div
+			class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden"
+		>
 			{#if loading}
 				<div class="flex items-center justify-center py-12">
 					<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
@@ -302,19 +332,42 @@
 				<div class="text-center py-12">
 					<IconClock class="w-12 h-12 text-gray-400 mx-auto mb-4" />
 					<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No time entries</h3>
-					<p class="text-gray-500 dark:text-gray-400">No time has been logged for the selected filters</p>
+					<p class="text-gray-500 dark:text-gray-400">
+						No time has been logged for the selected filters
+					</p>
 				</div>
 			{:else}
 				<table class="w-full">
 					<thead class="bg-gray-50 dark:bg-gray-700">
 						<tr>
-							<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Task</th>
-							<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">User</th>
-							<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Date</th>
-							<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Duration</th>
-							<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Billable</th>
-							<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Cost</th>
-							<th class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase">Description</th>
+							<th
+								class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+								>Task</th
+							>
+							<th
+								class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+								>User</th
+							>
+							<th
+								class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+								>Date</th
+							>
+							<th
+								class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+								>Duration</th
+							>
+							<th
+								class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+								>Billable</th
+							>
+							<th
+								class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+								>Cost</th
+							>
+							<th
+								class="px-4 py-3 text-left text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase"
+								>Description</th
+							>
 						</tr>
 					</thead>
 					<tbody class="divide-y divide-gray-200 dark:divide-gray-700">
@@ -323,15 +376,21 @@
 								<td class="px-4 py-3">
 									<div class="flex items-center gap-2">
 										<IconLayoutKanban class="w-4 h-4 text-gray-400" />
-										<span class="text-sm font-medium text-gray-900 dark:text-white">{entry.task?.title || 'Unknown Task'}</span>
+										<span class="text-sm font-medium text-gray-900 dark:text-white"
+											>{entry.task?.title || 'Unknown Task'}</span
+										>
 									</div>
 								</td>
 								<td class="px-4 py-3">
 									<div class="flex items-center gap-2">
-										<div class="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs">
+										<div
+											class="w-6 h-6 rounded-full bg-indigo-500 flex items-center justify-center text-white text-xs"
+										>
 											{entry.user?.name?.charAt(0).toUpperCase() || 'U'}
 										</div>
-										<span class="text-sm text-gray-600 dark:text-gray-300">{entry.user?.name || 'Unknown'}</span>
+										<span class="text-sm text-gray-600 dark:text-gray-300"
+											>{entry.user?.name || 'Unknown'}</span
+										>
 									</div>
 								</td>
 								<td class="px-4 py-3 text-sm text-gray-600 dark:text-gray-300">
@@ -350,11 +409,15 @@
 								</td>
 								<td class="px-4 py-3">
 									{#if entry.is_billable}
-										<span class="px-2 py-0.5 text-xs bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded">
+										<span
+											class="px-2 py-0.5 text-xs bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded"
+										>
 											Billable
 										</span>
 									{:else}
-										<span class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded">
+										<span
+											class="px-2 py-0.5 text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400 rounded"
+										>
 											Non-billable
 										</span>
 									{/if}

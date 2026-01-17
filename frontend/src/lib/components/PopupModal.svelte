@@ -1005,7 +1005,8 @@
 		tabindex="0"
 		aria-label="Close popup"
 		onclick={() => currentPopup?.closeOnOverlayClick && closePopup()}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && currentPopup?.closeOnOverlayClick && closePopup()}
+		onkeydown={(e: KeyboardEvent) =>
+			e.key === 'Enter' && currentPopup?.closeOnOverlayClick && closePopup()}
 		transition:fade={{ duration: 300 }}
 	></div>
 

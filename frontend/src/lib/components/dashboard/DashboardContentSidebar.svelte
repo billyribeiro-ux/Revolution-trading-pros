@@ -55,12 +55,7 @@
 	// PROPS
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let {
-		children,
-		sections = [],
-		class: className = '',
-		visible
-	}: Props = $props();
+	let { children, sections = [], class: className = '', visible }: Props = $props();
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED
@@ -68,7 +63,12 @@
 
 	// Combine base class with any additional classes
 	const sidebarClasses = $derived(
-		['dashboard__content-sidebar', className, visible === true && 'is-visible', visible === false && 'is-hidden']
+		[
+			'dashboard__content-sidebar',
+			className,
+			visible === true && 'is-visible',
+			visible === false && 'is-hidden'
+		]
 			.filter(Boolean)
 			.join(' ')
 	);

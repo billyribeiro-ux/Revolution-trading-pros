@@ -33,7 +33,7 @@ import type {
 	CustomEventPayload,
 	PurchasePayload,
 	IdentifyPayload,
-	AdapterMetrics,
+	AdapterMetrics
 } from './adapters/types';
 import { getGoogleAnalyticsAdapter } from './adapters/google-analytics';
 import { getConsoleAdapter } from './adapters/console';
@@ -76,24 +76,24 @@ const getDefaultConfig = (): AnalyticsConfig => ({
 		sendPageView: false,
 		anonymizeIp: true,
 		allowGoogleSignals: false,
-		allowAdPersonalization: false,
+		allowAdPersonalization: false
 	},
 	backend: {
 		endpoint: import.meta.env['VITE_ANALYTICS_ENDPOINT'] || '/api/analytics/batch',
 		flushIntervalMs: 5000,
 		maxBatchSize: 50,
-		useSendBeacon: true,
+		useSendBeacon: true
 	},
 	console: {
 		enabled: import.meta.env.DEV,
 		prettyPrint: true,
-		groupLogs: true,
+		groupLogs: true
 	},
 	consent: {
 		analytics: false,
-		marketing: false,
+		marketing: false
 	},
-	debug: import.meta.env.DEV,
+	debug: import.meta.env.DEV
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -117,7 +117,7 @@ class AnalyticsOrchestrator {
 		consent: { analytics: false, marketing: false },
 		userId: null,
 		sessionId: '',
-		environment: 'development',
+		environment: 'development'
 	});
 
 	constructor() {
@@ -163,7 +163,7 @@ class AnalyticsOrchestrator {
 			failedEvents: this._failedEvents,
 			adapterMetrics,
 			lastEventTime: Date.now(),
-			uptime: Date.now() - this._startTime,
+			uptime: Date.now() - this._startTime
 		};
 	}
 
@@ -182,26 +182,58 @@ class AnalyticsOrchestrator {
 			...customConfig,
 			googleAnalytics: {
 				measurementId: customConfig?.googleAnalytics?.measurementId ?? ga.measurementId,
-				...(customConfig?.googleAnalytics?.debug !== undefined ? { debug: customConfig.googleAnalytics.debug } : ga.debug !== undefined ? { debug: ga.debug } : {}),
-				...(customConfig?.googleAnalytics?.sendPageView !== undefined ? { sendPageView: customConfig.googleAnalytics.sendPageView } : ga.sendPageView !== undefined ? { sendPageView: ga.sendPageView } : {}),
-				...(customConfig?.googleAnalytics?.anonymizeIp !== undefined ? { anonymizeIp: customConfig.googleAnalytics.anonymizeIp } : ga.anonymizeIp !== undefined ? { anonymizeIp: ga.anonymizeIp } : {}),
-				...(customConfig?.googleAnalytics?.allowGoogleSignals !== undefined ? { allowGoogleSignals: customConfig.googleAnalytics.allowGoogleSignals } : ga.allowGoogleSignals !== undefined ? { allowGoogleSignals: ga.allowGoogleSignals } : {}),
-				...(customConfig?.googleAnalytics?.allowAdPersonalization !== undefined ? { allowAdPersonalization: customConfig.googleAnalytics.allowAdPersonalization } : ga.allowAdPersonalization !== undefined ? { allowAdPersonalization: ga.allowAdPersonalization } : {}),
+				...(customConfig?.googleAnalytics?.debug !== undefined
+					? { debug: customConfig.googleAnalytics.debug }
+					: ga.debug !== undefined
+						? { debug: ga.debug }
+						: {}),
+				...(customConfig?.googleAnalytics?.sendPageView !== undefined
+					? { sendPageView: customConfig.googleAnalytics.sendPageView }
+					: ga.sendPageView !== undefined
+						? { sendPageView: ga.sendPageView }
+						: {}),
+				...(customConfig?.googleAnalytics?.anonymizeIp !== undefined
+					? { anonymizeIp: customConfig.googleAnalytics.anonymizeIp }
+					: ga.anonymizeIp !== undefined
+						? { anonymizeIp: ga.anonymizeIp }
+						: {}),
+				...(customConfig?.googleAnalytics?.allowGoogleSignals !== undefined
+					? { allowGoogleSignals: customConfig.googleAnalytics.allowGoogleSignals }
+					: ga.allowGoogleSignals !== undefined
+						? { allowGoogleSignals: ga.allowGoogleSignals }
+						: {}),
+				...(customConfig?.googleAnalytics?.allowAdPersonalization !== undefined
+					? { allowAdPersonalization: customConfig.googleAnalytics.allowAdPersonalization }
+					: ga.allowAdPersonalization !== undefined
+						? { allowAdPersonalization: ga.allowAdPersonalization }
+						: {})
 			},
 			backend: {
 				endpoint: customConfig?.backend?.endpoint ?? be.endpoint,
-				...(customConfig?.backend?.flushIntervalMs !== undefined ? { flushIntervalMs: customConfig.backend.flushIntervalMs } : be.flushIntervalMs !== undefined ? { flushIntervalMs: be.flushIntervalMs } : {}),
-				...(customConfig?.backend?.maxBatchSize !== undefined ? { maxBatchSize: customConfig.backend.maxBatchSize } : be.maxBatchSize !== undefined ? { maxBatchSize: be.maxBatchSize } : {}),
-				...(customConfig?.backend?.useSendBeacon !== undefined ? { useSendBeacon: customConfig.backend.useSendBeacon } : be.useSendBeacon !== undefined ? { useSendBeacon: be.useSendBeacon } : {}),
+				...(customConfig?.backend?.flushIntervalMs !== undefined
+					? { flushIntervalMs: customConfig.backend.flushIntervalMs }
+					: be.flushIntervalMs !== undefined
+						? { flushIntervalMs: be.flushIntervalMs }
+						: {}),
+				...(customConfig?.backend?.maxBatchSize !== undefined
+					? { maxBatchSize: customConfig.backend.maxBatchSize }
+					: be.maxBatchSize !== undefined
+						? { maxBatchSize: be.maxBatchSize }
+						: {}),
+				...(customConfig?.backend?.useSendBeacon !== undefined
+					? { useSendBeacon: customConfig.backend.useSendBeacon }
+					: be.useSendBeacon !== undefined
+						? { useSendBeacon: be.useSendBeacon }
+						: {})
 			},
 			console: {
 				...defaults.console,
-				...customConfig?.console,
+				...customConfig?.console
 			},
 			consent: {
 				...defaults.consent,
-				...customConfig?.consent,
-			},
+				...customConfig?.consent
+			}
 		};
 
 		// Register default adapters
@@ -280,7 +312,7 @@ class AnalyticsOrchestrator {
 			page_referrer: payload?.page_referrer ?? (browser ? document.referrer : ''),
 			timestamp: Date.now(),
 			session_id: this._sessionId,
-			user_id: this._userId,
+			user_id: this._userId
 		};
 
 		this._broadcast('trackPageView', enrichedPayload);
@@ -296,7 +328,7 @@ class AnalyticsOrchestrator {
 			...payload,
 			timestamp: Date.now(),
 			session_id: this._sessionId,
-			user_id: this._userId,
+			user_id: this._userId
 		};
 
 		this._broadcast('trackEvent', eventName, enrichedPayload);
@@ -312,7 +344,7 @@ class AnalyticsOrchestrator {
 			...payload,
 			timestamp: Date.now(),
 			session_id: this._sessionId,
-			user_id: this._userId,
+			user_id: this._userId
 		};
 
 		this._broadcast('trackPurchase', enrichedPayload);
@@ -327,7 +359,7 @@ class AnalyticsOrchestrator {
 
 		const payload: IdentifyPayload = {
 			user_id: userId,
-			...properties,
+			...properties
 		};
 
 		this._broadcast('identify', payload);
@@ -443,7 +475,7 @@ class AnalyticsOrchestrator {
 			consent: this._config.consent,
 			userId: this._userId,
 			sessionId: this._sessionId,
-			environment: this._config.environment,
+			environment: this._config.environment
 		});
 	}
 }

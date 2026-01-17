@@ -42,7 +42,9 @@
 	let saving = $state(false);
 	let testingStorage = $state(false);
 	let storageTestResult = $state<{ success: boolean; message: string } | null>(null);
-	let activeTab = $state<'general' | 'stages' | 'labels' | 'storage' | 'time' | 'integrations'>('general');
+	let activeTab = $state<'general' | 'stages' | 'labels' | 'storage' | 'time' | 'integrations'>(
+		'general'
+	);
 
 	// New stage/label forms
 	let newStage = $state({ title: '', color: '#6b7280', auto_complete: false });
@@ -150,7 +152,9 @@
 					</div>
 					<div>
 						<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Board Settings</h1>
-						<p class="text-sm text-gray-500 dark:text-gray-400">Configure default settings for project boards</p>
+						<p class="text-sm text-gray-500 dark:text-gray-400">
+							Configure default settings for project boards
+						</p>
 					</div>
 				</div>
 			</div>
@@ -168,36 +172,51 @@
 				<div class="w-48 flex-shrink-0">
 					<nav class="space-y-1">
 						<button
-							onclick={() => activeTab = 'general'}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'general' ? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							onclick={() => (activeTab = 'general')}
+							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab ===
+							'general'
+								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
+								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconLayoutKanban class="w-4 h-4" />
 							General
 						</button>
 						<button
-							onclick={() => activeTab = 'stages'}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'stages' ? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							onclick={() => (activeTab = 'stages')}
+							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab ===
+							'stages'
+								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
+								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconPalette class="w-4 h-4" />
 							Default Stages
 						</button>
 						<button
-							onclick={() => activeTab = 'labels'}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'labels' ? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							onclick={() => (activeTab = 'labels')}
+							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab ===
+							'labels'
+								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
+								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconPalette class="w-4 h-4" />
 							Default Labels
 						</button>
 						<button
-							onclick={() => activeTab = 'time'}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'time' ? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							onclick={() => (activeTab = 'time')}
+							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab ===
+							'time'
+								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
+								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconClock class="w-4 h-4" />
 							Time Tracking
 						</button>
 						<button
-							onclick={() => activeTab = 'storage'}
-							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab === 'storage' ? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]' : 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
+							onclick={() => (activeTab = 'storage')}
+							class="w-full px-3 py-2 text-left rounded-lg flex items-center gap-2 {activeTab ===
+							'storage'
+								? 'bg-[#E6B800]/5 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A]'
+								: 'text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700'}"
 						>
 							<IconCloud class="w-4 h-4" />
 							Cloud Storage
@@ -207,12 +226,19 @@
 
 				<!-- Content -->
 				<div class="flex-1">
-					<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+					<div
+						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
+					>
 						{#if activeTab === 'general'}
-							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">General Settings</h2>
+							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+								General Settings
+							</h2>
 							<div class="space-y-6">
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="default-board-type">
+									<label
+										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										for="default-board-type"
+									>
 										Default Board Type
 									</label>
 									<select
@@ -229,19 +255,32 @@
 
 								<div class="flex items-center justify-between">
 									<div>
-										<div class="text-sm font-medium text-gray-700 dark:text-gray-300">Enable Webhooks</div>
-										<div class="text-xs text-gray-500 dark:text-gray-400">Allow boards to send webhook notifications</div>
+										<div class="text-sm font-medium text-gray-700 dark:text-gray-300">
+											Enable Webhooks
+										</div>
+										<div class="text-xs text-gray-500 dark:text-gray-400">
+											Allow boards to send webhook notifications
+										</div>
 									</div>
 									<label class="relative inline-flex items-center cursor-pointer">
-										<input type="checkbox" bind:checked={settings.webhooks_enabled} class="sr-only peer" />
-										<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#E6B800]/30 dark:peer-focus:ring-[#B38F00]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#E6B800]"></div>
+										<input
+											type="checkbox"
+											bind:checked={settings.webhooks_enabled}
+											class="sr-only peer"
+										/>
+										<div
+											class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#E6B800]/30 dark:peer-focus:ring-[#B38F00]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#E6B800]"
+										></div>
 									</label>
 								</div>
 							</div>
-
 						{:else if activeTab === 'stages'}
-							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Default Stages</h2>
-							<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">These stages will be created automatically for new boards.</p>
+							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+								Default Stages
+							</h2>
+							<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+								These stages will be created automatically for new boards.
+							</p>
 
 							<div class="space-y-3 mb-6">
 								{#each settings.default_stages as stage, index}
@@ -270,7 +309,9 @@
 								{/each}
 							</div>
 
-							<div class="flex items-center gap-3 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
+							<div
+								class="flex items-center gap-3 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg"
+							>
 								<input
 									type="color"
 									bind:value={newStage.color}
@@ -294,10 +335,13 @@
 									<IconPlus class="w-4 h-4" />
 								</button>
 							</div>
-
 						{:else if activeTab === 'labels'}
-							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Default Labels</h2>
-							<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">These labels will be available for new boards.</p>
+							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+								Default Labels
+							</h2>
+							<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+								These labels will be available for new boards.
+							</p>
 
 							<div class="space-y-3 mb-6">
 								{#each settings.default_labels as label, index}
@@ -328,7 +372,9 @@
 								{/each}
 							</div>
 
-							<div class="flex items-center gap-3 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg">
+							<div
+								class="flex items-center gap-3 p-3 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg"
+							>
 								<input
 									type="color"
 									bind:value={newLabel.color}
@@ -348,24 +394,38 @@
 									<IconPlus class="w-4 h-4" />
 								</button>
 							</div>
-
 						{:else if activeTab === 'time'}
-							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Time Tracking Settings</h2>
+							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+								Time Tracking Settings
+							</h2>
 
 							<div class="space-y-6">
 								<div class="flex items-center justify-between">
 									<div>
-										<div class="text-sm font-medium text-gray-700 dark:text-gray-300">Enable Time Tracking</div>
-										<div class="text-xs text-gray-500 dark:text-gray-400">Allow users to log time on tasks</div>
+										<div class="text-sm font-medium text-gray-700 dark:text-gray-300">
+											Enable Time Tracking
+										</div>
+										<div class="text-xs text-gray-500 dark:text-gray-400">
+											Allow users to log time on tasks
+										</div>
 									</div>
 									<label class="relative inline-flex items-center cursor-pointer">
-										<input type="checkbox" bind:checked={settings.time_tracking_enabled} class="sr-only peer" />
-										<div class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#E6B800]/30 dark:peer-focus:ring-[#B38F00]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#E6B800]"></div>
+										<input
+											type="checkbox"
+											bind:checked={settings.time_tracking_enabled}
+											class="sr-only peer"
+										/>
+										<div
+											class="w-11 h-6 bg-gray-200 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-[#E6B800]/30 dark:peer-focus:ring-[#B38F00]/50 rounded-full peer dark:bg-gray-700 peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all dark:border-gray-600 peer-checked:bg-[#E6B800]"
+										></div>
 									</label>
 								</div>
 
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="default-hourly-rate">
+									<label
+										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										for="default-hourly-rate"
+									>
 										Default Hourly Rate ($)
 									</label>
 									<input
@@ -380,7 +440,10 @@
 
 								<div class="grid grid-cols-2 gap-4">
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="working-hours">
+										<label
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+											for="working-hours"
+										>
 											Working Hours/Day
 										</label>
 										<input
@@ -393,7 +456,10 @@
 										/>
 									</div>
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="working-days">
+										<label
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+											for="working-days"
+										>
 											Working Days/Week
 										</label>
 										<input
@@ -407,14 +473,20 @@
 									</div>
 								</div>
 							</div>
-
 						{:else if activeTab === 'storage'}
-							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Cloud Storage Configuration</h2>
-							<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">Configure where attachments are stored. Leave empty to use local storage.</p>
+							<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+								Cloud Storage Configuration
+							</h2>
+							<p class="text-sm text-gray-500 dark:text-gray-400 mb-4">
+								Configure where attachments are stored. Leave empty to use local storage.
+							</p>
 
 							<div class="space-y-6">
 								<div>
-									<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="storage-driver">
+									<label
+										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										for="storage-driver"
+									>
 										Storage Driver
 									</label>
 									<select
@@ -432,7 +504,10 @@
 
 								{#if storageConfig && storageConfig.driver !== 'local'}
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="bucket-name">
+										<label
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+											for="bucket-name"
+										>
 											Bucket Name
 										</label>
 										<input
@@ -444,7 +519,10 @@
 									</div>
 
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="region">
+										<label
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+											for="region"
+										>
 											Region
 										</label>
 										<input
@@ -457,7 +535,10 @@
 									</div>
 
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="endpoint">
+										<label
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+											for="endpoint"
+										>
 											Endpoint (optional)
 										</label>
 										<input
@@ -470,7 +551,10 @@
 									</div>
 
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="access-key">
+										<label
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+											for="access-key"
+										>
 											Access Key
 										</label>
 										<input
@@ -482,7 +566,10 @@
 									</div>
 
 									<div>
-										<label class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2" for="secret-key">
+										<label
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+											for="secret-key"
+										>
 											Secret Key
 										</label>
 										<input
@@ -507,7 +594,11 @@
 											Test Connection
 										</button>
 										{#if storageTestResult}
-											<span class="flex items-center gap-2 text-sm {storageTestResult.success ? 'text-green-600' : 'text-red-600'}">
+											<span
+												class="flex items-center gap-2 text-sm {storageTestResult.success
+													? 'text-green-600'
+													: 'text-red-600'}"
+											>
 												{#if storageTestResult.success}
 													<IconCheck class="w-4 h-4" />
 												{:else}

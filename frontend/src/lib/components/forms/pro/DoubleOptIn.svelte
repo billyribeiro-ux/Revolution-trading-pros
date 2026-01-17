@@ -63,7 +63,10 @@
 		};
 	});
 
-	const statusConfig: Record<OptInStatus, { label: string; description: string; color: string; bgColor: string }> = {
+	const statusConfig: Record<
+		OptInStatus,
+		{ label: string; description: string; color: string; bgColor: string }
+	> = {
 		pending: {
 			label: 'Pending Verification',
 			description: 'Awaiting email confirmation',
@@ -127,9 +130,8 @@
 	function maskEmail(emailStr: string): string {
 		const [local, domain] = emailStr.split('@');
 		if (!domain) return emailStr;
-		const maskedLocal = local.length > 2
-			? local[0] + '*'.repeat(local.length - 2) + local[local.length - 1]
-			: local;
+		const maskedLocal =
+			local.length > 2 ? local[0] + '*'.repeat(local.length - 2) + local[local.length - 1] : local;
 		return `${maskedLocal}@${domain}`;
 	}
 
@@ -151,9 +153,7 @@
 
 	const config = $derived(statusConfig[data.status]);
 	const canResend = $derived(
-		allowResend &&
-		['sent', 'expired', 'failed'].includes(data.status) &&
-		resendTimer === 0
+		allowResend && ['sent', 'expired', 'failed'].includes(data.status) && resendTimer === 0
 	);
 </script>
 
@@ -162,28 +162,63 @@
 		<div class="status-card" style="--status-color: {config.color}; --status-bg: {config.bgColor}">
 			<div class="status-icon">
 				{#if data.status === 'pending'}
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<circle cx="12" cy="12" r="10"></circle>
 						<polyline points="12 6 12 12 16 14"></polyline>
 					</svg>
 				{:else if data.status === 'sent'}
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<line x1="22" y1="2" x2="11" y2="13"></line>
 						<polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
 					</svg>
 				{:else if data.status === 'confirmed'}
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
 						<polyline points="22 4 12 14.01 9 11.01"></polyline>
 					</svg>
 				{:else if data.status === 'expired'}
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<circle cx="12" cy="12" r="10"></circle>
 						<line x1="12" y1="8" x2="12" y2="12"></line>
 						<line x1="12" y1="16" x2="12.01" y2="16"></line>
 					</svg>
 				{:else}
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<circle cx="12" cy="12" r="10"></circle>
 						<line x1="15" y1="9" x2="9" y2="15"></line>
 						<line x1="9" y1="9" x2="15" y2="15"></line>
@@ -196,8 +231,16 @@
 				<p class="status-description">{config.description}</p>
 
 				<div class="email-info">
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+					<svg
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+						></path>
 						<polyline points="22,6 12,13 2,6"></polyline>
 					</svg>
 					<span>{maskEmail(email || data?.email || '')}</span>
@@ -205,7 +248,14 @@
 
 				{#if data.status === 'sent' && data.expiresAt}
 					<div class="expiry-info">
-						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<circle cx="12" cy="12" r="10"></circle>
 							<polyline points="12 6 12 12 16 14"></polyline>
 						</svg>
@@ -246,13 +296,27 @@
 					<span class="spinner"></span>
 					Sending...
 				{:else if resendTimer > 0}
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<circle cx="12" cy="12" r="10"></circle>
 						<polyline points="12 6 12 12 16 14"></polyline>
 					</svg>
 					Resend in {resendTimer}s
 				{:else}
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<polyline points="23 4 23 10 17 10"></polyline>
 						<path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
 					</svg>
@@ -264,7 +328,14 @@
 
 	{#if data.status === 'confirmed'}
 		<div class="success-banner">
-			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<polyline points="20 6 9 17 4 12"></polyline>
 			</svg>
 			<span>Your subscription is now active!</span>
@@ -272,7 +343,14 @@
 	{/if}
 
 	<div class="gdpr-notice">
-		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+		<svg
+			width="14"
+			height="14"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+		>
 			<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
 		</svg>
 		<span>Your email is protected and will only be used as per our privacy policy.</span>
@@ -284,7 +362,14 @@
 
 	{#if error || localError}
 		<div class="error-message">
-			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="14"
+				height="14"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<circle cx="12" cy="12" r="10"></circle>
 				<line x1="12" y1="8" x2="12" y2="12"></line>
 				<line x1="12" y1="16" x2="12.01" y2="16"></line>

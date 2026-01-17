@@ -69,43 +69,43 @@
 		'report-analytics': IconReportAnalytics,
 
 		// Action icons
-		'bell': IconBell,
-		'rocket': IconRocket,
-		'activity': IconActivity,
-		'bolt': IconBolt,
-		'flame': IconFlame,
-		'target': IconTarget,
+		bell: IconBell,
+		rocket: IconRocket,
+		activity: IconActivity,
+		bolt: IconBolt,
+		flame: IconFlame,
+		target: IconTarget,
 
 		// Finance icons
-		'wallet': IconWallet,
+		wallet: IconWallet,
 
 		// Media icons
 		'player-play': IconPlayerPlay,
-		'video': IconVideo,
-		'live': IconLive,
+		video: IconVideo,
+		live: IconLive,
 
 		// Education icons
-		'book': IconBook,
-		'school': IconSchool,
-		'certificate': IconCertificate,
+		book: IconBook,
+		school: IconSchool,
+		certificate: IconCertificate,
 
 		// Status/Badge icons
-		'star': IconStar,
-		'diamond': IconDiamond,
-		'crown': IconCrown,
-		'award': IconAward,
+		star: IconStar,
+		diamond: IconDiamond,
+		crown: IconCrown,
+		award: IconAward,
 
 		// Social icons
-		'users': IconUsers,
+		users: IconUsers,
 		'message-circle': IconMessageCircle,
 
 		// Utility icons
-		'calendar': IconCalendar,
-		'clock': IconClock,
-		'settings': IconSettings,
-		'help': IconHelp,
-		'home': IconHome,
-		'user': IconUser
+		calendar: IconCalendar,
+		clock: IconClock,
+		settings: IconSettings,
+		help: IconHelp,
+		home: IconHome,
+		user: IconUser
 	};
 
 	// Get the icon component, fallback to chart-line if not found

@@ -38,7 +38,7 @@ interface WebVitalsOptions {
 const DEFAULT_OPTIONS: WebVitalsOptions = {
 	endpoint: '/api/analytics/web-vitals',
 	debug: false,
-	sampleRate: 1,
+	sampleRate: 1
 };
 
 // Thresholds for rating metrics
@@ -48,7 +48,7 @@ const THRESHOLDS = {
 	CLS: { good: 0.1, poor: 0.25 },
 	FCP: { good: 1800, poor: 3000 },
 	TTFB: { good: 800, poor: 1800 },
-	INP: { good: 200, poor: 500 },
+	INP: { good: 200, poor: 500 }
 } as const;
 
 /**
@@ -74,10 +74,7 @@ function generateId(): string {
 /**
  * Report metric to analytics endpoint
  */
-async function reportMetric(
-	metric: WebVitalMetric,
-	options: WebVitalsOptions
-): Promise<void> {
+async function reportMetric(metric: WebVitalMetric, options: WebVitalsOptions): Promise<void> {
 	// Apply sample rate
 	if (Math.random() > (options.sampleRate ?? 1)) return;
 
@@ -107,7 +104,7 @@ async function reportMetric(
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					...options.headers,
+					...options.headers
 				},
 				body: JSON.stringify({
 					metric: metric.name,
@@ -120,10 +117,10 @@ async function reportMetric(
 					navigationType: metric.navigationType,
 					userAgent: navigator.userAgent,
 					connection: (navigator as any).connection?.effectiveType,
-					deviceMemory: (navigator as any).deviceMemory,
+					deviceMemory: (navigator as any).deviceMemory
 				}),
 				// Use keepalive for page unload scenarios
-				keepalive: true,
+				keepalive: true
 			});
 		} catch (error) {
 			if (options.debug) {
@@ -160,7 +157,7 @@ function observeLCP(options: WebVitalsOptions): void {
 				rating: getRating('LCP', lcpValue),
 				delta: lcpValue,
 				id: generateId(),
-				navigationType: getNavigationType(),
+				navigationType: getNavigationType()
 			};
 			reportMetric(metric, options);
 			observer.disconnect();
@@ -191,7 +188,7 @@ function observeFID(options: WebVitalsOptions): void {
 				rating: getRating('FID', value),
 				delta: value,
 				id: generateId(),
-				navigationType: getNavigationType(),
+				navigationType: getNavigationType()
 			};
 			reportMetric(metric, options);
 		}
@@ -251,7 +248,7 @@ function observeCLS(options: WebVitalsOptions): void {
 				rating: getRating('CLS', clsValue),
 				delta: clsValue,
 				id: generateId(),
-				navigationType: getNavigationType(),
+				navigationType: getNavigationType()
 			};
 			reportMetric(metric, options);
 		}
@@ -279,7 +276,7 @@ function observeFCP(options: WebVitalsOptions): void {
 					rating: getRating('FCP', value),
 					delta: value,
 					id: generateId(),
-					navigationType: getNavigationType(),
+					navigationType: getNavigationType()
 				};
 				reportMetric(metric, options);
 				observer.disconnect();
@@ -307,7 +304,7 @@ function observeTTFB(options: WebVitalsOptions): void {
 					rating: getRating('TTFB', value),
 					delta: value,
 					id: generateId(),
-					navigationType: getNavigationType(),
+					navigationType: getNavigationType()
 				};
 				reportMetric(metric, options);
 				observer.disconnect();
@@ -333,8 +330,7 @@ function observeINP(options: WebVitalsOptions): void {
 			// Only measure discrete events
 			if (
 				eventEntry.interactionId &&
-				(eventEntry.entryType === 'event' ||
-					eventEntry.entryType === 'first-input')
+				(eventEntry.entryType === 'event' || eventEntry.entryType === 'first-input')
 			) {
 				const duration = eventEntry.duration;
 				interactions.push(duration);
@@ -350,7 +346,11 @@ function observeINP(options: WebVitalsOptions): void {
 		}
 	});
 
-	observer.observe({ type: 'event', buffered: true, durationThreshold: 40 } as PerformanceObserverInit);
+	observer.observe({
+		type: 'event',
+		buffered: true,
+		durationThreshold: 40
+	} as PerformanceObserverInit);
 
 	// Report on page hide
 	const reportINP = () => {
@@ -361,7 +361,7 @@ function observeINP(options: WebVitalsOptions): void {
 				rating: getRating('INP', maxINP),
 				delta: maxINP,
 				id: generateId(),
-				navigationType: getNavigationType(),
+				navigationType: getNavigationType()
 			};
 			reportMetric(metric, options);
 		}

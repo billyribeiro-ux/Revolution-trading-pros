@@ -118,10 +118,7 @@ function processEventQueue(): void {
 /**
  * Track a TikTok event
  */
-export function trackTikTokEvent(
-	event: string,
-	data?: Record<string, unknown>
-): void {
+export function trackTikTokEvent(event: string, data?: Record<string, unknown>): void {
 	if (!browser) return;
 
 	if (!tiktokReady) {
@@ -183,7 +180,7 @@ export const TIKTOK_EVENTS = {
 	SEARCH: 'Search',
 	SUBMIT_FORM: 'SubmitForm',
 	SUBSCRIBE: 'Subscribe',
-	VIEW_CONTENT: 'ViewContent',
+	VIEW_CONTENT: 'ViewContent'
 } as const;
 
 /**
@@ -201,14 +198,14 @@ export const tiktokVendor: VendorConfig = {
 			name: '_ttp',
 			purpose: 'TikTok tracking pixel identifier',
 			duration: '13 months',
-			type: 'third-party',
+			type: 'third-party'
 		},
 		{
 			name: 'tt_*',
 			purpose: 'TikTok analytics cookies',
 			duration: 'Session to 13 months',
-			type: 'third-party',
-		},
+			type: 'third-party'
+		}
 	],
 	dataLocations: ['United States', 'Singapore'],
 	supportsRevocation: true,
@@ -226,5 +223,5 @@ export const tiktokVendor: VendorConfig = {
 		tiktokReady = false;
 		eventQueue.length = 0;
 		console.debug('[TikTok] Consent revoked');
-	},
+	}
 };

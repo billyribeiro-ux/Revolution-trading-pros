@@ -23,17 +23,17 @@ vi.mock('$app/environment', () => ({
 	browser: true,
 	dev: true,
 	building: false,
-	version: 'test',
+	version: 'test'
 }));
 
 vi.mock('$env/dynamic/public', () => ({
 	env: {
-		PUBLIC_GA4_MEASUREMENT_ID: 'G-TESTID12345',
-	},
+		PUBLIC_GA4_MEASUREMENT_ID: 'G-TESTID12345'
+	}
 }));
 
 vi.mock('$lib/api/config', () => ({
-	API_BASE_URL: 'http://localhost:8000',
+	API_BASE_URL: 'http://localhost:8000'
 }));
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -49,30 +49,20 @@ import {
 	type CustomEventPayload,
 	type PurchasePayload,
 	type IdentifyPayload,
-	type EcommerceItem,
+	type EcommerceItem
 } from '../adapters/types';
 
 import {
 	getGoogleAnalyticsAdapter,
 	createGoogleAnalyticsAdapter,
-	resetGoogleAnalyticsAdapter,
+	resetGoogleAnalyticsAdapter
 } from '../adapters/google-analytics';
 
-import {
-	getConsoleAdapter,
-	createConsoleAdapter,
-} from '../adapters/console';
+import { getConsoleAdapter, createConsoleAdapter } from '../adapters/console';
 
-import {
-	getBackendAdapter,
-	createBackendAdapter,
-} from '../adapters/backend';
+import { getBackendAdapter, createBackendAdapter } from '../adapters/backend';
 
-import {
-	getOrchestrator,
-	createOrchestrator,
-	resetOrchestrator,
-} from '../orchestrator';
+import { getOrchestrator, createOrchestrator, resetOrchestrator } from '../orchestrator';
 
 import {
 	metrics,
@@ -89,7 +79,7 @@ import {
 	trackError,
 	trackFormSubmit,
 	trackFormError,
-	Events,
+	Events
 } from '../metrics';
 
 import {
@@ -97,7 +87,7 @@ import {
 	updateAnalyticsConsent,
 	getAnalyticsMetrics,
 	flushAnalytics,
-	destroyAnalytics,
+	destroyAnalytics
 } from '../index';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -169,9 +159,9 @@ describe('GoogleAnalytics Adapter', () => {
 			environment: 'development',
 			googleAnalytics: {
 				measurementId: 'G-TEST123456',
-				debug: true,
+				debug: true
 			},
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		};
 
 		await adapter.initialize(config);
@@ -183,7 +173,7 @@ describe('GoogleAnalytics Adapter', () => {
 		expect(() => {
 			adapter.trackPageView({
 				page_path: '/test',
-				page_title: 'Test Page',
+				page_title: 'Test Page'
 			});
 		}).not.toThrow();
 	});
@@ -194,7 +184,7 @@ describe('GoogleAnalytics Adapter', () => {
 			adapter.trackEvent('test_event', {
 				event_category: 'testing',
 				event_label: 'unit test',
-				value: 100,
+				value: 100
 			});
 		}).not.toThrow();
 	});
@@ -206,9 +196,7 @@ describe('GoogleAnalytics Adapter', () => {
 				transaction_id: 'T-123',
 				value: 99.99,
 				currency: 'USD',
-				items: [
-					{ item_id: 'SKU-1', item_name: 'Product 1', price: 99.99 },
-				],
+				items: [{ item_id: 'SKU-1', item_name: 'Product 1', price: 99.99 }]
 			});
 		}).not.toThrow();
 	});
@@ -219,7 +207,7 @@ describe('GoogleAnalytics Adapter', () => {
 			adapter.identify!({
 				user_id: 'user-123',
 				email: 'test@example.com',
-				name: 'Test User',
+				name: 'Test User'
 			});
 		}).not.toThrow();
 	});
@@ -272,7 +260,7 @@ describe('Console Adapter', () => {
 			enabled: true,
 			environment: 'development',
 			console: { enabled: true, prettyPrint: true },
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		};
 
 		await adapter.initialize(config);
@@ -285,13 +273,13 @@ describe('Console Adapter', () => {
 			enabled: true,
 			environment: 'development',
 			console: { enabled: true },
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		expect(() => {
 			adapter.trackPageView({
 				page_path: '/test',
-				page_title: 'Test Page',
+				page_title: 'Test Page'
 			});
 		}).not.toThrow();
 	});
@@ -302,7 +290,7 @@ describe('Console Adapter', () => {
 			enabled: true,
 			environment: 'development',
 			console: { enabled: true },
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		expect(() => {
@@ -347,9 +335,9 @@ describe('Backend Adapter', () => {
 			backend: {
 				endpoint: '/api/analytics/batch',
 				flushIntervalMs: 5000,
-				maxBatchSize: 50,
+				maxBatchSize: 50
 			},
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		};
 
 		await adapter.initialize(config);
@@ -362,12 +350,12 @@ describe('Backend Adapter', () => {
 			enabled: true,
 			environment: 'production',
 			backend: { endpoint: '/api/analytics' },
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		adapter.trackPageView({
 			page_path: '/products',
-			page_title: 'Products',
+			page_title: 'Products'
 		});
 
 		expect(adapter.metrics.eventsTracked).toBe(1);
@@ -379,7 +367,7 @@ describe('Backend Adapter', () => {
 			enabled: true,
 			environment: 'production',
 			backend: { endpoint: '/api/analytics' },
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		adapter.trackEvent('product_viewed', { product_id: 'SKU-123' });
@@ -392,12 +380,12 @@ describe('Backend Adapter', () => {
 			enabled: true,
 			environment: 'production',
 			backend: { endpoint: '/api/analytics' },
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		adapter.identify!({
 			user_id: 'user-456',
-			email: 'user@test.com',
+			email: 'user@test.com'
 		});
 
 		expect(adapter.metrics.eventsTracked).toBe(1);
@@ -409,7 +397,7 @@ describe('Backend Adapter', () => {
 			enabled: true,
 			environment: 'production',
 			backend: { endpoint: '/api/analytics' },
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		adapter.trackEvent('test_event', {});
@@ -447,7 +435,7 @@ describe('Analytics Orchestrator', () => {
 		await orchestrator.initialize({
 			enabled: true,
 			environment: 'development',
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		expect(orchestrator.initialized).toBe(true);
@@ -458,7 +446,7 @@ describe('Analytics Orchestrator', () => {
 		await orchestrator.initialize({
 			enabled: true,
 			environment: 'development',
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		expect(() => {
@@ -471,7 +459,7 @@ describe('Analytics Orchestrator', () => {
 		await orchestrator.initialize({
 			enabled: true,
 			environment: 'development',
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		expect(() => {
@@ -484,14 +472,14 @@ describe('Analytics Orchestrator', () => {
 		await orchestrator.initialize({
 			enabled: true,
 			environment: 'development',
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		expect(() => {
 			orchestrator.trackPurchase({
 				transaction_id: 'T-999',
 				value: 199.99,
-				currency: 'USD',
+				currency: 'USD'
 			});
 		}).not.toThrow();
 	});
@@ -501,7 +489,7 @@ describe('Analytics Orchestrator', () => {
 		await orchestrator.initialize({
 			enabled: true,
 			environment: 'development',
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		expect(() => {
@@ -514,7 +502,7 @@ describe('Analytics Orchestrator', () => {
 		await orchestrator.initialize({
 			enabled: true,
 			environment: 'development',
-			consent: { analytics: false, marketing: false },
+			consent: { analytics: false, marketing: false }
 		});
 
 		orchestrator.updateConsent({ analytics: true, marketing: true });
@@ -527,7 +515,7 @@ describe('Analytics Orchestrator', () => {
 		await orchestrator.initialize({
 			enabled: true,
 			environment: 'development',
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		orchestrator.identify('user-123', {});
@@ -541,7 +529,7 @@ describe('Analytics Orchestrator', () => {
 		await orchestrator.initialize({
 			enabled: true,
 			environment: 'development',
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		await expect(orchestrator.flush()).resolves.not.toThrow();
@@ -552,7 +540,7 @@ describe('Analytics Orchestrator', () => {
 		await orchestrator.initialize({
 			enabled: true,
 			environment: 'development',
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		const metricsData = orchestrator.metrics;
@@ -567,7 +555,7 @@ describe('Analytics Orchestrator', () => {
 		await orchestrator.initialize({
 			enabled: true,
 			environment: 'development',
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		expect(() => {
@@ -673,7 +661,7 @@ describe('Metrics Service', () => {
 			trackPurchase({
 				transactionId: 'T-123',
 				value: 99.99,
-				currency: 'USD',
+				currency: 'USD'
 			});
 		}).not.toThrow();
 	});
@@ -759,7 +747,7 @@ describe('Index Exports', () => {
 			initializeAnalytics({
 				enabled: true,
 				environment: 'development',
-				consent: { analytics: true, marketing: false },
+				consent: { analytics: true, marketing: false }
 			})
 		).resolves.not.toThrow();
 	});
@@ -795,7 +783,7 @@ describe('Type Safety', () => {
 			page_path: '/products',
 			page_title: 'Products',
 			page_referrer: 'https://google.com',
-			page_type: 'category',
+			page_type: 'category'
 		};
 		expect(payload.page_path).toBe('/products');
 	});
@@ -805,7 +793,7 @@ describe('Type Safety', () => {
 			event_category: 'engagement',
 			event_label: 'button_click',
 			value: 100,
-			custom_field: 'custom_value',
+			custom_field: 'custom_value'
 		};
 		expect(payload.event_category).toBe('engagement');
 	});
@@ -815,7 +803,7 @@ describe('Type Safety', () => {
 			transaction_id: 'T-12345',
 			value: 299.99,
 			currency: 'USD',
-			tax: 25.00,
+			tax: 25.0,
 			shipping: 9.99,
 			coupon: 'SAVE10',
 			items: [
@@ -823,9 +811,9 @@ describe('Type Safety', () => {
 					item_id: 'SKU-001',
 					item_name: 'Premium Course',
 					price: 299.99,
-					quantity: 1,
-				},
-			],
+					quantity: 1
+				}
+			]
 		};
 		expect(payload.transaction_id).toBe('T-12345');
 		expect(payload.items?.length).toBe(1);
@@ -837,7 +825,7 @@ describe('Type Safety', () => {
 			email: 'user@example.com',
 			name: 'John Doe',
 			plan: 'premium',
-			created_at: '2024-01-01T00:00:00Z',
+			created_at: '2024-01-01T00:00:00Z'
 		};
 		expect(payload.user_id).toBe('user-12345');
 	});
@@ -854,7 +842,7 @@ describe('Type Safety', () => {
 			coupon: 'WELCOME',
 			discount: 20,
 			index: 0,
-			item_list_name: 'Featured Products',
+			item_list_name: 'Featured Products'
 		};
 		expect(item.item_id).toBe('SKU-001');
 	});
@@ -877,7 +865,7 @@ describe('Integration Tests', () => {
 		await initializeAnalytics({
 			enabled: true,
 			environment: 'production',
-			consent: { analytics: true, marketing: true },
+			consent: { analytics: true, marketing: true }
 		});
 
 		// Page view
@@ -889,7 +877,7 @@ describe('Integration Tests', () => {
 		// User identified
 		identify('user-123', {
 			email: 'user@test.com',
-			name: 'Test User',
+			name: 'Test User'
 		});
 
 		// User browses
@@ -900,7 +888,7 @@ describe('Integration Tests', () => {
 		track('add_to_cart', {
 			item_id: 'SKU-001',
 			item_name: 'Course',
-			price: 99.99,
+			price: 99.99
 		});
 
 		// User purchases
@@ -908,7 +896,7 @@ describe('Integration Tests', () => {
 			transactionId: 'T-001',
 			value: 99.99,
 			currency: 'USD',
-			items: [{ item_id: 'SKU-001', item_name: 'Course' }],
+			items: [{ item_id: 'SKU-001', item_name: 'Course' }]
 		});
 
 		// Flush and verify
@@ -923,7 +911,7 @@ describe('Integration Tests', () => {
 		await initializeAnalytics({
 			enabled: true,
 			environment: 'production',
-			consent: { analytics: false, marketing: false },
+			consent: { analytics: false, marketing: false }
 		});
 
 		// Track should be blocked
@@ -943,13 +931,13 @@ describe('Integration Tests', () => {
 		await initializeAnalytics({
 			enabled: true,
 			environment: 'production',
-			consent: { analytics: true, marketing: false },
+			consent: { analytics: true, marketing: false }
 		});
 
 		// Track error
 		trackError(new Error('Test error'), {
 			component: 'TestComponent',
-			action: 'test_action',
+			action: 'test_action'
 		});
 
 		// Form error

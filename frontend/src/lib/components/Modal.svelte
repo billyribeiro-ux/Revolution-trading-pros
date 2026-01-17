@@ -14,12 +14,7 @@
 		children?: Snippet;
 	}
 
-	let {
-		isOpen = false,
-		title = '',
-		onClose = () => {},
-		children
-	}: Props = $props();
+	let { isOpen = false, title = '', onClose = () => {}, children }: Props = $props();
 
 	let modalRef: HTMLDivElement | null = $state(null);
 
@@ -63,8 +58,8 @@
 		role="presentation"
 		tabindex="-1"
 	>
-		<div 
-			bind:this={modalRef} 
+		<div
+			bind:this={modalRef}
 			class="modal-container"
 			role="dialog"
 			aria-modal="true"
@@ -74,12 +69,7 @@
 			<!-- Header -->
 			<div class="modal-header">
 				<h2 id="modal-title" class="modal-title">{title}</h2>
-				<button
-					type="button"
-					class="modal-close"
-					onclick={onClose}
-					aria-label="Close modal"
-				>
+				<button type="button" class="modal-close" onclick={onClose} aria-label="Close modal">
 					<IconX size={24} stroke={2} />
 				</button>
 			</div>

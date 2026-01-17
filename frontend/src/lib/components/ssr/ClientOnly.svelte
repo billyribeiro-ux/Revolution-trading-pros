@@ -39,11 +39,7 @@
 {#if mounted || browser}
 	{@render children?.()}
 {:else if showSkeleton}
-	<SkeletonLoader
-		variant={skeletonVariant}
-		height={skeletonHeight}
-		width={skeletonWidth}
-	/>
+	<SkeletonLoader variant={skeletonVariant} height={skeletonHeight} width={skeletonWidth} />
 {:else}
 	{@render fallback?.()}
 {/if}

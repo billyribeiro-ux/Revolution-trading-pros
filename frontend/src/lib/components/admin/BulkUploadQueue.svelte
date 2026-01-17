@@ -72,7 +72,13 @@
 
 	function addFiles(newFiles: File[]) {
 		const validFiles = newFiles.filter((file) => {
-			const validTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'];
+			const validTypes = [
+				'video/mp4',
+				'video/webm',
+				'video/quicktime',
+				'video/x-msvideo',
+				'video/x-matroska'
+			];
 			return validTypes.includes(file.type) || file.name.match(/\.(mp4|webm|mov|avi|mkv)$/i);
 		});
 
@@ -314,12 +320,7 @@
 				{/each}
 			</div>
 
-			<button
-				type="button"
-				class="btn-start"
-				onclick={startBulkUpload}
-				disabled={isInitializing}
-			>
+			<button type="button" class="btn-start" onclick={startBulkUpload} disabled={isInitializing}>
 				{#if isInitializing}
 					<IconLoader size={20} class="spinning" /> Initializing...
 				{:else}
@@ -335,21 +336,26 @@
 					<div class="progress-bar">
 						<div
 							class="progress-fill"
-							style="width: {((batchStatus.completed + batchStatus.failed) / batchStatus.total_files) * 100}%"
+							style="width: {((batchStatus.completed + batchStatus.failed) /
+								batchStatus.total_files) *
+								100}%"
 						></div>
 					</div>
 					<div class="progress-stats">
 						<span class="stat completed">
-							<IconCheck size={16} /> {batchStatus.completed} completed
+							<IconCheck size={16} />
+							{batchStatus.completed} completed
 						</span>
 						{#if batchStatus.failed > 0}
 							<span class="stat failed">
-								<IconAlertCircle size={16} /> {batchStatus.failed} failed
+								<IconAlertCircle size={16} />
+								{batchStatus.failed} failed
 							</span>
 						{/if}
 						{#if batchStatus.in_progress > 0}
 							<span class="stat in-progress">
-								<IconLoader size={16} class="spinning" /> {batchStatus.in_progress} uploading
+								<IconLoader size={16} class="spinning" />
+								{batchStatus.in_progress} uploading
 							</span>
 						{/if}
 						{#if batchStatus.pending > 0}
@@ -361,7 +367,11 @@
 				<div class="upload-items">
 					{#each batchStatus.uploads as item (item.id)}
 						{@const StatusIcon = getStatusIcon(item.status)}
-						<div class="upload-item" class:completed={item.status === 'completed'} class:failed={item.status === 'failed'}>
+						<div
+							class="upload-item"
+							class:completed={item.status === 'completed'}
+							class:failed={item.status === 'failed'}
+						>
 							<div class="item-icon" style="color: {getStatusColor(item.status)}">
 								<StatusIcon size={20} class={item.status === 'uploading' ? 'spinning' : ''} />
 							</div>
@@ -452,8 +462,8 @@
 
 	.drop-zone:hover,
 	.drop-zone.dragging {
-		border-color: var(--primary, #E6B800);
-		background: var(--primary-alpha, #E6B8001a);
+		border-color: var(--primary, #e6b800);
+		background: var(--primary-alpha, #e6b8001a);
 	}
 
 	.drop-zone p {
@@ -530,8 +540,8 @@
 		width: 100%;
 		padding: 0.875rem;
 		margin-top: 1rem;
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 		border: none;
 		border-radius: 8px;
 		font-size: 1rem;
@@ -562,7 +572,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: var(--primary, #E6B800);
+		background: var(--primary, #e6b800);
 		transition: width 0.3s ease;
 	}
 
@@ -646,7 +656,7 @@
 
 	.item-progress-fill {
 		height: 100%;
-		background: var(--primary, #E6B800);
+		background: var(--primary, #e6b800);
 		transition: width 0.3s ease;
 	}
 
@@ -681,8 +691,8 @@
 
 	.btn-done {
 		padding: 0.625rem 1.5rem;
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;

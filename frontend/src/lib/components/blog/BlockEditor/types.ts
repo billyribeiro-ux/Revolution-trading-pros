@@ -96,7 +96,15 @@ export interface BlockContent {
 
 	// Special content
 	embedUrl?: string;
-	embedType?: 'youtube' | 'vimeo' | 'twitter' | 'instagram' | 'tiktok' | 'soundcloud' | 'spotify' | 'custom';
+	embedType?:
+		| 'youtube'
+		| 'vimeo'
+		| 'twitter'
+		| 'instagram'
+		| 'tiktok'
+		| 'soundcloud'
+		| 'spotify'
+		| 'custom';
 
 	// Code content
 	code?: string;
@@ -188,7 +196,23 @@ export interface BlockSettings {
 
 	// Visual Effects
 	opacity?: number;
-	blendMode?: 'normal' | 'multiply' | 'screen' | 'overlay' | 'darken' | 'lighten' | 'color-dodge' | 'color-burn' | 'hard-light' | 'soft-light' | 'difference' | 'exclusion' | 'hue' | 'saturation' | 'color' | 'luminosity';
+	blendMode?:
+		| 'normal'
+		| 'multiply'
+		| 'screen'
+		| 'overlay'
+		| 'darken'
+		| 'lighten'
+		| 'color-dodge'
+		| 'color-burn'
+		| 'hard-light'
+		| 'soft-light'
+		| 'difference'
+		| 'exclusion'
+		| 'hue'
+		| 'saturation'
+		| 'color'
+		| 'luminosity';
 
 	// Filters
 	filterBlur?: string;
@@ -337,7 +361,16 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
 		name: 'Text',
 		icon: 'text',
 		color: '#3b82f6',
-		blocks: ['paragraph', 'heading', 'quote', 'pullquote', 'code', 'preformatted', 'list', 'checklist']
+		blocks: [
+			'paragraph',
+			'heading',
+			'quote',
+			'pullquote',
+			'code',
+			'preformatted',
+			'list',
+			'checklist'
+		]
 	},
 	{
 		id: 'media',
@@ -372,7 +405,17 @@ export const BLOCK_CATEGORIES: BlockCategory[] = [
 		name: 'Advanced',
 		icon: 'sparkles',
 		color: '#ec4899',
-		blocks: ['callout', 'card', 'testimonial', 'cta', 'countdown', 'socialShare', 'author', 'relatedPosts', 'newsletter']
+		blocks: [
+			'callout',
+			'card',
+			'testimonial',
+			'cta',
+			'countdown',
+			'socialShare',
+			'author',
+			'relatedPosts',
+			'newsletter'
+		]
 	},
 	{
 		id: 'ai',
@@ -442,7 +485,14 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 		icon: 'h-1',
 		category: 'text',
 		keywords: ['title', 'header', 'h1', 'h2', 'h3'],
-		supports: { align: true, color: true, typography: true, spacing: true, anchor: true, customCSS: true },
+		supports: {
+			align: true,
+			color: true,
+			typography: true,
+			spacing: true,
+			anchor: true,
+			customCSS: true
+		},
 		defaultContent: { text: '' },
 		defaultSettings: { level: 2, textAlign: 'left' }
 	},
@@ -453,7 +503,14 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 		icon: 'quote',
 		category: 'text',
 		keywords: ['blockquote', 'citation', 'cite'],
-		supports: { align: true, color: true, typography: true, spacing: true, border: true, customCSS: true },
+		supports: {
+			align: true,
+			color: true,
+			typography: true,
+			spacing: true,
+			border: true,
+			customCSS: true
+		},
 		defaultContent: { text: '', html: '' },
 		defaultSettings: { borderColor: '#3b82f6' }
 	},
@@ -519,7 +576,14 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 		icon: 'photo',
 		category: 'media',
 		keywords: ['picture', 'photo', 'media'],
-		supports: { align: true, spacing: true, border: true, shadow: true, animation: true, customCSS: true },
+		supports: {
+			align: true,
+			spacing: true,
+			border: true,
+			shadow: true,
+			animation: true,
+			customCSS: true
+		},
 		defaultContent: {},
 		defaultSettings: { imageSize: 'large' }
 	},
@@ -607,7 +671,14 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 		icon: 'box',
 		category: 'layout',
 		keywords: ['container', 'wrapper', 'section'],
-		supports: { color: true, spacing: true, border: true, shadow: true, customCSS: true, nested: true },
+		supports: {
+			color: true,
+			spacing: true,
+			border: true,
+			shadow: true,
+			customCSS: true,
+			nested: true
+		},
 		defaultContent: { children: [] },
 		defaultSettings: {}
 	},
@@ -651,7 +722,16 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 		icon: 'click',
 		category: 'interactive',
 		keywords: ['cta', 'link', 'action'],
-		supports: { align: true, color: true, typography: true, spacing: true, border: true, shadow: true, animation: true, customCSS: true },
+		supports: {
+			align: true,
+			color: true,
+			typography: true,
+			spacing: true,
+			border: true,
+			shadow: true,
+			animation: true,
+			customCSS: true
+		},
 		defaultContent: { text: 'Click Here' },
 		defaultSettings: { buttonStyle: 'primary', buttonSize: 'medium' }
 	},
@@ -762,7 +842,9 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 		category: 'trading',
 		keywords: ['warning', 'disclaimer', 'legal'],
 		supports: { color: true, spacing: true, customCSS: true },
-		defaultContent: { text: 'Trading involves substantial risk of loss and is not suitable for all investors.' },
+		defaultContent: {
+			text: 'Trading involves substantial risk of loss and is not suitable for all investors.'
+		},
 		defaultSettings: { backgroundColor: '#fef3c7', borderColor: '#f59e0b' }
 	},
 	callout: {
@@ -783,7 +865,14 @@ export const BLOCK_DEFINITIONS: Record<BlockType, BlockDefinition> = {
 		icon: 'id',
 		category: 'advanced',
 		keywords: ['box', 'container', 'feature'],
-		supports: { color: true, spacing: true, border: true, shadow: true, customCSS: true, nested: true },
+		supports: {
+			color: true,
+			spacing: true,
+			border: true,
+			shadow: true,
+			customCSS: true,
+			nested: true
+		},
 		defaultContent: { children: [] },
 		defaultSettings: {}
 	},
@@ -957,7 +1046,19 @@ export interface SEOAnalysis {
 
 export interface SEOIssue {
 	type: 'error' | 'warning' | 'info' | 'success';
-	category: 'title' | 'description' | 'content' | 'headings' | 'images' | 'links' | 'keywords' | 'meta' | 'readability' | 'keyword' | 'slug' | 'structure';
+	category:
+		| 'title'
+		| 'description'
+		| 'content'
+		| 'headings'
+		| 'images'
+		| 'links'
+		| 'keywords'
+		| 'meta'
+		| 'readability'
+		| 'keyword'
+		| 'slug'
+		| 'structure';
 	message: string;
 	impact?: 'high' | 'medium' | 'low';
 }

@@ -4,14 +4,14 @@
 	 * Apple Principal Engineer ICT 11 Grade
 	 *
 	 * Contains camera, lights, and 3D candlestick objects
-	 * 
+	 *
 	 * ICT 11+ Patterns:
 	 * - Dynamic import only (prevents SSR issues with @threlte/core)
 	 * - Three.js integration via Threlte wrapper
 	 * - Procedural generation using Math.random() for particle positioning
 	 * - Orbit controls for interactive camera manipulation
 	 * - Float animations for organic movement
-	 * 
+	 *
 	 * NOTE: This component is dynamically imported by TradingScene3D.svelte
 	 * to prevent SSR issues. These imports are safe here because this
 	 * component only runs on the client.
@@ -113,17 +113,13 @@
 	{@const wickCenter = (candle.high + candle.low) / 2 - 50}
 	{@const color = candle.bullish ? bullColor : bearColor}
 
-	<Float
-		floatIntensity={0.5}
-		rotationIntensity={0.1}
-		speed={2}
-	>
+	<Float floatIntensity={0.5} rotationIntensity={0.1} speed={2}>
 		<T.Group position.x={candle.x} position.z={i * 0.5 - 3}>
 			<!-- Candle Body -->
 			<T.Mesh position.y={bodyCenter} castShadow>
 				<T.BoxGeometry args={[2, Math.max(bodyHeight, 1), 2]} />
 				<T.MeshStandardMaterial
-					color={color}
+					{color}
 					emissive={color}
 					emissiveIntensity={0.3}
 					metalness={0.2}
@@ -135,7 +131,7 @@
 			<T.Mesh position.y={wickCenter}>
 				<T.BoxGeometry args={[0.3, wickHeight, 0.3]} />
 				<T.MeshStandardMaterial
-					color={color}
+					{color}
 					emissive={color}
 					emissiveIntensity={0.2}
 					metalness={0.1}
@@ -146,12 +142,7 @@
 			<!-- Glow Ring at Base -->
 			<T.Mesh position.y={-20} rotation.x={-Math.PI / 2}>
 				<T.RingGeometry args={[1.5, 2, 32]} />
-				<T.MeshBasicMaterial
-					color={color}
-					transparent
-					opacity={0.3}
-					side={THREE.DoubleSide}
-				/>
+				<T.MeshBasicMaterial {color} transparent opacity={0.3} side={THREE.DoubleSide} />
 			</T.Mesh>
 		</T.Group>
 	</Float>
@@ -163,17 +154,10 @@
 	{@const y = Math.random() * 40 - 10}
 	{@const z = (Math.random() - 0.5) * 80}
 
-	<Float
-		floatIntensity={1}
-		speed={1 + Math.random()}
-	>
+	<Float floatIntensity={1} speed={1 + Math.random()}>
 		<T.Mesh position={[x, y, z]}>
 			<T.SphereGeometry args={[0.15, 8, 8]} />
-			<T.MeshBasicMaterial
-				color={gridColor}
-				transparent
-				opacity={0.6}
-			/>
+			<T.MeshBasicMaterial color={gridColor} transparent opacity={0.6} />
 		</T.Mesh>
 	</Float>
 {/each}

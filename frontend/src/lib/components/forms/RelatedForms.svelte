@@ -101,7 +101,10 @@
 	// Initial load
 	onMount(async () => {
 		loading = true;
-		await Promise.all([fetchRelatedForms(), showTrending ? fetchTrendingForms() : Promise.resolve()]);
+		await Promise.all([
+			fetchRelatedForms(),
+			showTrending ? fetchTrendingForms() : Promise.resolve()
+		]);
 		loading = false;
 	});
 </script>
@@ -113,10 +116,18 @@
 
 	{#if showTrending}
 		<div class="tabs">
-			<button class="tab" class:active={activeTab === 'related'} onclick={() => (activeTab = 'related')}>
+			<button
+				class="tab"
+				class:active={activeTab === 'related'}
+				onclick={() => (activeTab = 'related')}
+			>
 				Related
 			</button>
-			<button class="tab" class:active={activeTab === 'trending'} onclick={() => (activeTab = 'trending')}>
+			<button
+				class="tab"
+				class:active={activeTab === 'trending'}
+				onclick={() => (activeTab = 'trending')}
+			>
 				Trending
 			</button>
 		</div>
@@ -134,7 +145,10 @@
 					{#each relatedForms as form}
 						<a href="/forms/{form.slug}" class="form-card">
 							<div class="form-header">
-								<span class="relation-badge" style="background-color: {getRelationColor(form.relation_type)}">
+								<span
+									class="relation-badge"
+									style="background-color: {getRelationColor(form.relation_type)}"
+								>
 									{getRelationBadge(form.relation_type)}
 								</span>
 								{#if form.score}

@@ -23,12 +23,8 @@
 </script>
 
 <div class="st_box {platform.toLowerCase()}">
-	<img 
-		width="250" 
-		src={logo}
-		alt={platform}
-	>
-	
+	<img width="250" src={logo} alt={platform} />
+
 	{#if files.length > 0}
 		<table>
 			<tbody>
@@ -47,7 +43,7 @@
 			</tbody>
 		</table>
 	{/if}
-	
+
 	{#if notes}
 		<div class="platform_notes">
 			{@html notes}

@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * PageHeader - Consistent page header with title, description, and actions
-	 * 
+	 *
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
@@ -15,13 +15,7 @@
 		children?: Snippet;
 	}
 
-	let {
-		title,
-		description = '',
-		breadcrumbs = [],
-		actions,
-		children
-	}: Props = $props();
+	let { title, description = '', breadcrumbs = [], actions, children }: Props = $props();
 </script>
 
 <header class="page-header">
@@ -47,7 +41,7 @@
 				<p class="page-description">{description}</p>
 			{/if}
 		</div>
-		
+
 		<div class="header-actions">
 			{@render actions?.()}
 		</div>

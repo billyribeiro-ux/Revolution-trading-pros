@@ -113,14 +113,9 @@ function createToastStore() {
 	/**
 	 * Update an existing toast (useful for loading -> success/error transitions)
 	 */
-	function updateToast(
-		id: string,
-		updates: Partial<Omit<Toast, 'id'>>
-	): void {
+	function updateToast(id: string, updates: Partial<Omit<Toast, 'id'>>): void {
 		update((state) => ({
-			toasts: state.toasts.map((t) =>
-				t.id === id ? { ...t, ...updates } : t
-			)
+			toasts: state.toasts.map((t) => (t.id === id ? { ...t, ...updates } : t))
 		}));
 
 		// If duration is updated and > 0, set new timeout
@@ -241,9 +236,7 @@ function createToastStore() {
 			try {
 				const result = await promise;
 				const successMessage =
-					typeof options.success === 'function'
-						? options.success(result)
-						: options.success;
+					typeof options.success === 'function' ? options.success(result) : options.success;
 
 				updateToast(id, {
 					type: 'success',

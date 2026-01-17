@@ -27,7 +27,17 @@
 		placeholder = 'Select a color',
 		required = false,
 		disabled = false,
-		presets = ['#ef4444', '#f97316', '#eab308', '#22c55e', '#3b82f6', '#8b5cf6', '#ec4899', '#000000', '#ffffff'],
+		presets = [
+			'#ef4444',
+			'#f97316',
+			'#eab308',
+			'#22c55e',
+			'#3b82f6',
+			'#8b5cf6',
+			'#ec4899',
+			'#000000',
+			'#ffffff'
+		],
 		showInput = true,
 		format = 'hex',
 		error = '',
@@ -93,9 +103,15 @@
 				const d = max - min;
 				s = l > 0.5 ? d / (2 - max - min) : d / (max + min);
 				switch (max) {
-					case rNorm: h = ((gNorm - bNorm) / d + (gNorm < bNorm ? 6 : 0)) / 6; break;
-					case gNorm: h = ((bNorm - rNorm) / d + 2) / 6; break;
-					case bNorm: h = ((rNorm - gNorm) / d + 4) / 6; break;
+					case rNorm:
+						h = ((gNorm - bNorm) / d + (gNorm < bNorm ? 6 : 0)) / 6;
+						break;
+					case gNorm:
+						h = ((bNorm - rNorm) / d + 2) / 6;
+						break;
+					case bNorm:
+						h = ((rNorm - gNorm) / d + 4) / 6;
+						break;
 				}
 			}
 			return `hsl(${Math.round(h * 360)}, ${Math.round(s * 100)}%, ${Math.round(l * 100)}%)`;

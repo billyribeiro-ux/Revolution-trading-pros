@@ -278,7 +278,7 @@
 					thumbnail_url: thumbnailUrl,
 					duration: videoDuration,
 					categories: selectedCategories,
-					instructor: instructors.find(i => i.id === selectedInstructor) || { id: '', name: '' },
+					instructor: instructors.find((i) => i.id === selectedInstructor) || { id: '', name: '' },
 					membership_id: membershipId,
 					is_premium: isPremium,
 					is_published: isPublished
@@ -348,7 +348,13 @@
 			>
 				{#if videoFile}
 					<div class="file-preview">
-						<svg class="file-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							class="file-icon"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<polygon points="23 7 16 12 23 17 23 7"></polygon>
 							<rect x="1" y="5" width="15" height="14" rx="2" ry="2"></rect>
 						</svg>
@@ -359,7 +365,12 @@
 								<span class="file-duration">{formatDuration(videoDuration)}</span>
 							{/if}
 						</div>
-						<button type="button" class="remove-file" aria-label="Remove video file" onclick={() => videoFile = null}>
+						<button
+							type="button"
+							class="remove-file"
+							aria-label="Remove video file"
+							onclick={() => (videoFile = null)}
+						>
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<line x1="18" y1="6" x2="6" y2="18"></line>
 								<line x1="6" y1="6" x2="18" y2="18"></line>
@@ -367,7 +378,13 @@
 						</button>
 					</div>
 				{:else}
-					<svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						class="upload-icon"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
 						<polyline points="17 8 12 3 7 8"></polyline>
 						<line x1="12" y1="3" x2="12" y2="15"></line>
@@ -397,7 +414,12 @@
 				>
 					{#if thumbnailFile}
 						<img src={URL.createObjectURL(thumbnailFile)} alt="Thumbnail preview" />
-						<button type="button" class="remove-thumbnail" aria-label="Remove thumbnail" onclick={() => thumbnailFile = null}>
+						<button
+							type="button"
+							class="remove-thumbnail"
+							aria-label="Remove thumbnail"
+							onclick={() => (thumbnailFile = null)}
+						>
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 								<line x1="18" y1="6" x2="6" y2="18"></line>
 								<line x1="6" y1="6" x2="18" y2="18"></line>
@@ -456,13 +478,7 @@
 
 			<div class="form-group">
 				<label for="title">Title *</label>
-				<input
-					id="title"
-					type="text"
-					bind:value={title}
-					placeholder="Enter video title"
-					required
-				/>
+				<input id="title" type="text" bind:value={title} placeholder="Enter video title" required />
 			</div>
 
 			<div class="form-group">
@@ -499,7 +515,7 @@
 										if ((e.target as HTMLInputElement).checked) {
 											selectedCategories = [...selectedCategories, category.id];
 										} else {
-											selectedCategories = selectedCategories.filter(c => c !== category.id);
+											selectedCategories = selectedCategories.filter((c) => c !== category.id);
 										}
 									}}
 								/>
@@ -526,7 +542,9 @@
 			{/if}
 
 			<div class="actions">
-				<button type="button" class="btn btn-secondary" onclick={() => step = 'upload'}>Back</button>
+				<button type="button" class="btn btn-secondary" onclick={() => (step = 'upload')}
+					>Back</button
+				>
 				<button
 					type="button"
 					class="btn btn-primary"

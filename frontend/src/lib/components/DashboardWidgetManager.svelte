@@ -60,17 +60,17 @@
 
 	const iconMap: Record<string, typeof IconChartLine> = {
 		'chart-line': IconChartLine,
-		'world': IconWorld,
-		'article': IconFileText,
-		'users': IconUsers,
+		world: IconWorld,
+		article: IconFileText,
+		users: IconUsers,
 		'currency-dollar': IconCurrencyDollar,
 		'shopping-cart': IconShoppingCart,
-		'plug': IconPlugConnected,
+		plug: IconPlugConnected,
 		'heart-rate-monitor': IconActivity,
-		'bolt': IconBolt,
-		'mail': IconMail,
-		'search': IconSearch,
-		'eye': IconEyeCheck
+		bolt: IconBolt,
+		mail: IconMail,
+		search: IconSearch,
+		eye: IconEyeCheck
 	};
 
 	const sizeLabels: Record<WidgetSize, string> = {
@@ -111,7 +111,7 @@
 
 	function handleDragEnd() {
 		if (draggedWidget && dragOverIndex !== null) {
-			const fromIndex = $visibleWidgets.findIndex(w => w.id === draggedWidget!.id);
+			const fromIndex = $visibleWidgets.findIndex((w) => w.id === draggedWidget!.id);
 			if (fromIndex !== -1 && fromIndex !== dragOverIndex) {
 				widgetStore.reorderWidgets(fromIndex, dragOverIndex);
 			}
@@ -162,7 +162,7 @@
 				<button
 					class="tab"
 					class:active={activeTab === 'visible'}
-					onclick={() => activeTab = 'visible'}
+					onclick={() => (activeTab = 'visible')}
 				>
 					<IconEye size={16} />
 					Visible ({$visibleWidgets.length})
@@ -170,7 +170,7 @@
 				<button
 					class="tab"
 					class:active={activeTab === 'hidden'}
-					onclick={() => activeTab = 'hidden'}
+					onclick={() => (activeTab = 'hidden')}
 				>
 					<IconEyeOff size={16} />
 					Hidden ({$hiddenWidgets.length})
@@ -178,7 +178,7 @@
 				<button
 					class="tab"
 					class:active={activeTab === 'settings'}
-					onclick={() => activeTab = 'settings'}
+					onclick={() => (activeTab = 'settings')}
 				>
 					<IconSettings size={16} />
 					Settings
@@ -189,7 +189,9 @@
 			<div class="manager-content">
 				{#if activeTab === 'visible'}
 					<div class="widget-list" in:fade={{ duration: 150 }} role="list">
-						<p class="helper-text">Drag to reorder widgets. Click the size button to cycle sizes.</p>
+						<p class="helper-text">
+							Drag to reorder widgets. Click the size button to cycle sizes.
+						</p>
 						{#each $visibleWidgets as widget, index (widget.id)}
 							{@const WidgetIcon = iconMap[widget.icon] || IconChartLine}
 							<div
@@ -208,7 +210,9 @@
 								</div>
 								<div
 									class="widget-icon"
-									style="background: {categoryColors[widget.category]}20; color: {categoryColors[widget.category]}"
+									style="background: {categoryColors[widget.category]}20; color: {categoryColors[
+										widget.category
+									]}"
 								>
 									<WidgetIcon size={18} />
 								</div>
@@ -264,7 +268,9 @@
 								<div class="widget-item hidden-item">
 									<div
 										class="widget-icon"
-										style="background: {categoryColors[widget.category]}20; color: {categoryColors[widget.category]}"
+										style="background: {categoryColors[widget.category]}20; color: {categoryColors[
+											widget.category
+										]}"
 									>
 										<WidgetIcon size={18} />
 									</div>
@@ -315,9 +321,7 @@
 						<div class="setting-group">
 							<div class="setting-label">Auto Refresh</div>
 							<div class="toggle-row">
-								<span class="toggle-description">
-									Automatically refresh widget data
-								</span>
+								<span class="toggle-description"> Automatically refresh widget data </span>
 								<button
 									class="toggle-switch"
 									class:active={$autoRefreshEnabled}
@@ -332,7 +336,11 @@
 						<!-- Reset -->
 						<div class="setting-group">
 							<div class="setting-label">Reset</div>
-							<button class="reset-btn" onclick={() => widgetStore.resetToDefaults()} aria-label="Reset to defaults">
+							<button
+								class="reset-btn"
+								onclick={() => widgetStore.resetToDefaults()}
+								aria-label="Reset to defaults"
+							>
 								<IconRefresh size={16} />
 								Reset to Defaults
 							</button>
@@ -343,9 +351,7 @@
 
 			<!-- Footer -->
 			<div class="manager-footer">
-				<button class="done-btn" onclick={close}>
-					Done
-				</button>
+				<button class="done-btn" onclick={close}> Done </button>
 			</div>
 		</div>
 	</div>

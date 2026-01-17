@@ -8,12 +8,7 @@
 		children?: Snippet;
 	}
 
-	let {
-		padding = true,
-		hover = false,
-		class: className = '',
-		children
-	}: Props = $props();
+	let { padding = true, hover = false, class: className = '', children }: Props = $props();
 </script>
 
 <div

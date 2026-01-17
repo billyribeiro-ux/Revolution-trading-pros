@@ -5,7 +5,11 @@
 	 */
 
 	import { onMount } from 'svelte';
-	import { analyticsApi, type AnalyticsDashboard, type VideoAnalytics } from '$lib/api/video-advanced';
+	import {
+		analyticsApi,
+		type AnalyticsDashboard,
+		type VideoAnalytics
+	} from '$lib/api/video-advanced';
 	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
 	import IconEye from '@tabler/icons-svelte/icons/eye';
 	import IconClock from '@tabler/icons-svelte/icons/clock';
@@ -184,14 +188,8 @@
 			<div class="chart-container">
 				<div class="bar-chart">
 					{#each videoStats.daily_views as day (day.date)}
-						<div
-							class="bar-wrapper"
-							title="{day.date}: {day.views} views"
-						>
-							<div
-								class="bar"
-								style="height: {(day.views / getMaxViewCount()) * 100}%"
-							></div>
+						<div class="bar-wrapper" title="{day.date}: {day.views} views">
+							<div class="bar" style="height: {(day.views / getMaxViewCount()) * 100}%"></div>
 							<div class="bar-label">{day.date.slice(5)}</div>
 						</div>
 					{/each}
@@ -229,14 +227,8 @@
 			<div class="chart-container">
 				<div class="bar-chart">
 					{#each dashboard.views_by_day as day (day.date)}
-						<div
-							class="bar-wrapper"
-							title="{day.date}: {day.views} views"
-						>
-							<div
-								class="bar"
-								style="height: {(day.views / getMaxViewCount()) * 100}%"
-							></div>
+						<div class="bar-wrapper" title="{day.date}: {day.views} views">
+							<div class="bar" style="height: {(day.views / getMaxViewCount()) * 100}%"></div>
 							<div class="bar-label">{day.date.slice(5)}</div>
 						</div>
 					{/each}
@@ -280,10 +272,7 @@
 								<div class="device-percent">{Math.round((count / total) * 100)}%</div>
 							</div>
 							<div class="device-bar">
-								<div
-									class="device-bar-fill"
-									style="width: {(count / total) * 100}%"
-								></div>
+								<div class="device-bar-fill" style="width: {(count / total) * 100}%"></div>
 							</div>
 						</div>
 					{/each}
@@ -351,8 +340,8 @@
 	}
 
 	.period-btn.active {
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 	}
 
 	.btn-refresh,
@@ -423,7 +412,7 @@
 	}
 
 	.stat-icon {
-		color: var(--primary, #E6B800);
+		color: var(--primary, #e6b800);
 		margin-bottom: 0.5rem;
 	}
 
@@ -480,7 +469,7 @@
 
 	.bar {
 		width: 20px;
-		background: var(--primary, #E6B800);
+		background: var(--primary, #e6b800);
 		border-radius: 4px 4px 0 0;
 		min-height: 2px;
 		transition: height 0.3s ease;
@@ -573,7 +562,7 @@
 
 	.device-bar-fill {
 		height: 100%;
-		background: var(--primary, #E6B800);
+		background: var(--primary, #e6b800);
 		border-radius: 4px;
 	}
 

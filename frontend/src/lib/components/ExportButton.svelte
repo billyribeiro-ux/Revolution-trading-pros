@@ -90,7 +90,9 @@
 			exportedFormat = format;
 			toastStore.success(`Exported successfully as ${format.toUpperCase()}`);
 		} catch (error) {
-			toastStore.error(`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`);
+			toastStore.error(
+				`Export failed: ${error instanceof Error ? error.message : 'Unknown error'}`
+			);
 		} finally {
 			isExporting = false;
 			setTimeout(() => {
@@ -111,21 +113,23 @@
 		// Build CSV content
 		const csvContent = [
 			headers.join(','),
-			...data.map(row =>
-				headers.map(header => {
-					const value = row[header];
-					// Handle different types
-					if (value === null || value === undefined) return '';
-					if (typeof value === 'string') {
-						// Escape quotes and wrap in quotes if contains comma
-						const escaped = value.replace(/"/g, '""');
-						return value.includes(',') || value.includes('"') || value.includes('\n')
-							? `"${escaped}"`
-							: escaped;
-					}
-					if (typeof value === 'object') return JSON.stringify(value);
-					return String(value);
-				}).join(',')
+			...data.map((row) =>
+				headers
+					.map((header) => {
+						const value = row[header];
+						// Handle different types
+						if (value === null || value === undefined) return '';
+						if (typeof value === 'string') {
+							// Escape quotes and wrap in quotes if contains comma
+							const escaped = value.replace(/"/g, '""');
+							return value.includes(',') || value.includes('"') || value.includes('\n')
+								? `"${escaped}"`
+								: escaped;
+						}
+						if (typeof value === 'object') return JSON.stringify(value);
+						return String(value);
+					})
+					.join(',')
 			)
 		].join('\n');
 
@@ -154,19 +158,27 @@
 
 	function getFormatIcon(format: string) {
 		switch (format) {
-			case 'csv': return IconTable;
-			case 'json': return IconCode;
-			case 'pdf': return IconFileText;
-			default: return IconDownload;
+			case 'csv':
+				return IconTable;
+			case 'json':
+				return IconCode;
+			case 'pdf':
+				return IconFileText;
+			default:
+				return IconDownload;
 		}
 	}
 
 	function getFormatLabel(format: string) {
 		switch (format) {
-			case 'csv': return 'CSV Spreadsheet';
-			case 'json': return 'JSON Data';
-			case 'pdf': return 'PDF Report';
-			default: return format.toUpperCase();
+			case 'csv':
+				return 'CSV Spreadsheet';
+			case 'json':
+				return 'JSON Data';
+			case 'pdf':
+				return 'PDF Report';
+			default:
+				return format.toUpperCase();
 		}
 	}
 </script>
@@ -178,7 +190,10 @@
 		class="export-btn"
 		class:disabled
 		class:open={isOpen}
-		onclick={(e: MouseEvent) => { e.stopPropagation(); toggleDropdown(); }}
+		onclick={(e: MouseEvent) => {
+			e.stopPropagation();
+			toggleDropdown();
+		}}
 		{disabled}
 	>
 		{#if isExporting}
@@ -274,8 +289,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.dropdown {

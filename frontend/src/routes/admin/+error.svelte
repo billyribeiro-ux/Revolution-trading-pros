@@ -36,8 +36,7 @@
 	> = {
 		400: {
 			title: 'Invalid Request',
-			description:
-				'The request parameters are invalid. Please check your input and try again.',
+			description: 'The request parameters are invalid. Please check your input and try again.',
 			color: '#eab308',
 			showDebug: true
 		},
@@ -55,29 +54,25 @@
 		},
 		404: {
 			title: 'Admin Page Not Found',
-			description:
-				'This admin page does not exist. It may have been moved or removed.',
+			description: 'This admin page does not exist. It may have been moved or removed.',
 			color: '#E6B800',
 			showDebug: false
 		},
 		500: {
 			title: 'Internal Server Error',
-			description:
-				'An error occurred while processing your request. Our team has been notified.',
+			description: 'An error occurred while processing your request. Our team has been notified.',
 			color: '#ef4444',
 			showDebug: true
 		},
 		502: {
 			title: 'Backend Unavailable',
-			description:
-				'The API server is temporarily unavailable. Please try again in a few moments.',
+			description: 'The API server is temporarily unavailable. Please try again in a few moments.',
 			color: '#f97316',
 			showDebug: true
 		},
 		503: {
 			title: 'Service Maintenance',
-			description:
-				'The admin panel is currently undergoing maintenance. Please try again shortly.',
+			description: 'The admin panel is currently undergoing maintenance. Please try again shortly.',
 			color: '#B38F00',
 			showDebug: false
 		}
@@ -95,11 +90,15 @@
 
 	// Determine icon based on status
 	let ErrorIcon = $derived(
-		status === 401 ? IconLock :
-		status === 403 ? IconLock :
-		status === 404 ? IconSearch :
-		status >= 500 ? IconServer :
-		IconAlertTriangle
+		status === 401
+			? IconLock
+			: status === 403
+				? IconLock
+				: status === 404
+					? IconSearch
+					: status >= 500
+						? IconServer
+						: IconAlertTriangle
 	);
 
 	// Log admin errors
@@ -249,7 +248,11 @@
 	}
 
 	.error-header {
-		background: linear-gradient(135deg, var(--accent-color), color-mix(in srgb, var(--accent-color) 70%, #000));
+		background: linear-gradient(
+			135deg,
+			var(--accent-color),
+			color-mix(in srgb, var(--accent-color) 70%, #000)
+		);
 		padding: 2.5rem 2rem;
 		display: flex;
 		flex-direction: column;
@@ -371,8 +374,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800, #B38F00);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800, #b38f00);
+		color: #0d1117;
 	}
 
 	.btn-primary:hover {
@@ -402,7 +405,7 @@
 	}
 
 	.error-footer a {
-		color: #E6B800;
+		color: #e6b800;
 		text-decoration: none;
 	}
 

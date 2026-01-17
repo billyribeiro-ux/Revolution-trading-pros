@@ -313,9 +313,7 @@
 								</div>
 								<div class="file-info">
 									<span class="file-name" title={file.filename}>
-										{file.filename.length > 20
-											? file.filename.slice(0, 20) + '...'
-											: file.filename}
+										{file.filename.length > 20 ? file.filename.slice(0, 20) + '...' : file.filename}
 									</span>
 									<span class="file-meta">
 										{formatBytes(file.size)} · {formatDate(file.created_at)}
@@ -337,7 +335,17 @@
 
 	<!-- Merge Modal -->
 	{#if selectedGroup}
-		<div class="modal-overlay" onclick={closeModal} onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
+		<div
+			class="modal-overlay"
+			onclick={closeModal}
+			onkeydown={(e: KeyboardEvent) => {
+				if (e.key === 'Escape') closeModal();
+				if (e.key === 'Enter' || e.key === ' ') closeModal();
+			}}
+			role="button"
+			tabindex="0"
+			aria-label="Close modal"
+		>
 			<div
 				class="modal"
 				onclick={(e: MouseEvent) => e.stopPropagation()}

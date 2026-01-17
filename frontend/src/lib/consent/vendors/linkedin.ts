@@ -117,32 +117,32 @@ export const linkedinVendor: VendorConfig = {
 			name: 'li_*',
 			purpose: 'LinkedIn tracking and advertising',
 			duration: '6 months',
-			type: 'third-party',
+			type: 'third-party'
 		},
 		{
 			name: 'bcookie',
 			purpose: 'LinkedIn browser identifier',
 			duration: '1 year',
-			type: 'third-party',
+			type: 'third-party'
 		},
 		{
 			name: 'lidc',
 			purpose: 'LinkedIn data center selection',
 			duration: '24 hours',
-			type: 'third-party',
+			type: 'third-party'
 		},
 		{
 			name: 'UserMatchHistory',
 			purpose: 'LinkedIn Ads ID syncing',
 			duration: '30 days',
-			type: 'third-party',
+			type: 'third-party'
 		},
 		{
 			name: 'AnalyticsSyncHistory',
 			purpose: 'LinkedIn analytics sync',
 			duration: '30 days',
-			type: 'third-party',
-		},
+			type: 'third-party'
+		}
 	],
 	dataLocations: ['United States', 'Ireland'],
 	supportsRevocation: true,
@@ -160,5 +160,5 @@ export const linkedinVendor: VendorConfig = {
 		linkedinReady = false;
 		eventQueue.length = 0;
 		console.debug('[LinkedIn] Consent revoked');
-	},
+	}
 };

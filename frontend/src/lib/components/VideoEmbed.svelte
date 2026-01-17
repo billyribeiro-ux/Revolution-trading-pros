@@ -104,7 +104,16 @@
 		preload?: 'none' | 'metadata' | 'auto';
 		startTime?: number;
 		endTime?: number | null;
-		defaultQuality?: 'auto' | '144p' | '240p' | '360p' | '480p' | '720p' | '1080p' | '1440p' | '2160p';
+		defaultQuality?:
+			| 'auto'
+			| '144p'
+			| '240p'
+			| '360p'
+			| '480p'
+			| '720p'
+			| '1080p'
+			| '1440p'
+			| '2160p';
 		defaultSpeed?: number;
 		volume?: number;
 		// Display Props
@@ -307,7 +316,8 @@
 	let playerAPI: any = $state(null);
 
 	// Platform detection
-	let platform: 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5' = $state('html5');
+	let platform: 'youtube' | 'vimeo' | 'wistia' | 'dailymotion' | 'twitch' | 'html5' =
+		$state('html5');
 	let embedUrl: string = $state('');
 	let videoId: string = $state('');
 	let thumbnailUrl: string = $state('');
@@ -378,7 +388,7 @@
 		analyticsBase.id = analyticsId || generateId();
 		analyticsBase.url = url;
 	});
-	
+
 	// Derive full analytics object with current quality
 	let analytics: VideoAnalytics = $derived({
 		...analyticsBase,
@@ -416,14 +426,16 @@
 	let bufferedPercent = $derived(duration > 0 ? (bufferedEnd / duration) * 100 : 0);
 	let timeDisplay = $derived(`${formatTime(currentTime)} / ${formatTime(duration)}`);
 
-	let currentChapter = $derived(chapters.find(
-		(chapter) =>
-			currentTime >= chapter.startTime && (!chapter.endTime || currentTime < chapter.endTime)
-	));
+	let currentChapter = $derived(
+		chapters.find(
+			(chapter) =>
+				currentTime >= chapter.startTime && (!chapter.endTime || currentTime < chapter.endTime)
+		)
+	);
 
-	let activeOverlays = $derived(overlays.filter(
-		(overlay) => currentTime >= overlay.startTime && currentTime <= overlay.endTime
-	));
+	let activeOverlays = $derived(
+		overlays.filter((overlay) => currentTime >= overlay.startTime && currentTime <= overlay.endTime)
+	);
 
 	$effect(() => {
 		if (callToAction && shouldShowCTA()) {
@@ -1422,7 +1434,8 @@
 									max="1"
 									step="0.1"
 									value={currentVolume}
-									oninput={(e: Event & { currentTarget: HTMLInputElement }) => setVolume(parseFloat((e.currentTarget as HTMLInputElement).value))}
+									oninput={(e: Event & { currentTarget: HTMLInputElement }) =>
+										setVolume(parseFloat((e.currentTarget as HTMLInputElement).value))}
 									class="volume-slider"
 								/>
 							</div>

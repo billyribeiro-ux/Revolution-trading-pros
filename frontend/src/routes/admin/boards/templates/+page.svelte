@@ -193,10 +193,13 @@
 	}
 
 	let filteredTemplates = $derived.by(() => {
-		return templates.filter(t => {
+		return templates.filter((t) => {
 			if (searchQuery) {
 				const query = searchQuery.toLowerCase();
-				if (!t.title.toLowerCase().includes(query) && !t.description.toLowerCase().includes(query)) {
+				if (
+					!t.title.toLowerCase().includes(query) &&
+					!t.description.toLowerCase().includes(query)
+				) {
 					return false;
 				}
 			}
@@ -242,7 +245,7 @@
 	}
 
 	function getCategoryIcon(categoryId: string) {
-		const category = categories.find(c => c.id === categoryId);
+		const category = categories.find((c) => c.id === categoryId);
 		return category?.icon || IconLayoutKanban;
 	}
 </script>
@@ -269,7 +272,9 @@
 						</div>
 						<div>
 							<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Board Templates</h1>
-							<p class="text-sm text-gray-500 dark:text-gray-400">Start with a pre-built board configuration</p>
+							<p class="text-sm text-gray-500 dark:text-gray-400">
+								Start with a pre-built board configuration
+							</p>
 						</div>
 					</div>
 				</div>
@@ -292,15 +297,20 @@
 
 			<div class="flex items-center gap-2 overflow-x-auto pb-2 md:pb-0">
 				<button
-					onclick={() => selectedCategory = null}
-					class="px-4 py-2 text-sm whitespace-nowrap rounded-lg {selectedCategory === null ? 'bg-[#E6B800] text-[#0D1117]' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}"
+					onclick={() => (selectedCategory = null)}
+					class="px-4 py-2 text-sm whitespace-nowrap rounded-lg {selectedCategory === null
+						? 'bg-[#E6B800] text-[#0D1117]'
+						: 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}"
 				>
 					All
 				</button>
 				{#each categories as category}
 					<button
-						onclick={() => selectedCategory = category.id}
-						class="px-4 py-2 text-sm whitespace-nowrap rounded-lg flex items-center gap-2 {selectedCategory === category.id ? 'bg-[#E6B800] text-[#0D1117]' : 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}"
+						onclick={() => (selectedCategory = category.id)}
+						class="px-4 py-2 text-sm whitespace-nowrap rounded-lg flex items-center gap-2 {selectedCategory ===
+						category.id
+							? 'bg-[#E6B800] text-[#0D1117]'
+							: 'bg-white dark:bg-gray-800 text-gray-700 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-700'}"
 					>
 						<category.icon class="w-4 h-4" />
 						{category.name}
@@ -315,7 +325,9 @@
 				<div class="animate-spin rounded-full h-8 w-8 border-b-2 border-[#E6B800]"></div>
 			</div>
 		{:else if filteredTemplates.length === 0}
-			<div class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+			<div
+				class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
+			>
 				<IconTemplate class="w-12 h-12 text-gray-400 mx-auto mb-4" />
 				<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No templates found</h3>
 				<p class="text-gray-500 dark:text-gray-400">Try adjusting your search or filters</p>
@@ -324,7 +336,9 @@
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 				{#each filteredTemplates as template}
 					{@const CategoryIcon = getCategoryIcon(template.category)}
-					<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow">
+					<div
+						class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 overflow-hidden hover:shadow-lg transition-shadow"
+					>
 						<!-- Preview Header -->
 						<div class="h-32 bg-gradient-to-br from-[#E6B800] to-[#B38F00] p-4 flex items-end">
 							<div class="flex gap-2">
@@ -343,7 +357,9 @@
 									</div>
 								{/each}
 								{#if template.stages.length > 4}
-									<div class="w-16 h-20 rounded-t-lg bg-gray-400/50 flex items-center justify-center">
+									<div
+										class="w-16 h-20 rounded-t-lg bg-gray-400/50 flex items-center justify-center"
+									>
 										<span class="text-white text-xs">+{template.stages.length - 4}</span>
 									</div>
 								{/if}
@@ -354,13 +370,22 @@
 						<div class="p-4">
 							<div class="flex items-center gap-2 mb-2">
 								<CategoryIcon class="w-4 h-4 text-gray-400" />
-								<span class="text-xs text-gray-500 dark:text-gray-400 capitalize">{template.category}</span>
+								<span class="text-xs text-gray-500 dark:text-gray-400 capitalize"
+									>{template.category}</span
+								>
 								{#if template.is_default}
-									<span class="text-xs bg-[#E6B800]/10 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A] px-2 py-0.5 rounded">Default</span>
+									<span
+										class="text-xs bg-[#E6B800]/10 dark:bg-[#B38F00]/30 text-[#E6B800] dark:text-[#FFD11A] px-2 py-0.5 rounded"
+										>Default</span
+									>
 								{/if}
 							</div>
-							<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">{template.title}</h3>
-							<p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">{template.description}</p>
+							<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
+								{template.title}
+							</h3>
+							<p class="text-sm text-gray-500 dark:text-gray-400 mb-4 line-clamp-2">
+								{template.description}
+							</p>
 
 							<!-- Template Info -->
 							<div class="flex items-center gap-4 text-xs text-gray-500 dark:text-gray-400 mb-4">
@@ -407,11 +432,17 @@
 		{/if}
 
 		<!-- Create Custom Template -->
-		<div class="mt-8 p-6 bg-[#E6B800]/5 dark:bg-[#B38F00]/20 border border-[#E6B800]/20 dark:border-[#B38F00] rounded-xl">
+		<div
+			class="mt-8 p-6 bg-[#E6B800]/5 dark:bg-[#B38F00]/20 border border-[#E6B800]/20 dark:border-[#B38F00] rounded-xl"
+		>
 			<div class="flex items-center justify-between">
 				<div>
-					<h3 class="text-lg font-semibold text-[#B38F00] dark:text-[#FFD11A]">Create Custom Template</h3>
-					<p class="text-sm text-[#B38F00]/80 dark:text-[#FFD11A]/80">Save any board as a template to reuse later</p>
+					<h3 class="text-lg font-semibold text-[#B38F00] dark:text-[#FFD11A]">
+						Create Custom Template
+					</h3>
+					<p class="text-sm text-[#B38F00]/80 dark:text-[#FFD11A]/80">
+						Save any board as a template to reuse later
+					</p>
 				</div>
 				<a
 					href="/admin/boards"

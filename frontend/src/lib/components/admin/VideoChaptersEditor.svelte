@@ -4,7 +4,12 @@
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
 	 */
 
-	import { chaptersApi, formatDuration, parseTimeToSeconds, type VideoChapter } from '$lib/api/video-advanced';
+	import {
+		chaptersApi,
+		formatDuration,
+		parseTimeToSeconds,
+		type VideoChapter
+	} from '$lib/api/video-advanced';
 	import IconPlus from '@tabler/icons-svelte/icons/plus';
 	import IconTrash from '@tabler/icons-svelte/icons/trash';
 	import IconEdit from '@tabler/icons-svelte/icons/edit';
@@ -73,7 +78,9 @@
 			return;
 		}
 
-		const endSeconds = newChapter.endTime ? (parseTimeToSeconds(newChapter.endTime) ?? undefined) : undefined;
+		const endSeconds = newChapter.endTime
+			? (parseTimeToSeconds(newChapter.endTime) ?? undefined)
+			: undefined;
 
 		isSaving = true;
 		error = '';
@@ -117,7 +124,9 @@
 			return;
 		}
 
-		const endSeconds = editForm.endTime ? (parseTimeToSeconds(editForm.endTime) ?? undefined) : undefined;
+		const endSeconds = editForm.endTime
+			? (parseTimeToSeconds(editForm.endTime) ?? undefined)
+			: undefined;
 
 		isSaving = true;
 		error = '';
@@ -310,10 +319,7 @@
 				/>
 			</div>
 			<div class="form-row">
-				<textarea
-					bind:value={newChapter.description}
-					placeholder="Description (optional)"
-					rows="2"
+				<textarea bind:value={newChapter.description} placeholder="Description (optional)" rows="2"
 				></textarea>
 			</div>
 			<button
@@ -425,8 +431,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 		border-radius: 50%;
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -533,8 +539,8 @@
 	}
 
 	.btn-save {
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 	}
 
 	.btn-cancel {
@@ -574,8 +580,8 @@
 		gap: 0.375rem;
 		width: 100%;
 		padding: 0.625rem;
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;

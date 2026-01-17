@@ -14,7 +14,7 @@
 		phoneDisplay?: string;
 	}
 
-	let { 
+	let {
 		email = 'support@simplertrading.com',
 		phone = '5122668659',
 		phoneDisplay = '(512) 266-8659'
@@ -27,9 +27,9 @@
 			<strong>Have Questions?</strong>
 		</h2>
 		<p class="have-questions__text">
-			Our support staff is the best by far! You can email 
-			<a href="mailto:{email}">{email}</a> 
-			or call us at 
+			Our support staff is the best by far! You can email
+			<a href="mailto:{email}">{email}</a>
+			or call us at
 			<a href="tel:{phone}">{phoneDisplay}</a>
 		</p>
 	</div>

@@ -142,7 +142,9 @@ export const auditLog = {
 	/**
 	 * Log an action
 	 */
-	log(entry: Omit<AuditLogEntry, 'id' | 'timestamp' | 'userId' | 'userName' | 'userEmail'>): string {
+	log(
+		entry: Omit<AuditLogEntry, 'id' | 'timestamp' | 'userId' | 'userName' | 'userEmail'>
+	): string {
 		const user = getCurrentUser();
 		const id = generateId();
 
@@ -157,7 +159,7 @@ export const auditLog = {
 			...(browser && { userAgent: navigator.userAgent })
 		};
 
-		auditLogStore.update(state => {
+		auditLogStore.update((state) => {
 			const entries = [fullEntry, ...state.entries].slice(0, MAX_LOCAL_ENTRIES);
 			saveToStorage(entries);
 			return { ...state, entries };
@@ -172,24 +174,78 @@ export const auditLog = {
 	/**
 	 * Convenience methods for common actions
 	 */
-	logCreate(resource: string, resourceId: string, description: string, category: AuditCategory = 'content', metadata?: Record<string, unknown>) {
-		return this.log({ action: 'create', resource, resourceId, description, category, ...(metadata && { metadata }), success: true });
+	logCreate(
+		resource: string,
+		resourceId: string,
+		description: string,
+		category: AuditCategory = 'content',
+		metadata?: Record<string, unknown>
+	) {
+		return this.log({
+			action: 'create',
+			resource,
+			resourceId,
+			description,
+			category,
+			...(metadata && { metadata }),
+			success: true
+		});
 	},
 
-	logUpdate(resource: string, resourceId: string, description: string, category: AuditCategory = 'content', metadata?: Record<string, unknown>) {
-		return this.log({ action: 'update', resource, resourceId, description, category, ...(metadata && { metadata }), success: true });
+	logUpdate(
+		resource: string,
+		resourceId: string,
+		description: string,
+		category: AuditCategory = 'content',
+		metadata?: Record<string, unknown>
+	) {
+		return this.log({
+			action: 'update',
+			resource,
+			resourceId,
+			description,
+			category,
+			...(metadata && { metadata }),
+			success: true
+		});
 	},
 
-	logDelete(resource: string, resourceId: string, description: string, category: AuditCategory = 'content', metadata?: Record<string, unknown>) {
-		return this.log({ action: 'delete', resource, resourceId, description, category, ...(metadata && { metadata }), success: true });
+	logDelete(
+		resource: string,
+		resourceId: string,
+		description: string,
+		category: AuditCategory = 'content',
+		metadata?: Record<string, unknown>
+	) {
+		return this.log({
+			action: 'delete',
+			resource,
+			resourceId,
+			description,
+			category,
+			...(metadata && { metadata }),
+			success: true
+		});
 	},
 
-	logView(resource: string, resourceId: string, description: string, category: AuditCategory = 'content') {
+	logView(
+		resource: string,
+		resourceId: string,
+		description: string,
+		category: AuditCategory = 'content'
+	) {
 		return this.log({ action: 'view', resource, resourceId, description, category, success: true });
 	},
 
 	logExport(resource: string, description: string, metadata?: Record<string, unknown>) {
-		return this.log({ action: 'export', resource, description, category: 'content', ...(metadata && { metadata }), success: true });
+		return this.log({
+			action: 'export',
+			resource,
+			description,
+			category: 'content',
+			...(metadata && { metadata }),
+			success: true
+		});
 	},
 
 	logLogin(success: boolean, errorMessage?: string) {
@@ -249,21 +305,21 @@ export const auditLog = {
 	 * Set filters
 	 */
 	setFilters(filters: AuditLogState['filters']) {
-		auditLogStore.update(state => ({ ...state, filters }));
+		auditLogStore.update((state) => ({ ...state, filters }));
 	},
 
 	/**
 	 * Clear filters
 	 */
 	clearFilters() {
-		auditLogStore.update(state => ({ ...state, filters: {} }));
+		auditLogStore.update((state) => ({ ...state, filters: {} }));
 	},
 
 	/**
 	 * Clear all logs (admin only)
 	 */
 	clearAll() {
-		auditLogStore.update(state => {
+		auditLogStore.update((state) => {
 			saveToStorage([]);
 			return { ...state, entries: [] };
 		});
@@ -276,8 +332,17 @@ export const auditLog = {
 		const state = get(auditLogStore);
 
 		if (format === 'csv') {
-			const headers = ['Timestamp', 'User', 'Email', 'Action', 'Category', 'Resource', 'Description', 'Success'];
-			const rows = state.entries.map(e => [
+			const headers = [
+				'Timestamp',
+				'User',
+				'Email',
+				'Action',
+				'Category',
+				'Resource',
+				'Description',
+				'Success'
+			];
+			const rows = state.entries.map((e) => [
 				new Date(e.timestamp).toISOString(),
 				e.userName,
 				e.userEmail,
@@ -287,7 +352,7 @@ export const auditLog = {
 				e.description,
 				e.success.toString()
 			]);
-			return [headers.join(','), ...rows.map(r => r.join(','))].join('\n');
+			return [headers.join(','), ...rows.map((r) => r.join(','))].join('\n');
 		}
 
 		return JSON.stringify(state.entries, null, 2);
@@ -306,26 +371,27 @@ export const filteredEntries = derived(auditLogStore, ($state) => {
 	const { filters } = $state;
 
 	if (filters.action) {
-		entries = entries.filter(e => e.action === filters.action);
+		entries = entries.filter((e) => e.action === filters.action);
 	}
 	if (filters.category) {
-		entries = entries.filter(e => e.category === filters.category);
+		entries = entries.filter((e) => e.category === filters.category);
 	}
 	if (filters.userId) {
-		entries = entries.filter(e => e.userId === filters.userId);
+		entries = entries.filter((e) => e.userId === filters.userId);
 	}
 	if (filters.startDate) {
-		entries = entries.filter(e => e.timestamp >= filters.startDate!);
+		entries = entries.filter((e) => e.timestamp >= filters.startDate!);
 	}
 	if (filters.endDate) {
-		entries = entries.filter(e => e.timestamp <= filters.endDate!);
+		entries = entries.filter((e) => e.timestamp <= filters.endDate!);
 	}
 	if (filters.search) {
 		const search = filters.search.toLowerCase();
-		entries = entries.filter(e =>
-			e.description.toLowerCase().includes(search) ||
-			e.resource.toLowerCase().includes(search) ||
-			e.userName.toLowerCase().includes(search)
+		entries = entries.filter(
+			(e) =>
+				e.description.toLowerCase().includes(search) ||
+				e.resource.toLowerCase().includes(search) ||
+				e.userName.toLowerCase().includes(search)
 		);
 	}
 
@@ -337,17 +403,20 @@ export const filteredEntries = derived(auditLogStore, ($state) => {
  */
 export const recentActions = derived(auditLogStore, ($state) => {
 	const dayAgo = Date.now() - 24 * 60 * 60 * 1000;
-	return $state.entries.filter(e => e.timestamp > dayAgo);
+	return $state.entries.filter((e) => e.timestamp > dayAgo);
 });
 
 /**
  * Action counts by type
  */
 export const actionCounts = derived(auditLogStore, ($state) => {
-	return $state.entries.reduce((acc, entry) => {
-		acc[entry.action] = (acc[entry.action] || 0) + 1;
-		return acc;
-	}, {} as Record<AuditActionType, number>);
+	return $state.entries.reduce(
+		(acc, entry) => {
+			acc[entry.action] = (acc[entry.action] || 0) + 1;
+			return acc;
+		},
+		{} as Record<AuditActionType, number>
+	);
 });
 
 export default auditLog;

@@ -31,28 +31,32 @@
 			name: 'Michael Chen',
 			role: 'Day Trader, 3 Years',
 			avatar: 'MC',
-			quote: 'The live trading rooms completely transformed my approach. I went from losing consistently to profitable in 6 months.',
+			quote:
+				'The live trading rooms completely transformed my approach. I went from losing consistently to profitable in 6 months.',
 			profit: '+47% YTD'
 		},
 		{
 			name: 'Sarah Williams',
 			role: 'Options Trader',
 			avatar: 'SW',
-			quote: "The real-time alerts are incredible. I've caught moves I would have missed completely on my own.",
+			quote:
+				"The real-time alerts are incredible. I've caught moves I would have missed completely on my own.",
 			profit: '+$32k this quarter'
 		},
 		{
 			name: 'David Rodriguez',
 			role: 'Swing Trader',
 			avatar: 'DR',
-			quote: 'Finally, a community of serious traders. The education here is worth 10x what I paid.',
+			quote:
+				'Finally, a community of serious traders. The education here is worth 10x what I paid.',
 			profit: '8/10 winning trades'
 		},
 		{
 			name: 'Jennifer Park',
 			role: 'Part-time Trader',
 			avatar: 'JP',
-			quote: 'As a working professional, the alerts let me trade around my schedule. Life-changing.',
+			quote:
+				'As a working professional, the alerts let me trade around my schedule. Life-changing.',
 			profit: '+$18k part-time'
 		}
 	];

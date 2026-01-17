@@ -112,7 +112,14 @@
 			<span class="spinner-small"></span>
 			Saving...
 		{:else}
-			<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
 				<polyline points="17 21 17 13 7 13 7 21"></polyline>
 				<polyline points="7 3 7 8 15 8"></polyline>
@@ -126,7 +133,14 @@
 			<span class="spinner"></span>
 			Saving...
 		{:else}
-			<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="18"
+				height="18"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
 				<polyline points="17 21 17 13 7 13 7 21"></polyline>
 				<polyline points="7 3 7 8 15 8"></polyline>
@@ -138,28 +152,61 @@
 
 <!-- Email Modal -->
 {#if showEmailModal}
-	<div class="modal-overlay" onclick={closeModal} onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
-		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="presentation">
+	<div
+		class="modal-overlay"
+		onclick={closeModal}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Escape') closeModal();
+			if (e.key === 'Enter' || e.key === ' ') closeModal();
+		}}
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
+	>
+		<div
+			class="modal-content"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="presentation"
+		>
 			<button type="button" class="modal-close" onclick={closeModal} aria-label="Close">
-				<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<line x1="18" y1="6" x2="6" y2="18"></line>
 					<line x1="6" y1="6" x2="18" y2="18"></line>
 				</svg>
 			</button>
 
 			<div class="modal-icon">
-				<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+				<svg
+					width="32"
+					height="32"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"
+					></path>
 					<polyline points="22,6 12,13 2,6"></polyline>
 				</svg>
 			</div>
 
 			<h3 class="modal-title">Save Your Progress</h3>
-			<p class="modal-description">
-				Enter your email to receive a link to resume your form later.
-			</p>
+			<p class="modal-description">Enter your email to receive a link to resume your form later.</p>
 
-			<form onsubmit={(e: SubmitEvent) => { e.preventDefault(); handleEmailSubmit(); }}>
+			<form
+				onsubmit={(e: SubmitEvent) => {
+					e.preventDefault();
+					handleEmailSubmit();
+				}}
+			>
 				<label for="save-email-input" class="visually-hidden">Email address</label>
 				<input
 					id="save-email-input"
@@ -172,9 +219,7 @@
 
 				<div class="modal-actions">
 					<button type="button" class="btn-cancel" onclick={closeModal}>Cancel</button>
-					<button type="submit" class="btn-save" disabled={!saveEmail}>
-						Save & Send Link
-					</button>
+					<button type="submit" class="btn-save" disabled={!saveEmail}> Save & Send Link </button>
 				</div>
 			</form>
 		</div>
@@ -183,10 +228,32 @@
 
 <!-- Success Modal -->
 {#if savedHash}
-	<div class="modal-overlay" onclick={closeModal} onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') closeModal(); if (e.key === 'Enter' || e.key === ' ') closeModal(); }} role="button" tabindex="0" aria-label="Close modal">
-		<div class="modal-content success" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="presentation">
+	<div
+		class="modal-overlay"
+		onclick={closeModal}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Escape') closeModal();
+			if (e.key === 'Enter' || e.key === ' ') closeModal();
+		}}
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
+	>
+		<div
+			class="modal-content success"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="presentation"
+		>
 			<div class="success-icon">
-				<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					width="48"
+					height="48"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
 					<polyline points="22 4 12 14.01 9 11.01"></polyline>
 				</svg>
@@ -198,15 +265,34 @@
 			</p>
 
 			<div class="resume-link-box">
-			<label for="resume-link-input" class="visually-hidden">Resume link</label>
+				<label for="resume-link-input" class="visually-hidden">Resume link</label>
 				<input type="text" value={getResumeUrl()} readonly class="resume-link-input" />
-				<button type="button" class="copy-btn" onclick={copyResumeLink} aria-label={copySuccess ? 'Link copied' : 'Copy link'}>
+				<button
+					type="button"
+					class="copy-btn"
+					onclick={copyResumeLink}
+					aria-label={copySuccess ? 'Link copied' : 'Copy link'}
+				>
 					{#if copySuccess}
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<polyline points="20 6 9 17 4 12"></polyline>
 						</svg>
 					{:else}
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
 							<path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
 						</svg>
@@ -222,7 +308,14 @@
 <!-- Error Display -->
 {#if saveError}
 	<div class="save-error">
-		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+		<svg
+			width="16"
+			height="16"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+		>
 			<circle cx="12" cy="12" r="10"></circle>
 			<line x1="12" y1="8" x2="12" y2="12"></line>
 			<line x1="12" y1="16" x2="12.01" y2="16"></line>

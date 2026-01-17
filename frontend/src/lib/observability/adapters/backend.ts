@@ -25,7 +25,7 @@ import type {
 	PurchasePayload,
 	IdentifyPayload,
 	QueuedEvent,
-	AdapterMetrics,
+	AdapterMetrics
 } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -67,7 +67,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 		eventsFailed: 0,
 		lastEventTime: null,
 		averageLatencyMs: 0,
-		queueSize: 0,
+		queueSize: 0
 	};
 
 	constructor() {
@@ -81,7 +81,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 	get metrics(): AdapterMetrics {
 		return {
 			...this._metrics,
-			queueSize: this._eventQueue.length,
+			queueSize: this._eventQueue.length
 		};
 	}
 
@@ -120,7 +120,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 			console.debug('[Backend] Adapter initialized', {
 				endpoint: this._endpoint,
 				flushInterval: this._flushIntervalMs,
-				maxBatchSize: this._maxBatchSize,
+				maxBatchSize: this._maxBatchSize
 			});
 		}
 	}
@@ -136,7 +136,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 			page_title: payload.page_title || document.title,
 			page_referrer: payload.page_referrer || document.referrer,
 			page_type: payload.page_type,
-			content_group: payload.content_group,
+			content_group: payload.content_group
 		});
 	}
 
@@ -149,7 +149,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 			event_category: payload?.event_category,
 			event_label: payload?.event_label,
 			value: payload?.value,
-			...this._extractCustomProperties(payload),
+			...this._extractCustomProperties(payload)
 		});
 	}
 
@@ -165,7 +165,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 			tax: payload.tax,
 			shipping: payload.shipping,
 			coupon: payload.coupon,
-			items: payload.items,
+			items: payload.items
 		});
 	}
 
@@ -177,7 +177,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 
 		this._queueEvent('identify', {
 			...this._enrichPayload({}),
-			...payload,
+			...payload
 		});
 	}
 
@@ -187,7 +187,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 	setUserProperties(properties: Record<string, unknown>): void {
 		this._queueEvent('user_properties', {
 			...this._enrichPayload({}),
-			properties,
+			properties
 		});
 	}
 
@@ -199,7 +199,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 		this._sessionId = this._generateSessionId();
 
 		this._queueEvent('reset', {
-			...this._enrichPayload({}),
+			...this._enrichPayload({})
 		});
 	}
 
@@ -257,7 +257,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 			eventName,
 			payload,
 			timestamp: Date.now(),
-			retries: 0,
+			retries: 0
 		});
 
 		this._metrics.eventsTracked++;
@@ -285,23 +285,28 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 			viewport_width: window.innerWidth,
 			viewport_height: window.innerHeight,
 			language: navigator.language,
-			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+			timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
 		};
 	}
 
 	/**
 	 * Extract custom properties from payload.
 	 */
-	private _extractCustomProperties(
-		payload?: CustomEventPayload
-	): Record<string, unknown> {
+	private _extractCustomProperties(payload?: CustomEventPayload): Record<string, unknown> {
 		if (!payload) return {};
 
 		const custom: Record<string, unknown> = {};
 		const reserved = [
-			'timestamp', 'session_id', 'user_id', 'event_category',
-			'event_label', 'value', 'page_location', 'page_path',
-			'page_title', 'page_referrer',
+			'timestamp',
+			'session_id',
+			'user_id',
+			'event_category',
+			'event_label',
+			'value',
+			'page_location',
+			'page_path',
+			'page_title',
+			'page_referrer'
 		];
 
 		for (const [key, value] of Object.entries(payload)) {
@@ -373,8 +378,8 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 			events: events.map((e) => ({
 				event_name: e.eventName,
 				properties: e.payload,
-				timestamp: e.timestamp,
-			})),
+				timestamp: e.timestamp
+			}))
 		};
 
 		const body = JSON.stringify(payload);
@@ -388,7 +393,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 
 		// Use fetch for normal requests
 		const headers: Record<string, string> = {
-			'Content-Type': 'application/json',
+			'Content-Type': 'application/json'
 		};
 
 		if (this._authorization) {
@@ -399,7 +404,7 @@ class BackendAnalyticsAdapter implements AnalyticsAdapter {
 			method: 'POST',
 			headers,
 			body,
-			keepalive: true,
+			keepalive: true
 		});
 
 		return response.ok;

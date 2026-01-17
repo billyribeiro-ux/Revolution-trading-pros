@@ -16,12 +16,15 @@
 		isLoading = true;
 		try {
 			const token = localStorage.getItem('access_token');
-			const response = await fetch(`/api/admin/workflows/${workflowId}/analytics?range=${timeRange}`, {
-				headers: {
-					'Authorization': token ? `Bearer ${token}` : '',
-					'Accept': 'application/json'
+			const response = await fetch(
+				`/api/admin/workflows/${workflowId}/analytics?range=${timeRange}`,
+				{
+					headers: {
+						Authorization: token ? `Bearer ${token}` : '',
+						Accept: 'application/json'
+					}
 				}
-			});
+			);
 
 			if (response.ok) {
 				const data = await response.json();
@@ -101,11 +104,9 @@
 		<h2>Workflow Analytics</h2>
 		<div class="time-range-selector">
 			<button class:active={timeRange === '7d'} onclick={() => (timeRange = '7d')}>7 Days</button>
-			<button class:active={timeRange === '30d'} onclick={() => (timeRange = '30d')}
-				>30 Days</button
+			<button class:active={timeRange === '30d'} onclick={() => (timeRange = '30d')}>30 Days</button
 			>
-			<button class:active={timeRange === '90d'} onclick={() => (timeRange = '90d')}
-				>90 Days</button
+			<button class:active={timeRange === '90d'} onclick={() => (timeRange = '90d')}>90 Days</button
 			>
 		</div>
 	</div>

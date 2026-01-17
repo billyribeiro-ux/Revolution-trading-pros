@@ -80,7 +80,7 @@
 
 	async function addLocale(localeCode: string) {
 		try {
-			const locale = availableLocales.find(l => l.code === localeCode);
+			const locale = availableLocales.find((l) => l.code === localeCode);
 			if (!locale) return;
 
 			const response = await fetch('/api/admin/cms/locales', {
@@ -119,7 +119,8 @@
 	}
 
 	async function deleteLocale(id: number) {
-		if (!confirm('Are you sure you want to delete this locale? All translations will be lost.')) return;
+		if (!confirm('Are you sure you want to delete this locale? All translations will be lost.'))
+			return;
 		try {
 			const response = await fetch(`/api/admin/cms/locales/${id}`, {
 				method: 'DELETE',
@@ -143,7 +144,9 @@
 	}
 
 	function getLocaleInfo(code: string) {
-		return availableLocales.find(l => l.code === code) || { code, name: code, flag: '🌐', rtl: false };
+		return (
+			availableLocales.find((l) => l.code === code) || { code, name: code, flag: '🌐', rtl: false }
+		);
 	}
 
 	function getCompletionRate(locale: any): number {
@@ -152,8 +155,8 @@
 	}
 
 	function getUnusedLocales() {
-		const usedCodes = locales.map(l => l.code);
-		return availableLocales.filter(l => !usedCodes.includes(l.code));
+		const usedCodes = locales.map((l) => l.code);
+		return availableLocales.filter((l) => !usedCodes.includes(l.code));
 	}
 
 	onMount(() => {
@@ -181,7 +184,7 @@
 			</div>
 		</div>
 
-		<button class="btn-add" onclick={() => showAddLocale = true}>
+		<button class="btn-add" onclick={() => (showAddLocale = true)}>
 			<IconPlus size={18} />
 			Add Language
 		</button>
@@ -217,7 +220,9 @@
 							onclick={() => selectLocale(locale)}
 							role="button"
 							tabindex="0"
-							onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') selectLocale(locale); }}
+							onkeydown={(e) => {
+								if (e.key === 'Enter' || e.key === ' ') selectLocale(locale);
+							}}
 						>
 							<span class="locale-flag">{info.flag}</span>
 							<div class="locale-info">
@@ -234,7 +239,10 @@
 								<button
 									class="toggle-btn"
 									class:active={locale.is_active}
-									onclick={(e) => { e.stopPropagation(); toggleLocale(locale.id, locale.is_active); }}
+									onclick={(e) => {
+										e.stopPropagation();
+										toggleLocale(locale.id, locale.is_active);
+									}}
 								>
 									{#if locale.is_active}
 										<IconCheck size={14} />
@@ -323,10 +331,12 @@
 
 	<!-- Add Locale Modal -->
 	{#if showAddLocale}
-		<div 
-			class="modal-overlay" 
-			onclick={() => showAddLocale = false}
-			onkeydown={(e) => { if (e.key === 'Escape') showAddLocale = false; }}
+		<div
+			class="modal-overlay"
+			onclick={() => (showAddLocale = false)}
+			onkeydown={(e) => {
+				if (e.key === 'Escape') showAddLocale = false;
+			}}
 			role="button"
 			tabindex="-1"
 			aria-label="Close modal"
@@ -335,7 +345,7 @@
 		<div class="modal" in:fly={{ y: 50, duration: 400 }}>
 			<div class="modal-header">
 				<h2>Add Language</h2>
-				<button class="close-btn" onclick={() => showAddLocale = false}>
+				<button class="close-btn" onclick={() => (showAddLocale = false)}>
 					<IconX size={18} />
 				</button>
 			</div>
@@ -349,10 +359,7 @@
 				{:else}
 					<div class="locale-options">
 						{#each getUnusedLocales() as locale}
-							<button
-								class="locale-option"
-								onclick={() => addLocale(locale.code)}
-							>
+							<button class="locale-option" onclick={() => addLocale(locale.code)}>
 								<span class="option-flag">{locale.flag}</span>
 								<span class="option-name">{locale.name}</span>
 								<span class="option-code">{locale.code.toUpperCase()}</span>
@@ -399,7 +406,7 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #E6B800;
+		color: #e6b800;
 		text-decoration: none;
 		margin-bottom: 1rem;
 	}
@@ -780,7 +787,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Modal */
@@ -887,7 +896,7 @@
 		font-weight: 700;
 		padding: 0.2rem 0.4rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #B38F00;
+		color: #b38f00;
 		border-radius: 4px;
 	}
 </style>

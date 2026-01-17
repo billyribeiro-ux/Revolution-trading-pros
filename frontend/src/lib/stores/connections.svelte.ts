@@ -20,7 +20,13 @@ import { getAuthToken } from '$lib/stores/auth.svelte';
 // Types
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export type ConnectionState = 'connected' | 'disconnected' | 'error' | 'expired' | 'pending' | 'connecting';
+export type ConnectionState =
+	| 'connected'
+	| 'disconnected'
+	| 'error'
+	| 'expired'
+	| 'pending'
+	| 'connecting';
 
 export interface ConnectionStatus {
 	key: string;
@@ -140,7 +146,12 @@ export const FEATURE_SERVICES: Record<string, ServiceKey[]> = {
 		SERVICE_KEYS.FLUENT_BOOKING
 	],
 	forms: [SERVICE_KEYS.FLUENT_FORMS_PRO],
-	crm: [SERVICE_KEYS.FLUENT_CRM_PRO, SERVICE_KEYS.HUBSPOT, SERVICE_KEYS.SALESFORCE, SERVICE_KEYS.PIPEDRIVE],
+	crm: [
+		SERVICE_KEYS.FLUENT_CRM_PRO,
+		SERVICE_KEYS.HUBSPOT,
+		SERVICE_KEYS.SALESFORCE,
+		SERVICE_KEYS.PIPEDRIVE
+	],
 	social: [
 		SERVICE_KEYS.FACEBOOK,
 		SERVICE_KEYS.TWITTER,

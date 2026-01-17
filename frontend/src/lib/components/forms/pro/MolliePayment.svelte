@@ -80,9 +80,7 @@
 		{ id: 'giropay', name: 'Giropay', icon: '🏦', description: 'German online banking' }
 	];
 
-	const filteredMethods = $derived(
-		availableMethods.filter((m) => methods.includes(m.id))
-	);
+	const filteredMethods = $derived(availableMethods.filter((m) => methods.includes(m.id)));
 
 	async function selectMethod(methodId: string) {
 		selectedMethod = methodId;
@@ -411,8 +409,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.secure-badge {

@@ -42,7 +42,10 @@ function createThemeStore() {
 		let effectiveTheme: 'dark' | 'light';
 
 		if (theme === 'auto') {
-			effectiveTheme = typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+			effectiveTheme =
+				typeof window !== 'undefined' && window.matchMedia('(prefers-color-scheme: dark)').matches
+					? 'dark'
+					: 'light';
 		} else {
 			effectiveTheme = theme;
 		}
@@ -55,7 +58,8 @@ function createThemeStore() {
 		root.dataset['theme'] = effectiveTheme;
 
 		// Update meta theme-color for mobile browsers - Apple-style colors
-		const metaThemeColor = typeof document !== 'undefined' ? document.querySelector('meta[name="theme-color"]') : null;
+		const metaThemeColor =
+			typeof document !== 'undefined' ? document.querySelector('meta[name="theme-color"]') : null;
 		if (metaThemeColor) {
 			metaThemeColor.setAttribute('content', effectiveTheme === 'dark' ? '#0f172a' : '#f5f5f7');
 		}

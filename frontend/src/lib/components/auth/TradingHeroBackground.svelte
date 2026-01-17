@@ -348,7 +348,11 @@
 				>
 					<span class="ticker-symbol">{ticker.symbol}</span>
 					<span class="ticker-price">${ticker.price}</span>
-					<span class="ticker-change" class:positive={ticker.positive} class:negative={!ticker.positive}>
+					<span
+						class="ticker-change"
+						class:positive={ticker.positive}
+						class:negative={!ticker.positive}
+					>
 						{ticker.change}
 					</span>
 				</div>
@@ -416,7 +420,7 @@
 		left: 0;
 		right: 0;
 		height: 30%;
-		background: linear-gradient(to bottom, var(--auth-hero-bg, oklch(0.10 0.02 250)), transparent);
+		background: linear-gradient(to bottom, var(--auth-hero-bg, oklch(0.1 0.02 250)), transparent);
 		pointer-events: none;
 	}
 
@@ -426,7 +430,7 @@
 		left: 0;
 		right: 0;
 		height: 40%;
-		background: linear-gradient(to top, var(--auth-hero-bg, oklch(0.10 0.02 250)), transparent);
+		background: linear-gradient(to top, var(--auth-hero-bg, oklch(0.1 0.02 250)), transparent);
 		pointer-events: none;
 	}
 

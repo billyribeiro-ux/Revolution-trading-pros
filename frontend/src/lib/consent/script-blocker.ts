@@ -49,7 +49,7 @@ const BLOCKED_SCRIPTS: Record<ConsentCategory, RegExp[]> = {
 		/sharethis\.com/i,
 		// Instagram embeds
 		/instagram\.com\/embed/i,
-		/cdninstagram\.com/i,
+		/cdninstagram\.com/i
 	],
 
 	marketing: [
@@ -95,7 +95,7 @@ const BLOCKED_SCRIPTS: Record<ConsentCategory, RegExp[]> = {
 		// Soundcloud
 		/soundcloud\.com\/player/i,
 		// Slideshare
-		/slideshare\.net/i,
+		/slideshare\.net/i
 	],
 
 	preferences: [
@@ -117,35 +117,34 @@ const BLOCKED_SCRIPTS: Record<ConsentCategory, RegExp[]> = {
 		/open\.spotify\.com\/embed/i,
 		// Google Fonts (optional - can be enabled/disabled)
 		/fonts\.googleapis\.com/i,
-		/fonts\.gstatic\.com/i,
-	],
+		/fonts\.gstatic\.com/i
+	]
 };
 
 /**
  * Extended blocking patterns for embedded content.
  * These map to the main categories but are tracked separately.
  */
-export const EMBEDDED_CONTENT_PATTERNS: Record<string, { pattern: RegExp; category: ConsentCategory; name: string }[]> = {
+export const EMBEDDED_CONTENT_PATTERNS: Record<
+	string,
+	{ pattern: RegExp; category: ConsentCategory; name: string }[]
+> = {
 	youtube: [
 		{ pattern: /youtube\.com\/embed/i, category: 'preferences', name: 'YouTube' },
-		{ pattern: /youtube-nocookie\.com\/embed/i, category: 'preferences', name: 'YouTube (Privacy-Enhanced)' },
+		{
+			pattern: /youtube-nocookie\.com\/embed/i,
+			category: 'preferences',
+			name: 'YouTube (Privacy-Enhanced)'
+		}
 	],
-	vimeo: [
-		{ pattern: /player\.vimeo\.com/i, category: 'preferences', name: 'Vimeo' },
-	],
+	vimeo: [{ pattern: /player\.vimeo\.com/i, category: 'preferences', name: 'Vimeo' }],
 	google_maps: [
 		{ pattern: /google\.com\/maps\/embed/i, category: 'analytics', name: 'Google Maps' },
-		{ pattern: /maps\.googleapis\.com/i, category: 'analytics', name: 'Google Maps API' },
+		{ pattern: /maps\.googleapis\.com/i, category: 'analytics', name: 'Google Maps API' }
 	],
-	soundcloud: [
-		{ pattern: /soundcloud\.com\/player/i, category: 'marketing', name: 'SoundCloud' },
-	],
-	spotify: [
-		{ pattern: /open\.spotify\.com\/embed/i, category: 'preferences', name: 'Spotify' },
-	],
-	instagram: [
-		{ pattern: /instagram\.com\/embed/i, category: 'analytics', name: 'Instagram' },
-	],
+	soundcloud: [{ pattern: /soundcloud\.com\/player/i, category: 'marketing', name: 'SoundCloud' }],
+	spotify: [{ pattern: /open\.spotify\.com\/embed/i, category: 'preferences', name: 'Spotify' }],
+	instagram: [{ pattern: /instagram\.com\/embed/i, category: 'analytics', name: 'Instagram' }]
 };
 
 /**
@@ -153,18 +152,18 @@ export const EMBEDDED_CONTENT_PATTERNS: Record<string, { pattern: RegExp; catego
  * Can be used to completely block Google Fonts requests.
  */
 export const GOOGLE_FONTS_CONFIG = {
-	patterns: [
-		/fonts\.googleapis\.com/i,
-		/fonts\.gstatic\.com/i,
-	],
+	patterns: [/fonts\.googleapis\.com/i, /fonts\.gstatic\.com/i],
 	category: 'preferences' as ConsentCategory,
-	description: 'Google Fonts are loaded from Google servers. Blocking prevents external font requests.',
+	description:
+		'Google Fonts are loaded from Google servers. Blocking prevents external font requests.'
 };
 
 /**
  * Check if a URL is an embedded content type
  */
-export function getEmbeddedContentType(url: string): { type: string; name: string; category: ConsentCategory } | null {
+export function getEmbeddedContentType(
+	url: string
+): { type: string; name: string; category: ConsentCategory } | null {
 	for (const [type, patterns] of Object.entries(EMBEDDED_CONTENT_PATTERNS)) {
 		for (const { pattern, name, category } of patterns) {
 			if (pattern.test(url)) {
@@ -262,7 +261,7 @@ export function startScriptBlocking(): void {
 							blockedScripts.push({
 								src: value,
 								category,
-								attributes: {},
+								attributes: {}
 							});
 
 							// Set a data attribute instead
@@ -274,7 +273,7 @@ export function startScriptBlocking(): void {
 						// Allow the script
 						originalSrcDescriptor.set?.call(this, value);
 					},
-					configurable: true,
+					configurable: true
 				});
 			}
 		}
@@ -379,7 +378,7 @@ export function generateBlockingScript(): string {
 	const patterns = {
 		analytics: BLOCKED_SCRIPTS.analytics.map((r) => r.source).join('|'),
 		marketing: BLOCKED_SCRIPTS.marketing.map((r) => r.source).join('|'),
-		preferences: BLOCKED_SCRIPTS.preferences.map((r) => r.source).join('|'),
+		preferences: BLOCKED_SCRIPTS.preferences.map((r) => r.source).join('|')
 	};
 
 	return `

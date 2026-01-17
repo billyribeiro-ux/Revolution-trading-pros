@@ -18,12 +18,7 @@
 		onCompare?: (revisionA: Revision, revisionB: Revision) => void;
 	}
 
-	let {
-		currentBlocks,
-		revisions,
-		onRestore,
-		onCompare
-	}: Props = $props();
+	let { currentBlocks, revisions, onRestore, onCompare }: Props = $props();
 
 	// State
 	let selectedRevision = $state<Revision | null>(null);
@@ -40,18 +35,17 @@
 
 		// Filter by type
 		if (filterType !== 'all') {
-			filtered = filtered.filter(r =>
-				filterType === 'autosave' ? r.isAutosave : !r.isAutosave
-			);
+			filtered = filtered.filter((r) => (filterType === 'autosave' ? r.isAutosave : !r.isAutosave));
 		}
 
 		// Filter by search
 		if (searchQuery) {
 			const query = searchQuery.toLowerCase();
-			filtered = filtered.filter(r =>
-				r.title?.toLowerCase().includes(query) ||
-				r.description?.toLowerCase().includes(query) ||
-				r.author?.toLowerCase().includes(query)
+			filtered = filtered.filter(
+				(r) =>
+					r.title?.toLowerCase().includes(query) ||
+					r.description?.toLowerCase().includes(query) ||
+					r.author?.toLowerCase().includes(query)
 			);
 		}
 
@@ -93,30 +87,30 @@
 
 	// Get diff between current and revision
 	function getDiff(revision: Revision): { added: number; removed: number; modified: number } {
-		const currentIds = new Set(currentBlocks.map(b => b.id));
-		const revisionIds = new Set(revision.blocks.map(b => b.id));
+		const currentIds = new Set(currentBlocks.map((b) => b.id));
+		const revisionIds = new Set(revision.blocks.map((b) => b.id));
 
 		let added = 0;
 		let removed = 0;
 		let modified = 0;
 
 		// Count added blocks
-		currentBlocks.forEach(block => {
+		currentBlocks.forEach((block) => {
 			if (!revisionIds.has(block.id)) {
 				added++;
 			}
 		});
 
 		// Count removed blocks
-		revision.blocks.forEach(block => {
+		revision.blocks.forEach((block) => {
 			if (!currentIds.has(block.id)) {
 				removed++;
 			}
 		});
 
 		// Count modified blocks (simplified - just check if content differs)
-		currentBlocks.forEach(current => {
-			const rev = revision.blocks.find(b => b.id === current.id);
+		currentBlocks.forEach((current) => {
+			const rev = revision.blocks.find((b) => b.id === current.id);
 			if (rev && JSON.stringify(current.content) !== JSON.stringify(rev.content)) {
 				modified++;
 			}
@@ -165,7 +159,10 @@
 	}
 
 	// Get detailed diff between two revisions
-	function getDetailedDiff(revA: Revision, revB: Revision): {
+	function getDetailedDiff(
+		revA: Revision,
+		revB: Revision
+	): {
 		added: Block[];
 		removed: Block[];
 		modified: { before: Block; after: Block }[];
@@ -173,8 +170,8 @@
 	} {
 		const blocksA = revA.blocks;
 		const blocksB = revB.blocks;
-		const idsA = new Set(blocksA.map(b => b.id));
-		const idsB = new Set(blocksB.map(b => b.id));
+		const idsA = new Set(blocksA.map((b) => b.id));
+		const idsB = new Set(blocksB.map((b) => b.id));
 
 		const added: Block[] = [];
 		const removed: Block[] = [];
@@ -182,22 +179,22 @@
 		const unchanged: Block[] = [];
 
 		// Find removed (in A but not in B)
-		blocksA.forEach(block => {
+		blocksA.forEach((block) => {
 			if (!idsB.has(block.id)) {
 				removed.push(block);
 			}
 		});
 
 		// Find added (in B but not in A)
-		blocksB.forEach(block => {
+		blocksB.forEach((block) => {
 			if (!idsA.has(block.id)) {
 				added.push(block);
 			}
 		});
 
 		// Find modified and unchanged
-		blocksB.forEach(blockB => {
-			const blockA = blocksA.find(b => b.id === blockB.id);
+		blocksB.forEach((blockB) => {
+			const blockA = blocksA.find((b) => b.id === blockB.id);
 			if (blockA) {
 				if (JSON.stringify(blockA.content) !== JSON.stringify(blockB.content)) {
 					modified.push({ before: blockA, after: blockB });
@@ -238,11 +235,7 @@
 	<div class="header">
 		<h3>Revision History</h3>
 		<div class="header-actions">
-			<button
-				class="compare-btn"
-				class:active={compareMode}
-				onclick={toggleCompareMode}
-			>
+			<button class="compare-btn" class:active={compareMode} onclick={toggleCompareMode}>
 				{compareMode ? 'Cancel Compare' : 'Compare'}
 			</button>
 		</div>
@@ -252,31 +245,27 @@
 	<div class="filters">
 		<div class="search-box">
 			<span class="search-icon">🔍</span>
-			<input
-				type="text"
-				placeholder="Search revisions..."
-				bind:value={searchQuery}
-			/>
+			<input type="text" placeholder="Search revisions..." bind:value={searchQuery} />
 		</div>
 		<div class="filter-tabs">
 			<button
 				class="filter-tab"
 				class:active={filterType === 'all'}
-				onclick={() => filterType = 'all'}
+				onclick={() => (filterType = 'all')}
 			>
 				All
 			</button>
 			<button
 				class="filter-tab"
 				class:active={filterType === 'manual'}
-				onclick={() => filterType = 'manual'}
+				onclick={() => (filterType = 'manual')}
 			>
 				Manual
 			</button>
 			<button
 				class="filter-tab"
 				class:active={filterType === 'autosave'}
-				onclick={() => filterType = 'autosave'}
+				onclick={() => (filterType = 'autosave')}
 			>
 				Autosave
 			</button>
@@ -292,9 +281,7 @@
 				{:else if !compareRevisionB}
 					Select second revision to compare
 				{:else}
-					<button class="compare-action" onclick={handleCompare}>
-						View Comparison
-					</button>
+					<button class="compare-action" onclick={handleCompare}> View Comparison </button>
 				{/if}
 			</p>
 			{#if compareRevisionA || compareRevisionB}
@@ -302,13 +289,13 @@
 					{#if compareRevisionA}
 						<span class="selected-tag">
 							A: {formatRelativeTime(compareRevisionA.createdAt)}
-							<button onclick={() => compareRevisionA = null}>✕</button>
+							<button onclick={() => (compareRevisionA = null)}>✕</button>
 						</span>
 					{/if}
 					{#if compareRevisionB}
 						<span class="selected-tag">
 							B: {formatRelativeTime(compareRevisionB.createdAt)}
-							<button onclick={() => compareRevisionB = null}>✕</button>
+							<button onclick={() => (compareRevisionB = null)}>✕</button>
 						</span>
 					{/if}
 				</div>
@@ -326,7 +313,7 @@
 			{#each filteredRevisions() as revision, index}
 				{@const diff = getDiff(revision)}
 				{@const isSelected = compareMode
-					? (compareRevisionA?.id === revision.id || compareRevisionB?.id === revision.id)
+					? compareRevisionA?.id === revision.id || compareRevisionB?.id === revision.id
 					: selectedRevision?.id === revision.id}
 				<button
 					class="revision-item"
@@ -383,10 +370,12 @@
 
 	<!-- Preview Modal -->
 	{#if showPreview && selectedRevision && !compareMode}
-		<div 
-			class="preview-overlay" 
-			onclick={() => showPreview = false}
-			onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') showPreview = false; }}
+		<div
+			class="preview-overlay"
+			onclick={() => (showPreview = false)}
+			onkeydown={(e: KeyboardEvent) => {
+				if (e.key === 'Escape') showPreview = false;
+			}}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="preview-modal-title"
@@ -398,7 +387,7 @@
 						<h4 id="preview-modal-title">Revision Preview</h4>
 						<p class="preview-date">{formatFullDate(selectedRevision.createdAt)}</p>
 					</div>
-					<button class="close-btn" onclick={() => showPreview = false}>✕</button>
+					<button class="close-btn" onclick={() => (showPreview = false)}>✕</button>
 				</div>
 
 				<div class="preview-content">
@@ -438,16 +427,12 @@
 						</div>
 					</div>
 
-				<div class="preview-footer">
-					<button class="cancel-btn" onclick={() => showPreview = false}>
-						Cancel
-					</button>
-					<button class="restore-btn" onclick={handleRestore}>
-						Restore This Version
-					</button>
+					<div class="preview-footer">
+						<button class="cancel-btn" onclick={() => (showPreview = false)}> Cancel </button>
+						<button class="restore-btn" onclick={handleRestore}> Restore This Version </button>
+					</div>
 				</div>
 			</div>
-		</div>
 		</div>
 	{/if}
 
@@ -456,16 +441,18 @@
 		{@const detailedDiff = getDetailedDiff(compareRevisionA, compareRevisionB)}
 		<div
 			class="diff-overlay"
-			onclick={() => showDiffView = false}
-			onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') showDiffView = false; }}
+			onclick={() => (showDiffView = false)}
+			onkeydown={(e: KeyboardEvent) => {
+				if (e.key === 'Escape') showDiffView = false;
+			}}
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="diff-modal-title"
 			tabindex="-1"
 		>
 			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-			<div 
-				class="diff-modal" 
+			<div
+				class="diff-modal"
 				onclick={(e: MouseEvent) => e.stopPropagation()}
 				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 				role="document"
@@ -481,7 +468,9 @@
 							{formatRelativeTime(compareRevisionB.createdAt)}
 						</span>
 					</div>
-					<button class="close-btn" onclick={() => showDiffView = false} aria-label="Close">✕</button>
+					<button class="close-btn" onclick={() => (showDiffView = false)} aria-label="Close"
+						>✕</button
+					>
 				</div>
 
 				<div class="diff-stats">
@@ -595,10 +584,14 @@
 				</div>
 
 				<div class="diff-footer">
-					<button class="cancel-btn" onclick={() => showDiffView = false}>
-						Close
-					</button>
-					<button class="restore-btn" onclick={() => { if (compareRevisionB) onRestore(compareRevisionB); showDiffView = false; }}>
+					<button class="cancel-btn" onclick={() => (showDiffView = false)}> Close </button>
+					<button
+						class="restore-btn"
+						onclick={() => {
+							if (compareRevisionB) onRestore(compareRevisionB);
+							showDiffView = false;
+						}}
+					>
 						Restore Newer Version
 					</button>
 				</div>
@@ -920,7 +913,8 @@
 		display: flex;
 		flex-direction: column;
 		overflow: hidden;
-		box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+		box-shadow:
+			0 20px 25px -5px rgba(0, 0, 0, 0.1),
 			0 10px 10px -5px rgba(0, 0, 0, 0.04);
 	}
 

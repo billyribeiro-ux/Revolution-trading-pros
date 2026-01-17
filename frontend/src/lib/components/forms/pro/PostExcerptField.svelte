@@ -111,7 +111,9 @@
 		font-size: 0.9375rem;
 		line-height: 1.5;
 		resize: vertical;
-		transition: border-color 0.15s, box-shadow 0.15s;
+		transition:
+			border-color 0.15s,
+			box-shadow 0.15s;
 	}
 
 	.excerpt-textarea:focus {

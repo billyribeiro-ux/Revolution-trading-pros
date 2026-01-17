@@ -78,9 +78,9 @@
 		let filtered = [...comments];
 
 		if (activeTab === 'open') {
-			filtered = filtered.filter(c => c.status === 'open' || c.status === 'pending');
+			filtered = filtered.filter((c) => c.status === 'open' || c.status === 'pending');
 		} else if (activeTab === 'resolved') {
-			filtered = filtered.filter(c => c.status === 'resolved');
+			filtered = filtered.filter((c) => c.status === 'resolved');
 		}
 
 		// Sort by date (newest first)
@@ -92,9 +92,9 @@
 	// Stats
 	let stats = $derived(() => ({
 		total: comments.length,
-		open: comments.filter(c => c.status === 'open').length,
-		pending: comments.filter(c => c.status === 'pending').length,
-		resolved: comments.filter(c => c.status === 'resolved').length
+		open: comments.filter((c) => c.status === 'open').length,
+		pending: comments.filter((c) => c.status === 'pending').length,
+		resolved: comments.filter((c) => c.status === 'resolved').length
 	}));
 
 	// Format relative time
@@ -116,38 +116,57 @@
 	// Get type icon
 	function getTypeIcon(type: Comment['type']): string {
 		switch (type) {
-			case 'comment': return '💬';
-			case 'suggestion': return '💡';
-			case 'question': return '❓';
-			case 'approval': return '✅';
-			default: return '💬';
+			case 'comment':
+				return '💬';
+			case 'suggestion':
+				return '💡';
+			case 'question':
+				return '❓';
+			case 'approval':
+				return '✅';
+			default:
+				return '💬';
 		}
 	}
 
 	// Get type label
 	function getTypeLabel(type: Comment['type']): string {
 		switch (type) {
-			case 'comment': return 'Comment';
-			case 'suggestion': return 'Suggestion';
-			case 'question': return 'Question';
-			case 'approval': return 'Approval Request';
-			default: return 'Comment';
+			case 'comment':
+				return 'Comment';
+			case 'suggestion':
+				return 'Suggestion';
+			case 'question':
+				return 'Question';
+			case 'approval':
+				return 'Approval Request';
+			default:
+				return 'Comment';
 		}
 	}
 
 	// Get status color
 	function getStatusColor(status: Comment['status']): string {
 		switch (status) {
-			case 'open': return '#f59e0b';
-			case 'pending': return '#3b82f6';
-			case 'resolved': return '#10b981';
-			default: return '#6b7280';
+			case 'open':
+				return '#f59e0b';
+			case 'pending':
+				return '#3b82f6';
+			case 'resolved':
+				return '#10b981';
+			default:
+				return '#6b7280';
 		}
 	}
 
 	// Get initials
 	function getInitials(name: string): string {
-		return name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0, 2);
+		return name
+			.split(' ')
+			.map((n) => n[0])
+			.join('')
+			.toUpperCase()
+			.slice(0, 2);
 	}
 
 	// Submit new comment
@@ -198,9 +217,7 @@
 	<!-- Header -->
 	<div class="panel-header">
 		<h3>Comments & Feedback</h3>
-		<button class="new-comment-btn" onclick={() => showNewComment = true}>
-			+ New
-		</button>
+		<button class="new-comment-btn" onclick={() => (showNewComment = true)}> + New </button>
 	</div>
 
 	<!-- Stats -->
@@ -221,18 +238,10 @@
 
 	<!-- Tabs -->
 	<div class="tabs">
-		<button
-			class="tab"
-			class:active={activeTab === 'all'}
-			onclick={() => activeTab = 'all'}
-		>
+		<button class="tab" class:active={activeTab === 'all'} onclick={() => (activeTab = 'all')}>
 			All
 		</button>
-		<button
-			class="tab"
-			class:active={activeTab === 'open'}
-			onclick={() => activeTab = 'open'}
-		>
+		<button class="tab" class:active={activeTab === 'open'} onclick={() => (activeTab = 'open')}>
 			Open
 			{#if stats().open + stats().pending > 0}
 				<span class="badge">{stats().open + stats().pending}</span>
@@ -241,7 +250,7 @@
 		<button
 			class="tab"
 			class:active={activeTab === 'resolved'}
-			onclick={() => activeTab = 'resolved'}
+			onclick={() => (activeTab = 'resolved')}
 		>
 			Resolved
 		</button>
@@ -252,30 +261,30 @@
 		<div class="new-comment-form">
 			<div class="form-header">
 				<span>New {getTypeLabel(newCommentType)}</span>
-				<button class="close-btn" onclick={() => showNewComment = false}>✕</button>
+				<button class="close-btn" onclick={() => (showNewComment = false)}>✕</button>
 			</div>
 			<div class="type-selector">
 				<button
 					class:selected={newCommentType === 'comment'}
-					onclick={() => newCommentType = 'comment'}
+					onclick={() => (newCommentType = 'comment')}
 				>
 					💬 Comment
 				</button>
 				<button
 					class:selected={newCommentType === 'suggestion'}
-					onclick={() => newCommentType = 'suggestion'}
+					onclick={() => (newCommentType = 'suggestion')}
 				>
 					💡 Suggestion
 				</button>
 				<button
 					class:selected={newCommentType === 'question'}
-					onclick={() => newCommentType = 'question'}
+					onclick={() => (newCommentType = 'question')}
 				>
 					❓ Question
 				</button>
 				<button
 					class:selected={newCommentType === 'approval'}
-					onclick={() => newCommentType = 'approval'}
+					onclick={() => (newCommentType = 'approval')}
 				>
 					✅ Approval
 				</button>
@@ -293,14 +302,8 @@
 				</div>
 			{/if}
 			<div class="form-actions">
-				<button class="cancel-btn" onclick={() => showNewComment = false}>
-					Cancel
-				</button>
-				<button
-					class="submit-btn"
-					onclick={submitComment}
-					disabled={!newCommentContent.trim()}
-				>
+				<button class="cancel-btn" onclick={() => (showNewComment = false)}> Cancel </button>
+				<button class="submit-btn" onclick={submitComment} disabled={!newCommentContent.trim()}>
 					Add {getTypeLabel(newCommentType)}
 				</button>
 			</div>
@@ -313,7 +316,7 @@
 			<div class="empty-state">
 				<span class="empty-icon">💬</span>
 				<p>No comments yet</p>
-				<button onclick={() => showNewComment = true}>Start a discussion</button>
+				<button onclick={() => (showNewComment = true)}>Start a discussion</button>
 			</div>
 		{:else}
 			{#each filteredComments() as comment}
@@ -326,11 +329,7 @@
 					<div class="comment-header">
 						<div class="author-info">
 							{#if comment.author.avatar}
-								<img
-									src={comment.author.avatar}
-									alt={comment.author.name}
-									class="avatar"
-								/>
+								<img src={comment.author.avatar} alt={comment.author.name} class="avatar" />
 							{:else}
 								<div class="avatar-placeholder">
 									{getInitials(comment.author.name)}
@@ -378,10 +377,7 @@
 							>
 								↩ Reply
 							</button>
-							<button
-								class="action-btn resolve-btn"
-								onclick={() => onResolve(comment.id)}
-							>
+							<button class="action-btn resolve-btn" onclick={() => onResolve(comment.id)}>
 								✓ Resolve
 							</button>
 						{:else}
@@ -390,10 +386,7 @@
 							</span>
 						{/if}
 						{#if comment.author.id === currentUser.id}
-							<button
-								class="action-btn delete-btn"
-								onclick={() => handleDelete(comment.id)}
-							>
+							<button class="action-btn delete-btn" onclick={() => handleDelete(comment.id)}>
 								🗑
 							</button>
 						{/if}
@@ -401,12 +394,10 @@
 
 					<!-- Replies -->
 					{#if comment.replies.length > 0}
-						<button
-							class="show-replies-btn"
-							onclick={() => toggleExpand(comment.id)}
-						>
+						<button class="show-replies-btn" onclick={() => toggleExpand(comment.id)}>
 							{expandedComments.has(comment.id) ? '▼' : '▶'}
-							{comment.replies.length} {comment.replies.length === 1 ? 'reply' : 'replies'}
+							{comment.replies.length}
+							{comment.replies.length === 1 ? 'reply' : 'replies'}
 						</button>
 
 						{#if expandedComments.has(comment.id)}
@@ -447,9 +438,7 @@
 								aria-label="Reply content"
 							></textarea>
 							<div class="reply-actions">
-								<button class="cancel-btn" onclick={() => replyingTo = null}>
-									Cancel
-								</button>
+								<button class="cancel-btn" onclick={() => (replyingTo = null)}> Cancel </button>
 								<button
 									class="submit-btn"
 									onclick={() => submitReply(comment.id)}

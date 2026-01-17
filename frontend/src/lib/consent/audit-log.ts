@@ -9,7 +9,12 @@
  */
 
 import { browser } from '$app/environment';
-import type { ConsentState, ConsentCategory, ConsentAuditEntry, ConsentStorageOptions } from './types';
+import type {
+	ConsentState,
+	ConsentCategory,
+	ConsentAuditEntry,
+	ConsentStorageOptions
+} from './types';
 import { DEFAULT_STORAGE_OPTIONS } from './types';
 
 /**
@@ -80,7 +85,7 @@ export function addAuditEntry(
 		...(previousState && { previousState }),
 		method,
 		...(browser && { userAgent: navigator.userAgent }),
-		...(browser && { pageUrl: window.location.href }),
+		...(browser && { pageUrl: window.location.href })
 	};
 
 	if (browser) {
@@ -108,7 +113,7 @@ export function logConsentGiven(
 			necessary: state.necessary,
 			analytics: state.analytics,
 			marketing: state.marketing,
-			preferences: state.preferences,
+			preferences: state.preferences
 		},
 		method,
 		undefined,
@@ -131,14 +136,14 @@ export function logConsentUpdated(
 			necessary: newState.necessary,
 			analytics: newState.analytics,
 			marketing: newState.marketing,
-			preferences: newState.preferences,
+			preferences: newState.preferences
 		},
 		method,
 		{
 			necessary: previousState.necessary,
 			analytics: previousState.analytics,
 			marketing: previousState.marketing,
-			preferences: previousState.preferences,
+			preferences: previousState.preferences
 		},
 		options
 	);
@@ -173,7 +178,7 @@ export function logConsentExpired(
 			necessary: expiredState.necessary,
 			analytics: expiredState.analytics,
 			marketing: expiredState.marketing,
-			preferences: expiredState.preferences,
+			preferences: expiredState.preferences
 		},
 		'expiry',
 		undefined,
@@ -184,9 +189,7 @@ export function logConsentExpired(
 /**
  * Clear the audit log (for testing or user request).
  */
-export function clearAuditLog(
-	options: ConsentStorageOptions = DEFAULT_STORAGE_OPTIONS
-): void {
+export function clearAuditLog(options: ConsentStorageOptions = DEFAULT_STORAGE_OPTIONS): void {
 	if (!browser) return;
 
 	try {
@@ -201,16 +204,14 @@ export function clearAuditLog(
 /**
  * Export the audit log as JSON for GDPR data requests.
  */
-export function exportAuditLog(
-	options: ConsentStorageOptions = DEFAULT_STORAGE_OPTIONS
-): string {
+export function exportAuditLog(options: ConsentStorageOptions = DEFAULT_STORAGE_OPTIONS): string {
 	const log = getAuditLog(options);
 
 	return JSON.stringify(
 		{
 			exportDate: new Date().toISOString(),
 			totalEntries: log.length,
-			entries: log,
+			entries: log
 		},
 		null,
 		2
@@ -220,9 +221,7 @@ export function exportAuditLog(
 /**
  * Get audit statistics.
  */
-export function getAuditStats(
-	options: ConsentStorageOptions = DEFAULT_STORAGE_OPTIONS
-): {
+export function getAuditStats(options: ConsentStorageOptions = DEFAULT_STORAGE_OPTIONS): {
 	totalEntries: number;
 	firstEntry?: string;
 	lastEntry?: string;
@@ -240,16 +239,17 @@ export function getAuditStats(
 		...(lastEntry && { lastEntry }),
 		consentGivenCount: log.filter((e) => e.action === 'consent_given').length,
 		consentUpdatedCount: log.filter((e) => e.action === 'consent_updated').length,
-		consentRevokedCount: log.filter((e) => e.action === 'consent_revoked').length,
+		consentRevokedCount: log.filter((e) => e.action === 'consent_revoked').length
 	};
 }
 
 /**
  * Verify audit log integrity (basic check).
  */
-export function verifyAuditLogIntegrity(
-	options: ConsentStorageOptions = DEFAULT_STORAGE_OPTIONS
-): { valid: boolean; issues: string[] } {
+export function verifyAuditLogIntegrity(options: ConsentStorageOptions = DEFAULT_STORAGE_OPTIONS): {
+	valid: boolean;
+	issues: string[];
+} {
 	const log = getAuditLog(options);
 	const issues: string[] = [];
 
@@ -274,7 +274,7 @@ export function verifyAuditLogIntegrity(
 
 	return {
 		valid: issues.length === 0,
-		issues,
+		issues
 	};
 }
 
@@ -296,8 +296,8 @@ export async function syncAuditLogToServer(
 			body: JSON.stringify({
 				auditLog: log,
 				syncTimestamp: new Date().toISOString(),
-				userAgent: navigator.userAgent,
-			}),
+				userAgent: navigator.userAgent
+			})
 		});
 
 		return response.ok;

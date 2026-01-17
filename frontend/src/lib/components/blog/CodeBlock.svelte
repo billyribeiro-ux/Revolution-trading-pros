@@ -291,9 +291,7 @@
 		{#if showLineNumbers}
 			<div class="line-numbers" aria-hidden="true">
 				{#each codeLines as _, i}
-					<span class="line-number" class:highlighted={highlightedLineSet.has(i + 1)}
-						>{i + 1}</span
-					>
+					<span class="line-number" class:highlighted={highlightedLineSet.has(i + 1)}>{i + 1}</span>
 				{/each}
 			</div>
 		{/if}

@@ -173,7 +173,10 @@ class WebSocketService {
 	/**
 	 * Subscribe to user notifications
 	 */
-	subscribeToNotifications(userId: string, callback: (notification: NotificationPayload) => void): () => void {
+	subscribeToNotifications(
+		userId: string,
+		callback: (notification: NotificationPayload) => void
+	): () => void {
 		const channel = `user:${userId}:notifications`;
 
 		if (!this.subscriptions.has(channel)) {
@@ -201,7 +204,11 @@ class WebSocketService {
 	/**
 	 * Subscribe to cart updates
 	 */
-	subscribeToCart(userId: string | null, sessionId: string, callback: (cart: CartUpdatePayload) => void): () => void {
+	subscribeToCart(
+		userId: string | null,
+		sessionId: string,
+		callback: (cart: CartUpdatePayload) => void
+	): () => void {
 		const channel = userId ? `user:${userId}:cart` : `session:${sessionId}:cart`;
 		const wsChannel = userId ? `private-user.${userId}.cart` : `private-session.${sessionId}.cart`;
 

@@ -25,7 +25,12 @@
 		class?: string;
 	}
 
-	let { position = 'bottom-left', showAfterConsent = true, showDelay = 1000, class: className = '' }: Props = $props();
+	let {
+		position = 'bottom-left',
+		showAfterConsent = true,
+		showDelay = 1000,
+		class: className = ''
+	}: Props = $props();
 
 	// Svelte 5: Reactive state using $state() rune
 	let visible = $state(false);
@@ -89,7 +94,10 @@
 		onkeydown={handleKeyDown}
 		aria-label="Cookie settings"
 		title="Manage cookie preferences"
-		transition:fly={{ x: position.includes('left') ? -20 : 20, duration: prefersReducedMotion ? 0 : 300 }}
+		transition:fly={{
+			x: position.includes('left') ? -20 : 20,
+			duration: prefersReducedMotion ? 0 : 300
+		}}
 	>
 		<span class="btn-icon">
 			<svg
@@ -113,10 +121,7 @@
 			</svg>
 		</span>
 		{#if expanded}
-			<span
-				class="btn-label"
-				transition:fade={{ duration: prefersReducedMotion ? 0 : 150 }}
-			>
+			<span class="btn-label" transition:fade={{ duration: prefersReducedMotion ? 0 : 150 }}>
 				Cookie Settings
 			</span>
 		{/if}

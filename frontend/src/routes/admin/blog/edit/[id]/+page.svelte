@@ -419,12 +419,7 @@
 			<!-- Main Content Area -->
 			<div class="editor-main">
 				<div class="form-group">
-					<input
-						type="text"
-						bind:value={post.title}
-						placeholder="Post Title"
-						class="title-input"
-					/>
+					<input type="text" bind:value={post.title} placeholder="Post Title" class="title-input" />
 				</div>
 
 				<div class="form-group">
@@ -489,11 +484,7 @@
 
 				<!-- SEO Section -->
 				<div class="panel">
-					<button
-						type="button"
-						class="panel-header"
-						onclick={() => (showSeoPanel = !showSeoPanel)}
-					>
+					<button type="button" class="panel-header" onclick={() => (showSeoPanel = !showSeoPanel)}>
 						<h3>SEO Settings</h3>
 						<span>{showSeoPanel ? '-' : '+'}</span>
 					</button>

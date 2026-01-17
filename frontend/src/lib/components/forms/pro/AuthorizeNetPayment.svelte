@@ -212,37 +212,40 @@
 				}
 			};
 
-			Accept.dispatchData(secureData, (response: {
-				opaqueData?: { dataDescriptor: string; dataValue: string };
-				messages: { resultCode: string; message: { code: string; text: string }[] };
-			}) => {
-				isProcessing = false;
+			Accept.dispatchData(
+				secureData,
+				(response: {
+					opaqueData?: { dataDescriptor: string; dataValue: string };
+					messages: { resultCode: string; message: { code: string; text: string }[] };
+				}) => {
+					isProcessing = false;
 
-				if (response.messages.resultCode === 'Error') {
-					const errorMessage = response.messages.message
-						.map((m: { text: string }) => m.text)
-						.join(', ');
-					validationError = errorMessage;
-					if (onError) onError(errorMessage);
-					return;
-				}
+					if (response.messages.resultCode === 'Error') {
+						const errorMessage = response.messages.message
+							.map((m: { text: string }) => m.text)
+							.join(', ');
+						validationError = errorMessage;
+						if (onError) onError(errorMessage);
+						return;
+					}
 
-				if (response.opaqueData) {
-					const cardNum = cardNumber.replace(/\s/g, '');
-					paymentToken = {
-						opaqueData: response.opaqueData,
-						cardInfo: {
-							lastFour: cardNum.slice(-4),
-							cardType: getCardType(cardNum),
-							expirationDate: `${expirationMonth}/${expirationYear}`
+					if (response.opaqueData) {
+						const cardNum = cardNumber.replace(/\s/g, '');
+						paymentToken = {
+							opaqueData: response.opaqueData,
+							cardInfo: {
+								lastFour: cardNum.slice(-4),
+								cardType: getCardType(cardNum),
+								expirationDate: `${expirationMonth}/${expirationYear}`
+							}
+						};
+
+						if (onPaymentReady) {
+							onPaymentReady(paymentToken);
 						}
-					};
-
-					if (onPaymentReady) {
-						onPaymentReady(paymentToken);
 					}
 				}
-			});
+			);
 		} catch (err) {
 			isProcessing = false;
 			const errorMessage = err instanceof Error ? err.message : 'Payment processing failed';
@@ -261,9 +264,9 @@
 	const cardType = $derived(getCardType(cardNumber));
 	const isFormValid = $derived(
 		cardNumber.replace(/\s/g, '').length >= 13 &&
-		expirationMonth.length === 2 &&
-		expirationYear.length >= 2 &&
-		cvv.length >= 3
+			expirationMonth.length === 2 &&
+			expirationYear.length >= 2 &&
+			cvv.length >= 3
 	);
 </script>
 
@@ -282,15 +285,30 @@
 
 	{#if paymentToken}
 		<div class="payment-success">
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
 				<polyline points="22 4 12 14.01 9 11.01"></polyline>
 			</svg>
 			<div class="success-details">
 				<span class="success-title">Payment Method Saved</span>
-				<span class="card-details">{paymentToken.cardInfo.cardType} ending in {paymentToken.cardInfo.lastFour}</span>
+				<span class="card-details"
+					>{paymentToken.cardInfo.cardType} ending in {paymentToken.cardInfo.lastFour}</span
+				>
 			</div>
-			<button type="button" class="change-card-btn" onclick={() => { paymentToken = null; }}>
+			<button
+				type="button"
+				class="change-card-btn"
+				onclick={() => {
+					paymentToken = null;
+				}}
+			>
 				Change
 			</button>
 		</div>
@@ -393,7 +411,11 @@
 
 	<!-- Hidden inputs for form submission -->
 	{#if paymentToken}
-		<input type="hidden" name="{name}[data_descriptor]" value={paymentToken.opaqueData.dataDescriptor} />
+		<input
+			type="hidden"
+			name="{name}[data_descriptor]"
+			value={paymentToken.opaqueData.dataDescriptor}
+		/>
 		<input type="hidden" name="{name}[data_value]" value={paymentToken.opaqueData.dataValue} />
 		<input type="hidden" name="{name}[card_last_four]" value={paymentToken.cardInfo.lastFour} />
 		<input type="hidden" name="{name}[card_type]" value={paymentToken.cardInfo.cardType} />
@@ -401,7 +423,14 @@
 
 	{#if validationError || error}
 		<div class="error-message">
-			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="14"
+				height="14"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<circle cx="12" cy="12" r="10"></circle>
 				<line x1="12" y1="8" x2="12" y2="12"></line>
 				<line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -411,7 +440,14 @@
 	{/if}
 
 	<div class="security-notice">
-		<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+		<svg
+			width="14"
+			height="14"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+		>
 			<rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
 			<path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
 		</svg>

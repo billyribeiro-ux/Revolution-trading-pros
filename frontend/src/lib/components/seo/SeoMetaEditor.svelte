@@ -103,7 +103,9 @@
 	}
 
 	function removeKeyword(index: number) {
-		meta.additional_keywords = meta.additional_keywords.filter((_: string, i: number) => i !== index);
+		meta.additional_keywords = meta.additional_keywords.filter(
+			(_: string, i: number) => i !== index
+		);
 	}
 </script>
 

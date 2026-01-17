@@ -72,8 +72,8 @@
 		initialData?: CourseData | null;
 	}
 
-	let { 
-		courseSlug, 
+	let {
+		courseSlug,
 		title = 'Course Videos',
 		bunnyLibraryId = '',
 		maxHeight = '600px',
@@ -97,7 +97,7 @@
 	const allLessons = $derived.by(() => {
 		if (!courseData) return [];
 		if (courseData.modules && courseData.modules.length > 0) {
-			return courseData.modules.flatMap(m => m.lessons || []);
+			return courseData.modules.flatMap((m) => m.lessons || []);
 		}
 		return courseData.lessons || [];
 	});
@@ -115,28 +115,30 @@
 	onMount(() => {
 		mounted = true;
 		viewportWidth = window.innerWidth;
-		
-		const handleResize = () => { viewportWidth = window.innerWidth; };
+
+		const handleResize = () => {
+			viewportWidth = window.innerWidth;
+		};
 		window.addEventListener('resize', handleResize, { passive: true });
 
 		if (!initialData) {
 			fetchCourseData();
 		}
-		
+
 		return () => window.removeEventListener('resize', handleResize);
 	});
 
 	function initializeFromData() {
 		if (!courseData) return;
-		
+
 		const lessons = allLessons;
 		if (lessons.length > 0 && !activeLesson) {
 			activeLesson = lessons[0];
 		}
-		
+
 		if (courseData.modules) {
 			const newSet = new Set<number>();
-			courseData.modules.forEach(m => newSet.add(m.module.id));
+			courseData.modules.forEach((m) => newSet.add(m.module.id));
 			expandedModules = newSet;
 		}
 	}
@@ -144,11 +146,11 @@
 	async function fetchCourseData() {
 		loading = true;
 		error = '';
-		
+
 		try {
 			const res = await fetch(`/api/courses/slug/${courseSlug}/player`);
 			const data = await res.json();
-			
+
 			if (data.success && data.data) {
 				courseData = data.data;
 				initializeFromData();
@@ -185,7 +187,7 @@
 	}
 
 	function getLessonIndex(lesson: Lesson): number {
-		return allLessons.findIndex(l => l.id === lesson.id) + 1;
+		return allLessons.findIndex((l) => l.id === lesson.id) + 1;
 	}
 </script>
 
@@ -224,9 +226,17 @@
 								/>
 							{:else if !activeLesson.bunny_video_guid}
 								<div class="no-video-placeholder">
-									<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-										<polygon points="23 7 16 12 23 17 23 7"/>
-										<rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="64"
+										height="64"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.5"
+									>
+										<polygon points="23 7 16 12 23 17 23 7" />
+										<rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
 									</svg>
 									<span>Video coming soon</span>
 								</div>
@@ -247,9 +257,17 @@
 						</div>
 					{:else}
 						<div class="empty-player">
-							<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-								<polygon points="23 7 16 12 23 17 23 7"/>
-								<rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="64"
+								height="64"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.5"
+							>
+								<polygon points="23 7 16 12 23 17 23 7" />
+								<rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
 							</svg>
 							<span class="empty-message">No videos available</span>
 							<span class="empty-submessage">This course doesn't have any video lessons yet</span>
@@ -262,12 +280,12 @@
 					<div class="lesson-list-header">
 						<span class="lesson-count">{allLessons.length} lessons</span>
 					</div>
-					
+
 					<div class="lesson-list">
 						{#if hasModules}
 							{#each courseData?.modules || [] as moduleData (moduleData.module.id)}
 								<div class="module-group">
-									<button 
+									<button
 										class="module-header"
 										onclick={() => toggleModule(moduleData.module.id)}
 										aria-expanded={expandedModules.has(moduleData.module.id)}
@@ -281,18 +299,21 @@
 												{/if}
 											</span>
 										</div>
-										<svg 
-											class="chevron" 
+										<svg
+											class="chevron"
 											class:expanded={expandedModules.has(moduleData.module.id)}
-											xmlns="http://www.w3.org/2000/svg" 
-											width="20" height="20" 
-											viewBox="0 0 24 24" 
-											fill="none" stroke="currentColor" stroke-width="2"
+											xmlns="http://www.w3.org/2000/svg"
+											width="20"
+											height="20"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
 										>
-											<polyline points="6 9 12 15 18 9"/>
+											<polyline points="6 9 12 15 18 9" />
 										</svg>
 									</button>
-									
+
 									{#if expandedModules.has(moduleData.module.id)}
 										<div class="module-lessons">
 											{#each moduleData.lessons || [] as lesson (lesson.id)}
@@ -306,14 +327,23 @@
 													<div class="lesson-info">
 														<span class="lesson-title">{lesson.title}</span>
 														{#if lesson.duration_minutes}
-															<span class="lesson-meta">{formatDuration(lesson.duration_minutes)}</span>
+															<span class="lesson-meta"
+																>{formatDuration(lesson.duration_minutes)}</span
+															>
 														{/if}
 													</div>
 													{#if lesson.is_preview}
 														<span class="preview-badge">Preview</span>
 													{/if}
-													<svg class="play-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-														<polygon points="5 3 19 12 5 21 5 3"/>
+													<svg
+														class="play-icon"
+														xmlns="http://www.w3.org/2000/svg"
+														width="16"
+														height="16"
+														viewBox="0 0 24 24"
+														fill="currentColor"
+													>
+														<polygon points="5 3 19 12 5 21 5 3" />
 													</svg>
 												</button>
 											{/each}
@@ -339,8 +369,15 @@
 									{#if lesson.is_preview}
 										<span class="preview-badge">Preview</span>
 									{/if}
-									<svg class="play-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-										<polygon points="5 3 19 12 5 21 5 3"/>
+									<svg
+										class="play-icon"
+										xmlns="http://www.w3.org/2000/svg"
+										width="16"
+										height="16"
+										viewBox="0 0 24 24"
+										fill="currentColor"
+									>
+										<polygon points="5 3 19 12 5 21 5 3" />
 									</svg>
 								</button>
 							{/each}
@@ -354,7 +391,7 @@
 
 <style>
 	.class-videos-wrapper {
-		background-color: #FFFFFF;
+		background-color: #ffffff;
 		border-radius: 4px;
 		border: 1px solid #e0e0e0;
 		overflow: hidden;
@@ -659,7 +696,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Responsive */

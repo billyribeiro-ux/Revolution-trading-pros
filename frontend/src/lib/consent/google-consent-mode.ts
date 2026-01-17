@@ -14,7 +14,6 @@
 import { browser } from '$app/environment';
 import type { ConsentState, GoogleConsentParams } from './types';
 
-
 declare global {
 	interface Window {
 		dataLayer?: unknown[];
@@ -64,7 +63,7 @@ export function mapConsentToGoogle(consent: ConsentState): GoogleConsentParams {
 		personalization_storage: consent.preferences ? 'granted' : 'denied',
 
 		// security_storage: Always granted (necessary category)
-		security_storage: 'granted',
+		security_storage: 'granted'
 	};
 }
 
@@ -75,10 +74,7 @@ export function mapConsentToGoogle(consent: ConsentState): GoogleConsentParams {
  * @param consent - The initial consent state
  * @param waitForUpdate - Optional delay (ms) before applying defaults
  */
-export function setDefaultConsent(
-	consent: ConsentState,
-	waitForUpdate?: number
-): void {
+export function setDefaultConsent(consent: ConsentState, waitForUpdate?: number): void {
 	if (!browser) return;
 
 	ensureGtag();
@@ -87,7 +83,7 @@ export function setDefaultConsent(
 
 	// Set default consent with optional wait_for_update
 	const consentParams: GoogleConsentParams & { wait_for_update?: number } = {
-		...params,
+		...params
 	};
 
 	if (waitForUpdate && waitForUpdate > 0) {
@@ -167,7 +163,7 @@ export function grantAllConsent(): void {
 		ad_personalization: 'granted',
 		functionality_storage: 'granted',
 		personalization_storage: 'granted',
-		security_storage: 'granted',
+		security_storage: 'granted'
 	};
 
 	window.gtag!('consent', 'update', params);
@@ -191,7 +187,7 @@ export function denyNonEssentialConsent(): void {
 		ad_personalization: 'denied',
 		functionality_storage: 'denied',
 		personalization_storage: 'denied',
-		security_storage: 'granted', // Always granted
+		security_storage: 'granted' // Always granted
 	};
 
 	window.gtag!('consent', 'update', params);

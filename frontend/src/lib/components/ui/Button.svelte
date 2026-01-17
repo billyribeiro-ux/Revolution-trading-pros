@@ -41,10 +41,8 @@
 	}: ButtonProps = $props();
 
 	const variants: Record<string, string> = {
-		primary:
-			'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500 disabled:bg-blue-300',
-		secondary:
-			'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500 disabled:bg-gray-300',
+		primary: 'bg-blue-600 hover:bg-blue-700 text-white focus:ring-blue-500 disabled:bg-blue-300',
+		secondary: 'bg-gray-600 hover:bg-gray-700 text-white focus:ring-gray-500 disabled:bg-gray-300',
 		danger: 'bg-red-600 hover:bg-red-700 text-white focus:ring-red-500 disabled:bg-red-300',
 		success:
 			'bg-green-600 hover:bg-green-700 text-white focus:ring-green-500 disabled:bg-green-300',
@@ -89,13 +87,7 @@
 			viewBox="0 0 24 24"
 			aria-hidden="true"
 		>
-			<circle
-				class="opacity-25"
-				cx="12"
-				cy="12"
-				r="10"
-				stroke="currentColor"
-				stroke-width="4"
+			<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
 			></circle>
 			<path
 				class="opacity-75"

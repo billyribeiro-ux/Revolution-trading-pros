@@ -6,7 +6,14 @@ export interface CartItem {
 	name: string;
 	description?: string;
 	price: number;
-	type: 'membership' | 'course' | 'alert-service' | 'indicator' | 'trading-room' | 'weekly-watchlist' | 'premium-report';
+	type:
+		| 'membership'
+		| 'course'
+		| 'alert-service'
+		| 'indicator'
+		| 'trading-room'
+		| 'weekly-watchlist'
+		| 'premium-report';
 	image?: string;
 	thumbnail?: string; // Product thumbnail URL
 	quantity: number;
@@ -20,11 +27,11 @@ export interface CartItem {
  * Subscription conflict types for user feedback
  */
 export type SubscriptionConflictType =
-	| 'already_subscribed'  // User has exact same subscription
-	| 'upgrade'             // User is upgrading (e.g., monthly to quarterly/yearly)
-	| 'downgrade'           // User is downgrading (e.g., yearly to monthly)
-	| 'already_owned'       // User already owns this product (course/indicator)
-	| null;                 // No conflict
+	| 'already_subscribed' // User has exact same subscription
+	| 'upgrade' // User is upgrading (e.g., monthly to quarterly/yearly)
+	| 'downgrade' // User is downgrading (e.g., yearly to monthly)
+	| 'already_owned' // User already owns this product (course/indicator)
+	| null; // No conflict
 
 export interface SubscriptionConflict {
 	type: SubscriptionConflictType;
@@ -58,10 +65,14 @@ export function isUpgrade(
  */
 export function getIntervalDisplayName(interval: string): string {
 	switch (interval) {
-		case 'monthly': return 'Monthly';
-		case 'quarterly': return 'Quarterly';
-		case 'yearly': return 'Annual';
-		default: return interval;
+		case 'monthly':
+			return 'Monthly';
+		case 'quarterly':
+			return 'Quarterly';
+		case 'yearly':
+			return 'Annual';
+		default:
+			return interval;
 	}
 }
 

@@ -93,7 +93,12 @@
 		let index = 0;
 
 		contentBlocks.forEach((block) => {
-			if (block.type === 'heading' && block.data && (block.data.level ?? 0) >= 2 && (block.data.level ?? 0) <= maxDepth) {
+			if (
+				block.type === 'heading' &&
+				block.data &&
+				(block.data.level ?? 0) >= 2 &&
+				(block.data.level ?? 0) <= maxDepth
+			) {
 				const text = block.data?.text || '';
 				const id = generateSlug(text, index);
 				headings.push({
@@ -109,9 +114,7 @@
 	}
 
 	// Build nested hierarchy from flat headings
-	function buildHierarchy(
-		headings: { id: string; text: string; level: number }[]
-	): TocItem[] {
+	function buildHierarchy(headings: { id: string; text: string; level: number }[]): TocItem[] {
 		const result: TocItem[] = [];
 		const stack: { item: TocItem; level: number }[] = [];
 		let counters: number[] = [0, 0, 0, 0, 0, 0];
@@ -335,7 +338,13 @@
 				aria-expanded={isExpanded}
 				aria-controls="toc-list"
 			>
-				<svg class="toc-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					class="toc-icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<line x1="3" y1="6" x2="21" y2="6"></line>
 					<line x1="3" y1="12" x2="15" y2="12"></line>
 					<line x1="3" y1="18" x2="18" y2="18"></line>

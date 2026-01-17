@@ -82,33 +82,42 @@
 	// Calculate overall status - only if we have connected services
 	let overallStatus = $derived(() => {
 		if (!hasConnectedServices || rateLimits.length === 0) return 'none';
-		if (rateLimits.some(r => r.status === 'critical')) return 'critical';
-		if (rateLimits.some(r => r.status === 'warning')) return 'warning';
+		if (rateLimits.some((r) => r.status === 'critical')) return 'critical';
+		if (rateLimits.some((r) => r.status === 'warning')) return 'warning';
 		return 'ok';
 	});
 
 	// Calculate lowest percentage - only if we have connected services
 	let lowestPercentage = $derived(() => {
 		if (!hasConnectedServices || rateLimits.length === 0) return null;
-		return Math.min(...rateLimits.map(r => r.percentage));
+		return Math.min(...rateLimits.map((r) => r.percentage));
 	});
 
 	function getStatusColor(status: string) {
 		switch (status) {
-			case 'critical': return '#ef4444';
-			case 'warning': return '#f59e0b';
-			case 'ok': return '#10b981';
-			case 'none': return '#6b7280';
-			default: return '#6b7280';
+			case 'critical':
+				return '#ef4444';
+			case 'warning':
+				return '#f59e0b';
+			case 'ok':
+				return '#10b981';
+			case 'none':
+				return '#6b7280';
+			default:
+				return '#6b7280';
 		}
 	}
 
 	function getStatusIcon(status: string) {
 		switch (status) {
-			case 'critical': return IconAlertTriangle;
-			case 'warning': return IconClock;
-			case 'ok': return IconCircleCheck;
-			default: return IconPlugConnectedX;
+			case 'critical':
+				return IconAlertTriangle;
+			case 'warning':
+				return IconClock;
+			case 'ok':
+				return IconCircleCheck;
+			default:
+				return IconPlugConnectedX;
 		}
 	}
 
@@ -153,12 +162,17 @@
 		class:warning={overallStatus() === 'warning'}
 		class:critical={overallStatus() === 'critical'}
 		class:disconnected={overallStatus() === 'none'}
-		onclick={(e: MouseEvent) => { e.stopPropagation(); toggle(); }}
+		onclick={(e: MouseEvent) => {
+			e.stopPropagation();
+			toggle();
+		}}
 		title="API Rate Limits"
 	>
 		{#if hasConnectedServices}
 			<IconPlugConnected size={18} />
-			<span class="limit-percentage">{lowestPercentage() !== null ? Math.round(lowestPercentage() ?? 0) : '--'}%</span>
+			<span class="limit-percentage"
+				>{lowestPercentage() !== null ? Math.round(lowestPercentage() ?? 0) : '--'}%</span
+			>
 		{:else}
 			<IconPlugConnectedX size={18} />
 			<span class="limit-percentage">--</span>
@@ -208,11 +222,10 @@
 					</div>
 					<p class="no-services-title">No Services Connected</p>
 					<p class="no-services-desc">
-						Connect external services like Stripe, SendGrid, or OpenAI to monitor their API rate limits here.
+						Connect external services like Stripe, SendGrid, or OpenAI to monitor their API rate
+						limits here.
 					</p>
-					<a href="/admin/connections" class="connect-btn">
-						Connect Services
-					</a>
+					<a href="/admin/connections" class="connect-btn"> Connect Services </a>
 				</div>
 			{:else}
 				<div class="limits-list">
@@ -369,7 +382,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* No Services State */

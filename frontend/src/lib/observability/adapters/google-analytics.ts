@@ -31,7 +31,7 @@ import type {
 	PurchasePayload,
 	IdentifyPayload,
 	QueuedEvent,
-	AdapterMetrics,
+	AdapterMetrics
 } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -154,7 +154,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 	private _userId: string | null = null;
 	private _consent: { analytics: boolean; marketing: boolean } = {
 		analytics: false,
-		marketing: false,
+		marketing: false
 	};
 
 	// Metrics tracking
@@ -163,7 +163,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		eventsFailed: 0,
 		lastEventTime: null,
 		averageLatencyMs: 0,
-		queueSize: 0,
+		queueSize: 0
 	};
 	private _latencySum = 0;
 
@@ -180,7 +180,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 	get metrics(): AdapterMetrics {
 		return {
 			...this._metrics,
-			queueSize: this._eventQueue.length,
+			queueSize: this._eventQueue.length
 		};
 	}
 
@@ -258,11 +258,8 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 					await Promise.race([
 						injectGtagScript(this._measurementId),
 						new Promise((_, timeoutReject) =>
-							setTimeout(
-								() => timeoutReject(new Error('Script load timeout')),
-								INIT_TIMEOUT_MS
-							)
-						),
+							setTimeout(() => timeoutReject(new Error('Script load timeout')), INIT_TIMEOUT_MS)
+						)
 					]);
 
 					// Step 4: Initialize gtag with timestamp
@@ -280,7 +277,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 						cookie_flags: gaConfig.cookieFlags ?? '',
 						link_attribution: gaConfig.linkAttribution ?? true,
 						transport_type: gaConfig.transportType ?? 'beacon',
-						debug_mode: gaConfig.debug ?? false,
+						debug_mode: gaConfig.debug ?? false
 					});
 
 					this._state = 'ready';
@@ -288,7 +285,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 					if (this._config?.debug) {
 						console.debug('[GA4] Initialized successfully', {
 							measurementId: this._measurementId,
-							consent: this._consent,
+							consent: this._consent
 						});
 					}
 
@@ -319,7 +316,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 			functionality_storage: 'granted',
 			personalization_storage: this._consent.analytics ? 'granted' : 'denied',
 			security_storage: 'granted',
-			wait_for_update: 500,
+			wait_for_update: 500
 		});
 	}
 
@@ -337,7 +334,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 			ad_storage: consent.marketing ? 'granted' : 'denied',
 			ad_user_data: consent.marketing ? 'granted' : 'denied',
 			ad_personalization: consent.marketing ? 'granted' : 'denied',
-			personalization_storage: consent.analytics ? 'granted' : 'denied',
+			personalization_storage: consent.analytics ? 'granted' : 'denied'
 		});
 
 		if (this._config?.debug) {
@@ -360,7 +357,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 			page_location: payload.page_location ?? (browser ? window.location.href : ''),
 			page_path: payload.page_path ?? (browser ? window.location.pathname : ''),
 			page_title: payload.page_title ?? (browser ? document.title : ''),
-			page_referrer: payload.page_referrer ?? (browser ? document.referrer : ''),
+			page_referrer: payload.page_referrer ?? (browser ? document.referrer : '')
 		};
 
 		if (payload.page_type) {
@@ -389,7 +386,16 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 
 			// Copy remaining custom properties
 			for (const [key, value] of Object.entries(payload)) {
-				if (!['timestamp', 'session_id', 'user_id', 'event_category', 'event_label', 'value'].includes(key)) {
+				if (
+					![
+						'timestamp',
+						'session_id',
+						'user_id',
+						'event_category',
+						'event_label',
+						'value'
+					].includes(key)
+				) {
 					eventData[key] = value;
 				}
 			}
@@ -407,7 +413,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		const eventData: Record<string, unknown> = {
 			transaction_id: payload.transaction_id,
 			value: payload.value,
-			currency: payload.currency,
+			currency: payload.currency
 		};
 
 		if (payload.tax !== undefined) eventData['tax'] = payload.tax;
@@ -429,7 +435,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 		// Set user ID in GA4
 		if (this.isReady) {
 			window.gtag!('config', this._measurementId, {
-				user_id: payload.user_id,
+				user_id: payload.user_id
 			});
 		}
 
@@ -473,7 +479,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 
 		if (browser && this.isReady) {
 			window.gtag!('config', this._measurementId, {
-				user_id: null,
+				user_id: null
 			});
 		}
 
@@ -517,11 +523,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 	/**
 	 * Internal tracking method with queue support.
 	 */
-	private _track(
-		eventName: string,
-		payload: Record<string, unknown>,
-		startTime: number
-	): void {
+	private _track(eventName: string, payload: Record<string, unknown>, startTime: number): void {
 		// Skip if no consent
 		if (!this._consent.analytics) {
 			if (this._config?.debug) {
@@ -547,11 +549,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 	/**
 	 * Send event to Google Analytics.
 	 */
-	private _sendEvent(
-		eventName: string,
-		payload: Record<string, unknown>,
-		startTime: number
-	): void {
+	private _sendEvent(eventName: string, payload: Record<string, unknown>, startTime: number): void {
 		try {
 			window.gtag!('event', eventName, payload);
 
@@ -585,7 +583,7 @@ class GoogleAnalyticsAdapter implements AnalyticsAdapter {
 			eventName,
 			payload,
 			timestamp: Date.now(),
-			retries: 0,
+			retries: 0
 		});
 
 		this._metrics.queueSize = this._eventQueue.length;

@@ -221,7 +221,7 @@ export const CRM_INTEGRATIONS: Integration[] = [
 		name: 'Salesforce',
 		type: 'crm',
 		icon: 'salesforce',
-		description: 'World\'s #1 CRM platform',
+		description: "World's #1 CRM platform",
 		requiredFields: ['client_id', 'client_secret', 'refresh_token'],
 		features: ['leads', 'contacts', 'accounts', 'opportunities']
 	},
@@ -551,68 +551,405 @@ export const FIELD_CATEGORIES = {
 
 export const FIELD_TYPES: FieldType[] = [
 	// General Fields
-	{ id: 'text', label: 'Text Input', icon: 'text', category: 'general', description: 'Single line text input' },
-	{ id: 'email', label: 'Email', icon: 'mail', category: 'general', description: 'Email address with validation' },
-	{ id: 'textarea', label: 'Text Area', icon: 'align-left', category: 'general', description: 'Multi-line text input' },
-	{ id: 'number', label: 'Number', icon: 'hash', category: 'general', description: 'Numeric input with min/max' },
-	{ id: 'select', label: 'Dropdown', icon: 'chevron-down', category: 'general', description: 'Single selection dropdown' },
-	{ id: 'radio', label: 'Radio Button', icon: 'circle-dot', category: 'general', description: 'Single choice from options' },
-	{ id: 'checkbox', label: 'Checkbox', icon: 'square-check', category: 'general', description: 'Multiple choice selection' },
-	{ id: 'multiselect', label: 'Multi Select', icon: 'list-check', category: 'general', description: 'Multiple selection dropdown' },
-	{ id: 'date', label: 'Date Picker', icon: 'calendar', category: 'general', description: 'Date selection with calendar' },
-	{ id: 'time', label: 'Time Picker', icon: 'clock', category: 'general', description: 'Time selection' },
-	{ id: 'datetime', label: 'Date & Time', icon: 'calendar-clock', category: 'general', description: 'Combined date and time' },
-	{ id: 'file', label: 'File Upload', icon: 'upload', category: 'general', description: 'File attachment upload' },
-	{ id: 'image', label: 'Image Upload', icon: 'image', category: 'general', description: 'Image file upload with preview' },
-	{ id: 'hidden', label: 'Hidden Field', icon: 'eye-off', category: 'general', description: 'Hidden value field' },
-	{ id: 'password', label: 'Password', icon: 'lock', category: 'general', description: 'Password input with masking' },
-	{ id: 'url', label: 'Website URL', icon: 'link', category: 'general', description: 'URL input with validation' },
+	{
+		id: 'text',
+		label: 'Text Input',
+		icon: 'text',
+		category: 'general',
+		description: 'Single line text input'
+	},
+	{
+		id: 'email',
+		label: 'Email',
+		icon: 'mail',
+		category: 'general',
+		description: 'Email address with validation'
+	},
+	{
+		id: 'textarea',
+		label: 'Text Area',
+		icon: 'align-left',
+		category: 'general',
+		description: 'Multi-line text input'
+	},
+	{
+		id: 'number',
+		label: 'Number',
+		icon: 'hash',
+		category: 'general',
+		description: 'Numeric input with min/max'
+	},
+	{
+		id: 'select',
+		label: 'Dropdown',
+		icon: 'chevron-down',
+		category: 'general',
+		description: 'Single selection dropdown'
+	},
+	{
+		id: 'radio',
+		label: 'Radio Button',
+		icon: 'circle-dot',
+		category: 'general',
+		description: 'Single choice from options'
+	},
+	{
+		id: 'checkbox',
+		label: 'Checkbox',
+		icon: 'square-check',
+		category: 'general',
+		description: 'Multiple choice selection'
+	},
+	{
+		id: 'multiselect',
+		label: 'Multi Select',
+		icon: 'list-check',
+		category: 'general',
+		description: 'Multiple selection dropdown'
+	},
+	{
+		id: 'date',
+		label: 'Date Picker',
+		icon: 'calendar',
+		category: 'general',
+		description: 'Date selection with calendar'
+	},
+	{
+		id: 'time',
+		label: 'Time Picker',
+		icon: 'clock',
+		category: 'general',
+		description: 'Time selection'
+	},
+	{
+		id: 'datetime',
+		label: 'Date & Time',
+		icon: 'calendar-clock',
+		category: 'general',
+		description: 'Combined date and time'
+	},
+	{
+		id: 'file',
+		label: 'File Upload',
+		icon: 'upload',
+		category: 'general',
+		description: 'File attachment upload'
+	},
+	{
+		id: 'image',
+		label: 'Image Upload',
+		icon: 'image',
+		category: 'general',
+		description: 'Image file upload with preview'
+	},
+	{
+		id: 'hidden',
+		label: 'Hidden Field',
+		icon: 'eye-off',
+		category: 'general',
+		description: 'Hidden value field'
+	},
+	{
+		id: 'password',
+		label: 'Password',
+		icon: 'lock',
+		category: 'general',
+		description: 'Password input with masking'
+	},
+	{
+		id: 'url',
+		label: 'Website URL',
+		icon: 'link',
+		category: 'general',
+		description: 'URL input with validation'
+	},
 
 	// Advanced Fields
-	{ id: 'phone', label: 'Phone Number', icon: 'phone', category: 'advanced', description: 'Phone with formatting' },
-	{ id: 'phone_intl', label: 'International Phone', icon: 'globe', category: 'advanced', description: 'Phone with country codes', premium: true },
-	{ id: 'address', label: 'Address', icon: 'map-pin', category: 'advanced', description: 'Address with autocomplete', premium: true },
-	{ id: 'rating', label: 'Star Rating', icon: 'star', category: 'advanced', description: 'Star-based rating input' },
-	{ id: 'nps', label: 'Net Promoter Score', icon: 'gauge', category: 'advanced', description: 'NPS survey (0-10)', premium: true },
-	{ id: 'range', label: 'Range Slider', icon: 'sliders', category: 'advanced', description: 'Slider with min/max' },
-	{ id: 'range_slider', label: 'Advanced Slider', icon: 'sliders-horizontal', category: 'advanced', description: 'Multi-handle slider', premium: true },
-	{ id: 'color', label: 'Color Picker', icon: 'palette', category: 'advanced', description: 'Color selection input' },
-	{ id: 'signature', label: 'Signature Pad', icon: 'pen-tool', category: 'advanced', description: 'Digital signature capture' },
-	{ id: 'wysiwyg', label: 'Rich Text Editor', icon: 'type', category: 'advanced', description: 'Full WYSIWYG editor' },
-	{ id: 'rich_text_input', label: 'Rich Text Input', icon: 'pilcrow', category: 'advanced', description: 'Lightweight rich text', premium: true },
-	{ id: 'code', label: 'Code Editor', icon: 'code', category: 'advanced', description: 'Code input with syntax' },
-	{ id: 'calculator', label: 'Calculator', icon: 'calculator', category: 'advanced', description: 'Computed field', premium: true },
-	{ id: 'chained_select', label: 'Chained Select', icon: 'git-branch', category: 'advanced', description: 'Dependent dropdowns', premium: true },
-	{ id: 'dynamic_field', label: 'Dynamic Field', icon: 'database', category: 'advanced', description: 'Dynamic data population', premium: true },
-	{ id: 'post_selection', label: 'Post Selection', icon: 'file-text', category: 'advanced', description: 'Select posts/products', premium: true },
+	{
+		id: 'phone',
+		label: 'Phone Number',
+		icon: 'phone',
+		category: 'advanced',
+		description: 'Phone with formatting'
+	},
+	{
+		id: 'phone_intl',
+		label: 'International Phone',
+		icon: 'globe',
+		category: 'advanced',
+		description: 'Phone with country codes',
+		premium: true
+	},
+	{
+		id: 'address',
+		label: 'Address',
+		icon: 'map-pin',
+		category: 'advanced',
+		description: 'Address with autocomplete',
+		premium: true
+	},
+	{
+		id: 'rating',
+		label: 'Star Rating',
+		icon: 'star',
+		category: 'advanced',
+		description: 'Star-based rating input'
+	},
+	{
+		id: 'nps',
+		label: 'Net Promoter Score',
+		icon: 'gauge',
+		category: 'advanced',
+		description: 'NPS survey (0-10)',
+		premium: true
+	},
+	{
+		id: 'range',
+		label: 'Range Slider',
+		icon: 'sliders',
+		category: 'advanced',
+		description: 'Slider with min/max'
+	},
+	{
+		id: 'range_slider',
+		label: 'Advanced Slider',
+		icon: 'sliders-horizontal',
+		category: 'advanced',
+		description: 'Multi-handle slider',
+		premium: true
+	},
+	{
+		id: 'color',
+		label: 'Color Picker',
+		icon: 'palette',
+		category: 'advanced',
+		description: 'Color selection input'
+	},
+	{
+		id: 'signature',
+		label: 'Signature Pad',
+		icon: 'pen-tool',
+		category: 'advanced',
+		description: 'Digital signature capture'
+	},
+	{
+		id: 'wysiwyg',
+		label: 'Rich Text Editor',
+		icon: 'type',
+		category: 'advanced',
+		description: 'Full WYSIWYG editor'
+	},
+	{
+		id: 'rich_text_input',
+		label: 'Rich Text Input',
+		icon: 'pilcrow',
+		category: 'advanced',
+		description: 'Lightweight rich text',
+		premium: true
+	},
+	{
+		id: 'code',
+		label: 'Code Editor',
+		icon: 'code',
+		category: 'advanced',
+		description: 'Code input with syntax'
+	},
+	{
+		id: 'calculator',
+		label: 'Calculator',
+		icon: 'calculator',
+		category: 'advanced',
+		description: 'Computed field',
+		premium: true
+	},
+	{
+		id: 'chained_select',
+		label: 'Chained Select',
+		icon: 'git-branch',
+		category: 'advanced',
+		description: 'Dependent dropdowns',
+		premium: true
+	},
+	{
+		id: 'dynamic_field',
+		label: 'Dynamic Field',
+		icon: 'database',
+		category: 'advanced',
+		description: 'Dynamic data population',
+		premium: true
+	},
+	{
+		id: 'post_selection',
+		label: 'Post Selection',
+		icon: 'file-text',
+		category: 'advanced',
+		description: 'Select posts/products',
+		premium: true
+	},
 
 	// Payment Fields
-	{ id: 'payment', label: 'Payment Amount', icon: 'dollar-sign', category: 'payment', description: 'Payment total field', premium: true },
-	{ id: 'payment_method', label: 'Payment Method', icon: 'credit-card', category: 'payment', description: 'Payment method selector', premium: true },
-	{ id: 'subscription', label: 'Subscription', icon: 'repeat', category: 'payment', description: 'Subscription plan selector', premium: true },
-	{ id: 'item_quantity', label: 'Item Quantity', icon: 'shopping-cart', category: 'payment', description: 'Product quantity', premium: true },
-	{ id: 'coupon', label: 'Coupon Code', icon: 'tag', category: 'payment', description: 'Discount coupon field', premium: true },
-	{ id: 'payment_summary', label: 'Order Summary', icon: 'receipt', category: 'payment', description: 'Payment summary display', premium: true },
+	{
+		id: 'payment',
+		label: 'Payment Amount',
+		icon: 'dollar-sign',
+		category: 'payment',
+		description: 'Payment total field',
+		premium: true
+	},
+	{
+		id: 'payment_method',
+		label: 'Payment Method',
+		icon: 'credit-card',
+		category: 'payment',
+		description: 'Payment method selector',
+		premium: true
+	},
+	{
+		id: 'subscription',
+		label: 'Subscription',
+		icon: 'repeat',
+		category: 'payment',
+		description: 'Subscription plan selector',
+		premium: true
+	},
+	{
+		id: 'item_quantity',
+		label: 'Item Quantity',
+		icon: 'shopping-cart',
+		category: 'payment',
+		description: 'Product quantity',
+		premium: true
+	},
+	{
+		id: 'coupon',
+		label: 'Coupon Code',
+		icon: 'tag',
+		category: 'payment',
+		description: 'Discount coupon field',
+		premium: true
+	},
+	{
+		id: 'payment_summary',
+		label: 'Order Summary',
+		icon: 'receipt',
+		category: 'payment',
+		description: 'Payment summary display',
+		premium: true
+	},
 
 	// Container Fields
-	{ id: 'form_step', label: 'Form Step', icon: 'layers', category: 'container', description: 'Multi-step form marker', premium: true },
-	{ id: 'repeater', label: 'Repeater', icon: 'copy-plus', category: 'container', description: 'Repeatable field group', premium: true },
-	{ id: 'accordion', label: 'Accordion', icon: 'chevrons-down', category: 'container', description: 'Collapsible section', premium: true },
+	{
+		id: 'form_step',
+		label: 'Form Step',
+		icon: 'layers',
+		category: 'container',
+		description: 'Multi-step form marker',
+		premium: true
+	},
+	{
+		id: 'repeater',
+		label: 'Repeater',
+		icon: 'copy-plus',
+		category: 'container',
+		description: 'Repeatable field group',
+		premium: true
+	},
+	{
+		id: 'accordion',
+		label: 'Accordion',
+		icon: 'chevrons-down',
+		category: 'container',
+		description: 'Collapsible section',
+		premium: true
+	},
 
 	// Layout Elements
-	{ id: 'heading', label: 'Heading', icon: 'heading', category: 'layout', description: 'Section heading text' },
-	{ id: 'paragraph', label: 'Paragraph', icon: 'text', category: 'layout', description: 'Descriptive text block' },
-	{ id: 'divider', label: 'Divider', icon: 'minus', category: 'layout', description: 'Visual separator line' },
-	{ id: 'spacer', label: 'Spacer', icon: 'move-vertical', category: 'layout', description: 'Vertical spacing' },
-	{ id: 'shortcode', label: 'Shortcode', icon: 'code-2', category: 'layout', description: 'Embed shortcode', premium: true },
+	{
+		id: 'heading',
+		label: 'Heading',
+		icon: 'heading',
+		category: 'layout',
+		description: 'Section heading text'
+	},
+	{
+		id: 'paragraph',
+		label: 'Paragraph',
+		icon: 'text',
+		category: 'layout',
+		description: 'Descriptive text block'
+	},
+	{
+		id: 'divider',
+		label: 'Divider',
+		icon: 'minus',
+		category: 'layout',
+		description: 'Visual separator line'
+	},
+	{
+		id: 'spacer',
+		label: 'Spacer',
+		icon: 'move-vertical',
+		category: 'layout',
+		description: 'Vertical spacing'
+	},
+	{
+		id: 'shortcode',
+		label: 'Shortcode',
+		icon: 'code-2',
+		category: 'layout',
+		description: 'Embed shortcode',
+		premium: true
+	},
 
 	// Pro Fields
-	{ id: 'toggle', label: 'Toggle Switch', icon: 'toggle-right', category: 'pro', description: 'On/off toggle switch', premium: true },
-	{ id: 'gdpr', label: 'GDPR Consent', icon: 'shield-check', category: 'pro', description: 'GDPR compliance checkbox', premium: true },
-	{ id: 'terms', label: 'Terms & Conditions', icon: 'file-check', category: 'pro', description: 'Terms acceptance', premium: true },
-	{ id: 'quiz', label: 'Quiz Question', icon: 'help-circle', category: 'pro', description: 'Quiz/assessment field', premium: true },
-	{ id: 'save_progress', label: 'Save Progress', icon: 'save', category: 'pro', description: 'Save and resume button', premium: true },
-	{ id: 'chat', label: 'Conversational', icon: 'message-circle', category: 'pro', description: 'Chat-style input', premium: true }
+	{
+		id: 'toggle',
+		label: 'Toggle Switch',
+		icon: 'toggle-right',
+		category: 'pro',
+		description: 'On/off toggle switch',
+		premium: true
+	},
+	{
+		id: 'gdpr',
+		label: 'GDPR Consent',
+		icon: 'shield-check',
+		category: 'pro',
+		description: 'GDPR compliance checkbox',
+		premium: true
+	},
+	{
+		id: 'terms',
+		label: 'Terms & Conditions',
+		icon: 'file-check',
+		category: 'pro',
+		description: 'Terms acceptance',
+		premium: true
+	},
+	{
+		id: 'quiz',
+		label: 'Quiz Question',
+		icon: 'help-circle',
+		category: 'pro',
+		description: 'Quiz/assessment field',
+		premium: true
+	},
+	{
+		id: 'save_progress',
+		label: 'Save Progress',
+		icon: 'save',
+		category: 'pro',
+		description: 'Save and resume button',
+		premium: true
+	},
+	{
+		id: 'chat',
+		label: 'Conversational',
+		icon: 'message-circle',
+		category: 'pro',
+		description: 'Chat-style input',
+		premium: true
+	}
 ];
 
 // ============================================================================
@@ -630,43 +967,235 @@ export interface Feature {
 
 export const FEATURES: Feature[] = [
 	// Form Building
-	{ id: 'drag_drop', name: 'Drag & Drop Builder', description: 'Effortlessly create forms with drag and drop', category: 'building', icon: 'move' },
-	{ id: 'templates', name: 'Pre-built Templates', description: 'Start from dozens of ready templates', category: 'building', icon: 'layout' },
-	{ id: 'multi_step', name: 'Multi-Step Forms', description: 'Break forms into multiple steps', category: 'building', icon: 'layers', premium: true },
-	{ id: 'conversational', name: 'Conversational Forms', description: 'Interactive chat-style forms', category: 'building', icon: 'message-circle', premium: true },
-	{ id: 'conditional_logic', name: 'Conditional Logic', description: 'Show/hide fields based on input', category: 'building', icon: 'git-branch' },
-	{ id: 'calculations', name: 'Numeric Calculations', description: 'Real-time calculations in forms', category: 'building', icon: 'calculator', premium: true },
-	{ id: 'file_upload', name: 'File & Image Upload', description: 'Accept file attachments', category: 'building', icon: 'upload', premium: true },
+	{
+		id: 'drag_drop',
+		name: 'Drag & Drop Builder',
+		description: 'Effortlessly create forms with drag and drop',
+		category: 'building',
+		icon: 'move'
+	},
+	{
+		id: 'templates',
+		name: 'Pre-built Templates',
+		description: 'Start from dozens of ready templates',
+		category: 'building',
+		icon: 'layout'
+	},
+	{
+		id: 'multi_step',
+		name: 'Multi-Step Forms',
+		description: 'Break forms into multiple steps',
+		category: 'building',
+		icon: 'layers',
+		premium: true
+	},
+	{
+		id: 'conversational',
+		name: 'Conversational Forms',
+		description: 'Interactive chat-style forms',
+		category: 'building',
+		icon: 'message-circle',
+		premium: true
+	},
+	{
+		id: 'conditional_logic',
+		name: 'Conditional Logic',
+		description: 'Show/hide fields based on input',
+		category: 'building',
+		icon: 'git-branch'
+	},
+	{
+		id: 'calculations',
+		name: 'Numeric Calculations',
+		description: 'Real-time calculations in forms',
+		category: 'building',
+		icon: 'calculator',
+		premium: true
+	},
+	{
+		id: 'file_upload',
+		name: 'File & Image Upload',
+		description: 'Accept file attachments',
+		category: 'building',
+		icon: 'upload',
+		premium: true
+	},
 
 	// Customization
-	{ id: 'form_styler', name: 'Advanced Styler', description: 'Customize form appearance', category: 'customization', icon: 'palette', premium: true },
-	{ id: 'custom_css', name: 'Custom CSS & JS', description: 'Add custom styling code', category: 'customization', icon: 'code' },
-	{ id: 'landing_pages', name: 'Landing Pages', description: 'Turn forms into landing pages', category: 'customization', icon: 'layout', premium: true },
-	{ id: 'multi_column', name: 'Multi-Column Layout', description: 'Create multi-column forms', category: 'customization', icon: 'columns' },
+	{
+		id: 'form_styler',
+		name: 'Advanced Styler',
+		description: 'Customize form appearance',
+		category: 'customization',
+		icon: 'palette',
+		premium: true
+	},
+	{
+		id: 'custom_css',
+		name: 'Custom CSS & JS',
+		description: 'Add custom styling code',
+		category: 'customization',
+		icon: 'code'
+	},
+	{
+		id: 'landing_pages',
+		name: 'Landing Pages',
+		description: 'Turn forms into landing pages',
+		category: 'customization',
+		icon: 'layout',
+		premium: true
+	},
+	{
+		id: 'multi_column',
+		name: 'Multi-Column Layout',
+		description: 'Create multi-column forms',
+		category: 'customization',
+		icon: 'columns'
+	},
 
 	// Data & Entries
-	{ id: 'export_entries', name: 'Export Entries', description: 'Export to CSV/Excel', category: 'data', icon: 'download' },
-	{ id: 'pdf_generation', name: 'PDF Generation', description: 'Convert entries to PDF', category: 'data', icon: 'file-text', premium: true },
-	{ id: 'visual_reporting', name: 'Visual Reports', description: 'Charts and analytics', category: 'data', icon: 'bar-chart' },
-	{ id: 'partial_entries', name: 'Partial Entries', description: 'Capture incomplete submissions', category: 'data', icon: 'edit-3', premium: true },
-	{ id: 'entry_filter', name: 'Filter Entries', description: 'Advanced entry filtering', category: 'data', icon: 'filter', premium: true },
-	{ id: 'print_entries', name: 'Print Entries', description: 'Generate printable records', category: 'data', icon: 'printer' },
+	{
+		id: 'export_entries',
+		name: 'Export Entries',
+		description: 'Export to CSV/Excel',
+		category: 'data',
+		icon: 'download'
+	},
+	{
+		id: 'pdf_generation',
+		name: 'PDF Generation',
+		description: 'Convert entries to PDF',
+		category: 'data',
+		icon: 'file-text',
+		premium: true
+	},
+	{
+		id: 'visual_reporting',
+		name: 'Visual Reports',
+		description: 'Charts and analytics',
+		category: 'data',
+		icon: 'bar-chart'
+	},
+	{
+		id: 'partial_entries',
+		name: 'Partial Entries',
+		description: 'Capture incomplete submissions',
+		category: 'data',
+		icon: 'edit-3',
+		premium: true
+	},
+	{
+		id: 'entry_filter',
+		name: 'Filter Entries',
+		description: 'Advanced entry filtering',
+		category: 'data',
+		icon: 'filter',
+		premium: true
+	},
+	{
+		id: 'print_entries',
+		name: 'Print Entries',
+		description: 'Generate printable records',
+		category: 'data',
+		icon: 'printer'
+	},
 
 	// Advanced
-	{ id: 'quiz_survey', name: 'Quiz & Survey', description: 'Build quizzes with scoring', category: 'advanced', icon: 'help-circle', premium: true },
-	{ id: 'payment', name: 'Payment Integration', description: 'Accept payments via Stripe/PayPal', category: 'advanced', icon: 'credit-card', premium: true },
-	{ id: 'user_registration', name: 'User Registration', description: 'Create user accounts from forms', category: 'advanced', icon: 'user-plus', premium: true },
-	{ id: 'save_resume', name: 'Save & Resume', description: 'Let users save progress', category: 'advanced', icon: 'save', premium: true },
-	{ id: 'double_optin', name: 'Double Opt-in', description: 'Email confirmation for submissions', category: 'advanced', icon: 'mail-check', premium: true },
-	{ id: 'admin_approval', name: 'Admin Approval', description: 'Approve/reject submissions', category: 'advanced', icon: 'check-circle', premium: true },
-	{ id: 'scheduling', name: 'Form Scheduling', description: 'Schedule form availability', category: 'advanced', icon: 'calendar', premium: true },
-	{ id: 'inventory', name: 'Inventory Management', description: 'Track product availability', category: 'advanced', icon: 'package', premium: true },
-	{ id: 'coupons', name: 'Coupon Codes', description: 'Offer discounts via coupons', category: 'advanced', icon: 'tag', premium: true },
+	{
+		id: 'quiz_survey',
+		name: 'Quiz & Survey',
+		description: 'Build quizzes with scoring',
+		category: 'advanced',
+		icon: 'help-circle',
+		premium: true
+	},
+	{
+		id: 'payment',
+		name: 'Payment Integration',
+		description: 'Accept payments via Stripe/PayPal',
+		category: 'advanced',
+		icon: 'credit-card',
+		premium: true
+	},
+	{
+		id: 'user_registration',
+		name: 'User Registration',
+		description: 'Create user accounts from forms',
+		category: 'advanced',
+		icon: 'user-plus',
+		premium: true
+	},
+	{
+		id: 'save_resume',
+		name: 'Save & Resume',
+		description: 'Let users save progress',
+		category: 'advanced',
+		icon: 'save',
+		premium: true
+	},
+	{
+		id: 'double_optin',
+		name: 'Double Opt-in',
+		description: 'Email confirmation for submissions',
+		category: 'advanced',
+		icon: 'mail-check',
+		premium: true
+	},
+	{
+		id: 'admin_approval',
+		name: 'Admin Approval',
+		description: 'Approve/reject submissions',
+		category: 'advanced',
+		icon: 'check-circle',
+		premium: true
+	},
+	{
+		id: 'scheduling',
+		name: 'Form Scheduling',
+		description: 'Schedule form availability',
+		category: 'advanced',
+		icon: 'calendar',
+		premium: true
+	},
+	{
+		id: 'inventory',
+		name: 'Inventory Management',
+		description: 'Track product availability',
+		category: 'advanced',
+		icon: 'package',
+		premium: true
+	},
+	{
+		id: 'coupons',
+		name: 'Coupon Codes',
+		description: 'Offer discounts via coupons',
+		category: 'advanced',
+		icon: 'tag',
+		premium: true
+	},
 
 	// Security
-	{ id: 'spam_protection', name: 'Spam Protection', description: 'reCAPTCHA, hCaptcha, Turnstile', category: 'security', icon: 'shield' },
-	{ id: 'gdpr', name: 'GDPR Compliance', description: 'GDPR agreement fields', category: 'security', icon: 'shield-check' },
-	{ id: 'advanced_validation', name: 'Advanced Validation', description: 'Custom validation rules', category: 'security', icon: 'check-square' }
+	{
+		id: 'spam_protection',
+		name: 'Spam Protection',
+		description: 'reCAPTCHA, hCaptcha, Turnstile',
+		category: 'security',
+		icon: 'shield'
+	},
+	{
+		id: 'gdpr',
+		name: 'GDPR Compliance',
+		description: 'GDPR agreement fields',
+		category: 'security',
+		icon: 'shield-check'
+	},
+	{
+		id: 'advanced_validation',
+		name: 'Advanced Validation',
+		description: 'Custom validation rules',
+		category: 'security',
+		icon: 'check-square'
+	}
 ];
 
 // ============================================================================

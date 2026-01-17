@@ -21,10 +21,10 @@
  * Each category represents a distinct purpose for data processing.
  */
 export type ConsentCategory =
-	| 'necessary'     // Essential cookies/functionality (always enabled)
-	| 'analytics'     // Performance and analytics tracking (GA4, etc.)
-	| 'marketing'     // Advertising and marketing (Meta Pixel, etc.)
-	| 'preferences';  // User preference storage (personalization)
+	| 'necessary' // Essential cookies/functionality (always enabled)
+	| 'analytics' // Performance and analytics tracking (GA4, etc.)
+	| 'marketing' // Advertising and marketing (Meta Pixel, etc.)
+	| 'preferences'; // User preference storage (personalization)
 
 /**
  * All consent categories as an array for iteration.
@@ -33,7 +33,7 @@ export const CONSENT_CATEGORIES: ConsentCategory[] = [
 	'necessary',
 	'analytics',
 	'marketing',
-	'preferences',
+	'preferences'
 ];
 
 /**
@@ -58,7 +58,7 @@ export const CATEGORY_METADATA: Record<ConsentCategory, ConsentCategoryMeta> = {
 		description: 'Essential for the website to function. These cannot be disabled.',
 		required: true,
 		icon: 'shield-check',
-		cookieTypes: ['Session', 'Authentication', 'Security', 'Load Balancing'],
+		cookieTypes: ['Session', 'Authentication', 'Security', 'Load Balancing']
 	},
 	analytics: {
 		id: 'analytics',
@@ -66,7 +66,7 @@ export const CATEGORY_METADATA: Record<ConsentCategory, ConsentCategoryMeta> = {
 		description: 'Help us understand how visitors interact with our website.',
 		required: false,
 		icon: 'bar-chart-2',
-		cookieTypes: ['Analytics', 'Performance', 'A/B Testing'],
+		cookieTypes: ['Analytics', 'Performance', 'A/B Testing']
 	},
 	marketing: {
 		id: 'marketing',
@@ -74,7 +74,7 @@ export const CATEGORY_METADATA: Record<ConsentCategory, ConsentCategoryMeta> = {
 		description: 'Used to track visitors and display relevant advertisements.',
 		required: false,
 		icon: 'megaphone',
-		cookieTypes: ['Advertising', 'Retargeting', 'Social Media'],
+		cookieTypes: ['Advertising', 'Retargeting', 'Social Media']
 	},
 	preferences: {
 		id: 'preferences',
@@ -82,8 +82,8 @@ export const CATEGORY_METADATA: Record<ConsentCategory, ConsentCategoryMeta> = {
 		description: 'Remember your settings and personalize your experience.',
 		required: false,
 		icon: 'settings',
-		cookieTypes: ['Language', 'Theme', 'Layout', 'Favorites'],
-	},
+		cookieTypes: ['Language', 'Theme', 'Layout', 'Favorites']
+	}
 };
 
 // =============================================================================
@@ -253,7 +253,7 @@ export const DEFAULT_STORAGE_OPTIONS: ConsentStorageOptions = {
 	sameSite: 'lax',
 	secure: true,
 	auditLogKey: 'rtp_consent_audit',
-	maxAuditEntries: 100,
+	maxAuditEntries: 100
 };
 
 // =============================================================================
@@ -278,7 +278,7 @@ export const DEFAULT_CONSENT_STATE: ConsentState = {
 	updatedAt: new Date().toISOString(),
 	hasInteracted: false,
 	version: 2,
-	strictMode: false,
+	strictMode: false
 };
 
 /**
@@ -303,7 +303,7 @@ export const TCF_PURPOSE_MAP: Record<ConsentCategory, number[]> = {
 	necessary: [1], // Purpose 1: Store and/or access information on a device
 	analytics: [7, 8, 9, 10], // Purposes 7-10: Measurement
 	marketing: [2, 3, 4, 5, 6], // Purposes 2-6: Advertising
-	preferences: [1], // Purpose 1: Storage
+	preferences: [1] // Purpose 1: Storage
 };
 
 /**
@@ -360,7 +360,7 @@ export const CONSENT_EVENTS = {
 	CONSENT_MODAL_OPENED: 'rtp:consent:modal:opened',
 	CONSENT_MODAL_CLOSED: 'rtp:consent:modal:closed',
 	VENDOR_LOADED: 'rtp:consent:vendor:loaded',
-	VENDOR_BLOCKED: 'rtp:consent:vendor:blocked',
+	VENDOR_BLOCKED: 'rtp:consent:vendor:blocked'
 } as const;
 
 // =============================================================================
@@ -393,7 +393,13 @@ export interface ConsentAnalytics {
  * Consent interaction event for analytics.
  */
 export interface ConsentInteractionEvent {
-	type: 'banner_shown' | 'accept_all' | 'reject_all' | 'save_preferences' | 'modal_opened' | 'modal_closed';
+	type:
+		| 'banner_shown'
+		| 'accept_all'
+		| 'reject_all'
+		| 'save_preferences'
+		| 'modal_opened'
+		| 'modal_closed';
 	timestamp: number;
 	categories?: Partial<Record<ConsentCategory, boolean>>;
 	timeToDecision?: number;

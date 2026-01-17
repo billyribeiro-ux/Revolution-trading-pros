@@ -229,14 +229,23 @@
 	{#if showInviteForm}
 		<div class="invite-form">
 			<div class="form-row">
-				<input type="email" bind:value={inviteEmail} placeholder="Email address" class="email-input" />
+				<input
+					type="email"
+					bind:value={inviteEmail}
+					placeholder="Email address"
+					class="email-input"
+				/>
 				<select bind:value={inviteRole} class="role-select">
 					{#each roles as role}
 						<option value={role.value}>{role.label}</option>
 					{/each}
 				</select>
 			</div>
-			<button class="btn-send-invite" onclick={inviteCollaborator} disabled={inviting || !inviteEmail}>
+			<button
+				class="btn-send-invite"
+				onclick={inviteCollaborator}
+				disabled={inviting || !inviteEmail}
+			>
 				{inviting ? 'Inviting...' : 'Send Invite'}
 			</button>
 		</div>
@@ -254,7 +263,11 @@
 				</div>
 				<div class="active-users">
 					{#each activeUsers as user}
-						<div class="user-avatar" style="background-color: {user.avatar_color}" title={user.name}>
+						<div
+							class="user-avatar"
+							style="background-color: {user.avatar_color}"
+							title={user.name}
+						>
 							{user.name.charAt(0).toUpperCase()}
 						</div>
 					{/each}
@@ -268,7 +281,11 @@
 			<div class="collaborators-list">
 				{#each collaborators as collab}
 					<div class="collaborator-item">
-						<div class="collab-avatar" class:online={isOnline(collab.id)} style="background-color: {getAvatarColor(collab.id)}">
+						<div
+							class="collab-avatar"
+							class:online={isOnline(collab.id)}
+							style="background-color: {getAvatarColor(collab.id)}"
+						>
 							{(collab.name || '?').charAt(0).toUpperCase()}
 						</div>
 						<div class="collab-info">
@@ -283,12 +300,23 @@
 							</div>
 						</div>
 						<div class="collab-actions">
-							<select value={collab.role} onchange={(e: Event) => updateRole(collab.id, (e.target as HTMLSelectElement).value)} class="role-badge">
+							<select
+								value={collab.role}
+								onchange={(e: Event) =>
+									updateRole(collab.id, (e.target as HTMLSelectElement).value)}
+								class="role-badge"
+							>
 								{#each roles as role}
 									<option value={role.value}>{role.label}</option>
 								{/each}
 							</select>
-							<button class="btn-remove" onclick={() => removeCollaborator(collab.id)} title="Remove collaborator"> &times; </button>
+							<button
+								class="btn-remove"
+								onclick={() => removeCollaborator(collab.id)}
+								title="Remove collaborator"
+							>
+								&times;
+							</button>
 						</div>
 					</div>
 				{/each}
@@ -296,7 +324,9 @@
 				{#if collaborators.length === 0}
 					<div class="empty-state">
 						<p>No collaborators yet</p>
-						<button class="btn-invite-first" onclick={() => (showInviteForm = true)}> Invite your first team member </button>
+						<button class="btn-invite-first" onclick={() => (showInviteForm = true)}>
+							Invite your first team member
+						</button>
 					</div>
 				{/if}
 			</div>

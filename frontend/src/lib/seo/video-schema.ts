@@ -281,9 +281,7 @@ export function generateVideoSchema(
 	}
 
 	// Ensure thumbnail is an array
-	const thumbnails = Array.isArray(video.thumbnailUrl)
-		? video.thumbnailUrl
-		: [video.thumbnailUrl];
+	const thumbnails = Array.isArray(video.thumbnailUrl) ? video.thumbnailUrl : [video.thumbnailUrl];
 
 	const schema: Record<string, any> = {
 		'@context': 'https://schema.org',

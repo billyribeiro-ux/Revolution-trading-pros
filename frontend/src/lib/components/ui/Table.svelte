@@ -8,12 +8,7 @@
 		children?: Snippet;
 	}
 
-	let {
-		headers = [],
-		striped = false,
-		hoverable = true,
-		children
-	}: Props = $props();
+	let { headers = [], striped = false, hoverable = true, children }: Props = $props();
 </script>
 
 <div class="overflow-x-auto">

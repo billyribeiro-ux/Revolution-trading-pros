@@ -576,7 +576,8 @@
 						</button>
 					{:else}
 						<button type="button" class="btn-primary" onclick={saveIndicator} disabled={isSaving}>
-							<IconCheck size={16} /> {isSaving ? 'Saving...' : 'Save'}
+							<IconCheck size={16} />
+							{isSaving ? 'Saving...' : 'Save'}
 						</button>
 						{#if indicatorId}
 							<button
@@ -646,11 +647,7 @@
 								{/if}
 							</div>
 
-							<button
-								type="button"
-								class="btn-upload"
-								onclick={() => openFileUpload(platform.id)}
-							>
+							<button type="button" class="btn-upload" onclick={() => openFileUpload(platform.id)}>
 								<IconUpload size={14} /> Upload for {platform.display_name}
 							</button>
 						</div>
@@ -676,10 +673,17 @@
 					aria-label="Upload File"
 					tabindex="-1"
 					onclick={() => (showFileUpload = false)}
-					onkeydown={(e) => { if (e.key === 'Escape') showFileUpload = false; }}
+					onkeydown={(e) => {
+						if (e.key === 'Escape') showFileUpload = false;
+					}}
 				>
 					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-					<div class="modal-content" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+					<div
+						class="modal-content"
+						role="document"
+						onclick={(e) => e.stopPropagation()}
+						onkeydown={(e) => e.stopPropagation()}
+					>
 						<h3>Upload File for {getPlatformName(selectedPlatformId)}</h3>
 
 						<div class="form-group">
@@ -832,10 +836,17 @@
 					aria-label="Add Video"
 					tabindex="-1"
 					onclick={() => (showVideoForm = false)}
-					onkeydown={(e) => { if (e.key === 'Escape') showVideoForm = false; }}
+					onkeydown={(e) => {
+						if (e.key === 'Escape') showVideoForm = false;
+					}}
 				>
 					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-					<div class="modal-content" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+					<div
+						class="modal-content"
+						role="document"
+						onclick={(e) => e.stopPropagation()}
+						onkeydown={(e) => e.stopPropagation()}
+					>
 						<h3>Add Video</h3>
 
 						<div class="form-group">
@@ -963,7 +974,11 @@
 
 				<div class="tv-access-list">
 					{#each tvAccesses as access (access.id)}
-						<div class="tv-access-item" class:inactive={!access.is_active} class:expired={access.is_expired}>
+						<div
+							class="tv-access-item"
+							class:inactive={!access.is_active}
+							class:expired={access.is_expired}
+						>
 							<div class="access-info">
 								<span class="tv-username">@{access.tradingview_username}</span>
 								<span class="access-meta">
@@ -1017,10 +1032,17 @@
 					aria-label="Grant TradingView Access"
 					tabindex="-1"
 					onclick={() => (showTvAccessForm = false)}
-					onkeydown={(e) => { if (e.key === 'Escape') showTvAccessForm = false; }}
+					onkeydown={(e) => {
+						if (e.key === 'Escape') showTvAccessForm = false;
+					}}
 				>
 					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-					<div class="modal-content" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+					<div
+						class="modal-content"
+						role="document"
+						onclick={(e) => e.stopPropagation()}
+						onkeydown={(e) => e.stopPropagation()}
+					>
 						<h3>Grant TradingView Access</h3>
 
 						<div class="form-group">
@@ -1067,7 +1089,11 @@
 							<button type="button" class="btn-primary" onclick={grantTvAccess} disabled={isSaving}>
 								{isSaving ? 'Granting...' : 'Grant Access'}
 							</button>
-							<button type="button" class="btn-secondary" onclick={() => (showTvAccessForm = false)}>
+							<button
+								type="button"
+								class="btn-secondary"
+								onclick={() => (showTvAccessForm = false)}
+							>
 								Cancel
 							</button>
 						</div>
@@ -1123,8 +1149,8 @@
 
 	.version-badge {
 		padding: 0.25rem 0.5rem;
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -1174,8 +1200,8 @@
 	}
 
 	.tab.active {
-		color: var(--primary, #E6B800);
-		border-bottom-color: var(--primary, #E6B800);
+		color: var(--primary, #e6b800);
+		border-bottom-color: var(--primary, #e6b800);
 	}
 
 	.tab:disabled {
@@ -1220,7 +1246,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: var(--primary, #E6B800);
+		border-color: var(--primary, #e6b800);
 	}
 
 	.form-row {
@@ -1278,8 +1304,8 @@
 	}
 
 	.btn-primary {
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 	}
 
 	.btn-secondary {
@@ -1288,8 +1314,8 @@
 	}
 
 	.btn-add {
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 	}
 
 	.btn-close {
@@ -1435,8 +1461,8 @@
 	}
 
 	.btn-upload:hover {
-		border-color: var(--primary, #E6B800);
-		color: var(--primary, #E6B800);
+		border-color: var(--primary, #e6b800);
+		color: var(--primary, #e6b800);
 	}
 
 	.download-stats {
@@ -1451,7 +1477,7 @@
 		display: block;
 		font-size: 2rem;
 		font-weight: 600;
-		color: var(--primary, #E6B800);
+		color: var(--primary, #e6b800);
 	}
 
 	.stat-label {
@@ -1563,7 +1589,7 @@
 	}
 
 	.doc-icon {
-		color: var(--primary, #E6B800);
+		color: var(--primary, #e6b800);
 	}
 
 	.doc-info {
@@ -1626,7 +1652,7 @@
 
 	.tv-username {
 		font-weight: 600;
-		color: var(--primary, #E6B800);
+		color: var(--primary, #e6b800);
 		display: block;
 	}
 

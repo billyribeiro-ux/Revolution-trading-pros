@@ -7,12 +7,12 @@
 -->
 <script lang="ts">
 	import type { Trader } from '$lib/data/traders';
-	
+
 	// ICT 7 FIX: Svelte 5 $props() syntax (Nov 2025 best practice)
 	interface Props {
 		trader: Trader;
 	}
-	
+
 	let { trader }: Props = $props();
 </script>
 
@@ -27,11 +27,11 @@
 							<div class="fl-module-content fl-node-content">
 								<div class="fl-photo fl-photo-align-center">
 									<div class="fl-photo-content fl-photo-img-png">
-										<img 
-											class="fl-photo-img" 
-											src={trader.image} 
+										<img
+											class="fl-photo-img"
+											src={trader.image}
 											alt={trader.name}
-											width="2000" 
+											width="2000"
 											height="2000"
 										/>
 									</div>
@@ -88,7 +88,7 @@
 	}
 
 	.fl-row-bg-color {
-		background-color: #E5E9F4;
+		background-color: #e5e9f4;
 	}
 
 	.fl-row-content-wrap {
@@ -207,7 +207,7 @@
 	}
 
 	.fl-separator {
-		border-top: 2px solid #F69532;
+		border-top: 2px solid #f69532;
 		width: 60px;
 	}
 

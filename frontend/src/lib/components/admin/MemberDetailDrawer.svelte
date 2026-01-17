@@ -43,20 +43,15 @@
 		onRefresh?: () => void;
 	}
 
-	let {
-		isOpen,
-		memberId,
-		onClose,
-		onEdit,
-		onEmail,
-		onRefresh
-	}: Props = $props();
+	let { isOpen, memberId, onClose, onEdit, onEmail, onRefresh }: Props = $props();
 
 	// State
 	let data = $state<MemberFullDetails | null>(null);
 	let isLoading = $state(false);
 	let error = $state('');
-	let activeTab = $state<'overview' | 'subscriptions' | 'orders' | 'activity' | 'notes'>('overview');
+	let activeTab = $state<'overview' | 'subscriptions' | 'orders' | 'activity' | 'notes'>(
+		'overview'
+	);
 
 	// Notes state
 	let newNote = $state('');
@@ -319,16 +314,24 @@
 						Email
 					</button>
 					{#if data.member.status === 'banned' || data.member.status === 'suspended'}
-						<button type="button" class="btn-action success" onclick={() => showUnbanModal = true}>
+						<button
+							type="button"
+							class="btn-action success"
+							onclick={() => (showUnbanModal = true)}
+						>
 							<IconPlayerPlay size={16} />
 							Restore
 						</button>
 					{:else}
-						<button type="button" class="btn-action warning" onclick={() => showSuspendModal = true}>
+						<button
+							type="button"
+							class="btn-action warning"
+							onclick={() => (showSuspendModal = true)}
+						>
 							<IconClock size={16} />
 							Suspend
 						</button>
-						<button type="button" class="btn-action danger" onclick={() => showBanModal = true}>
+						<button type="button" class="btn-action danger" onclick={() => (showBanModal = true)}>
 							<IconBan size={16} />
 							Ban
 						</button>
@@ -341,7 +344,7 @@
 						type="button"
 						class="tab"
 						class:active={activeTab === 'overview'}
-						onclick={() => activeTab = 'overview'}
+						onclick={() => (activeTab = 'overview')}
 					>
 						<IconUser size={16} />
 						Overview
@@ -350,7 +353,7 @@
 						type="button"
 						class="tab"
 						class:active={activeTab === 'subscriptions'}
-						onclick={() => activeTab = 'subscriptions'}
+						onclick={() => (activeTab = 'subscriptions')}
 					>
 						<IconCreditCard size={16} />
 						Subscriptions
@@ -359,7 +362,7 @@
 						type="button"
 						class="tab"
 						class:active={activeTab === 'orders'}
-						onclick={() => activeTab = 'orders'}
+						onclick={() => (activeTab = 'orders')}
 					>
 						<IconReceipt size={16} />
 						Orders
@@ -368,7 +371,7 @@
 						type="button"
 						class="tab"
 						class:active={activeTab === 'activity'}
-						onclick={() => activeTab = 'activity'}
+						onclick={() => (activeTab = 'activity')}
 					>
 						<IconActivity size={16} />
 						Activity
@@ -377,7 +380,7 @@
 						type="button"
 						class="tab"
 						class:active={activeTab === 'notes'}
-						onclick={() => activeTab = 'notes'}
+						onclick={() => (activeTab = 'notes')}
 					>
 						<IconNotes size={16} />
 						Notes
@@ -455,7 +458,10 @@
 								<div class="timeline">
 									{#each data.timeline.slice(0, 5) as event}
 										<div class="timeline-item">
-											<div class="timeline-dot" style="--dot-color: {getStatusColor(event.type)}"></div>
+											<div
+												class="timeline-dot"
+												style="--dot-color: {getStatusColor(event.type)}"
+											></div>
 											<div class="timeline-content">
 												<span class="timeline-title">{event.title}</span>
 												<span class="timeline-date">{formatDateTime(event.date)}</span>
@@ -465,7 +471,6 @@
 								</div>
 							</section>
 						</div>
-
 					{:else if activeTab === 'subscriptions'}
 						<div class="tab-content">
 							{#if data.subscriptions.length === 0}
@@ -513,7 +518,6 @@
 								</div>
 							{/if}
 						</div>
-
 					{:else if activeTab === 'orders'}
 						<div class="tab-content">
 							{#if data.orders.length === 0}
@@ -549,7 +553,6 @@
 								</div>
 							{/if}
 						</div>
-
 					{:else if activeTab === 'activity'}
 						<div class="tab-content">
 							{#if data.activity.length === 0}
@@ -581,7 +584,6 @@
 								</div>
 							{/if}
 						</div>
-
 					{:else if activeTab === 'notes'}
 						<div class="tab-content">
 							<!-- Add Note Form -->
@@ -650,7 +652,10 @@
 	inputPlaceholder="Enter ban reason..."
 	bind:inputValue={banReason}
 	onConfirm={handleBan}
-	onCancel={() => { showBanModal = false; banReason = ''; }}
+	onCancel={() => {
+		showBanModal = false;
+		banReason = '';
+	}}
 />
 
 <!-- Suspend Modal -->
@@ -666,7 +671,10 @@
 	inputPlaceholder="Enter suspension reason..."
 	bind:inputValue={banReason}
 	onConfirm={handleSuspend}
-	onCancel={() => { showSuspendModal = false; banReason = ''; }}
+	onCancel={() => {
+		showSuspendModal = false;
+		banReason = '';
+	}}
 />
 
 <!-- Unban Modal -->
@@ -678,7 +686,7 @@
 	variant="success"
 	isLoading={isProcessingAction}
 	onConfirm={handleUnban}
-	onCancel={() => showUnbanModal = false}
+	onCancel={() => (showUnbanModal = false)}
 />
 
 <style>
@@ -691,8 +699,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.drawer {
@@ -736,12 +748,14 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-retry {
 		background: var(--admin-accent-primary);
-		color: #0D1117;
+		color: #0d1117;
 		border: none;
 		padding: 0.5rem 1rem;
 		border-radius: var(--radius-md, 0.5rem);
@@ -761,7 +775,11 @@
 		width: 56px;
 		height: 56px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--admin-accent-primary), var(--admin-widget-purple-icon));
+		background: linear-gradient(
+			135deg,
+			var(--admin-accent-primary),
+			var(--admin-widget-purple-icon)
+		);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1216,7 +1234,7 @@
 
 	.btn-add-note {
 		background: var(--admin-accent-primary);
-		color: #0D1117;
+		color: #0d1117;
 		border: none;
 		padding: 0.5rem 1rem;
 		border-radius: var(--radius-md, 0.5rem);

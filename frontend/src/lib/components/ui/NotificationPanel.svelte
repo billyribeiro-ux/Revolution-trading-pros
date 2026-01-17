@@ -130,12 +130,14 @@
 		document.removeEventListener('keydown', handleKeydown);
 	});
 
-	let positionClasses = $derived({
-		'top-right': 'right-0 top-full mt-2',
-		'top-left': 'left-0 top-full mt-2',
-		'bottom-right': 'right-0 bottom-full mb-2',
-		'bottom-left': 'left-0 bottom-full mb-2'
-	}[position]);
+	let positionClasses = $derived(
+		{
+			'top-right': 'right-0 top-full mt-2',
+			'top-left': 'left-0 top-full mt-2',
+			'bottom-right': 'right-0 bottom-full mb-2',
+			'bottom-left': 'left-0 bottom-full mb-2'
+		}[position]
+	);
 </script>
 
 <div class="relative">
@@ -208,13 +210,16 @@
 								hover:bg-slate-800/50 transition-colors cursor-pointer
 								{notification.read ? 'opacity-70' : ''}"
 							onclick={() => handleNotificationClick(notification)}
-							onkeypress={(e: KeyboardEvent) => e.key === 'Enter' && handleNotificationClick(notification)}
+							onkeypress={(e: KeyboardEvent) =>
+								e.key === 'Enter' && handleNotificationClick(notification)}
 							role="button"
 							tabindex="0"
 						>
 							<!-- Unread indicator -->
 							{#if !notification.read}
-								<div class="absolute left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-indigo-500 rounded-full"></div>
+								<div
+									class="absolute left-1 top-1/2 -translate-y-1/2 w-2 h-2 bg-indigo-500 rounded-full"
+								></div>
 							{/if}
 
 							<div class="flex gap-3 pl-2">
@@ -239,7 +244,10 @@
 
 									{#if notification.action}
 										<button
-											onclick={(e: MouseEvent) => { e.stopPropagation(); handleNotificationClick(notification); }}
+											onclick={(e: MouseEvent) => {
+												e.stopPropagation();
+												handleNotificationClick(notification);
+											}}
 											class="mt-2 text-xs text-indigo-400 hover:text-indigo-300 font-medium"
 										>
 											{notification.action.label}
@@ -249,7 +257,10 @@
 
 								<!-- Dismiss button -->
 								<button
-									onclick={(e: MouseEvent) => { e.stopPropagation(); notificationStore.dismiss(notification.id); }}
+									onclick={(e: MouseEvent) => {
+										e.stopPropagation();
+										notificationStore.dismiss(notification.id);
+									}}
 									class="flex-shrink-0 p-1 rounded opacity-0 group-hover:opacity-100
 										hover:bg-slate-700/50 transition-all"
 									aria-label="Dismiss"
@@ -260,7 +271,9 @@
 
 							<!-- Priority indicator for urgent -->
 							{#if notification.priority === 'urgent'}
-								<div class="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500"></div>
+								<div
+									class="absolute inset-x-0 bottom-0 h-0.5 bg-gradient-to-r from-red-500 to-orange-500"
+								></div>
 							{/if}
 						</div>
 					{/each}

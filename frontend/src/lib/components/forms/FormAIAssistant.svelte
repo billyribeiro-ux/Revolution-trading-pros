@@ -186,14 +186,26 @@
 
 	<!-- Tabs -->
 	<div class="tabs">
-		<button class="tab" class:active={activeTab === 'generate'} onclick={() => (activeTab = 'generate')}>
+		<button
+			class="tab"
+			class:active={activeTab === 'generate'}
+			onclick={() => (activeTab = 'generate')}
+		>
 			Generate
 		</button>
 		{#if formId}
-			<button class="tab" class:active={activeTab === 'suggest'} onclick={() => (activeTab = 'suggest')}>
+			<button
+				class="tab"
+				class:active={activeTab === 'suggest'}
+				onclick={() => (activeTab = 'suggest')}
+			>
 				Suggest Fields
 			</button>
-			<button class="tab" class:active={activeTab === 'analyze'} onclick={() => (activeTab = 'analyze')}>
+			<button
+				class="tab"
+				class:active={activeTab === 'analyze'}
+				onclick={() => (activeTab = 'analyze')}
+			>
 				Analyze
 			</button>
 		{/if}
@@ -225,7 +237,11 @@
 					{/each}
 				</div>
 
-				<button class="btn-generate" onclick={generateForm} disabled={isGenerating || !prompt.trim()}>
+				<button
+					class="btn-generate"
+					onclick={generateForm}
+					disabled={isGenerating || !prompt.trim()}
+				>
 					{#if isGenerating}
 						<span class="spinner"></span>
 						Generating...
@@ -265,7 +281,9 @@
 		<!-- Suggest Tab -->
 		{#if activeTab === 'suggest'}
 			<div class="suggest-section">
-				<p class="section-description">AI analyzes your current form and suggests additional fields that could improve it.</p>
+				<p class="section-description">
+					AI analyzes your current form and suggests additional fields that could improve it.
+				</p>
 
 				<button class="btn-suggest" onclick={getSuggestions} disabled={isGenerating}>
 					{#if isGenerating}
@@ -285,7 +303,9 @@
 									<span class="suggestion-label">{suggestion.label}</span>
 								</div>
 								<p class="suggestion-reason">{suggestion.reason}</p>
-								<button class="btn-add-field" onclick={() => addSuggestedField(suggestion)}> Add Field </button>
+								<button class="btn-add-field" onclick={() => addSuggestedField(suggestion)}>
+									Add Field
+								</button>
 							</div>
 						{/each}
 					</div>
@@ -300,7 +320,9 @@
 		<!-- Analyze Tab -->
 		{#if activeTab === 'analyze'}
 			<div class="analyze-section">
-				<p class="section-description">Get AI-powered insights to optimize your form for better conversion.</p>
+				<p class="section-description">
+					Get AI-powered insights to optimize your form for better conversion.
+				</p>
 
 				<button class="btn-analyze" onclick={analyzeForm} disabled={isAnalyzing}>
 					{#if isAnalyzing}
@@ -327,7 +349,11 @@
 							<div class="issues-section">
 								<h4>Issues Found</h4>
 								{#each analysis.issues as issue}
-									<div class="issue-item" class:warning={issue.severity === 'warning'} class:info={issue.severity === 'info'}>
+									<div
+										class="issue-item"
+										class:warning={issue.severity === 'warning'}
+										class:info={issue.severity === 'info'}
+									>
 										<span class="issue-icon">
 											{issue.severity === 'warning' ? '⚠️' : 'ℹ️'}
 										</span>
@@ -344,7 +370,10 @@
 								{#each analysis.recommendations as rec}
 									<div class="recommendation-card">
 										<div class="rec-header">
-											<span class="priority-badge" style="background-color: {getPriorityColor(rec.priority)}">
+											<span
+												class="priority-badge"
+												style="background-color: {getPriorityColor(rec.priority)}"
+											>
 												{rec.priority}
 											</span>
 											<span class="rec-category">{rec.category}</span>

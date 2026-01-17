@@ -1,7 +1,7 @@
 /**
  * Page Builder Type Definitions
  * Apple Principal Engineer ICT 7 Grade - January 2026
- * 
+ *
  * Core types for the drag-and-drop course page builder system.
  * Designed for extensibility and type safety.
  */
@@ -10,7 +10,7 @@
 // COMPONENT TYPES
 // ═══════════════════════════════════════════════════════════════════════════════
 
-export type ComponentType = 
+export type ComponentType =
 	| 'course-header'
 	| 'video-player'
 	| 'video-stack'
@@ -73,7 +73,7 @@ export interface DividerConfig {
 }
 
 // Union type for all configs
-export type ComponentConfig = 
+export type ComponentConfig =
 	| CourseHeaderConfig
 	| VideoPlayerConfig
 	| VideoStackConfig

@@ -2,7 +2,7 @@
 	/**
 	 * Component Palette - Drag Source Sidebar
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
-	 * 
+	 *
 	 * Beautiful sidebar with draggable component blocks organized by category.
 	 */
 
@@ -25,7 +25,7 @@
 	function handleDragStart(e: DragEvent, type: ComponentType) {
 		draggedType = type;
 		store.startDragNew(type);
-		
+
 		if (e.dataTransfer) {
 			e.dataTransfer.effectAllowed = 'copy';
 			e.dataTransfer.setData('text/plain', type);
@@ -124,8 +124,8 @@
 	.palette {
 		width: 260px;
 		height: 100%;
-		background: #FFFFFF;
-		border-right: 1px solid #E5E7EB;
+		background: #ffffff;
+		border-right: 1px solid #e5e7eb;
 		display: flex;
 		flex-direction: column;
 		flex-shrink: 0;
@@ -133,7 +133,7 @@
 
 	.palette-header {
 		padding: 20px;
-		border-bottom: 1px solid #E5E7EB;
+		border-bottom: 1px solid #e5e7eb;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
@@ -142,12 +142,12 @@
 	.palette-header h2 {
 		font-size: 16px;
 		font-weight: 600;
-		color: #1F2937;
+		color: #1f2937;
 		margin: 0;
 	}
 
 	.component-count {
-		background: #143E59;
+		background: #143e59;
 		color: white;
 		font-size: 11px;
 		font-weight: 600;
@@ -175,7 +175,7 @@
 		gap: 8px;
 		font-size: 12px;
 		font-weight: 600;
-		color: #6B7280;
+		color: #6b7280;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 		margin: 0 0 12px 0;
@@ -198,16 +198,16 @@
 		justify-content: center;
 		gap: 6px;
 		padding: 16px 8px;
-		background: #F9FAFB;
-		border: 1px solid #E5E7EB;
+		background: #f9fafb;
+		border: 1px solid #e5e7eb;
 		border-radius: 10px;
 		cursor: grab;
 		transition: all 0.15s ease;
 	}
 
 	.component-card:hover {
-		background: #F3F4F6;
-		border-color: #143E59;
+		background: #f3f4f6;
+		border-color: #143e59;
 		transform: translateY(-2px);
 		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.15);
 	}
@@ -236,13 +236,13 @@
 
 	.palette-footer {
 		padding: 16px;
-		border-top: 1px solid #E5E7EB;
-		background: #F9FAFB;
+		border-top: 1px solid #e5e7eb;
+		background: #f9fafb;
 	}
 
 	.tip {
 		font-size: 12px;
-		color: #6B7280;
+		color: #6b7280;
 		margin: 0;
 		text-align: center;
 	}
@@ -257,11 +257,11 @@
 	}
 
 	.palette-content::-webkit-scrollbar-thumb {
-		background: #D1D5DB;
+		background: #d1d5db;
 		border-radius: 3px;
 	}
 
 	.palette-content::-webkit-scrollbar-thumb:hover {
-		background: #9CA3AF;
+		background: #9ca3af;
 	}
 </style>

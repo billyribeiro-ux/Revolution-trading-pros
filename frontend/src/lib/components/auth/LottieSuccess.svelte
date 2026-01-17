@@ -65,9 +65,21 @@
 								ks: {
 									a: 0,
 									k: {
-										i: [[0, 0], [0, 0], [0, 0]],
-										o: [[0, 0], [0, 0], [0, 0]],
-										v: [[-30, 0], [-10, 20], [30, -25]],
+										i: [
+											[0, 0],
+											[0, 0],
+											[0, 0]
+										],
+										o: [
+											[0, 0],
+											[0, 0],
+											[0, 0]
+										],
+										v: [
+											[-30, 0],
+											[-10, 20],
+											[30, -25]
+										],
 										c: false
 									}
 								},
@@ -259,7 +271,7 @@
 				const lottieModule = await import('lottie-web/build/player/lottie_light.min.js');
 				// UMD build - access via default or direct
 				const lottie = lottieModule.default ?? lottieModule;
-				
+
 				if (!lottie?.loadAnimation) {
 					console.error('[LottieSuccess] lottie.loadAnimation not available');
 					return; // Fallback timeout will handle redirect
@@ -282,7 +294,9 @@
 						if (onComplete) {
 							onComplete();
 						} else {
-							console.error('[LottieSuccess] onComplete is undefined in animation complete handler');
+							console.error(
+								'[LottieSuccess] onComplete is undefined in animation complete handler'
+							);
 						}
 					}
 				});
@@ -301,8 +315,11 @@
 	});
 </script>
 
-<div class="lottie-container" bind:this={containerRef} style="width: {size}px; height: {size}px;">
-</div>
+<div
+	class="lottie-container"
+	bind:this={containerRef}
+	style="width: {size}px; height: {size}px;"
+></div>
 
 <style>
 	.lottie-container {

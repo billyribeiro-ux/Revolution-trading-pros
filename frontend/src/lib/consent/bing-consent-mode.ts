@@ -40,7 +40,7 @@ function ensureUetq(): void {
 export function mapConsentToBing(consent: ConsentState): BingConsentParams {
 	return {
 		// ad_storage: Requires marketing consent
-		ad_storage: consent.marketing ? 'granted' : 'denied',
+		ad_storage: consent.marketing ? 'granted' : 'denied'
 	};
 }
 
@@ -59,7 +59,7 @@ export function setBingDefaultConsent(consent: ConsentState): void {
 
 	// Push consent default to UET queue
 	window.uetq!.push('consent', 'default', {
-		ad_storage: params.ad_storage,
+		ad_storage: params.ad_storage
 	});
 
 	console.debug('[BingConsentMode] Set default consent:', params);
@@ -80,7 +80,7 @@ export function updateBingConsent(consent: ConsentState): void {
 
 	// Push consent update to UET queue
 	window.uetq!.push('consent', 'update', {
-		ad_storage: params.ad_storage,
+		ad_storage: params.ad_storage
 	});
 
 	console.debug('[BingConsentMode] Updated consent:', params);
@@ -128,7 +128,7 @@ export function grantAllBingConsent(): void {
 	ensureUetq();
 
 	window.uetq!.push('consent', 'update', {
-		ad_storage: 'granted',
+		ad_storage: 'granted'
 	});
 
 	bingConsentInitialized = true;
@@ -144,7 +144,7 @@ export function denyAllBingConsent(): void {
 	ensureUetq();
 
 	window.uetq!.push('consent', 'update', {
-		ad_storage: 'denied',
+		ad_storage: 'denied'
 	});
 
 	bingConsentInitialized = true;
@@ -160,6 +160,6 @@ export function getBingConsentModeConfig(consent: ConsentState): {
 } {
 	return {
 		enabled: true,
-		params: mapConsentToBing(consent),
+		params: mapConsentToBing(consent)
 	};
 }

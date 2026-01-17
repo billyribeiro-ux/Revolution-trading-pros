@@ -381,10 +381,10 @@
 			aria-describedby="popup-content"
 			tabindex="-1"
 			class="popup-container {getSizeClass(currentPopup.size ?? 'medium')} {getAnimationClass(
-			currentPopup.animation ?? 'fade'
-		)}"
-		onclick={(e: MouseEvent) => e.stopPropagation()}
-		onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+				currentPopup.animation ?? 'fade'
+			)}"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			style={currentPopup.design?.backgroundColor
 				? `background-color: ${currentPopup.design.backgroundColor}`
 				: ''}

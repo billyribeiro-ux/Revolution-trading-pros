@@ -2,7 +2,7 @@
 	/**
 	 * Builder Canvas - Drop Zone & Block Display
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
-	 * 
+	 *
 	 * Main canvas area where blocks are displayed and can be reordered.
 	 * Handles drag-drop interactions and block selection.
 	 */
@@ -61,20 +61,23 @@
 
 	function handleCanvasClick(e: MouseEvent) {
 		// Deselect if clicking on canvas background
-		if (e.target === canvasElement || (e.target as HTMLElement).classList.contains('canvas-inner')) {
+		if (
+			e.target === canvasElement ||
+			(e.target as HTMLElement).classList.contains('canvas-inner')
+		) {
 			store.clearSelection();
 		}
 	}
 </script>
 
-<div 
+<div
 	class="canvas"
 	class:preview-mode={store.isPreviewMode}
 	class:dragging={store.dragState.isDragging}
 >
 	<div class="canvas-header">
-		<input 
-			type="text" 
+		<input
+			type="text"
 			class="course-title-input"
 			value={store.layout.title}
 			oninput={(e) => store.updateLayoutMeta({ title: (e.target as HTMLInputElement).value })}
@@ -82,16 +85,38 @@
 			disabled={store.isPreviewMode}
 		/>
 		<div class="canvas-actions">
-			<button 
+			<button
 				class="action-btn"
 				class:active={store.isPreviewMode}
 				onclick={() => store.togglePreviewMode()}
 			>
 				{#if store.isPreviewMode}
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						><path d="M12 20h9" /><path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z" /></svg
+					>
 					Edit
 				{:else}
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle
+							cx="12"
+							cy="12"
+							r="3"
+						/></svg
+					>
 					Preview
 				{/if}
 			</button>
@@ -100,14 +125,16 @@
 
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
-	<div 
+	<div
 		class="canvas-body"
 		bind:this={canvasElement}
 		ondragover={handleDragOver}
 		ondragleave={handleDragLeave}
 		ondrop={handleDrop}
 		onclick={handleCanvasClick}
-		onkeydown={(e) => { if (e.key === 'Escape') store.clearSelection(); }}
+		onkeydown={(e) => {
+			if (e.key === 'Escape') store.clearSelection();
+		}}
 		role="application"
 		tabindex="0"
 		aria-label="Page builder canvas - drag and drop components here"
@@ -128,7 +155,7 @@
 						</div>
 					{/if}
 
-					<BlockWrapper 
+					<BlockWrapper
 						{block}
 						{store}
 						isSelected={store.selectedBlockId === block.id}
@@ -161,7 +188,7 @@
 		flex: 1;
 		display: flex;
 		flex-direction: column;
-		background: #F3F4F6;
+		background: #f3f4f6;
 		min-width: 0;
 		overflow: hidden;
 	}
@@ -171,8 +198,8 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 16px 24px;
-		background: #FFFFFF;
-		border-bottom: 1px solid #E5E7EB;
+		background: #ffffff;
+		border-bottom: 1px solid #e5e7eb;
 		gap: 16px;
 	}
 
@@ -180,7 +207,7 @@
 		flex: 1;
 		font-size: 20px;
 		font-weight: 600;
-		color: #1F2937;
+		color: #1f2937;
 		border: none;
 		background: transparent;
 		padding: 8px 0;
@@ -188,7 +215,7 @@
 	}
 
 	.course-title-input:focus {
-		border-bottom: 2px solid #143E59;
+		border-bottom: 2px solid #143e59;
 	}
 
 	.course-title-input:disabled {
@@ -205,8 +232,8 @@
 		align-items: center;
 		gap: 6px;
 		padding: 8px 16px;
-		background: #F3F4F6;
-		border: 1px solid #E5E7EB;
+		background: #f3f4f6;
+		border: 1px solid #e5e7eb;
 		border-radius: 8px;
 		font-size: 14px;
 		font-weight: 500;
@@ -216,12 +243,12 @@
 	}
 
 	.action-btn:hover {
-		background: #E5E7EB;
+		background: #e5e7eb;
 	}
 
 	.action-btn.active {
-		background: #143E59;
-		border-color: #143E59;
+		background: #143e59;
+		border-color: #143e59;
 		color: white;
 	}
 
@@ -235,7 +262,7 @@
 		max-width: 900px;
 		margin: 0 auto;
 		min-height: 100%;
-		background: #FFFFFF;
+		background: #ffffff;
 		border-radius: 12px;
 		box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
 		padding: 24px;
@@ -264,13 +291,13 @@
 	.empty-state h3 {
 		font-size: 20px;
 		font-weight: 600;
-		color: #1F2937;
+		color: #1f2937;
 		margin: 0 0 8px 0;
 	}
 
 	.empty-state p {
 		font-size: 14px;
-		color: #6B7280;
+		color: #6b7280;
 		margin: 0;
 		max-width: 300px;
 	}
@@ -281,18 +308,23 @@
 
 	.drop-line {
 		height: 3px;
-		background: linear-gradient(90deg, #143E59 0%, #1E73BE 100%);
+		background: linear-gradient(90deg, #143e59 0%, #1e73be 100%);
 		border-radius: 2px;
 		animation: pulse 1s ease-in-out infinite;
 	}
 
 	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.5; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
 	}
 
 	.drop-zone-empty {
-		border: 2px dashed #143E59;
+		border: 2px dashed #143e59;
 		border-radius: 12px;
 		padding: 60px;
 		background: rgba(20, 62, 89, 0.05);
@@ -303,7 +335,7 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 8px;
-		color: #143E59;
+		color: #143e59;
 		font-weight: 500;
 	}
 
@@ -313,12 +345,17 @@
 	}
 
 	@keyframes bounce {
-		0%, 100% { transform: translateY(0); }
-		50% { transform: translateY(-5px); }
+		0%,
+		100% {
+			transform: translateY(0);
+		}
+		50% {
+			transform: translateY(-5px);
+		}
 	}
 
 	.dragging .canvas-inner {
-		background: #FAFAFA;
+		background: #fafafa;
 	}
 
 	/* Scrollbar */
@@ -331,11 +368,11 @@
 	}
 
 	.canvas-body::-webkit-scrollbar-thumb {
-		background: #D1D5DB;
+		background: #d1d5db;
 		border-radius: 4px;
 	}
 
 	.canvas-body::-webkit-scrollbar-thumb:hover {
-		background: #9CA3AF;
+		background: #9ca3af;
 	}
 </style>

@@ -19,11 +19,7 @@
 	import { browser } from '$app/environment';
 	import { onDestroy } from 'svelte';
 	import type { ConsentCategory } from '../types';
-	import {
-		consentStore,
-		showPreferencesModal,
-		closePreferencesModal,
-	} from '../store.svelte';
+	import { consentStore, showPreferencesModal, closePreferencesModal } from '../store.svelte';
 	import { getVendorsByCategory } from '../vendors';
 
 	/**
@@ -35,7 +31,7 @@
 	let pendingConsent = $state({
 		analytics: false,
 		marketing: false,
-		preferences: false,
+		preferences: false
 	});
 
 	// Sync with store when modal opens
@@ -45,7 +41,7 @@
 			pendingConsent = {
 				analytics: current.analytics,
 				marketing: current.marketing,
-				preferences: current.preferences,
+				preferences: current.preferences
 			};
 		}
 	});
@@ -62,29 +58,29 @@
 			name: 'Strictly Necessary',
 			description:
 				'These cookies are essential for the website to function properly. They enable core features like security, network management, and accessibility. You cannot disable these.',
-			required: true,
+			required: true
 		},
 		{
 			id: 'analytics',
 			name: 'Analytics & Performance',
 			description:
 				'These cookies help us understand how visitors interact with our website by collecting and reporting information anonymously. This helps us improve our services.',
-			required: false,
+			required: false
 		},
 		{
 			id: 'marketing',
 			name: 'Marketing & Advertising',
 			description:
 				'These cookies are used to track visitors across websites. The intention is to display ads that are relevant and engaging for the individual user.',
-			required: false,
+			required: false
 		},
 		{
 			id: 'preferences',
 			name: 'Preferences & Personalization',
 			description:
 				'These cookies enable the website to remember choices you make (such as your language or region) and provide enhanced, more personal features.',
-			required: false,
-		},
+			required: false
+		}
 	];
 
 	// Get vendors for each category
@@ -98,7 +94,7 @@
 
 		pendingConsent = {
 			...pendingConsent,
-			[categoryId]: !pendingConsent[categoryId as keyof typeof pendingConsent],
+			[categoryId]: !pendingConsent[categoryId as keyof typeof pendingConsent]
 		};
 	}
 
@@ -107,7 +103,7 @@
 		consentStore.updateCategories({
 			analytics: pendingConsent.analytics,
 			marketing: pendingConsent.marketing,
-			preferences: pendingConsent.preferences,
+			preferences: pendingConsent.preferences
 		});
 		closePreferencesModal();
 	}
@@ -185,9 +181,7 @@
 
 	// Check for reduced motion
 	const prefersReducedMotion = $derived(
-		browser
-			? window.matchMedia('(prefers-reduced-motion: reduce)').matches
-			: false
+		browser ? window.matchMedia('(prefers-reduced-motion: reduce)').matches : false
 	);
 </script>
 
@@ -211,9 +205,7 @@
 			transition:scale={{ start: 0.95, duration: prefersReducedMotion ? 0 : 200 }}
 		>
 			<div class="modal-header">
-				<h2 id="preferences-modal-title" class="modal-title">
-					Cookie Preferences
-				</h2>
+				<h2 id="preferences-modal-title" class="modal-title">Cookie Preferences</h2>
 				<button
 					type="button"
 					class="modal-close"
@@ -239,9 +231,9 @@
 
 			<div class="modal-body">
 				<p class="modal-intro">
-					We use cookies and similar technologies to enhance your browsing
-					experience. Choose which categories of cookies you want to allow.
-					Your choices will be saved and you can change them at any time.
+					We use cookies and similar technologies to enhance your browsing experience. Choose which
+					categories of cookies you want to allow. Your choices will be saved and you can change
+					them at any time.
 				</p>
 
 				<div class="categories-list">
@@ -295,34 +287,18 @@
 
 			<div class="modal-footer">
 				<div class="footer-actions-left">
-					<button
-						type="button"
-						class="consent-btn consent-btn-outline"
-						onclick={handleRejectAll}
-					>
+					<button type="button" class="consent-btn consent-btn-outline" onclick={handleRejectAll}>
 						Reject All
 					</button>
-					<button
-						type="button"
-						class="consent-btn consent-btn-outline"
-						onclick={handleAcceptAll}
-					>
+					<button type="button" class="consent-btn consent-btn-outline" onclick={handleAcceptAll}>
 						Accept All
 					</button>
 				</div>
 				<div class="footer-actions-right">
-					<button
-						type="button"
-						class="consent-btn consent-btn-secondary"
-						onclick={handleCancel}
-					>
+					<button type="button" class="consent-btn consent-btn-secondary" onclick={handleCancel}>
 						Cancel
 					</button>
-					<button
-						type="button"
-						class="consent-btn consent-btn-primary"
-						onclick={handleSave}
-					>
+					<button type="button" class="consent-btn consent-btn-primary" onclick={handleSave}>
 						Save Preferences
 					</button>
 				</div>

@@ -15,17 +15,23 @@
 	 */
 
 	interface Props {
-		onUploadComplete?: (data: { video_url: string; embed_url: string; video_guid: string; thumbnail_url: string; duration?: number }) => void;
+		onUploadComplete?: (data: {
+			video_url: string;
+			embed_url: string;
+			video_guid: string;
+			thumbnail_url: string;
+			duration?: number;
+		}) => void;
 		onError?: (error: string) => void;
 		libraryId?: number;
 		apiBase?: string;
 	}
 
-	let { 
-		onUploadComplete, 
-		onError, 
+	let {
+		onUploadComplete,
+		onError,
 		libraryId = 389539, // Default Bunny library ID
-		apiBase = '/api/admin/bunny' 
+		apiBase = '/api/admin/bunny'
 	}: Props = $props();
 
 	// State
@@ -41,7 +47,13 @@
 	let fileInput = $state<HTMLInputElement | null>(null);
 
 	// Allowed file types and limits
-	const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'];
+	const allowedTypes = [
+		'video/mp4',
+		'video/webm',
+		'video/quicktime',
+		'video/x-msvideo',
+		'video/x-matroska'
+	];
 	const maxSize = 5 * 1024 * 1024 * 1024; // 5GB for Bunny.net
 
 	// Drag and drop handlers
@@ -136,7 +148,6 @@
 				thumbnail_url: finalData.thumbnail_url || '',
 				duration: finalData.duration
 			});
-
 		} catch (err) {
 			const message = err instanceof Error ? err.message : 'Upload failed';
 			error = message;
@@ -150,8 +161,8 @@
 
 	async function waitForProcessing(videoGuid: string, maxAttempts = 30): Promise<any> {
 		for (let i = 0; i < maxAttempts; i++) {
-			await new Promise(resolve => setTimeout(resolve, 2000));
-			
+			await new Promise((resolve) => setTimeout(resolve, 2000));
+
 			try {
 				const response = await fetch(`${apiBase}/video-status/${videoGuid}`);
 				if (response.ok) {
@@ -222,11 +233,16 @@
 
 	function getStatusText(): string {
 		switch (uploadStatus) {
-			case 'preparing': return 'Preparing upload...';
-			case 'uploading': return `Uploading... ${uploadProgress}%`;
-			case 'processing': return 'Processing video...';
-			case 'complete': return 'Upload complete!';
-			default: return '';
+			case 'preparing':
+				return 'Preparing upload...';
+			case 'uploading':
+				return `Uploading... ${uploadProgress}%`;
+			case 'processing':
+				return 'Processing video...';
+			case 'complete':
+				return 'Upload complete!';
+			default:
+				return '';
 		}
 	}
 </script>
@@ -241,9 +257,7 @@
 				</svg>
 			</div>
 			<p>Video uploaded successfully!</p>
-			<button type="button" class="btn-link" onclick={clearFile}>
-				Upload another video
-			</button>
+			<button type="button" class="btn-link" onclick={clearFile}> Upload another video </button>
 		</div>
 	{:else if videoFile}
 		<div class="file-selected">
@@ -271,8 +285,8 @@
 			{#if isUploading}
 				<div class="upload-progress">
 					<div class="progress-bar">
-						<div 
-							class="progress-fill" 
+						<div
+							class="progress-fill"
 							class:indeterminate={uploadStatus === 'preparing' || uploadStatus === 'processing'}
 							style="width: {uploadStatus === 'uploading' ? uploadProgress : 100}%"
 						></div>
@@ -353,12 +367,12 @@
 
 	.drop-zone:hover,
 	.drop-zone.dragging {
-		border-color: #E6B800;
+		border-color: #e6b800;
 		background: rgba(230, 184, 0, 0.1);
 	}
 
 	.drop-zone:focus {
-		outline: 2px solid #E6B800;
+		outline: 2px solid #e6b800;
 		outline-offset: 2px;
 	}
 
@@ -372,7 +386,7 @@
 	.upload-icon {
 		width: 48px;
 		height: 48px;
-		color: #E6B800;
+		color: #e6b800;
 		margin-bottom: 0.5rem;
 	}
 
@@ -480,7 +494,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #E6B800, #B38F00);
+		background: linear-gradient(90deg, #e6b800, #b38f00);
 		transition: width 0.3s;
 		border-radius: 4px;
 	}
@@ -491,7 +505,7 @@
 		background: linear-gradient(
 			90deg,
 			rgba(230, 184, 0, 0.3) 0%,
-			#E6B800 50%,
+			#e6b800 50%,
 			rgba(230, 184, 0, 0.3) 100%
 		);
 		background-size: 200% 100%;
@@ -522,10 +536,10 @@
 		width: 100%;
 		margin-top: 1rem;
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		border: none;
 		border-radius: 8px;
-		color: #0D1117;
+		color: #0d1117;
 		font-size: 0.9375rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -573,14 +587,14 @@
 	.btn-link {
 		background: transparent;
 		border: none;
-		color: #FFD11A;
+		color: #ffd11a;
 		font-size: 0.875rem;
 		cursor: pointer;
 		text-decoration: underline;
 	}
 
 	.btn-link:hover {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.error-message {

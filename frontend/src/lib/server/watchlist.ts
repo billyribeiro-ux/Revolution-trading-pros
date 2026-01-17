@@ -1,12 +1,12 @@
 /**
  * Weekly Watchlist Server-Side Fetch Helper
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Apple ICT 11+ Principal Engineer Grade - January 2026
- * 
+ *
  * Server-side data fetching for 0ms loading delay.
  * Use in +page.server.ts load functions to pre-fetch watchlist data.
- * 
+ *
  * @version 1.0.0
  */
 
@@ -46,14 +46,14 @@ export async function getLatestWatchlist(
 			per_page: '1',
 			status: 'published'
 		});
-		
+
 		if (roomSlug) {
 			params.set('room', roomSlug);
 		}
 
 		const response = await fetchFn(`${API_BASE}/api/watchlist?${params}`, {
 			headers: {
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				'Content-Type': 'application/json'
 			}
 		});
@@ -64,7 +64,7 @@ export async function getLatestWatchlist(
 		}
 
 		const result = await response.json();
-		
+
 		if (result.success && result.data?.length > 0) {
 			return result.data[0];
 		}
@@ -89,7 +89,7 @@ export async function getWatchlistBySlug(
 	try {
 		const response = await fetchFn(`${API_BASE}/api/watchlist/${slug}`, {
 			headers: {
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				'Content-Type': 'application/json'
 			}
 		});
@@ -99,7 +99,7 @@ export async function getWatchlistBySlug(
 		}
 
 		const result = await response.json();
-		
+
 		if (result.success && result.data) {
 			return result.data;
 		}

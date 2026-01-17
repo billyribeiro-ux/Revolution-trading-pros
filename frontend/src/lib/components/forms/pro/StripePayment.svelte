@@ -227,7 +227,6 @@
 			currency: currency
 		}).format(amount);
 	}
-
 </script>
 
 <div class="stripe-payment" class:disabled class:has-error={error || cardError}>
@@ -342,8 +341,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.payment-request-button {
@@ -371,7 +374,9 @@
 		border: 1px solid #d1d5db;
 		border-radius: 0.5rem;
 		background-color: white;
-		transition: border-color 0.15s, box-shadow 0.15s;
+		transition:
+			border-color 0.15s,
+			box-shadow 0.15s;
 	}
 
 	.card-element-wrapper:focus-within {

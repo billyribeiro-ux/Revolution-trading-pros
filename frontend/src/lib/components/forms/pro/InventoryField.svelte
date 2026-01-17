@@ -32,7 +32,9 @@
 		layout?: 'list' | 'grid' | 'compact';
 		columns?: number;
 		error?: string;
-		onchange?: (selection: { productId: string; quantity: number; product: ProductOption }[]) => void;
+		onchange?: (
+			selection: { productId: string; quantity: number; product: ProductOption }[]
+		) => void;
 	}
 
 	let {
@@ -231,7 +233,14 @@
 								disabled={disabled || quantity <= 0}
 								aria-label="Decrease quantity"
 							>
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								>
 									<line x1="5" y1="12" x2="19" y2="12"></line>
 								</svg>
 							</button>
@@ -241,7 +250,11 @@
 								value={quantity}
 								min="0"
 								max={maxQty}
-								oninput={(e: Event) => handleQuantityChange(product, parseInt((e.target as HTMLInputElement).value) || 0)}
+								oninput={(e: Event) =>
+									handleQuantityChange(
+										product,
+										parseInt((e.target as HTMLInputElement).value) || 0
+									)}
 								{disabled}
 							/>
 							<button
@@ -251,7 +264,14 @@
 								disabled={disabled || quantity >= maxQty}
 								aria-label="Increase quantity"
 							>
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								>
 									<line x1="12" y1="5" x2="12" y2="19"></line>
 									<line x1="5" y1="12" x2="19" y2="12"></line>
 								</svg>
@@ -267,8 +287,9 @@
 								name="{name}_selection"
 								value={product.id}
 								checked={isSelected}
-								onchange={(e: Event) => handleCheckboxChange(product, (e.target as HTMLInputElement).checked)}
-								disabled={disabled}
+								onchange={(e: Event) =>
+									handleCheckboxChange(product, (e.target as HTMLInputElement).checked)}
+								{disabled}
 							/>
 							<span class="radio-custom"></span>
 							Select
@@ -302,7 +323,14 @@
 
 	{#if error}
 		<div class="error-message">
-			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="14"
+				height="14"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<circle cx="12" cy="12" r="10"></circle>
 				<line x1="12" y1="8" x2="12" y2="12"></line>
 				<line x1="12" y1="16" x2="12.01" y2="16"></line>

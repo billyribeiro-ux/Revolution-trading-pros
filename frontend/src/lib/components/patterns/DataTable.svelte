@@ -1,17 +1,12 @@
 <script lang="ts">
 	/**
 	 * DataTable - Enterprise data table with sorting, pagination, and actions
-	 * 
+	 *
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
 	import type { Snippet } from 'svelte';
-	import {
-		IconSortAscending,
-		IconSortDescending,
-		IconArrowLeft,
-		IconArrowRight
-	} from '$lib/icons';
+	import { IconSortAscending, IconSortDescending, IconArrowLeft, IconArrowRight } from '$lib/icons';
 	import SkeletonLoader from '$lib/components/ui/SkeletonLoader.svelte';
 
 	interface Column {
@@ -70,14 +65,14 @@
 
 	function handleSort(column: Column) {
 		if (!column.sortable) return;
-		
+
 		if (sortKey === column.key) {
 			sortDirection = sortDirection === 'asc' ? 'desc' : 'asc';
 		} else {
 			sortKey = column.key;
 			sortDirection = 'asc';
 		}
-		
+
 		onsort?.({ key: sortKey, direction: sortDirection });
 	}
 
@@ -98,7 +93,7 @@
 			<thead>
 				<tr>
 					{#each columns as column}
-						<th 
+						<th
 							style={column.width ? `width: ${column.width}` : ''}
 							class:sortable={column.sortable}
 							class:sorted={sortKey === column.key}
@@ -128,15 +123,15 @@
 			</thead>
 			<tbody>
 				{#if loading}
-				{#each Array(pageSize) as _}
-					<tr>
-						{#each columns as _}
-							<td>
-								<SkeletonLoader variant="text" width="80%" />
-							</td>
-						{/each}
-					</tr>
-				{/each}
+					{#each Array(pageSize) as _}
+						<tr>
+							{#each columns as _}
+								<td>
+									<SkeletonLoader variant="text" width="80%" />
+								</td>
+							{/each}
+						</tr>
+					{/each}
 				{:else if data.length === 0}
 					<tr>
 						<td colspan={columns.length} class="empty-cell">
@@ -151,10 +146,7 @@
 					</tr>
 				{:else}
 					{#each data as row, index}
-						<tr 
-							onclick={() => handleRowClick(row, index)}
-							class:clickable={rowActions}
-						>
+						<tr onclick={() => handleRowClick(row, index)} class:clickable={rowActions}>
 							{#each columns as column}
 								<td class="align-{column.align || 'left'}">
 									{#if cell}
@@ -178,18 +170,14 @@
 				Showing {startItem} to {endItem} of {totalItems.toLocaleString()} results
 			</div>
 			<div class="pagination-controls">
-				<button 
-					class="page-btn"
-					disabled={page === 1}
-					onclick={() => handlePageChange(page - 1)}
-				>
+				<button class="page-btn" disabled={page === 1} onclick={() => handlePageChange(page - 1)}>
 					<IconArrowLeft size={18} />
 				</button>
-				
+
 				{#each Array(Math.min(5, totalPages)) as _, i}
 					{@const pageNum = page <= 3 ? i + 1 : page + i - 2}
 					{#if pageNum > 0 && pageNum <= totalPages}
-						<button 
+						<button
 							class="page-btn"
 							class:active={pageNum === page}
 							onclick={() => handlePageChange(pageNum)}
@@ -198,8 +186,8 @@
 						</button>
 					{/if}
 				{/each}
-				
-				<button 
+
+				<button
 					class="page-btn"
 					disabled={page === totalPages}
 					onclick={() => handlePageChange(page + 1)}
@@ -304,9 +292,15 @@
 		cursor: pointer;
 	}
 
-	.align-left { text-align: left; }
-	.align-center { text-align: center; }
-	.align-right { text-align: right; }
+	.align-left {
+		text-align: left;
+	}
+	.align-center {
+		text-align: center;
+	}
+	.align-right {
+		text-align: right;
+	}
 
 	.empty-cell {
 		text-align: center;

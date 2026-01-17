@@ -32,7 +32,7 @@ import type {
 	CustomEventPayload,
 	PurchasePayload,
 	EcommerceItem,
-	AnalyticsConfig,
+	AnalyticsConfig
 } from './adapters/types';
 import { AnalyticsEvents } from './adapters/types';
 
@@ -125,7 +125,7 @@ export const Events = {
 	API_ERROR: 'api_error',
 
 	// GA4 Standard Events (Extended)
-	...AnalyticsEvents,
+	...AnalyticsEvents
 } as const;
 
 export type EventName = (typeof Events)[keyof typeof Events];
@@ -221,7 +221,7 @@ class MetricsService {
 			page_path: properties?.path || window.location.pathname,
 			page_title: properties?.title || document.title,
 			page_referrer: properties?.referrer || document.referrer,
-			...(properties?.page_type && { page_type: properties.page_type }),
+			...(properties?.page_type && { page_type: properties.page_type })
 		};
 
 		getOrchestrator().trackPageView(payload);
@@ -275,7 +275,7 @@ class MetricsService {
 			...(payload.tax !== undefined && { tax: payload.tax }),
 			...(payload.shipping !== undefined && { shipping: payload.shipping }),
 			...(payload.coupon && { coupon: payload.coupon }),
-			...(payload.items && { items: payload.items }),
+			...(payload.items && { items: payload.items })
 		};
 
 		getOrchestrator().trackPurchase(purchasePayload);
@@ -349,7 +349,7 @@ class MetricsService {
 	trackSearch(searchTerm: string, resultsCount?: number): void {
 		this.track(Events.SEARCH_PERFORMED, {
 			search_term: searchTerm,
-			results_count: resultsCount,
+			results_count: resultsCount
 		});
 	}
 
@@ -360,7 +360,7 @@ class MetricsService {
 		this.track(Events.SHARE_CLICKED, {
 			content_type: contentType,
 			item_id: itemId,
-			method,
+			method
 		});
 	}
 
@@ -369,7 +369,7 @@ class MetricsService {
 	 */
 	trackAddToCart(item: EcommerceItem): void {
 		this.track(Events.PRODUCT_ADDED_TO_CART, {
-			...item,
+			...item
 		});
 	}
 
@@ -378,7 +378,7 @@ class MetricsService {
 	 */
 	trackRemoveFromCart(item: EcommerceItem): void {
 		this.track(Events.PRODUCT_REMOVED_FROM_CART, {
-			...item,
+			...item
 		});
 	}
 
@@ -389,7 +389,7 @@ class MetricsService {
 		this.track(Events.CHECKOUT_STARTED, {
 			value,
 			currency,
-			items_count: items?.length,
+			items_count: items?.length
 		});
 	}
 
@@ -399,7 +399,7 @@ class MetricsService {
 	trackVideoStart(videoTitle: string, videoId?: string): void {
 		this.track(Events.VIDEO_STARTED, {
 			video_title: videoTitle,
-			video_id: videoId,
+			video_id: videoId
 		});
 	}
 
@@ -410,7 +410,7 @@ class MetricsService {
 		this.track(Events.VIDEO_COMPLETED, {
 			video_title: videoTitle,
 			video_id: videoId,
-			watch_time_seconds: watchTimeSeconds,
+			watch_time_seconds: watchTimeSeconds
 		});
 	}
 
@@ -420,7 +420,7 @@ class MetricsService {
 	trackCourseStart(courseId: string, courseName: string): void {
 		this.track(Events.COURSE_STARTED, {
 			course_id: courseId,
-			course_name: courseName,
+			course_name: courseName
 		});
 	}
 
@@ -431,7 +431,7 @@ class MetricsService {
 		this.track(Events.COURSE_COMPLETED, {
 			course_id: courseId,
 			course_name: courseName,
-			completion_time_minutes: completionTimeMinutes,
+			completion_time_minutes: completionTimeMinutes
 		});
 	}
 
@@ -441,7 +441,7 @@ class MetricsService {
 	trackTradingRoomJoin(roomId: string, roomName: string): void {
 		this.track(Events.TRADING_ROOM_JOINED, {
 			room_id: roomId,
-			room_name: roomName,
+			room_name: roomName
 		});
 	}
 
@@ -452,7 +452,7 @@ class MetricsService {
 		this.track(Events.TRADING_ROOM_LEFT, {
 			room_id: roomId,
 			room_name: roomName,
-			duration_minutes: durationMinutes,
+			duration_minutes: durationMinutes
 		});
 	}
 
@@ -466,7 +466,7 @@ class MetricsService {
 		this.track(Events.ERROR_OCCURRED, {
 			error_message: errorMessage,
 			error_stack: errorStack,
-			...context,
+			...context
 		});
 	}
 
@@ -477,7 +477,7 @@ class MetricsService {
 		this.track(Events.FORM_SUBMITTED, {
 			form_id: formId,
 			form_name: formName,
-			success,
+			success
 		});
 	}
 
@@ -488,7 +488,7 @@ class MetricsService {
 		this.track(Events.FORM_ERROR, {
 			form_id: formId,
 			error_message: errorMessage,
-			field_name: fieldName,
+			field_name: fieldName
 		});
 	}
 }
@@ -503,27 +503,22 @@ export const metrics = MetricsService.getInstance();
 export const track = (name: string, properties?: EventProperties) =>
 	metrics.track(name, properties);
 
-export const trackPageView = (properties?: PageViewProperties) =>
-	metrics.trackPageView(properties);
+export const trackPageView = (properties?: PageViewProperties) => metrics.trackPageView(properties);
 
 export const identify = (userId: string, properties?: UserProperties) =>
 	metrics.identify(userId, properties);
 
-export const startTimer = (eventName: string) =>
-	metrics.startTimer(eventName);
+export const startTimer = (eventName: string) => metrics.startTimer(eventName);
 
 // Extended exports
 export const trackPurchase = (payload: Parameters<typeof metrics.trackPurchase>[0]) =>
 	metrics.trackPurchase(payload);
 
-export const trackSignUp = (method?: string) =>
-	metrics.trackSignUp(method);
+export const trackSignUp = (method?: string) => metrics.trackSignUp(method);
 
-export const trackLogin = (method?: string) =>
-	metrics.trackLogin(method);
+export const trackLogin = (method?: string) => metrics.trackLogin(method);
 
-export const trackLogout = () =>
-	metrics.trackLogout();
+export const trackLogout = () => metrics.trackLogout();
 
 export const trackSearch = (searchTerm: string, resultsCount?: number) =>
 	metrics.trackSearch(searchTerm, resultsCount);

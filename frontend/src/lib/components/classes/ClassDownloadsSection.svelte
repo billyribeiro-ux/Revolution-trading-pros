@@ -11,7 +11,7 @@
 		boxUrl: string;
 		title?: string;
 	}
-	
+
 	let { boxUrl, title = 'Class Downloads' }: Props = $props();
 </script>
 
@@ -32,7 +32,7 @@
 				></iframe>
 				<noscript>
 					<p class="iframe-fallback">
-						Please enable JavaScript to view class downloads, or 
+						Please enable JavaScript to view class downloads, or
 						<a href={boxUrl.replace('/embed/', '/')} target="_blank" rel="noopener noreferrer">
 							click here to open in Box.com
 						</a>.
@@ -46,7 +46,7 @@
 <style>
 	#dl-rp-row {
 		padding: 40px 0;
-		background-color: #EFEFEF;
+		background-color: #efefef;
 	}
 
 	#dl-rp-row .section-inner {
@@ -59,7 +59,7 @@
 	}
 
 	#class-downloads {
-		background-color: #FFFFFF;
+		background-color: #ffffff;
 		padding: 25px;
 		width: 100%;
 		max-width: 1080px;
@@ -74,14 +74,20 @@
 		margin: 0 0 20px 0;
 		text-align: left;
 		line-height: 1.2;
-		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+		font-family:
+			'Open Sans',
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			Roboto,
+			sans-serif;
 	}
 
 	.class-downloads-container {
 		width: 100%;
 		height: 400px;
 		box-sizing: border-box;
-		background: #FFFFFF;
+		background: #ffffff;
 		overflow: hidden;
 	}
 
@@ -95,7 +101,7 @@
 	.iframe-fallback {
 		padding: 20px;
 		text-align: center;
-		background-color: #FFFFFF;
+		background-color: #ffffff;
 		border: 1px solid #dddddd;
 		border-radius: 4px;
 		color: #666666;
@@ -116,7 +122,7 @@
 		#class-downloads {
 			padding: 16px;
 		}
-		
+
 		.class-downloads-container {
 			height: 300px;
 		}

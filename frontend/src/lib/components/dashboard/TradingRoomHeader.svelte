@@ -22,7 +22,7 @@
 	}
 
 	let { roomName, startHereUrl, pageTitle }: Props = $props();
-	
+
 	// Use custom pageTitle if provided, otherwise default to "{roomName} Dashboard"
 	let displayTitle = $derived(pageTitle || `${roomName} Dashboard`);
 
@@ -86,9 +86,7 @@
 <header class="dashboard__header">
 	<div class="dashboard__header-left">
 		<h1 class="dashboard__page-title">{displayTitle}</h1>
-		<a href={startHereUrl} class="btn btn-xs btn-default">
-			New? Start Here
-		</a>
+		<a href={startHereUrl} class="btn btn-xs btn-default"> New? Start Here </a>
 	</div>
 	<div class="dashboard__header-right">
 		<div class="dropdown" class:is-open={isDropdownOpen}>
@@ -108,12 +106,7 @@
 			{#if isDropdownOpen}
 				<div class="dropdown-menu" role="menu">
 					{#each tradingRooms as room}
-						<a 
-							href={room.href} 
-							class="dropdown-item" 
-							onclick={closeDropdown}
-							role="menuitem"
-						>
+						<a href={room.href} class="dropdown-item" onclick={closeDropdown} role="menuitem">
 							<span class="dropdown-item__icon">
 								<RtpIcon name={room.icon} size={20} />
 							</span>
@@ -222,14 +215,14 @@
 	}
 
 	.btn-default {
-		background-color: #F4F4F4;
-		color: #0A84AE;
-		border: 1px solid #F4F4F4;
+		background-color: #f4f4f4;
+		color: #0a84ae;
+		border: 1px solid #f4f4f4;
 	}
 
 	.btn-default:hover {
 		background-color: #d0d0d0;
-		color: #0A84AE;
+		color: #0a84ae;
 	}
 
 	.btn-default:active,
@@ -237,7 +230,7 @@
 		background-color: #e7e7e7;
 		border: 3px solid #c9a0dc;
 		outline: none;
-		color: #0A84AE;
+		color: #0a84ae;
 	}
 
 	/* Enter Trading Room Button */
@@ -342,7 +335,7 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.dropdown-item__text {

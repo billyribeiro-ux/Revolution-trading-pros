@@ -74,11 +74,7 @@
 		{#each navigation as item}
 			{@const IconComponent = item.icon}
 			<div class="nav-group">
-				<a
-					href={item.href}
-					class="nav-item"
-					class:active={isActive(item.href)}
-				>
+				<a href={item.href} class="nav-item" class:active={isActive(item.href)}>
 					<IconComponent size={20} />
 					<span class="nav-label">{item.label}</span>
 				</a>
@@ -113,10 +109,7 @@
 				<p class="user-email">{$authStore.user?.email || ''}</p>
 			</div>
 		</div>
-		<button
-			onclick={handleLogout}
-			class="logout-btn"
-		>
+		<button onclick={handleLogout} class="logout-btn">
 			<IconLogout size={18} />
 			<span>Logout</span>
 		</button>

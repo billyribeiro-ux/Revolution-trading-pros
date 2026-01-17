@@ -41,27 +41,129 @@ interface KeyboardState {
 
 const defaultShortcuts: Omit<KeyboardShortcut, 'action'>[] = [
 	// Navigation
-	{ id: 'goto-dashboard', keys: ['g', 'd'], description: 'Go to Dashboard', category: 'Navigation', global: true },
-	{ id: 'goto-analytics', keys: ['g', 'a'], description: 'Go to Analytics', category: 'Navigation', global: true },
-	{ id: 'goto-blog', keys: ['g', 'b'], description: 'Go to Blog', category: 'Navigation', global: true },
-	{ id: 'goto-crm', keys: ['g', 'c'], description: 'Go to CRM', category: 'Navigation', global: true },
-	{ id: 'goto-email', keys: ['g', 'e'], description: 'Go to Email', category: 'Navigation', global: true },
-	{ id: 'goto-media', keys: ['g', 'm'], description: 'Go to Media', category: 'Navigation', global: true },
-	{ id: 'goto-settings', keys: ['g', 's'], description: 'Go to Settings', category: 'Navigation', global: true },
+	{
+		id: 'goto-dashboard',
+		keys: ['g', 'd'],
+		description: 'Go to Dashboard',
+		category: 'Navigation',
+		global: true
+	},
+	{
+		id: 'goto-analytics',
+		keys: ['g', 'a'],
+		description: 'Go to Analytics',
+		category: 'Navigation',
+		global: true
+	},
+	{
+		id: 'goto-blog',
+		keys: ['g', 'b'],
+		description: 'Go to Blog',
+		category: 'Navigation',
+		global: true
+	},
+	{
+		id: 'goto-crm',
+		keys: ['g', 'c'],
+		description: 'Go to CRM',
+		category: 'Navigation',
+		global: true
+	},
+	{
+		id: 'goto-email',
+		keys: ['g', 'e'],
+		description: 'Go to Email',
+		category: 'Navigation',
+		global: true
+	},
+	{
+		id: 'goto-media',
+		keys: ['g', 'm'],
+		description: 'Go to Media',
+		category: 'Navigation',
+		global: true
+	},
+	{
+		id: 'goto-settings',
+		keys: ['g', 's'],
+		description: 'Go to Settings',
+		category: 'Navigation',
+		global: true
+	},
 
 	// Actions
-	{ id: 'search', keys: ['Meta', 'k'], description: 'Open Command Palette', category: 'Actions', global: true },
-	{ id: 'search-alt', keys: ['Control', 'k'], description: 'Open Command Palette', category: 'Actions', global: true },
-	{ id: 'notifications', keys: ['Meta', 'n'], description: 'Toggle Notifications', category: 'Actions', global: true },
-	{ id: 'refresh', keys: ['Meta', 'r'], description: 'Refresh Data', category: 'Actions', global: true },
-	{ id: 'new-item', keys: ['n'], description: 'Create New Item', category: 'Actions', global: true },
-	{ id: 'save', keys: ['Meta', 's'], description: 'Save Changes', category: 'Actions', global: true },
+	{
+		id: 'search',
+		keys: ['Meta', 'k'],
+		description: 'Open Command Palette',
+		category: 'Actions',
+		global: true
+	},
+	{
+		id: 'search-alt',
+		keys: ['Control', 'k'],
+		description: 'Open Command Palette',
+		category: 'Actions',
+		global: true
+	},
+	{
+		id: 'notifications',
+		keys: ['Meta', 'n'],
+		description: 'Toggle Notifications',
+		category: 'Actions',
+		global: true
+	},
+	{
+		id: 'refresh',
+		keys: ['Meta', 'r'],
+		description: 'Refresh Data',
+		category: 'Actions',
+		global: true
+	},
+	{
+		id: 'new-item',
+		keys: ['n'],
+		description: 'Create New Item',
+		category: 'Actions',
+		global: true
+	},
+	{
+		id: 'save',
+		keys: ['Meta', 's'],
+		description: 'Save Changes',
+		category: 'Actions',
+		global: true
+	},
 
 	// UI
-	{ id: 'help', keys: ['Shift', '?'], description: 'Show Shortcuts', category: 'Help', global: true },
-	{ id: 'escape', keys: ['Escape'], description: 'Close Modal/Panel', category: 'UI', global: true },
-	{ id: 'toggle-sidebar', keys: ['Meta', 'b'], description: 'Toggle Sidebar', category: 'UI', global: true },
-	{ id: 'toggle-theme', keys: ['Meta', 'Shift', 't'], description: 'Toggle Theme', category: 'UI', global: true }
+	{
+		id: 'help',
+		keys: ['Shift', '?'],
+		description: 'Show Shortcuts',
+		category: 'Help',
+		global: true
+	},
+	{
+		id: 'escape',
+		keys: ['Escape'],
+		description: 'Close Modal/Panel',
+		category: 'UI',
+		global: true
+	},
+	{
+		id: 'toggle-sidebar',
+		keys: ['Meta', 'b'],
+		description: 'Toggle Sidebar',
+		category: 'UI',
+		global: true
+	},
+	{
+		id: 'toggle-theme',
+		keys: ['Meta', 'Shift', 't'],
+		description: 'Toggle Theme',
+		category: 'UI',
+		global: true
+	}
 ];
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -88,11 +190,7 @@ let isInitialized = false;
 function handleKeyDown(event: KeyboardEvent) {
 	// Ignore if typing in input/textarea
 	const target = event.target as HTMLElement;
-	if (
-		target.tagName === 'INPUT' ||
-		target.tagName === 'TEXTAREA' ||
-		target.isContentEditable
-	) {
+	if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA' || target.isContentEditable) {
 		// Allow escape and certain meta shortcuts
 		if (event.key !== 'Escape' && !(event.metaKey || event.ctrlKey)) {
 			return;
@@ -111,13 +209,13 @@ function handleKeyDown(event: KeyboardEvent) {
 
 	// Check for modifier-based shortcuts first
 	if (modifiers.length > 0) {
-		const shortcut = state.shortcuts.find(s => {
+		const shortcut = state.shortcuts.find((s) => {
 			if (!s.enabled) return false;
-			const sModifiers = s.keys.filter(k => ['Meta', 'Control', 'Shift', 'Alt'].includes(k));
-			const sKey = s.keys.find(k => !['Meta', 'Control', 'Shift', 'Alt'].includes(k));
+			const sModifiers = s.keys.filter((k) => ['Meta', 'Control', 'Shift', 'Alt'].includes(k));
+			const sKey = s.keys.find((k) => !['Meta', 'Control', 'Shift', 'Alt'].includes(k));
 			return (
-				sModifiers.every(m => modifiers.includes(m)) &&
-				modifiers.every(m => sModifiers.includes(m)) &&
+				sModifiers.every((m) => modifiers.includes(m)) &&
+				modifiers.every((m) => sModifiers.includes(m)) &&
 				sKey?.toLowerCase() === key.toLowerCase()
 			);
 		});
@@ -142,9 +240,9 @@ function handleKeyDown(event: KeyboardEvent) {
 		}, 500);
 
 		// Check for sequence match
-		const shortcut = state.shortcuts.find(s => {
+		const shortcut = state.shortcuts.find((s) => {
 			if (!s.enabled) return false;
-			if (s.keys.some(k => ['Meta', 'Control', 'Shift', 'Alt'].includes(k))) return false;
+			if (s.keys.some((k) => ['Meta', 'Control', 'Shift', 'Alt'].includes(k))) return false;
 			return (
 				s.keys.length === keySequence.length &&
 				s.keys.every((k, i) => k.toLowerCase() === keySequence[i])
@@ -161,7 +259,7 @@ function handleKeyDown(event: KeyboardEvent) {
 
 	// Handle special keys
 	if (key === 'Escape') {
-		const shortcut = state.shortcuts.find(s => s.id === 'escape' && s.enabled);
+		const shortcut = state.shortcuts.find((s) => s.id === 'escape' && s.enabled);
 		if (shortcut) {
 			shortcut.action();
 		}
@@ -169,7 +267,7 @@ function handleKeyDown(event: KeyboardEvent) {
 
 	if (key === '?' && event.shiftKey) {
 		event.preventDefault();
-		keyboardStore.update(s => ({ ...s, isHelpOpen: !s.isHelpOpen }));
+		keyboardStore.update((s) => ({ ...s, isHelpOpen: !s.isHelpOpen }));
 	}
 }
 
@@ -187,30 +285,32 @@ export const keyboard = {
 		if (!browser || isInitialized) return;
 
 		// Build shortcuts with actions
-		const shortcuts: KeyboardShortcut[] = defaultShortcuts.map(s => ({
+		const shortcuts: KeyboardShortcut[] = defaultShortcuts.map((s) => ({
 			...s,
 			enabled: true,
-			action: customActions[s.id] || (() => {
-				// Default navigation actions
-				if (s.id.startsWith('goto-')) {
-					const path = s.id.replace('goto-', '');
-					const pathMap: Record<string, string> = {
-						dashboard: '/admin',
-						analytics: '/admin/analytics',
-						blog: '/admin/blog',
-						crm: '/admin/crm',
-						email: '/admin/email/campaigns',
-						media: '/admin/media',
-						settings: '/admin/settings'
-					};
-					if (pathMap[path]) {
-						goto(pathMap[path]);
+			action:
+				customActions[s.id] ||
+				(() => {
+					// Default navigation actions
+					if (s.id.startsWith('goto-')) {
+						const path = s.id.replace('goto-', '');
+						const pathMap: Record<string, string> = {
+							dashboard: '/admin',
+							analytics: '/admin/analytics',
+							blog: '/admin/blog',
+							crm: '/admin/crm',
+							email: '/admin/email/campaigns',
+							media: '/admin/media',
+							settings: '/admin/settings'
+						};
+						if (pathMap[path]) {
+							goto(pathMap[path]);
+						}
 					}
-				}
-			})
+				})
 		}));
 
-		keyboardStore.update(s => ({ ...s, shortcuts }));
+		keyboardStore.update((s) => ({ ...s, shortcuts }));
 
 		// Add event listener
 		window.addEventListener('keydown', handleKeyDown);
@@ -230,9 +330,12 @@ export const keyboard = {
 	 * Register a custom shortcut
 	 */
 	register(shortcut: KeyboardShortcut) {
-		keyboardStore.update(state => ({
+		keyboardStore.update((state) => ({
 			...state,
-			shortcuts: [...state.shortcuts.filter(s => s.id !== shortcut.id), { ...shortcut, enabled: true }]
+			shortcuts: [
+				...state.shortcuts.filter((s) => s.id !== shortcut.id),
+				{ ...shortcut, enabled: true }
+			]
 		}));
 	},
 
@@ -240,11 +343,9 @@ export const keyboard = {
 	 * Register an action handler for an existing shortcut ID
 	 */
 	registerAction(id: string, action: () => void) {
-		keyboardStore.update(state => ({
+		keyboardStore.update((state) => ({
 			...state,
-			shortcuts: state.shortcuts.map(s =>
-				s.id === id ? { ...s, action, enabled: true } : s
-			)
+			shortcuts: state.shortcuts.map((s) => (s.id === id ? { ...s, action, enabled: true } : s))
 		}));
 	},
 
@@ -252,9 +353,9 @@ export const keyboard = {
 	 * Unregister a shortcut
 	 */
 	unregister(id: string) {
-		keyboardStore.update(state => ({
+		keyboardStore.update((state) => ({
 			...state,
-			shortcuts: state.shortcuts.filter(s => s.id !== id)
+			shortcuts: state.shortcuts.filter((s) => s.id !== id)
 		}));
 	},
 
@@ -262,11 +363,9 @@ export const keyboard = {
 	 * Enable/disable a shortcut
 	 */
 	setEnabled(id: string, enabled: boolean) {
-		keyboardStore.update(state => ({
+		keyboardStore.update((state) => ({
 			...state,
-			shortcuts: state.shortcuts.map(s =>
-				s.id === id ? { ...s, enabled } : s
-			)
+			shortcuts: state.shortcuts.map((s) => (s.id === id ? { ...s, enabled } : s))
 		}));
 	},
 
@@ -274,28 +373,28 @@ export const keyboard = {
 	 * Set active context
 	 */
 	setContext(context: string) {
-		keyboardStore.update(s => ({ ...s, activeContext: context }));
+		keyboardStore.update((s) => ({ ...s, activeContext: context }));
 	},
 
 	/**
 	 * Toggle help modal
 	 */
 	toggleHelp() {
-		keyboardStore.update(s => ({ ...s, isHelpOpen: !s.isHelpOpen }));
+		keyboardStore.update((s) => ({ ...s, isHelpOpen: !s.isHelpOpen }));
 	},
 
 	/**
 	 * Open help modal
 	 */
 	openHelp() {
-		keyboardStore.update(s => ({ ...s, isHelpOpen: true }));
+		keyboardStore.update((s) => ({ ...s, isHelpOpen: true }));
 	},
 
 	/**
 	 * Close help modal
 	 */
 	closeHelp() {
-		keyboardStore.update(s => ({ ...s, isHelpOpen: false }));
+		keyboardStore.update((s) => ({ ...s, isHelpOpen: false }));
 	},
 
 	/**
@@ -314,7 +413,7 @@ export const keyboard = {
 			ArrowRight: '→'
 		};
 
-		return keys.map(k => keyMap[k] || k.toUpperCase()).join(' + ');
+		return keys.map((k) => keyMap[k] || k.toUpperCase()).join(' + ');
 	}
 };
 

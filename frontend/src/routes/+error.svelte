@@ -101,7 +101,11 @@
 	}
 </script>
 
-<SEOHead title="{config.title} - Revolution Trading Pros" description={config.description} noindex />
+<SEOHead
+	title="{config.title} - Revolution Trading Pros"
+	description={config.description}
+	noindex
+/>
 
 <main class="error-page">
 	<div class="error-container">

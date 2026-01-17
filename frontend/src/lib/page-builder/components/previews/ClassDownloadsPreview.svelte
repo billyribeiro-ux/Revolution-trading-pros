@@ -2,7 +2,7 @@
 	/**
 	 * Class Downloads Preview Component
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
-	 * 
+	 *
 	 * Wrapper for the ClassDownloads component in the page builder.
 	 */
 
@@ -19,7 +19,7 @@
 
 <div class="downloads-preview">
 	{#if isPreview && (config.courseId || config.courseSlug)}
-		<ClassDownloads 
+		<ClassDownloads
 			courseId={config.courseId}
 			courseSlug={config.courseSlug}
 			title={config.title}
@@ -61,14 +61,14 @@
 	}
 
 	.downloads-placeholder {
-		background: #FFFFFF;
-		border: 1px solid #E5E7EB;
+		background: #ffffff;
+		border: 1px solid #e5e7eb;
 		border-radius: 4px;
 	}
 
 	.placeholder-header {
 		padding: 16px 20px;
-		border-bottom: 1px solid #E0E0E0;
+		border-bottom: 1px solid #e0e0e0;
 	}
 
 	.placeholder-header h3 {
@@ -87,7 +87,7 @@
 		align-items: center;
 		gap: 12px;
 		padding: 12px 20px;
-		border-bottom: 1px solid #F0F0F0;
+		border-bottom: 1px solid #f0f0f0;
 	}
 
 	.file-row:last-of-type {
@@ -95,7 +95,7 @@
 	}
 
 	.file-row.alt {
-		background: #F9F9F9;
+		background: #f9f9f9;
 	}
 
 	.file-icon {
@@ -115,10 +115,10 @@
 
 	.file-note {
 		padding: 12px 20px;
-		background: #F9FAFB;
-		border-top: 1px solid #E5E7EB;
+		background: #f9fafb;
+		border-top: 1px solid #e5e7eb;
 		text-align: center;
 		font-size: 13px;
-		color: #6B7280;
+		color: #6b7280;
 	}
 </style>

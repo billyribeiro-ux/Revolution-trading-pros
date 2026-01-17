@@ -54,9 +54,9 @@
 	});
 
 	const needsOptions = $derived(['select', 'radio', 'checkbox'].includes(fieldData.field_type));
-	const supportsValidation = $derived(!['heading', 'divider', 'html', 'hidden'].includes(
-		fieldData.field_type
-	));
+	const supportsValidation = $derived(
+		!['heading', 'divider', 'html', 'hidden'].includes(fieldData.field_type)
+	);
 
 	function handleSave() {
 		// Parse options from textarea - convert strings to FieldOption objects

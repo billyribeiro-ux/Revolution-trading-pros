@@ -112,9 +112,7 @@
 		filteredCategories.length > 0 && selectedIds.size === filteredCategories.length
 	);
 
-	let mergeTargetOptions = $derived(
-		categories.filter((cat) => !selectedIds.has(cat.id))
-	);
+	let mergeTargetOptions = $derived(categories.filter((cat) => !selectedIds.has(cat.id)));
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// EFFECTS - Svelte 5 $effect
@@ -428,257 +426,247 @@
 
 <div class="page">
 	<div class="admin-page-container">
-	<!-- Header -->
-	<header class="page-header">
-		<h1>
-			<IconFolder size={28} />
-			Categories
-		</h1>
-		<p class="subtitle">Organize products and content with categories</p>
-		<div class="header-actions">
-			<button class="btn-refresh" onclick={() => loadCategories()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			<button class="btn-secondary" onclick={exportCategories}>
-				<IconDownload size={18} />
-				Export
-			</button>
-			<button class="btn-primary" onclick={() => openCategoryModal()}>
-				<IconFolderPlus size={18} />
-				Add Category
-			</button>
-		</div>
-	</header>
-
-	<!-- Stats Cards -->
-	<div class="stats-grid">
-		<div class="stat-card">
-			<div class="stat-icon blue">
-				<IconFolder size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.total}</span>
-				<span class="stat-label">Total Categories</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon green">
-				<IconEye size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.visible}</span>
-				<span class="stat-label">Visible</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon amber">
-				<IconEyeOff size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.hidden}</span>
-				<span class="stat-label">Hidden</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon purple">
-				<IconChartBar size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.withPosts}</span>
-				<span class="stat-label">With Content</span>
-			</div>
-		</div>
-	</div>
-
-	<!-- Filters Bar -->
-	<div class="filters-bar">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<input
-				type="text"
-				placeholder="Search categories..."
-				bind:value={searchQuery}
-			/>
-		</div>
-		<select class="filter-select" bind:value={parentFilter}>
-			<option value={null}>All Categories</option>
-			<option value={0}>Root Categories Only</option>
-			{#each parentCategories as parent}
-				<option value={parent.id}>{parent.name} & Children</option>
-			{/each}
-		</select>
-		<label class="checkbox-label">
-			<input type="checkbox" bind:checked={showHidden} />
-			<span>Show Hidden</span>
-		</label>
-	</div>
-
-	<!-- Bulk Actions Bar -->
-	{#if selectedIds.size > 0}
-		<div class="bulk-actions-bar" transition:fade>
-			<span class="selected-count">{selectedIds.size} selected</span>
-			<div class="bulk-buttons">
-				<button class="btn-bulk" onclick={() => bulkToggleVisibility(true)}>
-					<IconEye size={16} />
-					Show
+		<!-- Header -->
+		<header class="page-header">
+			<h1>
+				<IconFolder size={28} />
+				Categories
+			</h1>
+			<p class="subtitle">Organize products and content with categories</p>
+			<div class="header-actions">
+				<button class="btn-refresh" onclick={() => loadCategories()} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
-				<button class="btn-bulk" onclick={() => bulkToggleVisibility(false)}>
-					<IconEyeOff size={16} />
-					Hide
+				<button class="btn-secondary" onclick={exportCategories}>
+					<IconDownload size={18} />
+					Export
 				</button>
-				<button class="btn-bulk" onclick={() => (showMergeModal = true)}>
-					<IconGitMerge size={16} />
-					Merge
-				</button>
-				<button class="btn-bulk danger" onclick={bulkDelete}>
-					<IconTrash size={16} />
-					Delete
-				</button>
-			</div>
-		</div>
-	{/if}
-
-	<!-- Categories List -->
-	<div class="categories-container">
-		{#if isLoading}
-			<div class="loading-state">
-				<div class="spinner"></div>
-				<p>Loading categories...</p>
-			</div>
-		{:else if error}
-			<div class="error-state">
-				<IconAlertCircle size={48} />
-				<p>{error}</p>
-				<button class="btn-primary" onclick={() => loadCategories()}>Try Again</button>
-			</div>
-		{:else if filteredCategories.length === 0}
-			<div class="empty-state">
-				<IconFolder size={48} />
-				<h3>No categories found</h3>
-				<p>Create your first category to organize your content</p>
 				<button class="btn-primary" onclick={() => openCategoryModal()}>
 					<IconFolderPlus size={18} />
-					Create Category
+					Add Category
 				</button>
 			</div>
-		{:else}
-			<div class="categories-table-wrapper">
-				<table class="categories-table">
-					<thead>
-						<tr>
-							<th class="th-checkbox">
-								<input
-									type="checkbox"
-									checked={allSelected}
-									onchange={toggleSelectAll}
-								/>
-							</th>
-							<th class="th-drag"></th>
-							<th>Category</th>
-							<th>Slug</th>
-							<th>Items</th>
-							<th>Visibility</th>
-							<th>Updated</th>
-							<th class="th-actions">Actions</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each filteredCategories as category (category.id)}
-							<tr
-								class:selected={selectedIds.has(category.id)}
-								class:child-row={category.parent_id}
-							>
-								<td>
-									<input
-										type="checkbox"
-										checked={selectedIds.has(category.id)}
-										onchange={() => toggleSelection(category.id)}
-									/>
-								</td>
-								<td class="drag-handle">
-									<IconGripVertical size={16} />
-								</td>
-								<td>
-									<div class="category-cell">
-										{#if category.parent_id}
-											<span class="child-indicator">
-												<IconChevronRight size={14} />
-											</span>
-										{/if}
-										<div
-											class="category-color"
-											style="background: {category.color}"
-										></div>
-										<div class="category-info">
-											<span class="category-name">{category.name}</span>
-											{#if category.description}
-												<span class="category-desc">{category.description}</span>
-											{/if}
-										</div>
-									</div>
-								</td>
-								<td>
-									<button
-										class="slug-badge"
-										onclick={() => copySlug(category.slug)}
-										title="Click to copy"
-									>
-										/{category.slug}
-										<IconCopy size={12} />
-									</button>
-								</td>
-								<td>
-									<span class="count-badge">{category.post_count}</span>
-								</td>
-								<td>
-									{#if category.is_visible}
-										<span class="visibility-badge visible">
-											<IconEye size={14} />
-											Visible
-										</span>
-									{:else}
-										<span class="visibility-badge hidden">
-											<IconEyeOff size={14} />
-											Hidden
-										</span>
-									{/if}
-								</td>
-								<td class="date-cell">
-									{formatDate(category.updated_at)}
-								</td>
-								<td>
-									<div class="action-buttons">
-										<button
-											class="btn-icon"
-											onclick={() => openCategoryModal(category)}
-											title="Edit"
-										>
-											<IconEdit size={16} />
-										</button>
-										<button
-											class="btn-icon danger"
-											onclick={() => deleteCategory(category.id)}
-											title="Delete"
-										>
-											<IconTrash size={16} />
-										</button>
-									</div>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
-			</div>
+		</header>
 
-			<!-- Table Footer -->
-			<div class="table-footer">
-				<span class="results-count">
-					Showing {filteredCategories.length} of {categories.length} categories
-				</span>
+		<!-- Stats Cards -->
+		<div class="stats-grid">
+			<div class="stat-card">
+				<div class="stat-icon blue">
+					<IconFolder size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.total}</span>
+					<span class="stat-label">Total Categories</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon green">
+					<IconEye size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.visible}</span>
+					<span class="stat-label">Visible</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon amber">
+					<IconEyeOff size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.hidden}</span>
+					<span class="stat-label">Hidden</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon purple">
+					<IconChartBar size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.withPosts}</span>
+					<span class="stat-label">With Content</span>
+				</div>
+			</div>
+		</div>
+
+		<!-- Filters Bar -->
+		<div class="filters-bar">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<input type="text" placeholder="Search categories..." bind:value={searchQuery} />
+			</div>
+			<select class="filter-select" bind:value={parentFilter}>
+				<option value={null}>All Categories</option>
+				<option value={0}>Root Categories Only</option>
+				{#each parentCategories as parent}
+					<option value={parent.id}>{parent.name} & Children</option>
+				{/each}
+			</select>
+			<label class="checkbox-label">
+				<input type="checkbox" bind:checked={showHidden} />
+				<span>Show Hidden</span>
+			</label>
+		</div>
+
+		<!-- Bulk Actions Bar -->
+		{#if selectedIds.size > 0}
+			<div class="bulk-actions-bar" transition:fade>
+				<span class="selected-count">{selectedIds.size} selected</span>
+				<div class="bulk-buttons">
+					<button class="btn-bulk" onclick={() => bulkToggleVisibility(true)}>
+						<IconEye size={16} />
+						Show
+					</button>
+					<button class="btn-bulk" onclick={() => bulkToggleVisibility(false)}>
+						<IconEyeOff size={16} />
+						Hide
+					</button>
+					<button class="btn-bulk" onclick={() => (showMergeModal = true)}>
+						<IconGitMerge size={16} />
+						Merge
+					</button>
+					<button class="btn-bulk danger" onclick={bulkDelete}>
+						<IconTrash size={16} />
+						Delete
+					</button>
+				</div>
 			</div>
 		{/if}
+
+		<!-- Categories List -->
+		<div class="categories-container">
+			{#if isLoading}
+				<div class="loading-state">
+					<div class="spinner"></div>
+					<p>Loading categories...</p>
+				</div>
+			{:else if error}
+				<div class="error-state">
+					<IconAlertCircle size={48} />
+					<p>{error}</p>
+					<button class="btn-primary" onclick={() => loadCategories()}>Try Again</button>
+				</div>
+			{:else if filteredCategories.length === 0}
+				<div class="empty-state">
+					<IconFolder size={48} />
+					<h3>No categories found</h3>
+					<p>Create your first category to organize your content</p>
+					<button class="btn-primary" onclick={() => openCategoryModal()}>
+						<IconFolderPlus size={18} />
+						Create Category
+					</button>
+				</div>
+			{:else}
+				<div class="categories-table-wrapper">
+					<table class="categories-table">
+						<thead>
+							<tr>
+								<th class="th-checkbox">
+									<input type="checkbox" checked={allSelected} onchange={toggleSelectAll} />
+								</th>
+								<th class="th-drag"></th>
+								<th>Category</th>
+								<th>Slug</th>
+								<th>Items</th>
+								<th>Visibility</th>
+								<th>Updated</th>
+								<th class="th-actions">Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each filteredCategories as category (category.id)}
+								<tr
+									class:selected={selectedIds.has(category.id)}
+									class:child-row={category.parent_id}
+								>
+									<td>
+										<input
+											type="checkbox"
+											checked={selectedIds.has(category.id)}
+											onchange={() => toggleSelection(category.id)}
+										/>
+									</td>
+									<td class="drag-handle">
+										<IconGripVertical size={16} />
+									</td>
+									<td>
+										<div class="category-cell">
+											{#if category.parent_id}
+												<span class="child-indicator">
+													<IconChevronRight size={14} />
+												</span>
+											{/if}
+											<div class="category-color" style="background: {category.color}"></div>
+											<div class="category-info">
+												<span class="category-name">{category.name}</span>
+												{#if category.description}
+													<span class="category-desc">{category.description}</span>
+												{/if}
+											</div>
+										</div>
+									</td>
+									<td>
+										<button
+											class="slug-badge"
+											onclick={() => copySlug(category.slug)}
+											title="Click to copy"
+										>
+											/{category.slug}
+											<IconCopy size={12} />
+										</button>
+									</td>
+									<td>
+										<span class="count-badge">{category.post_count}</span>
+									</td>
+									<td>
+										{#if category.is_visible}
+											<span class="visibility-badge visible">
+												<IconEye size={14} />
+												Visible
+											</span>
+										{:else}
+											<span class="visibility-badge hidden">
+												<IconEyeOff size={14} />
+												Hidden
+											</span>
+										{/if}
+									</td>
+									<td class="date-cell">
+										{formatDate(category.updated_at)}
+									</td>
+									<td>
+										<div class="action-buttons">
+											<button
+												class="btn-icon"
+												onclick={() => openCategoryModal(category)}
+												title="Edit"
+											>
+												<IconEdit size={16} />
+											</button>
+											<button
+												class="btn-icon danger"
+												onclick={() => deleteCategory(category.id)}
+												title="Delete"
+											>
+												<IconTrash size={16} />
+											</button>
+										</div>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
+
+				<!-- Table Footer -->
+				<div class="table-footer">
+					<span class="results-count">
+						Showing {filteredCategories.length} of {categories.length} categories
+					</span>
+				</div>
+			{/if}
+		</div>
 	</div>
-	</div><!-- End admin-page-container -->
+	<!-- End admin-page-container -->
 </div>
 
 <!-- Category Modal -->
@@ -841,8 +829,8 @@
 
 			<div class="modal-body">
 				<p class="merge-info">
-					Merge {selectedIds.size} selected categories into a single category.
-					All associated content will be moved to the target category.
+					Merge {selectedIds.size} selected categories into a single category. All associated content
+					will be moved to the target category.
 				</p>
 
 				<div class="form-group">
@@ -857,14 +845,8 @@
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showMergeModal = false)}>
-					Cancel
-				</button>
-				<button
-					class="btn-primary"
-					onclick={mergeCategories}
-					disabled={!mergeForm.targetId}
-				>
+				<button class="btn-secondary" onclick={() => (showMergeModal = false)}> Cancel </button>
+				<button class="btn-primary" onclick={mergeCategories} disabled={!mergeForm.targetId}>
 					<IconGitMerge size={18} />
 					Merge Categories
 				</button>
@@ -944,8 +926,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -1019,10 +1005,22 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
+	.stat-icon.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
 
 	.stat-content {
 		display: flex;

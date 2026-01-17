@@ -76,7 +76,7 @@ export const DEFAULT_VARIANTS: BannerVariant[] = [
 		tone: 'friendly',
 		buttonStyle: 'gradient',
 		colorScheme: 'dark',
-		weight: 50,
+		weight: 50
 	},
 	{
 		id: 'minimal',
@@ -90,8 +90,8 @@ export const DEFAULT_VARIANTS: BannerVariant[] = [
 			title: 'Cookies',
 			description: 'We use cookies to improve your experience.',
 			acceptButton: 'OK',
-			rejectButton: 'No',
-		},
+			rejectButton: 'No'
+		}
 	},
 	{
 		id: 'formal',
@@ -104,9 +104,9 @@ export const DEFAULT_VARIANTS: BannerVariant[] = [
 		customCopy: {
 			title: 'Cookie Notice',
 			description:
-				'This website uses cookies and similar technologies to enhance your browsing experience, analyze traffic, and provide personalized content. By continuing to use this site, you consent to our use of cookies in accordance with our Privacy Policy.',
-		},
-	},
+				'This website uses cookies and similar technologies to enhance your browsing experience, analyze traffic, and provide personalized content. By continuing to use this site, you consent to our use of cookies in accordance with our Privacy Policy.'
+		}
+	}
 ];
 
 /**
@@ -172,8 +172,8 @@ export function initializeABTest(
 ): BannerVariant {
 	if (!browser) {
 		const firstVariant = variants[0];
-	if (!firstVariant) throw new Error('No variants provided');
-	return firstVariant;
+		if (!firstVariant) throw new Error('No variants provided');
+		return firstVariant;
 	}
 
 	// Check for forced variant (for testing)
@@ -222,9 +222,7 @@ export function recordImpression(): void {
 /**
  * Record user decision
  */
-export function recordDecision(
-	action: ABTestResult['action']
-): void {
+export function recordDecision(action: ABTestResult['action']): void {
 	if (!browser) return;
 
 	const variant = get(currentVariant);
@@ -235,7 +233,7 @@ export function recordDecision(
 		action,
 		timeToDecision: bannerShownAt ? Date.now() - bannerShownAt : 0,
 		timestamp: new Date().toISOString(),
-		sessionId: getSessionId(),
+		sessionId: getSessionId()
 	};
 
 	testResults.update((results) => [...results, result]);
@@ -302,7 +300,7 @@ export function getABTestAnalytics(): ABTestAnalytics[] {
 			acceptRate: impressions > 0 ? accepts / impressions : 0,
 			rejectRate: impressions > 0 ? rejects / impressions : 0,
 			customizeRate: impressions > 0 ? customizes / impressions : 0,
-			avgTimeToDecision: impressions > 0 ? totalTimeToDecision / impressions : 0,
+			avgTimeToDecision: impressions > 0 ? totalTimeToDecision / impressions : 0
 		});
 	}
 
@@ -312,7 +310,9 @@ export function getABTestAnalytics(): ABTestAnalytics[] {
 /**
  * Get best performing variant
  */
-export function getBestVariant(metric: 'acceptRate' | 'avgTimeToDecision' = 'acceptRate'): string | null {
+export function getBestVariant(
+	metric: 'acceptRate' | 'avgTimeToDecision' = 'acceptRate'
+): string | null {
 	const analytics = getABTestAnalytics();
 
 	if (analytics.length === 0) return null;
@@ -347,12 +347,16 @@ export function clearABTestData(): void {
  * Export A/B test data for analysis
  */
 export function exportABTestData(): string {
-	return JSON.stringify({
-		currentVariant: get(currentVariant),
-		results: get(testResults),
-		analytics: getABTestAnalytics(),
-		exportedAt: new Date().toISOString(),
-	}, null, 2);
+	return JSON.stringify(
+		{
+			currentVariant: get(currentVariant),
+			results: get(testResults),
+			analytics: getABTestAnalytics(),
+			exportedAt: new Date().toISOString()
+		},
+		null,
+		2
+	);
 }
 
 /**

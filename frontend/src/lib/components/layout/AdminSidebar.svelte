@@ -2,7 +2,7 @@
 	/**
 	 * AdminSidebar - Sidebar for admin dashboard
 	 * Extracted from admin layout for reusability
-	 * 
+	 *
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
@@ -46,9 +46,7 @@
 	const menuSections = [
 		{
 			title: null,
-			items: [
-				{ icon: IconDashboard, label: 'Overview', href: '/admin' }
-			]
+			items: [{ icon: IconDashboard, label: 'Overview', href: '/admin' }]
 		},
 		{
 			title: 'Members',
@@ -162,11 +160,7 @@
 
 <!-- Mobile Overlay -->
 {#if isOpen}
-	<button 
-		class="sidebar-overlay" 
-		onclick={closeSidebar}
-		aria-label="Close sidebar"
-	></button>
+	<button class="sidebar-overlay" onclick={closeSidebar} aria-label="Close sidebar"></button>
 {/if}
 
 <style>
@@ -186,9 +180,10 @@
 		left: 0;
 		height: 100vh;
 		z-index: var(--z-modal, 500);
-		transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
-					background 0.3s ease,
-					border-color 0.3s ease;
+		transition:
+			transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+			background 0.3s ease,
+			border-color 0.3s ease;
 	}
 
 	/* Sidebar Header */
@@ -278,7 +273,7 @@
 		transform: translateY(-50%);
 		width: 3px;
 		height: 0;
-		background: var(--admin-accent-primary, #E6B800);
+		background: var(--admin-accent-primary, #e6b800);
 		border-radius: 0 2px 2px 0;
 		transition: height 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
@@ -305,7 +300,7 @@
 
 	.nav-item.active::before {
 		height: 60%;
-		background: var(--admin-accent-primary-hover, #FFD11A);
+		background: var(--admin-accent-primary-hover, #ffd11a);
 	}
 
 	/* Sidebar Footer */
@@ -330,7 +325,11 @@
 		width: 40px;
 		height: 40px;
 		border-radius: var(--radius-md, 0.5rem);
-		background: linear-gradient(135deg, var(--admin-accent-primary), var(--admin-widget-purple-icon));
+		background: linear-gradient(
+			135deg,
+			var(--admin-accent-primary),
+			var(--admin-widget-purple-icon)
+		);
 		display: flex;
 		align-items: center;
 		justify-content: center;

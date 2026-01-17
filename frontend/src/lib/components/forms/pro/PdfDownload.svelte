@@ -61,7 +61,9 @@
 
 	async function downloadPdf(pdf: PdfFile) {
 		try {
-			const response = await fetch(`/api/forms/${formId}/submissions/${submissionId}/pdf/${pdf.id}/download`);
+			const response = await fetch(
+				`/api/forms/${formId}/submissions/${submissionId}/pdf/${pdf.id}/download`
+			);
 
 			if (!response.ok) {
 				throw new Error('Failed to download PDF');
@@ -92,7 +94,9 @@
 		error = null;
 
 		try {
-			const response = await fetch(`/api/forms/${formId}/submissions/${submissionId}/pdf/${pdf.id}/preview`);
+			const response = await fetch(
+				`/api/forms/${formId}/submissions/${submissionId}/pdf/${pdf.id}/preview`
+			);
 
 			if (!response.ok) {
 				throw new Error('Failed to load preview');
@@ -142,7 +146,14 @@
 			<div class="pdf-actions">
 				{#each pdfList as pdf}
 					<button type="button" class="download-btn" onclick={() => downloadPdf(pdf)}>
-						<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="18"
+							height="18"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
 							<polyline points="7 10 12 15 17 10"></polyline>
 							<line x1="12" y1="15" x2="12" y2="3"></line>
@@ -150,8 +161,20 @@
 						Download PDF
 					</button>
 					{#if showPreview}
-						<button type="button" class="preview-btn" onclick={() => previewPdf(pdf)} aria-label="Preview PDF">
-							<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<button
+							type="button"
+							class="preview-btn"
+							onclick={() => previewPdf(pdf)}
+							aria-label="Preview PDF"
+						>
+							<svg
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
 								<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
 								<circle cx="12" cy="12" r="3"></circle>
 							</svg>
@@ -165,7 +188,14 @@
 					<span class="spinner"></span>
 					Generating...
 				{:else}
-					<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
 						<polyline points="14 2 14 8 20 8"></polyline>
 						<line x1="12" y1="18" x2="12" y2="12"></line>
@@ -179,7 +209,14 @@
 {:else if variant === 'card'}
 	<div class="pdf-download-card">
 		<div class="card-header">
-			<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="24"
+				height="24"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
 				<polyline points="14 2 14 8 20 8"></polyline>
 				<line x1="16" y1="13" x2="8" y2="13"></line>
@@ -199,26 +236,61 @@
 				{#each pdfList as pdf}
 					<div class="pdf-item">
 						<div class="pdf-icon">
-							<svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+							<svg
+								width="32"
+								height="32"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="1.5"
+							>
 								<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
 								<polyline points="14 2 14 8 20 8"></polyline>
 							</svg>
 						</div>
 						<div class="pdf-info">
 							<span class="pdf-name">{pdf.filename}</span>
-							<span class="pdf-meta">{pdf.file_size_formatted} &bull; {pdf.download_count} downloads</span>
+							<span class="pdf-meta"
+								>{pdf.file_size_formatted} &bull; {pdf.download_count} downloads</span
+							>
 						</div>
 						<div class="pdf-actions">
 							{#if showPreview}
-								<button type="button" class="action-btn preview" onclick={() => previewPdf(pdf)} title="Preview" aria-label="Preview PDF">
-									<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<button
+									type="button"
+									class="action-btn preview"
+									onclick={() => previewPdf(pdf)}
+									title="Preview"
+									aria-label="Preview PDF"
+								>
+									<svg
+										width="16"
+										height="16"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+									>
 										<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
 										<circle cx="12" cy="12" r="3"></circle>
 									</svg>
 								</button>
 							{/if}
-							<button type="button" class="action-btn download" onclick={() => downloadPdf(pdf)} title="Download" aria-label="Download PDF">
-								<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+							<button
+								type="button"
+								class="action-btn download"
+								onclick={() => downloadPdf(pdf)}
+								title="Download"
+								aria-label="Download PDF"
+							>
+								<svg
+									width="16"
+									height="16"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								>
 									<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
 									<polyline points="7 10 12 15 17 10"></polyline>
 									<line x1="12" y1="15" x2="12" y2="3"></line>
@@ -246,12 +318,24 @@
 
 		{#if allowGenerate && pdfList.length > 0}
 			<div class="card-footer">
-				<button type="button" class="generate-btn secondary" onclick={generatePdf} disabled={isGenerating}>
+				<button
+					type="button"
+					class="generate-btn secondary"
+					onclick={generatePdf}
+					disabled={isGenerating}
+				>
 					{#if isGenerating}
 						<span class="spinner"></span>
 						Generating...
 					{:else}
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<line x1="12" y1="5" x2="12" y2="19"></line>
 							<line x1="5" y1="12" x2="19" y2="12"></line>
 						</svg>
@@ -267,7 +351,14 @@
 		{#if pdfList.length > 0}
 			{#each pdfList as pdf}
 				<a href={pdf.url} class="pdf-link" download={pdf.filename} onclick={() => downloadPdf(pdf)}>
-					<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
 						<polyline points="14 2 14 8 20 8"></polyline>
 					</svg>
@@ -276,7 +367,14 @@
 			{/each}
 		{:else if allowGenerate}
 			<button type="button" class="pdf-link" onclick={generatePdf} disabled={isGenerating}>
-				<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
 					<polyline points="14 2 14 8 20 8"></polyline>
 				</svg>
@@ -288,7 +386,14 @@
 
 {#if error}
 	<div class="error-message">
-		<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+		<svg
+			width="16"
+			height="16"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"
+		>
 			<circle cx="12" cy="12" r="10"></circle>
 			<line x1="12" y1="8" x2="12" y2="12"></line>
 			<line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -298,12 +403,34 @@
 {/if}
 
 {#if previewUrl}
-	<div class="preview-overlay" onclick={closePreview} onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') closePreview(); if (e.key === 'Enter' || e.key === ' ') closePreview(); }} role="button" tabindex="0" aria-label="Close preview">
-		<div class="preview-modal" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="presentation">
+	<div
+		class="preview-overlay"
+		onclick={closePreview}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Escape') closePreview();
+			if (e.key === 'Enter' || e.key === ' ') closePreview();
+		}}
+		role="button"
+		tabindex="0"
+		aria-label="Close preview"
+	>
+		<div
+			class="preview-modal"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="presentation"
+		>
 			<div class="preview-header">
 				<h3>PDF Preview</h3>
 				<button type="button" class="close-btn" onclick={closePreview} aria-label="Close preview">
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<line x1="18" y1="6" x2="6" y2="18"></line>
 						<line x1="6" y1="6" x2="18" y2="18"></line>
 					</svg>

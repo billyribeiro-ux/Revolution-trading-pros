@@ -65,11 +65,15 @@
 	});
 
 	// Calculate totals
-	const totalRevenue = $derived(report?.channels?.reduce((sum, c) => sum + c.attributed_revenue, 0) || 0);
+	const totalRevenue = $derived(
+		report?.channels?.reduce((sum, c) => sum + c.attributed_revenue, 0) || 0
+	);
 	const totalConversions = $derived(
 		report?.channels?.reduce((sum, c) => sum + c.attributed_conversions, 0) || 0
 	);
-	const totalTouchpoints = $derived(report?.channels?.reduce((sum, c) => sum + c.touchpoints, 0) || 0);
+	const totalTouchpoints = $derived(
+		report?.channels?.reduce((sum, c) => sum + c.touchpoints, 0) || 0
+	);
 </script>
 
 <svelte:head>

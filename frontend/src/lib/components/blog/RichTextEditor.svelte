@@ -94,7 +94,7 @@
 
 	function insertHeading(value: string) {
 		execCommand('formatBlock', value);
-		const option = headingOptions.find(h => h.value === value);
+		const option = headingOptions.find((h) => h.value === value);
 		selectedHeading = option?.label || 'Paragraph';
 		showHeadingDropdown = false;
 	}
@@ -216,10 +216,10 @@
 		<!-- Headings Dropdown -->
 		<div class="toolbar-group">
 			<div class="heading-dropdown-wrapper">
-				<button 
-					type="button" 
+				<button
+					type="button"
 					class="heading-dropdown-btn"
-					onclick={() => showHeadingDropdown = !showHeadingDropdown}
+					onclick={() => (showHeadingDropdown = !showHeadingDropdown)}
 				>
 					<span>{selectedHeading}</span>
 					<IconChevronDown size={16} />
@@ -227,7 +227,7 @@
 				{#if showHeadingDropdown}
 					<div class="heading-dropdown">
 						{#each headingOptions as option}
-							<button 
+							<button
 								type="button"
 								class="heading-option"
 								class:active={selectedHeading === option.label}

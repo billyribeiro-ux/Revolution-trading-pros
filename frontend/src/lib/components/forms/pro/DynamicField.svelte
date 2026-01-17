@@ -164,9 +164,7 @@
 
 	const filteredOptions = $derived(
 		enableSearchable && searchQuery
-			? options.filter((opt) =>
-					opt.label.toLowerCase().includes(searchQuery.toLowerCase())
-				)
+			? options.filter((opt) => opt.label.toLowerCase().includes(searchQuery.toLowerCase()))
 			: options
 	);
 

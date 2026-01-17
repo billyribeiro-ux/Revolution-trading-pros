@@ -153,13 +153,15 @@
 		}
 	});
 
-	const filteredReports = $derived(reports.filter((report) => {
-		if (activeFilter === 'all') return true;
-		if (activeFilter === 'active') return report.status === 'active';
-		if (activeFilter === 'scheduled') return report.schedule;
-		if (activeFilter === 'draft') return report.status === 'draft';
-		return true;
-	}));
+	const filteredReports = $derived(
+		reports.filter((report) => {
+			if (activeFilter === 'all') return true;
+			if (activeFilter === 'active') return report.status === 'active';
+			if (activeFilter === 'scheduled') return report.schedule;
+			if (activeFilter === 'draft') return report.status === 'draft';
+			return true;
+		})
+	);
 
 	// Report type icons
 	const typeIcons: Record<string, string> = {
@@ -197,7 +199,9 @@
 			<div class="flex items-center justify-center py-20">
 				<div class="relative">
 					<div class="w-12 h-12 border-4 border-purple-500/20 rounded-full"></div>
-					<div class="absolute top-0 left-0 w-12 h-12 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"></div>
+					<div
+						class="absolute top-0 left-0 w-12 h-12 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"
+					></div>
 				</div>
 			</div>
 		{:else if !$isAnalyticsConnected}
@@ -219,100 +223,100 @@
 			</div>
 
 			{#if loading}
-		<div class="flex items-center justify-center py-20">
-			<div
-				class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
-			></div>
-		</div>
-	{:else if error}
-		<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
-			<p class="text-red-600">{error}</p>
-			<button
-				onclick={loadReports}
-				class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
-			>
-				Retry
-			</button>
-		</div>
-	{:else if filteredReports.length === 0}
-		<div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
-			<div class="text-4xl mb-4">📊</div>
-			<h3 class="text-lg font-medium text-gray-900 mb-2">No Reports Yet</h3>
-			<p class="text-gray-500 mb-6">Create your first custom report</p>
-			<button
-				onclick={() => (showCreateModal = true)}
-				class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-block"
-			>
-				Create Your First Report
-			</button>
-		</div>
-	{:else}
-		<!-- Reports Grid -->
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-			{#each filteredReports as report}
-				<div
-					class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow"
-				>
-					<div class="flex items-start justify-between mb-4">
-						<div class="flex items-center gap-3">
-							<span class="text-2xl">{typeIcons[report.type] || '📊'}</span>
-							<div>
-								<h3 class="font-semibold text-gray-900">{report.name}</h3>
-								<span
-									class="text-xs px-2 py-0.5 rounded capitalize
-									{report.status === 'active'
-										? 'bg-green-100 text-green-700'
-										: report.status === 'draft'
-											? 'bg-gray-100 text-gray-700'
-											: 'bg-yellow-100 text-yellow-700'}"
-								>
-									{report.status}
-								</span>
-							</div>
-						</div>
-						<button class="text-gray-400 hover:text-gray-600">⋮</button>
-					</div>
-
-					{#if report.description}
-						<p class="text-sm text-gray-500 mb-4 line-clamp-2">{report.description}</p>
-					{/if}
-
-					<div class="space-y-2 text-sm text-gray-500">
-						<div class="flex items-center justify-between">
-							<span>Created</span>
-							<span>{formatDate(report.created_at)}</span>
-						</div>
-						{#if report.last_run}
-							<div class="flex items-center justify-between">
-								<span>Last Run</span>
-								<span>{formatDate(report.last_run)}</span>
-							</div>
-						{/if}
-						{#if report.schedule}
-							<div class="flex items-center justify-between">
-								<span>Schedule</span>
-								<span class="capitalize">{report.schedule.frequency}</span>
-							</div>
-						{/if}
-					</div>
-
-					<div class="mt-4 pt-4 border-t border-gray-100 flex gap-2">
-						<a
-							href="/admin/analytics/reports/{report.id}"
-							class="flex-1 px-3 py-2 text-sm text-center bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-						>
-							View Report
-						</a>
-						<button
-							class="px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-						>
-							Edit
-						</button>
-					</div>
+				<div class="flex items-center justify-center py-20">
+					<div
+						class="w-8 h-8 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"
+					></div>
 				</div>
-			{/each}
-		</div>
-	{/if}
+			{:else if error}
+				<div class="bg-red-50 border border-red-200 rounded-xl p-6 text-center">
+					<p class="text-red-600">{error}</p>
+					<button
+						onclick={loadReports}
+						class="mt-4 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700"
+					>
+						Retry
+					</button>
+				</div>
+			{:else if filteredReports.length === 0}
+				<div class="bg-white rounded-xl border border-gray-200 p-12 text-center">
+					<div class="text-4xl mb-4">📊</div>
+					<h3 class="text-lg font-medium text-gray-900 mb-2">No Reports Yet</h3>
+					<p class="text-gray-500 mb-6">Create your first custom report</p>
+					<button
+						onclick={() => (showCreateModal = true)}
+						class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 inline-block"
+					>
+						Create Your First Report
+					</button>
+				</div>
+			{:else}
+				<!-- Reports Grid -->
+				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+					{#each filteredReports as report}
+						<div
+							class="bg-white rounded-xl border border-gray-200 p-6 hover:shadow-lg transition-shadow"
+						>
+							<div class="flex items-start justify-between mb-4">
+								<div class="flex items-center gap-3">
+									<span class="text-2xl">{typeIcons[report.type] || '📊'}</span>
+									<div>
+										<h3 class="font-semibold text-gray-900">{report.name}</h3>
+										<span
+											class="text-xs px-2 py-0.5 rounded capitalize
+									{report.status === 'active'
+												? 'bg-green-100 text-green-700'
+												: report.status === 'draft'
+													? 'bg-gray-100 text-gray-700'
+													: 'bg-yellow-100 text-yellow-700'}"
+										>
+											{report.status}
+										</span>
+									</div>
+								</div>
+								<button class="text-gray-400 hover:text-gray-600">⋮</button>
+							</div>
+
+							{#if report.description}
+								<p class="text-sm text-gray-500 mb-4 line-clamp-2">{report.description}</p>
+							{/if}
+
+							<div class="space-y-2 text-sm text-gray-500">
+								<div class="flex items-center justify-between">
+									<span>Created</span>
+									<span>{formatDate(report.created_at)}</span>
+								</div>
+								{#if report.last_run}
+									<div class="flex items-center justify-between">
+										<span>Last Run</span>
+										<span>{formatDate(report.last_run)}</span>
+									</div>
+								{/if}
+								{#if report.schedule}
+									<div class="flex items-center justify-between">
+										<span>Schedule</span>
+										<span class="capitalize">{report.schedule.frequency}</span>
+									</div>
+								{/if}
+							</div>
+
+							<div class="mt-4 pt-4 border-t border-gray-100 flex gap-2">
+								<a
+									href="/admin/analytics/reports/{report.id}"
+									class="flex-1 px-3 py-2 text-sm text-center bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+								>
+									View Report
+								</a>
+								<button
+									class="px-3 py-2 text-sm border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
+								>
+									Edit
+								</button>
+							</div>
+						</div>
+					{/each}
+				</div>
+			{/if}
 		{/if}
 	</div>
 </div>
@@ -379,9 +383,7 @@
 
 				<!-- Metrics -->
 				<div>
-					<span class="block text-sm font-medium text-gray-700 mb-2"
-						>Metrics</span
-					>
+					<span class="block text-sm font-medium text-gray-700 mb-2">Metrics</span>
 					<div class="flex flex-wrap gap-2">
 						{#each availableMetrics as metric}
 							<button
@@ -399,9 +401,7 @@
 
 				<!-- Dimensions -->
 				<div>
-					<span class="block text-sm font-medium text-gray-700 mb-2"
-						>Dimensions</span
-					>
+					<span class="block text-sm font-medium text-gray-700 mb-2">Dimensions</span>
 					<div class="flex flex-wrap gap-2">
 						{#each availableDimensions as dimension}
 							<button

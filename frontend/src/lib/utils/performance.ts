@@ -61,7 +61,10 @@ function reportMetric(metric: PerformanceMetric): void {
 /**
  * Get rating based on thresholds
  */
-function getRating(value: number, thresholds: [number, number]): 'good' | 'needs-improvement' | 'poor' {
+function getRating(
+	value: number,
+	thresholds: [number, number]
+): 'good' | 'needs-improvement' | 'poor' {
 	if (value <= thresholds[0]) return 'good';
 	if (value <= thresholds[1]) return 'needs-improvement';
 	return 'poor';
@@ -78,7 +81,7 @@ export function measureLCP(): void {
 		let reported = false;
 		const observer = new PerformanceObserver((list) => {
 			if (reported) return;
-			
+
 			const entries = list.getEntries();
 			const lastEntry = entries[entries.length - 1] as any;
 
@@ -93,7 +96,7 @@ export function measureLCP(): void {
 		});
 
 		observer.observe({ type: 'largest-contentful-paint', buffered: true });
-		
+
 		// Disconnect after page load settles
 		setTimeout(() => {
 			reported = true;
@@ -132,7 +135,11 @@ export function measureINP(): (() => void) | undefined {
 			});
 		});
 
-		observer.observe({ type: 'event', buffered: true, durationThreshold: 16 } as PerformanceObserverInit);
+		observer.observe({
+			type: 'event',
+			buffered: true,
+			durationThreshold: 16
+		} as PerformanceObserverInit);
 
 		// Report INP on page visibility change (user leaving)
 		const reportINP = () => {
@@ -173,7 +180,6 @@ export function measureINP(): (() => void) | undefined {
 			if (timeoutId) clearTimeout(timeoutId);
 			observer.disconnect();
 		};
-
 	} catch (error) {
 		console.error('INP measurement failed:', error);
 		return undefined;
@@ -298,12 +304,12 @@ export function measureFCP(): void {
 		let reported = false;
 		const observer = new PerformanceObserver((list) => {
 			if (reported) return;
-			
+
 			const entries = list.getEntries();
 			// Find the first-contentful-paint entry
-			const fcpEntry = entries.find(e => e.name === 'first-contentful-paint');
+			const fcpEntry = entries.find((e) => e.name === 'first-contentful-paint');
 			if (!fcpEntry) return;
-			
+
 			reported = true;
 			const metric: PerformanceMetric = {
 				name: 'FCP',
@@ -329,8 +335,10 @@ export function measureTTFB(): void {
 	if (typeof window === 'undefined' || typeof performance === 'undefined') return;
 
 	try {
-		const navigationEntry = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-		
+		const navigationEntry = performance.getEntriesByType(
+			'navigation'
+		)[0] as PerformanceNavigationTiming;
+
 		if (navigationEntry) {
 			const ttfb = navigationEntry.responseStart - navigationEntry.requestStart;
 
@@ -380,17 +388,17 @@ function startMonitoring(): void {
 	performanceCleanupFns = [];
 
 	// Measure all Core Web Vitals (November 2025 standard)
-	measureLCP();   // Largest Contentful Paint
+	measureLCP(); // Largest Contentful Paint
 
 	// Collect cleanup functions from metrics that return them
-	const inpCleanup = measureINP();   // Interaction to Next Paint (replaced FID in March 2024)
+	const inpCleanup = measureINP(); // Interaction to Next Paint (replaced FID in March 2024)
 	if (inpCleanup) performanceCleanupFns.push(inpCleanup);
 
-	const clsCleanup = measureCLS();   // Cumulative Layout Shift
+	const clsCleanup = measureCLS(); // Cumulative Layout Shift
 	if (clsCleanup) performanceCleanupFns.push(clsCleanup);
 
-	measureFCP();   // First Contentful Paint
-	measureTTFB();  // Time to First Byte
+	measureFCP(); // First Contentful Paint
+	measureTTFB(); // Time to First Byte
 
 	// Legacy FID for backwards compatibility with older analytics
 	measureFID();

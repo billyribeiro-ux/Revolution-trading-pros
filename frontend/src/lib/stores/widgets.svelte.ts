@@ -191,7 +191,7 @@ function loadConfig(): WidgetConfig {
 			const parsed = JSON.parse(stored);
 			// Merge with defaults to handle new widgets
 			const storedIds = new Set(parsed.widgets.map((w: DashboardWidget) => w.id));
-			const newWidgets = defaultWidgets.filter(w => !storedIds.has(w.id));
+			const newWidgets = defaultWidgets.filter((w) => !storedIds.has(w.id));
 
 			return {
 				...defaultConfig,
@@ -221,7 +221,7 @@ function createWidgetStore() {
 	const { subscribe, set, update } = writable<WidgetConfig>(loadConfig());
 
 	// Auto-save on changes
-	subscribe(config => {
+	subscribe((config) => {
 		saveConfig(config);
 	});
 
@@ -230,27 +230,23 @@ function createWidgetStore() {
 
 		// Toggle widget visibility
 		toggleWidget(id: string) {
-			update(config => ({
+			update((config) => ({
 				...config,
-				widgets: config.widgets.map(w =>
-					w.id === id ? { ...w, visible: !w.visible } : w
-				)
+				widgets: config.widgets.map((w) => (w.id === id ? { ...w, visible: !w.visible } : w))
 			}));
 		},
 
 		// Update widget size
 		setWidgetSize(id: string, size: WidgetSize) {
-			update(config => ({
+			update((config) => ({
 				...config,
-				widgets: config.widgets.map(w =>
-					w.id === id ? { ...w, size } : w
-				)
+				widgets: config.widgets.map((w) => (w.id === id ? { ...w, size } : w))
 			}));
 		},
 
 		// Reorder widgets
 		reorderWidgets(fromIndex: number, toIndex: number) {
-			update(config => {
+			update((config) => {
 				const widgets = [...config.widgets];
 				const [removed] = widgets.splice(fromIndex, 1);
 				if (!removed) return config;
@@ -266,15 +262,16 @@ function createWidgetStore() {
 
 		// Move widget by id
 		moveWidget(id: string, direction: 'up' | 'down') {
-			update(config => {
+			update((config) => {
 				const widgets = [...config.widgets].sort((a, b) => a.order - b.order);
-				const currentIndex = widgets.findIndex(w => w.id === id);
+				const currentIndex = widgets.findIndex((w) => w.id === id);
 
 				if (currentIndex === -1) return config;
 
-				const targetIndex = direction === 'up'
-					? Math.max(0, currentIndex - 1)
-					: Math.min(widgets.length - 1, currentIndex + 1);
+				const targetIndex =
+					direction === 'up'
+						? Math.max(0, currentIndex - 1)
+						: Math.min(widgets.length - 1, currentIndex + 1);
 
 				if (currentIndex === targetIndex) return config;
 
@@ -291,26 +288,24 @@ function createWidgetStore() {
 
 		// Set layout mode
 		setLayout(layout: 'grid' | 'list') {
-			update(config => ({ ...config, layout }));
+			update((config) => ({ ...config, layout }));
 		},
 
 		// Toggle auto-refresh
 		toggleAutoRefresh() {
-			update(config => ({ ...config, autoRefresh: !config.autoRefresh }));
+			update((config) => ({ ...config, autoRefresh: !config.autoRefresh }));
 		},
 
 		// Set refresh interval
 		setRefreshInterval(interval: number) {
-			update(config => ({ ...config, refreshInterval: interval }));
+			update((config) => ({ ...config, refreshInterval: interval }));
 		},
 
 		// Mark widget as refreshed
 		markRefreshed(id: string) {
-			update(config => ({
+			update((config) => ({
 				...config,
-				widgets: config.widgets.map(w =>
-					w.id === id ? { ...w, lastRefreshed: Date.now() } : w
-				)
+				widgets: config.widgets.map((w) => (w.id === id ? { ...w, lastRefreshed: Date.now() } : w))
 			}));
 		},
 
@@ -322,9 +317,7 @@ function createWidgetStore() {
 		// Get visible widgets sorted by order
 		getVisibleWidgets(): DashboardWidget[] {
 			const config = get({ subscribe });
-			return config.widgets
-				.filter(w => w.visible)
-				.sort((a, b) => a.order - b.order);
+			return config.widgets.filter((w) => w.visible).sort((a, b) => a.order - b.order);
 		}
 	};
 }
@@ -332,15 +325,15 @@ function createWidgetStore() {
 export const widgetStore = createWidgetStore();
 
 // Derived stores
-export const visibleWidgets = derived(widgetStore, $config =>
-	$config.widgets.filter(w => w.visible).sort((a, b) => a.order - b.order)
+export const visibleWidgets = derived(widgetStore, ($config) =>
+	$config.widgets.filter((w) => w.visible).sort((a, b) => a.order - b.order)
 );
 
-export const hiddenWidgets = derived(widgetStore, $config =>
-	$config.widgets.filter(w => !w.visible).sort((a, b) => a.order - b.order)
+export const hiddenWidgets = derived(widgetStore, ($config) =>
+	$config.widgets.filter((w) => !w.visible).sort((a, b) => a.order - b.order)
 );
 
-export const widgetsByCategory = derived(widgetStore, $config => {
+export const widgetsByCategory = derived(widgetStore, ($config) => {
 	const categories: Record<string, DashboardWidget[]> = {
 		analytics: [],
 		content: [],
@@ -358,5 +351,5 @@ export const widgetsByCategory = derived(widgetStore, $config => {
 	return categories;
 });
 
-export const widgetLayout = derived(widgetStore, $config => $config.layout);
-export const autoRefreshEnabled = derived(widgetStore, $config => $config.autoRefresh);
+export const widgetLayout = derived(widgetStore, ($config) => $config.layout);
+export const autoRefreshEnabled = derived(widgetStore, ($config) => $config.autoRefresh);

@@ -207,7 +207,7 @@
 			maxlength={maxLength}
 			oninput={handleInput}
 			class="plain-textarea"
-			aria-labelledby={label ? "content-label" : undefined}
+			aria-labelledby={label ? 'content-label' : undefined}
 		></textarea>
 	{/if}
 

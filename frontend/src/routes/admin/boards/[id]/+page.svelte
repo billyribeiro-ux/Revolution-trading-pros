@@ -2,7 +2,17 @@
 	import { onMount } from 'svelte';
 	import { page } from '$app/state';
 	import { boardsAPI } from '$lib/api/boards';
-	import type { Board, Stage, Task, Label, BoardMember, Comment, Attachment, Subtask, CustomFieldDefinition } from '$lib/boards/types';
+	import type {
+		Board,
+		Stage,
+		Task,
+		Label,
+		BoardMember,
+		Comment,
+		Attachment,
+		Subtask,
+		CustomFieldDefinition
+	} from '$lib/boards/types';
 	import {
 		IconArrowLeft,
 		IconPlus,
@@ -74,18 +84,21 @@
 	// Filtered tasks by stage
 	let tasksByStage = $derived.by(() => {
 		const result: Record<string, Task[]> = {};
-		stages.forEach(stage => {
+		stages.forEach((stage) => {
 			result[stage.id] = tasks
-				.filter(t => {
+				.filter((t) => {
 					if (t.stage_id !== stage.id) return false;
 					if (searchQuery) {
 						const query = searchQuery.toLowerCase();
-						if (!t.title.toLowerCase().includes(query) && !t.description?.toLowerCase().includes(query)) {
+						if (
+							!t.title.toLowerCase().includes(query) &&
+							!t.description?.toLowerCase().includes(query)
+						) {
 							return false;
 						}
 					}
 					if (filterAssignee && !t.assignees.includes(filterAssignee)) return false;
-					if (filterLabel && !t.labels?.some(l => l.id === filterLabel)) return false;
+					if (filterLabel && !t.labels?.some((l) => l.id === filterLabel)) return false;
 					if (filterPriority && t.priority !== filterPriority) return false;
 					return true;
 				})
@@ -100,7 +113,7 @@
 		// Check for task in URL query
 		const taskId = page.url.searchParams.get('task');
 		if (taskId) {
-			const task = tasks.find(t => t.id === taskId);
+			const task = tasks.find((t) => t.id === taskId);
 			if (task) {
 				openTaskModal(task);
 			}
@@ -216,7 +229,7 @@
 
 		try {
 			const updated = await boardsAPI.updateTask(boardId, selectedTask.id, data);
-			tasks = tasks.map(t => t.id === selectedTask!.id ? updated : t);
+			tasks = tasks.map((t) => (t.id === selectedTask!.id ? updated : t));
 			selectedTask = updated;
 		} catch (error) {
 			console.error('Failed to update task:', error);
@@ -228,7 +241,7 @@
 
 		try {
 			await boardsAPI.deleteTask(boardId, selectedTask.id);
-			tasks = tasks.filter(t => t.id !== selectedTask!.id);
+			tasks = tasks.filter((t) => t.id !== selectedTask!.id);
 			closeTaskModal();
 		} catch (error) {
 			console.error('Failed to delete task:', error);
@@ -240,7 +253,7 @@
 
 		try {
 			const updated = await boardsAPI.completeTask(boardId, selectedTask.id);
-			tasks = tasks.map(t => t.id === selectedTask!.id ? updated : t);
+			tasks = tasks.map((t) => (t.id === selectedTask!.id ? updated : t));
 			selectedTask = updated;
 		} catch (error) {
 			console.error('Failed to complete task:', error);
@@ -278,7 +291,7 @@
 
 		try {
 			const updated = await boardsAPI.toggleSubtaskComplete(boardId, selectedTask.id, subtask.id);
-			taskSubtasks = taskSubtasks.map(s => s.id === subtask.id ? updated : s);
+			taskSubtasks = taskSubtasks.map((s) => (s.id === subtask.id ? updated : s));
 		} catch (error) {
 			console.error('Failed to toggle subtask:', error);
 		}
@@ -332,10 +345,10 @@
 
 		try {
 			const updated = await boardsAPI.moveTask(boardId, draggedTask.id, stageId, position);
-			tasks = tasks.map(t => t.id === draggedTask!.id ? updated : t);
+			tasks = tasks.map((t) => (t.id === draggedTask!.id ? updated : t));
 
 			// Reorder other tasks in the stage
-			const stageTasks = tasks.filter(t => t.stage_id === stageId && t.id !== draggedTask!.id);
+			const stageTasks = tasks.filter((t) => t.stage_id === stageId && t.id !== draggedTask!.id);
 			stageTasks.forEach((t, i) => {
 				if (i >= position) {
 					t.position = i + 1;
@@ -390,7 +403,9 @@
 
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
 	<!-- Header -->
-	<div class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+	<div
+		class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0"
+	>
 		<div class="px-4 py-3">
 			<div class="flex items-center justify-between">
 				<div class="flex items-center gap-4">
@@ -402,16 +417,23 @@
 					</a>
 					{#if board}
 						<div class="flex items-center gap-3">
-							<div class="w-3 h-8 rounded" style="background-color: {board.background_color || '#E6B800'}"></div>
+							<div
+								class="w-3 h-8 rounded"
+								style="background-color: {board.background_color || '#E6B800'}"
+							></div>
 							<div>
-								<h1 class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2">
+								<h1
+									class="text-lg font-semibold text-gray-900 dark:text-white flex items-center gap-2"
+								>
 									{board.title}
 									<button
 										onclick={async () => {
 											const updated = await boardsAPI.toggleFavorite(boardId);
 											board = updated;
 										}}
-										class="{board.is_favorite ? 'text-yellow-500' : 'text-gray-400 hover:text-yellow-500'}"
+										class={board.is_favorite
+											? 'text-yellow-500'
+											: 'text-gray-400 hover:text-yellow-500'}
 									>
 										{#if board.is_favorite}
 											<IconStarFilled class="w-5 h-5" />
@@ -442,8 +464,10 @@
 
 					<!-- Filters -->
 					<button
-						onclick={() => showFilters = !showFilters}
-						class="px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2 {showFilters ? 'bg-gray-100 dark:bg-gray-700' : ''}"
+						onclick={() => (showFilters = !showFilters)}
+						class="px-3 py-1.5 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg flex items-center gap-2 {showFilters
+							? 'bg-gray-100 dark:bg-gray-700'
+							: ''}"
 					>
 						<IconFilter class="w-4 h-4" />
 						Filters
@@ -452,16 +476,23 @@
 					<!-- Members -->
 					<div class="flex items-center -space-x-2">
 						{#each members.slice(0, 4) as member}
-							<div class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-sm font-medium border-2 border-white dark:border-gray-800" title={member.name}>
+							<div
+								class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-sm font-medium border-2 border-white dark:border-gray-800"
+								title={member.name}
+							>
 								{member.name.charAt(0).toUpperCase()}
 							</div>
 						{/each}
 						{#if members.length > 4}
-							<div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-300 text-xs font-medium border-2 border-white dark:border-gray-800">
+							<div
+								class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-300 text-xs font-medium border-2 border-white dark:border-gray-800"
+							>
 								+{members.length - 4}
 							</div>
 						{/if}
-						<button class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 border-2 border-white dark:border-gray-800 ml-1">
+						<button
+							class="w-8 h-8 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 border-2 border-white dark:border-gray-800 ml-1"
+						>
 							<IconUsers class="w-4 h-4" />
 						</button>
 					</div>
@@ -478,7 +509,9 @@
 
 			<!-- Filter Bar -->
 			{#if showFilters}
-				<div class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center gap-4">
+				<div
+					class="mt-3 pt-3 border-t border-gray-200 dark:border-gray-700 flex items-center gap-4"
+				>
 					<select
 						bind:value={filterAssignee}
 						class="px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -510,7 +543,11 @@
 					</select>
 					{#if filterAssignee || filterLabel || filterPriority}
 						<button
-							onclick={() => { filterAssignee = null; filterLabel = null; filterPriority = null; }}
+							onclick={() => {
+								filterAssignee = null;
+								filterLabel = null;
+								filterPriority = null;
+							}}
 							class="px-3 py-1.5 text-sm text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg"
 						>
 							Clear filters
@@ -530,17 +567,23 @@
 		{:else}
 			<div class="flex gap-4 h-full min-h-[calc(100vh-180px)]">
 				{#each stages as stage}
-					<div class="flex-shrink-0 w-72 bg-gray-200/50 dark:bg-gray-800/50 rounded-xl flex flex-col max-h-full">
+					<div
+						class="flex-shrink-0 w-72 bg-gray-200/50 dark:bg-gray-800/50 rounded-xl flex flex-col max-h-full"
+					>
 						<!-- Stage Header -->
 						<div class="p-3 flex items-center justify-between flex-shrink-0">
 							<div class="flex items-center gap-2">
 								<div class="w-3 h-3 rounded-full" style="background-color: {stage.color}"></div>
 								<h3 class="font-medium text-gray-900 dark:text-white">{stage.title}</h3>
-								<span class="text-xs bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full">
+								<span
+									class="text-xs bg-gray-300 dark:bg-gray-700 text-gray-600 dark:text-gray-400 px-2 py-0.5 rounded-full"
+								>
 									{tasksByStage[stage.id]?.length || 0}
 								</span>
 							</div>
-							<button class="p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 rounded">
+							<button
+								class="p-1 text-gray-500 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-700 rounded"
+							>
 								<IconDots class="w-4 h-4" />
 							</button>
 						</div>
@@ -548,9 +591,11 @@
 						<!-- Tasks -->
 						<div
 							class="flex-1 overflow-y-auto p-2 space-y-2"
-							ondragover={(e: DragEvent) => handleDragOver(e, stage.id, tasksByStage[stage.id]?.length || 0)}
+							ondragover={(e: DragEvent) =>
+								handleDragOver(e, stage.id, tasksByStage[stage.id]?.length || 0)}
 							ondragleave={handleDragLeave}
-							ondrop={(e: DragEvent) => handleDrop(e, stage.id, tasksByStage[stage.id]?.length || 0)}
+							ondrop={(e: DragEvent) =>
+								handleDrop(e, stage.id, tasksByStage[stage.id]?.length || 0)}
 							role="region"
 							aria-label="Task drop zone"
 						>
@@ -562,7 +607,12 @@
 									ondragover={(e: DragEvent) => handleDragOver(e, stage.id, index)}
 									role="button"
 									tabindex="0"
-									class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 cursor-pointer hover:shadow-md transition-shadow {draggedTask?.id === task.id ? 'opacity-50' : ''} {dragOverStage === stage.id && dragOverPosition === index ? 'border-t-2 border-[#E6B800]' : ''}"
+									class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3 cursor-pointer hover:shadow-md transition-shadow {draggedTask?.id ===
+									task.id
+										? 'opacity-50'
+										: ''} {dragOverStage === stage.id && dragOverPosition === index
+										? 'border-t-2 border-[#E6B800]'
+										: ''}"
 									onclick={() => openTaskModal(task)}
 									onkeydown={(e: KeyboardEvent) => {
 										if (e.key === 'Enter' || e.key === ' ') {
@@ -586,13 +636,22 @@
 									{/if}
 
 									<!-- Title -->
-									<h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">{task.title}</h4>
+									<h4 class="text-sm font-medium text-gray-900 dark:text-white mb-2">
+										{task.title}
+									</h4>
 
 									<!-- Meta -->
-									<div class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400">
+									<div
+										class="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400"
+									>
 										<div class="flex items-center gap-3">
 											{#if task.due_date}
-												<span class="flex items-center gap-1 {isOverdue(task.due_date) && task.status !== 'completed' ? 'text-red-500' : ''}">
+												<span
+													class="flex items-center gap-1 {isOverdue(task.due_date) &&
+													task.status !== 'completed'
+														? 'text-red-500'
+														: ''}"
+												>
 													<IconCalendar class="w-3.5 h-3.5" />
 													{formatDate(task.due_date)}
 												</span>
@@ -623,9 +682,12 @@
 											{#if task.assignees && task.assignees.length > 0}
 												<div class="flex -space-x-1">
 													{#each task.assignees.slice(0, 2) as assigneeId}
-														{@const assignee = members.find(m => m.user_id === assigneeId)}
+														{@const assignee = members.find((m) => m.user_id === assigneeId)}
 														{#if assignee}
-															<div class="w-6 h-6 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-xs border border-white dark:border-gray-800" title={assignee.name}>
+															<div
+																class="w-6 h-6 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-xs border border-white dark:border-gray-800"
+																title={assignee.name}
+															>
 																{assignee.name.charAt(0).toUpperCase()}
 															</div>
 														{/if}
@@ -644,7 +706,9 @@
 
 							<!-- Add Task Input -->
 							{#if showNewTaskInput === stage.id}
-								<div class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3">
+								<div
+									class="bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700 p-3"
+								>
 									<textarea
 										bind:value={newTaskTitle}
 										placeholder="Enter task title..."
@@ -671,7 +735,10 @@
 												Add
 											</button>
 											<button
-												onclick={() => { showNewTaskInput = null; newTaskTitle = ''; }}
+												onclick={() => {
+													showNewTaskInput = null;
+													newTaskTitle = '';
+												}}
 												class="px-3 py-1 text-xs text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 rounded"
 											>
 												Cancel
@@ -686,7 +753,7 @@
 						{#if showNewTaskInput !== stage.id}
 							<div class="p-2 flex-shrink-0">
 								<button
-									onclick={() => showNewTaskInput = stage.id}
+									onclick={() => (showNewTaskInput = stage.id)}
 									class="w-full px-3 py-2 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-300/50 dark:hover:bg-gray-700/50 rounded-lg flex items-center gap-2"
 								>
 									<IconPlus class="w-4 h-4" />
@@ -708,7 +775,10 @@
 								class="w-full px-3 py-2 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white mb-2"
 								onkeydown={(e: KeyboardEvent) => {
 									if (e.key === 'Enter') createStage();
-									if (e.key === 'Escape') { showNewStageInput = false; newStageTitle = ''; }
+									if (e.key === 'Escape') {
+										showNewStageInput = false;
+										newStageTitle = '';
+									}
 								}}
 							/>
 							<div class="flex items-center gap-2">
@@ -720,7 +790,10 @@
 									Add Stage
 								</button>
 								<button
-									onclick={() => { showNewStageInput = false; newStageTitle = ''; }}
+									onclick={() => {
+										showNewStageInput = false;
+										newStageTitle = '';
+									}}
 									class="px-3 py-1.5 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-300 dark:hover:bg-gray-700 rounded-lg"
 								>
 									Cancel
@@ -729,7 +802,7 @@
 						</div>
 					{:else}
 						<button
-							onclick={() => showNewStageInput = true}
+							onclick={() => (showNewStageInput = true)}
 							class="w-full px-4 py-3 text-sm text-gray-600 dark:text-gray-400 hover:bg-gray-200/50 dark:hover:bg-gray-800/50 rounded-xl border-2 border-dashed border-gray-300 dark:border-gray-700 flex items-center justify-center gap-2"
 						>
 							<IconPlus class="w-4 h-4" />
@@ -743,35 +816,49 @@
 
 	<!-- Task Detail Modal -->
 	{#if showTaskModal && selectedTask}
-		<div class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 overflow-y-auto py-8">
+		<div
+			class="fixed inset-0 bg-black/50 flex items-start justify-center z-50 overflow-y-auto py-8"
+		>
 			<div class="bg-white dark:bg-gray-800 rounded-xl shadow-xl w-full max-w-3xl mx-4">
 				<!-- Modal Header -->
-				<div class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between">
+				<div
+					class="p-4 border-b border-gray-200 dark:border-gray-700 flex items-start justify-between"
+				>
 					<div class="flex-1">
 						{#if editingTaskTitle}
 							<input
 								type="text"
 								value={selectedTask.title}
-								onblur={(e: FocusEvent) => { updateTask({ title: (e.currentTarget as HTMLInputElement).value }); editingTaskTitle = false; }}
-								onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter') { updateTask({ title: (e.currentTarget as HTMLInputElement).value }); editingTaskTitle = false; } }}
+								onblur={(e: FocusEvent) => {
+									updateTask({ title: (e.currentTarget as HTMLInputElement).value });
+									editingTaskTitle = false;
+								}}
+								onkeydown={(e: KeyboardEvent) => {
+									if (e.key === 'Enter') {
+										updateTask({ title: (e.currentTarget as HTMLInputElement).value });
+										editingTaskTitle = false;
+									}
+								}}
 								class="w-full text-xl font-semibold bg-transparent border-b border-[#E6B800] focus:outline-none text-gray-900 dark:text-white"
 							/>
 						{:else}
 							<button
 								type="button"
 								class="text-xl font-semibold text-gray-900 dark:text-white cursor-pointer hover:text-[#E6B800] dark:hover:text-[#FFD11A] text-left w-full bg-transparent border-0 p-0"
-								onclick={() => editingTaskTitle = true}
+								onclick={() => (editingTaskTitle = true)}
 							>
 								{selectedTask?.title}
 							</button>
 						{/if}
 						<p class="text-sm text-gray-500 dark:text-gray-400 mt-1">
-							in {stages.find(s => s.id === selectedTask?.stage_id)?.title || 'Unknown'}
+							in {stages.find((s) => s.id === selectedTask?.stage_id)?.title || 'Unknown'}
 						</p>
 					</div>
 					<div class="flex items-center gap-2">
 						{#if selectedTask?.status === 'completed'}
-							<span class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded flex items-center gap-1">
+							<span
+								class="px-2 py-1 text-xs bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400 rounded flex items-center gap-1"
+							>
 								<IconCheck class="w-3.5 h-3.5" />
 								Completed
 							</span>
@@ -802,14 +889,17 @@
 							{#if editingTaskDescription}
 								<textarea
 									value={selectedTask.description || ''}
-									onblur={(e: FocusEvent) => { updateTask({ description: (e.currentTarget as HTMLTextAreaElement).value }); editingTaskDescription = false; }}
+									onblur={(e: FocusEvent) => {
+										updateTask({ description: (e.currentTarget as HTMLTextAreaElement).value });
+										editingTaskDescription = false;
+									}}
 									rows="4"
 									class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white text-sm"
 									placeholder="Add a description..."
 								></textarea>
 							{:else}
 								<div
-									onclick={() => editingTaskDescription = true}
+									onclick={() => (editingTaskDescription = true)}
 									onkeydown={(e: KeyboardEvent) => {
 										if (e.key === 'Enter' || e.key === ' ') {
 											e.preventDefault();
@@ -827,12 +917,14 @@
 
 						<!-- Subtasks -->
 						<div class="mb-6">
-							<h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+							<h3
+								class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2"
+							>
 								<IconSubtask class="w-4 h-4" />
 								Subtasks
 								{#if taskSubtasks.length > 0}
 									<span class="text-xs text-gray-500">
-										{taskSubtasks.filter(s => s.is_completed).length}/{taskSubtasks.length}
+										{taskSubtasks.filter((s) => s.is_completed).length}/{taskSubtasks.length}
 									</span>
 								{/if}
 							</h3>
@@ -841,13 +933,19 @@
 									<div class="flex items-center gap-2 group">
 										<button
 											onclick={() => toggleSubtask(subtask)}
-											class="w-5 h-5 rounded border {subtask.is_completed ? 'bg-green-500 border-green-500 text-white' : 'border-gray-300 dark:border-gray-600'} flex items-center justify-center"
+											class="w-5 h-5 rounded border {subtask.is_completed
+												? 'bg-green-500 border-green-500 text-white'
+												: 'border-gray-300 dark:border-gray-600'} flex items-center justify-center"
 										>
 											{#if subtask.is_completed}
 												<IconCheck class="w-3 h-3" />
 											{/if}
 										</button>
-										<span class="text-sm {subtask.is_completed ? 'line-through text-gray-400' : 'text-gray-700 dark:text-gray-300'}">
+										<span
+											class="text-sm {subtask.is_completed
+												? 'line-through text-gray-400'
+												: 'text-gray-700 dark:text-gray-300'}"
+										>
 											{subtask.title}
 										</span>
 									</div>
@@ -858,7 +956,9 @@
 										bind:value={newSubtaskTitle}
 										placeholder="Add subtask..."
 										class="flex-1 px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
-										onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter') addSubtask(); }}
+										onkeydown={(e: KeyboardEvent) => {
+											if (e.key === 'Enter') addSubtask();
+										}}
 									/>
 									<button
 										onclick={addSubtask}
@@ -873,27 +973,37 @@
 
 						<!-- Comments -->
 						<div>
-							<h3 class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2">
+							<h3
+								class="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 flex items-center gap-2"
+							>
 								<IconMessage class="w-4 h-4" />
 								Comments ({taskComments.length})
 							</h3>
 							<div class="space-y-3">
 								{#each taskComments as comment}
 									<div class="flex gap-3">
-										<div class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-sm flex-shrink-0">
+										<div
+											class="w-8 h-8 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-sm flex-shrink-0"
+										>
 											{comment.author?.name?.charAt(0).toUpperCase() || 'U'}
 										</div>
 										<div class="flex-1">
 											<div class="flex items-center gap-2">
-												<span class="text-sm font-medium text-gray-900 dark:text-white">{comment.author?.name || 'Unknown'}</span>
-												<span class="text-xs text-gray-500">{new Date(comment.created_at).toLocaleString()}</span>
+												<span class="text-sm font-medium text-gray-900 dark:text-white"
+													>{comment.author?.name || 'Unknown'}</span
+												>
+												<span class="text-xs text-gray-500"
+													>{new Date(comment.created_at).toLocaleString()}</span
+												>
 											</div>
 											<p class="text-sm text-gray-600 dark:text-gray-400 mt-1">{comment.content}</p>
 										</div>
 									</div>
 								{/each}
 								<div class="flex gap-3">
-									<div class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 text-sm flex-shrink-0">
+									<div
+										class="w-8 h-8 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-gray-600 dark:text-gray-400 text-sm flex-shrink-0"
+									>
 										<IconUser class="w-4 h-4" />
 									</div>
 									<div class="flex-1">
@@ -920,7 +1030,9 @@
 					<div class="w-64 p-4 space-y-4">
 						<!-- Timer -->
 						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Time Tracking</h4>
+							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
+								Time Tracking
+							</h4>
 							<div class="flex items-center gap-2">
 								{#if activeTimer?.taskId === selectedTask.id}
 									<span class="text-lg font-mono text-[#E6B800]">{timerDisplay}</span>
@@ -931,7 +1043,9 @@
 										<IconPlayerStop class="w-5 h-5" />
 									</button>
 								{:else}
-									<span class="text-sm text-gray-600 dark:text-gray-400">{selectedTask.logged_minutes || 0}m logged</span>
+									<span class="text-sm text-gray-600 dark:text-gray-400"
+										>{selectedTask.logged_minutes || 0}m logged</span
+									>
 									<button
 										onclick={startTimer}
 										class="p-1.5 text-green-500 hover:bg-green-50 dark:hover:bg-green-900/20 rounded"
@@ -944,20 +1058,28 @@
 
 						<!-- Assignees -->
 						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Assignees</h4>
+							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
+								Assignees
+							</h4>
 							<div class="flex flex-wrap gap-2">
 								{#each selectedTask.assignees || [] as assigneeId}
-									{@const assignee = members.find(m => m.user_id === assigneeId)}
+									{@const assignee = members.find((m) => m.user_id === assigneeId)}
 									{#if assignee}
-										<div class="flex items-center gap-2 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full">
-											<div class="w-5 h-5 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-xs">
+										<div
+											class="flex items-center gap-2 px-2 py-1 bg-gray-100 dark:bg-gray-700 rounded-full"
+										>
+											<div
+												class="w-5 h-5 rounded-full bg-[#E6B800] flex items-center justify-center text-[#0D1117] text-xs"
+											>
 												{assignee.name.charAt(0).toUpperCase()}
 											</div>
 											<span class="text-xs text-gray-700 dark:text-gray-300">{assignee.name}</span>
 										</div>
 									{/if}
 								{/each}
-								<button class="px-2 py-1 text-xs text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded-full">
+								<button
+									class="px-2 py-1 text-xs text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded-full"
+								>
 									+ Add
 								</button>
 							</div>
@@ -965,21 +1087,27 @@
 
 						<!-- Due Date -->
 						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Due Date</h4>
+							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
+								Due Date
+							</h4>
 							<input
 								type="date"
 								value={selectedTask.due_date?.split('T')[0] || ''}
-								onchange={(e: Event) => updateTask({ due_date: (e.currentTarget as HTMLInputElement).value })}
+								onchange={(e: Event) =>
+									updateTask({ due_date: (e.currentTarget as HTMLInputElement).value })}
 								class="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 							/>
 						</div>
 
 						<!-- Priority -->
 						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Priority</h4>
+							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
+								Priority
+							</h4>
 							<select
 								value={selectedTask.priority}
-								onchange={(e: Event) => updateTask({ priority: (e.currentTarget as HTMLSelectElement).value as any })}
+								onchange={(e: Event) =>
+									updateTask({ priority: (e.currentTarget as HTMLSelectElement).value as any })}
 								class="w-full px-3 py-1.5 text-sm border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 							>
 								<option value="none">None</option>
@@ -992,7 +1120,9 @@
 
 						<!-- Labels -->
 						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Labels</h4>
+							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
+								Labels
+							</h4>
 							<div class="flex flex-wrap gap-1">
 								{#each selectedTask.labels || [] as label}
 									<span
@@ -1002,7 +1132,9 @@
 										{label.title}
 									</span>
 								{/each}
-								<button class="px-2 py-0.5 text-xs text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded">
+								<button
+									class="px-2 py-0.5 text-xs text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded"
+								>
 									+ Add
 								</button>
 							</div>
@@ -1010,7 +1142,9 @@
 
 						<!-- Attachments -->
 						<div>
-							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">Attachments ({taskAttachments.length})</h4>
+							<h4 class="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase mb-2">
+								Attachments ({taskAttachments.length})
+							</h4>
 							<div class="space-y-1">
 								{#each taskAttachments as attachment}
 									<a
@@ -1022,7 +1156,9 @@
 										<span class="truncate">{attachment.original_filename}</span>
 									</a>
 								{/each}
-								<button class="w-full px-2 py-1.5 text-xs text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded flex items-center gap-2">
+								<button
+									class="w-full px-2 py-1.5 text-xs text-[#E6B800] hover:bg-[#E6B800]/5 dark:hover:bg-[#B38F00]/20 rounded flex items-center gap-2"
+								>
 									<IconPlus class="w-3.5 h-3.5" />
 									Add attachment
 								</button>

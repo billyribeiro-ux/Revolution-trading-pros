@@ -2,7 +2,7 @@
 	/**
 	 * ClassDownloads Component - Box.com Identical UI
 	 * Svelte 5 / SvelteKit - January 2026
-	 * 
+	 *
 	 * Displays course files in a Box-like interface with:
 	 * - White background, grey alternating rows
 	 * - Sortable columns (Name, Size, Modified)
@@ -34,7 +34,12 @@
 		maxHeight?: string;
 	}
 
-	let { courseId = '', courseSlug = '', title = 'Class Downloads', maxHeight = '400px' }: Props = $props();
+	let {
+		courseId = '',
+		courseSlug = '',
+		title = 'Class Downloads',
+		maxHeight = '400px'
+	}: Props = $props();
 
 	let downloads = $state<Download[]>([]);
 	let loading = $state(true);
@@ -49,13 +54,15 @@
 
 	onMount(() => {
 		fetchDownloads();
-		
+
 		if (!browser) return;
-		
+
 		viewportWidth = window.innerWidth;
-		const handleResize = () => { viewportWidth = window.innerWidth; };
+		const handleResize = () => {
+			viewportWidth = window.innerWidth;
+		};
 		window.addEventListener('resize', handleResize, { passive: true });
-		
+
 		return () => window.removeEventListener('resize', handleResize);
 	});
 
@@ -76,7 +83,7 @@
 
 			const res = await fetch(url);
 			const data = await res.json();
-			
+
 			if (data.success) {
 				downloads = data.data || [];
 			} else {
@@ -103,8 +110,9 @@
 					comparison = (a.file_size_bytes || 0) - (b.file_size_bytes || 0);
 					break;
 				case 'date':
-					comparison = new Date(a.updated_at || a.created_at || 0).getTime() - 
-								 new Date(b.updated_at || b.created_at || 0).getTime();
+					comparison =
+						new Date(a.updated_at || a.created_at || 0).getTime() -
+						new Date(b.updated_at || b.created_at || 0).getTime();
 					break;
 			}
 			return sortDirection === 'asc' ? comparison : -comparison;
@@ -134,10 +142,10 @@
 	const formatDate = (dateStr?: string): string => {
 		if (!dateStr) return '-';
 		const date = new Date(dateStr);
-		return date.toLocaleDateString('en-US', { 
-			month: 'short', 
-			day: 'numeric', 
-			year: 'numeric' 
+		return date.toLocaleDateString('en-US', {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric'
 		});
 	};
 
@@ -217,14 +225,26 @@
 				<tbody>
 					{#if downloads.length === 0}
 						<tr>
-							<td colspan={isMobile ? 2 : (isTablet ? 3 : 4)} class="empty-state-cell">
+							<td colspan={isMobile ? 2 : isTablet ? 3 : 4} class="empty-state-cell">
 								<div class="empty-state-content">
-									<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
-										<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
-										<polyline points="13 2 13 9 20 9"/>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="48"
+										height="48"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="1.5"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+									>
+										<path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z" />
+										<polyline points="13 2 13 9 20 9" />
 									</svg>
 									<span class="empty-message">Nothing to download</span>
-									<span class="empty-submessage">No files are currently available for this class</span>
+									<span class="empty-submessage"
+										>No files are currently available for this class</span
+									>
 								</div>
 							</td>
 						</tr>
@@ -247,16 +267,24 @@
 									<td class="col-date">{formatDate(dl.updated_at || dl.created_at)}</td>
 								{/if}
 								<td class="col-action">
-									<button 
-										class="download-btn" 
+									<button
+										class="download-btn"
 										onclick={() => handleDownload(dl)}
 										aria-label="Download {dl.title || dl.file_name}"
 										disabled={!dl.download_url}
 									>
-										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-											<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-											<polyline points="7 10 12 15 17 10"/>
-											<line x1="12" x2="12" y1="15" y2="3"/>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="18"
+											height="18"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+										>
+											<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+											<polyline points="7 10 12 15 17 10" />
+											<line x1="12" x2="12" y1="15" y2="3" />
 										</svg>
 									</button>
 								</td>
@@ -271,10 +299,16 @@
 
 <style>
 	.class-downloads-wrapper {
-		background-color: #FFFFFF;
+		background-color: #ffffff;
 		border-radius: 4px;
 		overflow: hidden;
-		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+		font-family:
+			'Open Sans',
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			Roboto,
+			sans-serif;
 	}
 
 	.downloads-header {
@@ -379,7 +413,7 @@
 
 	/* Alternating row colors - Box style */
 	.downloads-table tbody tr {
-		background: #FFFFFF;
+		background: #ffffff;
 	}
 
 	.downloads-table tbody tr.alt {
@@ -482,7 +516,7 @@
 	.empty-state-cell {
 		padding: 60px 24px !important;
 		text-align: center;
-		background: #FFFFFF !important;
+		background: #ffffff !important;
 		border-bottom: none !important;
 	}
 
@@ -519,7 +553,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.error-state {

@@ -10,11 +10,7 @@
 
 import { writable, derived, get } from 'svelte/store';
 import { browser } from '$app/environment';
-import {
-	analyticsApi,
-	type DashboardData,
-	type RealTimeMetrics
-} from '$lib/api/analytics';
+import { analyticsApi, type DashboardData, type RealTimeMetrics } from '$lib/api/analytics';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types

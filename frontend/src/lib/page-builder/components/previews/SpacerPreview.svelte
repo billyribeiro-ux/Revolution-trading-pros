@@ -14,11 +14,7 @@
 	let { config, isPreview }: Props = $props();
 </script>
 
-<div 
-	class="spacer"
-	class:preview={isPreview}
-	style="height: {config.height ?? 40}px;"
->
+<div class="spacer" class:preview={isPreview} style="height: {config.height ?? 40}px;">
 	{#if !isPreview}
 		<div class="spacer-indicator">
 			<span class="spacer-label">{config.height ?? 40}px</span>
@@ -40,7 +36,7 @@
 			rgba(20, 62, 89, 0.03) 10px,
 			rgba(20, 62, 89, 0.03) 20px
 		);
-		border: 1px dashed #D1D5DB;
+		border: 1px dashed #d1d5db;
 		border-radius: 4px;
 	}
 
@@ -54,11 +50,11 @@
 	.spacer-label {
 		display: inline-block;
 		padding: 4px 8px;
-		background: #F3F4F6;
-		border: 1px solid #E5E7EB;
+		background: #f3f4f6;
+		border: 1px solid #e5e7eb;
 		border-radius: 4px;
 		font-size: 11px;
 		font-weight: 500;
-		color: #6B7280;
+		color: #6b7280;
 	}
 </style>

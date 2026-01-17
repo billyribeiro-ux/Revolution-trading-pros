@@ -137,7 +137,6 @@
 	}
 
 	function handleSaveField(field: FormField) {
-
 		if (editingFieldIndex === -1) {
 			// Add new field
 			fields = [...fields, field];

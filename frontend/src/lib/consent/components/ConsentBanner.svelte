@@ -19,11 +19,7 @@
 	import { fly } from 'svelte/transition';
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import {
-		consentStore,
-		showConsentBanner,
-		openPreferencesModal,
-	} from '../store.svelte';
+	import { consentStore, showConsentBanner, openPreferencesModal } from '../store.svelte';
 	// Template store imported by BannerRenderer
 	import BannerRenderer from '../templates/BannerRenderer.svelte';
 
@@ -84,14 +80,11 @@
 		>
 			<div class="consent-banner-content">
 				<div class="consent-banner-text">
-					<h2 id="consent-banner-title" class="consent-banner-title">
-						We value your privacy
-					</h2>
+					<h2 id="consent-banner-title" class="consent-banner-title">We value your privacy</h2>
 					<p id="consent-banner-description" class="consent-banner-description">
-						We use cookies and similar technologies to enhance your experience,
-						analyze site traffic, and for marketing purposes. You can choose to
-						accept all cookies, reject non-essential ones, or customize your
-						preferences.
+						We use cookies and similar technologies to enhance your experience, analyze site
+						traffic, and for marketing purposes. You can choose to accept all cookies, reject
+						non-essential ones, or customize your preferences.
 					</p>
 				</div>
 
@@ -103,18 +96,10 @@
 					>
 						Manage Preferences
 					</button>
-					<button
-						type="button"
-						class="consent-btn consent-btn-outline"
-						onclick={handleRejectAll}
-					>
+					<button type="button" class="consent-btn consent-btn-outline" onclick={handleRejectAll}>
 						Reject All
 					</button>
-					<button
-						type="button"
-						class="consent-btn consent-btn-primary"
-						onclick={handleAcceptAll}
-					>
+					<button type="button" class="consent-btn consent-btn-primary" onclick={handleAcceptAll}>
 						Accept All
 					</button>
 				</div>

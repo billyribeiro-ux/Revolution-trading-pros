@@ -66,15 +66,15 @@
 			<div class="metric-label">Monthly Recurring Revenue</div>
 			<div class="metric-value">{formatCurrency(data.mrr)}</div>
 			{#if true}
-			{@const TrendIcon = getTrendIcon(data.mrr_change)}
-			<div
-				class="metric-change"
-				class:positive={data.mrr_change > 0}
-				class:negative={data.mrr_change < 0}
-			>
-				<TrendIcon size={16} />
-				{formatPercent(Math.abs(data.mrr_change))} vs last month
-			</div>
+				{@const TrendIcon = getTrendIcon(data.mrr_change)}
+				<div
+					class="metric-change"
+					class:positive={data.mrr_change > 0}
+					class:negative={data.mrr_change < 0}
+				>
+					<TrendIcon size={16} />
+					{formatPercent(Math.abs(data.mrr_change))} vs last month
+				</div>
 			{/if}
 		</div>
 

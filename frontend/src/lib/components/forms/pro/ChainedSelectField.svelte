@@ -90,7 +90,12 @@
 	}
 </script>
 
-<div class="chained-select-field" class:disabled class:has-error={error} class:horizontal={layout === 'horizontal'}>
+<div
+	class="chained-select-field"
+	class:disabled
+	class:has-error={error}
+	class:horizontal={layout === 'horizontal'}
+>
 	<div class="selects-container" class:horizontal={layout === 'horizontal'}>
 		{#each levels as level, index}
 			{@const options = getFilteredOptions(index)}
@@ -108,7 +113,8 @@
 					id="{name}_{level.name}"
 					name="{name}[{level.name}]"
 					value={selections[level.name] || ''}
-					onchange={(e: Event) => handleChange(level.name, (e.target as HTMLSelectElement).value, index)}
+					onchange={(e: Event) =>
+						handleChange(level.name, (e.target as HTMLSelectElement).value, index)}
 					disabled={isDisabled}
 					class="select-input"
 					class:placeholder={!selections[level.name]}

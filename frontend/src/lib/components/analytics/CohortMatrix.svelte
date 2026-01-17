@@ -46,17 +46,19 @@
 	let periodNumbers = $derived(Array.from({ length: maxPeriods }, (_, i) => i));
 
 	// Calculate average retention per period
-	let periodAverages = $derived(periodNumbers.map((period) => {
-		const values = data
-			.filter((row) => row.periods && row.periods[period])
-			.map((row) => {
-				const periodData = row.periods![period];
-				return typeof periodData === 'number' ? periodData : periodData.retention_rate;
-			});
+	let periodAverages = $derived(
+		periodNumbers.map((period) => {
+			const values = data
+				.filter((row) => row.periods && row.periods[period])
+				.map((row) => {
+					const periodData = row.periods![period];
+					return typeof periodData === 'number' ? periodData : periodData.retention_rate;
+				});
 
-		if (values.length === 0) return null;
-		return values.reduce((a, b) => a + b, 0) / values.length;
-	}));
+			if (values.length === 0) return null;
+			return values.reduce((a, b) => a + b, 0) / values.length;
+		})
+	);
 </script>
 
 <div class="bg-white rounded-xl border border-gray-200 overflow-hidden">

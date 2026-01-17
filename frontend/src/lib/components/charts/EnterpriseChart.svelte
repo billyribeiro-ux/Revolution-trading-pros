@@ -227,22 +227,22 @@
 	// Update data reactively
 	$effect(() => {
 		if (browser && series && data.length > 0) {
-		if (type === 'candlestick') {
-			(series as any).setData(
-				data.map((d) => ({
-					time: d.time,
-					open: d.open ?? d.value,
-					high: d.high ?? d.value,
-					low: d.low ?? d.value,
-					close: d.close ?? d.value
-				}))
-			);
-		} else {
-			(series as any).setData(data);
-		}
-		if (chart) {
-			(chart as any).timeScale().fitContent();
-		}
+			if (type === 'candlestick') {
+				(series as any).setData(
+					data.map((d) => ({
+						time: d.time,
+						open: d.open ?? d.value,
+						high: d.high ?? d.value,
+						low: d.low ?? d.value,
+						close: d.close ?? d.value
+					}))
+				);
+			} else {
+				(series as any).setData(data);
+			}
+			if (chart) {
+				(chart as any).timeScale().fitContent();
+			}
 		}
 	});
 

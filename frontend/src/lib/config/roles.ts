@@ -1,17 +1,17 @@
 /**
  * Role & Permission Configuration - Apple ICT 7 Principal Engineer Pattern
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Centralized role and permission management for the entire application.
- * 
+ *
  * ROLE HIERARCHY:
  * 1. SUPERADMIN - Full system access, cannot be restricted
  * 2. ADMIN - Administrative access, can be restricted by permissions
  * 3. MEMBER - Authenticated user with purchased access
  * 4. USER - Basic authenticated user
- * 
+ *
  * ICT 7 PRINCIPLE: Zero hardcoded values - all configuration via environment
- * 
+ *
  * @version 2.0.0
  * @author Revolution Trading Pros
  */
@@ -28,12 +28,12 @@ import { browser } from '$app/environment';
  */
 function parseEmailList(envVar: string | undefined): readonly string[] {
 	if (!envVar || typeof envVar !== 'string') return [];
-	
+
 	return Object.freeze(
 		envVar
 			.split(',')
-			.map(email => email.trim().toLowerCase())
-			.filter(email => email.length > 0 && email.includes('@'))
+			.map((email) => email.trim().toLowerCase())
+			.filter((email) => email.length > 0 && email.includes('@'))
 	);
 }
 
@@ -41,11 +41,11 @@ function parseEmailList(envVar: string | undefined): readonly string[] {
  * Superadmin emails - loaded from environment variable
  * These users have FULL unrestricted access to everything.
  * They bypass all permission checks and can access any feature.
- * 
+ *
  * @security Configure via VITE_SUPERADMIN_EMAILS environment variable
  * @example VITE_SUPERADMIN_EMAILS=admin@example.com,superadmin@example.com
  */
-export const SUPERADMIN_EMAILS: readonly string[] = browser 
+export const SUPERADMIN_EMAILS: readonly string[] = browser
 	? parseEmailList(import.meta.env.VITE_SUPERADMIN_EMAILS)
 	: [];
 
@@ -53,7 +53,7 @@ export const SUPERADMIN_EMAILS: readonly string[] = browser
  * Developer emails - loaded from environment variable
  * These users bypass email verification and get all memberships unlocked.
  * They experience the platform as a regular member (not admin) with full access for testing.
- * 
+ *
  * @security Configure via VITE_DEVELOPER_EMAILS environment variable
  * @example VITE_DEVELOPER_EMAILS=dev@example.com,test@example.com
  */
@@ -73,7 +73,7 @@ export const ROLES = Object.freeze({
 	USER: 'user'
 } as const);
 
-export type RoleType = typeof ROLES[keyof typeof ROLES];
+export type RoleType = (typeof ROLES)[keyof typeof ROLES];
 
 /**
  * Role hierarchy - higher index = more permissions
@@ -93,77 +93,77 @@ export const PERMISSIONS = Object.freeze({
 	// Dashboard
 	DASHBOARD_VIEW: 'dashboard.view',
 	DASHBOARD_ANALYTICS: 'dashboard.analytics',
-	
+
 	// Users
 	USERS_VIEW: 'users.view',
 	USERS_CREATE: 'users.create',
 	USERS_EDIT: 'users.edit',
 	USERS_DELETE: 'users.delete',
 	USERS_IMPERSONATE: 'users.impersonate',
-	
+
 	// Content
 	POSTS_VIEW: 'posts.view',
 	POSTS_CREATE: 'posts.create',
 	POSTS_EDIT: 'posts.edit',
 	POSTS_DELETE: 'posts.delete',
 	POSTS_PUBLISH: 'posts.publish',
-	
+
 	// Products
 	PRODUCTS_VIEW: 'products.view',
 	PRODUCTS_CREATE: 'products.create',
 	PRODUCTS_EDIT: 'products.edit',
 	PRODUCTS_DELETE: 'products.delete',
-	
+
 	// Orders
 	ORDERS_VIEW: 'orders.view',
 	ORDERS_MANAGE: 'orders.manage',
 	ORDERS_REFUND: 'orders.refund',
-	
+
 	// Coupons
 	COUPONS_VIEW: 'coupons.view',
 	COUPONS_CREATE: 'coupons.create',
 	COUPONS_EDIT: 'coupons.edit',
 	COUPONS_DELETE: 'coupons.delete',
-	
+
 	// Popups
 	POPUPS_VIEW: 'popups.view',
 	POPUPS_CREATE: 'popups.create',
 	POPUPS_EDIT: 'popups.edit',
 	POPUPS_DELETE: 'popups.delete',
-	
+
 	// Forms
 	FORMS_VIEW: 'forms.view',
 	FORMS_CREATE: 'forms.create',
 	FORMS_EDIT: 'forms.edit',
 	FORMS_DELETE: 'forms.delete',
 	FORMS_SUBMISSIONS: 'forms.submissions',
-	
+
 	// Settings
 	SETTINGS_VIEW: 'settings.view',
 	SETTINGS_EDIT: 'settings.edit',
 	SETTINGS_SYSTEM: 'settings.system',
-	
+
 	// Memberships
 	MEMBERSHIPS_VIEW: 'memberships.view',
 	MEMBERSHIPS_MANAGE: 'memberships.manage',
-	
+
 	// Trading Rooms
 	TRADING_ROOMS_ACCESS: 'trading_rooms.access',
 	TRADING_ROOMS_MODERATE: 'trading_rooms.moderate',
 	TRADING_ROOMS_ADMIN: 'trading_rooms.admin',
-	
+
 	// Media
 	MEDIA_VIEW: 'media.view',
 	MEDIA_UPLOAD: 'media.upload',
 	MEDIA_DELETE: 'media.delete',
-	
+
 	// System
 	SYSTEM_LOGS: 'system.logs',
 	SYSTEM_CACHE: 'system.cache',
 	SYSTEM_MAINTENANCE: 'system.maintenance'
 } as const);
 
-export type PermissionType = typeof PERMISSIONS[keyof typeof PERMISSIONS];
+export type PermissionType = (typeof PERMISSIONS)[keyof typeof PERMISSIONS];
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Role-Permission Mapping
@@ -175,14 +175,14 @@ export type PermissionType = typeof PERMISSIONS[keyof typeof PERMISSIONS];
  */
 export const ROLE_PERMISSIONS: Record<RoleType, readonly PermissionType[]> = Object.freeze({
 	[ROLES.SUPERADMIN]: Object.values(PERMISSIONS), // All permissions
-	
+
 	[ROLES.DEVELOPER]: [
 		PERMISSIONS.DASHBOARD_VIEW,
 		PERMISSIONS.TRADING_ROOMS_ACCESS,
 		PERMISSIONS.MEMBERSHIPS_VIEW,
 		PERMISSIONS.MEDIA_VIEW
 	],
-	
+
 	[ROLES.ADMIN]: [
 		PERMISSIONS.DASHBOARD_VIEW,
 		PERMISSIONS.DASHBOARD_ANALYTICS,
@@ -217,16 +217,14 @@ export const ROLE_PERMISSIONS: Record<RoleType, readonly PermissionType[]> = Obj
 		PERMISSIONS.MEDIA_VIEW,
 		PERMISSIONS.MEDIA_UPLOAD
 	],
-	
+
 	[ROLES.MEMBER]: [
 		PERMISSIONS.DASHBOARD_VIEW,
 		PERMISSIONS.TRADING_ROOMS_ACCESS,
 		PERMISSIONS.MEDIA_VIEW
 	],
-	
-	[ROLES.USER]: [
-		PERMISSIONS.DASHBOARD_VIEW
-	]
+
+	[ROLES.USER]: [PERMISSIONS.DASHBOARD_VIEW]
 });
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -252,61 +250,74 @@ export function isDeveloperEmail(email: string | null | undefined): boolean {
 /**
  * Check if a user has superadmin access
  */
-export function isSuperadmin(user: { email?: string; roles?: string[] } | null | undefined): boolean {
+export function isSuperadmin(
+	user: { email?: string; roles?: string[] } | null | undefined
+): boolean {
 	if (!user) return false;
-	
+
 	// Check email first (highest priority) - with null check
 	if (user.email && isSuperadminEmail(user.email)) return true;
-	
+
 	// Check roles
-	if (user.roles?.some(role => 
-		role.toLowerCase() === ROLES.SUPERADMIN || 
-		role.toLowerCase() === 'super_admin' ||
-		role.toLowerCase() === 'superadmin'
-	)) {
+	if (
+		user.roles?.some(
+			(role) =>
+				role.toLowerCase() === ROLES.SUPERADMIN ||
+				role.toLowerCase() === 'super_admin' ||
+				role.toLowerCase() === 'superadmin'
+		)
+	) {
 		return true;
 	}
-	
+
 	return false;
 }
 
 /**
  * Check if a user has developer access
  */
-export function isDeveloper(user: { email?: string; role?: string; roles?: string[] } | null | undefined): boolean {
+export function isDeveloper(
+	user: { email?: string; role?: string; roles?: string[] } | null | undefined
+): boolean {
 	if (!user) return false;
-	
+
 	// Check email first (highest priority)
 	if (user.email && isDeveloperEmail(user.email)) return true;
-	
+
 	// Check role field
 	if (user.role?.toLowerCase() === ROLES.DEVELOPER) return true;
-	
+
 	// Check roles array
-	if (user.roles?.some(role => role.toLowerCase() === ROLES.DEVELOPER)) return true;
-	
+	if (user.roles?.some((role) => role.toLowerCase() === ROLES.DEVELOPER)) return true;
+
 	return false;
 }
 
 /**
  * Check if a user has admin access (admin or superadmin)
  */
-export function isAdmin(user: { email?: string; roles?: string[]; is_admin?: boolean } | null | undefined): boolean {
+export function isAdmin(
+	user: { email?: string; roles?: string[]; is_admin?: boolean } | null | undefined
+): boolean {
 	if (!user) return false;
-	
+
 	// Superadmin is always admin
 	if (isSuperadmin(user)) return true;
-	
+
 	// Check is_admin flag
 	if (user.is_admin) return true;
-	
+
 	// Check roles
-	if (user.roles?.some(role => 
-		['admin', 'administrator', 'super-admin', 'super_admin', 'superadmin'].includes(role.toLowerCase())
-	)) {
+	if (
+		user.roles?.some((role) =>
+			['admin', 'administrator', 'super-admin', 'super_admin', 'superadmin'].includes(
+				role.toLowerCase()
+			)
+		)
+	) {
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -319,13 +330,13 @@ export function hasPermission(
 	permission: PermissionType | string
 ): boolean {
 	if (!user) return false;
-	
+
 	// Superadmin has all permissions
 	if (isSuperadmin(user)) return true;
-	
+
 	// Check explicit permissions
 	if (user.permissions?.includes(permission)) return true;
-	
+
 	// Check role-based permissions
 	if (user.roles) {
 		for (const role of user.roles) {
@@ -336,7 +347,7 @@ export function hasPermission(
 			}
 		}
 	}
-	
+
 	return false;
 }
 
@@ -347,7 +358,7 @@ export function hasAnyPermission(
 	user: { email?: string; roles?: string[]; permissions?: string[] } | null | undefined,
 	permissions: (PermissionType | string)[]
 ): boolean {
-	return permissions.some(p => hasPermission(user, p));
+	return permissions.some((p) => hasPermission(user, p));
 }
 
 /**
@@ -357,7 +368,7 @@ export function hasAllPermissions(
 	user: { email?: string; roles?: string[]; permissions?: string[] } | null | undefined,
 	permissions: (PermissionType | string)[]
 ): boolean {
-	return permissions.every(p => hasPermission(user, p));
+	return permissions.every((p) => hasPermission(user, p));
 }
 
 /**
@@ -367,44 +378,46 @@ export function getUserPermissions(
 	user: { email?: string; roles?: string[]; permissions?: string[] } | null | undefined
 ): PermissionType[] {
 	if (!user) return [];
-	
+
 	// Superadmin has all permissions
 	if (isSuperadmin(user)) return Object.values(PERMISSIONS);
-	
+
 	const permissions = new Set<PermissionType>();
-	
+
 	// Add explicit permissions
 	if (user.permissions) {
-		user.permissions.forEach(p => permissions.add(p as PermissionType));
+		user.permissions.forEach((p) => permissions.add(p as PermissionType));
 	}
-	
+
 	// Add role-based permissions
 	if (user.roles) {
 		for (const role of user.roles) {
 			const roleKey = role.toLowerCase() as RoleType;
 			const rolePerms = ROLE_PERMISSIONS[roleKey];
 			if (rolePerms) {
-				rolePerms.forEach(p => permissions.add(p));
+				rolePerms.forEach((p) => permissions.add(p));
 			}
 		}
 	}
-	
+
 	return Array.from(permissions);
 }
 
 /**
  * Get the highest role for a user
  */
-export function getHighestRole(user: { email?: string; roles?: string[] } | null | undefined): RoleType {
+export function getHighestRole(
+	user: { email?: string; roles?: string[] } | null | undefined
+): RoleType {
 	if (!user) return ROLES.USER;
-	
+
 	// Superadmin email always gets superadmin role - with null check
 	if (user.email && isSuperadminEmail(user.email)) return ROLES.SUPERADMIN;
-	
+
 	if (!user.roles || user.roles.length === 0) return ROLES.USER;
-	
+
 	let highestIndex = 0;
-	
+
 	for (const role of user.roles) {
 		const normalizedRole = role.toLowerCase().replace('_', '-') as RoleType;
 		const index = ROLE_HIERARCHY.indexOf(normalizedRole);
@@ -412,6 +425,6 @@ export function getHighestRole(user: { email?: string; roles?: string[] } | null
 			highestIndex = index;
 		}
 	}
-	
+
 	return ROLE_HIERARCHY[highestIndex] ?? ROLES.USER;
 }

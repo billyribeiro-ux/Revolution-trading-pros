@@ -71,13 +71,7 @@
 		onclose?: () => void;
 	}
 
-	let {
-		searchQuery = '',
-		isModal = false,
-		position = null,
-		oninsert,
-		onclose
-	}: Props = $props();
+	let { searchQuery = '', isModal = false, position = null, oninsert, onclose }: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -153,7 +147,7 @@
 				return (
 					def.name.toLowerCase().includes(query) ||
 					def.description.toLowerCase().includes(query) ||
-					def.keywords.some(k => k.toLowerCase().includes(query))
+					def.keywords.some((k) => k.toLowerCase().includes(query))
 				);
 			})
 			.map(([type]) => type as BlockType);
@@ -176,7 +170,7 @@
 	}
 
 	function getCategoryColor(categoryId: string): string {
-		return BLOCK_CATEGORIES.find(c => c.id === categoryId)?.color || '#6b7280';
+		return BLOCK_CATEGORIES.find((c) => c.id === categoryId)?.color || '#6b7280';
 	}
 </script>
 
@@ -213,11 +207,7 @@
 						aria-label="Search blocks"
 					/>
 					{#if localSearch}
-						<button
-							type="button"
-							class="clear-search"
-							onclick={() => localSearch = ''}
-						>
+						<button type="button" class="clear-search" onclick={() => (localSearch = '')}>
 							<IconX size={16} />
 						</button>
 					{/if}
@@ -244,10 +234,14 @@
 										type="button"
 										class="block-item"
 										onclick={() => handleBlockClick(type)}
-										onmouseenter={() => hoveredBlock = type}
-										onmouseleave={() => hoveredBlock = null}
+										onmouseenter={() => (hoveredBlock = type)}
+										onmouseleave={() => (hoveredBlock = null)}
 									>
-										<div class="block-icon" style:background={getCategoryColor(def.category) + '15'} style:color={getCategoryColor(def.category)}>
+										<div
+											class="block-icon"
+											style:background={getCategoryColor(def.category) + '15'}
+											style:color={getCategoryColor(def.category)}
+										>
 											<Icon size={24} />
 										</div>
 										<span class="block-name">{def.name}</span>
@@ -265,7 +259,8 @@
 									type="button"
 									class="category-header"
 									class:expanded={activeCategory === category.id}
-									onclick={() => activeCategory = activeCategory === category.id ? null : category.id}
+									onclick={() =>
+										(activeCategory = activeCategory === category.id ? null : category.id)}
 								>
 									<div class="category-label" style:--cat-color={category.color}>
 										<span class="category-dot"></span>
@@ -283,10 +278,14 @@
 												type="button"
 												class="block-item"
 												onclick={() => handleBlockClick(type)}
-												onmouseenter={() => hoveredBlock = type}
-												onmouseleave={() => hoveredBlock = null}
+												onmouseenter={() => (hoveredBlock = type)}
+												onmouseleave={() => (hoveredBlock = null)}
 											>
-												<div class="block-icon" style:background={category.color + '15'} style:color={category.color}>
+												<div
+													class="block-icon"
+													style:background={category.color + '15'}
+													style:color={category.color}
+												>
 													<Icon size={20} />
 												</div>
 												<div class="block-info">

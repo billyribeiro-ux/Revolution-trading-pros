@@ -30,14 +30,16 @@
 	];
 
 	// Svelte 5: Derived value using $derived() rune
-	let filteredTemplates = $derived(templates.filter((template) => {
-		const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory;
-		const matchesSearch =
-			searchQuery === '' ||
-			template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			template.description.toLowerCase().includes(searchQuery.toLowerCase());
-		return matchesCategory && matchesSearch;
-	}));
+	let filteredTemplates = $derived(
+		templates.filter((template) => {
+			const matchesCategory = selectedCategory === 'all' || template.category === selectedCategory;
+			const matchesSearch =
+				searchQuery === '' ||
+				template.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				template.description.toLowerCase().includes(searchQuery.toLowerCase());
+			return matchesCategory && matchesSearch;
+		})
+	);
 
 	function handleSelect(template: FormTemplate) {
 		onSelect?.(template);

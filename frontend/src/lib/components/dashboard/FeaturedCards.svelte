@@ -36,7 +36,7 @@
 <section class="dashboard__content-section-member {className}">
 	<div class="row featured_cards" class:layout-2x1={layout === '2x1'}>
 		{#each cards as card, index (card.id)}
-			<div 
+			<div
 				class="text-center"
 				class:col-md-6={layout === '3x1' || (layout === '2x1' && index < 2)}
 				class:col-lg-4={layout === '3x1'}
@@ -105,9 +105,10 @@
 	.featured_cards a {
 		color: #fff !important;
 		display: inline-block;
-		font-family: "Open Sans Condensed", sans-serif;
+		font-family: 'Open Sans Condensed', sans-serif;
 		font-weight: 700;
-		background: transparent linear-gradient(180deg, #FFB834 0%, #C68000 100%) 0% 0% no-repeat padding-box;
+		background: transparent linear-gradient(180deg, #ffb834 0%, #c68000 100%) 0% 0% no-repeat
+			padding-box;
 		border-radius: 50px;
 		padding: 5px 30px;
 		margin: 0 auto 20px auto;

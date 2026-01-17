@@ -21,12 +21,7 @@
 // Type Definitions
 // ═══════════════════════════════════════════════════════════════════════════
 
-export type CaseTransform =
-	| 'titlecase'
-	| 'sentencecase'
-	| 'lowercase'
-	| 'uppercase'
-	| 'none';
+export type CaseTransform = 'titlecase' | 'sentencecase' | 'lowercase' | 'uppercase' | 'none';
 
 export interface ImageSeoSettings {
 	// Alt text settings
@@ -124,11 +119,11 @@ export const defaultImageSeoSettings: ImageSeoSettings = {
 export function extractFilename(src: string): { filename: string; extension: string } {
 	const url = src.split('?')[0]; // Remove query params
 	if (!url) return { filename: '', extension: '' };
-	
+
 	const parts = url.split('/');
 	const fullFilename = parts[parts.length - 1];
 	if (!fullFilename) return { filename: '', extension: '' };
-	
+
 	const lastDot = fullFilename.lastIndexOf('.');
 
 	if (lastDot === -1) {

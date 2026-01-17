@@ -229,7 +229,11 @@
 		width: 28px;
 		height: 28px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--color-rtp-primary, #3b82f6) 0%, var(--color-rtp-primary-dark, #2563eb) 100%);
+		background: linear-gradient(
+			135deg,
+			var(--color-rtp-primary, #3b82f6) 0%,
+			var(--color-rtp-primary-dark, #2563eb) 100%
+		);
 		display: flex;
 		align-items: center;
 		justify-content: center;

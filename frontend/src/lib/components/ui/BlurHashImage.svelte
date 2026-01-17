@@ -59,22 +59,18 @@
 
 		// Check if it's a Cloudflare Images URL
 		if (url.hostname.includes('imagedelivery.net')) {
-			return widths
-				.map(w => `${url.origin}${url.pathname}/w=${w},q=${quality} ${w}w`)
-				.join(', ');
+			return widths.map((w) => `${url.origin}${url.pathname}/w=${w},q=${quality} ${w}w`).join(', ');
 		}
 
 		// Check if it's an R2/S3 URL with Sharp integration
 		if (url.pathname.includes('/media/') || url.pathname.includes('/images/')) {
-			return widths
-				.map(w => `${baseUrl}?w=${w}&q=${quality} ${w}w`)
-				.join(', ');
+			return widths.map((w) => `${baseUrl}?w=${w}&q=${quality} ${w}w`).join(', ');
 		}
 
 		// For standard URLs, assume query param based resizing
 		const separator = baseUrl.includes('?') ? '&' : '?';
 		return widths
-			.map(w => `${baseUrl}${separator}width=${w}&quality=${quality} ${w}w`)
+			.map((w) => `${baseUrl}${separator}width=${w}&quality=${quality} ${w}w`)
 			.join(', ');
 	}
 
@@ -128,14 +124,13 @@
 
 <div
 	class="blurhash-container {className}"
-	style="width: {typeof width === 'number' ? `${width}px` : width}; height: {typeof height === 'number' ? `${height}px` : height};"
+	style="width: {typeof width === 'number' ? `${width}px` : width}; height: {typeof height ===
+	'number'
+		? `${height}px`
+		: height};"
 >
 	<!-- Placeholder layer -->
-	<div
-		class="placeholder"
-		class:hidden={isLoaded}
-		style={placeholderStyle}
-	></div>
+	<div class="placeholder" class:hidden={isLoaded} style={placeholderStyle}></div>
 
 	<!-- Actual image -->
 	{#if !hasError}

@@ -74,9 +74,9 @@
 		inset: 0;
 		background: linear-gradient(
 			180deg,
-			var(--auth-bg, oklch(0.10 0.02 250)) 0%,
+			var(--auth-bg, oklch(0.1 0.02 250)) 0%,
 			oklch(0.08 0.03 270) 50%,
-			var(--auth-bg, oklch(0.10 0.02 250)) 100%
+			var(--auth-bg, oklch(0.1 0.02 250)) 100%
 		);
 	}
 
@@ -112,7 +112,8 @@
 	}
 
 	@keyframes bar-pulse {
-		0%, 100% {
+		0%,
+		100% {
 			transform: scaleY(1);
 			opacity: 0.15;
 		}
@@ -139,7 +140,8 @@
 	}
 
 	@keyframes float {
-		0%, 100% {
+		0%,
+		100% {
 			transform: translateY(0) scale(1);
 			opacity: 0.3;
 		}
@@ -163,12 +165,7 @@
 	/* Light Theme */
 	:global(html.light) .gradient-layer,
 	:global(body.light) .gradient-layer {
-		background: linear-gradient(
-			180deg,
-			#f5f5f7 0%,
-			#e8e8ed 50%,
-			#f5f5f7 100%
-		);
+		background: linear-gradient(180deg, #f5f5f7 0%, #e8e8ed 50%, #f5f5f7 100%);
 	}
 
 	:global(html.light) .bar.bullish,

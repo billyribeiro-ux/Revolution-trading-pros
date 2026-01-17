@@ -170,7 +170,9 @@
 	}
 
 	let hasSelections = $derived(selectedSubmissions.size > 0);
-	let allSelected = $derived(submissions.length > 0 && selectedSubmissions.size === submissions.length);
+	let allSelected = $derived(
+		submissions.length > 0 && selectedSubmissions.size === submissions.length
+	);
 </script>
 
 <div class="submissions-container">
@@ -209,8 +211,7 @@
 			{#if hasSelections}
 				<div class="bulk-actions">
 					<span class="selection-count">{selectedSubmissions.size} selected</span>
-					<button class="btn-bulk" onclick={() => handleBulkStatusUpdate('read')}>Mark Read</button
-					>
+					<button class="btn-bulk" onclick={() => handleBulkStatusUpdate('read')}>Mark Read</button>
 					<button class="btn-bulk" onclick={() => handleBulkStatusUpdate('starred')}>Star</button>
 					<button class="btn-bulk" onclick={() => handleBulkStatusUpdate('archived')}
 						>Archive</button
@@ -283,7 +284,11 @@
 									<select
 										class="status-select"
 										value={submission.status}
-										onchange={(e: Event) => handleStatusChange(submission, (e.currentTarget as HTMLInputElement).value as any)}
+										onchange={(e: Event) =>
+											handleStatusChange(
+												submission,
+												(e.currentTarget as HTMLInputElement).value as any
+											)}
 									>
 										<option value="unread">Unread</option>
 										<option value="read">Read</option>

@@ -22,7 +22,7 @@ import type {
 	PageViewPayload,
 	CustomEventPayload,
 	PurchasePayload,
-	IdentifyPayload,
+	IdentifyPayload
 } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -45,7 +45,7 @@ const STYLES = {
 	// Additional styles
 	header: 'font-size: 12px; font-weight: bold; color: #60a5fa;',
 	timestamp: 'color: #6b7280; font-size: 10px;',
-	payload: 'color: #a3a3a3; font-size: 11px;',
+	payload: 'color: #a3a3a3; font-size: 11px;'
 } as const;
 
 // Event type emojis for visual identification
@@ -74,7 +74,7 @@ const EVENT_ICONS: Record<string, string> = {
 	course_start: '📚',
 	course_complete: '🎓',
 	experiment_exposure: '🧪',
-	experiment_conversion: '✅',
+	experiment_conversion: '✅'
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -156,8 +156,8 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 			'Page Path': payload.page_path || window.location.pathname,
 			'Page Title': payload.page_title || document.title,
 			'Page Type': payload.page_type || 'unknown',
-			'Referrer': payload.page_referrer || document.referrer || '(direct)',
-			'Timestamp': new Date().toISOString(),
+			Referrer: payload.page_referrer || document.referrer || '(direct)',
+			Timestamp: new Date().toISOString()
 		});
 
 		if (this._groupLogs) {
@@ -177,15 +177,12 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 		const title = `${icon} ${eventName.toUpperCase().replace(/_/g, ' ')}`;
 
 		if (this._groupLogs) {
-			console.groupCollapsed(
-				`%c${title}`,
-				`${STYLES.badge} ${STYLES.event}`
-			);
+			console.groupCollapsed(`%c${title}`, `${STYLES.badge} ${STYLES.event}`);
 		}
 
 		const displayPayload: Record<string, unknown> = {
 			'Event Name': eventName,
-			'Timestamp': new Date().toISOString(),
+			Timestamp: new Date().toISOString()
 		};
 
 		if (payload) {
@@ -195,7 +192,16 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 
 			// Add custom properties
 			for (const [key, value] of Object.entries(payload)) {
-				if (!['event_category', 'event_label', 'value', 'timestamp', 'session_id', 'user_id'].includes(key)) {
+				if (
+					![
+						'event_category',
+						'event_label',
+						'value',
+						'timestamp',
+						'session_id',
+						'user_id'
+					].includes(key)
+				) {
 					displayPayload[this._formatKey(key)] = value;
 				}
 			}
@@ -229,12 +235,12 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 
 		this._logPayload({
 			'Transaction ID': payload.transaction_id,
-			'Value': `$${payload.value.toFixed(2)} ${payload.currency}`,
-			'Tax': payload.tax !== undefined ? `$${payload.tax.toFixed(2)}` : 'N/A',
-			'Shipping': payload.shipping !== undefined ? `$${payload.shipping.toFixed(2)}` : 'N/A',
-			'Coupon': payload.coupon || 'None',
-			'Items': payload.items?.length || 0,
-			'Timestamp': new Date().toISOString(),
+			Value: `$${payload.value.toFixed(2)} ${payload.currency}`,
+			Tax: payload.tax !== undefined ? `$${payload.tax.toFixed(2)}` : 'N/A',
+			Shipping: payload.shipping !== undefined ? `$${payload.shipping.toFixed(2)}` : 'N/A',
+			Coupon: payload.coupon || 'None',
+			Items: payload.items?.length || 0,
+			Timestamp: new Date().toISOString()
 		});
 
 		// Log items if present
@@ -268,7 +274,7 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 
 		const displayPayload: Record<string, unknown> = {
 			'User ID': payload.user_id,
-			'Timestamp': new Date().toISOString(),
+			Timestamp: new Date().toISOString()
 		};
 
 		for (const [key, value] of Object.entries(payload)) {
@@ -290,11 +296,7 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 	setUserProperties(properties: Record<string, unknown>): void {
 		if (!this._enabled) return;
 
-		console.log(
-			'%c👤 USER PROPERTIES%c',
-			`${STYLES.badge} ${STYLES.identify}`,
-			STYLES.value
-		);
+		console.log('%c👤 USER PROPERTIES%c', `${STYLES.badge} ${STYLES.identify}`, STYLES.value);
 		this._logPayload(properties);
 	}
 
@@ -317,13 +319,10 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 	onConsentChange(consent: { analytics: boolean; marketing: boolean }): void {
 		if (!this._enabled) return;
 
-		console.log(
-			'%c🔒 CONSENT UPDATED',
-			`${STYLES.badge} background: #6366f1; color: white;`
-		);
+		console.log('%c🔒 CONSENT UPDATED', `${STYLES.badge} background: #6366f1; color: white;`);
 		this._logPayload({
-			'Analytics': consent.analytics ? '✅ Granted' : '❌ Denied',
-			'Marketing': consent.marketing ? '✅ Granted' : '❌ Denied',
+			Analytics: consent.analytics ? '✅ Granted' : '❌ Denied',
+			Marketing: consent.marketing ? '✅ Granted' : '❌ Denied'
 		});
 	}
 
@@ -358,11 +357,7 @@ class ConsoleAnalyticsAdapter implements AnalyticsAdapter {
 	private _logPayload(payload: Record<string, unknown>): void {
 		if (this._prettyPrint) {
 			for (const [key, value] of Object.entries(payload)) {
-				console.log(
-					`%c  ${key}:%c ${this._formatValue(value)}`,
-					STYLES.label,
-					STYLES.value
-				);
+				console.log(`%c  ${key}:%c ${this._formatValue(value)}`, STYLES.label, STYLES.value);
 			}
 		} else {
 			console.log(payload);

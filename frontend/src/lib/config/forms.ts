@@ -228,8 +228,7 @@ export const FORMS = {
 		slug: 'portfolio-review',
 		name: 'Portfolio Review',
 		description: 'Request portfolio review'
-	},
-
+	}
 } as const satisfies Record<string, FormDefinition>;
 
 // ============================================================================
@@ -240,7 +239,7 @@ export const FORMS = {
 export type FormKey = keyof typeof FORMS;
 
 /** Type for form definitions */
-export type FormConfig = typeof FORMS[FormKey];
+export type FormConfig = (typeof FORMS)[FormKey];
 
 // ============================================================================
 // Helper Functions
@@ -257,14 +256,14 @@ export function getForm(key: FormKey): FormDefinition {
  * Get a form definition by slug
  */
 export function getFormBySlug(slug: string): FormDefinition | undefined {
-	return Object.values(FORMS).find(form => form.slug === slug);
+	return Object.values(FORMS).find((form) => form.slug === slug);
 }
 
 /**
  * Get a form definition by ID
  */
 export function getFormById(id: string): FormDefinition | undefined {
-	return Object.values(FORMS).find(form => form.id === id);
+	return Object.values(FORMS).find((form) => form.id === id);
 }
 
 /**
@@ -278,9 +277,7 @@ export function getAllForms(): FormDefinition[] {
  * Check if a form exists in the registry
  */
 export function formExists(slugOrId: string): boolean {
-	return Object.values(FORMS).some(
-		form => form.slug === slugOrId || form.id === slugOrId
-	);
+	return Object.values(FORMS).some((form) => form.slug === slugOrId || form.id === slugOrId);
 }
 
 // ============================================================================
@@ -293,6 +290,11 @@ export const FORM_GROUPS = {
 	LEADS: [FORMS.QUOTE_REQUEST, FORMS.CONSULTATION, FORMS.DEMO_REQUEST],
 	FEEDBACK: [FORMS.FEEDBACK, FORMS.SATISFACTION_SURVEY, FORMS.NPS_SURVEY],
 	SUPPORT: [FORMS.SUPPORT_TICKET, FORMS.BUG_REPORT, FORMS.FEATURE_REQUEST],
-	REGISTRATION: [FORMS.EVENT_REGISTRATION, FORMS.WEBINAR_REGISTRATION, FORMS.JOB_APPLICATION, FORMS.PARTNER_APPLICATION],
-	TRADING: [FORMS.ACCOUNT_OPENING, FORMS.STRATEGY_CONSULTATION, FORMS.PORTFOLIO_REVIEW],
+	REGISTRATION: [
+		FORMS.EVENT_REGISTRATION,
+		FORMS.WEBINAR_REGISTRATION,
+		FORMS.JOB_APPLICATION,
+		FORMS.PARTNER_APPLICATION
+	],
+	TRADING: [FORMS.ACCOUNT_OPENING, FORMS.STRATEGY_CONSULTATION, FORMS.PORTFOLIO_REVIEW]
 } as const;

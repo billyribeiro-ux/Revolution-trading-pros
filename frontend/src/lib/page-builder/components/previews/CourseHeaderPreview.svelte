@@ -14,9 +14,10 @@
 	let { config, isPreview }: Props = $props();
 </script>
 
-<div 
+<div
 	class="course-header"
-	style="background-color: {config.backgroundColor ?? '#143E59'}; color: {config.textColor ?? '#FFFFFF'};"
+	style="background-color: {config.backgroundColor ?? '#143E59'}; color: {config.textColor ??
+		'#FFFFFF'};"
 >
 	<div class="header-content">
 		{#if config.subtitle}
@@ -71,7 +72,7 @@
 	.login-btn {
 		display: inline-block;
 		padding: 12px 32px;
-		background: #E67E22;
+		background: #e67e22;
 		color: white;
 		border: none;
 		border-radius: 4px;
@@ -82,6 +83,6 @@
 	}
 
 	.login-btn:hover {
-		background: #D35400;
+		background: #d35400;
 	}
 </style>

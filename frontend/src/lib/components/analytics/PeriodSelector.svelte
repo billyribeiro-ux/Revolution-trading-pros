@@ -11,11 +11,7 @@
 		onchange?: (value: string) => void;
 	}
 
-	let {
-		value = $bindable('30d'),
-		showCustom = true,
-		onchange
-	}: Props = $props();
+	let { value = $bindable('30d'), showCustom = true, onchange }: Props = $props();
 
 	const periods = [
 		{ value: '7d', label: '7 Days' },

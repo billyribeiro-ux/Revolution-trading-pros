@@ -63,7 +63,8 @@
 		{
 			title: 'Live Trading Rooms',
 			subtitle: 'Institutional-Style Sessions',
-			description: 'Join structured sessions with clear levels, real-time execution, and disciplined risk management.',
+			description:
+				'Join structured sessions with clear levels, real-time execution, and disciplined risk management.',
 			primaryCTA: { text: 'Explore Rooms', href: '/live-trading-rooms/day-trading' },
 			secondaryCTA: { text: 'Create Free Account', href: '/signup' },
 			accentColor: 'rgba(99, 102, 241, 0.5)'
@@ -71,7 +72,8 @@
 		{
 			title: 'SPX Profit Pulse',
 			subtitle: 'Context-Rich Alerts',
-			description: 'Receive SPX alerts with entry context, invalidation, and sizing guidance (not lottery tickets).',
+			description:
+				'Receive SPX alerts with entry context, invalidation, and sizing guidance (not lottery tickets).',
 			primaryCTA: { text: 'Get Alerts', href: '/alerts/spx-profit-pulse' },
 			secondaryCTA: { text: 'Learn More', href: '/alerts/explosive-swings' },
 			accentColor: 'rgba(250, 204, 21, 0.5)'
@@ -79,7 +81,8 @@
 		{
 			title: 'Trading Frameworks',
 			subtitle: 'Structured Education',
-			description: 'Master robust frameworks for execution, risk, and review workflows across market conditions.',
+			description:
+				'Master robust frameworks for execution, risk, and review workflows across market conditions.',
 			primaryCTA: { text: 'Browse Courses', href: '/courses' },
 			secondaryCTA: { text: 'View Mentorship', href: '/mentorship' },
 			accentColor: 'rgba(52, 211, 153, 0.5)'
@@ -87,7 +90,8 @@
 		{
 			title: 'Pro Tools & Indicators',
 			subtitle: 'Professional-Grade Edge',
-			description: 'Volume profiles, internals, momentum systems, and tooling built for repeatable institutional logic.',
+			description:
+				'Volume profiles, internals, momentum systems, and tooling built for repeatable institutional logic.',
 			primaryCTA: { text: 'View Indicators', href: '/indicators' },
 			secondaryCTA: { text: 'See All Tools', href: '/store' },
 			accentColor: 'rgba(139, 92, 246, 0.5)'
@@ -320,37 +324,53 @@
 
 			// Cinematic exit - elements scatter/dissolve
 			exitTL
-				.to(buttons, {
-					opacity: 0,
-					y: 20,
-					scale: 0.8,
-					stagger: 0.03,
-					duration: 0.25,
-					ease: 'power3.in'
-				}, 0)
-				.to(p, {
-					opacity: 0,
-					y: -20,
-					filter: 'blur(4px)',
-					duration: 0.3,
-					ease: 'power2.in'
-				}, 0.05)
-				.to(h2, {
-					opacity: 0,
-					y: -30,
-					scale: 0.95,
-					filter: 'blur(6px)',
-					duration: 0.35,
-					ease: 'power2.in'
-				}, 0.1)
-				.to(h1, {
-					opacity: 0,
-					scale: 0.9,
-					filter: 'blur(12px)',
-					y: -40,
-					duration: 0.4,
-					ease: 'power3.in'
-				}, 0.15);
+				.to(
+					buttons,
+					{
+						opacity: 0,
+						y: 20,
+						scale: 0.8,
+						stagger: 0.03,
+						duration: 0.25,
+						ease: 'power3.in'
+					},
+					0
+				)
+				.to(
+					p,
+					{
+						opacity: 0,
+						y: -20,
+						filter: 'blur(4px)',
+						duration: 0.3,
+						ease: 'power2.in'
+					},
+					0.05
+				)
+				.to(
+					h2,
+					{
+						opacity: 0,
+						y: -30,
+						scale: 0.95,
+						filter: 'blur(6px)',
+						duration: 0.35,
+						ease: 'power2.in'
+					},
+					0.1
+				)
+				.to(
+					h1,
+					{
+						opacity: 0,
+						scale: 0.9,
+						filter: 'blur(12px)',
+						y: -40,
+						duration: 0.4,
+						ease: 'power3.in'
+					},
+					0.15
+				);
 
 			// Trigger ambient effects
 			pulseAmbientGlow();
@@ -370,7 +390,7 @@
 
 		// Fallback: If no GSAP, just make everything visible
 		if (!gsapLib) {
-			[h1, h2, p, ...Array.from(buttons)].forEach(el => {
+			[h1, h2, p, ...Array.from(buttons)].forEach((el) => {
 				if (el instanceof HTMLElement) {
 					el.style.opacity = '1';
 					el.style.visibility = 'visible';
@@ -391,7 +411,7 @@
 			onComplete: () => {
 				isAnimating = false;
 				// Ensure buttons are visible after animation completes
-				buttons.forEach(btn => {
+				buttons.forEach((btn) => {
 					if (btn instanceof HTMLElement) {
 						btn.style.opacity = '1';
 						btn.style.visibility = 'visible';
@@ -420,88 +440,147 @@
 			case 0: // "EPIC REVEAL" - Title explodes from center with shockwave
 				timeline
 					// Title bursts from tiny with massive blur
-					.fromTo(h1,
+					.fromTo(
+						h1,
 						{ opacity: 0, scale: 0.3, filter: 'blur(30px)', y: 50 },
-						{ opacity: 1, scale: 1, filter: 'blur(0px)', y: 0, duration: 1.2, ease: 'expo.out' }, 0)
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', y: 0, duration: 1.2, ease: 'expo.out' },
+						0
+					)
 					// Subtitle slides up with golden shimmer
-					.fromTo(h2,
+					.fromTo(
+						h2,
 						{ opacity: 0, y: 60, scale: 0.9, filter: 'blur(8px)' },
-						{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' }, 0.3)
+						{ opacity: 1, y: 0, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' },
+						0.3
+					)
 					// Description fades in smoothly
-					.fromTo(p,
+					.fromTo(
+						p,
 						{ opacity: 0, y: 30 },
-						{ opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' }, 0.5)
+						{ opacity: 1, y: 0, duration: 0.7, ease: 'power2.out' },
+						0.5
+					)
 					// Buttons pop in with spring physics
-					.fromTo(buttons,
+					.fromTo(
+						buttons,
 						{ opacity: 0, y: 40, scale: 0.7 },
-						{ opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.12, ease: 'back.out(1.7)' }, 0.65)
+						{ opacity: 1, y: 0, scale: 1, duration: 0.8, stagger: 0.12, ease: 'back.out(1.7)' },
+						0.65
+					)
 					// Subtle pulse on primary button
-					.to(buttons[0], {
-						boxShadow: '0 0 40px rgba(250, 204, 21, 0.6)',
-						duration: 0.3,
-						yoyo: true,
-						repeat: 1
-					}, 1.2);
+					.to(
+						buttons[0],
+						{
+							boxShadow: '0 0 40px rgba(250, 204, 21, 0.6)',
+							duration: 0.3,
+							yoyo: true,
+							repeat: 1
+						},
+						1.2
+					);
 				break;
 
 			case 1: // "METEOR DROP" - Elements crash in from above with bounce
 				timeline
 					// Title slams down from way above
-					.fromTo(h1,
+					.fromTo(
+						h1,
 						{ opacity: 0, y: -200, scale: 1.3, rotationX: -45 },
-						{ opacity: 1, y: 0, scale: 1, rotationX: 0, duration: 1.1, ease: 'bounce.out' }, 0)
+						{ opacity: 1, y: 0, scale: 1, rotationX: 0, duration: 1.1, ease: 'bounce.out' },
+						0
+					)
 					// Subtitle follows with lighter bounce
-					.fromTo(h2,
+					.fromTo(
+						h2,
 						{ opacity: 0, y: -150, scale: 1.2 },
-						{ opacity: 1, y: 0, scale: 1, duration: 1, ease: 'elastic.out(1, 0.4)' }, 0.15)
+						{ opacity: 1, y: 0, scale: 1, duration: 1, ease: 'elastic.out(1, 0.4)' },
+						0.15
+					)
 					// Description drops in
-					.fromTo(p,
+					.fromTo(
+						p,
 						{ opacity: 0, y: -80 },
-						{ opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' }, 0.35)
+						{ opacity: 1, y: 0, duration: 0.8, ease: 'power3.out' },
+						0.35
+					)
 					// Buttons slam in from above
-					.fromTo(buttons,
+					.fromTo(
+						buttons,
 						{ opacity: 0, y: -60, rotationX: -30 },
-						{ opacity: 1, y: 0, rotationX: 0, duration: 0.7, stagger: 0.1, ease: 'back.out(1.4)' }, 0.55);
+						{ opacity: 1, y: 0, rotationX: 0, duration: 0.7, stagger: 0.1, ease: 'back.out(1.4)' },
+						0.55
+					);
 				break;
 
 			case 2: // "CINEMATIC ZOOM" - Dolly zoom effect like Hitchcock
 				timeline
 					// Title zooms from far away with dramatic blur
-					.fromTo(h1,
+					.fromTo(
+						h1,
 						{ opacity: 0, scale: 3, filter: 'blur(40px)', z: -500 },
-						{ opacity: 1, scale: 1, filter: 'blur(0px)', z: 0, duration: 1.4, ease: 'expo.out' }, 0)
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', z: 0, duration: 1.4, ease: 'expo.out' },
+						0
+					)
 					// Subtitle emerges from the blur
-					.fromTo(h2,
+					.fromTo(
+						h2,
 						{ opacity: 0, scale: 2, filter: 'blur(20px)' },
-						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1.1, ease: 'power4.out' }, 0.2)
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 1.1, ease: 'power4.out' },
+						0.2
+					)
 					// Description materializes
-					.fromTo(p,
+					.fromTo(
+						p,
 						{ opacity: 0, scale: 1.5, filter: 'blur(10px)' },
-						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' }, 0.45)
+						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.9, ease: 'power3.out' },
+						0.45
+					)
 					// Buttons zoom in from distance
-					.fromTo(buttons,
+					.fromTo(
+						buttons,
 						{ opacity: 0, scale: 0.3, filter: 'blur(5px)' },
-						{ opacity: 1, scale: 1, filter: 'blur(0px)', duration: 0.8, stagger: 0.15, ease: 'back.out(2)' }, 0.7);
+						{
+							opacity: 1,
+							scale: 1,
+							filter: 'blur(0px)',
+							duration: 0.8,
+							stagger: 0.15,
+							ease: 'back.out(2)'
+						},
+						0.7
+					);
 				break;
 
 			case 3: // "MATRIX SLIDE" - Dramatic side-to-side with skew distortion
 				timeline
 					// Title slides from left with heavy skew
-					.fromTo(h1,
+					.fromTo(
+						h1,
 						{ opacity: 0, x: -300, skewX: -20, scale: 0.8 },
-						{ opacity: 1, x: 0, skewX: 0, scale: 1, duration: 1, ease: 'power4.out' }, 0)
+						{ opacity: 1, x: 0, skewX: 0, scale: 1, duration: 1, ease: 'power4.out' },
+						0
+					)
 					// Subtitle slides from right with opposite skew
-					.fromTo(h2,
+					.fromTo(
+						h2,
 						{ opacity: 0, x: 300, skewX: 20, scale: 0.8 },
-						{ opacity: 1, x: 0, skewX: 0, scale: 1, duration: 1, ease: 'power4.out' }, 0.12)
+						{ opacity: 1, x: 0, skewX: 0, scale: 1, duration: 1, ease: 'power4.out' },
+						0.12
+					)
 					// Description slides up
-					.fromTo(p,
+					.fromTo(
+						p,
 						{ opacity: 0, y: 50, skewY: 3 },
-						{ opacity: 1, y: 0, skewY: 0, duration: 0.8, ease: 'power3.out' }, 0.35)
+						{ opacity: 1, y: 0, skewY: 0, duration: 0.8, ease: 'power3.out' },
+						0.35
+					)
 					// Buttons slide in from left with stagger
-					.fromTo(buttons,
+					.fromTo(
+						buttons,
 						{ opacity: 0, x: -80, skewX: -10 },
-						{ opacity: 1, x: 0, skewX: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out' }, 0.55);
+						{ opacity: 1, x: 0, skewX: 0, duration: 0.7, stagger: 0.12, ease: 'power3.out' },
+						0.55
+					);
 				break;
 		}
 	}
@@ -555,7 +634,7 @@
 		slideProgress = 0;
 
 		progressInterval = setInterval(() => {
-			slideProgress += (100 / 70); // 7 seconds = 7000ms, update every 100ms
+			slideProgress += 100 / 70; // 7 seconds = 7000ms, update every 100ms
 			if (slideProgress >= 100) {
 				slideProgress = 0;
 			}
@@ -650,12 +729,7 @@
 	});
 </script>
 
-<section
-	bind:this={heroSection}
-	id="hero"
-	class="hero-section"
-	class:hero-animating={isAnimating}
->
+<section bind:this={heroSection} id="hero" class="hero-section" class:hero-animating={isAnimating}>
 	<!-- Ambient Background Layers -->
 	<div class="hero-ambient" aria-hidden="true">
 		<div class="ambient-gradient"></div>
@@ -664,12 +738,7 @@
 	</div>
 
 	<!-- Chart Background -->
-	<div
-		id="chart-bg"
-		bind:this={chartContainer}
-		class="hero-chart"
-		aria-hidden="true"
-	></div>
+	<div id="chart-bg" bind:this={chartContainer} class="hero-chart" aria-hidden="true"></div>
 
 	<!-- Vignette Overlay -->
 	<div class="hero-vignette" aria-hidden="true"></div>
@@ -712,7 +781,10 @@
 					aria-current={i === currentSlide ? 'true' : 'false'}
 					onclick={() => goToSlide(i)}
 				>
-					<span class="slide-dot__fill" style="--progress: {i === currentSlide ? slideProgress : 0}%"></span>
+					<span
+						class="slide-dot__fill"
+						style="--progress: {i === currentSlide ? slideProgress : 0}%"
+					></span>
 				</button>
 			{/each}
 		</nav>
@@ -792,8 +864,15 @@
 	}
 
 	@keyframes ambientPulse {
-		0%, 100% { opacity: 1; transform: scale(1); }
-		50% { opacity: 0.8; transform: scale(1.05); }
+		0%,
+		100% {
+			opacity: 1;
+			transform: scale(1);
+		}
+		50% {
+			opacity: 0.8;
+			transform: scale(1.05);
+		}
 	}
 
 	.ambient-grid {
@@ -810,8 +889,12 @@
 	}
 
 	@keyframes gridFloat {
-		0% { transform: perspective(500px) rotateX(5deg) translateY(0); }
-		100% { transform: perspective(500px) rotateX(5deg) translateY(60px); }
+		0% {
+			transform: perspective(500px) rotateX(5deg) translateY(0);
+		}
+		100% {
+			transform: perspective(500px) rotateX(5deg) translateY(60px);
+		}
 	}
 
 	.ambient-glow {
@@ -826,7 +909,10 @@
 			var(--accent-color, rgba(99, 102, 241, 0.2)) 0%,
 			transparent 70%
 		);
-		transition: background 1.5s ease, transform 0.5s ease, opacity 0.5s ease;
+		transition:
+			background 1.5s ease,
+			transform 0.5s ease,
+			opacity 0.5s ease;
 		mix-blend-mode: screen;
 		filter: blur(40px);
 	}
@@ -839,13 +925,7 @@
 		inset: 0;
 		z-index: 1;
 		opacity: var(--hero-chart-opacity);
-		mask-image: linear-gradient(
-			to right,
-			transparent 0%,
-			black 10%,
-			black 90%,
-			transparent 100%
-		);
+		mask-image: linear-gradient(to right, transparent 0%, black 10%, black 90%, transparent 100%);
 		-webkit-mask-image: linear-gradient(
 			to right,
 			transparent 0%,
@@ -931,7 +1011,7 @@
 		font-family: var(--font-heading, system-ui);
 		font-size: clamp(2.75rem, 9vw, 5.5rem);
 		font-weight: 800;
-		line-height: 1.0;
+		line-height: 1;
 		color: white;
 		margin-block-end: 0.75rem;
 		letter-spacing: -0.03em;
@@ -967,8 +1047,13 @@
 	}
 
 	@keyframes shimmer {
-		0%, 100% { background-position: 0% 50%; }
-		50% { background-position: 100% 50%; }
+		0%,
+		100% {
+			background-position: 0% 50%;
+		}
+		50% {
+			background-position: 100% 50%;
+		}
 	}
 
 	.slide__description {
@@ -1040,7 +1125,9 @@
 		background:
 			linear-gradient(180deg, rgba(255, 255, 255, 0.25) 0%, transparent 50%),
 			linear-gradient(135deg, #fde047 0%, #facc15 25%, #f59e0b 50%, #facc15 75%, #fde047 100%);
-		background-size: 100% 100%, 300% 100%;
+		background-size:
+			100% 100%,
+			300% 100%;
 		color: #1a1a1a;
 
 		/* Multi-layer 3D shadow for floating effect */
@@ -1048,22 +1135,22 @@
 			/* Outer glow */
 			0 0 60px rgba(250, 204, 21, 0.3),
 			0 0 100px rgba(250, 204, 21, 0.15),
-			/* Floating shadow layers */
-			0 4px 6px rgba(0, 0, 0, 0.1),
+			/* Floating shadow layers */ 0 4px 6px rgba(0, 0, 0, 0.1),
 			0 8px 15px rgba(245, 158, 11, 0.2),
 			0 15px 30px rgba(250, 204, 21, 0.15),
 			0 25px 50px rgba(0, 0, 0, 0.1),
-			/* Inner highlights for 3D depth */
-			inset 0 2px 0 rgba(255, 255, 255, 0.5),
+			/* Inner highlights for 3D depth */ inset 0 2px 0 rgba(255, 255, 255, 0.5),
 			inset 0 -2px 4px rgba(245, 158, 11, 0.3),
-			/* Edge light */
-			0 0 0 1px rgba(255, 255, 255, 0.2);
+			/* Edge light */ 0 0 0 1px rgba(255, 255, 255, 0.2);
 
-		animation: primaryFloat 4s ease-in-out infinite, goldenShimmer 3s ease-in-out infinite;
+		animation:
+			primaryFloat 4s ease-in-out infinite,
+			goldenShimmer 3s ease-in-out infinite;
 	}
 
 	@keyframes primaryFloat {
-		0%, 100% {
+		0%,
+		100% {
 			transform: perspective(800px) translateZ(0) rotateX(0deg) rotateY(0deg) translateY(0);
 		}
 		50% {
@@ -1072,35 +1159,49 @@
 	}
 
 	@keyframes goldenShimmer {
-		0%, 100% { background-position: 0% 0%, 0% 50%; }
-		50% { background-position: 0% 0%, 100% 50%; }
+		0%,
+		100% {
+			background-position:
+				0% 0%,
+				0% 50%;
+		}
+		50% {
+			background-position:
+				0% 0%,
+				100% 50%;
+		}
 	}
 
 	/* Holographic glow layer */
 	.cta--primary .cta__glow {
 		position: absolute;
 		inset: -4px;
-		background:
-			conic-gradient(
-				from 0deg,
-				rgba(250, 204, 21, 0.8),
-				rgba(251, 191, 36, 0.6),
-				rgba(245, 158, 11, 0.8),
-				rgba(251, 191, 36, 0.6),
-				rgba(250, 204, 21, 0.8)
-			);
+		background: conic-gradient(
+			from 0deg,
+			rgba(250, 204, 21, 0.8),
+			rgba(251, 191, 36, 0.6),
+			rgba(245, 158, 11, 0.8),
+			rgba(251, 191, 36, 0.6),
+			rgba(250, 204, 21, 0.8)
+		);
 		border-radius: inherit;
 		opacity: 0;
 		z-index: -1;
 		filter: blur(15px);
 		transform: translateZ(-10px);
-		transition: opacity 0.5s ease, filter 0.5s ease;
+		transition:
+			opacity 0.5s ease,
+			filter 0.5s ease;
 		animation: rotateGlow 4s linear infinite;
 	}
 
 	@keyframes rotateGlow {
-		from { filter: blur(15px) hue-rotate(0deg); }
-		to { filter: blur(15px) hue-rotate(360deg); }
+		from {
+			filter: blur(15px) hue-rotate(0deg);
+		}
+		to {
+			filter: blur(15px) hue-rotate(360deg);
+		}
 	}
 
 	/* Light sweep reflection */
@@ -1136,7 +1237,9 @@
 		filter: blur(4px);
 		opacity: 0.7;
 		transform: translateZ(-20px) scaleY(0.3);
-		transition: opacity 0.5s ease, transform 0.5s ease;
+		transition:
+			opacity 0.5s ease,
+			transform 0.5s ease;
 	}
 
 	.cta--primary:hover {
@@ -1148,15 +1251,12 @@
 			0 0 80px rgba(250, 204, 21, 0.5),
 			0 0 120px rgba(250, 204, 21, 0.3),
 			0 0 180px rgba(250, 204, 21, 0.15),
-			/* Deep floating shadows */
-			0 10px 20px rgba(0, 0, 0, 0.15),
+			/* Deep floating shadows */ 0 10px 20px rgba(0, 0, 0, 0.15),
 			0 20px 40px rgba(245, 158, 11, 0.25),
 			0 35px 60px rgba(0, 0, 0, 0.15),
-			/* Inner 3D highlights */
-			inset 0 3px 0 rgba(255, 255, 255, 0.6),
+			/* Inner 3D highlights */ inset 0 3px 0 rgba(255, 255, 255, 0.6),
 			inset 0 -3px 6px rgba(245, 158, 11, 0.4),
-			/* Edge glow */
-			0 0 0 2px rgba(250, 204, 21, 0.5);
+			/* Edge glow */ 0 0 0 2px rgba(250, 204, 21, 0.5);
 	}
 
 	.cta--primary:hover .cta__glow {
@@ -1189,20 +1289,25 @@
 	 * Secondary Button - 3D Crystal Glass with Holographic Edge
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	.cta--secondary {
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.12) 0%, rgba(255, 255, 255, 0.02) 50%, rgba(255, 255, 255, 0.05) 100%);
+		background: linear-gradient(
+			180deg,
+			rgba(255, 255, 255, 0.12) 0%,
+			rgba(255, 255, 255, 0.02) 50%,
+			rgba(255, 255, 255, 0.05) 100%
+		);
 		color: white;
 		border: 1.5px solid transparent;
 		background-clip: padding-box;
 
 		/* Holographic border effect */
 		border-image: linear-gradient(
-			135deg,
-			rgba(255, 255, 255, 0.4),
-			rgba(139, 92, 246, 0.3),
-			rgba(99, 102, 241, 0.3),
-			rgba(255, 255, 255, 0.2)
-		) 1;
+				135deg,
+				rgba(255, 255, 255, 0.4),
+				rgba(139, 92, 246, 0.3),
+				rgba(99, 102, 241, 0.3),
+				rgba(255, 255, 255, 0.2)
+			)
+			1;
 		border-radius: 9999px;
 
 		backdrop-filter: blur(20px);
@@ -1212,12 +1317,10 @@
 		box-shadow:
 			/* Outer glow */
 			0 0 30px rgba(139, 92, 246, 0.1),
-			/* Floating shadows */
-			0 4px 8px rgba(0, 0, 0, 0.15),
+			/* Floating shadows */ 0 4px 8px rgba(0, 0, 0, 0.15),
 			0 8px 20px rgba(0, 0, 0, 0.1),
 			0 15px 40px rgba(0, 0, 0, 0.08),
-			/* Inner glass highlights */
-			inset 0 1px 0 rgba(255, 255, 255, 0.2),
+			/* Inner glass highlights */ inset 0 1px 0 rgba(255, 255, 255, 0.2),
 			inset 0 -1px 0 rgba(255, 255, 255, 0.05);
 
 		animation: secondaryFloat 5s ease-in-out infinite;
@@ -1258,12 +1361,18 @@
 	}
 
 	@keyframes borderShift {
-		0%, 100% { background-position: 0% 50%; }
-		50% { background-position: 100% 50%; }
+		0%,
+		100% {
+			background-position: 0% 50%;
+		}
+		50% {
+			background-position: 100% 50%;
+		}
 	}
 
 	@keyframes secondaryFloat {
-		0%, 100% {
+		0%,
+		100% {
 			transform: perspective(800px) translateZ(0) rotateX(0deg) rotateY(0deg) translateY(0);
 		}
 		50% {
@@ -1294,8 +1403,12 @@
 	}
 
 	.cta--secondary:hover {
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.18) 0%, rgba(255, 255, 255, 0.05) 50%, rgba(255, 255, 255, 0.08) 100%);
+		background: linear-gradient(
+			180deg,
+			rgba(255, 255, 255, 0.18) 0%,
+			rgba(255, 255, 255, 0.05) 50%,
+			rgba(255, 255, 255, 0.08) 100%
+		);
 		transform: perspective(800px) translateZ(20px) rotateX(-4deg) rotateY(-3deg) translateY(-8px);
 		animation: none;
 
@@ -1303,12 +1416,10 @@
 			/* Outer glow */
 			0 0 50px rgba(139, 92, 246, 0.2),
 			0 0 80px rgba(99, 102, 241, 0.1),
-			/* Deep floating shadows */
-			0 10px 20px rgba(0, 0, 0, 0.2),
+			/* Deep floating shadows */ 0 10px 20px rgba(0, 0, 0, 0.2),
 			0 20px 40px rgba(0, 0, 0, 0.15),
 			0 30px 60px rgba(0, 0, 0, 0.1),
-			/* Enhanced inner highlights */
-			inset 0 2px 0 rgba(255, 255, 255, 0.3),
+			/* Enhanced inner highlights */ inset 0 2px 0 rgba(255, 255, 255, 0.3),
 			inset 0 -1px 0 rgba(255, 255, 255, 0.1);
 	}
 
@@ -1370,7 +1481,9 @@
 		border-radius: 4px;
 		cursor: pointer;
 		overflow: hidden;
-		transition: background 0.3s ease, transform 0.2s ease;
+		transition:
+			background 0.3s ease,
+			transform 0.2s ease;
 	}
 
 	.slide-dot:hover {

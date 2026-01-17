@@ -368,8 +368,8 @@
 
 	<!-- Preferences Modal -->
 	{#if showPreferences}
-		<div 
-			class="consent-modal-overlay" 
+		<div
+			class="consent-modal-overlay"
 			onclick={closePreferences}
 			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && closePreferences()}
 			role="button"

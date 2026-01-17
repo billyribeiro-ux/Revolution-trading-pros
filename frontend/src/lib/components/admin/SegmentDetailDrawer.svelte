@@ -71,14 +71,7 @@
 		onExport?: (segment: Segment) => void;
 	}
 
-	let {
-		isOpen,
-		segment,
-		onClose,
-		onEdit,
-		onDelete,
-		onExport
-	}: Props = $props();
+	let { isOpen, segment, onClose, onEdit, onDelete, onExport }: Props = $props();
 
 	// State
 	let activeTab = $state<'overview' | 'members' | 'analytics'>('overview');
@@ -172,11 +165,46 @@
 
 	function generateMockMembers(): MemberPreview[] {
 		return [
-			{ id: 1, name: 'John Smith', email: 'john@example.com', status: 'active', total_spent: 1250, joined_at: '2024-01-15' },
-			{ id: 2, name: 'Sarah Johnson', email: 'sarah@example.com', status: 'active', total_spent: 890, joined_at: '2024-02-20' },
-			{ id: 3, name: 'Mike Davis', email: 'mike@example.com', status: 'trial', total_spent: 450, joined_at: '2024-03-10' },
-			{ id: 4, name: 'Emily Wilson', email: 'emily@example.com', status: 'active', total_spent: 2100, joined_at: '2023-11-05' },
-			{ id: 5, name: 'David Brown', email: 'david@example.com', status: 'active', total_spent: 675, joined_at: '2024-04-01' }
+			{
+				id: 1,
+				name: 'John Smith',
+				email: 'john@example.com',
+				status: 'active',
+				total_spent: 1250,
+				joined_at: '2024-01-15'
+			},
+			{
+				id: 2,
+				name: 'Sarah Johnson',
+				email: 'sarah@example.com',
+				status: 'active',
+				total_spent: 890,
+				joined_at: '2024-02-20'
+			},
+			{
+				id: 3,
+				name: 'Mike Davis',
+				email: 'mike@example.com',
+				status: 'trial',
+				total_spent: 450,
+				joined_at: '2024-03-10'
+			},
+			{
+				id: 4,
+				name: 'Emily Wilson',
+				email: 'emily@example.com',
+				status: 'active',
+				total_spent: 2100,
+				joined_at: '2023-11-05'
+			},
+			{
+				id: 5,
+				name: 'David Brown',
+				email: 'david@example.com',
+				status: 'active',
+				total_spent: 675,
+				joined_at: '2024-04-01'
+			}
 		];
 	}
 
@@ -215,16 +243,15 @@
 	function formatCondition(condition: Condition): string {
 		const field = fieldLabels[condition.field] || condition.field;
 		const operator = operatorLabels[condition.operator] || condition.operator;
-		const value = condition.field === 'total_spent'
-			? formatCurrency(Number(condition.value))
-			: condition.value;
+		const value =
+			condition.field === 'total_spent' ? formatCurrency(Number(condition.value)) : condition.value;
 		return `${field} ${operator} ${value}`;
 	}
 
 	function getMemberInitials(member: MemberPreview): string {
 		return member.name
 			.split(' ')
-			.map(n => n[0])
+			.map((n) => n[0])
 			.join('')
 			.toUpperCase()
 			.slice(0, 2);
@@ -248,14 +275,16 @@
 
 {#if isOpen && segment}
 	<!-- Backdrop -->
-	<button
-		class="drawer-backdrop"
-		onclick={onClose}
-		aria-label="Close drawer"
-	></button>
+	<button class="drawer-backdrop" onclick={onClose} aria-label="Close drawer"></button>
 
 	<!-- Drawer -->
-	<aside class="drawer" class:open={isOpen} role="dialog" aria-modal="true" aria-labelledby="drawer-title">
+	<aside
+		class="drawer"
+		class:open={isOpen}
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="drawer-title"
+	>
 		<!-- Header -->
 		<header class="drawer-header">
 			<div class="header-content">
@@ -268,7 +297,9 @@
 						{#if segment.isSystem}
 							<span class="system-badge">System</span>
 						{/if}
-						<span class="segment-type">{segment.type === 'smart' ? 'Smart Segment' : 'Static Segment'}</span>
+						<span class="segment-type"
+							>{segment.type === 'smart' ? 'Smart Segment' : 'Static Segment'}</span
+						>
 					</div>
 				</div>
 			</div>
@@ -287,14 +318,20 @@
 				</div>
 			</div>
 			{#if analytics}
-				<div class="stat" class:positive={analytics.growth_30d > 0} class:negative={analytics.growth_30d < 0}>
+				<div
+					class="stat"
+					class:positive={analytics.growth_30d > 0}
+					class:negative={analytics.growth_30d < 0}
+				>
 					{#if analytics.growth_30d >= 0}
 						<IconTrendingUp size={20} />
 					{:else}
 						<IconTrendingDown size={20} />
 					{/if}
 					<div class="stat-content">
-						<span class="stat-value">{analytics.growth_30d > 0 ? '+' : ''}{analytics.growth_30d}%</span>
+						<span class="stat-value"
+							>{analytics.growth_30d > 0 ? '+' : ''}{analytics.growth_30d}%</span
+						>
 						<span class="stat-label">30d Growth</span>
 					</div>
 				</div>
@@ -331,7 +368,7 @@
 				type="button"
 				class="tab"
 				class:active={activeTab === 'overview'}
-				onclick={() => activeTab = 'overview'}
+				onclick={() => (activeTab = 'overview')}
 			>
 				<IconFilter size={16} />
 				Overview
@@ -340,7 +377,7 @@
 				type="button"
 				class="tab"
 				class:active={activeTab === 'members'}
-				onclick={() => activeTab = 'members'}
+				onclick={() => (activeTab = 'members')}
 			>
 				<IconUsers size={16} />
 				Members
@@ -349,7 +386,7 @@
 				type="button"
 				class="tab"
 				class:active={activeTab === 'analytics'}
-				onclick={() => activeTab = 'analytics'}
+				onclick={() => (activeTab = 'analytics')}
 			>
 				<IconChartBar size={16} />
 				Analytics
@@ -414,7 +451,9 @@
 									<IconClock size={16} />
 									<div>
 										<span class="meta-label">Type</span>
-										<span class="meta-value">{segment.type === 'smart' ? 'Auto-updating' : 'Manual'}</span>
+										<span class="meta-value"
+											>{segment.type === 'smart' ? 'Auto-updating' : 'Manual'}</span
+										>
 									</div>
 								</div>
 							</div>
@@ -564,7 +603,11 @@
 	.header-icon {
 		width: 48px;
 		height: 48px;
-		background: linear-gradient(135deg, var(--admin-accent-primary, #E6B800), var(--admin-accent-secondary, #B38F00));
+		background: linear-gradient(
+			135deg,
+			var(--admin-accent-primary, #e6b800),
+			var(--admin-accent-secondary, #b38f00)
+		);
 		border-radius: var(--radius-lg, 0.75rem);
 		display: flex;
 		align-items: center;
@@ -641,8 +684,12 @@
 		color: var(--admin-text-muted);
 	}
 
-	.stat.positive { color: var(--admin-success); }
-	.stat.negative { color: var(--admin-error); }
+	.stat.positive {
+		color: var(--admin-success);
+	}
+	.stat.negative {
+		color: var(--admin-error);
+	}
 
 	.stat-content {
 		display: flex;
@@ -869,7 +916,11 @@
 		width: 36px;
 		height: 36px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--admin-accent-primary), var(--admin-widget-purple-icon));
+		background: linear-gradient(
+			135deg,
+			var(--admin-accent-primary),
+			var(--admin-widget-purple-icon)
+		);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1025,7 +1076,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.error-state button {

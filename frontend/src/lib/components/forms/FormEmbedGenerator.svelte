@@ -184,7 +184,12 @@
 				{#if selectedType === 'popup'}
 					<div class="option full-width">
 						<label for="button-text">Button Text</label>
-						<input id="button-text" type="text" bind:value={options.buttonText} placeholder="Open Form" />
+						<input
+							id="button-text"
+							type="text"
+							bind:value={options.buttonText}
+							placeholder="Open Form"
+						/>
 					</div>
 				{/if}
 
@@ -229,11 +234,7 @@
 			<h3 class="section-label">Embed Code</h3>
 			<div class="code-container">
 				<pre class="code-block">{embedCode || 'Generating...'}</pre>
-				<button
-					class="btn-copy"
-					onclick={() => copyToClipboard(embedCode)}
-					disabled={!embedCode}
-				>
+				<button class="btn-copy" onclick={() => copyToClipboard(embedCode)} disabled={!embedCode}>
 					{copied ? 'Copied!' : 'Copy Code'}
 				</button>
 			</div>
@@ -249,15 +250,30 @@
 				<div class="utm-grid">
 					<div class="option">
 						<label for="utm-source">Source</label>
-						<input id="utm-source" type="text" bind:value={utmParams.source} placeholder="e.g., newsletter" />
+						<input
+							id="utm-source"
+							type="text"
+							bind:value={utmParams.source}
+							placeholder="e.g., newsletter"
+						/>
 					</div>
 					<div class="option">
 						<label for="utm-medium">Medium</label>
-						<input id="utm-medium" type="text" bind:value={utmParams.medium} placeholder="e.g., email" />
+						<input
+							id="utm-medium"
+							type="text"
+							bind:value={utmParams.medium}
+							placeholder="e.g., email"
+						/>
 					</div>
 					<div class="option">
 						<label for="utm-campaign">Campaign</label>
-						<input id="utm-campaign" type="text" bind:value={utmParams.campaign} placeholder="e.g., spring2025" />
+						<input
+							id="utm-campaign"
+							type="text"
+							bind:value={utmParams.campaign}
+							placeholder="e.g., spring2025"
+						/>
 					</div>
 				</div>
 				<button class="btn-regenerate small" onclick={generateShareLink}> Update Link </button>
@@ -289,7 +305,9 @@
 			<h3 class="section-label">Share on Social</h3>
 			<div class="social-buttons">
 				<a
-					href="https://twitter.com/intent/tweet?url={encodeURIComponent(shareUrl)}&text={encodeURIComponent(formTitle)}"
+					href="https://twitter.com/intent/tweet?url={encodeURIComponent(
+						shareUrl
+					)}&text={encodeURIComponent(formTitle)}"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="social-btn twitter"

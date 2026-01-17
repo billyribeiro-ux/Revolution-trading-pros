@@ -109,21 +109,22 @@
 
 		// Filter by type
 		if (filterType !== 'all') {
-			items = items.filter(item => item.type === filterType);
+			items = items.filter((item) => item.type === filterType);
 		}
 
 		// Filter by folder
 		if (currentFolder) {
-			items = items.filter(item => item.folder === currentFolder);
+			items = items.filter((item) => item.folder === currentFolder);
 		}
 
 		// Filter by search
 		if (searchQuery) {
 			const query = searchQuery.toLowerCase();
-			items = items.filter(item =>
-				item.name.toLowerCase().includes(query) ||
-				item.alt?.toLowerCase().includes(query) ||
-				item.tags?.some(t => t.toLowerCase().includes(query))
+			items = items.filter(
+				(item) =>
+					item.name.toLowerCase().includes(query) ||
+					item.alt?.toLowerCase().includes(query) ||
+					item.tags?.some((t) => t.toLowerCase().includes(query))
 			);
 		}
 
@@ -165,11 +166,16 @@
 	// Get type icon
 	function getTypeIcon(type: string): string {
 		switch (type) {
-			case 'image': return '🖼️';
-			case 'video': return '🎬';
-			case 'audio': return '🎵';
-			case 'document': return '📄';
-			default: return '📁';
+			case 'image':
+				return '🖼️';
+			case 'video':
+				return '🎬';
+			case 'audio':
+				return '🎵';
+			case 'document':
+				return '📄';
+			default:
+				return '📁';
 		}
 	}
 
@@ -203,8 +209,8 @@
 
 	// Add files to upload queue
 	function addToUploadQueue(files: File[]): void {
-		const validFiles = files.filter(file =>
-			acceptTypes.some(type => {
+		const validFiles = files.filter((file) =>
+			acceptTypes.some((type) => {
 				if (type.endsWith('/*')) {
 					return file.type.startsWith(type.slice(0, -1));
 				}
@@ -230,7 +236,7 @@
 
 			// Simulate upload progress
 			for (let i = 0; i <= 100; i += 10) {
-				await new Promise(resolve => setTimeout(resolve, 100));
+				await new Promise((resolve) => setTimeout(resolve, 100));
 				uploadProgress[file.name] = i;
 				uploadProgress = { ...uploadProgress };
 			}
@@ -240,10 +246,15 @@
 				id: crypto.randomUUID(),
 				name: file.name,
 				url: URL.createObjectURL(file),
-				type: file.type.startsWith('image/') ? 'image' :
-					file.type.startsWith('video/') ? 'video' :
-					file.type.startsWith('audio/') ? 'audio' :
-					file.type.includes('pdf') ? 'document' : 'other',
+				type: file.type.startsWith('image/')
+					? 'image'
+					: file.type.startsWith('video/')
+						? 'video'
+						: file.type.startsWith('audio/')
+							? 'audio'
+							: file.type.includes('pdf')
+								? 'document'
+								: 'other',
 				mimeType: file.type,
 				size: file.size,
 				folder: currentFolder,
@@ -255,7 +266,7 @@
 			if (file.type.startsWith('image/')) {
 				const img = new Image();
 				img.src = newItem.url;
-				await new Promise<void>(resolve => {
+				await new Promise<void>((resolve) => {
 					img.onload = () => {
 						newItem.width = img.naturalWidth;
 						newItem.height = img.naturalHeight;
@@ -289,7 +300,7 @@
 
 	// Handle insert
 	function handleInsert(): void {
-		const selected = mediaItems.filter(item => selectedItems.has(item.id));
+		const selected = mediaItems.filter((item) => selectedItems.has(item.id));
 		if (selected.length > 0 && selected[0]) {
 			onSelect(selected[0]); // For single select
 			onClose();
@@ -309,13 +320,16 @@
 	// Save edit
 	function saveEdit(): void {
 		if (editingItem) {
-			const index = mediaItems.findIndex(i => i.id === editingItem!.id);
+			const index = mediaItems.findIndex((i) => i.id === editingItem!.id);
 			if (index !== -1 && mediaItems[index]) {
 				mediaItems[index] = {
 					...mediaItems[index]!,
 					alt: editForm.alt,
 					caption: editForm.caption,
-					tags: editForm.tags.split(',').map(t => t.trim()).filter(Boolean),
+					tags: editForm.tags
+						.split(',')
+						.map((t) => t.trim())
+						.filter(Boolean),
 					updatedAt: new Date()
 				};
 				mediaItems = [...mediaItems];
@@ -327,7 +341,7 @@
 	// Delete item
 	function deleteItem(id: string): void {
 		if (confirm('Are you sure you want to delete this item?')) {
-			mediaItems = mediaItems.filter(item => item.id !== id);
+			mediaItems = mediaItems.filter((item) => item.id !== id);
 			selectedItems.delete(id);
 			selectedItems = new Set(selectedItems);
 		}
@@ -348,8 +362,8 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if isOpen}
-	<div 
-		class="media-overlay" 
+	<div
+		class="media-overlay"
 		onclick={onClose}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && onClose()}
 		role="dialog"
@@ -358,17 +372,11 @@
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div 
-			class="media-modal" 
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			role="document"
-		>
+		<div class="media-modal" onclick={(e: MouseEvent) => e.stopPropagation()} role="document">
 			<!-- Header -->
 			<div class="modal-header">
 				<h2>Media Library</h2>
-				<button class="close-btn" onclick={onClose} aria-label="Close">
-					✕
-				</button>
+				<button class="close-btn" onclick={onClose} aria-label="Close"> ✕ </button>
 			</div>
 
 			<!-- Tabs -->
@@ -376,14 +384,14 @@
 				<button
 					class="tab"
 					class:active={activeTab === 'library'}
-					onclick={() => activeTab = 'library'}
+					onclick={() => (activeTab = 'library')}
 				>
 					Library
 				</button>
 				<button
 					class="tab"
 					class:active={activeTab === 'upload'}
-					onclick={() => activeTab = 'upload'}
+					onclick={() => (activeTab = 'upload')}
 				>
 					Upload
 					{#if uploadQueue.length > 0}
@@ -400,11 +408,7 @@
 						<div class="toolbar-left">
 							<div class="search-box">
 								<span class="search-icon">🔍</span>
-								<input
-									type="text"
-									placeholder="Search media..."
-									bind:value={searchQuery}
-								/>
+								<input type="text" placeholder="Search media..." bind:value={searchQuery} />
 							</div>
 
 							<select bind:value={filterType} class="filter-select">
@@ -423,7 +427,7 @@
 
 							<button
 								class="sort-order-btn"
-								onclick={() => sortOrder = sortOrder === 'asc' ? 'desc' : 'asc'}
+								onclick={() => (sortOrder = sortOrder === 'asc' ? 'desc' : 'asc')}
 								title={sortOrder === 'asc' ? 'Ascending' : 'Descending'}
 							>
 								{sortOrder === 'asc' ? '↑' : '↓'}
@@ -434,14 +438,14 @@
 							<div class="view-toggle">
 								<button
 									class:active={viewMode === 'grid'}
-									onclick={() => viewMode = 'grid'}
+									onclick={() => (viewMode = 'grid')}
 									title="Grid view"
 								>
 									⊞
 								</button>
 								<button
 									class:active={viewMode === 'list'}
-									onclick={() => viewMode = 'list'}
+									onclick={() => (viewMode = 'list')}
 									title="List view"
 								>
 									☰
@@ -457,10 +461,7 @@
 							<h4>Folders</h4>
 							<ul class="folder-list">
 								<li>
-									<button
-										class:active={currentFolder === ''}
-										onclick={() => currentFolder = ''}
-									>
+									<button class:active={currentFolder === ''} onclick={() => (currentFolder = '')}>
 										📁 All Media
 									</button>
 								</li>
@@ -468,7 +469,7 @@
 									<li>
 										<button
 											class:active={currentFolder === folder}
-											onclick={() => currentFolder = folder}
+											onclick={() => (currentFolder = folder)}
 										>
 											📁 {folder}
 										</button>
@@ -483,7 +484,7 @@
 								<div class="empty-state">
 									<span class="empty-icon">📭</span>
 									<p>No media found</p>
-									<button class="upload-btn" onclick={() => activeTab = 'upload'}>
+									<button class="upload-btn" onclick={() => (activeTab = 'upload')}>
 										Upload Files
 									</button>
 								</div>
@@ -521,10 +522,22 @@
 												<span class="item-size">{formatFileSize(item.size)}</span>
 											</div>
 											<div class="item-actions">
-												<button onclick={(e: MouseEvent) => { e.stopPropagation(); openEditModal(item); }} title="Edit">
+												<button
+													onclick={(e: MouseEvent) => {
+														e.stopPropagation();
+														openEditModal(item);
+													}}
+													title="Edit"
+												>
 													✏️
 												</button>
-												<button onclick={(e: MouseEvent) => { e.stopPropagation(); deleteItem(item.id); }} title="Delete">
+												<button
+													onclick={(e: MouseEvent) => {
+														e.stopPropagation();
+														deleteItem(item.id);
+													}}
+													title="Delete"
+												>
 													🗑️
 												</button>
 											</div>
@@ -556,7 +569,10 @@
 												>
 													<td class="preview-cell">
 														{#if item.type === 'image'}
-															<img src={item.thumbnailUrl || item.url} alt={item.alt || item.name} />
+															<img
+																src={item.thumbnailUrl || item.url}
+																alt={item.alt || item.name}
+															/>
 														{:else}
 															<span class="type-icon-small">{getTypeIcon(item.type)}</span>
 														{/if}
@@ -566,10 +582,20 @@
 													<td class="size-cell">{formatFileSize(item.size)}</td>
 													<td class="date-cell">{item.createdAt.toLocaleDateString()}</td>
 													<td class="actions-cell">
-														<button onclick={(e: MouseEvent) => { e.stopPropagation(); openEditModal(item); }}>
+														<button
+															onclick={(e: MouseEvent) => {
+																e.stopPropagation();
+																openEditModal(item);
+															}}
+														>
 															✏️
 														</button>
-														<button onclick={(e: MouseEvent) => { e.stopPropagation(); deleteItem(item.id); }}>
+														<button
+															onclick={(e: MouseEvent) => {
+																e.stopPropagation();
+																deleteItem(item.id);
+															}}
+														>
 															🗑️
 														</button>
 													</td>
@@ -581,7 +607,6 @@
 							{/if}
 						</div>
 					</div>
-
 				{:else}
 					<!-- Upload Tab -->
 					<div class="upload-area">
@@ -608,7 +633,7 @@
 								/>
 							</label>
 							<p class="upload-hint">
-								Accepts: {acceptTypes.map(t => t.replace('/*', 's')).join(', ')}
+								Accepts: {acceptTypes.map((t) => t.replace('/*', 's')).join(', ')}
 							</p>
 						</div>
 
@@ -618,7 +643,9 @@
 								<ul>
 									{#each uploadQueue as file, i}
 										<li>
-											<span class="file-icon">{getTypeIcon(file.type.split('/')[0] ?? 'other')}</span>
+											<span class="file-icon"
+												>{getTypeIcon(file.type.split('/')[0] ?? 'other')}</span
+											>
 											<div class="file-info">
 												<span class="file-name">{file.name}</span>
 												<span class="file-size">{formatFileSize(file.size)}</span>
@@ -632,18 +659,12 @@
 												{/if}
 											</div>
 											{#if !isUploading}
-												<button class="remove-btn" onclick={() => removeFromQueue(i)}>
-													✕
-												</button>
+												<button class="remove-btn" onclick={() => removeFromQueue(i)}> ✕ </button>
 											{/if}
 										</li>
 									{/each}
 								</ul>
-								<button
-									class="start-upload-btn"
-									onclick={startUpload}
-									disabled={isUploading}
-								>
+								<button class="start-upload-btn" onclick={startUpload} disabled={isUploading}>
 									{isUploading ? 'Uploading...' : 'Start Upload'}
 								</button>
 							</div>
@@ -658,14 +679,8 @@
 					{selectedItems.size} item{selectedItems.size !== 1 ? 's' : ''} selected
 				</div>
 				<div class="footer-actions">
-					<button class="cancel-btn" onclick={onClose}>
-						Cancel
-					</button>
-					<button
-						class="insert-btn"
-						onclick={handleInsert}
-						disabled={selectedItems.size === 0}
-					>
+					<button class="cancel-btn" onclick={onClose}> Cancel </button>
+					<button class="insert-btn" onclick={handleInsert} disabled={selectedItems.size === 0}>
 						Insert Selected
 					</button>
 				</div>
@@ -676,9 +691,9 @@
 
 <!-- Edit Modal -->
 {#if editingItem}
-	<div 
-		class="edit-overlay" 
-		onclick={() => editingItem = null}
+	<div
+		class="edit-overlay"
+		onclick={() => (editingItem = null)}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (editingItem = null)}
 		role="dialog"
 		aria-modal="true"
@@ -686,11 +701,7 @@
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div 
-			class="edit-modal" 
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			role="document"
-		>
+		<div class="edit-modal" onclick={(e: MouseEvent) => e.stopPropagation()} role="document">
 			<h3>Edit Media</h3>
 			<div class="edit-preview">
 				{#if editingItem.type === 'image'}
@@ -702,19 +713,30 @@
 			<div class="edit-form">
 				<div class="field">
 					<label for="media-alt-text">Alt Text</label>
-					<input id="media-alt-text" type="text" bind:value={editForm.alt} placeholder="Describe this image" />
+					<input
+						id="media-alt-text"
+						type="text"
+						bind:value={editForm.alt}
+						placeholder="Describe this image"
+					/>
 				</div>
 				<div class="field">
 					<label for="media-caption">Caption</label>
-					<textarea id="media-caption" bind:value={editForm.caption} placeholder="Optional caption"></textarea>
+					<textarea id="media-caption" bind:value={editForm.caption} placeholder="Optional caption"
+					></textarea>
 				</div>
 				<div class="field">
 					<label for="media-tags">Tags</label>
-					<input id="media-tags" type="text" bind:value={editForm.tags} placeholder="tag1, tag2, tag3" />
+					<input
+						id="media-tags"
+						type="text"
+						bind:value={editForm.tags}
+						placeholder="tag1, tag2, tag3"
+					/>
 				</div>
 			</div>
 			<div class="edit-actions">
-				<button class="cancel-btn" onclick={() => editingItem = null}>Cancel</button>
+				<button class="cancel-btn" onclick={() => (editingItem = null)}>Cancel</button>
 				<button class="save-btn" onclick={saveEdit}>Save Changes</button>
 			</div>
 		</div>

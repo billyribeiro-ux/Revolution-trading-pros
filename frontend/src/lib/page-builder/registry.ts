@@ -1,7 +1,7 @@
 /**
  * Component Registry
  * Apple Principal Engineer ICT 7 Grade - January 2026
- * 
+ *
  * Central registry of all available page builder components.
  * Easy to extend - just add new entries to the registry.
  */
@@ -107,11 +107,13 @@ export const componentRegistry: ComponentRegistryEntry[] = [
 // ═══════════════════════════════════════════════════════════════════════════════
 
 export function getComponentByType(type: ComponentType): ComponentRegistryEntry | undefined {
-	return componentRegistry.find(c => c.type === type);
+	return componentRegistry.find((c) => c.type === type);
 }
 
-export function getComponentsByCategory(category: 'content' | 'media' | 'layout'): ComponentRegistryEntry[] {
-	return componentRegistry.filter(c => c.category === category);
+export function getComponentsByCategory(
+	category: 'content' | 'media' | 'layout'
+): ComponentRegistryEntry[] {
+	return componentRegistry.filter((c) => c.category === category);
 }
 
 export function createDefaultConfig(type: ComponentType): Record<string, unknown> {

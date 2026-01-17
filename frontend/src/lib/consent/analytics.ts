@@ -27,11 +27,11 @@ function getDefaultAnalytics(): ConsentAnalytics {
 			necessary: 1, // Always 100%
 			analytics: 0,
 			marketing: 0,
-			preferences: 0,
+			preferences: 0
 		},
 		avgTimeToDecision: 0,
 		bannerImpressions: 0,
-		modalOpens: 0,
+		modalOpens: 0
 	};
 }
 
@@ -134,7 +134,7 @@ export function trackConsentInteraction(
 		timestamp: now,
 		...(categories && { categories }),
 		...(timeToDecision !== undefined && { timeToDecision }),
-		pageUrl: window.location.href,
+		pageUrl: window.location.href
 	};
 
 	// Add to events
@@ -188,10 +188,7 @@ function updateAnalytics(event: ConsentInteractionEvent): void {
 			// Update average time to decision
 			const decisionsWithTime = decisions.filter((e) => e.timeToDecision);
 			if (decisionsWithTime.length > 0) {
-				const totalTime = decisionsWithTime.reduce(
-					(sum, e) => sum + (e.timeToDecision || 0),
-					0
-				);
+				const totalTime = decisionsWithTime.reduce((sum, e) => sum + (e.timeToDecision || 0), 0);
 				analytics.avgTimeToDecision = totalTime / decisionsWithTime.length;
 			}
 
@@ -204,7 +201,7 @@ function updateAnalytics(event: ConsentInteractionEvent): void {
 					necessary: preferencesEvents.length, // Always 100%
 					analytics: 0,
 					marketing: 0,
-					preferences: 0,
+					preferences: 0
 				};
 
 				preferencesEvents.forEach((e) => {
@@ -221,7 +218,7 @@ function updateAnalytics(event: ConsentInteractionEvent): void {
 					necessary: 1,
 					analytics: (categoryTotals.analytics + acceptAllCount) / totalDecisions,
 					marketing: (categoryTotals.marketing + acceptAllCount) / totalDecisions,
-					preferences: (categoryTotals.preferences + acceptAllCount) / totalDecisions,
+					preferences: (categoryTotals.preferences + acceptAllCount) / totalDecisions
 				};
 			}
 			break;
@@ -246,8 +243,8 @@ function sendToBehaviorTracker(event: ConsentInteractionEvent): void {
 				page_url: event.pageUrl,
 				event_metadata: {
 					categories: event.categories,
-					timeToDecision: event.timeToDecision,
-				},
+					timeToDecision: event.timeToDecision
+				}
 			});
 		}
 	} catch (e) {
@@ -273,7 +270,9 @@ export function getAnalyticsSummary(): {
 	if (analytics.acceptAllRate > 0.7) {
 		insights.push('High accept rate indicates trust in your privacy practices.');
 	} else if (analytics.rejectAllRate > 0.5) {
-		insights.push('High reject rate may indicate privacy concerns. Consider reviewing your messaging.');
+		insights.push(
+			'High reject rate may indicate privacy concerns. Consider reviewing your messaging.'
+		);
 	}
 
 	if (analytics.avgTimeToDecision > 30000) {
@@ -287,13 +286,15 @@ export function getAnalyticsSummary(): {
 	}
 
 	if (analytics.categoryRates.analytics > analytics.categoryRates.marketing) {
-		insights.push('Users prefer analytics over marketing. Consider highlighting privacy-friendly analytics.');
+		insights.push(
+			'Users prefer analytics over marketing. Consider highlighting privacy-friendly analytics.'
+		);
 	}
 
 	return {
 		analytics,
 		recentEvents,
-		insights,
+		insights
 	};
 }
 
@@ -305,7 +306,7 @@ export function exportAnalyticsData(): string {
 		{
 			exportDate: new Date().toISOString(),
 			analytics: getConsentAnalytics(),
-			events: getInteractionEvents(),
+			events: getInteractionEvents()
 		},
 		null,
 		2
@@ -340,8 +341,8 @@ export async function syncAnalyticsToServer(endpoint: string): Promise<boolean> 
 			body: JSON.stringify({
 				analytics: getConsentAnalytics(),
 				events: getInteractionEvents(),
-				syncTimestamp: new Date().toISOString(),
-			}),
+				syncTimestamp: new Date().toISOString()
+			})
 		});
 
 		return response.ok;

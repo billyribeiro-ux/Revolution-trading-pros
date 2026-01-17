@@ -104,17 +104,21 @@
 
 	let trendIcon = $derived(kpi.trend === 'up' ? '↑' : kpi.trend === 'down' ? '↓' : '→');
 
-	let sizeClasses = $derived({
-		sm: 'p-3',
-		md: 'p-4',
-		lg: 'p-6'
-	}[size]);
+	let sizeClasses = $derived(
+		{
+			sm: 'p-3',
+			md: 'p-4',
+			lg: 'p-6'
+		}[size]
+	);
 
-	let valueSizeClasses = $derived({
-		sm: 'text-xl',
-		md: 'text-2xl',
-		lg: 'text-4xl'
-	}[size]);
+	let valueSizeClasses = $derived(
+		{
+			sm: 'text-xl',
+			md: 'text-2xl',
+			lg: 'text-4xl'
+		}[size]
+	);
 
 	// Simple sparkline SVG
 	function generateSparklinePath(data: number[]): string {

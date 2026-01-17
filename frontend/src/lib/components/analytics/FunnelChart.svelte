@@ -118,10 +118,10 @@
 					<span class="text-gray-500">Overall Rate:</span>
 					<span
 						class="font-semibold ml-1 {(lastStep.overall_conversion_rate ?? 0) >= 10
-						? 'text-green-600'
-						: 'text-orange-600'}"
-				>
-					{(lastStep.overall_conversion_rate ?? 0).toFixed(2)}%
+							? 'text-green-600'
+							: 'text-orange-600'}"
+					>
+						{(lastStep.overall_conversion_rate ?? 0).toFixed(2)}%
 					</span>
 				</div>
 			</div>

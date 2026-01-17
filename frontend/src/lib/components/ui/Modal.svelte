@@ -127,9 +127,7 @@
 				if (modalElement) {
 					// Try initial focus selector first
 					if (initialFocusSelector) {
-						const initialElement = modalElement.querySelector(
-							initialFocusSelector
-						) as HTMLElement;
+						const initialElement = modalElement.querySelector(initialFocusSelector) as HTMLElement;
 						if (initialElement) {
 							initialElement.focus();
 							return;
@@ -165,20 +163,13 @@
 
 {#if open}
 	<!-- Modal Backdrop -->
-	<div
-		class="fixed inset-0 z-50 overflow-y-auto"
-		onclick={handleBackdropClick}
-		role="presentation"
-	>
+	<div class="fixed inset-0 z-50 overflow-y-auto" onclick={handleBackdropClick} role="presentation">
 		<div
 			class="flex min-h-screen items-center justify-center p-4"
 			class:p-0={size === 'fullscreen'}
 		>
 			<!-- Backdrop overlay -->
-			<div
-				class="fixed inset-0 bg-black/50 transition-opacity"
-				aria-hidden="true"
-			></div>
+			<div class="fixed inset-0 bg-black/50 transition-opacity" aria-hidden="true"></div>
 
 			<!-- Modal Panel -->
 			<div
@@ -193,10 +184,7 @@
 				<!-- Header -->
 				{#if title}
 					<div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-						<h2
-							id={titleId}
-							class="text-lg font-semibold text-gray-900"
-						>
+						<h2 id={titleId} class="text-lg font-semibold text-gray-900">
 							{title}
 						</h2>
 						<button

@@ -33,20 +33,28 @@
 	} from '$lib/stores/connections.svelte';
 
 	// Feature configuration - maps features to display info
-	const FEATURE_CONFIG: Record<string, {
-		name: string;
-		description: string;
-		icon: string;
-		color: string;
-		features: string[];
-		primaryService?: ServiceKey;
-	}> = {
+	const FEATURE_CONFIG: Record<
+		string,
+		{
+			name: string;
+			description: string;
+			icon: string;
+			color: string;
+			features: string[];
+			primaryService?: ServiceKey;
+		}
+	> = {
 		analytics: {
 			name: 'Analytics',
 			description: 'Track visitors, sessions, and user behavior across your site',
 			icon: '📊',
 			color: '#F9AB00',
-			features: ['Real-time visitor tracking', 'Session analytics', 'User behavior insights', 'Conversion tracking'],
+			features: [
+				'Real-time visitor tracking',
+				'Session analytics',
+				'User behavior insights',
+				'Conversion tracking'
+			],
 			primaryService: 'google_analytics'
 		},
 		seo: {
@@ -54,7 +62,12 @@
 			description: 'Monitor search rankings, indexing status, and SEO performance',
 			icon: '🔍',
 			color: '#4285F4',
-			features: ['Search ranking monitoring', 'Indexing status', 'Keyword performance', 'Backlink analysis'],
+			features: [
+				'Search ranking monitoring',
+				'Indexing status',
+				'Keyword performance',
+				'Backlink analysis'
+			],
 			primaryService: 'google_search_console'
 		},
 		email: {
@@ -62,7 +75,12 @@
 			description: 'Send transactional and marketing emails to your users',
 			icon: '✉️',
 			color: '#1A82E2',
-			features: ['Transactional emails', 'Marketing campaigns', 'Email analytics', 'Delivery tracking'],
+			features: [
+				'Transactional emails',
+				'Marketing campaigns',
+				'Email analytics',
+				'Delivery tracking'
+			],
 			primaryService: 'sendgrid'
 		},
 		payment: {
@@ -70,7 +88,12 @@
 			description: 'Accept payments and manage subscriptions seamlessly',
 			icon: '💳',
 			color: '#635BFF',
-			features: ['Credit card payments', 'Subscription billing', 'Invoice management', 'Revenue analytics'],
+			features: [
+				'Credit card payments',
+				'Subscription billing',
+				'Invoice management',
+				'Revenue analytics'
+			],
 			primaryService: 'stripe'
 		},
 		crm: {
@@ -78,7 +101,12 @@
 			description: 'Manage customer relationships, contacts, and sales pipelines',
 			icon: '👥',
 			color: '#FF7A59',
-			features: ['Contact management', 'Sales pipeline', 'Customer insights', 'Automation workflows'],
+			features: [
+				'Contact management',
+				'Sales pipeline',
+				'Customer insights',
+				'Automation workflows'
+			],
 			primaryService: 'fluent_crm_pro'
 		},
 		forms: {
@@ -86,7 +114,12 @@
 			description: 'Create and manage forms with advanced features',
 			icon: '📝',
 			color: '#10B981',
-			features: ['Drag-drop builder', 'Conditional logic', 'Payment forms', 'Submissions management'],
+			features: [
+				'Drag-drop builder',
+				'Conditional logic',
+				'Payment forms',
+				'Submissions management'
+			],
 			primaryService: 'fluent_forms_pro'
 		},
 		behavior: {
@@ -180,14 +213,22 @@
 		}
 		if (feature) {
 			switch (feature) {
-				case 'analytics': return $isAnalyticsConnected;
-				case 'seo': return $isSeoConnected;
-				case 'email': return $isEmailConnected;
-				case 'payment': return $isPaymentConnected;
-				case 'crm': return $isCrmConnected;
-				case 'forms': return $isFormsConnected;
-				case 'behavior': return $isBehaviorConnected;
-				default: return connections.isFeatureConnected(feature as keyof typeof FEATURE_SERVICES);
+				case 'analytics':
+					return $isAnalyticsConnected;
+				case 'seo':
+					return $isSeoConnected;
+				case 'email':
+					return $isEmailConnected;
+				case 'payment':
+					return $isPaymentConnected;
+				case 'crm':
+					return $isCrmConnected;
+				case 'forms':
+					return $isFormsConnected;
+				case 'behavior':
+					return $isBehaviorConnected;
+				default:
+					return connections.isFeatureConnected(feature as keyof typeof FEATURE_SERVICES);
 			}
 		}
 		return false;
@@ -237,9 +278,15 @@
 					<div class="icon-container" style="--icon-color: {config().color}">
 						<span class="service-icon">{config().icon}</span>
 						<div class="status-indicator">
-							<svg class="disconnect-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-								<path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
-								<line x1="12" y1="2" x2="12" y2="12"/>
+							<svg
+								class="disconnect-icon"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+							>
+								<path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+								<line x1="12" y1="2" x2="12" y2="12" />
 							</svg>
 						</div>
 					</div>
@@ -276,27 +323,44 @@
 					onclick={handleConnect}
 					style="--btn-color: {config().color}"
 				>
-					<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/>
-						<path d="M12 6v6l4 2"/>
+					<svg
+						class="btn-icon"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
+						<path d="M12 6v6l4 2" />
 					</svg>
 					<span>Connect {config().name}</span>
-					<svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M5 12h14M12 5l7 7-7 7"/>
+					<svg
+						class="arrow-icon"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path d="M5 12h14M12 5l7 7-7 7" />
 					</svg>
 				</button>
 
 				<!-- Security Note -->
 				<div class="security-note">
-					<svg class="lock-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-						<path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+					<svg
+						class="lock-icon"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+						<path d="M7 11V7a5 5 0 0 1 10 0v4" />
 					</svg>
 					<span>Your credentials are encrypted and stored securely</span>
 				</div>
 			</div>
 		</div>
-
 	{:else if variant === 'banner'}
 		<!-- Banner Variant - For page headers -->
 		<div
@@ -316,35 +380,29 @@
 				<button class="banner-button" onclick={handleConnect} style="--btn-color: {config().color}">
 					<span>Connect Now</span>
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M5 12h14M12 5l7 7-7 7"/>
+						<path d="M5 12h14M12 5l7 7-7 7" />
 					</svg>
 				</button>
 			</div>
 		</div>
-
 	{:else if variant === 'inline'}
 		<!-- Inline Variant - For within content -->
-		<div
-			class="service-status-inline"
-			in:fade={{ duration: 300 }}
-			role="alert"
-		>
+		<div class="service-status-inline" in:fade={{ duration: 300 }} role="alert">
 			<div class="inline-icon" style="color: {config().color}">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<circle cx="12" cy="12" r="10"/>
-					<line x1="12" y1="8" x2="12" y2="12"/>
-					<line x1="12" y1="16" x2="12.01" y2="16"/>
+					<circle cx="12" cy="12" r="10" />
+					<line x1="12" y1="8" x2="12" y2="12" />
+					<line x1="12" y1="16" x2="12.01" y2="16" />
 				</svg>
 			</div>
 			<span class="inline-message">{config().name} not connected</span>
 			<button class="inline-button" onclick={handleConnect}>
 				Connect
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M5 12h14M12 5l7 7-7 7"/>
+					<path d="M5 12h14M12 5l7 7-7 7" />
 				</svg>
 			</button>
 		</div>
-
 	{:else if variant === 'badge'}
 		<!-- Badge Variant - Minimal indicator -->
 		<button
@@ -356,7 +414,6 @@
 			<span class="badge-dot"></span>
 			<span class="badge-text">Disconnected</span>
 		</button>
-
 	{:else if variant === 'minimal'}
 		<!-- Minimal Variant - Just a button -->
 		<button
@@ -366,8 +423,8 @@
 			style="--btn-color: {config().color}"
 		>
 			<svg class="plug-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<path d="M18.36 6.64a9 9 0 1 1-12.73 0"/>
-				<line x1="12" y1="2" x2="12" y2="12"/>
+				<path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
+				<line x1="12" y1="2" x2="12" y2="12" />
 			</svg>
 			<span>Connect {config().name}</span>
 		</button>
@@ -395,7 +452,7 @@
 		transform: translateX(-50%);
 		width: 400px;
 		height: 400px;
-		background: radial-gradient(circle, var(--glow-color, #E6B800) 0%, transparent 70%);
+		background: radial-gradient(circle, var(--glow-color, #e6b800) 0%, transparent 70%);
 		opacity: 0.08;
 		pointer-events: none;
 	}
@@ -403,7 +460,7 @@
 	.decorative-orb {
 		position: absolute;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--orb-color, #E6B800), transparent);
+		background: linear-gradient(135deg, var(--orb-color, #e6b800), transparent);
 		opacity: 0.03;
 		pointer-events: none;
 	}
@@ -561,27 +618,32 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 2rem;
-		background: linear-gradient(135deg, var(--btn-color, #E6B800), color-mix(in srgb, var(--btn-color, #E6B800), #B38F00 40%));
-		color: #0D1117;
+		background: linear-gradient(
+			135deg,
+			var(--btn-color, #e6b800),
+			color-mix(in srgb, var(--btn-color, #e6b800), #b38f00 40%)
+		);
+		color: #0d1117;
 		border: none;
 		border-radius: 16px;
 		font-size: 1rem;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-		box-shadow: 0 10px 30px color-mix(in srgb, var(--btn-color, #E6B800) 30%, transparent);
+		box-shadow: 0 10px 30px color-mix(in srgb, var(--btn-color, #e6b800) 30%, transparent);
 	}
 
 	.connect-button:hover {
 		transform: translateY(-3px);
-		box-shadow: 0 15px 40px color-mix(in srgb, var(--btn-color, #E6B800) 40%, transparent);
+		box-shadow: 0 15px 40px color-mix(in srgb, var(--btn-color, #e6b800) 40%, transparent);
 	}
 
 	.connect-button:active {
 		transform: translateY(-1px);
 	}
 
-	.btn-icon, .arrow-icon {
+	.btn-icon,
+	.arrow-icon {
 		width: 20px;
 		height: 20px;
 	}
@@ -619,7 +681,11 @@
 		left: 0;
 		right: 0;
 		height: 100%;
-		background: linear-gradient(90deg, color-mix(in srgb, var(--glow-color, #f59e0b) 10%, transparent), transparent);
+		background: linear-gradient(
+			90deg,
+			color-mix(in srgb, var(--glow-color, #f59e0b) 10%, transparent),
+			transparent
+		);
 		pointer-events: none;
 	}
 
@@ -799,10 +865,10 @@
 	}
 
 	.service-status-minimal:hover {
-		background: color-mix(in srgb, var(--btn-color, #E6B800) 10%, transparent);
-		border-color: color-mix(in srgb, var(--btn-color, #E6B800) 40%, transparent);
+		background: color-mix(in srgb, var(--btn-color, #e6b800) 10%, transparent);
+		border-color: color-mix(in srgb, var(--btn-color, #e6b800) 40%, transparent);
 		border-style: solid;
-		color: var(--btn-color, #E6B800);
+		color: var(--btn-color, #e6b800);
 	}
 
 	.plug-icon {

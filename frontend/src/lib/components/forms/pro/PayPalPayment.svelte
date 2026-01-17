@@ -99,52 +99,56 @@
 	function renderButtons() {
 		if (buttonsRendered || !window.paypal) return;
 
-		window.paypal.Buttons({
-			style: {
-				layout: 'vertical',
-				color: 'gold',
-				shape: 'rect',
-				label: 'paypal',
-				height: 45
-			},
-			createOrder: (_data: any, actions: any) => {
-				return actions.order.create({
-					purchase_units: [{
-						description: description,
-						amount: {
-							currency_code: currency,
-							value: amount.toFixed(2)
-						}
-					}]
-				});
-			},
-			onApprove: async (data: any, actions: any) => {
-				try {
-					const order = await actions.order.capture();
+		window.paypal
+			.Buttons({
+				style: {
+					layout: 'vertical',
+					color: 'gold',
+					shape: 'rect',
+					label: 'paypal',
+					height: 45
+				},
+				createOrder: (_data: any, actions: any) => {
+					return actions.order.create({
+						purchase_units: [
+							{
+								description: description,
+								amount: {
+									currency_code: currency,
+									value: amount.toFixed(2)
+								}
+							}
+						]
+					});
+				},
+				onApprove: async (data: any, actions: any) => {
+					try {
+						const order = await actions.order.capture();
 
-					const result: PayPalPaymentResult = {
-						orderId: data.orderID,
-						payerId: data.payerID,
-						status: order.status,
-						captureId: order.purchase_units?.[0]?.payments?.captures?.[0]?.id,
-						payerEmail: order.payer?.email_address,
-						payerName: order.payer?.name?.given_name
-					};
+						const result: PayPalPaymentResult = {
+							orderId: data.orderID,
+							payerId: data.payerID,
+							status: order.status,
+							captureId: order.purchase_units?.[0]?.payments?.captures?.[0]?.id,
+							payerEmail: order.payer?.email_address,
+							payerName: order.payer?.name?.given_name
+						};
 
-					if (onpayment) onpayment(result);
-				} catch (err) {
-					paypalError = 'Payment failed to complete';
-					if (onerror) onerror('Payment capture failed');
+						if (onpayment) onpayment(result);
+					} catch (err) {
+						paypalError = 'Payment failed to complete';
+						if (onerror) onerror('Payment capture failed');
+					}
+				},
+				onError: (err: any) => {
+					paypalError = 'Payment was cancelled or failed';
+					if (onerror) onerror(err.message || 'PayPal error');
+				},
+				onCancel: () => {
+					paypalError = 'Payment was cancelled';
 				}
-			},
-			onError: (err: any) => {
-				paypalError = 'Payment was cancelled or failed';
-				if (onerror) onerror(err.message || 'PayPal error');
-			},
-			onCancel: () => {
-				paypalError = 'Payment was cancelled';
-			}
-		}).render(buttonContainerRef);
+			})
+			.render(buttonContainerRef);
 
 		buttonsRendered = true;
 	}
@@ -155,7 +159,6 @@
 			currency: currency
 		}).format(amount);
 	}
-
 </script>
 
 <div class="paypal-payment" class:disabled class:has-error={error || paypalError}>
@@ -182,7 +185,12 @@
 		</div>
 	{/if}
 
-	<div id="paypal-buttons-container" bind:this={buttonContainerRef} class="paypal-buttons" class:hidden={loading}></div>
+	<div
+		id="paypal-buttons-container"
+		bind:this={buttonContainerRef}
+		class="paypal-buttons"
+		class:hidden={loading}
+	></div>
 
 	{#if paypalError}
 		<p class="paypal-error">{paypalError}</p>
@@ -262,8 +270,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.paypal-buttons {

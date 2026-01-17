@@ -22,13 +22,7 @@
 		onClose?: () => void;
 	}
 
-	let {
-		resourceType = 'video',
-		resourceId,
-		resourceTitle,
-		onScheduled,
-		onClose
-	}: Props = $props();
+	let { resourceType = 'video', resourceId, resourceTitle, onScheduled, onClose }: Props = $props();
 
 	let jobs = $state<ScheduledJob[]>([]);
 	let isLoading = $state(true);
@@ -202,7 +196,8 @@
 
 	{#if error}
 		<div class="error-message">
-			<IconAlertCircle size={16} /> {error}
+			<IconAlertCircle size={16} />
+			{error}
 		</div>
 	{/if}
 
@@ -266,12 +261,7 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="date">Date</label>
-						<input
-							type="date"
-							id="date"
-							bind:value={scheduledDate}
-							min={getTomorrowDate()}
-						/>
+						<input type="date" id="date" bind:value={scheduledDate} min={getTomorrowDate()} />
 					</div>
 					<div class="form-group">
 						<label for="time">Time</label>
@@ -296,20 +286,11 @@
 				</div>
 
 				<div class="form-actions">
-					<button
-						type="button"
-						class="btn-schedule"
-						onclick={createJob}
-						disabled={isSaving}
-					>
+					<button type="button" class="btn-schedule" onclick={createJob} disabled={isSaving}>
 						<IconCheck size={16} />
 						{isSaving ? 'Scheduling...' : 'Schedule'}
 					</button>
-					<button
-						type="button"
-						class="btn-cancel"
-						onclick={() => (showForm = false)}
-					>
+					<button type="button" class="btn-cancel" onclick={() => (showForm = false)}>
 						Cancel
 					</button>
 				</div>
@@ -444,8 +425,8 @@
 		gap: 0.5rem;
 		width: 100%;
 		padding: 0.75rem;
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
@@ -526,8 +507,8 @@
 		justify-content: center;
 		gap: 0.375rem;
 		padding: 0.625rem;
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 		border: none;
 		border-radius: 6px;
 		cursor: pointer;

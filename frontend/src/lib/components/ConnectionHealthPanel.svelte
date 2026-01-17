@@ -74,28 +74,40 @@
 
 	function getStatusIcon(status: ConnectionState) {
 		switch (status) {
-			case 'connected': return IconCheck;
-			case 'connecting': return IconLoader;
-			case 'error': return IconAlertCircle;
-			default: return IconPlugConnectedX;
+			case 'connected':
+				return IconCheck;
+			case 'connecting':
+				return IconLoader;
+			case 'error':
+				return IconAlertCircle;
+			default:
+				return IconPlugConnectedX;
 		}
 	}
 
 	function getStatusColor(status: ConnectionState) {
 		switch (status) {
-			case 'connected': return '#10b981';
-			case 'connecting': return '#f59e0b';
-			case 'error': return '#ef4444';
-			default: return '#64748b';
+			case 'connected':
+				return '#10b981';
+			case 'connecting':
+				return '#f59e0b';
+			case 'error':
+				return '#ef4444';
+			default:
+				return '#64748b';
 		}
 	}
 
 	function getStatusLabel(status: ConnectionState) {
 		switch (status) {
-			case 'connected': return 'Connected';
-			case 'connecting': return 'Connecting...';
-			case 'error': return 'Error';
-			default: return 'Disconnected';
+			case 'connected':
+				return 'Connected';
+			case 'connecting':
+				return 'Connecting...';
+			case 'error':
+				return 'Error';
+			default:
+				return 'Disconnected';
 		}
 	}
 
@@ -131,9 +143,13 @@
 		onclose?.();
 	}
 
-	let connectedCount = $derived(Object.values($allConnectionStatuses).filter(s => s === 'connected').length);
+	let connectedCount = $derived(
+		Object.values($allConnectionStatuses).filter((s) => s === 'connected').length
+	);
 	let totalCount = $derived(Object.keys($allConnectionStatuses).length);
-	let overallHealth = $derived(connectedCount === totalCount ? 'healthy' : connectedCount > 0 ? 'partial' : 'unhealthy');
+	let overallHealth = $derived(
+		connectedCount === totalCount ? 'healthy' : connectedCount > 0 ? 'partial' : 'unhealthy'
+	);
 </script>
 
 {#if isOpen}
@@ -156,7 +172,12 @@
 			<!-- Header -->
 			<div class="panel-header">
 				<div class="header-left">
-					<div class="header-icon" class:healthy={overallHealth === 'healthy'} class:partial={overallHealth === 'partial'} class:unhealthy={overallHealth === 'unhealthy'}>
+					<div
+						class="header-icon"
+						class:healthy={overallHealth === 'healthy'}
+						class:partial={overallHealth === 'partial'}
+						class:unhealthy={overallHealth === 'unhealthy'}
+					>
 						<IconPlugConnected size={20} />
 					</div>
 					<div class="header-info">
@@ -167,7 +188,11 @@
 					</div>
 				</div>
 				<div class="header-actions">
-					<button class="refresh-all-btn" onclick={refreshAll} disabled={refreshingService !== null}>
+					<button
+						class="refresh-all-btn"
+						onclick={refreshAll}
+						disabled={refreshingService !== null}
+					>
 						<IconRefresh size={16} class={refreshingService ? 'spinning' : ''} />
 						Refresh All
 					</button>
@@ -178,7 +203,12 @@
 			</div>
 
 			<!-- Overall Status Bar -->
-			<div class="status-bar" class:healthy={overallHealth === 'healthy'} class:partial={overallHealth === 'partial'} class:unhealthy={overallHealth === 'unhealthy'}>
+			<div
+				class="status-bar"
+				class:healthy={overallHealth === 'healthy'}
+				class:partial={overallHealth === 'partial'}
+				class:unhealthy={overallHealth === 'unhealthy'}
+			>
 				<div class="status-indicator">
 					{#if overallHealth === 'healthy'}
 						<IconCheck size={18} />
@@ -199,7 +229,7 @@
 				<button
 					class="tab"
 					class:active={activeTab === 'overview'}
-					onclick={() => activeTab = 'overview'}
+					onclick={() => (activeTab = 'overview')}
 				>
 					<IconPlugConnected size={16} />
 					Overview
@@ -207,7 +237,7 @@
 				<button
 					class="tab"
 					class:active={activeTab === 'details'}
-					onclick={() => activeTab = 'details'}
+					onclick={() => (activeTab = 'details')}
 				>
 					<IconChartLine size={16} />
 					Metrics
@@ -219,16 +249,29 @@
 				{#if activeTab === 'overview'}
 					<div class="services-list" in:fade={{ duration: 150 }}>
 						{#each Object.entries($allConnectionStatuses) as [service, status]}
-							{@const metrics = mockMetrics[service] || { responseTime: 0, uptime: 0, errorRate: 0 }}
+							{@const metrics = mockMetrics[service] || {
+								responseTime: 0,
+								uptime: 0,
+								errorRate: 0
+							}}
 							{@const StatusIcon = getStatusIcon(status)}
-							<div class="service-card" class:connected={status === 'connected'} class:error={status === 'error'}>
+							<div
+								class="service-card"
+								class:connected={status === 'connected'}
+								class:error={status === 'error'}
+							>
 								<div class="service-status" style="color: {getStatusColor(status)}">
 									<StatusIcon size={20} class={status === 'connecting' ? 'spinning' : ''} />
 								</div>
 								<div class="service-info">
 									<div class="service-header">
 										<span class="service-name">{serviceLabels[service]}</span>
-										<span class="status-badge" style="background: {getStatusColor(status)}20; color: {getStatusColor(status)}">
+										<span
+											class="status-badge"
+											style="background: {getStatusColor(status)}20; color: {getStatusColor(
+												status
+											)}"
+										>
 											{getStatusLabel(status)}
 										</span>
 									</div>
@@ -253,7 +296,10 @@
 										disabled={refreshingService === service}
 										title="Refresh connection"
 									>
-										<IconRefresh size={16} class={refreshingService === service ? 'spinning' : ''} />
+										<IconRefresh
+											size={16}
+											class={refreshingService === service ? 'spinning' : ''}
+										/>
 									</button>
 									<a href="/admin/connections" class="action-btn" title="Configure">
 										<IconExternalLink size={16} />
@@ -265,7 +311,11 @@
 				{:else}
 					<div class="metrics-view" in:fade={{ duration: 150 }}>
 						{#each Object.entries($allConnectionStatuses) as [service, status]}
-							{@const metrics = mockMetrics[service] || { responseTime: 0, uptime: 0, errorRate: 0 }}
+							{@const metrics = mockMetrics[service] || {
+								responseTime: 0,
+								uptime: 0,
+								errorRate: 0
+							}}
 							<div class="metrics-card">
 								<div class="metrics-header">
 									<span class="service-name">{serviceLabels[service]}</span>
@@ -274,13 +324,19 @@
 								<div class="metrics-grid">
 									<div class="metric-item">
 										<span class="metric-label">Response Time</span>
-										<span class="metric-value" style="color: {getResponseTimeColor(metrics.responseTime)}">
+										<span
+											class="metric-value"
+											style="color: {getResponseTimeColor(metrics.responseTime)}"
+										>
 											{metrics.responseTime}ms
 										</span>
 										<div class="metric-bar">
 											<div
 												class="metric-bar-fill"
-												style="width: {Math.min(metrics.responseTime / 5, 100)}%; background: {getResponseTimeColor(metrics.responseTime)}"
+												style="width: {Math.min(
+													metrics.responseTime / 5,
+													100
+												)}%; background: {getResponseTimeColor(metrics.responseTime)}"
 											></div>
 										</div>
 									</div>
@@ -292,13 +348,22 @@
 										<div class="metric-bar">
 											<div
 												class="metric-bar-fill"
-												style="width: {metrics.uptime}%; background: {getUptimeColor(metrics.uptime)}"
+												style="width: {metrics.uptime}%; background: {getUptimeColor(
+													metrics.uptime
+												)}"
 											></div>
 										</div>
 									</div>
 									<div class="metric-item">
 										<span class="metric-label">Error Rate</span>
-										<span class="metric-value" style="color: {metrics.errorRate > 1 ? '#ef4444' : metrics.errorRate > 0.5 ? '#f59e0b' : '#10b981'}">
+										<span
+											class="metric-value"
+											style="color: {metrics.errorRate > 1
+												? '#ef4444'
+												: metrics.errorRate > 0.5
+													? '#f59e0b'
+													: '#10b981'}"
+										>
 											{metrics.errorRate}%
 										</span>
 										<div class="metric-bar">
@@ -753,8 +818,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	@media (max-width: 480px) {

@@ -5,7 +5,7 @@
 	 *
 	 * Uses Threlte/Three.js for floating 3D candlesticks
 	 * Low-poly, performance optimized
-	 * 
+	 *
 	 * ICT11+ Pattern: Dynamic imports to prevent SSR issues and improve TTFB
 	 *
 	 * @version 2.0.0
@@ -19,13 +19,13 @@
 
 	onMount(async () => {
 		if (!browser) return;
-		
+
 		// Dynamic import to prevent SSR issues and reduce initial bundle
 		const [threlte, scene] = await Promise.all([
 			import('@threlte/core'),
 			import('./Scene3D.svelte')
 		]);
-		
+
 		ThrelteCanvas = threlte.Canvas;
 		Scene3DComponent = scene.default;
 		mounted = true;

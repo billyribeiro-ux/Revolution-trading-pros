@@ -42,7 +42,7 @@
 		{ value: 'top-left', label: 'Top Left' },
 		{ value: 'top-right', label: 'Top Right' },
 		{ value: 'center', label: 'Center Modal' },
-		{ value: 'fullscreen', label: 'Fullscreen' },
+		{ value: 'fullscreen', label: 'Fullscreen' }
 	];
 
 	// Button variant options
@@ -53,7 +53,7 @@
 		{ value: 'gradient', label: 'Gradient' },
 		{ value: 'pill', label: 'Pill' },
 		{ value: 'rounded', label: 'Rounded' },
-		{ value: 'square', label: 'Square' },
+		{ value: 'square', label: 'Square' }
 	];
 
 	// Animation options
@@ -65,7 +65,7 @@
 		{ value: 'slide-left', label: 'Slide Left' },
 		{ value: 'slide-right', label: 'Slide Right' },
 		{ value: 'scale', label: 'Scale' },
-		{ value: 'bounce', label: 'Bounce' },
+		{ value: 'bounce', label: 'Bounce' }
 	];
 
 	// Icon type options
@@ -73,22 +73,37 @@
 		{ value: 'cookie', label: 'Cookie' },
 		{ value: 'shield', label: 'Shield' },
 		{ value: 'lock', label: 'Lock' },
-		{ value: 'checkmark', label: 'Checkmark' },
+		{ value: 'checkmark', label: 'Checkmark' }
 	];
 
 	// Preset color themes
 	const colorPresets = [
 		{ name: 'Dark', bg: '#0a0a0a', text: '#ffffff', accent: '#3b82f6' },
 		{ name: 'Light', bg: '#ffffff', text: '#18181b', accent: '#2563eb' },
-		{ name: 'Purple', bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)', text: '#ffffff', accent: '#ffffff' },
-		{ name: 'Ocean', bg: 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)', text: '#ffffff', accent: '#ffffff' },
-		{ name: 'Sunset', bg: 'linear-gradient(135deg, #f97316 0%, #ec4899 100%)', text: '#ffffff', accent: '#ffffff' },
+		{
+			name: 'Purple',
+			bg: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+			text: '#ffffff',
+			accent: '#ffffff'
+		},
+		{
+			name: 'Ocean',
+			bg: 'linear-gradient(135deg, #0ea5e9 0%, #06b6d4 100%)',
+			text: '#ffffff',
+			accent: '#ffffff'
+		},
+		{
+			name: 'Sunset',
+			bg: 'linear-gradient(135deg, #f97316 0%, #ec4899 100%)',
+			text: '#ffffff',
+			accent: '#ffffff'
+		},
 		{ name: 'Forest', bg: '#f0fdf4', text: '#14532d', accent: '#22c55e' },
 		{ name: 'Neon', bg: '#0d0d0d', text: '#00ff88', accent: '#ff00ff' },
-		{ name: 'Gold', bg: '#1a1a1a', text: '#fafafa', accent: '#d4af37' },
+		{ name: 'Gold', bg: '#1a1a1a', text: '#fafafa', accent: '#d4af37' }
 	];
 
-	function applyColorPreset(preset: typeof colorPresets[0]) {
+	function applyColorPreset(preset: (typeof colorPresets)[0]) {
 		editedTemplate.colors.background = preset.bg;
 		editedTemplate.colors.text = preset.text;
 		editedTemplate.colors.accent = preset.accent;
@@ -167,11 +182,7 @@
 		>
 			Typography
 		</button>
-		<button
-			class="tab"
-			class:active={activeTab === 'copy'}
-			onclick={() => (activeTab = 'copy')}
-		>
+		<button class="tab" class:active={activeTab === 'copy'} onclick={() => (activeTab = 'copy')}>
 			Text & Copy
 		</button>
 		<button
@@ -360,11 +371,7 @@
 										bind:value={editedTemplate.colors.text}
 										aria-label="Text color picker"
 									/>
-									<input
-										type="text"
-										class="form-input"
-										bind:value={editedTemplate.colors.text}
-									/>
+									<input type="text" class="form-input" bind:value={editedTemplate.colors.text} />
 								</div>
 							</label>
 						</div>
@@ -396,11 +403,7 @@
 										bind:value={editedTemplate.colors.accent}
 										aria-label="Accent color picker"
 									/>
-									<input
-										type="text"
-										class="form-input"
-										bind:value={editedTemplate.colors.accent}
-									/>
+									<input type="text" class="form-input" bind:value={editedTemplate.colors.accent} />
 								</div>
 							</label>
 						</div>
@@ -843,7 +846,8 @@
 							Base on existing template
 							<select
 								class="form-select"
-								onchange={(e: Event) => copyFromTemplate((e.currentTarget as HTMLInputElement).value)}
+								onchange={(e: Event) =>
+									copyFromTemplate((e.currentTarget as HTMLInputElement).value)}
 							>
 								<option value="">Select a template...</option>
 								{#each BANNER_TEMPLATES as t}

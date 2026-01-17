@@ -24,7 +24,7 @@ function getAuthHeaders(): HeadersInit {
 	return {
 		'Content-Type': 'application/json',
 		Accept: 'application/json',
-		...(token ? { Authorization: `Bearer ${token}` } : {}),
+		...(token ? { Authorization: `Bearer ${token}` } : {})
 	};
 }
 
@@ -37,7 +37,7 @@ function getAuthHeaders(): HeadersInit {
  */
 const activeTemplateConfig = writable<ActiveTemplateConfig>({
 	templateId: DEFAULT_TEMPLATE_ID,
-	updatedAt: new Date().toISOString(),
+	updatedAt: new Date().toISOString()
 });
 
 /**
@@ -152,7 +152,7 @@ function applyCustomization(
 		typography: { ...template.typography, ...customization.typography },
 		spacing: { ...template.spacing, ...customization.spacing },
 		copy: { ...template.copy, ...customization.copy },
-		...(customCSS && { customCSS }),
+		...(customCSS && { customCSS })
 	};
 }
 
@@ -251,7 +251,7 @@ function convertBackendTemplate(backendTemplate: any): BackendBannerTemplate {
 			settingsBg: backendTemplate.settings_btn_bg || 'transparent',
 			settingsText: backendTemplate.settings_btn_text || '#94a3b8',
 			toggleActive: backendTemplate.toggle_active_color || '#0ea5e9',
-			toggleInactive: backendTemplate.toggle_inactive_color || '#475569',
+			toggleInactive: backendTemplate.toggle_inactive_color || '#475569'
 		},
 		typography: {
 			fontFamily: backendTemplate.font_family || 'Inter, system-ui, sans-serif',
@@ -260,27 +260,27 @@ function convertBackendTemplate(backendTemplate: any): BackendBannerTemplate {
 			bodySize: backendTemplate.body_font_size || 14,
 			bodyWeight: backendTemplate.body_font_weight || 400,
 			buttonSize: backendTemplate.btn_font_size || 14,
-			buttonWeight: backendTemplate.btn_font_weight || 500,
+			buttonWeight: backendTemplate.btn_font_weight || 500
 		},
 		spacing: {
 			padding: {
 				top: backendTemplate.padding_top || 20,
 				bottom: backendTemplate.padding_bottom || 20,
 				left: backendTemplate.padding_left || 24,
-				right: backendTemplate.padding_right || 24,
+				right: backendTemplate.padding_right || 24
 			},
 			buttonPadding: {
 				x: backendTemplate.btn_padding_x || 16,
-				y: backendTemplate.btn_padding_y || 10,
+				y: backendTemplate.btn_padding_y || 10
 			},
 			buttonMargin: backendTemplate.btn_margin || 8,
 			borderRadius: backendTemplate.btn_border_radius || 6,
 			containerRadius: backendTemplate.container_border_radius || 12,
-			maxWidth: backendTemplate.container_max_width || 1200,
+			maxWidth: backendTemplate.container_max_width || 1200
 		},
 		animation: {
 			type: backendTemplate.animation_type || 'slide',
-			duration: backendTemplate.animation_duration || 300,
+			duration: backendTemplate.animation_duration || 300
 		},
 		copy: {
 			title: backendTemplate.title || 'We value your privacy',
@@ -288,7 +288,7 @@ function convertBackendTemplate(backendTemplate: any): BackendBannerTemplate {
 			rejectButton: backendTemplate.reject_btn_label || 'Reject All',
 			settingsButton: backendTemplate.settings_btn_label || 'Manage Preferences',
 			privacyLinkText: backendTemplate.privacy_link_text || 'Privacy Policy',
-			cookieLinkText: backendTemplate.cookie_link_text || 'Cookie Policy',
+			cookieLinkText: backendTemplate.cookie_link_text || 'Cookie Policy'
 		},
 		options: {
 			showRejectButton: backendTemplate.show_reject_btn ?? true,
@@ -299,8 +299,8 @@ function convertBackendTemplate(backendTemplate: any): BackendBannerTemplate {
 			closeOnScrollDistance: backendTemplate.close_on_scroll_distance || 60,
 			showCloseButton: backendTemplate.show_close_btn ?? false,
 			blockPageScroll: backendTemplate.block_page_scroll ?? false,
-			showPoweredBy: backendTemplate.show_powered_by ?? false,
-		},
+			showPoweredBy: backendTemplate.show_powered_by ?? false
+		}
 	};
 }
 
@@ -308,7 +308,9 @@ function convertBackendTemplate(backendTemplate: any): BackendBannerTemplate {
  * Convert frontend template to backend API format
  * Accepts any template-like object and extracts relevant properties
  */
-function convertToBackendFormat(template: Partial<BackendBannerTemplate> | BannerTemplate | any): any {
+function convertToBackendFormat(
+	template: Partial<BackendBannerTemplate> | BannerTemplate | any
+): any {
 	return {
 		name: template.name,
 		description: template.description,
@@ -361,7 +363,7 @@ function convertToBackendFormat(template: Partial<BackendBannerTemplate> | Banne
 		close_on_scroll_distance: template.options?.closeOnScrollDistance,
 		show_close_btn: template.options?.showCloseButton,
 		block_page_scroll: template.options?.blockPageScroll,
-		show_powered_by: template.options?.showPoweredBy,
+		show_powered_by: template.options?.showPoweredBy
 	};
 }
 
@@ -377,7 +379,7 @@ async function fetchTemplatesFromBackend(): Promise<void> {
 
 	try {
 		const response = await fetch(`${API_BASE}/templates`, {
-			headers: getAuthHeaders(),
+			headers: getAuthHeaders()
 		});
 
 		if (response.ok) {
@@ -390,7 +392,7 @@ async function fetchTemplatesFromBackend(): Promise<void> {
 					backendActiveId.set(data.data.activeId);
 					activeTemplateConfig.update((config) => ({
 						...config,
-						templateId: data.data.activeId.toString(),
+						templateId: data.data.activeId.toString()
 					}));
 				}
 			}
@@ -410,7 +412,7 @@ async function createTemplateInBackend(template: BannerTemplate): Promise<string
 		const response = await fetch(`${API_BASE}/templates`, {
 			method: 'POST',
 			headers: getAuthHeaders(),
-			body: JSON.stringify(convertToBackendFormat(template)),
+			body: JSON.stringify(convertToBackendFormat(template))
 		});
 
 		if (response.ok) {
@@ -429,14 +431,17 @@ async function createTemplateInBackend(template: BannerTemplate): Promise<string
 /**
  * Update template in backend
  */
-async function updateTemplateInBackend(id: string, template: Partial<BannerTemplate>): Promise<boolean> {
+async function updateTemplateInBackend(
+	id: string,
+	template: Partial<BannerTemplate>
+): Promise<boolean> {
 	if (!browser) return false;
 
 	try {
 		const response = await fetch(`${API_BASE}/templates/${id}`, {
 			method: 'PUT',
 			headers: getAuthHeaders(),
-			body: JSON.stringify(convertToBackendFormat(template as BannerTemplate)),
+			body: JSON.stringify(convertToBackendFormat(template as BannerTemplate))
 		});
 
 		if (response.ok) {
@@ -458,7 +463,7 @@ async function deleteTemplateFromBackend(id: string): Promise<boolean> {
 	try {
 		const response = await fetch(`${API_BASE}/templates/${id}`, {
 			method: 'DELETE',
-			headers: getAuthHeaders(),
+			headers: getAuthHeaders()
 		});
 
 		if (response.ok) {
@@ -480,7 +485,7 @@ async function activateTemplateInBackend(id: string): Promise<boolean> {
 	try {
 		const response = await fetch(`${API_BASE}/templates/${id}/activate`, {
 			method: 'POST',
-			headers: getAuthHeaders(),
+			headers: getAuthHeaders()
 		});
 
 		if (response.ok) {
@@ -543,7 +548,7 @@ export async function setActiveTemplate(templateId: string): Promise<void> {
 	activeTemplateConfig.set({
 		...rest,
 		templateId,
-		updatedAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString()
 	});
 
 	// Sync to backend if it's a backend template
@@ -563,7 +568,7 @@ export function updateCustomization(customization: Partial<TemplateCustomization
 		const existing = config.customization || {
 			templateId: config.templateId,
 			createdAt: new Date().toISOString(),
-			updatedAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString()
 		};
 
 		return {
@@ -571,9 +576,9 @@ export function updateCustomization(customization: Partial<TemplateCustomization
 			customization: {
 				...existing,
 				...customization,
-				updatedAt: new Date().toISOString(),
+				updatedAt: new Date().toISOString()
 			},
-			updatedAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString()
 		};
 	});
 }
@@ -585,7 +590,7 @@ export function clearCustomization(): void {
 	const { customization: _removed, ...rest } = get(activeTemplateConfig);
 	activeTemplateConfig.set({
 		...rest,
-		updatedAt: new Date().toISOString(),
+		updatedAt: new Date().toISOString()
 	});
 }
 
@@ -600,7 +605,7 @@ export async function saveAsCustomTemplate(name: string): Promise<string> {
 		id: `custom-${Date.now().toString(36)}`,
 		name,
 		category: 'custom',
-		isEditable: true,
+		isEditable: true
 	};
 
 	// Try to save to backend first
@@ -624,7 +629,10 @@ export async function saveAsCustomTemplate(name: string): Promise<string> {
 /**
  * Update custom template
  */
-export async function updateCustomTemplate(id: string, updates: Partial<BannerTemplate>): Promise<void> {
+export async function updateCustomTemplate(
+	id: string,
+	updates: Partial<BannerTemplate>
+): Promise<void> {
 	// Try backend first
 	const backendTemplate = get(backendTemplates).find((t) => t.id === id);
 	if (backendTemplate) {
@@ -715,7 +723,7 @@ export function exportTemplateConfig(): string {
 			activeConfig: get(activeTemplateConfig),
 			customTemplates: [...get(customTemplates).values()],
 			backendTemplates: get(backendTemplates),
-			exportedAt: new Date().toISOString(),
+			exportedAt: new Date().toISOString()
 		},
 		null,
 		2

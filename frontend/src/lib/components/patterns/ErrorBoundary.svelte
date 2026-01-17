@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * ErrorBoundary - Catches and displays errors gracefully
-	 * 
+	 *
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
@@ -44,20 +44,20 @@
 			<div class="error-icon">
 				<IconAlertTriangle size={48} />
 			</div>
-			
+
 			<h2 class="error-title">Something went wrong</h2>
-			
+
 			<p class="error-message">
 				{error.message || 'An unexpected error occurred'}
 			</p>
-			
+
 			{#if showDetails && error.stack}
 				<details class="error-details">
 					<summary>Technical Details</summary>
 					<pre>{error.stack}</pre>
 				</details>
 			{/if}
-			
+
 			<div class="error-actions">
 				{#if onRetry}
 					<button class="btn-primary" onclick={handleRetry}>
@@ -65,9 +65,7 @@
 						Try Again
 					</button>
 				{/if}
-				<button class="btn-secondary" onclick={handleReport}>
-					Report Issue
-				</button>
+				<button class="btn-secondary" onclick={handleReport}> Report Issue </button>
 			</div>
 		</div>
 	</div>
@@ -144,7 +142,11 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, var(--color-rtp-primary, #6366f1), var(--color-rtp-indigo, #8b5cf6));
+		background: linear-gradient(
+			135deg,
+			var(--color-rtp-primary, #6366f1),
+			var(--color-rtp-indigo, #8b5cf6)
+		);
 		color: white;
 		border: none;
 		border-radius: var(--radius-md, 0.5rem);

@@ -213,7 +213,11 @@
 
 			if (result.success) {
 				submitted = true;
-				submitMessage = successMessage || result.message || formInstance.settings?.success_message || 'Thank you for your submission!';
+				submitMessage =
+					successMessage ||
+					result.message ||
+					formInstance.settings?.success_message ||
+					'Thank you for your submission!';
 
 				// Reset form
 				formData = {};
@@ -250,7 +254,6 @@
 		submitMessage = '';
 		errors = {};
 	}
-
 </script>
 
 <div
@@ -360,7 +363,9 @@
 		padding: 2rem;
 		background: var(--fe-bg);
 		border-radius: calc(var(--fe-radius) * 2);
-		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+		box-shadow:
+			0 4px 6px -1px rgba(0, 0, 0, 0.1),
+			0 2px 4px -2px rgba(0, 0, 0, 0.1);
 	}
 
 	.form-title {

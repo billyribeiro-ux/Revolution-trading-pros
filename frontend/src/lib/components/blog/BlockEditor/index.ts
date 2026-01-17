@@ -64,7 +64,4 @@ export type {
 } from './types';
 
 // Constants Export
-export {
-	BLOCK_CATEGORIES,
-	BLOCK_DEFINITIONS
-} from './types';
+export { BLOCK_CATEGORIES, BLOCK_DEFINITIONS } from './types';

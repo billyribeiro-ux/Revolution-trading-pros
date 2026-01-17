@@ -80,7 +80,6 @@
 		disabled?: boolean;
 	}
 
-
 	interface ErrorState {
 		hasError: boolean;
 		message: string;
@@ -133,7 +132,6 @@
 	let quickMenuRef = $state<HTMLDivElement>();
 	let userMenuTriggerRef = $state<HTMLButtonElement>();
 	let quickMenuTriggerRef = $state<HTMLButtonElement>();
-
 
 	// Session management
 	let sessionCheckInterval: number | null = null;
@@ -197,7 +195,7 @@
 		(() => {
 			// Must be authenticated first
 			if (!$authStore.isAuthenticated) return false;
-			
+
 			if (!currentUser) {
 				console.debug('[AdminToolbar] No user data yet, checking auth...');
 				return false;
@@ -205,7 +203,14 @@
 
 			// Use centralized admin check
 			const result = checkIsAdmin(currentUser);
-			console.debug('[AdminToolbar] Admin check for:', currentUser?.email || 'unknown', 'isSuperadmin:', isSuperadminUser, 'isAdmin:', result);
+			console.debug(
+				'[AdminToolbar] Admin check for:',
+				currentUser?.email || 'unknown',
+				'isSuperadmin:',
+				isSuperadminUser,
+				'isAdmin:',
+				result
+			);
 			return result;
 		})()
 	);
@@ -226,7 +231,6 @@
 			return currentUser.name[0]?.toUpperCase() || 'A';
 		})()
 	);
-
 
 	const filteredQuickMenuItems = $derived(
 		quickMenuItems.filter((item) => {
@@ -331,12 +335,12 @@
 
 	function handleClickOutside(event: MouseEvent): void {
 		const target = event.target as HTMLElement;
-		
+
 		// Don't close if clicking on trigger buttons (they handle their own toggle)
 		if (target.closest('.quick-menu-trigger') || target.closest('.user-menu-trigger')) {
 			return;
 		}
-		
+
 		// Don't close if clicking inside dropdown menus
 		if (target.closest('.dropdown-menu')) {
 			return;
@@ -832,7 +836,6 @@
 			<div class="loading-bar" role="progressbar" aria-label="Loading"></div>
 		{/if}
 	</div>
-
 {/if}
 
 <style>

@@ -33,7 +33,15 @@
 
 <nav class="lesson-nav">
 	<button class="nav-btn prev" disabled={!prevLesson} onclick={() => handleNav(prevLesson)}>
-		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="20"
+			height="20"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"><path d="m15 18-6-6 6-6" /></svg
+		>
 		<div class="nav-text">
 			<span class="label">Previous</span>
 			{#if prevLesson}
@@ -54,7 +62,15 @@
 				<span class="title">{nextLesson.title}</span>
 			{/if}
 		</div>
-		<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+		<svg
+			xmlns="http://www.w3.org/2000/svg"
+			width="20"
+			height="20"
+			viewBox="0 0 24 24"
+			fill="none"
+			stroke="currentColor"
+			stroke-width="2"><path d="m9 18 6-6-6-6" /></svg
+		>
 	</button>
 </nav>
 

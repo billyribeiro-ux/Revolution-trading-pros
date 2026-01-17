@@ -51,7 +51,7 @@ export {
 	type PageViewPayload,
 	type CustomEventPayload,
 	type PurchasePayload,
-	type EcommerceItem,
+	type EcommerceItem
 } from './metrics';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -66,7 +66,7 @@ export {
 	analyticsConsent,
 	registeredAdapters,
 	type OrchestratorState,
-	type OrchestratorMetrics,
+	type OrchestratorMetrics
 } from './orchestrator';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -100,7 +100,7 @@ export {
 	createConsoleAdapter,
 	// Backend
 	getBackendAdapter,
-	createBackendAdapter,
+	createBackendAdapter
 } from './adapters';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -118,7 +118,7 @@ export {
 	FEATURE_FLAGS,
 	type Experiment,
 	type ExperimentAssignment,
-	type FeatureFlag,
+	type FeatureFlag
 } from './experiments';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -155,9 +155,7 @@ import type { AnalyticsConfig } from './adapters';
  *
  * @param config - Optional configuration overrides
  */
-export async function initializeAnalytics(
-	config?: Partial<AnalyticsConfig>
-): Promise<void> {
+export async function initializeAnalytics(config?: Partial<AnalyticsConfig>): Promise<void> {
 	if (!browser) return;
 
 	await metrics.initialize(config);
@@ -179,9 +177,7 @@ export async function initializeAnalytics(
  * updateAnalyticsConsent({ analytics: false, marketing: false });
  * ```
  */
-export function updateAnalyticsConsent(
-	consent: { analytics: boolean; marketing: boolean }
-): void {
+export function updateAnalyticsConsent(consent: { analytics: boolean; marketing: boolean }): void {
 	if (!browser) return;
 
 	getOrchestrator().updateConsent(consent);

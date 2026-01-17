@@ -34,9 +34,24 @@
 
 	// Preset colors
 	const presetColors = [
-		'#000000', '#333333', '#666666', '#999999', '#CCCCCC', '#FFFFFF',
-		'#FF0000', '#FF6600', '#FFCC00', '#00FF00', '#00CCFF', '#0066FF',
-		'#6600FF', '#FF00FF', '#FF3366', '#663300', '#006633', '#003366'
+		'#000000',
+		'#333333',
+		'#666666',
+		'#999999',
+		'#CCCCCC',
+		'#FFFFFF',
+		'#FF0000',
+		'#FF6600',
+		'#FFCC00',
+		'#00FF00',
+		'#00CCFF',
+		'#0066FF',
+		'#6600FF',
+		'#FF00FF',
+		'#FF3366',
+		'#663300',
+		'#006633',
+		'#003366'
 	];
 
 	// Font families
@@ -103,8 +118,17 @@
 
 	// Blend modes
 	const blendModes = [
-		'normal', 'multiply', 'screen', 'overlay', 'darken', 'lighten',
-		'color-dodge', 'color-burn', 'hard-light', 'soft-light', 'difference'
+		'normal',
+		'multiply',
+		'screen',
+		'overlay',
+		'darken',
+		'lighten',
+		'color-dodge',
+		'color-burn',
+		'hard-light',
+		'soft-light',
+		'difference'
 	];
 
 	// Section toggle
@@ -123,22 +147,51 @@
 	}
 
 	// Parse spacing value
-	function parseSpacing(value: string | undefined): { top: string; right: string; bottom: string; left: string } {
+	function parseSpacing(value: string | undefined): {
+		top: string;
+		right: string;
+		bottom: string;
+		left: string;
+	} {
 		if (!value) return { top: '0', right: '0', bottom: '0', left: '0' };
 		const parts = value.split(' ');
 		if (parts.length === 1) {
-			return { top: parts[0] ?? '0', right: parts[0] ?? '0', bottom: parts[0] ?? '0', left: parts[0] ?? '0' };
+			return {
+				top: parts[0] ?? '0',
+				right: parts[0] ?? '0',
+				bottom: parts[0] ?? '0',
+				left: parts[0] ?? '0'
+			};
 		} else if (parts.length === 2) {
-			return { top: parts[0] ?? '0', right: parts[1] ?? '0', bottom: parts[0] ?? '0', left: parts[1] ?? '0' };
+			return {
+				top: parts[0] ?? '0',
+				right: parts[1] ?? '0',
+				bottom: parts[0] ?? '0',
+				left: parts[1] ?? '0'
+			};
 		} else if (parts.length === 4) {
-			return { top: parts[0] ?? '0', right: parts[1] ?? '0', bottom: parts[2] ?? '0', left: parts[3] ?? '0' };
+			return {
+				top: parts[0] ?? '0',
+				right: parts[1] ?? '0',
+				bottom: parts[2] ?? '0',
+				left: parts[3] ?? '0'
+			};
 		}
 		return { top: '0', right: '0', bottom: '0', left: '0' };
 	}
 
 	// Build spacing value
-	function buildSpacing(values: { top: string; right: string; bottom: string; left: string }): string {
-		if (values.top === values.right && values.right === values.bottom && values.bottom === values.left) {
+	function buildSpacing(values: {
+		top: string;
+		right: string;
+		bottom: string;
+		left: string;
+	}): string {
+		if (
+			values.top === values.right &&
+			values.right === values.bottom &&
+			values.bottom === values.left
+		) {
 			return values.top;
 		}
 		if (values.top === values.bottom && values.left === values.right) {
@@ -155,24 +208,20 @@
 <div class="settings-panel">
 	<!-- Tab Navigation -->
 	<div class="tabs">
-		<button
-			class="tab"
-			class:active={activeTab === 'style'}
-			onclick={() => activeTab = 'style'}
-		>
+		<button class="tab" class:active={activeTab === 'style'} onclick={() => (activeTab = 'style')}>
 			Style
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'advanced'}
-			onclick={() => activeTab = 'advanced'}
+			onclick={() => (activeTab = 'advanced')}
 		>
 			Advanced
 		</button>
 		<button
 			class="tab"
 			class:active={activeTab === 'responsive'}
-			onclick={() => activeTab = 'responsive'}
+			onclick={() => (activeTab = 'responsive')}
 		>
 			Responsive
 		</button>
@@ -203,10 +252,7 @@
 
 			<!-- Typography Section -->
 			<div class="section">
-				<button
-					class="section-header"
-					onclick={() => toggleSection('typography')}
-				>
+				<button class="section-header" onclick={() => toggleSection('typography')}>
 					<span>Typography</span>
 					<span class="chevron" class:expanded={expandedSections.has('typography')}>▼</span>
 				</button>
@@ -217,7 +263,8 @@
 								Font Family
 								<select
 									value={block.settings.fontFamily || 'inherit'}
-									onchange={(e: Event) => updateSetting('fontFamily', (e.currentTarget as HTMLInputElement).value)}
+									onchange={(e: Event) =>
+										updateSetting('fontFamily', (e.currentTarget as HTMLInputElement).value)}
 								>
 									{#each fontFamilies as font}
 										<option value={font.value}>{font.label}</option>
@@ -236,7 +283,11 @@
 											min="8"
 											max="200"
 											value={parseInt(block.settings.fontSize || '16')}
-											onchange={(e: Event) => updateSetting('fontSize', `${(e.currentTarget as HTMLInputElement).value}px`)}
+											onchange={(e: Event) =>
+												updateSetting(
+													'fontSize',
+													`${(e.currentTarget as HTMLInputElement).value}px`
+												)}
 										/>
 										<span class="unit">px</span>
 									</div>
@@ -247,7 +298,8 @@
 									Weight
 									<select
 										value={block.settings.fontWeight || '400'}
-										onchange={(e: Event) => updateSetting('fontWeight', (e.currentTarget as HTMLInputElement).value)}
+										onchange={(e: Event) =>
+											updateSetting('fontWeight', (e.currentTarget as HTMLInputElement).value)}
 									>
 										{#each fontWeights as weight}
 											<option value={weight.value}>{weight.label}</option>
@@ -267,7 +319,8 @@
 										max="3"
 										step="0.1"
 										value={parseFloat(block.settings.lineHeight || '1.6')}
-										onchange={(e: Event) => updateSetting('lineHeight', (e.currentTarget as HTMLInputElement).value)}
+										onchange={(e: Event) =>
+											updateSetting('lineHeight', (e.currentTarget as HTMLInputElement).value)}
 									/>
 								</label>
 							</div>
@@ -281,7 +334,11 @@
 											max="20"
 											step="0.5"
 											value={parseFloat(block.settings.letterSpacing || '0')}
-											onchange={(e: Event) => updateSetting('letterSpacing', `${(e.currentTarget as HTMLInputElement).value}px`)}
+											onchange={(e: Event) =>
+												updateSetting(
+													'letterSpacing',
+													`${(e.currentTarget as HTMLInputElement).value}px`
+												)}
 										/>
 										<span class="unit">px</span>
 									</div>
@@ -310,7 +367,8 @@
 							<div class="button-group" role="group" aria-label="Text transform">
 								<button
 									class="text-btn"
-									class:active={!block.settings.textTransform || block.settings.textTransform === 'none'}
+									class:active={!block.settings.textTransform ||
+										block.settings.textTransform === 'none'}
 									onclick={() => updateSetting('textTransform', 'none')}
 								>
 									Aa
@@ -344,10 +402,7 @@
 
 			<!-- Colors Section -->
 			<div class="section">
-				<button
-					class="section-header"
-					onclick={() => toggleSection('colors')}
-				>
+				<button class="section-header" onclick={() => toggleSection('colors')}>
 					<span>Colors</span>
 					<span class="chevron" class:expanded={expandedSections.has('colors')}>▼</span>
 				</button>
@@ -361,13 +416,14 @@
 										type="button"
 										class="color-swatch"
 										style="background-color: {block.settings.textColor || '#000000'}"
-										onclick={() => showColorPicker = showColorPicker === 'text' ? null : 'text'}
+										onclick={() => (showColorPicker = showColorPicker === 'text' ? null : 'text')}
 										aria-label="Pick text color"
 									></button>
 									<input
 										type="text"
 										value={block.settings.textColor || '#000000'}
-										onchange={(e: Event) => updateSetting('textColor', (e.currentTarget as HTMLInputElement).value)}
+										onchange={(e: Event) =>
+											updateSetting('textColor', (e.currentTarget as HTMLInputElement).value)}
 									/>
 								</div>
 							</label>
@@ -397,13 +453,14 @@
 										type="button"
 										class="color-swatch"
 										style="background-color: {block.settings.backgroundColor || 'transparent'}"
-										onclick={() => showColorPicker = showColorPicker === 'bg' ? null : 'bg'}
+										onclick={() => (showColorPicker = showColorPicker === 'bg' ? null : 'bg')}
 										aria-label="Pick background color"
 									></button>
 									<input
 										type="text"
 										value={block.settings.backgroundColor || 'transparent'}
-										onchange={(e: Event) => updateSetting('backgroundColor', (e.currentTarget as HTMLInputElement).value)}
+										onchange={(e: Event) =>
+											updateSetting('backgroundColor', (e.currentTarget as HTMLInputElement).value)}
 									/>
 								</div>
 							</label>
@@ -432,7 +489,11 @@
 									type="text"
 									placeholder="linear-gradient(135deg, #667eea 0%, #764ba2 100%)"
 									value={block.settings.backgroundGradient || ''}
-									onchange={(e: Event) => updateSetting('backgroundGradient', (e.currentTarget as HTMLInputElement).value)}
+									onchange={(e: Event) =>
+										updateSetting(
+											'backgroundGradient',
+											(e.currentTarget as HTMLInputElement).value
+										)}
 								/>
 							</label>
 						</div>
@@ -442,10 +503,7 @@
 
 			<!-- Spacing Section -->
 			<div class="section">
-				<button
-					class="section-header"
-					onclick={() => toggleSection('spacing')}
-				>
+				<button class="section-header" onclick={() => toggleSection('spacing')}>
 					<span>Spacing</span>
 					<span class="chevron" class:expanded={expandedSections.has('spacing')}>▼</span>
 				</button>
@@ -461,7 +519,10 @@
 										aria-label="Padding top"
 										value={parseInt(paddingValues.top) || 0}
 										onchange={(e: Event) => {
-											const newValues = { ...paddingValues, top: `${(e.currentTarget as HTMLInputElement).value}px` };
+											const newValues = {
+												...paddingValues,
+												top: `${(e.currentTarget as HTMLInputElement).value}px`
+											};
 											updateSetting('padding', buildSpacing(newValues));
 										}}
 									/>
@@ -473,7 +534,10 @@
 										aria-label="Padding left"
 										value={parseInt(paddingValues.left) || 0}
 										onchange={(e: Event) => {
-											const newValues = { ...paddingValues, left: `${(e.currentTarget as HTMLInputElement).value}px` };
+											const newValues = {
+												...paddingValues,
+												left: `${(e.currentTarget as HTMLInputElement).value}px`
+											};
 											updateSetting('padding', buildSpacing(newValues));
 										}}
 									/>
@@ -488,7 +552,10 @@
 										aria-label="Padding right"
 										value={parseInt(paddingValues.right) || 0}
 										onchange={(e: Event) => {
-											const newValues = { ...paddingValues, right: `${(e.currentTarget as HTMLInputElement).value}px` };
+											const newValues = {
+												...paddingValues,
+												right: `${(e.currentTarget as HTMLInputElement).value}px`
+											};
 											updateSetting('padding', buildSpacing(newValues));
 										}}
 									/>
@@ -500,7 +567,10 @@
 										aria-label="Padding bottom"
 										value={parseInt(paddingValues.bottom) || 0}
 										onchange={(e: Event) => {
-											const newValues = { ...paddingValues, bottom: `${(e.currentTarget as HTMLInputElement).value}px` };
+											const newValues = {
+												...paddingValues,
+												bottom: `${(e.currentTarget as HTMLInputElement).value}px`
+											};
 											updateSetting('padding', buildSpacing(newValues));
 										}}
 									/>
@@ -517,7 +587,10 @@
 										aria-label="Margin top"
 										value={parseInt(marginValues.top) || 0}
 										onchange={(e: Event) => {
-											const newValues = { ...marginValues, top: `${(e.currentTarget as HTMLInputElement).value}px` };
+											const newValues = {
+												...marginValues,
+												top: `${(e.currentTarget as HTMLInputElement).value}px`
+											};
 											updateSetting('margin', buildSpacing(newValues));
 										}}
 									/>
@@ -528,7 +601,10 @@
 										aria-label="Margin left"
 										value={parseInt(marginValues.left) || 0}
 										onchange={(e: Event) => {
-											const newValues = { ...marginValues, left: `${(e.currentTarget as HTMLInputElement).value}px` };
+											const newValues = {
+												...marginValues,
+												left: `${(e.currentTarget as HTMLInputElement).value}px`
+											};
 											updateSetting('margin', buildSpacing(newValues));
 										}}
 									/>
@@ -542,7 +618,10 @@
 										aria-label="Margin right"
 										value={parseInt(marginValues.right) || 0}
 										onchange={(e: Event) => {
-											const newValues = { ...marginValues, right: `${(e.currentTarget as HTMLInputElement).value}px` };
+											const newValues = {
+												...marginValues,
+												right: `${(e.currentTarget as HTMLInputElement).value}px`
+											};
 											updateSetting('margin', buildSpacing(newValues));
 										}}
 									/>
@@ -553,7 +632,10 @@
 										aria-label="Margin bottom"
 										value={parseInt(marginValues.bottom) || 0}
 										onchange={(e: Event) => {
-											const newValues = { ...marginValues, bottom: `${(e.currentTarget as HTMLInputElement).value}px` };
+											const newValues = {
+												...marginValues,
+												bottom: `${(e.currentTarget as HTMLInputElement).value}px`
+											};
 											updateSetting('margin', buildSpacing(newValues));
 										}}
 									/>
@@ -566,10 +648,7 @@
 
 			<!-- Border Section -->
 			<div class="section">
-				<button
-					class="section-header"
-					onclick={() => toggleSection('border')}
-				>
+				<button class="section-header" onclick={() => toggleSection('border')}>
 					<span>Border</span>
 					<span class="chevron" class:expanded={expandedSections.has('border')}>▼</span>
 				</button>
@@ -581,7 +660,8 @@
 									Style
 									<select
 										value={block.settings.borderStyle || 'none'}
-										onchange={(e: Event) => updateSetting('borderStyle', (e.currentTarget as HTMLInputElement).value)}
+										onchange={(e: Event) =>
+											updateSetting('borderStyle', (e.currentTarget as HTMLInputElement).value)}
 									>
 										{#each borderStyles as style}
 											<option value={style.value}>{style.label}</option>
@@ -598,7 +678,11 @@
 											min="0"
 											max="20"
 											value={parseInt(block.settings.borderWidth || '0')}
-											onchange={(e: Event) => updateSetting('borderWidth', `${(e.currentTarget as HTMLInputElement).value}px`)}
+											onchange={(e: Event) =>
+												updateSetting(
+													'borderWidth',
+													`${(e.currentTarget as HTMLInputElement).value}px`
+												)}
 										/>
 										<span class="unit">px</span>
 									</div>
@@ -614,13 +698,15 @@
 										type="button"
 										class="color-swatch"
 										style="background-color: {block.settings.borderColor || '#CCCCCC'}"
-										onclick={() => showColorPicker = showColorPicker === 'border' ? null : 'border'}
+										onclick={() =>
+											(showColorPicker = showColorPicker === 'border' ? null : 'border')}
 										aria-label="Pick border color"
 									></button>
 									<input
 										type="text"
 										value={block.settings.borderColor || '#CCCCCC'}
-										onchange={(e: Event) => updateSetting('borderColor', (e.currentTarget as HTMLInputElement).value)}
+										onchange={(e: Event) =>
+											updateSetting('borderColor', (e.currentTarget as HTMLInputElement).value)}
 									/>
 								</div>
 							</label>
@@ -651,7 +737,11 @@
 										min="0"
 										max="100"
 										value={parseInt(block.settings.borderRadius || '0')}
-										onchange={(e: Event) => updateSetting('borderRadius', `${(e.currentTarget as HTMLInputElement).value}px`)}
+										onchange={(e: Event) =>
+											updateSetting(
+												'borderRadius',
+												`${(e.currentTarget as HTMLInputElement).value}px`
+											)}
 									/>
 									<span class="unit">px</span>
 								</div>
@@ -665,21 +755,18 @@
 									type="text"
 									placeholder="0 4px 6px rgba(0, 0, 0, 0.1)"
 									value={block.settings.boxShadow || ''}
-									onchange={(e: Event) => updateSetting('boxShadow', (e.currentTarget as HTMLInputElement).value)}
+									onchange={(e: Event) =>
+										updateSetting('boxShadow', (e.currentTarget as HTMLInputElement).value)}
 								/>
 							</label>
 						</div>
 					</div>
 				{/if}
 			</div>
-
 		{:else if activeTab === 'advanced'}
 			<!-- Animation Section -->
 			<div class="section">
-				<button
-					class="section-header"
-					onclick={() => toggleSection('animation')}
-				>
+				<button class="section-header" onclick={() => toggleSection('animation')}>
 					<span>Animation</span>
 					<span class="chevron" class:expanded={expandedSections.has('animation')}>▼</span>
 				</button>
@@ -690,7 +777,8 @@
 								Entrance Animation
 								<select
 									value={block.settings.animation || 'none'}
-									onchange={(e: Event) => updateSetting('animation', (e.currentTarget as HTMLInputElement).value)}
+									onchange={(e: Event) =>
+										updateSetting('animation', (e.currentTarget as HTMLInputElement).value)}
 								>
 									{#each animations as anim}
 										<option value={anim.value}>{anim.label}</option>
@@ -710,7 +798,11 @@
 											max="5"
 											step="0.1"
 											value={parseFloat(block.settings.animationDuration || '0.5')}
-											onchange={(e: Event) => updateSetting('animationDuration', `${(e.currentTarget as HTMLInputElement).value}s`)}
+											onchange={(e: Event) =>
+												updateSetting(
+													'animationDuration',
+													`${(e.currentTarget as HTMLInputElement).value}s`
+												)}
 										/>
 										<span class="unit">s</span>
 									</div>
@@ -726,7 +818,11 @@
 											max="5"
 											step="0.1"
 											value={parseFloat(block.settings.animationDelay || '0')}
-											onchange={(e: Event) => updateSetting('animationDelay', `${(e.currentTarget as HTMLInputElement).value}s`)}
+											onchange={(e: Event) =>
+												updateSetting(
+													'animationDelay',
+													`${(e.currentTarget as HTMLInputElement).value}s`
+												)}
 										/>
 										<span class="unit">s</span>
 									</div>
@@ -739,10 +835,7 @@
 
 			<!-- Transform Section -->
 			<div class="section">
-				<button
-					class="section-header"
-					onclick={() => toggleSection('transform')}
-				>
+				<button class="section-header" onclick={() => toggleSection('transform')}>
 					<span>Transform</span>
 					<span class="chevron" class:expanded={expandedSections.has('transform')}>▼</span>
 				</button>
@@ -758,7 +851,11 @@
 											min="-360"
 											max="360"
 											value={parseInt(block.settings.rotate || '0')}
-											onchange={(e: Event) => updateSetting('rotate', `${(e.currentTarget as HTMLInputElement).value}deg`)}
+											onchange={(e: Event) =>
+												updateSetting(
+													'rotate',
+													`${(e.currentTarget as HTMLInputElement).value}deg`
+												)}
 										/>
 										<span class="unit">°</span>
 									</div>
@@ -773,7 +870,8 @@
 										max="3"
 										step="0.1"
 										value={parseFloat(block.settings.scale || '1')}
-										onchange={(e: Event) => updateSetting('scale', (e.currentTarget as HTMLInputElement).value)}
+										onchange={(e: Event) =>
+											updateSetting('scale', (e.currentTarget as HTMLInputElement).value)}
 									/>
 								</label>
 							</div>
@@ -787,7 +885,11 @@
 										<input
 											type="number"
 											value={parseInt(block.settings.translateX || '0')}
-											onchange={(e: Event) => updateSetting('translateX', `${(e.currentTarget as HTMLInputElement).value}px`)}
+											onchange={(e: Event) =>
+												updateSetting(
+													'translateX',
+													`${(e.currentTarget as HTMLInputElement).value}px`
+												)}
 										/>
 										<span class="unit">px</span>
 									</div>
@@ -800,7 +902,11 @@
 										<input
 											type="number"
 											value={parseInt(block.settings.translateY || '0')}
-											onchange={(e: Event) => updateSetting('translateY', `${(e.currentTarget as HTMLInputElement).value}px`)}
+											onchange={(e: Event) =>
+												updateSetting(
+													'translateY',
+													`${(e.currentTarget as HTMLInputElement).value}px`
+												)}
 										/>
 										<span class="unit">px</span>
 									</div>
@@ -818,7 +924,8 @@
 											min="-45"
 											max="45"
 											value={parseInt(block.settings.skewX || '0')}
-											onchange={(e: Event) => updateSetting('skewX', `${(e.currentTarget as HTMLInputElement).value}deg`)}
+											onchange={(e: Event) =>
+												updateSetting('skewX', `${(e.currentTarget as HTMLInputElement).value}deg`)}
 										/>
 										<span class="unit">°</span>
 									</div>
@@ -833,7 +940,8 @@
 											min="-45"
 											max="45"
 											value={parseInt(block.settings.skewY || '0')}
-											onchange={(e: Event) => updateSetting('skewY', `${(e.currentTarget as HTMLInputElement).value}deg`)}
+											onchange={(e: Event) =>
+												updateSetting('skewY', `${(e.currentTarget as HTMLInputElement).value}deg`)}
 										/>
 										<span class="unit">°</span>
 									</div>
@@ -846,10 +954,7 @@
 
 			<!-- Effects Section -->
 			<div class="section">
-				<button
-					class="section-header"
-					onclick={() => toggleSection('effects')}
-				>
+				<button class="section-header" onclick={() => toggleSection('effects')}>
 					<span>Effects</span>
 					<span class="chevron" class:expanded={expandedSections.has('effects')}>▼</span>
 				</button>
@@ -865,7 +970,11 @@
 										max="1"
 										step="0.01"
 										value={block.settings.opacity || 1}
-										oninput={(e: Event) => updateSetting('opacity', parseFloat((e.currentTarget as HTMLInputElement).value))}
+										oninput={(e: Event) =>
+											updateSetting(
+												'opacity',
+												parseFloat((e.currentTarget as HTMLInputElement).value)
+											)}
 									/>
 									<span class="value">{Math.round((block.settings.opacity || 1) * 100)}%</span>
 								</div>
@@ -877,7 +986,8 @@
 								Blend Mode
 								<select
 									value={block.settings.blendMode || 'normal'}
-									onchange={(e: Event) => updateSetting('blendMode', (e.currentTarget as HTMLInputElement).value)}
+									onchange={(e: Event) =>
+										updateSetting('blendMode', (e.currentTarget as HTMLInputElement).value)}
 								>
 									{#each blendModes as mode}
 										<option value={mode}>{mode}</option>
@@ -896,7 +1006,11 @@
 										min="0"
 										max="20"
 										value={parseInt(String(block.settings.filterBlur || '0'))}
-										oninput={(e: Event) => updateSetting('filterBlur', `${(e.currentTarget as HTMLInputElement).value}px`)}
+										oninput={(e: Event) =>
+											updateSetting(
+												'filterBlur',
+												`${(e.currentTarget as HTMLInputElement).value}px`
+											)}
 									/>
 									<span class="value">{block.settings.filterBlur || '0px'}</span>
 								</div>
@@ -907,7 +1021,11 @@
 										min="0"
 										max="200"
 										value={parseInt(String(block.settings.filterBrightness || '100'))}
-										oninput={(e: Event) => updateSetting('filterBrightness', `${(e.currentTarget as HTMLInputElement).value}%`)}
+										oninput={(e: Event) =>
+											updateSetting(
+												'filterBrightness',
+												`${(e.currentTarget as HTMLInputElement).value}%`
+											)}
 									/>
 									<span class="value">{block.settings.filterBrightness || '100%'}</span>
 								</div>
@@ -918,7 +1036,11 @@
 										min="0"
 										max="200"
 										value={parseInt(String(block.settings.filterContrast || '100'))}
-										oninput={(e: Event) => updateSetting('filterContrast', `${(e.currentTarget as HTMLInputElement).value}%`)}
+										oninput={(e: Event) =>
+											updateSetting(
+												'filterContrast',
+												`${(e.currentTarget as HTMLInputElement).value}%`
+											)}
 									/>
 									<span class="value">{block.settings.filterContrast || '100%'}</span>
 								</div>
@@ -929,7 +1051,11 @@
 										min="0"
 										max="100"
 										value={parseInt(String(block.settings.filterGrayscale || '0'))}
-										oninput={(e: Event) => updateSetting('filterGrayscale', `${(e.currentTarget as HTMLInputElement).value}%`)}
+										oninput={(e: Event) =>
+											updateSetting(
+												'filterGrayscale',
+												`${(e.currentTarget as HTMLInputElement).value}%`
+											)}
 									/>
 									<span class="value">{block.settings.filterGrayscale || '0%'}</span>
 								</div>
@@ -940,7 +1066,11 @@
 										min="0"
 										max="200"
 										value={parseInt(String(block.settings.filterSaturate || '100'))}
-										oninput={(e: Event) => updateSetting('filterSaturate', `${(e.currentTarget as HTMLInputElement).value}%`)}
+										oninput={(e: Event) =>
+											updateSetting(
+												'filterSaturate',
+												`${(e.currentTarget as HTMLInputElement).value}%`
+											)}
 									/>
 									<span class="value">{block.settings.filterSaturate || '100%'}</span>
 								</div>
@@ -952,10 +1082,7 @@
 
 			<!-- Custom CSS Section -->
 			<div class="section">
-				<button
-					class="section-header"
-					onclick={() => toggleSection('customCss')}
-				>
+				<button class="section-header" onclick={() => toggleSection('customCss')}>
 					<span>Custom CSS</span>
 					<span class="chevron" class:expanded={expandedSections.has('customCss')}>▼</span>
 				</button>
@@ -968,7 +1095,8 @@
 									type="text"
 									placeholder="my-custom-class another-class"
 									value={block.settings.customClass || ''}
-									onchange={(e: Event) => updateSetting('customClass', (e.currentTarget as HTMLInputElement).value)}
+									onchange={(e: Event) =>
+										updateSetting('customClass', (e.currentTarget as HTMLInputElement).value)}
 								/>
 							</label>
 						</div>
@@ -980,7 +1108,8 @@
 									type="text"
 									placeholder="my-element-id"
 									value={block.settings.customId || ''}
-									onchange={(e: Event) => updateSetting('customId', (e.currentTarget as HTMLInputElement).value)}
+									onchange={(e: Event) =>
+										updateSetting('customId', (e.currentTarget as HTMLInputElement).value)}
 								/>
 							</label>
 						</div>
@@ -989,26 +1118,23 @@
 							<label>
 								Custom CSS
 								<textarea
-								rows="6"
-								placeholder=".selector &#123;
+									rows="6"
+									placeholder=".selector &#123;
   property: value;
 &#125;"
-								value={block.settings.customCSS || ''}
-								onchange={(e: Event) => updateSetting('customCSS', (e.currentTarget as HTMLInputElement).value)}
-							></textarea>
+									value={block.settings.customCSS || ''}
+									onchange={(e: Event) =>
+										updateSetting('customCSS', (e.currentTarget as HTMLInputElement).value)}
+								></textarea>
 							</label>
 						</div>
 					</div>
 				{/if}
 			</div>
-
 		{:else if activeTab === 'responsive'}
 			<!-- Visibility Section -->
 			<div class="section">
-				<button
-					class="section-header"
-					onclick={() => toggleSection('visibility')}
-				>
+				<button class="section-header" onclick={() => toggleSection('visibility')}>
 					<span>Visibility</span>
 					<span class="chevron" class:expanded={expandedSections.has('visibility')}>▼</span>
 				</button>
@@ -1019,7 +1145,8 @@
 								<input
 									type="checkbox"
 									checked={block.settings.hideOnDesktop !== true}
-									onchange={(e: Event) => updateSetting('hideOnDesktop', !(e.currentTarget as HTMLInputElement).checked)}
+									onchange={(e: Event) =>
+										updateSetting('hideOnDesktop', !(e.currentTarget as HTMLInputElement).checked)}
 								/>
 								<span class="device-icon">🖥️</span>
 								<span>Show on Desktop</span>
@@ -1028,7 +1155,8 @@
 								<input
 									type="checkbox"
 									checked={block.settings.hideOnTablet !== true}
-									onchange={(e: Event) => updateSetting('hideOnTablet', !(e.currentTarget as HTMLInputElement).checked)}
+									onchange={(e: Event) =>
+										updateSetting('hideOnTablet', !(e.currentTarget as HTMLInputElement).checked)}
 								/>
 								<span class="device-icon">📱</span>
 								<span>Show on Tablet</span>
@@ -1037,7 +1165,8 @@
 								<input
 									type="checkbox"
 									checked={block.settings.hideOnMobile !== true}
-									onchange={(e: Event) => updateSetting('hideOnMobile', !(e.currentTarget as HTMLInputElement).checked)}
+									onchange={(e: Event) =>
+										updateSetting('hideOnMobile', !(e.currentTarget as HTMLInputElement).checked)}
 								/>
 								<span class="device-icon">📲</span>
 								<span>Show on Mobile</span>
@@ -1049,10 +1178,7 @@
 
 			<!-- Responsive Overrides Section -->
 			<div class="section">
-				<button
-					class="section-header"
-					onclick={() => toggleSection('responsive')}
-				>
+				<button class="section-header" onclick={() => toggleSection('responsive')}>
 					<span>Responsive Overrides</span>
 					<span class="chevron" class:expanded={expandedSections.has('responsive')}>▼</span>
 				</button>
@@ -1072,7 +1198,11 @@
 											type="text"
 											placeholder="e.g., 14px"
 											value={block.settings.tabletFontSize || ''}
-											onchange={(e: Event) => updateSetting('tabletFontSize', (e.currentTarget as HTMLInputElement).value)}
+											onchange={(e: Event) =>
+												updateSetting(
+													'tabletFontSize',
+													(e.currentTarget as HTMLInputElement).value
+												)}
 										/>
 									</label>
 								</div>
@@ -1083,7 +1213,8 @@
 											type="text"
 											placeholder="e.g., 10px 15px"
 											value={block.settings.tabletPadding || ''}
-											onchange={(e: Event) => updateSetting('tabletPadding', (e.currentTarget as HTMLInputElement).value)}
+											onchange={(e: Event) =>
+												updateSetting('tabletPadding', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1100,7 +1231,11 @@
 											type="text"
 											placeholder="e.g., 12px"
 											value={block.settings.mobileFontSize || ''}
-											onchange={(e: Event) => updateSetting('mobileFontSize', (e.currentTarget as HTMLInputElement).value)}
+											onchange={(e: Event) =>
+												updateSetting(
+													'mobileFontSize',
+													(e.currentTarget as HTMLInputElement).value
+												)}
 										/>
 									</label>
 								</div>
@@ -1111,7 +1246,8 @@
 											type="text"
 											placeholder="e.g., 8px 10px"
 											value={block.settings.mobilePadding || ''}
-											onchange={(e: Event) => updateSetting('mobilePadding', (e.currentTarget as HTMLInputElement).value)}
+											onchange={(e: Event) =>
+												updateSetting('mobilePadding', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1123,10 +1259,7 @@
 
 			<!-- Z-Index Section -->
 			<div class="section">
-				<button
-					class="section-header"
-					onclick={() => toggleSection('zindex')}
-				>
+				<button class="section-header" onclick={() => toggleSection('zindex')}>
 					<span>Position & Z-Index</span>
 					<span class="chevron" class:expanded={expandedSections.has('zindex')}>▼</span>
 				</button>
@@ -1140,7 +1273,8 @@
 									min="-999"
 									max="9999"
 									value={block.settings.zIndex || 0}
-									onchange={(e: Event) => updateSetting('zIndex', parseInt((e.currentTarget as HTMLInputElement).value))}
+									onchange={(e: Event) =>
+										updateSetting('zIndex', parseInt((e.currentTarget as HTMLInputElement).value))}
 								/>
 							</label>
 						</div>
@@ -1150,7 +1284,8 @@
 								Position
 								<select
 									value={block.settings.position || 'static'}
-									onchange={(e: Event) => updateSetting('position', (e.currentTarget as HTMLInputElement).value)}
+									onchange={(e: Event) =>
+										updateSetting('position', (e.currentTarget as HTMLInputElement).value)}
 								>
 									<option value="static">Static</option>
 									<option value="relative">Relative</option>
@@ -1170,7 +1305,8 @@
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionTop || ''}
-											onchange={(e: Event) => updateSetting('positionTop', (e.currentTarget as HTMLInputElement).value)}
+											onchange={(e: Event) =>
+												updateSetting('positionTop', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1181,7 +1317,8 @@
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionRight || ''}
-											onchange={(e: Event) => updateSetting('positionRight', (e.currentTarget as HTMLInputElement).value)}
+											onchange={(e: Event) =>
+												updateSetting('positionRight', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1194,7 +1331,11 @@
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionBottom || ''}
-											onchange={(e: Event) => updateSetting('positionBottom', (e.currentTarget as HTMLInputElement).value)}
+											onchange={(e: Event) =>
+												updateSetting(
+													'positionBottom',
+													(e.currentTarget as HTMLInputElement).value
+												)}
 										/>
 									</label>
 								</div>
@@ -1205,7 +1346,8 @@
 											type="text"
 											placeholder="auto"
 											value={block.settings.positionLeft || ''}
-											onchange={(e: Event) => updateSetting('positionLeft', (e.currentTarget as HTMLInputElement).value)}
+											onchange={(e: Event) =>
+												updateSetting('positionLeft', (e.currentTarget as HTMLInputElement).value)}
 										/>
 									</label>
 								</div>
@@ -1320,8 +1462,8 @@
 		letter-spacing: 0.025em;
 	}
 
-	.field input[type="text"],
-	.field input[type="number"],
+	.field input[type='text'],
+	.field input[type='number'],
 	.field select,
 	.field textarea {
 		width: 100%;
@@ -1331,7 +1473,9 @@
 		border-radius: 0.375rem;
 		background: var(--bg-primary, #ffffff);
 		color: var(--text-primary, #1f2937);
-		transition: border-color 0.2s, box-shadow 0.2s;
+		transition:
+			border-color 0.2s,
+			box-shadow 0.2s;
 	}
 
 	.field input:focus,
@@ -1526,7 +1670,7 @@
 		gap: 0.75rem;
 	}
 
-	.slider-field input[type="range"] {
+	.slider-field input[type='range'] {
 		flex: 1;
 		height: 4px;
 		-webkit-appearance: none;
@@ -1536,7 +1680,7 @@
 		cursor: pointer;
 	}
 
-	.slider-field input[type="range"]::-webkit-slider-thumb {
+	.slider-field input[type='range']::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		width: 16px;
 		height: 16px;
@@ -1570,7 +1714,7 @@
 		color: var(--text-secondary, #6b7280);
 	}
 
-	.filter-item input[type="range"] {
+	.filter-item input[type='range'] {
 		width: 100%;
 		height: 4px;
 		-webkit-appearance: none;
@@ -1579,7 +1723,7 @@
 		border-radius: 2px;
 	}
 
-	.filter-item input[type="range"]::-webkit-slider-thumb {
+	.filter-item input[type='range']::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		width: 12px;
 		height: 12px;
@@ -1607,7 +1751,7 @@
 		font-size: 0.875rem;
 	}
 
-	.checkbox-label input[type="checkbox"] {
+	.checkbox-label input[type='checkbox'] {
 		width: 16px;
 		height: 16px;
 		accent-color: var(--primary, #3b82f6);

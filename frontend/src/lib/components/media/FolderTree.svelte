@@ -16,7 +16,11 @@
 		onCreateFolder?: () => void;
 	}
 
-	let { currentFolderId = null, onFolderSelect = () => {}, onCreateFolder = () => {} }: Props = $props();
+	let {
+		currentFolderId = null,
+		onFolderSelect = () => {},
+		onCreateFolder = () => {}
+	}: Props = $props();
 
 	let expandedFolders = $state(new Set<string>());
 

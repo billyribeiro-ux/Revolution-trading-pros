@@ -103,7 +103,7 @@
 		switch (finalPosition) {
 			case 'right':
 				left = triggerRect.right + gap;
-				top = triggerRect.top + (triggerRect.height / 2) - (tooltipRect.height / 2);
+				top = triggerRect.top + triggerRect.height / 2 - tooltipRect.height / 2;
 				if (left + tooltipRect.width > viewportWidth) {
 					left = triggerRect.left - tooltipRect.width - gap;
 					finalPosition = 'left';
@@ -111,14 +111,14 @@
 				break;
 			case 'left':
 				left = triggerRect.left - tooltipRect.width - gap;
-				top = triggerRect.top + (triggerRect.height / 2) - (tooltipRect.height / 2);
+				top = triggerRect.top + triggerRect.height / 2 - tooltipRect.height / 2;
 				if (left < 0) {
 					left = triggerRect.right + gap;
 					finalPosition = 'right';
 				}
 				break;
 			case 'top':
-				left = triggerRect.left + (triggerRect.width / 2) - (tooltipRect.width / 2);
+				left = triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2;
 				top = triggerRect.top - tooltipRect.height - gap;
 				if (top < 0) {
 					top = triggerRect.bottom + gap;
@@ -126,7 +126,7 @@
 				}
 				break;
 			case 'bottom':
-				left = triggerRect.left + (triggerRect.width / 2) - (tooltipRect.width / 2);
+				left = triggerRect.left + triggerRect.width / 2 - tooltipRect.width / 2;
 				top = triggerRect.bottom + gap;
 				if (top + tooltipRect.height > viewportHeight) {
 					top = triggerRect.top - tooltipRect.height - gap;
@@ -159,7 +159,7 @@
 
 	function showTooltip() {
 		if (disabled || !browser) return;
-		
+
 		timeoutId = setTimeout(() => {
 			createAndPositionTooltip();
 			isVisible = true;
@@ -219,7 +219,7 @@
 		font-weight: 600;
 		border-radius: 5px;
 		white-space: nowrap;
-		box-shadow: 
+		box-shadow:
 			0 4px 6px -1px rgba(0, 0, 0, 0.1),
 			0 2px 4px -1px rgba(0, 0, 0, 0.06),
 			0 0 0 1px rgba(0, 0, 0, 0.05);
@@ -242,8 +242,12 @@
 		}
 
 		@keyframes tooltipFadeInSimple {
-			from { opacity: 0; }
-			to { opacity: 1; }
+			from {
+				opacity: 0;
+			}
+			to {
+				opacity: 1;
+			}
 		}
 	}
 </style>

@@ -73,11 +73,11 @@
 	let activeTab = $state<'lessons' | 'downloads'>('lessons');
 
 	const isLessonCompleted = (lessonId: string): boolean => {
-		return progress.find(p => p.lesson_id === lessonId)?.is_completed ?? false;
+		return progress.find((p) => p.lesson_id === lessonId)?.is_completed ?? false;
 	};
 
 	const getLessonProgress = (lessonId: string): number => {
-		const p = progress.find(p => p.lesson_id === lessonId);
+		const p = progress.find((p) => p.lesson_id === lessonId);
 		if (!p?.video_position_seconds) return 0;
 		return p.video_position_seconds;
 	};
@@ -106,9 +106,11 @@
 		onProgress?.(currentLesson.id, position, completed);
 	};
 
-	const completedCount = $derived(progress.filter(p => p.is_completed).length);
+	const completedCount = $derived(progress.filter((p) => p.is_completed).length);
 	const totalLessons = $derived(modules.reduce((acc, m) => acc + m.lessons.length, 0));
-	const overallProgress = $derived(totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0);
+	const overallProgress = $derived(
+		totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
+	);
 </script>
 
 <div class="player" class:sidebar-closed={!sidebarOpen}>
@@ -122,7 +124,18 @@
 				/>
 			{:else}
 				<div class="no-video">
-					<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="48"
+						height="48"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						><path
+							d="m16 13 5.223 3.482a.5.5 0 0 0 .777-.416V7.87a.5.5 0 0 0-.752-.432L16 10.5"
+						/><rect x="2" y="6" width="14" height="12" rx="2" /></svg
+					>
 					<p>No video available for this lesson</p>
 				</div>
 			{/if}
@@ -136,8 +149,16 @@
 	</div>
 
 	<aside class="sidebar">
-		<button class="toggle" onclick={() => sidebarOpen = !sidebarOpen} aria-label="Toggle sidebar">
-			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+		<button class="toggle" onclick={() => (sidebarOpen = !sidebarOpen)} aria-label="Toggle sidebar">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"><path d="m15 18-6-6 6-6" /></svg
+			>
 		</button>
 
 		<div class="sidebar-header">
@@ -145,12 +166,18 @@
 			<div class="progress-bar">
 				<div class="fill" style="width: {overallProgress}%"></div>
 			</div>
-			<span class="progress-text">{overallProgress}% complete ({completedCount}/{totalLessons})</span>
+			<span class="progress-text"
+				>{overallProgress}% complete ({completedCount}/{totalLessons})</span
+			>
 		</div>
 
 		<div class="tabs">
-			<button class:active={activeTab === 'lessons'} onclick={() => activeTab = 'lessons'}>Lessons</button>
-			<button class:active={activeTab === 'downloads'} onclick={() => activeTab = 'downloads'}>Downloads</button>
+			<button class:active={activeTab === 'lessons'} onclick={() => (activeTab = 'lessons')}
+				>Lessons</button
+			>
+			<button class:active={activeTab === 'downloads'} onclick={() => (activeTab = 'downloads')}
+				>Downloads</button
+			>
 		</div>
 
 		{#if activeTab === 'lessons'}
@@ -174,11 +201,41 @@
 									>
 										<span class="status">
 											{#if completed}
-												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													width="16"
+													height="16"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="2"
+													><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline
+														points="22 4 12 14.01 9 11.01"
+													/></svg
+												>
 											{:else if locked}
-												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													width="16"
+													height="16"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="2"
+													><rect width="18" height="11" x="3" y="11" rx="2" ry="2" /><path
+														d="M7 11V7a5 5 0 0 1 10 0v4"
+													/></svg
+												>
 											{:else}
-												<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+												<svg
+													xmlns="http://www.w3.org/2000/svg"
+													width="16"
+													height="16"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="2"><polygon points="5 3 19 12 5 21 5 3" /></svg
+												>
 											{/if}
 										</span>
 										<span class="lesson-title">{lesson.title}</span>
@@ -199,7 +256,18 @@
 				{:else}
 					{#each downloads as dl}
 						<a href={dl.download_url} class="download-item" download={dl.file_name}>
-							<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" x2="12" y1="15" y2="3"/></svg>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="20"
+								height="20"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline
+									points="7 10 12 15 17 10"
+								/><line x1="12" x2="12" y1="15" y2="3" /></svg
+							>
 							<div class="dl-info">
 								<span class="dl-title">{dl.title}</span>
 								<span class="dl-meta">{dl.file_name} • {formatFileSize(dl.file_size_bytes)}</span>
@@ -213,53 +281,235 @@
 </div>
 
 <style>
-	.player { display: flex; min-height: 100vh; background: #0f172a; }
-	.main { flex: 1; display: flex; flex-direction: column; }
-	.video-container { aspect-ratio: 16/9; background: #000; }
-	.no-video { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #64748b; gap: 16px; }
-	.lesson-info { padding: 24px; color: #fff; }
-	.lesson-info h1 { font-size: 24px; margin: 0 0 12px; }
-	.lesson-info p { color: #94a3b8; line-height: 1.6; margin: 0; }
+	.player {
+		display: flex;
+		min-height: 100vh;
+		background: #0f172a;
+	}
+	.main {
+		flex: 1;
+		display: flex;
+		flex-direction: column;
+	}
+	.video-container {
+		aspect-ratio: 16/9;
+		background: #000;
+	}
+	.no-video {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		height: 100%;
+		color: #64748b;
+		gap: 16px;
+	}
+	.lesson-info {
+		padding: 24px;
+		color: #fff;
+	}
+	.lesson-info h1 {
+		font-size: 24px;
+		margin: 0 0 12px;
+	}
+	.lesson-info p {
+		color: #94a3b8;
+		line-height: 1.6;
+		margin: 0;
+	}
 
-	.sidebar { width: 360px; background: #1e293b; display: flex; flex-direction: column; position: relative; transition: width 0.3s, margin 0.3s; }
-	.sidebar-closed .sidebar { width: 0; margin-left: -360px; }
-	.toggle { position: absolute; left: -40px; top: 20px; width: 32px; height: 32px; background: #1e293b; border: none; border-radius: 6px 0 0 6px; color: #fff; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-	.sidebar-closed .toggle svg { transform: rotate(180deg); }
+	.sidebar {
+		width: 360px;
+		background: #1e293b;
+		display: flex;
+		flex-direction: column;
+		position: relative;
+		transition:
+			width 0.3s,
+			margin 0.3s;
+	}
+	.sidebar-closed .sidebar {
+		width: 0;
+		margin-left: -360px;
+	}
+	.toggle {
+		position: absolute;
+		left: -40px;
+		top: 20px;
+		width: 32px;
+		height: 32px;
+		background: #1e293b;
+		border: none;
+		border-radius: 6px 0 0 6px;
+		color: #fff;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.sidebar-closed .toggle svg {
+		transform: rotate(180deg);
+	}
 
-	.sidebar-header { padding: 20px; border-bottom: 1px solid #334155; }
-	.sidebar-header h2 { font-size: 16px; color: #fff; margin: 0 0 12px; }
-	.progress-bar { height: 6px; background: #334155; border-radius: 3px; overflow: hidden; }
-	.fill { height: 100%; background: #10b981; transition: width 0.3s; }
-	.progress-text { font-size: 12px; color: #94a3b8; margin-top: 8px; display: block; }
+	.sidebar-header {
+		padding: 20px;
+		border-bottom: 1px solid #334155;
+	}
+	.sidebar-header h2 {
+		font-size: 16px;
+		color: #fff;
+		margin: 0 0 12px;
+	}
+	.progress-bar {
+		height: 6px;
+		background: #334155;
+		border-radius: 3px;
+		overflow: hidden;
+	}
+	.fill {
+		height: 100%;
+		background: #10b981;
+		transition: width 0.3s;
+	}
+	.progress-text {
+		font-size: 12px;
+		color: #94a3b8;
+		margin-top: 8px;
+		display: block;
+	}
 
-	.tabs { display: flex; border-bottom: 1px solid #334155; }
-	.tabs button { flex: 1; padding: 12px; background: none; border: none; color: #94a3b8; font-size: 14px; cursor: pointer; border-bottom: 2px solid transparent; }
-	.tabs button.active { color: #fff; border-bottom-color: #10b981; }
+	.tabs {
+		display: flex;
+		border-bottom: 1px solid #334155;
+	}
+	.tabs button {
+		flex: 1;
+		padding: 12px;
+		background: none;
+		border: none;
+		color: #94a3b8;
+		font-size: 14px;
+		cursor: pointer;
+		border-bottom: 2px solid transparent;
+	}
+	.tabs button.active {
+		color: #fff;
+		border-bottom-color: #10b981;
+	}
 
-	.lesson-list { flex: 1; overflow-y: auto; }
-	.module { border-bottom: 1px solid #334155; }
-	.module h3 { font-size: 13px; color: #94a3b8; padding: 12px 16px 8px; margin: 0; text-transform: uppercase; letter-spacing: 0.5px; }
-	.module ul { list-style: none; margin: 0; padding: 0; }
-	.lesson-btn { width: 100%; display: flex; align-items: center; gap: 12px; padding: 12px 16px; background: none; border: none; color: #e2e8f0; font-size: 14px; cursor: pointer; text-align: left; transition: background 0.2s; }
-	.lesson-btn:hover:not(:disabled) { background: #334155; }
-	.lesson-btn.active { background: #334155; border-left: 3px solid #10b981; }
-	.lesson-btn.completed .status { color: #10b981; }
-	.lesson-btn.locked { color: #64748b; cursor: not-allowed; }
-	.status { flex-shrink: 0; }
-	.lesson-title { flex: 1; }
-	.duration { font-size: 12px; color: #64748b; }
+	.lesson-list {
+		flex: 1;
+		overflow-y: auto;
+	}
+	.module {
+		border-bottom: 1px solid #334155;
+	}
+	.module h3 {
+		font-size: 13px;
+		color: #94a3b8;
+		padding: 12px 16px 8px;
+		margin: 0;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+	.module ul {
+		list-style: none;
+		margin: 0;
+		padding: 0;
+	}
+	.lesson-btn {
+		width: 100%;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 12px 16px;
+		background: none;
+		border: none;
+		color: #e2e8f0;
+		font-size: 14px;
+		cursor: pointer;
+		text-align: left;
+		transition: background 0.2s;
+	}
+	.lesson-btn:hover:not(:disabled) {
+		background: #334155;
+	}
+	.lesson-btn.active {
+		background: #334155;
+		border-left: 3px solid #10b981;
+	}
+	.lesson-btn.completed .status {
+		color: #10b981;
+	}
+	.lesson-btn.locked {
+		color: #64748b;
+		cursor: not-allowed;
+	}
+	.status {
+		flex-shrink: 0;
+	}
+	.lesson-title {
+		flex: 1;
+	}
+	.duration {
+		font-size: 12px;
+		color: #64748b;
+	}
 
-	.download-list { flex: 1; overflow-y: auto; padding: 12px; }
-	.empty { text-align: center; color: #64748b; padding: 24px; }
-	.download-item { display: flex; align-items: center; gap: 12px; padding: 12px; background: #334155; border-radius: 8px; margin-bottom: 8px; text-decoration: none; color: #fff; transition: background 0.2s; }
-	.download-item:hover { background: #475569; }
-	.dl-info { display: flex; flex-direction: column; gap: 2px; }
-	.dl-title { font-size: 14px; }
-	.dl-meta { font-size: 12px; color: #94a3b8; }
+	.download-list {
+		flex: 1;
+		overflow-y: auto;
+		padding: 12px;
+	}
+	.empty {
+		text-align: center;
+		color: #64748b;
+		padding: 24px;
+	}
+	.download-item {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 12px;
+		background: #334155;
+		border-radius: 8px;
+		margin-bottom: 8px;
+		text-decoration: none;
+		color: #fff;
+		transition: background 0.2s;
+	}
+	.download-item:hover {
+		background: #475569;
+	}
+	.dl-info {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+	.dl-title {
+		font-size: 14px;
+	}
+	.dl-meta {
+		font-size: 12px;
+		color: #94a3b8;
+	}
 
 	@media (max-width: 1024px) {
-		.sidebar { position: fixed; right: 0; top: 0; bottom: 0; z-index: 50; }
-		.sidebar-closed .sidebar { margin-left: 0; transform: translateX(100%); }
-		.toggle { left: auto; right: 100%; border-radius: 6px 0 0 6px; }
+		.sidebar {
+			position: fixed;
+			right: 0;
+			top: 0;
+			bottom: 0;
+			z-index: 50;
+		}
+		.sidebar-closed .sidebar {
+			margin-left: 0;
+			transform: translateX(100%);
+		}
+		.toggle {
+			left: auto;
+			right: 100%;
+			border-radius: 6px 0 0 6px;
+		}
 	}
 </style>

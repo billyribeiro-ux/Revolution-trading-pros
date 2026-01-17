@@ -1,10 +1,10 @@
 /**
  * Admin Fetch Utility - Apple ICT11+ Principal Engineer Implementation
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Centralized authenticated fetch for all admin API calls.
  * Uses the Vite proxy (/api -> backend) with proper auth headers.
- * 
+ *
  * @version 1.0.0
  * @author Revolution Trading Pros
  */
@@ -44,7 +44,7 @@ export interface AdminFetchOptions extends Omit<RequestInit, 'headers'> {
 /**
  * Authenticated fetch for admin API endpoints
  * Automatically includes Bearer token and handles 401 responses
- * 
+ *
  * @param endpoint - API endpoint (e.g., '/api/admin/posts')
  * @param options - Fetch options
  * @returns Promise with parsed JSON response
@@ -54,39 +54,39 @@ export async function adminFetch<T = any>(
 	options: AdminFetchOptions = {}
 ): Promise<T> {
 	const { skipAuthRedirect = false, rawResponse = false, headers = {}, ...fetchOptions } = options;
-	
+
 	// Get auth token from secure store
 	const token = getAuthToken();
-	
+
 	// Build headers
 	const requestHeaders: Record<string, string> = {
-		'Accept': 'application/json',
+		Accept: 'application/json',
 		...headers
 	};
-	
+
 	// Add Content-Type for non-FormData bodies
 	if (fetchOptions.body && !(fetchOptions.body instanceof FormData)) {
 		requestHeaders['Content-Type'] = 'application/json';
 	}
-	
+
 	// Add auth token if available
 	if (token) {
 		requestHeaders['Authorization'] = `Bearer ${token}`;
 	}
-	
+
 	// ICT 11+ FIX: Build absolute URL for Pages.dev compatibility (no proxy)
-	const url = endpoint.startsWith('http') 
-		? endpoint 
-		: endpoint.startsWith('/api/') 
-			? `${API_BASE_URL}${endpoint}` 
+	const url = endpoint.startsWith('http')
+		? endpoint
+		: endpoint.startsWith('/api/')
+			? `${API_BASE_URL}${endpoint}`
 			: `${API_BASE_URL}/api${endpoint}`;
-	
+
 	try {
 		const response = await fetch(url, {
 			...fetchOptions,
 			headers: requestHeaders
 		});
-		
+
 		// Handle 401 Unauthorized
 		if (response.status === 401 && !skipAuthRedirect && browser) {
 			// Redirect to login with return URL
@@ -94,17 +94,17 @@ export async function adminFetch<T = any>(
 			goto(`/login?redirect=${returnUrl}`);
 			throw new AdminApiError('Unauthorized', 401);
 		}
-		
+
 		// Return raw response if requested (for blob downloads, etc.)
 		if (rawResponse) {
 			return response as unknown as T;
 		}
-		
+
 		// Parse JSON response
 		const contentType = response.headers.get('content-type');
 		if (contentType?.includes('application/json')) {
 			const data = await response.json();
-			
+
 			// Throw error for non-OK responses
 			if (!response.ok) {
 				throw new AdminApiError(
@@ -113,29 +113,25 @@ export async function adminFetch<T = any>(
 					data.errors
 				);
 			}
-			
+
 			return data;
 		}
-		
+
 		// Handle non-JSON responses
 		if (!response.ok) {
 			throw new AdminApiError(`Request failed with status ${response.status}`, response.status);
 		}
-		
+
 		// Return text for non-JSON responses
 		const text = await response.text();
 		return { data: text } as T;
-		
 	} catch (error) {
 		if (error instanceof AdminApiError) {
 			throw error;
 		}
-		
+
 		// Network or other errors
-		throw new AdminApiError(
-			error instanceof Error ? error.message : 'Network error',
-			0
-		);
+		throw new AdminApiError(error instanceof Error ? error.message : 'Network error', 0);
 	}
 }
 
@@ -151,15 +147,15 @@ export class AdminApiError extends Error {
 		super(message);
 		this.name = 'AdminApiError';
 	}
-	
+
 	get isAuthError(): boolean {
 		return this.status === 401 || this.status === 403;
 	}
-	
+
 	get isValidationError(): boolean {
 		return this.status === 422;
 	}
-	
+
 	get isServerError(): boolean {
 		return this.status >= 500;
 	}
@@ -171,28 +167,28 @@ export class AdminApiError extends Error {
 export const adminApi = {
 	get: <T = any>(endpoint: string, options?: AdminFetchOptions) =>
 		adminFetch<T>(endpoint, { ...options, method: 'GET' }),
-	
+
 	post: <T = any>(endpoint: string, data?: any, options?: AdminFetchOptions) =>
 		adminFetch<T>(endpoint, {
 			...options,
 			method: 'POST',
 			body: data instanceof FormData ? data : JSON.stringify(data)
 		}),
-	
+
 	put: <T = any>(endpoint: string, data?: any, options?: AdminFetchOptions) =>
 		adminFetch<T>(endpoint, {
 			...options,
 			method: 'PUT',
 			body: JSON.stringify(data)
 		}),
-	
+
 	patch: <T = any>(endpoint: string, data?: any, options?: AdminFetchOptions) =>
 		adminFetch<T>(endpoint, {
 			...options,
 			method: 'PATCH',
 			body: JSON.stringify(data)
 		}),
-	
+
 	delete: <T = any>(endpoint: string, options?: AdminFetchOptions) =>
 		adminFetch<T>(endpoint, { ...options, method: 'DELETE' })
 };

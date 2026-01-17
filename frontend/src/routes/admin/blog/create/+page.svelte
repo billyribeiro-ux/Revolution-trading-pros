@@ -50,7 +50,7 @@
 	];
 
 	function getPredefinedCategoryById(id: string): BlogCategory | undefined {
-		return predefinedCategories.find(c => c.id === id);
+		return predefinedCategories.find((c) => c.id === id);
 	}
 
 	let post = $state({
@@ -85,7 +85,7 @@
 		if (index === -1) {
 			post.categories = [...post.categories, categoryId];
 		} else {
-			post.categories = post.categories.filter(c => c !== categoryId);
+			post.categories = post.categories.filter((c) => c !== categoryId);
 		}
 	}
 
@@ -145,7 +145,7 @@
 	function handleBlocksChange(blocks: Block[]) {
 		contentBlocks = blocks;
 		// Also update the post content_blocks
-		post.content_blocks = blocks.map(b => ({
+		post.content_blocks = blocks.map((b) => ({
 			type: b.type,
 			content: b.content,
 			settings: b.settings
@@ -161,32 +161,34 @@
 
 	// Convert blocks to HTML for backward compatibility
 	function blocksToHtml(blocks: Block[]): string {
-		return blocks.map(block => {
-			const content = block.content as any; // Type assertion for flexible content access
-			switch (block.type) {
-				case 'paragraph':
-					return `<p>${content.text || ''}</p>`;
-				case 'heading':
-					const level = content.level || 2;
-					return `<h${level}>${content.text || ''}</h${level}>`;
-				case 'quote':
-					return `<blockquote>${content.text || ''}</blockquote>`;
-				case 'list':
-					const items = content.items || [];
-					const listType = content.listType === 'ordered' ? 'ol' : 'ul';
-					return `<${listType}>${items.map((item: string) => `<li>${item}</li>`).join('')}</${listType}>`;
-				case 'image':
-					return `<figure><img src="${content.src || ''}" alt="${content.alt || ''}" />${content.caption ? `<figcaption>${content.caption}</figcaption>` : ''}</figure>`;
-				case 'code':
-					return `<pre><code class="language-${content.language || 'text'}">${content.code || ''}</code></pre>`;
-				case 'separator':
-					return '<hr />';
-				case 'html':
-					return content.html || '';
-				default:
-					return content.text ? `<p>${content.text}</p>` : '';
-			}
-		}).join('\n');
+		return blocks
+			.map((block) => {
+				const content = block.content as any; // Type assertion for flexible content access
+				switch (block.type) {
+					case 'paragraph':
+						return `<p>${content.text || ''}</p>`;
+					case 'heading':
+						const level = content.level || 2;
+						return `<h${level}>${content.text || ''}</h${level}>`;
+					case 'quote':
+						return `<blockquote>${content.text || ''}</blockquote>`;
+					case 'list':
+						const items = content.items || [];
+						const listType = content.listType === 'ordered' ? 'ol' : 'ul';
+						return `<${listType}>${items.map((item: string) => `<li>${item}</li>`).join('')}</${listType}>`;
+					case 'image':
+						return `<figure><img src="${content.src || ''}" alt="${content.alt || ''}" />${content.caption ? `<figcaption>${content.caption}</figcaption>` : ''}</figure>`;
+					case 'code':
+						return `<pre><code class="language-${content.language || 'text'}">${content.code || ''}</code></pre>`;
+					case 'separator':
+						return '<hr />';
+					case 'html':
+						return content.html || '';
+					default:
+						return content.text ? `<p>${content.text}</p>` : '';
+				}
+			})
+			.join('\n');
 	}
 
 	async function createTag() {
@@ -222,7 +224,7 @@
 				...post,
 				status,
 				content: htmlContent, // HTML for backward compatibility
-				blocks: contentBlocks.map(b => ({
+				blocks: contentBlocks.map((b) => ({
 					id: b.id,
 					type: b.type,
 					content: b.content,
@@ -371,7 +373,9 @@
 							type="button"
 							class="toolbar-btn"
 							title="Keyboard shortcuts"
-							onclick={() => {/* Handled by BlockEditor */}}
+							onclick={() => {
+								/* Handled by BlockEditor */
+							}}
 						>
 							<IconKeyboard size={18} />
 						</button>
@@ -379,7 +383,7 @@
 							type="button"
 							class="toolbar-btn"
 							title={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}
-							onclick={() => isFullscreen = !isFullscreen}
+							onclick={() => (isFullscreen = !isFullscreen)}
 						>
 							{#if isFullscreen}
 								<IconMinimize size={18} />
@@ -496,7 +500,13 @@
 					</div>
 				{:else}
 					<label class="upload-box" class:disabled={uploadingImage}>
-						<input type="file" accept="image/*" onchange={handleFeaturedImageUpload} hidden disabled={uploadingImage} />
+						<input
+							type="file"
+							accept="image/*"
+							onchange={handleFeaturedImageUpload}
+							hidden
+							disabled={uploadingImage}
+						/>
 						<IconPhoto size={48} />
 						<span>Click to upload featured image</span>
 					</label>
@@ -537,7 +547,11 @@
 							{#if category}
 								<span class="selected-tag" style:--tag-color={category.color}>
 									{category.name}
-									<button type="button" onclick={() => toggleCategorySelection(categoryId)} aria-label="Remove {category.name}">
+									<button
+										type="button"
+										onclick={() => toggleCategorySelection(categoryId)}
+										aria-label="Remove {category.name}"
+									>
 										<IconX size={12} />
 									</button>
 								</span>
@@ -954,15 +968,15 @@
 	}
 
 	.category-btn:hover {
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
-		border-color: color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
-		color: var(--tag-color, #E6B800);
+		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
+		border-color: color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
+		color: var(--tag-color, #e6b800);
 	}
 
 	.category-btn.selected {
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 20%, transparent);
-		border-color: var(--tag-color, #E6B800);
-		color: var(--tag-color, #E6B800);
+		background: color-mix(in srgb, var(--tag-color, #e6b800) 20%, transparent);
+		border-color: var(--tag-color, #e6b800);
+		color: var(--tag-color, #e6b800);
 	}
 
 	.selected-categories {
@@ -988,12 +1002,12 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.375rem 0.625rem;
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: var(--tag-color, #E6B800);
+		color: var(--tag-color, #e6b800);
 	}
 
 	.selected-tag button {

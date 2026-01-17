@@ -99,7 +99,11 @@
 				{ keys: [modKey, 'Home'], description: 'Go to first block', action: 'firstBlock' },
 				{ keys: [modKey, 'End'], description: 'Go to last block', action: 'lastBlock' },
 				{ keys: ['Tab'], description: 'Indent / Focus next field', action: 'tab' },
-				{ keys: [shiftKey, 'Tab'], description: 'Outdent / Focus previous field', action: 'shiftTab' }
+				{
+					keys: [shiftKey, 'Tab'],
+					description: 'Outdent / Focus previous field',
+					action: 'shiftTab'
+				}
 			]
 		},
 		{
@@ -107,7 +111,11 @@
 			shortcuts: [
 				{ keys: [shiftKey, '↑'], description: 'Extend selection up', action: 'selectUp' },
 				{ keys: [shiftKey, '↓'], description: 'Extend selection down', action: 'selectDown' },
-				{ keys: [modKey, shiftKey, 'A'], description: 'Select all blocks', action: 'selectAllBlocks' },
+				{
+					keys: [modKey, shiftKey, 'A'],
+					description: 'Select all blocks',
+					action: 'selectAllBlocks'
+				},
 				{ keys: ['Escape'], description: 'Clear selection', action: 'clearSelection' }
 			]
 		},
@@ -118,7 +126,11 @@
 				{ keys: [modKey, 'X'], description: 'Cut', action: 'cut' },
 				{ keys: [modKey, 'V'], description: 'Paste', action: 'paste' },
 				{ keys: [modKey, shiftKey, 'V'], description: 'Paste as plain text', action: 'pastePlain' },
-				{ keys: [modKey, shiftKey, 'D'], description: 'Duplicate to clipboard', action: 'duplicateClipboard' }
+				{
+					keys: [modKey, shiftKey, 'D'],
+					description: 'Duplicate to clipboard',
+					action: 'duplicateClipboard'
+				}
 			]
 		},
 		{
@@ -139,14 +151,15 @@
 
 		const query = searchQuery.toLowerCase();
 		return shortcutCategories
-			.map(category => ({
+			.map((category) => ({
 				...category,
 				shortcuts: category.shortcuts.filter(
-					s => s.description.toLowerCase().includes(query) ||
+					(s) =>
+						s.description.toLowerCase().includes(query) ||
 						s.keys.join(' ').toLowerCase().includes(query)
 				)
 			}))
-			.filter(category => category.shortcuts.length > 0);
+			.filter((category) => category.shortcuts.length > 0);
 	});
 
 	// Close on escape
@@ -160,8 +173,8 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if isOpen}
-	<div 
-		class="shortcuts-overlay" 
+	<div
+		class="shortcuts-overlay"
 		onclick={onClose}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && onClose()}
 		role="dialog"
@@ -170,16 +183,10 @@
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<!-- svelte-ignore a11y_click_events_have_key_events -->
-		<div 
-			class="shortcuts-modal" 
-			onclick={(e: MouseEvent) => e.stopPropagation()}
-			role="document"
-		>
+		<div class="shortcuts-modal" onclick={(e: MouseEvent) => e.stopPropagation()} role="document">
 			<div class="shortcuts-header">
 				<h2>Keyboard Shortcuts</h2>
-				<button class="close-btn" onclick={onClose} aria-label="Close">
-					✕
-				</button>
+				<button class="close-btn" onclick={onClose} aria-label="Close"> ✕ </button>
 			</div>
 
 			<div class="search-bar">
@@ -191,9 +198,7 @@
 					aria-label="Search keyboard shortcuts"
 				/>
 				{#if searchQuery}
-					<button class="clear-btn" onclick={() => searchQuery = ''}>
-						✕
-					</button>
+					<button class="clear-btn" onclick={() => (searchQuery = '')}> ✕ </button>
 				{/if}
 			</div>
 
@@ -253,8 +258,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.shortcuts-modal {

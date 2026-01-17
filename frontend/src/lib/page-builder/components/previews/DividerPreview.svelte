@@ -45,12 +45,12 @@
 		left: 50%;
 		transform: translate(-50%, -50%);
 		padding: 2px 8px;
-		background: #F9FAFB;
-		border: 1px solid #E5E7EB;
+		background: #f9fafb;
+		border: 1px solid #e5e7eb;
 		border-radius: 4px;
 		font-size: 10px;
 		font-weight: 500;
-		color: #9CA3AF;
+		color: #9ca3af;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}

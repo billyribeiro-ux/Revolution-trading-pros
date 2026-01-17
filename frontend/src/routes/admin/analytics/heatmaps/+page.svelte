@@ -69,7 +69,9 @@
 	async function loadHeatmapData(page: HeatmapPage) {
 		selectedPage = page;
 		try {
-			const response = await fetch(`/api/admin/analytics/heatmaps/${encodeURIComponent(page.url)}?period=${selectedPeriod}&type=${heatmapType}`);
+			const response = await fetch(
+				`/api/admin/analytics/heatmaps/${encodeURIComponent(page.url)}?period=${selectedPeriod}&type=${heatmapType}`
+			);
 			if (response.ok) {
 				heatmapData = await response.json();
 			}
@@ -105,9 +107,10 @@
 	const stats = $derived({
 		totalPages: pages.length,
 		totalClicks: pages.reduce((sum, p) => sum + p.clicks, 0),
-		avgScrollDepth: pages.length > 0
-			? Math.round(pages.reduce((sum, p) => sum + p.scroll_depth, 0) / pages.length)
-			: 0,
+		avgScrollDepth:
+			pages.length > 0
+				? Math.round(pages.reduce((sum, p) => sum + p.scroll_depth, 0) / pages.length)
+				: 0,
 		totalVisitors: pages.reduce((sum, p) => sum + p.unique_visitors, 0)
 	});
 </script>
@@ -121,9 +124,16 @@
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
-				<div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-rose-500/20">
+				<div
+					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-rose-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-rose-500/20"
+				>
 					<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
+						/>
 					</svg>
 				</div>
 				<div>
@@ -156,7 +166,9 @@
 			<div class="flex items-center justify-center py-20">
 				<div class="relative">
 					<div class="w-12 h-12 border-4 border-rose-500/20 rounded-full"></div>
-					<div class="absolute top-0 left-0 w-12 h-12 border-4 border-rose-500 rounded-full animate-spin border-t-transparent"></div>
+					<div
+						class="absolute top-0 left-0 w-12 h-12 border-4 border-rose-500 rounded-full animate-spin border-t-transparent"
+					></div>
 				</div>
 			</div>
 		{:else if !$isAnalyticsConnected}
@@ -169,7 +181,9 @@
 					<div class="text-sm text-slate-400">Tracked Pages</div>
 				</div>
 				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
-					<div class="text-3xl font-bold text-rose-400 mb-1">{stats.totalClicks.toLocaleString()}</div>
+					<div class="text-3xl font-bold text-rose-400 mb-1">
+						{stats.totalClicks.toLocaleString()}
+					</div>
 					<div class="text-sm text-slate-400">Total Clicks</div>
 				</div>
 				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
@@ -177,7 +191,9 @@
 					<div class="text-sm text-slate-400">Avg Scroll Depth</div>
 				</div>
 				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
-					<div class="text-3xl font-bold text-blue-400 mb-1">{stats.totalVisitors.toLocaleString()}</div>
+					<div class="text-3xl font-bold text-blue-400 mb-1">
+						{stats.totalVisitors.toLocaleString()}
+					</div>
 					<div class="text-sm text-slate-400">Unique Visitors</div>
 				</div>
 			</div>
@@ -186,14 +202,25 @@
 				<div class="flex items-center justify-center py-20">
 					<div class="relative">
 						<div class="w-10 h-10 border-4 border-rose-500/20 rounded-full"></div>
-						<div class="absolute top-0 left-0 w-10 h-10 border-4 border-rose-500 rounded-full animate-spin border-t-transparent"></div>
+						<div
+							class="absolute top-0 left-0 w-10 h-10 border-4 border-rose-500 rounded-full animate-spin border-t-transparent"
+						></div>
 					</div>
 				</div>
 			{:else if error}
-				<div class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 text-center">
-					<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center">
+				<div
+					class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 text-center"
+				>
+					<div
+						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
+					>
 						<svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+							/>
 						</svg>
 					</div>
 					<p class="text-red-400 mb-4">{error}</p>
@@ -205,14 +232,30 @@
 					</button>
 				</div>
 			{:else if pages.length === 0}
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center">
-					<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-rose-500/10 flex items-center justify-center">
-						<svg class="w-8 h-8 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+				<div
+					class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center"
+				>
+					<div
+						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-rose-500/10 flex items-center justify-center"
+					>
+						<svg
+							class="w-8 h-8 text-rose-400"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
+							/>
 						</svg>
 					</div>
 					<h3 class="text-lg font-medium text-white mb-2">No Heatmap Data Yet</h3>
-					<p class="text-slate-400 mb-6">Heatmaps will appear once you have visitor activity on your site</p>
+					<p class="text-slate-400 mb-6">
+						Heatmaps will appear once you have visitor activity on your site
+					</p>
 					<a
 						href="/admin/settings/tracking"
 						class="inline-block px-6 py-3 bg-gradient-to-r from-rose-500 to-pink-600 text-white rounded-xl hover:from-rose-400 hover:to-pink-500 font-semibold shadow-lg shadow-rose-500/25 transition-all"
@@ -224,7 +267,9 @@
 				<div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 					<!-- Page List -->
 					<div class="lg:col-span-1 space-y-4">
-						<h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">Tracked Pages</h3>
+						<h3 class="text-sm font-medium text-slate-400 uppercase tracking-wider mb-4">
+							Tracked Pages
+						</h3>
 						{#each pages as page}
 							<button
 								onclick={() => loadHeatmapData(page)}
@@ -244,17 +289,25 @@
 					<!-- Heatmap Preview -->
 					<div class="lg:col-span-2">
 						{#if selectedPage}
-							<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+							<div
+								class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden"
+							>
 								<div class="p-5 border-b border-white/10 flex items-center justify-between">
 									<div>
-										<h3 class="font-semibold text-white">{selectedPage.title || selectedPage.url}</h3>
+										<h3 class="font-semibold text-white">
+											{selectedPage.title || selectedPage.url}
+										</h3>
 										<p class="text-xs text-slate-400">{selectedPage.url}</p>
 									</div>
 									<div class="flex items-center gap-2">
-										<span class="px-3 py-1.5 rounded-lg bg-rose-500/20 text-rose-400 text-xs font-medium">
+										<span
+											class="px-3 py-1.5 rounded-lg bg-rose-500/20 text-rose-400 text-xs font-medium"
+										>
 											{selectedPage.clicks.toLocaleString()} clicks
 										</span>
-										<span class="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-medium">
+										<span
+											class="px-3 py-1.5 rounded-lg bg-blue-500/20 text-blue-400 text-xs font-medium"
+										>
 											{selectedPage.unique_visitors.toLocaleString()} visitors
 										</span>
 									</div>
@@ -263,13 +316,29 @@
 								<!-- Heatmap Visualization Placeholder -->
 								<div class="aspect-video bg-slate-800/50 flex items-center justify-center">
 									<div class="text-center">
-										<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-rose-500/10 flex items-center justify-center">
-											<svg class="w-8 h-8 text-rose-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+										<div
+											class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-rose-500/10 flex items-center justify-center"
+										>
+											<svg
+												class="w-8 h-8 text-rose-400"
+												fill="none"
+												stroke="currentColor"
+												viewBox="0 0 24 24"
+											>
+												<path
+													stroke-linecap="round"
+													stroke-linejoin="round"
+													stroke-width="2"
+													d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+												/>
 											</svg>
 										</div>
-										<p class="text-slate-400 text-sm">Heatmap visualization will be rendered here</p>
-										<p class="text-slate-500 text-xs mt-1">Requires heatmap rendering library integration</p>
+										<p class="text-slate-400 text-sm">
+											Heatmap visualization will be rendered here
+										</p>
+										<p class="text-slate-500 text-xs mt-1">
+											Requires heatmap rendering library integration
+										</p>
 									</div>
 								</div>
 
@@ -277,12 +346,7 @@
 								<div class="p-5 border-t border-white/10">
 									<h4 class="text-sm font-medium text-slate-300 mb-4">Scroll Depth Distribution</h4>
 									<div class="space-y-2">
-										{#each [
-											{ depth: '25%', percentage: 85 },
-											{ depth: '50%', percentage: 62 },
-											{ depth: '75%', percentage: 38 },
-											{ depth: '100%', percentage: 15 }
-										] as scroll}
+										{#each [{ depth: '25%', percentage: 85 }, { depth: '50%', percentage: 62 }, { depth: '75%', percentage: 38 }, { depth: '100%', percentage: 15 }] as scroll}
 											<div class="flex items-center gap-3">
 												<span class="text-xs text-slate-400 w-12">{scroll.depth}</span>
 												<div class="flex-1 h-2 bg-slate-700 rounded-full overflow-hidden">
@@ -291,18 +355,34 @@
 														style="width: {scroll.percentage}%"
 													></div>
 												</div>
-												<span class="text-xs text-slate-400 w-10 text-right">{scroll.percentage}%</span>
+												<span class="text-xs text-slate-400 w-10 text-right"
+													>{scroll.percentage}%</span
+												>
 											</div>
 										{/each}
 									</div>
 								</div>
 							</div>
 						{:else}
-							<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center h-full flex items-center justify-center">
+							<div
+								class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center h-full flex items-center justify-center"
+							>
 								<div>
-									<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-700/50 flex items-center justify-center">
-										<svg class="w-8 h-8 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122" />
+									<div
+										class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-slate-700/50 flex items-center justify-center"
+									>
+										<svg
+											class="w-8 h-8 text-slate-500"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
+											/>
 										</svg>
 									</div>
 									<p class="text-slate-400">Select a page to view its heatmap</p>

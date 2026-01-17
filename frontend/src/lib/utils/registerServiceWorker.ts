@@ -3,7 +3,7 @@
  * ══════════════════════════════════════════════════════════════════════════════
  * SvelteKit handles service worker registration automatically when
  * serviceWorker: { register: true } is set in svelte.config.js
- * 
+ *
  * This module provides utilities for manual control when needed
  * ══════════════════════════════════════════════════════════════════════════════
  */
@@ -12,7 +12,7 @@ export async function registerServiceWorker(): Promise<void> {
 	// SvelteKit handles registration automatically via svelte.config.js
 	// This function is kept for backward compatibility but is now a no-op
 	// The service worker is registered from src/service-worker.ts
-	
+
 	if (typeof window === 'undefined' || !('serviceWorker' in navigator)) {
 		return;
 	}

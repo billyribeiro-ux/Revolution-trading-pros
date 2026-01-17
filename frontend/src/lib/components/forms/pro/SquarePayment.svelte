@@ -203,7 +203,6 @@
 			currency: currency
 		}).format(amount);
 	}
-
 </script>
 
 <div class="square-payment" class:disabled class:has-error={error || cardError}>
@@ -324,8 +323,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.digital-wallets {

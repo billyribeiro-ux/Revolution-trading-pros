@@ -38,7 +38,7 @@ export interface CrossDomainConfig {
 const DEFAULT_CONFIG: CrossDomainConfig = {
 	allowedOrigins: [],
 	useUrlParams: false,
-	useDomainCookie: true,
+	useDomainCookie: true
 };
 
 let config: CrossDomainConfig = { ...DEFAULT_CONFIG };
@@ -145,13 +145,11 @@ function setDomainCookie(consent: ConsentState): void {
 			analytics: consent.analytics,
 			marketing: consent.marketing,
 			preferences: consent.preferences,
-			updatedAt: consent.updatedAt,
+			updatedAt: consent.updatedAt
 		})
 	);
 
-	const expires = consent.expiresAt
-		? `expires=${new Date(consent.expiresAt).toUTCString()};`
-		: '';
+	const expires = consent.expiresAt ? `expires=${new Date(consent.expiresAt).toUTCString()};` : '';
 
 	document.cookie = `rtp_consent_shared=${value}; ${expires} domain=${config.cookieDomain}; path=/; SameSite=Lax; Secure`;
 
@@ -230,10 +228,10 @@ function handleConsentRequest(source: Window, origin: string): void {
 				marketing: consent.marketing,
 				preferences: consent.preferences,
 				updatedAt: consent.updatedAt,
-				hasInteracted: consent.hasInteracted,
+				hasInteracted: consent.hasInteracted
 			},
-			timestamp: new Date().toISOString(),
-		},
+			timestamp: new Date().toISOString()
+		}
 	};
 
 	source.postMessage(response, origin);
@@ -256,7 +254,7 @@ function handleConsentSync(consent?: Partial<ConsentState>): void {
 			{
 				analytics: consent.analytics ?? false,
 				marketing: consent.marketing ?? false,
-				preferences: consent.preferences ?? false,
+				preferences: consent.preferences ?? false
 			},
 			'api'
 		);
@@ -286,10 +284,10 @@ function broadcastConsentUpdate(consent: ConsentState): void {
 				marketing: consent.marketing,
 				preferences: consent.preferences,
 				updatedAt: consent.updatedAt,
-				hasInteracted: consent.hasInteracted,
+				hasInteracted: consent.hasInteracted
 			},
-			timestamp: new Date().toISOString(),
-		},
+			timestamp: new Date().toISOString()
+		}
 	};
 
 	// Send to parent if in iframe
@@ -321,8 +319,8 @@ export function requestConsentFromParent(): void {
 		source: 'rtp-consent',
 		version: '1.0.0',
 		payload: {
-			timestamp: new Date().toISOString(),
-		},
+			timestamp: new Date().toISOString()
+		}
 	};
 
 	window.parent.postMessage(message, '*');
@@ -363,7 +361,7 @@ export function encodeConsentParam(consent: ConsentState): string {
 		a: consent.analytics ? 1 : 0,
 		m: consent.marketing ? 1 : 0,
 		p: consent.preferences ? 1 : 0,
-		i: consent.consentId,
+		i: consent.consentId
 	};
 
 	return btoa(JSON.stringify(data));
@@ -380,7 +378,7 @@ function decodeConsentParam(param: string): Partial<ConsentState> | null {
 			marketing: data.m === 1,
 			preferences: data.p === 1,
 			consentId: data.i,
-			hasInteracted: true,
+			hasInteracted: true
 		};
 	} catch (e) {
 		return null;
@@ -415,7 +413,7 @@ export function syncFromDomainCookie(): boolean {
 			{
 				analytics: cookieConsent.analytics ?? false,
 				marketing: cookieConsent.marketing ?? false,
-				preferences: cookieConsent.preferences ?? false,
+				preferences: cookieConsent.preferences ?? false
 			},
 			'api'
 		);

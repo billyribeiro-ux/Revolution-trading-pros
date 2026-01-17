@@ -38,10 +38,12 @@
 	const confirmDelete = $derived(field.attributes?.['confirm_delete'] ?? true);
 
 	// Sub-fields configuration - use $derived to maintain reactivity
-	const subFields = $derived<Partial<FormField>[]>(field.attributes?.['sub_fields'] ?? [
-		{ name: 'title', label: 'Title', field_type: 'text', required: true },
-		{ name: 'description', label: 'Description', field_type: 'textarea' }
-	]);
+	const subFields = $derived<Partial<FormField>[]>(
+		field.attributes?.['sub_fields'] ?? [
+			{ name: 'title', label: 'Title', field_type: 'text', required: true },
+			{ name: 'description', label: 'Description', field_type: 'textarea' }
+		]
+	);
 
 	// Initialize rows state
 	let rows = $state<RepeaterRow[]>([]);
@@ -169,7 +171,12 @@
 	{/if}
 
 	<!-- Hidden input for form association -->
-	<input type="hidden" id={field.name + '_repeater'} name={field.name} value={JSON.stringify(rows)} />
+	<input
+		type="hidden"
+		id={field.name + '_repeater'}
+		name={field.name}
+		value={JSON.stringify(rows)}
+	/>
 
 	<div class="repeater-rows">
 		{#each rows as row, index (row.id)}
@@ -231,7 +238,12 @@
 											type="text"
 											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
-											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
+											oninput={(e: Event) =>
+												updateFieldValue(
+													index,
+													subField.name!,
+													(e.currentTarget as HTMLInputElement).value
+												)}
 											placeholder={subField.placeholder ?? ''}
 											class="sub-field-input"
 										/>
@@ -239,7 +251,12 @@
 										<textarea
 											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
-											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLTextAreaElement).value)}
+											oninput={(e: Event) =>
+												updateFieldValue(
+													index,
+													subField.name!,
+													(e.currentTarget as HTMLTextAreaElement).value
+												)}
 											placeholder={subField.placeholder ?? ''}
 											class="sub-field-textarea"
 											rows={3}
@@ -250,7 +267,11 @@
 											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											oninput={(e: Event) =>
-												updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).valueAsNumber)}
+												updateFieldValue(
+													index,
+													subField.name!,
+													(e.currentTarget as HTMLInputElement).valueAsNumber
+												)}
 											placeholder={subField.placeholder ?? ''}
 											class="sub-field-input"
 										/>
@@ -259,7 +280,12 @@
 											type="email"
 											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
-											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
+											oninput={(e: Event) =>
+												updateFieldValue(
+													index,
+													subField.name!,
+													(e.currentTarget as HTMLInputElement).value
+												)}
 											placeholder={subField.placeholder ?? ''}
 											class="sub-field-input"
 										/>
@@ -269,7 +295,11 @@
 												type="checkbox"
 												checked={row.values[subField.name] ?? false}
 												onchange={(e: Event) =>
-													updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).checked)}
+													updateFieldValue(
+														index,
+														subField.name!,
+														(e.currentTarget as HTMLInputElement).checked
+													)}
 											/>
 											<span>{subField.placeholder ?? 'Yes'}</span>
 										</label>
@@ -278,7 +308,11 @@
 											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											onchange={(e: Event) =>
-												updateFieldValue(index, subField.name!, (e.currentTarget as HTMLSelectElement).value)}
+												updateFieldValue(
+													index,
+													subField.name!,
+													(e.currentTarget as HTMLSelectElement).value
+												)}
 											class="sub-field-select"
 										>
 											<option value="">Select...</option>
@@ -296,7 +330,11 @@
 											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
 											onchange={(e: Event) =>
-												updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
+												updateFieldValue(
+													index,
+													subField.name!,
+													(e.currentTarget as HTMLInputElement).value
+												)}
 											class="sub-field-input"
 										/>
 									{:else}
@@ -304,7 +342,12 @@
 											type="text"
 											id="{field.name}_{row.id}_{subField.name}"
 											value={row.values[subField.name] ?? ''}
-											oninput={(e: Event) => updateFieldValue(index, subField.name!, (e.currentTarget as HTMLInputElement).value)}
+											oninput={(e: Event) =>
+												updateFieldValue(
+													index,
+													subField.name!,
+													(e.currentTarget as HTMLInputElement).value
+												)}
 											placeholder={subField.placeholder ?? ''}
 											class="sub-field-input"
 										/>

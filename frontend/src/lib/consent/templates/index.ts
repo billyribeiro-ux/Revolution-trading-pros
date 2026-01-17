@@ -27,7 +27,7 @@ export type {
 	BannerTemplate,
 	TemplateCustomization,
 	ActiveTemplateConfig,
-	TemplatePreview,
+	TemplatePreview
 } from './types';
 
 // Registry
@@ -37,7 +37,7 @@ export {
 	getTemplatesByCategory,
 	getTemplateCategories,
 	getTemplatePreviews,
-	DEFAULT_TEMPLATE_ID,
+	DEFAULT_TEMPLATE_ID
 } from './registry';
 
 // Store
@@ -59,7 +59,7 @@ export {
 	getActiveTemplateConfig,
 	getCurrentTemplate,
 	exportTemplateConfig,
-	importTemplateConfig,
+	importTemplateConfig
 } from './store';
 
 // Components

@@ -11,13 +11,7 @@
 	 * @version 2.0.0 - Accessibility Enhanced
 	 * @accessibility WCAG 2.1 AA compliant
 	 */
-	import {
-		IconCheck,
-		IconX,
-		IconAlertCircle,
-		IconInfoCircle,
-		IconLoader
-	} from '$lib/icons';
+	import { IconCheck, IconX, IconAlertCircle, IconInfoCircle, IconLoader } from '$lib/icons';
 	import { toasts, removeToast, type ToastType } from '$lib/stores/toast.svelte';
 
 	const icons: Record<ToastType, typeof IconCheck> = {
@@ -46,11 +40,7 @@
 </script>
 
 <!-- Screen reader live region - announces new toasts -->
-<div
-	class="fixed top-4 right-4 z-50 space-y-2"
-	role="region"
-	aria-label="Notifications"
->
+<div class="fixed top-4 right-4 z-50 space-y-2" role="region" aria-label="Notifications">
 	{#each $toasts as toast (toast.id)}
 		{@const IconComponent = icons[toast.type]}
 		<div

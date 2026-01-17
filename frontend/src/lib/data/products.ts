@@ -67,7 +67,7 @@ export const products: Record<string, Product> = {
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SPX PROFIT PULSE ALERT SERVICE
 	// ═══════════════════════════════════════════════════════════════════════════
-	'monthly': {
+	monthly: {
 		id: 'spx-profit-pulse-monthly',
 		slug: 'monthly',
 		name: 'SPX Profit Pulse - Monthly',
@@ -83,7 +83,7 @@ export const products: Record<string, Product> = {
 			'Risk Management Guidance'
 		]
 	},
-	'quarterly': {
+	quarterly: {
 		id: 'spx-profit-pulse-quarterly',
 		slug: 'quarterly',
 		name: 'SPX Profit Pulse - Quarterly',
@@ -99,7 +99,7 @@ export const products: Record<string, Product> = {
 			'Risk Management Guidance'
 		]
 	},
-	'annual': {
+	annual: {
 		id: 'spx-profit-pulse-annual',
 		slug: 'annual',
 		name: 'SPX Profit Pulse - Annual',
@@ -259,5 +259,5 @@ export function productToCartItem(product: Product): Omit<CartItem, 'quantity'> 
  * Get all products by category
  */
 export function getProductsByCategory(category: Product['category']): Product[] {
-	return Object.values(products).filter(p => p.category === category);
+	return Object.values(products).filter((p) => p.category === category);
 }

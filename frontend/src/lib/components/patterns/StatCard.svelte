@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * StatCard - Metric display card with trend indicator
-	 * 
+	 *
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
@@ -30,7 +30,9 @@
 		loading = false
 	}: Props = $props();
 
-	let trendDirection = $derived(trend === null ? 'neutral' : trend > 0 ? 'up' : trend < 0 ? 'down' : 'neutral');
+	let trendDirection = $derived(
+		trend === null ? 'neutral' : trend > 0 ? 'up' : trend < 0 ? 'down' : 'neutral'
+	);
 	let formattedTrend = $derived(trend !== null ? `${trend > 0 ? '+' : ''}${trend}%` : '');
 
 	const iconColors = {
@@ -49,7 +51,7 @@
 			<IconComponent size={24} />
 		</div>
 	{/if}
-	
+
 	<div class="stat-content">
 		{#if loading}
 			<div class="skeleton-value"></div>
@@ -57,7 +59,7 @@
 		{:else}
 			<div class="stat-value">{value}</div>
 			<div class="stat-title">{title}</div>
-			
+
 			{#if trend !== null || subtitle}
 				<div class="stat-footer">
 					{#if trend !== null}
@@ -167,7 +169,12 @@
 	.skeleton-value {
 		height: 2rem;
 		width: 60%;
-		background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 25%, rgba(99, 102, 241, 0.2) 50%, rgba(99, 102, 241, 0.1) 75%);
+		background: linear-gradient(
+			90deg,
+			rgba(99, 102, 241, 0.1) 25%,
+			rgba(99, 102, 241, 0.2) 50%,
+			rgba(99, 102, 241, 0.1) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: var(--radius-md, 0.5rem);
@@ -177,14 +184,23 @@
 		height: 1rem;
 		width: 40%;
 		margin-top: 0.5rem;
-		background: linear-gradient(90deg, rgba(99, 102, 241, 0.1) 25%, rgba(99, 102, 241, 0.2) 50%, rgba(99, 102, 241, 0.1) 75%);
+		background: linear-gradient(
+			90deg,
+			rgba(99, 102, 241, 0.1) 25%,
+			rgba(99, 102, 241, 0.2) 50%,
+			rgba(99, 102, 241, 0.1) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: var(--radius-sm, 0.375rem);
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 </style>

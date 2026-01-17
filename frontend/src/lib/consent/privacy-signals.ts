@@ -17,14 +17,40 @@ import type { PrivacySignals } from './types';
  * EU/EEA country codes requiring strict GDPR consent.
  */
 const EU_COUNTRIES = new Set([
-	'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR',
-	'DE', 'GR', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL',
-	'PL', 'PT', 'RO', 'SK', 'SI', 'ES', 'SE', // EU members
-	'IS', 'LI', 'NO', // EEA
-	'GB', 'UK', // UK (post-Brexit still has strict rules)
-	'CH', // Switzerland (similar requirements)
+	'AT',
+	'BE',
+	'BG',
+	'HR',
+	'CY',
+	'CZ',
+	'DK',
+	'EE',
+	'FI',
+	'FR',
+	'DE',
+	'GR',
+	'HU',
+	'IE',
+	'IT',
+	'LV',
+	'LT',
+	'LU',
+	'MT',
+	'NL',
+	'PL',
+	'PT',
+	'RO',
+	'SK',
+	'SI',
+	'ES',
+	'SE', // EU members
+	'IS',
+	'LI',
+	'NO', // EEA
+	'GB',
+	'UK', // UK (post-Brexit still has strict rules)
+	'CH' // Switzerland (similar requirements)
 ]);
-
 
 /**
  * Check if Do Not Track is enabled.
@@ -89,7 +115,7 @@ export function detectRegion(): string | undefined {
 			const parts = locale.split('-');
 			if (parts.length >= 2) {
 				const lastPart = parts[parts.length - 1];
-			const country = lastPart?.toUpperCase();
+				const country = lastPart?.toUpperCase();
 				if (country && country.length === 2) {
 					return country;
 				}
@@ -160,7 +186,7 @@ function getCountryFromTimezone(timezone: string): string | undefined {
 
 		// Africa
 		'Africa/Johannesburg': 'ZA',
-		'Africa/Cairo': 'EG',
+		'Africa/Cairo': 'EG'
 	};
 
 	return tzToCountry[timezone];
@@ -234,7 +260,7 @@ export function detectPrivacySignals(): PrivacySignals {
 		dnt,
 		gpc,
 		...(region && { region }),
-		requiresStrictConsent: requiresStrict,
+		requiresStrictConsent: requiresStrict
 	};
 
 	console.debug('[PrivacySignals] Detected:', signals);
@@ -256,7 +282,7 @@ export function getSignalBasedDefaults(signals: PrivacySignals): {
 		return {
 			analytics: false,
 			marketing: false,
-			preferences: false,
+			preferences: false
 		};
 	}
 
@@ -266,7 +292,7 @@ export function getSignalBasedDefaults(signals: PrivacySignals): {
 		return {
 			analytics: false,
 			marketing: false,
-			preferences: true, // Preferences are okay with DNT
+			preferences: true // Preferences are okay with DNT
 		};
 	}
 
@@ -276,7 +302,7 @@ export function getSignalBasedDefaults(signals: PrivacySignals): {
 		return {
 			analytics: false,
 			marketing: false,
-			preferences: false,
+			preferences: false
 		};
 	}
 
@@ -286,7 +312,7 @@ export function getSignalBasedDefaults(signals: PrivacySignals): {
 	return {
 		analytics: false, // Still default to false for safety
 		marketing: false,
-		preferences: false,
+		preferences: false
 	};
 }
 

@@ -66,15 +66,24 @@
 		}
 		if (feature) {
 			switch (feature) {
-				case 'analytics': return $isAnalyticsConnected;
-				case 'seo': return $isSeoConnected;
-				case 'email': return $isEmailConnected;
-				case 'payment': return $isPaymentConnected;
-				case 'crm': return $isCrmConnected;
-				case 'fluent': return $isFluentConnected;
-				case 'forms': return $isFormsConnected;
-				case 'behavior': return $isBehaviorConnected;
-				default: return connections.isFeatureConnected(feature as keyof typeof FEATURE_SERVICES);
+				case 'analytics':
+					return $isAnalyticsConnected;
+				case 'seo':
+					return $isSeoConnected;
+				case 'email':
+					return $isEmailConnected;
+				case 'payment':
+					return $isPaymentConnected;
+				case 'crm':
+					return $isCrmConnected;
+				case 'fluent':
+					return $isFluentConnected;
+				case 'forms':
+					return $isFormsConnected;
+				case 'behavior':
+					return $isBehaviorConnected;
+				default:
+					return connections.isFeatureConnected(feature as keyof typeof FEATURE_SERVICES);
 			}
 		}
 		return false;
@@ -93,11 +102,6 @@
 	{#if disconnected}
 		{@render disconnected()}
 	{:else}
-		<ServiceConnectionStatus
-			{feature}
-			{serviceKey}
-			{variant}
-			{showFeatures}
-		/>
+		<ServiceConnectionStatus {feature} {serviceKey} {variant} {showFeatures} />
 	{/if}
 {/if}

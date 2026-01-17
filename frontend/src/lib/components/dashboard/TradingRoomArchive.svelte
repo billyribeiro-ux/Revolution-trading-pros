@@ -108,7 +108,7 @@
 
 	// Transform API videos to sessions
 	let allSessions = $derived<ArchiveSession[]>(
-		(videos || []).map(video => ({
+		(videos || []).map((video) => ({
 			id: String(video.id),
 			title: video.title,
 			trader: video.trader?.name || '',
@@ -122,10 +122,11 @@
 	let filteredSessions = $derived(
 		searchQuery.trim() === '' || searchQuery === serverSearch
 			? allSessions
-			: allSessions.filter(session => 
-				session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-				session.trader.toLowerCase().includes(searchQuery.toLowerCase())
-			)
+			: allSessions.filter(
+					(session) =>
+						session.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+						session.trader.toLowerCase().includes(searchQuery.toLowerCase())
+				)
 	);
 
 	// Format date for display
@@ -139,8 +140,8 @@
 	let groupedSessions = $derived(() => {
 		const groups: DateGroup[] = [];
 		const dateMap = new Map<string, ArchiveSession[]>();
-		
-		filteredSessions.forEach(session => {
+
+		filteredSessions.forEach((session) => {
 			const existing = dateMap.get(session.date);
 			if (existing) {
 				existing.push(session);
@@ -150,11 +151,11 @@
 		});
 
 		// Sort dates descending
-		const sortedDates = Array.from(dateMap.keys()).sort((a, b) => 
-			new Date(b).getTime() - new Date(a).getTime()
+		const sortedDates = Array.from(dateMap.keys()).sort(
+			(a, b) => new Date(b).getTime() - new Date(a).getTime()
 		);
 
-		sortedDates.forEach(date => {
+		sortedDates.forEach((date) => {
 			groups.push({
 				date,
 				displayDate: formatDate(date),
@@ -227,7 +228,11 @@
 			if (currentPage > delta + 2) {
 				pages.push('...');
 			}
-			for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+			for (
+				let i = Math.max(2, currentPage - delta);
+				i <= Math.min(totalPages - 1, currentPage + delta);
+				i++
+			) {
 				if (!pages.includes(i)) {
 					pages.push(i);
 				}
@@ -248,13 +253,13 @@
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Trading Room Archives</h2>
-			
+
 			{#if error}
 				<div class="error-message">
 					<p>{error}</p>
 				</div>
 			{/if}
-			
+
 			<!-- Filters -->
 			<div class="dashboard-filters">
 				<div class="dashboard-filters__count">
@@ -263,20 +268,47 @@
 				<div class="dashboard-filters__search">
 					<form onsubmit={handleSearchSubmit} class="search-form">
 						<div class="search-input-wrapper">
-							<svg class="search-icon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+							<svg
+								class="search-icon"
+								xmlns="http://www.w3.org/2000/svg"
+								width="18"
+								height="18"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								stroke-linecap="round"
+								stroke-linejoin="round"
+							>
 								<circle cx="11" cy="11" r="8"></circle>
 								<path d="m21 21-4.3-4.3"></path>
 							</svg>
-							<input 
-								type="text" 
-								placeholder="Search archives..." 
+							<input
+								type="text"
+								placeholder="Search archives..."
 								bind:value={searchQuery}
 								oninput={handleSearch}
 								class="search-input"
 							/>
 							{#if searchQuery}
-								<button type="button" class="clear-btn" onclick={clearSearch} aria-label="Clear search">
-									<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+								<button
+									type="button"
+									class="clear-btn"
+									onclick={clearSearch}
+									aria-label="Clear search"
+								>
+									<svg
+										xmlns="http://www.w3.org/2000/svg"
+										width="16"
+										height="16"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										aria-hidden="true"
+									>
 										<path d="M18 6 6 18"></path>
 										<path d="m6 6 12 12"></path>
 									</svg>
@@ -301,9 +333,7 @@
 											<p class="card-trader"><i>With {session.trader}</i></p>
 										{/if}
 									</div>
-									<a href={session.href} class="btn btn-tiny btn-default">
-										Watch Now
-									</a>
+									<a href={session.href} class="btn btn-tiny btn-default"> Watch Now </a>
 								</div>
 							</article>
 						{/each}
@@ -325,7 +355,7 @@
 						{#each getPageNumbers() as page}
 							{#if typeof page === 'number'}
 								<li>
-									<button 
+									<button
 										class="page-number"
 										class:current={page === currentPage}
 										onclick={() => goToPage(page)}
@@ -461,7 +491,9 @@
 		border-radius: 4px;
 		font-size: 14px;
 		font-family: 'Open Sans', sans-serif;
-		transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	.search-input:focus {
@@ -567,9 +599,9 @@
 	}
 
 	.btn-default {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border: 1px solid #143E59;
+		border: 1px solid #143e59;
 	}
 
 	.btn-default:hover {
@@ -628,9 +660,9 @@
 	}
 
 	.page-number.current {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	.page-number.dots {

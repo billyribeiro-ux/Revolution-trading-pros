@@ -1,7 +1,7 @@
 /**
  * Pattern Components - Barrel Export
  * Composed patterns for common UI scenarios
- * 
+ *
  * @version 2.0.0
  * @author Revolution Trading Pros
  */

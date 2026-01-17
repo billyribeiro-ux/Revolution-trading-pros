@@ -31,12 +31,7 @@
 		onUpdate: (updates: Partial<Block>) => void;
 	}
 
-	let {
-		block,
-		isSelected = false,
-		isEditing = true,
-		onUpdate
-	}: Props = $props();
+	let { block, isSelected = false, isEditing = true, onUpdate }: Props = $props();
 
 	// ==========================================================================
 	// State
@@ -90,9 +85,10 @@
 
 	// Checklist handling
 	function toggleCheckItem(itemId: string) {
-		const items = block.content.items?.map(item =>
-			item.id === itemId ? { ...item, checked: !item.checked } : item
-		) || [];
+		const items =
+			block.content.items?.map((item) =>
+				item.id === itemId ? { ...item, checked: !item.checked } : item
+			) || [];
 		updateContent({ items });
 	}
 
@@ -142,7 +138,7 @@
 			{block.content.text || ''}
 		</p>
 
-	<!-- Heading Block -->
+		<!-- Heading Block -->
 	{:else if block.type === 'heading'}
 		{@const level = block.settings.level || 2}
 		<div class="heading-block-wrapper">
@@ -153,7 +149,8 @@
 							type="button"
 							class="level-btn"
 							class:active={level === lvl}
-							onclick={() => onUpdate({ settings: { ...block.settings, level: lvl as 1 | 2 | 3 | 4 | 5 | 6 } })}
+							onclick={() =>
+								onUpdate({ settings: { ...block.settings, level: lvl as 1 | 2 | 3 | 4 | 5 | 6 } })}
 							title="Heading {lvl}"
 						>
 							H{lvl}
@@ -176,7 +173,7 @@
 			</svelte:element>
 		</div>
 
-	<!-- Quote Block -->
+		<!-- Quote Block -->
 	{:else if block.type === 'quote'}
 		<blockquote class="quote-block">
 			<div
@@ -194,7 +191,7 @@
 			{/if}
 		</blockquote>
 
-	<!-- Pull Quote Block -->
+		<!-- Pull Quote Block -->
 	{:else if block.type === 'pullquote'}
 		<figure class="pullquote-block">
 			<blockquote
@@ -209,13 +206,14 @@
 			</blockquote>
 		</figure>
 
-	<!-- Code Block -->
+		<!-- Code Block -->
 	{:else if block.type === 'code'}
 		<div class="code-block">
 			<div class="code-header">
 				<select
 					value={block.content.language || 'javascript'}
-					onchange={(e: Event) => updateContent({ language: (e.target as HTMLSelectElement).value })}
+					onchange={(e: Event) =>
+						updateContent({ language: (e.target as HTMLSelectElement).value })}
 					disabled={!isEditing}
 				>
 					<option value="javascript">JavaScript</option>
@@ -232,30 +230,36 @@
 				</select>
 			</div>
 			<pre class="code-content"><code
-				contenteditable={isEditing}
-				class="language-{block.content.language || 'javascript'}"
-				oninput={(e: Event) => updateContent({ code: (e.target as HTMLElement).textContent || '' })}
-				onpaste={handlePaste}
-			>{block.content.code || ''}</code></pre>
+					contenteditable={isEditing}
+					class="language-{block.content.language || 'javascript'}"
+					oninput={(e: Event) =>
+						updateContent({ code: (e.target as HTMLElement).textContent || '' })}
+					onpaste={handlePaste}>{block.content.code || ''}</code
+				></pre>
 		</div>
 
-	<!-- List Block -->
+		<!-- List Block -->
 	{:else if block.type === 'list'}
 		{@const ListTag = block.content.listType === 'number' ? 'ol' : 'ul'}
 		<svelte:element this={ListTag} class="list-block">
-			{#each (block.content.listItems || ['']) as item, index}
+			{#each block.content.listItems || [''] as item, index}
 				<li class="list-item">
 					<span
 						role="textbox"
 						tabindex="0"
 						contenteditable={isEditing}
 						class="list-text editable-content"
-						oninput={(e: Event) => updateListItem(index, (e.target as HTMLElement).textContent || '')}
+						oninput={(e: Event) =>
+							updateListItem(index, (e.target as HTMLElement).textContent || '')}
 						onkeydown={(e: KeyboardEvent) => {
 							if (e.key === 'Enter') {
 								e.preventDefault();
 								addListItem(index);
-							} else if (e.key === 'Backspace' && !item && (block.content.listItems?.length || 0) > 1) {
+							} else if (
+								e.key === 'Backspace' &&
+								!item &&
+								(block.content.listItems?.length || 0) > 1
+							) {
 								e.preventDefault();
 								removeListItem(index);
 							}
@@ -266,11 +270,7 @@
 						{item}
 					</span>
 					{#if isEditing && (block.content.listItems?.length || 0) > 1}
-						<button
-							type="button"
-							class="remove-item"
-							onclick={() => removeListItem(index)}
-						>
+						<button type="button" class="remove-item" onclick={() => removeListItem(index)}>
 							<IconX size={14} />
 						</button>
 					{/if}
@@ -278,16 +278,20 @@
 			{/each}
 		</svelte:element>
 		{#if isEditing}
-			<button type="button" class="add-item-btn" onclick={() => addListItem((block.content.listItems?.length || 1) - 1)}>
+			<button
+				type="button"
+				class="add-item-btn"
+				onclick={() => addListItem((block.content.listItems?.length || 1) - 1)}
+			>
 				<IconPlus size={14} />
 				Add item
 			</button>
 		{/if}
 
-	<!-- Checklist Block -->
+		<!-- Checklist Block -->
 	{:else if block.type === 'checklist'}
 		<div class="checklist-block">
-			{#each (block.content.items || []) as item}
+			{#each block.content.items || [] as item}
 				<label class="check-item" class:checked={item.checked}>
 					<input
 						type="checkbox"
@@ -303,10 +307,12 @@
 					<span
 						class="check-text editable-content"
 						oninput={(e: Event) => {
-							const items = block.content.items?.map(i =>
-							i.id === item.id ? { ...i, content: (e.target as HTMLElement).textContent || '' } : i
-						);
-						if (items) updateContent({ items });
+							const items = block.content.items?.map((i) =>
+								i.id === item.id
+									? { ...i, content: (e.target as HTMLElement).textContent || '' }
+									: i
+							);
+							if (items) updateContent({ items });
 						}}
 						onpaste={handlePaste}
 					>
@@ -319,11 +325,14 @@
 					type="button"
 					class="add-item-btn"
 					onclick={() => {
-						const items = [...(block.content.items || []), {
-							id: `item_${Date.now()}`,
-							content: '',
-							checked: false
-						}];
+						const items = [
+							...(block.content.items || []),
+							{
+								id: `item_${Date.now()}`,
+								content: '',
+								checked: false
+							}
+						];
 						updateContent({ items });
 					}}
 				>
@@ -333,7 +342,7 @@
 			{/if}
 		</div>
 
-	<!-- Image Block -->
+		<!-- Image Block -->
 	{:else if block.type === 'image'}
 		<figure class="image-block">
 			{#if block.content.mediaUrl}
@@ -347,7 +356,8 @@
 						contenteditable={isEditing}
 						class="image-caption editable-content"
 						class:placeholder={!block.content.mediaCaption}
-						oninput={(e: Event) => updateContent({ mediaCaption: (e.target as HTMLElement).textContent || '' })}
+						oninput={(e: Event) =>
+							updateContent({ mediaCaption: (e.target as HTMLElement).textContent || '' })}
 						data-placeholder="Add a caption..."
 					>
 						{block.content.mediaCaption || ''}
@@ -372,14 +382,17 @@
 			{/if}
 		</figure>
 
-	<!-- Video Block -->
+		<!-- Video Block -->
 	{:else if block.type === 'video'}
 		<div class="video-block">
 			{#if block.content.embedUrl}
-				{@const isYouTube = block.content.embedUrl.includes('youtube') || block.content.embedUrl.includes('youtu.be')}
+				{@const isYouTube =
+					block.content.embedUrl.includes('youtube') || block.content.embedUrl.includes('youtu.be')}
 				{@const isVimeo = block.content.embedUrl.includes('vimeo')}
 				{#if isYouTube}
-					{@const videoId = block.content.embedUrl.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/)?.[1]}
+					{@const videoId = block.content.embedUrl.match(
+						/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/
+					)?.[1]}
 					<div class="video-embed">
 						<iframe
 							src="https://www.youtube.com/embed/{videoId}"
@@ -413,22 +426,20 @@
 					<input
 						type="url"
 						placeholder="https://youtube.com/watch?v=..."
-						onchange={(e: Event) => updateContent({ embedUrl: (e.target as HTMLInputElement).value })}
+						onchange={(e: Event) =>
+							updateContent({ embedUrl: (e.target as HTMLInputElement).value })}
 					/>
 				</div>
 			{/if}
 		</div>
 
-	<!-- Separator Block -->
+		<!-- Separator Block -->
 	{:else if block.type === 'separator'}
 		<hr class="separator-block" />
 
-	<!-- Spacer Block -->
+		<!-- Spacer Block -->
 	{:else if block.type === 'spacer'}
-		<div
-			class="spacer-block"
-			style:height={block.settings.height || '40px'}
-		>
+		<div class="spacer-block" style:height={block.settings.height || '40px'}>
 			{#if isEditing}
 				<div class="spacer-handle">
 					<IconGripVertical size={14} />
@@ -437,12 +448,13 @@
 			{/if}
 		</div>
 
-	<!-- Button Block -->
+		<!-- Button Block -->
 	{:else if block.type === 'button'}
 		<div class="button-block-wrapper">
 			<a
 				href={block.settings.linkUrl || '#'}
-				class="button-block button-{block.settings.buttonStyle || 'primary'} button-size-{block.settings.buttonSize || 'medium'}"
+				class="button-block button-{block.settings.buttonStyle || 'primary'} button-size-{block
+					.settings.buttonSize || 'medium'}"
 				target={block.settings.linkTarget || '_self'}
 				onclick={(e: MouseEvent) => isEditing && e.preventDefault()}
 			>
@@ -457,7 +469,7 @@
 			</a>
 		</div>
 
-	<!-- Callout Block -->
+		<!-- Callout Block -->
 	{:else if block.type === 'callout'}
 		<div class="callout-block">
 			<div class="callout-icon">
@@ -475,7 +487,7 @@
 			</div>
 		</div>
 
-	<!-- Trading Chart Block -->
+		<!-- Trading Chart Block -->
 	{:else if block.type === 'chart'}
 		<div class="chart-block">
 			<div class="chart-header">
@@ -495,16 +507,17 @@
 			</div>
 		</div>
 
-	<!-- Risk Disclaimer Block -->
+		<!-- Risk Disclaimer Block -->
 	{:else if block.type === 'riskDisclaimer'}
 		<div class="disclaimer-block">
 			<IconAlertTriangle size={24} />
 			<p>
-				{block.content.text || 'Trading involves substantial risk of loss and is not suitable for all investors.'}
+				{block.content.text ||
+					'Trading involves substantial risk of loss and is not suitable for all investors.'}
 			</p>
 		</div>
 
-	<!-- Custom HTML Block -->
+		<!-- Custom HTML Block -->
 	{:else if block.type === 'html'}
 		{#if isEditing}
 			<div class="html-block-editor">
@@ -522,7 +535,7 @@
 			</div>
 		{/if}
 
-	<!-- Default/Unknown Block -->
+		<!-- Default/Unknown Block -->
 	{:else}
 		<div class="unknown-block">
 			<span>Unknown block type: {block.type}</span>
@@ -598,12 +611,36 @@
 		color: white;
 	}
 
-	.heading-1 { font-size: 2.25rem; font-weight: 700; margin: 0; }
-	.heading-2 { font-size: 1.875rem; font-weight: 600; margin: 0; }
-	.heading-3 { font-size: 1.5rem; font-weight: 600; margin: 0; }
-	.heading-4 { font-size: 1.25rem; font-weight: 600; margin: 0; }
-	.heading-5 { font-size: 1.125rem; font-weight: 600; margin: 0; }
-	.heading-6 { font-size: 1rem; font-weight: 600; margin: 0; }
+	.heading-1 {
+		font-size: 2.25rem;
+		font-weight: 700;
+		margin: 0;
+	}
+	.heading-2 {
+		font-size: 1.875rem;
+		font-weight: 600;
+		margin: 0;
+	}
+	.heading-3 {
+		font-size: 1.5rem;
+		font-weight: 600;
+		margin: 0;
+	}
+	.heading-4 {
+		font-size: 1.25rem;
+		font-weight: 600;
+		margin: 0;
+	}
+	.heading-5 {
+		font-size: 1.125rem;
+		font-weight: 600;
+		margin: 0;
+	}
+	.heading-6 {
+		font-size: 1rem;
+		font-weight: 600;
+		margin: 0;
+	}
 
 	/* Quote */
 	.quote-block {
@@ -750,7 +787,7 @@
 		cursor: pointer;
 	}
 
-	.check-item input[type="checkbox"] {
+	.check-item input[type='checkbox'] {
 		position: absolute;
 		opacity: 0;
 	}

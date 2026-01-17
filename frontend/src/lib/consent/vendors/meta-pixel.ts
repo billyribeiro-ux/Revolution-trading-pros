@@ -121,10 +121,7 @@ function injectPixelScript(): Promise<void> {
  *
  * @see https://developers.facebook.com/docs/meta-pixel/reference#standard-events
  */
-export function trackPixelEvent(
-	eventName: string,
-	params?: Record<string, unknown>
-): void {
+export function trackPixelEvent(eventName: string, params?: Record<string, unknown>): void {
 	if (!browser || !pixelInitialized || !pixelConsentGranted) {
 		console.debug('[MetaPixel] Cannot track event - pixel not ready or consent not granted');
 		return;
@@ -140,10 +137,7 @@ export function trackPixelEvent(
  * @param eventName - Custom event name
  * @param params - Optional event parameters
  */
-export function trackCustomPixelEvent(
-	eventName: string,
-	params?: Record<string, unknown>
-): void {
+export function trackCustomPixelEvent(eventName: string, params?: Record<string, unknown>): void {
 	if (!browser || !pixelInitialized || !pixelConsentGranted) {
 		console.debug('[MetaPixel] Cannot track custom event - pixel not ready or consent not granted');
 		return;
@@ -267,7 +261,7 @@ export const metaPixelVendor: VendorConfig = {
 		// Note: The pixel script itself cannot be unloaded without a page refresh.
 		// However, with consent revoked, no new events will be sent.
 		// For complete removal, the user would need to refresh the page.
-	},
+	}
 };
 
 /**

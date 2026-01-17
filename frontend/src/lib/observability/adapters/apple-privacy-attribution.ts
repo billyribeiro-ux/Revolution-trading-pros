@@ -27,7 +27,7 @@ import type {
 	PageViewPayload,
 	CustomEventPayload,
 	IdentifyPayload,
-	AdapterMetrics,
+	AdapterMetrics
 } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -64,14 +64,14 @@ interface PCMAttributionData {
 const STORAGE_KEY = 'rtp_apple_attribution';
 const DEFAULT_CONVERSION_MAP: ConversionValueMap = {
 	// Funnel stages with SKAdNetwork conversion values
-	'page_view': { coarseValue: 'low', fineValue: 1 },
-	'popup_shown': { coarseValue: 'low', fineValue: 2 },
-	'popup_click': { coarseValue: 'low', fineValue: 5 },
-	'form_start': { coarseValue: 'medium', fineValue: 10 },
-	'form_submit': { coarseValue: 'medium', fineValue: 20 },
-	'signup': { coarseValue: 'high', fineValue: 40 },
-	'purchase': { coarseValue: 'high', fineValue: 63, lockWindow: true },
-	'subscription': { coarseValue: 'high', fineValue: 63, lockWindow: true },
+	page_view: { coarseValue: 'low', fineValue: 1 },
+	popup_shown: { coarseValue: 'low', fineValue: 2 },
+	popup_click: { coarseValue: 'low', fineValue: 5 },
+	form_start: { coarseValue: 'medium', fineValue: 10 },
+	form_submit: { coarseValue: 'medium', fineValue: 20 },
+	signup: { coarseValue: 'high', fineValue: 40 },
+	purchase: { coarseValue: 'high', fineValue: 63, lockWindow: true },
+	subscription: { coarseValue: 'high', fineValue: 63, lockWindow: true }
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -115,10 +115,9 @@ function isPCMSupported(): boolean {
  */
 function generatePrivacySessionId(): string {
 	// Use a hash-based approach that doesn't persist across sessions
-	const sessionData = [
-		Date.now().toString(36),
-		Math.random().toString(36).substring(2, 8),
-	].join('-');
+	const sessionData = [Date.now().toString(36), Math.random().toString(36).substring(2, 8)].join(
+		'-'
+	);
 
 	return sessionData;
 }
@@ -177,7 +176,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 		eventsFailed: 0,
 		lastEventTime: null,
 		averageLatencyMs: 0,
-		queueSize: 0,
+		queueSize: 0
 	};
 
 	/**
@@ -231,7 +230,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 		if (this._appleConfig.conversionValueMapping) {
 			this._conversionMap = {
 				...DEFAULT_CONVERSION_MAP,
-				...this._appleConfig.conversionValueMapping,
+				...this._appleConfig.conversionValueMapping
 			};
 		}
 
@@ -250,7 +249,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 			console.debug('[AppleAttribution] Initialized', {
 				isAppleDevice: this.isAppleDevice,
 				isPCMSupported: this.isPCMSupported,
-				sessionId: this._sessionId,
+				sessionId: this._sessionId
 			});
 		}
 	}
@@ -273,7 +272,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 
 		this._trackConversionEvent('page_view', {
 			page_path: payload.page_path,
-			page_type: payload.page_type,
+			page_type: payload.page_type
 		});
 	}
 
@@ -300,21 +299,21 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 
 		this._trackConversionEvent(eventName, {
 			popup_id: popupId,
-			conversion_value: value,
+			conversion_value: value
 		});
 
 		// Update stored attribution data
 		storeAttributionData({
 			lastPopupId: popupId,
 			lastPopupEvent: eventType,
-			conversionValue: this._currentConversionValue,
+			conversionValue: this._currentConversionValue
 		});
 
 		if (this._config?.debug) {
 			console.debug('[AppleAttribution] Popup conversion tracked:', {
 				popupId,
 				eventType,
-				conversionValue: this._currentConversionValue,
+				conversionValue: this._currentConversionValue
 			});
 		}
 	}
@@ -331,9 +330,9 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 			// Create attribution link for PCM
 			// This would typically be added to outbound links
 			const pcmParams = new URLSearchParams({
-				'attributionsourceid': attributionData.sourceId.toString(),
-				'attributiondestination': attributionData.destinationSite,
-				'attributionsourcepriority': attributionData.priority.toString(),
+				attributionsourceid: attributionData.sourceId.toString(),
+				attributiondestination: attributionData.destinationSite,
+				attributionsourcepriority: attributionData.priority.toString()
 			});
 
 			if (attributionData.triggerData !== undefined) {
@@ -343,7 +342,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 			storeAttributionData({
 				pcmRegistered: true,
 				pcmSourceId: attributionData.sourceId,
-				pcmDestination: attributionData.destinationSite,
+				pcmDestination: attributionData.destinationSite
 			});
 
 			if (this._config?.debug) {
@@ -369,7 +368,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 			storeAttributionData({
 				pcmConversionTriggered: true,
 				pcmTriggerData: triggerData,
-				pcmConversionTime: Date.now(),
+				pcmConversionTime: Date.now()
 			});
 
 			if (this._config?.debug) {
@@ -394,7 +393,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 
 		return {
 			fine: this._currentConversionValue,
-			coarse,
+			coarse
 		};
 	}
 
@@ -473,7 +472,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 			isPCMSupported: this.isPCMSupported,
 			currentConversionValue: this.getConversionValue(),
 			storedData: getAttributionData(),
-			metrics: this.metrics,
+			metrics: this.metrics
 		};
 	}
 
@@ -484,10 +483,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 	/**
 	 * Internal tracking method with conversion value updates.
 	 */
-	private _trackConversionEvent(
-		eventName: string,
-		payload: Record<string, unknown>
-	): void {
+	private _trackConversionEvent(eventName: string, payload: Record<string, unknown>): void {
 		try {
 			const mapping = this._conversionMap[eventName];
 
@@ -500,7 +496,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 					storeAttributionData({
 						conversionValue: this._currentConversionValue,
 						lastConversionEvent: eventName,
-						lastConversionTime: Date.now(),
+						lastConversionTime: Date.now()
 					});
 
 					// If lock window specified, prevent future updates
@@ -517,7 +513,7 @@ class ApplePrivacyAttributionAdapter implements AnalyticsAdapter {
 				console.debug('[AppleAttribution] Event tracked:', {
 					eventName,
 					payload,
-					conversionValue: this._currentConversionValue,
+					conversionValue: this._currentConversionValue
 				});
 			}
 		} catch (error) {

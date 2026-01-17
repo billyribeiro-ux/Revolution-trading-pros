@@ -29,7 +29,7 @@ export type {
 	// Config Types
 	GoogleAnalyticsConfig,
 	BackendAnalyticsConfig,
-	ConsoleAdapterConfig,
+	ConsoleAdapterConfig
 } from './types';
 
 export { AnalyticsEvents } from './types';
@@ -38,17 +38,11 @@ export { AnalyticsEvents } from './types';
 export {
 	getGoogleAnalyticsAdapter,
 	createGoogleAnalyticsAdapter,
-	resetGoogleAnalyticsAdapter,
+	resetGoogleAnalyticsAdapter
 } from './google-analytics';
 
 // Console Adapter
-export {
-	getConsoleAdapter,
-	createConsoleAdapter,
-} from './console';
+export { getConsoleAdapter, createConsoleAdapter } from './console';
 
 // Backend Adapter
-export {
-	getBackendAdapter,
-	createBackendAdapter,
-} from './backend';
+export { getBackendAdapter, createBackendAdapter } from './backend';

@@ -57,12 +57,42 @@
 
 	// Quick actions
 	let quickActions = [
-		{ id: 'intro', label: 'Write intro', icon: IconPencil, prompt: 'Write an engaging introduction for a blog post about' },
-		{ id: 'conclusion', label: 'Write conclusion', icon: IconFileDescription, prompt: 'Write a compelling conclusion for' },
-		{ id: 'expand', label: 'Expand text', icon: IconSparkles, prompt: 'Expand and add more detail to this text:' },
-		{ id: 'simplify', label: 'Simplify', icon: IconBulb, prompt: 'Simplify this text for easier reading:' },
-		{ id: 'headline', label: 'Generate headlines', icon: IconWand, prompt: 'Generate 5 catchy headlines for:' },
-		{ id: 'bullets', label: 'Create bullet points', icon: IconFileDescription, prompt: 'Convert this into bullet points:' }
+		{
+			id: 'intro',
+			label: 'Write intro',
+			icon: IconPencil,
+			prompt: 'Write an engaging introduction for a blog post about'
+		},
+		{
+			id: 'conclusion',
+			label: 'Write conclusion',
+			icon: IconFileDescription,
+			prompt: 'Write a compelling conclusion for'
+		},
+		{
+			id: 'expand',
+			label: 'Expand text',
+			icon: IconSparkles,
+			prompt: 'Expand and add more detail to this text:'
+		},
+		{
+			id: 'simplify',
+			label: 'Simplify',
+			icon: IconBulb,
+			prompt: 'Simplify this text for easier reading:'
+		},
+		{
+			id: 'headline',
+			label: 'Generate headlines',
+			icon: IconWand,
+			prompt: 'Generate 5 catchy headlines for:'
+		},
+		{
+			id: 'bullets',
+			label: 'Create bullet points',
+			icon: IconFileDescription,
+			prompt: 'Convert this into bullet points:'
+		}
 	];
 
 	let toneOptions = [
@@ -114,7 +144,7 @@
 	async function simulateAIGeneration() {
 		// This would be replaced with actual AI API call
 		// For demo purposes, we simulate the response
-		await new Promise(resolve => setTimeout(resolve, 2000));
+		await new Promise((resolve) => setTimeout(resolve, 2000));
 
 		const baseContent = prompt.toLowerCase();
 
@@ -130,7 +160,6 @@
 	}
 
 	function generateSampleContent(topic: string, tone: string): string {
-
 		// Sample generated content based on tone
 		const intros: Record<string, string> = {
 			professional: `In today's rapidly evolving landscape, understanding ${topic} has become essential for success.`,
@@ -171,7 +200,7 @@ ${text}
 	}
 
 	function translateSampleContent(text: string, lang: string): string {
-		const langName = languages.find(l => l.code === lang)?.name || lang;
+		const langName = languages.find((l) => l.code === lang)?.name || lang;
 		return `**${langName} Translation:**
 
 [Translated content would appear here]
@@ -198,7 +227,7 @@ This text discusses key concepts and provides insights into the main topic. The 
 - Summary: ~50 words (${Math.round((50 / wordCount) * 100)}% of original)`;
 	}
 
-	function handleQuickAction(action: typeof quickActions[0]) {
+	function handleQuickAction(action: (typeof quickActions)[0]) {
 		prompt = action.prompt + ' ';
 		activeTab = 'generate';
 	}
@@ -215,7 +244,7 @@ This text discusses key concepts and provides insights into the main topic. The 
 		if (generatedContent) {
 			await navigator.clipboard.writeText(generatedContent);
 			copied = true;
-			setTimeout(() => copied = false, 2000);
+			setTimeout(() => (copied = false), 2000);
 		}
 	}
 
@@ -260,7 +289,7 @@ This text discusses key concepts and provides insights into the main topic. The 
 			type="button"
 			class="ai-tab"
 			class:active={activeTab === 'generate'}
-			onclick={() => activeTab = 'generate'}
+			onclick={() => (activeTab = 'generate')}
 		>
 			<IconWand size={16} />
 			Generate
@@ -269,7 +298,7 @@ This text discusses key concepts and provides insights into the main topic. The 
 			type="button"
 			class="ai-tab"
 			class:active={activeTab === 'improve'}
-			onclick={() => activeTab = 'improve'}
+			onclick={() => (activeTab = 'improve')}
 		>
 			<IconSparkles size={16} />
 			Improve
@@ -278,7 +307,7 @@ This text discusses key concepts and provides insights into the main topic. The 
 			type="button"
 			class="ai-tab"
 			class:active={activeTab === 'translate'}
-			onclick={() => activeTab = 'translate'}
+			onclick={() => (activeTab = 'translate')}
 		>
 			<IconLanguage size={16} />
 			Translate
@@ -287,7 +316,7 @@ This text discusses key concepts and provides insights into the main topic. The 
 			type="button"
 			class="ai-tab"
 			class:active={activeTab === 'summarize'}
-			onclick={() => activeTab = 'summarize'}
+			onclick={() => (activeTab = 'summarize')}
 		>
 			<IconFileDescription size={16} />
 			Summarize
@@ -338,21 +367,14 @@ This text discusses key concepts and provides insights into the main topic. The 
 					</div>
 				</div>
 			</div>
-
 		{:else if activeTab === 'improve'}
 			<div class="improve-panel" transition:fade={{ duration: 150 }}>
 				<div class="prompt-input">
-					<textarea
-						bind:value={prompt}
-						placeholder="Paste the text you want to improve..."
-						rows="6"
+					<textarea bind:value={prompt} placeholder="Paste the text you want to improve..." rows="6"
 					></textarea>
 				</div>
-				<p class="help-text">
-					AI will enhance clarity, fix grammar, and improve readability.
-				</p>
+				<p class="help-text">AI will enhance clarity, fix grammar, and improve readability.</p>
 			</div>
-
 		{:else if activeTab === 'translate'}
 			<div class="translate-panel" transition:fade={{ duration: 150 }}>
 				<div class="prompt-input">
@@ -373,7 +395,6 @@ This text discusses key concepts and provides insights into the main topic. The 
 					</div>
 				</div>
 			</div>
-
 		{:else if activeTab === 'summarize'}
 			<div class="summarize-panel" transition:fade={{ duration: 150 }}>
 				<div class="prompt-input">
@@ -383,9 +404,7 @@ This text discusses key concepts and provides insights into the main topic. The 
 						rows="6"
 					></textarea>
 				</div>
-				<p class="help-text">
-					AI will create a concise summary with key takeaways.
-				</p>
+				<p class="help-text">AI will create a concise summary with key takeaways.</p>
 			</div>
 		{/if}
 
@@ -654,8 +673,12 @@ This text discusses key concepts and provides insights into the main topic. The 
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Error */

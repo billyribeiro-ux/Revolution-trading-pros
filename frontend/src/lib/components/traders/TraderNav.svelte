@@ -7,20 +7,20 @@
 -->
 <script lang="ts">
 	import { traderSubPages } from '$lib/data/traders';
-	
+
 	// ICT 7 FIX: Svelte 5 $props() syntax (Nov 2025 best practice)
 	interface Props {
 		traderSlug: string;
 		currentPath?: string;
 	}
-	
+
 	let { traderSlug, currentPath = '' }: Props = $props();
 </script>
 
 <div class="trader_pills">
 	{#each traderSubPages as pill}
 		<div class="trader_pill">
-			<a 
+			<a
 				href="/dashboard/day-trading-room/meet-the-traders/{traderSlug}{pill.path}"
 				class:active={currentPath === pill.path}
 			>
@@ -56,15 +56,15 @@
 	}
 
 	.trader_pill a:hover {
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
-		border-color: #F69532;
+		border-color: #f69532;
 	}
 
 	.trader_pill a.active {
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
-		border-color: #F69532;
+		border-color: #f69532;
 	}
 
 	@media (max-width: 767px) {

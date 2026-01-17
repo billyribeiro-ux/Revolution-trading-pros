@@ -29,8 +29,8 @@
 				<tr>
 					<td>{doc.title}</td>
 					<td class="text-right">
-						<DownloadButton 
-							href={doc.url} 
+						<DownloadButton
+							href={doc.url}
 							text="Click to View"
 							target="_blank"
 							rel="noopener noreferrer"

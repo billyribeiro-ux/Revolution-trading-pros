@@ -50,7 +50,9 @@
 					type="button"
 					class="score-btn"
 					class:selected={value === i}
-					style={value === i ? `background-color: ${getScoreColor(i)}; color: white; border-color: ${getScoreColor(i)};` : ''}
+					style={value === i
+						? `background-color: ${getScoreColor(i)}; color: white; border-color: ${getScoreColor(i)};`
+						: ''}
 					onclick={() => onchange?.(i)}
 					aria-label={`Score ${i}`}
 				>

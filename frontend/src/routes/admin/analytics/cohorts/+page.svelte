@@ -150,9 +150,16 @@
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
-				<div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/20">
+				<div
+					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center text-2xl shadow-lg shadow-purple-500/20"
+				>
 					<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+						/>
 					</svg>
 				</div>
 				<div>
@@ -187,7 +194,9 @@
 			<div class="flex items-center justify-center py-20">
 				<div class="relative">
 					<div class="w-12 h-12 border-4 border-purple-500/20 rounded-full"></div>
-					<div class="absolute top-0 left-0 w-12 h-12 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"></div>
+					<div
+						class="absolute top-0 left-0 w-12 h-12 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"
+					></div>
 				</div>
 			</div>
 		{:else if !$isAnalyticsConnected}
@@ -196,14 +205,25 @@
 			<div class="flex items-center justify-center py-20">
 				<div class="relative">
 					<div class="w-10 h-10 border-4 border-purple-500/20 rounded-full"></div>
-					<div class="absolute top-0 left-0 w-10 h-10 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"></div>
+					<div
+						class="absolute top-0 left-0 w-10 h-10 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"
+					></div>
 				</div>
 			</div>
 		{:else if error}
-			<div class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 text-center">
-				<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center">
+			<div
+				class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 text-center"
+			>
+				<div
+					class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
+				>
 					<svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
 					</svg>
 				</div>
 				<p class="text-red-400 mb-4">{error}</p>
@@ -216,9 +236,21 @@
 			</div>
 		{:else if cohorts.length === 0}
 			<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center">
-				<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-purple-500/10 flex items-center justify-center">
-					<svg class="w-8 h-8 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z" />
+				<div
+					class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-purple-500/10 flex items-center justify-center"
+				>
+					<svg
+						class="w-8 h-8 text-purple-400"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"
+						/>
 					</svg>
 				</div>
 				<h3 class="text-lg font-medium text-white mb-2">No Cohorts Yet</h3>
@@ -290,7 +322,9 @@
 				{/if}
 
 				<!-- Cohort Matrix -->
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden mb-8">
+				<div
+					class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden mb-8"
+				>
 					<CohortMatrix data={selectedCohort.retention_matrix} title={selectedCohort.name} />
 				</div>
 
@@ -315,7 +349,9 @@
 						<div>
 							<div class="text-xs font-medium text-slate-500 uppercase mb-1">Total Users</div>
 							<div class="text-sm text-white">
-								{selectedCohort.retention_matrix.reduce((sum, r) => sum + r.size, 0).toLocaleString()}
+								{selectedCohort.retention_matrix
+									.reduce((sum, r) => sum + r.size, 0)
+									.toLocaleString()}
 							</div>
 						</div>
 					</div>
@@ -344,7 +380,12 @@
 						aria-label="Close modal"
 					>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M6 18L18 6M6 6l12 12"
+							/>
 						</svg>
 					</button>
 				</div>
@@ -352,7 +393,8 @@
 
 			<div class="p-6 space-y-4">
 				<div>
-					<label for="cohort-name" class="block text-sm font-medium text-slate-300 mb-2">Name</label>
+					<label for="cohort-name" class="block text-sm font-medium text-slate-300 mb-2">Name</label
+					>
 					<input
 						id="cohort-name"
 						type="text"
@@ -363,7 +405,9 @@
 				</div>
 
 				<div>
-					<label for="cohort-description" class="block text-sm font-medium text-slate-300 mb-2">Description</label>
+					<label for="cohort-description" class="block text-sm font-medium text-slate-300 mb-2"
+						>Description</label
+					>
 					<textarea
 						id="cohort-description"
 						bind:value={newCohort.description}
@@ -375,7 +419,9 @@
 
 				<div class="grid grid-cols-2 gap-4">
 					<div>
-						<label for="cohort-type" class="block text-sm font-medium text-slate-300 mb-2">Type</label>
+						<label for="cohort-type" class="block text-sm font-medium text-slate-300 mb-2"
+							>Type</label
+						>
 						<select
 							id="cohort-type"
 							bind:value={newCohort.type}
@@ -387,7 +433,9 @@
 						</select>
 					</div>
 					<div>
-						<label for="cohort-granularity" class="block text-sm font-medium text-slate-300 mb-2">Granularity</label>
+						<label for="cohort-granularity" class="block text-sm font-medium text-slate-300 mb-2"
+							>Granularity</label
+						>
 						<select
 							id="cohort-granularity"
 							bind:value={newCohort.granularity}
@@ -403,7 +451,9 @@
 				{#if newCohort.type === 'custom'}
 					<div class="grid grid-cols-2 gap-4">
 						<div>
-							<label for="cohort-start-event" class="block text-sm font-medium text-slate-300 mb-2">Start Event</label>
+							<label for="cohort-start-event" class="block text-sm font-medium text-slate-300 mb-2"
+								>Start Event</label
+							>
 							<input
 								id="cohort-start-event"
 								type="text"
@@ -413,7 +463,9 @@
 							/>
 						</div>
 						<div>
-							<label for="cohort-return-event" class="block text-sm font-medium text-slate-300 mb-2">Return Event</label>
+							<label for="cohort-return-event" class="block text-sm font-medium text-slate-300 mb-2"
+								>Return Event</label
+							>
 							<input
 								id="cohort-return-event"
 								type="text"

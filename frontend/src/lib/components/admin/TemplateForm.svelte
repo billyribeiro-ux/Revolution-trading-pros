@@ -9,11 +9,7 @@
 		onsaved?: (detail: { id: number }) => void;
 	}
 
-	let {
-		template = null,
-		isEdit = false,
-		onsaved
-	}: Props = $props();
+	let { template = null, isEdit = false, onsaved }: Props = $props();
 
 	// Form fields
 	let name = $state('');
@@ -89,7 +85,12 @@
 	{#if error}
 		<p class="alert alert-error">{error}</p>
 	{/if}
-	<form onsubmit={(e: SubmitEvent) => { e.preventDefault(); handleSubmit(); }}>
+	<form
+		onsubmit={(e: SubmitEvent) => {
+			e.preventDefault();
+			handleSubmit();
+		}}
+	>
 		<div class="grid">
 			<div class="field">
 				<label for="name">Name</label>
@@ -133,12 +134,8 @@
 			</div>
 		</div>
 		<div class="actions">
-			<button
-				type="button"
-				class="btn-secondary"
-				onclick={cancel}
-				disabled={loading}
-				title="Cancel"><IconX size={18} /> Cancel</button
+			<button type="button" class="btn-secondary" onclick={cancel} disabled={loading} title="Cancel"
+				><IconX size={18} /> Cancel</button
 			>
 			<button type="submit" class="btn-primary" disabled={loading} title="Save">
 				{#if loading}
@@ -185,7 +182,7 @@
 	input:focus,
 	textarea:focus {
 		outline: none;
-		border-color: #E6B800;
+		border-color: #e6b800;
 		background: rgba(15, 23, 42, 0.7);
 	}
 	.actions {
@@ -195,8 +192,8 @@
 		margin-top: 1.5rem;
 	}
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800, #B38F00);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800, #b38f00);
+		color: #0d1117;
 		border: none;
 		padding: 0.5rem 1rem;
 		border-radius: 6px;

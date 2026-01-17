@@ -63,20 +63,23 @@
 			let expression = formula;
 
 			// Replace field references {field_name} with actual values
-			expression = expression.replace(/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g, (_: string, fieldName: string) => {
-				const value = formData[fieldName];
+			expression = expression.replace(
+				/\{([a-zA-Z_][a-zA-Z0-9_]*)\}/g,
+				(_: string, fieldName: string) => {
+					const value = formData[fieldName];
 
-				if (value === undefined || value === null || value === '') {
-					return '0';
+					if (value === undefined || value === null || value === '') {
+						return '0';
+					}
+
+					if (typeof value === 'number') {
+						return String(value);
+					}
+
+					const parsed = parseFloat(value);
+					return isNaN(parsed) ? '0' : String(parsed);
 				}
-
-				if (typeof value === 'number') {
-					return String(value);
-				}
-
-				const parsed = parseFloat(value);
-				return isNaN(parsed) ? '0' : String(parsed);
-			});
+			);
 
 			// Process built-in functions
 			expression = processFunctions(expression);
@@ -209,12 +212,21 @@
 		switch (format) {
 			case 'currency': {
 				const symbol = currencySymbols[currency] || currency + ' ';
-				return symbol + value.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals });
+				return (
+					symbol +
+					value.toLocaleString(undefined, {
+						minimumFractionDigits: decimals,
+						maximumFractionDigits: decimals
+					})
+				);
 			}
 
 			case 'percentage':
 				return (
-					value.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) + '%'
+					value.toLocaleString(undefined, {
+						minimumFractionDigits: decimals,
+						maximumFractionDigits: decimals
+					}) + '%'
 				);
 
 			case 'integer':
@@ -223,7 +235,10 @@
 			default:
 				return (
 					prefix +
-					value.toLocaleString(undefined, { minimumFractionDigits: decimals, maximumFractionDigits: decimals }) +
+					value.toLocaleString(undefined, {
+						minimumFractionDigits: decimals,
+						maximumFractionDigits: decimals
+					}) +
 					suffix
 				);
 		}
@@ -242,7 +257,13 @@
 		<p class="field-help">{field.help_text}</p>
 	{/if}
 
-	<div class="calculated-display" class:has-error={!!error} id={field.name} role="status" aria-live="polite">
+	<div
+		class="calculated-display"
+		class:has-error={!!error}
+		id={field.name}
+		role="status"
+		aria-live="polite"
+	>
 		<span class="calculated-value">{displayValue}</span>
 		{#if calculatedValue !== null}
 			<span class="raw-value">({calculatedValue})</span>

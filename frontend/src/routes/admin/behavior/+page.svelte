@@ -94,244 +94,253 @@
 
 <div class="behavior-page">
 	<div class="admin-page-container">
-	<!-- Header -->
-	<div class="page-header">
-		<div>
-			<h1>Behavior Tracking</h1>
-			<p class="page-description">Analyze user interactions, clicks, scrolls, and session recordings</p>
-		</div>
-		{#if $isBehaviorConnected}
-			<div class="header-actions">
-				<div class="period-selector">
-					<button class:active={selectedPeriod === '24h'} onclick={() => changePeriod('24h')}>24H</button>
-					<button class:active={selectedPeriod === '7d'} onclick={() => changePeriod('7d')}>7D</button>
-					<button class:active={selectedPeriod === '30d'} onclick={() => changePeriod('30d')}>30D</button>
+		<!-- Header -->
+		<div class="page-header">
+			<div>
+				<h1>Behavior Tracking</h1>
+				<p class="page-description">
+					Analyze user interactions, clicks, scrolls, and session recordings
+				</p>
+			</div>
+			{#if $isBehaviorConnected}
+				<div class="header-actions">
+					<div class="period-selector">
+						<button class:active={selectedPeriod === '24h'} onclick={() => changePeriod('24h')}
+							>24H</button
+						>
+						<button class:active={selectedPeriod === '7d'} onclick={() => changePeriod('7d')}
+							>7D</button
+						>
+						<button class:active={selectedPeriod === '30d'} onclick={() => changePeriod('30d')}
+							>30D</button
+						>
+					</div>
+					<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
+						<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					</button>
 				</div>
-				<button class="btn-refresh" onclick={loadData} disabled={isLoading}>
-					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-				</button>
+			{/if}
+		</div>
+
+		<!-- Connection Check -->
+		{#if connectionLoading}
+			<SkeletonLoader variant="dashboard" />
+		{:else if !$isBehaviorConnected}
+			<ApiNotConnected
+				serviceName="Behavior Analytics"
+				description="Connect an analytics platform to track user behavior, record sessions, and generate heatmaps for deeper insights."
+				serviceKey="google_analytics"
+				icon="🔍"
+				color="#10b981"
+				features={[
+					'Track user sessions and interactions',
+					'Record and replay user sessions',
+					'Generate click and scroll heatmaps',
+					'Analyze page engagement metrics',
+					'Identify UX issues and opportunities'
+				]}
+			/>
+		{:else}
+			{#if error}
+				<div class="error-banner">{error}</div>
+			{/if}
+
+			<!-- Metrics Grid -->
+			<div class="metrics-grid">
+				<div class="metric-card">
+					<div class="metric-icon blue">
+						<IconEye size={24} />
+					</div>
+					<div class="metric-content">
+						<span class="metric-value">{metrics.totalSessions.toLocaleString()}</span>
+						<span class="metric-label">Total Sessions</span>
+					</div>
+					<div class="metric-trend positive">
+						<IconArrowUpRight size={14} />
+						<span>12.5%</span>
+					</div>
+				</div>
+
+				<div class="metric-card">
+					<div class="metric-icon purple">
+						<IconClock size={24} />
+					</div>
+					<div class="metric-content">
+						<span class="metric-value">{metrics.avgSessionDuration}</span>
+						<span class="metric-label">Avg. Session Duration</span>
+					</div>
+					<div class="metric-trend positive">
+						<IconArrowUpRight size={14} />
+						<span>8.3%</span>
+					</div>
+				</div>
+
+				<div class="metric-card">
+					<div class="metric-icon cyan">
+						<IconChartBar size={24} />
+					</div>
+					<div class="metric-content">
+						<span class="metric-value">{metrics.pagesPerSession.toFixed(1)}</span>
+						<span class="metric-label">Pages / Session</span>
+					</div>
+					<div class="metric-trend positive">
+						<IconArrowUpRight size={14} />
+						<span>5.2%</span>
+					</div>
+				</div>
+
+				<div class="metric-card">
+					<div class="metric-icon green">
+						<IconPointer size={24} />
+					</div>
+					<div class="metric-content">
+						<span class="metric-value">{metrics.scrollDepth}%</span>
+						<span class="metric-label">Avg. Scroll Depth</span>
+					</div>
+					<div class="metric-trend positive">
+						<IconArrowUpRight size={14} />
+						<span>3.1%</span>
+					</div>
+				</div>
+
+				<div class="metric-card">
+					<div class="metric-icon orange">
+						<IconClick size={24} />
+					</div>
+					<div class="metric-content">
+						<span class="metric-value">{metrics.clickRate}%</span>
+						<span class="metric-label">Click Rate</span>
+					</div>
+					<div class="metric-trend negative">
+						<IconArrowUpRight size={14} />
+						<span>1.2%</span>
+					</div>
+				</div>
+
+				<div class="metric-card">
+					<div class="metric-icon pink">
+						<IconCursor size={24} />
+					</div>
+					<div class="metric-content">
+						<span class="metric-value">{metrics.heatmapViews.toLocaleString()}</span>
+						<span class="metric-label">Heatmap Views</span>
+					</div>
+					<div class="metric-trend positive">
+						<IconArrowUpRight size={14} />
+						<span>15.7%</span>
+					</div>
+				</div>
+			</div>
+
+			<!-- Content Grid -->
+			<div class="content-grid">
+				<!-- Click Heatmap Section -->
+				<div class="panel">
+					<div class="panel-header">
+						<h3>
+							<IconClick size={20} />
+							Top Click Elements
+						</h3>
+						<a href="/admin/analytics/heatmaps" class="panel-link">View Heatmaps</a>
+					</div>
+					<div class="panel-content">
+						{#if topClicks.length === 0}
+							<div class="empty-state">
+								<IconClick size={32} />
+								<p>No click data available yet</p>
+							</div>
+						{:else}
+							<div class="click-list">
+								{#each topClicks as click, i}
+									<div class="click-item">
+										<span class="click-rank">{i + 1}</span>
+										<div class="click-info">
+											<span class="click-element">{click.element}</span>
+											<span class="click-page">{click.page}</span>
+										</div>
+										<span class="click-count">{click.count}</span>
+									</div>
+								{/each}
+							</div>
+						{/if}
+					</div>
+				</div>
+
+				<!-- Scroll Depth Section -->
+				<div class="panel">
+					<div class="panel-header">
+						<h3>
+							<IconPointer size={20} />
+							Scroll Depth by Page
+						</h3>
+					</div>
+					<div class="panel-content">
+						{#if topScrolls.length === 0}
+							<div class="empty-state">
+								<IconPointer size={32} />
+								<p>No scroll data available yet</p>
+							</div>
+						{:else}
+							<div class="scroll-list">
+								{#each topScrolls as scroll}
+									<div class="scroll-item">
+										<div class="scroll-info">
+											<span class="scroll-page">{scroll.page}</span>
+											<span class="scroll-views">{scroll.views} views</span>
+										</div>
+										<div class="scroll-bar-wrap">
+											<div class="scroll-bar" style="width: {scroll.avgDepth}%"></div>
+										</div>
+										<span class="scroll-depth">{scroll.avgDepth}%</span>
+									</div>
+								{/each}
+							</div>
+						{/if}
+					</div>
+				</div>
+
+				<!-- Session Recordings -->
+				<div class="panel full-width">
+					<div class="panel-header">
+						<h3>
+							<IconPlay size={20} />
+							Recent Session Recordings
+						</h3>
+						<a href="/admin/analytics/recordings" class="panel-link">View All</a>
+					</div>
+					<div class="panel-content">
+						{#if recordings.length === 0}
+							<div class="empty-state">
+								<IconPlay size={32} />
+								<p>No session recordings available</p>
+								<span class="empty-hint">Session recordings help you understand user behavior</span>
+							</div>
+						{:else}
+							<div class="recordings-grid">
+								{#each recordings as recording}
+									<div class="recording-card">
+										<div class="recording-preview">
+											<IconPlay size={24} />
+										</div>
+										<div class="recording-info">
+											<span class="recording-duration">{recording.duration}</span>
+											<span class="recording-pages">{recording.pages} pages</span>
+											<span class="recording-date">{recording.date}</span>
+										</div>
+										<button class="btn-play">
+											<IconPlay size={16} />
+											Watch
+										</button>
+									</div>
+								{/each}
+							</div>
+						{/if}
+					</div>
+				</div>
 			</div>
 		{/if}
 	</div>
-
-	<!-- Connection Check -->
-	{#if connectionLoading}
-		<SkeletonLoader variant="dashboard" />
-	{:else if !$isBehaviorConnected}
-		<ApiNotConnected
-			serviceName="Behavior Analytics"
-			description="Connect an analytics platform to track user behavior, record sessions, and generate heatmaps for deeper insights."
-			serviceKey="google_analytics"
-			icon="🔍"
-			color="#10b981"
-			features={[
-				'Track user sessions and interactions',
-				'Record and replay user sessions',
-				'Generate click and scroll heatmaps',
-				'Analyze page engagement metrics',
-				'Identify UX issues and opportunities'
-			]}
-		/>
-	{:else}
-		{#if error}
-			<div class="error-banner">{error}</div>
-		{/if}
-
-		<!-- Metrics Grid -->
-		<div class="metrics-grid">
-		<div class="metric-card">
-			<div class="metric-icon blue">
-				<IconEye size={24} />
-			</div>
-			<div class="metric-content">
-				<span class="metric-value">{metrics.totalSessions.toLocaleString()}</span>
-				<span class="metric-label">Total Sessions</span>
-			</div>
-			<div class="metric-trend positive">
-				<IconArrowUpRight size={14} />
-				<span>12.5%</span>
-			</div>
-		</div>
-
-		<div class="metric-card">
-			<div class="metric-icon purple">
-				<IconClock size={24} />
-			</div>
-			<div class="metric-content">
-				<span class="metric-value">{metrics.avgSessionDuration}</span>
-				<span class="metric-label">Avg. Session Duration</span>
-			</div>
-			<div class="metric-trend positive">
-				<IconArrowUpRight size={14} />
-				<span>8.3%</span>
-			</div>
-		</div>
-
-		<div class="metric-card">
-			<div class="metric-icon cyan">
-				<IconChartBar size={24} />
-			</div>
-			<div class="metric-content">
-				<span class="metric-value">{metrics.pagesPerSession.toFixed(1)}</span>
-				<span class="metric-label">Pages / Session</span>
-			</div>
-			<div class="metric-trend positive">
-				<IconArrowUpRight size={14} />
-				<span>5.2%</span>
-			</div>
-		</div>
-
-		<div class="metric-card">
-			<div class="metric-icon green">
-				<IconPointer size={24} />
-			</div>
-			<div class="metric-content">
-				<span class="metric-value">{metrics.scrollDepth}%</span>
-				<span class="metric-label">Avg. Scroll Depth</span>
-			</div>
-			<div class="metric-trend positive">
-				<IconArrowUpRight size={14} />
-				<span>3.1%</span>
-			</div>
-		</div>
-
-		<div class="metric-card">
-			<div class="metric-icon orange">
-				<IconClick size={24} />
-			</div>
-			<div class="metric-content">
-				<span class="metric-value">{metrics.clickRate}%</span>
-				<span class="metric-label">Click Rate</span>
-			</div>
-			<div class="metric-trend negative">
-				<IconArrowUpRight size={14} />
-				<span>1.2%</span>
-			</div>
-		</div>
-
-		<div class="metric-card">
-			<div class="metric-icon pink">
-				<IconCursor size={24} />
-			</div>
-			<div class="metric-content">
-				<span class="metric-value">{metrics.heatmapViews.toLocaleString()}</span>
-				<span class="metric-label">Heatmap Views</span>
-			</div>
-			<div class="metric-trend positive">
-				<IconArrowUpRight size={14} />
-				<span>15.7%</span>
-			</div>
-		</div>
-	</div>
-
-	<!-- Content Grid -->
-	<div class="content-grid">
-		<!-- Click Heatmap Section -->
-		<div class="panel">
-			<div class="panel-header">
-				<h3>
-					<IconClick size={20} />
-					Top Click Elements
-				</h3>
-				<a href="/admin/analytics/heatmaps" class="panel-link">View Heatmaps</a>
-			</div>
-			<div class="panel-content">
-				{#if topClicks.length === 0}
-					<div class="empty-state">
-						<IconClick size={32} />
-						<p>No click data available yet</p>
-					</div>
-				{:else}
-					<div class="click-list">
-						{#each topClicks as click, i}
-							<div class="click-item">
-								<span class="click-rank">{i + 1}</span>
-								<div class="click-info">
-									<span class="click-element">{click.element}</span>
-									<span class="click-page">{click.page}</span>
-								</div>
-								<span class="click-count">{click.count}</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-		</div>
-
-		<!-- Scroll Depth Section -->
-		<div class="panel">
-			<div class="panel-header">
-				<h3>
-					<IconPointer size={20} />
-					Scroll Depth by Page
-				</h3>
-			</div>
-			<div class="panel-content">
-				{#if topScrolls.length === 0}
-					<div class="empty-state">
-						<IconPointer size={32} />
-						<p>No scroll data available yet</p>
-					</div>
-				{:else}
-					<div class="scroll-list">
-						{#each topScrolls as scroll}
-							<div class="scroll-item">
-								<div class="scroll-info">
-									<span class="scroll-page">{scroll.page}</span>
-									<span class="scroll-views">{scroll.views} views</span>
-								</div>
-								<div class="scroll-bar-wrap">
-									<div class="scroll-bar" style="width: {scroll.avgDepth}%"></div>
-								</div>
-								<span class="scroll-depth">{scroll.avgDepth}%</span>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-		</div>
-
-		<!-- Session Recordings -->
-		<div class="panel full-width">
-			<div class="panel-header">
-				<h3>
-					<IconPlay size={20} />
-					Recent Session Recordings
-				</h3>
-				<a href="/admin/analytics/recordings" class="panel-link">View All</a>
-			</div>
-			<div class="panel-content">
-				{#if recordings.length === 0}
-					<div class="empty-state">
-						<IconPlay size={32} />
-						<p>No session recordings available</p>
-						<span class="empty-hint">Session recordings help you understand user behavior</span>
-					</div>
-				{:else}
-					<div class="recordings-grid">
-						{#each recordings as recording}
-							<div class="recording-card">
-								<div class="recording-preview">
-									<IconPlay size={24} />
-								</div>
-								<div class="recording-info">
-									<span class="recording-duration">{recording.duration}</span>
-									<span class="recording-pages">{recording.pages} pages</span>
-									<span class="recording-date">{recording.date}</span>
-								</div>
-								<button class="btn-play">
-									<IconPlay size={16} />
-									Watch
-								</button>
-							</div>
-						{/each}
-					</div>
-				{/if}
-			</div>
-		</div>
-	</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -390,7 +399,7 @@
 	}
 
 	.period-selector button.active {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		color: white;
 	}
 
@@ -410,7 +419,7 @@
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -418,8 +427,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.error-banner {
@@ -440,11 +453,15 @@
 	}
 
 	@media (max-width: 1400px) {
-		.metrics-grid { grid-template-columns: repeat(3, 1fr); }
+		.metrics-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 
 	@media (max-width: 768px) {
-		.metrics-grid { grid-template-columns: repeat(2, 1fr); }
+		.metrics-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.metric-card {
@@ -467,12 +484,30 @@
 		justify-content: center;
 	}
 
-	.metric-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.metric-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
-	.metric-icon.cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
-	.metric-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.metric-icon.orange { background: rgba(251, 146, 60, 0.15); color: #fb923c; }
-	.metric-icon.pink { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
+	.metric-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.metric-icon.purple {
+		background: rgba(230, 184, 0, 0.15);
+		color: #e6b800;
+	}
+	.metric-icon.cyan {
+		background: rgba(6, 182, 212, 0.15);
+		color: #22d3ee;
+	}
+	.metric-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.metric-icon.orange {
+		background: rgba(251, 146, 60, 0.15);
+		color: #fb923c;
+	}
+	.metric-icon.pink {
+		background: rgba(236, 72, 153, 0.15);
+		color: #f472b6;
+	}
 
 	.metric-content {
 		display: flex;
@@ -522,7 +557,9 @@
 	}
 
 	@media (max-width: 1024px) {
-		.content-grid { grid-template-columns: 1fr; }
+		.content-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.panel {
@@ -537,7 +574,9 @@
 	}
 
 	@media (max-width: 1024px) {
-		.panel.full-width { grid-column: span 1; }
+		.panel.full-width {
+			grid-column: span 1;
+		}
 	}
 
 	.panel-header {
@@ -559,17 +598,17 @@
 	}
 
 	.panel-header h3 :global(svg) {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.panel-link {
 		font-size: 0.85rem;
-		color: #E6B800;
+		color: #e6b800;
 		text-decoration: none;
 	}
 
 	.panel-link:hover {
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.panel-content {
@@ -626,7 +665,7 @@
 		border-radius: 8px;
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.click-info {
@@ -648,7 +687,7 @@
 
 	.click-count {
 		font-weight: 600;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	/* Scroll List */
@@ -695,7 +734,7 @@
 
 	.scroll-bar {
 		height: 100%;
-		background: linear-gradient(90deg, #E6B800, #B38F00);
+		background: linear-gradient(90deg, #e6b800, #b38f00);
 		border-radius: 4px;
 		transition: width 0.5s ease-out;
 	}
@@ -704,7 +743,7 @@
 		width: 50px;
 		text-align: right;
 		font-weight: 600;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	/* Recordings */
@@ -732,7 +771,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.recording-info {
@@ -765,7 +804,7 @@
 		background: rgba(230, 184, 0, 0.2);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 8px;
-		color: #E6B800;
+		color: #e6b800;
 		font-size: 0.85rem;
 		font-weight: 500;
 		cursor: pointer;

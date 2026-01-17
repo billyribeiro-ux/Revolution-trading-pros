@@ -19,7 +19,7 @@
 		id: number | string;
 		title: string;
 		slug: string;
-		
+
 		// Optional display properties
 		description?: string | null;
 		thumbnail_url?: string | null;
@@ -28,7 +28,7 @@
 		formatted_date?: string;
 		duration?: number | null;
 		formatted_duration?: string;
-		
+
 		// Allow any additional properties from API responses
 		video_url?: string;
 		embed_url?: string;
@@ -41,7 +41,7 @@
 		views_count?: number;
 		rooms?: Array<{ id: number; name: string; slug: string }>;
 		created_at?: string;
-		
+
 		// Catch-all for any other properties
 		[key: string]: unknown;
 	}
@@ -56,8 +56,8 @@
 		emptyMessage?: string;
 	}
 
-	let { 
-		videos, 
+	let {
+		videos,
 		currentPage,
 		totalPages,
 		basePath = '/learning-center',
@@ -93,7 +93,11 @@
 			if (currentPage > 3) {
 				range.push('...');
 			}
-			for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+			for (
+				let i = Math.max(2, currentPage - delta);
+				i <= Math.min(totalPages - 1, currentPage + delta);
+				i++
+			) {
 				if (!range.includes(i)) {
 					range.push(i);
 				}
@@ -130,8 +134,8 @@
 		<ul class="page-numbers">
 			{#if currentPage > 1}
 				<li>
-					<button 
-						class="page-numbers" 
+					<button
+						class="page-numbers"
 						onclick={() => goToPage(currentPage - 1)}
 						type="button"
 						aria-label="Previous page"
@@ -140,7 +144,7 @@
 					</button>
 				</li>
 			{/if}
-			
+
 			{#each getPaginationRange() as pageNum}
 				<li>
 					{#if pageNum === '...'}
@@ -148,21 +152,17 @@
 					{:else if pageNum === currentPage}
 						<span class="page-numbers current" aria-current="page">{pageNum}</span>
 					{:else}
-						<button 
-							class="page-numbers" 
-							onclick={() => goToPage(pageNum as number)}
-							type="button"
-						>
+						<button class="page-numbers" onclick={() => goToPage(pageNum as number)} type="button">
 							{pageNum}
 						</button>
 					{/if}
 				</li>
 			{/each}
-			
+
 			{#if currentPage < totalPages}
 				<li>
-					<button 
-						class="page-numbers" 
+					<button
+						class="page-numbers"
 						onclick={() => goToPage(currentPage + 1)}
 						type="button"
 						aria-label="Next page"

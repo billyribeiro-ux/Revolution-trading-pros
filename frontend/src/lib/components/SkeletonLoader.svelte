@@ -9,7 +9,15 @@
 
 	interface Props {
 		/** Type of skeleton to display */
-		variant?: 'card' | 'metric' | 'table-row' | 'list-item' | 'text' | 'avatar' | 'chart' | 'dashboard';
+		variant?:
+			| 'card'
+			| 'metric'
+			| 'table-row'
+			| 'list-item'
+			| 'text'
+			| 'avatar'
+			| 'chart'
+			| 'dashboard';
 		/** Number of items to render */
 		count?: number;
 		/** Custom height */
@@ -20,13 +28,7 @@
 		columns?: number;
 	}
 
-	let {
-		variant = 'card',
-		count = 1,
-		height,
-		width,
-		columns = 4
-	}: Props = $props();
+	let { variant = 'card', count = 1, height, width, columns = 4 }: Props = $props();
 </script>
 
 {#each Array(count) as _}
@@ -364,7 +366,8 @@
 	}
 
 	@keyframes pulse {
-		0%, 100% {
+		0%,
+		100% {
 			opacity: 0.6;
 		}
 		50% {

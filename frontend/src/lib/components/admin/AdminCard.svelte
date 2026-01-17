@@ -52,7 +52,9 @@
 </script>
 
 <div
-	class="admin-card variant-{variant} {paddingClasses[padding]} {hover ? 'hoverable' : ''} {className}"
+	class="admin-card variant-{variant} {paddingClasses[padding]} {hover
+		? 'hoverable'
+		: ''} {className}"
 	role="region"
 	aria-label={title || 'Card'}
 >

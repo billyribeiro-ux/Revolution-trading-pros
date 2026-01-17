@@ -7,11 +7,7 @@
 		children?: Snippet;
 	}
 
-	let {
-		variant = 'default',
-		size = 'sm',
-		children
-	}: Props = $props();
+	let { variant = 'default', size = 'sm', children }: Props = $props();
 
 	const variants = {
 		default: 'bg-gray-100 text-gray-800',

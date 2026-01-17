@@ -19,7 +19,7 @@ const defaultTypography = {
 	descriptionSize: '0.875rem',
 	buttonSize: '0.875rem',
 	buttonWeight: '600',
-	lineHeight: '1.5',
+	lineHeight: '1.5'
 };
 
 /**
@@ -30,7 +30,7 @@ const defaultSpacing = {
 	gap: '1rem',
 	buttonPadding: '0.75rem 1.5rem',
 	borderRadius: '12px',
-	buttonBorderRadius: '8px',
+	buttonBorderRadius: '8px'
 };
 
 /**
@@ -42,7 +42,7 @@ const defaultMobile = {
 	stackButtons: true,
 	compact: false,
 	fullWidthButtons: true,
-	padding: '1rem',
+	padding: '1rem'
 };
 
 /**
@@ -51,7 +51,7 @@ const defaultMobile = {
 const defaultTablet = {
 	position: 'bottom' as const,
 	maxWidth: '600px',
-	stackButtons: false,
+	stackButtons: false
 };
 
 /**
@@ -59,12 +59,13 @@ const defaultTablet = {
  */
 const defaultCopy = {
 	title: 'We value your privacy',
-	description: 'We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.',
+	description:
+		'We use cookies to enhance your browsing experience, serve personalized content, and analyze our traffic. By clicking "Accept All", you consent to our use of cookies.',
 	acceptAll: 'Accept All',
 	rejectAll: 'Reject All',
 	customize: 'Customize',
 	privacyPolicy: 'Privacy Policy',
-	cookiePolicy: 'Cookie Policy',
+	cookiePolicy: 'Cookie Policy'
 };
 
 // =============================================================================
@@ -103,14 +104,14 @@ const minimalDark: BannerTemplate = {
 		rejectButtonText: '#a1a1aa',
 		customizeButton: 'transparent',
 		customizeButtonText: '#ffffff',
-		border: '#27272a',
+		border: '#27272a'
 	},
 	typography: { ...defaultTypography },
 	spacing: { ...defaultSpacing, borderRadius: '0' },
 	copy: { ...defaultCopy },
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
-	boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)',
+	boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.3)'
 };
 
 /**
@@ -145,14 +146,14 @@ const minimalLight: BannerTemplate = {
 		rejectButtonText: '#71717a',
 		customizeButton: 'transparent',
 		customizeButtonText: '#18181b',
-		border: '#e4e4e7',
+		border: '#e4e4e7'
 	},
 	typography: { ...defaultTypography },
 	spacing: { ...defaultSpacing, borderRadius: '0' },
 	copy: { ...defaultCopy },
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
-	boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.1)',
+	boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.1)'
 };
 
 /**
@@ -189,7 +190,7 @@ const glassmorphism: BannerTemplate = {
 		rejectButtonText: '#ffffff',
 		customizeButton: 'transparent',
 		customizeButtonText: '#ffffff',
-		border: 'rgba(255, 255, 255, 0.2)',
+		border: 'rgba(255, 255, 255, 0.2)'
 	},
 	typography: { ...defaultTypography },
 	spacing: { ...defaultSpacing, borderRadius: '16px' },
@@ -198,7 +199,7 @@ const glassmorphism: BannerTemplate = {
 	tablet: { ...defaultTablet },
 	backdropBlur: '20px',
 	boxShadow: '0 8px 32px rgba(0, 0, 0, 0.3)',
-	border: '1px solid rgba(255, 255, 255, 0.2)',
+	border: '1px solid rgba(255, 255, 255, 0.2)'
 };
 
 /**
@@ -233,14 +234,14 @@ const gradientPurple: BannerTemplate = {
 		rejectButton: 'rgba(255, 255, 255, 0.2)',
 		rejectButtonText: '#ffffff',
 		customizeButton: 'transparent',
-		customizeButtonText: '#ffffff',
+		customizeButtonText: '#ffffff'
 	},
 	typography: { ...defaultTypography },
 	spacing: { ...defaultSpacing },
 	copy: { ...defaultCopy },
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
-	boxShadow: '0 -4px 30px rgba(102, 126, 234, 0.4)',
+	boxShadow: '0 -4px 30px rgba(102, 126, 234, 0.4)'
 };
 
 /**
@@ -275,14 +276,14 @@ const gradientOcean: BannerTemplate = {
 		rejectButton: 'rgba(255, 255, 255, 0.2)',
 		rejectButtonText: '#ffffff',
 		customizeButton: 'transparent',
-		customizeButtonText: '#ffffff',
+		customizeButtonText: '#ffffff'
 	},
 	typography: { ...defaultTypography },
 	spacing: { ...defaultSpacing },
 	copy: { ...defaultCopy },
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
-	boxShadow: '0 -4px 30px rgba(14, 165, 233, 0.4)',
+	boxShadow: '0 -4px 30px rgba(14, 165, 233, 0.4)'
 };
 
 /**
@@ -318,14 +319,14 @@ const floatingCard: BannerTemplate = {
 		rejectButtonText: '#6b7280',
 		customizeButton: '#f3f4f6',
 		customizeButtonText: '#374151',
-		border: '#e5e7eb',
+		border: '#e5e7eb'
 	},
 	typography: { ...defaultTypography, titleSize: '1rem', descriptionSize: '0.8125rem' },
 	spacing: { ...defaultSpacing, padding: '1.25rem', borderRadius: '16px' },
 	copy: { ...defaultCopy },
 	mobile: { ...defaultMobile, position: 'bottom', useDrawer: true },
 	tablet: { ...defaultTablet, position: 'bottom-right', maxWidth: '400px' },
-	boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)',
+	boxShadow: '0 10px 40px rgba(0, 0, 0, 0.15)'
 };
 
 /**
@@ -361,14 +362,14 @@ const floatingDarkCard: BannerTemplate = {
 		rejectButtonText: '#a1a1aa',
 		customizeButton: '#27272a',
 		customizeButtonText: '#fafafa',
-		border: '#3f3f46',
+		border: '#3f3f46'
 	},
 	typography: { ...defaultTypography, titleSize: '1rem', descriptionSize: '0.8125rem' },
 	spacing: { ...defaultSpacing, padding: '1.25rem', borderRadius: '16px' },
 	copy: { ...defaultCopy },
 	mobile: { ...defaultMobile, position: 'bottom', useDrawer: true },
 	tablet: { ...defaultTablet, position: 'bottom-left', maxWidth: '400px' },
-	boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)',
+	boxShadow: '0 10px 40px rgba(0, 0, 0, 0.5)'
 };
 
 /**
@@ -404,18 +405,19 @@ const corporateBlue: BannerTemplate = {
 		rejectButtonText: '#94a3b8',
 		customizeButton: 'transparent',
 		customizeButtonText: '#ffffff',
-		border: '#334155',
+		border: '#334155'
 	},
 	typography: { ...defaultTypography },
 	spacing: { ...defaultSpacing },
 	copy: {
 		...defaultCopy,
 		title: 'Cookie Notice',
-		description: 'We use cookies and similar technologies to provide our services, enhance your experience, and understand how our services are used. By continuing to use this website, you consent to our use of these technologies.',
+		description:
+			'We use cookies and similar technologies to provide our services, enhance your experience, and understand how our services are used. By continuing to use this website, you consent to our use of these technologies.'
 	},
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
-	boxShadow: '0 -4px 20px rgba(30, 58, 95, 0.4)',
+	boxShadow: '0 -4px 20px rgba(30, 58, 95, 0.4)'
 };
 
 /**
@@ -450,22 +452,23 @@ const enterpriseGray: BannerTemplate = {
 		rejectButtonText: '#475569',
 		customizeButton: 'transparent',
 		customizeButtonText: '#0f172a',
-		border: '#e2e8f0',
+		border: '#e2e8f0'
 	},
 	typography: { ...defaultTypography, fontFamily: '"Inter", system-ui, sans-serif' },
 	spacing: { ...defaultSpacing, borderRadius: '0', buttonBorderRadius: '4px' },
 	copy: {
 		...defaultCopy,
 		title: 'Cookie Preferences',
-		description: 'This website uses cookies to ensure you get the best experience. You can manage your preferences at any time.',
+		description:
+			'This website uses cookies to ensure you get the best experience. You can manage your preferences at any time.',
 		acceptAll: 'Accept',
 		rejectAll: 'Decline',
-		customize: 'Manage Preferences',
+		customize: 'Manage Preferences'
 	},
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
 	boxShadow: '0 -1px 3px rgba(0, 0, 0, 0.1)',
-	border: '1px solid #e2e8f0',
+	border: '1px solid #e2e8f0'
 };
 
 /**
@@ -501,21 +504,25 @@ const playfulRounded: BannerTemplate = {
 		rejectButtonText: '#92400e',
 		customizeButton: 'transparent',
 		customizeButtonText: '#78350f',
-		border: '#fcd34d',
+		border: '#fcd34d'
 	},
-	typography: { ...defaultTypography, fontFamily: '"Nunito", "Comic Sans MS", cursive, sans-serif' },
+	typography: {
+		...defaultTypography,
+		fontFamily: '"Nunito", "Comic Sans MS", cursive, sans-serif'
+	},
 	spacing: { ...defaultSpacing, borderRadius: '24px', buttonBorderRadius: '9999px' },
 	copy: {
 		...defaultCopy,
 		title: '🍪 Cookie Time!',
-		description: 'We use cookies to make your experience sweeter! Accept all to enjoy the full flavor, or customize to pick your favorites.',
+		description:
+			'We use cookies to make your experience sweeter! Accept all to enjoy the full flavor, or customize to pick your favorites.',
 		acceptAll: 'Yum, Accept All!',
 		rejectAll: 'No Thanks',
-		customize: 'Pick & Choose',
+		customize: 'Pick & Choose'
 	},
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
-	boxShadow: '0 4px 20px rgba(245, 158, 11, 0.3)',
+	boxShadow: '0 4px 20px rgba(245, 158, 11, 0.3)'
 };
 
 /**
@@ -551,22 +558,23 @@ const neonCyberpunk: BannerTemplate = {
 		rejectButtonText: '#ff00ff',
 		customizeButton: 'transparent',
 		customizeButtonText: '#00ffff',
-		border: '#00ff88',
+		border: '#00ff88'
 	},
 	typography: { ...defaultTypography, fontFamily: '"JetBrains Mono", "Fira Code", monospace' },
 	spacing: { ...defaultSpacing, borderRadius: '0', buttonBorderRadius: '0' },
 	copy: {
 		...defaultCopy,
 		title: '> PRIVACY_PROTOCOL',
-		description: 'SYSTEM.REQUIRES.CONSENT // Enable tracking modules to enhance your experience. Choose your data permissions.',
+		description:
+			'SYSTEM.REQUIRES.CONSENT // Enable tracking modules to enhance your experience. Choose your data permissions.',
 		acceptAll: '[ACCEPT_ALL]',
 		rejectAll: '[REJECT]',
-		customize: '[CONFIG]',
+		customize: '[CONFIG]'
 	},
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
 	boxShadow: '0 0 20px rgba(0, 255, 136, 0.3), 0 0 40px rgba(255, 0, 255, 0.1)',
-	border: '1px solid #00ff88',
+	border: '1px solid #00ff88'
 };
 
 /**
@@ -601,23 +609,24 @@ const elegantSerif: BannerTemplate = {
 		rejectButtonText: '#78716c',
 		customizeButton: 'transparent',
 		customizeButtonText: '#1c1917',
-		border: '#d6d3d1',
+		border: '#d6d3d1'
 	},
 	typography: {
 		...defaultTypography,
 		fontFamily: '"Playfair Display", "Georgia", serif',
-		titleWeight: '500',
+		titleWeight: '500'
 	},
 	spacing: { ...defaultSpacing, borderRadius: '0', buttonBorderRadius: '0' },
 	copy: {
 		...defaultCopy,
 		title: 'Privacy Notice',
-		description: 'We employ cookies to deliver an exceptional experience tailored to your preferences. Your privacy matters to us.',
+		description:
+			'We employ cookies to deliver an exceptional experience tailored to your preferences. Your privacy matters to us.'
 	},
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
 	boxShadow: 'none',
-	border: '1px solid #d6d3d1',
+	border: '1px solid #d6d3d1'
 };
 
 /**
@@ -652,14 +661,14 @@ const neumorphismLight: BannerTemplate = {
 		rejectButton: '#e0e5ec',
 		rejectButtonText: '#718096',
 		customizeButton: '#e0e5ec',
-		customizeButtonText: '#2d3748',
+		customizeButtonText: '#2d3748'
 	},
 	typography: { ...defaultTypography },
 	spacing: { ...defaultSpacing, borderRadius: '20px', buttonBorderRadius: '12px' },
 	copy: { ...defaultCopy },
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
-	boxShadow: '20px 20px 60px #bec3c9, -20px -20px 60px #ffffff',
+	boxShadow: '20px 20px 60px #bec3c9, -20px -20px 60px #ffffff'
 };
 
 /**
@@ -668,7 +677,7 @@ const neumorphismLight: BannerTemplate = {
 const topBarMinimal: BannerTemplate = {
 	id: 'top-bar-minimal',
 	name: 'Top Bar Minimal',
-	description: 'Compact top bar that\'s unobtrusive yet visible.',
+	description: "Compact top bar that's unobtrusive yet visible.",
 	category: 'minimal',
 	isEditable: true,
 	position: 'top',
@@ -693,20 +702,26 @@ const topBarMinimal: BannerTemplate = {
 		rejectButton: 'transparent',
 		rejectButtonText: '#9ca3af',
 		customizeButton: 'transparent',
-		customizeButtonText: '#f9fafb',
+		customizeButtonText: '#f9fafb'
 	},
 	typography: { ...defaultTypography, titleSize: '0.875rem', descriptionSize: '0.8125rem' },
-	spacing: { ...defaultSpacing, padding: '0.75rem 1.5rem', borderRadius: '0', buttonBorderRadius: '6px', buttonPadding: '0.5rem 1rem' },
+	spacing: {
+		...defaultSpacing,
+		padding: '0.75rem 1.5rem',
+		borderRadius: '0',
+		buttonBorderRadius: '6px',
+		buttonPadding: '0.5rem 1rem'
+	},
 	copy: {
 		title: '',
 		description: 'We use cookies to improve your experience.',
 		acceptAll: 'Got it',
 		rejectAll: '',
-		customize: 'Learn more',
+		customize: 'Learn more'
 	},
 	mobile: { ...defaultMobile, position: 'top', compact: true },
 	tablet: { ...defaultTablet, position: 'top' },
-	boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)',
+	boxShadow: '0 4px 6px rgba(0, 0, 0, 0.1)'
 };
 
 /**
@@ -742,14 +757,14 @@ const centerModal: BannerTemplate = {
 		rejectButton: '#f3f4f6',
 		rejectButtonText: '#6b7280',
 		customizeButton: '#f3f4f6',
-		customizeButtonText: '#374151',
+		customizeButtonText: '#374151'
 	},
 	typography: { ...defaultTypography },
 	spacing: { ...defaultSpacing, padding: '2rem', borderRadius: '16px' },
 	copy: { ...defaultCopy },
 	mobile: { ...defaultMobile, position: 'center' },
 	tablet: { ...defaultTablet, position: 'center', maxWidth: '480px' },
-	boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+	boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
 };
 
 /**
@@ -784,14 +799,14 @@ const gradientSunset: BannerTemplate = {
 		rejectButton: 'rgba(255, 255, 255, 0.2)',
 		rejectButtonText: '#ffffff',
 		customizeButton: 'transparent',
-		customizeButtonText: '#ffffff',
+		customizeButtonText: '#ffffff'
 	},
 	typography: { ...defaultTypography },
 	spacing: { ...defaultSpacing },
 	copy: { ...defaultCopy },
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
-	boxShadow: '0 -4px 30px rgba(236, 72, 153, 0.4)',
+	boxShadow: '0 -4px 30px rgba(236, 72, 153, 0.4)'
 };
 
 /**
@@ -826,21 +841,26 @@ const darkMinimalCard: BannerTemplate = {
 		rejectButtonText: '#a3a3a3',
 		customizeButton: 'transparent',
 		customizeButtonText: '#a3a3a3',
-		border: '#262626',
+		border: '#262626'
 	},
 	typography: { ...defaultTypography, titleSize: '0.9375rem', descriptionSize: '0.8125rem' },
-	spacing: { ...defaultSpacing, padding: '1.25rem', borderRadius: '12px', buttonBorderRadius: '6px' },
+	spacing: {
+		...defaultSpacing,
+		padding: '1.25rem',
+		borderRadius: '12px',
+		buttonBorderRadius: '6px'
+	},
 	copy: {
 		...defaultCopy,
 		title: 'Cookies',
 		description: 'This site uses cookies to enhance your experience.',
 		acceptAll: 'Accept',
-		customize: 'Settings',
+		customize: 'Settings'
 	},
 	mobile: { ...defaultMobile, position: 'bottom', useDrawer: true },
 	tablet: { ...defaultTablet, position: 'bottom-right', maxWidth: '360px' },
 	boxShadow: '0 8px 30px rgba(0, 0, 0, 0.4)',
-	border: '1px solid #262626',
+	border: '1px solid #262626'
 };
 
 /**
@@ -877,7 +897,7 @@ const fullscreenBlur: BannerTemplate = {
 		rejectButtonText: '#ffffff',
 		customizeButton: 'rgba(255, 255, 255, 0.1)',
 		customizeButtonText: '#ffffff',
-		border: 'rgba(255, 255, 255, 0.1)',
+		border: 'rgba(255, 255, 255, 0.1)'
 	},
 	typography: { ...defaultTypography, titleSize: '1.5rem' },
 	spacing: { ...defaultSpacing, padding: '2.5rem', borderRadius: '20px', gap: '1.5rem' },
@@ -886,7 +906,7 @@ const fullscreenBlur: BannerTemplate = {
 	tablet: { ...defaultTablet, position: 'fullscreen', maxWidth: '550px' },
 	backdropBlur: '10px',
 	boxShadow: '0 0 100px rgba(59, 130, 246, 0.2)',
-	border: '1px solid rgba(255, 255, 255, 0.1)',
+	border: '1px solid rgba(255, 255, 255, 0.1)'
 };
 
 /**
@@ -922,19 +942,20 @@ const natureGreen: BannerTemplate = {
 		rejectButtonText: '#166534',
 		customizeButton: 'transparent',
 		customizeButtonText: '#14532d',
-		border: '#bbf7d0',
+		border: '#bbf7d0'
 	},
 	typography: { ...defaultTypography },
 	spacing: { ...defaultSpacing },
 	copy: {
 		...defaultCopy,
 		title: '🌿 Privacy & Cookies',
-		description: 'We care about your privacy as much as we care about the environment. Choose how you\'d like us to use cookies.',
+		description:
+			"We care about your privacy as much as we care about the environment. Choose how you'd like us to use cookies."
 	},
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
 	boxShadow: '0 -4px 20px rgba(34, 197, 94, 0.15)',
-	border: '1px solid #bbf7d0',
+	border: '1px solid #bbf7d0'
 };
 
 /**
@@ -969,23 +990,24 @@ const premiumGold: BannerTemplate = {
 		rejectButtonText: '#a3a3a3',
 		customizeButton: 'transparent',
 		customizeButtonText: '#d4af37',
-		border: '#d4af37',
+		border: '#d4af37'
 	},
 	typography: {
 		...defaultTypography,
 		fontFamily: '"Cinzel", "Times New Roman", serif',
-		titleWeight: '500',
+		titleWeight: '500'
 	},
 	spacing: { ...defaultSpacing },
 	copy: {
 		...defaultCopy,
 		title: 'Privacy Preferences',
-		description: 'We value your privacy and are committed to being transparent about how we collect and use your information.',
+		description:
+			'We value your privacy and are committed to being transparent about how we collect and use your information.'
 	},
 	mobile: { ...defaultMobile },
 	tablet: { ...defaultTablet },
 	boxShadow: '0 -4px 30px rgba(212, 175, 55, 0.2)',
-	border: '1px solid rgba(212, 175, 55, 0.3)',
+	border: '1px solid rgba(212, 175, 55, 0.3)'
 };
 
 /**
@@ -1023,7 +1045,7 @@ const revolutionTrading: BannerTemplate = {
 		rejectButtonText: '#212121',
 		customizeButton: '#F0F0F0',
 		customizeButtonText: '#212121',
-		border: '#333333',
+		border: '#333333'
 	},
 	typography: {
 		fontFamily: 'Arial, sans-serif',
@@ -1032,23 +1054,24 @@ const revolutionTrading: BannerTemplate = {
 		descriptionSize: '20px',
 		buttonSize: '16px',
 		buttonWeight: '500',
-		lineHeight: '1.5',
+		lineHeight: '1.5'
 	},
 	spacing: {
 		padding: '45px 80px 40px 80px',
 		gap: '0',
 		buttonPadding: '20px 25px 20px 20px',
 		borderRadius: '0',
-		buttonBorderRadius: '0',
+		buttonBorderRadius: '0'
 	},
 	copy: {
 		title: '',
-		description: 'By clicking "Accept," you agree to our Terms of Use, Privacy Policy and consent to the use of cookies and similar tracking technologies to, among other things, serve you relevant ads ourselves or through our third-party ad partners with whom data from cookies is shared.',
+		description:
+			'By clicking "Accept," you agree to our Terms of Use, Privacy Policy and consent to the use of cookies and similar tracking technologies to, among other things, serve you relevant ads ourselves or through our third-party ad partners with whom data from cookies is shared.',
 		acceptAll: 'Accept',
 		rejectAll: 'Reject',
 		customize: 'More options',
 		privacyPolicy: 'Privacy Policy',
-		cookiePolicy: 'Cookie Policy',
+		cookiePolicy: 'Cookie Policy'
 	},
 	mobile: {
 		position: 'bottom',
@@ -1056,15 +1079,15 @@ const revolutionTrading: BannerTemplate = {
 		stackButtons: true,
 		compact: false,
 		fullWidthButtons: true,
-		padding: '30px 20px',
+		padding: '30px 20px'
 	},
 	tablet: {
 		position: 'bottom',
 		maxWidth: '100%',
-		stackButtons: false,
+		stackButtons: false
 	},
 	boxShadow: '0 -4px 20px rgba(0, 0, 0, 0.15)',
-	border: '1px solid #333333',
+	border: '1px solid #333333'
 };
 
 // =============================================================================
@@ -1095,7 +1118,7 @@ export const BANNER_TEMPLATES: BannerTemplate[] = [
 	fullscreenBlur,
 	natureGreen,
 	premiumGold,
-	revolutionTrading,
+	revolutionTrading
 ];
 
 /**
@@ -1122,12 +1145,17 @@ export function getTemplateCategories(): string[] {
 /**
  * Get template previews (lightweight list)
  */
-export function getTemplatePreviews(): { id: string; name: string; category: string; description: string }[] {
+export function getTemplatePreviews(): {
+	id: string;
+	name: string;
+	category: string;
+	description: string;
+}[] {
 	return BANNER_TEMPLATES.map((t) => ({
 		id: t.id,
 		name: t.name,
 		category: t.category,
-		description: t.description,
+		description: t.description
 	}));
 }
 

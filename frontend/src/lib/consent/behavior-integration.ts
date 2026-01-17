@@ -98,7 +98,7 @@ async function enableTracking(): Promise<void> {
 			// Enhanced privacy settings
 			maskPII: true,
 			respectDNT: false, // We handle DNT via consent
-			anonymizeIP: true,
+			anonymizeIP: true
 		});
 
 		// Expose for consent analytics integration
@@ -147,10 +147,7 @@ export function setBehaviorUserId(userId: string | null): void {
 /**
  * Track a custom event (if consent is granted).
  */
-export function trackBehaviorEvent(
-	eventType: string,
-	metadata?: Record<string, unknown>
-): void {
+export function trackBehaviorEvent(eventType: string, metadata?: Record<string, unknown>): void {
 	if (!browser || !trackerEnabled || !behaviorTracker) {
 		console.debug('[BehaviorIntegration] Cannot track event - tracking not enabled');
 		return;
@@ -161,7 +158,7 @@ export function trackBehaviorEvent(
 			event_type: eventType,
 			timestamp: Date.now(),
 			page_url: window.location.href,
-			event_metadata: metadata,
+			event_metadata: metadata
 		});
 	} catch (e) {
 		console.error('[BehaviorIntegration] Failed to track event:', e);

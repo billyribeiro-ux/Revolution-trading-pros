@@ -39,14 +39,14 @@ export const CURRENT_POLICY_VERSION: PolicyVersion = {
 	publishedAt: '2024-01-01T00:00:00Z',
 	changelog: ['Initial privacy policy release'],
 	requiresReconsent: false,
-	changeType: 'major',
+	changeType: 'major'
 };
 
 /**
  * Policy version history
  */
 export const POLICY_VERSIONS: PolicyVersion[] = [
-	CURRENT_POLICY_VERSION,
+	CURRENT_POLICY_VERSION
 	// Add new versions here when updating policy
 	// {
 	//   version: '1.1.0',
@@ -103,7 +103,7 @@ export function checkVersionCompatibility(consent: ConsentState): VersionCompare
 		userVersion,
 		currentVersion,
 		missedVersions: [],
-		changesSummary: [],
+		changesSummary: []
 	};
 
 	// No previous version - first time user
@@ -119,8 +119,7 @@ export function checkVersionCompatibility(consent: ConsentState): VersionCompare
 	// Find all versions between user's version and current
 	const missedVersions = POLICY_VERSIONS.filter((v) => {
 		return (
-			compareVersions(v.version, userVersion) > 0 &&
-			compareVersions(v.version, currentVersion) <= 0
+			compareVersions(v.version, userVersion) > 0 && compareVersions(v.version, currentVersion) <= 0
 		);
 	}).sort((a, b) => compareVersions(a.version, b.version));
 
@@ -173,11 +172,13 @@ export function getCurrentPolicyVersion(): string {
 /**
  * Get policy changelog between two versions
  */
-export function getChangelog(fromVersion: string, toVersion: string = CURRENT_POLICY_VERSION.version): string[] {
+export function getChangelog(
+	fromVersion: string,
+	toVersion: string = CURRENT_POLICY_VERSION.version
+): string[] {
 	return POLICY_VERSIONS.filter((v) => {
 		return (
-			compareVersions(v.version, fromVersion) > 0 &&
-			compareVersions(v.version, toVersion) <= 0
+			compareVersions(v.version, fromVersion) > 0 && compareVersions(v.version, toVersion) <= 0
 		);
 	})
 		.sort((a, b) => compareVersions(a.version, b.version))
@@ -191,7 +192,7 @@ export function formatVersionDate(version: PolicyVersion): string {
 	return new Date(version.publishedAt).toLocaleDateString(undefined, {
 		year: 'numeric',
 		month: 'long',
-		day: 'numeric',
+		day: 'numeric'
 	});
 }
 
@@ -206,6 +207,6 @@ export function getVersionInfo(): {
 	return {
 		version: CURRENT_POLICY_VERSION.version,
 		publishedAt: CURRENT_POLICY_VERSION.publishedAt,
-		formattedDate: formatVersionDate(CURRENT_POLICY_VERSION),
+		formattedDate: formatVersionDate(CURRENT_POLICY_VERSION)
 	};
 }

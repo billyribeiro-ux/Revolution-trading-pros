@@ -41,7 +41,9 @@
 
 	// Modal state
 	let showRecoveryModal = $state(false);
-	let recoveryTemplate = $state<'reminder_1' | 'reminder_2' | 'final_discount' | 'custom'>('reminder_1');
+	let recoveryTemplate = $state<'reminder_1' | 'reminder_2' | 'final_discount' | 'custom'>(
+		'reminder_1'
+	);
 	let customSubject = $state('');
 	let customBody = $state('');
 	let discountCode = $state('');
@@ -131,7 +133,8 @@
 			};
 			if (recoveryTemplate === 'custom' && customSubject) options.custom_subject = customSubject;
 			if (recoveryTemplate === 'custom' && customBody) options.custom_body = customBody;
-			if (recoveryTemplate === 'final_discount' && discountCode) options.discount_code = discountCode;
+			if (recoveryTemplate === 'final_discount' && discountCode)
+				options.discount_code = discountCode;
 			if (recoveryTemplate === 'final_discount') options.discount_percent = discountPercent;
 
 			const result = await abandonedCartsApi.sendBulkRecovery(Array.from(selectedCarts), options);
@@ -199,7 +202,11 @@
 		return colorMap[status] || 'status-neutral';
 	}
 
-	function getTemplateInfo(template: string): { name: string; description: string; timing: string } {
+	function getTemplateInfo(template: string): {
+		name: string;
+		description: string;
+		timing: string;
+	} {
 		switch (template) {
 			case 'reminder_1':
 				return {
@@ -332,7 +339,10 @@
 						<div class="stage-label">Pending</div>
 					</div>
 					<div class="stage-bar">
-						<div class="stage-fill pending" style="--width: {(pendingCount / stats.total_abandoned) * 100}%"></div>
+						<div
+							class="stage-fill pending"
+							style="--width: {(pendingCount / stats.total_abandoned) * 100}%"
+						></div>
 					</div>
 				</div>
 
@@ -349,7 +359,10 @@
 						<div class="stage-label">Email Sent</div>
 					</div>
 					<div class="stage-bar">
-						<div class="stage-fill sent" style="--width: {(emailSentCount / stats.total_abandoned) * 100}%"></div>
+						<div
+							class="stage-fill sent"
+							style="--width: {(emailSentCount / stats.total_abandoned) * 100}%"
+						></div>
 					</div>
 				</div>
 
@@ -366,7 +379,10 @@
 						<div class="stage-label">Clicked</div>
 					</div>
 					<div class="stage-bar">
-						<div class="stage-fill clicked" style="--width: {(clickedCount / stats.total_abandoned) * 100}%"></div>
+						<div
+							class="stage-fill clicked"
+							style="--width: {(clickedCount / stats.total_abandoned) * 100}%"
+						></div>
 					</div>
 				</div>
 
@@ -383,7 +399,10 @@
 						<div class="stage-label">Recovered</div>
 					</div>
 					<div class="stage-bar">
-						<div class="stage-fill recovered" style="--width: {(stats.recovered_count / stats.total_abandoned) * 100}%"></div>
+						<div
+							class="stage-fill recovered"
+							style="--width: {(stats.recovered_count / stats.total_abandoned) * 100}%"
+						></div>
 					</div>
 				</div>
 			</div>
@@ -391,7 +410,14 @@
 
 		<!-- Quick Actions -->
 		<div class="quick-actions">
-			<button class="action-card reminder" onclick={() => { recoveryTemplate = 'reminder_1'; selectedCarts = new Set(carts.filter(c => c.status === 'pending').map(c => c.id)); showRecoveryModal = true; }}>
+			<button
+				class="action-card reminder"
+				onclick={() => {
+					recoveryTemplate = 'reminder_1';
+					selectedCarts = new Set(carts.filter((c) => c.status === 'pending').map((c) => c.id));
+					showRecoveryModal = true;
+				}}
+			>
 				<div class="action-icon">
 					<IconMail size={24} />
 				</div>
@@ -402,7 +428,14 @@
 				<div class="action-count">{pendingCount} carts</div>
 			</button>
 
-			<button class="action-card urgency" onclick={() => { recoveryTemplate = 'reminder_2'; selectedCarts = new Set(carts.filter(c => c.status === 'email_sent').map(c => c.id)); showRecoveryModal = true; }}>
+			<button
+				class="action-card urgency"
+				onclick={() => {
+					recoveryTemplate = 'reminder_2';
+					selectedCarts = new Set(carts.filter((c) => c.status === 'email_sent').map((c) => c.id));
+					showRecoveryModal = true;
+				}}
+			>
 				<div class="action-icon">
 					<IconClock size={24} />
 				</div>
@@ -413,7 +446,18 @@
 				<div class="action-count">{emailSentCount} carts</div>
 			</button>
 
-			<button class="action-card discount" onclick={() => { recoveryTemplate = 'final_discount'; selectedCarts = new Set(carts.filter(c => c.status === 'email_sent' || c.status === 'clicked').map(c => c.id)); showRecoveryModal = true; }}>
+			<button
+				class="action-card discount"
+				onclick={() => {
+					recoveryTemplate = 'final_discount';
+					selectedCarts = new Set(
+						carts
+							.filter((c) => c.status === 'email_sent' || c.status === 'clicked')
+							.map((c) => c.id)
+					);
+					showRecoveryModal = true;
+				}}
+			>
 				<div class="action-icon">
 					<IconPercentage size={24} />
 				</div>
@@ -532,7 +576,12 @@
 											<button
 												class="action-btn send"
 												title="Send Recovery Email"
-												onclick={() => { selectedCarts.clear(); selectedCarts.add(cart.id); selectedCarts = selectedCarts; showRecoveryModal = true; }}
+												onclick={() => {
+													selectedCarts.clear();
+													selectedCarts.add(cart.id);
+													selectedCarts = selectedCarts;
+													showRecoveryModal = true;
+												}}
 											>
 												<IconMail size={16} />
 											</button>
@@ -554,7 +603,10 @@
 				<!-- Pagination -->
 				<div class="pagination">
 					<div class="pagination-info">
-						Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total}
+						Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(
+							pagination.current_page * pagination.per_page,
+							pagination.total
+						)} of {pagination.total}
 					</div>
 					<div class="pagination-controls">
 						<button
@@ -564,7 +616,9 @@
 						>
 							<IconChevronLeft size={18} />
 						</button>
-						<span class="page-indicator">Page {pagination.current_page} of {pagination.last_page}</span>
+						<span class="page-indicator"
+							>Page {pagination.current_page} of {pagination.last_page}</span
+						>
 						<button
 							class="page-btn"
 							disabled={pagination.current_page === pagination.last_page}
@@ -581,8 +635,24 @@
 
 <!-- Recovery Email Modal -->
 {#if showRecoveryModal}
-	<div class="modal-overlay" role="button" tabindex="0" aria-label="Close modal" onclick={() => (showRecoveryModal = false)} onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showRecoveryModal = false; }}>
-		<div class="modal-content" role="dialog" aria-modal="true" tabindex="-1" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
+	<div
+		class="modal-overlay"
+		role="button"
+		tabindex="0"
+		aria-label="Close modal"
+		onclick={() => (showRecoveryModal = false)}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showRecoveryModal = false;
+		}}
+	>
+		<div
+			class="modal-content"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		>
 			<div class="modal-header">
 				<div>
 					<h2>Send Recovery Email</h2>
@@ -705,7 +775,9 @@
 					disabled={sending || (recoveryTemplate === 'custom' && (!customSubject || !customBody))}
 				>
 					<IconSend size={18} />
-					{sending ? 'Sending...' : `Send to ${selectedCarts.size} Cart${selectedCarts.size > 1 ? 's' : ''}`}
+					{sending
+						? 'Sending...'
+						: `Send to ${selectedCarts.size} Cart${selectedCarts.size > 1 ? 's' : ''}`}
 				</button>
 			</div>
 		</div>
@@ -736,7 +808,7 @@
 	}
 
 	.back-btn:hover {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.header-content {
@@ -818,7 +890,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Metrics Grid */
@@ -849,10 +923,22 @@
 		justify-content: center;
 	}
 
-	.metric-card.total .metric-icon { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-	.metric-card.recovered .metric-icon { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-	.metric-card.pending .metric-icon { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-	.metric-card.average .metric-icon { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
+	.metric-card.total .metric-icon {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
+	.metric-card.recovered .metric-icon {
+		background: rgba(16, 185, 129, 0.15);
+		color: #34d399;
+	}
+	.metric-card.pending .metric-icon {
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
+	.metric-card.average .metric-icon {
+		background: rgba(230, 184, 0, 0.15);
+		color: #ffd11a;
+	}
 
 	.metric-label {
 		font-size: 0.75rem;
@@ -936,10 +1022,22 @@
 		justify-content: center;
 	}
 
-	.stage-icon.pending { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-	.stage-icon.sent { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-	.stage-icon.clicked { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
-	.stage-icon.recovered { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+	.stage-icon.pending {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
+	.stage-icon.sent {
+		background: rgba(56, 189, 248, 0.15);
+		color: #38bdf8;
+	}
+	.stage-icon.clicked {
+		background: rgba(230, 184, 0, 0.15);
+		color: #ffd11a;
+	}
+	.stage-icon.recovered {
+		background: rgba(16, 185, 129, 0.15);
+		color: #34d399;
+	}
 
 	.stage-info {
 		text-align: center;
@@ -973,10 +1071,18 @@
 		transition: width 0.5s ease-out;
 	}
 
-	.stage-fill.pending { background: #fbbf24; }
-	.stage-fill.sent { background: #38bdf8; }
-	.stage-fill.clicked { background: #FFD11A; }
-	.stage-fill.recovered { background: #34d399; }
+	.stage-fill.pending {
+		background: #fbbf24;
+	}
+	.stage-fill.sent {
+		background: #38bdf8;
+	}
+	.stage-fill.clicked {
+		background: #ffd11a;
+	}
+	.stage-fill.recovered {
+		background: #34d399;
+	}
 
 	.pipeline-connector {
 		color: #64748b;
@@ -1008,9 +1114,15 @@
 		transform: translateY(-2px);
 	}
 
-	.action-card.reminder:hover { border-color: rgba(56, 189, 248, 0.5); }
-	.action-card.urgency:hover { border-color: rgba(245, 158, 11, 0.5); }
-	.action-card.discount:hover { border-color: rgba(16, 185, 129, 0.5); }
+	.action-card.reminder:hover {
+		border-color: rgba(56, 189, 248, 0.5);
+	}
+	.action-card.urgency:hover {
+		border-color: rgba(245, 158, 11, 0.5);
+	}
+	.action-card.discount:hover {
+		border-color: rgba(16, 185, 129, 0.5);
+	}
 
 	.action-icon {
 		width: 48px;
@@ -1021,9 +1133,18 @@
 		justify-content: center;
 	}
 
-	.action-card.reminder .action-icon { background: rgba(56, 189, 248, 0.15); color: #38bdf8; }
-	.action-card.urgency .action-icon { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-	.action-card.discount .action-icon { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+	.action-card.reminder .action-icon {
+		background: rgba(56, 189, 248, 0.15);
+		color: #38bdf8;
+	}
+	.action-card.urgency .action-icon {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
+	.action-card.discount .action-icon {
+		background: rgba(16, 185, 129, 0.15);
+		color: #34d399;
+	}
 
 	.action-content h4 {
 		font-size: 1rem;
@@ -1247,7 +1368,7 @@
 
 	.status-primary {
 		background: rgba(230, 184, 0, 0.15);
-		color: #FFD11A;
+		color: #ffd11a;
 		border-color: rgba(230, 184, 0, 0.3);
 	}
 
@@ -1573,7 +1694,7 @@
 		gap: 1rem;
 	}
 
-	.discount-slider input[type="range"] {
+	.discount-slider input[type='range'] {
 		flex: 1;
 		height: 8px;
 		background: rgba(245, 158, 11, 0.2);
@@ -1582,7 +1703,7 @@
 		appearance: none;
 	}
 
-	.discount-slider input[type="range"]::-webkit-slider-thumb {
+	.discount-slider input[type='range']::-webkit-slider-thumb {
 		-webkit-appearance: none;
 		width: 20px;
 		height: 20px;

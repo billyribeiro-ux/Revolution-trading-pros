@@ -13,7 +13,10 @@
 
 	interface Props {
 		block: Block;
-		onUpdate: (updates: { content?: Partial<BlockContent>; settings?: Partial<BlockSettings> }) => void;
+		onUpdate: (updates: {
+			content?: Partial<BlockContent>;
+			settings?: Partial<BlockSettings>;
+		}) => void;
 		onTransform: (type: BlockType) => void;
 		onDuplicate: () => void;
 		onDelete: () => void;
@@ -72,7 +75,11 @@
 	];
 
 	// Text alignment options
-	const alignOptions: { value: 'left' | 'center' | 'right' | 'justify'; icon: string; label: string }[] = [
+	const alignOptions: {
+		value: 'left' | 'center' | 'right' | 'justify';
+		icon: string;
+		label: string;
+	}[] = [
 		{ value: 'left', icon: '☰', label: 'Left' },
 		{ value: 'center', icon: '☷', label: 'Center' },
 		{ value: 'right', icon: '☲', label: 'Right' },
@@ -141,7 +148,9 @@
 
 	// Check if block supports text formatting
 	let supportsTextFormatting = $derived(
-		['paragraph', 'heading', 'quote', 'pullquote', 'list', 'checklist', 'callout'].includes(block.type)
+		['paragraph', 'heading', 'quote', 'pullquote', 'list', 'checklist', 'callout'].includes(
+			block.type
+		)
 	);
 
 	// Check if block is a heading
@@ -219,18 +228,10 @@
 	<!-- Text Formatting (only for text blocks) -->
 	{#if supportsTextFormatting}
 		<div class="toolbar-group">
-			<button
-				class="toolbar-btn"
-				title="Bold (Ctrl+B)"
-				onclick={() => applyFormat('bold')}
-			>
+			<button class="toolbar-btn" title="Bold (Ctrl+B)" onclick={() => applyFormat('bold')}>
 				<strong>B</strong>
 			</button>
-			<button
-				class="toolbar-btn"
-				title="Italic (Ctrl+I)"
-				onclick={() => applyFormat('italic')}
-			>
+			<button class="toolbar-btn" title="Italic (Ctrl+I)" onclick={() => applyFormat('italic')}>
 				<em>I</em>
 			</button>
 			<button
@@ -250,15 +251,11 @@
 			<button
 				class="toolbar-btn"
 				title="Insert Link (Ctrl+K)"
-				onclick={() => showLinkModal = true}
+				onclick={() => (showLinkModal = true)}
 			>
 				🔗
 			</button>
-			<button
-				class="toolbar-btn"
-				title="Inline Code"
-				onclick={() => applyFormat('code')}
-			>
+			<button class="toolbar-btn" title="Inline Code" onclick={() => applyFormat('code')}>
 				<code>&lt;/&gt;</code>
 			</button>
 		</div>
@@ -279,7 +276,7 @@
 						showMoreMenu = false;
 					}}
 				>
-					{alignOptions.find(a => a.value === (block.settings.textAlign || 'left'))?.icon || '☰'}
+					{alignOptions.find((a) => a.value === (block.settings.textAlign || 'left'))?.icon || '☰'}
 					<span class="dropdown-arrow">▼</span>
 				</button>
 				{#if showAlignMenu}
@@ -305,12 +302,7 @@
 
 	<!-- Block Actions -->
 	<div class="toolbar-group">
-		<button
-			class="toolbar-btn"
-			title="Move up (Ctrl+↑)"
-			onclick={onMoveUp}
-			disabled={!canMoveUp}
-		>
+		<button class="toolbar-btn" title="Move up (Ctrl+↑)" onclick={onMoveUp} disabled={!canMoveUp}>
 			↑
 		</button>
 		<button
@@ -328,13 +320,7 @@
 
 	<!-- More Actions -->
 	<div class="toolbar-group">
-		<button
-			class="toolbar-btn"
-			title="Duplicate (Ctrl+D)"
-			onclick={onDuplicate}
-		>
-			⧉
-		</button>
+		<button class="toolbar-btn" title="Duplicate (Ctrl+D)" onclick={onDuplicate}> ⧉ </button>
 		<div class="dropdown">
 			<button
 				class="toolbar-btn"
@@ -364,7 +350,10 @@
 						<span>Duplicate</span>
 						<span class="shortcut">Ctrl+D</span>
 					</button>
-					<button class="dropdown-item" onclick={() => navigator.clipboard.writeText(JSON.stringify(block))}>
+					<button
+						class="dropdown-item"
+						onclick={() => navigator.clipboard.writeText(JSON.stringify(block))}
+					>
 						<span class="item-icon">📋</span>
 						<span>Copy block</span>
 					</button>
@@ -380,21 +369,17 @@
 	</div>
 
 	<!-- Delete Button -->
-	<button
-		class="toolbar-btn delete-btn"
-		title="Delete block"
-		onclick={onDelete}
-	>
-		🗑
-	</button>
+	<button class="toolbar-btn delete-btn" title="Delete block" onclick={onDelete}> 🗑 </button>
 </div>
 
 <!-- Link Modal -->
 {#if showLinkModal}
-	<div 
-		class="modal-overlay" 
-		onclick={() => showLinkModal = false}
-		onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape') showLinkModal = false; }}
+	<div
+		class="modal-overlay"
+		onclick={() => (showLinkModal = false)}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Escape') showLinkModal = false;
+		}}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="link-modal-title"
@@ -413,20 +398,11 @@
 			</div>
 			<div class="field">
 				<label for="link-text-input">Link Text (optional)</label>
-				<input
-					id="link-text-input"
-					type="text"
-					placeholder="Click here"
-					bind:value={linkText}
-				/>
+				<input id="link-text-input" type="text" placeholder="Click here" bind:value={linkText} />
 			</div>
 			<div class="modal-actions">
-				<button class="cancel-btn" onclick={() => showLinkModal = false}>
-					Cancel
-				</button>
-				<button class="submit-btn" onclick={insertLink} disabled={!linkUrl}>
-					Insert
-				</button>
+				<button class="cancel-btn" onclick={() => (showLinkModal = false)}> Cancel </button>
+				<button class="submit-btn" onclick={insertLink} disabled={!linkUrl}> Insert </button>
 			</div>
 		</div>
 	</div>
@@ -441,7 +417,8 @@
 		background: var(--bg-primary, #ffffff);
 		border: 1px solid var(--border-color, #e5e7eb);
 		border-radius: 0.5rem;
-		box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+		box-shadow:
+			0 4px 6px -1px rgba(0, 0, 0, 0.1),
 			0 2px 4px -1px rgba(0, 0, 0, 0.06);
 	}
 
@@ -529,7 +506,8 @@
 		background: var(--bg-primary, #ffffff);
 		border: 1px solid var(--border-color, #e5e7eb);
 		border-radius: 0.5rem;
-		box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1),
+		box-shadow:
+			0 10px 15px -3px rgba(0, 0, 0, 0.1),
 			0 4px 6px -2px rgba(0, 0, 0, 0.05);
 		padding: 0.375rem;
 		z-index: 150;
@@ -704,7 +682,9 @@
 		border-radius: 0.375rem;
 		font-size: 0.875rem;
 		color: var(--text-primary, #1f2937);
-		transition: border-color 0.2s, box-shadow 0.2s;
+		transition:
+			border-color 0.2s,
+			box-shadow 0.2s;
 	}
 
 	.field input:focus {

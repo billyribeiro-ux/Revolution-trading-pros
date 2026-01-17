@@ -21,7 +21,9 @@
 	});
 
 	// Generate embed codes
-	let iframeCode = $derived(`<iframe src="${embedUrl}" width="100%" height="600" frameborder="0" style="border: none; max-width: 800px;"></iframe>`);
+	let iframeCode = $derived(
+		`<iframe src="${embedUrl}" width="100%" height="600" frameborder="0" style="border: none; max-width: 800px;"></iframe>`
+	);
 
 	let scriptCode = $derived(`<div id="form-${form.slug}"></div>
 <script>
@@ -140,8 +142,8 @@
 				</ul>
 			{:else if embedType === 'script'}
 				<p>
-					<strong>How to use:</strong> Paste this code into your HTML. The script will automatically
-					create an iframe.
+					<strong>How to use:</strong> Paste this code into your HTML. The script will automatically create
+					an iframe.
 				</p>
 				<ul>
 					<li>More control over placement</li>

@@ -85,9 +85,7 @@
 
 		try {
 			// Use backend proxy to avoid exposing API key
-			const response = await fetch(
-				`/api/address/autocomplete?query=${encodeURIComponent(query)}`
-			);
+			const response = await fetch(`/api/address/autocomplete?query=${encodeURIComponent(query)}`);
 
 			if (!response.ok) {
 				throw new Error('Search failed');
@@ -189,8 +187,7 @@
 			}
 		}
 
-		components.address_line1 =
-			`${components.street_number} ${components.street_name}`.trim();
+		components.address_line1 = `${components.street_number} ${components.street_name}`.trim();
 
 		return components;
 	}
@@ -349,7 +346,8 @@
 					<input
 						type="text"
 						value={address.address_line1}
-						oninput={(e: Event) => updateField('address_line1', (e.currentTarget as HTMLInputElement).value)}
+						oninput={(e: Event) =>
+							updateField('address_line1', (e.currentTarget as HTMLInputElement).value)}
 						placeholder="Street address"
 						class="sub-input"
 						readonly={!manualMode}
@@ -363,7 +361,8 @@
 					<input
 						type="text"
 						value={address.address_line2}
-						oninput={(e: Event) => updateField('address_line2', (e.currentTarget as HTMLInputElement).value)}
+						oninput={(e: Event) =>
+							updateField('address_line2', (e.currentTarget as HTMLInputElement).value)}
 						placeholder="Apt, Suite, Unit, etc."
 						class="sub-input"
 						readonly={!manualMode}
@@ -388,7 +387,8 @@
 					<input
 						type="text"
 						value={address.state}
-						oninput={(e: Event) => updateField('state', (e.currentTarget as HTMLInputElement).value)}
+						oninput={(e: Event) =>
+							updateField('state', (e.currentTarget as HTMLInputElement).value)}
 						placeholder="State"
 						class="sub-input"
 						readonly={!manualMode}
@@ -399,7 +399,8 @@
 					<input
 						type="text"
 						value={address.postal_code}
-						oninput={(e: Event) => updateField('postal_code', (e.currentTarget as HTMLInputElement).value)}
+						oninput={(e: Event) =>
+							updateField('postal_code', (e.currentTarget as HTMLInputElement).value)}
 						placeholder="ZIP"
 						class="sub-input"
 						readonly={!manualMode}
@@ -413,7 +414,8 @@
 					<input
 						type="text"
 						value={address.country}
-						oninput={(e: Event) => updateField('country', (e.currentTarget as HTMLInputElement).value)}
+						oninput={(e: Event) =>
+							updateField('country', (e.currentTarget as HTMLInputElement).value)}
 						placeholder="Country"
 						class="sub-input"
 						readonly={!manualMode}

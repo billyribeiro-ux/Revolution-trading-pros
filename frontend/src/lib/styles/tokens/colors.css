@@ -9,94 +9,94 @@
  */
 
 :root {
-    /* ═══════════════════════════════════════════════════════════════════════════
+	/* ═══════════════════════════════════════════════════════════════════════════
      * BACKGROUND SCALE
      * ═══════════════════════════════════════════════════════════════════════════ */
-    --bg-base: #0D1117;           /* Main app background */
-    --bg-elevated: #161B22;       /* Cards, modals, elevated surfaces */
-    --bg-surface: #1C2128;        /* Input backgrounds, nested containers */
-    --bg-hover: #252B33;          /* Hover states for interactive elements */
-    --bg-active: #2D333B;         /* Active/pressed states */
+	--bg-base: #0d1117; /* Main app background */
+	--bg-elevated: #161b22; /* Cards, modals, elevated surfaces */
+	--bg-surface: #1c2128; /* Input backgrounds, nested containers */
+	--bg-hover: #252b33; /* Hover states for interactive elements */
+	--bg-active: #2d333b; /* Active/pressed states */
 
-    /* ═══════════════════════════════════════════════════════════════════════════
+	/* ═══════════════════════════════════════════════════════════════════════════
      * PRIMARY PALETTE (Gold/Amber) - Brand Color
      * ═══════════════════════════════════════════════════════════════════════════ */
-    --primary-50: #FFF9E6;        /* Tinted backgrounds */
-    --primary-100: #FFEFB3;
-    --primary-200: #FFE580;
-    --primary-300: #FFDB4D;
-    --primary-400: #FFD11A;       /* Primary accent, highlights */
-    --primary-500: #E6B800;       /* Main primary, CTAs, buttons */
-    --primary-600: #B38F00;       /* Hover state for primary */
-    --primary-700: #806600;       /* Active state for primary */
-    --primary-800: #4D3D00;
-    --primary-900: #1A1400;
+	--primary-50: #fff9e6; /* Tinted backgrounds */
+	--primary-100: #ffefb3;
+	--primary-200: #ffe580;
+	--primary-300: #ffdb4d;
+	--primary-400: #ffd11a; /* Primary accent, highlights */
+	--primary-500: #e6b800; /* Main primary, CTAs, buttons */
+	--primary-600: #b38f00; /* Hover state for primary */
+	--primary-700: #806600; /* Active state for primary */
+	--primary-800: #4d3d00;
+	--primary-900: #1a1400;
 
-    /* ═══════════════════════════════════════════════════════════════════════════
+	/* ═══════════════════════════════════════════════════════════════════════════
      * SECONDARY PALETTE (Slate Blue) - Supporting Color
      * ═══════════════════════════════════════════════════════════════════════════ */
-    --secondary-50: #E8EDF5;
-    --secondary-100: #C5D1E8;
-    --secondary-200: #9FB3D9;
-    --secondary-300: #7995CA;     /* Secondary accent, links */
-    --secondary-400: #5377BB;
-    --secondary-500: #3D5A99;     /* Main secondary */
-    --secondary-600: #2F4778;     /* Hover state */
-    --secondary-700: #233557;     /* Active state */
-    --secondary-800: #172337;
-    --secondary-900: #0B1118;
+	--secondary-50: #e8edf5;
+	--secondary-100: #c5d1e8;
+	--secondary-200: #9fb3d9;
+	--secondary-300: #7995ca; /* Secondary accent, links */
+	--secondary-400: #5377bb;
+	--secondary-500: #3d5a99; /* Main secondary */
+	--secondary-600: #2f4778; /* Hover state */
+	--secondary-700: #233557; /* Active state */
+	--secondary-800: #172337;
+	--secondary-900: #0b1118;
 
-    /* ═══════════════════════════════════════════════════════════════════════════
+	/* ═══════════════════════════════════════════════════════════════════════════
      * TEXT HIERARCHY
      * ═══════════════════════════════════════════════════════════════════════════ */
-    --text-primary: #F0F6FC;      /* Headings, primary content */
-    --text-secondary: #8B949E;    /* Descriptions, metadata */
-    --text-tertiary: #6E7681;     /* Labels, hints, captions */
-    --text-muted: #484F58;        /* Disabled text, placeholders */
+	--text-primary: #f0f6fc; /* Headings, primary content */
+	--text-secondary: #8b949e; /* Descriptions, metadata */
+	--text-tertiary: #6e7681; /* Labels, hints, captions */
+	--text-muted: #484f58; /* Disabled text, placeholders */
 
-    /* ═══════════════════════════════════════════════════════════════════════════
+	/* ═══════════════════════════════════════════════════════════════════════════
      * BORDER SYSTEM
      * ═══════════════════════════════════════════════════════════════════════════ */
-    --border-default: #30363D;    /* Standard borders */
-    --border-muted: #21262D;      /* Subtle dividers */
-    --border-emphasis: #8B949E;   /* Emphasized borders, focus rings */
-    --border-thin: #3D444D;       /* Thin outer borders for containers */
+	--border-default: #30363d; /* Standard borders */
+	--border-muted: #21262d; /* Subtle dividers */
+	--border-emphasis: #8b949e; /* Emphasized borders, focus rings */
+	--border-thin: #3d444d; /* Thin outer borders for containers */
 
-    /* ═══════════════════════════════════════════════════════════════════════════
+	/* ═══════════════════════════════════════════════════════════════════════════
      * SEMANTIC COLORS - SUCCESS
      * ═══════════════════════════════════════════════════════════════════════════ */
-    --success-soft: rgba(46, 160, 67, 0.15);    /* Background tint */
-    --success-base: #2EA043;                     /* Icons, text */
-    --success-emphasis: #3FB950;                 /* Strong emphasis */
+	--success-soft: rgba(46, 160, 67, 0.15); /* Background tint */
+	--success-base: #2ea043; /* Icons, text */
+	--success-emphasis: #3fb950; /* Strong emphasis */
 
-    /* ═══════════════════════════════════════════════════════════════════════════
+	/* ═══════════════════════════════════════════════════════════════════════════
      * SEMANTIC COLORS - WARNING
      * ═══════════════════════════════════════════════════════════════════════════ */
-    --warning-soft: rgba(187, 128, 9, 0.15);
-    --warning-base: #BB8009;
-    --warning-emphasis: #D29922;
+	--warning-soft: rgba(187, 128, 9, 0.15);
+	--warning-base: #bb8009;
+	--warning-emphasis: #d29922;
 
-    /* ═══════════════════════════════════════════════════════════════════════════
+	/* ═══════════════════════════════════════════════════════════════════════════
      * SEMANTIC COLORS - ERROR
      * ═══════════════════════════════════════════════════════════════════════════ */
-    --error-soft: rgba(218, 54, 51, 0.15);
-    --error-base: #DA3633;
-    --error-emphasis: #F85149;
+	--error-soft: rgba(218, 54, 51, 0.15);
+	--error-base: #da3633;
+	--error-emphasis: #f85149;
 
-    /* ═══════════════════════════════════════════════════════════════════════════
+	/* ═══════════════════════════════════════════════════════════════════════════
      * SEMANTIC COLORS - INFO
      * ═══════════════════════════════════════════════════════════════════════════ */
-    --info-soft: rgba(56, 139, 253, 0.15);
-    --info-base: #388BFD;
-    --info-emphasis: #58A6FF;
+	--info-soft: rgba(56, 139, 253, 0.15);
+	--info-base: #388bfd;
+	--info-emphasis: #58a6ff;
 
-    /* ═══════════════════════════════════════════════════════════════════════════
+	/* ═══════════════════════════════════════════════════════════════════════════
      * SIDEBAR COLORS
      * ═══════════════════════════════════════════════════════════════════════════ */
-    --sidebar-bg: #161B22;
-    --sidebar-hover: #21262D;
-    --sidebar-active: rgba(230, 184, 0, 0.15);
-    --sidebar-text: #F0F6FC;
-    --sidebar-text-muted: #8B949E;
-    --sidebar-border: #30363D;
+	--sidebar-bg: #161b22;
+	--sidebar-hover: #21262d;
+	--sidebar-active: rgba(230, 184, 0, 0.15);
+	--sidebar-text: #f0f6fc;
+	--sidebar-text-muted: #8b949e;
+	--sidebar-border: #30363d;
 }

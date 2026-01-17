@@ -1,7 +1,7 @@
 /**
  * Experiments - Feature flags and A/B testing infrastructure
  * Netflix E6 Level Experimentation
- * 
+ *
  * @version 2.0.0
  * @author Revolution Trading Pros
  */
@@ -46,45 +46,45 @@ export const EXPERIMENTS: Record<string, Experiment> = {
 		name: 'New Pricing Page Design',
 		variants: ['control', 'treatment_a', 'treatment_b'],
 		defaultVariant: 'control',
-		enabled: false,
+		enabled: false
 	},
 	simplified_checkout: {
 		id: 'simplified_checkout',
 		name: 'Simplified Checkout Flow',
 		variants: ['control', 'treatment'],
 		defaultVariant: 'control',
-		enabled: false,
+		enabled: false
 	},
 	trading_room_layout: {
 		id: 'trading_room_layout',
 		name: 'Trading Room Layout',
 		variants: ['control', 'side_panel', 'bottom_panel'],
 		defaultVariant: 'control',
-		enabled: false,
-	},
+		enabled: false
+	}
 };
 
 export const FEATURE_FLAGS: Record<string, FeatureFlag> = {
 	// Example feature flags - add your own here
 	dark_mode: {
 		id: 'dark_mode',
-		enabled: true,
+		enabled: true
 	},
 	new_dashboard: {
 		id: 'new_dashboard',
 		enabled: false,
-		rolloutPercentage: 0,
+		rolloutPercentage: 0
 	},
 	live_chat: {
 		id: 'live_chat',
 		enabled: false,
-		rolloutPercentage: 0,
+		rolloutPercentage: 0
 	},
 	ai_alerts: {
 		id: 'ai_alerts',
 		enabled: false,
-		rolloutPercentage: 0,
-	},
+		rolloutPercentage: 0
+	}
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -96,7 +96,7 @@ const USER_ID_KEY = 'rtp_experiment_user_id';
 
 function getStoredAssignments(): Record<string, ExperimentAssignment> {
 	if (!browser) return {};
-	
+
 	try {
 		const stored = localStorage.getItem(STORAGE_KEY);
 		return stored ? JSON.parse(stored) : {};
@@ -107,7 +107,7 @@ function getStoredAssignments(): Record<string, ExperimentAssignment> {
 
 function storeAssignment(assignment: ExperimentAssignment): void {
 	if (!browser) return;
-	
+
 	try {
 		const assignments = getStoredAssignments();
 		assignments[assignment.experimentId] = assignment;
@@ -119,7 +119,7 @@ function storeAssignment(assignment: ExperimentAssignment): void {
 
 function getOrCreateUserId(): string {
 	if (!browser) return 'server';
-	
+
 	let userId = localStorage.getItem(USER_ID_KEY);
 	if (!userId) {
 		userId = `anon_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
@@ -139,7 +139,7 @@ function hashString(str: string): number {
 	let hash = 0;
 	for (let i = 0; i < str.length; i++) {
 		const char = str.charCodeAt(i);
-		hash = ((hash << 5) - hash) + char;
+		hash = (hash << 5) - hash + char;
 		hash = hash & hash; // Convert to 32bit integer
 	}
 	return Math.abs(hash);
@@ -168,7 +168,7 @@ function assignVariant(experiment: Experiment, userId: string): string {
 	storeAssignment({
 		experimentId: experiment.id,
 		variant,
-		assignedAt: Date.now(),
+		assignedAt: Date.now()
 	});
 
 	return variant;
@@ -187,7 +187,7 @@ interface ExperimentsState {
 const experimentsStore = writable<ExperimentsState>({
 	userId: '',
 	assignments: {},
-	exposures: new Set(),
+	exposures: new Set()
 });
 
 /**
@@ -199,20 +199,23 @@ async function fetchExperimentConfig(): Promise<void> {
 	try {
 		const userId = getOrCreateUserId();
 		const response = await fetch(`${API_BASE_URL}/api/experiments/config?anonymous_id=${userId}`);
-		
+
 		if (response.ok) {
 			const data = await response.json();
-			
+
 			// Update assignments from server
 			if (data.experiments) {
-				experimentsStore.update(state => ({
+				experimentsStore.update((state) => ({
 					...state,
 					assignments: {
 						...state.assignments,
 						...Object.fromEntries(
-							Object.entries(data.experiments).map(([key, val]: [string, any]) => [key, val.variant])
-						),
-					},
+							Object.entries(data.experiments).map(([key, val]: [string, any]) => [
+								key,
+								val.variant
+							])
+						)
+					}
 				}));
 			}
 
@@ -235,16 +238,16 @@ async function fetchExperimentConfig(): Promise<void> {
 if (browser) {
 	const userId = getOrCreateUserId();
 	const assignments: Record<string, string> = {};
-	
+
 	// Pre-assign all experiments locally first
 	for (const [id, experiment] of Object.entries(EXPERIMENTS)) {
 		assignments[id] = assignVariant(experiment, userId);
 	}
-	
+
 	experimentsStore.set({
 		userId,
 		assignments,
-		exposures: new Set(),
+		exposures: new Set()
 	});
 
 	// Then fetch from server (async, will update store when ready)
@@ -262,7 +265,7 @@ if (browser) {
 export function useExperiment(experimentId: string): string {
 	const state = get(experimentsStore);
 	const experiment = EXPERIMENTS[experimentId];
-	
+
 	if (!experiment) {
 		console.warn(`[Experiments] Unknown experiment: ${experimentId}`);
 		return 'control';
@@ -273,12 +276,12 @@ export function useExperiment(experimentId: string): string {
 	// Track exposure (once per session)
 	if (browser && !state.exposures.has(experimentId)) {
 		state.exposures.add(experimentId);
-		experimentsStore.update(s => ({ ...s, exposures: state.exposures }));
-		
+		experimentsStore.update((s) => ({ ...s, exposures: state.exposures }));
+
 		track('experiment_exposure', {
 			experiment_id: experimentId,
 			experiment_name: experiment.name,
-			variant,
+			variant
 		});
 	}
 
@@ -290,7 +293,7 @@ export function useExperiment(experimentId: string): string {
  */
 export function useFeatureFlag(flagId: string): boolean {
 	const flag = FEATURE_FLAGS[flagId];
-	
+
 	if (!flag) {
 		console.warn(`[Experiments] Unknown feature flag: ${flagId}`);
 		return false;
@@ -314,10 +317,14 @@ export function useFeatureFlag(flagId: string): boolean {
 /**
  * Track experiment conversion
  */
-export function trackConversion(experimentId: string, conversionType: string, value?: number): void {
+export function trackConversion(
+	experimentId: string,
+	conversionType: string,
+	value?: number
+): void {
 	const state = get(experimentsStore);
 	const variant = state.assignments[experimentId];
-	
+
 	if (!variant) {
 		console.warn(`[Experiments] No assignment for experiment: ${experimentId}`);
 		return;
@@ -327,7 +334,7 @@ export function trackConversion(experimentId: string, conversionType: string, va
 		experiment_id: experimentId,
 		variant,
 		conversion_type: conversionType,
-		conversion_value: value,
+		conversion_value: value
 	});
 }
 
@@ -336,19 +343,19 @@ export function trackConversion(experimentId: string, conversionType: string, va
  */
 export function overrideExperiment(experimentId: string, variant: string): void {
 	if (!browser) return;
-	
-	experimentsStore.update(state => ({
+
+	experimentsStore.update((state) => ({
 		...state,
 		assignments: {
 			...state.assignments,
-			[experimentId]: variant,
-		},
+			[experimentId]: variant
+		}
 	}));
 
 	storeAssignment({
 		experimentId,
 		variant,
-		assignedAt: Date.now(),
+		assignedAt: Date.now()
 	});
 }
 
@@ -357,20 +364,20 @@ export function overrideExperiment(experimentId: string, variant: string): void 
  */
 export function clearOverrides(): void {
 	if (!browser) return;
-	
+
 	localStorage.removeItem(STORAGE_KEY);
-	
+
 	const userId = getOrCreateUserId();
 	const assignments: Record<string, string> = {};
-	
+
 	for (const [id, experiment] of Object.entries(EXPERIMENTS)) {
 		assignments[id] = assignVariant(experiment, userId);
 	}
-	
+
 	experimentsStore.set({
 		userId,
 		assignments,
-		exposures: new Set(),
+		exposures: new Set()
 	});
 }
 
@@ -378,10 +385,7 @@ export function clearOverrides(): void {
 // Derived Stores
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const experimentAssignments = derived(
-	experimentsStore,
-	$state => $state.assignments
-);
+export const experimentAssignments = derived(experimentsStore, ($state) => $state.assignments);
 
 export default {
 	useExperiment,
@@ -390,5 +394,5 @@ export default {
 	overrideExperiment,
 	clearOverrides,
 	EXPERIMENTS,
-	FEATURE_FLAGS,
+	FEATURE_FLAGS
 };

@@ -10,7 +10,12 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { browser } from '$app/environment';
-	import { authStore, isAuthenticated, sessionInvalidated, type UserSession } from '$lib/stores/auth.svelte';
+	import {
+		authStore,
+		isAuthenticated,
+		sessionInvalidated,
+		type UserSession
+	} from '$lib/stores/auth.svelte';
 	import authService from '$lib/api/auth';
 
 	// Redirect if not authenticated - use replaceState to prevent history pollution
@@ -152,9 +157,7 @@
 
 			<!-- Session Invalidation Warning -->
 			{#if $sessionInvalidated}
-				<div
-					class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3"
-				>
+				<div class="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3">
 					<svg
 						class="w-5 h-5 text-amber-500 flex-shrink-0 mt-0.5"
 						fill="none"
@@ -404,7 +407,9 @@
 								clip-rule="evenodd"
 							/>
 						</svg>
-						<span>If you see a session you don't recognize, revoke it and change your password.</span>
+						<span
+							>If you see a session you don't recognize, revoke it and change your password.</span
+						>
 					</li>
 				</ul>
 			</div>

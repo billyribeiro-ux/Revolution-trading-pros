@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * AppSidebar - Sidebar for authenticated member area
-	 * 
+	 *
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
@@ -85,17 +85,17 @@
 
 <!-- Mobile Overlay -->
 {#if isOpen}
-	<button 
-		class="sidebar-overlay" 
-		onclick={closeSidebar}
-		aria-label="Close sidebar"
-	></button>
+	<button class="sidebar-overlay" onclick={closeSidebar} aria-label="Close sidebar"></button>
 {/if}
 
 <style>
 	.app-sidebar {
 		width: 260px;
-		background: linear-gradient(180deg, var(--color-rtp-surface, #1e293b) 0%, var(--color-rtp-bg, #0f172a) 100%);
+		background: linear-gradient(
+			180deg,
+			var(--color-rtp-surface, #1e293b) 0%,
+			var(--color-rtp-bg, #0f172a) 100%
+		);
 		border-right: 1px solid rgba(99, 102, 241, 0.1);
 		display: flex;
 		flex-direction: column;
@@ -186,7 +186,11 @@
 		width: 40px;
 		height: 40px;
 		border-radius: var(--radius-md, 0.5rem);
-		background: linear-gradient(135deg, var(--color-rtp-primary, #6366f1), var(--color-rtp-indigo, #8b5cf6));
+		background: linear-gradient(
+			135deg,
+			var(--color-rtp-primary, #6366f1),
+			var(--color-rtp-indigo, #8b5cf6)
+		);
 		display: flex;
 		align-items: center;
 		justify-content: center;

@@ -20,7 +20,7 @@
 		<strong>Available Platforms:</strong>
 		{platforms.join(', ')}
 	</p>
-	<hr>
+	<hr />
 </section>
 
 <style>
@@ -30,7 +30,7 @@
 		text-align: center;
 		margin-bottom: 10px;
 		font-size: 30px;
-		font-family: "Open Sans Condensed", sans-serif;
+		font-family: 'Open Sans Condensed', sans-serif;
 		line-height: 1.1em;
 	}
 
@@ -38,7 +38,7 @@
 		text-align: center;
 		margin-bottom: 40px;
 		color: #666666;
-		font-family: "Open Sans", sans-serif;
+		font-family: 'Open Sans', sans-serif;
 	}
 
 	.platforms strong {

@@ -9,7 +9,7 @@ const PRODUCTION_API_URL = 'https://revolution-trading-pros-api.fly.dev';
 export const load = async ({ fetch }: { fetch: typeof globalThis.fetch }) => {
 	// Fetch posts with timeout - don't block too long
 	const posts = await fetchPosts(fetch);
-	
+
 	return {
 		posts
 	};
@@ -19,17 +19,17 @@ async function fetchPosts(fetch: typeof globalThis.fetch) {
 	try {
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), 5000); // Increased timeout
-		
+
 		const url = `${PRODUCTION_API_URL}/api/posts?per_page=6`;
 		console.log('[SSR] Fetching posts from:', url);
-		
-		const response = await fetch(url, { 
+
+		const response = await fetch(url, {
 			signal: controller.signal,
 			headers: {
-				'Accept': 'application/json'
+				Accept: 'application/json'
 			}
 		});
-		
+
 		clearTimeout(timeoutId);
 
 		if (!response.ok) {

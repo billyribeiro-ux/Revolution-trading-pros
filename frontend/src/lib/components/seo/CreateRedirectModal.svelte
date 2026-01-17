@@ -83,7 +83,12 @@
 			</button>
 		</div>
 
-		<form onsubmit={(e: SubmitEvent) => { e.preventDefault(); save(); }}>
+		<form
+			onsubmit={(e: SubmitEvent) => {
+				e.preventDefault();
+				save();
+			}}
+		>
 			<div class="modal-body">
 				{#if error}
 					<div class="error-message">{error}</div>

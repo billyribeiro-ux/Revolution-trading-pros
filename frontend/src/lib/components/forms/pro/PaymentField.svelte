@@ -20,7 +20,7 @@
 	let { field, value = null, currency = 'USD', error, onchange }: Props = $props();
 
 	const paymentType = $derived(field.attributes?.payment_type || 'single');
-	const items = $derived<PaymentItem[]>(field.options as PaymentItem[] || []);
+	const items = $derived<PaymentItem[]>((field.options as PaymentItem[]) || []);
 	const allowQuantity = $derived(field.attributes?.allow_quantity || false);
 
 	function formatCurrency(amount: number): string {
@@ -107,7 +107,8 @@
 						id="payment-item-{item.id}"
 						type="checkbox"
 						checked={isSelected(item.id)}
-						onchange={(e: Event) => handleMultiSelect(item, (e.currentTarget as HTMLInputElement).checked)}
+						onchange={(e: Event) =>
+							handleMultiSelect(item, (e.currentTarget as HTMLInputElement).checked)}
 					/>
 				{:else}
 					<input
@@ -150,7 +151,11 @@
 							class="qty-input"
 							aria-label="Quantity"
 							onclick={(e: MouseEvent) => e.stopPropagation()}
-							onchange={(e: Event) => handleQuantityChange(item.id, parseInt((e.currentTarget as HTMLInputElement).value) || 1)}
+							onchange={(e: Event) =>
+								handleQuantityChange(
+									item.id,
+									parseInt((e.currentTarget as HTMLInputElement).value) || 1
+								)}
 						/>
 						<button
 							type="button"

@@ -73,7 +73,7 @@ function createOfflineStore() {
 	// Setup network listeners
 	if (browser) {
 		window.addEventListener('online', () => {
-			update(state => ({
+			update((state) => ({
 				...state,
 				isOnline: true,
 				lastOnline: Date.now()
@@ -83,7 +83,7 @@ function createOfflineStore() {
 		});
 
 		window.addEventListener('offline', () => {
-			update(state => ({
+			update((state) => ({
 				...state,
 				isOnline: false
 			}));
@@ -91,17 +91,19 @@ function createOfflineStore() {
 
 		// Check for service worker support
 		if ('serviceWorker' in navigator) {
-			navigator.serviceWorker.ready.then(() => {
-				update(state => ({
-					...state,
-					serviceWorkerStatus: 'activated'
-				}));
-			}).catch(() => {
-				update(state => ({
-					...state,
-					serviceWorkerStatus: 'error'
-				}));
-			});
+			navigator.serviceWorker.ready
+				.then(() => {
+					update((state) => ({
+						...state,
+						serviceWorkerStatus: 'activated'
+					}));
+				})
+				.catch(() => {
+					update((state) => ({
+						...state,
+						serviceWorkerStatus: 'error'
+					}));
+				});
 		}
 	}
 
@@ -111,7 +113,7 @@ function createOfflineStore() {
 			return;
 		}
 
-		update(s => ({ ...s, syncInProgress: true }));
+		update((s) => ({ ...s, syncInProgress: true }));
 
 		const actionsToSync = [...state.pendingActions];
 		const failedActions: PendingAction[] = [];
@@ -132,7 +134,7 @@ function createOfflineStore() {
 			}
 		}
 
-		update(s => ({
+		update((s) => ({
 			...s,
 			pendingActions: failedActions,
 			syncInProgress: false
@@ -169,7 +171,7 @@ function createOfflineStore() {
 				retryCount: 0
 			};
 
-			update(state => {
+			update((state) => {
 				const newActions = [...state.pendingActions, action];
 				savePendingActions(newActions);
 				return {
@@ -187,8 +189,8 @@ function createOfflineStore() {
 
 		// Remove a pending action
 		removeAction(id: string) {
-			update(state => {
-				const newActions = state.pendingActions.filter(a => a.id !== id);
+			update((state) => {
+				const newActions = state.pendingActions.filter((a) => a.id !== id);
 				savePendingActions(newActions);
 				return {
 					...state,
@@ -199,7 +201,7 @@ function createOfflineStore() {
 
 		// Clear all pending actions
 		clearPendingActions() {
-			update(state => {
+			update((state) => {
 				savePendingActions([]);
 				return {
 					...state,
@@ -213,7 +215,7 @@ function createOfflineStore() {
 
 		// Update cache size
 		updateCacheSize(size: number) {
-			update(state => ({
+			update((state) => ({
 				...state,
 				cacheSize: size
 			}));
@@ -225,10 +227,8 @@ function createOfflineStore() {
 
 			try {
 				const cacheNames = await caches.keys();
-				await Promise.all(
-					cacheNames.map(name => caches.delete(name))
-				);
-				update(state => ({
+				await Promise.all(cacheNames.map((name) => caches.delete(name)));
+				update((state) => ({
 					...state,
 					cacheSize: 0
 				}));
@@ -242,7 +242,10 @@ function createOfflineStore() {
 export const offlineStore = createOfflineStore();
 
 // Derived stores
-export const isOnline = derived(offlineStore, $store => $store.isOnline);
-export const hasPendingActions = derived(offlineStore, $store => $store.pendingActions.length > 0);
-export const pendingActionsCount = derived(offlineStore, $store => $store.pendingActions.length);
-export const isSyncing = derived(offlineStore, $store => $store.syncInProgress);
+export const isOnline = derived(offlineStore, ($store) => $store.isOnline);
+export const hasPendingActions = derived(
+	offlineStore,
+	($store) => $store.pendingActions.length > 0
+);
+export const pendingActionsCount = derived(offlineStore, ($store) => $store.pendingActions.length);
+export const isSyncing = derived(offlineStore, ($store) => $store.syncInProgress);

@@ -263,11 +263,7 @@
 				ondragend={handleDragEnd}
 			>
 				<div class="repeater-item__header">
-					<button
-						type="button"
-						class="repeater-item__drag-handle"
-						aria-label="Drag to reorder"
-					>
+					<button type="button" class="repeater-item__drag-handle" aria-label="Drag to reorder">
 						<svg
 							xmlns="http://www.w3.org/2000/svg"
 							width="16"
@@ -285,7 +281,8 @@
 					</button>
 
 					<span class="repeater-item__title">
-						{itemLabel} {index + 1}
+						{itemLabel}
+						{index + 1}
 						{#if item.collapsed && getItemPreview(item)}
 							<span class="repeater-item__preview">— {getItemPreview(item)}</span>
 						{/if}
@@ -369,7 +366,9 @@
 									fill="none"
 									stroke="currentColor"
 									stroke-width="2"
-									style="transform: rotate({item.collapsed ? -90 : 0}deg); transition: transform 0.2s"
+									style="transform: rotate({item.collapsed
+										? -90
+										: 0}deg); transition: transform 0.2s"
 								>
 									<polyline points="6 9 12 15 18 9"></polyline>
 								</svg>
@@ -419,7 +418,12 @@
 											id="{id}-{index}-{field.name}"
 											class="repeater-item__input"
 											value={item.data[field.name]}
-											onchange={(e: Event) => updateField(index, field.name, (e.currentTarget as HTMLSelectElement).value)}
+											onchange={(e: Event) =>
+												updateField(
+													index,
+													field.name,
+													(e.currentTarget as HTMLSelectElement).value
+												)}
 											required={field.required}
 										>
 											<option value="">Select...</option>
@@ -434,7 +438,12 @@
 											value={item.data[field.name]}
 											placeholder={field.placeholder}
 											required={field.required}
-											oninput={(e: Event) => updateField(index, field.name, (e.currentTarget as HTMLTextAreaElement).value)}
+											oninput={(e: Event) =>
+												updateField(
+													index,
+													field.name,
+													(e.currentTarget as HTMLTextAreaElement).value
+												)}
 										></textarea>
 									{:else}
 										<input
@@ -444,7 +453,8 @@
 											value={item.data[field.name]}
 											placeholder={field.placeholder}
 											required={field.required}
-											oninput={(e: Event) => updateField(index, field.name, (e.currentTarget as HTMLInputElement).value)}
+											oninput={(e: Event) =>
+												updateField(index, field.name, (e.currentTarget as HTMLInputElement).value)}
 										/>
 									{/if}
 								</div>
@@ -647,7 +657,9 @@
 		border: 1px solid #d1d5db;
 		border-radius: 0.5rem;
 		font-size: 0.875rem;
-		transition: border-color 0.2s, box-shadow 0.2s;
+		transition:
+			border-color 0.2s,
+			box-shadow 0.2s;
 	}
 
 	.repeater-item__input:focus {

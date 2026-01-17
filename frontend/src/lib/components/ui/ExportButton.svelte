@@ -9,7 +9,13 @@
 	 */
 	import { fly } from 'svelte/transition';
 	import { IconDownload, IconCsv, IconPdf, IconJson } from '$lib/icons';
-	import { exportToCSV, exportToPDF, exportToJSON, type ExportColumn, type ExportOptions } from '$lib/utils/export';
+	import {
+		exportToCSV,
+		exportToPDF,
+		exportToJSON,
+		type ExportColumn,
+		type ExportOptions
+	} from '$lib/utils/export';
 
 	interface Props {
 		data?: Record<string, unknown>[];

@@ -98,13 +98,13 @@ export const ROOMS: Room[] = [
 /**
  * Get all room IDs
  */
-export const ALL_ROOM_IDS = ROOMS.map(r => r.id);
+export const ALL_ROOM_IDS = ROOMS.map((r) => r.id);
 
 /**
  * Get rooms by type
  */
 export function getRoomsByType(type: RoomType): Room[] {
-	return ROOMS.filter(r => r.type === type);
+	return ROOMS.filter((r) => r.type === type);
 }
 
 /**
@@ -125,29 +125,28 @@ export function getAlertsOnlyServices(): Room[] {
  * Get room by ID/slug
  */
 export function getRoomById(id: string): Room | undefined {
-	return ROOMS.find(r => r.id === id || r.slug === id);
+	return ROOMS.find((r) => r.id === id || r.slug === id);
 }
 
 /**
  * Get room by membership ID
  */
 export function getRoomByMembershipId(membershipId: number): Room | undefined {
-	return ROOMS.find(r => r.membershipId === membershipId);
+	return ROOMS.find((r) => r.membershipId === membershipId);
 }
 
 /**
  * Get multiple rooms by IDs
  */
 export function getRoomsByIds(ids: string[]): Room[] {
-	return ROOMS.filter(r => ids.includes(r.id));
+	return ROOMS.filter((r) => ids.includes(r.id));
 }
 
 /**
  * Check if room IDs represent all rooms
  */
 export function isAllRooms(roomIds: string[]): boolean {
-	return roomIds.length === ROOMS.length &&
-		ROOMS.every(r => roomIds.includes(r.id));
+	return roomIds.length === ROOMS.length && ROOMS.every((r) => roomIds.includes(r.id));
 }
 
 /**

@@ -49,7 +49,7 @@ function initializeReddit(pixelId: string): void {
 		window.rdt?.('init', pixelId, {
 			optOut: false,
 			useDecimalCurrencyValues: true,
-			aaid: import.meta.env['PUBLIC_REDDIT_AAID'] || '',
+			aaid: import.meta.env['PUBLIC_REDDIT_AAID'] || ''
 		});
 		window.rdt?.('track', 'PageVisit');
 		redditReady = true;
@@ -75,10 +75,7 @@ function processEventQueue(): void {
 /**
  * Track a Reddit event
  */
-export function trackRedditEvent(
-	event: string,
-	data?: Record<string, unknown>
-): void {
+export function trackRedditEvent(event: string, data?: Record<string, unknown>): void {
 	if (!browser) return;
 
 	if (!redditReady) {
@@ -146,7 +143,7 @@ export const REDDIT_EVENTS = {
 	PURCHASE: 'Purchase',
 	LEAD: 'Lead',
 	SIGN_UP: 'SignUp',
-	CUSTOM: 'Custom',
+	CUSTOM: 'Custom'
 } as const;
 
 /**
@@ -164,14 +161,14 @@ export const redditVendor: VendorConfig = {
 			name: 'rdt_*',
 			purpose: 'Reddit tracking and advertising',
 			duration: '90 days',
-			type: 'third-party',
+			type: 'third-party'
 		},
 		{
 			name: '_rdt_uuid',
 			purpose: 'Reddit unique user identifier',
 			duration: '90 days',
-			type: 'third-party',
-		},
+			type: 'third-party'
+		}
 	],
 	dataLocations: ['United States'],
 	supportsRevocation: true,
@@ -190,5 +187,5 @@ export const redditVendor: VendorConfig = {
 		limitedDataUseEnabled = false;
 		eventQueue.length = 0;
 		console.debug('[Reddit] Consent revoked');
-	},
+	}
 };

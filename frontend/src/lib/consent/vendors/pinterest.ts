@@ -70,10 +70,7 @@ function processEventQueue(): void {
 /**
  * Track a Pinterest event
  */
-export function trackPinterestEvent(
-	event: string,
-	data?: Record<string, unknown>
-): void {
+export function trackPinterestEvent(event: string, data?: Record<string, unknown>): void {
 	if (!browser) return;
 
 	if (!pinterestReady) {
@@ -119,7 +116,7 @@ export const PINTEREST_EVENTS = {
 	WATCH_VIDEO: 'watchvideo',
 	SIGNUP: 'signup',
 	LEAD: 'lead',
-	CUSTOM: 'custom',
+	CUSTOM: 'custom'
 } as const;
 
 /**
@@ -137,14 +134,14 @@ export const pinterestVendor: VendorConfig = {
 			name: '_pinterest_*',
 			purpose: 'Pinterest tracking and advertising',
 			duration: '1 year',
-			type: 'third-party',
+			type: 'third-party'
 		},
 		{
 			name: '_pin_unauth',
 			purpose: 'Pinterest unauthenticated user tracking',
 			duration: '1 year',
-			type: 'third-party',
-		},
+			type: 'third-party'
+		}
 	],
 	dataLocations: ['United States'],
 	supportsRevocation: true,
@@ -162,5 +159,5 @@ export const pinterestVendor: VendorConfig = {
 		pinterestReady = false;
 		eventQueue.length = 0;
 		console.debug('[Pinterest] Consent revoked');
-	},
+	}
 };

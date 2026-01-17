@@ -363,7 +363,11 @@
 					<div class="form-row">
 						<div class="form-group">
 							<label for="difficulty">Difficulty Level</label>
-							<select id="difficulty" bind:value={formData.difficulty_level} disabled={!editMode && !!courseId}>
+							<select
+								id="difficulty"
+								bind:value={formData.difficulty_level}
+								disabled={!editMode && !!courseId}
+							>
 								{#each difficultyOptions as opt}
 									<option value={opt.value}>{opt.label}</option>
 								{/each}
@@ -436,7 +440,11 @@
 							Featured
 						</label>
 						<label class="toggle-label">
-							<input type="checkbox" bind:checked={formData.is_free} disabled={!editMode && !!courseId} />
+							<input
+								type="checkbox"
+								bind:checked={formData.is_free}
+								disabled={!editMode && !!courseId}
+							/>
 							Free
 						</label>
 						<label class="toggle-label">
@@ -471,7 +479,8 @@
 						</button>
 					{:else}
 						<button type="button" class="btn-primary" onclick={saveCourse} disabled={isSaving}>
-							<IconCheck size={16} /> {isSaving ? 'Saving...' : 'Save'}
+							<IconCheck size={16} />
+							{isSaving ? 'Saving...' : 'Save'}
 						</button>
 						{#if courseId}
 							<button
@@ -502,11 +511,7 @@
 
 				{#if showSectionForm}
 					<div class="inline-form">
-						<input
-							type="text"
-							bind:value={sectionFormData.title}
-							placeholder="Section title"
-						/>
+						<input type="text" bind:value={sectionFormData.title} placeholder="Section title" />
 						<input
 							type="text"
 							bind:value={sectionFormData.description}
@@ -529,7 +534,12 @@
 								role="button"
 								tabindex="0"
 								onclick={() => toggleSection(section.id)}
-								onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleSection(section.id); } }}
+								onkeydown={(e) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.preventDefault();
+										toggleSection(section.id);
+									}
+								}}
 							>
 								<div class="section-grip">
 									<IconGripVertical size={16} />
@@ -546,7 +556,12 @@
 									<span class="section-meta">{section.lesson_count} lessons</span>
 								</div>
 								<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-								<div class="section-actions" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="group">
+								<div
+									class="section-actions"
+									onclick={(e) => e.stopPropagation()}
+									onkeydown={(e) => e.stopPropagation()}
+									role="group"
+								>
 									<button
 										type="button"
 										class="btn-icon"
@@ -636,10 +651,17 @@
 					aria-label="Add Lesson"
 					tabindex="-1"
 					onclick={() => (showLessonForm = false)}
-					onkeydown={(e) => { if (e.key === 'Escape') showLessonForm = false; }}
+					onkeydown={(e) => {
+						if (e.key === 'Escape') showLessonForm = false;
+					}}
 				>
 					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-					<div class="modal-content" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+					<div
+						class="modal-content"
+						role="document"
+						onclick={(e) => e.stopPropagation()}
+						onkeydown={(e) => e.stopPropagation()}
+					>
 						<h3>Add Lesson</h3>
 
 						<div class="form-group">
@@ -883,8 +905,8 @@
 	}
 
 	.tab.active {
-		color: var(--primary, #E6B800);
-		border-bottom-color: var(--primary, #E6B800);
+		color: var(--primary, #e6b800);
+		border-bottom-color: var(--primary, #e6b800);
 	}
 
 	.tab:disabled {
@@ -929,7 +951,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: var(--primary, #E6B800);
+		border-color: var(--primary, #e6b800);
 	}
 
 	.form-row {
@@ -982,8 +1004,8 @@
 	}
 
 	.btn-primary {
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 	}
 
 	.btn-secondary {
@@ -992,8 +1014,8 @@
 	}
 
 	.btn-add {
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 	}
 
 	.btn-close {
@@ -1253,7 +1275,7 @@
 	}
 
 	.resource-icon {
-		color: var(--primary, #E6B800);
+		color: var(--primary, #e6b800);
 	}
 
 	/* Modal */

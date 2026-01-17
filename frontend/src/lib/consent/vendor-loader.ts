@@ -24,10 +24,7 @@ const loadingVendors = new Set<string>();
 /**
  * Check if all required categories for a vendor are granted.
  */
-export function hasRequiredConsent(
-	vendor: VendorConfig,
-	consent: ConsentState
-): boolean {
+export function hasRequiredConsent(vendor: VendorConfig, consent: ConsentState): boolean {
 	return vendor.requiredCategories.every((category: ConsentCategory) => {
 		return consent[category] === true;
 	});
@@ -36,10 +33,7 @@ export function hasRequiredConsent(
 /**
  * Load a single vendor if consent is granted.
  */
-export async function loadVendor(
-	vendor: VendorConfig,
-	consent: ConsentState
-): Promise<boolean> {
+export async function loadVendor(vendor: VendorConfig, consent: ConsentState): Promise<boolean> {
 	if (!browser) return false;
 
 	// Skip if already loaded or loading
@@ -83,10 +77,7 @@ export async function loadVendor(
 /**
  * Handle consent being revoked for a vendor.
  */
-export function handleConsentRevoked(
-	vendor: VendorConfig,
-	consent: ConsentState
-): void {
+export function handleConsentRevoked(vendor: VendorConfig, consent: ConsentState): void {
 	if (!browser) return;
 
 	// Only call revoke handler if vendor was loaded and consent is now missing
@@ -129,9 +120,7 @@ export async function loadVendorsForConsent(
 		})
 	);
 
-	const loaded = results.filter(
-		(r) => r.status === 'fulfilled' && r.value === true
-	).length;
+	const loaded = results.filter((r) => r.status === 'fulfilled' && r.value === true).length;
 
 	console.debug(`[VendorLoader] Loaded ${loaded}/${vendors.length} vendors`);
 }
@@ -212,10 +201,7 @@ export function injectScript(
 /**
  * Utility: Inject an inline script into the document head.
  */
-export function injectInlineScript(
-	code: string,
-	options: { id?: string } = {}
-): void {
+export function injectInlineScript(code: string, options: { id?: string } = {}): void {
 	if (!browser) return;
 
 	// Check if script already exists

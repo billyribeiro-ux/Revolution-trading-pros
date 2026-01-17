@@ -24,18 +24,22 @@
 		onKpiClick = null
 	}: Props = $props();
 
-	let filteredKpis = $derived(kpis.filter((kpi) => {
-		if (showPrimaryOnly && !kpi.is_primary) return false;
-		if (category && kpi.category !== category) return false;
-		return true;
-	}));
+	let filteredKpis = $derived(
+		kpis.filter((kpi) => {
+			if (showPrimaryOnly && !kpi.is_primary) return false;
+			if (category && kpi.category !== category) return false;
+			return true;
+		})
+	);
 
-	let gridCols = $derived({
-		2: 'grid-cols-1 sm:grid-cols-2',
-		3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
-		4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
-		5: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
-	}[columns]);
+	let gridCols = $derived(
+		{
+			2: 'grid-cols-1 sm:grid-cols-2',
+			3: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+			4: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+			5: 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5'
+		}[columns]
+	);
 
 	// Group KPIs by category
 	let categories = $derived([...new Set(kpis.map((k) => k.category))]);
@@ -56,8 +60,14 @@
 							<div
 								role="button"
 								tabindex="0"
-								onclick={(e: MouseEvent) => { e.preventDefault(); onKpiClick?.(kpi); }}
-								onkeypress={(e: KeyboardEvent) => { e.preventDefault(); onKpiClick?.(kpi); }}
+								onclick={(e: MouseEvent) => {
+									e.preventDefault();
+									onKpiClick?.(kpi);
+								}}
+								onkeypress={(e: KeyboardEvent) => {
+									e.preventDefault();
+									onKpiClick?.(kpi);
+								}}
 							>
 								<KpiCard {kpi} clickable={!!onKpiClick} />
 							</div>

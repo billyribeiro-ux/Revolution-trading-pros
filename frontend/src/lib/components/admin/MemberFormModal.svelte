@@ -5,7 +5,12 @@
 	 *
 	 * Enterprise-grade modal for member CRUD operations.
 	 */
-	import { membersApi, type Member, type CreateMemberRequest, type UpdateMemberRequest } from '$lib/api/members';
+	import {
+		membersApi,
+		type Member,
+		type CreateMemberRequest,
+		type UpdateMemberRequest
+	} from '$lib/api/members';
 	import { IconX, IconUserPlus, IconUserEdit, IconEye, IconEyeOff, IconCopy } from '$lib/icons';
 
 	interface Props {
@@ -17,14 +22,7 @@
 		onClose: () => void;
 	}
 
-	let {
-		isOpen,
-		mode: modeProp,
-		member = null,
-		onSave,
-		onSaved,
-		onClose
-	}: Props = $props();
+	let { isOpen, mode: modeProp, member = null, onSave, onSaved, onClose }: Props = $props();
 
 	// Derive mode from props - if member provided, default to edit
 	let mode = $derived(modeProp ?? (member ? 'edit' : 'create'));
@@ -161,7 +159,10 @@
 
 	function generatePassword() {
 		const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789!@#$%';
-		password = Array.from({ length: 16 }, () => chars[Math.floor(Math.random() * chars.length)]).join('');
+		password = Array.from(
+			{ length: 16 },
+			() => chars[Math.floor(Math.random() * chars.length)]
+		).join('');
 		showPassword = true;
 	}
 
@@ -198,7 +199,13 @@
 				<h2 id="modal-title" class="modal-title">
 					{mode === 'create' ? 'Create New Member' : 'Edit Member'}
 				</h2>
-				<button type="button" class="btn-close" onclick={closeAndClear} disabled={isLoading} aria-label="Close">
+				<button
+					type="button"
+					class="btn-close"
+					onclick={closeAndClear}
+					disabled={isLoading}
+					aria-label="Close"
+				>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -213,16 +220,29 @@
 					<p>A temporary password has been generated. Please share this with the member:</p>
 					<div class="password-display">
 						<code>{temporaryPassword}</code>
-						<button type="button" class="btn-copy" onclick={() => copyPassword(temporaryPassword!)} title="Copy password">
+						<button
+							type="button"
+							class="btn-copy"
+							onclick={() => copyPassword(temporaryPassword!)}
+							title="Copy password"
+						>
 							<IconCopy size={18} />
 						</button>
 					</div>
-					<p class="password-warning">This password will not be shown again. Make sure to save it.</p>
+					<p class="password-warning">
+						This password will not be shown again. Make sure to save it.
+					</p>
 					<button type="button" class="btn-primary" onclick={closeAndClear}>Done</button>
 				</div>
 			{:else}
 				<!-- Form -->
-				<form class="modal-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+				<form
+					class="modal-form"
+					onsubmit={(e) => {
+						e.preventDefault();
+						handleSubmit();
+					}}
+				>
 					{#if error}
 						<div class="error-banner">{error}</div>
 					{/if}
@@ -241,7 +261,9 @@
 					</div>
 
 					<div class="form-group">
-						<label for="email" class="form-label">Email Address <span class="required">*</span></label>
+						<label for="email" class="form-label"
+							>Email Address <span class="required">*</span></label
+						>
 						<input
 							id="email"
 							type="email"
@@ -284,7 +306,7 @@
 							<button
 								type="button"
 								class="btn-toggle-password"
-								onclick={() => showPassword = !showPassword}
+								onclick={() => (showPassword = !showPassword)}
 								title={showPassword ? 'Hide password' : 'Show password'}
 							>
 								{#if showPassword}
@@ -294,7 +316,12 @@
 								{/if}
 							</button>
 						</div>
-						<button type="button" class="btn-generate" onclick={generatePassword} disabled={isLoading}>
+						<button
+							type="button"
+							class="btn-generate"
+							onclick={generatePassword}
+							disabled={isLoading}
+						>
 							Generate Strong Password
 						</button>
 					</div>
@@ -343,8 +370,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.modal-container {
@@ -460,7 +491,9 @@
 		color: var(--admin-text-primary);
 		font-family: var(--font-body), 'Roboto', sans-serif;
 		font-size: 0.9375rem;
-		transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	.form-input:focus,
@@ -533,7 +566,7 @@
 		cursor: pointer;
 	}
 
-	.checkbox-label input[type="checkbox"] {
+	.checkbox-label input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
 		accent-color: var(--admin-accent-primary);
@@ -578,7 +611,7 @@
 	.btn-submit {
 		background: var(--admin-accent-primary);
 		border: none;
-		color: #0D1117;
+		color: #0d1117;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -606,7 +639,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Temporary Password Display */
@@ -684,7 +719,7 @@
 	.btn-primary {
 		background: var(--admin-accent-primary);
 		border: none;
-		color: #0D1117;
+		color: #0d1117;
 		padding: 0.75rem 2rem;
 		border-radius: var(--radius-md, 0.5rem);
 		font-size: 0.9375rem;

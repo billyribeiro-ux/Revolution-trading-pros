@@ -18,8 +18,10 @@ const mockLocalStorage = {
 	clear: vi.fn(() => {
 		mockLocalStorage.data = {};
 	}),
-	get length() { return Object.keys(mockLocalStorage.data).length; },
-	key: vi.fn((index: number) => Object.keys(mockLocalStorage.data)[index] || null),
+	get length() {
+		return Object.keys(mockLocalStorage.data).length;
+	},
+	key: vi.fn((index: number) => Object.keys(mockLocalStorage.data)[index] || null)
 };
 
 // Mock timers
@@ -42,7 +44,7 @@ const mockWindow = {
 	location: {
 		href: 'https://example.com/test-page',
 		pathname: '/test-page',
-		origin: 'https://example.com',
+		origin: 'https://example.com'
 	},
 	dataLayer: [] as unknown[],
 	gtag: vi.fn((...args: unknown[]) => {
@@ -50,10 +52,12 @@ const mockWindow = {
 	}),
 	addEventListener: vi.fn(),
 	removeEventListener: vi.fn(),
-	requestIdleCallback: vi.fn((cb: (deadline: { didTimeout: boolean; timeRemaining: () => number }) => void) => {
-		cb({ didTimeout: false, timeRemaining: () => 50 });
-		return 1;
-	}),
+	requestIdleCallback: vi.fn(
+		(cb: (deadline: { didTimeout: boolean; timeRemaining: () => number }) => void) => {
+			cb({ didTimeout: false, timeRemaining: () => 50 });
+			return 1;
+		}
+	),
 	requestAnimationFrame: vi.fn((cb: () => void) => {
 		cb();
 		return 1;
@@ -66,7 +70,7 @@ const mockWindow = {
 	setTimeout: mockSetTimeout,
 	setInterval: mockSetInterval,
 	clearTimeout: mockClearTimeout,
-	clearInterval: mockClearInterval,
+	clearInterval: mockClearInterval
 };
 
 // Mock document object with script loading simulation
@@ -79,7 +83,7 @@ const mockDocument = {
 			if (element.onload) {
 				Promise.resolve().then(() => element.onload!());
 			}
-		}),
+		})
 	},
 	createElement: vi.fn(() => {
 		const element = {
@@ -89,28 +93,28 @@ const mockDocument = {
 			defer: false,
 			onload: null as (() => void) | null,
 			onerror: null as (() => void) | null,
-			setAttribute: vi.fn(),
+			setAttribute: vi.fn()
 		};
 		return element;
 	}),
 	getElementById: vi.fn(() => null),
 	visibilityState: 'visible' as DocumentVisibilityState,
 	addEventListener: vi.fn(),
-	removeEventListener: vi.fn(),
+	removeEventListener: vi.fn()
 };
 
 // Mock navigator object
 const mockNavigator = {
 	userAgent: 'TestUserAgent/1.0',
 	language: 'en-US',
-	sendBeacon: vi.fn(() => true),
+	sendBeacon: vi.fn(() => true)
 };
 
 // Mock Intl
 const mockIntl = {
 	DateTimeFormat: vi.fn(() => ({
-		resolvedOptions: () => ({ timeZone: 'America/New_York' }),
-	})),
+		resolvedOptions: () => ({ timeZone: 'America/New_York' })
+	}))
 };
 
 // Mock fetch
@@ -135,7 +139,7 @@ export {
 	mockSetTimeout,
 	mockSetInterval,
 	mockClearTimeout,
-	mockClearInterval,
+	mockClearInterval
 };
 
 // Reset function for use in beforeEach

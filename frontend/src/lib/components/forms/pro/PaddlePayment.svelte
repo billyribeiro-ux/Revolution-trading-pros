@@ -167,7 +167,6 @@
 			currency: currency
 		}).format(amount);
 	}
-
 </script>
 
 <div class="paddle-payment" class:disabled class:has-error={error || paymentError}>
@@ -313,8 +312,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.payment-error {

@@ -7,7 +7,12 @@
 export * from './types';
 
 // Registry
-export { componentRegistry, getComponentByType, getComponentsByCategory, createDefaultConfig } from './registry';
+export {
+	componentRegistry,
+	getComponentByType,
+	getComponentsByCategory,
+	createDefaultConfig
+} from './registry';
 
 // Store
 export { createBuilderStore, type BuilderStore } from './store.svelte';

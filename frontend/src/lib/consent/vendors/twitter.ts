@@ -13,12 +13,14 @@ import type { VendorConfig } from '../types';
 
 declare global {
 	interface Window {
-		twq?: {
-			(...args: unknown[]): void;
-			exe?: ((...args: unknown[]) => void) | undefined;
-			version: string;
-			queue: unknown[][];
-		} | undefined;
+		twq?:
+			| {
+					(...args: unknown[]): void;
+					exe?: ((...args: unknown[]) => void) | undefined;
+					version: string;
+					queue: unknown[][];
+			  }
+			| undefined;
 	}
 }
 
@@ -79,10 +81,7 @@ function processEventQueue(): void {
 /**
  * Track a Twitter event
  */
-export function trackTwitterEvent(
-	event: string,
-	data?: Record<string, unknown>
-): void {
+export function trackTwitterEvent(event: string, data?: Record<string, unknown>): void {
 	if (!browser) return;
 
 	if (!twitterReady) {
@@ -130,7 +129,7 @@ export const TWITTER_EVENTS = {
 	CONTENT_VIEW: 'tw-ContentView',
 	LEAD: 'tw-Lead',
 	SEARCH: 'tw-Search',
-	CUSTOM: 'tw-Custom',
+	CUSTOM: 'tw-Custom'
 } as const;
 
 /**
@@ -148,20 +147,20 @@ export const twitterVendor: VendorConfig = {
 			name: '_twitter_*',
 			purpose: 'Twitter tracking and advertising',
 			duration: '2 years',
-			type: 'third-party',
+			type: 'third-party'
 		},
 		{
 			name: 'muc_ads',
 			purpose: 'Twitter advertising cookie',
 			duration: '2 years',
-			type: 'third-party',
+			type: 'third-party'
 		},
 		{
 			name: 'personalization_id',
 			purpose: 'Twitter personalization',
 			duration: '2 years',
-			type: 'third-party',
-		},
+			type: 'third-party'
+		}
 	],
 	dataLocations: ['United States'],
 	supportsRevocation: true,
@@ -179,5 +178,5 @@ export const twitterVendor: VendorConfig = {
 		twitterReady = false;
 		eventQueue.length = 0;
 		console.debug('[Twitter] Consent revoked');
-	},
+	}
 };

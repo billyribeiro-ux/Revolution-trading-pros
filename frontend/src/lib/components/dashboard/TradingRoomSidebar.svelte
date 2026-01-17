@@ -242,7 +242,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function sleep(ms: number): Promise<void> {
-		return new Promise(resolve => setTimeout(resolve, ms));
+		return new Promise((resolve) => setTimeout(resolve, ms));
 	}
 
 	function calculateBackoff(attempt: number): number {
@@ -324,7 +324,7 @@
 				action: 'circuit_open',
 				error: 'Circuit breaker open - using cached data'
 			});
-			
+
 			if (!cached || cached.length === 0) {
 				scheduleError = true;
 				scheduleLoading = false;
@@ -335,7 +335,7 @@
 		try {
 			// Fetch with retry logic
 			const events = await fetchScheduleWithRetry();
-			
+
 			// Update state
 			scheduleEvents = events;
 			scheduleLoading = false;
@@ -419,8 +419,8 @@
 		<ul class="link-list">
 			{#each quickLinks as link}
 				<li>
-					<a 
-						href={link.href} 
+					<a
+						href={link.href}
 						target={link.external ? '_blank' : undefined}
 						rel={link.external ? 'noopener noreferrer' : undefined}
 					>
@@ -488,7 +488,7 @@
 		font-family: 'Montserrat', var(--font-heading), sans-serif;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
-		background-color: #143E59;
+		background-color: #143e59;
 		border-bottom: 2px solid #0e2433;
 	}
 
@@ -604,7 +604,7 @@
 	}
 
 	.link-list a {
-		color: #143E59;
+		color: #143e59;
 		text-decoration: none;
 		font-size: 14px;
 		font-family: 'Montserrat', var(--font-body), sans-serif;

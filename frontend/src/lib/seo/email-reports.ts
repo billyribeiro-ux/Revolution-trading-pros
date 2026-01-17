@@ -302,10 +302,7 @@ export function generateExecutiveSummary(metrics: ReportMetric[]): string {
 /**
  * Generate HTML report content
  */
-export function generateHtmlReport(
-	report: GeneratedReport,
-	branding: ReportBranding
-): string {
+export function generateHtmlReport(report: GeneratedReport, branding: ReportBranding): string {
 	const sections = report.sections
 		.map(
 			(section) => `
@@ -639,9 +636,7 @@ function createReportStore() {
 		toggle: (id: string) => {
 			update((templates) => {
 				const updated = templates.map((t) =>
-					t.id === id
-						? { ...t, isActive: !t.isActive, updatedAt: new Date().toISOString() }
-						: t
+					t.id === id ? { ...t, isActive: !t.isActive, updatedAt: new Date().toISOString() } : t
 				);
 				save(updated);
 				return updated;

@@ -32,9 +32,17 @@
 	};
 
 	const socialLinks = [
-		{ href: 'https://facebook.com/revolutiontradingpros', icon: IconBrandFacebook, label: 'Facebook' },
+		{
+			href: 'https://facebook.com/revolutiontradingpros',
+			icon: IconBrandFacebook,
+			label: 'Facebook'
+		},
 		{ href: 'https://twitter.com/revtradingpros', icon: IconBrandTwitter, label: 'Twitter' },
-		{ href: 'https://instagram.com/revolutiontradingpros', icon: IconBrandInstagram, label: 'Instagram' },
+		{
+			href: 'https://instagram.com/revolutiontradingpros',
+			icon: IconBrandInstagram,
+			label: 'Instagram'
+		},
 		{ href: 'https://youtube.com/@RevolutionTradingPros', icon: IconBrandYoutube, label: 'YouTube' }
 	];
 </script>
@@ -52,9 +60,9 @@
 				<div class="social-links">
 					{#each socialLinks as social}
 						{@const IconComponent = social.icon}
-						<a 
-							href={social.href} 
-							target="_blank" 
+						<a
+							href={social.href}
+							target="_blank"
 							rel="noopener noreferrer"
 							class="social-link"
 							aria-label={social.label}
@@ -95,9 +103,9 @@
 
 		<div class="risk-disclaimer">
 			<p>
-				<strong>Risk Disclaimer:</strong> Trading involves substantial risk of loss and is not suitable for all investors. 
-				Past performance is not indicative of future results. The content provided is for educational purposes only 
-				and should not be considered financial advice.
+				<strong>Risk Disclaimer:</strong> Trading involves substantial risk of loss and is not suitable
+				for all investors. Past performance is not indicative of future results. The content provided
+				is for educational purposes only and should not be considered financial advice.
 			</p>
 		</div>
 

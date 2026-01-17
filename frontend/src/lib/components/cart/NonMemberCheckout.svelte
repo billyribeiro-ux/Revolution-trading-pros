@@ -225,7 +225,9 @@
 											</div>
 
 											<div class="text-center">
-												<a href="/forgot-password" class="forgot-password-link">Forgot your password?</a>
+												<a href="/forgot-password" class="forgot-password-link"
+													>Forgot your password?</a
+												>
 											</div>
 										</form>
 									</div>
@@ -266,7 +268,9 @@
 
 										<div class="form-row">
 											<div class="form-group form-group-half">
-												<label for="reg_billing_first_name">First Name <abbr class="required" title="required">*</abbr></label>
+												<label for="reg_billing_first_name"
+													>First Name <abbr class="required" title="required">*</abbr></label
+												>
 												<input
 													type="text"
 													class="form-control"
@@ -278,7 +282,9 @@
 											</div>
 
 											<div class="form-group form-group-half">
-												<label for="reg_billing_last_name">Last Name <abbr class="required" title="required">*</abbr></label>
+												<label for="reg_billing_last_name"
+													>Last Name <abbr class="required" title="required">*</abbr></label
+												>
 												<input
 													type="text"
 													class="form-control"
@@ -291,7 +297,9 @@
 										</div>
 
 										<div class="form-group">
-											<label for="reg_email">Email Address <abbr class="required" title="required">*</abbr></label>
+											<label for="reg_email"
+												>Email Address <abbr class="required" title="required">*</abbr></label
+											>
 											<input
 												type="email"
 												class="form-control"
@@ -303,7 +311,9 @@
 										</div>
 
 										<div class="form-group">
-											<label for="reg_password">Password <abbr class="required" title="required">*</abbr></label>
+											<label for="reg_password"
+												>Password <abbr class="required" title="required">*</abbr></label
+											>
 											<input
 												type="password"
 												class="form-control"
@@ -373,7 +383,11 @@
 													</div>
 													<div class="product-total">
 														<span class="rtp-price-amount amount">
-															<bdi><span class="rtp-price-currency">$</span>{item.price.toFixed(2)}</bdi>
+															<bdi
+																><span class="rtp-price-currency">$</span>{item.price.toFixed(
+																	2
+																)}</bdi
+															>
 														</span>
 													</div>
 												</div>
@@ -397,7 +411,8 @@
 											<div>Total</div>
 											<div class="checkout-order-total-price">
 												<span class="rtp-price-amount amount">
-													<bdi><span class="rtp-price-currency">$</span>{$cartTotal.toFixed(2)}</bdi>
+													<bdi><span class="rtp-price-currency">$</span>{$cartTotal.toFixed(2)}</bdi
+													>
 												</span>
 											</div>
 										</div>
@@ -414,7 +429,11 @@
 															<tr class="rtp-cart-subtotal rtp-recurring-total">
 																<td colspan="2">
 																	<span class="rtp-price-amount amount">
-																		<bdi><span class="rtp-price-currency">$</span>{item.price.toFixed(2)}</bdi>
+																		<bdi
+																			><span class="rtp-price-currency">$</span>{item.price.toFixed(
+																				2
+																			)}</bdi
+																		>
 																	</span>
 																	{getIntervalLabel(item.interval)}
 																</td>
@@ -442,7 +461,10 @@
 										</div>
 
 										{#if couponFormVisible}
-											<form class="rtp-checkout-coupon rtp-form-coupon" onsubmit={(e: SubmitEvent) => e.preventDefault()}>
+											<form
+												class="rtp-checkout-coupon rtp-form-coupon"
+												onsubmit={(e: SubmitEvent) => e.preventDefault()}
+											>
 												<p>If you have a coupon code, please apply it below.</p>
 												<div class="coupon-input-row">
 													<input
@@ -452,9 +474,7 @@
 														placeholder="Coupon code"
 														bind:value={couponCode}
 													/>
-													<button type="submit" class="btn btn-default">
-														Apply coupon
-													</button>
+													<button type="submit" class="btn btn-default"> Apply coupon </button>
 												</div>
 											</form>
 										{/if}
@@ -501,7 +521,13 @@
 		min-height: 100vh;
 		background: var(--st-bg);
 		padding: 40px 0;
-		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		font-family:
+			'Open Sans',
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			Roboto,
+			sans-serif;
 	}
 
 	.container {

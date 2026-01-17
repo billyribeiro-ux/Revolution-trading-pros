@@ -10,14 +10,7 @@
 
 	import { fade, fly } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
-	import {
-		IconTrash,
-		IconInbox,
-		IconDownload,
-		IconX,
-		IconCheck,
-		IconLoader
-	} from '$lib/icons';
+	import { IconTrash, IconInbox, IconDownload, IconX, IconCheck, IconLoader } from '$lib/icons';
 
 	interface BatchAction {
 		id: string;
@@ -57,7 +50,7 @@
 			variant: 'danger',
 			action: async (ids) => {
 				console.log('Deleting:', ids);
-				await new Promise(r => setTimeout(r, 1000));
+				await new Promise((r) => setTimeout(r, 1000));
 			}
 		},
 		{
@@ -66,7 +59,7 @@
 			icon: IconInbox,
 			action: async (ids) => {
 				console.log('Archiving:', ids);
-				await new Promise(r => setTimeout(r, 1000));
+				await new Promise((r) => setTimeout(r, 1000));
 			}
 		},
 		{
@@ -75,7 +68,7 @@
 			icon: IconDownload,
 			action: async (ids) => {
 				console.log('Exporting:', ids);
-				await new Promise(r => setTimeout(r, 1000));
+				await new Promise((r) => setTimeout(r, 1000));
 			}
 		}
 	];
@@ -103,9 +96,12 @@
 
 	function getVariantClass(variant?: string) {
 		switch (variant) {
-			case 'danger': return 'action-danger';
-			case 'success': return 'action-success';
-			default: return '';
+			case 'danger':
+				return 'action-danger';
+			case 'success':
+				return 'action-success';
+			default:
+				return '';
 		}
 	}
 </script>
@@ -127,7 +123,8 @@
 
 				{#if !allSelected && totalCount > selectedIds.length}
 					<button class="select-all-btn" onclick={onSelectAll}>
-						Select all {totalCount.toLocaleString()} {resourceName}
+						Select all {totalCount.toLocaleString()}
+						{resourceName}
 					</button>
 				{/if}
 
@@ -307,8 +304,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	@media (max-width: 768px) {

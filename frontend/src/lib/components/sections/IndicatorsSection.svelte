@@ -122,10 +122,10 @@
 		const rect = chartRef.getBoundingClientRect();
 		const width = rect.width;
 		const height = rect.height;
-		
+
 		// Skip if dimensions are invalid
 		if (width === 0 || height === 0) return;
-		
+
 		const visibleCandles = Math.floor(candleData.length * chartProgress);
 
 		// Clear canvas using CSS dimensions (context is already scaled)
@@ -157,7 +157,8 @@
 		visibleData.forEach((candle, i) => {
 			const x = i * (candleWidth + gap) + gap / 2;
 			const openY = height - ((candle.open - minPrice) / priceRange) * height * 0.7 - height * 0.15;
-			const closeY = height - ((candle.close - minPrice) / priceRange) * height * 0.7 - height * 0.15;
+			const closeY =
+				height - ((candle.close - minPrice) / priceRange) * height * 0.7 - height * 0.15;
 			const highY = height - ((candle.high - minPrice) / priceRange) * height * 0.7 - height * 0.15;
 			const lowY = height - ((candle.low - minPrice) / priceRange) * height * 0.7 - height * 0.15;
 
@@ -216,7 +217,7 @@
 
 		// Check for reduced motion preference
 		prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		
+
 		// Trigger entrance animations when section scrolls into viewport
 		queueMicrotask(() => {
 			if (sectionRef) {
@@ -265,9 +266,12 @@
 
 		// Auto-rotate indicators (slower on mobile for better UX)
 		const isMobile = window.innerWidth < 768;
-		rotationInterval = setInterval(() => {
-			activeIndicator = (activeIndicator + 1) % indicators.length;
-		}, isMobile ? 5000 : 4000);
+		rotationInterval = setInterval(
+			() => {
+				activeIndicator = (activeIndicator + 1) % indicators.length;
+			},
+			isMobile ? 5000 : 4000
+		);
 
 		return () => {
 			if (rotationInterval) clearInterval(rotationInterval);
@@ -277,20 +281,20 @@
 
 	function setupCanvas() {
 		if (!canvasRef || !chartRef) return;
-		
+
 		const dpr = window.devicePixelRatio || 1;
 		const rect = chartRef.getBoundingClientRect();
-		
+
 		// Ensure we have valid dimensions
 		if (rect.width === 0 || rect.height === 0) {
 			console.debug('[IndicatorsSection] Canvas has zero dimensions, retrying...');
 			return;
 		}
-		
+
 		// Reset canvas dimensions
 		canvasRef.width = rect.width * dpr;
 		canvasRef.height = rect.height * dpr;
-		
+
 		// Get fresh context after resize
 		chartCtx = canvasRef.getContext('2d');
 		if (chartCtx) {
@@ -413,8 +417,13 @@
 	<div class="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 		<!-- Section Header -->
 		{#if isVisible}
-			<div class="max-w-4xl mx-auto text-center mb-24" in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}>
-				<div class="inline-flex items-center gap-3 px-4 py-1.5 border border-blue-900/30 bg-blue-950/10 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm">
+			<div
+				class="max-w-4xl mx-auto text-center mb-24"
+				in:slideUp={{ delay: 0, duration: prefersReducedMotion ? 0 : 800 }}
+			>
+				<div
+					class="inline-flex items-center gap-3 px-4 py-1.5 border border-blue-900/30 bg-blue-950/10 text-blue-500 text-[10px] font-bold tracking-[0.3em] uppercase mb-8 rounded-sm"
+				>
 					<IconSparkles class="w-3.5 h-3.5" />
 					Technical Edge
 				</div>
@@ -424,8 +433,8 @@
 				</h2>
 
 				<p class="text-lg text-slate-400 font-light leading-relaxed max-w-2xl mx-auto">
-					We don't offer retail indicators. We provide institutional-grade analysis tools. 
-					Verified by quantitative funds and professional trading desks.
+					We don't offer retail indicators. We provide institutional-grade analysis tools. Verified
+					by quantitative funds and professional trading desks.
 				</p>
 			</div>
 		{/if}
@@ -434,12 +443,20 @@
 		<div class="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-16 items-center">
 			<!-- Chart Visualization - Order 2 on mobile, 1 on desktop -->
 			{#if isVisible}
-				<div in:scaleIn={{ delay: prefersReducedMotion ? 0 : 200, duration: prefersReducedMotion ? 0 : 600 }} class="relative order-2 lg:order-1">
+				<div
+					in:scaleIn={{
+						delay: prefersReducedMotion ? 0 : 200,
+						duration: prefersReducedMotion ? 0 : 600
+					}}
+					class="relative order-2 lg:order-1"
+				>
 					<div
 						class="relative rounded-xl sm:rounded-2xl overflow-hidden bg-zinc-900/50 backdrop-blur-xl border border-zinc-800/50 shadow-2xl"
 					>
 						<!-- Chart Header -->
-						<div class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-800/50">
+						<div
+							class="flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 border-b border-zinc-800/50"
+						>
 							<div class="flex items-center gap-2 sm:gap-3">
 								<div class="flex gap-1 sm:gap-1.5">
 									<div class="w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full bg-red-500/80"></div>
@@ -450,7 +467,9 @@
 							</div>
 							<div class="flex items-center gap-1.5 sm:gap-2">
 								<span class="text-[10px] sm:text-xs font-mono text-emerald-400">+2.34%</span>
-								<div class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse"></div>
+								<div
+									class="w-1.5 h-1.5 sm:w-2 sm:h-2 rounded-full bg-emerald-500 animate-pulse"
+								></div>
 							</div>
 						</div>
 
@@ -485,12 +504,21 @@
 
 			<!-- Indicator Cards - Order 1 on mobile, 2 on desktop -->
 			{#if isVisible}
-				<div class="space-y-3 sm:space-y-4 order-1 lg:order-2" in:slideUp={{ delay: prefersReducedMotion ? 0 : 300, duration: prefersReducedMotion ? 0 : 600 }}>
+				<div
+					class="space-y-3 sm:space-y-4 order-1 lg:order-2"
+					in:slideUp={{
+						delay: prefersReducedMotion ? 0 : 300,
+						duration: prefersReducedMotion ? 0 : 600
+					}}
+				>
 					{#each indicators as indicator, i}
 						{@const IconComponent = indicator.icon}
 						<a
 							href={indicator.href}
-							class="indicator-card group block relative p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-zinc-900/30 backdrop-blur-sm border border-zinc-800/50 hover:border-zinc-700/50 hover:bg-zinc-800/30 transition-all duration-300 active:scale-[0.98] {activeIndicator === i ? 'ring-2 ring-blue-500/30 bg-zinc-800/40' : ''}"
+							class="indicator-card group block relative p-4 sm:p-5 rounded-xl sm:rounded-2xl bg-zinc-900/30 backdrop-blur-sm border border-zinc-800/50 hover:border-zinc-700/50 hover:bg-zinc-800/30 transition-all duration-300 active:scale-[0.98] {activeIndicator ===
+							i
+								? 'ring-2 ring-blue-500/30 bg-zinc-800/40'
+								: ''}"
 							onmouseenter={() => (activeIndicator = i)}
 							ontouchstart={() => (activeIndicator = i)}
 						>
@@ -505,7 +533,9 @@
 								<!-- Content -->
 								<div class="flex-1 min-w-0">
 									<div class="flex items-center gap-2 mb-0.5 sm:mb-1 flex-wrap">
-										<h3 class="text-base sm:text-lg font-semibold text-white group-hover:text-blue-400 transition-colors">
+										<h3
+											class="text-base sm:text-lg font-semibold text-white group-hover:text-blue-400 transition-colors"
+										>
 											{indicator.name}
 										</h3>
 										<span
@@ -514,15 +544,21 @@
 											{indicator.category}
 										</span>
 									</div>
-									<p class="text-xs sm:text-sm text-zinc-500 mb-1 sm:mb-2 hidden sm:block">{indicator.fullName}</p>
-									<p class="text-xs sm:text-sm text-zinc-400 leading-relaxed line-clamp-2">{indicator.description}</p>
+									<p class="text-xs sm:text-sm text-zinc-500 mb-1 sm:mb-2 hidden sm:block">
+										{indicator.fullName}
+									</p>
+									<p class="text-xs sm:text-sm text-zinc-400 leading-relaxed line-clamp-2">
+										{indicator.description}
+									</p>
 								</div>
 
 								<!-- Arrow -->
 								<div
 									class="flex-shrink-0 w-8 h-8 sm:w-10 sm:h-10 rounded-full bg-zinc-800/50 flex items-center justify-center group-hover:bg-blue-500/20 group-hover:translate-x-1 transition-all duration-300"
 								>
-									<IconArrowRight class="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 group-hover:text-blue-400" />
+									<IconArrowRight
+										class="w-4 h-4 sm:w-5 sm:h-5 text-zinc-500 group-hover:text-blue-400"
+									/>
 								</div>
 							</div>
 						</a>
@@ -535,7 +571,9 @@
 							class="group inline-flex items-center justify-center gap-2 sm:gap-3 w-full sm:w-auto px-6 sm:px-8 py-3.5 sm:py-4 rounded-full bg-gradient-to-r from-blue-600 to-cyan-600 text-white font-semibold shadow-lg shadow-blue-500/25 hover:shadow-blue-500/40 active:scale-[0.98] hover:scale-105 transition-all duration-300"
 						>
 							<span class="text-sm sm:text-base">Explore All Indicators</span>
-							<IconArrowRight class="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
+							<IconArrowRight
+								class="w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform"
+							/>
 						</a>
 					</div>
 				</div>

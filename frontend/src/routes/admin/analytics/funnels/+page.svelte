@@ -121,9 +121,16 @@
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
-				<div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg shadow-violet-500/20">
+				<div
+					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center text-2xl shadow-lg shadow-violet-500/20"
+				>
 					<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M19 9l-7 7-7-7"
+						/>
 					</svg>
 				</div>
 				<div>
@@ -149,7 +156,9 @@
 			<div class="flex items-center justify-center py-20">
 				<div class="relative">
 					<div class="w-12 h-12 border-4 border-violet-500/20 rounded-full"></div>
-					<div class="absolute top-0 left-0 w-12 h-12 border-4 border-violet-500 rounded-full animate-spin border-t-transparent"></div>
+					<div
+						class="absolute top-0 left-0 w-12 h-12 border-4 border-violet-500 rounded-full animate-spin border-t-transparent"
+					></div>
 				</div>
 			</div>
 		{:else if !$isAnalyticsConnected}
@@ -158,14 +167,25 @@
 			<div class="flex items-center justify-center py-20">
 				<div class="relative">
 					<div class="w-10 h-10 border-4 border-violet-500/20 rounded-full"></div>
-					<div class="absolute top-0 left-0 w-10 h-10 border-4 border-violet-500 rounded-full animate-spin border-t-transparent"></div>
+					<div
+						class="absolute top-0 left-0 w-10 h-10 border-4 border-violet-500 rounded-full animate-spin border-t-transparent"
+					></div>
 				</div>
 			</div>
 		{:else if error}
-			<div class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 text-center">
-				<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center">
+			<div
+				class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 text-center"
+			>
+				<div
+					class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
+				>
 					<svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
 					</svg>
 				</div>
 				<p class="text-red-400 mb-4">{error}</p>
@@ -178,13 +198,27 @@
 			</div>
 		{:else if funnels.length === 0}
 			<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center">
-				<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-violet-500/10 flex items-center justify-center">
-					<svg class="w-8 h-8 text-violet-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+				<div
+					class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-violet-500/10 flex items-center justify-center"
+				>
+					<svg
+						class="w-8 h-8 text-violet-400"
+						fill="none"
+						stroke="currentColor"
+						viewBox="0 0 24 24"
+					>
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M19 9l-7 7-7-7"
+						/>
 					</svg>
 				</div>
 				<h3 class="text-lg font-medium text-white mb-2">No Funnels Yet</h3>
-				<p class="text-slate-400 mb-6">Create your first funnel to track user conversion journeys</p>
+				<p class="text-slate-400 mb-6">
+					Create your first funnel to track user conversion journeys
+				</p>
 				<button
 					onclick={() => (showCreateModal = true)}
 					class="px-6 py-3 bg-gradient-to-r from-violet-500 to-purple-600 text-white rounded-xl hover:from-violet-400 hover:to-purple-500 font-semibold shadow-lg shadow-violet-500/25 transition-all"
@@ -203,7 +237,9 @@
 					>
 						<div class="flex items-center justify-between mb-4">
 							<h3 class="font-semibold text-white">{funnel.name}</h3>
-							<span class="text-2xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent">
+							<span
+								class="text-2xl font-bold bg-gradient-to-r from-violet-400 to-purple-400 bg-clip-text text-transparent"
+							>
 								{funnel.overall_conversion.toFixed(1)}%
 							</span>
 						</div>
@@ -213,14 +249,24 @@
 						<div class="flex items-center gap-4 text-sm text-slate-500">
 							<span class="flex items-center gap-1.5">
 								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 10h16M4 14h16M4 18h16" />
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M4 6h16M4 10h16M4 14h16M4 18h16"
+									/>
 								</svg>
 								{funnel.steps.length} steps
 							</span>
 							{#if funnel.avg_completion_time}
 								<span class="flex items-center gap-1.5">
 									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-										<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+										/>
 									</svg>
 									Avg: {formatTime(funnel.avg_completion_time)}
 								</span>
@@ -233,10 +279,16 @@
 			<!-- Selected Funnel Detail -->
 			{#if selectedFunnel}
 				<div class="space-y-6">
-					<FunnelChart steps={selectedFunnel.steps} title={selectedFunnel.name} showDropOff={true} />
+					<FunnelChart
+						steps={selectedFunnel.steps}
+						title={selectedFunnel.name}
+						showDropOff={true}
+					/>
 
 					<!-- Step Details Table -->
-					<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden">
+					<div
+						class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 overflow-hidden"
+					>
 						<div class="p-5 border-b border-white/10">
 							<h3 class="font-semibold text-white">Step Analysis</h3>
 						</div>
@@ -244,20 +296,33 @@
 							<table class="w-full text-sm">
 								<thead class="bg-slate-800/50">
 									<tr>
-										<th class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider">Step</th>
-										<th class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider">Users</th>
-										<th class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider">Conversion</th>
-										<th class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider">Drop-off</th>
-										<th class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider">From Start</th>
+										<th
+											class="text-left py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
+											>Step</th
+										>
+										<th
+											class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
+											>Users</th
+										>
+										<th
+											class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
+											>Conversion</th
+										>
+										<th
+											class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
+											>Drop-off</th
+										>
+										<th
+											class="text-right py-4 px-5 font-medium text-slate-400 uppercase text-xs tracking-wider"
+											>From Start</th
+										>
 									</tr>
 								</thead>
 								<tbody class="divide-y divide-white/5">
 									{#each selectedFunnel.steps as step, i}
 										{@const firstStep = selectedFunnel.steps[0]}
 										{@const fromStart =
-											firstStep && firstStep.count > 0
-												? (step.count / firstStep.count) * 100
-												: 0}
+											firstStep && firstStep.count > 0 ? (step.count / firstStep.count) * 100 : 0}
 										<tr class="hover:bg-white/5 transition-colors">
 											<td class="py-4 px-5">
 												<div class="flex items-center gap-3">
@@ -294,7 +359,8 @@
 															style="width: {fromStart}%"
 														></div>
 													</div>
-													<span class="text-slate-400 w-14 text-right">{fromStart.toFixed(1)}%</span>
+													<span class="text-slate-400 w-14 text-right">{fromStart.toFixed(1)}%</span
+													>
 												</div>
 											</td>
 										</tr>
@@ -312,7 +378,9 @@
 <!-- Create Funnel Modal -->
 {#if showCreateModal}
 	<div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-		<div class="bg-slate-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/10 shadow-2xl">
+		<div
+			class="bg-slate-900 rounded-2xl w-full max-w-2xl max-h-[90vh] overflow-y-auto border border-white/10 shadow-2xl"
+		>
 			<div class="p-6 border-b border-white/10">
 				<div class="flex items-center justify-between">
 					<h2 class="text-xl font-bold text-white">Create Funnel</h2>
@@ -322,7 +390,12 @@
 						aria-label="Close modal"
 					>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M6 18L18 6M6 6l12 12"
+							/>
 						</svg>
 					</button>
 				</div>
@@ -332,7 +405,9 @@
 				<!-- Basic Info -->
 				<div class="space-y-4">
 					<div>
-						<label for="funnel-name" class="block text-sm font-medium text-slate-300 mb-2">Name</label>
+						<label for="funnel-name" class="block text-sm font-medium text-slate-300 mb-2"
+							>Name</label
+						>
 						<input
 							id="funnel-name"
 							type="text"
@@ -342,7 +417,9 @@
 						/>
 					</div>
 					<div>
-						<label for="funnel-description" class="block text-sm font-medium text-slate-300 mb-2">Description</label>
+						<label for="funnel-description" class="block text-sm font-medium text-slate-300 mb-2"
+							>Description</label
+						>
 						<textarea
 							id="funnel-description"
 							bind:value={newFunnel.description}
@@ -366,7 +443,9 @@
 					</div>
 					<div class="space-y-3">
 						{#each newFunnel.steps as step, index}
-							<div class="flex items-center gap-3 p-4 bg-slate-800/30 rounded-xl border border-white/5">
+							<div
+								class="flex items-center gap-3 p-4 bg-slate-800/30 rounded-xl border border-white/5"
+							>
 								<span
 									class="w-7 h-7 bg-violet-500/20 text-violet-400 rounded-lg flex items-center justify-center text-xs font-semibold flex-shrink-0"
 								>
@@ -391,7 +470,12 @@
 										aria-label="Remove step"
 									>
 										<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+											/>
 										</svg>
 									</button>
 								{/if}

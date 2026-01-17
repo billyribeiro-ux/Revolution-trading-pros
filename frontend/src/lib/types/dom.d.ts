@@ -1,10 +1,10 @@
 /**
  * DOM Type Declarations for Client-Side Code
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Ensures DOM types are available in all client-side modules
  * Fixes TypeScript errors when checking files that use window/document
- * 
+ *
  * @version 1.0.0
  */
 

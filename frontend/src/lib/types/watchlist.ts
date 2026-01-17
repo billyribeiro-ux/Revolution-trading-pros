@@ -2,9 +2,9 @@
  * Weekly Watchlist Types
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Grade - January 2026
- * 
+ *
  * Type definitions for the Weekly Watchlist system
- * 
+ *
  * @version 1.0.0
  */
 

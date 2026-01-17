@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * EmptyState - Consistent empty state display
-	 * 
+	 *
 	 * @version 2.0.0
 	 * @author Revolution Trading Pros
 	 */
@@ -43,15 +43,15 @@
 	<div class="empty-icon">
 		<Icon size={sizes[size].icon} />
 	</div>
-	
+
 	<h3 class="empty-title">{title}</h3>
-	
+
 	{#if description}
 		<p class="empty-description">{description}</p>
 	{/if}
-	
+
 	{@render children?.()}
-	
+
 	{#if actionLabel}
 		<button class="empty-action" onclick={handleAction}>
 			{actionLabel}
@@ -93,7 +93,11 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, var(--color-rtp-primary, #6366f1), var(--color-rtp-indigo, #8b5cf6));
+		background: linear-gradient(
+			135deg,
+			var(--color-rtp-primary, #6366f1),
+			var(--color-rtp-indigo, #8b5cf6)
+		);
 		color: white;
 		border: none;
 		border-radius: var(--radius-md, 0.5rem);

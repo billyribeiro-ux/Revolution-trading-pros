@@ -47,27 +47,31 @@
 		IconPlugConnected
 	} from '$lib/icons';
 	import { browser } from '$app/environment';
-	import { connections, isAnalyticsConnected, isSeoConnected } from '$lib/stores/connections.svelte';
+	import {
+		connections,
+		isAnalyticsConnected,
+		isSeoConnected
+	} from '$lib/stores/connections.svelte';
 	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
 	// ICT 11+ FIX: Use absolute API URL for Pages.dev compatibility (no proxy)
 	async function localFetch<T = any>(endpoint: string): Promise<T> {
-		const url = endpoint.startsWith('http') 
-			? endpoint 
-			: endpoint.startsWith('/api/') 
-				? `${API_BASE_URL}${endpoint}` 
+		const url = endpoint.startsWith('http')
+			? endpoint
+			: endpoint.startsWith('/api/')
+				? `${API_BASE_URL}${endpoint}`
 				: `${API_BASE_URL}/api${endpoint}`;
-		
+
 		const token = getAuthToken();
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
-			'Accept': 'application/json'
+			Accept: 'application/json'
 		};
 		if (token) {
 			headers['Authorization'] = `Bearer ${token}`;
 		}
-		
+
 		const response = await fetch(url, {
 			method: 'GET',
 			headers,
@@ -125,13 +129,22 @@
 	};
 
 	// Device breakdown - default values to prevent null access errors
-	let deviceBreakdown: { desktop: number; mobile: number; tablet: number } = { desktop: 0, mobile: 0, tablet: 0 };
+	let deviceBreakdown: { desktop: number; mobile: number; tablet: number } = {
+		desktop: 0,
+		mobile: 0,
+		tablet: 0
+	};
 
 	// Top pages
 	let topPages: { path: string; views: number; change: number }[] = [];
 
 	// Animated counter
-	function animateValue(start: number, end: number, duration: number, callback: (val: number) => void) {
+	function animateValue(
+		start: number,
+		end: number,
+		duration: number,
+		callback: (val: number) => void
+	) {
 		const startTime = performance.now();
 		const animate = (currentTime: number) => {
 			const elapsed = currentTime - startTime;
@@ -163,7 +176,8 @@
 			if (membersRes.status === 'fulfilled') {
 				const memberData = membersRes.value;
 				const newMembers = memberData?.overview?.total_members || memberData?.total || 0;
-				if (mounted) animateValue(stats.totalMembers, newMembers, 800, v => stats.totalMembers = v);
+				if (mounted)
+					animateValue(stats.totalMembers, newMembers, 800, (v) => (stats.totalMembers = v));
 				else stats.totalMembers = newMembers;
 				stats.activeSubscriptions = memberData?.subscriptions?.active || 0;
 			}
@@ -197,7 +211,12 @@
 					if (data.kpis.sessions?.value !== undefined) {
 						const sessionsVal = data.kpis.sessions.value;
 						if (mounted && analytics.sessions.value !== null) {
-							animateValue(analytics.sessions.value, sessionsVal, 800, v => analytics.sessions.value = v);
+							animateValue(
+								analytics.sessions.value,
+								sessionsVal,
+								800,
+								(v) => (analytics.sessions.value = v)
+							);
 						} else {
 							analytics.sessions.value = sessionsVal;
 						}
@@ -209,7 +228,12 @@
 					if (data.kpis.pageviews?.value !== undefined) {
 						const pageviewsVal = data.kpis.pageviews.value;
 						if (mounted && analytics.pageviews.value !== null) {
-							animateValue(analytics.pageviews.value, pageviewsVal, 800, v => analytics.pageviews.value = v);
+							animateValue(
+								analytics.pageviews.value,
+								pageviewsVal,
+								800,
+								(v) => (analytics.pageviews.value = v)
+							);
 						} else {
 							analytics.pageviews.value = pageviewsVal;
 						}
@@ -222,7 +246,12 @@
 					if (usersData?.value !== undefined) {
 						const usersVal = usersData.value;
 						if (mounted && analytics.totalUsers.value !== null) {
-							animateValue(analytics.totalUsers.value, usersVal, 800, v => analytics.totalUsers.value = v);
+							animateValue(
+								analytics.totalUsers.value,
+								usersVal,
+								800,
+								(v) => (analytics.totalUsers.value = v)
+							);
 						} else {
 							analytics.totalUsers.value = usersVal;
 						}
@@ -234,7 +263,12 @@
 					if (data.kpis.new_users?.value !== undefined) {
 						const newUsersVal = data.kpis.new_users.value;
 						if (mounted && analytics.newUsers.value !== null) {
-							animateValue(analytics.newUsers.value, newUsersVal, 800, v => analytics.newUsers.value = v);
+							animateValue(
+								analytics.newUsers.value,
+								newUsersVal,
+								800,
+								(v) => (analytics.newUsers.value = v)
+							);
 						} else {
 							analytics.newUsers.value = newUsersVal;
 						}
@@ -251,9 +285,12 @@
 
 					// Session Duration - ONLY use real values
 					if (data.kpis.avg_session_duration?.value !== undefined) {
-						analytics.avgSessionDuration.value = formatDuration(data.kpis.avg_session_duration.value);
+						analytics.avgSessionDuration.value = formatDuration(
+							data.kpis.avg_session_duration.value
+						);
 						analytics.avgSessionDuration.change = data.kpis.avg_session_duration.change ?? 0;
-						analytics.avgSessionDuration.trend = analytics.avgSessionDuration.change >= 0 ? 'up' : 'down';
+						analytics.avgSessionDuration.trend =
+							analytics.avgSessionDuration.change >= 0 ? 'up' : 'down';
 					}
 				}
 				if (data?.top_pages) topPages = data.top_pages.slice(0, 5);
@@ -261,12 +298,16 @@
 				// SEO data from built-in SEO system
 				if (data?.seo) {
 					hasRealSeoData = true;
-					if (data.seo.search_traffic !== undefined) seoMetrics.searchTraffic.value = data.seo.search_traffic;
-					if (data.seo.impressions !== undefined) seoMetrics.totalImpressions.value = data.seo.impressions;
+					if (data.seo.search_traffic !== undefined)
+						seoMetrics.searchTraffic.value = data.seo.search_traffic;
+					if (data.seo.impressions !== undefined)
+						seoMetrics.totalImpressions.value = data.seo.impressions;
 					if (data.seo.clicks !== undefined) seoMetrics.totalClicks.value = data.seo.clicks;
 					if (data.seo.keywords !== undefined) seoMetrics.totalKeywords.value = data.seo.keywords;
-					if (data.seo.avg_position !== undefined) seoMetrics.avgPosition.value = data.seo.avg_position;
-					if (data.seo.indexed_pages !== undefined) seoMetrics.indexedPages.value = data.seo.indexed_pages;
+					if (data.seo.avg_position !== undefined)
+						seoMetrics.avgPosition.value = data.seo.avg_position;
+					if (data.seo.indexed_pages !== undefined)
+						seoMetrics.indexedPages.value = data.seo.indexed_pages;
 					if (data.seo.avg_ctr !== undefined) seoMetrics.avgCTR.value = data.seo.avg_ctr;
 				}
 			}
@@ -312,152 +353,81 @@
 	<div class="admin-page-container">
 		<!-- Header - Centered Style -->
 		<header class="page-header" in:fly={{ y: -20, duration: 400 }}>
-		<h1>Analytics Dashboard</h1>
-		<p class="subtitle">
-			Real-time insights and performance metrics
-			{#if lastUpdated}
-				<span class="last-updated">Updated {lastUpdated.toLocaleTimeString()}</span>
-			{/if}
-		</p>
-		<div class="header-actions">
-			<div class="period-selector">
-				<button class:active={selectedPeriod === '7d'} onclick={() => changePeriod('7d')}>7D</button>
-				<button class:active={selectedPeriod === '30d'} onclick={() => changePeriod('30d')}>30D</button>
-				<button class:active={selectedPeriod === '90d'} onclick={() => changePeriod('90d')}>90D</button>
+			<h1>Analytics Dashboard</h1>
+			<p class="subtitle">
+				Real-time insights and performance metrics
+				{#if lastUpdated}
+					<span class="last-updated">Updated {lastUpdated.toLocaleTimeString()}</span>
+				{/if}
+			</p>
+			<div class="header-actions">
+				<div class="period-selector">
+					<button class:active={selectedPeriod === '7d'} onclick={() => changePeriod('7d')}
+						>7D</button
+					>
+					<button class:active={selectedPeriod === '30d'} onclick={() => changePeriod('30d')}
+						>30D</button
+					>
+					<button class:active={selectedPeriod === '90d'} onclick={() => changePeriod('90d')}
+						>90D</button
+					>
+				</div>
+				<button
+					class="btn-secondary"
+					onclick={fetchDashboardStats}
+					disabled={isLoading}
+					class:loading={isLoading}
+				>
+					<IconRefresh size={18} />
+					Refresh
+				</button>
 			</div>
-			<button class="btn-secondary" onclick={fetchDashboardStats} disabled={isLoading} class:loading={isLoading}>
-				<IconRefresh size={18} />
-				Refresh
-			</button>
-		</div>
-	</header>
+		</header>
 
-	{#if error}
-		<div class="error-banner" in:fly={{ y: -10, duration: 300 }}>
-			<IconAlertCircle size={20} />
-			<span>{error}</span>
-		</div>
-	{/if}
-
-	<!-- Site Analytics Panel -->
-	<section class="analytics-panel glass-panel" in:fly={{ y: 20, duration: 500, delay: 100 }}>
-		<div class="panel-header">
-			<div class="panel-title">
-				<div class="panel-icon analytics-icon">
-					<IconChartBar size={24} />
-				</div>
-				<div>
-					<h2>Site Analytics</h2>
-					<span class="panel-subtitle">Traffic & engagement overview</span>
-				</div>
-			</div>
-			{#if analyticsConnected}
-				<div class="panel-badge connected">
-					<IconCalendar size={14} />
-					Last {selectedPeriod === '7d' ? '7' : selectedPeriod === '30d' ? '30' : '90'} Days
-				</div>
-			{:else}
-				<a href="/admin/connections" class="panel-badge not-connected">
-					<IconPlugConnected size={14} />
-					Connect Analytics
-				</a>
-			{/if}
-		</div>
-
-		{#if !analyticsConnected}
-			<!-- Not Connected State -->
-			<div class="not-connected-banner">
-				<div class="not-connected-icon">
-					<IconChartBar size={32} />
-				</div>
-				<div class="not-connected-text">
-					<h3>Analytics Not Connected</h3>
-					<p>Connect Google Analytics, Mixpanel, or another analytics service to see real traffic data.</p>
-				</div>
-				<a href="/admin/connections" class="connect-btn">
-					<IconPlugConnected size={16} />
-					Connect Service
-				</a>
-			</div>
-		{:else}
-			<div class="metrics-grid">
-				{#each [
-					{ label: 'Sessions', value: analytics.sessions.value, change: analytics.sessions.change, trend: analytics.sessions.trend, icon: IconEye, color: 'blue' },
-					{ label: 'Pageviews', value: analytics.pageviews.value, change: analytics.pageviews.change, trend: analytics.pageviews.trend, icon: IconClick, color: 'purple' },
-					{ label: 'Avg. Duration', value: analytics.avgSessionDuration.value, change: analytics.avgSessionDuration.change, trend: analytics.avgSessionDuration.trend, icon: IconClock, color: 'cyan', isText: true },
-					{ label: 'Total Users', value: analytics.totalUsers.value, change: analytics.totalUsers.change, trend: analytics.totalUsers.trend, icon: IconUsers, color: 'green' },
-					{ label: 'Bounce Rate', value: analytics.bounceRate.value, change: analytics.bounceRate.change, trend: analytics.bounceRate.trend, icon: IconActivity, color: 'orange', suffix: '%', invertTrend: true },
-					{ label: 'New Users', value: analytics.newUsers.value, change: analytics.newUsers.change, trend: analytics.newUsers.trend, icon: IconUserCircle, color: 'pink' }
-				] as metric, i}
-					{@const MetricIcon = metric.icon}
-					<div class="metric-card {metric.color}" in:scale={{ duration: 400, delay: 150 + i * 50, easing: cubicOut }}>
-						<div class="metric-icon-wrap {metric.color}">
-							<MetricIcon size={20} />
-						</div>
-						<div class="metric-body">
-							<span class="metric-label">{metric.label}</span>
-							<div class="metric-value-row">
-								<span class="metric-value">
-									{#if isLoading}
-										<span class="loading-dots">...</span>
-									{:else if metric.value === null}
-										<span class="no-data">—</span>
-									{:else if metric.isText}
-										{metric.value}
-									{:else}
-										{formatNumber(typeof metric.value === 'number' ? metric.value : 0)}{metric.suffix || ''}
-									{/if}
-								</span>
-								{#if metric.value !== null && metric.change !== 0}
-									<div class="metric-trend" class:positive={metric.trend === 'up'} class:negative={metric.trend === 'down'}>
-										<IconArrowUpRight size={14} />
-										<span>{Math.abs(metric.change).toFixed(1)}%</span>
-									</div>
-								{/if}
-							</div>
-						</div>
-						<div class="metric-glow {metric.color}"></div>
-					</div>
-				{/each}
+		{#if error}
+			<div class="error-banner" in:fly={{ y: -10, duration: 300 }}>
+				<IconAlertCircle size={20} />
+				<span>{error}</span>
 			</div>
 		{/if}
-	</section>
 
-	<!-- SEO & Site Health Row -->
-	<div class="dual-panel-row">
-		<!-- SEO Overview -->
-		<section class="analytics-panel glass-panel seo-panel" in:fly={{ x: -20, duration: 500, delay: 200 }}>
+		<!-- Site Analytics Panel -->
+		<section class="analytics-panel glass-panel" in:fly={{ y: 20, duration: 500, delay: 100 }}>
 			<div class="panel-header">
 				<div class="panel-title">
-					<div class="panel-icon google-icon">
-						<IconBrandGoogle size={24} />
+					<div class="panel-icon analytics-icon">
+						<IconChartBar size={24} />
 					</div>
 					<div>
-						<h2>SEO Performance</h2>
-						<span class="panel-subtitle">Search engine visibility</span>
+						<h2>Site Analytics</h2>
+						<span class="panel-subtitle">Traffic & engagement overview</span>
 					</div>
 				</div>
-				{#if seoConnected}
-					<a href="/admin/seo" class="panel-link">
-						View Details <IconExternalLink size={14} />
-					</a>
+				{#if analyticsConnected}
+					<div class="panel-badge connected">
+						<IconCalendar size={14} />
+						Last {selectedPeriod === '7d' ? '7' : selectedPeriod === '30d' ? '30' : '90'} Days
+					</div>
 				{:else}
 					<a href="/admin/connections" class="panel-badge not-connected">
 						<IconPlugConnected size={14} />
-						Connect SEO Tools
+						Connect Analytics
 					</a>
 				{/if}
 			</div>
 
-			{#if !seoConnected}
+			{#if !analyticsConnected}
 				<!-- Not Connected State -->
 				<div class="not-connected-banner">
 					<div class="not-connected-icon">
-						<IconBrandGoogle size={32} />
+						<IconChartBar size={32} />
 					</div>
 					<div class="not-connected-text">
-						<h3>SEO Tools Not Connected</h3>
-						<p>Connect Google Search Console or another SEO tool to see real search performance data.</p>
+						<h3>Analytics Not Connected</h3>
+						<p>
+							Connect Google Analytics, Mixpanel, or another analytics service to see real traffic
+							data.
+						</p>
 					</div>
 					<a href="/admin/connections" class="connect-btn">
 						<IconPlugConnected size={16} />
@@ -465,253 +435,372 @@
 					</a>
 				</div>
 			{:else}
-				<div class="seo-metrics-grid">
-					<div class="seo-metric-card primary">
-						<div class="seo-metric-header">
-							<IconSearch size={18} />
-							<span>Search Traffic</span>
-						</div>
-						<div class="seo-metric-value">{seoMetrics.searchTraffic.value !== null ? formatNumber(seoMetrics.searchTraffic.value) : '—'}</div>
-						{#if seoMetrics.searchTraffic.value !== null && seoMetrics.searchTraffic.change !== 0}
-							<div class="seo-metric-change positive">
-								<IconArrowUpRight size={12} />
-								+{seoMetrics.searchTraffic.change}%
+				<div class="metrics-grid">
+					{#each [{ label: 'Sessions', value: analytics.sessions.value, change: analytics.sessions.change, trend: analytics.sessions.trend, icon: IconEye, color: 'blue' }, { label: 'Pageviews', value: analytics.pageviews.value, change: analytics.pageviews.change, trend: analytics.pageviews.trend, icon: IconClick, color: 'purple' }, { label: 'Avg. Duration', value: analytics.avgSessionDuration.value, change: analytics.avgSessionDuration.change, trend: analytics.avgSessionDuration.trend, icon: IconClock, color: 'cyan', isText: true }, { label: 'Total Users', value: analytics.totalUsers.value, change: analytics.totalUsers.change, trend: analytics.totalUsers.trend, icon: IconUsers, color: 'green' }, { label: 'Bounce Rate', value: analytics.bounceRate.value, change: analytics.bounceRate.change, trend: analytics.bounceRate.trend, icon: IconActivity, color: 'orange', suffix: '%', invertTrend: true }, { label: 'New Users', value: analytics.newUsers.value, change: analytics.newUsers.change, trend: analytics.newUsers.trend, icon: IconUserCircle, color: 'pink' }] as metric, i}
+						{@const MetricIcon = metric.icon}
+						<div
+							class="metric-card {metric.color}"
+							in:scale={{ duration: 400, delay: 150 + i * 50, easing: cubicOut }}
+						>
+							<div class="metric-icon-wrap {metric.color}">
+								<MetricIcon size={20} />
 							</div>
-						{/if}
-						<div class="seo-metric-bar">
-							<div class="seo-metric-bar-fill" style="width: {seoMetrics.searchTraffic.value !== null ? '75%' : '0%'}"></div>
-						</div>
-					</div>
-
-					<div class="seo-metric-card">
-						<div class="seo-metric-header">
-							<IconEye size={18} />
-							<span>Impressions</span>
-						</div>
-						<div class="seo-metric-value">{seoMetrics.totalImpressions.value !== null ? formatNumber(seoMetrics.totalImpressions.value) : '—'}</div>
-						{#if seoMetrics.totalImpressions.value !== null && seoMetrics.totalImpressions.change !== 0}
-							<div class="seo-metric-change positive">
-								<IconArrowUpRight size={12} />
-								+{seoMetrics.totalImpressions.change}%
+							<div class="metric-body">
+								<span class="metric-label">{metric.label}</span>
+								<div class="metric-value-row">
+									<span class="metric-value">
+										{#if isLoading}
+											<span class="loading-dots">...</span>
+										{:else if metric.value === null}
+											<span class="no-data">—</span>
+										{:else if metric.isText}
+											{metric.value}
+										{:else}
+											{formatNumber(
+												typeof metric.value === 'number' ? metric.value : 0
+											)}{metric.suffix || ''}
+										{/if}
+									</span>
+									{#if metric.value !== null && metric.change !== 0}
+										<div
+											class="metric-trend"
+											class:positive={metric.trend === 'up'}
+											class:negative={metric.trend === 'down'}
+										>
+											<IconArrowUpRight size={14} />
+											<span>{Math.abs(metric.change).toFixed(1)}%</span>
+										</div>
+									{/if}
+								</div>
 							</div>
-						{/if}
-					</div>
-
-					<div class="seo-metric-card">
-						<div class="seo-metric-header">
-							<IconClick size={18} />
-							<span>Clicks</span>
+							<div class="metric-glow {metric.color}"></div>
 						</div>
-						<div class="seo-metric-value">{seoMetrics.totalClicks.value !== null ? formatNumber(seoMetrics.totalClicks.value) : '—'}</div>
-						{#if seoMetrics.totalClicks.value !== null && seoMetrics.totalClicks.change !== 0}
-							<div class="seo-metric-change positive">
-								<IconArrowUpRight size={12} />
-								+{seoMetrics.totalClicks.change}%
-							</div>
-						{/if}
-					</div>
-
-					<div class="seo-metric-card">
-						<div class="seo-metric-header">
-							<IconTarget size={18} />
-							<span>Avg CTR</span>
-						</div>
-						<div class="seo-metric-value">{seoMetrics.avgCTR.value !== null ? seoMetrics.avgCTR.value.toFixed(1) + '%' : '—'}</div>
-						{#if seoMetrics.avgCTR.value !== null && seoMetrics.avgCTR.change !== 0}
-							<div class="seo-metric-change positive">
-								<IconArrowUpRight size={12} />
-								+{seoMetrics.avgCTR.change}%
-							</div>
-						{/if}
-					</div>
-
-					<div class="seo-metric-card">
-						<div class="seo-metric-header">
-							<IconChartLine size={18} />
-							<span>Keywords</span>
-						</div>
-						<div class="seo-metric-value">{seoMetrics.totalKeywords.value !== null ? formatNumber(seoMetrics.totalKeywords.value) : '—'}</div>
-						{#if seoMetrics.totalKeywords.value !== null && seoMetrics.totalKeywords.change !== 0}
-							<div class="seo-metric-change positive">
-								<IconArrowUpRight size={12} />
-								+{seoMetrics.totalKeywords.change}
-							</div>
-						{/if}
-					</div>
-
-					<div class="seo-metric-card">
-						<div class="seo-metric-header">
-							<IconTrendingUp size={18} />
-							<span>Avg Position</span>
-						</div>
-						<div class="seo-metric-value">{seoMetrics.avgPosition.value !== null ? seoMetrics.avgPosition.value.toFixed(1) : '—'}</div>
-						{#if seoMetrics.avgPosition.value !== null && seoMetrics.avgPosition.change !== 0}
-							<div class="seo-metric-change" class:positive={seoMetrics.avgPosition.change < 0} class:negative={seoMetrics.avgPosition.change > 0}>
-								<IconArrowUpRight size={12} />
-								{Math.abs(seoMetrics.avgPosition.change).toFixed(1)}
-							</div>
-						{/if}
-					</div>
+					{/each}
 				</div>
 			{/if}
 		</section>
 
-		<!-- Site Health -->
-		<section class="analytics-panel glass-panel health-panel" in:fly={{ x: 20, duration: 500, delay: 200 }}>
+		<!-- SEO & Site Health Row -->
+		<div class="dual-panel-row">
+			<!-- SEO Overview -->
+			<section
+				class="analytics-panel glass-panel seo-panel"
+				in:fly={{ x: -20, duration: 500, delay: 200 }}
+			>
+				<div class="panel-header">
+					<div class="panel-title">
+						<div class="panel-icon google-icon">
+							<IconBrandGoogle size={24} />
+						</div>
+						<div>
+							<h2>SEO Performance</h2>
+							<span class="panel-subtitle">Search engine visibility</span>
+						</div>
+					</div>
+					{#if seoConnected}
+						<a href="/admin/seo" class="panel-link">
+							View Details <IconExternalLink size={14} />
+						</a>
+					{:else}
+						<a href="/admin/connections" class="panel-badge not-connected">
+							<IconPlugConnected size={14} />
+							Connect SEO Tools
+						</a>
+					{/if}
+				</div>
+
+				{#if !seoConnected}
+					<!-- Not Connected State -->
+					<div class="not-connected-banner">
+						<div class="not-connected-icon">
+							<IconBrandGoogle size={32} />
+						</div>
+						<div class="not-connected-text">
+							<h3>SEO Tools Not Connected</h3>
+							<p>
+								Connect Google Search Console or another SEO tool to see real search performance
+								data.
+							</p>
+						</div>
+						<a href="/admin/connections" class="connect-btn">
+							<IconPlugConnected size={16} />
+							Connect Service
+						</a>
+					</div>
+				{:else}
+					<div class="seo-metrics-grid">
+						<div class="seo-metric-card primary">
+							<div class="seo-metric-header">
+								<IconSearch size={18} />
+								<span>Search Traffic</span>
+							</div>
+							<div class="seo-metric-value">
+								{seoMetrics.searchTraffic.value !== null
+									? formatNumber(seoMetrics.searchTraffic.value)
+									: '—'}
+							</div>
+							{#if seoMetrics.searchTraffic.value !== null && seoMetrics.searchTraffic.change !== 0}
+								<div class="seo-metric-change positive">
+									<IconArrowUpRight size={12} />
+									+{seoMetrics.searchTraffic.change}%
+								</div>
+							{/if}
+							<div class="seo-metric-bar">
+								<div
+									class="seo-metric-bar-fill"
+									style="width: {seoMetrics.searchTraffic.value !== null ? '75%' : '0%'}"
+								></div>
+							</div>
+						</div>
+
+						<div class="seo-metric-card">
+							<div class="seo-metric-header">
+								<IconEye size={18} />
+								<span>Impressions</span>
+							</div>
+							<div class="seo-metric-value">
+								{seoMetrics.totalImpressions.value !== null
+									? formatNumber(seoMetrics.totalImpressions.value)
+									: '—'}
+							</div>
+							{#if seoMetrics.totalImpressions.value !== null && seoMetrics.totalImpressions.change !== 0}
+								<div class="seo-metric-change positive">
+									<IconArrowUpRight size={12} />
+									+{seoMetrics.totalImpressions.change}%
+								</div>
+							{/if}
+						</div>
+
+						<div class="seo-metric-card">
+							<div class="seo-metric-header">
+								<IconClick size={18} />
+								<span>Clicks</span>
+							</div>
+							<div class="seo-metric-value">
+								{seoMetrics.totalClicks.value !== null
+									? formatNumber(seoMetrics.totalClicks.value)
+									: '—'}
+							</div>
+							{#if seoMetrics.totalClicks.value !== null && seoMetrics.totalClicks.change !== 0}
+								<div class="seo-metric-change positive">
+									<IconArrowUpRight size={12} />
+									+{seoMetrics.totalClicks.change}%
+								</div>
+							{/if}
+						</div>
+
+						<div class="seo-metric-card">
+							<div class="seo-metric-header">
+								<IconTarget size={18} />
+								<span>Avg CTR</span>
+							</div>
+							<div class="seo-metric-value">
+								{seoMetrics.avgCTR.value !== null ? seoMetrics.avgCTR.value.toFixed(1) + '%' : '—'}
+							</div>
+							{#if seoMetrics.avgCTR.value !== null && seoMetrics.avgCTR.change !== 0}
+								<div class="seo-metric-change positive">
+									<IconArrowUpRight size={12} />
+									+{seoMetrics.avgCTR.change}%
+								</div>
+							{/if}
+						</div>
+
+						<div class="seo-metric-card">
+							<div class="seo-metric-header">
+								<IconChartLine size={18} />
+								<span>Keywords</span>
+							</div>
+							<div class="seo-metric-value">
+								{seoMetrics.totalKeywords.value !== null
+									? formatNumber(seoMetrics.totalKeywords.value)
+									: '—'}
+							</div>
+							{#if seoMetrics.totalKeywords.value !== null && seoMetrics.totalKeywords.change !== 0}
+								<div class="seo-metric-change positive">
+									<IconArrowUpRight size={12} />
+									+{seoMetrics.totalKeywords.change}
+								</div>
+							{/if}
+						</div>
+
+						<div class="seo-metric-card">
+							<div class="seo-metric-header">
+								<IconTrendingUp size={18} />
+								<span>Avg Position</span>
+							</div>
+							<div class="seo-metric-value">
+								{seoMetrics.avgPosition.value !== null
+									? seoMetrics.avgPosition.value.toFixed(1)
+									: '—'}
+							</div>
+							{#if seoMetrics.avgPosition.value !== null && seoMetrics.avgPosition.change !== 0}
+								<div
+									class="seo-metric-change"
+									class:positive={seoMetrics.avgPosition.change < 0}
+									class:negative={seoMetrics.avgPosition.change > 0}
+								>
+									<IconArrowUpRight size={12} />
+									{Math.abs(seoMetrics.avgPosition.change).toFixed(1)}
+								</div>
+							{/if}
+						</div>
+					</div>
+				{/if}
+			</section>
+
+			<!-- Site Health -->
+			<section
+				class="analytics-panel glass-panel health-panel"
+				in:fly={{ x: 20, duration: 500, delay: 200 }}
+			>
+				<div class="panel-header">
+					<div class="panel-title">
+						<div class="panel-icon health-icon">
+							<IconActivity size={24} />
+						</div>
+						<div>
+							<h2>Site Health</h2>
+							<span class="panel-subtitle">Technical monitoring</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="health-grid">
+					<!-- Device Breakdown -->
+					<div class="health-card device-card">
+						<h4>Device Breakdown</h4>
+						<div class="device-bars">
+							<div class="device-row">
+								<div class="device-info">
+									<IconDevices size={16} />
+									<span>Desktop</span>
+								</div>
+								<div class="device-bar-wrap">
+									<div class="device-bar desktop" style="width: {deviceBreakdown.desktop}%"></div>
+								</div>
+								<span class="device-percent">{deviceBreakdown.desktop}%</span>
+							</div>
+							<div class="device-row">
+								<div class="device-info">
+									<IconDeviceMobile size={16} />
+									<span>Mobile</span>
+								</div>
+								<div class="device-bar-wrap">
+									<div class="device-bar mobile" style="width: {deviceBreakdown.mobile}%"></div>
+								</div>
+								<span class="device-percent">{deviceBreakdown.mobile}%</span>
+							</div>
+							<div class="device-row">
+								<div class="device-info">
+									<IconBrowser size={16} />
+									<span>Tablet</span>
+								</div>
+								<div class="device-bar-wrap">
+									<div class="device-bar tablet" style="width: {deviceBreakdown.tablet}%"></div>
+								</div>
+								<span class="device-percent">{deviceBreakdown.tablet}%</span>
+							</div>
+						</div>
+					</div>
+
+					<!-- Errors & Redirects -->
+					<div class="health-card errors-card">
+						<h4>404 Errors</h4>
+						<div class="error-stats">
+							<div class="error-stat">
+								<span
+									class="error-count"
+									class:has-errors={(seoMetrics.error404Count.value ?? 0) > 0}
+									>{seoMetrics.error404Count.value ?? 0}</span
+								>
+								<span class="error-label">Logged</span>
+							</div>
+							<div class="error-stat">
+								<span class="error-count">{seoMetrics.error404Count.hits}</span>
+								<span class="error-label">Hits</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="health-card redirects-card">
+						<h4>Redirections</h4>
+						<div class="error-stats">
+							<div class="error-stat">
+								<span class="redirect-count">{seoMetrics.redirections.count}</span>
+								<span class="error-label">Active</span>
+							</div>
+							<div class="error-stat">
+								<span class="redirect-count">{seoMetrics.redirections.hits}</span>
+								<span class="error-label">Hits</span>
+							</div>
+						</div>
+					</div>
+				</div>
+			</section>
+		</div>
+
+		<!-- Business Overview -->
+		<section
+			class="analytics-panel glass-panel business-panel"
+			in:fly={{ y: 20, duration: 500, delay: 300 }}
+		>
 			<div class="panel-header">
 				<div class="panel-title">
-					<div class="panel-icon health-icon">
-						<IconActivity size={24} />
+					<div class="panel-icon business-icon">
+						<IconTrendingUp size={24} />
 					</div>
 					<div>
-						<h2>Site Health</h2>
-						<span class="panel-subtitle">Technical monitoring</span>
+						<h2>Business Overview</h2>
+						<span class="panel-subtitle">Key business metrics</span>
 					</div>
 				</div>
 			</div>
 
-			<div class="health-grid">
-				<!-- Device Breakdown -->
-				<div class="health-card device-card">
-					<h4>Device Breakdown</h4>
-					<div class="device-bars">
-						<div class="device-row">
-							<div class="device-info">
-								<IconDevices size={16} />
-								<span>Desktop</span>
-							</div>
-							<div class="device-bar-wrap">
-								<div class="device-bar desktop" style="width: {deviceBreakdown.desktop}%"></div>
-							</div>
-							<span class="device-percent">{deviceBreakdown.desktop}%</span>
+			<div class="business-grid">
+				{#each [{ href: '/admin/members', icon: IconUserCircle, value: stats.totalMembers, label: 'Total Members', color: 'indigo' }, { href: '/admin/subscriptions', icon: IconReceipt, value: stats.activeSubscriptions, label: 'Active Subscriptions', color: 'teal' }, { href: '/admin/products', icon: IconShoppingCart, value: stats.totalProducts, label: 'Products', color: 'emerald' }, { href: '/admin/blog', icon: IconNews, value: stats.totalPosts, label: 'Blog Posts', color: 'blue' }, { href: '/admin/coupons', icon: IconTicket, value: stats.activeCoupons, label: 'Active Coupons', color: 'amber' }] as item, i}
+					{@const BusinessIcon = item.icon}
+					<a
+						href={item.href}
+						class="business-card {item.color}"
+						in:scale={{ duration: 400, delay: 350 + i * 50, easing: cubicOut }}
+					>
+						<div class="business-card-icon {item.color}">
+							<BusinessIcon size={28} />
 						</div>
-						<div class="device-row">
-							<div class="device-info">
-								<IconDeviceMobile size={16} />
-								<span>Mobile</span>
-							</div>
-							<div class="device-bar-wrap">
-								<div class="device-bar mobile" style="width: {deviceBreakdown.mobile}%"></div>
-							</div>
-							<span class="device-percent">{deviceBreakdown.mobile}%</span>
+						<div class="business-card-content">
+							<span class="business-card-value">
+								{#if isLoading}...{:else}{formatNumber(item.value)}{/if}
+							</span>
+							<span class="business-card-label">{item.label}</span>
 						</div>
-						<div class="device-row">
-							<div class="device-info">
-								<IconBrowser size={16} />
-								<span>Tablet</span>
-							</div>
-							<div class="device-bar-wrap">
-								<div class="device-bar tablet" style="width: {deviceBreakdown.tablet}%"></div>
-							</div>
-							<span class="device-percent">{deviceBreakdown.tablet}%</span>
+						<div class="business-card-arrow">
+							<IconArrowUpRight size={18} />
 						</div>
-					</div>
-				</div>
+					</a>
+				{/each}
+			</div>
+		</section>
 
-				<!-- Errors & Redirects -->
-				<div class="health-card errors-card">
-					<h4>404 Errors</h4>
-					<div class="error-stats">
-						<div class="error-stat">
-							<span class="error-count" class:has-errors={(seoMetrics.error404Count.value ?? 0) > 0}>{seoMetrics.error404Count.value ?? 0}</span>
-							<span class="error-label">Logged</span>
+		<!-- Quick Actions -->
+		<section class="cms-section" in:fly={{ y: 20, duration: 500, delay: 400 }}>
+			<h3 class="section-title">Quick Actions</h3>
+			<div class="cms-grid">
+				{#each [{ href: '/admin/blog', icon: IconNews, label: 'Blog Posts', desc: 'Create & manage articles', color: 'blog' }, { href: '/admin/blog/categories', icon: IconTag, label: 'Categories', desc: 'Organize content', color: 'categories' }, { href: '/admin/media', icon: IconPhoto, label: 'Media Library', desc: 'Upload & organize files', color: 'media' }, { href: '/admin/videos', icon: IconVideo, label: 'Videos', desc: 'Manage video content', color: 'videos' }, { href: '/admin/forms', icon: IconForms, label: 'Forms', desc: 'Build & manage forms', color: 'forms' }, { href: '/admin/popups', icon: IconBellRinging, label: 'Popups', desc: 'Create popup campaigns', color: 'popups' }, { href: '/admin/email/campaigns', icon: IconSend, label: 'Campaigns', desc: 'Email campaigns', color: 'campaigns' }, { href: '/admin/email/templates', icon: IconMail, label: 'Email Templates', desc: 'Design email templates', color: 'templates' }, { href: '/admin/seo', icon: IconSeo, label: 'SEO', desc: 'Search optimization', color: 'seo' }, { href: '/admin/analytics', icon: IconChartBar, label: 'Analytics', desc: 'View detailed analytics', color: 'analytics' }, { href: '/admin/settings', icon: IconSettings, label: 'Settings', desc: 'System configuration', color: 'settings' }] as item}
+					{@const CmsIcon = item.icon}
+					<a href={item.href} class="cms-card">
+						<div class="cms-icon {item.color}">
+							<CmsIcon size={24} />
 						</div>
-						<div class="error-stat">
-							<span class="error-count">{seoMetrics.error404Count.hits}</span>
-							<span class="error-label">Hits</span>
+						<div class="cms-info">
+							<span class="cms-label">{item.label}</span>
+							<span class="cms-desc">{item.desc}</span>
 						</div>
-					</div>
-				</div>
-
-				<div class="health-card redirects-card">
-					<h4>Redirections</h4>
-					<div class="error-stats">
-						<div class="error-stat">
-							<span class="redirect-count">{seoMetrics.redirections.count}</span>
-							<span class="error-label">Active</span>
-						</div>
-						<div class="error-stat">
-							<span class="redirect-count">{seoMetrics.redirections.hits}</span>
-							<span class="error-label">Hits</span>
-						</div>
-					</div>
-				</div>
+					</a>
+				{/each}
 			</div>
 		</section>
 	</div>
-
-	<!-- Business Overview -->
-	<section class="analytics-panel glass-panel business-panel" in:fly={{ y: 20, duration: 500, delay: 300 }}>
-		<div class="panel-header">
-			<div class="panel-title">
-				<div class="panel-icon business-icon">
-					<IconTrendingUp size={24} />
-				</div>
-				<div>
-					<h2>Business Overview</h2>
-					<span class="panel-subtitle">Key business metrics</span>
-				</div>
-			</div>
-		</div>
-
-		<div class="business-grid">
-			{#each [
-				{ href: '/admin/members', icon: IconUserCircle, value: stats.totalMembers, label: 'Total Members', color: 'indigo' },
-				{ href: '/admin/subscriptions', icon: IconReceipt, value: stats.activeSubscriptions, label: 'Active Subscriptions', color: 'teal' },
-				{ href: '/admin/products', icon: IconShoppingCart, value: stats.totalProducts, label: 'Products', color: 'emerald' },
-				{ href: '/admin/blog', icon: IconNews, value: stats.totalPosts, label: 'Blog Posts', color: 'blue' },
-				{ href: '/admin/coupons', icon: IconTicket, value: stats.activeCoupons, label: 'Active Coupons', color: 'amber' }
-			] as item, i}
-				{@const BusinessIcon = item.icon}
-				<a href={item.href} class="business-card {item.color}" in:scale={{ duration: 400, delay: 350 + i * 50, easing: cubicOut }}>
-					<div class="business-card-icon {item.color}">
-						<BusinessIcon size={28} />
-					</div>
-					<div class="business-card-content">
-						<span class="business-card-value">
-							{#if isLoading}...{:else}{formatNumber(item.value)}{/if}
-						</span>
-						<span class="business-card-label">{item.label}</span>
-					</div>
-					<div class="business-card-arrow">
-						<IconArrowUpRight size={18} />
-					</div>
-				</a>
-			{/each}
-		</div>
-	</section>
-
-	<!-- Quick Actions -->
-	<section class="cms-section" in:fly={{ y: 20, duration: 500, delay: 400 }}>
-		<h3 class="section-title">Quick Actions</h3>
-		<div class="cms-grid">
-			{#each [
-				{ href: '/admin/blog', icon: IconNews, label: 'Blog Posts', desc: 'Create & manage articles', color: 'blog' },
-				{ href: '/admin/blog/categories', icon: IconTag, label: 'Categories', desc: 'Organize content', color: 'categories' },
-				{ href: '/admin/media', icon: IconPhoto, label: 'Media Library', desc: 'Upload & organize files', color: 'media' },
-				{ href: '/admin/videos', icon: IconVideo, label: 'Videos', desc: 'Manage video content', color: 'videos' },
-				{ href: '/admin/forms', icon: IconForms, label: 'Forms', desc: 'Build & manage forms', color: 'forms' },
-				{ href: '/admin/popups', icon: IconBellRinging, label: 'Popups', desc: 'Create popup campaigns', color: 'popups' },
-				{ href: '/admin/email/campaigns', icon: IconSend, label: 'Campaigns', desc: 'Email campaigns', color: 'campaigns' },
-				{ href: '/admin/email/templates', icon: IconMail, label: 'Email Templates', desc: 'Design email templates', color: 'templates' },
-				{ href: '/admin/seo', icon: IconSeo, label: 'SEO', desc: 'Search optimization', color: 'seo' },
-				{ href: '/admin/analytics', icon: IconChartBar, label: 'Analytics', desc: 'View detailed analytics', color: 'analytics' },
-				{ href: '/admin/settings', icon: IconSettings, label: 'Settings', desc: 'System configuration', color: 'settings' }
-			] as item}
-				{@const CmsIcon = item.icon}
-				<a href={item.href} class="cms-card">
-					<div class="cms-icon {item.color}">
-						<CmsIcon size={24} />
-					</div>
-					<div class="cms-info">
-						<span class="cms-label">{item.label}</span>
-						<span class="cms-desc">{item.desc}</span>
-					</div>
-				</a>
-			{/each}
-		</div>
-	</section>
-	</div><!-- End admin-page-container -->
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -842,8 +931,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Error Banner */
@@ -1045,11 +1138,15 @@
 	}
 
 	@media (max-width: 1400px) {
-		.metrics-grid { grid-template-columns: repeat(3, 1fr); }
+		.metrics-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 
 	@media (max-width: 768px) {
-		.metrics-grid { grid-template-columns: repeat(2, 1fr); }
+		.metrics-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.metric-card {
@@ -1069,12 +1166,24 @@
 	}
 
 	/* Color accents for metric cards - using RTP semantic colors */
-	.metric-card.blue:hover { border-color: var(--admin-info-border); }
-	.metric-card.purple:hover { border-color: rgba(230, 184, 0, 0.5); }
-	.metric-card.cyan:hover { border-color: var(--admin-info-border); }
-	.metric-card.green:hover { border-color: var(--admin-success-border); }
-	.metric-card.orange:hover { border-color: var(--admin-warning-border); }
-	.metric-card.pink:hover { border-color: rgba(236, 72, 153, 0.5); }
+	.metric-card.blue:hover {
+		border-color: var(--admin-info-border);
+	}
+	.metric-card.purple:hover {
+		border-color: rgba(230, 184, 0, 0.5);
+	}
+	.metric-card.cyan:hover {
+		border-color: var(--admin-info-border);
+	}
+	.metric-card.green:hover {
+		border-color: var(--admin-success-border);
+	}
+	.metric-card.orange:hover {
+		border-color: var(--admin-warning-border);
+	}
+	.metric-card.pink:hover {
+		border-color: rgba(236, 72, 153, 0.5);
+	}
 
 	.metric-glow {
 		position: absolute;
@@ -1087,14 +1196,28 @@
 		pointer-events: none;
 	}
 
-	.metric-card:hover .metric-glow { opacity: 1; }
+	.metric-card:hover .metric-glow {
+		opacity: 1;
+	}
 
-	.metric-glow.blue { background: radial-gradient(circle, var(--admin-info-bg) 0%, transparent 70%); }
-	.metric-glow.purple { background: radial-gradient(circle, rgba(230, 184, 0, 0.15) 0%, transparent 70%); }
-	.metric-glow.cyan { background: radial-gradient(circle, var(--admin-info-bg) 0%, transparent 70%); }
-	.metric-glow.green { background: radial-gradient(circle, var(--admin-success-bg) 0%, transparent 70%); }
-	.metric-glow.orange { background: radial-gradient(circle, var(--admin-warning-bg) 0%, transparent 70%); }
-	.metric-glow.pink { background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%); }
+	.metric-glow.blue {
+		background: radial-gradient(circle, var(--admin-info-bg) 0%, transparent 70%);
+	}
+	.metric-glow.purple {
+		background: radial-gradient(circle, rgba(230, 184, 0, 0.15) 0%, transparent 70%);
+	}
+	.metric-glow.cyan {
+		background: radial-gradient(circle, var(--admin-info-bg) 0%, transparent 70%);
+	}
+	.metric-glow.green {
+		background: radial-gradient(circle, var(--admin-success-bg) 0%, transparent 70%);
+	}
+	.metric-glow.orange {
+		background: radial-gradient(circle, var(--admin-warning-bg) 0%, transparent 70%);
+	}
+	.metric-glow.pink {
+		background: radial-gradient(circle, rgba(236, 72, 153, 0.15) 0%, transparent 70%);
+	}
 
 	.metric-icon-wrap {
 		width: 36px;
@@ -1106,12 +1229,30 @@
 		margin-bottom: 0.875rem;
 	}
 
-	.metric-icon-wrap.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.metric-icon-wrap.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-	.metric-icon-wrap.cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
-	.metric-icon-wrap.green { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
-	.metric-icon-wrap.orange { background: rgba(234, 179, 8, 0.15); color: #eab308; }
-	.metric-icon-wrap.pink { background: rgba(236, 72, 153, 0.15); color: #f472b6; }
+	.metric-icon-wrap.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.metric-icon-wrap.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
+	.metric-icon-wrap.cyan {
+		background: rgba(6, 182, 212, 0.15);
+		color: #22d3ee;
+	}
+	.metric-icon-wrap.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #22c55e;
+	}
+	.metric-icon-wrap.orange {
+		background: rgba(234, 179, 8, 0.15);
+		color: #eab308;
+	}
+	.metric-icon-wrap.pink {
+		background: rgba(236, 72, 153, 0.15);
+		color: #f472b6;
+	}
 
 	.metric-label {
 		font-size: 0.75rem;
@@ -1170,7 +1311,9 @@
 	}
 
 	@media (max-width: 1100px) {
-		.dual-panel-row { grid-template-columns: 1fr; }
+		.dual-panel-row {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	/* SEO Panel - Email Templates Style */
@@ -1181,7 +1324,9 @@
 	}
 
 	@media (max-width: 768px) {
-		.seo-metrics-grid { grid-template-columns: repeat(2, 1fr); }
+		.seo-metrics-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.seo-metric-card {
@@ -1204,7 +1349,9 @@
 	}
 
 	@media (max-width: 768px) {
-		.seo-metric-card.primary { grid-column: span 2; }
+		.seo-metric-card.primary {
+			grid-column: span 2;
+		}
 	}
 
 	.seo-metric-header {
@@ -1319,9 +1466,15 @@
 		transition: width 1s ease-out;
 	}
 
-	.device-bar.desktop { background: linear-gradient(90deg, #6366f1, #8b5cf6); }
-	.device-bar.mobile { background: linear-gradient(90deg, #06b6d4, #22d3ee); }
-	.device-bar.tablet { background: linear-gradient(90deg, #eab308, #facc15); }
+	.device-bar.desktop {
+		background: linear-gradient(90deg, #6366f1, #8b5cf6);
+	}
+	.device-bar.mobile {
+		background: linear-gradient(90deg, #06b6d4, #22d3ee);
+	}
+	.device-bar.tablet {
+		background: linear-gradient(90deg, #eab308, #facc15);
+	}
 
 	.device-percent {
 		font-size: 0.75rem;
@@ -1371,11 +1524,15 @@
 	}
 
 	@media (max-width: 1200px) {
-		.business-grid { grid-template-columns: repeat(3, 1fr); }
+		.business-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 
 	@media (max-width: 768px) {
-		.business-grid { grid-template-columns: repeat(2, 1fr); }
+		.business-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	.business-card {
@@ -1397,11 +1554,21 @@
 		background: rgba(30, 41, 59, 0.5);
 	}
 
-	.business-card.indigo:hover { border-color: rgba(99, 102, 241, 0.3); }
-	.business-card.teal:hover { border-color: rgba(20, 184, 166, 0.3); }
-	.business-card.emerald:hover { border-color: rgba(34, 197, 94, 0.3); }
-	.business-card.blue:hover { border-color: rgba(59, 130, 246, 0.3); }
-	.business-card.amber:hover { border-color: rgba(234, 179, 8, 0.3); }
+	.business-card.indigo:hover {
+		border-color: rgba(99, 102, 241, 0.3);
+	}
+	.business-card.teal:hover {
+		border-color: rgba(20, 184, 166, 0.3);
+	}
+	.business-card.emerald:hover {
+		border-color: rgba(34, 197, 94, 0.3);
+	}
+	.business-card.blue:hover {
+		border-color: rgba(59, 130, 246, 0.3);
+	}
+	.business-card.amber:hover {
+		border-color: rgba(234, 179, 8, 0.3);
+	}
 
 	.business-card-icon {
 		width: 48px;
@@ -1413,11 +1580,26 @@
 		flex-shrink: 0;
 	}
 
-	.business-card-icon.indigo { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
-	.business-card-icon.teal { background: rgba(20, 184, 166, 0.15); color: #2dd4bf; }
-	.business-card-icon.emerald { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
-	.business-card-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.business-card-icon.amber { background: rgba(234, 179, 8, 0.15); color: #eab308; }
+	.business-card-icon.indigo {
+		background: rgba(99, 102, 241, 0.15);
+		color: #a5b4fc;
+	}
+	.business-card-icon.teal {
+		background: rgba(20, 184, 166, 0.15);
+		color: #2dd4bf;
+	}
+	.business-card-icon.emerald {
+		background: rgba(34, 197, 94, 0.15);
+		color: #22c55e;
+	}
+	.business-card-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.business-card-icon.amber {
+		background: rgba(234, 179, 8, 0.15);
+		color: #eab308;
+	}
 
 	.business-card-content {
 		flex: 1;
@@ -1501,17 +1683,50 @@
 	}
 
 	/* CMS Icons - Email Templates Style */
-	.cms-icon.blog { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.cms-icon.categories { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-	.cms-icon.media { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
-	.cms-icon.videos { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-	.cms-icon.forms { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
-	.cms-icon.popups { background: rgba(234, 179, 8, 0.15); color: #eab308; }
-	.cms-icon.campaigns { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-	.cms-icon.templates { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.cms-icon.seo { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
-	.cms-icon.analytics { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
-	.cms-icon.settings { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
+	.cms-icon.blog {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.cms-icon.categories {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
+	.cms-icon.media {
+		background: rgba(99, 102, 241, 0.15);
+		color: #a5b4fc;
+	}
+	.cms-icon.videos {
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
+	.cms-icon.forms {
+		background: rgba(34, 197, 94, 0.15);
+		color: #22c55e;
+	}
+	.cms-icon.popups {
+		background: rgba(234, 179, 8, 0.15);
+		color: #eab308;
+	}
+	.cms-icon.campaigns {
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
+	.cms-icon.templates {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.cms-icon.seo {
+		background: rgba(34, 197, 94, 0.15);
+		color: #22c55e;
+	}
+	.cms-icon.analytics {
+		background: rgba(99, 102, 241, 0.15);
+		color: #a5b4fc;
+	}
+	.cms-icon.settings {
+		background: rgba(148, 163, 184, 0.15);
+		color: #94a3b8;
+	}
 
 	.cms-info {
 		display: flex;

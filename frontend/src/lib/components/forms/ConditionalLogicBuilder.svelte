@@ -87,7 +87,9 @@
 		const field = fields.find((f) => f.name === fieldName);
 		if (!field) return operators.filter((op) => op.types.includes('all'));
 
-		return operators.filter((op) => op.types.includes('all') || op.types.includes(field.field_type));
+		return operators.filter(
+			(op) => op.types.includes('all') || op.types.includes(field.field_type)
+		);
 	}
 
 	// Get field options for value dropdown
@@ -243,7 +245,11 @@
 						<!-- Field Select -->
 						<select
 							value={rule.field}
-							onchange={(e: Event) => updateRule(index, { field: (e.currentTarget as HTMLSelectElement).value, value: '' })}
+							onchange={(e: Event) =>
+								updateRule(index, {
+									field: (e.currentTarget as HTMLSelectElement).value,
+									value: ''
+								})}
 							class="rule-select field-select"
 						>
 							{#each getAvailableFields() as field}
@@ -254,7 +260,10 @@
 						<!-- Operator Select -->
 						<select
 							value={rule.operator}
-							onchange={(e: Event) => updateRule(index, { operator: (e.currentTarget as HTMLSelectElement).value as any })}
+							onchange={(e: Event) =>
+								updateRule(index, {
+									operator: (e.currentTarget as HTMLSelectElement).value as any
+								})}
 							class="rule-select operator-select"
 						>
 							{#each getOperatorsForField(rule.field) as op}
@@ -268,7 +277,8 @@
 							{#if fieldOptions.length > 0}
 								<select
 									value={rule.value}
-									onchange={(e: Event) => updateRule(index, { value: (e.currentTarget as HTMLSelectElement).value })}
+									onchange={(e: Event) =>
+										updateRule(index, { value: (e.currentTarget as HTMLSelectElement).value })}
 									class="rule-select value-select"
 								>
 									<option value="">Select value...</option>
@@ -280,7 +290,8 @@
 								<input
 									type="text"
 									value={rule.value}
-									oninput={(e: Event) => updateRule(index, { value: (e.currentTarget as HTMLInputElement).value })}
+									oninput={(e: Event) =>
+										updateRule(index, { value: (e.currentTarget as HTMLInputElement).value })}
 									placeholder="Enter value..."
 									class="rule-input value-input"
 								/>

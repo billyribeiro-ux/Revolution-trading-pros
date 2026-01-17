@@ -26,3 +26,6 @@ coverage/
 package-lock.json
 pnpm-lock.yaml
 yarn.lock
+
+# Reference files - not part of the website
+Implementation/

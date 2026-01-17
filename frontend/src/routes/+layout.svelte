@@ -1,11 +1,11 @@
 <script lang="ts">
 	/**
 	 * Root Layout - Restored with essential components
-	 * 
+	 *
 	 * ICT9+ Hydration-Safe Pattern:
 	 * - Auth-dependent UI uses client-only state to prevent SSR/client mismatch
 	 * - Stores that differ between SSR and client are only read after mount
-	 * 
+	 *
 	 * ICT8-11+ GA4 Integration:
 	 * - Uses SvelteKit's afterNavigate for page view tracking
 	 * - Prevents GA4 from using history.pushState (conflicts with SvelteKit router)
@@ -25,7 +25,7 @@
 	import type { Snippet } from 'svelte';
 
 	// Consent System
-	import { 
+	import {
 		initializeConsent,
 		ConsentBanner,
 		ConsentPreferencesModal,
@@ -42,8 +42,8 @@
 	let isAdminArea = $derived(pathname.startsWith('/admin'));
 	let isEmbedArea = $derived(pathname.startsWith('/embed'));
 	let isDashboardArea = $derived(pathname.startsWith('/dashboard'));
-	
-	// ICT9+ Hydration-Safe Pattern: 
+
+	// ICT9+ Hydration-Safe Pattern:
 	// Auth state is ONLY read client-side to prevent SSR/client mismatch
 	// SSR always renders without admin toolbar, client adds it after hydration
 	let mounted = $state(false);

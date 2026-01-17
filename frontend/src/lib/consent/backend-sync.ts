@@ -80,7 +80,7 @@ const DEFAULT_CONFIG: BackendSyncConfig = {
 	endpoint: '/api/consent/sync',
 	syncAuditLog: true,
 	syncOnChange: true,
-	debounceMs: 1000,
+	debounceMs: 1000
 };
 
 let config: BackendSyncConfig = { ...DEFAULT_CONFIG };
@@ -119,10 +119,7 @@ function generateSessionId(): string {
 /**
  * Build sync payload from consent state
  */
-export function buildSyncPayload(
-	consent: ConsentState,
-	userId?: string
-): ConsentSyncPayload {
+export function buildSyncPayload(consent: ConsentState, userId?: string): ConsentSyncPayload {
 	const payload: ConsentSyncPayload = {
 		consentId: consent.consentId || 'unknown',
 		...(userId && { userId }),
@@ -131,7 +128,7 @@ export function buildSyncPayload(
 			necessary: consent.necessary,
 			analytics: consent.analytics,
 			marketing: consent.marketing,
-			preferences: consent.preferences,
+			preferences: consent.preferences
 		},
 		metadata: {
 			updatedAt: consent.updatedAt,
@@ -143,12 +140,12 @@ export function buildSyncPayload(
 				privacySignals: {
 					gpc: consent.privacySignals.gpc,
 					dnt: consent.privacySignals.dnt,
-					...(consent.privacySignals.region && { region: consent.privacySignals.region }),
-				},
-			}),
+					...(consent.privacySignals.region && { region: consent.privacySignals.region })
+				}
+			})
 		},
 		...(browser && { userAgent: navigator.userAgent }),
-		...(browser && { url: window.location.href }),
+		...(browser && { url: window.location.href })
 	};
 
 	if (config.syncAuditLog) {
@@ -173,7 +170,7 @@ export async function syncConsentToBackend(
 	const stateHash = JSON.stringify({
 		analytics: consent.analytics,
 		marketing: consent.marketing,
-		preferences: consent.preferences,
+		preferences: consent.preferences
 	});
 
 	if (stateHash === lastSyncedState) {
@@ -182,7 +179,7 @@ export async function syncConsentToBackend(
 			success: true,
 			consentId: consent.consentId || '',
 			serverTimestamp: new Date().toISOString(),
-			message: 'No changes to sync',
+			message: 'No changes to sync'
 		};
 	}
 
@@ -191,7 +188,7 @@ export async function syncConsentToBackend(
 	try {
 		const headers: Record<string, string> = {
 			'Content-Type': 'application/json',
-			...config.headers,
+			...config.headers
 		};
 
 		if (config.apiKey) {
@@ -202,7 +199,7 @@ export async function syncConsentToBackend(
 			method: 'POST',
 			headers,
 			body: JSON.stringify(payload),
-			credentials: 'include',
+			credentials: 'include'
 		});
 
 		if (!response.ok) {
@@ -221,7 +218,7 @@ export async function syncConsentToBackend(
 			success: false,
 			consentId: consent.consentId || '',
 			serverTimestamp: new Date().toISOString(),
-			message: error instanceof Error ? error.message : 'Unknown error',
+			message: error instanceof Error ? error.message : 'Unknown error'
 		};
 	}
 }
@@ -244,14 +241,12 @@ export function debouncedSync(consent: ConsentState, userId?: string): void {
 /**
  * Fetch consent from backend (for cross-device sync)
  */
-export async function fetchConsentFromBackend(
-	userId: string
-): Promise<ConsentState | null> {
+export async function fetchConsentFromBackend(userId: string): Promise<ConsentState | null> {
 	if (!browser) return null;
 
 	try {
 		const headers: Record<string, string> = {
-			...config.headers,
+			...config.headers
 		};
 
 		if (config.apiKey) {
@@ -261,7 +256,7 @@ export async function fetchConsentFromBackend(
 		const response = await fetch(`${config.endpoint}?userId=${encodeURIComponent(userId)}`, {
 			method: 'GET',
 			headers,
-			credentials: 'include',
+			credentials: 'include'
 		});
 
 		if (!response.ok) {
@@ -285,28 +280,23 @@ export async function fetchConsentFromBackend(
 /**
  * Delete consent from backend (for GDPR right to erasure)
  */
-export async function deleteConsentFromBackend(
-	consentId: string
-): Promise<boolean> {
+export async function deleteConsentFromBackend(consentId: string): Promise<boolean> {
 	if (!browser) return false;
 
 	try {
 		const headers: Record<string, string> = {
-			...config.headers,
+			...config.headers
 		};
 
 		if (config.apiKey) {
 			headers['X-API-Key'] = config.apiKey;
 		}
 
-		const response = await fetch(
-			`${config.endpoint}?consentId=${encodeURIComponent(consentId)}`,
-			{
-				method: 'DELETE',
-				headers,
-				credentials: 'include',
-			}
-		);
+		const response = await fetch(`${config.endpoint}?consentId=${encodeURIComponent(consentId)}`, {
+			method: 'DELETE',
+			headers,
+			credentials: 'include'
+		});
 
 		if (!response.ok) {
 			throw new Error(`HTTP ${response.status}`);
@@ -330,21 +320,18 @@ export async function exportConsentFromBackend(
 
 	try {
 		const headers: Record<string, string> = {
-			...config.headers,
+			...config.headers
 		};
 
 		if (config.apiKey) {
 			headers['X-API-Key'] = config.apiKey;
 		}
 
-		const response = await fetch(
-			`${config.endpoint}/export?userId=${encodeURIComponent(userId)}`,
-			{
-				method: 'GET',
-				headers,
-				credentials: 'include',
-			}
-		);
+		const response = await fetch(`${config.endpoint}/export?userId=${encodeURIComponent(userId)}`, {
+			method: 'GET',
+			headers,
+			credentials: 'include'
+		});
 
 		if (!response.ok) {
 			throw new Error(`HTTP ${response.status}`);

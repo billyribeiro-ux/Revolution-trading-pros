@@ -17,14 +17,7 @@
 		pendingActionsCount,
 		isSyncing
 	} from '$lib/stores/offline.svelte';
-	import {
-		IconWifi,
-		IconUpload,
-		IconLoader,
-		IconCheck,
-		IconX,
-		IconRefresh
-	} from '$lib/icons';
+	import { IconWifi, IconUpload, IconLoader, IconCheck, IconX, IconRefresh } from '$lib/icons';
 
 	let showDetails = $state(false);
 	let justCameOnline = $state(false);
@@ -97,7 +90,7 @@
 {#if $isOnline && $hasPendingActions && !justCameOnline}
 	<button
 		class="sync-float-btn"
-		onclick={() => showDetails = !showDetails}
+		onclick={() => (showDetails = !showDetails)}
 		in:fly={{ y: 20, duration: 200 }}
 	>
 		{#if $isSyncing}
@@ -109,23 +102,16 @@
 	</button>
 
 	{#if showDetails}
-		<div
-			class="sync-details"
-			transition:fly={{ y: 10, duration: 200, easing: quintOut }}
-		>
+		<div class="sync-details" transition:fly={{ y: 10, duration: 200, easing: quintOut }}>
 			<div class="details-header">
 				<span>Pending Changes</span>
-				<button class="close-details" onclick={() => showDetails = false}>
+				<button class="close-details" onclick={() => (showDetails = false)}>
 					<IconX size={14} />
 				</button>
 			</div>
 			<div class="details-content">
 				<p>{$pendingActionsCount} changes waiting to sync</p>
-				<button
-					class="sync-all-btn"
-					onclick={() => offlineStore.sync()}
-					disabled={$isSyncing}
-				>
+				<button class="sync-all-btn" onclick={() => offlineStore.sync()} disabled={$isSyncing}>
 					{#if $isSyncing}
 						<IconLoader size={14} class="spinning" />
 						Syncing...
@@ -344,8 +330,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	@media (max-width: 640px) {

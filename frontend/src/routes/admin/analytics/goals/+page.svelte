@@ -47,10 +47,30 @@
 
 	// Goal type options
 	const goalTypes = [
-		{ value: 'event', label: 'Event Goal', icon: 'M13 10V3L4 14h7v7l9-11h-7z', description: 'Track specific events' },
-		{ value: 'pageview', label: 'Pageview Goal', icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z', description: 'Track page visits' },
-		{ value: 'revenue', label: 'Revenue Goal', icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z', description: 'Track revenue targets' },
-		{ value: 'duration', label: 'Duration Goal', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', description: 'Track time on site' }
+		{
+			value: 'event',
+			label: 'Event Goal',
+			icon: 'M13 10V3L4 14h7v7l9-11h-7z',
+			description: 'Track specific events'
+		},
+		{
+			value: 'pageview',
+			label: 'Pageview Goal',
+			icon: 'M15 12a3 3 0 11-6 0 3 3 0 016 0zM2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z',
+			description: 'Track page visits'
+		},
+		{
+			value: 'revenue',
+			label: 'Revenue Goal',
+			icon: 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z',
+			description: 'Track revenue targets'
+		},
+		{
+			value: 'duration',
+			label: 'Duration Goal',
+			icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+			description: 'Track time on site'
+		}
 	];
 
 	async function loadGoals() {
@@ -153,9 +173,16 @@
 		<!-- Apple ICT7 Grade Header -->
 		<header class="flex items-center justify-between mb-8">
 			<div class="flex items-center gap-4">
-				<div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-2xl shadow-lg shadow-emerald-500/20">
+				<div
+					class="w-12 h-12 rounded-2xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-2xl shadow-lg shadow-emerald-500/20"
+				>
 					<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
 					</svg>
 				</div>
 				<div>
@@ -181,7 +208,9 @@
 			<div class="flex items-center justify-center py-20">
 				<div class="relative">
 					<div class="w-12 h-12 border-4 border-emerald-500/20 rounded-full"></div>
-					<div class="absolute top-0 left-0 w-12 h-12 border-4 border-emerald-500 rounded-full animate-spin border-t-transparent"></div>
+					<div
+						class="absolute top-0 left-0 w-12 h-12 border-4 border-emerald-500 rounded-full animate-spin border-t-transparent"
+					></div>
 				</div>
 			</div>
 		{:else if !$isAnalyticsConnected}
@@ -202,7 +231,9 @@
 					<div class="text-sm text-slate-400">Completed</div>
 				</div>
 				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-5">
-					<div class="text-3xl font-bold text-amber-400 mb-1">{stats.totalCompletions.toLocaleString()}</div>
+					<div class="text-3xl font-bold text-amber-400 mb-1">
+						{stats.totalCompletions.toLocaleString()}
+					</div>
 					<div class="text-sm text-slate-400">Total Completions</div>
 				</div>
 			</div>
@@ -226,14 +257,25 @@
 				<div class="flex items-center justify-center py-20">
 					<div class="relative">
 						<div class="w-10 h-10 border-4 border-emerald-500/20 rounded-full"></div>
-						<div class="absolute top-0 left-0 w-10 h-10 border-4 border-emerald-500 rounded-full animate-spin border-t-transparent"></div>
+						<div
+							class="absolute top-0 left-0 w-10 h-10 border-4 border-emerald-500 rounded-full animate-spin border-t-transparent"
+						></div>
 					</div>
 				</div>
 			{:else if error}
-				<div class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 text-center">
-					<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center">
+				<div
+					class="bg-red-500/10 backdrop-blur-xl border border-red-500/20 rounded-2xl p-8 text-center"
+				>
+					<div
+						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-red-500/10 flex items-center justify-center"
+					>
 						<svg class="w-8 h-8 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+							/>
 						</svg>
 					</div>
 					<p class="text-red-400 mb-4">{error}</p>
@@ -245,10 +287,24 @@
 					</button>
 				</div>
 			{:else if filteredGoals.length === 0}
-				<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center">
-					<div class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-emerald-500/10 flex items-center justify-center">
-						<svg class="w-8 h-8 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+				<div
+					class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-12 text-center"
+				>
+					<div
+						class="w-16 h-16 mx-auto mb-4 rounded-2xl bg-emerald-500/10 flex items-center justify-center"
+					>
+						<svg
+							class="w-8 h-8 text-emerald-400"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+							/>
 						</svg>
 					</div>
 					<h3 class="text-lg font-medium text-white mb-2">No Goals Configured</h3>
@@ -264,29 +320,48 @@
 				<!-- Goals Grid -->
 				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
 					{#each filteredGoals as goal}
-						<div class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 transition-all">
+						<div
+							class="bg-white/5 backdrop-blur-xl rounded-2xl border border-white/10 p-6 hover:bg-white/10 transition-all"
+						>
 							<div class="flex items-start justify-between mb-4">
 								<div class="flex items-center gap-3">
-									<div class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center">
-										<svg class="w-5 h-5 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{goalTypes.find(t => t.value === goal.type)?.icon || 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'}" />
+									<div
+										class="w-10 h-10 rounded-xl bg-emerald-500/20 flex items-center justify-center"
+									>
+										<svg
+											class="w-5 h-5 text-emerald-400"
+											fill="none"
+											stroke="currentColor"
+											viewBox="0 0 24 24"
+										>
+											<path
+												stroke-linecap="round"
+												stroke-linejoin="round"
+												stroke-width="2"
+												d={goalTypes.find((t) => t.value === goal.type)?.icon ||
+													'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'}
+											/>
 										</svg>
 									</div>
 									<div>
 										<h3 class="font-semibold text-white">{goal.name}</h3>
-										<span class="text-xs px-2 py-0.5 rounded-full capitalize
+										<span
+											class="text-xs px-2 py-0.5 rounded-full capitalize
 											{goal.status === 'active'
 												? 'bg-emerald-500/20 text-emerald-400'
 												: goal.status === 'completed'
 													? 'bg-blue-500/20 text-blue-400'
-													: 'bg-slate-500/20 text-slate-400'}">
+													: 'bg-slate-500/20 text-slate-400'}"
+										>
 											{goal.status}
 										</span>
 									</div>
 								</div>
 								<button class="text-slate-400 hover:text-white" aria-label="More options">
 									<svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
-										<path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z" />
+										<path
+											d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"
+										/>
 									</svg>
 								</button>
 							</div>
@@ -303,7 +378,9 @@
 								</div>
 								<div class="h-2 bg-slate-700 rounded-full overflow-hidden">
 									<div
-										class="h-full bg-gradient-to-r {getProgressColor(goal.conversion_rate)} rounded-full transition-all duration-500"
+										class="h-full bg-gradient-to-r {getProgressColor(
+											goal.conversion_rate
+										)} rounded-full transition-all duration-500"
 										style="width: {Math.min(100, goal.conversion_rate)}%"
 									></div>
 								</div>
@@ -324,7 +401,9 @@
 <!-- Create Goal Modal -->
 {#if showCreateModal}
 	<div class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
-		<div class="bg-slate-900 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto border border-white/10 shadow-2xl">
+		<div
+			class="bg-slate-900 rounded-2xl w-full max-w-xl max-h-[90vh] overflow-y-auto border border-white/10 shadow-2xl"
+		>
 			<div class="p-6 border-b border-white/10">
 				<div class="flex items-center justify-between">
 					<h2 class="text-xl font-bold text-white">Create Goal</h2>
@@ -334,7 +413,12 @@
 						aria-label="Close modal"
 					>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M6 18L18 6M6 6l12 12"
+							/>
 						</svg>
 					</button>
 				</div>
@@ -344,7 +428,8 @@
 				<!-- Basic Info -->
 				<div class="space-y-4">
 					<div>
-						<label for="goal-name" class="block text-sm font-medium text-slate-300 mb-2">Name</label>
+						<label for="goal-name" class="block text-sm font-medium text-slate-300 mb-2">Name</label
+						>
 						<input
 							id="goal-name"
 							type="text"
@@ -354,7 +439,9 @@
 						/>
 					</div>
 					<div>
-						<label for="goal-description" class="block text-sm font-medium text-slate-300 mb-2">Description</label>
+						<label for="goal-description" class="block text-sm font-medium text-slate-300 mb-2"
+							>Description</label
+						>
 						<textarea
 							id="goal-description"
 							bind:value={newGoal.description}
@@ -377,8 +464,20 @@
 									? 'border-emerald-500 bg-emerald-500/10'
 									: 'border-white/10 hover:border-white/20 bg-slate-800/30'}"
 							>
-								<svg class="w-5 h-5 mb-2 {newGoal.type === type.value ? 'text-emerald-400' : 'text-slate-400'}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d={type.icon} />
+								<svg
+									class="w-5 h-5 mb-2 {newGoal.type === type.value
+										? 'text-emerald-400'
+										: 'text-slate-400'}"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d={type.icon}
+									/>
 								</svg>
 								<div class="font-medium text-white text-sm">{type.label}</div>
 								<div class="text-xs text-slate-400">{type.description}</div>
@@ -390,7 +489,9 @@
 				<!-- Conditional Fields -->
 				{#if newGoal.type === 'event'}
 					<div>
-						<label for="target-event" class="block text-sm font-medium text-slate-300 mb-2">Target Event</label>
+						<label for="target-event" class="block text-sm font-medium text-slate-300 mb-2"
+							>Target Event</label
+						>
 						<input
 							id="target-event"
 							type="text"
@@ -401,7 +502,9 @@
 					</div>
 				{:else if newGoal.type === 'pageview'}
 					<div>
-						<label for="target-url" class="block text-sm font-medium text-slate-300 mb-2">Target URL</label>
+						<label for="target-url" class="block text-sm font-medium text-slate-300 mb-2"
+							>Target URL</label
+						>
 						<input
 							id="target-url"
 							type="text"

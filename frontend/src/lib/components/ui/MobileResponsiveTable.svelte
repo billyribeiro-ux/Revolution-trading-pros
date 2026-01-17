@@ -148,13 +148,15 @@
 	});
 
 	// Generate export columns (adapt 2-param render to 1-param format)
-	let exportColumns = $derived(columns.map((col) => {
-		const base = { key: col.key, label: col.label };
-		if (col.render) {
-			return { ...base, format: (value: unknown) => col.render!(value, {}) } as ExportColumn;
-		}
-		return base as ExportColumn;
-	}));
+	let exportColumns = $derived(
+		columns.map((col) => {
+			const base = { key: col.key, label: col.label };
+			if (col.render) {
+				return { ...base, format: (value: unknown) => col.render!(value, {}) } as ExportColumn;
+			}
+			return base as ExportColumn;
+		})
+	);
 
 	let visibleColumns = $derived(isMobile ? columns.filter((c) => !c.mobileHidden) : columns);
 	let isAllSelected = $derived(data.length > 0 && selectedIds.length === data.length);
@@ -176,12 +178,7 @@
 		</div>
 	{:else if data.length === 0}
 		<div class="flex flex-col items-center justify-center py-12 text-slate-500">
-			<svg
-				class="w-16 h-16 mb-4 opacity-50"
-				fill="none"
-				stroke="currentColor"
-				viewBox="0 0 24 24"
-			>
+			<svg class="w-16 h-16 mb-4 opacity-50" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 				<path
 					stroke-linecap="round"
 					stroke-linejoin="round"
@@ -201,7 +198,8 @@
 						active:scale-[0.98] active:bg-slate-800/80"
 					onclick={() => handleRowClick(row)}
 					onkeypress={(e: KeyboardEvent) => e.key === 'Enter' && handleRowClick(row)}
-					onkeydown={(e: KeyboardEvent) => e.key === ' ' && (e.preventDefault(), handleRowClick(row))}
+					onkeydown={(e: KeyboardEvent) =>
+						e.key === ' ' && (e.preventDefault(), handleRowClick(row))}
 					role="button"
 					tabindex="0"
 					aria-label={`Row ${index + 1}`}
@@ -211,7 +209,10 @@
 							<input
 								type="checkbox"
 								checked={isRowSelected(row)}
-								onclick={(e: MouseEvent) => { e.stopPropagation(); toggleSelect(getRowId(row)); }}
+								onclick={(e: MouseEvent) => {
+									e.stopPropagation();
+									toggleSelect(getRowId(row));
+								}}
 								class="w-4 h-4 rounded border-slate-600 text-indigo-500 focus:ring-indigo-500"
 							/>
 							<span class="text-xs text-slate-500">#{index + 1}</span>
@@ -286,7 +287,9 @@
 				<tbody class="divide-y divide-slate-700/50">
 					{#each data as row (getRowId(row))}
 						<tr
-							class="hover:bg-slate-800/30 transition-colors cursor-pointer {isRowSelected(row) ? 'bg-indigo-500/10' : ''}"
+							class="hover:bg-slate-800/30 transition-colors cursor-pointer {isRowSelected(row)
+								? 'bg-indigo-500/10'
+								: ''}"
 							onclick={() => handleRowClick(row)}
 						>
 							{#if selectable}
@@ -294,7 +297,10 @@
 									<input
 										type="checkbox"
 										checked={isRowSelected(row)}
-										onclick={(e: MouseEvent) => { e.stopPropagation(); toggleSelect(getRowId(row)); }}
+										onclick={(e: MouseEvent) => {
+											e.stopPropagation();
+											toggleSelect(getRowId(row));
+										}}
 										class="w-4 h-4 rounded border-slate-600 text-indigo-500 focus:ring-indigo-500"
 									/>
 								</td>

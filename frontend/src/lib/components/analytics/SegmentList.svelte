@@ -34,10 +34,12 @@
 	};
 
 	// Sort segments: system first, then by user count
-	let sortedSegments = $derived([...segments].sort((a, b) => {
-		if (a.is_system !== b.is_system) return a.is_system ? -1 : 1;
-		return b.user_count - a.user_count;
-	}));
+	let sortedSegments = $derived(
+		[...segments].sort((a, b) => {
+			if (a.is_system !== b.is_system) return a.is_system ? -1 : 1;
+			return b.user_count - a.user_count;
+		})
+	);
 
 	function formatNumber(num: number): string {
 		if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';

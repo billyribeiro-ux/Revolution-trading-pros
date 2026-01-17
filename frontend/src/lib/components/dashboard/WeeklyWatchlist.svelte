@@ -41,12 +41,7 @@
 		className?: string;
 	}
 
-	let { 
-		data = null,
-		roomSlug,
-		href,
-		className = ''
-	}: Props = $props();
+	let { data = null, roomSlug, href, className = '' }: Props = $props();
 
 	// Client-side state (only used if no SSR data)
 	let clientData = $state<WatchlistData | null>(null);
@@ -61,12 +56,11 @@
 	const displayTrader = $derived(watchlist?.trader || 'Trading Team');
 	const displayWeekOf = $derived(formatWeekOf(watchlist?.weekOf));
 	const displayImage = $derived(
-		watchlist?.video?.poster || 
-		'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg'
+		watchlist?.video?.poster ||
+			'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg'
 	);
 	const displayHref = $derived(
-		href || 
-		(watchlist?.slug ? `/watchlist/${watchlist.slug}` : '/watchlist/latest')
+		href || (watchlist?.slug ? `/watchlist/${watchlist.slug}` : '/watchlist/latest')
 	);
 
 	// Format week_of date
@@ -74,10 +68,10 @@
 		if (!dateStr) return 'This Week';
 		try {
 			const date = new Date(dateStr);
-			return date.toLocaleDateString('en-US', { 
-				month: 'long', 
-				day: 'numeric', 
-				year: 'numeric' 
+			return date.toLocaleDateString('en-US', {
+				month: 'long',
+				day: 'numeric',
+				year: 'numeric'
 			});
 		} catch {
 			return dateStr;
@@ -87,11 +81,12 @@
 	// Client-side fetch fallback (only if no SSR data)
 	$effect(() => {
 		if (!browser || data) return; // Skip if SSR data exists
-		
+
 		isLoading = true;
 		hasError = false;
 
-		watchlistApi.getLatest(roomSlug)
+		watchlistApi
+			.getLatest(roomSlug)
 			.then((response) => {
 				if (response.success && response.data) {
 					clientData = response.data;
@@ -132,7 +127,12 @@
 				<h2 class="section-title-alt section-title-alt--underline">Weekly Watchlist</h2>
 				<div class="mobile-image">
 					<a href={displayHref}>
-						<img src={displayImage} alt="Weekly Watchlist" class="u--border-radius" loading="eager" />
+						<img
+							src={displayImage}
+							alt="Weekly Watchlist"
+							class="u--border-radius"
+							loading="eager"
+						/>
 					</a>
 				</div>
 				<h4 class="h5 u--font-weight-bold">{displayTitle}</h4>
@@ -188,7 +188,7 @@
 
 	.section-title-alt--underline {
 		padding-bottom: 15px;
-		border-bottom: 3px solid #F69532;
+		border-bottom: 3px solid #f69532;
 	}
 
 	.h5 {
@@ -237,9 +237,9 @@
 	}
 
 	.btn-default {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border: 1px solid #143E59;
+		border: 1px solid #143e59;
 	}
 
 	.btn-default:hover {
@@ -341,7 +341,11 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: -200% 0; }
-		100% { background-position: 200% 0; }
+		0% {
+			background-position: -200% 0;
+		}
+		100% {
+			background-position: 200% 0;
+		}
 	}
 </style>

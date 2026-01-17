@@ -47,7 +47,7 @@
 		isAnalyzing = true;
 
 		// Simulate analysis delay for realistic UX
-		await new Promise(resolve => setTimeout(resolve, 300));
+		await new Promise((resolve) => setTimeout(resolve, 300));
 
 		const issues: SEOAnalysis['issues'] = [];
 		const suggestions: string[] = [];
@@ -56,7 +56,7 @@
 		// Extract plain text from content
 		const plainText = stripHtml(content);
 		const wordCount = countWords(plainText);
-	const sentences = countSentences(plainText);
+		const sentences = countSentences(plainText);
 
 		// ===================
 		// Title Analysis
@@ -76,12 +76,25 @@
 		// ===================
 		// Readability Analysis
 		// ===================
-		const readabilityScore = analyzeReadability(plainText, sentences, wordCount, issues, suggestions);
+		const readabilityScore = analyzeReadability(
+			plainText,
+			sentences,
+			wordCount,
+			issues,
+			suggestions
+		);
 
 		// ===================
 		// Keyword Analysis
 		// ===================
-		const keywordScore = analyzeKeywords(plainText, title, metaDescription, focusKeyword, issues, suggestions);
+		const keywordScore = analyzeKeywords(
+			plainText,
+			title,
+			metaDescription,
+			focusKeyword,
+			issues,
+			suggestions
+		);
 
 		// ===================
 		// Slug Analysis
@@ -95,11 +108,11 @@
 
 		// Calculate overall score
 		overallScore = Math.round(
-			(titleScore * 0.2) +
-			(metaScore * 0.15) +
-			(contentScore * 0.25) +
-			(readabilityScore * 0.2) +
-			(keywordScore * 0.2)
+			titleScore * 0.2 +
+				metaScore * 0.15 +
+				contentScore * 0.25 +
+				readabilityScore * 0.2 +
+				keywordScore * 0.2
 		);
 
 		// Ensure score is within bounds
@@ -125,12 +138,15 @@
 
 	// Strip HTML tags
 	function stripHtml(html: string): string {
-		return html.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+		return html
+			.replace(/<[^>]*>/g, ' ')
+			.replace(/\s+/g, ' ')
+			.trim();
 	}
 
 	// Count words
 	function countWords(text: string): number {
-		return text.split(/\s+/).filter(word => word.length > 0).length;
+		return text.split(/\s+/).filter((word) => word.length > 0).length;
 	}
 
 	// Count sentences
@@ -162,32 +178,63 @@
 			issues.push({ type: 'error', message: 'Page title is missing', category: 'title' });
 			score -= 40;
 		} else if (titleLength < 30) {
-			issues.push({ type: 'warning', message: `Title is too short (${titleLength} chars). Aim for 50-60 characters.`, category: 'title' });
+			issues.push({
+				type: 'warning',
+				message: `Title is too short (${titleLength} chars). Aim for 50-60 characters.`,
+				category: 'title'
+			});
 			score -= 20;
 		} else if (titleLength > 60) {
-			issues.push({ type: 'warning', message: `Title is too long (${titleLength} chars). Keep under 60 characters.`, category: 'title' });
+			issues.push({
+				type: 'warning',
+				message: `Title is too long (${titleLength} chars). Keep under 60 characters.`,
+				category: 'title'
+			});
 			score -= 15;
 		} else {
-			issues.push({ type: 'success', message: `Title length is optimal (${titleLength} chars)`, category: 'title' });
+			issues.push({
+				type: 'success',
+				message: `Title length is optimal (${titleLength} chars)`,
+				category: 'title'
+			});
 		}
 
 		// Keyword in title
 		if (keyword && title.toLowerCase().includes(keyword.toLowerCase())) {
 			issues.push({ type: 'success', message: 'Focus keyword found in title', category: 'title' });
 		} else if (keyword) {
-			issues.push({ type: 'warning', message: 'Focus keyword not found in title', category: 'title' });
+			issues.push({
+				type: 'warning',
+				message: 'Focus keyword not found in title',
+				category: 'title'
+			});
 			suggestions.push('Add your focus keyword near the beginning of the title');
 			score -= 15;
 		}
 
 		// Title starts with keyword
 		if (keyword && title.toLowerCase().startsWith(keyword.toLowerCase())) {
-			issues.push({ type: 'success', message: 'Title starts with focus keyword', category: 'title' });
+			issues.push({
+				type: 'success',
+				message: 'Title starts with focus keyword',
+				category: 'title'
+			});
 		}
 
 		// Power words in title
-		const powerWords = ['ultimate', 'complete', 'essential', 'proven', 'best', 'top', 'guide', 'how to', 'secrets', 'tips'];
-		const hasPowerWord = powerWords.some(word => title.toLowerCase().includes(word));
+		const powerWords = [
+			'ultimate',
+			'complete',
+			'essential',
+			'proven',
+			'best',
+			'top',
+			'guide',
+			'how to',
+			'secrets',
+			'tips'
+		];
+		const hasPowerWord = powerWords.some((word) => title.toLowerCase().includes(word));
 		if (hasPowerWord) {
 			issues.push({ type: 'success', message: 'Title contains power words', category: 'title' });
 		} else {
@@ -211,29 +258,53 @@
 			issues.push({ type: 'error', message: 'Meta description is missing', category: 'meta' });
 			score -= 40;
 		} else if (metaLength < 120) {
-			issues.push({ type: 'warning', message: `Meta description is too short (${metaLength} chars). Aim for 150-160 characters.`, category: 'meta' });
+			issues.push({
+				type: 'warning',
+				message: `Meta description is too short (${metaLength} chars). Aim for 150-160 characters.`,
+				category: 'meta'
+			});
 			score -= 20;
 		} else if (metaLength > 160) {
-			issues.push({ type: 'warning', message: `Meta description is too long (${metaLength} chars). Keep under 160 characters.`, category: 'meta' });
+			issues.push({
+				type: 'warning',
+				message: `Meta description is too long (${metaLength} chars). Keep under 160 characters.`,
+				category: 'meta'
+			});
 			score -= 10;
 		} else {
-			issues.push({ type: 'success', message: `Meta description length is optimal (${metaLength} chars)`, category: 'meta' });
+			issues.push({
+				type: 'success',
+				message: `Meta description length is optimal (${metaLength} chars)`,
+				category: 'meta'
+			});
 		}
 
 		// Keyword in meta
 		if (keyword && meta.toLowerCase().includes(keyword.toLowerCase())) {
-			issues.push({ type: 'success', message: 'Focus keyword found in meta description', category: 'meta' });
+			issues.push({
+				type: 'success',
+				message: 'Focus keyword found in meta description',
+				category: 'meta'
+			});
 		} else if (keyword) {
-			issues.push({ type: 'warning', message: 'Focus keyword not found in meta description', category: 'meta' });
+			issues.push({
+				type: 'warning',
+				message: 'Focus keyword not found in meta description',
+				category: 'meta'
+			});
 			suggestions.push('Include your focus keyword in the meta description');
 			score -= 15;
 		}
 
 		// Call to action
 		const ctaWords = ['learn', 'discover', 'find out', 'get', 'start', 'try', 'read', 'click'];
-		const hasCTA = ctaWords.some(word => meta.toLowerCase().includes(word));
+		const hasCTA = ctaWords.some((word) => meta.toLowerCase().includes(word));
 		if (hasCTA) {
-			issues.push({ type: 'success', message: 'Meta description contains a call to action', category: 'meta' });
+			issues.push({
+				type: 'success',
+				message: 'Meta description contains a call to action',
+				category: 'meta'
+			});
 		} else {
 			suggestions.push('Add a call to action in your meta description');
 		}
@@ -253,40 +324,80 @@
 
 		// Word count check
 		if (wordCount < 300) {
-			issues.push({ type: 'error', message: `Content is too short (${wordCount} words). Aim for at least 1000 words for better rankings.`, category: 'content' });
+			issues.push({
+				type: 'error',
+				message: `Content is too short (${wordCount} words). Aim for at least 1000 words for better rankings.`,
+				category: 'content'
+			});
 			score -= 30;
 		} else if (wordCount < 1000) {
-			issues.push({ type: 'warning', message: `Content is relatively short (${wordCount} words). Consider expanding to 1500+ words.`, category: 'content' });
+			issues.push({
+				type: 'warning',
+				message: `Content is relatively short (${wordCount} words). Consider expanding to 1500+ words.`,
+				category: 'content'
+			});
 			score -= 15;
 		} else if (wordCount >= 1500) {
-			issues.push({ type: 'success', message: `Excellent content length (${wordCount} words)`, category: 'content' });
+			issues.push({
+				type: 'success',
+				message: `Excellent content length (${wordCount} words)`,
+				category: 'content'
+			});
 		} else {
-			issues.push({ type: 'success', message: `Good content length (${wordCount} words)`, category: 'content' });
+			issues.push({
+				type: 'success',
+				message: `Good content length (${wordCount} words)`,
+				category: 'content'
+			});
 		}
 
 		// Keyword density
 		if (keyword) {
 			const density = calculateKeywordDensity(text, keyword);
 			if (density === 0) {
-				issues.push({ type: 'error', message: 'Focus keyword not found in content', category: 'content' });
+				issues.push({
+					type: 'error',
+					message: 'Focus keyword not found in content',
+					category: 'content'
+				});
 				score -= 25;
 			} else if (density < 0.5) {
-				issues.push({ type: 'warning', message: `Keyword density is low (${density.toFixed(1)}%). Aim for 1-2%.`, category: 'content' });
+				issues.push({
+					type: 'warning',
+					message: `Keyword density is low (${density.toFixed(1)}%). Aim for 1-2%.`,
+					category: 'content'
+				});
 				score -= 10;
 			} else if (density > 3) {
-				issues.push({ type: 'warning', message: `Keyword density is too high (${density.toFixed(1)}%). This may be seen as keyword stuffing.`, category: 'content' });
+				issues.push({
+					type: 'warning',
+					message: `Keyword density is too high (${density.toFixed(1)}%). This may be seen as keyword stuffing.`,
+					category: 'content'
+				});
 				score -= 15;
 			} else {
-				issues.push({ type: 'success', message: `Good keyword density (${density.toFixed(1)}%)`, category: 'content' });
+				issues.push({
+					type: 'success',
+					message: `Good keyword density (${density.toFixed(1)}%)`,
+					category: 'content'
+				});
 			}
 		}
 
 		// First 100 words
 		const first100Words = text.split(/\s+/).slice(0, 100).join(' ').toLowerCase();
 		if (keyword && first100Words.includes(keyword.toLowerCase())) {
-			issues.push({ type: 'success', message: 'Focus keyword appears in the first 100 words', category: 'content' });
+			issues.push({
+				type: 'success',
+				message: 'Focus keyword appears in the first 100 words',
+				category: 'content'
+			});
 		} else if (keyword) {
-			issues.push({ type: 'warning', message: 'Focus keyword does not appear in the first 100 words', category: 'content' });
+			issues.push({
+				type: 'warning',
+				message: 'Focus keyword does not appear in the first 100 words',
+				category: 'content'
+			});
 			suggestions.push('Add your focus keyword within the first paragraph');
 			score -= 10;
 		}
@@ -308,14 +419,26 @@
 		const avgSentenceLength = sentences > 0 ? wordCount / sentences : 0;
 
 		if (avgSentenceLength > 25) {
-			issues.push({ type: 'warning', message: `Sentences are too long on average (${avgSentenceLength.toFixed(0)} words). Aim for under 20 words.`, category: 'readability' });
+			issues.push({
+				type: 'warning',
+				message: `Sentences are too long on average (${avgSentenceLength.toFixed(0)} words). Aim for under 20 words.`,
+				category: 'readability'
+			});
 			suggestions.push('Break up long sentences for better readability');
 			score -= 15;
 		} else if (avgSentenceLength > 20) {
-			issues.push({ type: 'info', message: `Average sentence length is slightly high (${avgSentenceLength.toFixed(0)} words)`, category: 'readability' });
+			issues.push({
+				type: 'info',
+				message: `Average sentence length is slightly high (${avgSentenceLength.toFixed(0)} words)`,
+				category: 'readability'
+			});
 			score -= 5;
 		} else {
-			issues.push({ type: 'success', message: `Good average sentence length (${avgSentenceLength.toFixed(0)} words)`, category: 'readability' });
+			issues.push({
+				type: 'success',
+				message: `Good average sentence length (${avgSentenceLength.toFixed(0)} words)`,
+				category: 'readability'
+			});
 		}
 
 		// Passive voice (simplified check)
@@ -324,27 +447,63 @@
 		const passivePercentage = sentences > 0 ? (passiveCount / sentences) * 100 : 0;
 
 		if (passivePercentage > 20) {
-			issues.push({ type: 'warning', message: `Too much passive voice detected (~${passivePercentage.toFixed(0)}%)`, category: 'readability' });
+			issues.push({
+				type: 'warning',
+				message: `Too much passive voice detected (~${passivePercentage.toFixed(0)}%)`,
+				category: 'readability'
+			});
 			suggestions.push('Use more active voice for engaging content');
 			score -= 10;
 		} else if (passivePercentage > 10) {
-			issues.push({ type: 'info', message: `Some passive voice detected (~${passivePercentage.toFixed(0)}%)`, category: 'readability' });
+			issues.push({
+				type: 'info',
+				message: `Some passive voice detected (~${passivePercentage.toFixed(0)}%)`,
+				category: 'readability'
+			});
 		} else {
-			issues.push({ type: 'success', message: 'Good use of active voice', category: 'readability' });
+			issues.push({
+				type: 'success',
+				message: 'Good use of active voice',
+				category: 'readability'
+			});
 		}
 
 		// Transition words (simplified)
-		const transitionWords = ['however', 'therefore', 'furthermore', 'additionally', 'moreover', 'consequently', 'thus', 'hence', 'meanwhile', 'nevertheless', 'although', 'because', 'since', 'while', 'whereas'];
-		const transitionCount = transitionWords.filter(word =>
+		const transitionWords = [
+			'however',
+			'therefore',
+			'furthermore',
+			'additionally',
+			'moreover',
+			'consequently',
+			'thus',
+			'hence',
+			'meanwhile',
+			'nevertheless',
+			'although',
+			'because',
+			'since',
+			'while',
+			'whereas'
+		];
+		const transitionCount = transitionWords.filter((word) =>
 			text.toLowerCase().includes(word)
 		).length;
 
 		if (transitionCount < 3 && wordCount > 300) {
-			issues.push({ type: 'warning', message: 'Content lacks transition words', category: 'readability' });
+			issues.push({
+				type: 'warning',
+				message: 'Content lacks transition words',
+				category: 'readability'
+			});
 			suggestions.push('Add transition words to improve content flow');
 			score -= 10;
 		} else {
-			issues.push({ type: 'success', message: 'Good use of transition words', category: 'readability' });
+			issues.push({
+				type: 'success',
+				message: 'Good use of transition words',
+				category: 'readability'
+			});
 		}
 
 		return Math.max(0, score);
@@ -371,16 +530,24 @@
 		const keywordWords = keyword.toLowerCase().split(/\s+/);
 		let variationsFound = 0;
 
-		keywordWords.forEach(word => {
+		keywordWords.forEach((word) => {
 			if (text.toLowerCase().includes(word)) {
 				variationsFound++;
 			}
 		});
 
 		if (variationsFound === keywordWords.length) {
-			issues.push({ type: 'success', message: 'All keyword variations found in content', category: 'keyword' });
+			issues.push({
+				type: 'success',
+				message: 'All keyword variations found in content',
+				category: 'keyword'
+			});
 		} else {
-			issues.push({ type: 'info', message: `${variationsFound}/${keywordWords.length} keyword variations found`, category: 'keyword' });
+			issues.push({
+				type: 'info',
+				message: `${variationsFound}/${keywordWords.length} keyword variations found`,
+				category: 'keyword'
+			});
 		}
 
 		// Related keywords (LSI)
@@ -410,24 +577,34 @@
 
 		// Slug length
 		if (slug.length > 75) {
-			issues.push({ type: 'warning', message: 'URL slug is too long. Keep under 75 characters.', category: 'slug' });
+			issues.push({
+				type: 'warning',
+				message: 'URL slug is too long. Keep under 75 characters.',
+				category: 'slug'
+			});
 		} else {
 			issues.push({ type: 'success', message: 'URL slug length is good', category: 'slug' });
 		}
 
 		// Keyword in slug
 		if (keyword && slug.toLowerCase().includes(keyword.toLowerCase().replace(/\s+/g, '-'))) {
-			issues.push({ type: 'success', message: 'Focus keyword found in URL slug', category: 'slug' });
+			issues.push({
+				type: 'success',
+				message: 'Focus keyword found in URL slug',
+				category: 'slug'
+			});
 		} else if (keyword) {
-			issues.push({ type: 'warning', message: 'Focus keyword not found in URL slug', category: 'slug' });
+			issues.push({
+				type: 'warning',
+				message: 'Focus keyword not found in URL slug',
+				category: 'slug'
+			});
 			suggestions.push('Include your focus keyword in the URL slug');
 		}
 
 		// Stop words in slug
 		const stopWords = ['a', 'an', 'the', 'and', 'or', 'but', 'in', 'on', 'at', 'to', 'for'];
-		const hasStopWords = stopWords.some(word =>
-			slug.split('-').includes(word)
-		);
+		const hasStopWords = stopWords.some((word) => slug.split('-').includes(word));
 		if (hasStopWords) {
 			suggestions.push('Consider removing stop words from your URL slug');
 		}
@@ -446,9 +623,17 @@
 			issues.push({ type: 'warning', message: 'No H2 subheadings found', category: 'structure' });
 			suggestions.push('Add H2 subheadings to improve content structure');
 		} else if (h2Count < 3) {
-			issues.push({ type: 'info', message: `Only ${h2Count} H2 subheading(s) found`, category: 'structure' });
+			issues.push({
+				type: 'info',
+				message: `Only ${h2Count} H2 subheading(s) found`,
+				category: 'structure'
+			});
 		} else {
-			issues.push({ type: 'success', message: `Good number of H2 subheadings (${h2Count})`, category: 'structure' });
+			issues.push({
+				type: 'success',
+				message: `Good number of H2 subheadings (${h2Count})`,
+				category: 'structure'
+			});
 		}
 
 		// Images check
@@ -456,10 +641,18 @@
 		const altCount = (html.match(/<img[^>]*alt="[^"]+"/gi) || []).length;
 
 		if (imgCount === 0) {
-			issues.push({ type: 'warning', message: 'No images found in content', category: 'structure' });
+			issues.push({
+				type: 'warning',
+				message: 'No images found in content',
+				category: 'structure'
+			});
 			suggestions.push('Add relevant images to make content more engaging');
 		} else if (altCount < imgCount) {
-			issues.push({ type: 'warning', message: `${imgCount - altCount} image(s) missing alt text`, category: 'structure' });
+			issues.push({
+				type: 'warning',
+				message: `${imgCount - altCount} image(s) missing alt text`,
+				category: 'structure'
+			});
 			suggestions.push('Add descriptive alt text to all images');
 		} else {
 			issues.push({ type: 'success', message: 'All images have alt text', category: 'structure' });
@@ -472,13 +665,21 @@
 		if (internalLinks === 0) {
 			suggestions.push('Add internal links to other relevant content');
 		} else {
-			issues.push({ type: 'success', message: `${internalLinks} internal link(s) found`, category: 'structure' });
+			issues.push({
+				type: 'success',
+				message: `${internalLinks} internal link(s) found`,
+				category: 'structure'
+			});
 		}
 
 		if (externalLinks === 0) {
 			suggestions.push('Consider adding external links to authoritative sources');
 		} else {
-			issues.push({ type: 'success', message: `${externalLinks} external link(s) found`, category: 'structure' });
+			issues.push({
+				type: 'success',
+				message: `${externalLinks} external link(s) found`,
+				category: 'structure'
+			});
 		}
 	}
 
@@ -512,17 +713,22 @@
 
 	// Get issues by category
 	function getIssuesByCategory(category: string): SEOAnalysis['issues'] {
-		return analysis?.issues.filter(i => i.category === category) || [];
+		return analysis?.issues.filter((i) => i.category === category) || [];
 	}
 
 	// Get icon for issue type
 	function getIssueIcon(type: string): string {
 		switch (type) {
-			case 'error': return '✗';
-			case 'warning': return '⚠';
-			case 'success': return '✓';
-			case 'info': return 'ℹ';
-			default: return '•';
+			case 'error':
+				return '✗';
+			case 'warning':
+				return '⚠';
+			case 'success':
+				return '✓';
+			case 'info':
+				return 'ℹ';
+			default:
+				return '•';
 		}
 	}
 </script>
@@ -538,12 +744,7 @@
 		<div class="score-section">
 			<div class="score-circle" style="--score-color: {getScoreColor(analysis.score)}">
 				<svg viewBox="0 0 100 100">
-					<circle
-						class="score-bg"
-						cx="50"
-						cy="50"
-						r="45"
-					/>
+					<circle class="score-bg" cx="50" cy="50" r="45" />
 					<circle
 						class="score-progress"
 						cx="50"
@@ -584,10 +785,7 @@
 		<div class="categories">
 			<!-- Title Analysis -->
 			<div class="category">
-				<button
-					class="category-header"
-					onclick={() => toggleCategory('title')}
-				>
+				<button class="category-header" onclick={() => toggleCategory('title')}>
 					<div class="category-info">
 						<span class="category-name">Title</span>
 						<span class="category-score" style="color: {getScoreColor(analysis.titleScore || 0)}">
@@ -610,10 +808,7 @@
 
 			<!-- Meta Description Analysis -->
 			<div class="category">
-				<button
-					class="category-header"
-					onclick={() => toggleCategory('meta')}
-				>
+				<button class="category-header" onclick={() => toggleCategory('meta')}>
 					<div class="category-info">
 						<span class="category-name">Meta Description</span>
 						<span class="category-score" style="color: {getScoreColor(analysis.metaScore || 0)}">
@@ -636,10 +831,7 @@
 
 			<!-- Content Analysis -->
 			<div class="category">
-				<button
-					class="category-header"
-					onclick={() => toggleCategory('content')}
-				>
+				<button class="category-header" onclick={() => toggleCategory('content')}>
 					<div class="category-info">
 						<span class="category-name">Content</span>
 						<span class="category-score" style="color: {getScoreColor(analysis.contentScore || 0)}">
@@ -662,13 +854,13 @@
 
 			<!-- Readability Analysis -->
 			<div class="category">
-				<button
-					class="category-header"
-					onclick={() => toggleCategory('readability')}
-				>
+				<button class="category-header" onclick={() => toggleCategory('readability')}>
 					<div class="category-info">
 						<span class="category-name">Readability</span>
-						<span class="category-score" style="color: {getScoreColor(analysis.readabilityGrade || 0)}">
+						<span
+							class="category-score"
+							style="color: {getScoreColor(analysis.readabilityGrade || 0)}"
+						>
 							{analysis.readabilityGrade || 0}%
 						</span>
 					</div>
@@ -688,10 +880,7 @@
 
 			<!-- Keyword Analysis -->
 			<div class="category">
-				<button
-					class="category-header"
-					onclick={() => toggleCategory('keyword')}
-				>
+				<button class="category-header" onclick={() => toggleCategory('keyword')}>
 					<div class="category-info">
 						<span class="category-name">Keywords</span>
 					</div>
@@ -711,10 +900,7 @@
 
 			<!-- Structure Analysis -->
 			<div class="category">
-				<button
-					class="category-header"
-					onclick={() => toggleCategory('structure')}
-				>
+				<button class="category-header" onclick={() => toggleCategory('structure')}>
 					<div class="category-info">
 						<span class="category-name">Structure</span>
 					</div>
@@ -735,10 +921,7 @@
 			<!-- URL Slug Analysis -->
 			{#if slug}
 				<div class="category">
-					<button
-						class="category-header"
-						onclick={() => toggleCategory('slug')}
-					>
+					<button class="category-header" onclick={() => toggleCategory('slug')}>
 						<div class="category-info">
 							<span class="category-name">URL Slug</span>
 						</div>
@@ -800,7 +983,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.score-section {

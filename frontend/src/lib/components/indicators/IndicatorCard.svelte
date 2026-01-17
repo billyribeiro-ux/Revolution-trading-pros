@@ -23,7 +23,7 @@
 		icon?: string;
 		status: 'active' | 'inactive';
 	}
-	
+
 	let { id, name, description, platform, platformUrl, icon, status }: Props = $props();
 </script>
 
@@ -125,7 +125,7 @@
 	}
 
 	.card-title a:hover {
-		color: #1D73BE;
+		color: #1d73be;
 	}
 
 	.h5 {

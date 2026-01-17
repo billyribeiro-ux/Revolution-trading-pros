@@ -314,12 +314,7 @@
 
 	<div class="modal-actions">
 		<button type="button" class="btn-cancel" onclick={onClose}>Cancel</button>
-		<button
-			type="button"
-			class="btn-save"
-			onclick={saveBulkEdit}
-			disabled={isSaving}
-		>
+		<button type="button" class="btn-save" onclick={saveBulkEdit} disabled={isSaving}>
 			<IconCheck size={16} />
 			{isSaving ? 'Saving...' : `Update ${selectedIds.length} Videos`}
 		</button>
@@ -394,7 +389,7 @@
 	}
 
 	.section-toggle input {
-		accent-color: var(--primary, #E6B800);
+		accent-color: var(--primary, #e6b800);
 	}
 
 	.edit-section select {
@@ -449,7 +444,7 @@
 
 	.tag-name {
 		padding: 0.125rem 0.375rem;
-		background: var(--tag-color, #E6B800);
+		background: var(--tag-color, #e6b800);
 		border-radius: 4px;
 	}
 
@@ -514,8 +509,8 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.625rem 1rem;
-		background: var(--primary, #E6B800);
-		color: #0D1117;
+		background: var(--primary, #e6b800);
+		color: #0d1117;
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;

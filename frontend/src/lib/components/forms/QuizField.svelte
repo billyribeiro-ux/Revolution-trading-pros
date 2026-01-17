@@ -106,9 +106,7 @@
 			const selectedCorrect = [...selectedOptions].filter((id) => correctIds.has(id));
 			const selectedIncorrect = [...selectedOptions].filter((id) => !correctIds.has(id));
 
-			return (
-				selectedCorrect.length === correctIds.size && selectedIncorrect.length === 0
-			);
+			return selectedCorrect.length === correctIds.size && selectedIncorrect.length === 0;
 		}
 	}
 

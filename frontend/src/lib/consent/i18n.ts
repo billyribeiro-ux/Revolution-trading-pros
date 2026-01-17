@@ -179,7 +179,7 @@ const en: ConsentTranslations = {
 	required: 'Required',
 	optional: 'Optional',
 	on: 'On',
-	off: 'Off',
+	off: 'Off'
 };
 
 /**
@@ -203,11 +203,9 @@ const de: ConsentTranslations = {
 	necessaryDescription:
 		'Essentielle Cookies, die Kernfunktionen ermöglichen. Diese können nicht deaktiviert werden.',
 	analytics: 'Analyse',
-	analyticsDescription:
-		'Helfen uns zu verstehen, wie Besucher mit unserer Website interagieren.',
+	analyticsDescription: 'Helfen uns zu verstehen, wie Besucher mit unserer Website interagieren.',
 	marketing: 'Marketing',
-	marketingDescription:
-		'Werden verwendet, um Besuchern relevante Werbung anzuzeigen.',
+	marketingDescription: 'Werden verwendet, um Besuchern relevante Werbung anzuzeigen.',
 	preferences: 'Präferenzen',
 	preferencesDescription:
 		'Ermöglichen der Website, Ihre Einstellungen wie Sprache oder Region zu speichern.',
@@ -248,7 +246,7 @@ const de: ConsentTranslations = {
 	required: 'Erforderlich',
 	optional: 'Optional',
 	on: 'An',
-	off: 'Aus',
+	off: 'Aus'
 };
 
 /**
@@ -275,8 +273,7 @@ const fr: ConsentTranslations = {
 	analyticsDescription:
 		'Nous aident à comprendre comment les visiteurs interagissent avec notre site.',
 	marketing: 'Marketing',
-	marketingDescription:
-		'Utilisés pour afficher des publicités pertinentes aux visiteurs.',
+	marketingDescription: 'Utilisés pour afficher des publicités pertinentes aux visiteurs.',
 	preferences: 'Préférences',
 	preferencesDescription:
 		'Permettent au site de mémoriser vos préférences comme la langue ou la région.',
@@ -317,7 +314,7 @@ const fr: ConsentTranslations = {
 	required: 'Requis',
 	optional: 'Optionnel',
 	on: 'On',
-	off: 'Off',
+	off: 'Off'
 };
 
 /**
@@ -344,8 +341,7 @@ const es: ConsentTranslations = {
 	analyticsDescription:
 		'Nos ayudan a entender cómo interactúan los visitantes con nuestro sitio web.',
 	marketing: 'Marketing',
-	marketingDescription:
-		'Se utilizan para mostrar anuncios relevantes a los visitantes.',
+	marketingDescription: 'Se utilizan para mostrar anuncios relevantes a los visitantes.',
 	preferences: 'Preferencias',
 	preferencesDescription:
 		'Permiten que el sitio web recuerde sus preferencias como idioma o región.',
@@ -386,7 +382,7 @@ const es: ConsentTranslations = {
 	required: 'Requerido',
 	optional: 'Opcional',
 	on: 'On',
-	off: 'Off',
+	off: 'Off'
 };
 
 /**
@@ -410,11 +406,9 @@ const it: ConsentTranslations = {
 	necessaryDescription:
 		'Cookie essenziali che abilitano le funzionalità di base. Non possono essere disabilitati.',
 	analytics: 'Analitici',
-	analyticsDescription:
-		'Ci aiutano a capire come i visitatori interagiscono con il nostro sito.',
+	analyticsDescription: 'Ci aiutano a capire come i visitatori interagiscono con il nostro sito.',
 	marketing: 'Marketing',
-	marketingDescription:
-		'Utilizzati per mostrare pubblicità pertinenti ai visitatori.',
+	marketingDescription: 'Utilizzati per mostrare pubblicità pertinenti ai visitatori.',
 	preferences: 'Preferenze',
 	preferencesDescription:
 		'Permettono al sito di ricordare le tue preferenze come lingua o regione.',
@@ -422,11 +416,9 @@ const it: ConsentTranslations = {
 	cookieSettings: 'Impostazioni cookie',
 
 	cookiePolicyTitle: 'Politica sui cookie',
-	cookiePolicyIntro:
-		'Questa politica sui cookie spiega come utilizziamo i cookie sul nostro sito.',
+	cookiePolicyIntro: 'Questa politica sui cookie spiega come utilizziamo i cookie sul nostro sito.',
 	whatAreCookies: 'Cosa sono i cookie?',
-	whatAreCookiesDescription:
-		'I cookie sono piccoli file di testo memorizzati sul tuo dispositivo.',
+	whatAreCookiesDescription: 'I cookie sono piccoli file di testo memorizzati sul tuo dispositivo.',
 	howWeUseCookies: 'Come utilizziamo i cookie',
 	cookieDeclaration: 'Dichiarazione dei cookie',
 	lastUpdated: 'Ultimo aggiornamento',
@@ -455,7 +447,7 @@ const it: ConsentTranslations = {
 	required: 'Richiesto',
 	optional: 'Opzionale',
 	on: 'On',
-	off: 'Off',
+	off: 'Off'
 };
 
 /**
@@ -479,20 +471,16 @@ const nl: ConsentTranslations = {
 	necessaryDescription:
 		'Essentiële cookies die kernfunctionaliteit mogelijk maken. Deze kunnen niet worden uitgeschakeld.',
 	analytics: 'Analytisch',
-	analyticsDescription:
-		'Helpen ons te begrijpen hoe bezoekers omgaan met onze website.',
+	analyticsDescription: 'Helpen ons te begrijpen hoe bezoekers omgaan met onze website.',
 	marketing: 'Marketing',
-	marketingDescription:
-		'Worden gebruikt om relevante advertenties aan bezoekers te tonen.',
+	marketingDescription: 'Worden gebruikt om relevante advertenties aan bezoekers te tonen.',
 	preferences: 'Voorkeuren',
-	preferencesDescription:
-		'Laat de website uw voorkeuren onthouden zoals taal of regio.',
+	preferencesDescription: 'Laat de website uw voorkeuren onthouden zoals taal of regio.',
 
 	cookieSettings: 'Cookie-instellingen',
 
 	cookiePolicyTitle: 'Cookiebeleid',
-	cookiePolicyIntro:
-		'Dit cookiebeleid legt uit hoe wij cookies gebruiken op onze website.',
+	cookiePolicyIntro: 'Dit cookiebeleid legt uit hoe wij cookies gebruiken op onze website.',
 	whatAreCookies: 'Wat zijn cookies?',
 	whatAreCookiesDescription:
 		'Cookies zijn kleine tekstbestanden die op uw apparaat worden opgeslagen.',
@@ -524,7 +512,7 @@ const nl: ConsentTranslations = {
 	required: 'Vereist',
 	optional: 'Optioneel',
 	on: 'Aan',
-	off: 'Uit',
+	off: 'Uit'
 };
 
 /**
@@ -548,11 +536,9 @@ const pt: ConsentTranslations = {
 	necessaryDescription:
 		'Cookies essenciais que permitem funcionalidades básicas. Não podem ser desativados.',
 	analytics: 'Analíticos',
-	analyticsDescription:
-		'Ajudam-nos a compreender como os visitantes interagem com o nosso site.',
+	analyticsDescription: 'Ajudam-nos a compreender como os visitantes interagem com o nosso site.',
 	marketing: 'Marketing',
-	marketingDescription:
-		'Utilizados para mostrar anúncios relevantes aos visitantes.',
+	marketingDescription: 'Utilizados para mostrar anúncios relevantes aos visitantes.',
 	preferences: 'Preferências',
 	preferencesDescription:
 		'Permitem que o site memorize as suas preferências como idioma ou região.',
@@ -560,8 +546,7 @@ const pt: ConsentTranslations = {
 	cookieSettings: 'Definições de cookies',
 
 	cookiePolicyTitle: 'Política de Cookies',
-	cookiePolicyIntro:
-		'Esta política de cookies explica como utilizamos cookies no nosso site.',
+	cookiePolicyIntro: 'Esta política de cookies explica como utilizamos cookies no nosso site.',
 	whatAreCookies: 'O que são cookies?',
 	whatAreCookiesDescription:
 		'Cookies são pequenos ficheiros de texto armazenados no seu dispositivo.',
@@ -593,7 +578,7 @@ const pt: ConsentTranslations = {
 	required: 'Obrigatório',
 	optional: 'Opcional',
 	on: 'On',
-	off: 'Off',
+	off: 'Off'
 };
 
 /**
@@ -626,7 +611,7 @@ const translations: Record<SupportedLanguage, ConsentTranslations> = {
 	lt: en,
 	ja: en,
 	zh: en,
-	ko: en,
+	ko: en
 };
 
 /**
@@ -715,6 +700,6 @@ export function addTranslations(
 ): void {
 	translations[lang] = {
 		...translations[lang],
-		...customTranslations,
+		...customTranslations
 	};
 }

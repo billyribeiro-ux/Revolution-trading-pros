@@ -19,7 +19,15 @@
 		onDelete?: (template: BannerTemplate) => void;
 	}
 
-	let { template, isActive = false, showActions = true, onSelect, onPreview, onEdit, onDelete }: Props = $props();
+	let {
+		template,
+		isActive = false,
+		showActions = true,
+		onSelect,
+		onPreview,
+		onEdit,
+		onDelete
+	}: Props = $props();
 
 	// Generate mini preview styles
 	function getMiniPreviewStyles(): string {
@@ -45,7 +53,7 @@
 		playful: 'bg-yellow-500/20 text-yellow-300',
 		dark: 'bg-zinc-500/20 text-zinc-300',
 		light: 'bg-white/20 text-white',
-		custom: 'bg-green-500/20 text-green-300',
+		custom: 'bg-green-500/20 text-green-300'
 	};
 </script>
 
@@ -78,8 +86,16 @@
 		<!-- Active indicator -->
 		{#if isActive}
 			<div class="active-badge">
-				<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3">
-					<path d="m9 12 2 2 4-4"/>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="14"
+					height="14"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="3"
+				>
+					<path d="m9 12 2 2 4-4" />
 				</svg>
 				Active
 			</div>
@@ -122,21 +138,43 @@
 			<div class="card-actions">
 				<button
 					class="action-btn preview"
-					onclick={(e: MouseEvent) => { e.stopPropagation(); onPreview?.(template); }}
+					onclick={(e: MouseEvent) => {
+						e.stopPropagation();
+						onPreview?.(template);
+					}}
 				>
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
-						<circle cx="12" cy="12" r="3"/>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" />
+						<circle cx="12" cy="12" r="3" />
 					</svg>
 					Preview
 				</button>
 				{#if template.isEditable}
 					<button
 						class="action-btn edit"
-						onclick={(e: MouseEvent) => { e.stopPropagation(); onEdit?.(template); }}
+						onclick={(e: MouseEvent) => {
+							e.stopPropagation();
+							onEdit?.(template);
+						}}
 					>
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
 						</svg>
 						Edit
 					</button>
@@ -146,10 +184,23 @@
 						class="action-btn delete"
 						aria-label="Delete template"
 						title="Delete template"
-						onclick={(e: MouseEvent) => { e.stopPropagation(); onDelete?.(template); }}
+						onclick={(e: MouseEvent) => {
+							e.stopPropagation();
+							onDelete?.(template);
+						}}
 					>
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-							<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path
+								d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+							/>
 						</svg>
 					</button>
 				{/if}

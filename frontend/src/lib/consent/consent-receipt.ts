@@ -100,29 +100,29 @@ export function generateConsentReceipt(
 			necessary: consent.necessary,
 			analytics: consent.analytics,
 			marketing: consent.marketing,
-			preferences: consent.preferences,
+			preferences: consent.preferences
 		},
 
 		...(consent.privacySignals && {
 			privacySignals: {
 				gpc: consent.privacySignals.gpc,
 				dnt: consent.privacySignals.dnt,
-				...(consent.privacySignals.region && { region: consent.privacySignals.region }),
-			},
+				...(consent.privacySignals.region && { region: consent.privacySignals.region })
+			}
 		}),
 
 		auditTrail: getAuditLog().slice(-10), // Last 10 entries
 
 		userAgent: browser ? navigator.userAgent : '',
 		schemaVersion: '1.0.0',
-		checksum: '', // Will be filled below
+		checksum: '' // Will be filled below
 	};
 
 	// Calculate checksum
 	const dataForChecksum = JSON.stringify({
 		consentId: receiptData.consentId,
 		consentDate: receiptData.consentDate,
-		categories: receiptData.categories,
+		categories: receiptData.categories
 	});
 	receiptData.checksum = calculateChecksum(dataForChecksum);
 
@@ -387,7 +387,7 @@ export function verifyReceiptChecksum(receipt: ConsentReceipt): boolean {
 	const dataForChecksum = JSON.stringify({
 		consentId: receipt.consentId,
 		consentDate: receipt.consentDate,
-		categories: receipt.categories,
+		categories: receipt.categories
 	});
 
 	const calculatedChecksum = calculateChecksum(dataForChecksum);

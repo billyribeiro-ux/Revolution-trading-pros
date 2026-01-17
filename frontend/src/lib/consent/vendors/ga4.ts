@@ -1,8 +1,8 @@
 /**
  * Google Analytics 4 (GA4) Vendor Configuration
- * 
+ *
  * ICT11+ Principal Engineer Implementation
- * 
+ *
  * Architecture:
  *   - GA4 is configured with send_page_view: false to disable automatic tracking
  *   - Page views are tracked manually via SvelteKit's afterNavigate hook
@@ -42,7 +42,7 @@ const PUBLIC_GA4_MEASUREMENT_ID = import.meta.env['PUBLIC_GA4_MEASUREMENT_ID'] |
 
 /**
  * ICT11+ Pattern: Prevent GA4 from triggering SvelteKit router warnings
- * 
+ *
  * GA4's gtag.js internally calls history.pushState/replaceState which
  * triggers SvelteKit's warning. We temporarily replace history methods
  * with versions that don't trigger SvelteKit's stack trace detection.
@@ -97,10 +97,10 @@ function initGtag(): void {
 
 /**
  * Send a page view event to GA4.
- * 
+ *
  * ICT11+ Pattern: This is the ONLY way page views are tracked.
  * Call this from SvelteKit's afterNavigate hook in your root layout.
- * 
+ *
  * @param url - Optional URL override (defaults to current location)
  */
 export function trackPageView(url?: string): void {
@@ -112,7 +112,7 @@ export function trackPageView(url?: string): void {
 	window.gtag!('event', 'page_view', {
 		page_location: pageUrl,
 		page_path: pagePath,
-		page_title: document.title,
+		page_title: document.title
 	});
 
 	console.debug('[GA4] Tracked page view:', pagePath);
@@ -124,10 +124,7 @@ export function trackPageView(url?: string): void {
  * @param eventName - The event name (e.g., 'purchase', 'sign_up')
  * @param params - Optional event parameters
  */
-export function trackEvent(
-	eventName: string,
-	params?: Record<string, unknown>
-): void {
+export function trackEvent(eventName: string, params?: Record<string, unknown>): void {
 	if (!browser || !ga4Initialized) return;
 
 	window.gtag!('event', eventName, params);
@@ -143,7 +140,7 @@ export function setUserProperties(properties: Record<string, unknown>): void {
 	if (!browser || !ga4Initialized || !PUBLIC_GA4_MEASUREMENT_ID) return;
 
 	window.gtag!('config', PUBLIC_GA4_MEASUREMENT_ID, {
-		user_properties: properties,
+		user_properties: properties
 	});
 
 	console.debug('[GA4] Set user properties:', properties);
@@ -158,7 +155,7 @@ export function setUserId(userId: string | null): void {
 	if (!browser || !ga4Initialized || !PUBLIC_GA4_MEASUREMENT_ID) return;
 
 	window.gtag!('config', PUBLIC_GA4_MEASUREMENT_ID, {
-		user_id: userId,
+		user_id: userId
 	});
 
 	console.debug('[GA4] Set user ID:', userId ? '[set]' : '[cleared]');
@@ -214,13 +211,13 @@ export const ga4Vendor: VendorConfig = {
 			// Step 3: Load the gtag.js script with silent history patching
 			// ICT11+ Pattern: Enable silent mode to prevent SvelteKit router warnings
 			const restoreHistory = enableSilentHistoryMode();
-			
+
 			try {
 				await injectScript(
 					`https://www.googletagmanager.com/gtag/js?id=${PUBLIC_GA4_MEASUREMENT_ID}`,
 					{
 						id: 'ga4-gtag',
-						async: true,
+						async: true
 					}
 				);
 			} finally {
@@ -232,7 +229,7 @@ export const ga4Vendor: VendorConfig = {
 			window.gtag!('js', new Date());
 
 			// Step 5: Configure GA4 - SvelteKit-native approach
-			// 
+			//
 			// ICT11+ Architecture Decision:
 			// - send_page_view: false - We handle page tracking via afterNavigate
 			// - No history hooks - SvelteKit owns the router, we just listen
@@ -253,7 +250,7 @@ export const ga4Vendor: VendorConfig = {
 
 				// Consent-dependent features
 				allow_google_signals: currentConsent.marketing,
-				allow_ad_personalization_signals: currentConsent.marketing,
+				allow_ad_personalization_signals: currentConsent.marketing
 			});
 
 			ga4Initialized = true;
@@ -282,7 +279,7 @@ export const ga4Vendor: VendorConfig = {
 		// If you want to completely stop GA4 from running, you would need to
 		// reload the page (scripts can't be unloaded). This is generally not
 		// recommended as consent mode handles data collection properly.
-	},
+	}
 };
 
 /**

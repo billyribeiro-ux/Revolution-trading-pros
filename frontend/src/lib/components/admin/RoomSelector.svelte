@@ -6,7 +6,14 @@
 	 * @version 1.0.0 - December 2025
 	 */
 
-	import { ROOMS, ALL_ROOM_IDS, getLiveTradingRooms, getAlertsOnlyServices, isAllRooms, type Room } from '$lib/config/rooms';
+	import {
+		ROOMS,
+		ALL_ROOM_IDS,
+		getLiveTradingRooms,
+		getAlertsOnlyServices,
+		isAllRooms,
+		type Room
+	} from '$lib/config/rooms';
 
 	// Props
 	let {
@@ -31,7 +38,7 @@
 		if (allSelected) return 'All Rooms & Services';
 		if (noneSelected) return 'Select rooms...';
 		if (selectedRooms.length === 1) {
-			const room = ROOMS.find(r => r.id === selectedRooms[0]);
+			const room = ROOMS.find((r) => r.id === selectedRooms[0]);
 			return room?.name || selectedRooms[0];
 		}
 		return `${selectedRooms.length} rooms selected`;
@@ -41,7 +48,7 @@
 	function toggleRoom(roomId: string) {
 		if (disabled) return;
 		if (selectedRooms.includes(roomId)) {
-			selectedRooms = selectedRooms.filter(id => id !== roomId);
+			selectedRooms = selectedRooms.filter((id) => id !== roomId);
 		} else {
 			selectedRooms = [...selectedRooms, roomId];
 		}
@@ -59,12 +66,12 @@
 
 	function selectGroup(rooms: Room[]) {
 		if (disabled) return;
-		const groupIds = rooms.map(r => r.id);
-		const allInGroup = groupIds.every(id => selectedRooms.includes(id));
+		const groupIds = rooms.map((r) => r.id);
+		const allInGroup = groupIds.every((id) => selectedRooms.includes(id));
 
 		if (allInGroup) {
 			// Deselect all in group
-			selectedRooms = selectedRooms.filter(id => !groupIds.includes(id));
+			selectedRooms = selectedRooms.filter((id) => !groupIds.includes(id));
 		} else {
 			// Select all in group
 			const newSelection = new Set([...selectedRooms, ...groupIds]);
@@ -73,11 +80,11 @@
 	}
 
 	function isGroupSelected(rooms: Room[]): boolean {
-		return rooms.every(r => selectedRooms.includes(r.id));
+		return rooms.every((r) => selectedRooms.includes(r.id));
 	}
 
 	function isGroupPartial(rooms: Room[]): boolean {
-		const count = rooms.filter(r => selectedRooms.includes(r.id)).length;
+		const count = rooms.filter((r) => selectedRooms.includes(r.id)).length;
 		return count > 0 && count < rooms.length;
 	}
 
@@ -110,7 +117,11 @@
 			{selectionText}
 		</span>
 		<svg class="trigger-icon" class:rotated={isExpanded} viewBox="0 0 20 20" fill="currentColor">
-			<path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+			<path
+				fill-rule="evenodd"
+				d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+				clip-rule="evenodd"
+			/>
 		</svg>
 	</button>
 
@@ -132,20 +143,35 @@
 
 			<!-- Live Trading Rooms Group -->
 			<div class="room-group">
-				<button
-					type="button"
-					class="group-header"
-					onclick={() => selectGroup(liveTradingRooms)}
-				>
-					<div class="group-checkbox" class:checked={isGroupSelected(liveTradingRooms)} class:partial={isGroupPartial(liveTradingRooms)}>
+				<button type="button" class="group-header" onclick={() => selectGroup(liveTradingRooms)}>
+					<div
+						class="group-checkbox"
+						class:checked={isGroupSelected(liveTradingRooms)}
+						class:partial={isGroupPartial(liveTradingRooms)}
+					>
 						{#if isGroupSelected(liveTradingRooms)}
-							<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+							<svg viewBox="0 0 20 20" fill="currentColor"
+								><path
+									fill-rule="evenodd"
+									d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+									clip-rule="evenodd"
+								/></svg
+							>
 						{:else if isGroupPartial(liveTradingRooms)}
-							<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+							<svg viewBox="0 0 20 20" fill="currentColor"
+								><path
+									fill-rule="evenodd"
+									d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+									clip-rule="evenodd"
+								/></svg
+							>
 						{/if}
 					</div>
 					<span class="group-title">Live Trading Rooms</span>
-					<span class="group-count">{liveTradingRooms.filter(r => selectedRooms.includes(r.id)).length}/{liveTradingRooms.length}</span>
+					<span class="group-count"
+						>{liveTradingRooms.filter((r) => selectedRooms.includes(r.id))
+							.length}/{liveTradingRooms.length}</span
+					>
 				</button>
 				<div class="room-list">
 					{#each liveTradingRooms as room}
@@ -157,12 +183,20 @@
 						>
 							<div class="room-checkbox" class:checked={selectedRooms.includes(room.id)}>
 								{#if selectedRooms.includes(room.id)}
-									<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+									<svg viewBox="0 0 20 20" fill="currentColor"
+										><path
+											fill-rule="evenodd"
+											d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+											clip-rule="evenodd"
+										/></svg
+									>
 								{/if}
 							</div>
 							<span class="room-icon">{room.icon}</span>
 							<span class="room-name">{room.name}</span>
-							<span class="room-badge" style="background-color: {room.color}20; color: {room.color}">{room.shortName}</span>
+							<span class="room-badge" style="background-color: {room.color}20; color: {room.color}"
+								>{room.shortName}</span
+							>
 						</button>
 					{/each}
 				</div>
@@ -170,20 +204,35 @@
 
 			<!-- Alerts Only Services Group -->
 			<div class="room-group">
-				<button
-					type="button"
-					class="group-header"
-					onclick={() => selectGroup(alertsOnlyServices)}
-				>
-					<div class="group-checkbox" class:checked={isGroupSelected(alertsOnlyServices)} class:partial={isGroupPartial(alertsOnlyServices)}>
+				<button type="button" class="group-header" onclick={() => selectGroup(alertsOnlyServices)}>
+					<div
+						class="group-checkbox"
+						class:checked={isGroupSelected(alertsOnlyServices)}
+						class:partial={isGroupPartial(alertsOnlyServices)}
+					>
 						{#if isGroupSelected(alertsOnlyServices)}
-							<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+							<svg viewBox="0 0 20 20" fill="currentColor"
+								><path
+									fill-rule="evenodd"
+									d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+									clip-rule="evenodd"
+								/></svg
+							>
 						{:else if isGroupPartial(alertsOnlyServices)}
-							<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"/></svg>
+							<svg viewBox="0 0 20 20" fill="currentColor"
+								><path
+									fill-rule="evenodd"
+									d="M3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z"
+									clip-rule="evenodd"
+								/></svg
+							>
 						{/if}
 					</div>
 					<span class="group-title">Alerts Only Services</span>
-					<span class="group-count">{alertsOnlyServices.filter(r => selectedRooms.includes(r.id)).length}/{alertsOnlyServices.length}</span>
+					<span class="group-count"
+						>{alertsOnlyServices.filter((r) => selectedRooms.includes(r.id))
+							.length}/{alertsOnlyServices.length}</span
+					>
 				</button>
 				<div class="room-list">
 					{#each alertsOnlyServices as room}
@@ -195,12 +244,20 @@
 						>
 							<div class="room-checkbox" class:checked={selectedRooms.includes(room.id)}>
 								{#if selectedRooms.includes(room.id)}
-									<svg viewBox="0 0 20 20" fill="currentColor"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/></svg>
+									<svg viewBox="0 0 20 20" fill="currentColor"
+										><path
+											fill-rule="evenodd"
+											d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
+											clip-rule="evenodd"
+										/></svg
+									>
 								{/if}
 							</div>
 							<span class="room-icon">{room.icon}</span>
 							<span class="room-name">{room.name}</span>
-							<span class="room-badge" style="background-color: {room.color}20; color: {room.color}">{room.shortName}</span>
+							<span class="room-badge" style="background-color: {room.color}20; color: {room.color}"
+								>{room.shortName}</span
+							>
 						</button>
 					{/each}
 				</div>
@@ -208,9 +265,7 @@
 
 			<!-- Done Button -->
 			<div class="dropdown-footer">
-				<button type="button" class="done-btn" onclick={closeDropdown}>
-					Done
-				</button>
+				<button type="button" class="done-btn" onclick={closeDropdown}> Done </button>
 			</div>
 		</div>
 	{/if}
@@ -219,10 +274,14 @@
 	{#if !isExpanded && selectedRooms.length > 0 && selectedRooms.length <= 4 && !allSelected}
 		<div class="selected-tags">
 			{#each selectedRooms as roomId}
-				{@const room = ROOMS.find(r => r.id === roomId)}
+				{@const room = ROOMS.find((r) => r.id === roomId)}
 				{#if room}
-					<span class="tag" style="background-color: {room.color}20; color: {room.color}; border-color: {room.color}40">
-						{room.icon} {room.shortName}
+					<span
+						class="tag"
+						style="background-color: {room.color}20; color: {room.color}; border-color: {room.color}40"
+					>
+						{room.icon}
+						{room.shortName}
 					</span>
 				{/if}
 			{/each}

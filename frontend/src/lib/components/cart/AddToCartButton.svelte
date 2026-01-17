@@ -85,7 +85,9 @@
 	});
 
 	// Check if item is already in cart (filter out 'lifetime' as cart doesn't support it)
-	let isInCart = $derived(cartStore.hasItem(productId, interval === 'lifetime' ? undefined : interval));
+	let isInCart = $derived(
+		cartStore.hasItem(productId, interval === 'lifetime' ? undefined : interval)
+	);
 
 	// Determine button state
 	let isDisabled = $derived(
@@ -117,12 +119,7 @@
 
 		isChecking = true;
 		try {
-			const result = await checkProductOwnership(
-				productId,
-				productSlug,
-				normalizedType,
-				interval
-			);
+			const result = await checkProductOwnership(productId, productSlug, normalizedType, interval);
 			ownershipStatus = result;
 		} catch (error) {
 			console.error('[AddToCart] Error checking ownership:', error);
@@ -177,7 +174,10 @@
 						: 'alert-service';
 
 		// Filter out 'lifetime' interval as cart store only supports monthly/quarterly/yearly
-		const cartItem: Omit<typeof cartStore extends { addItem: (item: infer T) => any } ? T : never, never> = {
+		const cartItem: Omit<
+			typeof cartStore extends { addItem: (item: infer T) => any } ? T : never,
+			never
+		> = {
 			id: productId,
 			name: productName,
 			price,
@@ -188,7 +188,7 @@
 			...(interval && interval !== 'lifetime' && { interval }),
 			...(productSlug && { productSlug })
 		};
-		
+
 		const added = cartStore.addItem(cartItem as Omit<CartItem, 'quantity'>);
 
 		if (added) {

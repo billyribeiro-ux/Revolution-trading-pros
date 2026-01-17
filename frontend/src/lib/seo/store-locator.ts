@@ -85,14 +85,7 @@ export interface ContactInfo {
 }
 
 export interface SocialProfile {
-	platform:
-		| 'facebook'
-		| 'twitter'
-		| 'instagram'
-		| 'linkedin'
-		| 'youtube'
-		| 'tiktok'
-		| 'pinterest';
+	platform: 'facebook' | 'twitter' | 'instagram' | 'linkedin' | 'youtube' | 'tiktok' | 'pinterest';
 	url: string;
 }
 
@@ -282,16 +275,12 @@ export function generateLocationSchema(location: Location): Record<string, any> 
 	}
 
 	// Contact info
-	const primaryPhone = location.contacts.find(
-		(c) => c.type === 'phone' && c.isPrimary
-	);
+	const primaryPhone = location.contacts.find((c) => c.type === 'phone' && c.isPrimary);
 	if (primaryPhone) {
 		schema['telephone'] = primaryPhone.value;
 	}
 
-	const primaryEmail = location.contacts.find(
-		(c) => c.type === 'email' && c.isPrimary
-	);
+	const primaryEmail = location.contacts.find((c) => c.type === 'email' && c.isPrimary);
 	if (primaryEmail?.value) {
 		schema['email'] = primaryEmail.value;
 	}

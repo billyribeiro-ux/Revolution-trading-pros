@@ -124,19 +124,13 @@
 
 	const filteredTerms = $derived(
 		searchQuery
-			? fetchedTerms.filter((t) =>
-					t.name.toLowerCase().includes(searchQuery.toLowerCase())
-				)
+			? fetchedTerms.filter((t) => t.name.toLowerCase().includes(searchQuery.toLowerCase()))
 			: []
 	);
 
-	const selectedTerms = $derived(
-		fetchedTerms.filter((t) => selectedIds.includes(String(t.id)))
-	);
+	const selectedTerms = $derived(fetchedTerms.filter((t) => selectedIds.includes(String(t.id))));
 
-	const canSelect = $derived(
-		!maxSelections || selectedIds.length < maxSelections
-	);
+	const canSelect = $derived(!maxSelections || selectedIds.length < maxSelections);
 
 	function toggleTerm(termId: string) {
 		if (disabled) return;
@@ -272,7 +266,10 @@
 							<button
 								type="button"
 								class="create-btn"
-								onclick={() => { newTermName = searchQuery; handleCreate(); }}
+								onclick={() => {
+									newTermName = searchQuery;
+									handleCreate();
+								}}
 								disabled={creating}
 							>
 								{creating ? 'Creating...' : `Create "${searchQuery}"`}
@@ -391,8 +388,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.select-input {

@@ -137,8 +137,7 @@ const SANITIZE_PROFILES = {
 			'allow'
 		],
 		// Only allow iframes from trusted sources
-		ALLOWED_URI_REGEXP:
-			/^(?:(?:https?|mailto|tel):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i
+		ALLOWED_URI_REGEXP: /^(?:(?:https?|mailto|tel):|[^a-z]|[a-z+.-]+(?:[^a-z+.\-:]|$))/i
 	},
 
 	// Minimal: Text only with basic formatting
@@ -166,7 +165,10 @@ export type SanitizeProfile = keyof typeof SANITIZE_PROFILES;
  * {@html safeHtml}
  * ```
  */
-export function sanitizeHtml(html: string | null | undefined, profile: SanitizeProfile = 'standard'): string {
+export function sanitizeHtml(
+	html: string | null | undefined,
+	profile: SanitizeProfile = 'standard'
+): string {
 	if (!html) return '';
 
 	const config = SANITIZE_PROFILES[profile];

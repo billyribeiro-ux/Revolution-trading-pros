@@ -108,7 +108,9 @@
 		border-radius: 0.5rem;
 		font-size: 1.125rem;
 		font-weight: 500;
-		transition: border-color 0.15s, box-shadow 0.15s;
+		transition:
+			border-color 0.15s,
+			box-shadow 0.15s;
 	}
 
 	.title-input:focus {

@@ -36,7 +36,7 @@
 		try {
 			const filters = statusFilter ? { status: statusFilter } : undefined;
 			const response = await getForms(currentPage, 20, filters);
-			
+
 			// Response is { forms: Form[], total: number, perPage: number }
 			forms = response?.forms || [];
 			totalPages = Math.ceil((response?.total || forms.length) / (response?.perPage || 20));

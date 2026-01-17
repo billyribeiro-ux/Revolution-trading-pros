@@ -60,7 +60,7 @@ export type {
 	ConsentChangeEvent,
 	ConsentAnalytics,
 	ConsentInteractionEvent,
-	TCFConsentData,
+	TCFConsentData
 } from './types';
 
 export {
@@ -72,7 +72,7 @@ export {
 	CATEGORY_METADATA,
 	TCF_PURPOSE_MAP,
 	CONSENT_EVENTS,
-	generateConsentId,
+	generateConsentId
 } from './types';
 
 // =============================================================================
@@ -88,19 +88,14 @@ export {
 	showPreferencesModal,
 	openPreferencesModal,
 	closePreferencesModal,
-	onConsentChange,
+	onConsentChange
 } from './store.svelte';
 
 // =============================================================================
 // STORAGE
 // =============================================================================
 
-export {
-	loadConsent,
-	saveConsent,
-	clearConsent,
-	isStorageAvailable,
-} from './storage';
+export { loadConsent, saveConsent, clearConsent, isStorageAvailable } from './storage';
 
 // =============================================================================
 // GOOGLE CONSENT MODE
@@ -113,7 +108,7 @@ export {
 	mapConsentToGoogle,
 	grantAllConsent,
 	denyNonEssentialConsent,
-	isConsentModeInitialized,
+	isConsentModeInitialized
 } from './google-consent-mode';
 
 // =============================================================================
@@ -128,7 +123,7 @@ export {
 	grantAllBingConsent,
 	denyAllBingConsent,
 	isBingConsentModeInitialized,
-	getBingConsentModeConfig,
+	getBingConsentModeConfig
 } from './bing-consent-mode';
 
 export type { BingConsentParams } from './bing-consent-mode';
@@ -151,7 +146,7 @@ export {
 	generatePassthroughUrl,
 	getPassthroughConfig,
 	shouldEnablePassthrough,
-	DEFAULT_PASSTHROUGH_PARAMS,
+	DEFAULT_PASSTHROUGH_PARAMS
 } from './url-passthrough';
 
 export type { UrlPassthroughConfig } from './url-passthrough';
@@ -167,7 +162,7 @@ export {
 	getLoadedVendors,
 	hasRequiredConsent,
 	injectScript,
-	injectInlineScript,
+	injectInlineScript
 } from './vendor-loader';
 
 // =============================================================================
@@ -225,7 +220,7 @@ export {
 	isRedditReady,
 	setRedditLimitedDataUse,
 	isRedditLDUEnabled,
-	REDDIT_EVENTS,
+	REDDIT_EVENTS
 } from './vendors';
 
 // =============================================================================
@@ -241,7 +236,7 @@ export {
 	hasPrivacyLaw,
 	getSignalBasedDefaults,
 	getConsentUIMode,
-	onPrivacySignalChange,
+	onPrivacySignalChange
 } from './privacy-signals';
 
 // =============================================================================
@@ -259,7 +254,7 @@ export {
 	exportAuditLog,
 	getAuditStats,
 	verifyAuditLogIntegrity,
-	syncAuditLogToServer,
+	syncAuditLogToServer
 } from './audit-log';
 
 // =============================================================================
@@ -272,7 +267,7 @@ export {
 	watchCookies,
 	deleteCookie,
 	deleteCookiesByCategory,
-	getCookieSummary,
+	getCookieSummary
 } from './cookie-scanner';
 
 export type { ScannedCookie, CookieScanResult } from './cookie-scanner';
@@ -288,7 +283,7 @@ export {
 	getAnalyticsSummary,
 	exportAnalyticsData,
 	clearAnalytics,
-	syncAnalyticsToServer,
+	syncAnalyticsToServer
 } from './analytics';
 
 // =============================================================================
@@ -302,7 +297,7 @@ export {
 	isBehaviorTrackingEnabled,
 	getBehaviorTracker,
 	cleanupBehaviorIntegration,
-	flushBehaviorEvents,
+	flushBehaviorEvents
 } from './behavior-integration';
 
 // =============================================================================
@@ -313,7 +308,7 @@ export {
 	ConsentBanner,
 	ConsentPreferencesModal,
 	ConsentSettingsButton,
-	ContentPlaceholder,
+	ContentPlaceholder
 } from './components';
 
 // =============================================================================
@@ -329,7 +324,7 @@ export {
 	getSupportedLanguages,
 	getTranslation,
 	addTranslations,
-	detectBrowserLanguage,
+	detectBrowserLanguage
 } from './i18n';
 
 export type { SupportedLanguage, ConsentTranslations } from './i18n';
@@ -345,7 +340,7 @@ export {
 	generateReceiptHTML,
 	downloadReceiptAsHTML,
 	printReceipt,
-	verifyReceiptChecksum,
+	verifyReceiptChecksum
 } from './consent-receipt';
 
 export type { ConsentReceipt } from './consent-receipt';
@@ -367,7 +362,7 @@ export {
 	EMBEDDED_CONTENT_PATTERNS,
 	GOOGLE_FONTS_CONFIG,
 	getEmbeddedContentType,
-	shouldBlockEmbed,
+	shouldBlockEmbed
 } from './script-blocker';
 
 // =============================================================================
@@ -384,7 +379,7 @@ export {
 	getCurrentPolicyVersion,
 	getChangelog,
 	formatVersionDate,
-	getVersionInfo,
+	getVersionInfo
 } from './versioning';
 
 export type { PolicyVersion, VersionCompareResult, VersionChangeType } from './versioning';
@@ -401,7 +396,7 @@ export {
 	debouncedSync,
 	fetchConsentFromBackend,
 	deleteConsentFromBackend,
-	exportConsentFromBackend,
+	exportConsentFromBackend
 } from './backend-sync';
 
 export type { BackendSyncConfig, ConsentSyncPayload, ConsentSyncResponse } from './backend-sync';
@@ -420,7 +415,7 @@ export {
 	getBestVariant,
 	clearABTestData,
 	exportABTestData,
-	getVariantStyles,
+	getVariantStyles
 } from './ab-testing';
 
 export type {
@@ -430,7 +425,7 @@ export type {
 	ColorScheme,
 	BannerVariant,
 	ABTestResult,
-	ABTestAnalytics,
+	ABTestAnalytics
 } from './ab-testing';
 
 // =============================================================================
@@ -444,7 +439,7 @@ export {
 	requestConsentFromParent,
 	encodeConsentParam,
 	generateConsentUrl,
-	syncFromDomainCookie,
+	syncFromDomainCookie
 } from './cross-domain';
 
 export type { CrossDomainConfig } from './cross-domain';
@@ -498,7 +493,7 @@ export {
 	// Components
 	BannerRenderer,
 	TemplatePreviewCard,
-	TemplateEditor,
+	TemplateEditor
 } from './templates';
 
 // =============================================================================
@@ -512,7 +507,10 @@ import { applyBingConsentMode } from './bing-consent-mode';
 import { applyUrlPassthrough, captureUrlParameters } from './url-passthrough';
 import { loadVendorsForConsent } from './vendor-loader';
 import { vendors } from './vendors';
-import { initConsentAwareBehaviorTracking, cleanupBehaviorIntegration } from './behavior-integration';
+import {
+	initConsentAwareBehaviorTracking,
+	cleanupBehaviorIntegration
+} from './behavior-integration';
 import { trackConsentInteraction } from './analytics';
 import { initializeTemplateStore } from './templates';
 import type { ConsentState } from './types';
@@ -607,7 +605,7 @@ export async function exportConsentData(): Promise<string> {
 			currentConsent: consentStore.getState(),
 			auditLog: JSON.parse(exportAuditLog()),
 			analytics: JSON.parse(exportAnalyticsData()),
-			cookies: scanCookies(),
+			cookies: scanCookies()
 		},
 		null,
 		2

@@ -2,12 +2,20 @@
 	/**
 	 * Block Preview - Renders Component Based on Type
 	 * Apple Principal Engineer ICT 7 Grade - January 2026
-	 * 
+	 *
 	 * Dynamically renders the appropriate component preview based on block type.
 	 */
 
-	import type { PageBlock, CourseHeaderConfig, VideoPlayerConfig, VideoStackConfig, ClassDownloadsConfig, SpacerConfig, DividerConfig } from '../types';
-	
+	import type {
+		PageBlock,
+		CourseHeaderConfig,
+		VideoPlayerConfig,
+		VideoStackConfig,
+		ClassDownloadsConfig,
+		SpacerConfig,
+		DividerConfig
+	} from '../types';
+
 	// Preview components
 	import CourseHeaderPreview from './previews/CourseHeaderPreview.svelte';
 	import VideoPlayerPreview from './previews/VideoPlayerPreview.svelte';
@@ -45,10 +53,10 @@
 <style>
 	.unknown-block {
 		padding: 20px;
-		background: #FEF3C7;
-		border: 1px dashed #F59E0B;
+		background: #fef3c7;
+		border: 1px dashed #f59e0b;
 		border-radius: 8px;
 		text-align: center;
-		color: #92400E;
+		color: #92400e;
 	}
 </style>

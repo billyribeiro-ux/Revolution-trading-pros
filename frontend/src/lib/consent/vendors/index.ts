@@ -41,7 +41,7 @@ export const vendors: VendorConfig[] = [
 	twitterVendor,
 	linkedinVendor,
 	pinterestVendor,
-	redditVendor,
+	redditVendor
 ];
 
 /**
@@ -75,7 +75,7 @@ export function getVendorInfo(): Array<{
 		description: v.description,
 		requiredCategories: [...v.requiredCategories],
 		...(v.privacyPolicyUrl && { privacyPolicyUrl: v.privacyPolicyUrl }),
-		...(v.dataLocations && { dataLocations: [...v.dataLocations] }),
+		...(v.dataLocations && { dataLocations: [...v.dataLocations] })
 	}));
 }
 
@@ -96,7 +96,7 @@ export {
 	trackEvent as trackGA4Event,
 	setUserProperties as setGA4UserProperties,
 	setUserId as setGA4UserId,
-	isGA4Ready,
+	isGA4Ready
 } from './ga4';
 
 // Meta Pixel
@@ -105,7 +105,7 @@ export {
 	trackCustomPixelEvent,
 	trackPixelPageView,
 	setLimitedDataUse,
-	isMetaPixelReady,
+	isMetaPixelReady
 } from './meta-pixel';
 
 // TikTok
@@ -114,30 +114,21 @@ export {
 	trackTikTokPageView,
 	identifyTikTokUser,
 	isTikTokReady,
-	TIKTOK_EVENTS,
+	TIKTOK_EVENTS
 } from './tiktok';
 
 // Twitter/X
-export {
-	trackTwitterEvent,
-	trackTwitterPageView,
-	isTwitterReady,
-	TWITTER_EVENTS,
-} from './twitter';
+export { trackTwitterEvent, trackTwitterPageView, isTwitterReady, TWITTER_EVENTS } from './twitter';
 
 // LinkedIn
-export {
-	trackLinkedInConversion,
-	trackLinkedInPageView,
-	isLinkedInReady,
-} from './linkedin';
+export { trackLinkedInConversion, trackLinkedInPageView, isLinkedInReady } from './linkedin';
 
 // Pinterest
 export {
 	trackPinterestEvent,
 	trackPinterestPageView,
 	isPinterestReady,
-	PINTEREST_EVENTS,
+	PINTEREST_EVENTS
 } from './pinterest';
 
 // Reddit
@@ -147,5 +138,5 @@ export {
 	isRedditReady,
 	setRedditLimitedDataUse,
 	isRedditLDUEnabled,
-	REDDIT_EVENTS,
+	REDDIT_EVENTS
 } from './reddit';

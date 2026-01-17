@@ -52,17 +52,9 @@
 		IconHistory
 	} from '$lib/icons';
 
-	import type {
-		Block,
-		BlockType,
-		EditorState,
-		SEOAnalysis,
-		Revision
-	} from './types';
+	import type { Block, BlockType, EditorState, SEOAnalysis, Revision } from './types';
 
-	import {
-		BLOCK_DEFINITIONS
-	} from './types';
+	import { BLOCK_DEFINITIONS } from './types';
 
 	// Import sub-components (we'll create these)
 	import BlockInserter from './BlockInserter.svelte';
@@ -164,7 +156,7 @@
 	let canRedo = $derived(editorState.history.future.length > 0);
 	let selectedBlock = $derived(
 		editorState.selectedBlockId
-			? editorState.blocks.find(b => b.id === editorState.selectedBlockId)
+			? editorState.blocks.find((b) => b.id === editorState.selectedBlockId)
 			: null
 	);
 	let wordCount = $derived(calculateWordCount(editorState.blocks));
@@ -254,7 +246,7 @@
 	function updateBlock(blockId: string, updates: Partial<Block>) {
 		pushToHistory();
 
-		editorState.blocks = editorState.blocks.map(block =>
+		editorState.blocks = editorState.blocks.map((block) =>
 			block.id === blockId
 				? {
 						...block,
@@ -272,8 +264,8 @@
 	function deleteBlock(blockId: string) {
 		pushToHistory();
 
-		const index = editorState.blocks.findIndex(b => b.id === blockId);
-		editorState.blocks = editorState.blocks.filter(b => b.id !== blockId);
+		const index = editorState.blocks.findIndex((b) => b.id === blockId);
+		editorState.blocks = editorState.blocks.filter((b) => b.id !== blockId);
 
 		// Select adjacent block
 		if (editorState.blocks.length > 0) {
@@ -285,7 +277,7 @@
 	}
 
 	function duplicateBlock(blockId: string) {
-		const block = editorState.blocks.find(b => b.id === blockId);
+		const block = editorState.blocks.find((b) => b.id === blockId);
 		if (!block) return;
 
 		pushToHistory();
@@ -301,7 +293,7 @@
 			}
 		};
 
-		const index = editorState.blocks.findIndex(b => b.id === blockId);
+		const index = editorState.blocks.findIndex((b) => b.id === blockId);
 		const newBlocks = [...editorState.blocks];
 		newBlocks.splice(index + 1, 0, duplicated);
 		editorState.blocks = newBlocks;
@@ -309,7 +301,7 @@
 	}
 
 	function moveBlock(blockId: string, direction: 'up' | 'down') {
-		const index = editorState.blocks.findIndex(b => b.id === blockId);
+		const index = editorState.blocks.findIndex((b) => b.id === blockId);
 		if (index === -1) return;
 
 		const newIndex = direction === 'up' ? index - 1 : index + 1;
@@ -351,7 +343,7 @@
 
 	function handleDragEnd() {
 		if (editorState.draggedBlockId && editorState.dropTargetIndex !== null) {
-			const fromIndex = editorState.blocks.findIndex(b => b.id === editorState.draggedBlockId);
+			const fromIndex = editorState.blocks.findIndex((b) => b.id === editorState.draggedBlockId);
 			const toIndex = editorState.dropTargetIndex;
 
 			if (fromIndex !== toIndex && fromIndex !== -1) {
@@ -386,7 +378,9 @@
 
 		editorState.history = {
 			...editorState.history,
-			past: [...editorState.history.past, editorState.history.present].slice(-editorState.history.maxSize),
+			past: [...editorState.history.past, editorState.history.present].slice(
+				-editorState.history.maxSize
+			),
 			present: currentState,
 			future: []
 		};
@@ -433,7 +427,7 @@
 	// ==========================================================================
 
 	function copyBlock(blockId: string) {
-		const block = editorState.blocks.find(b => b.id === blockId);
+		const block = editorState.blocks.find((b) => b.id === blockId);
 		if (block) {
 			editorState.clipboard = JSON.parse(JSON.stringify(block));
 		}
@@ -448,7 +442,7 @@
 		if (!editorState.clipboard) return;
 
 		const index = editorState.selectedBlockId
-			? editorState.blocks.findIndex(b => b.id === editorState.selectedBlockId) + 1
+			? editorState.blocks.findIndex((b) => b.id === editorState.selectedBlockId) + 1
 			: editorState.blocks.length;
 
 		pushToHistory();
@@ -516,7 +510,11 @@
 		if (isMeta && e.key === 'v' && editorState.clipboard) {
 			// Only paste block if no text input focused
 			const activeEl = document.activeElement;
-			if (activeEl?.tagName !== 'INPUT' && activeEl?.tagName !== 'TEXTAREA' && !activeEl?.getAttribute('contenteditable')) {
+			if (
+				activeEl?.tagName !== 'INPUT' &&
+				activeEl?.tagName !== 'TEXTAREA' &&
+				!activeEl?.getAttribute('contenteditable')
+			) {
 				e.preventDefault();
 				pasteBlock();
 			}
@@ -525,7 +523,11 @@
 		// Delete block: Backspace/Delete when block selected
 		if ((e.key === 'Backspace' || e.key === 'Delete') && editorState.selectedBlockId) {
 			const activeEl = document.activeElement;
-			if (activeEl?.tagName !== 'INPUT' && activeEl?.tagName !== 'TEXTAREA' && !activeEl?.getAttribute('contenteditable')) {
+			if (
+				activeEl?.tagName !== 'INPUT' &&
+				activeEl?.tagName !== 'TEXTAREA' &&
+				!activeEl?.getAttribute('contenteditable')
+			) {
 				e.preventDefault();
 				deleteBlock(editorState.selectedBlockId);
 			}
@@ -573,7 +575,7 @@
 		// Navigate blocks: Arrow keys
 		if (e.key === 'ArrowUp' || e.key === 'ArrowDown') {
 			if (editorState.selectedBlockId) {
-				const index = editorState.blocks.findIndex(b => b.id === editorState.selectedBlockId);
+				const index = editorState.blocks.findIndex((b) => b.id === editorState.selectedBlockId);
 				if (index !== -1) {
 					const newIndex = e.key === 'ArrowUp' ? index - 1 : index + 1;
 					if (newIndex >= 0 && newIndex < editorState.blocks.length) {
@@ -675,46 +677,86 @@
 	function runSEOAnalysis() {
 		// Basic SEO analysis
 		const content = getPlainTextContent(editorState.blocks);
-		const words = content.split(/\s+/).filter(w => w.length > 0);
-		const sentences = content.split(/[.!?]+/).filter(s => s.trim().length > 0);
+		const words = content.split(/\s+/).filter((w) => w.length > 0);
+		const sentences = content.split(/[.!?]+/).filter((s) => s.trim().length > 0);
 
 		const issues: SEOAnalysis['issues'] = [];
 		const suggestions: string[] = [];
 
 		// Title checks
 		if (!postTitle) {
-			issues.push({ type: 'error', category: 'title', message: 'Post title is missing', impact: 'high' });
+			issues.push({
+				type: 'error',
+				category: 'title',
+				message: 'Post title is missing',
+				impact: 'high'
+			});
 		} else if (postTitle.length < 30) {
-			issues.push({ type: 'warning', category: 'title', message: 'Title is too short (recommended: 50-60 characters)', impact: 'medium' });
+			issues.push({
+				type: 'warning',
+				category: 'title',
+				message: 'Title is too short (recommended: 50-60 characters)',
+				impact: 'medium'
+			});
 		} else if (postTitle.length > 70) {
-			issues.push({ type: 'warning', category: 'title', message: 'Title is too long (recommended: 50-60 characters)', impact: 'medium' });
+			issues.push({
+				type: 'warning',
+				category: 'title',
+				message: 'Title is too long (recommended: 50-60 characters)',
+				impact: 'medium'
+			});
 		}
 
 		// Meta description checks
 		if (!metaDescription) {
-			issues.push({ type: 'error', category: 'description', message: 'Meta description is missing', impact: 'high' });
+			issues.push({
+				type: 'error',
+				category: 'description',
+				message: 'Meta description is missing',
+				impact: 'high'
+			});
 		} else if (metaDescription.length < 120) {
-			issues.push({ type: 'warning', category: 'description', message: 'Meta description is too short (recommended: 150-160 characters)', impact: 'medium' });
+			issues.push({
+				type: 'warning',
+				category: 'description',
+				message: 'Meta description is too short (recommended: 150-160 characters)',
+				impact: 'medium'
+			});
 		}
 
 		// Content length
 		if (words.length < 300) {
-			issues.push({ type: 'warning', category: 'content', message: 'Content is too short (recommended: 1000+ words for SEO)', impact: 'medium' });
+			issues.push({
+				type: 'warning',
+				category: 'content',
+				message: 'Content is too short (recommended: 1000+ words for SEO)',
+				impact: 'medium'
+			});
 			suggestions.push('Add more content to improve SEO ranking');
 		}
 
 		// Heading structure
-		const headings = editorState.blocks.filter(b => b.type === 'heading');
+		const headings = editorState.blocks.filter((b) => b.type === 'heading');
 		if (headings.length === 0) {
-			issues.push({ type: 'warning', category: 'headings', message: 'No headings found. Add H2/H3 headings to structure content', impact: 'medium' });
+			issues.push({
+				type: 'warning',
+				category: 'headings',
+				message: 'No headings found. Add H2/H3 headings to structure content',
+				impact: 'medium'
+			});
 		}
 
 		// Images without alt
 		const imagesWithoutAlt = editorState.blocks.filter(
-			b => b.type === 'image' && !b.content.mediaAlt
+			(b) => b.type === 'image' && !b.content.mediaAlt
 		).length;
 		if (imagesWithoutAlt > 0) {
-			issues.push({ type: 'warning', category: 'images', message: `${imagesWithoutAlt} image(s) missing alt text`, impact: 'medium' });
+			issues.push({
+				type: 'warning',
+				category: 'images',
+				message: `${imagesWithoutAlt} image(s) missing alt text`,
+				impact: 'medium'
+			});
 		}
 
 		// Keyword density (if focus keyword provided)
@@ -724,16 +766,26 @@
 			keywordDensity = (keywordCount / words.length) * 100;
 
 			if (keywordDensity < 0.5) {
-				issues.push({ type: 'warning', category: 'keywords', message: 'Focus keyword density is too low', impact: 'medium' });
+				issues.push({
+					type: 'warning',
+					category: 'keywords',
+					message: 'Focus keyword density is too low',
+					impact: 'medium'
+				});
 			} else if (keywordDensity > 3) {
-				issues.push({ type: 'warning', category: 'keywords', message: 'Focus keyword density is too high (keyword stuffing)', impact: 'medium' });
+				issues.push({
+					type: 'warning',
+					category: 'keywords',
+					message: 'Focus keyword density is too high (keyword stuffing)',
+					impact: 'medium'
+				});
 			}
 		}
 
 		// Readability (Flesch-Kincaid approximation)
 		const avgWordsPerSentence = sentences.length > 0 ? words.length / sentences.length : 0;
 		const avgSyllablesPerWord = 1.5; // Simplified
-		const readabilityScore = 206.835 - (1.015 * avgWordsPerSentence) - (84.6 * avgSyllablesPerWord);
+		const readabilityScore = 206.835 - 1.015 * avgWordsPerSentence - 84.6 * avgSyllablesPerWord;
 
 		let readabilityGrade = 'Easy';
 		if (readabilityScore < 30) readabilityGrade = 'Very Difficult';
@@ -743,9 +795,9 @@
 		else if (readabilityScore < 80) readabilityGrade = 'Fairly Easy';
 
 		// Calculate overall score
-		const errorCount = issues.filter(i => i.type === 'error').length;
-		const warningCount = issues.filter(i => i.type === 'warning').length;
-		let score = 100 - (errorCount * 20) - (warningCount * 5);
+		const errorCount = issues.filter((i) => i.type === 'error').length;
+		const warningCount = issues.filter((i) => i.type === 'warning').length;
+		let score = 100 - errorCount * 20 - warningCount * 5;
 		score = Math.max(0, Math.min(100, score));
 
 		let grade: SEOAnalysis['grade'] = 'A';
@@ -779,15 +831,17 @@
 		return blocks.reduce((count, block) => {
 			const text = block.content.text || block.content.html || '';
 			const plainText = text.replace(/<[^>]*>/g, '');
-			return count + plainText.split(/\s+/).filter(w => w.length > 0).length;
+			return count + plainText.split(/\s+/).filter((w) => w.length > 0).length;
 		}, 0);
 	}
 
 	function getPlainTextContent(blocks: Block[]): string {
-		return blocks.map(block => {
-			const text = block.content.text || block.content.html || '';
-			return text.replace(/<[^>]*>/g, '');
-		}).join(' ');
+		return blocks
+			.map((block) => {
+				const text = block.content.text || block.content.html || '';
+				return text.replace(/<[^>]*>/g, '');
+			})
+			.join(' ');
 	}
 
 	function formatLastSaved(iso: string | null): string {
@@ -803,9 +857,12 @@
 
 	function getDeviceWidth(): string {
 		switch (editorState.devicePreview) {
-			case 'mobile': return '375px';
-			case 'tablet': return '768px';
-			default: return '100%';
+			case 'mobile':
+				return '375px';
+			case 'tablet':
+				return '768px';
+			default:
+				return '100%';
 		}
 	}
 </script>
@@ -883,7 +940,7 @@
 					type="button"
 					class="view-btn"
 					class:active={editorState.viewMode === 'edit'}
-					onclick={() => editorState.viewMode = 'edit'}
+					onclick={() => (editorState.viewMode = 'edit')}
 				>
 					<IconEdit size={16} />
 					Edit
@@ -892,7 +949,7 @@
 					type="button"
 					class="view-btn"
 					class:active={editorState.viewMode === 'preview'}
-					onclick={() => editorState.viewMode = 'preview'}
+					onclick={() => (editorState.viewMode = 'preview')}
 				>
 					<IconEye size={16} />
 					Preview
@@ -902,27 +959,27 @@
 
 		<div class="header-right">
 			<div class="save-status">
-			{#if saveError}
-				<span class="error">{saveError}</span>
-			{:else if isSaving}
-				<span class="saving"><IconCloudUpload size={16} class="spin" /> Saving...</span>
-			{:else if editorState.hasUnsavedChanges}
-				<span class="unsaved">Unsaved changes</span>
-			{:else}
-				<span class="saved">Saved {formatLastSaved(editorState.lastSaved)}</span>
-			{/if}
-		</div>
-		{#if seoAnalysis && seoAnalysis.grade}
-			<div class="seo-score" title="SEO Score: {seoAnalysis.score}/100">
-				<span class="grade grade-{seoAnalysis.grade.toLowerCase()}">{seoAnalysis.grade}</span>
+				{#if saveError}
+					<span class="error">{saveError}</span>
+				{:else if isSaving}
+					<span class="saving"><IconCloudUpload size={16} class="spin" /> Saving...</span>
+				{:else if editorState.hasUnsavedChanges}
+					<span class="unsaved">Unsaved changes</span>
+				{:else}
+					<span class="saved">Saved {formatLastSaved(editorState.lastSaved)}</span>
+				{/if}
 			</div>
-		{/if}
+			{#if seoAnalysis && seoAnalysis.grade}
+				<div class="seo-score" title="SEO Score: {seoAnalysis.score}/100">
+					<span class="grade grade-{seoAnalysis.grade.toLowerCase()}">{seoAnalysis.grade}</span>
+				</div>
+			{/if}
 
 			<div class="header-actions">
 				<button
 					type="button"
 					class="toolbar-btn"
-					onclick={() => showRevisions = true}
+					onclick={() => (showRevisions = true)}
 					title="Revision History"
 				>
 					<IconHistory size={18} />
@@ -930,7 +987,7 @@
 				<button
 					type="button"
 					class="toolbar-btn"
-					onclick={() => showKeyboardHelp = true}
+					onclick={() => (showKeyboardHelp = true)}
 					title="Keyboard Shortcuts"
 				>
 					<IconKeyboard size={18} />
@@ -958,12 +1015,7 @@
 				<IconDeviceFloppy size={18} />
 				Save Draft
 			</button>
-			<button
-				type="button"
-				class="btn-publish"
-				onclick={handlePublish}
-				disabled={isSaving}
-			>
+			<button type="button" class="btn-publish" onclick={handlePublish} disabled={isSaving}>
 				<IconCloudUpload size={18} />
 				Publish
 			</button>
@@ -978,7 +1030,7 @@
 					type="button"
 					class="tab-btn"
 					class:active={editorState.sidebarTab === 'blocks'}
-					onclick={() => editorState.sidebarTab = 'blocks'}
+					onclick={() => (editorState.sidebarTab = 'blocks')}
 					title="Add Blocks"
 				>
 					<IconPlus size={20} />
@@ -987,7 +1039,7 @@
 					type="button"
 					class="tab-btn"
 					class:active={editorState.sidebarTab === 'settings'}
-					onclick={() => editorState.sidebarTab = 'settings'}
+					onclick={() => (editorState.sidebarTab = 'settings')}
 					title="Block Settings"
 				>
 					<IconSettings size={20} />
@@ -996,7 +1048,7 @@
 					type="button"
 					class="tab-btn"
 					class:active={editorState.sidebarTab === 'layers'}
-					onclick={() => editorState.sidebarTab = 'layers'}
+					onclick={() => (editorState.sidebarTab = 'layers')}
 					title="Block Layers"
 				>
 					<IconStack2 size={20} />
@@ -1005,7 +1057,7 @@
 					type="button"
 					class="tab-btn"
 					class:active={editorState.sidebarTab === 'ai'}
-					onclick={() => editorState.sidebarTab = 'ai'}
+					onclick={() => (editorState.sidebarTab = 'ai')}
 					title="AI Assistant"
 				>
 					<IconRobot size={20} />
@@ -1014,7 +1066,7 @@
 					type="button"
 					class="tab-btn"
 					class:active={editorState.sidebarTab === 'seo'}
-					onclick={() => editorState.sidebarTab = 'seo'}
+					onclick={() => (editorState.sidebarTab = 'seo')}
 					title="SEO Analysis"
 				>
 					<IconSeo size={20} />
@@ -1028,16 +1080,9 @@
 					</div>
 					<div class="block-search">
 						<IconSearch size={16} />
-						<input
-							type="text"
-							placeholder="Search blocks..."
-							bind:value={searchQuery}
-						/>
+						<input type="text" placeholder="Search blocks..." bind:value={searchQuery} />
 					</div>
-					<BlockInserter
-						{searchQuery}
-						oninsert={handleBlockInsert}
-					/>
+					<BlockInserter {searchQuery} oninsert={handleBlockInsert} />
 				{:else if editorState.sidebarTab === 'settings'}
 					{#if selectedBlock}
 						<BlockSettingsPanel
@@ -1060,7 +1105,7 @@
 								type="button"
 								class="layer-item"
 								class:selected={block.id === editorState.selectedBlockId}
-								onclick={() => editorState.selectedBlockId = block.id}
+								onclick={() => (editorState.selectedBlockId = block.id)}
 							>
 								<IconGripVertical size={14} />
 								<span class="layer-type">{BLOCK_DEFINITIONS[block.type]?.name || block.type}</span>
@@ -1111,11 +1156,7 @@
 						</div>
 						<h2>Start creating your content</h2>
 						<p>Click the button below to add your first block</p>
-						<button
-							type="button"
-							class="btn-add-first"
-							onclick={() => openBlockInserter(0)}
-						>
+						<button type="button" class="btn-add-first" onclick={() => openBlockInserter(0)}>
 							<IconPlus size={18} />
 							Add Block
 						</button>
@@ -1125,25 +1166,30 @@
 					<div class="blocks-container">
 						{#each editorState.blocks as block, index (block.id)}
 							<div
-							class="block-wrapper"
-							class:selected={block.id === editorState.selectedBlockId}
-							class:hovered={block.id === editorState.hoveredBlockId}
-							class:dragging={block.id === editorState.draggedBlockId}
-							class:drop-target={index === editorState.dropTargetIndex}
-							data-block-id={block.id}
-							draggable={!readOnly}
-							ondragstart={(e: DragEvent) => handleDragStart(e, block.id)}
-							ondragover={(e: DragEvent) => handleDragOver(e, index)}
-							ondragend={handleDragEnd}
-							ondrop={(e: DragEvent) => handleDrop(e, index)}
-							onclick={() => editorState.selectedBlockId = block.id}
-							onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); editorState.selectedBlockId = block.id; } }}
-							onmouseenter={() => editorState.hoveredBlockId = block.id}
-							onmouseleave={() => editorState.hoveredBlockId = null}
-							tabindex="0"
-							role="button"
-							animate:flip={{ duration: 300, easing: quintOut }}
-						>
+								class="block-wrapper"
+								class:selected={block.id === editorState.selectedBlockId}
+								class:hovered={block.id === editorState.hoveredBlockId}
+								class:dragging={block.id === editorState.draggedBlockId}
+								class:drop-target={index === editorState.dropTargetIndex}
+								data-block-id={block.id}
+								draggable={!readOnly}
+								ondragstart={(e: DragEvent) => handleDragStart(e, block.id)}
+								ondragover={(e: DragEvent) => handleDragOver(e, index)}
+								ondragend={handleDragEnd}
+								ondrop={(e: DragEvent) => handleDrop(e, index)}
+								onclick={() => (editorState.selectedBlockId = block.id)}
+								onkeydown={(e: KeyboardEvent) => {
+									if (e.key === 'Enter' || e.key === ' ') {
+										e.preventDefault();
+										editorState.selectedBlockId = block.id;
+									}
+								}}
+								onmouseenter={() => (editorState.hoveredBlockId = block.id)}
+								onmouseleave={() => (editorState.hoveredBlockId = null)}
+								tabindex="0"
+								role="button"
+								animate:flip={{ duration: 300, easing: quintOut }}
+							>
 								<!-- Block Toolbar (on hover/select) -->
 								{#if (block.id === editorState.selectedBlockId || block.id === editorState.hoveredBlockId) && editorState.viewMode === 'edit'}
 									<div class="block-toolbar" transition:fade={{ duration: 150 }}>
@@ -1158,7 +1204,10 @@
 										<button
 											type="button"
 											class="block-tool"
-											onclick={(e: MouseEvent) => { e.stopPropagation(); moveBlock(block.id, 'up'); }}
+											onclick={(e: MouseEvent) => {
+												e.stopPropagation();
+												moveBlock(block.id, 'up');
+											}}
 											disabled={index === 0}
 											title="Move up"
 										>
@@ -1167,7 +1216,10 @@
 										<button
 											type="button"
 											class="block-tool"
-											onclick={(e: MouseEvent) => { e.stopPropagation(); moveBlock(block.id, 'down'); }}
+											onclick={(e: MouseEvent) => {
+												e.stopPropagation();
+												moveBlock(block.id, 'down');
+											}}
 											disabled={index === editorState.blocks.length - 1}
 											title="Move down"
 										>
@@ -1177,7 +1229,10 @@
 										<button
 											type="button"
 											class="block-tool"
-											onclick={(e: MouseEvent) => { e.stopPropagation(); duplicateBlock(block.id); }}
+											onclick={(e: MouseEvent) => {
+												e.stopPropagation();
+												duplicateBlock(block.id);
+											}}
 											title="Duplicate"
 										>
 											<IconCopy size={16} />
@@ -1185,7 +1240,10 @@
 										<button
 											type="button"
 											class="block-tool danger"
-											onclick={(e: MouseEvent) => { e.stopPropagation(); deleteBlock(block.id); }}
+											onclick={(e: MouseEvent) => {
+												e.stopPropagation();
+												deleteBlock(block.id);
+											}}
 											title="Delete"
 										>
 											<IconTrash size={16} />
@@ -1206,7 +1264,10 @@
 									<button
 										type="button"
 										class="add-between-btn"
-										onclick={(e: MouseEvent) => { e.stopPropagation(); openBlockInserter(index + 1, e); }}
+										onclick={(e: MouseEvent) => {
+											e.stopPropagation();
+											openBlockInserter(index + 1, e);
+										}}
 										title="Add block"
 									>
 										<IconPlus size={16} />
@@ -1231,13 +1292,13 @@
 			addBlock(type, inserterIndex);
 			showBlockInserter = false;
 		}}
-		onclose={() => showBlockInserter = false}
+		onclose={() => (showBlockInserter = false)}
 	/>
 {/if}
 
 <!-- Keyboard Shortcuts Modal -->
 {#if showKeyboardHelp}
-	<KeyboardShortcuts isOpen={showKeyboardHelp} onClose={() => showKeyboardHelp = false} />
+	<KeyboardShortcuts isOpen={showKeyboardHelp} onClose={() => (showKeyboardHelp = false)} />
 {/if}
 
 <!-- Revision History Modal -->
@@ -1803,8 +1864,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Responsive */
@@ -1832,6 +1897,5 @@
 			transform: translateX(-100%);
 			transition: transform 0.3s ease;
 		}
-
 	}
 </style>

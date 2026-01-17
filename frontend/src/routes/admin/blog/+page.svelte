@@ -67,7 +67,7 @@
 	];
 
 	function getPredefinedCategoryById(id: string): BlogCategory | undefined {
-		return predefinedCategories.find(c => c.id === id);
+		return predefinedCategories.find((c) => c.id === id);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -181,7 +181,6 @@
 		}
 	}
 
-	
 	// ═══════════════════════════════════════════════════════════════════════════
 	// WebSocket & Real-time Updates
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -393,7 +392,9 @@
 				params.append('ids', [...selectedPosts].join(','));
 			}
 
-			const response = await adminFetch<Response>(`/api/admin/posts/export?${params}`, { rawResponse: true });
+			const response = await adminFetch<Response>(`/api/admin/posts/export?${params}`, {
+				rawResponse: true
+			});
 			const blob = await response.blob();
 
 			const a = document.createElement('a');
@@ -640,741 +641,761 @@
 
 <div class="blog-page">
 	<div class="admin-page-container">
-	<!-- Notifications -->
-	<div class="notifications">
-		{#each notifications as notification (notification.id)}
-			<div class="notification {notification.type}" transition:fly={{ y: -20, duration: 300 }}>
-				{#if notification.type === 'success'}
-					<IconCheck size={20} />
-				{:else if notification.type === 'error'}
-					<IconX size={20} />
-				{:else}
-					<IconAlertCircle size={20} />
-				{/if}
-				{notification.message}
-			</div>
-		{/each}
-	</div>
-
-	<!-- Header -->
-	<header class="page-header">
-		<h1>Blog Posts</h1>
-		<p class="subtitle">
-			Create and manage blog posts • {posts.length} posts • Last updated: {new Date().toLocaleTimeString()}
-		</p>
-		<div class="header-actions">
-			<button
-				class="btn-icon"
-				onclick={() => {
-					loadPosts();
-					loadStats();
-				}}
-				title="Refresh (R)"
-			>
-				<IconRefresh size={18} />
-			</button>
-			<button
-				class="btn-primary"
-				onclick={() => goto('/admin/blog/create')}
-				title="New Post (Ctrl+N)"
-			>
-				<IconPlus size={18} />
-				New Post
-			</button>
+		<!-- Notifications -->
+		<div class="notifications">
+			{#each notifications as notification (notification.id)}
+				<div class="notification {notification.type}" transition:fly={{ y: -20, duration: 300 }}>
+					{#if notification.type === 'success'}
+						<IconCheck size={20} />
+					{:else if notification.type === 'error'}
+						<IconX size={20} />
+					{:else}
+						<IconAlertCircle size={20} />
+					{/if}
+					{notification.message}
+				</div>
+			{/each}
 		</div>
-	</header>
 
-	<!-- Stats -->
-	{#if stats}
-		<div class="stats-grid">
-			<div class="stat-card">
-				<div class="stat-icon"><IconChartBar size={24} /></div>
-				<div class="stat-content">
-					<div class="stat-value">{stats.total}</div>
-					<div class="stat-label">Total Posts</div>
-					<div class="stat-change">+{stats.new_this_month || 0} this month</div>
-				</div>
+		<!-- Header -->
+		<header class="page-header">
+			<h1>Blog Posts</h1>
+			<p class="subtitle">
+				Create and manage blog posts • {posts.length} posts • Last updated: {new Date().toLocaleTimeString()}
+			</p>
+			<div class="header-actions">
+				<button
+					class="btn-icon"
+					onclick={() => {
+						loadPosts();
+						loadStats();
+					}}
+					title="Refresh (R)"
+				>
+					<IconRefresh size={18} />
+				</button>
+				<button
+					class="btn-primary"
+					onclick={() => goto('/admin/blog/create')}
+					title="New Post (Ctrl+N)"
+				>
+					<IconPlus size={18} />
+					New Post
+				</button>
 			</div>
-			<div class="stat-card published">
-				<div class="stat-icon"><IconCheck size={24} /></div>
-				<div class="stat-content">
-					<div class="stat-value">{stats.published}</div>
-					<div class="stat-label">Published</div>
-					<div class="stat-change">{Math.round((stats.published / stats.total) * 100)}%</div>
+		</header>
+
+		<!-- Stats -->
+		{#if stats}
+			<div class="stats-grid">
+				<div class="stat-card">
+					<div class="stat-icon"><IconChartBar size={24} /></div>
+					<div class="stat-content">
+						<div class="stat-value">{stats.total}</div>
+						<div class="stat-label">Total Posts</div>
+						<div class="stat-change">+{stats.new_this_month || 0} this month</div>
+					</div>
 				</div>
-			</div>
-			<div class="stat-card draft">
-				<div class="stat-icon"><IconEdit size={24} /></div>
-				<div class="stat-content">
-					<div class="stat-value">{stats.draft}</div>
-					<div class="stat-label">Drafts</div>
-					<div class="stat-change">{stats.scheduled || 0} scheduled</div>
+				<div class="stat-card published">
+					<div class="stat-icon"><IconCheck size={24} /></div>
+					<div class="stat-content">
+						<div class="stat-value">{stats.published}</div>
+						<div class="stat-label">Published</div>
+						<div class="stat-change">{Math.round((stats.published / stats.total) * 100)}%</div>
+					</div>
 				</div>
-			</div>
-			<div class="stat-card views">
-				<div class="stat-icon"><IconEye size={24} /></div>
-				<div class="stat-content">
-					<div class="stat-value">{formatNumber(stats.total_views || 0)}</div>
-					<div class="stat-label">Total Views</div>
-					<div class="stat-change">
-						<IconTrendingUp size={16} />
-						{stats.views_growth || 0}%
+				<div class="stat-card draft">
+					<div class="stat-icon"><IconEdit size={24} /></div>
+					<div class="stat-content">
+						<div class="stat-value">{stats.draft}</div>
+						<div class="stat-label">Drafts</div>
+						<div class="stat-change">{stats.scheduled || 0} scheduled</div>
+					</div>
+				</div>
+				<div class="stat-card views">
+					<div class="stat-icon"><IconEye size={24} /></div>
+					<div class="stat-content">
+						<div class="stat-value">{formatNumber(stats.total_views || 0)}</div>
+						<div class="stat-label">Total Views</div>
+						<div class="stat-change">
+							<IconTrendingUp size={16} />
+							{stats.views_growth || 0}%
+						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-	{/if}
+		{/if}
 
-	<!-- Controls Bar -->
-	<div class="controls-bar">
-		<div class="controls-left">
-			{#if showBulkActions}
-				<div class="bulk-actions" transition:slide={{ duration: 200 }}>
-					<span class="bulk-count">{selectedPosts.size} selected</span>
-					<button class="btn-secondary" onclick={() => bulkChangeStatus('published')}>
-						Publish
-					</button>
-					<button class="btn-secondary" onclick={() => bulkChangeStatus('draft')}> Draft </button>
-					<button class="btn-secondary danger" onclick={bulkDelete}>
-						<IconTrash size={18} />
-						Delete
-					</button>
-					<button
-						class="btn-ghost"
-						onclick={() => {
-							selectedPosts.clear();
-							selectAll = false;
-						}}
-					>
-						Cancel
-					</button>
-				</div>
-			{:else}
-				<div class="search-box">
-					<IconSearch size={20} />
-					<input type="text" bind:value={searchQuery} placeholder="Search posts... (Ctrl+F)" />
-				</div>
-			{/if}
-		</div>
-
-		<div class="controls-right">
-			<!-- Date Range -->
-			<div class="date-range">
-				<input type="date" bind:value={dateRange.start} class="date-input" />
-				<span>to</span>
-				<input type="date" bind:value={dateRange.end} class="date-input" />
+		<!-- Controls Bar -->
+		<div class="controls-bar">
+			<div class="controls-left">
+				{#if showBulkActions}
+					<div class="bulk-actions" transition:slide={{ duration: 200 }}>
+						<span class="bulk-count">{selectedPosts.size} selected</span>
+						<button class="btn-secondary" onclick={() => bulkChangeStatus('published')}>
+							Publish
+						</button>
+						<button class="btn-secondary" onclick={() => bulkChangeStatus('draft')}> Draft </button>
+						<button class="btn-secondary danger" onclick={bulkDelete}>
+							<IconTrash size={18} />
+							Delete
+						</button>
+						<button
+							class="btn-ghost"
+							onclick={() => {
+								selectedPosts.clear();
+								selectAll = false;
+							}}
+						>
+							Cancel
+						</button>
+					</div>
+				{:else}
+					<div class="search-box">
+						<IconSearch size={20} />
+						<input type="text" bind:value={searchQuery} placeholder="Search posts... (Ctrl+F)" />
+					</div>
+				{/if}
 			</div>
 
-			<!-- Filters -->
-			<select class="filter-select" bind:value={statusFilter}>
-				{#each statusOptions as option}
-					<option value={option.value}>{option.label}</option>
-				{/each}
-			</select>
+			<div class="controls-right">
+				<!-- Date Range -->
+				<div class="date-range">
+					<input type="date" bind:value={dateRange.start} class="date-input" />
+					<span>to</span>
+					<input type="date" bind:value={dateRange.end} class="date-input" />
+				</div>
 
-			<select class="filter-select" bind:value={categoryFilter}>
-				<option value="all">All Categories</option>
-				{#each predefinedCategories as category}
-					<option value={category.id}>{category.name}</option>
-				{/each}
-			</select>
-
-			<!-- Sort -->
-			<div class="sort-controls">
-				<select class="filter-select" bind:value={sortBy}>
-					{#each sortOptions as option}
+				<!-- Filters -->
+				<select class="filter-select" bind:value={statusFilter}>
+					{#each statusOptions as option}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
-				<button
-					class="btn-icon"
-					onclick={() => (sortOrder = sortOrder === 'asc' ? 'desc' : 'asc')}
-				>
-					{#if sortOrder === 'asc'}
-						<IconSortAscending size={18} />
-					{:else}
-						<IconSortDescending size={18} />
-					{/if}
-				</button>
-			</div>
 
-			<!-- View Toggle -->
-			<div class="view-toggle">
-				<button
-					class:active={viewMode === 'grid'}
-					onclick={() => (viewMode = 'grid')}
-					title="Grid View"
-				>
-					<IconLayoutGrid size={18} />
-				</button>
-				<button
-					class:active={viewMode === 'list'}
-					onclick={() => (viewMode = 'list')}
-					title="List View"
-				>
-					<IconList size={18} />
-				</button>
-			</div>
+				<select class="filter-select" bind:value={categoryFilter}>
+					<option value="all">All Categories</option>
+					{#each predefinedCategories as category}
+						<option value={category.id}>{category.name}</option>
+					{/each}
+				</select>
 
-			<!-- Actions -->
-			<div class="action-buttons">
-				<button class="btn-secondary" onclick={() => (showExportModal = true)}>
-					<IconDownload size={18} />
-					Export
-				</button>
-				<label class="btn-secondary">
-					<IconUpload size={18} />
-					Import
-					<input type="file" accept=".csv,.json" onchange={importPosts} hidden />
-				</label>
-				<a href="/admin/blog/categories" class="btn-secondary">
-					<IconFilter size={18} />
-					Categories
-				</a>
-			</div>
-		</div>
-	</div>
-
-	<!-- Posts View -->
-	{#if viewMode === 'grid'}
-		<div class="posts-grid">
-			{#if loading}
-				{#each Array(6) as _}
-					<div class="post-card skeleton">
-						<div class="skeleton-image"></div>
-						<div class="skeleton-content">
-							<div class="skeleton-line"></div>
-							<div class="skeleton-line short"></div>
-						</div>
-					</div>
-				{/each}
-			{:else if posts.length === 0}
-				<div class="empty-state">
-					<IconEdit size={48} />
-					<h3>No posts found</h3>
-					<p>{searchQuery ? 'Try a different search' : 'Create your first blog post'}</p>
-					<button class="btn-primary" onclick={() => goto('/admin/blog/create')}>
-						<IconPlus size={18} />
-						Create Post
+				<!-- Sort -->
+				<div class="sort-controls">
+					<select class="filter-select" bind:value={sortBy}>
+						{#each sortOptions as option}
+							<option value={option.value}>{option.label}</option>
+						{/each}
+					</select>
+					<button
+						class="btn-icon"
+						onclick={() => (sortOrder = sortOrder === 'asc' ? 'desc' : 'asc')}
+					>
+						{#if sortOrder === 'asc'}
+							<IconSortAscending size={18} />
+						{:else}
+							<IconSortDescending size={18} />
+						{/if}
 					</button>
 				</div>
-			{:else}
-				<!-- Select All Card -->
-				<div class="select-all-card">
-					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
-						<span>Select All ({posts.length})</span>
-					</label>
+
+				<!-- View Toggle -->
+				<div class="view-toggle">
+					<button
+						class:active={viewMode === 'grid'}
+						onclick={() => (viewMode = 'grid')}
+						title="Grid View"
+					>
+						<IconLayoutGrid size={18} />
+					</button>
+					<button
+						class:active={viewMode === 'list'}
+						onclick={() => (viewMode = 'list')}
+						title="List View"
+					>
+						<IconList size={18} />
+					</button>
 				</div>
 
-				{#each posts as post (post.id)}
-					<div
-						class="post-card"
-						class:selected={selectedPosts.has(post.id)}
-						transition:scale={{ duration: 200 }}
-					>
-						<!-- Selection Checkbox -->
-						<div class="post-select">
-							<input
-								type="checkbox"
-								checked={selectedPosts.has(post.id)}
-								onchange={() => togglePostSelection(post.id)}
-							/>
-						</div>
-
-						<!-- Featured Star -->
-						<button
-							class="featured-toggle"
-							class:active={post.featured}
-							onclick={() => toggleFeatured(post)}
-						>
-							{#if post.featured}
-								<IconStarFilled size={20} />
-							{:else}
-								<IconStar size={20} />
-							{/if}
-						</button>
-
-						<!-- Post Image -->
-						{#if post.featured_image}
-							<div class="post-image" style="background-image: url({post.featured_image})">
-								{#if post.status === 'scheduled'}
-									<div class="scheduled-overlay">
-										<IconClock size={20} />
-										{formatDateTime(post.publish_at)}
-									</div>
-								{/if}
-							</div>
-						{:else}
-							<div class="post-image placeholder">
-								<IconEdit size={32} />
-							</div>
-						{/if}
-
-						<div class="post-content">
-							<div class="post-header">
-								<h3>{post.title}</h3>
-								<div class="post-badges">
-									<span class="status-badge status-{post.status}">
-										{post.status}
-									</span>
-									{#if post.seo_score}
-										<span
-											class="seo-badge"
-											style="background: {getSeoScoreColor(
-												post.seo_score
-											)}20; color: {getSeoScoreColor(post.seo_score)}"
-										>
-											SEO: {post.seo_score}
-										</span>
-									{/if}
-								</div>
-							</div>
-
-							{#if post.excerpt}
-								<p class="post-excerpt">{post.excerpt}</p>
-							{/if}
-
-							<!-- Metrics -->
-							<div class="post-metrics">
-								<div class="metric">
-									<IconEye size={16} />
-									{formatNumber(post.view_count || 0)}
-								</div>
-								<div class="metric">
-									<IconChartBar size={16} />
-									{post.engagement_rate || 0}%
-								</div>
-								{#if post.bounce_rate}
-									<div class="metric">
-										<IconTrendingUp size={16} />
-										{post.bounce_rate}% bounce
-									</div>
-								{/if}
-								{#if post.avg_read_time}
-									<div class="metric">
-										<IconClock size={16} />
-										{post.avg_read_time}s read
-									</div>
-								{/if}
-							</div>
-
-							<div class="post-meta">
-								{#if post.author}
-									<div class="meta-item">
-										<IconUser size={16} />
-										{post.author.name}
-									</div>
-								{/if}
-
-								{#if post.published_at}
-									<div class="meta-item">
-										<IconCalendar size={16} />
-										{formatDate(post.published_at)}
-									</div>
-								{/if}
-							</div>
-
-							{#if post.categories && post.categories.length > 0}
-								<div class="post-categories">
-									{#each (post.categories || []).slice(0, 3) as categoryId}
-										{@const category = typeof categoryId === 'string' ? getPredefinedCategoryById(categoryId) : categoryId}
-										{#if category}
-											<span
-												class="category-badge"
-												style:--tag-color={category.color || '#E6B800'}
-											>
-												{category.name}
-											</span>
-										{/if}
-									{/each}
-									{#if post.categories.length > 3}
-										<span class="category-more">+{post.categories.length - 3}</span>
-									{/if}
-								</div>
-							{/if}
-
-							<!-- Quick Actions -->
-							<div class="post-actions">
-								<button
-									class="action-btn primary"
-									onclick={() => goto(`/admin/blog/edit/${post.id}`)}
-									title="Edit"
-								>
-									<IconEdit size={18} />
-									Edit
-								</button>
-
-								<button class="action-btn" onclick={() => (previewPost = post)} title="Preview">
-									<IconEye size={18} />
-								</button>
-
-								<button
-									class="action-btn"
-									onclick={() => toggleStatus(post)}
-									title="Toggle Status"
-								>
-									{#if post.status === 'published'}
-										<IconPlayerPause size={18} />
-									{:else}
-										<IconPlayerPlay size={18} />
-									{/if}
-								</button>
-
-								<!-- More Actions -->
-								<div class="action-dropdown">
-									<button class="action-btn" onclick={() => toggleActionMenu(post.id)}>
-										<IconMenu2 size={18} />
-									</button>
-
-									{#if activeActionMenu === post.id}
-										<div class="action-menu" transition:scale={{ duration: 150 }}>
-											<button onclick={() => duplicatePost(post.id)}>
-												<IconCopy size={16} />
-												Duplicate
-											</button>
-											<button
-												onclick={() => {
-													schedulePost = post;
-													showScheduleModal = true;
-												}}
-											>
-												<IconClock size={16} />
-												Schedule
-											</button>
-											<button onclick={() => loadPostAnalytics(post)}>
-												<IconChartBar size={16} />
-												Analytics
-											</button>
-											<button onclick={() => window.open(`/blog/${post.slug}`, '_blank')}>
-												<IconExternalLink size={16} />
-												View Live
-											</button>
-											<hr />
-											<button class="danger" onclick={() => deletePost(post.id)}>
-												<IconTrash size={16} />
-												Delete
-											</button>
-										</div>
-									{/if}
-								</div>
-							</div>
-						</div>
-					</div>
-				{/each}
-			{/if}
+				<!-- Actions -->
+				<div class="action-buttons">
+					<button class="btn-secondary" onclick={() => (showExportModal = true)}>
+						<IconDownload size={18} />
+						Export
+					</button>
+					<label class="btn-secondary">
+						<IconUpload size={18} />
+						Import
+						<input type="file" accept=".csv,.json" onchange={importPosts} hidden />
+					</label>
+					<a href="/admin/blog/categories" class="btn-secondary">
+						<IconFilter size={18} />
+						Categories
+					</a>
+				</div>
+			</div>
 		</div>
-	{:else}
-		<!-- List View -->
-		<div class="posts-table-container">
-			<table class="posts-table">
-				<thead>
-					<tr>
-						<th>
+
+		<!-- Posts View -->
+		{#if viewMode === 'grid'}
+			<div class="posts-grid">
+				{#if loading}
+					{#each Array(6) as _}
+						<div class="post-card skeleton">
+							<div class="skeleton-image"></div>
+							<div class="skeleton-content">
+								<div class="skeleton-line"></div>
+								<div class="skeleton-line short"></div>
+							</div>
+						</div>
+					{/each}
+				{:else if posts.length === 0}
+					<div class="empty-state">
+						<IconEdit size={48} />
+						<h3>No posts found</h3>
+						<p>{searchQuery ? 'Try a different search' : 'Create your first blog post'}</p>
+						<button class="btn-primary" onclick={() => goto('/admin/blog/create')}>
+							<IconPlus size={18} />
+							Create Post
+						</button>
+					</div>
+				{:else}
+					<!-- Select All Card -->
+					<div class="select-all-card">
+						<label class="checkbox-label">
 							<input type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
-						</th>
-						<th>Title</th>
-						<th>Author</th>
-						<th>Status</th>
-						<th>Categories</th>
-						<th>Views</th>
-						<th>SEO</th>
-						<th>Published</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
+							<span>Select All ({posts.length})</span>
+						</label>
+					</div>
+
 					{#each posts as post (post.id)}
-						<tr class:selected={selectedPosts.has(post.id)}>
-							<td>
+						<div
+							class="post-card"
+							class:selected={selectedPosts.has(post.id)}
+							transition:scale={{ duration: 200 }}
+						>
+							<!-- Selection Checkbox -->
+							<div class="post-select">
 								<input
 									type="checkbox"
 									checked={selectedPosts.has(post.id)}
 									onchange={() => togglePostSelection(post.id)}
 								/>
-							</td>
-							<td>
-								<div class="table-title">
-									{#if post.featured}
-										<IconStarFilled size={16} class="featured-icon" />
+							</div>
+
+							<!-- Featured Star -->
+							<button
+								class="featured-toggle"
+								class:active={post.featured}
+								onclick={() => toggleFeatured(post)}
+							>
+								{#if post.featured}
+									<IconStarFilled size={20} />
+								{:else}
+									<IconStar size={20} />
+								{/if}
+							</button>
+
+							<!-- Post Image -->
+							{#if post.featured_image}
+								<div class="post-image" style="background-image: url({post.featured_image})">
+									{#if post.status === 'scheduled'}
+										<div class="scheduled-overlay">
+											<IconClock size={20} />
+											{formatDateTime(post.publish_at)}
+										</div>
 									{/if}
-									<a href="/admin/blog/edit/{post.id}">{post.title}</a>
 								</div>
-							</td>
-							<td>{post.author?.name || '-'}</td>
-							<td>
-								<span class="status-badge status-{post.status}">
-									{post.status}
-								</span>
-							</td>
-							<td>
-								{#if post.categories?.length > 0}
-									<div class="table-category-tags">
-										{#each (post.categories || []).slice(0, 2) as categoryId}
-											{@const category = typeof categoryId === 'string' ? getPredefinedCategoryById(categoryId) : categoryId}
-											{#if category}
-												<span class="category-tag-table" style:--tag-color={category.color || '#E6B800'}>{category.name}</span>
-											{/if}
-										{/each}
-										{#if post.categories.length > 2}
-											<span class="more-tag">+{post.categories.length - 2}</span>
+							{:else}
+								<div class="post-image placeholder">
+									<IconEdit size={32} />
+								</div>
+							{/if}
+
+							<div class="post-content">
+								<div class="post-header">
+									<h3>{post.title}</h3>
+									<div class="post-badges">
+										<span class="status-badge status-{post.status}">
+											{post.status}
+										</span>
+										{#if post.seo_score}
+											<span
+												class="seo-badge"
+												style="background: {getSeoScoreColor(
+													post.seo_score
+												)}20; color: {getSeoScoreColor(post.seo_score)}"
+											>
+												SEO: {post.seo_score}
+											</span>
 										{/if}
 									</div>
-								{:else}
-									-
-								{/if}
-							</td>
-							<td>{formatNumber(post.view_count || 0)}</td>
-							<td>
-								<div class="seo-score-bar" style="--score: {post.seo_score}%">
-									{post.seo_score}
 								</div>
-							</td>
-							<td>{post.published_at ? formatDate(post.published_at) : '-'}</td>
-							<td>
-								<div class="table-actions">
+
+								{#if post.excerpt}
+									<p class="post-excerpt">{post.excerpt}</p>
+								{/if}
+
+								<!-- Metrics -->
+								<div class="post-metrics">
+									<div class="metric">
+										<IconEye size={16} />
+										{formatNumber(post.view_count || 0)}
+									</div>
+									<div class="metric">
+										<IconChartBar size={16} />
+										{post.engagement_rate || 0}%
+									</div>
+									{#if post.bounce_rate}
+										<div class="metric">
+											<IconTrendingUp size={16} />
+											{post.bounce_rate}% bounce
+										</div>
+									{/if}
+									{#if post.avg_read_time}
+										<div class="metric">
+											<IconClock size={16} />
+											{post.avg_read_time}s read
+										</div>
+									{/if}
+								</div>
+
+								<div class="post-meta">
+									{#if post.author}
+										<div class="meta-item">
+											<IconUser size={16} />
+											{post.author.name}
+										</div>
+									{/if}
+
+									{#if post.published_at}
+										<div class="meta-item">
+											<IconCalendar size={16} />
+											{formatDate(post.published_at)}
+										</div>
+									{/if}
+								</div>
+
+								{#if post.categories && post.categories.length > 0}
+									<div class="post-categories">
+										{#each (post.categories || []).slice(0, 3) as categoryId}
+											{@const category =
+												typeof categoryId === 'string'
+													? getPredefinedCategoryById(categoryId)
+													: categoryId}
+											{#if category}
+												<span
+													class="category-badge"
+													style:--tag-color={category.color || '#E6B800'}
+												>
+													{category.name}
+												</span>
+											{/if}
+										{/each}
+										{#if post.categories.length > 3}
+											<span class="category-more">+{post.categories.length - 3}</span>
+										{/if}
+									</div>
+								{/if}
+
+								<!-- Quick Actions -->
+								<div class="post-actions">
 									<button
-										class="action-icon"
+										class="action-btn primary"
 										onclick={() => goto(`/admin/blog/edit/${post.id}`)}
 										title="Edit"
 									>
-										<IconEdit size={16} />
+										<IconEdit size={18} />
+										Edit
 									</button>
-									<button class="action-icon" onclick={() => (previewPost = post)} title="Preview">
-										<IconEye size={16} />
+
+									<button class="action-btn" onclick={() => (previewPost = post)} title="Preview">
+										<IconEye size={18} />
 									</button>
+
 									<button
-										class="action-icon"
-										onclick={() => duplicatePost(post.id)}
-										title="Duplicate"
+										class="action-btn"
+										onclick={() => toggleStatus(post)}
+										title="Toggle Status"
 									>
-										<IconCopy size={16} />
+										{#if post.status === 'published'}
+											<IconPlayerPause size={18} />
+										{:else}
+											<IconPlayerPlay size={18} />
+										{/if}
 									</button>
-									<button
-										class="action-icon danger"
-										onclick={() => deletePost(post.id)}
-										title="Delete"
-									>
-										<IconTrash size={16} />
-									</button>
-								</div>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	{/if}
 
-	<!-- Preview Modal -->
-	{#if previewPost}
-		<div
-			class="modal-overlay"
-			role="button"
-			tabindex="0"
-			onclick={() => (previewPost = null)}
-			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (previewPost = null)}
-		>
-			<div
-				class="modal preview-modal"
-				role="dialog"
-				aria-modal="true"
-				tabindex="-1"
-				onclick={(e: MouseEvent) => e.stopPropagation()}
-				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			>
-				<div class="modal-header">
-					<h2>Preview: {previewPost.title}</h2>
-					<button class="btn-icon" onclick={() => (previewPost = null)}>
-						<IconX size={20} />
-					</button>
-				</div>
-				<div class="modal-content">
-					<iframe src="/blog/{previewPost.slug}?preview=true" title="Post Preview"></iframe>
-				</div>
-			</div>
-		</div>
-	{/if}
+									<!-- More Actions -->
+									<div class="action-dropdown">
+										<button class="action-btn" onclick={() => toggleActionMenu(post.id)}>
+											<IconMenu2 size={18} />
+										</button>
 
-	<!-- Export Modal -->
-	{#if showExportModal}
-		<div
-			class="modal-overlay"
-			role="button"
-			tabindex="0"
-			onclick={() => (showExportModal = false)}
-			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showExportModal = false)}
-		>
-			<div
-				class="modal"
-				role="dialog"
-				aria-modal="true"
-				tabindex="-1"
-				onclick={(e: MouseEvent) => e.stopPropagation()}
-				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			>
-				<div class="modal-header">
-					<h2>Export Posts</h2>
-					<button class="btn-icon" onclick={() => (showExportModal = false)}>
-						<IconX size={20} />
-					</button>
-				</div>
-				<div class="modal-content">
-					<div class="export-options">
-						<label>
-							<input type="radio" bind:group={exportFormat} value="csv" />
-							CSV Format
-						</label>
-						<label>
-							<input type="radio" bind:group={exportFormat} value="json" />
-							JSON Format
-						</label>
-						<label>
-							<input type="radio" bind:group={exportFormat} value="wordpress" />
-							WordPress XML
-						</label>
-					</div>
-					<p class="export-info">
-						{selectedPosts.size > 0
-							? `Exporting ${selectedPosts.size} selected posts`
-							: 'Exporting all posts matching current filters'}
-					</p>
-				</div>
-				<div class="modal-actions">
-					<button class="btn-secondary" onclick={() => (showExportModal = false)}> Cancel </button>
-					<button class="btn-primary" onclick={exportPosts}>
-						<IconDownload size={18} />
-						Export
-					</button>
-				</div>
-			</div>
-		</div>
-	{/if}
-
-	<!-- Schedule Modal -->
-	{#if showScheduleModal && schedulePost}
-		<div
-			class="modal-overlay"
-			role="button"
-			tabindex="0"
-			onclick={() => (showScheduleModal = false)}
-			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showScheduleModal = false)}
-		>
-			<div
-				class="modal"
-				role="dialog"
-				aria-modal="true"
-				tabindex="-1"
-				onclick={(e: MouseEvent) => e.stopPropagation()}
-				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			>
-				<div class="modal-header">
-					<h2>Schedule Post</h2>
-					<button class="btn-icon" onclick={() => (showScheduleModal = false)}>
-						<IconX size={20} />
-					</button>
-				</div>
-				<div class="modal-content">
-					<p class="schedule-info">Schedule "{schedulePost.title}" for publication</p>
-					<div class="schedule-form">
-						<label>
-							<span>Publish Date & Time</span>
-							<input 
-								type="datetime-local" 
-								class="schedule-input"
-								min={new Date().toISOString().slice(0, 16)}
-							/>
-						</label>
-					</div>
-				</div>
-				<div class="modal-actions">
-					<button class="btn-secondary" onclick={() => (showScheduleModal = false)}>Cancel</button>
-					<button class="btn-primary" onclick={() => {
-						showNotification('info', 'Scheduling feature coming soon');
-						showScheduleModal = false;
-					}}>
-						<IconCalendar size={18} />
-						Schedule
-					</button>
-				</div>
-			</div>
-		</div>
-	{/if}
-
-	<!-- Analytics Modal -->
-	{#if showAnalyticsModal && analyticsPost}
-		<div
-			class="modal-overlay"
-			role="button"
-			tabindex="0"
-			onclick={() => (showAnalyticsModal = false)}
-			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAnalyticsModal = false)}
-		>
-			<div
-				class="modal analytics-modal"
-				role="dialog"
-				aria-modal="true"
-				tabindex="-1"
-				onclick={(e: MouseEvent) => e.stopPropagation()}
-				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
-			>
-				<div class="modal-header">
-					<h2>Analytics: {analyticsPost.title}</h2>
-					<button class="btn-icon" onclick={() => (showAnalyticsModal = false)}>
-						<IconX size={20} />
-					</button>
-				</div>
-				<div class="modal-content">
-					{#if analyticsPost.analytics}
-						<div class="analytics-grid">
-							<div class="analytics-card">
-								<h3>Performance</h3>
-								<div class="metric-row">
-									<span>Total Views</span>
-									<strong>{formatNumber(analyticsPost.analytics.views)}</strong>
-								</div>
-								<div class="metric-row">
-									<span>Unique Visitors</span>
-									<strong>{formatNumber(analyticsPost.analytics.unique_visitors)}</strong>
-								</div>
-								<div class="metric-row">
-									<span>Avg. Time on Page</span>
-									<strong>{analyticsPost.analytics.avg_time}s</strong>
-								</div>
-								<div class="metric-row">
-									<span>Bounce Rate</span>
-									<strong>{analyticsPost.analytics.bounce_rate}%</strong>
-								</div>
-							</div>
-
-							<div class="analytics-card">
-								<h3>Engagement</h3>
-								<div class="metric-row">
-									<span>Comments</span>
-									<strong>{analyticsPost.analytics.comments}</strong>
-								</div>
-								<div class="metric-row">
-									<span>Shares</span>
-									<strong>{analyticsPost.analytics.shares}</strong>
-								</div>
-								<div class="metric-row">
-									<span>Likes</span>
-									<strong>{analyticsPost.analytics.likes}</strong>
-								</div>
-								<div class="metric-row">
-									<span>CTR</span>
-									<strong>{analyticsPost.analytics.ctr}%</strong>
+										{#if activeActionMenu === post.id}
+											<div class="action-menu" transition:scale={{ duration: 150 }}>
+												<button onclick={() => duplicatePost(post.id)}>
+													<IconCopy size={16} />
+													Duplicate
+												</button>
+												<button
+													onclick={() => {
+														schedulePost = post;
+														showScheduleModal = true;
+													}}
+												>
+													<IconClock size={16} />
+													Schedule
+												</button>
+												<button onclick={() => loadPostAnalytics(post)}>
+													<IconChartBar size={16} />
+													Analytics
+												</button>
+												<button onclick={() => window.open(`/blog/${post.slug}`, '_blank')}>
+													<IconExternalLink size={16} />
+													View Live
+												</button>
+												<hr />
+												<button class="danger" onclick={() => deletePost(post.id)}>
+													<IconTrash size={16} />
+													Delete
+												</button>
+											</div>
+										{/if}
+									</div>
 								</div>
 							</div>
 						</div>
-					{:else}
-						<div class="loading">Loading analytics...</div>
-					{/if}
+					{/each}
+				{/if}
+			</div>
+		{:else}
+			<!-- List View -->
+			<div class="posts-table-container">
+				<table class="posts-table">
+					<thead>
+						<tr>
+							<th>
+								<input type="checkbox" bind:checked={selectAll} onchange={toggleSelectAll} />
+							</th>
+							<th>Title</th>
+							<th>Author</th>
+							<th>Status</th>
+							<th>Categories</th>
+							<th>Views</th>
+							<th>SEO</th>
+							<th>Published</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each posts as post (post.id)}
+							<tr class:selected={selectedPosts.has(post.id)}>
+								<td>
+									<input
+										type="checkbox"
+										checked={selectedPosts.has(post.id)}
+										onchange={() => togglePostSelection(post.id)}
+									/>
+								</td>
+								<td>
+									<div class="table-title">
+										{#if post.featured}
+											<IconStarFilled size={16} class="featured-icon" />
+										{/if}
+										<a href="/admin/blog/edit/{post.id}">{post.title}</a>
+									</div>
+								</td>
+								<td>{post.author?.name || '-'}</td>
+								<td>
+									<span class="status-badge status-{post.status}">
+										{post.status}
+									</span>
+								</td>
+								<td>
+									{#if post.categories?.length > 0}
+										<div class="table-category-tags">
+											{#each (post.categories || []).slice(0, 2) as categoryId}
+												{@const category =
+													typeof categoryId === 'string'
+														? getPredefinedCategoryById(categoryId)
+														: categoryId}
+												{#if category}
+													<span
+														class="category-tag-table"
+														style:--tag-color={category.color || '#E6B800'}>{category.name}</span
+													>
+												{/if}
+											{/each}
+											{#if post.categories.length > 2}
+												<span class="more-tag">+{post.categories.length - 2}</span>
+											{/if}
+										</div>
+									{:else}
+										-
+									{/if}
+								</td>
+								<td>{formatNumber(post.view_count || 0)}</td>
+								<td>
+									<div class="seo-score-bar" style="--score: {post.seo_score}%">
+										{post.seo_score}
+									</div>
+								</td>
+								<td>{post.published_at ? formatDate(post.published_at) : '-'}</td>
+								<td>
+									<div class="table-actions">
+										<button
+											class="action-icon"
+											onclick={() => goto(`/admin/blog/edit/${post.id}`)}
+											title="Edit"
+										>
+											<IconEdit size={16} />
+										</button>
+										<button
+											class="action-icon"
+											onclick={() => (previewPost = post)}
+											title="Preview"
+										>
+											<IconEye size={16} />
+										</button>
+										<button
+											class="action-icon"
+											onclick={() => duplicatePost(post.id)}
+											title="Duplicate"
+										>
+											<IconCopy size={16} />
+										</button>
+										<button
+											class="action-icon danger"
+											onclick={() => deletePost(post.id)}
+											title="Delete"
+										>
+											<IconTrash size={16} />
+										</button>
+									</div>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
+
+		<!-- Preview Modal -->
+		{#if previewPost}
+			<div
+				class="modal-overlay"
+				role="button"
+				tabindex="0"
+				onclick={() => (previewPost = null)}
+				onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (previewPost = null)}
+			>
+				<div
+					class="modal preview-modal"
+					role="dialog"
+					aria-modal="true"
+					tabindex="-1"
+					onclick={(e: MouseEvent) => e.stopPropagation()}
+					onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+				>
+					<div class="modal-header">
+						<h2>Preview: {previewPost.title}</h2>
+						<button class="btn-icon" onclick={() => (previewPost = null)}>
+							<IconX size={20} />
+						</button>
+					</div>
+					<div class="modal-content">
+						<iframe src="/blog/{previewPost.slug}?preview=true" title="Post Preview"></iframe>
+					</div>
 				</div>
 			</div>
-		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+		{/if}
+
+		<!-- Export Modal -->
+		{#if showExportModal}
+			<div
+				class="modal-overlay"
+				role="button"
+				tabindex="0"
+				onclick={() => (showExportModal = false)}
+				onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showExportModal = false)}
+			>
+				<div
+					class="modal"
+					role="dialog"
+					aria-modal="true"
+					tabindex="-1"
+					onclick={(e: MouseEvent) => e.stopPropagation()}
+					onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+				>
+					<div class="modal-header">
+						<h2>Export Posts</h2>
+						<button class="btn-icon" onclick={() => (showExportModal = false)}>
+							<IconX size={20} />
+						</button>
+					</div>
+					<div class="modal-content">
+						<div class="export-options">
+							<label>
+								<input type="radio" bind:group={exportFormat} value="csv" />
+								CSV Format
+							</label>
+							<label>
+								<input type="radio" bind:group={exportFormat} value="json" />
+								JSON Format
+							</label>
+							<label>
+								<input type="radio" bind:group={exportFormat} value="wordpress" />
+								WordPress XML
+							</label>
+						</div>
+						<p class="export-info">
+							{selectedPosts.size > 0
+								? `Exporting ${selectedPosts.size} selected posts`
+								: 'Exporting all posts matching current filters'}
+						</p>
+					</div>
+					<div class="modal-actions">
+						<button class="btn-secondary" onclick={() => (showExportModal = false)}>
+							Cancel
+						</button>
+						<button class="btn-primary" onclick={exportPosts}>
+							<IconDownload size={18} />
+							Export
+						</button>
+					</div>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Schedule Modal -->
+		{#if showScheduleModal && schedulePost}
+			<div
+				class="modal-overlay"
+				role="button"
+				tabindex="0"
+				onclick={() => (showScheduleModal = false)}
+				onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showScheduleModal = false)}
+			>
+				<div
+					class="modal"
+					role="dialog"
+					aria-modal="true"
+					tabindex="-1"
+					onclick={(e: MouseEvent) => e.stopPropagation()}
+					onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+				>
+					<div class="modal-header">
+						<h2>Schedule Post</h2>
+						<button class="btn-icon" onclick={() => (showScheduleModal = false)}>
+							<IconX size={20} />
+						</button>
+					</div>
+					<div class="modal-content">
+						<p class="schedule-info">Schedule "{schedulePost.title}" for publication</p>
+						<div class="schedule-form">
+							<label>
+								<span>Publish Date & Time</span>
+								<input
+									type="datetime-local"
+									class="schedule-input"
+									min={new Date().toISOString().slice(0, 16)}
+								/>
+							</label>
+						</div>
+					</div>
+					<div class="modal-actions">
+						<button class="btn-secondary" onclick={() => (showScheduleModal = false)}>Cancel</button
+						>
+						<button
+							class="btn-primary"
+							onclick={() => {
+								showNotification('info', 'Scheduling feature coming soon');
+								showScheduleModal = false;
+							}}
+						>
+							<IconCalendar size={18} />
+							Schedule
+						</button>
+					</div>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Analytics Modal -->
+		{#if showAnalyticsModal && analyticsPost}
+			<div
+				class="modal-overlay"
+				role="button"
+				tabindex="0"
+				onclick={() => (showAnalyticsModal = false)}
+				onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAnalyticsModal = false)}
+			>
+				<div
+					class="modal analytics-modal"
+					role="dialog"
+					aria-modal="true"
+					tabindex="-1"
+					onclick={(e: MouseEvent) => e.stopPropagation()}
+					onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+				>
+					<div class="modal-header">
+						<h2>Analytics: {analyticsPost.title}</h2>
+						<button class="btn-icon" onclick={() => (showAnalyticsModal = false)}>
+							<IconX size={20} />
+						</button>
+					</div>
+					<div class="modal-content">
+						{#if analyticsPost.analytics}
+							<div class="analytics-grid">
+								<div class="analytics-card">
+									<h3>Performance</h3>
+									<div class="metric-row">
+										<span>Total Views</span>
+										<strong>{formatNumber(analyticsPost.analytics.views)}</strong>
+									</div>
+									<div class="metric-row">
+										<span>Unique Visitors</span>
+										<strong>{formatNumber(analyticsPost.analytics.unique_visitors)}</strong>
+									</div>
+									<div class="metric-row">
+										<span>Avg. Time on Page</span>
+										<strong>{analyticsPost.analytics.avg_time}s</strong>
+									</div>
+									<div class="metric-row">
+										<span>Bounce Rate</span>
+										<strong>{analyticsPost.analytics.bounce_rate}%</strong>
+									</div>
+								</div>
+
+								<div class="analytics-card">
+									<h3>Engagement</h3>
+									<div class="metric-row">
+										<span>Comments</span>
+										<strong>{analyticsPost.analytics.comments}</strong>
+									</div>
+									<div class="metric-row">
+										<span>Shares</span>
+										<strong>{analyticsPost.analytics.shares}</strong>
+									</div>
+									<div class="metric-row">
+										<span>Likes</span>
+										<strong>{analyticsPost.analytics.likes}</strong>
+									</div>
+									<div class="metric-row">
+										<span>CTR</span>
+										<strong>{analyticsPost.analytics.ctr}%</strong>
+									</div>
+								</div>
+							</div>
+						{:else}
+							<div class="loading">Loading analytics...</div>
+						{/if}
+					</div>
+				</div>
+			</div>
+		{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <!-- Keyboard Shortcuts Helper -->
@@ -1927,12 +1948,12 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 0.25rem 0.5rem;
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.7rem;
 		font-weight: 500;
-		color: var(--tag-color, #E6B800);
+		color: var(--tag-color, #e6b800);
 		white-space: nowrap;
 	}
 
@@ -2102,12 +2123,12 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 0.125rem 0.5rem;
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.7rem;
 		font-weight: 500;
-		color: var(--tag-color, #E6B800);
+		color: var(--tag-color, #e6b800);
 		white-space: nowrap;
 	}
 

@@ -47,10 +47,7 @@
 			<!-- Progress Bar for auto-dismiss -->
 			{#if toast.duration > 0}
 				<div class="toast-progress">
-					<div
-						class="toast-progress-bar"
-						style="animation-duration: {toast.duration}ms"
-					></div>
+					<div class="toast-progress-bar" style="animation-duration: {toast.duration}ms"></div>
 				</div>
 			{/if}
 
@@ -61,7 +58,11 @@
 				<span class="toast-message">{toast.message}</span>
 			</div>
 			{#if toast.dismissible}
-				<button class="toast-close" onclick={() => toastStore.dismiss(toast.id)} aria-label="Dismiss">
+				<button
+					class="toast-close"
+					onclick={() => toastStore.dismiss(toast.id)}
+					aria-label="Dismiss"
+				>
 					<IconX size={16} />
 				</button>
 			{/if}
@@ -119,8 +120,12 @@
 	}
 
 	@keyframes progress-shrink {
-		from { transform: scaleX(1); }
-		to { transform: scaleX(0); }
+		from {
+			transform: scaleX(1);
+		}
+		to {
+			transform: scaleX(0);
+		}
 	}
 
 	/* Icons */
@@ -139,8 +144,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Success */

@@ -7,13 +7,7 @@
 -->
 
 <script lang="ts">
-	import {
-		IconBrain,
-		IconTrendingUp,
-		IconAlertTriangle,
-		IconBulb,
-		IconTarget
-	} from '$lib/icons';
+	import { IconBrain, IconTrendingUp, IconAlertTriangle, IconBulb, IconTarget } from '$lib/icons';
 
 	interface Insight {
 		id: string;

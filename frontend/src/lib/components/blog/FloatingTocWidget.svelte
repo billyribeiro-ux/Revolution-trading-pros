@@ -47,7 +47,7 @@
 	// Svelte 5: Side effect with cleanup using $effect() rune
 	$effect(() => {
 		if (!browser) return;
-		
+
 		window.addEventListener('scroll', handleScroll, { passive: true });
 		handleScroll(); // Check initial position
 

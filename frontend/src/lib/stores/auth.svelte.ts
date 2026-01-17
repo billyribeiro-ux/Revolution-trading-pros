@@ -1,8 +1,8 @@
 import { browser } from '$app/environment';
 import { goto } from '$app/navigation';
-import { 
-	isSuperadmin, 
-	isAdmin as checkIsAdmin, 
+import {
+	isSuperadmin,
+	isAdmin as checkIsAdmin,
 	hasPermission as checkHasPermission,
 	hasAnyPermission,
 	hasAllPermissions,
@@ -11,14 +11,14 @@ import {
 	SUPERADMIN_EMAILS,
 	ROLES,
 	PERMISSIONS,
-	type PermissionType 
+	type PermissionType
 } from '$lib/config/roles';
 
 /**
  * Revolution Trading Pros - Secure Authentication Store
  * ======================================================
  * SVELTE 5 RUNES VERSION
- * 
+ *
  * SECURITY HARDENED: Implements secure token storage pattern
  * - Access tokens stored in memory only (prevents XSS theft)
  * - Session ID stored in localStorage (low-risk identifier only)
@@ -35,22 +35,22 @@ import {
 // =============================================================================
 
 export interface User {
-	id: number;  // Rust API uses i64 (number in TypeScript)
+	id: number; // Rust API uses i64 (number in TypeScript)
 	name: string;
 	first_name?: string;
 	last_name?: string;
 	email: string;
-	email_verified_at?: string | null;  // ISO timestamp or null
-	email_verified?: boolean;  // Computed from email_verified_at
+	email_verified_at?: string | null; // ISO timestamp or null
+	email_verified?: boolean; // Computed from email_verified_at
 	created_at: string;
 	updated_at?: string;
 	roles?: string[];
 	permissions?: string[];
-	role?: string;  // Rust API sends single role
+	role?: string; // Rust API sends single role
 	is_admin?: boolean;
 	avatar?: string;
-	avatar_url?: string;  // Rust API format
-	mfa_enabled?: boolean;  // Rust API
+	avatar_url?: string; // Rust API format
+	mfa_enabled?: boolean; // Rust API
 }
 
 export interface UserSession {
@@ -182,7 +182,7 @@ function createSafeUser(user: User): User {
 		...(user?.role !== undefined && { role: user.role }),
 		permissions: user?.permissions ?? [],
 		is_admin: user?.is_admin ?? (user?.role === 'admin' || user?.role === 'super_admin'),
-		...(user?.avatar ?? user?.avatar_url ? { avatar: user?.avatar ?? user?.avatar_url } : {}),
+		...((user?.avatar ?? user?.avatar_url) ? { avatar: user?.avatar ?? user?.avatar_url } : {}),
 		...(user?.avatar_url !== undefined && { avatar_url: user.avatar_url }),
 		...(user?.mfa_enabled !== undefined && { mfa_enabled: user.mfa_enabled })
 	};
@@ -257,20 +257,34 @@ class AuthStoreClass {
 
 	private notifySubscribers(): void {
 		const snapshot = this.getSnapshot();
-		this.subscribers.forEach(fn => fn(snapshot));
+		this.subscribers.forEach((fn) => fn(snapshot));
 	}
 
 	// ==========================================================================
 	// Getters for state access (reactive in Svelte 5)
 	// ==========================================================================
 
-	get user(): User | null { return this._user; }
-	get sessionId(): string | null { return this._sessionId; }
-	get tokenExpiry(): number | null { return this._tokenExpiry; }
-	get isInitializing(): boolean { return this._isInitializing; }
-	get isLoading(): boolean { return this._isLoading; }
-	get sessionInvalidated(): boolean { return this._sessionInvalidated; }
-	get invalidationReason(): string | null { return this._invalidationReason; }
+	get user(): User | null {
+		return this._user;
+	}
+	get sessionId(): string | null {
+		return this._sessionId;
+	}
+	get tokenExpiry(): number | null {
+		return this._tokenExpiry;
+	}
+	get isInitializing(): boolean {
+		return this._isInitializing;
+	}
+	get isLoading(): boolean {
+		return this._isLoading;
+	}
+	get sessionInvalidated(): boolean {
+		return this._sessionInvalidated;
+	}
+	get invalidationReason(): string | null {
+		return this._invalidationReason;
+	}
 
 	// ==========================================================================
 	// Derived values as getters
@@ -379,7 +393,8 @@ class AuthStoreClass {
 	 */
 	setSessionInvalidated(reason?: string): void {
 		this._sessionInvalidated = true;
-		this._invalidationReason = reason || 'Your session was ended because you signed in from another device.';
+		this._invalidationReason =
+			reason || 'Your session was ended because you signed in from another device.';
 		this.notifySubscribers();
 	}
 
@@ -496,7 +511,7 @@ class AuthStoreClass {
 					credentials: 'include',
 					headers: {
 						'Content-Type': 'application/json',
-						'Accept': 'application/json'
+						Accept: 'application/json'
 					},
 					body: JSON.stringify(requestBody)
 				});
@@ -623,7 +638,9 @@ export const authStore = new AuthStoreClass();
  * In Svelte 5, access via authStore.user or this exported getter
  */
 export const user = {
-	get current() { return authStore.user; },
+	get current() {
+		return authStore.user;
+	},
 	// For components that destructure or use directly
 	subscribe(fn: (value: User | null) => void) {
 		// Initial call
@@ -637,7 +654,9 @@ export const user = {
  * Reactive auth status getter
  */
 export const isAuthenticated = {
-	get current() { return authStore.isAuthenticated; },
+	get current() {
+		return authStore.isAuthenticated;
+	},
 	subscribe(fn: (value: boolean) => void) {
 		fn(authStore.isAuthenticated);
 		return () => {};
@@ -645,7 +664,9 @@ export const isAuthenticated = {
 };
 
 export const isLoading = {
-	get current() { return authStore.isLoading; },
+	get current() {
+		return authStore.isLoading;
+	},
 	subscribe(fn: (value: boolean) => void) {
 		fn(authStore.isLoading);
 		return () => {};
@@ -653,7 +674,9 @@ export const isLoading = {
 };
 
 export const isInitializing = {
-	get current() { return authStore.isInitializing; },
+	get current() {
+		return authStore.isInitializing;
+	},
 	subscribe(fn: (value: boolean) => void) {
 		fn(authStore.isInitializing);
 		return () => {};
@@ -661,7 +684,9 @@ export const isInitializing = {
 };
 
 export const sessionId = {
-	get current() { return authStore.sessionId; },
+	get current() {
+		return authStore.sessionId;
+	},
 	subscribe(fn: (value: string | null) => void) {
 		fn(authStore.sessionId);
 		return () => {};
@@ -669,7 +694,9 @@ export const sessionId = {
 };
 
 export const sessionInvalidated = {
-	get current() { return authStore.sessionInvalidated; },
+	get current() {
+		return authStore.sessionInvalidated;
+	},
 	subscribe(fn: (value: boolean) => void) {
 		fn(authStore.sessionInvalidated);
 		return () => {};
@@ -677,7 +704,9 @@ export const sessionInvalidated = {
 };
 
 export const invalidationReason = {
-	get current() { return authStore.invalidationReason; },
+	get current() {
+		return authStore.invalidationReason;
+	},
 	subscribe(fn: (value: string | null) => void) {
 		fn(authStore.invalidationReason);
 		return () => {};
@@ -685,7 +714,9 @@ export const invalidationReason = {
 };
 
 export const isSuperAdmin = {
-	get current() { return authStore.isSuperAdmin; },
+	get current() {
+		return authStore.isSuperAdmin;
+	},
 	subscribe(fn: (value: boolean) => void) {
 		fn(authStore.isSuperAdmin);
 		return () => {};
@@ -693,7 +724,9 @@ export const isSuperAdmin = {
 };
 
 export const isAdminUser = {
-	get current() { return authStore.isAdminUser; },
+	get current() {
+		return authStore.isAdminUser;
+	},
 	subscribe(fn: (value: boolean) => void) {
 		fn(authStore.isAdminUser);
 		return () => {};
@@ -701,7 +734,9 @@ export const isAdminUser = {
 };
 
 export const userRole = {
-	get current() { return authStore.userRole; },
+	get current() {
+		return authStore.userRole;
+	},
 	subscribe(fn: (value: string | null) => void) {
 		fn(authStore.userRole);
 		return () => {};
@@ -709,7 +744,9 @@ export const userRole = {
 };
 
 export const userPermissions = {
-	get current() { return authStore.userPermissions; },
+	get current() {
+		return authStore.userPermissions;
+	},
 	subscribe(fn: (value: string[]) => void) {
 		fn(authStore.userPermissions);
 		return () => {};
@@ -725,11 +762,11 @@ export const getAuthToken = (): string | null => authStore.getToken();
 export const getSessionId = (): string | null => authStore.getSessionId();
 
 // Re-export role helpers for convenience
-export { 
-	isSuperadmin, 
-	checkIsAdmin, 
-	checkHasPermission as hasPermission, 
-	hasAnyPermission, 
+export {
+	isSuperadmin,
+	checkIsAdmin,
+	checkHasPermission as hasPermission,
+	hasAnyPermission,
 	hasAllPermissions,
 	SUPERADMIN_EMAILS,
 	ROLES,

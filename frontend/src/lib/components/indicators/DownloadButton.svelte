@@ -12,20 +12,10 @@
 		rel?: string;
 	}
 
-	let { 
-		href, 
-		text = 'Click to Download',
-		target,
-		rel
-	}: Props = $props();
+	let { href, text = 'Click to Download', target, rel }: Props = $props();
 </script>
 
-<a 
-	class="orng_btn" 
-	{href}
-	{target}
-	{rel}
->
+<a class="orng_btn" {href} {target} {rel}>
 	{text}
 </a>
 

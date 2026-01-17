@@ -53,23 +53,15 @@
 	}: Props = $props();
 
 	// Computed
-	const severity = $derived<ErrorSeverity>(
-		isApiError(error) ? error.severity : 'error'
-	);
+	const severity = $derived<ErrorSeverity>(isApiError(error) ? error.severity : 'error');
 
 	const message = $derived(getUserFriendlyMessage(error));
 
-	const validationErrors = $derived(
-		isApiError(error) ? getValidationErrors(error) : {}
-	);
+	const validationErrors = $derived(isApiError(error) ? getValidationErrors(error) : {});
 
-	const hasValidationErrors = $derived(
-		Object.keys(validationErrors).length > 0
-	);
+	const hasValidationErrors = $derived(Object.keys(validationErrors).length > 0);
 
-	const canRetry = $derived(
-		showRetry && isApiError(error) && error.isRetryable
-	);
+	const canRetry = $derived(showRetry && isApiError(error) && error.isRetryable);
 
 	// Icon based on severity
 	const IconComponent = $derived(() => {

@@ -134,12 +134,14 @@
 		fileInput?.click();
 	}
 
-	const aspectRatioClass = $derived({
-		'16:9': 'aspect-video',
-		'4:3': 'aspect-4-3',
-		'1:1': 'aspect-square',
-		free: 'aspect-free'
-	}[aspectRatio]);
+	const aspectRatioClass = $derived(
+		{
+			'16:9': 'aspect-video',
+			'4:3': 'aspect-4-3',
+			'1:1': 'aspect-square',
+			free: 'aspect-free'
+		}[aspectRatio]
+	);
 </script>
 
 <div class="featured-image-field" class:disabled class:has-error={error || uploadError}>
@@ -159,9 +161,7 @@
 				<button type="button" class="change-btn" onclick={openFilePicker} {disabled}>
 					Change
 				</button>
-				<button type="button" class="remove-btn" onclick={removeImage} {disabled}>
-					Remove
-				</button>
+				<button type="button" class="remove-btn" onclick={removeImage} {disabled}> Remove </button>
 			</div>
 		</div>
 	{:else}
@@ -185,7 +185,13 @@
 					<span>Uploading...</span>
 				</div>
 			{:else}
-				<svg class="upload-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					class="upload-icon"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
 					<circle cx="8.5" cy="8.5" r="1.5"></circle>
 					<polyline points="21 15 16 10 5 21"></polyline>
@@ -194,7 +200,9 @@
 					<span class="dropzone-link">Click to upload</span> or drag and drop
 				</p>
 				<p class="dropzone-hint">
-					{acceptedTypes.map((t) => t.replace('image/', '')).join(', ')} up to {formatFileSize(maxFileSize)}
+					{acceptedTypes.map((t) => t.replace('image/', '')).join(', ')} up to {formatFileSize(
+						maxFileSize
+					)}
 				</p>
 			{/if}
 		</div>
@@ -223,7 +231,7 @@
 	{/if}
 
 	<!-- Hidden inputs for form submission -->
-	<input type="hidden" name={name} value={imageUrl} />
+	<input type="hidden" {name} value={imageUrl} />
 	{#if imageId}
 		<input type="hidden" name="{name}_id" value={imageId} />
 	{/if}
@@ -335,8 +343,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.image-preview {

@@ -37,13 +37,13 @@
 
 		// Check if we're on a class detail page (e.g., /classes/tax-loss-harvest)
 		const isClassDetailPage = segments[0] === 'classes' && segments.length > 1;
-		
+
 		// Check if we're on an indicator detail page (e.g., /indicators/volume-max-i)
 		const isIndicatorDetailPage = segments[0] === 'indicators' && segments.length > 1;
-		
+
 		// Check if we're on My Classes list page
 		const isMyClassesPage = pathname === '/dashboard/classes';
-		
+
 		// Check if we're on My Indicators list page
 		const isMyIndicatorsPage = pathname === '/dashboard/indicators';
 
@@ -59,7 +59,7 @@
 			// Add class name as current item
 			const className = segments[1]
 				.split('-')
-				.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+				.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 				.join(' ');
 
 			items.push({
@@ -87,7 +87,7 @@
 			// Add indicator name as current item (formatted from slug)
 			const indicatorName = segments[1]
 				.split('-')
-				.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+				.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 				.join(' ');
 
 			items.push({
@@ -136,7 +136,7 @@
 				// Format segment to readable label
 				const label = segment
 					.split('-')
-					.map(word => word.charAt(0).toUpperCase() + word.slice(1))
+					.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
 					.join(' ');
 
 				// Map dashboard to "Member Dashboard"
@@ -167,14 +167,18 @@
 		<ul>
 			{#each breadcrumbs as item, index}
 				{#if index > 0}
-					<li class="separator{index === 1 ? ' separator-home' : ''}" aria-hidden="true"> / </li>
+					<li class="separator{index === 1 ? ' separator-home' : ''}" aria-hidden="true">/</li>
 				{/if}
 				<li class={item.className || (item.isCurrent ? 'item-current' : 'item-home')}>
 					{#if item.isCurrent}
 						<strong class="breadcrumb-current" title={item.label}>{item.label}</strong>
 					{:else}
-						<a 
-							class="breadcrumb-link{index === 0 ? ' breadcrumb-home' : ''}{item.className?.includes('custom-post-type-classes') ? ' breadcrumb-cat breadcrumb-custom-post-type-classes' : ''}" 
+						<a
+							class="breadcrumb-link{index === 0
+								? ' breadcrumb-home'
+								: ''}{item.className?.includes('custom-post-type-classes')
+								? ' breadcrumb-cat breadcrumb-custom-post-type-classes'
+								: ''}"
 							href={item.href}
 							title={item.label}
 						>
@@ -239,7 +243,7 @@
 	}
 
 	.breadcrumb-link:hover {
-		color: #143E59;
+		color: #143e59;
 		text-decoration: underline;
 	}
 

@@ -88,7 +88,8 @@
 	});
 
 	$effect(() => {
-		selectedCountry = countries.find((c) => c.code === (value.country_code || defaultCountry)) || countries[0];
+		selectedCountry =
+			countries.find((c) => c.code === (value.country_code || defaultCountry)) || countries[0];
 	});
 
 	$effect(() => {
@@ -170,7 +171,14 @@
 			<button type="button" class="country-button" onclick={toggleDropdown}>
 				<span class="country-flag">{selectedCountry.flag}</span>
 				<span class="dial-code">{selectedCountry.dialCode}</span>
-				<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					width="12"
+					height="12"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<polyline points="6 9 12 15 18 9"></polyline>
 				</svg>
 			</button>
@@ -223,7 +231,11 @@
 		/>
 	</div>
 
-	<input type="hidden" name={`${field.name}_full`} value={`${selectedCountry.dialCode}${phoneNumber.replace(/\D/g, '')}`} />
+	<input
+		type="hidden"
+		name={`${field.name}_full`}
+		value={`${selectedCountry.dialCode}${phoneNumber.replace(/\D/g, '')}`}
+	/>
 	<input type="hidden" name={`${field.name}_country`} value={selectedCountry.code} />
 
 	{#if error && error.length > 0}

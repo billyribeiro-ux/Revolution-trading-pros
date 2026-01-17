@@ -26,7 +26,8 @@
 	<div class="video-container">
 		{#if hasVideo && isPreview && config.bunnyVideoGuid}
 			<iframe
-				src="https://iframe.mediadelivery.net/embed/{config.bunnyLibraryId ?? 0}/{config.bunnyVideoGuid}?autoplay=false"
+				src="https://iframe.mediadelivery.net/embed/{config.bunnyLibraryId ??
+					0}/{config.bunnyVideoGuid}?autoplay=false"
 				loading="lazy"
 				style="border: none; width: 100%; height: 100%;"
 				allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
@@ -39,8 +40,16 @@
 					<img src={config.thumbnailUrl} alt={config.title} class="thumbnail" />
 				{:else}
 					<div class="placeholder-content">
-						<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-							<polygon points="5 3 19 12 5 21 5 3"/>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="48"
+							height="48"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="1.5"
+						>
+							<polygon points="5 3 19 12 5 21 5 3" />
 						</svg>
 						<span>{hasVideo ? 'Video ready' : 'No video uploaded'}</span>
 					</div>
@@ -48,8 +57,14 @@
 				{#if config.thumbnailUrl}
 					<div class="play-overlay">
 						<div class="play-button">
-							<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="white">
-								<polygon points="5 3 19 12 5 21 5 3"/>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="32"
+								height="32"
+								viewBox="0 0 24 24"
+								fill="white"
+							>
+								<polygon points="5 3 19 12 5 21 5 3" />
 							</svg>
 						</div>
 					</div>
@@ -61,13 +76,13 @@
 
 <style>
 	.video-player {
-		border: 1px solid #E5E7EB;
+		border: 1px solid #e5e7eb;
 		border-radius: 4px;
 		overflow: hidden;
 	}
 
 	.video-header {
-		background: #1F2937;
+		background: #1f2937;
 		padding: 12px 16px;
 		display: flex;
 		align-items: center;
@@ -110,7 +125,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #1F2937;
+		background: #1f2937;
 	}
 
 	.thumbnail {
@@ -124,7 +139,7 @@
 		flex-direction: column;
 		align-items: center;
 		gap: 12px;
-		color: #6B7280;
+		color: #6b7280;
 	}
 
 	.play-overlay {
@@ -149,7 +164,9 @@
 		justify-content: center;
 		padding-left: 4px;
 		cursor: pointer;
-		transition: transform 0.2s ease, background 0.2s ease;
+		transition:
+			transform 0.2s ease,
+			background 0.2s ease;
 	}
 
 	.play-button:hover {

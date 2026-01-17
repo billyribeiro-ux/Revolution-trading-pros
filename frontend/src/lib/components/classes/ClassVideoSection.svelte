@@ -18,12 +18,12 @@
 		showOverlay?: boolean;
 		poster?: string;
 	}
-	
-	let { 
-		videoUrl, 
-		videoTitle, 
+
+	let {
+		videoUrl,
+		videoTitle,
 		videoId = '',
-		overlayTitle = '', 
+		overlayTitle = '',
 		overlayDescription = '',
 		showOverlay = false,
 		poster = ''
@@ -41,17 +41,17 @@
 			{/if}
 		</div>
 	{/if}
-	
+
 	{#if videoId}
 		<div id={videoId} class="class-video-player"></div>
 	{/if}
-	
-	<video 
+
+	<video
 		id={videoUrl}
-		controls 
-		width="100%" 
-		poster={poster}
-		style="aspect-ratio: 16/9;" 
+		controls
+		width="100%"
+		{poster}
+		style="aspect-ratio: 16/9;"
 		title={videoTitle}
 	>
 		<source src={videoUrl} type="video/mp4" />

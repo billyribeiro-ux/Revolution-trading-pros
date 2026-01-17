@@ -44,9 +44,11 @@
 	let activeFilter = $state<'all' | 'unread'>('all');
 
 	// Derived filtered notifications
-	let filteredNotifications = $derived(activeFilter === 'unread'
-		? $notifications.filter(n => !n.read && !n.dismissed)
-		: $notifications.filter(n => !n.dismissed));
+	let filteredNotifications = $derived(
+		activeFilter === 'unread'
+			? $notifications.filter((n) => !n.read && !n.dismissed)
+			: $notifications.filter((n) => !n.dismissed)
+	);
 
 	function groupByDate(notifs: Notification[]) {
 		const groups: Record<string, Notification[]> = {
@@ -84,21 +86,31 @@
 
 	function getIcon(type: string) {
 		switch (type) {
-			case 'success': return IconCircleCheck;
-			case 'warning': return IconAlertTriangle;
-			case 'error': return IconAlertCircle;
-			case 'system': return IconSettings;
-			default: return IconInfoCircle;
+			case 'success':
+				return IconCircleCheck;
+			case 'warning':
+				return IconAlertTriangle;
+			case 'error':
+				return IconAlertCircle;
+			case 'system':
+				return IconSettings;
+			default:
+				return IconInfoCircle;
 		}
 	}
 
 	function getIconColor(type: string) {
 		switch (type) {
-			case 'success': return '#10b981';
-			case 'warning': return '#f59e0b';
-			case 'error': return '#ef4444';
-			case 'system': return '#8b5cf6';
-			default: return '#3b82f6';
+			case 'success':
+				return '#10b981';
+			case 'warning':
+				return '#f59e0b';
+			case 'error':
+				return '#ef4444';
+			case 'system':
+				return '#8b5cf6';
+			default:
+				return '#3b82f6';
 		}
 	}
 
@@ -166,14 +178,14 @@
 				<button
 					class="filter-tab"
 					class:active={activeFilter === 'all'}
-					onclick={() => activeFilter = 'all'}
+					onclick={() => (activeFilter = 'all')}
 				>
 					All
 				</button>
 				<button
 					class="filter-tab"
 					class:active={activeFilter === 'unread'}
-					onclick={() => activeFilter = 'unread'}
+					onclick={() => (activeFilter = 'unread')}
 				>
 					Unread
 					{#if $unreadCount > 0}
@@ -202,7 +214,10 @@
 					</div>
 				{:else}
 					{#each groupedNotifications as [group, items], groupIndex}
-						<div class="notification-group" in:fly={{ y: 20, duration: 200, delay: groupIndex * 50 }}>
+						<div
+							class="notification-group"
+							in:fly={{ y: 20, duration: 200, delay: groupIndex * 50 }}
+						>
 							<div class="group-label">{group}</div>
 							{#each items as notification (notification.id)}
 								{@const Icon = getIcon(notification.type)}

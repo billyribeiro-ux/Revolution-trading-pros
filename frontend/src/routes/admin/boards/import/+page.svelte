@@ -128,10 +128,14 @@
 
 	function getStatusColor(status: string): string {
 		switch (status) {
-			case 'completed': return 'text-green-600 bg-green-100 dark:bg-green-900/30';
-			case 'failed': return 'text-red-600 bg-red-100 dark:bg-red-900/30';
-			case 'processing': return 'text-blue-600 bg-blue-100 dark:bg-blue-900/30';
-			default: return 'text-gray-600 bg-gray-100 dark:bg-gray-700';
+			case 'completed':
+				return 'text-green-600 bg-green-100 dark:bg-green-900/30';
+			case 'failed':
+				return 'text-red-600 bg-red-100 dark:bg-red-900/30';
+			case 'processing':
+				return 'text-blue-600 bg-blue-100 dark:bg-blue-900/30';
+			default:
+				return 'text-gray-600 bg-gray-100 dark:bg-gray-700';
 		}
 	}
 </script>
@@ -157,7 +161,9 @@
 					</div>
 					<div>
 						<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Import Board</h1>
-						<p class="text-sm text-gray-500 dark:text-gray-400">Import from Trello, Asana, or CSV</p>
+						<p class="text-sm text-gray-500 dark:text-gray-400">
+							Import from Trello, Asana, or CSV
+						</p>
 					</div>
 				</div>
 			</div>
@@ -167,10 +173,14 @@
 	<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
 		{#if importJob}
 			<!-- Import Progress -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+			<div
+				class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
+			>
 				<div class="flex items-center justify-between mb-6">
 					<h2 class="text-lg font-semibold text-gray-900 dark:text-white">Import Progress</h2>
-					<span class="px-3 py-1 text-sm rounded-full {getStatusColor(importJob.status)} capitalize">
+					<span
+						class="px-3 py-1 text-sm rounded-full {getStatusColor(importJob.status)} capitalize"
+					>
 						{importJob.status}
 					</span>
 				</div>
@@ -194,7 +204,9 @@
 
 				{#if importJob.status === 'completed'}
 					<div class="text-center py-8">
-						<div class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+						<div
+							class="w-16 h-16 bg-green-100 dark:bg-green-900/30 rounded-full flex items-center justify-center mx-auto mb-4"
+						>
 							<IconCheck class="w-8 h-8 text-green-600" />
 						</div>
 						<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Import Complete!</h3>
@@ -223,7 +235,9 @@
 
 				{#if importJob.status === 'failed'}
 					<div class="text-center py-8">
-						<div class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+						<div
+							class="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4"
+						>
 							<IconX class="w-8 h-8 text-red-600" />
 						</div>
 						<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">Import Failed</h3>
@@ -240,7 +254,9 @@
 				{/if}
 
 				{#if importJob.errors && importJob.errors.length > 0 && importJob.status === 'completed'}
-					<div class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg">
+					<div
+						class="mt-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-lg"
+					>
 						<h4 class="text-sm font-medium text-yellow-800 dark:text-yellow-200 mb-2">
 							{importJob.errors.length} items could not be imported:
 						</h4>
@@ -257,9 +273,11 @@
 			</div>
 		{:else if selectedSource}
 			<!-- File Upload -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6">
+			<div
+				class="bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6"
+			>
 				<button
-					onclick={() => selectedSource = null}
+					onclick={() => (selectedSource = null)}
 					class="text-sm text-indigo-600 hover:text-indigo-700 mb-4 flex items-center gap-1"
 				>
 					<IconArrowLeft class="w-4 h-4" />
@@ -267,17 +285,19 @@
 				</button>
 
 				<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-2">
-					Upload {sources.find(s => s.id === selectedSource)?.name} File
+					Upload {sources.find((s) => s.id === selectedSource)?.name} File
 				</h2>
 				<p class="text-sm text-gray-500 dark:text-gray-400 mb-6">
-					{sources.find(s => s.id === selectedSource)?.description}
+					{sources.find((s) => s.id === selectedSource)?.description}
 				</p>
 
 				<!-- Drop Zone -->
 				<div
 					role="button"
 					tabindex="0"
-					class="border-2 border-dashed rounded-xl p-8 text-center transition-colors {dragOver ? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20' : 'border-gray-300 dark:border-gray-600'}"
+					class="border-2 border-dashed rounded-xl p-8 text-center transition-colors {dragOver
+						? 'border-indigo-500 bg-indigo-50 dark:bg-indigo-900/20'
+						: 'border-gray-300 dark:border-gray-600'}"
 					ondrop={handleDrop}
 					ondragover={handleDragOver}
 					ondragleave={handleDragLeave}
@@ -289,27 +309,24 @@
 								<div class="font-medium text-gray-900 dark:text-white">{file.name}</div>
 								<div class="text-sm text-gray-500">{(file.size / 1024).toFixed(1)} KB</div>
 							</div>
-							<button
-								onclick={() => file = null}
-								class="p-1 text-gray-400 hover:text-gray-600"
-							>
+							<button onclick={() => (file = null)} class="p-1 text-gray-400 hover:text-gray-600">
 								<IconX class="w-5 h-5" />
 							</button>
 						</div>
 					{:else}
 						<IconUpload class="w-10 h-10 text-gray-400 mx-auto mb-4" />
-						<p class="text-gray-600 dark:text-gray-400 mb-2">
-							Drag and drop your file here, or
-						</p>
+						<p class="text-gray-600 dark:text-gray-400 mb-2">Drag and drop your file here, or</p>
 					{/if}
 
 					<label class="inline-block">
-						<span class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg cursor-pointer">
+						<span
+							class="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg cursor-pointer"
+						>
 							{file ? 'Choose Different File' : 'Browse Files'}
 						</span>
 						<input
 							type="file"
-							accept={sources.find(s => s.id === selectedSource)?.accept}
+							accept={sources.find((s) => s.id === selectedSource)?.accept}
 							onchange={handleFileSelect}
 							class="hidden"
 						/>
@@ -317,7 +334,9 @@
 				</div>
 
 				{#if error}
-					<div class="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-3">
+					<div
+						class="mt-4 p-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 rounded-lg flex items-center gap-3"
+					>
 						<IconAlertCircle class="w-5 h-5 text-red-600" />
 						<span class="text-sm text-red-700 dark:text-red-300">{error}</span>
 					</div>
@@ -342,11 +361,13 @@
 		{:else}
 			<!-- Source Selection -->
 			<div class="space-y-4">
-				<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">Choose Import Source</h2>
+				<h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-6">
+					Choose Import Source
+				</h2>
 
 				{#each sources as source}
 					<button
-						onclick={() => selectedSource = source.id}
+						onclick={() => (selectedSource = source.id)}
 						class="w-full bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700 p-6 text-left hover:border-indigo-300 dark:hover:border-indigo-700 hover:shadow-md transition-all flex items-center gap-4"
 					>
 						<div class="p-3 {source.color} rounded-xl">
@@ -361,12 +382,20 @@
 			</div>
 
 			<!-- Help Section -->
-			<div class="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl">
-				<h3 class="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">How to export from other tools:</h3>
+			<div
+				class="mt-8 p-6 bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-800 rounded-xl"
+			>
+				<h3 class="text-sm font-semibold text-blue-800 dark:text-blue-200 mb-2">
+					How to export from other tools:
+				</h3>
 				<ul class="text-sm text-blue-700 dark:text-blue-300 space-y-2">
-					<li><strong>Trello:</strong> Open board menu → More → Print and export → Export to JSON</li>
+					<li>
+						<strong>Trello:</strong> Open board menu → More → Print and export → Export to JSON
+					</li>
 					<li><strong>Asana:</strong> Open project → ••• menu → Export/Print → CSV</li>
-					<li><strong>CSV:</strong> Create a CSV with columns: title, description, status, due_date, priority</li>
+					<li>
+						<strong>CSV:</strong> Create a CSV with columns: title, description, status, due_date, priority
+					</li>
 				</ul>
 			</div>
 		{/if}

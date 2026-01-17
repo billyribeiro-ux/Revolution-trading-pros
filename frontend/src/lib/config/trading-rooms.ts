@@ -51,7 +51,8 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 		name: 'Day Trading Room',
 		title: 'Day Trading Room Dashboard',
 		type: 'trading-room',
-		description: 'Master the art of day trading with expert guidance and real-time market analysis.',
+		description:
+			'Master the art of day trading with expert guidance and real-time market analysis.',
 		calendarId: 'simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com',
 		calendarApiKey: 'AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw',
 		calendarClientId: '656301048421-g2s2jvb2pe772mnj8j8it67eirh4jq1f.apps.googleusercontent.com',
@@ -59,7 +60,8 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 			src: 'https://simpler-options.s3.amazonaws.com/tutorials/MTT_tutorial2025.mp4',
 			poster: 'https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg'
 		},
-		watchlistImage: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
+		watchlistImage:
+			'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 		quickLinks: [
 			{ label: 'Support', href: 'https://intercom.help/simpler-trading/en/', external: true },
 			{ label: 'Platform Tutorials', href: '/tutorials', external: true },
@@ -117,7 +119,8 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 			src: 'https://simpler-options.s3.amazonaws.com/tutorials/SwingTrading_tutorial2025.mp4',
 			poster: 'https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg'
 		},
-		watchlistImage: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Swing-Watchlist.jpg',
+		watchlistImage:
+			'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Swing-Watchlist.jpg',
 		quickLinks: [
 			{ label: 'Support', href: 'https://intercom.help/simpler-trading/en/', external: true },
 			{ label: 'Platform Tutorials', href: '/tutorials', external: true },
@@ -158,7 +161,8 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 		name: 'Small Account Mentorship',
 		title: 'Small Account Mentorship Dashboard',
 		type: 'trading-room',
-		description: 'Grow your small account with proven strategies designed for capital preservation and steady growth.',
+		description:
+			'Grow your small account with proven strategies designed for capital preservation and steady growth.',
 		calendarId: 'simpleroptions.com_small_account@group.calendar.google.com',
 		calendarApiKey: 'AIzaSyBTC-zYg65B6xD8ezr4gMWCeUNk7y2Hlrw',
 		calendarClientId: '656301048421-g2s2jvb2pe772mnj8j8it67eirh4jq1f.apps.googleusercontent.com',
@@ -276,7 +280,8 @@ export const tradingRooms: Record<string, TradingRoomConfig> = {
 			src: 'https://simpler-options.s3.amazonaws.com/tutorials/OptionsDayTrading_tutorial2025.mp4',
 			poster: 'https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg'
 		},
-		watchlistImage: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Options-Watchlist.jpg',
+		watchlistImage:
+			'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Options-Watchlist.jpg',
 		quickLinks: [
 			{ label: 'Support', href: 'https://intercom.help/simpler-trading/en/', external: true },
 			{ label: 'Platform Tutorials', href: '/tutorials', external: true },

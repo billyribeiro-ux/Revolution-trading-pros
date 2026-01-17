@@ -126,7 +126,11 @@
 	});
 </script>
 
-<div class="form-report" class:variant-summary={variant === 'summary'} class:variant-compact={variant === 'compact'}>
+<div
+	class="form-report"
+	class:variant-summary={variant === 'summary'}
+	class:variant-compact={variant === 'compact'}
+>
 	{#if isLoading}
 		<div class="loading-state">
 			<span class="spinner"></span>
@@ -134,7 +138,14 @@
 		</div>
 	{:else if error}
 		<div class="error-state">
-			<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="20"
+				height="20"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<circle cx="12" cy="12" r="10"></circle>
 				<line x1="12" y1="8" x2="12" y2="12"></line>
 				<line x1="12" y1="16" x2="12.01" y2="16"></line>
@@ -156,7 +167,14 @@
 						<span class="spinner small"></span>
 						Exporting...
 					{:else}
-						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
 							<polyline points="7 10 12 15 17 10"></polyline>
 							<line x1="12" y1="15" x2="12" y2="3"></line>
@@ -171,7 +189,14 @@
 		<div class="stats-grid">
 			<div class="stat-card">
 				<div class="stat-icon submissions">
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
 						<polyline points="14 2 14 8 20 8"></polyline>
 						<line x1="16" y1="13" x2="8" y2="13"></line>
@@ -187,7 +212,14 @@
 			{#if reportData.conversion_rate !== undefined}
 				<div class="stat-card">
 					<div class="stat-icon conversion">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<polyline points="23 6 13.5 15.5 8.5 10.5 1 18"></polyline>
 							<polyline points="17 6 23 6 23 12"></polyline>
 						</svg>
@@ -202,7 +234,14 @@
 			{#if reportData.avg_completion_time}
 				<div class="stat-card">
 					<div class="stat-icon time">
-						<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<circle cx="12" cy="12" r="10"></circle>
 							<polyline points="12 6 12 12 16 14"></polyline>
 						</svg>
@@ -216,7 +255,14 @@
 
 			<div class="stat-card">
 				<div class="stat-icon fields">
-					<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="24"
+						height="24"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<rect x="3" y="3" width="7" height="7"></rect>
 						<rect x="14" y="3" width="7" height="7"></rect>
 						<rect x="14" y="14" width="7" height="7"></rect>
@@ -266,7 +312,9 @@
 										<div class="chart-bar-container">
 											<div
 												class="chart-bar"
-												style="width: {getBarWidth(item.percentage)}; background-color: {getBarColor(itemIndex)}"
+												style="width: {getBarWidth(
+													item.percentage
+												)}; background-color: {getBarColor(itemIndex)}"
 											></div>
 											<span class="chart-value">{item.count} ({item.percentage.toFixed(1)}%)</span>
 										</div>
@@ -296,7 +344,14 @@
 		{/if}
 	{:else}
 		<div class="empty-state">
-			<svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
+			<svg
+				width="48"
+				height="48"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1"
+			>
 				<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
 				<polyline points="14 2 14 8 20 8"></polyline>
 			</svg>
@@ -384,10 +439,18 @@
 		color: white;
 	}
 
-	.stat-icon.submissions { background-color: #3b82f6; }
-	.stat-icon.conversion { background-color: #10b981; }
-	.stat-icon.time { background-color: #f59e0b; }
-	.stat-icon.fields { background-color: #8b5cf6; }
+	.stat-icon.submissions {
+		background-color: #3b82f6;
+	}
+	.stat-icon.conversion {
+		background-color: #10b981;
+	}
+	.stat-icon.time {
+		background-color: #f59e0b;
+	}
+	.stat-icon.fields {
+		background-color: #8b5cf6;
+	}
 
 	.stat-value {
 		font-size: 1.5rem;

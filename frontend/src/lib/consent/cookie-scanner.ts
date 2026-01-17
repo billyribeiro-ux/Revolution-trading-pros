@@ -27,70 +27,274 @@ interface CookiePattern {
  */
 const KNOWN_COOKIES: CookiePattern[] = [
 	// Google Analytics
-	{ pattern: /^_ga$/i, category: 'analytics', vendor: 'Google Analytics', purpose: 'Distinguish unique users', duration: '2 years' },
-	{ pattern: /^_ga_/i, category: 'analytics', vendor: 'Google Analytics', purpose: 'Store session state', duration: '2 years' },
-	{ pattern: /^_gid$/i, category: 'analytics', vendor: 'Google Analytics', purpose: 'Distinguish users', duration: '24 hours' },
-	{ pattern: /^_gat/i, category: 'analytics', vendor: 'Google Analytics', purpose: 'Throttle request rate', duration: '1 minute' },
-	{ pattern: /^_gac_/i, category: 'marketing', vendor: 'Google Ads', purpose: 'Campaign information', duration: '90 days' },
+	{
+		pattern: /^_ga$/i,
+		category: 'analytics',
+		vendor: 'Google Analytics',
+		purpose: 'Distinguish unique users',
+		duration: '2 years'
+	},
+	{
+		pattern: /^_ga_/i,
+		category: 'analytics',
+		vendor: 'Google Analytics',
+		purpose: 'Store session state',
+		duration: '2 years'
+	},
+	{
+		pattern: /^_gid$/i,
+		category: 'analytics',
+		vendor: 'Google Analytics',
+		purpose: 'Distinguish users',
+		duration: '24 hours'
+	},
+	{
+		pattern: /^_gat/i,
+		category: 'analytics',
+		vendor: 'Google Analytics',
+		purpose: 'Throttle request rate',
+		duration: '1 minute'
+	},
+	{
+		pattern: /^_gac_/i,
+		category: 'marketing',
+		vendor: 'Google Ads',
+		purpose: 'Campaign information',
+		duration: '90 days'
+	},
 
 	// Meta/Facebook
-	{ pattern: /^_fbp$/i, category: 'marketing', vendor: 'Meta Pixel', purpose: 'Identify browsers', duration: '3 months' },
-	{ pattern: /^_fbc$/i, category: 'marketing', vendor: 'Meta Pixel', purpose: 'Store click identifier', duration: '3 months' },
-	{ pattern: /^fr$/i, category: 'marketing', vendor: 'Facebook', purpose: 'Ad delivery and measurement', duration: '3 months' },
+	{
+		pattern: /^_fbp$/i,
+		category: 'marketing',
+		vendor: 'Meta Pixel',
+		purpose: 'Identify browsers',
+		duration: '3 months'
+	},
+	{
+		pattern: /^_fbc$/i,
+		category: 'marketing',
+		vendor: 'Meta Pixel',
+		purpose: 'Store click identifier',
+		duration: '3 months'
+	},
+	{
+		pattern: /^fr$/i,
+		category: 'marketing',
+		vendor: 'Facebook',
+		purpose: 'Ad delivery and measurement',
+		duration: '3 months'
+	},
 
 	// Google Ads
-	{ pattern: /^_gcl_/i, category: 'marketing', vendor: 'Google Ads', purpose: 'Conversion tracking', duration: '90 days' },
-	{ pattern: /^IDE$/i, category: 'marketing', vendor: 'Google DoubleClick', purpose: 'Ad targeting', duration: '1 year' },
-	{ pattern: /^test_cookie$/i, category: 'marketing', vendor: 'Google DoubleClick', purpose: 'Check cookie support', duration: 'Session' },
+	{
+		pattern: /^_gcl_/i,
+		category: 'marketing',
+		vendor: 'Google Ads',
+		purpose: 'Conversion tracking',
+		duration: '90 days'
+	},
+	{
+		pattern: /^IDE$/i,
+		category: 'marketing',
+		vendor: 'Google DoubleClick',
+		purpose: 'Ad targeting',
+		duration: '1 year'
+	},
+	{
+		pattern: /^test_cookie$/i,
+		category: 'marketing',
+		vendor: 'Google DoubleClick',
+		purpose: 'Check cookie support',
+		duration: 'Session'
+	},
 
 	// LinkedIn
-	{ pattern: /^li_/i, category: 'marketing', vendor: 'LinkedIn', purpose: 'Advertising and analytics', duration: 'Varies' },
-	{ pattern: /^bcookie$/i, category: 'marketing', vendor: 'LinkedIn', purpose: 'Browser identifier', duration: '2 years' },
-	{ pattern: /^lidc$/i, category: 'marketing', vendor: 'LinkedIn', purpose: 'Load balancing', duration: '1 day' },
+	{
+		pattern: /^li_/i,
+		category: 'marketing',
+		vendor: 'LinkedIn',
+		purpose: 'Advertising and analytics',
+		duration: 'Varies'
+	},
+	{
+		pattern: /^bcookie$/i,
+		category: 'marketing',
+		vendor: 'LinkedIn',
+		purpose: 'Browser identifier',
+		duration: '2 years'
+	},
+	{
+		pattern: /^lidc$/i,
+		category: 'marketing',
+		vendor: 'LinkedIn',
+		purpose: 'Load balancing',
+		duration: '1 day'
+	},
 
 	// Twitter/X
-	{ pattern: /^_twitter/i, category: 'marketing', vendor: 'Twitter/X', purpose: 'Advertising', duration: 'Varies' },
-	{ pattern: /^muc_ads$/i, category: 'marketing', vendor: 'Twitter/X', purpose: 'Ad targeting', duration: '2 years' },
+	{
+		pattern: /^_twitter/i,
+		category: 'marketing',
+		vendor: 'Twitter/X',
+		purpose: 'Advertising',
+		duration: 'Varies'
+	},
+	{
+		pattern: /^muc_ads$/i,
+		category: 'marketing',
+		vendor: 'Twitter/X',
+		purpose: 'Ad targeting',
+		duration: '2 years'
+	},
 
 	// TikTok
-	{ pattern: /^_ttp$/i, category: 'marketing', vendor: 'TikTok', purpose: 'Track unique visitors', duration: '13 months' },
-	{ pattern: /^tt_/i, category: 'marketing', vendor: 'TikTok', purpose: 'Advertising', duration: 'Varies' },
+	{
+		pattern: /^_ttp$/i,
+		category: 'marketing',
+		vendor: 'TikTok',
+		purpose: 'Track unique visitors',
+		duration: '13 months'
+	},
+	{
+		pattern: /^tt_/i,
+		category: 'marketing',
+		vendor: 'TikTok',
+		purpose: 'Advertising',
+		duration: 'Varies'
+	},
 
 	// Hotjar
-	{ pattern: /^_hj/i, category: 'analytics', vendor: 'Hotjar', purpose: 'Session recording', duration: 'Varies' },
-	{ pattern: /^hjSession/i, category: 'analytics', vendor: 'Hotjar', purpose: 'Session data', duration: '30 minutes' },
+	{
+		pattern: /^_hj/i,
+		category: 'analytics',
+		vendor: 'Hotjar',
+		purpose: 'Session recording',
+		duration: 'Varies'
+	},
+	{
+		pattern: /^hjSession/i,
+		category: 'analytics',
+		vendor: 'Hotjar',
+		purpose: 'Session data',
+		duration: '30 minutes'
+	},
 
 	// Mixpanel
-	{ pattern: /^mp_/i, category: 'analytics', vendor: 'Mixpanel', purpose: 'Analytics tracking', duration: '1 year' },
+	{
+		pattern: /^mp_/i,
+		category: 'analytics',
+		vendor: 'Mixpanel',
+		purpose: 'Analytics tracking',
+		duration: '1 year'
+	},
 
 	// Amplitude
-	{ pattern: /^amplitude_/i, category: 'analytics', vendor: 'Amplitude', purpose: 'Analytics tracking', duration: '1 year' },
+	{
+		pattern: /^amplitude_/i,
+		category: 'analytics',
+		vendor: 'Amplitude',
+		purpose: 'Analytics tracking',
+		duration: '1 year'
+	},
 
 	// Segment
-	{ pattern: /^ajs_/i, category: 'analytics', vendor: 'Segment', purpose: 'Analytics routing', duration: '1 year' },
+	{
+		pattern: /^ajs_/i,
+		category: 'analytics',
+		vendor: 'Segment',
+		purpose: 'Analytics routing',
+		duration: '1 year'
+	},
 
 	// Intercom
-	{ pattern: /^intercom-/i, category: 'preferences', vendor: 'Intercom', purpose: 'Chat widget', duration: 'Varies' },
+	{
+		pattern: /^intercom-/i,
+		category: 'preferences',
+		vendor: 'Intercom',
+		purpose: 'Chat widget',
+		duration: 'Varies'
+	},
 
 	// Zendesk
-	{ pattern: /^__zlcmid$/i, category: 'preferences', vendor: 'Zendesk', purpose: 'Live chat', duration: '1 year' },
+	{
+		pattern: /^__zlcmid$/i,
+		category: 'preferences',
+		vendor: 'Zendesk',
+		purpose: 'Live chat',
+		duration: '1 year'
+	},
 
 	// Cloudflare
-	{ pattern: /^__cf_bm$/i, category: 'necessary', vendor: 'Cloudflare', purpose: 'Bot management', duration: '30 minutes' },
-	{ pattern: /^cf_clearance$/i, category: 'necessary', vendor: 'Cloudflare', purpose: 'Security clearance', duration: '1 year' },
+	{
+		pattern: /^__cf_bm$/i,
+		category: 'necessary',
+		vendor: 'Cloudflare',
+		purpose: 'Bot management',
+		duration: '30 minutes'
+	},
+	{
+		pattern: /^cf_clearance$/i,
+		category: 'necessary',
+		vendor: 'Cloudflare',
+		purpose: 'Security clearance',
+		duration: '1 year'
+	},
 
 	// Stripe
-	{ pattern: /^__stripe/i, category: 'necessary', vendor: 'Stripe', purpose: 'Payment processing', duration: 'Session' },
+	{
+		pattern: /^__stripe/i,
+		category: 'necessary',
+		vendor: 'Stripe',
+		purpose: 'Payment processing',
+		duration: 'Session'
+	},
 
 	// Common session/auth cookies
-	{ pattern: /^session/i, category: 'necessary', vendor: 'Application', purpose: 'Session management', duration: 'Session' },
-	{ pattern: /^auth/i, category: 'necessary', vendor: 'Application', purpose: 'Authentication', duration: 'Varies' },
-	{ pattern: /^token/i, category: 'necessary', vendor: 'Application', purpose: 'Authentication', duration: 'Varies' },
-	{ pattern: /^csrf/i, category: 'necessary', vendor: 'Application', purpose: 'Security', duration: 'Session' },
-	{ pattern: /^xsrf/i, category: 'necessary', vendor: 'Application', purpose: 'Security', duration: 'Session' },
+	{
+		pattern: /^session/i,
+		category: 'necessary',
+		vendor: 'Application',
+		purpose: 'Session management',
+		duration: 'Session'
+	},
+	{
+		pattern: /^auth/i,
+		category: 'necessary',
+		vendor: 'Application',
+		purpose: 'Authentication',
+		duration: 'Varies'
+	},
+	{
+		pattern: /^token/i,
+		category: 'necessary',
+		vendor: 'Application',
+		purpose: 'Authentication',
+		duration: 'Varies'
+	},
+	{
+		pattern: /^csrf/i,
+		category: 'necessary',
+		vendor: 'Application',
+		purpose: 'Security',
+		duration: 'Session'
+	},
+	{
+		pattern: /^xsrf/i,
+		category: 'necessary',
+		vendor: 'Application',
+		purpose: 'Security',
+		duration: 'Session'
+	},
 
 	// Our consent cookie
-	{ pattern: /^rtp_consent$/i, category: 'necessary', vendor: 'Revolution Trading Pros', purpose: 'Store consent preferences', duration: '1 year' },
+	{
+		pattern: /^rtp_consent$/i,
+		category: 'necessary',
+		vendor: 'Revolution Trading Pros',
+		purpose: 'Store consent preferences',
+		duration: '1 year'
+	}
 ];
 
 /**
@@ -163,14 +367,16 @@ export function scanCookies(): CookieScanResult {
 			purpose: known?.purpose || 'Unknown purpose',
 			duration: known?.duration || 'Unknown',
 			type: name.startsWith('_') ? 'third-party' : 'first-party',
-			isKnown: !!known,
+			isKnown: !!known
 		};
 
 		// Don't expose sensitive cookie values
-		if (!name.toLowerCase().includes('token') &&
-				!name.toLowerCase().includes('auth') &&
-				!name.toLowerCase().includes('session') &&
-				!name.toLowerCase().includes('key')) {
+		if (
+			!name.toLowerCase().includes('token') &&
+			!name.toLowerCase().includes('auth') &&
+			!name.toLowerCase().includes('session') &&
+			!name.toLowerCase().includes('key')
+		) {
 			scanned.value = value.length > 50 ? value.substring(0, 50) + '...' : value;
 		}
 
@@ -182,7 +388,7 @@ export function scanCookies(): CookieScanResult {
 		necessary: [],
 		analytics: [],
 		marketing: [],
-		preferences: [],
+		preferences: []
 	};
 
 	scannedCookies.forEach((cookie) => {
@@ -206,16 +412,14 @@ export function scanCookies(): CookieScanResult {
 		uncategorizedCookies: scannedCookies.filter((c) => !c.isKnown).length,
 		cookies: scannedCookies,
 		byCategory,
-		byVendor,
+		byVendor
 	};
 }
 
 /**
  * Get cookies that shouldn't be set without consent.
  */
-export function getUnconsentedCookies(
-	allowedCategories: ConsentCategory[]
-): ScannedCookie[] {
+export function getUnconsentedCookies(allowedCategories: ConsentCategory[]): ScannedCookie[] {
 	const scan = scanCookies();
 
 	return scan.cookies.filter((cookie) => {
@@ -312,8 +516,8 @@ export function getCookieSummary(): {
 			necessary: scan.byCategory.necessary.length,
 			analytics: scan.byCategory.analytics.length,
 			marketing: scan.byCategory.marketing.length,
-			preferences: scan.byCategory.preferences.length,
+			preferences: scan.byCategory.preferences.length
 		},
-		vendors: Object.keys(scan.byVendor),
+		vendors: Object.keys(scan.byVendor)
 	};
 }

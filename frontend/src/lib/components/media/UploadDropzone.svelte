@@ -16,7 +16,12 @@
 		multiple?: boolean;
 	}
 
-	let { folderId = null, accept = 'image/*,video/*,application/pdf', maxSize = 100 * 1024 * 1024, multiple = true }: Props = $props();
+	let {
+		folderId = null,
+		accept = 'image/*,video/*,application/pdf',
+		maxSize = 100 * 1024 * 1024,
+		multiple = true
+	}: Props = $props();
 
 	let isDragging = $state(false);
 	let fileInput: HTMLInputElement;

@@ -116,7 +116,8 @@
 	}
 
 	let readRate = $derived(
-		stats && stats.total_submissions > 0 ? (stats.read_count / stats.total_submissions) * 100 : 0);
+		stats && stats.total_submissions > 0 ? (stats.read_count / stats.total_submissions) * 100 : 0
+	);
 </script>
 
 <div class="analytics-container">

@@ -41,7 +41,7 @@ export const ChartColorsDark = {
 
 	// Gradient colors
 	gradientTop: 'rgba(99, 102, 241, 0.4)',
-	gradientBottom: 'rgba(99, 102, 241, 0.0)',
+	gradientBottom: 'rgba(99, 102, 241, 0.0)'
 } as const;
 
 // Light theme chart colors - Apple-inspired clean aesthetic
@@ -78,7 +78,7 @@ export const ChartColorsLight = {
 
 	// Gradient colors
 	gradientTop: 'rgba(79, 70, 229, 0.3)',
-	gradientBottom: 'rgba(79, 70, 229, 0.0)',
+	gradientBottom: 'rgba(79, 70, 229, 0.0)'
 } as const;
 
 // Default to light theme colors (Apple Principal Engineer preference)
@@ -95,8 +95,8 @@ export const ChartFonts = {
 		xs: 10,
 		sm: 11,
 		md: 12,
-		lg: 14,
-	},
+		lg: 14
+	}
 } as const;
 
 /**
@@ -110,11 +110,11 @@ export function getLightweightChartsOptions(height = 300) {
 			background: { type: 'solid' as const, color: 'transparent' },
 			textColor: ChartColors.textSecondary,
 			fontFamily: ChartFonts.family,
-			fontSize: ChartFonts.size.sm,
+			fontSize: ChartFonts.size.sm
 		},
 		grid: {
 			vertLines: { color: ChartColors.grid },
-			horzLines: { color: ChartColors.grid },
+			horzLines: { color: ChartColors.grid }
 		},
 		crosshair: {
 			mode: 1, // Normal
@@ -122,33 +122,33 @@ export function getLightweightChartsOptions(height = 300) {
 				color: ChartColors.primary,
 				width: 1,
 				style: 2, // Dashed
-				labelBackgroundColor: ChartColors.primary,
+				labelBackgroundColor: ChartColors.primary
 			},
 			horzLine: {
 				color: ChartColors.primary,
 				width: 1,
 				style: 2,
-				labelBackgroundColor: ChartColors.primary,
-			},
+				labelBackgroundColor: ChartColors.primary
+			}
 		},
 		rightPriceScale: {
 			borderColor: ChartColors.border,
-			scaleMargins: { top: 0.1, bottom: 0.1 },
+			scaleMargins: { top: 0.1, bottom: 0.1 }
 		},
 		timeScale: {
 			borderColor: ChartColors.border,
 			timeVisible: true,
-			secondsVisible: false,
+			secondsVisible: false
 		},
 		handleScale: {
-			axisPressedMouseMove: true,
+			axisPressedMouseMove: true
 		},
 		handleScroll: {
 			mouseWheel: true,
 			pressedMouseMove: true,
 			horzTouchDrag: true,
-			vertTouchDrag: false,
-		},
+			vertTouchDrag: false
+		}
 	};
 }
 
@@ -160,7 +160,7 @@ export function getAreaSeriesOptions(color = ChartColors.primary) {
 		lineColor: color,
 		topColor: `${color}66`, // 40% opacity
 		bottomColor: `${color}00`, // 0% opacity
-		lineWidth: 2,
+		lineWidth: 2
 	};
 }
 
@@ -170,7 +170,7 @@ export function getAreaSeriesOptions(color = ChartColors.primary) {
 export function getLineSeriesOptions(color = ChartColors.primary) {
 	return {
 		color,
-		lineWidth: 2,
+		lineWidth: 2
 	};
 }
 
@@ -184,7 +184,7 @@ export function getCandlestickSeriesOptions() {
 		borderUpColor: ChartColors.upColor,
 		borderDownColor: ChartColors.downColor,
 		wickUpColor: ChartColors.upColor,
-		wickDownColor: ChartColors.downColor,
+		wickDownColor: ChartColors.downColor
 	};
 }
 
@@ -194,7 +194,7 @@ export function getCandlestickSeriesOptions() {
 export function getHistogramSeriesOptions(color = ChartColors.primary) {
 	return {
 		color,
-		priceFormat: { type: 'volume' as const },
+		priceFormat: { type: 'volume' as const }
 	};
 }
 
@@ -210,27 +210,27 @@ export function getApexChartsTheme(isDark: boolean = false) {
 			foreColor: colors.textSecondary,
 			fontFamily: ChartFonts.family,
 			toolbar: {
-				show: false,
+				show: false
 			},
 			zoom: {
-				enabled: false,
-			},
+				enabled: false
+			}
 		},
 		colors: [colors.primary, colors.success, colors.warning, colors.info],
 		grid: {
 			borderColor: colors.grid,
-			strokeDashArray: 4,
+			strokeDashArray: 4
 		},
 		stroke: {
 			curve: 'smooth' as const,
-			width: 2,
+			width: 2
 		},
 		tooltip: {
 			theme: isDark ? 'dark' : 'light',
 			style: {
 				fontSize: '12px',
-				fontFamily: ChartFonts.family,
-			},
+				fontFamily: ChartFonts.family
+			}
 		},
 		xaxis: {
 			axisBorder: { color: colors.border },
@@ -238,23 +238,23 @@ export function getApexChartsTheme(isDark: boolean = false) {
 			labels: {
 				style: {
 					colors: colors.textMuted,
-					fontSize: '11px',
-				},
-			},
+					fontSize: '11px'
+				}
+			}
 		},
 		yaxis: {
 			labels: {
 				style: {
 					colors: colors.textMuted,
-					fontSize: '11px',
-				},
-			},
+					fontSize: '11px'
+				}
+			}
 		},
 		legend: {
 			labels: {
-				colors: colors.textSecondary,
-			},
-		},
+				colors: colors.textSecondary
+			}
+		}
 	};
 }
 
@@ -273,9 +273,9 @@ export function getChartJsTheme(isDark: boolean = false) {
 					color: colors.textSecondary,
 					font: {
 						family: ChartFonts.family,
-						size: ChartFonts.size.sm,
-					},
-				},
+						size: ChartFonts.size.sm
+					}
+				}
 			},
 			tooltip: {
 				backgroundColor: isDark ? colors.surface : '#ffffff',
@@ -286,40 +286,40 @@ export function getChartJsTheme(isDark: boolean = false) {
 				titleFont: {
 					family: ChartFonts.family,
 					size: ChartFonts.size.md,
-					weight: '600',
+					weight: '600'
 				},
 				bodyFont: {
 					family: ChartFonts.family,
-					size: ChartFonts.size.sm,
-				},
-			},
+					size: ChartFonts.size.sm
+				}
+			}
 		},
 		scales: {
 			x: {
 				grid: {
-					color: colors.grid,
+					color: colors.grid
 				},
 				ticks: {
 					color: colors.textMuted,
 					font: {
 						family: ChartFonts.family,
-						size: ChartFonts.size.xs,
-					},
-				},
+						size: ChartFonts.size.xs
+					}
+				}
 			},
 			y: {
 				grid: {
-					color: colors.grid,
+					color: colors.grid
 				},
 				ticks: {
 					color: colors.textMuted,
 					font: {
 						family: ChartFonts.family,
-						size: ChartFonts.size.xs,
-					},
-				},
-			},
-		},
+						size: ChartFonts.size.xs
+					}
+				}
+			}
+		}
 	};
 }
 
@@ -335,5 +335,5 @@ export default {
 	getCandlestickSeriesOptions,
 	getHistogramSeriesOptions,
 	getApexChartsTheme,
-	getChartJsTheme,
+	getChartJsTheme
 };

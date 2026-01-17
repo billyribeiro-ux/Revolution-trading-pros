@@ -119,10 +119,22 @@
 		viewport?: string;
 		preconnect?: string[];
 		dnsPrefetch?: string[];
-		preload?: Array<{ 
-			href: string; 
-			as: 'audio' | 'document' | 'embed' | 'fetch' | 'font' | 'image' | 'object' | 'script' | 'style' | 'track' | 'video' | 'worker'; 
-			type?: string 
+		preload?: Array<{
+			href: string;
+			as:
+				| 'audio'
+				| 'document'
+				| 'embed'
+				| 'fetch'
+				| 'font'
+				| 'image'
+				| 'object'
+				| 'script'
+				| 'style'
+				| 'track'
+				| 'video'
+				| 'worker';
+			type?: string;
 		}>;
 		prefetch?: string[];
 		modulePreload?: string[];
@@ -242,11 +254,9 @@
 
 	// URL Construction - use consistent server-side URL to avoid hydration mismatch
 	let currentUrl = $derived(`${siteUrl}${page.url.pathname}`);
-	let fullCanonical = $derived(canonical
-		? canonical.startsWith('http')
-			? canonical
-			: `${siteUrl}${canonical}`
-		: currentUrl);
+	let fullCanonical = $derived(
+		canonical ? (canonical.startsWith('http') ? canonical : `${siteUrl}${canonical}`) : currentUrl
+	);
 
 	// Title Construction
 	let fullTitle = $derived(constructTitle(title, siteName));
@@ -274,7 +284,8 @@
 
 	let effectiveKeywords = $derived(keywords.length >= 3 ? keywords : generateDefaultKeywords());
 	let effectiveBreadcrumbs = $derived(
-		breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath(page.url.pathname));
+		breadcrumbs.length > 0 ? breadcrumbs : generateBreadcrumbsFromPath(page.url.pathname)
+	);
 
 	// SEO Score
 	let seoScore = $derived(calculateSEOScore());
@@ -298,8 +309,8 @@
 			}
 			const keys = Object.keys(obj as Record<string, unknown>).sort();
 			const pairs = keys
-				.filter(k => (obj as Record<string, unknown>)[k] !== undefined)
-				.map(k => `${JSON.stringify(k)}:${stableStringify((obj as Record<string, unknown>)[k])}`);
+				.filter((k) => (obj as Record<string, unknown>)[k] !== undefined)
+				.map((k) => `${JSON.stringify(k)}:${stableStringify((obj as Record<string, unknown>)[k])}`);
 			return '{' + pairs.join(',') + '}';
 		};
 		// Use concatenation to avoid Svelte parsing the script tag

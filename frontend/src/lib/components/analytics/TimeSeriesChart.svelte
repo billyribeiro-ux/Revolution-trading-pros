@@ -66,29 +66,36 @@
 	}
 
 	// Generate SVG path for line
-	let linePath = $derived(data
-		.map((d, i) => {
-			const x = scaleX(i);
-			const y = scaleY(d.value);
-			return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`;
-		})
-		.join(' '));
+	let linePath = $derived(
+		data
+			.map((d, i) => {
+				const x = scaleX(i);
+				const y = scaleY(d.value);
+				return i === 0 ? `M ${x} ${y}` : `L ${x} ${y}`;
+			})
+			.join(' ')
+	);
 
 	// Generate SVG path for area
 	let areaPath = $derived(
 		linePath +
-		` L ${scaleX(data.length - 1)} ${padding.top + chartHeight}` +
-		` L ${padding.left} ${padding.top + chartHeight}` +
-		` Z`);
+			` L ${scaleX(data.length - 1)} ${padding.top + chartHeight}` +
+			` L ${padding.left} ${padding.top + chartHeight}` +
+			` Z`
+	);
 
 	// Y-axis ticks
-	let yTicks = $derived([0, 0.25, 0.5, 0.75, 1].map((t) => ({
-		value: minValue + t * valueRange,
-		y: scaleY(minValue + t * valueRange)
-	})));
+	let yTicks = $derived(
+		[0, 0.25, 0.5, 0.75, 1].map((t) => ({
+			value: minValue + t * valueRange,
+			y: scaleY(minValue + t * valueRange)
+		}))
+	);
 
 	// X-axis labels (show ~5 labels)
-	let xLabels = $derived(data.filter((_, i) => i % Math.ceil(data.length / 5) === 0 || i === data.length - 1));
+	let xLabels = $derived(
+		data.filter((_, i) => i % Math.ceil(data.length / 5) === 0 || i === data.length - 1)
+	);
 
 	// Handle resize
 	function handleResize() {

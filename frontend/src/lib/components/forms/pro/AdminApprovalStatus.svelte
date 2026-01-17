@@ -45,7 +45,10 @@
 	let noteText = $state('');
 	let updateError = $state('');
 
-	const statusConfig: Record<ApprovalStatus, { label: string; color: string; bgColor: string; icon: string }> = {
+	const statusConfig: Record<
+		ApprovalStatus,
+		{ label: string; color: string; bgColor: string; icon: string }
+	> = {
 		pending: {
 			label: 'Pending Review',
 			color: '#92400e',
@@ -125,29 +128,67 @@
 
 <div class="admin-approval-status" class:has-error={error || updateError}>
 	<div class="status-card">
-		<div class="current-status" style="--status-color: {config.color}; --status-bg: {config.bgColor}">
+		<div
+			class="current-status"
+			style="--status-color: {config.color}; --status-bg: {config.bgColor}"
+		>
 			<div class="status-icon">
 				{#if config.icon === 'clock'}
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<circle cx="12" cy="12" r="10"></circle>
 						<polyline points="12 6 12 12 16 14"></polyline>
 					</svg>
 				{:else if config.icon === 'check'}
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<polyline points="20 6 9 17 4 12"></polyline>
 					</svg>
 				{:else if config.icon === 'x'}
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<line x1="18" y1="6" x2="6" y2="18"></line>
 						<line x1="6" y1="6" x2="18" y2="18"></line>
 					</svg>
 				{:else if config.icon === 'edit'}
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
 						<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
 					</svg>
 				{:else if config.icon === 'pause'}
-					<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<rect x="6" y="4" width="4" height="16"></rect>
 						<rect x="14" y="4" width="4" height="16"></rect>
 					</svg>
@@ -200,7 +241,14 @@
 								class="status-btn approve"
 								onclick={() => initiateStatusChange('approved')}
 							>
-								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<svg
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								>
 									<polyline points="20 6 9 17 4 12"></polyline>
 								</svg>
 								Approve
@@ -212,7 +260,14 @@
 								class="status-btn reject"
 								onclick={() => initiateStatusChange('rejected')}
 							>
-								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<svg
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								>
 									<line x1="18" y1="6" x2="6" y2="18"></line>
 									<line x1="6" y1="6" x2="18" y2="18"></line>
 								</svg>
@@ -225,7 +280,14 @@
 								class="status-btn revision"
 								onclick={() => initiateStatusChange('needs_revision')}
 							>
-								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<svg
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								>
 									<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
 									<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
 								</svg>
@@ -238,7 +300,14 @@
 								class="status-btn hold"
 								onclick={() => initiateStatusChange('on_hold')}
 							>
-								<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+								<svg
+									width="14"
+									height="14"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+								>
 									<rect x="6" y="4" width="4" height="16"></rect>
 									<rect x="14" y="4" width="4" height="16"></rect>
 								</svg>
@@ -274,7 +343,14 @@
 							</div>
 							{#if log.note}
 								<div class="history-note">
-									<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+									<svg
+										width="14"
+										height="14"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2"
+									>
 										<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
 									</svg>
 									{log.note}
@@ -289,7 +365,14 @@
 
 	{#if error || updateError}
 		<div class="error-message">
-			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="14"
+				height="14"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<circle cx="12" cy="12" r="10"></circle>
 				<line x1="12" y1="8" x2="12" y2="12"></line>
 				<line x1="12" y1="16" x2="12.01" y2="16"></line>

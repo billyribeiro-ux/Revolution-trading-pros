@@ -101,7 +101,8 @@
 				required={field.required}
 				class={getInputClasses(!!error)}
 				autocomplete={enableAutocomplete ? 'address-line1' : 'off'}
-				oninput={(e: Event) => handleFieldChange('address_line_1', (e.currentTarget as HTMLInputElement).value)}
+				oninput={(e: Event) =>
+					handleFieldChange('address_line_1', (e.currentTarget as HTMLInputElement).value)}
 			/>
 		</div>
 
@@ -117,7 +118,8 @@
 					value={addressData.address_line_2}
 					class="address-input"
 					autocomplete={enableAutocomplete ? 'address-line2' : 'off'}
-					oninput={(e: Event) => handleFieldChange('address_line_2', (e.currentTarget as HTMLInputElement).value)}
+					oninput={(e: Event) =>
+						handleFieldChange('address_line_2', (e.currentTarget as HTMLInputElement).value)}
 				/>
 			</div>
 		{/if}
@@ -135,7 +137,8 @@
 					required={field.required}
 					class={getInputClasses(!!error)}
 					autocomplete={enableAutocomplete ? 'address-level2' : 'off'}
-					oninput={(e: Event) => handleFieldChange('city', (e.currentTarget as HTMLInputElement).value)}
+					oninput={(e: Event) =>
+						handleFieldChange('city', (e.currentTarget as HTMLInputElement).value)}
 				/>
 			</div>
 			<div class="half-field">
@@ -149,7 +152,8 @@
 					required={field.required}
 					class={getInputClasses(!!error)}
 					autocomplete={enableAutocomplete ? 'address-level1' : 'off'}
-					oninput={(e: Event) => handleFieldChange('state', (e.currentTarget as HTMLInputElement).value)}
+					oninput={(e: Event) =>
+						handleFieldChange('state', (e.currentTarget as HTMLInputElement).value)}
 				/>
 			</div>
 		</div>
@@ -167,7 +171,8 @@
 					required={field.required}
 					class={getInputClasses(!!error)}
 					autocomplete={enableAutocomplete ? 'postal-code' : 'off'}
-					oninput={(e: Event) => handleFieldChange('zip', (e.currentTarget as HTMLInputElement).value)}
+					oninput={(e: Event) =>
+						handleFieldChange('zip', (e.currentTarget as HTMLInputElement).value)}
 				/>
 			</div>
 			{#if showCountry}
@@ -180,7 +185,8 @@
 						required={field.required}
 						class={getInputClasses(!!error)}
 						autocomplete={enableAutocomplete ? 'country' : 'off'}
-						onchange={(e: Event) => handleFieldChange('country', (e.currentTarget as HTMLInputElement).value)}
+						onchange={(e: Event) =>
+							handleFieldChange('country', (e.currentTarget as HTMLInputElement).value)}
 					>
 						<option value="">Select country</option>
 						{#each countries as country}

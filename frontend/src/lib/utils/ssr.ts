@@ -87,14 +87,18 @@ export function afterHydration(): Promise<void> {
 		if (document.readyState === 'complete') {
 			// Use requestIdleCallback for better performance
 			if ('requestIdleCallback' in window) {
-				(window as unknown as { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(() => resolve());
+				(
+					window as unknown as { requestIdleCallback: (cb: () => void) => void }
+				).requestIdleCallback(() => resolve());
 			} else {
 				setTimeout(resolve, 0);
 			}
 		} else {
 			window.addEventListener('load', () => {
 				if ('requestIdleCallback' in window) {
-					(window as unknown as { requestIdleCallback: (cb: () => void) => void }).requestIdleCallback(() => resolve());
+					(
+						window as unknown as { requestIdleCallback: (cb: () => void) => void }
+					).requestIdleCallback(() => resolve());
 				} else {
 					setTimeout(resolve, 0);
 				}
@@ -178,7 +182,8 @@ export function getDevicePixelRatio(): number {
 export function getConnectionQuality(): 'slow' | 'medium' | 'fast' | 'unknown' {
 	if (!browser) return 'unknown';
 
-	const connection = (navigator as unknown as { connection?: { effectiveType?: string } }).connection;
+	const connection = (navigator as unknown as { connection?: { effectiveType?: string } })
+		.connection;
 
 	if (!connection) return 'unknown';
 
@@ -230,9 +235,7 @@ export function createIntersectionObserver(
 /**
  * Create resize observer with SSR safety
  */
-export function createResizeObserver(
-	callback: ResizeObserverCallback
-): ResizeObserver | null {
+export function createResizeObserver(callback: ResizeObserverCallback): ResizeObserver | null {
 	if (!browser || !('ResizeObserver' in window)) {
 		return null;
 	}

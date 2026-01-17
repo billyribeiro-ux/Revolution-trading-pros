@@ -94,7 +94,7 @@ export const AnalyticsEvents = {
 	// Error Events
 	// ─────────────────────────────────────────────────────────────────────────
 	ERROR: 'error',
-	EXCEPTION: 'exception',
+	EXCEPTION: 'exception'
 } as const;
 
 export type AnalyticsEventName = (typeof AnalyticsEvents)[keyof typeof AnalyticsEvents];

@@ -101,7 +101,9 @@
 						</div>
 						<div>
 							<h1 class="text-2xl font-bold text-gray-900 dark:text-white">Board Reports</h1>
-							<p class="text-sm text-gray-500 dark:text-gray-400">Analytics and insights for your boards</p>
+							<p class="text-sm text-gray-500 dark:text-gray-400">
+								Analytics and insights for your boards
+							</p>
 						</div>
 					</div>
 				</div>
@@ -139,15 +141,12 @@
 			</select>
 
 			<div class="flex items-center gap-1 bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-				{#each [
-					{ value: 'week', label: 'Week' },
-					{ value: 'month', label: 'Month' },
-					{ value: 'quarter', label: 'Quarter' },
-					{ value: 'year', label: 'Year' }
-				] as p}
+				{#each [{ value: 'week', label: 'Week' }, { value: 'month', label: 'Month' }, { value: 'quarter', label: 'Quarter' }, { value: 'year', label: 'Year' }] as p}
 					<button
-						onclick={() => period = p.value as ReportPeriod}
-						class="px-4 py-2 text-sm rounded-md {period === p.value ? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm' : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}"
+						onclick={() => (period = p.value as ReportPeriod)}
+						class="px-4 py-2 text-sm rounded-md {period === p.value
+							? 'bg-white dark:bg-gray-700 text-gray-900 dark:text-white shadow-sm'
+							: 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'}"
 					>
 						{p.label}
 					</button>
@@ -169,7 +168,9 @@
 		{:else if report}
 			<!-- Overview Stats -->
 			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
 					<div class="flex items-center justify-between mb-4">
 						<span class="text-sm text-gray-500 dark:text-gray-400">Total Tasks</span>
 						<IconChecks class="w-5 h-5 text-blue-500" />
@@ -177,16 +178,22 @@
 					<div class="text-3xl font-bold text-gray-900 dark:text-white">{report.total_tasks}</div>
 				</div>
 
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
 					<div class="flex items-center justify-between mb-4">
 						<span class="text-sm text-gray-500 dark:text-gray-400">Completed</span>
 						<IconChecks class="w-5 h-5 text-green-500" />
 					</div>
 					<div class="text-3xl font-bold text-green-600">{report.completed_tasks}</div>
-					<div class="text-sm text-gray-500 dark:text-gray-400">{report.completion_rate.toFixed(1)}% completion rate</div>
+					<div class="text-sm text-gray-500 dark:text-gray-400">
+						{report.completion_rate.toFixed(1)}% completion rate
+					</div>
 				</div>
 
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
 					<div class="flex items-center justify-between mb-4">
 						<span class="text-sm text-gray-500 dark:text-gray-400">Overdue</span>
 						<IconCalendar class="w-5 h-5 text-red-500" />
@@ -194,34 +201,48 @@
 					<div class="text-3xl font-bold text-red-600">{report.overdue_tasks}</div>
 				</div>
 
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
 					<div class="flex items-center justify-between mb-4">
 						<span class="text-sm text-gray-500 dark:text-gray-400">Avg. Completion Time</span>
 						<IconClock class="w-5 h-5 text-purple-500" />
 					</div>
-					<div class="text-3xl font-bold text-gray-900 dark:text-white">{formatMinutes(report.avg_completion_time)}</div>
+					<div class="text-3xl font-bold text-gray-900 dark:text-white">
+						{formatMinutes(report.avg_completion_time)}
+					</div>
 				</div>
 			</div>
 
 			<!-- Velocity -->
-			<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-8">
+			<div
+				class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700 mb-8"
+			>
 				<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Velocity</h3>
 				<div class="flex items-center gap-8">
 					<div>
 						<div class="text-sm text-gray-500 dark:text-gray-400 mb-1">This Period</div>
-						<div class="text-2xl font-bold text-gray-900 dark:text-white">{report.velocity.current_period} tasks</div>
+						<div class="text-2xl font-bold text-gray-900 dark:text-white">
+							{report.velocity.current_period} tasks
+						</div>
 					</div>
 					<div>
 						<div class="text-sm text-gray-500 dark:text-gray-400 mb-1">Previous Period</div>
-						<div class="text-2xl font-bold text-gray-600 dark:text-gray-400">{report.velocity.previous_period} tasks</div>
+						<div class="text-2xl font-bold text-gray-600 dark:text-gray-400">
+							{report.velocity.previous_period} tasks
+						</div>
 					</div>
 					<div class="flex items-center gap-2">
 						{#if report.velocity.trend === 'up'}
 							<IconTrendingUp class="w-6 h-6 text-green-500" />
-							<span class="text-green-600 font-medium">+{report.velocity.change_percentage.toFixed(1)}%</span>
+							<span class="text-green-600 font-medium"
+								>+{report.velocity.change_percentage.toFixed(1)}%</span
+							>
 						{:else if report.velocity.trend === 'down'}
 							<IconTrendingDown class="w-6 h-6 text-red-500" />
-							<span class="text-red-600 font-medium">{report.velocity.change_percentage.toFixed(1)}%</span>
+							<span class="text-red-600 font-medium"
+								>{report.velocity.change_percentage.toFixed(1)}%</span
+							>
 						{:else}
 							<span class="text-gray-500">No change</span>
 						{/if}
@@ -231,14 +252,18 @@
 
 			<div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
 				<!-- Tasks by Stage -->
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tasks by Stage</h3>
 					<div class="space-y-4">
 						{#each report.tasks_by_stage as stage}
 							<div>
 								<div class="flex items-center justify-between mb-1">
 									<span class="text-sm text-gray-700 dark:text-gray-300">{stage.stage_title}</span>
-									<span class="text-sm text-gray-500">{stage.task_count} ({stage.percentage.toFixed(1)}%)</span>
+									<span class="text-sm text-gray-500"
+										>{stage.task_count} ({stage.percentage.toFixed(1)}%)</span
+									>
 								</div>
 								<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
 									<div
@@ -252,19 +277,35 @@
 				</div>
 
 				<!-- Tasks by Priority -->
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Tasks by Priority</h3>
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
+					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+						Tasks by Priority
+					</h3>
 					<div class="space-y-4">
 						{#each report.tasks_by_priority as priority}
-							{@const colors = { urgent: 'bg-red-500', high: 'bg-orange-500', medium: 'bg-yellow-500', low: 'bg-blue-500', none: 'bg-gray-400' }}
+							{@const colors = {
+								urgent: 'bg-red-500',
+								high: 'bg-orange-500',
+								medium: 'bg-yellow-500',
+								low: 'bg-blue-500',
+								none: 'bg-gray-400'
+							}}
 							<div>
 								<div class="flex items-center justify-between mb-1">
-									<span class="text-sm text-gray-700 dark:text-gray-300 capitalize">{priority.priority}</span>
-									<span class="text-sm text-gray-500">{priority.task_count} ({priority.percentage.toFixed(1)}%)</span>
+									<span class="text-sm text-gray-700 dark:text-gray-300 capitalize"
+										>{priority.priority}</span
+									>
+									<span class="text-sm text-gray-500"
+										>{priority.task_count} ({priority.percentage.toFixed(1)}%)</span
+									>
 								</div>
 								<div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2">
 									<div
-										class="{colors[priority.priority as keyof typeof colors]} h-2 rounded-full transition-all"
+										class="{colors[
+											priority.priority as keyof typeof colors
+										]} h-2 rounded-full transition-all"
 										style="width: {priority.percentage}%"
 									></div>
 								</div>
@@ -274,22 +315,34 @@
 				</div>
 
 				<!-- Team Performance -->
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Team Performance</h3>
 					<div class="space-y-4">
 						{#each report.tasks_by_assignee as assignee}
-							<div class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
+							<div
+								class="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700 rounded-lg"
+							>
 								<div class="flex items-center gap-3">
-									<div class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm">
+									<div
+										class="w-8 h-8 rounded-full bg-indigo-500 flex items-center justify-center text-white text-sm"
+									>
 										{assignee.user_name.charAt(0).toUpperCase()}
 									</div>
 									<div>
-										<div class="text-sm font-medium text-gray-900 dark:text-white">{assignee.user_name}</div>
-										<div class="text-xs text-gray-500">{assignee.assigned_count} assigned, {assignee.completed_count} completed</div>
+										<div class="text-sm font-medium text-gray-900 dark:text-white">
+											{assignee.user_name}
+										</div>
+										<div class="text-xs text-gray-500">
+											{assignee.assigned_count} assigned, {assignee.completed_count} completed
+										</div>
 									</div>
 								</div>
 								<div class="text-right">
-									<div class="text-sm font-medium text-gray-900 dark:text-white">{assignee.completion_rate.toFixed(0)}%</div>
+									<div class="text-sm font-medium text-gray-900 dark:text-white">
+										{assignee.completion_rate.toFixed(0)}%
+									</div>
 									<div class="text-xs text-gray-500">completion</div>
 								</div>
 							</div>
@@ -298,8 +351,12 @@
 				</div>
 
 				<!-- Labels Distribution -->
-				<div class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700">
-					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Labels Distribution</h3>
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl p-6 border border-gray-200 dark:border-gray-700"
+				>
+					<h3 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">
+						Labels Distribution
+					</h3>
 					<div class="flex flex-wrap gap-3">
 						{#each report.tasks_by_label as label}
 							<div
@@ -314,7 +371,9 @@
 				</div>
 			</div>
 		{:else}
-			<div class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700">
+			<div
+				class="text-center py-12 bg-white dark:bg-gray-800 rounded-xl border border-gray-200 dark:border-gray-700"
+			>
 				<IconChartBar class="w-12 h-12 text-gray-400 mx-auto mb-4" />
 				<h3 class="text-lg font-medium text-gray-900 dark:text-white mb-2">No report available</h3>
 				<p class="text-gray-500 dark:text-gray-400">Select a board to view its report</p>

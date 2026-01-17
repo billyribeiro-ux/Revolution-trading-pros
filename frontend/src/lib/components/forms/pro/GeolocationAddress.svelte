@@ -195,7 +195,14 @@
 					<span class="spinner"></span>
 					Detecting...
 				{:else}
-					<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<svg
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
 						<circle cx="12" cy="12" r="10"></circle>
 						<circle cx="12" cy="12" r="3"></circle>
 						<line x1="12" y1="2" x2="12" y2="6"></line>
@@ -210,14 +217,33 @@
 			{#if addressValue.latitude && addressValue.longitude}
 				<div class="location-info">
 					<span class="coordinates">
-						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+						<svg
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
 							<circle cx="12" cy="10" r="3"></circle>
 						</svg>
 						{addressValue.latitude.toFixed(6)}, {addressValue.longitude.toFixed(6)}
 					</span>
-					<button type="button" class="clear-location" onclick={clearLocation} title="Clear location">
-						<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<button
+						type="button"
+						class="clear-location"
+						onclick={clearLocation}
+						title="Clear location"
+					>
+						<svg
+							width="14"
+							height="14"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
 							<line x1="18" y1="6" x2="6" y2="18"></line>
 							<line x1="6" y1="6" x2="18" y2="18"></line>
 						</svg>
@@ -239,7 +265,8 @@
 				id="{name}_line1"
 				name="{name}[address_line_1]"
 				value={addressValue.address_line_1}
-				oninput={(e: Event) => handleInputChange('address_line_1', (e.target as HTMLInputElement).value)}
+				oninput={(e: Event) =>
+					handleInputChange('address_line_1', (e.target as HTMLInputElement).value)}
 				placeholder="123 Main Street"
 				{disabled}
 				{required}
@@ -253,7 +280,8 @@
 				id="{name}_line2"
 				name="{name}[address_line_2]"
 				value={addressValue.address_line_2}
-				oninput={(e: Event) => handleInputChange('address_line_2', (e.target as HTMLInputElement).value)}
+				oninput={(e: Event) =>
+					handleInputChange('address_line_2', (e.target as HTMLInputElement).value)}
 				placeholder="Apt, Suite, Unit, etc."
 				{disabled}
 			/>
@@ -334,7 +362,14 @@
 
 	{#if error}
 		<div class="error-message">
-			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+			<svg
+				width="14"
+				height="14"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
 				<circle cx="12" cy="12" r="10"></circle>
 				<line x1="12" y1="8" x2="12" y2="12"></line>
 				<line x1="12" y1="16" x2="12.01" y2="16"></line>

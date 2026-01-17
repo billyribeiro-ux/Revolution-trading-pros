@@ -81,7 +81,9 @@
 
 			if (response.ok) {
 				const blob = await response.blob();
-				const filename = response.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] || `form-export.${exportFormat}`;
+				const filename =
+					response.headers.get('Content-Disposition')?.match(/filename="(.+)"/)?.[1] ||
+					`form-export.${exportFormat}`;
 
 				// Download file
 				const url = window.URL.createObjectURL(blob);
@@ -181,10 +183,18 @@
 
 	<!-- Tabs -->
 	<div class="tabs">
-		<button class="tab" class:active={activeTab === 'export'} onclick={() => (activeTab = 'export')}>
+		<button
+			class="tab"
+			class:active={activeTab === 'export'}
+			onclick={() => (activeTab = 'export')}
+		>
 			Export
 		</button>
-		<button class="tab" class:active={activeTab === 'import'} onclick={() => (activeTab = 'import')}>
+		<button
+			class="tab"
+			class:active={activeTab === 'import'}
+			onclick={() => (activeTab = 'import')}
+		>
 			Import
 		</button>
 	</div>
@@ -245,7 +255,13 @@
 					<div class="option-group">
 						<label class="option-label" for="date-from">Date Range (optional)</label>
 						<div class="date-range">
-							<input type="date" id="date-from" bind:value={dateFrom} class="date-input" placeholder="From" />
+							<input
+								type="date"
+								id="date-from"
+								bind:value={dateFrom}
+								class="date-input"
+								placeholder="From"
+							/>
 							<span class="date-separator">to</span>
 							<input type="date" bind:value={dateTo} class="date-input" placeholder="To" />
 						</div>
@@ -258,7 +274,11 @@
 						<span class="spinner"></span>
 						Exporting...
 					{:else}
-						Export {exportType === 'form' ? 'Form' : exportType === 'submissions' ? 'Submissions' : 'All'}
+						Export {exportType === 'form'
+							? 'Form'
+							: exportType === 'submissions'
+								? 'Submissions'
+								: 'All'}
 					{/if}
 				</button>
 
@@ -318,7 +338,11 @@
 
 				<!-- Import Result -->
 				{#if importResult}
-					<div class="import-result" class:success={importResult.success} class:error={!importResult.success}>
+					<div
+						class="import-result"
+						class:success={importResult.success}
+						class:error={!importResult.success}
+					>
 						{#if importResult.success}
 							<span class="result-icon">✓</span>
 						{:else}
@@ -329,7 +353,11 @@
 				{/if}
 
 				<!-- Import Button -->
-				<button class="btn-primary" onclick={handleImport} disabled={importing || (!importFile && importSource !== 'template')}>
+				<button
+					class="btn-primary"
+					onclick={handleImport}
+					disabled={importing || (!importFile && importSource !== 'template')}
+				>
 					{#if importing}
 						<span class="spinner"></span>
 						Importing...

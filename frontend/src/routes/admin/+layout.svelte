@@ -11,7 +11,7 @@
 	 */
 	// Admin Design System - Only loaded in admin area, not globally
 	import '$lib/styles/main.css';
-	
+
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
@@ -56,13 +56,13 @@
 
 		// Initialize keyboard shortcuts with custom actions
 		keyboard.init({
-			'search': () => {
+			search: () => {
 				isCommandPaletteOpen = true;
 			},
 			'search-alt': () => {
 				isCommandPaletteOpen = true;
 			},
-			'help': () => {
+			help: () => {
 				isKeyboardHelpOpen = true;
 			},
 			'goto-dashboard': () => {
@@ -77,7 +77,7 @@
 			'goto-settings': () => {
 				goto('/admin/settings');
 			},
-			'escape': () => {
+			escape: () => {
 				isCommandPaletteOpen = false;
 				isNotificationCenterOpen = false;
 				isKeyboardHelpOpen = false;
@@ -102,37 +102,40 @@
 	function formatPageTitle(pathname: string): string {
 		const segments = pathname.split('/').filter(Boolean);
 		if (segments.length <= 1) return 'Dashboard';
-		
+
 		const lastSegment = segments[segments.length - 1];
 		// Handle special cases
 		const titleMap: Record<string, string> = {
-			'blog': 'Blog Posts',
-			'categories': 'Categories',
-			'media': 'Media Library',
-			'members': 'Members',
-			'segments': 'Segments',
-			'subscriptions': 'Subscriptions',
-			'products': 'Products',
-			'coupons': 'Coupons',
-			'crm': 'CRM',
-			'campaigns': 'Email Campaigns',
-			'templates': 'Email Templates',
-			'smtp': 'Email Settings',
-			'seo': 'SEO Settings',
-			'analytics': 'Analytics',
-			'behavior': 'Behavior Tracking',
-			'users': 'Admin Users',
-			'settings': 'Settings',
-			'popups': 'Popups',
-			'forms': 'Forms',
-			'videos': 'Videos',
-			'resources': 'Resources',
-			'indicators': 'Indicators',
+			blog: 'Blog Posts',
+			categories: 'Categories',
+			media: 'Media Library',
+			members: 'Members',
+			segments: 'Segments',
+			subscriptions: 'Subscriptions',
+			products: 'Products',
+			coupons: 'Coupons',
+			crm: 'CRM',
+			campaigns: 'Email Campaigns',
+			templates: 'Email Templates',
+			smtp: 'Email Settings',
+			seo: 'SEO Settings',
+			analytics: 'Analytics',
+			behavior: 'Behavior Tracking',
+			users: 'Admin Users',
+			settings: 'Settings',
+			popups: 'Popups',
+			forms: 'Forms',
+			videos: 'Videos',
+			resources: 'Resources',
+			indicators: 'Indicators',
 			'site-health': 'Site Health',
-			'connections': 'API Connections'
+			connections: 'API Connections'
 		};
-		
-		return titleMap[lastSegment] || lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace(/-/g, ' ');
+
+		return (
+			titleMap[lastSegment] ||
+			lastSegment.charAt(0).toUpperCase() + lastSegment.slice(1).replace(/-/g, ' ')
+		);
 	}
 </script>
 
@@ -158,7 +161,7 @@
 				<!-- Search Button -->
 				<button
 					class="header-btn"
-					onclick={() => isCommandPaletteOpen = true}
+					onclick={() => (isCommandPaletteOpen = true)}
 					title="Search (⌘K)"
 					aria-label="Open search"
 				>
@@ -170,7 +173,7 @@
 				<!-- Notifications Button -->
 				<button
 					class="header-btn notification-btn"
-					onclick={() => isNotificationCenterOpen = true}
+					onclick={() => (isNotificationCenterOpen = true)}
 					title="Notifications"
 					aria-label="Open notifications"
 				>
@@ -183,7 +186,7 @@
 				<!-- Connection Health Button -->
 				<button
 					class="header-btn"
-					onclick={() => isConnectionHealthOpen = true}
+					onclick={() => (isConnectionHealthOpen = true)}
 					title="API Connection Status"
 					aria-label="View API connection status"
 				>
@@ -196,7 +199,7 @@
 				<!-- Keyboard Shortcuts -->
 				<button
 					class="header-btn desktop-only"
-					onclick={() => isKeyboardHelpOpen = true}
+					onclick={() => (isKeyboardHelpOpen = true)}
 					title="Keyboard Shortcuts (?)"
 					aria-label="View keyboard shortcuts"
 				>
@@ -235,7 +238,9 @@
 		min-height: 100vh;
 		background: var(--admin-bg);
 		color: var(--admin-text-primary);
-		transition: background-color 0.3s ease, color 0.3s ease;
+		transition:
+			background-color 0.3s ease,
+			color 0.3s ease;
 	}
 
 	/* Main Content Area */
@@ -260,7 +265,10 @@
 		position: sticky;
 		top: 0;
 		z-index: 30;
-		transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+		transition:
+			background-color 0.3s ease,
+			border-color 0.3s ease,
+			box-shadow 0.3s ease;
 	}
 
 	/* Mobile Menu Button */
@@ -287,7 +295,12 @@
 
 	/* Header Title - Montserrat 600 */
 	.header-title h1 {
-		font-family: var(--font-heading), 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+		font-family:
+			var(--font-heading),
+			'Montserrat',
+			-apple-system,
+			BlinkMacSystemFont,
+			sans-serif;
 		font-size: 1.375rem;
 		font-weight: 600;
 		color: var(--admin-text-primary);

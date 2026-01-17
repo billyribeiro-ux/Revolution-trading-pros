@@ -14,7 +14,12 @@
 	import { fade, fly, scale } from 'svelte/transition';
 	import { quintOut } from 'svelte/easing';
 	import { analyticsApi, type DashboardData } from '$lib/api/analytics';
-	import { connections, isAnalyticsConnected, FEATURE_SERVICES, SERVICE_KEYS } from '$lib/stores/connections.svelte';
+	import {
+		connections,
+		isAnalyticsConnected,
+		FEATURE_SERVICES,
+		SERVICE_KEYS
+	} from '$lib/stores/connections.svelte';
 	import ApiNotConnected from '$lib/components/ApiNotConnected.svelte';
 	import KpiGrid from '$lib/components/analytics/KpiGrid.svelte';
 	import FunnelChart from '$lib/components/analytics/FunnelChart.svelte';
@@ -36,16 +41,19 @@
 	let isConnected = $state(false);
 
 	// Helper to get KPI value by key
-	function getKpiValue(kpis: import('$lib/api/analytics').KpiValue[] | undefined, key: string): number {
+	function getKpiValue(
+		kpis: import('$lib/api/analytics').KpiValue[] | undefined,
+		key: string
+	): number {
 		if (!kpis) return 0;
-		const kpi = kpis.find(k => k.kpi_key === key);
+		const kpi = kpis.find((k) => k.kpi_key === key);
 		return kpi?.value || 0;
 	}
 
 	// Derived export data
 	let exportData = $derived.by(() => {
 		if (!dashboardData) return [];
-		
+
 		const data = dashboardData;
 		return [
 			{
@@ -94,16 +102,17 @@
 	let activeTab = $state('overview');
 
 	// Analytics services that can be connected - dynamically generated from FEATURE_SERVICES
-	const analyticsServices = FEATURE_SERVICES['analytics']?.map((key) => {
-		const serviceConfig: Record<string, { name: string; icon: string; color: string }> = {
-			[SERVICE_KEYS.GOOGLE_ANALYTICS]: { name: 'Google Analytics', icon: '📊', color: '#E6B800' },
-			[SERVICE_KEYS.MIXPANEL]: { name: 'Mixpanel', icon: '📈', color: '#B38F00' },
-			[SERVICE_KEYS.AMPLITUDE]: { name: 'Amplitude', icon: '📉', color: '#3b82f6' },
-			[SERVICE_KEYS.SEGMENT]: { name: 'Segment', icon: '🔗', color: '#10b981' },
-			[SERVICE_KEYS.PLAUSIBLE]: { name: 'Plausible', icon: '🌿', color: '#14b8a6' }
-		};
-		return { key, ...serviceConfig[key] };
-	}) || [];
+	const analyticsServices =
+		FEATURE_SERVICES['analytics']?.map((key) => {
+			const serviceConfig: Record<string, { name: string; icon: string; color: string }> = {
+				[SERVICE_KEYS.GOOGLE_ANALYTICS]: { name: 'Google Analytics', icon: '📊', color: '#E6B800' },
+				[SERVICE_KEYS.MIXPANEL]: { name: 'Mixpanel', icon: '📈', color: '#B38F00' },
+				[SERVICE_KEYS.AMPLITUDE]: { name: 'Amplitude', icon: '📉', color: '#3b82f6' },
+				[SERVICE_KEYS.SEGMENT]: { name: 'Segment', icon: '🔗', color: '#10b981' },
+				[SERVICE_KEYS.PLAUSIBLE]: { name: 'Plausible', icon: '🌿', color: '#14b8a6' }
+			};
+			return { key, ...serviceConfig[key] };
+		}) || [];
 
 	async function loadDashboard() {
 		loading = true;
@@ -170,357 +179,354 @@
 
 <div class="analytics-dashboard">
 	<div class="admin-page-container">
-	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
-	</div>
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
+		</div>
 
-	<!-- Header -->
-	<header class="dashboard-header" in:fly={{ y: -20, duration: 500, easing: quintOut }}>
-		<div class="header-content">
-			<div class="header-title">
-				<div class="title-icon">
-					<IconChartBar size={28} />
+		<!-- Header -->
+		<header class="dashboard-header" in:fly={{ y: -20, duration: 500, easing: quintOut }}>
+			<div class="header-content">
+				<div class="header-title">
+					<div class="title-icon">
+						<IconChartBar size={28} />
+					</div>
+					<div>
+						<h1>Analytics Dashboard</h1>
+						<p>Enterprise insights and performance metrics</p>
+					</div>
 				</div>
-				<div>
-					<h1>Analytics Dashboard</h1>
-					<p>Enterprise insights and performance metrics</p>
-				</div>
+
+				{#if isConnected}
+					<div class="header-actions">
+						<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
+						<ExportButton
+							data={exportData}
+							filename="analytics-report-{selectedPeriod}"
+							formats={['csv', 'json']}
+							label="Export"
+							disabled={loading || !dashboardData}
+						/>
+						<a href="/admin/analytics/events" class="btn-primary">
+							Event Explorer
+							<IconArrowRight size={18} />
+						</a>
+					</div>
+				{/if}
 			</div>
 
+			<!-- Connection Status Badge -->
+			<div class="connection-status" class:connected={isConnected}>
+				<IconPlugConnected size={16} />
+				<span>{isConnected ? 'Analytics Connected' : 'Not Connected'}</span>
+			</div>
+
+			<!-- Tab Navigation (only show when connected) -->
 			{#if isConnected}
-				<div class="header-actions">
-					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
-					<ExportButton
-						data={exportData}
-						filename="analytics-report-{selectedPeriod}"
-						formats={['csv', 'json']}
-						label="Export"
-						disabled={loading || !dashboardData}
+				<nav class="tab-nav" in:fade={{ duration: 300, delay: 200 }}>
+					{#each tabs as tab}
+						<button
+							class="tab-btn"
+							class:active={activeTab === tab.id}
+							onclick={() => (activeTab = tab.id)}
+						>
+							<span class="tab-icon">{tab.icon}</span>
+							{tab.label}
+						</button>
+					{/each}
+				</nav>
+			{/if}
+		</header>
+
+		<!-- Main Content -->
+		<main class="dashboard-content">
+			{#if connectionsLoading}
+				<!-- Loading Connections -->
+				<div class="loading-state" in:fade={{ duration: 300 }}>
+					<div class="loading-spinner"></div>
+					<p>Checking connections...</p>
+				</div>
+			{:else if !isConnected}
+				<!-- Not Connected State -->
+				<div class="not-connected-state" in:scale={{ duration: 400, start: 0.95 }}>
+					<ApiNotConnected
+						serviceName="Analytics"
+						description="Connect an analytics service to view real-time data, track user behavior, and measure conversions."
+						icon="📊"
+						color="#E6B800"
+						features={[
+							'Real-time visitor tracking',
+							'User behavior analytics',
+							'Conversion funnel analysis',
+							'Cohort retention reports',
+							'Channel attribution'
+						]}
 					/>
-					<a href="/admin/analytics/events" class="btn-primary">
-						Event Explorer
-						<IconArrowRight size={18} />
-					</a>
+
+					<!-- Available Services -->
+					<div class="available-services" in:fly={{ y: 20, duration: 400, delay: 200 }}>
+						<h3>Available Analytics Services</h3>
+						<div class="services-grid">
+							{#each analyticsServices as service}
+								<a
+									href="/admin/connections?connect={service.key}"
+									class="service-card"
+									style="--service-color: {service.color}"
+								>
+									<span class="service-icon">{service.icon}</span>
+									<span class="service-name">{service.name}</span>
+									<IconArrowRight size={16} class="service-arrow" />
+								</a>
+							{/each}
+						</div>
+					</div>
+				</div>
+			{:else if loading}
+				<!-- Loading Dashboard -->
+				<div class="loading-state" in:fade={{ duration: 300 }}>
+					<div class="loading-spinner"></div>
+					<p>Loading analytics data...</p>
+				</div>
+			{:else if error}
+				<!-- Error State -->
+				<div class="error-state" in:fade={{ duration: 300 }}>
+					<div class="error-icon">⚠️</div>
+					<h3>Unable to Load Analytics</h3>
+					<p>{error}</p>
+					<button class="btn-retry" onclick={loadDashboard}>
+						<IconRefresh size={18} />
+						Try Again
+					</button>
+				</div>
+			{:else if dashboardData}
+				<!-- Dashboard Content -->
+				<div class="dashboard-grid" in:fade={{ duration: 400 }}>
+					<!-- Overview Tab -->
+					{#if activeTab === 'overview'}
+						<div class="tab-content">
+							<!-- Real-time Widget -->
+							<div class="grid-row">
+								<div class="widget-large">
+									<RealTimeWidget />
+								</div>
+								<div class="widget-small">
+									<div class="quick-actions">
+										<h3>Quick Actions</h3>
+										<a href="/admin/analytics/segments" class="action-link">
+											<span class="action-icon">👥</span>
+											<div class="action-text">
+												<strong>Segments</strong>
+												<span>Manage user segments</span>
+											</div>
+										</a>
+										<a href="/admin/analytics/goals" class="action-link">
+											<span class="action-icon">🎯</span>
+											<div class="action-text">
+												<strong>Goals</strong>
+												<span>Track conversion goals</span>
+											</div>
+										</a>
+										<a href="/admin/analytics/reports" class="action-link">
+											<span class="action-icon">📈</span>
+											<div class="action-text">
+												<strong>Reports</strong>
+												<span>Custom report builder</span>
+											</div>
+										</a>
+									</div>
+								</div>
+							</div>
+
+							<!-- KPI Grid -->
+							{#if dashboardData.kpis && dashboardData.kpis.length > 0}
+								<KpiGrid kpis={dashboardData.kpis} />
+							{/if}
+
+							<!-- Time Series Charts -->
+							{#if revenueTimeSeries.length > 0 || usersTimeSeries.length > 0}
+								<div class="charts-row">
+									{#if revenueTimeSeries.length > 0}
+										<TimeSeriesChart
+											data={revenueTimeSeries}
+											title="Revenue Trend"
+											color="#10B981"
+											formatValue={(v) => '$' + v.toLocaleString()}
+										/>
+									{/if}
+									{#if usersTimeSeries.length > 0}
+										<TimeSeriesChart
+											data={usersTimeSeries}
+											title="Active Users"
+											color="#3B82F6"
+											formatValue={(v) => v.toLocaleString()}
+										/>
+									{/if}
+								</div>
+							{/if}
+
+							<!-- Top Pages & Events -->
+							<div class="data-tables">
+								<div class="data-table">
+									<h3>Top Pages</h3>
+									{#if dashboardData.top_pages && dashboardData.top_pages.length > 0}
+										<div class="table-rows">
+											{#each dashboardData.top_pages.slice(0, 10) as page, i}
+												<div class="table-row">
+													<span class="row-rank">{i + 1}</span>
+													<span class="row-label">{page.page_path}</span>
+													<span class="row-value">{page.views.toLocaleString()}</span>
+												</div>
+											{/each}
+										</div>
+									{:else}
+										<p class="no-data">No page data available yet</p>
+									{/if}
+								</div>
+
+								<div class="data-table">
+									<h3>Top Events</h3>
+									{#if dashboardData.top_events && dashboardData.top_events.length > 0}
+										<div class="table-rows">
+											{#each dashboardData.top_events.slice(0, 10) as event, i}
+												<div class="table-row">
+													<span class="row-rank">{i + 1}</span>
+													<span class="row-label">{event.event_name}</span>
+													<span class="row-value">{event.count.toLocaleString()}</span>
+												</div>
+											{/each}
+										</div>
+									{:else}
+										<p class="no-data">No event data available yet</p>
+									{/if}
+								</div>
+							</div>
+						</div>
+					{/if}
+
+					<!-- Funnels Tab -->
+					{#if activeTab === 'funnels'}
+						<div class="tab-content">
+							<div class="tab-header">
+								<h2>Conversion Funnels</h2>
+								<a href="/admin/analytics/funnels/create" class="btn-primary"> Create Funnel </a>
+							</div>
+
+							{#if dashboardData.funnels && dashboardData.funnels.length > 0}
+								<div class="funnels-grid">
+									{#each dashboardData.funnels as funnel}
+										<FunnelChart steps={funnel.steps} title={funnel.name} showDropOff={true} />
+									{/each}
+								</div>
+							{:else}
+								<div class="empty-state">
+									<span class="empty-icon">🔻</span>
+									<h3>No Funnels Yet</h3>
+									<p>Create your first funnel to track user journeys</p>
+									<a href="/admin/analytics/funnels/create" class="btn-primary">
+										Create First Funnel
+									</a>
+								</div>
+							{/if}
+						</div>
+					{/if}
+
+					<!-- Cohorts Tab -->
+					{#if activeTab === 'cohorts'}
+						<div class="tab-content">
+							<div class="tab-header">
+								<h2>Cohort Analysis</h2>
+								<div class="tab-actions">
+									<select class="select-input">
+										<option value="weekly">Weekly Cohorts</option>
+										<option value="monthly">Monthly Cohorts</option>
+										<option value="daily">Daily Cohorts</option>
+									</select>
+									<a href="/admin/analytics/cohorts/create" class="btn-primary"> Create Cohort </a>
+								</div>
+							</div>
+
+							{#if dashboardData.cohorts && dashboardData.cohorts.length > 0}
+								{#each dashboardData.cohorts as cohort}
+									<CohortMatrix data={cohort.retention_matrix} title={cohort.name} />
+								{/each}
+							{:else}
+								<div class="empty-state">
+									<span class="empty-icon">👥</span>
+									<h3>No Cohort Data</h3>
+									<p>Start tracking user retention with cohort analysis</p>
+									<a href="/admin/analytics/cohorts/create" class="btn-primary">
+										Create First Cohort
+									</a>
+								</div>
+							{/if}
+						</div>
+					{/if}
+
+					<!-- Attribution Tab -->
+					{#if activeTab === 'attribution'}
+						<div class="tab-content">
+							<div class="tab-header">
+								<h2>Channel Attribution</h2>
+								<select bind:value={attributionModel} class="select-input">
+									<option value="first_touch">First Touch</option>
+									<option value="last_touch">Last Touch</option>
+									<option value="linear">Linear</option>
+									<option value="time_decay">Time Decay</option>
+									<option value="position_based">Position Based</option>
+								</select>
+							</div>
+
+							{#if dashboardData.attribution && dashboardData.attribution.channels}
+								<AttributionChart
+									channels={dashboardData.attribution.channels}
+									model={attributionModel}
+								/>
+
+								<div class="attribution-table">
+									<h3>Model Comparison</h3>
+									<div class="table-wrapper">
+										<table>
+											<thead>
+												<tr>
+													<th>Channel</th>
+													<th>First Touch</th>
+													<th>Last Touch</th>
+													<th>Linear</th>
+													<th>Time Decay</th>
+													<th>Position Based</th>
+												</tr>
+											</thead>
+											<tbody>
+												{#each dashboardData.attribution.channels as channel}
+													<tr>
+														<td class="channel-name">{channel.channel}</td>
+														<td>{channel.first_touch_share?.toFixed(1) || '-'}%</td>
+														<td>{channel.last_touch_share?.toFixed(1) || '-'}%</td>
+														<td>{channel.linear_share?.toFixed(1) || '-'}%</td>
+														<td>{channel.time_decay_share?.toFixed(1) || '-'}%</td>
+														<td>{channel.position_based_share?.toFixed(1) || '-'}%</td>
+													</tr>
+												{/each}
+											</tbody>
+										</table>
+									</div>
+								</div>
+							{:else}
+								<div class="empty-state">
+									<span class="empty-icon">🎯</span>
+									<h3>No Attribution Data</h3>
+									<p>Attribution data will appear once conversions are tracked</p>
+								</div>
+							{/if}
+						</div>
+					{/if}
 				</div>
 			{/if}
-		</div>
-
-		<!-- Connection Status Badge -->
-		<div class="connection-status" class:connected={isConnected}>
-			<IconPlugConnected size={16} />
-			<span>{isConnected ? 'Analytics Connected' : 'Not Connected'}</span>
-		</div>
-
-		<!-- Tab Navigation (only show when connected) -->
-		{#if isConnected}
-			<nav class="tab-nav" in:fade={{ duration: 300, delay: 200 }}>
-				{#each tabs as tab}
-					<button
-						class="tab-btn"
-						class:active={activeTab === tab.id}
-						onclick={() => (activeTab = tab.id)}
-					>
-						<span class="tab-icon">{tab.icon}</span>
-						{tab.label}
-					</button>
-				{/each}
-			</nav>
-		{/if}
-	</header>
-
-	<!-- Main Content -->
-	<main class="dashboard-content">
-		{#if connectionsLoading}
-			<!-- Loading Connections -->
-			<div class="loading-state" in:fade={{ duration: 300 }}>
-				<div class="loading-spinner"></div>
-				<p>Checking connections...</p>
-			</div>
-		{:else if !isConnected}
-			<!-- Not Connected State -->
-			<div class="not-connected-state" in:scale={{ duration: 400, start: 0.95 }}>
-				<ApiNotConnected
-					serviceName="Analytics"
-					description="Connect an analytics service to view real-time data, track user behavior, and measure conversions."
-					icon="📊"
-					color="#E6B800"
-					features={[
-						'Real-time visitor tracking',
-						'User behavior analytics',
-						'Conversion funnel analysis',
-						'Cohort retention reports',
-						'Channel attribution'
-					]}
-				/>
-
-				<!-- Available Services -->
-				<div class="available-services" in:fly={{ y: 20, duration: 400, delay: 200 }}>
-					<h3>Available Analytics Services</h3>
-					<div class="services-grid">
-						{#each analyticsServices as service}
-							<a
-								href="/admin/connections?connect={service.key}"
-								class="service-card"
-								style="--service-color: {service.color}"
-							>
-								<span class="service-icon">{service.icon}</span>
-								<span class="service-name">{service.name}</span>
-								<IconArrowRight size={16} class="service-arrow" />
-							</a>
-						{/each}
-					</div>
-				</div>
-			</div>
-		{:else if loading}
-			<!-- Loading Dashboard -->
-			<div class="loading-state" in:fade={{ duration: 300 }}>
-				<div class="loading-spinner"></div>
-				<p>Loading analytics data...</p>
-			</div>
-		{:else if error}
-			<!-- Error State -->
-			<div class="error-state" in:fade={{ duration: 300 }}>
-				<div class="error-icon">⚠️</div>
-				<h3>Unable to Load Analytics</h3>
-				<p>{error}</p>
-				<button class="btn-retry" onclick={loadDashboard}>
-					<IconRefresh size={18} />
-					Try Again
-				</button>
-			</div>
-		{:else if dashboardData}
-			<!-- Dashboard Content -->
-			<div class="dashboard-grid" in:fade={{ duration: 400 }}>
-				<!-- Overview Tab -->
-				{#if activeTab === 'overview'}
-					<div class="tab-content">
-						<!-- Real-time Widget -->
-						<div class="grid-row">
-							<div class="widget-large">
-								<RealTimeWidget />
-							</div>
-							<div class="widget-small">
-								<div class="quick-actions">
-									<h3>Quick Actions</h3>
-									<a href="/admin/analytics/segments" class="action-link">
-										<span class="action-icon">👥</span>
-										<div class="action-text">
-											<strong>Segments</strong>
-											<span>Manage user segments</span>
-										</div>
-									</a>
-									<a href="/admin/analytics/goals" class="action-link">
-										<span class="action-icon">🎯</span>
-										<div class="action-text">
-											<strong>Goals</strong>
-											<span>Track conversion goals</span>
-										</div>
-									</a>
-									<a href="/admin/analytics/reports" class="action-link">
-										<span class="action-icon">📈</span>
-										<div class="action-text">
-											<strong>Reports</strong>
-											<span>Custom report builder</span>
-										</div>
-									</a>
-								</div>
-							</div>
-						</div>
-
-						<!-- KPI Grid -->
-						{#if dashboardData.kpis && dashboardData.kpis.length > 0}
-							<KpiGrid kpis={dashboardData.kpis} />
-						{/if}
-
-						<!-- Time Series Charts -->
-						{#if revenueTimeSeries.length > 0 || usersTimeSeries.length > 0}
-							<div class="charts-row">
-								{#if revenueTimeSeries.length > 0}
-									<TimeSeriesChart
-										data={revenueTimeSeries}
-										title="Revenue Trend"
-										color="#10B981"
-										formatValue={(v) => '$' + v.toLocaleString()}
-									/>
-								{/if}
-								{#if usersTimeSeries.length > 0}
-									<TimeSeriesChart
-										data={usersTimeSeries}
-										title="Active Users"
-										color="#3B82F6"
-										formatValue={(v) => v.toLocaleString()}
-									/>
-								{/if}
-							</div>
-						{/if}
-
-						<!-- Top Pages & Events -->
-						<div class="data-tables">
-							<div class="data-table">
-								<h3>Top Pages</h3>
-								{#if dashboardData.top_pages && dashboardData.top_pages.length > 0}
-									<div class="table-rows">
-										{#each dashboardData.top_pages.slice(0, 10) as page, i}
-											<div class="table-row">
-												<span class="row-rank">{i + 1}</span>
-												<span class="row-label">{page.page_path}</span>
-												<span class="row-value">{page.views.toLocaleString()}</span>
-											</div>
-										{/each}
-									</div>
-								{:else}
-									<p class="no-data">No page data available yet</p>
-								{/if}
-							</div>
-
-							<div class="data-table">
-								<h3>Top Events</h3>
-								{#if dashboardData.top_events && dashboardData.top_events.length > 0}
-									<div class="table-rows">
-										{#each dashboardData.top_events.slice(0, 10) as event, i}
-											<div class="table-row">
-												<span class="row-rank">{i + 1}</span>
-												<span class="row-label">{event.event_name}</span>
-												<span class="row-value">{event.count.toLocaleString()}</span>
-											</div>
-										{/each}
-									</div>
-								{:else}
-									<p class="no-data">No event data available yet</p>
-								{/if}
-							</div>
-						</div>
-					</div>
-				{/if}
-
-				<!-- Funnels Tab -->
-				{#if activeTab === 'funnels'}
-					<div class="tab-content">
-						<div class="tab-header">
-							<h2>Conversion Funnels</h2>
-							<a href="/admin/analytics/funnels/create" class="btn-primary">
-								Create Funnel
-							</a>
-						</div>
-
-						{#if dashboardData.funnels && dashboardData.funnels.length > 0}
-							<div class="funnels-grid">
-								{#each dashboardData.funnels as funnel}
-									<FunnelChart steps={funnel.steps} title={funnel.name} showDropOff={true} />
-								{/each}
-							</div>
-						{:else}
-							<div class="empty-state">
-								<span class="empty-icon">🔻</span>
-								<h3>No Funnels Yet</h3>
-								<p>Create your first funnel to track user journeys</p>
-								<a href="/admin/analytics/funnels/create" class="btn-primary">
-									Create First Funnel
-								</a>
-							</div>
-						{/if}
-					</div>
-				{/if}
-
-				<!-- Cohorts Tab -->
-				{#if activeTab === 'cohorts'}
-					<div class="tab-content">
-						<div class="tab-header">
-							<h2>Cohort Analysis</h2>
-							<div class="tab-actions">
-								<select class="select-input">
-									<option value="weekly">Weekly Cohorts</option>
-									<option value="monthly">Monthly Cohorts</option>
-									<option value="daily">Daily Cohorts</option>
-								</select>
-								<a href="/admin/analytics/cohorts/create" class="btn-primary">
-									Create Cohort
-								</a>
-							</div>
-						</div>
-
-						{#if dashboardData.cohorts && dashboardData.cohorts.length > 0}
-							{#each dashboardData.cohorts as cohort}
-								<CohortMatrix data={cohort.retention_matrix} title={cohort.name} />
-							{/each}
-						{:else}
-							<div class="empty-state">
-								<span class="empty-icon">👥</span>
-								<h3>No Cohort Data</h3>
-								<p>Start tracking user retention with cohort analysis</p>
-								<a href="/admin/analytics/cohorts/create" class="btn-primary">
-									Create First Cohort
-								</a>
-							</div>
-						{/if}
-					</div>
-				{/if}
-
-				<!-- Attribution Tab -->
-				{#if activeTab === 'attribution'}
-					<div class="tab-content">
-						<div class="tab-header">
-							<h2>Channel Attribution</h2>
-							<select bind:value={attributionModel} class="select-input">
-								<option value="first_touch">First Touch</option>
-								<option value="last_touch">Last Touch</option>
-								<option value="linear">Linear</option>
-								<option value="time_decay">Time Decay</option>
-								<option value="position_based">Position Based</option>
-							</select>
-						</div>
-
-						{#if dashboardData.attribution && dashboardData.attribution.channels}
-							<AttributionChart
-								channels={dashboardData.attribution.channels}
-								model={attributionModel}
-							/>
-
-							<div class="attribution-table">
-								<h3>Model Comparison</h3>
-								<div class="table-wrapper">
-									<table>
-										<thead>
-											<tr>
-												<th>Channel</th>
-												<th>First Touch</th>
-												<th>Last Touch</th>
-												<th>Linear</th>
-												<th>Time Decay</th>
-												<th>Position Based</th>
-											</tr>
-										</thead>
-										<tbody>
-											{#each dashboardData.attribution.channels as channel}
-												<tr>
-													<td class="channel-name">{channel.channel}</td>
-													<td>{channel.first_touch_share?.toFixed(1) || '-'}%</td>
-													<td>{channel.last_touch_share?.toFixed(1) || '-'}%</td>
-													<td>{channel.linear_share?.toFixed(1) || '-'}%</td>
-													<td>{channel.time_decay_share?.toFixed(1) || '-'}%</td>
-													<td>{channel.position_based_share?.toFixed(1) || '-'}%</td>
-												</tr>
-											{/each}
-										</tbody>
-									</table>
-								</div>
-							</div>
-						{:else}
-							<div class="empty-state">
-								<span class="empty-icon">🎯</span>
-								<h3>No Attribution Data</h3>
-								<p>Attribution data will appear once conversions are tracked</p>
-							</div>
-						{/if}
-					</div>
-				{/if}
-			</div>
-		{/if}
-	</main>
-	</div><!-- End admin-page-container -->
+		</main>
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -552,7 +558,7 @@
 		height: 600px;
 		top: -200px;
 		right: -200px;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		animation: float 20s ease-in-out infinite;
 	}
 
@@ -561,7 +567,7 @@
 		height: 500px;
 		bottom: -150px;
 		left: -150px;
-		background: linear-gradient(135deg, #3b82f6, #B38F00);
+		background: linear-gradient(135deg, #3b82f6, #b38f00);
 		animation: float 25s ease-in-out infinite reverse;
 	}
 
@@ -576,9 +582,16 @@
 	}
 
 	@keyframes float {
-		0%, 100% { transform: translate(0, 0) scale(1); }
-		33% { transform: translate(30px, -30px) scale(1.05); }
-		66% { transform: translate(-20px, 20px) scale(0.95); }
+		0%,
+		100% {
+			transform: translate(0, 0) scale(1);
+		}
+		33% {
+			transform: translate(30px, -30px) scale(1.05);
+		}
+		66% {
+			transform: translate(-20px, 20px) scale(0.95);
+		}
 	}
 
 	/* Header */
@@ -608,7 +621,7 @@
 	.title-icon {
 		width: 48px;
 		height: 48px;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		border-radius: 12px;
 		display: flex;
 		align-items: center;
@@ -643,8 +656,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 10px;
 		font-size: 0.875rem;
@@ -713,8 +726,8 @@
 	}
 
 	.tab-btn.active {
-		color: #E6B800;
-		border-bottom-color: #E6B800;
+		color: #e6b800;
+		border-bottom-color: #e6b800;
 	}
 
 	.tab-icon {
@@ -744,13 +757,15 @@
 		width: 48px;
 		height: 48px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.loading-state p {
@@ -797,7 +812,7 @@
 
 	.service-card:hover {
 		background: rgba(30, 41, 59, 0.8);
-		border-color: var(--service-color, #E6B800);
+		border-color: var(--service-color, #e6b800);
 		transform: translateY(-2px);
 	}
 
@@ -816,7 +831,7 @@
 	}
 
 	.service-card:hover :global(.service-arrow) {
-		color: var(--service-color, #E6B800);
+		color: var(--service-color, #e6b800);
 		transform: translateX(4px);
 	}
 

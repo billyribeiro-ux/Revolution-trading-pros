@@ -15,6 +15,6 @@ export const load = async ({ locals }: { locals: any }) => {
 	return {
 		// Initial consent state from cookie (read in hooks.server.ts)
 		initialConsent: locals.consent,
-		hasConsentInteraction: locals.hasConsentInteraction,
+		hasConsentInteraction: locals.hasConsentInteraction
 	};
 };

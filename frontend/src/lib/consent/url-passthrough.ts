@@ -29,22 +29,22 @@ export interface UrlPassthroughConfig {
  * Default URL passthrough parameters
  */
 export const DEFAULT_PASSTHROUGH_PARAMS = [
-	'gclid',    // Google Click ID
-	'dclid',    // Display Click ID
-	'gclsrc',   // Google Click Source
-	'wbraid',   // Web-to-App Attribution
-	'gbraid',   // App-to-Web Attribution
+	'gclid', // Google Click ID
+	'dclid', // Display Click ID
+	'gclsrc', // Google Click Source
+	'wbraid', // Web-to-App Attribution
+	'gbraid', // App-to-Web Attribution
 	'utm_source',
 	'utm_medium',
 	'utm_campaign',
 	'utm_term',
 	'utm_content',
-	'fbclid',   // Facebook Click ID
-	'msclkid',  // Microsoft Click ID
-	'ttclid',   // TikTok Click ID
-	'twclid',   // Twitter Click ID
+	'fbclid', // Facebook Click ID
+	'msclkid', // Microsoft Click ID
+	'ttclid', // TikTok Click ID
+	'twclid', // Twitter Click ID
 	'li_fat_id', // LinkedIn First-Party ID
-	'rdt_cid',  // Reddit Click ID
+	'rdt_cid' // Reddit Click ID
 ];
 
 declare global {
@@ -276,6 +276,6 @@ export function getPassthroughConfig(consent: ConsentState): UrlPassthroughConfi
 	return {
 		enabled: shouldEnablePassthrough(consent),
 		autoDecorate: true,
-		parameters: DEFAULT_PASSTHROUGH_PARAMS,
+		parameters: DEFAULT_PASSTHROUGH_PARAMS
 	};
 }

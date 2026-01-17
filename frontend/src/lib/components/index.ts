@@ -1,7 +1,7 @@
 /**
  * Components - Main Barrel Export
  * Revolution Trading Pros Component Library
- * 
+ *
  * @version 2.0.0
  * @author Revolution Trading Pros
  */
@@ -32,29 +32,18 @@ export {
 	ConnectionHealthPanel,
 	OfflineIndicator,
 	DashboardWidgetManager,
-	BatchOperations,
+	BatchOperations
 } from './ui';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Pattern Components
 // ═══════════════════════════════════════════════════════════════════════════
-export {
-	DataTable,
-	StatCard,
-	EmptyState,
-	ErrorBoundary,
-	PageHeader,
-} from './patterns';
+export { DataTable, StatCard, EmptyState, ErrorBoundary, PageHeader } from './patterns';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Layout Components
 // ═══════════════════════════════════════════════════════════════════════════
-export {
-	MarketingFooter,
-	AppSidebar,
-	AdminSidebar,
-	TradingRoomShell,
-} from './layout';
+export { MarketingFooter, AppSidebar, AdminSidebar, TradingRoomShell } from './layout';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Chart Components
@@ -71,12 +60,10 @@ export {
 	getCandlestickSeriesOptions,
 	getHistogramSeriesOptions,
 	getApexChartsTheme,
-	getChartJsTheme,
+	getChartJsTheme
 } from './charts';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Dashboard Components
 // ═══════════════════════════════════════════════════════════════════════════
-export {
-	DashboardSidebar,
-} from './dashboard';
+export { DashboardSidebar } from './dashboard';

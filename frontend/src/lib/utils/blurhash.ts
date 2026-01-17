@@ -37,10 +37,7 @@ export interface BlurhashResult {
  * Decode a blurhash string to a data URL for instant display
  * Optimized for speed - uses small dimensions (32x32) for thumbnails
  */
-export function decodeBlurhash(
-	hash: string,
-	options: BlurhashOptions = {}
-): string | null {
+export function decodeBlurhash(hash: string, options: BlurhashOptions = {}): string | null {
 	if (!hash || hash.length < 6) return null;
 
 	const { width = 32, height = 18, punch = 1 } = options;
@@ -176,11 +173,7 @@ export function blurhashBg(
 /**
  * Convert decoded pixels to a data URL
  */
-function pixelsToDataURL(
-	pixels: Uint8ClampedArray,
-	width: number,
-	height: number
-): string {
+function pixelsToDataURL(pixels: Uint8ClampedArray, width: number, height: number): string {
 	const canvas = document.createElement('canvas');
 	canvas.width = width;
 	canvas.height = height;

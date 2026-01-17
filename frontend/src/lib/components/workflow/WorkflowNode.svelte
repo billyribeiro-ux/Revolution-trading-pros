@@ -11,7 +11,15 @@
 		onendConnection?: () => void;
 	}
 
-	let { node, selected = false, onselect, onmove, ondelete, onstartConnection, onendConnection }: Props = $props();
+	let {
+		node,
+		selected = false,
+		onselect,
+		onmove,
+		ondelete,
+		onstartConnection,
+		onendConnection
+	}: Props = $props();
 
 	let isDragging = $state(false);
 	let dragStart = $state({ x: 0, y: 0 });
@@ -104,7 +112,10 @@
 	<div class="node-actions">
 		<button
 			class="action-btn"
-			onclick={(e: MouseEvent) => { e.stopPropagation(); ondelete?.(); }}
+			onclick={(e: MouseEvent) => {
+				e.stopPropagation();
+				ondelete?.();
+			}}
 			title="Delete node"
 		>
 			<svg
@@ -131,7 +142,10 @@
 	></div>
 	<div
 		class="connection-point output"
-		onmousedown={(e: MouseEvent) => { e.stopPropagation(); onstartConnection?.(); }}
+		onmousedown={(e: MouseEvent) => {
+			e.stopPropagation();
+			onstartConnection?.();
+		}}
 		role="button"
 		tabindex="0"
 	></div>

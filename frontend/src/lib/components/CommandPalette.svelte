@@ -59,33 +59,150 @@
 	// Navigation items
 	const navigationItems = [
 		{ id: 'dashboard', label: 'Dashboard', path: '/admin', icon: IconHome, category: 'Navigation' },
-		{ id: 'analytics', label: 'Analytics', path: '/admin/analytics', icon: IconChartBar, category: 'Navigation' },
-		{ id: 'seo', label: 'SEO Settings', path: '/admin/seo', icon: IconBrandGoogle, category: 'Navigation' },
-		{ id: 'behavior', label: 'Behavior Tracking', path: '/admin/behavior', icon: IconActivity, category: 'Navigation' },
-		{ id: 'blog', label: 'Blog Posts', path: '/admin/blog', icon: IconFileText, category: 'Content' },
-		{ id: 'media', label: 'Media Library', path: '/admin/media', icon: IconPhoto, category: 'Content' },
+		{
+			id: 'analytics',
+			label: 'Analytics',
+			path: '/admin/analytics',
+			icon: IconChartBar,
+			category: 'Navigation'
+		},
+		{
+			id: 'seo',
+			label: 'SEO Settings',
+			path: '/admin/seo',
+			icon: IconBrandGoogle,
+			category: 'Navigation'
+		},
+		{
+			id: 'behavior',
+			label: 'Behavior Tracking',
+			path: '/admin/behavior',
+			icon: IconActivity,
+			category: 'Navigation'
+		},
+		{
+			id: 'blog',
+			label: 'Blog Posts',
+			path: '/admin/blog',
+			icon: IconFileText,
+			category: 'Content'
+		},
+		{
+			id: 'media',
+			label: 'Media Library',
+			path: '/admin/media',
+			icon: IconPhoto,
+			category: 'Content'
+		},
 		{ id: 'videos', label: 'Videos', path: '/admin/videos', icon: IconVideo, category: 'Content' },
 		{ id: 'forms', label: 'Forms', path: '/admin/forms', icon: IconForms, category: 'Content' },
 		{ id: 'members', label: 'Members', path: '/admin/members', icon: IconUsers, category: 'Users' },
 		{ id: 'crm', label: 'CRM', path: '/admin/crm', icon: IconUsers, category: 'Users' },
-		{ id: 'campaigns', label: 'Email Campaigns', path: '/admin/email/campaigns', icon: IconMail, category: 'Marketing' },
-		{ id: 'templates', label: 'Email Templates', path: '/admin/email/templates', icon: IconMail, category: 'Marketing' },
-		{ id: 'products', label: 'Products', path: '/admin/products', icon: IconShoppingCart, category: 'Commerce' },
-		{ id: 'subscriptions', label: 'Subscriptions', path: '/admin/subscriptions', icon: IconCreditCard, category: 'Commerce' },
-		{ id: 'connections', label: 'API Connections', path: '/admin/connections', icon: IconPlugConnected, category: 'Settings' },
-		{ id: 'site-health', label: 'Site Health', path: '/admin/site-health', icon: IconActivity, category: 'Settings' },
-		{ id: 'settings', label: 'Settings', path: '/admin/settings', icon: IconSettings, category: 'Settings' }
+		{
+			id: 'campaigns',
+			label: 'Email Campaigns',
+			path: '/admin/email/campaigns',
+			icon: IconMail,
+			category: 'Marketing'
+		},
+		{
+			id: 'templates',
+			label: 'Email Templates',
+			path: '/admin/email/templates',
+			icon: IconMail,
+			category: 'Marketing'
+		},
+		{
+			id: 'products',
+			label: 'Products',
+			path: '/admin/products',
+			icon: IconShoppingCart,
+			category: 'Commerce'
+		},
+		{
+			id: 'subscriptions',
+			label: 'Subscriptions',
+			path: '/admin/subscriptions',
+			icon: IconCreditCard,
+			category: 'Commerce'
+		},
+		{
+			id: 'connections',
+			label: 'API Connections',
+			path: '/admin/connections',
+			icon: IconPlugConnected,
+			category: 'Settings'
+		},
+		{
+			id: 'site-health',
+			label: 'Site Health',
+			path: '/admin/site-health',
+			icon: IconActivity,
+			category: 'Settings'
+		},
+		{
+			id: 'settings',
+			label: 'Settings',
+			path: '/admin/settings',
+			icon: IconSettings,
+			category: 'Settings'
+		}
 	];
 
 	// Quick actions
 	const quickActions = [
-		{ id: 'new-post', label: 'Create New Post', action: () => goto('/admin/blog/new'), icon: IconFileText, category: 'Quick Actions' },
-		{ id: 'new-campaign', label: 'Create Email Campaign', action: () => goto('/admin/email/campaigns?new=true'), icon: IconMail, category: 'Quick Actions' },
-		{ id: 'upload-media', label: 'Upload Media', action: () => goto('/admin/media?upload=true'), icon: IconUpload, category: 'Quick Actions' },
-		{ id: 'export-data', label: 'Export Data', action: () => goto('/admin/settings?export=true'), icon: IconDownload, category: 'Quick Actions' },
-		{ id: 'refresh-all', label: 'Refresh All Data', action: () => window.location.reload(), icon: IconRefresh, category: 'Quick Actions' },
-		{ id: 'clear-cache', label: 'Clear Cache', action: () => { localStorage.clear(); window.location.reload(); }, icon: IconDatabase, category: 'Quick Actions' },
-		{ id: 'logout', label: 'Logout', action: () => goto('/logout'), icon: IconLogout, category: 'Quick Actions' }
+		{
+			id: 'new-post',
+			label: 'Create New Post',
+			action: () => goto('/admin/blog/new'),
+			icon: IconFileText,
+			category: 'Quick Actions'
+		},
+		{
+			id: 'new-campaign',
+			label: 'Create Email Campaign',
+			action: () => goto('/admin/email/campaigns?new=true'),
+			icon: IconMail,
+			category: 'Quick Actions'
+		},
+		{
+			id: 'upload-media',
+			label: 'Upload Media',
+			action: () => goto('/admin/media?upload=true'),
+			icon: IconUpload,
+			category: 'Quick Actions'
+		},
+		{
+			id: 'export-data',
+			label: 'Export Data',
+			action: () => goto('/admin/settings?export=true'),
+			icon: IconDownload,
+			category: 'Quick Actions'
+		},
+		{
+			id: 'refresh-all',
+			label: 'Refresh All Data',
+			action: () => window.location.reload(),
+			icon: IconRefresh,
+			category: 'Quick Actions'
+		},
+		{
+			id: 'clear-cache',
+			label: 'Clear Cache',
+			action: () => {
+				localStorage.clear();
+				window.location.reload();
+			},
+			icon: IconDatabase,
+			category: 'Quick Actions'
+		},
+		{
+			id: 'logout',
+			label: 'Logout',
+			action: () => goto('/logout'),
+			icon: IconLogout,
+			category: 'Quick Actions'
+		}
 	];
 
 	// Fuzzy search function
@@ -103,27 +220,32 @@
 	}
 
 	// Filter and combine results
-	let filteredResults = $derived(searchQuery.trim() === ''
-		? [...navigationItems.slice(0, 5), ...quickActions.slice(0, 3)]
-		: [
-			...navigationItems.filter(item =>
-				fuzzyMatch(item.label, searchQuery) ||
-				fuzzyMatch(item.category, searchQuery)
-			),
-			...quickActions.filter(item =>
-				fuzzyMatch(item.label, searchQuery) ||
-				fuzzyMatch(item.category, searchQuery)
-			)
-		]);
+	let filteredResults = $derived(
+		searchQuery.trim() === ''
+			? [...navigationItems.slice(0, 5), ...quickActions.slice(0, 3)]
+			: [
+					...navigationItems.filter(
+						(item) => fuzzyMatch(item.label, searchQuery) || fuzzyMatch(item.category, searchQuery)
+					),
+					...quickActions.filter(
+						(item) => fuzzyMatch(item.label, searchQuery) || fuzzyMatch(item.category, searchQuery)
+					)
+				]
+	);
 
 	// Group results by category
-	let groupedResults = $derived(filteredResults.reduce((acc, item) => {
-		if (!acc[item.category]) {
-			acc[item.category] = [];
-		}
-		acc[item.category]?.push(item);
-		return acc;
-	}, {} as Record<string, typeof filteredResults>));
+	let groupedResults = $derived(
+		filteredResults.reduce(
+			(acc, item) => {
+				if (!acc[item.category]) {
+					acc[item.category] = [];
+				}
+				acc[item.category]?.push(item);
+				return acc;
+			},
+			{} as Record<string, typeof filteredResults>
+		)
+	);
 
 	// Flat list for keyboard navigation
 	let flatResults = $derived(Object.values(groupedResults).flat());
@@ -152,7 +274,7 @@
 		}
 	}
 
-	function selectItem(item: typeof navigationItems[0] | typeof quickActions[0]) {
+	function selectItem(item: (typeof navigationItems)[0] | (typeof quickActions)[0]) {
 		if (searchQuery.trim()) {
 			saveRecentSearch(searchQuery);
 		}
@@ -168,7 +290,7 @@
 	function saveRecentSearch(query: string) {
 		if (!browser) return;
 		const recent = JSON.parse(localStorage.getItem('recentSearches') || '[]') as string[];
-		const updated = [query, ...recent.filter(s => s !== query)].slice(0, 5);
+		const updated = [query, ...recent.filter((s) => s !== query)].slice(0, 5);
 		localStorage.setItem('recentSearches', JSON.stringify(updated));
 		recentSearches = updated;
 	}
@@ -271,7 +393,7 @@
 									class="result-item"
 									class:selected={selectedIndex === globalIndex}
 									onclick={() => selectItem(item)}
-									onmouseenter={() => selectedIndex = globalIndex}
+									onmouseenter={() => (selectedIndex = globalIndex)}
 								>
 									<div class="item-icon">
 										<Icon size={18} />

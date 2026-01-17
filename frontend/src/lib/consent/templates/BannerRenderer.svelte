@@ -34,7 +34,9 @@
 	// Svelte 5: Derived values using $derived() rune
 	// ICT9+ Hydration-Safe: Only show after mount to prevent SSR/client mismatch
 	let template = $derived($activeTemplate);
-	let shouldShow = $derived(mounted && (forceShow || $isPreviewMode || (!$consentStore.hasInteracted && visible)));
+	let shouldShow = $derived(
+		mounted && (forceShow || $isPreviewMode || (!$consentStore.hasInteracted && visible))
+	);
 
 	// Detect device type
 	function updateDeviceType() {
@@ -87,11 +89,14 @@
 		}
 
 		// Border radius
-		const borderRadius = position === 'bottom' || position === 'top' ? '0' : template.spacing.borderRadius;
+		const borderRadius =
+			position === 'bottom' || position === 'top' ? '0' : template.spacing.borderRadius;
 		styles.push(`border-radius: ${borderRadius}`);
 
 		// Padding
-		const padding = isMobile ? template.mobile.padding || template.spacing.padding : template.spacing.padding;
+		const padding = isMobile
+			? template.mobile.padding || template.spacing.padding
+			: template.spacing.padding;
 		styles.push(`padding: ${padding}`);
 
 		// Box shadow
@@ -160,21 +165,21 @@
 					type: 'accept',
 					text: template.copy.acceptAll || $t.acceptAll,
 					onClick: handleAcceptAll,
-					style: getButtonStyle(template, 'accept'),
+					style: getButtonStyle(template, 'accept')
 				});
 			} else if (btn === 'reject' && template.showRejectButton) {
 				buttons.push({
 					type: 'reject',
 					text: template.copy.rejectAll || $t.rejectAll,
 					onClick: handleRejectAll,
-					style: getButtonStyle(template, 'reject'),
+					style: getButtonStyle(template, 'reject')
 				});
 			} else if (btn === 'customize' && template.showCustomizeButton) {
 				buttons.push({
 					type: 'customize',
 					text: template.copy.customize || $t.customize,
 					onClick: handleCustomize,
-					style: getButtonStyle(template, 'customize'),
+					style: getButtonStyle(template, 'customize')
 				});
 			}
 		}
@@ -183,7 +188,10 @@
 	}
 
 	// Get button styles
-	function getButtonStyle(template: BannerTemplate, type: 'accept' | 'reject' | 'customize'): string {
+	function getButtonStyle(
+		template: BannerTemplate,
+		type: 'accept' | 'reject' | 'customize'
+	): string {
 		const styles: string[] = [];
 
 		if (type === 'accept') {
@@ -275,19 +283,32 @@
 		style="{getContainerStyles(template)}; {getAnimationStyles(template)}"
 		role="dialog"
 		aria-label="Cookie consent"
-		aria-modal={getEffectivePosition(template) === 'center' || getEffectivePosition(template) === 'fullscreen'}
+		aria-modal={getEffectivePosition(template) === 'center' ||
+			getEffectivePosition(template) === 'fullscreen'}
 	>
 		<!-- Close button -->
 		{#if template.showCloseButton}
 			<button class="close-btn" onclick={handleClose} aria-label="Close">
-				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M18 6 6 18"/><path d="m6 6 12 12"/>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path d="M18 6 6 18" /><path d="m6 6 12 12" />
 				</svg>
 			</button>
 		{/if}
 
 		<!-- Content wrapper -->
-		<div class="content-wrapper" class:has-icon={template.showIcon} class:stack-buttons={isMobile && template.mobile.stackButtons}>
+		<div
+			class="content-wrapper"
+			class:has-icon={template.showIcon}
+			class:stack-buttons={isMobile && template.mobile.stackButtons}
+		>
 			<!-- Icon -->
 			{#if template.showIcon}
 				<div class="icon" style="color: {template.colors.accent}">
@@ -300,14 +321,16 @@
 				{#if template.copy.title}
 					<h2
 						class="title"
-						style="font-size: {template.typography.titleSize}; font-weight: {template.typography.titleWeight}"
+						style="font-size: {template.typography.titleSize}; font-weight: {template.typography
+							.titleWeight}"
 					>
 						{template.copy.title}
 					</h2>
 				{/if}
 				<p
 					class="description"
-					style="font-size: {template.typography.descriptionSize}; color: {template.colors.textMuted}; line-height: {template.typography.lineHeight}"
+					style="font-size: {template.typography.descriptionSize}; color: {template.colors
+						.textMuted}; line-height: {template.typography.lineHeight}"
 				>
 					{template.copy.description}
 				</p>
@@ -326,11 +349,7 @@
 				style="gap: {template.spacing.gap}"
 			>
 				{#each getButtons(template) as button}
-					<button
-						class="btn btn-{button.type}"
-						style={button.style}
-						onclick={button.onClick}
-					>
+					<button class="btn btn-{button.type}" style={button.style} onclick={button.onClick}>
 						{button.text}
 					</button>
 				{/each}
@@ -466,8 +485,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	/* Close button */

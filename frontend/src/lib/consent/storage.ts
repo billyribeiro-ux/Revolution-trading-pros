@@ -67,11 +67,7 @@ function getCookie(name: string): string | null {
 /**
  * Set a cookie with the specified options.
  */
-function setCookie(
-	name: string,
-	value: string,
-	options: ConsentStorageOptions
-): boolean {
+function setCookie(name: string, value: string, options: ConsentStorageOptions): boolean {
 	if (!browser || !cookiesAvailable()) return false;
 
 	try {
@@ -133,7 +129,9 @@ function validateAndMigrate(data: unknown): ConsentState | null {
 	// Migrate from older versions if needed
 	const version = state.version ?? 0;
 	if (version < CONSENT_SCHEMA_VERSION) {
-		console.debug(`[Consent] Migrating consent state from v${version} to v${CONSENT_SCHEMA_VERSION}`);
+		console.debug(
+			`[Consent] Migrating consent state from v${version} to v${CONSENT_SCHEMA_VERSION}`
+		);
 		// Future migrations would go here
 	}
 
@@ -144,7 +142,7 @@ function validateAndMigrate(data: unknown): ConsentState | null {
 		preferences: Boolean(state.preferences),
 		updatedAt: state.updatedAt || new Date().toISOString(),
 		hasInteracted: Boolean(state.hasInteracted),
-		version: CONSENT_SCHEMA_VERSION,
+		version: CONSENT_SCHEMA_VERSION
 	};
 }
 
@@ -209,7 +207,7 @@ export function saveConsent(
 		...state,
 		necessary: true, // Always ensure necessary is true
 		updatedAt: new Date().toISOString(),
-		version: CONSENT_SCHEMA_VERSION,
+		version: CONSENT_SCHEMA_VERSION
 	};
 
 	const serialized = JSON.stringify(stateWithMeta);
@@ -242,9 +240,7 @@ export function saveConsent(
 /**
  * Clear all stored consent data.
  */
-export function clearConsent(
-	options: ConsentStorageOptions = DEFAULT_STORAGE_OPTIONS
-): void {
+export function clearConsent(options: ConsentStorageOptions = DEFAULT_STORAGE_OPTIONS): void {
 	if (!browser) return;
 
 	deleteCookie(options.cookieName, options);

@@ -171,7 +171,13 @@
 			</div>
 
 			<!-- Close button -->
-			<button type="button" class="btn-close" onclick={onCancel} disabled={isLoading} aria-label="Close">
+			<button
+				type="button"
+				class="btn-close"
+				onclick={onCancel}
+				disabled={isLoading}
+				aria-label="Close"
+			>
 				<IconX size={20} />
 			</button>
 		</div>
@@ -193,8 +199,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.modal-container {
@@ -278,7 +288,9 @@
 		border-radius: var(--radius-md, 0.5rem);
 		color: var(--admin-text-primary);
 		font-size: 0.9375rem;
-		transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	.modal-input:focus {
@@ -323,7 +335,7 @@
 	.btn-confirm {
 		background: var(--btn-bg);
 		border: none;
-		color: #0D1117;
+		color: #0d1117;
 	}
 
 	.btn-confirm:hover:not(:disabled) {
@@ -372,6 +384,8 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

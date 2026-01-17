@@ -1,6 +1,6 @@
 /**
  * Layout Components - Barrel Export
- * 
+ *
  * @version 2.0.0
  * @author Revolution Trading Pros
  */

@@ -100,26 +100,31 @@ function createNotificationStore() {
 		}
 
 		// Subscribe to user notifications via WebSocket
-		wsUnsubscribe = websocketService.subscribeToNotifications(userId, (notification: NotificationPayload) => {
-			// Convert WebSocket notification to our format
-			add({
-				id: notification.id,
-				type: notification.type,
-				priority: notification.priority,
-				title: notification.title,
-				message: notification.message,
-				timestamp: new Date(notification.timestamp),
-				read: notification.read,
-				dismissed: notification.dismissed,
-				...(notification.action && {
-					action: {
-						label: notification.action.label,
-						...(notification.action.href && { href: notification.action.href })
-					}
-				}),
-				...(notification.metadata && { metadata: notification.metadata as Record<string, unknown> })
-			});
-		});
+		wsUnsubscribe = websocketService.subscribeToNotifications(
+			userId,
+			(notification: NotificationPayload) => {
+				// Convert WebSocket notification to our format
+				add({
+					id: notification.id,
+					type: notification.type,
+					priority: notification.priority,
+					title: notification.title,
+					message: notification.message,
+					timestamp: new Date(notification.timestamp),
+					read: notification.read,
+					dismissed: notification.dismissed,
+					...(notification.action && {
+						action: {
+							label: notification.action.label,
+							...(notification.action.href && { href: notification.action.href })
+						}
+					}),
+					...(notification.metadata && {
+						metadata: notification.metadata as Record<string, unknown>
+					})
+				});
+			}
+		);
 	}
 
 	function destroyWebSocket() {
@@ -170,9 +175,7 @@ function createNotificationStore() {
 		update((state) => {
 			const newState = {
 				...state,
-				notifications: state.notifications.map((n) =>
-					n.id === id ? { ...n, read: true } : n
-				),
+				notifications: state.notifications.map((n) => (n.id === id ? { ...n, read: true } : n)),
 				hasNewNotifications: state.notifications.some((n) => n.id !== id && !n.read)
 			};
 			persist(newState);
@@ -230,7 +233,10 @@ function createNotificationStore() {
 	function playNotificationSound() {
 		try {
 			// Create a simple beep using Web Audio API
-			const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)();
+			const audioContext = new (
+				window.AudioContext ||
+				(window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
+			)();
 			const oscillator = audioContext.createOscillator();
 			const gainNode = audioContext.createGain();
 
@@ -297,7 +303,10 @@ export const unreadNotifications = derived(notificationStore, ($store) =>
 	$store.notifications.filter((n) => !n.read && !n.dismissed)
 );
 export const unreadCount = derived(unreadNotifications, ($unread) => $unread.length);
-export const hasNewNotifications = derived(notificationStore, ($store) => $store.hasNewNotifications);
+export const hasNewNotifications = derived(
+	notificationStore,
+	($store) => $store.hasNewNotifications
+);
 
 // Notification by priority
 export const urgentNotifications = derived(notificationStore, ($store) =>

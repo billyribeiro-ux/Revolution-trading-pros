@@ -21,15 +21,20 @@
 
 	let { isOpen = $bindable(false), onclose }: Props = $props();
 
-	let groupedShortcuts = $derived($keyboard.shortcuts
-		.filter(s => s.enabled)
-		.reduce((acc, shortcut) => {
-			if (!acc[shortcut.category]) {
-				acc[shortcut.category] = [];
-			}
-			acc[shortcut.category]?.push(shortcut);
-			return acc;
-		}, {} as Record<string, typeof $keyboard.shortcuts>));
+	let groupedShortcuts = $derived(
+		$keyboard.shortcuts
+			.filter((s) => s.enabled)
+			.reduce(
+				(acc, shortcut) => {
+					if (!acc[shortcut.category]) {
+						acc[shortcut.category] = [];
+					}
+					acc[shortcut.category]?.push(shortcut);
+					return acc;
+				},
+				{} as Record<string, typeof $keyboard.shortcuts>
+			)
+	);
 
 	function close() {
 		isOpen = false;

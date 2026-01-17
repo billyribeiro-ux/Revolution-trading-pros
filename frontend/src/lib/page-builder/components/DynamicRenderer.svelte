@@ -2,15 +2,15 @@
 	/**
 	 * Dynamic Course Page Renderer
 	 * Apple Principal Engineer ICT 11 Grade - January 2026
-	 * 
+	 *
 	 * Renders saved page layouts on public-facing course pages.
 	 * Takes a layout from the database and renders all blocks dynamically.
 	 */
 
-	import type { 
-		PageLayout, 
-		CourseHeaderConfig, 
-		VideoPlayerConfig, 
+	import type {
+		PageLayout,
+		CourseHeaderConfig,
+		VideoPlayerConfig,
 		VideoStackConfig,
 		ClassDownloadsConfig,
 		SpacerConfig,
@@ -48,9 +48,12 @@
 				{:else if block.type === 'video-stack'}
 					<VideoStackPreview config={block.config as VideoStackConfig} isPreview={true} />
 				{:else if block.type === 'class-downloads'}
-					<ClassDownloadsPreview 
-						config={{...(block.config as ClassDownloadsConfig), courseId: courseId || (block.config as ClassDownloadsConfig).courseId}} 
-						isPreview={true} 
+					<ClassDownloadsPreview
+						config={{
+							...(block.config as ClassDownloadsConfig),
+							courseId: courseId || (block.config as ClassDownloadsConfig).courseId
+						}}
+						isPreview={true}
 					/>
 				{:else if block.type === 'spacer'}
 					<SpacerPreview config={block.config as SpacerConfig} isPreview={true} />

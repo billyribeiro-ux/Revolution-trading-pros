@@ -30,7 +30,7 @@ import type {
 	PageViewPayload,
 	CustomEventPayload,
 	IdentifyPayload,
-	AdapterMetrics,
+	AdapterMetrics
 } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -114,11 +114,21 @@ function injectClarityScript(projectId: string): Promise<void> {
 		}
 
 		// Initialize clarity function before script loads
-		(function(c: ClarityWindow, l: Document, a: string, r: string, i: string, t?: HTMLScriptElement, y?: Element) {
+		(function (
+			c: ClarityWindow,
+			l: Document,
+			a: string,
+			r: string,
+			i: string,
+			t?: HTMLScriptElement,
+			y?: Element
+		) {
 			const existingFn = c[a] as ClarityFunction | undefined;
-			const fn: ClarityFunction = existingFn || function(...args: unknown[]) {
-				(fn.q = fn.q || []).push(args);
-			};
+			const fn: ClarityFunction =
+				existingFn ||
+				function (...args: unknown[]) {
+					(fn.q = fn.q || []).push(args);
+				};
 			c[a] = fn;
 			t = l.createElement(r) as HTMLScriptElement;
 			t.async = true;
@@ -160,7 +170,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 	private _initPromise: Promise<void> | null = null;
 	private _consent: { analytics: boolean; marketing: boolean } = {
 		analytics: false,
-		marketing: false,
+		marketing: false
 	};
 
 	// Metrics tracking
@@ -169,7 +179,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 		eventsFailed: 0,
 		lastEventTime: null,
 		averageLatencyMs: 0,
-		queueSize: 0,
+		queueSize: 0
 	};
 
 	/**
@@ -268,7 +278,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 					if (this._config?.debug) {
 						console.debug('[Clarity] Initialized successfully', {
 							projectId: this._projectId,
-							consent: this._consent,
+							consent: this._consent
 						});
 					}
 
@@ -399,12 +409,7 @@ class MicrosoftClarityAdapter implements AnalyticsAdapter {
 	/**
 	 * Track click position for heatmap analysis.
 	 */
-	trackClickPosition(
-		elementId: string,
-		x: number,
-		y: number,
-		elementType: string
-	): void {
+	trackClickPosition(elementId: string, x: number, y: number, elementType: string): void {
 		if (!this.isReady || !window.clarity) return;
 
 		try {

@@ -233,7 +233,8 @@
 								type="checkbox"
 								value={optionValue}
 								checked={isChecked(optionValue)}
-								onchange={(e: Event) => handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
+								onchange={(e: Event) =>
+									handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
 								{...(field.attributes as Record<string, any>) || {}}
 							/>
 							<span>{optionLabel}</span>
@@ -336,7 +337,12 @@
 
 			<!-- Hidden Field -->
 		{:else if field.field_type === 'hidden'}
-			<input type="hidden" name={field.name} {value} {...(field.attributes as Record<string, any>) || {}} />
+			<input
+				type="hidden"
+				name={field.name}
+				{value}
+				{...(field.attributes as Record<string, any>) || {}}
+			/>
 
 			<!-- Rating (Stars) -->
 		{:else if field.field_type === 'rating'}
@@ -400,12 +406,16 @@
 						{@const optionDescription = typeof option === 'object' ? option.description : ''}
 						{@const optionIcon = typeof option === 'object' ? option.icon : null}
 						{@const optionColor = typeof option === 'object' ? option.color : null}
-						<label class="category-card" style={optionColor ? `border-left-color: ${optionColor}` : ''}>
+						<label
+							class="category-card"
+							style={optionColor ? `border-left-color: ${optionColor}` : ''}
+						>
 							<input
 								type="checkbox"
 								value={optionValue}
 								checked={isChecked(optionValue)}
-								onchange={(e: Event) => handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
+								onchange={(e: Event) =>
+									handleCheckboxChange(optionValue, (e.currentTarget as HTMLInputElement).checked)}
 							/>
 							<div class="category-content">
 								{#if optionIcon}
@@ -424,7 +434,9 @@
 				{#if field.attributes?.['min_selections'] || field.attributes?.['max_selections']}
 					<small class="category-hint">
 						{#if field.attributes['min_selections'] && field.attributes['max_selections']}
-							Select between {field.attributes['min_selections']} and {field.attributes['max_selections']} topics
+							Select between {field.attributes['min_selections']} and {field.attributes[
+								'max_selections'
+							]} topics
 						{:else if field.attributes['min_selections']}
 							Select at least {field.attributes['min_selections']} topic(s)
 						{:else if field.attributes['max_selections']}

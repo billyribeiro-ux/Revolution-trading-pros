@@ -760,7 +760,14 @@ export interface TagPivot {
 // FLUENTCRM PRO - CRM COMPANIES (B2B)
 // =====================================================
 
-export type CompanySize = '1-10' | '11-50' | '51-200' | '201-500' | '501-1000' | '1001-5000' | '5001+';
+export type CompanySize =
+	| '1-10'
+	| '11-50'
+	| '51-200'
+	| '201-500'
+	| '501-1000'
+	| '1001-5000'
+	| '5001+';
 export type CompanyIndustry =
 	| 'technology'
 	| 'finance'
@@ -1058,7 +1065,14 @@ export interface WebhookLog {
 // FLUENTCRM PRO - IMPORT/EXPORT
 // =====================================================
 
-export type ImportType = 'contacts' | 'tags' | 'lists' | 'sequences' | 'campaigns' | 'automations' | 'templates';
+export type ImportType =
+	| 'contacts'
+	| 'tags'
+	| 'lists'
+	| 'sequences'
+	| 'campaigns'
+	| 'automations'
+	| 'templates';
 export type ImportStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
 export interface ImportJob {

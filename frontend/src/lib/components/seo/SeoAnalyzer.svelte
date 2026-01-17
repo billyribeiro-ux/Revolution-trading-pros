@@ -16,7 +16,13 @@
 		additionalKeywords?: string[];
 	}
 
-	let { content = '', title = '', description = '', focusKeyword = '', additionalKeywords = [] }: Props = $props();
+	let {
+		content = '',
+		title = '',
+		description = '',
+		focusKeyword = '',
+		additionalKeywords = []
+	}: Props = $props();
 
 	let analysis: any = $state(null);
 	let readability: any = $state(null);
