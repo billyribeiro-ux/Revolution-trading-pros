@@ -8,6 +8,9 @@
 //! - Presigned URL generation for direct uploads
 //! - Image dimension extraction
 //! - MIME type validation
+
+#![allow(clippy::useless_format)]
+#![allow(clippy::double_ended_iterator_last)]
 //!
 //! @version 2.0.0 - January 2026
 

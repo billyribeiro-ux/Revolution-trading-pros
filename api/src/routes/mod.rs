@@ -145,7 +145,10 @@ pub fn api_router() -> Router<AppState> {
         // Admin Members - Segments, Tags, Filters - ICT 7 Grade
         .nest("/admin/members", admin_members::router())
         // Admin Member Management - Full CRUD, Ban, Export - ICT 11+ Grade
-        .nest("/admin/member-management", admin_member_management::router())
+        .nest(
+            "/admin/member-management",
+            admin_member_management::router(),
+        )
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())

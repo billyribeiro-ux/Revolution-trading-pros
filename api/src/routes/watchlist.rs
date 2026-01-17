@@ -252,7 +252,7 @@ async fn create_watchlist(
     .bind(&body.trader)
     .bind(&body.trader_image)
     .bind(&date_posted)
-    .bind(&week_of)
+    .bind(week_of)
     .bind(body.video_src.as_ref().unwrap_or(&String::new()))
     .bind(&body.video_poster)
     .bind(&body.title)

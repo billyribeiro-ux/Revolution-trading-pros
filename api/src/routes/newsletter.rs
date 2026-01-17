@@ -1,6 +1,8 @@
 //! Newsletter routes - Revolution Trading Pros
 //! Apple ICT 11+ Principal Engineer Grade - December 2025
 
+#![allow(clippy::map_flatten)]
+
 use axum::{
     extract::{Query, State},
     http::StatusCode,

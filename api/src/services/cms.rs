@@ -154,6 +154,7 @@ pub struct AuditContext {
 }
 
 /// Log an audit event
+#[allow(clippy::too_many_arguments)]
 pub async fn log_audit(
     pool: &PgPool,
     action: &str,
@@ -363,6 +364,7 @@ pub async fn transition_workflow(
 }
 
 /// Assign content to a user for review
+#[allow(clippy::too_many_arguments)]
 pub async fn assign_for_review(
     pool: &PgPool,
     content_type: &str,

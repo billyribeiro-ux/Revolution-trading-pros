@@ -280,6 +280,7 @@ async fn get_video_status(
 async fn list_uploads(
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    #[allow(clippy::type_complexity)]
     let uploads: Vec<(String, i64, String, String, Option<i32>, Option<String>, chrono::NaiveDateTime)> =
         sqlx::query_as::<_, (String, i64, String, String, Option<i32>, Option<String>, chrono::NaiveDateTime)>(
             r#"

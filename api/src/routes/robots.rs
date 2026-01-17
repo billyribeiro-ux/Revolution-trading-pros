@@ -189,7 +189,7 @@ fn get_production_rules(site_url: &str) -> String {
 
 /// Get disallow-all rules for non-production
 fn get_disallow_all() -> String {
-    vec![
+    [
         "# Revolution Trading Pros - robots.txt",
         "# Non-production environment - all crawling disabled",
         "",

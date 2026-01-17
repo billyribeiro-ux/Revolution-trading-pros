@@ -2,6 +2,9 @@
 //!
 //! Admin member management with filtering, statistics, and analytics.
 
+#![allow(clippy::collapsible_str_replace)]
+#![allow(clippy::type_complexity)]
+
 use axum::{
     extract::{Path, Query, State},
     response::Json,

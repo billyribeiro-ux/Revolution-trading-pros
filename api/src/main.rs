@@ -214,9 +214,10 @@ async fn main() -> anyhow::Result<()> {
 
     // Build router with security layers
     // ICT 11+ Enhancement: Add metrics middleware to track all requests
-    // ICT 11+ CORB Fix: Content-Type middleware MUST come before security headers
-    // This ensures all responses have Content-Type set before X-Content-Type-Options: nosniff
-    // is applied. Without this, CORB blocks cross-origin responses when using credentials.
+    // ICT 11+ CORB Fix: Middleware ordering is CRITICAL
+    // Axum applies layers in REVERSE order (bottom to top in execution)
+    // Execution order: TraceLayer → CompressionLayer → ensure_content_type → CORS → security_headers → metrics → routes
+    // This ensures Content-Type is set BEFORE CORS headers are evaluated by the browser
     let app = Router::new()
         .merge(routes::health::router())
         .nest("/api", routes::api_router())
@@ -229,9 +230,9 @@ async fn main() -> anyhow::Result<()> {
             metrics.clone(),
             monitoring::metrics_middleware,
         ))
-        .layer(axum_middleware::from_fn(middleware::ensure_content_type))
         .layer(security_headers)
         .layer(cors)
+        .layer(axum_middleware::from_fn(middleware::ensure_content_type))
         .layer(CompressionLayer::new())
         .layer(TraceLayer::new_for_http())
         .with_state(state);

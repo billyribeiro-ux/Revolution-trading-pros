@@ -92,7 +92,7 @@ impl Config {
             cors_origins: std::env::var("CORS_ORIGINS")
                 .unwrap_or_else(|_| {
                     // ICT 7: Include all localhost origins for development and E2E testing
-                    let origins = vec![
+                    let origins = [
                         "https://revolution-trading-pros.pages.dev",
                         "https://www.revolution-trading-pros.pages.dev",
                         "http://localhost:5173",
