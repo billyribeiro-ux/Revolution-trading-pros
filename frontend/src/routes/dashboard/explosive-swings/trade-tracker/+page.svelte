@@ -239,14 +239,14 @@
 		// Use API stats if available
 		if (apiStats) {
 			return {
-				totalTrades: apiStats.wins + apiStats.losses,
-				wins: apiStats.wins,
-				losses: apiStats.losses,
-				winRate: apiStats.win_rate.toFixed(1),
-				totalProfit: apiStats.total_pnl,
-				avgWin: apiStats.avg_win.toFixed(0),
-				avgLoss: apiStats.avg_loss.toFixed(0),
-				profitFactor: apiStats.profit_factor.toFixed(2)
+				totalTrades: (apiStats.wins ?? 0) + (apiStats.losses ?? 0),
+				wins: apiStats.wins ?? 0,
+				losses: apiStats.losses ?? 0,
+				winRate: (apiStats.win_rate ?? 0).toFixed(1),
+				totalProfit: apiStats.total_pnl ?? 0,
+				avgWin: (apiStats.avg_win ?? 0).toFixed(0),
+				avgLoss: (apiStats.avg_loss ?? 0).toFixed(0),
+				profitFactor: (apiStats.profit_factor ?? 0).toFixed(2)
 			};
 		}
 
@@ -384,7 +384,7 @@
 					<div class="ticker-cell">{trade.ticker}</div>
 					<div>{trade.entryDate}</div>
 					<div>{trade.exitDate || 'Active'}</div>
-					<div>${trade.entryPrice.toFixed(2)}</div>
+					<div>${(trade.entryPrice ?? 0).toFixed(2)}</div>
 					<div>{trade.exitPrice ? `$${trade.exitPrice.toFixed(2)}` : '-'}</div>
 					<div class:green={trade.profit > 0} class:red={trade.profit < 0}>
 						{trade.profit !== 0 ? `$${trade.profit.toLocaleString()}` : '-'}
