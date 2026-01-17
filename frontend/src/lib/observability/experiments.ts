@@ -9,7 +9,6 @@
 import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import { track } from './metrics';
-import { API_BASE_URL } from '$lib/api/config';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -198,7 +197,9 @@ async function fetchExperimentConfig(): Promise<void> {
 
 	try {
 		const userId = getOrCreateUserId();
-		const response = await fetch(`${API_BASE_URL}/api/experiments/config?anonymous_id=${userId}`);
+		const response = await fetch(`/api/experiments/config?anonymous_id=${userId}`, {
+			credentials: 'include'
+		});
 
 		if (response.ok) {
 			const data = await response.json();
