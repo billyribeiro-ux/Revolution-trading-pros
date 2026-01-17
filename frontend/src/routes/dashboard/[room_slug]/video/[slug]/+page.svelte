@@ -29,7 +29,7 @@
 		{
 			name: 'Day Trading Room',
 			href: '#', // TODO: Provide URL
-			icon: 'chart-line'
+			icon: 'bolt'
 		},
 		{
 			name: 'Swing Trading Room',

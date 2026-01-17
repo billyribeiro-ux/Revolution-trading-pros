@@ -56,7 +56,7 @@
 			{
 				name: 'Day Trading Room',
 				href: '#', // TODO: Provide URL
-				icon: 'chart-line',
+				icon: 'bolt',
 				variant: 'day-trading'
 			},
 			{
@@ -93,7 +93,7 @@
 				cards.push({
 					name: membership.name,
 					href: `/dashboard/${membership.slug}`,
-					icon: membership.icon ?? 'chart-line',
+					icon: membership.icon ?? 'bolt',
 					variant: getVariantFromSlug(membership.slug),
 					tradingRoom: membership.accessUrl ?? `/live-trading-rooms/${membership.slug}`
 				});
