@@ -33,8 +33,13 @@
 		IconMail,
 		IconCurrencyDollar,
 		IconCalendar,
-		IconTrendingUp
+		IconTrendingUp,
+		IconDotsVertical,
+		IconFileSpreadsheet,
+		IconPdf
 	} from '$lib/icons';
+	import SegmentDetailDrawer from '$lib/components/admin/SegmentDetailDrawer.svelte';
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State - Svelte 5 Runes
@@ -52,6 +57,13 @@
 	let showCreateSegmentModal = $state(false);
 	let showCreateTagModal = $state(false);
 	let showSaveFilterModal = $state(false);
+
+	// Enterprise components state
+	let showSegmentDrawer = $state(false);
+	let selectedSegment = $state<Segment | null>(null);
+	let showDeleteModal = $state(false);
+	let deleteTarget = $state<{ type: 'segment' | 'tag' | 'filter'; item: Segment | Tag | SavedFilter } | null>(null);
+	let isDeleting = $state(false);
 
 	// Form state
 	let newSegment = $state({
@@ -355,28 +367,128 @@
 		toastStore.success('Tag created successfully');
 	}
 
-	function deleteSegment(id: number) {
-		const segment = segments.find(s => s.id === id);
-		if (segment?.isSystem) {
+	// Enterprise drawer handlers
+	function openSegmentDrawer(segment: Segment) {
+		selectedSegment = segment;
+		showSegmentDrawer = true;
+	}
+
+	function closeSegmentDrawer() {
+		showSegmentDrawer = false;
+		selectedSegment = null;
+	}
+
+	function handleEditSegment(segment: Segment) {
+		closeSegmentDrawer();
+		// TODO: Open edit modal
+		toastStore.info(`Editing "${segment.name}" - Coming soon`);
+	}
+
+	function handleExportSegment(segment: Segment) {
+		exportSegmentData(segment);
+	}
+
+	// Delete confirmation handlers
+	function confirmDeleteSegment(segment: Segment) {
+		if (segment.isSystem) {
 			toastStore.error('Cannot delete system segments');
 			return;
 		}
-		if (!confirm('Delete this segment?')) return;
-		segments = segments.filter((s) => s.id !== id);
-		toastStore.success('Segment deleted');
+		deleteTarget = { type: 'segment', item: segment };
+		showDeleteModal = true;
 	}
 
-	function deleteTag(id: number) {
-		if (!confirm('Delete this tag? It will be removed from all members.')) return;
-		tags = tags.filter((t) => t.id !== id);
-		toastStore.success('Tag deleted');
+	function confirmDeleteTag(tag: Tag) {
+		deleteTarget = { type: 'tag', item: tag };
+		showDeleteModal = true;
 	}
 
-	function deleteSavedFilter(id: number) {
-		if (!confirm('Delete this saved filter?')) return;
-		savedFilters = savedFilters.filter((f) => f.id !== id);
-		toastStore.success('Filter deleted');
+	function confirmDeleteFilter(filter: SavedFilter) {
+		deleteTarget = { type: 'filter', item: filter };
+		showDeleteModal = true;
 	}
+
+	async function handleConfirmDelete() {
+		if (!deleteTarget) return;
+
+		// Save reference before nullifying
+		const targetType = deleteTarget.type;
+		const targetItem = deleteTarget.item;
+
+		isDeleting = true;
+		try {
+			if (targetType === 'segment') {
+				const segment = targetItem as Segment;
+				// Try API first
+				try {
+					await adminFetch(`/api/admin/members/segments/${segment.id}`, { method: 'DELETE' });
+				} catch {
+					// Fallback to local state
+				}
+				segments = segments.filter((s) => s.id !== segment.id);
+				toastStore.success('Segment deleted');
+
+				// Close drawer if this segment was deleted from there
+				if (selectedSegment && selectedSegment.id === segment.id) {
+					closeSegmentDrawer();
+				}
+			} else if (targetType === 'tag') {
+				const tag = targetItem as Tag;
+				try {
+					await adminFetch(`/api/admin/members/tags/${tag.id}`, { method: 'DELETE' });
+				} catch {
+					// Fallback to local state
+				}
+				tags = tags.filter((t) => t.id !== tag.id);
+				toastStore.success('Tag deleted');
+			} else if (targetType === 'filter') {
+				const filter = targetItem as SavedFilter;
+				try {
+					await adminFetch(`/api/admin/members/filters/${filter.id}`, { method: 'DELETE' });
+				} catch {
+					// Fallback to local state
+				}
+				savedFilters = savedFilters.filter((f) => f.id !== filter.id);
+				toastStore.success('Filter deleted');
+			}
+		} finally {
+			isDeleting = false;
+			showDeleteModal = false;
+			deleteTarget = null;
+		}
+	}
+
+	function cancelDelete() {
+		showDeleteModal = false;
+		deleteTarget = null;
+	}
+
+	// Get delete modal config based on target
+	let deleteModalConfig = $derived(() => {
+		if (!deleteTarget) return { title: '', message: '', confirmText: 'Delete' };
+		switch (deleteTarget.type) {
+			case 'segment':
+				return {
+					title: 'Delete Segment',
+					message: `Are you sure you want to delete "${(deleteTarget.item as Segment).name}"? This action cannot be undone.`,
+					confirmText: 'Delete Segment'
+				};
+			case 'tag':
+				return {
+					title: 'Delete Tag',
+					message: `Are you sure you want to delete "${(deleteTarget.item as Tag).name}"? It will be removed from all members.`,
+					confirmText: 'Delete Tag'
+				};
+			case 'filter':
+				return {
+					title: 'Delete Saved Filter',
+					message: `Are you sure you want to delete "${(deleteTarget.item as SavedFilter).name}"?`,
+					confirmText: 'Delete Filter'
+				};
+			default:
+				return { title: '', message: '', confirmText: 'Delete' };
+		}
+	});
 
 	function applySavedFilter(filter: SavedFilter) {
 		// Navigate to members page with filter applied
@@ -493,7 +605,14 @@
 		{#if activeTab === 'segments'}
 			<div class="segments-grid">
 				{#each segments as segment}
-					<div class="segment-card" class:system={segment.isSystem}>
+					<div
+						class="segment-card"
+						class:system={segment.isSystem}
+						role="button"
+						tabindex="0"
+						onclick={() => openSegmentDrawer(segment)}
+						onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && openSegmentDrawer(segment)}
+					>
 						<div class="segment-header">
 							<div class="segment-info">
 								<h3>{segment.name}</h3>
@@ -532,24 +651,24 @@
 									</span>
 								{/if}
 							</div>
-							<div class="segment-actions">
-								<button class="btn-icon" onclick={() => viewSegmentMembers(segment)} title="View members">
+							<div class="segment-actions" onclick={(e: MouseEvent) => e.stopPropagation()}>
+								<button class="btn-icon" type="button" onclick={() => viewSegmentMembers(segment)} title="View members">
 									<IconUsers size={16} />
 								</button>
-								<button class="btn-icon" onclick={() => viewSegmentAnalytics(segment)} title="View analytics">
+								<button class="btn-icon" type="button" onclick={() => openSegmentDrawer(segment)} title="View analytics">
 									<IconChartBar size={16} />
 								</button>
-								<button class="btn-icon" onclick={() => exportSegmentData(segment)} title="Export data">
+								<button class="btn-icon" type="button" onclick={() => exportSegmentData(segment)} title="Export data">
 									<IconDownload size={16} />
 								</button>
-								<button class="btn-icon" title="Send campaign">
+								<button class="btn-icon" type="button" title="Send campaign">
 									<IconMail size={16} />
 								</button>
 								{#if !segment.isSystem}
-									<button class="btn-icon" title="Edit">
+									<button class="btn-icon" type="button" title="Edit">
 										<IconEdit size={16} />
 									</button>
-									<button class="btn-icon danger" onclick={() => deleteSegment(segment.id)} title="Delete">
+									<button class="btn-icon danger" type="button" onclick={() => confirmDeleteSegment(segment)} title="Delete">
 										<IconTrash size={16} />
 									</button>
 								{/if}
@@ -576,14 +695,14 @@
 						</div>
 
 						<div class="tag-actions">
-							<button class="btn-secondary small" onclick={() => goto(`/admin/members?tag=${tag.id}`)}>
+							<button class="btn-secondary small" type="button" onclick={() => goto(`/admin/members?tag=${tag.id}`)}>
 								<IconUsers size={14} />
 								View Members
 							</button>
-							<button class="btn-icon" title="Edit">
+							<button class="btn-icon" type="button" title="Edit">
 								<IconEdit size={16} />
 							</button>
-							<button class="btn-icon danger" onclick={() => deleteTag(tag.id)} title="Delete">
+							<button class="btn-icon danger" type="button" onclick={() => confirmDeleteTag(tag)} title="Delete">
 								<IconTrash size={16} />
 							</button>
 						</div>
@@ -614,13 +733,13 @@
 						</div>
 
 						<div class="filter-actions">
-							<button class="btn-primary small" onclick={() => applySavedFilter(filter)}>
+							<button class="btn-primary small" type="button" onclick={() => applySavedFilter(filter)}>
 								Apply Filter
 							</button>
-							<button class="btn-icon" title="Duplicate">
+							<button class="btn-icon" type="button" title="Duplicate">
 								<IconCopy size={16} />
 							</button>
-							<button class="btn-icon danger" onclick={() => deleteSavedFilter(filter.id)} title="Delete">
+							<button class="btn-icon danger" type="button" onclick={() => confirmDeleteFilter(filter)} title="Delete">
 								<IconTrash size={16} />
 							</button>
 						</div>
@@ -865,6 +984,28 @@
 	</div>
 {/if}
 
+<!-- Enterprise Segment Detail Drawer -->
+<SegmentDetailDrawer
+	isOpen={showSegmentDrawer}
+	segment={selectedSegment}
+	onClose={closeSegmentDrawer}
+	onEdit={handleEditSegment}
+	onDelete={confirmDeleteSegment}
+	onExport={handleExportSegment}
+/>
+
+<!-- Delete Confirmation Modal -->
+<ConfirmationModal
+	isOpen={showDeleteModal}
+	title={deleteModalConfig().title}
+	message={deleteModalConfig().message}
+	confirmText={deleteModalConfig().confirmText}
+	variant="danger"
+	isLoading={isDeleting}
+	onConfirm={handleConfirmDelete}
+	onCancel={cancelDelete}
+/>
+
 <style>
 	.page {
 		max-width: 1400px;
@@ -989,14 +1130,37 @@
 	}
 
 	.segment-card {
+		display: flex;
+		flex-direction: column;
+		text-align: left;
+		width: 100%;
 		background: rgba(30, 41, 59, 0.4);
 		border: 1px solid rgba(148, 163, 184, 0.1);
 		border-radius: 8px;
 		padding: 1.5rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		font-family: inherit;
+	}
+
+	.segment-card:hover {
+		background: rgba(30, 41, 59, 0.6);
+		border-color: rgba(230, 184, 0, 0.3);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 25px -8px rgba(0, 0, 0, 0.4);
+	}
+
+	.segment-card:focus-visible {
+		outline: none;
+		box-shadow: 0 0 0 2px rgba(230, 184, 0, 0.5);
 	}
 
 	.segment-card.system {
 		border-color: rgba(230, 184, 0, 0.2);
+	}
+
+	.segment-card.system:hover {
+		border-color: rgba(230, 184, 0, 0.4);
 	}
 
 	.segment-header {
