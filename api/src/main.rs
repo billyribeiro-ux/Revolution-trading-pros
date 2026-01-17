@@ -3,6 +3,10 @@
 //! High-performance Rust backend with Axum
 //! Stack: Fly.io PostgreSQL, Upstash Redis, Cloudflare R2
 
+#![allow(dead_code)]
+#![allow(unused_imports)]
+#![allow(unused_variables)]
+
 mod config;
 mod db;
 mod docs;
