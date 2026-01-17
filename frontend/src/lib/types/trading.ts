@@ -213,9 +213,11 @@ export interface TradeCreateInput {
 	option_type?: OptionType;
 	strike?: number;
 	expiration?: string;
+	contract_type?: ContractType;
 	entry_alert_id?: number;
 	entry_price: number;
 	entry_date: string;
+	entry_tos_string?: string;
 	setup?: TradeSetup;
 	notes?: string;
 }
