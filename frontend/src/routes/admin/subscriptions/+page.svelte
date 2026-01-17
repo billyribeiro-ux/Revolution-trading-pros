@@ -18,6 +18,8 @@
 	} from '$lib/stores/subscriptions.svelte';
 	import { connections, isPaymentConnected } from '$lib/stores/connections.svelte';
 	import ServiceConnectionStatus from '$lib/components/admin/ServiceConnectionStatus.svelte';
+	import SubscriptionDetailDrawer from '$lib/components/admin/SubscriptionDetailDrawer.svelte';
+	import SubscriptionFormModal from '$lib/components/admin/SubscriptionFormModal.svelte';
 
 	// State
 	let connectionLoading = $state(true);
@@ -41,6 +43,11 @@
 	let cancelReason = $state('');
 	let pauseReason = $state('');
 	let cancelImmediate = $state(false);
+
+	// Drawer and Form Modal state
+	let showDetailDrawer = $state(false);
+	let showFormModal = $state(false);
+	let formModalMode = $state<'create' | 'edit'>('create');
 
 	// Pagination (reserved for future implementation)
 	// let currentPage = $state(1);
@@ -257,6 +264,28 @@
 	function getIntervalLabel(interval: string): string {
 		return interval.charAt(0).toUpperCase() + interval.slice(1);
 	}
+
+	function openSubscriptionDetail(subscription: Subscription) {
+		selectedSubscription = subscription;
+		showDetailDrawer = true;
+	}
+
+	function openCreateModal() {
+		selectedSubscription = null;
+		formModalMode = 'create';
+		showFormModal = true;
+	}
+
+	function openEditModal(subscription: Subscription) {
+		selectedSubscription = subscription;
+		formModalMode = 'edit';
+		showFormModal = true;
+		showDetailDrawer = false;
+	}
+
+	function handleSubscriptionSaved() {
+		loadData();
+	}
 </script>
 
 <svelte:head>
@@ -266,9 +295,22 @@
 <div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-12 px-4">
 	<div class="max-w-7xl mx-auto">
 		<!-- Header -->
-		<div class="mb-8">
-			<h1 class="text-4xl font-bold text-white mb-2">Subscription Management</h1>
-			<p class="text-slate-400">Monitor and manage all customer subscriptions</p>
+		<div class="flex items-start justify-between mb-8">
+			<div>
+				<h1 class="text-4xl font-bold text-white mb-2">Subscription Management</h1>
+				<p class="text-slate-400">Monitor and manage all customer subscriptions</p>
+			</div>
+			{#if $isPaymentConnected}
+				<button
+					onclick={openCreateModal}
+					class="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-600 text-white font-semibold rounded-xl transition-colors"
+				>
+					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+					</svg>
+					Create Subscription
+				</button>
+			{/if}
 		</div>
 
 		<!-- Connection Check -->
@@ -564,7 +606,10 @@
 							</tr>
 						{:else}
 							{#each filteredSubscriptions as subscription}
-								<tr class="hover:bg-slate-700/30 transition-colors">
+								<tr 
+									class="hover:bg-slate-700/30 transition-colors cursor-pointer"
+									onclick={() => openSubscriptionDetail(subscription)}
+								>
 									<td class="px-6 py-4">
 										<div class="text-white font-medium">{subscription.productName}</div>
 										<div class="text-sm text-slate-400">{subscription.id.slice(0, 8)}...</div>
@@ -591,7 +636,14 @@
 										{formatDate(subscription.nextPaymentDate)}
 									</td>
 									<td class="px-6 py-4">
-										<div class="flex items-center gap-2">
+										<div class="flex items-center gap-2" onclick={(e) => e.stopPropagation()}>
+											<button
+												onclick={() => openSubscriptionDetail(subscription)}
+												class="text-blue-400 hover:text-blue-300 text-sm font-medium"
+												title="View Details"
+											>
+												View
+											</button>
 											{#if subscription.status === 'active'}
 												<button
 													onclick={() => handlePause(subscription)}
@@ -747,6 +799,24 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Subscription Detail Drawer -->
+<SubscriptionDetailDrawer
+	isOpen={showDetailDrawer}
+	subscription={selectedSubscription}
+	onClose={() => { showDetailDrawer = false; selectedSubscription = null; }}
+	onEdit={openEditModal}
+	onRefresh={loadData}
+/>
+
+<!-- Subscription Form Modal -->
+<SubscriptionFormModal
+	isOpen={showFormModal}
+	mode={formModalMode}
+	subscription={selectedSubscription}
+	onClose={() => { showFormModal = false; selectedSubscription = null; }}
+	onSaved={handleSubscriptionSaved}
+/>
 
 <style>
 	/* Custom scrollbar for table */

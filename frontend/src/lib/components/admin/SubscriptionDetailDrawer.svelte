@@ -660,7 +660,7 @@
 <ConfirmationModal
 	isOpen={showCancelModal}
 	title="Cancel Subscription"
-	message="This will cancel the subscription. Choose whether to cancel immediately or at the end of the current billing period."
+	message="This will cancel the subscription at the end of the current billing period. Enter a reason for cancellation."
 	confirmText="Cancel Subscription"
 	variant="danger"
 	isLoading={isProcessingAction}
@@ -670,12 +670,7 @@
 	bind:inputValue={actionReason}
 	onConfirm={handleCancel}
 	onCancel={() => { showCancelModal = false; actionReason = ''; cancelImmediate = false; }}
->
-	<label class="checkbox-option">
-		<input type="checkbox" bind:checked={cancelImmediate} />
-		<span>Cancel immediately (don't wait until period end)</span>
-	</label>
-</ConfirmationModal>
+/>
 
 <!-- Reactivate Modal -->
 <ConfirmationModal
@@ -1329,22 +1324,5 @@
 	.btn-retry-payment:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
-	}
-
-	/* Checkbox in modal */
-	:global(.checkbox-option) {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		margin-top: 1rem;
-		font-size: 0.875rem;
-		color: var(--admin-text-secondary);
-		cursor: pointer;
-	}
-
-	:global(.checkbox-option input) {
-		width: 16px;
-		height: 16px;
-		accent-color: var(--admin-accent-primary);
 	}
 </style>
