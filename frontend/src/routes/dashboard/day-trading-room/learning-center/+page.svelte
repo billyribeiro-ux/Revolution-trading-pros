@@ -659,7 +659,7 @@
 		-ms-flex-align: center;
 		align-items: center;
 		background: #fff;
-		padding: 20px;
+		padding: 20px 20px 20px 0;
 		-webkit-box-shadow: 0 3px 6px #00000029;
 		box-shadow: 0 3px 6px #00000029;
 	}

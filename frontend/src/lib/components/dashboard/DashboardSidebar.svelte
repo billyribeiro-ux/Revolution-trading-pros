@@ -116,7 +116,7 @@
 	// Parent uses $effect to auto-collapse on membership dashboard routes
 	// DO NOT add $effect here that modifies collapsed - it will conflict with parent
 
-	// Check if a link is active
+	// Check if a link is active (exact match)
 	function isActive(href: string): boolean {
 		// Exact match for dashboard home
 		if (href === '/dashboard/' || href === '/dashboard') {
@@ -130,6 +130,18 @@
 
 		// ONLY exact match - no parent path matching
 		return normalizedCurrent === normalizedHref;
+	}
+
+	// Check if current path is within a section (for trading room parent highlighting)
+	// This keeps the trading room icon highlighted when on subpages like /learning-center
+	function isWithinSection(href: string): boolean {
+		// Normalize paths (remove trailing slashes)
+		const normalizedCurrent =
+			currentPath.endsWith('/') && currentPath !== '/' ? currentPath.slice(0, -1) : currentPath;
+		const normalizedHref = href.endsWith('/') && href !== '/' ? href.slice(0, -1) : href;
+
+		// Check if current path starts with this href (is within section)
+		return normalizedCurrent.startsWith(normalizedHref);
 	}
 
 	// Toggle mobile menu
@@ -311,7 +323,7 @@
 				</li>
 				<ul class="dash_main_links">
 					{#each tradingRoomLinks as link}
-						<li class:is-active={isActive(link.href)}>
+						<li class:is-active={isWithinSection(link.href)}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
 									<a href={link.href}>
@@ -342,7 +354,7 @@
 				</li>
 				<ul class="dash_main_links">
 					{#each mentorshipLinks as link}
-						<li class:is-active={isActive(link.href)}>
+						<li class:is-active={isWithinSection(link.href)}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
 									<a href={link.href}>
@@ -373,7 +385,7 @@
 				</li>
 				<ul class="dash_main_links">
 					{#each scannerLinks as link}
-						<li class:is-active={isActive(link.href)}>
+						<li class:is-active={isWithinSection(link.href)}>
 							{#if collapsed}
 								<Tooltip text={link.text} position="right" delay={150}>
 									<a href={link.href}>
