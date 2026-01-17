@@ -66,23 +66,8 @@
 		"declaration": false,
 		"declarationMap": false,
 
-		// ═══════════════════════════════════════════════════════════════════════════
-		// PATH MAPPINGS - SvelteKit Aliases
-		// ═══════════════════════════════════════════════════════════════════════════
-		"baseUrl": ".",
-		"paths": {
-			"$lib": ["src/lib"],
-			"$lib/*": ["src/lib/*"],
-			"$app/*": ["node_modules/@sveltejs/kit/src/runtime/app/*"],
-			"$components": ["src/lib/components"],
-			"$components/*": ["src/lib/components/*"],
-			"$stores": ["src/lib/stores"],
-			"$stores/*": ["src/lib/stores/*"],
-			"$utils": ["src/lib/utils"],
-			"$utils/*": ["src/lib/utils/*"],
-			"$api": ["src/lib/api"],
-			"$api/*": ["src/lib/api/*"]
-		}
+		// PATH MAPPINGS: Defined in svelte.config.js kit.alias
+		// SvelteKit auto-generates these in .svelte-kit/tsconfig.json
 	},
 	"include": [
 		"src/**/*",
