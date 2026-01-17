@@ -55,7 +55,9 @@ pub struct MediaQuery {
     pub collection: Option<String>,
     pub images_only: Option<bool>,
     pub is_optimized: Option<bool>,
+    #[serde(alias = "sort")]
     pub sort_by: Option<String>,
+    #[serde(alias = "order")]
     pub sort_dir: Option<String>,
     pub per_page: Option<i64>,
     pub page: Option<i64>,
