@@ -760,7 +760,7 @@
 
 	.form-group input:focus,
 	.form-group textarea:focus {
-		border-color: #6366f1;
+		border-color: #e6b800;
 		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 

@@ -1057,15 +1057,16 @@
 	}
 
 	.stat-card {
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.8);
 		border-radius: 12px;
 		padding: 1.5rem;
 		position: relative;
 		overflow: hidden;
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		border: 1px solid rgba(148, 163, 184, 0.15);
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
+		backdrop-filter: blur(10px);
 	}
 
 	.stat-card.gradient-purple { border-color: rgba(230, 184, 0, 0.3); }
@@ -1208,12 +1209,13 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 1.5rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: rgba(30, 41, 59, 0.8);
+		border: 1px solid rgba(148, 163, 184, 0.15);
 		border-radius: 12px;
 		cursor: pointer;
 		transition: all 0.2s;
 		min-width: 200px;
+		backdrop-filter: blur(10px);
 	}
 
 	.service-card:hover {
@@ -1266,10 +1268,16 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: rgba(30, 41, 59, 0.85);
+		border: 1px solid rgba(148, 163, 184, 0.15);
 		border-radius: 12px;
 		color: #94a3b8;
+		backdrop-filter: blur(10px);
+	}
+
+	.search-box:focus-within {
+		border-color: rgba(230, 184, 0, 0.5);
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.15);
 	}
 
 	.search-box input {
@@ -1329,10 +1337,11 @@
 		display: flex;
 		gap: 1rem;
 		padding: 1rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: rgba(30, 41, 59, 0.85);
+		border: 1px solid rgba(148, 163, 184, 0.15);
 		border-radius: 12px;
 		margin-bottom: 1rem;
+		backdrop-filter: blur(10px);
 	}
 
 	.filter-group {
@@ -1352,12 +1361,18 @@
 	.filter-group select {
 		width: 100%;
 		padding: 0.625rem 0.875rem;
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(30, 41, 59, 0.95);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 12px;
 		color: #f1f5f9;
 		font-size: 0.875rem;
 		cursor: pointer;
+	}
+
+	.filter-group select:focus {
+		border-color: rgba(230, 184, 0, 0.5);
+		outline: none;
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.15);
 	}
 
 	.clear-filters {
@@ -1379,10 +1394,11 @@
 
 	/* Members Table */
 	.members-table-container {
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.1);
+		background: rgba(30, 41, 59, 0.85);
+		border: 1px solid rgba(148, 163, 184, 0.15);
 		border-radius: 12px;
 		overflow: hidden;
+		backdrop-filter: blur(10px);
 	}
 
 	.loading-state,
@@ -1633,13 +1649,14 @@
 	}
 
 	.modal-content {
-		background: rgba(30, 41, 59, 0.95);
+		background: rgba(30, 41, 59, 0.98);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 12px;
 		width: 100%;
 		max-width: 600px;
 		max-height: 90vh;
 		overflow-y: auto;
+		backdrop-filter: blur(20px);
 	}
 
 	.modal-header {
@@ -1775,14 +1792,15 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
-		color: white;
-		box-shadow: 0 4px 14px rgba(99, 102, 241, 0.3);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
+		color: #0d1117;
+		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
 	}
 
 	.btn-primary:hover:not(:disabled) {
+		background: linear-gradient(135deg, #f5c800, #c9a000);
 		transform: translateY(-2px);
-		box-shadow: 0 8px 24px rgba(99, 102, 241, 0.4);
+		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-primary:disabled {

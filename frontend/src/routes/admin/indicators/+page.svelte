@@ -292,7 +292,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1.25rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 		border: none;
 		border-radius: 8px;
@@ -414,7 +414,7 @@
 		width: 2.5rem;
 		height: 2.5rem;
 		border: 3px solid rgba(100, 116, 139, 0.3);
-		border-top-color: #6366f1;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
@@ -424,7 +424,7 @@
 		width: 1rem;
 		height: 1rem;
 		border: 2px solid rgba(100, 116, 139, 0.3);
-		border-top-color: #6366f1;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
