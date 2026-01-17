@@ -71,10 +71,7 @@ impl ApiError {
     /// Add a single field error
     pub fn with_field_error(mut self, field: impl Into<String>, error: impl Into<String>) -> Self {
         let mut errors = self.errors.unwrap_or_default();
-        errors
-            .entry(field.into())
-            .or_default()
-            .push(error.into());
+        errors.entry(field.into()).or_default().push(error.into());
         self.errors = Some(errors);
         self
     }

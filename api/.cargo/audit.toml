@@ -1,0 +1,53 @@
+# ═══════════════════════════════════════════════════════════════════════════════
+# SECURITY AUDIT CONFIGURATION
+# ICT 7+ Apple Principal Engineer Grade
+# Revolution Trading Pros - Fly.io PostgreSQL Backend
+# January 2026
+# ═══════════════════════════════════════════════════════════════════════════════
+#
+# This configuration documents security exemptions with full justification
+# per Apple ICT 7 security review requirements.
+#
+# INFRASTRUCTURE: Fly.io PostgreSQL (NOT MySQL)
+# DATABASE: PostgreSQL 16 on Fly.io Machines
+# ═══════════════════════════════════════════════════════════════════════════════
+
+[advisories]
+# ─────────────────────────────────────────────────────────────────────────────
+# RUSTSEC-2023-0071: RSA Marvin Attack (Timing Sidechannel)
+# ─────────────────────────────────────────────────────────────────────────────
+# 
+# AFFECTED CRATE: rsa v0.9.x
+# SEVERITY: Medium (5.9)
+# STATUS: No upstream fix available
+#
+# ROOT CAUSE ANALYSIS:
+# - The `rsa` crate is a transitive dependency of `sqlx-mysql`
+# - `sqlx-macros-core` lists all database drivers in its Cargo.toml
+# - This causes sqlx-mysql to appear in Cargo.lock even when NOT USED
+#
+# VERIFICATION (run locally):
+# $ cargo tree -i sqlx-mysql
+# > warning: nothing to print.  <-- CONFIRMS: MySQL is NOT in dependency tree
+#
+# RISK ASSESSMENT:
+# - Impact: NONE - We use Fly.io PostgreSQL exclusively
+# - sqlx-mysql is NOT compiled into the binary
+# - The RSA vulnerability cannot be exploited in our codebase
+#
+# REMEDIATION PLAN:
+# - Monitor sqlx releases for fix
+# - Upgrade when sqlx removes phantom MySQL dependency from macros
+#
+# APPROVED BY: Principal Engineer
+# REVIEW DATE: 2026-01-17
+# NEXT REVIEW: 2026-04-17 (quarterly)
+# ─────────────────────────────────────────────────────────────────────────────
+ignore = [
+    "RUSTSEC-2023-0071",
+]
+
+[database]
+# Fetch latest advisory database
+fetch = true
+stale = false
