@@ -131,10 +131,21 @@ async fn get_overview(
 
 /// Performance tracking (public - for frontend)
 /// Accepts performance metrics from frontend monitoring
+/// Supports both JSON and text/plain (from navigator.sendBeacon)
 async fn track_performance(
     State(state): State<AppState>,
-    Json(input): Json<serde_json::Value>,
+    body: axum::body::Bytes,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Parse body - could be JSON or text/plain from sendBeacon
+    let input: serde_json::Value = if body.is_empty() {
+        json!({})
+    } else {
+        serde_json::from_slice(&body).unwrap_or_else(|e| {
+            tracing::warn!("Failed to parse performance metrics as JSON: {:?}", e);
+            json!({})
+        })
+    };
+
     // Store performance metrics in analytics_events table
     sqlx::query(
         r#"
