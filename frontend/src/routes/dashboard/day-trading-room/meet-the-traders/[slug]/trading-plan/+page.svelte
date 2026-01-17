@@ -14,7 +14,7 @@
 		content: string[];
 	}
 
-	let trader = $derived(getTraderBySlug(page.params.slug));
+	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
 
 	// Trader-specific trading plan - in production, fetch from API
 	const tradingPlanSections: TradingPlanSection[] = [

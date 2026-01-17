@@ -10,7 +10,7 @@
 	import { getTraderBySlug } from '$lib/data/traders';
 	import WeeklyWatchlist from '$lib/components/dashboard/WeeklyWatchlist.svelte';
 
-	let trader = $derived(getTraderBySlug(page.params.slug));
+	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
 </script>
 
 <!-- Who is Section -->

@@ -58,6 +58,7 @@ import { getAuthToken } from '$lib/stores/auth.svelte';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_URL = '/api';
+const ML_API = '/api/ml';
 
 const CACHE_TTL = 300000; // 5 minutes
 const VALIDATION_CACHE_TTL = 60000; // 1 minute

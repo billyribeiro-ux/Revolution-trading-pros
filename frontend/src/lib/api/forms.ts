@@ -60,6 +60,7 @@ import { getAuthToken, getSessionId as _getAuthSessionId } from '$lib/stores/aut
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 // All API calls go through SvelteKit proxy routes
 const API_BASE = '/api';
+const AI_API = '/api/ai';
 
 const CACHE_TTL = 300000; // 5 minutes
 const MAX_RETRIES = 3;

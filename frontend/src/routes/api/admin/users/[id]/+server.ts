@@ -79,7 +79,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 
 // GET - Get single user
 export const GET: RequestHandler = async ({ params, request }) => {
-	const userId = parseInt(params.id);
+	const userId = parseInt(params.id ?? '0');
 
 	// Try backend first
 	const backendData = await fetchFromBackend(`/api/admin/users/${userId}`, {
@@ -121,7 +121,7 @@ export const GET: RequestHandler = async ({ params, request }) => {
 
 // PUT - Update user
 export const PUT: RequestHandler = async ({ params, request }) => {
-	const userId = parseInt(params.id);
+	const userId = parseInt(params.id ?? '0');
 	const body = await request.json();
 
 	// Try backend first
@@ -162,7 +162,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 
 // DELETE - Delete user
 export const DELETE: RequestHandler = async ({ params, request }) => {
-	const userId = parseInt(params.id);
+	const userId = parseInt(params.id ?? '0');
 
 	// Try backend first
 	const backendData = await fetchFromBackend(`/api/admin/users/${userId}`, {

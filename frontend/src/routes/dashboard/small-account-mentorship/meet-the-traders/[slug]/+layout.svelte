@@ -15,7 +15,7 @@
 
 	let { children }: { children: Snippet } = $props();
 
-	let trader = $derived(getTraderBySlug(page.params.slug));
+	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
 	let currentPath = $derived.by(() => {
 		const slug = page.params.slug;
 		const fullPath = page.url.pathname;

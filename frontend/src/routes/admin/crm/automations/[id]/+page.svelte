@@ -60,7 +60,7 @@
 
 	let activeTab = $state<'overview' | 'workflow' | 'subscribers'>('overview');
 
-	const funnelId = page.params.id;
+	const funnelId = page.params.id ?? '';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// API FUNCTIONS

@@ -27,7 +27,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 
 		// Simulate connection verification
 		// In production, you would actually test the credentials against the service
-		await simulateConnectionTest(key, credentials);
+		await simulateConnectionTest(key ?? '', credentials);
 
 		// Create connection record
 		const connection = {
@@ -45,7 +45,7 @@ export const POST: RequestHandler = async ({ params, request }) => {
 			last_error: null
 		};
 
-		connections.set(key, connection);
+		connections.set(key ?? '', connection);
 
 		return json({
 			success: true,

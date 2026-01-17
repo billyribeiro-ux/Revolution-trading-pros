@@ -19,7 +19,7 @@
 		keyPoints: string[];
 	}
 
-	let trader = $derived(getTraderBySlug(page.params.slug));
+	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
 
 	// Trader-specific strategies - in production, fetch from API
 	const strategies: Strategy[] = [

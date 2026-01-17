@@ -58,6 +58,8 @@ import { api, type ApiResponse } from './client.svelte';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 
+const AI_API = '/api/ai';
+
 const CACHE_TTL = 300000; // 5 minutes
 const ANALYSIS_DEBOUNCE = 2000; // 2 seconds
 const RANK_CHECK_INTERVAL = 3600000; // 1 hour

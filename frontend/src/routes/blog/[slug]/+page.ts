@@ -8,7 +8,7 @@ export const ssr = false; // Client-side rendering only
 
 export const load: Load = async ({ params }) => {
 	try {
-		const post = await apiFetch<Post>(API_ENDPOINTS.posts.single(params.slug));
+		const post = await apiFetch<Post>(API_ENDPOINTS.posts.single(params.slug ?? ''));
 
 		return {
 			post
