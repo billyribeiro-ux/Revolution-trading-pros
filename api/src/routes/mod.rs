@@ -48,12 +48,13 @@ pub mod forms;
 pub mod member_courses;
 pub mod member_indicators;
 pub mod migrate;
+pub mod organization;
 pub mod popups;
 pub mod room_content;
 pub mod room_resources;
 pub mod subscriptions_admin;
 pub mod trading_rooms;
-pub mod watchlist; // ICT 7: Service connection status
+pub mod watchlist; // ICT 7: Service connection status // ICT 7: Teams & Departments
 
 use crate::AppState;
 use axum::Router;
@@ -150,6 +151,12 @@ pub fn api_router() -> Router<AppState> {
         .nest(
             "/admin/member-management",
             admin_member_management::router(),
+        )
+        // Organization - Teams & Departments - ICT 7 Grade
+        .nest("/admin/organization/teams", organization::teams_router())
+        .nest(
+            "/admin/organization/departments",
+            organization::departments_router(),
         )
         .merge(robots::router())
         .merge(sitemap::router())
