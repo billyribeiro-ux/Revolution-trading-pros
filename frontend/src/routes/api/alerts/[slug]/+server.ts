@@ -5,7 +5,9 @@
  * GET /api/alerts/[room-slug] - List alerts for a room
  * POST /api/alerts/[room-slug] - Create new alert (admin)
  *
- * @version 1.0.0
+ * Connects to backend at /api/room-content/rooms/:slug/alerts
+ *
+ * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -15,7 +17,43 @@ import type { RoomAlert, AlertCreateInput, AlertType } from '$lib/types/trading'
 import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
 
 // ═══════════════════════════════════════════════════════════════════════════
-// MOCK DATA - Matches Explosive Swings alerts
+// BACKEND CONFIGURATION
+// ═══════════════════════════════════════════════════════════════════════════
+
+const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BACKEND FETCH HELPER
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
+	try {
+		console.log(`[Alerts API] Fetching: ${BACKEND_URL}${endpoint}`);
+		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+			...options,
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				...options.headers
+			}
+		});
+
+		if (!response.ok) {
+			console.error(`[Alerts API] Backend error: ${response.status} ${response.statusText}`);
+			return null;
+		}
+
+		const data = await response.json();
+		console.log(`[Alerts API] Backend success:`, data?.data?.length || 0, 'items');
+		return data;
+	} catch (err) {
+		console.error('[Alerts API] Backend fetch failed:', err);
+		return null;
+	}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FALLBACK MOCK DATA (only used when backend unavailable)
 // ═══════════════════════════════════════════════════════════════════════════
 
 const mockAlerts: Record<string, RoomAlert[]> = {
@@ -27,8 +65,8 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			alert_type: 'ENTRY',
 			ticker: 'NVDA',
 			title: 'Opening NVDA Swing Position',
-			message: 'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.',
-			notes: 'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.',
+			message: 'Entering NVDA at $142.50. First target $148, stop at $136.',
+			notes: 'Entry based on breakout above $142 resistance with strong volume confirmation.',
 			trade_type: 'shares',
 			action: 'BUY',
 			quantity: 150,
@@ -45,185 +83,76 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			is_new: true,
 			is_published: true,
 			is_pinned: false,
-			published_at: '2026-01-17T10:32:00Z',
-			created_at: '2026-01-17T10:32:00Z',
-			updated_at: '2026-01-17T10:32:00Z'
-		},
-		{
-			id: 2,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			alert_type: 'UPDATE',
-			ticker: 'TSLA',
-			title: 'TSLA Approaching Entry Zone',
-			message: 'TSLA pulling back to our entry zone. Be ready. Will alert when triggered.',
-			notes: 'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.',
-			trade_type: null,
-			action: null,
-			quantity: null,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			contract_type: null,
-			order_type: null,
-			limit_price: null,
-			fill_price: null,
-			tos_string: null,
-			entry_alert_id: null,
-			trade_plan_id: 2,
-			is_new: true,
-			is_published: true,
-			is_pinned: false,
-			published_at: '2026-01-17T09:15:00Z',
-			created_at: '2026-01-17T09:15:00Z',
-			updated_at: '2026-01-17T09:15:00Z'
-		},
-		{
-			id: 3,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			alert_type: 'EXIT',
-			ticker: 'MSFT',
-			title: 'Closing MSFT for +8.2%',
-			message: 'Taking profits on MSFT. Hit second target. +$2,450 on this trade.',
-			notes: 'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.',
-			trade_type: 'shares',
-			action: 'SELL',
-			quantity: 100,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			contract_type: null,
-			order_type: 'LMT',
-			limit_price: 460.00,
-			fill_price: 460.00,
-			tos_string: 'SELL -100 MSFT @460.00 LMT',
-			entry_alert_id: null,
-			trade_plan_id: null,
-			is_new: false,
-			is_published: true,
-			is_pinned: false,
-			published_at: '2026-01-16T15:45:00Z',
-			created_at: '2026-01-16T15:45:00Z',
-			updated_at: '2026-01-16T15:45:00Z'
-		},
-		{
-			id: 4,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			alert_type: 'ENTRY',
-			ticker: 'META',
-			title: 'META Entry Triggered',
-			message: 'META hit our entry at $585. Position active. Targets in trade plan.',
-			notes: 'Entry confirmed at $585 with volume spike. Stop placed at $565 (3.4% risk). Currently up 1.3% and holding well. Momentum strong with AI revenue narrative. Will trail stop after T1 hit.',
-			trade_type: 'options',
-			action: 'BUY',
-			quantity: 2,
-			option_type: 'CALL',
-			strike: 590,
-			expiration: '2026-01-24',
-			contract_type: 'Weeklys',
-			order_type: 'LMT',
-			limit_price: 12.50,
-			fill_price: 12.50,
-			tos_string: 'BUY +2 META 100 (Weeklys) 24 JAN 26 590 CALL @12.50 LMT',
-			entry_alert_id: null,
-			trade_plan_id: 5,
-			is_new: false,
-			is_published: true,
-			is_pinned: false,
-			published_at: '2026-01-16T11:20:00Z',
-			created_at: '2026-01-16T11:20:00Z',
-			updated_at: '2026-01-16T11:20:00Z'
-		},
-		{
-			id: 5,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			alert_type: 'UPDATE',
-			ticker: 'AMD',
-			title: 'AMD Short Setup Active',
-			message: 'Bearish setup triggered on AMD. Short at $125 with stop at $132.',
-			notes: 'Bearish breakdown confirmed. Entered short at $125, currently at $123.50 (-1.2%). Stop at $132 gives us 5.6% risk. First target $120, second target $115. Watch for bounce at $120 psychological level.',
-			trade_type: 'shares',
-			action: 'SELL',
-			quantity: 200,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			contract_type: null,
-			order_type: 'LMT',
-			limit_price: 125.00,
-			fill_price: 125.00,
-			tos_string: 'SELL -200 AMD @125.00 LMT',
-			entry_alert_id: null,
-			trade_plan_id: 6,
-			is_new: false,
-			is_published: true,
-			is_pinned: false,
-			published_at: '2026-01-10T14:30:00Z',
-			created_at: '2026-01-10T14:30:00Z',
-			updated_at: '2026-01-10T14:30:00Z'
+			published_at: new Date().toISOString(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString()
 		}
 	]
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH
-// ═══════════════════════════════════════════════════════════════════════════
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
-
-	try {
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) return null;
-		return await response.json();
-	} catch {
-		return null;
-	}
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
 // GET - List alerts for a room
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ params, url, request }) => {
+export const GET: RequestHandler = async ({ params, url, request, cookies }) => {
 	const { slug } = params;
 
 	if (!slug) {
 		throw error(400, 'Room slug is required');
 	}
 
-	// Query params
-	const alertType = url.searchParams.get('alert_type') as AlertType | 'all' | null;
+	// Build query params
+	const page = url.searchParams.get('page') || '1';
+	const perPage = url.searchParams.get('per_page') || url.searchParams.get('limit') || '50';
+	const alertType = url.searchParams.get('alert_type');
 	const ticker = url.searchParams.get('ticker');
-	const limit = parseInt(url.searchParams.get('limit') || '50', 10);
-	const offset = parseInt(url.searchParams.get('offset') || '0', 10);
 
-	// Try backend first
+	// Get auth headers
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 	const headers: Record<string, string> = {};
-	if (authHeader) headers['Authorization'] = authHeader;
 
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
+	}
+
+	// Build backend query params
+	const backendParams = new URLSearchParams();
+	backendParams.set('page', page);
+	backendParams.set('per_page', perPage);
+
+	// Call backend at /api/room-content/rooms/:slug/alerts
 	const backendData = await fetchFromBackend(
-		`/api/alerts/${slug}?${url.searchParams.toString()}`,
+		`/api/room-content/rooms/${slug}/alerts?${backendParams.toString()}`,
 		{ headers }
 	);
 
-	if (backendData?.success) {
-		return json(backendData);
+	if (backendData?.data) {
+		// Transform backend response to frontend format
+		let alerts = backendData.data;
+
+		// Apply client-side filters if needed
+		if (alertType && alertType !== 'all') {
+			alerts = alerts.filter((a: RoomAlert) => a.alert_type === alertType);
+		}
+		if (ticker) {
+			alerts = alerts.filter((a: RoomAlert) => a.ticker.toUpperCase() === ticker.toUpperCase());
+		}
+
+		return json({
+			success: true,
+			data: alerts,
+			total: backendData.meta?.total || alerts.length,
+			page: parseInt(page),
+			limit: parseInt(perPage),
+			_source: 'backend'
+		});
 	}
 
 	// Fallback to mock data
+	console.log(`[Alerts API] Using mock data for ${slug}`);
 	let alerts = mockAlerts[slug] || [];
 
 	// Filter by alert type
@@ -245,16 +174,17 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 	alerts.sort((a, b) => new Date(b.published_at).getTime() - new Date(a.published_at).getTime());
 
 	// Paginate
+	const offset = (parseInt(page) - 1) * parseInt(perPage);
 	const total = alerts.length;
-	alerts = alerts.slice(offset, offset + limit);
+	alerts = alerts.slice(offset, offset + parseInt(perPage));
 
 	return json({
 		success: true,
 		data: alerts,
 		total,
-		limit,
-		offset,
-		_mock: true
+		page: parseInt(page),
+		limit: parseInt(perPage),
+		_source: 'mock'
 	});
 };
 
@@ -262,11 +192,12 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 // POST - Create new alert (admin only)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const POST: RequestHandler = async ({ params, request }) => {
+export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 
-	if (!authHeader) {
+	if (!authHeader && !sessionCookie) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -305,18 +236,52 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		tosString = buildTosString(tosParams);
 	}
 
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/alerts/${slug}`, {
-		method: 'POST',
-		headers: { Authorization: authHeader },
-		body: JSON.stringify({ ...body, tos_string: tosString })
-	});
-
-	if (backendData?.success) {
-		return json(backendData);
+	// Build headers
+	const headers: Record<string, string> = {};
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
 	}
 
-	// Mock create
+	// Call backend at /api/admin/room-content/alerts
+	const backendData = await fetchFromBackend(`/api/admin/room-content/alerts`, {
+		method: 'POST',
+		headers,
+		body: JSON.stringify({
+			room_slug: slug,
+			alert_type: body.alert_type,
+			ticker: body.ticker.toUpperCase(),
+			title: body.title,
+			message: body.message,
+			notes: body.notes,
+			trade_type: body.trade_type,
+			action: body.action,
+			quantity: body.quantity,
+			option_type: body.option_type,
+			strike: body.strike,
+			expiration: body.expiration,
+			contract_type: body.contract_type,
+			order_type: body.order_type,
+			limit_price: body.limit_price,
+			fill_price: body.fill_price || body.limit_price,
+			tos_string: tosString,
+			entry_alert_id: body.entry_alert_id,
+			trade_plan_id: body.trade_plan_id,
+			is_pinned: body.is_pinned
+		})
+	});
+
+	if (backendData) {
+		return json({
+			success: true,
+			data: backendData,
+			message: 'Alert created successfully',
+			_source: 'backend'
+		});
+	}
+
+	// Mock create fallback
 	const alerts = mockAlerts[slug] || [];
 	const maxId = alerts.reduce((max, a) => Math.max(max, a.id), 0);
 
@@ -350,7 +315,6 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		updated_at: new Date().toISOString()
 	};
 
-	// Add to mock data
 	if (!mockAlerts[slug]) {
 		mockAlerts[slug] = [];
 	}
@@ -360,6 +324,6 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		success: true,
 		data: newAlert,
 		message: 'Alert created successfully',
-		_mock: true
+		_source: 'mock'
 	});
 };

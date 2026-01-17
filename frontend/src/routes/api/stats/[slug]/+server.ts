@@ -5,7 +5,9 @@
  * GET /api/stats/[room-slug] - Get room statistics
  * POST /api/stats/[room-slug]/refresh - Force recalculate stats (admin)
  *
- * @version 1.0.0
+ * Connects to backend at /api/room-content/rooms/:slug/stats
+ *
+ * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -14,7 +16,43 @@ import { env } from '$env/dynamic/private';
 import type { RoomStats } from '$lib/types/trading';
 
 // ═══════════════════════════════════════════════════════════════════════════
-// MOCK DATA - Matches Explosive Swings stats
+// BACKEND CONFIGURATION
+// ═══════════════════════════════════════════════════════════════════════════
+
+const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BACKEND FETCH HELPER
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
+	try {
+		console.log(`[Stats API] Fetching: ${BACKEND_URL}${endpoint}`);
+		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+			...options,
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				...options.headers
+			}
+		});
+
+		if (!response.ok) {
+			console.error(`[Stats API] Backend error: ${response.status} ${response.statusText}`);
+			return null;
+		}
+
+		const data = await response.json();
+		console.log(`[Stats API] Backend success`);
+		return data;
+	} catch (err) {
+		console.error('[Stats API] Backend fetch failed:', err);
+		return null;
+	}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FALLBACK MOCK DATA
 // ═══════════════════════════════════════════════════════════════════════════
 
 const mockStats: Record<string, RoomStats> = {
@@ -41,52 +79,40 @@ const mockStats: Record<string, RoomStats> = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH
-// ═══════════════════════════════════════════════════════════════════════════
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
-
-	try {
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) return null;
-		return await response.json();
-	} catch {
-		return null;
-	}
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
 // GET - Get room statistics
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ params, request }) => {
+export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 
 	if (!slug) {
 		throw error(400, 'Room slug is required');
 	}
 
-	// Try backend first
+	// Get auth headers
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 	const headers: Record<string, string> = {};
-	if (authHeader) headers['Authorization'] = authHeader;
 
-	const backendData = await fetchFromBackend(`/api/stats/${slug}`, { headers });
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
+	}
 
-	if (backendData?.success) {
-		return json(backendData);
+	// Call backend at /api/room-content/rooms/:slug/stats
+	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/stats`, { headers });
+
+	if (backendData?.data) {
+		return json({
+			success: true,
+			data: backendData.data,
+			_source: 'backend'
+		});
 	}
 
 	// Fallback to mock data
+	console.log(`[Stats API] Using mock data for ${slug}`);
 	const stats = mockStats[slug];
 
 	if (!stats) {
@@ -112,14 +138,14 @@ export const GET: RequestHandler = async ({ params, request }) => {
 				current_streak: 0,
 				calculated_at: new Date().toISOString()
 			},
-			_mock: true
+			_source: 'mock'
 		});
 	}
 
 	return json({
 		success: true,
 		data: stats,
-		_mock: true
+		_source: 'mock'
 	});
 };
 
@@ -127,11 +153,12 @@ export const GET: RequestHandler = async ({ params, request }) => {
 // POST - Refresh/recalculate stats (admin only)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const POST: RequestHandler = async ({ params, request }) => {
+export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 
-	if (!authHeader) {
+	if (!authHeader && !sessionCookie) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -139,14 +166,27 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		throw error(400, 'Room slug is required');
 	}
 
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/stats/${slug}/refresh`, {
+	// Build headers
+	const headers: Record<string, string> = {};
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
+	}
+
+	// Call backend to refresh stats
+	const backendData = await fetchFromBackend(`/api/admin/room-content/rooms/${slug}/stats/refresh`, {
 		method: 'POST',
-		headers: { Authorization: authHeader }
+		headers
 	});
 
-	if (backendData?.success) {
-		return json(backendData);
+	if (backendData) {
+		return json({
+			success: true,
+			data: backendData.data || backendData,
+			message: 'Stats refreshed',
+			_source: 'backend'
+		});
 	}
 
 	// Mock refresh - just update the calculated_at timestamp
@@ -158,6 +198,6 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		success: true,
 		data: mockStats[slug] || null,
 		message: 'Stats refreshed',
-		_mock: true
+		_source: 'mock'
 	});
 };

@@ -5,7 +5,9 @@
  * GET /api/trades/[room-slug] - List trades for a room
  * POST /api/trades/[room-slug] - Create new trade (from entry alert)
  *
- * @version 1.0.0
+ * Connects to backend at /api/room-content/rooms/:slug/trades
+ *
+ * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -14,7 +16,43 @@ import { env } from '$env/dynamic/private';
 import type { Trade, TradeCreateInput, TradeStatus } from '$lib/types/trading';
 
 // ═══════════════════════════════════════════════════════════════════════════
-// MOCK DATA - Matches Trade Tracker page
+// BACKEND CONFIGURATION
+// ═══════════════════════════════════════════════════════════════════════════
+
+const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BACKEND FETCH HELPER
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
+	try {
+		console.log(`[Trades API] Fetching: ${BACKEND_URL}${endpoint}`);
+		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+			...options,
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				...options.headers
+			}
+		});
+
+		if (!response.ok) {
+			console.error(`[Trades API] Backend error: ${response.status} ${response.statusText}`);
+			return null;
+		}
+
+		const data = await response.json();
+		console.log(`[Trades API] Backend success:`, data?.data?.length || 0, 'items');
+		return data;
+	} catch (err) {
+		console.error('[Trades API] Backend fetch failed:', err);
+		return null;
+	}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FALLBACK MOCK DATA
 // ═══════════════════════════════════════════════════════════════════════════
 
 const mockTrades: Record<string, Trade[]> = {
@@ -31,234 +69,60 @@ const mockTrades: Record<string, Trade[]> = {
 			strike: null,
 			expiration: null,
 			entry_alert_id: null,
-			entry_price: 425.00,
+			entry_price: 425.0,
 			entry_date: '2026-01-05',
 			exit_alert_id: null,
-			exit_price: 460.00,
+			exit_price: 460.0,
 			exit_date: '2026-01-10',
 			setup: 'Breakout',
 			status: 'closed',
 			pnl: 3500,
 			pnl_percent: 8.24,
 			holding_days: 5,
-			notes: 'Perfect breakout setup. Held through consolidation and exited at T2.',
-			created_at: '2026-01-05T10:00:00Z',
-			updated_at: '2026-01-10T15:45:00Z'
-		},
-		{
-			id: 2,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			ticker: 'META',
-			trade_type: 'options',
-			direction: 'long',
-			quantity: 2,
-			option_type: 'CALL',
-			strike: 590,
-			expiration: '2026-01-24',
-			entry_alert_id: 4,
-			entry_price: 12.50,
-			entry_date: '2026-01-08',
-			exit_alert_id: null,
-			exit_price: 18.75,
-			exit_date: '2026-01-12',
-			setup: 'Momentum',
-			status: 'closed',
-			pnl: 1250,
-			pnl_percent: 50.00,
-			holding_days: 4,
-			notes: 'Strong momentum play. Quick move to target.',
-			created_at: '2026-01-08T11:20:00Z',
-			updated_at: '2026-01-12T14:30:00Z'
-		},
-		{
-			id: 3,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			ticker: 'AMD',
-			trade_type: 'shares',
-			direction: 'short',
-			quantity: 200,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			entry_alert_id: 5,
-			entry_price: 125.00,
-			entry_date: '2026-01-09',
-			exit_alert_id: null,
-			exit_price: 127.00,
-			exit_date: '2026-01-11',
-			setup: 'Reversal',
-			status: 'closed',
-			pnl: -400,
-			pnl_percent: -1.60,
-			holding_days: 2,
-			notes: "Stopped out. Reversal didn't materialize.",
-			created_at: '2026-01-09T14:30:00Z',
-			updated_at: '2026-01-11T10:15:00Z'
-		},
-		{
-			id: 4,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			ticker: 'NFLX',
-			trade_type: 'shares',
-			direction: 'long',
-			quantity: 60,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			entry_alert_id: null,
-			entry_price: 520.00,
-			entry_date: '2026-01-02',
-			exit_alert_id: null,
-			exit_price: 570.00,
-			exit_date: '2026-01-09',
-			setup: 'Earnings',
-			status: 'closed',
-			pnl: 3000,
-			pnl_percent: 9.62,
-			holding_days: 7,
-			notes: 'Earnings catalyst worked perfectly. Held for runner target.',
-			created_at: '2026-01-02T09:35:00Z',
-			updated_at: '2026-01-09T15:00:00Z'
-		},
-		{
-			id: 5,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			ticker: 'NVDA',
-			trade_type: 'shares',
-			direction: 'long',
-			quantity: 150,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			entry_alert_id: 1,
-			entry_price: 142.50,
-			entry_date: '2026-01-13',
-			exit_alert_id: null,
-			exit_price: null,
-			exit_date: null,
-			setup: 'Breakout',
-			status: 'open',
-			pnl: null,
-			pnl_percent: null,
-			holding_days: null,
-			notes: 'Currently holding. Watching for T1 at $148.',
-			created_at: '2026-01-13T10:32:00Z',
-			updated_at: '2026-01-13T10:32:00Z'
-		},
-		{
-			id: 6,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			ticker: 'TSLA',
-			trade_type: 'shares',
-			direction: 'long',
-			quantity: 80,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			entry_alert_id: null,
-			entry_price: 235.00,
-			entry_date: '2025-12-28',
-			exit_alert_id: null,
-			exit_price: 265.00,
-			exit_date: '2026-01-05',
-			setup: 'Momentum',
-			status: 'closed',
-			pnl: 2400,
-			pnl_percent: 12.77,
-			holding_days: 8,
-			notes: 'Great momentum trade. Hit T3 and exited.',
-			created_at: '2025-12-28T10:15:00Z',
-			updated_at: '2026-01-05T14:20:00Z'
-		},
-		{
-			id: 7,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			ticker: 'AMZN',
-			trade_type: 'shares',
-			direction: 'long',
-			quantity: 100,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			entry_alert_id: null,
-			entry_price: 185.00,
-			entry_date: '2026-01-11',
-			exit_alert_id: null,
-			exit_price: null,
-			exit_date: null,
-			setup: 'Breakout',
-			status: 'open',
-			pnl: null,
-			pnl_percent: null,
-			holding_days: null,
-			notes: 'Active position. Currently at T1.',
-			created_at: '2026-01-11T11:15:00Z',
-			updated_at: '2026-01-11T11:15:00Z'
-		},
-		{
-			id: 8,
-			room_id: 4,
-			room_slug: 'explosive-swings',
-			ticker: 'GOOGL',
-			trade_type: 'shares',
-			direction: 'long',
-			quantity: 120,
-			option_type: null,
-			strike: null,
-			expiration: null,
-			entry_alert_id: null,
-			entry_price: 168.00,
-			entry_date: '2025-12-20',
-			exit_alert_id: null,
-			exit_price: 175.00,
-			exit_date: '2025-12-30',
-			setup: 'Momentum',
-			status: 'closed',
-			pnl: 840,
-			pnl_percent: 4.17,
-			holding_days: 10,
-			notes: 'Slow grind higher. Took profits at T1.',
-			created_at: '2025-12-20T09:45:00Z',
-			updated_at: '2025-12-30T15:30:00Z'
+			notes: 'Perfect breakout setup.',
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString()
 		}
 	]
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH
+// HELPER: Calculate stats from trades
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+function calculateStats(trades: Trade[]) {
+	const closedTrades = trades.filter((t) => t.status === 'closed');
+	const openTrades = trades.filter((t) => t.status === 'open');
+	const wins = closedTrades.filter((t) => (t.pnl || 0) > 0);
+	const losses = closedTrades.filter((t) => (t.pnl || 0) < 0);
 
-	try {
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
+	const totalPnl = closedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
+	const avgWin = wins.length > 0 ? wins.reduce((sum, t) => sum + (t.pnl || 0), 0) / wins.length : 0;
+	const avgLoss =
+		losses.length > 0
+			? Math.abs(losses.reduce((sum, t) => sum + (t.pnl || 0), 0) / losses.length)
+			: 0;
+	const winRate = closedTrades.length > 0 ? (wins.length / closedTrades.length) * 100 : 0;
+	const profitFactor = avgLoss > 0 ? avgWin / avgLoss : avgWin > 0 ? Infinity : 0;
 
-		if (!response.ok) return null;
-		return await response.json();
-	} catch {
-		return null;
-	}
+	return {
+		total_trades: closedTrades.length,
+		open_trades: openTrades.length,
+		wins: wins.length,
+		losses: losses.length,
+		win_rate: Math.round(winRate * 10) / 10,
+		total_pnl: totalPnl,
+		avg_win: Math.round(avgWin),
+		avg_loss: Math.round(avgLoss),
+		profit_factor: Math.round(profitFactor * 100) / 100
+	};
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
 // GET - List trades for a room
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ params, url, request }) => {
+export const GET: RequestHandler = async ({ params, url, request, cookies }) => {
 	const { slug } = params;
 
 	if (!slug) {
@@ -268,24 +132,50 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 	// Query params
 	const status = url.searchParams.get('status') as TradeStatus | 'all' | null;
 	const ticker = url.searchParams.get('ticker');
-	const limit = parseInt(url.searchParams.get('limit') || '50', 10);
-	const offset = parseInt(url.searchParams.get('offset') || '0', 10);
+	const page = url.searchParams.get('page') || '1';
+	const perPage = url.searchParams.get('per_page') || url.searchParams.get('limit') || '50';
 
-	// Try backend first
+	// Get auth headers
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 	const headers: Record<string, string> = {};
-	if (authHeader) headers['Authorization'] = authHeader;
 
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
+	}
+
+	// Build backend query params
+	const backendParams = new URLSearchParams();
+	backendParams.set('page', page);
+	backendParams.set('per_page', perPage);
+	if (status && status !== 'all') backendParams.set('status', status);
+	if (ticker) backendParams.set('ticker', ticker);
+
+	// Call backend at /api/room-content/rooms/:slug/trades
 	const backendData = await fetchFromBackend(
-		`/api/trades/${slug}?${url.searchParams.toString()}`,
+		`/api/room-content/rooms/${slug}/trades?${backendParams.toString()}`,
 		{ headers }
 	);
 
-	if (backendData?.success) {
-		return json(backendData);
+	if (backendData?.data) {
+		const trades = backendData.data;
+		const stats = calculateStats(trades);
+
+		return json({
+			success: true,
+			data: trades,
+			stats,
+			total: backendData.meta?.total || trades.length,
+			page: parseInt(page),
+			limit: parseInt(perPage),
+			_source: 'backend'
+		});
 	}
 
 	// Fallback to mock data
+	console.log(`[Trades API] Using mock data for ${slug}`);
 	let trades = mockTrades[slug] || [];
 
 	// Filter by status
@@ -301,48 +191,22 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 	// Sort by entry date (newest first)
 	trades.sort((a, b) => new Date(b.entry_date).getTime() - new Date(a.entry_date).getTime());
 
-	// Calculate stats from trades
-	const closedTrades = (mockTrades[slug] || []).filter((t) => t.status === 'closed');
-	const openTrades = (mockTrades[slug] || []).filter((t) => t.status === 'open');
-	const wins = closedTrades.filter((t) => (t.pnl || 0) > 0);
-	const losses = closedTrades.filter((t) => (t.pnl || 0) < 0);
-
-	const totalPnl = closedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-	const avgWin = wins.length > 0
-		? wins.reduce((sum, t) => sum + (t.pnl || 0), 0) / wins.length
-		: 0;
-	const avgLoss = losses.length > 0
-		? Math.abs(losses.reduce((sum, t) => sum + (t.pnl || 0), 0) / losses.length)
-		: 0;
-	const winRate = closedTrades.length > 0
-		? (wins.length / closedTrades.length) * 100
-		: 0;
-	const profitFactor = avgLoss > 0 ? avgWin / avgLoss : avgWin > 0 ? Infinity : 0;
-
-	const stats = {
-		total_trades: closedTrades.length,
-		open_trades: openTrades.length,
-		wins: wins.length,
-		losses: losses.length,
-		win_rate: Math.round(winRate * 10) / 10,
-		total_pnl: totalPnl,
-		avg_win: Math.round(avgWin),
-		avg_loss: Math.round(avgLoss),
-		profit_factor: Math.round(profitFactor * 100) / 100
-	};
+	// Calculate stats
+	const stats = calculateStats(mockTrades[slug] || []);
 
 	// Paginate
+	const offset = (parseInt(page) - 1) * parseInt(perPage);
 	const total = trades.length;
-	trades = trades.slice(offset, offset + limit);
+	trades = trades.slice(offset, offset + parseInt(perPage));
 
 	return json({
 		success: true,
 		data: trades,
 		stats,
 		total,
-		limit,
-		offset,
-		_mock: true
+		page: parseInt(page),
+		limit: parseInt(perPage),
+		_source: 'mock'
 	});
 };
 
@@ -350,11 +214,12 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 // POST - Create new trade (from entry alert)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const POST: RequestHandler = async ({ params, request }) => {
+export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 
-	if (!authHeader) {
+	if (!authHeader && !sessionCookie) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -369,18 +234,47 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		throw error(400, 'Ticker, trade_type, direction, quantity, and entry_price are required');
 	}
 
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/trades/${slug}`, {
-		method: 'POST',
-		headers: { Authorization: authHeader },
-		body: JSON.stringify(body)
-	});
-
-	if (backendData?.success) {
-		return json(backendData);
+	// Build headers
+	const headers: Record<string, string> = {};
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
 	}
 
-	// Mock create
+	// Call backend at /api/admin/room-content/trades
+	const backendData = await fetchFromBackend(`/api/admin/room-content/trades`, {
+		method: 'POST',
+		headers,
+		body: JSON.stringify({
+			room_slug: slug,
+			ticker: body.ticker.toUpperCase(),
+			trade_type: body.trade_type,
+			direction: body.direction,
+			quantity: body.quantity,
+			option_type: body.option_type,
+			strike: body.strike,
+			expiration: body.expiration,
+			contract_type: body.contract_type,
+			entry_alert_id: body.entry_alert_id,
+			entry_price: body.entry_price,
+			entry_date: body.entry_date || new Date().toISOString().split('T')[0],
+			entry_tos_string: body.entry_tos_string,
+			setup: body.setup,
+			notes: body.notes
+		})
+	});
+
+	if (backendData) {
+		return json({
+			success: true,
+			data: backendData,
+			message: 'Trade created successfully',
+			_source: 'backend'
+		});
+	}
+
+	// Mock create fallback
 	const trades = mockTrades[slug] || [];
 	const maxId = trades.reduce((max, t) => Math.max(max, t.id), 0);
 
@@ -411,7 +305,6 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		updated_at: new Date().toISOString()
 	};
 
-	// Add to mock data
 	if (!mockTrades[slug]) {
 		mockTrades[slug] = [];
 	}
@@ -421,6 +314,6 @@ export const POST: RequestHandler = async ({ params, request }) => {
 		success: true,
 		data: newTrade,
 		message: 'Trade created successfully',
-		_mock: true
+		_source: 'mock'
 	});
 };
