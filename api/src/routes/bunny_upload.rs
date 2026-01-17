@@ -280,7 +280,7 @@ async fn get_video_status(
 async fn list_uploads(
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let uploads: Vec<(String, i64, String, String, Option<i32>, Option<String>, chrono::NaiveDateTime)> = 
+    let uploads: Vec<(String, i64, String, String, Option<i32>, Option<String>, chrono::NaiveDateTime)> =
         sqlx::query_as::<_, (String, i64, String, String, Option<i32>, Option<String>, chrono::NaiveDateTime)>(
             r#"
             SELECT video_guid, library_id, title, status, duration_seconds, thumbnail_url, upload_started_at
