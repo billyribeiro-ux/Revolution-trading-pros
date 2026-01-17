@@ -1106,7 +1106,7 @@
 	}
 
 	.modal-header h2 :global(svg) {
-		color: #6366f1;
+		color: #e6b800;
 	}
 
 	.modal-close {
@@ -1202,7 +1202,7 @@
 	}
 
 	.modal-info :global(svg) {
-		color: #6366f1;
+		color: #e6b800;
 		flex-shrink: 0;
 		margin-top: 0.125rem;
 	}

@@ -1696,7 +1696,7 @@
     width: 20px;
     height: 20px;
     border: 2px solid rgba(99, 102, 241, 0.2);
-    border-top-color: #6366f1;
+    border-top-color: #e6b800;
     border-radius: 50%;
     animation: spin 0.8s linear infinite;
   }
@@ -1728,7 +1728,7 @@
 
   .progress-fill {
     height: 100%;
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #e6b800, #b38f00);
     transition: width 0.3s;
   }
 
@@ -1841,7 +1841,7 @@
   }
 
   .btn-primary {
-    background: linear-gradient(135deg, #6366f1, #8b5cf6);
+    background: linear-gradient(135deg, #e6b800, #b38f00);
     color: white;
     border: none;
   }
@@ -1961,7 +1961,7 @@
   }
 
   .media-grid .media-item.selected {
-    border-color: #6366f1;
+    border-color: #e6b800;
     box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
   }
 
@@ -2051,7 +2051,7 @@
     width: 18px;
     height: 18px;
     cursor: pointer;
-    accent-color: #6366f1;
+    accent-color: #e6b800;
   }
 
   .item-info {
@@ -2489,7 +2489,7 @@
   }
 
   .toast-info svg {
-    color: #6366f1;
+    color: #e6b800;
   }
 
   /* ═══════════════════════════════════════════════════════════════════════════
@@ -2551,7 +2551,7 @@
     width: 40px;
     height: 40px;
     border: 3px solid rgba(99, 102, 241, 0.2);
-    border-top-color: #6366f1;
+    border-top-color: #e6b800;
     border-radius: 50%;
     animation: spin 1s linear infinite;
     margin-bottom: 1rem;

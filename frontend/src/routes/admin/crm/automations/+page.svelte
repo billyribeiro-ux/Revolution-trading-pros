@@ -985,7 +985,7 @@ contact_789"
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -1375,7 +1375,7 @@ contact_789"
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
@@ -1424,7 +1424,7 @@ contact_789"
 	}
 
 	.modal-header h2 :global(svg) {
-		color: #6366f1;
+		color: #e6b800;
 	}
 
 	.modal-close {
@@ -1580,7 +1580,7 @@ contact_789"
 	}
 
 	.modal-info :global(svg) {
-		color: #6366f1;
+		color: #e6b800;
 		flex-shrink: 0;
 		margin-top: 0.125rem;
 	}

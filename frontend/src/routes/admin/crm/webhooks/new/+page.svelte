@@ -680,7 +680,7 @@
 	}
 
 	.toggle-input:checked + .toggle-switch {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 	}
 
 	.toggle-input:checked + .toggle-switch::after {
@@ -846,7 +846,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		border: none;
 		border-radius: 10px;
 		color: white;
@@ -882,7 +882,7 @@
 		width: 20px;
 		height: 20px;
 		border: 2px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #6366f1;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}

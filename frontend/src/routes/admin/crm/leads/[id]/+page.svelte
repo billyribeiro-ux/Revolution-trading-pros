@@ -998,7 +998,7 @@
 		width: 80px;
 		height: 80px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1476,7 +1476,7 @@
 	}
 
 	.timeline-dot.email {
-		background: #6366f1;
+		background: #e6b800;
 	}
 
 	.timeline-dot.call {

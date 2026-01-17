@@ -950,7 +950,7 @@
 	}
 
 	.period-selector button.active {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 	}
 
@@ -959,7 +959,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 0.5rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 		border: none;
 		padding: 0.625rem 1rem;
@@ -1072,7 +1072,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 		text-decoration: none;
 		border-radius: 10px;
@@ -1542,7 +1542,7 @@
 	}
 
 	.device-bar.desktop {
-		background: linear-gradient(90deg, #6366f1, #8b5cf6);
+		background: linear-gradient(90deg, #e6b800, #b38f00);
 	}
 	.device-bar.mobile {
 		background: linear-gradient(90deg, #06b6d4, #22d3ee);

@@ -3135,7 +3135,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #6366f1, #8b5cf6);
+		background: linear-gradient(90deg, #e6b800, #b38f00);
 		transition: width 0.5s ease;
 	}
 
@@ -4481,7 +4481,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 	}
 

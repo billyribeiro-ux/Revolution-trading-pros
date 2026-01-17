@@ -737,7 +737,7 @@
 	}
 
 	.step.active .step-number {
-		background: #6366f1;
+		background: #e6b800;
 		color: white;
 	}
 
@@ -913,7 +913,7 @@
 	}
 
 	.trigger-card.selected {
-		border-color: #6366f1;
+		border-color: #e6b800;
 		background: rgba(99, 102, 241, 0.1);
 	}
 
@@ -952,7 +952,7 @@
 		width: 24px;
 		height: 24px;
 		border-radius: 50%;
-		background: #6366f1;
+		background: #e6b800;
 		color: white;
 		display: flex;
 		align-items: center;
@@ -987,7 +987,7 @@
 		width: 18px;
 		height: 18px;
 		border-radius: 4px;
-		accent-color: #6366f1;
+		accent-color: #e6b800;
 	}
 
 	/* Info Card */
@@ -1002,7 +1002,7 @@
 	}
 
 	.info-card :global(svg) {
-		color: #6366f1;
+		color: #e6b800;
 		flex-shrink: 0;
 	}
 
@@ -1071,7 +1071,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 		border: none;
 		border-radius: 10px;

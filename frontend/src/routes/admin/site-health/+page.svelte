@@ -1038,7 +1038,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 		border: none;
 		padding: 0.5rem 1rem;

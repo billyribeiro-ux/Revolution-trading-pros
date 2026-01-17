@@ -1503,7 +1503,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
 	}

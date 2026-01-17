@@ -863,7 +863,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 		border: none;
 		border-radius: 6px;
@@ -1060,7 +1060,7 @@
 	.form-group input:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #6366f1;
+		border-color: #e6b800;
 	}
 
 	.form-group input[type='color'] {
