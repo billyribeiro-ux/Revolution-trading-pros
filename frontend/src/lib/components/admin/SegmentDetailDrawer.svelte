@@ -281,8 +281,6 @@
 	<aside
 		class="drawer"
 		class:open={isOpen}
-		role="dialog"
-		aria-modal="true"
 		aria-labelledby="drawer-title"
 	>
 		<!-- Header -->

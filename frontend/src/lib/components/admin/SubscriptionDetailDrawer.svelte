@@ -256,7 +256,7 @@
 		}
 	}
 
-	function handleBackdropClick(e: MouseEvent) {
+	function handleBackdropClick(e: MouseEvent | KeyboardEvent) {
 		if (e.target === e.currentTarget) {
 			onClose();
 		}
@@ -264,7 +264,7 @@
 </script>
 
 {#if isOpen && subscription}
-	<div class="drawer-backdrop" onclick={handleBackdropClick}>
+	<div class="drawer-backdrop" role="presentation" onclick={handleBackdropClick} onkeydown={(e) => { if (e.key === 'Escape') handleBackdropClick(e); }}>
 		<aside class="drawer" class:open={isOpen}>
 			<!-- Header -->
 			<header class="drawer-header">

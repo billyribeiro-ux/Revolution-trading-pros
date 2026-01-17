@@ -442,8 +442,8 @@
 						</div>
 
 						{#if cardBadge}
-							<div class="form-group">
-								<label class="form-label">Badge Color</label>
+							<div class="form-group" role="radiogroup" aria-labelledby="badge-color-label">
+								<span id="badge-color-label" class="form-label">Badge Color</span>
 								<div class="color-options">
 									{#each badgeColors as color}
 										<button

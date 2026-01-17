@@ -201,7 +201,7 @@
 		}
 	}
 
-	function handleBackdropClick(e: MouseEvent) {
+	function handleBackdropClick(e: MouseEvent | KeyboardEvent) {
 		if (e.target === e.currentTarget) {
 			onClose();
 		}
@@ -209,7 +209,7 @@
 </script>
 
 {#if isOpen}
-	<div class="drawer-backdrop" onclick={handleBackdropClick}>
+	<div class="drawer-backdrop" role="presentation" onclick={handleBackdropClick} onkeydown={(e) => { if (e.key === 'Escape') handleBackdropClick(e); }}>
 		<aside class="drawer" class:open={isOpen}>
 			{#if isLoading}
 				<div class="loading-state">
@@ -364,7 +364,7 @@
 								<div class="modules-list">
 									{#each courseData.modules as module, idx}
 										<div class="module-card" class:expanded={expandedModules.has(module.id)}>
-											<div class="module-header" onclick={() => toggleModuleExpand(module.id)}>
+											<div class="module-header" role="button" tabindex="0" onclick={() => toggleModuleExpand(module.id)} onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); toggleModuleExpand(module.id); } }}>
 												<div class="module-drag">
 													<IconGripVertical size={16} />
 												</div>
@@ -385,7 +385,7 @@
 														</span>
 													{/if}
 												</div>
-												<div class="module-actions" onclick={(e) => e.stopPropagation()}>
+												<div class="module-actions">
 													<button
 														type="button"
 														class="btn-module-action"
