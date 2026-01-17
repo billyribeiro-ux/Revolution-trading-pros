@@ -85,9 +85,7 @@
 			</div>
 		</section>
 
-		<ClassDownloadsSection
-			boxUrl="https://simplertrading.app.box.com/embed/s/tew1quydbn8be4o9jcif8b2ops3bpipc"
-		/>
+		<ClassDownloadsSection courseSlug="tax-loss-harvest-c" />
 	</div>
 </div>
 
