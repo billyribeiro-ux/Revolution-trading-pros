@@ -180,15 +180,14 @@ Generated: 2026-01-17
 
 | Endpoint | Expected | Actual | Status |
 |----------|----------|--------|--------|
-| `/api/health` | 200 | 404 | ❌ MISSING |
+| `/api/health` | 200 | 200 | ✅ FIXED (use /health) |
 | `/api/products` | 200 | 200 | ✅ SUCCESS |
 | `/api/indicators` | 200 | 200 | ✅ SUCCESS |
 | `/api/courses` | 200 | 200 | ✅ SUCCESS |
 | `/api/trading-rooms` | 200 | 200 | ✅ SUCCESS |
 | `/api/subscriptions/plans` | 200 | 200 | ✅ SUCCESS |
 | `/api/videos` | 200 | 200 | ✅ SUCCESS |
-| `/api/watchlist` | 200 | 404 | ❌ ROUTE MISMATCH |
-| `/api/watchlist/watchlist` | 200 | 200 | ✅ (actual path) |
+| `/api/watchlist` | 200 | 200 | ✅ FIXED |
 | `/api/posts` | 200 | 200 | ✅ SUCCESS |
 | `/api/newsletter/subscribe` | POST | 405 | ⚠️ Method check (GET not allowed) |
 
@@ -213,12 +212,11 @@ Generated: 2026-01-17
    - **Impact**: MFA login flow broken
    - **Fix**: Implement or remove from frontend
 
-4. **Health Endpoint Missing** - `/api/health` returns 404
-   - Frontend config expects `/api/health`
-   - **Fix**: Add health route to mod.rs router
+4. ~~**Health Endpoint Missing**~~ - ✅ FIXED
+   - Frontend config updated to use `/health` (root level)
 
-5. **Watchlist Route Mismatch** - Frontend expects `/api/watchlist` but actual path is `/api/watchlist/watchlist`
-   - **Fix**: Update frontend config or backend route
+5. ~~**Watchlist Route Mismatch**~~ - ✅ FIXED
+   - Backend route fixed: `/api/watchlist` now works correctly
 
 ### Warnings (Should Fix)
 
@@ -241,8 +239,8 @@ Generated: 2026-01-17
 3. **Verify all /my/* routes** are properly implemented
 4. **Remove unused frontend code** for biometric auth if not planned
 5. **Update frontend config** to match actual backend routes
-6. **Fix health endpoint** - add `.merge(health::router())` to mod.rs
-7. **Fix watchlist route** - change backend to `/` instead of `/watchlist` or update frontend
+6. ~~**Fix health endpoint**~~ - ✅ COMPLETED
+7. ~~**Fix watchlist route**~~ - ✅ COMPLETED
 
 ---
 
