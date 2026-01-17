@@ -1,150 +1,85 @@
 <script lang="ts">
 	/**
 	 * Watchlist - Explosive Swings
-	 * @version 1.0.0
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Displays weekly trade plan entries fetched from backend API
+	 *
+	 * @version 2.0.0 - ICT 11 Principal Engineer Grade
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
+	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import type { TradePlanEntry } from '$lib/types/trading';
 
-	// TYPE DEFINITIONS
-	interface WatchlistEntry {
-		ticker: string;
-		company: string;
-		bias: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
-		entry: string;
-		target1: string;
-		target2: string;
-		target3: string;
-		runner: string;
-		stop: string;
-		optionsStrike: string;
-		optionsExp: string;
-		currentPrice: string;
-		change: string;
-		status: 'active' | 'watching' | 'closed';
-		notes: string;
-		technicals: string;
-		catalyst: string;
+	const ROOM_SLUG = 'explosive-swings';
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE - Svelte 5 $state runes
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	let tradePlanEntries = $state<TradePlanEntry[]>([]);
+	let isLoading = $state(true);
+	let error = $state<string | null>(null);
+	let weekOf = $state<string | null>(null);
+	let dataSource = $state<'backend' | 'mock' | null>(null);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// API FETCH
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function fetchTradePlan() {
+		isLoading = true;
+		error = null;
+		try {
+			const response = await fetch(`/api/trade-plans/${ROOM_SLUG}`);
+			const data = await response.json();
+			if (data.success) {
+				tradePlanEntries = data.data || [];
+				weekOf = data.week_of || null;
+				dataSource = data._source || 'backend';
+			} else {
+				error = 'Failed to load trade plan';
+			}
+		} catch (err) {
+			console.error('Failed to fetch trade plan:', err);
+			error = 'Failed to load trade plan';
+		} finally {
+			isLoading = false;
+		}
 	}
 
-	const watchlist: WatchlistEntry[] = [
-		{
-			ticker: 'NVDA',
-			company: 'NVIDIA Corporation',
-			bias: 'BULLISH',
-			entry: '$142.50',
-			target1: '$148.00',
-			target2: '$152.00',
-			target3: '$158.00',
-			runner: '$165.00+',
-			stop: '$136.00',
-			optionsStrike: '$145 Call',
-			optionsExp: 'Jan 24, 2026',
-			currentPrice: '$145.20',
-			change: '+1.9%',
-			status: 'active',
-			notes:
-				'Breakout above consolidation. Wait for pullback to entry zone. Strong momentum with volume confirmation.',
-			technicals: 'RSI: 62, MACD: Bullish crossover, Volume: Above average',
-			catalyst: 'AI chip demand, Q4 earnings upcoming'
-		},
-		{
-			ticker: 'TSLA',
-			company: 'Tesla Inc',
-			bias: 'BULLISH',
-			entry: '$248.00',
-			target1: '$255.00',
-			target2: '$265.00',
-			target3: '$275.00',
-			runner: '$290.00+',
-			stop: '$235.00',
-			optionsStrike: '$250 Call',
-			optionsExp: 'Jan 31, 2026',
-			currentPrice: '$251.30',
-			change: '+1.3%',
-			status: 'active',
-			notes: 'Momentum building. Earnings catalyst ahead. Watch for continuation above $250.',
-			technicals: 'RSI: 58, MACD: Positive, Volume: Increasing',
-			catalyst: 'Q4 deliveries beat, FSD updates'
-		},
-		{
-			ticker: 'AMZN',
-			company: 'Amazon.com Inc',
-			bias: 'BULLISH',
-			entry: '$185.00',
-			target1: '$190.00',
-			target2: '$195.00',
-			target3: '$198.00',
-			runner: '$205.00+',
-			stop: '$178.00',
-			optionsStrike: '$185 Call',
-			optionsExp: 'Jan 24, 2026',
-			currentPrice: '$187.50',
-			change: '+1.4%',
-			status: 'active',
-			notes:
-				'Breaking above key resistance. Strong volume confirmation. Cloud growth story intact.',
-			technicals: 'RSI: 65, MACD: Bullish, Volume: High',
-			catalyst: 'AWS growth, holiday sales data'
-		},
-		{
-			ticker: 'GOOGL',
-			company: 'Alphabet Inc',
-			bias: 'NEUTRAL',
-			entry: '$175.50',
-			target1: '$180.00',
-			target2: '$185.00',
-			target3: '$188.00',
-			runner: '$195.00+',
-			stop: '$168.00',
-			optionsStrike: '$177.50 Call',
-			optionsExp: 'Feb 7, 2026',
-			currentPrice: '$174.80',
-			change: '-0.4%',
-			status: 'watching',
-			notes: 'Watching for breakout. Not triggered yet. Need to see price action above $176.',
-			technicals: 'RSI: 52, MACD: Neutral, Volume: Average',
-			catalyst: 'AI integration, search revenue'
-		},
-		{
-			ticker: 'META',
-			company: 'Meta Platforms Inc',
-			bias: 'BULLISH',
-			entry: '$585.00',
-			target1: '$600.00',
-			target2: '$615.00',
-			target3: '$630.00',
-			runner: '$650.00+',
-			stop: '$565.00',
-			optionsStrike: '$590 Call',
-			optionsExp: 'Jan 24, 2026',
-			currentPrice: '$592.40',
-			change: '+1.3%',
-			status: 'active',
-			notes: 'Strong trend. Buy dips to support. AI monetization story gaining traction.',
-			technicals: 'RSI: 68, MACD: Strong bullish, Volume: Above average',
-			catalyst: 'AI revenue growth, metaverse updates'
-		},
-		{
-			ticker: 'AMD',
-			company: 'Advanced Micro Devices',
-			bias: 'BEARISH',
-			entry: '$125.00',
-			target1: '$120.00',
-			target2: '$115.00',
-			target3: '$110.00',
-			runner: '$100.00',
-			stop: '$132.00',
-			optionsStrike: '$122 Put',
-			optionsExp: 'Jan 31, 2026',
-			currentPrice: '$123.50',
-			change: '-1.2%',
-			status: 'active',
-			notes: 'Breakdown in progress. Short on bounces. Losing market share concerns.',
-			technicals: 'RSI: 38, MACD: Bearish, Volume: Increasing on down days',
-			catalyst: 'Competition pressure, margin concerns'
+	onMount(() => {
+		fetchTradePlan();
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// HELPERS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function formatDate(dateStr: string | null | undefined): string {
+		if (!dateStr) return '';
+		try {
+			const date = new Date(dateStr);
+			return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+		} catch {
+			return dateStr;
 		}
-	];
+	}
+
+	function formatWeekOf(dateStr: string | null): string {
+		if (!dateStr) return '';
+		try {
+			const date = new Date(dateStr);
+			return date.toLocaleDateString('en-US', {
+				weekday: 'long',
+				month: 'long',
+				day: 'numeric',
+				year: 'numeric'
+			});
+		} catch {
+			return dateStr;
+		}
+	}
 </script>
 
 <svelte:head>
@@ -159,88 +94,121 @@
 <div class="watchlist-page">
 	<div class="page-header">
 		<h1>This Week's Watchlist</h1>
-		<p>Complete trade plan with entries, targets, stops, and options plays</p>
+		{#if weekOf}
+			<p>Week of {formatWeekOf(weekOf)}</p>
+		{:else}
+			<p>Complete trade plan with entries, targets, stops, and options plays</p>
+		{/if}
+		{#if dataSource === 'mock'}
+			<span class="data-source-badge">Demo Data</span>
+		{/if}
 	</div>
 
-	<div class="watchlist-grid">
-		{#each watchlist as stock}
-			<div class="stock-card">
-				<div class="stock-header">
-					<div class="stock-title">
-						<h2>{stock.ticker}</h2>
-						<span class="company-name">{stock.company}</span>
-					</div>
-					<div class="stock-price">
-						<div class="current-price">{stock.currentPrice}</div>
-						<div
-							class="price-change"
-							class:positive={stock.change.startsWith('+')}
-							class:negative={stock.change.startsWith('-')}
-						>
-							{stock.change}
+	<!-- Loading State -->
+	{#if isLoading}
+		<div class="loading-state">
+			<div class="spinner"></div>
+			<p>Loading watchlist...</p>
+		</div>
+	{:else if error}
+		<!-- Error State -->
+		<div class="error-state">
+			<p>{error}</p>
+			<button onclick={() => fetchTradePlan()}>Retry</button>
+		</div>
+	{:else if tradePlanEntries.length === 0}
+		<!-- Empty State -->
+		<div class="empty-state">
+			<p>No trade plan entries for this week yet.</p>
+			<p class="subtext">Check back soon for new setups.</p>
+		</div>
+	{:else}
+		<!-- Watchlist Grid -->
+		<div class="watchlist-grid">
+			{#each tradePlanEntries as stock (stock.id)}
+				<div class="stock-card">
+					<div class="stock-header">
+						<div class="stock-title">
+							<h2>{stock.ticker}</h2>
 						</div>
 					</div>
-				</div>
 
-				<div class="bias-badge bias--{stock.bias.toLowerCase()}">
-					{stock.bias}
-				</div>
+					<div class="bias-badge bias--{stock.bias.toLowerCase()}">
+						{stock.bias}
+					</div>
 
-				<div class="trade-plan">
-					<div class="plan-row">
-						<span class="label">Entry:</span>
-						<span class="value entry">{stock.entry}</span>
+					<div class="trade-plan">
+						<div class="plan-row">
+							<span class="label">Entry:</span>
+							<span class="value entry">{stock.entry || '-'}</span>
+						</div>
+						<div class="plan-row">
+							<span class="label">Target 1:</span>
+							<span class="value target">{stock.target1 || '-'}</span>
+						</div>
+						<div class="plan-row">
+							<span class="label">Target 2:</span>
+							<span class="value target">{stock.target2 || '-'}</span>
+						</div>
+						<div class="plan-row">
+							<span class="label">Target 3:</span>
+							<span class="value target">{stock.target3 || '-'}</span>
+						</div>
+						{#if stock.runner}
+							<div class="plan-row">
+								<span class="label">Runner:</span>
+								<span class="value runner">{stock.runner}</span>
+							</div>
+						{/if}
+						<div class="plan-row">
+							<span class="label">Stop:</span>
+							<span class="value stop">{stock.stop || '-'}</span>
+						</div>
 					</div>
-					<div class="plan-row">
-						<span class="label">Target 1:</span>
-						<span class="value target">{stock.target1}</span>
-					</div>
-					<div class="plan-row">
-						<span class="label">Target 2:</span>
-						<span class="value target">{stock.target2}</span>
-					</div>
-					<div class="plan-row">
-						<span class="label">Target 3:</span>
-						<span class="value target">{stock.target3}</span>
-					</div>
-					<div class="plan-row">
-						<span class="label">Runner:</span>
-						<span class="value runner">{stock.runner}</span>
-					</div>
-					<div class="plan-row">
-						<span class="label">Stop:</span>
-						<span class="value stop">{stock.stop}</span>
-					</div>
-				</div>
 
-				<div class="options-section">
-					<h4>Options Play</h4>
-					<div class="options-info">
-						<span>{stock.optionsStrike}</span>
-						<span>Exp: {stock.optionsExp}</span>
+					{#if stock.options_strike || stock.options_exp}
+						<div class="options-section">
+							<h4>Options Play</h4>
+							<div class="options-info">
+								<span>{stock.options_strike || '-'}</span>
+								<span>Exp: {formatDate(stock.options_exp)}</span>
+							</div>
+						</div>
+					{/if}
+
+					<div class="status-badge status--{stock.is_active ? 'active' : 'inactive'}">
+						{stock.is_active ? 'ACTIVE' : 'INACTIVE'}
 					</div>
-				</div>
 
-				<div class="status-badge status--{stock.status}">
-					{stock.status.toUpperCase()}
+					{#if stock.notes}
+						<div class="notes-section">
+							<h4>Trade Notes</h4>
+							<p>{stock.notes}</p>
+						</div>
+					{/if}
 				</div>
+			{/each}
+		</div>
+	{/if}
 
-				<div class="notes-section">
-					<h4>Trade Notes</h4>
-					<p>{stock.notes}</p>
-				</div>
-
-				<div class="technicals-section">
-					<h4>Technicals</h4>
-					<p>{stock.technicals}</p>
-				</div>
-
-				<div class="catalyst-section">
-					<h4>Catalyst</h4>
-					<p>{stock.catalyst}</p>
-				</div>
-			</div>
-		{/each}
+	<!-- Back Link -->
+	<div class="back-link">
+		<a href="/dashboard/explosive-swings">
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="16"
+				height="16"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				stroke-linecap="round"
+				stroke-linejoin="round"
+			>
+				<path d="m15 18-6-6 6-6" />
+			</svg>
+			Back to Dashboard
+		</a>
 	</div>
 </div>
 
@@ -269,6 +237,97 @@
 		font-size: 16px;
 		color: #666;
 		margin: 0;
+	}
+
+	.data-source-badge {
+		display: inline-block;
+		margin-top: 12px;
+		padding: 4px 12px;
+		background: #fef3c7;
+		color: #92400e;
+		border-radius: 9999px;
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	/* Loading State */
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 80px 20px;
+	}
+
+	.spinner {
+		width: 40px;
+		height: 40px;
+		border: 4px solid #e5e7eb;
+		border-top-color: #f69532;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.loading-state p {
+		margin-top: 16px;
+		color: #666;
+	}
+
+	/* Error State */
+	.error-state {
+		text-align: center;
+		padding: 60px 20px;
+		background: #fef2f2;
+		border-radius: 12px;
+		max-width: 500px;
+		margin: 0 auto;
+	}
+
+	.error-state p {
+		color: #991b1b;
+		margin: 0 0 16px 0;
+	}
+
+	.error-state button {
+		padding: 10px 24px;
+		background: #ef4444;
+		color: white;
+		border: none;
+		border-radius: 8px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background 0.2s;
+	}
+
+	.error-state button:hover {
+		background: #dc2626;
+	}
+
+	/* Empty State */
+	.empty-state {
+		text-align: center;
+		padding: 80px 20px;
+		background: #f8fafc;
+		border-radius: 12px;
+		max-width: 500px;
+		margin: 0 auto;
+	}
+
+	.empty-state p {
+		color: #666;
+		margin: 0;
+	}
+
+	.empty-state .subtext {
+		color: #999;
+		font-size: 14px;
+		margin-top: 8px;
 	}
 
 	.watchlist-grid {
@@ -318,36 +377,6 @@
 		margin: 0 0 5px 0;
 		color: #143e59;
 		font-family: 'Montserrat', sans-serif;
-	}
-
-	.company-name {
-		font-size: 13px;
-		color: #666;
-	}
-
-	.stock-price {
-		text-align: right;
-	}
-
-	.current-price {
-		font-size: 24px;
-		font-weight: 700;
-		color: #333;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.price-change {
-		font-size: 14px;
-		font-weight: 600;
-		margin-top: 4px;
-	}
-
-	.price-change.positive {
-		color: #22c55e;
-	}
-
-	.price-change.negative {
-		color: #ef4444;
 	}
 
 	.bias-badge {
@@ -457,25 +486,16 @@
 		color: #166534;
 	}
 
-	.status--watching {
-		background: #fef3c7;
-		color: #92400e;
-	}
-
-	.status--closed {
+	.status--inactive {
 		background: #f3f4f6;
 		color: #6b7280;
 	}
 
-	.notes-section,
-	.technicals-section,
-	.catalyst-section {
+	.notes-section {
 		margin-bottom: 15px;
 	}
 
-	.notes-section h4,
-	.technicals-section h4,
-	.catalyst-section h4 {
+	.notes-section h4 {
 		font-size: 12px;
 		font-weight: 700;
 		text-transform: uppercase;
@@ -483,12 +503,29 @@
 		margin: 0 0 8px 0;
 	}
 
-	.notes-section p,
-	.technicals-section p,
-	.catalyst-section p {
+	.notes-section p {
 		font-size: 13px;
 		color: #555;
 		line-height: 1.6;
 		margin: 0;
+	}
+
+	.back-link {
+		max-width: 1400px;
+		margin: 40px auto 0;
+	}
+
+	.back-link a {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: #666;
+		text-decoration: none;
+		font-size: 14px;
+		transition: color 0.2s;
+	}
+
+	.back-link a:hover {
+		color: #143e59;
 	}
 </style>

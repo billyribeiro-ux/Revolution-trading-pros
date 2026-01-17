@@ -1,9 +1,13 @@
 <script lang="ts">
 	/**
 	 * Video Library - Explosive Swings
-	 * @version 1.0.0
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Displays all videos for the room - fetched from API with fallback to mock
+	 *
+	 * @version 2.0.0 - ICT 11 Principal Engineer Grade
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
+	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
 	// TYPE DEFINITIONS
@@ -20,10 +24,94 @@
 
 	type VideoCategory = 'all' | 'weekly' | 'entry' | 'exit' | 'analysis' | 'education';
 
+	const ROOM_SLUG = 'explosive-swings';
+
 	// REACTIVE STATE
 	let selectedCategory = $state<VideoCategory>('all');
+	let apiVideos = $state<Video[]>([]);
+	let isLoading = $state(true);
+	let dataSource = $state<'backend' | 'mock' | null>(null);
 
-	const videos: Video[] = [
+	// Fetch videos from API
+	async function fetchVideos() {
+		isLoading = true;
+		try {
+			// Try to fetch weekly video and alerts to build video list
+			const [weeklyRes, alertsRes] = await Promise.all([
+				fetch(`/api/weekly-video/${ROOM_SLUG}`),
+				fetch(`/api/alerts/${ROOM_SLUG}?limit=50`)
+			]);
+
+			const weeklyData = await weeklyRes.json();
+			const alertsData = await alertsRes.json();
+
+			const fetchedVideos: Video[] = [];
+
+			// Add weekly video if exists
+			if (weeklyData.success && weeklyData.data) {
+				const wv = weeklyData.data;
+				fetchedVideos.push({
+					id: wv.id,
+					title: wv.video_title || wv.week_title,
+					date: formatDate(wv.published_at || wv.week_of),
+					duration: wv.duration || '',
+					category: 'weekly',
+					thumbnail: wv.thumbnail_url || 'https://placehold.co/640x360/143E59/FFFFFF/png?text=Weekly+Breakdown',
+					excerpt: wv.description || "Complete breakdown of this week's top swing trade opportunities.",
+					href: `/dashboard/explosive-swings/video/weekly`
+				});
+			}
+
+			// Add entry/exit alerts as videos
+			if (alertsData.success && alertsData.data) {
+				for (const alert of alertsData.data) {
+					if (alert.alert_type === 'ENTRY' || alert.alert_type === 'EXIT') {
+						fetchedVideos.push({
+							id: alert.id + 1000,
+							title: alert.title,
+							date: formatDate(alert.published_at),
+							duration: '5:00',
+							category: alert.alert_type.toLowerCase() as 'entry' | 'exit',
+							thumbnail: alert.alert_type === 'ENTRY'
+								? `https://placehold.co/640x360/22c55e/FFFFFF/png?text=${alert.ticker}+ENTRY`
+								: `https://placehold.co/640x360/3b82f6/FFFFFF/png?text=${alert.ticker}+EXIT`,
+							excerpt: alert.message,
+							href: `/dashboard/explosive-swings/updates/${alert.ticker.toLowerCase()}-${alert.alert_type.toLowerCase()}`
+						});
+					}
+				}
+			}
+
+			if (fetchedVideos.length > 0) {
+				apiVideos = fetchedVideos;
+				dataSource = weeklyData._source || 'backend';
+			} else {
+				dataSource = 'mock';
+			}
+		} catch (err) {
+			console.error('Failed to fetch videos:', err);
+			dataSource = 'mock';
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	function formatDate(dateStr: string): string {
+		if (!dateStr) return '';
+		try {
+			const date = new Date(dateStr);
+			return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+		} catch {
+			return dateStr;
+		}
+	}
+
+	onMount(() => {
+		fetchVideos();
+	});
+
+	// Fallback videos (used when API returns no data)
+	const fallbackVideos: Video[] = [
 		{
 			id: 1,
 			title: 'Weekly Breakdown: Top Swing Setups',
@@ -147,6 +235,9 @@
 		}
 	];
 
+	// Use API videos if available, otherwise fallback
+	const videos = $derived<Video[]>(apiVideos.length > 0 ? apiVideos : fallbackVideos);
+
 	const filteredVideos = $derived(
 		selectedCategory === 'all' ? videos : videos.filter((v) => v.category === selectedCategory)
 	);
@@ -165,6 +256,9 @@
 	<div class="page-header">
 		<h1>Video Library</h1>
 		<p>All trade breakdowns, market analysis, and educational content</p>
+		{#if dataSource === 'mock'}
+			<span class="data-source-badge">Demo Data</span>
+		{/if}
 	</div>
 
 	<div class="filter-section">
@@ -212,8 +306,18 @@
 		</button>
 	</div>
 
-	<div class="videos-grid">
-		{#each filteredVideos as video}
+	{#if isLoading}
+		<div class="loading-state">
+			<div class="spinner"></div>
+			<p>Loading videos...</p>
+		</div>
+	{:else if filteredVideos.length === 0}
+		<div class="empty-state">
+			<p>No videos found in this category.</p>
+		</div>
+	{:else}
+		<div class="videos-grid">
+			{#each filteredVideos as video}
 			<a href={video.href} class="video-card">
 				<div class="video-thumbnail" style="background-image: url('{video.thumbnail}')">
 					<div class="play-overlay">
@@ -231,7 +335,8 @@
 				</div>
 			</a>
 		{/each}
-	</div>
+		</div>
+	{/if}
 </div>
 
 <style>
@@ -407,6 +512,59 @@
 		font-size: 14px;
 		color: #666;
 		line-height: 1.6;
+		margin: 0;
+	}
+
+	.data-source-badge {
+		display: inline-block;
+		margin-top: 12px;
+		padding: 4px 12px;
+		background: #fef3c7;
+		color: #92400e;
+		border-radius: 9999px;
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	.loading-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 80px 20px;
+	}
+
+	.spinner {
+		width: 40px;
+		height: 40px;
+		border: 4px solid #e5e7eb;
+		border-top-color: #f69532;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.loading-state p {
+		margin-top: 16px;
+		color: #666;
+	}
+
+	.empty-state {
+		text-align: center;
+		padding: 80px 20px;
+		background: #f8fafc;
+		border-radius: 12px;
+		max-width: 500px;
+		margin: 0 auto;
+	}
+
+	.empty-state p {
+		color: #666;
 		margin: 0;
 	}
 </style>

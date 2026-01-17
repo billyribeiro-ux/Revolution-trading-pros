@@ -1,7 +1,10 @@
 <script lang="ts">
 	/**
 	 * Trade Tracker - Explosive Swings
-	 * @version 1.1.0
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Complete trade history with admin controls for closing trades
+	 *
+	 * @version 2.0.0 - ICT 11 Principal Engineer Grade
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
 	import { onMount } from 'svelte';
@@ -53,7 +56,33 @@
 	} | null>(null);
 	let isLoading = $state(false);
 
+	// Admin state
+	let isAdmin = $state(false);
+	let showCloseTradeModal = $state(false);
+	let closingTrade = $state<Trade | null>(null);
+	let isClosingTrade = $state(false);
+	let closeTradeForm = $state({
+		exit_price: '',
+		exit_date: new Date().toISOString().split('T')[0],
+		notes: ''
+	});
+	let successMessage = $state('');
+	let errorMessage = $state('');
+
 	const ROOM_SLUG = 'explosive-swings';
+
+	// Check admin status
+	async function checkAdminStatus() {
+		try {
+			const response = await fetch('/api/auth/me');
+			if (response.ok) {
+				const data = await response.json();
+				isAdmin = data.user?.role === 'admin' || data.user?.is_admin === true;
+			}
+		} catch {
+			isAdmin = false;
+		}
+	}
 
 	// Fetch trades from API
 	async function fetchTrades() {
@@ -72,8 +101,69 @@
 		}
 	}
 
+	// Open close trade modal
+	function openCloseTrade(trade: Trade) {
+		closingTrade = trade;
+		closeTradeForm = {
+			exit_price: '',
+			exit_date: new Date().toISOString().split('T')[0],
+			notes: trade.notes || ''
+		};
+		showCloseTradeModal = true;
+	}
+
+	// Close trade handler
+	async function closeTrade() {
+		if (!closingTrade || !closeTradeForm.exit_price) {
+			errorMessage = 'Exit price is required';
+			return;
+		}
+
+		isClosingTrade = true;
+		errorMessage = '';
+
+		try {
+			// Use PUT to the trade endpoint with exit_price to close it
+			const response = await fetch(`/api/trades/${ROOM_SLUG}/${closingTrade.id}`, {
+				method: 'PUT',
+				headers: { 'Content-Type': 'application/json' },
+				body: JSON.stringify({
+					exit_price: parseFloat(closeTradeForm.exit_price),
+					exit_date: closeTradeForm.exit_date,
+					notes: closeTradeForm.notes,
+					status: 'closed'
+				})
+			});
+
+			const data = await response.json();
+
+			if (data.success) {
+				successMessage = `Trade closed: ${closingTrade.ticker} at $${closeTradeForm.exit_price}`;
+				showCloseTradeModal = false;
+				closingTrade = null;
+				await fetchTrades();
+			} else {
+				errorMessage = data.error || 'Failed to close trade';
+			}
+		} catch (err) {
+			errorMessage = 'Failed to close trade';
+			console.error(err);
+		} finally {
+			isClosingTrade = false;
+		}
+	}
+
 	onMount(() => {
+		checkAdminStatus();
 		fetchTrades();
+	});
+
+	// Clear messages after delay
+	$effect(() => {
+		if (successMessage) {
+			const timeout = setTimeout(() => (successMessage = ''), 3000);
+			return () => clearTimeout(timeout);
+		}
 	});
 
 	// Format date for display
@@ -364,10 +454,18 @@
 		</button>
 	</div>
 
+	<!-- Success/Error Messages -->
+	{#if successMessage}
+		<div class="message success-message">{successMessage}</div>
+	{/if}
+	{#if errorMessage}
+		<div class="message error-message">{errorMessage}</div>
+	{/if}
+
 	<!-- Trades Table -->
 	<div class="trades-container">
 		<div class="trades-table">
-			<div class="table-header">
+			<div class="table-header" class:has-actions={isAdmin}>
 				<div>Ticker</div>
 				<div>Entry</div>
 				<div>Exit</div>
@@ -378,9 +476,10 @@
 				<div>Days</div>
 				<div>Setup</div>
 				<div>Result</div>
+				{#if isAdmin}<div>Actions</div>{/if}
 			</div>
 			{#each filteredTrades as trade}
-				<div class="table-row" class:active={trade.result === 'ACTIVE'}>
+				<div class="table-row" class:active={trade.result === 'ACTIVE'} class:has-actions={isAdmin}>
 					<div class="ticker-cell">{trade.ticker}</div>
 					<div>{trade.entryDate}</div>
 					<div>{trade.exitDate || 'Active'}</div>
@@ -399,6 +498,17 @@
 					<div>
 						<span class="result-badge result--{trade.result.toLowerCase()}">{trade.result}</span>
 					</div>
+					{#if isAdmin}
+						<div class="actions-cell">
+							{#if trade.result === 'ACTIVE'}
+								<button class="close-trade-btn" onclick={() => openCloseTrade(trade)}>
+									Close Trade
+								</button>
+							{:else}
+								<span class="closed-indicator">Closed</span>
+							{/if}
+						</div>
+					{/if}
 				</div>
 				<div class="notes-row">
 					<div class="notes-content">
@@ -409,7 +519,99 @@
 			{/each}
 		</div>
 	</div>
+
+	<!-- Admin Link -->
+	{#if isAdmin}
+		<div class="admin-link">
+			<a href="/admin/trading-rooms/explosive-swings">
+				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+					<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
+					<circle cx="12" cy="12" r="3"/>
+				</svg>
+				Manage All Content in Admin
+			</a>
+		</div>
+	{/if}
 </div>
+
+<!-- Close Trade Modal -->
+{#if showCloseTradeModal && closingTrade}
+	<div class="modal-overlay" onclick={() => (showCloseTradeModal = false)}>
+		<div class="modal" onclick={(e) => e.stopPropagation()}>
+			<div class="modal-header">
+				<h2>Close Trade: {closingTrade.ticker}</h2>
+				<button class="modal-close" onclick={() => (showCloseTradeModal = false)}>&times;</button>
+			</div>
+
+			<div class="modal-body">
+				<div class="trade-summary">
+					<div class="summary-row">
+						<span>Entry Price:</span>
+						<strong>${closingTrade.entryPrice.toFixed(2)}</strong>
+					</div>
+					<div class="summary-row">
+						<span>Entry Date:</span>
+						<strong>{closingTrade.entryDate}</strong>
+					</div>
+					<div class="summary-row">
+						<span>Shares:</span>
+						<strong>{closingTrade.shares}</strong>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="exit_price">Exit Price *</label>
+					<input
+						type="number"
+						id="exit_price"
+						step="0.01"
+						placeholder="e.g., 155.00"
+						bind:value={closeTradeForm.exit_price}
+						required
+					/>
+				</div>
+
+				<div class="form-group">
+					<label for="exit_date">Exit Date</label>
+					<input
+						type="date"
+						id="exit_date"
+						bind:value={closeTradeForm.exit_date}
+					/>
+				</div>
+
+				<div class="form-group">
+					<label for="notes">Notes</label>
+					<textarea
+						id="notes"
+						rows="3"
+						placeholder="Exit notes..."
+						bind:value={closeTradeForm.notes}
+					></textarea>
+				</div>
+
+				{#if closeTradeForm.exit_price}
+					{@const exitPrice = parseFloat(closeTradeForm.exit_price)}
+					{@const pnl = (exitPrice - closingTrade.entryPrice) * closingTrade.shares}
+					{@const pnlPercent = ((exitPrice - closingTrade.entryPrice) / closingTrade.entryPrice) * 100}
+					<div class="pnl-preview" class:profit={pnl > 0} class:loss={pnl < 0}>
+						<span>Estimated P&L:</span>
+						<strong>{pnl > 0 ? '+' : ''}${pnl.toFixed(2)} ({pnlPercent > 0 ? '+' : ''}{pnlPercent.toFixed(2)}%)</strong>
+					</div>
+				{/if}
+			</div>
+
+			<div class="modal-footer">
+				<button class="btn-cancel" onclick={() => (showCloseTradeModal = false)}>
+					Cancel
+				</button>
+				<button class="btn-close-trade" onclick={closeTrade} disabled={isClosingTrade || !closeTradeForm.exit_price}>
+					{isClosingTrade ? 'Closing...' : 'Close Trade'}
+				</button>
+			</div>
+		</div>
+	</div>
+{/if}
 
 <style>
 	.trade-tracker {
@@ -603,6 +805,237 @@
 	.result--loss {
 		background: #fee2e2;
 		color: #991b1b;
+	}
+
+	/* Messages */
+	.message {
+		max-width: 1400px;
+		margin: 0 auto 20px;
+		padding: 12px 20px;
+		border-radius: 8px;
+		font-weight: 500;
+	}
+
+	.success-message {
+		background: #dcfce7;
+		color: #166534;
+	}
+
+	.error-message {
+		background: #fee2e2;
+		color: #991b1b;
+	}
+
+	/* Table with actions */
+	.table-header.has-actions,
+	.table-row.has-actions {
+		grid-template-columns: 80px 100px 100px 90px 90px 100px 80px 60px 100px 90px 100px;
+	}
+
+	.actions-cell {
+		display: flex;
+		align-items: center;
+	}
+
+	.close-trade-btn {
+		background: #f69532;
+		color: white;
+		border: none;
+		padding: 6px 12px;
+		border-radius: 6px;
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.close-trade-btn:hover {
+		background: #e8852d;
+	}
+
+	.closed-indicator {
+		color: #999;
+		font-size: 12px;
+	}
+
+	/* Admin Link */
+	.admin-link {
+		max-width: 1400px;
+		margin: 30px auto 0;
+		text-align: center;
+	}
+
+	.admin-link a {
+		display: inline-flex;
+		align-items: center;
+		gap: 8px;
+		color: #666;
+		text-decoration: none;
+		padding: 12px 24px;
+		background: #f8fafc;
+		border-radius: 8px;
+		font-weight: 500;
+		transition: all 0.2s;
+	}
+
+	.admin-link a:hover {
+		background: #e5e7eb;
+		color: #143e59;
+	}
+
+	/* Modal */
+	.modal-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.6);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		z-index: 1000;
+		padding: 20px;
+	}
+
+	.modal {
+		background: white;
+		border-radius: 16px;
+		width: 100%;
+		max-width: 500px;
+		max-height: 90vh;
+		overflow-y: auto;
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+	}
+
+	.modal-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px 24px;
+		border-bottom: 1px solid #e5e7eb;
+	}
+
+	.modal-header h2 {
+		margin: 0;
+		font-size: 20px;
+		color: #143e59;
+	}
+
+	.modal-close {
+		background: none;
+		border: none;
+		font-size: 28px;
+		color: #999;
+		cursor: pointer;
+		line-height: 1;
+	}
+
+	.modal-close:hover {
+		color: #333;
+	}
+
+	.modal-body {
+		padding: 24px;
+	}
+
+	.trade-summary {
+		background: #f8fafc;
+		border-radius: 8px;
+		padding: 16px;
+		margin-bottom: 20px;
+	}
+
+	.summary-row {
+		display: flex;
+		justify-content: space-between;
+		padding: 6px 0;
+	}
+
+	.summary-row span {
+		color: #666;
+	}
+
+	.form-group {
+		margin-bottom: 16px;
+	}
+
+	.form-group label {
+		display: block;
+		font-size: 13px;
+		font-weight: 600;
+		color: #666;
+		margin-bottom: 6px;
+	}
+
+	.form-group input,
+	.form-group textarea {
+		width: 100%;
+		padding: 12px;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
+		font-size: 14px;
+	}
+
+	.form-group input:focus,
+	.form-group textarea:focus {
+		outline: none;
+		border-color: #f69532;
+	}
+
+	.pnl-preview {
+		display: flex;
+		justify-content: space-between;
+		padding: 16px;
+		border-radius: 8px;
+		margin-top: 16px;
+	}
+
+	.pnl-preview.profit {
+		background: #dcfce7;
+		color: #166534;
+	}
+
+	.pnl-preview.loss {
+		background: #fee2e2;
+		color: #991b1b;
+	}
+
+	.modal-footer {
+		display: flex;
+		gap: 12px;
+		justify-content: flex-end;
+		padding: 20px 24px;
+		border-top: 1px solid #e5e7eb;
+	}
+
+	.btn-cancel {
+		padding: 12px 24px;
+		background: #e5e7eb;
+		border: none;
+		border-radius: 8px;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.btn-cancel:hover {
+		background: #d1d5db;
+	}
+
+	.btn-close-trade {
+		padding: 12px 24px;
+		background: #f69532;
+		color: white;
+		border: none;
+		border-radius: 8px;
+		font-weight: 600;
+		cursor: pointer;
+	}
+
+	.btn-close-trade:hover:not(:disabled) {
+		background: #e8852d;
+	}
+
+	.btn-close-trade:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
 	}
 
 	.result--active {
