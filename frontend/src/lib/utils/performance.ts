@@ -14,7 +14,7 @@
 /// <reference lib="dom.iterable" />
 
 // ICT 11+ Principal Engineer: Import from centralized config - single source of truth
-import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
+import { API_ENDPOINTS } from '$lib/api/config';
 
 export interface PerformanceMetric {
 	name: string;
@@ -48,12 +48,11 @@ function reportMetric(metric: PerformanceMetric): void {
 			});
 		}
 
-		// Send to custom analytics endpoint on Fly.io backend
-		// ICT 11+: Use text/plain to avoid CORS preflight (sendBeacon can't handle preflight)
-		// Backend parses JSON from raw bytes regardless of Content-Type
+		// Send to same-origin proxy to avoid CORB/CORS issues
+		// ICT 11+: Use text/plain to avoid preflight (sendBeacon can't handle preflight)
 		if ('sendBeacon' in navigator && typeof navigator.sendBeacon === 'function') {
 			const blob = new Blob([JSON.stringify(metric)], { type: 'text/plain' });
-			navigator.sendBeacon(`${API_BASE_URL}${API_ENDPOINTS.analytics.performance}`, blob);
+			navigator.sendBeacon(API_ENDPOINTS.analytics.performance, blob);
 		}
 	}
 }

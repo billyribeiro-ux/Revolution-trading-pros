@@ -5,10 +5,7 @@
 	 *
 	 * Enterprise-grade modal for subscription CRUD operations with plan management.
 	 */
-	import type {
-		Subscription,
-		SubscriptionInterval
-	} from '$lib/stores/subscriptions.svelte';
+	import type { Subscription, SubscriptionInterval } from '$lib/stores/subscriptions.svelte';
 	import { createSubscription, updateSubscription } from '$lib/api/subscriptions';
 	import {
 		IconX,
@@ -28,14 +25,7 @@
 		onClose: () => void;
 	}
 
-	let {
-		isOpen,
-		mode: modeProp,
-		subscription = null,
-		onSave,
-		onSaved,
-		onClose
-	}: Props = $props();
+	let { isOpen, mode: modeProp, subscription = null, onSave, onSaved, onClose }: Props = $props();
 
 	// Derive mode from props
 	let mode = $derived(modeProp ?? (subscription ? 'edit' : 'create'));
@@ -161,7 +151,7 @@
 				onClose();
 			} else if (mode === 'edit' && subscription) {
 				const data: Partial<Subscription> = {};
-				
+
 				if (productName.trim() !== subscription.productName) {
 					data.productName = productName.trim();
 				}
@@ -210,9 +200,12 @@
 
 	function calculateAnnualCost(): number {
 		switch (interval) {
-			case 'monthly': return price * 12;
-			case 'quarterly': return price * 4;
-			case 'yearly': return price;
+			case 'monthly':
+				return price * 12;
+			case 'quarterly':
+				return price * 4;
+			case 'yearly':
+				return price;
 		}
 	}
 </script>
@@ -240,7 +233,13 @@
 				<h2 id="modal-title" class="modal-title">
 					{mode === 'create' ? 'Create Subscription' : 'Edit Subscription'}
 				</h2>
-				<button type="button" class="btn-close" onclick={onClose} disabled={isLoading} aria-label="Close">
+				<button
+					type="button"
+					class="btn-close"
+					onclick={onClose}
+					disabled={isLoading}
+					aria-label="Close"
+				>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -251,7 +250,7 @@
 					type="button"
 					class="section-tab"
 					class:active={activeSection === 'details'}
-					onclick={() => activeSection = 'details'}
+					onclick={() => (activeSection = 'details')}
 				>
 					<IconCreditCard size={16} />
 					Details
@@ -260,7 +259,7 @@
 					type="button"
 					class="section-tab"
 					class:active={activeSection === 'billing'}
-					onclick={() => activeSection = 'billing'}
+					onclick={() => (activeSection = 'billing')}
 				>
 					<IconCurrencyDollar size={16} />
 					Billing
@@ -269,7 +268,7 @@
 					type="button"
 					class="section-tab"
 					class:active={activeSection === 'options'}
-					onclick={() => activeSection = 'options'}
+					onclick={() => (activeSection = 'options')}
 				>
 					<IconCalendar size={16} />
 					Options
@@ -277,7 +276,13 @@
 			</nav>
 
 			<!-- Form -->
-			<form class="modal-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+			<form
+				class="modal-form"
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSubmit();
+				}}
+			>
 				{#if error}
 					<div class="error-banner">{error}</div>
 				{/if}
@@ -286,7 +291,9 @@
 					<div class="form-section">
 						{#if mode === 'create'}
 							<div class="form-group">
-								<label for="userId" class="form-label">User ID <span class="required">*</span></label>
+								<label for="userId" class="form-label"
+									>User ID <span class="required">*</span></label
+								>
 								<input
 									id="userId"
 									type="text"
@@ -338,7 +345,6 @@
 							></textarea>
 						</div>
 					</div>
-
 				{:else if activeSection === 'billing'}
 					<div class="form-section">
 						<div class="form-group">
@@ -407,7 +413,10 @@
 										<IconCreditCard size={20} />
 										<span>Card</span>
 									</label>
-									<label class="payment-type-option" class:selected={paymentMethodType === 'paypal'}>
+									<label
+										class="payment-type-option"
+										class:selected={paymentMethodType === 'paypal'}
+									>
 										<input
 											type="radio"
 											name="paymentType"
@@ -431,16 +440,11 @@
 							</div>
 						{/if}
 					</div>
-
 				{:else if activeSection === 'options'}
 					<div class="form-section">
 						<div class="form-group">
 							<label class="toggle-label">
-								<input
-									type="checkbox"
-									bind:checked={autoRenew}
-									disabled={isLoading}
-								/>
+								<input type="checkbox" bind:checked={autoRenew} disabled={isLoading} />
 								<span class="toggle-text">
 									<strong>Auto-Renew</strong>
 									<span>Automatically renew subscription at the end of each billing period</span>
@@ -471,7 +475,9 @@
 								<div class="trial-info">
 									<IconCalendar size={16} />
 									<span>
-										Trial will end on <strong>{new Date(Date.now() + trialDays * 86400000).toLocaleDateString()}</strong>
+										Trial will end on <strong
+											>{new Date(Date.now() + trialDays * 86400000).toLocaleDateString()}</strong
+										>
 									</span>
 								</div>
 							{/if}
@@ -483,7 +489,9 @@
 								<div class="meta-grid">
 									<div class="meta-item">
 										<span class="meta-label">Created</span>
-										<span class="meta-value">{new Date(subscription.createdAt).toLocaleDateString()}</span>
+										<span class="meta-value"
+											>{new Date(subscription.createdAt).toLocaleDateString()}</span
+										>
 									</div>
 									<div class="meta-item">
 										<span class="meta-label">Status</span>
@@ -537,8 +545,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.modal-container {
@@ -691,7 +703,9 @@
 		color: var(--admin-text-primary);
 		font-family: var(--font-body), 'Roboto', sans-serif;
 		font-size: 0.9375rem;
-		transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	.form-textarea {
@@ -995,7 +1009,7 @@
 	.btn-submit {
 		background: var(--admin-accent-primary);
 		border: none;
-		color: #0D1117;
+		color: #0d1117;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1023,6 +1037,8 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

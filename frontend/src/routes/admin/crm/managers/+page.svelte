@@ -60,7 +60,10 @@
 	}
 
 	async function deleteRole(id: string) {
-		if (!confirm('Are you sure you want to delete this role? Users with this role will lose access.')) return;
+		if (
+			!confirm('Are you sure you want to delete this role? Users with this role will lose access.')
+		)
+			return;
 
 		try {
 			await crmAPI.deleteManagerRole(id);
@@ -143,7 +146,11 @@
 
 	<!-- Tabs -->
 	<div class="tabs">
-		<button class="tab" class:active={activeTab === 'managers'} onclick={() => (activeTab = 'managers')}>
+		<button
+			class="tab"
+			class:active={activeTab === 'managers'}
+			onclick={() => (activeTab = 'managers')}
+		>
 			<IconUsers size={18} />
 			Managers
 		</button>
@@ -204,7 +211,11 @@
 							<a href="/admin/crm/managers/{manager.id}/edit" class="btn-icon" title="Edit">
 								<IconEdit size={16} />
 							</a>
-							<button class="btn-icon danger" title="Remove" onclick={() => removeManager(manager.id)}>
+							<button
+								class="btn-icon danger"
+								title="Remove"
+								onclick={() => removeManager(manager.id)}
+							>
 								<IconTrash size={16} />
 							</button>
 						</div>
@@ -249,17 +260,19 @@
 							</div>
 							<div class="stat">
 								<IconSettings size={16} />
-								<span>{role.permissions.filter(p => p.allowed).length} permissions</span>
+								<span>{role.permissions.filter((p) => p.allowed).length} permissions</span>
 							</div>
 						</div>
 						<div class="role-permissions">
 							<span class="permissions-label">Permissions:</span>
 							<div class="permissions-tags">
-								{#each role.permissions.filter(p => p.allowed).slice(0, 4) as perm}
+								{#each role.permissions.filter((p) => p.allowed).slice(0, 4) as perm}
 									<span class="permission-tag">{perm.module} ({perm.action})</span>
 								{/each}
-								{#if role.permissions.filter(p => p.allowed).length > 4}
-									<span class="permission-more">+{role.permissions.filter(p => p.allowed).length - 4} more</span>
+								{#if role.permissions.filter((p) => p.allowed).length > 4}
+									<span class="permission-more"
+										>+{role.permissions.filter((p) => p.allowed).length - 4} more</span
+									>
 								{/if}
 							</div>
 						</div>
@@ -328,7 +341,7 @@
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -336,8 +349,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -345,7 +362,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -367,7 +384,7 @@
 		padding: 0.5rem 1rem;
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		color: #e6b800;
 		border-radius: 8px;
 		font-weight: 600;
 		cursor: pointer;
@@ -407,8 +424,14 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.purple {
+		background: rgba(230, 184, 0, 0.15);
+		color: #e6b800;
+	}
 
 	.stat-content {
 		display: flex;
@@ -450,13 +473,13 @@
 	}
 
 	.tab:hover {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.tab.active {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.managers-list {
@@ -483,7 +506,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #E6B800;
+		color: #e6b800;
 		overflow: hidden;
 	}
 
@@ -519,7 +542,7 @@
 		border-radius: 9999px;
 		font-size: 0.8rem;
 		font-weight: 600;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.manager-meta {
@@ -549,7 +572,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-icon.danger:hover {
@@ -588,7 +611,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #E6B800;
+		color: #e6b800;
 		flex-shrink: 0;
 	}
 
@@ -656,7 +679,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border-radius: 4px;
 		font-size: 0.7rem;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.permission-more {
@@ -670,7 +693,9 @@
 		margin-top: auto;
 	}
 
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -698,7 +723,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

@@ -43,7 +43,7 @@
 
 	// Extract indicator ID from URL pathname
 	let indicatorId = $state('');
-	
+
 	onMount(() => {
 		const pathParts = window.location.pathname.split('/');
 		indicatorId = pathParts[pathParts.length - 1];
@@ -84,7 +84,7 @@
 			if (data.success) {
 				indicator = data.data;
 				success = 'Indicator saved successfully';
-				setTimeout(() => success = '', 3000);
+				setTimeout(() => (success = ''), 3000);
 			} else {
 				error = data.error || 'Failed to save';
 			}
@@ -99,11 +99,13 @@
 	const toggleIndicator = async () => {
 		if (!indicator) return;
 		try {
-			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/toggle`, { method: 'POST' });
+			const data = await adminFetch(`/api/admin/indicators/${indicatorId}/toggle`, {
+				method: 'POST'
+			});
 			if (data.success) {
 				indicator = data.data;
 				success = indicator?.is_active ? 'Indicator activated!' : 'Indicator deactivated!';
-				setTimeout(() => success = '', 3000);
+				setTimeout(() => (success = ''), 3000);
 			}
 		} catch (e) {
 			error = 'Failed to toggle status';
@@ -111,8 +113,12 @@
 	};
 
 	// Placeholder data for files and videos (backend endpoints to be implemented)
-	let files = $state<Array<{id: number; platform: string; filename: string; version: string; is_active: boolean}>>([]);
-	let videos = $state<Array<{id: number; title: string; thumbnail?: string; duration?: string; platform: string}>>([]);
+	let files = $state<
+		Array<{ id: number; platform: string; filename: string; version: string; is_active: boolean }>
+	>([]);
+	let videos = $state<
+		Array<{ id: number; title: string; thumbnail?: string; duration?: string; platform: string }>
+	>([]);
 </script>
 
 <svelte:head>
@@ -135,8 +141,12 @@
 			<div class="header-left">
 				<a href="/admin/indicators" class="back-link">← Back</a>
 				<h1>{indicator.name}</h1>
-					<!-- ICT 7 FIX: Use is_active instead of status -->
-				<span class="status" class:status--published={indicator.is_active} class:status--draft={!indicator.is_active}>
+				<!-- ICT 7 FIX: Use is_active instead of status -->
+				<span
+					class="status"
+					class:status--published={indicator.is_active}
+					class:status--draft={!indicator.is_active}
+				>
 					{indicator.is_active ? 'Active' : 'Inactive'}
 				</span>
 			</div>
@@ -160,10 +170,16 @@
 		{/if}
 
 		<nav class="tabs">
-			<button class:active={activeTab === 'details'} onclick={() => activeTab = 'details'}>Details</button>
-			<button class:active={activeTab === 'files'} onclick={() => activeTab = 'files'}>Files <span class="badge">{files.length}</span></button>
-			<button class:active={activeTab === 'videos'} onclick={() => activeTab = 'videos'}>Videos <span class="badge">{videos.length}</span></button>
-			<button class:active={activeTab === 'seo'} onclick={() => activeTab = 'seo'}>SEO</button>
+			<button class:active={activeTab === 'details'} onclick={() => (activeTab = 'details')}
+				>Details</button
+			>
+			<button class:active={activeTab === 'files'} onclick={() => (activeTab = 'files')}
+				>Files <span class="badge">{files.length}</span></button
+			>
+			<button class:active={activeTab === 'videos'} onclick={() => (activeTab = 'videos')}
+				>Videos <span class="badge">{videos.length}</span></button
+			>
+			<button class:active={activeTab === 'seo'} onclick={() => (activeTab = 'seo')}>SEO</button>
 		</nav>
 
 		<div class="tab-content">
@@ -186,7 +202,12 @@
 						</div>
 						<div class="form-group">
 							<label for="platform">Platform</label>
-							<input type="text" id="platform" bind:value={indicator.platform} placeholder="thinkorswim, tradingview, etc." />
+							<input
+								type="text"
+								id="platform"
+								bind:value={indicator.platform}
+								placeholder="thinkorswim, tradingview, etc."
+							/>
 						</div>
 						<div class="form-group">
 							<label for="version">Version</label>
@@ -208,15 +229,30 @@
 					<div class="form-grid">
 						<div class="form-group">
 							<label for="thumbnail">Thumbnail URL</label>
-							<input type="url" id="thumbnail" bind:value={indicator.thumbnail} placeholder="https://..." />
+							<input
+								type="url"
+								id="thumbnail"
+								bind:value={indicator.thumbnail}
+								placeholder="https://..."
+							/>
 						</div>
 						<div class="form-group">
 							<label for="download_url">Download URL</label>
-							<input type="url" id="download_url" bind:value={indicator.download_url} placeholder="https://..." />
+							<input
+								type="url"
+								id="download_url"
+								bind:value={indicator.download_url}
+								placeholder="https://..."
+							/>
 						</div>
 						<div class="form-group full-width">
 							<label for="documentation_url">Documentation URL</label>
-							<input type="url" id="documentation_url" bind:value={indicator.documentation_url} placeholder="https://..." />
+							<input
+								type="url"
+								id="documentation_url"
+								bind:value={indicator.documentation_url}
+								placeholder="https://..."
+							/>
 						</div>
 					</div>
 				</div>
@@ -229,10 +265,10 @@
 					</div>
 					<div class="form-group full-width">
 						<label for="long_description">Long Description</label>
-						<textarea id="long_description" rows="8" bind:value={indicator.long_description}></textarea>
+						<textarea id="long_description" rows="8" bind:value={indicator.long_description}
+						></textarea>
 					</div>
 				</div>
-
 			{:else if activeTab === 'files'}
 				<div class="form-section">
 					<div class="section-header">
@@ -262,7 +298,11 @@
 											<td class="platform">{file.platform}</td>
 											<td class="file-name">{file.filename}</td>
 											<td>{file.version}</td>
-											<td><span class="file-status" class:active={file.is_active}>{file.is_active ? 'Active' : 'Inactive'}</span></td>
+											<td
+												><span class="file-status" class:active={file.is_active}
+													>{file.is_active ? 'Active' : 'Inactive'}</span
+												></td
+											>
 											<td>
 												<button class="btn-icon btn-danger">Delete</button>
 											</td>
@@ -273,7 +313,6 @@
 						</div>
 					{/if}
 				</div>
-
 			{:else if activeTab === 'videos'}
 				<div class="form-section">
 					<div class="section-header">
@@ -307,17 +346,26 @@
 						</div>
 					{/if}
 				</div>
-
 			{:else if activeTab === 'seo'}
 				<div class="form-section">
 					<h2>SEO Settings</h2>
 					<div class="form-group full-width">
 						<label for="meta_title">Meta Title</label>
-						<input type="text" id="meta_title" bind:value={indicator.meta_title} placeholder="Page title for search engines" />
+						<input
+							type="text"
+							id="meta_title"
+							bind:value={indicator.meta_title}
+							placeholder="Page title for search engines"
+						/>
 					</div>
 					<div class="form-group full-width">
 						<label for="meta_description">Meta Description</label>
-						<textarea id="meta_description" rows="3" bind:value={indicator.meta_description} placeholder="Description for search engines"></textarea>
+						<textarea
+							id="meta_description"
+							rows="3"
+							bind:value={indicator.meta_description}
+							placeholder="Description for search engines"
+						></textarea>
 					</div>
 				</div>
 			{/if}
@@ -326,75 +374,342 @@
 </div>
 
 <style>
-	.editor-page { padding: 24px; max-width: 1200px; margin: 0 auto; }
+	.editor-page {
+		padding: 24px;
+		max-width: 1200px;
+		margin: 0 auto;
+	}
 
-	.loading, .error-state { display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 64px; }
-	.spinner { width: 40px; height: 40px; border: 3px solid #e5e7eb; border-top-color: #143e59; border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
-	@keyframes spin { to { transform: rotate(360deg); } }
+	.loading,
+	.error-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 64px;
+	}
+	.spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e5e7eb;
+		border-top-color: #143e59;
+		border-radius: 50%;
+		animation: spin 1s linear infinite;
+		margin-bottom: 16px;
+	}
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
 
-	.page-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px; flex-wrap: wrap; gap: 16px; }
-	.header-left { display: flex; align-items: center; gap: 12px; }
-	.back-link { color: #6b7280; text-decoration: none; font-size: 14px; }
-	.back-link:hover { color: #143e59; }
-	h1 { font-size: 24px; font-weight: 600; color: #1f2937; margin: 0; }
+	.page-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 24px;
+		flex-wrap: wrap;
+		gap: 16px;
+	}
+	.header-left {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+	.back-link {
+		color: #6b7280;
+		text-decoration: none;
+		font-size: 14px;
+	}
+	.back-link:hover {
+		color: #143e59;
+	}
+	h1 {
+		font-size: 24px;
+		font-weight: 600;
+		color: #1f2937;
+		margin: 0;
+	}
 
-	.status { display: inline-block; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 500; text-transform: capitalize; }
-	.status--draft { background: #fef3c7; color: #92400e; }
-	.status--published { background: #d1fae5; color: #065f46; }
+	.status {
+		display: inline-block;
+		padding: 4px 10px;
+		border-radius: 20px;
+		font-size: 12px;
+		font-weight: 500;
+		text-transform: capitalize;
+	}
+	.status--draft {
+		background: #fef3c7;
+		color: #92400e;
+	}
+	.status--published {
+		background: #d1fae5;
+		color: #065f46;
+	}
 
-	.header-actions { display: flex; gap: 12px; }
-	.btn-primary, .btn-secondary, .btn-success { display: inline-flex; align-items: center; gap: 6px; padding: 10px 20px; border: none; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; }
-	.btn-primary { background: #143e59; color: #fff; }
-	.btn-primary:hover { background: #0f2d42; }
-	.btn-primary:disabled { opacity: 0.6; cursor: not-allowed; }
-	.btn-secondary { background: #f3f4f6; color: #374151; border: 1px solid #e5e7eb; }
-	.btn-secondary:hover { background: #e5e7eb; }
-	.btn-success { background: #10b981; color: #fff; }
-	.btn-success:hover { background: #059669; }
+	.header-actions {
+		display: flex;
+		gap: 12px;
+	}
+	.btn-primary,
+	.btn-secondary,
+	.btn-success {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 10px 20px;
+		border: none;
+		border-radius: 8px;
+		font-size: 14px;
+		font-weight: 500;
+		cursor: pointer;
+		text-decoration: none;
+	}
+	.btn-primary {
+		background: #143e59;
+		color: #fff;
+	}
+	.btn-primary:hover {
+		background: #0f2d42;
+	}
+	.btn-primary:disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+	}
+	.btn-secondary {
+		background: #f3f4f6;
+		color: #374151;
+		border: 1px solid #e5e7eb;
+	}
+	.btn-secondary:hover {
+		background: #e5e7eb;
+	}
+	.btn-success {
+		background: #10b981;
+		color: #fff;
+	}
+	.btn-success:hover {
+		background: #059669;
+	}
 
-	.alert { padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 14px; }
-	.alert-error { background: #fee2e2; color: #dc2626; }
-	.alert-success { background: #d1fae5; color: #065f46; }
+	.alert {
+		padding: 12px 16px;
+		border-radius: 8px;
+		margin-bottom: 16px;
+		font-size: 14px;
+	}
+	.alert-error {
+		background: #fee2e2;
+		color: #dc2626;
+	}
+	.alert-success {
+		background: #d1fae5;
+		color: #065f46;
+	}
 
-	.tabs { display: flex; gap: 4px; border-bottom: 1px solid #e5e7eb; margin-bottom: 24px; }
-	.tabs button { padding: 12px 20px; background: none; border: none; font-size: 14px; font-weight: 500; color: #6b7280; cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -1px; display: flex; align-items: center; gap: 8px; }
-	.tabs button:hover { color: #1f2937; }
-	.tabs button.active { color: #143e59; border-bottom-color: #143e59; }
-	.badge { background: #e5e7eb; padding: 2px 8px; border-radius: 10px; font-size: 12px; }
+	.tabs {
+		display: flex;
+		gap: 4px;
+		border-bottom: 1px solid #e5e7eb;
+		margin-bottom: 24px;
+	}
+	.tabs button {
+		padding: 12px 20px;
+		background: none;
+		border: none;
+		font-size: 14px;
+		font-weight: 500;
+		color: #6b7280;
+		cursor: pointer;
+		border-bottom: 2px solid transparent;
+		margin-bottom: -1px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.tabs button:hover {
+		color: #1f2937;
+	}
+	.tabs button.active {
+		color: #143e59;
+		border-bottom-color: #143e59;
+	}
+	.badge {
+		background: #e5e7eb;
+		padding: 2px 8px;
+		border-radius: 10px;
+		font-size: 12px;
+	}
 
-	.form-section { background: #fff; border: 1px solid #e5e7eb; border-radius: 12px; padding: 24px; margin-bottom: 24px; }
-	.form-section h2 { font-size: 16px; font-weight: 600; color: #1f2937; margin: 0 0 20px; }
-	.section-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-	.section-header h2 { margin: 0; }
+	.form-section {
+		background: #fff;
+		border: 1px solid #e5e7eb;
+		border-radius: 12px;
+		padding: 24px;
+		margin-bottom: 24px;
+	}
+	.form-section h2 {
+		font-size: 16px;
+		font-weight: 600;
+		color: #1f2937;
+		margin: 0 0 20px;
+	}
+	.section-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 20px;
+	}
+	.section-header h2 {
+		margin: 0;
+	}
 
-	.form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; }
-	.form-group { display: flex; flex-direction: column; gap: 6px; }
-	.form-group.full-width { grid-column: 1 / -1; }
-	label { font-size: 13px; font-weight: 500; color: #374151; }
-	input, select, textarea { padding: 10px 12px; border: 1px solid #e5e7eb; border-radius: 6px; font-size: 14px; }
-	input:focus, select:focus, textarea:focus { outline: none; border-color: #143e59; }
-	textarea { resize: vertical; }
+	.form-grid {
+		display: grid;
+		grid-template-columns: repeat(2, 1fr);
+		gap: 16px;
+	}
+	.form-group {
+		display: flex;
+		flex-direction: column;
+		gap: 6px;
+	}
+	.form-group.full-width {
+		grid-column: 1 / -1;
+	}
+	label {
+		font-size: 13px;
+		font-weight: 500;
+		color: #374151;
+	}
+	input,
+	select,
+	textarea {
+		padding: 10px 12px;
+		border: 1px solid #e5e7eb;
+		border-radius: 6px;
+		font-size: 14px;
+	}
+	input:focus,
+	select:focus,
+	textarea:focus {
+		outline: none;
+		border-color: #143e59;
+	}
+	textarea {
+		resize: vertical;
+	}
 
-	.empty-state { text-align: center; padding: 40px; color: #6b7280; }
-	.hint { font-size: 13px; color: #9ca3af; }
+	.empty-state {
+		text-align: center;
+		padding: 40px;
+		color: #6b7280;
+	}
+	.hint {
+		font-size: 13px;
+		color: #9ca3af;
+	}
 
-	.files-table table { width: 100%; border-collapse: collapse; }
-	.files-table th { text-align: left; padding: 12px; font-size: 12px; font-weight: 600; color: #6b7280; text-transform: uppercase; border-bottom: 1px solid #e5e7eb; }
-	.files-table td { padding: 12px; border-bottom: 1px solid #f3f4f6; }
-	.platform { font-weight: 500; text-transform: capitalize; }
-	.file-name { color: #6b7280; font-size: 13px; }
-	.file-status { font-size: 12px; padding: 2px 8px; border-radius: 4px; background: #f3f4f6; }
-	.file-status.active { background: #d1fae5; color: #065f46; }
+	.files-table table {
+		width: 100%;
+		border-collapse: collapse;
+	}
+	.files-table th {
+		text-align: left;
+		padding: 12px;
+		font-size: 12px;
+		font-weight: 600;
+		color: #6b7280;
+		text-transform: uppercase;
+		border-bottom: 1px solid #e5e7eb;
+	}
+	.files-table td {
+		padding: 12px;
+		border-bottom: 1px solid #f3f4f6;
+	}
+	.platform {
+		font-weight: 500;
+		text-transform: capitalize;
+	}
+	.file-name {
+		color: #6b7280;
+		font-size: 13px;
+	}
+	.file-status {
+		font-size: 12px;
+		padding: 2px 8px;
+		border-radius: 4px;
+		background: #f3f4f6;
+	}
+	.file-status.active {
+		background: #d1fae5;
+		color: #065f46;
+	}
 
-	.videos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 16px; }
-	.video-card { background: #f9fafb; border-radius: 8px; overflow: hidden; position: relative; }
-	.thumbnail, .thumbnail-placeholder { width: 100%; aspect-ratio: 16/9; object-fit: cover; background: #e5e7eb; display: flex; align-items: center; justify-content: center; color: #9ca3af; }
-	.video-info { padding: 12px; }
-	.video-info h3 { font-size: 14px; font-weight: 500; margin: 0 0 8px; }
-	.video-meta { display: flex; gap: 6px; }
-	.tag { font-size: 11px; padding: 2px 8px; background: #143e59; color: #fff; border-radius: 4px; }
-	.video-card .btn-icon { position: absolute; top: 8px; right: 8px; background: rgba(0,0,0,0.5); color: #fff; }
+	.videos-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 16px;
+	}
+	.video-card {
+		background: #f9fafb;
+		border-radius: 8px;
+		overflow: hidden;
+		position: relative;
+	}
+	.thumbnail,
+	.thumbnail-placeholder {
+		width: 100%;
+		aspect-ratio: 16/9;
+		object-fit: cover;
+		background: #e5e7eb;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: #9ca3af;
+	}
+	.video-info {
+		padding: 12px;
+	}
+	.video-info h3 {
+		font-size: 14px;
+		font-weight: 500;
+		margin: 0 0 8px;
+	}
+	.video-meta {
+		display: flex;
+		gap: 6px;
+	}
+	.tag {
+		font-size: 11px;
+		padding: 2px 8px;
+		background: #143e59;
+		color: #fff;
+		border-radius: 4px;
+	}
+	.video-card .btn-icon {
+		position: absolute;
+		top: 8px;
+		right: 8px;
+		background: rgba(0, 0, 0, 0.5);
+		color: #fff;
+	}
 
-	.btn-icon { display: flex; align-items: center; justify-content: center; width: 32px; height: 32px; border: none; background: #f3f4f6; border-radius: 6px; color: #6b7280; cursor: pointer; }
-	.btn-danger:hover { background: #fee2e2; color: #dc2626; }
+	.btn-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		border: none;
+		background: #f3f4f6;
+		border-radius: 6px;
+		color: #6b7280;
+		cursor: pointer;
+	}
+	.btn-danger:hover {
+		background: #fee2e2;
+		color: #dc2626;
+	}
 </style>

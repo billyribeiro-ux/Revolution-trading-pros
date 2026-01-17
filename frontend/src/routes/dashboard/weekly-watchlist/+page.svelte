@@ -10,7 +10,7 @@
 <script lang="ts">
 	import FeaturedCards from '$lib/components/dashboard/FeaturedCards.svelte';
 	import RightSidebar from '$lib/components/dashboard/RightSidebar.svelte';
-	
+
 	// Type definitions for component data
 	interface FeaturedCard {
 		id: number;
@@ -21,7 +21,7 @@
 		cardClass: string;
 		titleClass: string;
 	}
-	
+
 	interface ArchiveItem {
 		id: number;
 		title: string;
@@ -69,7 +69,8 @@
 			title: 'Weekly Watchlist with TG Watkins',
 			date: 'January 12, 2026',
 			weekOf: 'Week of January 12, 2026.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 			href: '/watchlist/01122026-tg-watkins'
 		},
 		{
@@ -85,7 +86,8 @@
 			title: 'Weekly Watchlist with David Starr',
 			date: 'December 29, 2025',
 			weekOf: 'Week of December 29, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
 			href: '/watchlist/12292025-david-starr'
 		},
 		{
@@ -93,7 +95,8 @@
 			title: 'Weekly Watchlist with TG Watkins',
 			date: 'December 22, 2025',
 			weekOf: 'Week of December 22, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 			href: '/watchlist/12222025-tg-watkins'
 		},
 		{
@@ -109,7 +112,8 @@
 			title: 'Weekly Watchlist with Taylor Horton',
 			date: 'December 08, 2025',
 			weekOf: 'Week of December 8, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
 			href: '/watchlist/12082025-taylor-horton'
 		},
 		{
@@ -117,7 +121,8 @@
 			title: 'Weekly Watchlist with TG Watkins',
 			date: 'December 01, 2025',
 			weekOf: 'Week of December 1, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 			href: '/watchlist/12012025-tg-watkins'
 		},
 		{
@@ -133,7 +138,8 @@
 			title: 'Weekly Watchlist with Taylor Horton',
 			date: 'November 17, 2025',
 			weekOf: 'Week of November 17, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
 			href: '/watchlist/11172025-taylor-horton'
 		}
 	];
@@ -159,51 +165,51 @@
 </header>
 
 <div class="dashboard__content">
-
-		<div class="dashboard__content-main">
-		
+	<div class="dashboard__content-main">
 		<!-- FEATURED CARDS SECTION - 2x1 Layout (2 top, 1 centered bottom) -->
 		<FeaturedCards {cards} layout="2x1" />
 
-	<!-- WATCHLIST RUNDOWN ARCHIVE SECTION -->
-	<div class="dashboard__content-section">
-		<section>
-			<h2 class="section-title">Watchlist Rundown Archive</h2>
-			<div class="video-grid">
-				{#each archiveItems as { id, title, date, weekOf, image, href } (id)}
-					<div class="video-grid__item">
-						<article class="video-card">
-							<figure class="video-card__figure">
-								<div class="video-card__thumbnail" style="background-image: url({image});">
-									<a {href}>
-										<img src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" alt={title} loading="lazy" />
-									</a>
-								</div>
-								<div class="video-card__content">
-									<div>
-										<h4 class="video-card__title">
-											<a {href}>{title}</a>
-										</h4>
-										<div class="video-card__date">
-											<span><i>{date}</i></span><br />
-										</div>
-										<p class="video-card__description">{weekOf}</p>
+		<!-- WATCHLIST RUNDOWN ARCHIVE SECTION -->
+		<div class="dashboard__content-section">
+			<section>
+				<h2 class="section-title">Watchlist Rundown Archive</h2>
+				<div class="video-grid">
+					{#each archiveItems as { id, title, date, weekOf, image, href } (id)}
+						<div class="video-grid__item">
+							<article class="video-card">
+								<figure class="video-card__figure">
+									<div class="video-card__thumbnail" style="background-image: url({image});">
+										<a {href}>
+											<img
+												src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg"
+												alt={title}
+												loading="lazy"
+											/>
+										</a>
 									</div>
-									<a {href} class="video-card__link">Watch Now</a>
-								</div>
-							</figure>
-						</article>
-					</div>
-				{/each}
-			</div>
-		</section>
-	</div>
-
+									<div class="video-card__content">
+										<div>
+											<h4 class="video-card__title">
+												<a {href}>{title}</a>
+											</h4>
+											<div class="video-card__date">
+												<span><i>{date}</i></span><br />
+											</div>
+											<p class="video-card__description">{weekOf}</p>
+										</div>
+										<a {href} class="video-card__link">Watch Now</a>
+									</div>
+								</figure>
+							</article>
+						</div>
+					{/each}
+				</div>
+			</section>
+		</div>
 	</div>
 
 	<!-- SIDEBAR - Using RightSidebar component (SSOT) -->
 	<RightSidebar sections={sidebarSections} />
-
 </div>
 
 <style>
@@ -322,7 +328,9 @@
 		border-radius: 5px;
 		overflow: hidden;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-		transition: transform 0.3s ease, box-shadow 0.3s ease;
+		transition:
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
 		display: flex;
 		flex-direction: column;
 		width: 100%;
@@ -331,7 +339,9 @@
 
 	.video-card:hover {
 		transform: translateY(-8px);
-		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+		box-shadow:
+			0 12px 24px rgba(0, 0, 0, 0.15),
+			0 4px 8px rgba(0, 0, 0, 0.1);
 	}
 
 	.video-card__figure {
@@ -388,7 +398,7 @@
 	}
 
 	.video-card__title a:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.video-card__date {
@@ -416,14 +426,14 @@
 	.video-card__link {
 		margin-top: auto;
 		display: inline-block;
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
 		padding: 10px 20px;
 		font-size: 14px;
 		font-weight: 600;
 		text-decoration: none;
 		border-radius: 4px;
-		border: 1px solid #F69532;
+		border: 1px solid #f69532;
 		transition: all 0.2s ease;
 	}
 
@@ -453,5 +463,4 @@
 			padding: 40px;
 		}
 	}
-
 </style>

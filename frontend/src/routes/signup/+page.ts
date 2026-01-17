@@ -1,10 +1,10 @@
 /**
  * Signup Page Configuration - Apple ICT 7
- * 
+ *
  * SSR Configuration:
  * - prerender: false (dynamic page with auth redirect)
  * - ssr: true (server-side rendering for SEO)
- * 
+ *
  * @version 1.0.0
  */
 

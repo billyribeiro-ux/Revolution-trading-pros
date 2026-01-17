@@ -39,7 +39,8 @@
 			type: 'Daily Video',
 			title: 'Market Analysis & Trading Strategies',
 			date: 'December 23, 2025 with HG',
-			excerpt: 'Things can always change, but given how the market closed on Tuesday, it looks like Santa\'s on his way. Let\'s look at the facts, then also some preferences and opinions as we get into the end of 2025.',
+			excerpt:
+				"Things can always change, but given how the market closed on Tuesday, it looks like Santa's on his way. Let's look at the facts, then also some preferences and opinions as we get into the end of 2025.",
 			href: '/daily/small-account-mentorship/market-analysis',
 			image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
 			isVideo: true
@@ -59,7 +60,8 @@
 			type: 'Daily Video',
 			title: 'Setting Up for Success',
 			date: 'December 22, 2025 with Expert',
-			excerpt: 'Everything looks good for a potential rally, as the indexes are consolidating and breaking higher, along with a lot of key stocks. Let\'s take a look at TSLA, GOOGL, AMZN, AVGO, MSFT, and more.',
+			excerpt:
+				"Everything looks good for a potential rally, as the indexes are consolidating and breaking higher, along with a lot of key stocks. Let's take a look at TSLA, GOOGL, AMZN, AVGO, MSFT, and more.",
 			href: '/daily/small-account-mentorship/setting-up-success',
 			image: 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg',
 			isVideo: true
@@ -79,7 +81,8 @@
 			type: 'Daily Video',
 			title: 'Holiday Weekend Market Review',
 			date: 'December 19, 2025 with Expert',
-			excerpt: 'Indexes continue to churn sideways as we approach next week\'s holiday trade. Bulls usually take over in low volume. Can they do it again?',
+			excerpt:
+				"Indexes continue to churn sideways as we approach next week's holiday trade. Bulls usually take over in low volume. Can they do it again?",
 			href: '/daily/small-account-mentorship/holiday-weekend-review',
 			image: 'https://cdn.simplertrading.com/2025/05/07134553/SimplerCentral_SS.jpg',
 			isVideo: true
@@ -99,14 +102,16 @@
 	// Derive display items from API or fallback to static
 	const displayUpdates = $derived(
 		data.latestUpdates && data.latestUpdates.length > 0
-			? data.latestUpdates.map(r => ({
+			? data.latestUpdates.map((r) => ({
 					id: r.id,
 					type: r.content_type === 'daily_video' ? 'Daily Video' : r.content_type.replace('_', ' '),
 					title: r.title,
 					date: r.formatted_date,
 					excerpt: r.description || '',
 					href: `/daily/small-account-mentorship/${r.slug}`,
-					image: r.thumbnail_url || 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+					image:
+						r.thumbnail_url ||
+						'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
 					isVideo: r.resource_type === 'video'
 				}))
 			: fallbackArticles
@@ -150,42 +155,46 @@
 			// @ts-ignore
 			gapi.load('client', () => {
 				// @ts-ignore
-				gapi.client.init({
-					apiKey: API_KEY,
-					clientId: CLIENT_ID,
-					discoveryDocs: DISCOVERY_DOCS,
-					scope: SCOPES
-				}).then(() => {
-					// @ts-ignore
-					return gapi.client.calendar.events.list({
-						'calendarId': 'simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com',
-						'timeMin': (new Date()).toISOString(),
-						'showDeleted': false,
-						'singleEvents': true,
-						'maxResults': 10,
-						'orderBy': 'startTime',
-						'fields': 'items(summary,start/dateTime)'
-					});
-				}).then((response: any) => {
-					const dateOptions: Intl.DateTimeFormatOptions = {
-						month: 'short',
-						day: 'numeric',
-						year: 'numeric',
-						hour: 'numeric',
-						minute: 'numeric',
-						timeZoneName: 'short'
-					};
-					const container = document.querySelector('.room-sched');
-					if (container && response.result.items) {
-						for (let i = 0; i < response.result.items.length; i++) {
-							const eventStart = new Date(response.result.items[i].start.dateTime);
-							const eventHtml = `<h4>${response.result.items[i].summary}</h4><span>${eventStart.toLocaleString('en-US', dateOptions)}</span>`;
-							container.innerHTML += eventHtml;
+				gapi.client
+					.init({
+						apiKey: API_KEY,
+						clientId: CLIENT_ID,
+						discoveryDocs: DISCOVERY_DOCS,
+						scope: SCOPES
+					})
+					.then(() => {
+						// @ts-ignore
+						return gapi.client.calendar.events.list({
+							calendarId: 'simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com',
+							timeMin: new Date().toISOString(),
+							showDeleted: false,
+							singleEvents: true,
+							maxResults: 10,
+							orderBy: 'startTime',
+							fields: 'items(summary,start/dateTime)'
+						});
+					})
+					.then((response: any) => {
+						const dateOptions: Intl.DateTimeFormatOptions = {
+							month: 'short',
+							day: 'numeric',
+							year: 'numeric',
+							hour: 'numeric',
+							minute: 'numeric',
+							timeZoneName: 'short'
+						};
+						const container = document.querySelector('.room-sched');
+						if (container && response.result.items) {
+							for (let i = 0; i < response.result.items.length; i++) {
+								const eventStart = new Date(response.result.items[i].start.dateTime);
+								const eventHtml = `<h4>${response.result.items[i].summary}</h4><span>${eventStart.toLocaleString('en-US', dateOptions)}</span>`;
+								container.innerHTML += eventHtml;
+							}
 						}
-					}
-				}).catch((error: any) => {
-					console.warn('Calendar Error:', error);
-				});
+					})
+					.catch((error: any) => {
+						console.warn('Calendar Error:', error);
+					});
 			});
 		} catch (error) {
 			console.warn('Failed to initialize Google Calendar:', error);
@@ -198,15 +207,14 @@
 	<script src="https://apis.google.com/js/api.js"></script>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Small Account Mentorship" 
-	startHereUrl="/dashboard/small-account-mentorship/start-here" 
+<TradingRoomHeader
+	roomName="Small Account Mentorship"
+	startHereUrl="/dashboard/small-account-mentorship/start-here"
 />
 
 <!-- DASHBOARD CONTENT - Exact WordPress Structure -->
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-
 		<!-- VIDEO TUTORIAL SECTION - ICT 7: API-driven -->
 		<section class="dashboard__content-section-member">
 			{#if data.tutorialVideo}
@@ -219,28 +227,44 @@
 						controls={true}
 					/>
 				{:else}
-					<video controls width="100%" poster={data.tutorialVideo.thumbnail_url || ''} style="aspect-ratio: 16 / 9;">
-						<source src={data.tutorialVideo.file_url} type="video/mp4">
+					<video
+						controls
+						width="100%"
+						poster={data.tutorialVideo.thumbnail_url || ''}
+						style="aspect-ratio: 16 / 9;"
+					>
+						<source src={data.tutorialVideo.file_url} type="video/mp4" />
 						Your browser does not support the video tag.
 					</video>
 				{/if}
 			{:else}
 				<!-- Fallback to hardcoded video -->
-				<video controls width="100%" poster="https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg" style="aspect-ratio: 2 / 1;">
-					<source src="https://simpler-options.s3.amazonaws.com/tutorials/MTT_tutorial2025.mp4" type="video/mp4">
+				<video
+					controls
+					width="100%"
+					poster="https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg"
+					style="aspect-ratio: 2 / 1;"
+				>
+					<source
+						src="https://simpler-options.s3.amazonaws.com/tutorials/MTT_tutorial2025.mp4"
+						type="video/mp4"
+					/>
 					Your browser does not support the video tag.
 				</video>
 			{/if}
 		</section>
 
 		<!-- LATEST UPDATES SECTION - ICT 7: API-driven with fallback -->
-		<LatestUpdates items={displayUpdates} title="Latest Updates" roomSlug="small-account-mentorship" />
+		<LatestUpdates
+			items={displayUpdates}
+			title="Latest Updates"
+			roomSlug="small-account-mentorship"
+		/>
 
 		<!-- WEEKLY WATCHLIST SECTION - SSR pre-fetched for 0ms loading -->
 		<div class="dashboard__content-section u--background-color-white">
 			<WeeklyWatchlist data={(data as { watchlist?: any }).watchlist} />
 		</div>
-
 	</div>
 
 	<!-- SIDEBAR - Using TradingRoomSidebar Component -->

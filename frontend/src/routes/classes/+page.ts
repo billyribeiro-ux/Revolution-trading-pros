@@ -1,10 +1,10 @@
 /**
  * Classes Page Configuration - Apple ICT 7
- * 
+ *
  * SSG Configuration:
  * - prerender: true (static page for SEO)
  * - ssr: true (server-side rendering)
- * 
+ *
  * @version 1.0.0
  */
 

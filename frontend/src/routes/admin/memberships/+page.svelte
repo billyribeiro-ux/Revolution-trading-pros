@@ -119,7 +119,9 @@
 		price: 0,
 		billing_cycle: 'monthly' as 'monthly' | 'quarterly' | 'annual',
 		is_active: true,
-		features: [{ feature_code: 'feature_1', feature_name: '', description: '' }] as MembershipFeature[]
+		features: [
+			{ feature_code: 'feature_1', feature_name: '', description: '' }
+		] as MembershipFeature[]
 	});
 	let formLoading = $state(false);
 	let formError = $state('');
@@ -216,11 +218,12 @@
 					let monthlyPrice = p.price;
 					if (p.billing_cycle === 'quarterly') monthlyPrice = p.price / 3;
 					if (p.billing_cycle === 'annual') monthlyPrice = p.price / 12;
-					return sum + (monthlyPrice * subscribers);
+					return sum + monthlyPrice * subscribers;
 				}, 0),
-				top_plan: plans.reduce((top, p) =>
-					(p.subscriber_count || 0) > (top?.subscriber_count || 0) ? p : top
-				, plans[0])?.name
+				top_plan: plans.reduce(
+					(top, p) => ((p.subscriber_count || 0) > (top?.subscriber_count || 0) ? p : top),
+					plans[0]
+				)?.name
 			};
 		}
 	});
@@ -355,9 +358,10 @@
 			price: plan.price,
 			billing_cycle: plan.billing_cycle,
 			is_active: plan.is_active,
-			features: plan.features.length > 0
-				? [...plan.features]
-				: [{ feature_code: 'feature_1', feature_name: '', description: '' }]
+			features:
+				plan.features.length > 0
+					? [...plan.features]
+					: [{ feature_code: 'feature_1', feature_name: '', description: '' }]
 		};
 		showEditModal = true;
 	}
@@ -404,19 +408,23 @@
 	}
 
 	function getBillingLabel(cycle: string): string {
-		return {
-			monthly: '/month',
-			quarterly: '/quarter',
-			annual: '/year'
-		}[cycle] || '/month';
+		return (
+			{
+				monthly: '/month',
+				quarterly: '/quarter',
+				annual: '/year'
+			}[cycle] || '/month'
+		);
 	}
 
 	function getBillingBadge(cycle: string): string {
-		return {
-			monthly: 'Monthly',
-			quarterly: 'Quarterly',
-			annual: 'Annual'
-		}[cycle] || cycle;
+		return (
+			{
+				monthly: 'Monthly',
+				quarterly: 'Quarterly',
+				annual: 'Annual'
+			}[cycle] || cycle
+		);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -434,251 +442,263 @@
 
 <div class="page">
 	<div class="admin-page-container">
-	<!-- Page Header - Centered -->
-	<div class="page-header">
-		<h1>Membership Plans</h1>
-		<p class="subtitle">Manage subscription tiers, pricing, and plan features</p>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={loadData} disabled={isLoading}>
-				<IconRefresh size={18} />
-				Refresh
-			</button>
-			<button class="btn-primary" onclick={() => goto('/admin/memberships/create')}>
-				<IconPlus size={18} />
-				Add Plan
-			</button>
-		</div>
-	</div>
-
-	<!-- Stats Overview -->
-	<section class="stats-grid">
-		<div class="stat-card highlight">
-			<div class="stat-icon amber">
-				<IconCrown size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.total_plans}</span>
-				<span class="stat-label">Total Plans</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon emerald">
-				<IconCheck size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.active_plans}</span>
-				<span class="stat-label">Active Plans</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon blue">
-				<IconUsers size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{stats.total_subscribers.toLocaleString()}</span>
-				<span class="stat-label">Total Subscribers</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon purple">
-				<IconCurrencyDollar size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value">{formatCurrency(stats.total_mrr)}</span>
-				<span class="stat-label">Monthly Revenue</span>
-			</div>
-		</div>
-		<div class="stat-card">
-			<div class="stat-icon cyan">
-				<IconStar size={24} />
-			</div>
-			<div class="stat-content">
-				<span class="stat-value truncate">{stats.top_plan || 'N/A'}</span>
-				<span class="stat-label">Top Plan</span>
-			</div>
-		</div>
-	</section>
-
-	<!-- Search and Filter Bar -->
-	<div class="search-filter-bar">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<input
-				type="text"
-				placeholder="Search plans..."
-				bind:value={searchQuery}
-				class="search-input"
-			/>
-		</div>
-		<button class="btn-filter" onclick={() => (showFilters = !showFilters)}>
-			<IconFilter size={18} />
-			Filters
-			<IconChevronDown size={16} class={showFilters ? 'rotate' : ''} />
-		</button>
-	</div>
-
-	<!-- Filters Panel -->
-	{#if showFilters}
-		<div class="filters-panel">
-			<div class="filter-group">
-				<label for="filter-status">Status</label>
-				<select id="filter-status" bind:value={selectedStatus}>
-					{#each statusOptions as option}
-						<option value={option.value}>{option.label}</option>
-					{/each}
-				</select>
-			</div>
-			<div class="filter-group">
-				<label for="filter-cycle">Billing Cycle</label>
-				<select id="filter-cycle" bind:value={selectedCycle}>
-					{#each cycleOptions as option}
-						<option value={option.value}>{option.label}</option>
-					{/each}
-				</select>
-			</div>
-			<div class="filter-group">
-				<label for="filter-sort">Sort By</label>
-				<select id="filter-sort" bind:value={sortBy}>
-					{#each sortOptions as option}
-						<option value={option.value}>{option.label}</option>
-					{/each}
-				</select>
-			</div>
-			<div class="filter-group">
-				<label for="filter-order">Order</label>
-				<select id="filter-order" bind:value={sortOrder}>
-					<option value="desc">Highest First</option>
-					<option value="asc">Lowest First</option>
-				</select>
-			</div>
-			<button
-				class="btn-clear-filters"
-				onclick={() => {
-					selectedStatus = 'all';
-					selectedCycle = 'all';
-					sortBy = 'created_at';
-					sortOrder = 'desc';
-					searchQuery = '';
-				}}
-			>
-				Clear Filters
-			</button>
-		</div>
-	{/if}
-
-	<!-- Plans Grid -->
-	<div class="plans-container">
-		{#if isLoading}
-			<div class="loading-state">
-				<div class="spinner"></div>
-				<p>Loading membership plans...</p>
-			</div>
-		{:else if error}
-			<div class="error-state">
-				<p>{error}</p>
-				<button onclick={loadData}>Try Again</button>
-			</div>
-		{:else if filteredPlans.length === 0}
-			<div class="empty-state">
-				<IconCrown size={48} />
-				<h3>No membership plans found</h3>
-				<p>Create your first membership plan to start monetizing your content</p>
+		<!-- Page Header - Centered -->
+		<div class="page-header">
+			<h1>Membership Plans</h1>
+			<p class="subtitle">Manage subscription tiers, pricing, and plan features</p>
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={loadData} disabled={isLoading}>
+					<IconRefresh size={18} />
+					Refresh
+				</button>
 				<button class="btn-primary" onclick={() => goto('/admin/memberships/create')}>
 					<IconPlus size={18} />
 					Add Plan
 				</button>
 			</div>
-		{:else}
-			<div class="plans-grid">
-				{#each filteredPlans as plan (plan.id)}
-					<div class="plan-card" class:inactive={!plan.is_active}>
-						<div class="plan-header">
-							<div class="plan-status">
-								<button
-									class="status-toggle"
-									class:active={plan.is_active}
-									onclick={() => togglePlanStatus(plan)}
-									title={plan.is_active ? 'Deactivate plan' : 'Activate plan'}
-								>
-									{#if plan.is_active}
-										<IconToggleRight size={24} />
-									{:else}
-										<IconToggleLeft size={24} />
-									{/if}
-								</button>
-								<span class="status-label" class:active={plan.is_active}>
-									{plan.is_active ? 'Active' : 'Inactive'}
-								</span>
-							</div>
-							<div class="plan-actions">
-								<button class="btn-icon" title="Preview" onclick={() => openPreviewModal(plan)}>
-									<IconEye size={16} />
-								</button>
-								<button class="btn-icon" title="Edit" onclick={() => openEditModal(plan)}>
-									<IconEdit size={16} />
-								</button>
-								<button class="btn-icon" title="Duplicate" onclick={() => duplicatePlan(plan)}>
-									<IconCopy size={16} />
-								</button>
-								<button class="btn-icon danger" title="Delete" onclick={() => openDeleteModal(plan)}>
-									<IconTrash size={16} />
-								</button>
-							</div>
-						</div>
+		</div>
 
-						<div class="plan-body">
-							<div class="plan-crown">
-								<IconCrown size={28} />
-							</div>
-							<h3 class="plan-name">{plan.name}</h3>
-							<div class="plan-pricing">
-								<span class="plan-price">{formatCurrency(plan.price)}</span>
-								<span class="plan-cycle">{getBillingLabel(plan.billing_cycle)}</span>
-							</div>
-							<span class="cycle-badge">{getBillingBadge(plan.billing_cycle)}</span>
+		<!-- Stats Overview -->
+		<section class="stats-grid">
+			<div class="stat-card highlight">
+				<div class="stat-icon amber">
+					<IconCrown size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.total_plans}</span>
+					<span class="stat-label">Total Plans</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon emerald">
+					<IconCheck size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.active_plans}</span>
+					<span class="stat-label">Active Plans</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon blue">
+					<IconUsers size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{stats.total_subscribers.toLocaleString()}</span>
+					<span class="stat-label">Total Subscribers</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon purple">
+					<IconCurrencyDollar size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value">{formatCurrency(stats.total_mrr)}</span>
+					<span class="stat-label">Monthly Revenue</span>
+				</div>
+			</div>
+			<div class="stat-card">
+				<div class="stat-icon cyan">
+					<IconStar size={24} />
+				</div>
+				<div class="stat-content">
+					<span class="stat-value truncate">{stats.top_plan || 'N/A'}</span>
+					<span class="stat-label">Top Plan</span>
+				</div>
+			</div>
+		</section>
 
-							{#if plan.description}
-								<p class="plan-description">{plan.description}</p>
-							{/if}
+		<!-- Search and Filter Bar -->
+		<div class="search-filter-bar">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<input
+					type="text"
+					placeholder="Search plans..."
+					bind:value={searchQuery}
+					class="search-input"
+				/>
+			</div>
+			<button class="btn-filter" onclick={() => (showFilters = !showFilters)}>
+				<IconFilter size={18} />
+				Filters
+				<IconChevronDown size={16} class={showFilters ? 'rotate' : ''} />
+			</button>
+		</div>
 
-							<div class="plan-features">
-								{#each (plan.features || []).slice(0, 3) as feature}
-									<div class="feature-item">
-										<IconCheck size={14} />
-										<span>{feature.feature_name}</span>
-									</div>
-								{/each}
-								{#if plan.features.length > 3}
-									<div class="feature-more">+{plan.features.length - 3} more features</div>
-								{/if}
-							</div>
-						</div>
-
-						<div class="plan-footer">
-							<div class="plan-stat">
-								<IconUsers size={16} />
-								<span>{plan.subscriber_count || 0} subscribers</span>
-							</div>
-							<div class="plan-stat">
-								<IconChartBar size={16} />
-								<span>{formatCurrency(plan.revenue || 0)} revenue</span>
-							</div>
-						</div>
-					</div>
-				{/each}
+		<!-- Filters Panel -->
+		{#if showFilters}
+			<div class="filters-panel">
+				<div class="filter-group">
+					<label for="filter-status">Status</label>
+					<select id="filter-status" bind:value={selectedStatus}>
+						{#each statusOptions as option}
+							<option value={option.value}>{option.label}</option>
+						{/each}
+					</select>
+				</div>
+				<div class="filter-group">
+					<label for="filter-cycle">Billing Cycle</label>
+					<select id="filter-cycle" bind:value={selectedCycle}>
+						{#each cycleOptions as option}
+							<option value={option.value}>{option.label}</option>
+						{/each}
+					</select>
+				</div>
+				<div class="filter-group">
+					<label for="filter-sort">Sort By</label>
+					<select id="filter-sort" bind:value={sortBy}>
+						{#each sortOptions as option}
+							<option value={option.value}>{option.label}</option>
+						{/each}
+					</select>
+				</div>
+				<div class="filter-group">
+					<label for="filter-order">Order</label>
+					<select id="filter-order" bind:value={sortOrder}>
+						<option value="desc">Highest First</option>
+						<option value="asc">Lowest First</option>
+					</select>
+				</div>
+				<button
+					class="btn-clear-filters"
+					onclick={() => {
+						selectedStatus = 'all';
+						selectedCycle = 'all';
+						sortBy = 'created_at';
+						sortOrder = 'desc';
+						searchQuery = '';
+					}}
+				>
+					Clear Filters
+				</button>
 			</div>
 		{/if}
+
+		<!-- Plans Grid -->
+		<div class="plans-container">
+			{#if isLoading}
+				<div class="loading-state">
+					<div class="spinner"></div>
+					<p>Loading membership plans...</p>
+				</div>
+			{:else if error}
+				<div class="error-state">
+					<p>{error}</p>
+					<button onclick={loadData}>Try Again</button>
+				</div>
+			{:else if filteredPlans.length === 0}
+				<div class="empty-state">
+					<IconCrown size={48} />
+					<h3>No membership plans found</h3>
+					<p>Create your first membership plan to start monetizing your content</p>
+					<button class="btn-primary" onclick={() => goto('/admin/memberships/create')}>
+						<IconPlus size={18} />
+						Add Plan
+					</button>
+				</div>
+			{:else}
+				<div class="plans-grid">
+					{#each filteredPlans as plan (plan.id)}
+						<div class="plan-card" class:inactive={!plan.is_active}>
+							<div class="plan-header">
+								<div class="plan-status">
+									<button
+										class="status-toggle"
+										class:active={plan.is_active}
+										onclick={() => togglePlanStatus(plan)}
+										title={plan.is_active ? 'Deactivate plan' : 'Activate plan'}
+									>
+										{#if plan.is_active}
+											<IconToggleRight size={24} />
+										{:else}
+											<IconToggleLeft size={24} />
+										{/if}
+									</button>
+									<span class="status-label" class:active={plan.is_active}>
+										{plan.is_active ? 'Active' : 'Inactive'}
+									</span>
+								</div>
+								<div class="plan-actions">
+									<button class="btn-icon" title="Preview" onclick={() => openPreviewModal(plan)}>
+										<IconEye size={16} />
+									</button>
+									<button class="btn-icon" title="Edit" onclick={() => openEditModal(plan)}>
+										<IconEdit size={16} />
+									</button>
+									<button class="btn-icon" title="Duplicate" onclick={() => duplicatePlan(plan)}>
+										<IconCopy size={16} />
+									</button>
+									<button
+										class="btn-icon danger"
+										title="Delete"
+										onclick={() => openDeleteModal(plan)}
+									>
+										<IconTrash size={16} />
+									</button>
+								</div>
+							</div>
+
+							<div class="plan-body">
+								<div class="plan-crown">
+									<IconCrown size={28} />
+								</div>
+								<h3 class="plan-name">{plan.name}</h3>
+								<div class="plan-pricing">
+									<span class="plan-price">{formatCurrency(plan.price)}</span>
+									<span class="plan-cycle">{getBillingLabel(plan.billing_cycle)}</span>
+								</div>
+								<span class="cycle-badge">{getBillingBadge(plan.billing_cycle)}</span>
+
+								{#if plan.description}
+									<p class="plan-description">{plan.description}</p>
+								{/if}
+
+								<div class="plan-features">
+									{#each (plan.features || []).slice(0, 3) as feature}
+										<div class="feature-item">
+											<IconCheck size={14} />
+											<span>{feature.feature_name}</span>
+										</div>
+									{/each}
+									{#if plan.features.length > 3}
+										<div class="feature-more">+{plan.features.length - 3} more features</div>
+									{/if}
+								</div>
+							</div>
+
+							<div class="plan-footer">
+								<div class="plan-stat">
+									<IconUsers size={16} />
+									<span>{plan.subscriber_count || 0} subscribers</span>
+								</div>
+								<div class="plan-stat">
+									<IconChartBar size={16} />
+									<span>{formatCurrency(plan.revenue || 0)} revenue</span>
+								</div>
+							</div>
+						</div>
+					{/each}
+				</div>
+			{/if}
+		</div>
 	</div>
-	</div><!-- End admin-page-container -->
+	<!-- End admin-page-container -->
 </div>
 
 <!-- Edit Plan Modal -->
 {#if showEditModal && editingPlan}
-	<div class="modal-overlay" onclick={(e) => { if (e.target === e.currentTarget) showEditModal = false; }} onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)} role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="edit-modal-title">
-		<div
-			class="modal modal-large"
-			role="document"
-		>
+	<div
+		class="modal-overlay"
+		onclick={(e) => {
+			if (e.target === e.currentTarget) showEditModal = false;
+		}}
+		onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+		aria-labelledby="edit-modal-title"
+	>
+		<div class="modal modal-large" role="document">
 			<div class="modal-header">
 				<h3 id="edit-modal-title">
 					<IconEdit size={20} />
@@ -695,29 +715,15 @@
 				<div class="form-grid">
 					<div class="form-group">
 						<label for="edit_name">Plan Name *</label>
-						<input
-							id="edit_name"
-							type="text"
-							bind:value={formData.name}
-							required
-						/>
+						<input id="edit_name" type="text" bind:value={formData.name} required />
 					</div>
 					<div class="form-group">
 						<label for="edit_slug">URL Slug *</label>
-						<input
-							id="edit_slug"
-							type="text"
-							bind:value={formData.slug}
-							required
-						/>
+						<input id="edit_slug" type="text" bind:value={formData.slug} required />
 					</div>
 					<div class="form-group full-width">
 						<label for="edit_description">Description</label>
-						<textarea
-							id="edit_description"
-							rows="2"
-							bind:value={formData.description}
-						></textarea>
+						<textarea id="edit_description" rows="2" bind:value={formData.description}></textarea>
 					</div>
 					<div class="form-group">
 						<label for="edit_price">Price (USD) *</label>
@@ -785,9 +791,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showEditModal = false)}>
-					Cancel
-				</button>
+				<button class="btn-secondary" onclick={() => (showEditModal = false)}> Cancel </button>
 				<button
 					class="btn-primary"
 					onclick={updatePlan}
@@ -807,11 +811,18 @@
 
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal && deletingPlan}
-	<div class="modal-overlay" onclick={(e) => { if (e.target === e.currentTarget) showDeleteModal = false; }} onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)} role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="delete-modal-title">
-		<div
-			class="modal modal-small"
-			role="document"
-		>
+	<div
+		class="modal-overlay"
+		onclick={(e) => {
+			if (e.target === e.currentTarget) showDeleteModal = false;
+		}}
+		onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+		aria-labelledby="delete-modal-title"
+	>
+		<div class="modal modal-small" role="document">
 			<div class="modal-header">
 				<h3 id="delete-modal-title">
 					<IconTrash size={20} />
@@ -826,14 +837,14 @@
 					Are you sure you want to delete <strong>{deletingPlan.name}</strong>?
 					{#if deletingPlan.subscriber_count && deletingPlan.subscriber_count > 0}
 						<br /><br />
-						<span class="warning-text">Warning: This plan has {deletingPlan.subscriber_count} active subscribers!</span>
+						<span class="warning-text"
+							>Warning: This plan has {deletingPlan.subscriber_count} active subscribers!</span
+						>
 					{/if}
 				</p>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showDeleteModal = false)}>
-					Cancel
-				</button>
+				<button class="btn-secondary" onclick={() => (showDeleteModal = false)}> Cancel </button>
 				<button class="btn-danger" onclick={deletePlan}>
 					<IconTrash size={18} />
 					Delete Plan
@@ -845,11 +856,18 @@
 
 <!-- Preview Modal -->
 {#if showPreviewModal && previewingPlan}
-	<div class="modal-overlay" onclick={(e) => { if (e.target === e.currentTarget) showPreviewModal = false; }} onkeydown={(e) => e.key === 'Escape' && (showPreviewModal = false)} role="dialog" aria-modal="true" tabindex="-1" aria-labelledby="preview-modal-title">
-		<div
-			class="modal modal-preview"
-			role="document"
-		>
+	<div
+		class="modal-overlay"
+		onclick={(e) => {
+			if (e.target === e.currentTarget) showPreviewModal = false;
+		}}
+		onkeydown={(e) => e.key === 'Escape' && (showPreviewModal = false)}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+		aria-labelledby="preview-modal-title"
+	>
+		<div class="modal modal-preview" role="document">
 			<div class="modal-header">
 				<h3 id="preview-modal-title">
 					<IconEye size={20} />
@@ -880,9 +898,7 @@
 							</div>
 						{/each}
 					</div>
-					<button class="preview-btn" disabled>
-						Subscribe Now
-					</button>
+					<button class="preview-btn" disabled> Subscribe Now </button>
 				</div>
 			</div>
 		</div>
@@ -964,11 +980,26 @@
 		flex-shrink: 0;
 	}
 
-	.stat-icon.amber { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
-	.stat-icon.emerald { background: rgba(34, 197, 94, 0.15); color: #22c55e; }
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-	.stat-icon.cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
+	.stat-icon.amber {
+		background: rgba(99, 102, 241, 0.15);
+		color: #a5b4fc;
+	}
+	.stat-icon.emerald {
+		background: rgba(34, 197, 94, 0.15);
+		color: #22c55e;
+	}
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
+	.stat-icon.cyan {
+		background: rgba(6, 182, 212, 0.15);
+		color: #22d3ee;
+	}
 
 	.stat-content {
 		display: flex;
@@ -1060,8 +1091,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {

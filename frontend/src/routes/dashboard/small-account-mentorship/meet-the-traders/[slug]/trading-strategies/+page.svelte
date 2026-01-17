@@ -26,7 +26,8 @@
 		{
 			id: '1',
 			name: 'Squeeze Pro Momentum',
-			description: 'Identify explosive momentum moves using the Squeeze Pro indicator. This strategy focuses on catching breakouts after periods of low volatility consolidation.',
+			description:
+				'Identify explosive momentum moves using the Squeeze Pro indicator. This strategy focuses on catching breakouts after periods of low volatility consolidation.',
 			difficulty: 'Intermediate',
 			timeframe: 'Daily / 4-Hour',
 			markets: ['SPY', 'QQQ', 'Individual Stocks'],
@@ -40,7 +41,8 @@
 		{
 			id: '2',
 			name: 'Voodoo Lines Support/Resistance',
-			description: 'Use proprietary Voodoo Lines to identify key support and resistance levels that institutional traders watch.',
+			description:
+				'Use proprietary Voodoo Lines to identify key support and resistance levels that institutional traders watch.',
 			difficulty: 'Beginner',
 			timeframe: 'All Timeframes',
 			markets: ['All Markets'],
@@ -54,7 +56,8 @@
 		{
 			id: '3',
 			name: 'Options Momentum Swing',
-			description: 'Capture multi-day momentum moves using options for leveraged exposure with defined risk.',
+			description:
+				'Capture multi-day momentum moves using options for leveraged exposure with defined risk.',
 			difficulty: 'Advanced',
 			timeframe: 'Daily',
 			markets: ['High Beta Stocks', 'ETFs'],
@@ -69,10 +72,14 @@
 
 	function getDifficultyColor(difficulty: string): string {
 		switch (difficulty) {
-			case 'Beginner': return '#28a745';
-			case 'Intermediate': return '#ffc107';
-			case 'Advanced': return '#dc3545';
-			default: return '#666';
+			case 'Beginner':
+				return '#28a745';
+			case 'Intermediate':
+				return '#ffc107';
+			case 'Advanced':
+				return '#dc3545';
+			default:
+				return '#666';
 		}
 	}
 </script>
@@ -84,7 +91,10 @@
 	</div>
 	<div class="content-block">
 		<div class="content-text">
-			<p>Explore the trading strategies developed and refined by {trader.name}. Each strategy includes detailed entry and exit criteria, risk management rules, and best practices.</p>
+			<p>
+				Explore the trading strategies developed and refined by {trader.name}. Each strategy
+				includes detailed entry and exit criteria, risk management rules, and best practices.
+			</p>
 		</div>
 	</div>
 
@@ -94,13 +104,16 @@
 			<article class="strategy-card">
 				<header class="card-header">
 					<h3 class="strategy-name">{strategy.name}</h3>
-					<span class="difficulty-badge" style="background-color: {getDifficultyColor(strategy.difficulty)}">
+					<span
+						class="difficulty-badge"
+						style="background-color: {getDifficultyColor(strategy.difficulty)}"
+					>
 						{strategy.difficulty}
 					</span>
 				</header>
 				<div class="card-body">
 					<p class="strategy-description">{strategy.description}</p>
-					
+
 					<div class="strategy-meta">
 						<div class="meta-item">
 							<span class="meta-label">Timeframe</span>
@@ -122,7 +135,10 @@
 					</div>
 				</div>
 				<footer class="card-footer">
-					<a href="/dashboard/day-trading-room/meet-the-traders/{trader.slug}/trader-store" class="btn btn-xs btn-default">Learn This Strategy</a>
+					<a
+						href="/dashboard/day-trading-room/meet-the-traders/{trader.slug}/trader-store"
+						class="btn btn-xs btn-default">Learn This Strategy</a
+					>
 				</footer>
 			</article>
 		{/each}
@@ -136,51 +152,185 @@
 {/if}
 
 <style>
-	.content-block { margin-bottom: 20px; }
-	.content-block:last-child { margin-bottom: 0; }
+	.content-block {
+		margin-bottom: 20px;
+	}
+	.content-block:last-child {
+		margin-bottom: 0;
+	}
 
-	.section-heading { font-size: 24px; font-weight: 700; color: #333; margin: 0 0 15px; line-height: 1.2; }
+	.section-heading {
+		font-size: 24px;
+		font-weight: 700;
+		color: #333;
+		margin: 0 0 15px;
+		line-height: 1.2;
+	}
 
-	.content-text { font-size: 16px; line-height: 1.7; color: #444; margin-bottom: 30px; }
-	.content-text p { margin: 0; }
+	.content-text {
+		font-size: 16px;
+		line-height: 1.7;
+		color: #444;
+		margin-bottom: 30px;
+	}
+	.content-text p {
+		margin: 0;
+	}
 
-	.strategies-grid { display: grid; grid-template-columns: repeat(1, 1fr); gap: 25px; margin-top: 20px; }
+	.strategies-grid {
+		display: grid;
+		grid-template-columns: repeat(1, 1fr);
+		gap: 25px;
+		margin-top: 20px;
+	}
 
-	.strategy-card { background: #fff; border: 1px solid #e6e6e6; border-radius: 8px; overflow: hidden; transition: box-shadow 0.3s ease; }
-	.strategy-card:hover { box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08); }
+	.strategy-card {
+		background: #fff;
+		border: 1px solid #e6e6e6;
+		border-radius: 8px;
+		overflow: hidden;
+		transition: box-shadow 0.3s ease;
+	}
+	.strategy-card:hover {
+		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+	}
 
-	.card-header { display: flex; justify-content: space-between; align-items: center; padding: 20px; background: #f9f9f9; border-bottom: 1px solid #e6e6e6; }
-	.strategy-name { font-size: 20px; font-weight: 700; color: #333; margin: 0; }
-	.difficulty-badge { display: inline-block; padding: 5px 12px; color: #fff; font-size: 11px; font-weight: 600; border-radius: 3px; text-transform: uppercase; }
+	.card-header {
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
+		padding: 20px;
+		background: #f9f9f9;
+		border-bottom: 1px solid #e6e6e6;
+	}
+	.strategy-name {
+		font-size: 20px;
+		font-weight: 700;
+		color: #333;
+		margin: 0;
+	}
+	.difficulty-badge {
+		display: inline-block;
+		padding: 5px 12px;
+		color: #fff;
+		font-size: 11px;
+		font-weight: 600;
+		border-radius: 3px;
+		text-transform: uppercase;
+	}
 
-	.card-body { padding: 20px; }
-	.strategy-description { font-size: 15px; color: #555; line-height: 1.7; margin: 0 0 20px; }
+	.card-body {
+		padding: 20px;
+	}
+	.strategy-description {
+		font-size: 15px;
+		color: #555;
+		line-height: 1.7;
+		margin: 0 0 20px;
+	}
 
-	.strategy-meta { display: flex; gap: 30px; margin-bottom: 20px; padding-bottom: 20px; border-bottom: 1px solid #e6e6e6; }
-	.meta-item { display: flex; flex-direction: column; gap: 4px; }
-	.meta-label { font-size: 11px; text-transform: uppercase; color: #999; font-weight: 600; }
-	.meta-value { font-size: 14px; color: #333; font-weight: 500; }
+	.strategy-meta {
+		display: flex;
+		gap: 30px;
+		margin-bottom: 20px;
+		padding-bottom: 20px;
+		border-bottom: 1px solid #e6e6e6;
+	}
+	.meta-item {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
+	}
+	.meta-label {
+		font-size: 11px;
+		text-transform: uppercase;
+		color: #999;
+		font-weight: 600;
+	}
+	.meta-value {
+		font-size: 14px;
+		color: #333;
+		font-weight: 500;
+	}
 
-	.key-points h4 { font-size: 14px; font-weight: 700; color: #333; margin: 0 0 10px; text-transform: uppercase; }
-	.key-points ul { margin: 0; padding: 0 0 0 20px; }
-	.key-points li { font-size: 14px; color: #555; line-height: 1.8; margin-bottom: 5px; }
-	.key-points li:last-child { margin-bottom: 0; }
+	.key-points h4 {
+		font-size: 14px;
+		font-weight: 700;
+		color: #333;
+		margin: 0 0 10px;
+		text-transform: uppercase;
+	}
+	.key-points ul {
+		margin: 0;
+		padding: 0 0 0 20px;
+	}
+	.key-points li {
+		font-size: 14px;
+		color: #555;
+		line-height: 1.8;
+		margin-bottom: 5px;
+	}
+	.key-points li:last-child {
+		margin-bottom: 0;
+	}
 
-	.card-footer { padding: 15px 20px; background: #fafafa; border-top: 1px solid #e6e6e6; }
+	.card-footer {
+		padding: 15px 20px;
+		background: #fafafa;
+		border-top: 1px solid #e6e6e6;
+	}
 
-	.btn { display: inline-block; padding: 10px 20px; font-size: 14px; font-weight: 600; text-align: center; text-decoration: none; border-radius: 4px; transition: all 0.2s ease; cursor: pointer; }
-	.btn-xs { padding: 8px 16px; font-size: 12px; }
-	.btn-default { background: #143E59; color: #fff; border: 1px solid #143E59; }
-	.btn-default:hover { background: #0c2638; border-color: #0c2638; }
+	.btn {
+		display: inline-block;
+		padding: 10px 20px;
+		font-size: 14px;
+		font-weight: 600;
+		text-align: center;
+		text-decoration: none;
+		border-radius: 4px;
+		transition: all 0.2s ease;
+		cursor: pointer;
+	}
+	.btn-xs {
+		padding: 8px 16px;
+		font-size: 12px;
+	}
+	.btn-default {
+		background: #143e59;
+		color: #fff;
+		border: 1px solid #143e59;
+	}
+	.btn-default:hover {
+		background: #0c2638;
+		border-color: #0c2638;
+	}
 
-	.empty-state { text-align: center; padding: 60px 20px; color: #666; }
+	.empty-state {
+		text-align: center;
+		padding: 60px 20px;
+		color: #666;
+	}
 
 	/* Mobile-first: stacked by default, row on md+ */
-	.card-header { flex-direction: column; gap: 10px; text-align: center; }
-	.strategy-meta { flex-direction: column; gap: 15px; }
+	.card-header {
+		flex-direction: column;
+		gap: 10px;
+		text-align: center;
+	}
+	.strategy-meta {
+		flex-direction: column;
+		gap: 15px;
+	}
 
 	@media (min-width: 768px) {
-		.card-header { flex-direction: row; gap: 20px; text-align: left; }
-		.strategy-meta { flex-direction: row; gap: 30px; }
+		.card-header {
+			flex-direction: row;
+			gap: 20px;
+			text-align: left;
+		}
+		.strategy-meta {
+			flex-direction: row;
+			gap: 30px;
+		}
 	}
 </style>

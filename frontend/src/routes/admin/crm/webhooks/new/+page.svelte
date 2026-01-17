@@ -44,17 +44,16 @@
 	let fieldErrors = $state<Record<string, string>>({});
 
 	// Toast notification state
-	let toasts = $state<Array<{ id: string; type: 'success' | 'error' | 'info'; message: string }>>([]);
+	let toasts = $state<Array<{ id: string; type: 'success' | 'error' | 'info'; message: string }>>(
+		[]
+	);
 
 	// =====================================================
 	// DERIVED STATE
 	// =====================================================
 
 	let isFormValid = $derived(
-		name.trim().length > 0 &&
-		url.trim().length > 0 &&
-		isValidUrl(url) &&
-		selectedEvents.size > 0
+		name.trim().length > 0 && url.trim().length > 0 && isValidUrl(url) && selectedEvents.size > 0
 	);
 
 	let selectedCount = $derived(selectedEvents.size);
@@ -118,7 +117,7 @@
 		try {
 			// Build headers object
 			const headers: Record<string, string> = {};
-			customHeaders.forEach(h => {
+			customHeaders.forEach((h) => {
 				if (h.key.trim() && h.value.trim()) {
 					headers[h.key.trim()] = h.value.trim();
 				}
@@ -194,15 +193,15 @@
 	}
 
 	function updateHeaderKey(index: number, key: string) {
-		customHeaders = customHeaders.map((h, i) => i === index ? { ...h, key } : h);
+		customHeaders = customHeaders.map((h, i) => (i === index ? { ...h, key } : h));
 	}
 
 	function updateHeaderValue(index: number, value: string) {
-		customHeaders = customHeaders.map((h, i) => i === index ? { ...h, value } : h);
+		customHeaders = customHeaders.map((h, i) => (i === index ? { ...h, value } : h));
 	}
 
 	function formatEventName(event: string): string {
-		return event.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+		return event.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase());
 	}
 
 	// =====================================================
@@ -213,12 +212,12 @@
 		const id = crypto.randomUUID();
 		toasts = [...toasts, { id, type, message }];
 		setTimeout(() => {
-			toasts = toasts.filter(t => t.id !== id);
+			toasts = toasts.filter((t) => t.id !== id);
 		}, 5000);
 	}
 
 	function dismissToast(id: string) {
-		toasts = toasts.filter(t => t.id !== id);
+		toasts = toasts.filter((t) => t.id !== id);
 	}
 
 	// =====================================================
@@ -243,11 +242,19 @@
 				<span>Back to Webhooks</span>
 			</a>
 			<h1>Create New Webhook</h1>
-			<p class="page-description">Configure a webhook to send real-time notifications to external services</p>
+			<p class="page-description">
+				Configure a webhook to send real-time notifications to external services
+			</p>
 		</div>
 	</header>
 
-	<form class="webhook-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+	<form
+		class="webhook-form"
+		onsubmit={(e) => {
+			e.preventDefault();
+			handleSubmit();
+		}}
+	>
 		<!-- Basic Info Section -->
 		<section class="form-section">
 			<h2 class="section-title">Basic Information</h2>
@@ -287,9 +294,7 @@
 			</div>
 
 			<div class="form-group">
-				<label for="secret">
-					Secret Key (Optional)
-				</label>
+				<label for="secret"> Secret Key (Optional) </label>
 				<div class="input-with-action">
 					<input
 						type="text"
@@ -297,7 +302,12 @@
 						bind:value={secret}
 						placeholder="Used to sign webhook payloads"
 					/>
-					<button type="button" class="btn-generate" onclick={generateSecret} title="Generate Secret">
+					<button
+						type="button"
+						class="btn-generate"
+						onclick={generateSecret}
+						title="Generate Secret"
+					>
 						<IconKey size={16} />
 						Generate
 					</button>
@@ -307,11 +317,7 @@
 
 			<div class="form-group">
 				<label class="toggle-label">
-					<input
-						type="checkbox"
-						bind:checked={isActive}
-						class="toggle-input"
-					/>
+					<input type="checkbox" bind:checked={isActive} class="toggle-input" />
 					<span class="toggle-switch"></span>
 					<span class="toggle-text">Active</span>
 				</label>
@@ -402,20 +408,14 @@
 					{/each}
 				</div>
 			{:else}
-				<div class="no-headers">
-					No custom headers configured
-				</div>
+				<div class="no-headers">No custom headers configured</div>
 			{/if}
 		</section>
 
 		<!-- Form Actions -->
 		<div class="form-actions">
 			<a href="/admin/crm/webhooks" class="btn-cancel">Cancel</a>
-			<button
-				type="submit"
-				class="btn-submit"
-				disabled={isSaving || !isFormValid}
-			>
+			<button type="submit" class="btn-submit" disabled={isSaving || !isFormValid}>
 				{#if isSaving}
 					<IconRefresh size={18} class="spinning" />
 					Creating...
@@ -576,8 +576,8 @@
 		color: #f87171;
 	}
 
-	.form-group input[type="text"],
-	.form-group input[type="url"] {
+	.form-group input[type='text'],
+	.form-group input[type='url'] {
 		width: 100%;
 		padding: 0.75rem 1rem;
 		background: rgba(30, 41, 59, 0.6);
@@ -871,8 +871,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* =====================================================
@@ -924,14 +928,30 @@
 		}
 	}
 
-	.toast-success { border-color: rgba(34, 197, 94, 0.3); }
-	.toast-success .toast-icon { color: #4ade80; }
-	.toast-error { border-color: rgba(239, 68, 68, 0.3); }
-	.toast-error .toast-icon { color: #f87171; }
-	.toast-info .toast-icon { color: #60a5fa; }
+	.toast-success {
+		border-color: rgba(34, 197, 94, 0.3);
+	}
+	.toast-success .toast-icon {
+		color: #4ade80;
+	}
+	.toast-error {
+		border-color: rgba(239, 68, 68, 0.3);
+	}
+	.toast-error .toast-icon {
+		color: #f87171;
+	}
+	.toast-info .toast-icon {
+		color: #60a5fa;
+	}
 
-	.toast-icon { flex-shrink: 0; }
-	.toast-message { flex: 1; color: #e2e8f0; font-size: 0.9rem; }
+	.toast-icon {
+		flex-shrink: 0;
+	}
+	.toast-message {
+		flex: 1;
+		color: #e2e8f0;
+		font-size: 0.9rem;
+	}
 
 	.toast-dismiss {
 		display: flex;
@@ -979,7 +999,8 @@
 			flex-direction: column-reverse;
 		}
 
-		.btn-cancel, .btn-submit {
+		.btn-cancel,
+		.btn-submit {
 			width: 100%;
 			justify-content: center;
 		}

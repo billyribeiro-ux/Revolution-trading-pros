@@ -32,7 +32,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 $props() rune with explicit typing
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	interface Props {
 		data: PageData;
 	}
@@ -42,7 +42,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 $derived() for reactive destructuring
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	const scanners = $derived(data.scanners);
 	const seo = $derived(data.seo);
 	const breadcrumbs = $derived(data.breadcrumbs);
@@ -51,7 +51,7 @@
 	// STRUCTURED DATA - JSON-LD for Google Rich Snippets
 	// Google Dec 2025: Required for product listings
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	// Svelte 5 $derived.by() for complex computations - Apple ICT 11+ pattern
 	const structuredData = $derived.by(() => ({
 		'@context': 'https://schema.org',
@@ -84,7 +84,9 @@
 							price: scanner.price,
 							priceCurrency: scanner.currency,
 							availability: `https://schema.org/${scanner.availability}`,
-							priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split('T')[0]
+							priceValidUntil: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000)
+								.toISOString()
+								.split('T')[0]
 						},
 						aggregateRating: {
 							'@type': 'AggregateRating',
@@ -129,7 +131,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// NAVIGATION
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	function viewScanner(slug: string) {
 		goto(`/store/scanners/${slug}/`);
 	}
@@ -143,11 +145,14 @@
 	<meta name="description" content={seo.description} />
 	<meta name="keywords" content={seo.keywords.join(', ')} />
 	<link rel="canonical" href={seo.canonical} />
-	
+
 	<!-- Robots Meta -->
-	<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1" />
+	<meta
+		name="robots"
+		content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1"
+	/>
 	<meta name="googlebot" content="index, follow" />
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════
 	     OPEN GRAPH - Social Media Sharing
 	     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -161,7 +166,7 @@
 	<meta property="og:image:alt" content="Revolution Trading Pros - Trading Scanners" />
 	<meta property="og:site_name" content="Revolution Trading Pros" />
 	<meta property="og:locale" content="en_US" />
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════
 	     TWITTER CARD - Twitter Sharing
 	     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -172,13 +177,13 @@
 	<meta name="twitter:image:alt" content="Revolution Trading Pros - Trading Scanners" />
 	<meta name="twitter:site" content="@revolutiontrading" />
 	<meta name="twitter:creator" content="@revolutiontrading" />
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════
 	     STRUCTURED DATA - JSON-LD for Google Rich Snippets
 	     Google Dec 2025: Critical for product listings
 	     ═══════════════════════════════════════════════════════════════════════════ -->
 	{@html `<script type="application/ld+json">${JSON.stringify(structuredData)}</script>`}
-	
+
 	<!-- ═══════════════════════════════════════════════════════════════════════════
 	     PERFORMANCE HINTS - Core Web Vitals Optimization
 	     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -186,7 +191,7 @@
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="anonymous" />
 	<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 	<link rel="dns-prefetch" href="https://www.google-analytics.com" />
-	
+
 	<!-- Preload critical assets -->
 	<link rel="preload" as="image" href="/revolution-trading-pros.png" fetchpriority="high" />
 </svelte:head>
@@ -220,22 +225,24 @@
 		<!-- Hero Section - Semantic HTML -->
 		<header class="page-header">
 			<h1 itemprop="name">Trading Scanners</h1>
-			<p class="subtitle" itemprop="description">Professional-grade scanning tools for serious traders</p>
+			<p class="subtitle" itemprop="description">
+				Professional-grade scanning tools for serious traders
+			</p>
 		</header>
 
 		<!-- Scanners Grid - Semantic Product Cards -->
 		<div class="scanners-grid" role="list">
 			{#each scanners as scanner}
-				<article 
-					class="scanner-card" 
+				<article
+					class="scanner-card"
 					role="listitem"
-					itemscope 
+					itemscope
 					itemtype="https://schema.org/SoftwareApplication"
 				>
 					{#if scanner.image}
 						<div class="scanner-image">
-							<img 
-								src={scanner.image} 
+							<img
+								src={scanner.image}
 								alt="{scanner.name} - Professional trading scanner interface"
 								itemprop="image"
 								loading="lazy"
@@ -245,11 +252,11 @@
 							/>
 						</div>
 					{/if}
-					
+
 					<div class="scanner-content">
 						<h2 itemprop="name">{scanner.name}</h2>
 						<p class="description" itemprop="description">{scanner.description}</p>
-						
+
 						<!-- Features List -->
 						<ul class="features" aria-label="Key features">
 							{#each (scanner.features || []).slice(0, 3) as feature}
@@ -259,7 +266,7 @@
 								</li>
 							{/each}
 						</ul>
-						
+
 						<!-- Pricing & CTA -->
 						<div class="scanner-footer">
 							<div class="pricing" itemprop="offers" itemscope itemtype="https://schema.org/Offer">
@@ -271,8 +278,8 @@
 								</span>
 								<span class="interval">/{scanner.interval}</span>
 							</div>
-							
-							<button 
+
+							<button
 								class="btn-primary"
 								onclick={() => viewScanner(scanner.slug)}
 								aria-label="Learn more about {scanner.name}"
@@ -372,7 +379,9 @@
 		border-radius: 12px;
 		overflow: hidden;
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-		transition: transform 0.3s ease, box-shadow 0.3s ease;
+		transition:
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
 	}
 
 	.scanner-card:hover {

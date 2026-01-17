@@ -2,7 +2,7 @@
 	/**
 	 * Page Builder Admin Route
 	 * Apple Principal Engineer ICT 11 Grade - January 2026
-	 * 
+	 *
 	 * Main page builder interface for creating and editing course pages.
 	 * Fully integrated with backend API for save/load functionality.
 	 */
@@ -52,7 +52,7 @@
 			if (courseData.success && courseData.data?.course) {
 				const course = courseData.data.course;
 				courseName = course.title;
-				store.updateLayoutMeta({ 
+				store.updateLayoutMeta({
 					title: course.title,
 					courseId: course.id
 				});
@@ -85,7 +85,7 @@
 
 		try {
 			const layout = store.exportLayout();
-			
+
 			// Add course ID to layout
 			if (courseId) {
 				layout.courseId = courseId;
@@ -114,14 +114,16 @@
 					})
 				});
 			}
-			
+
 			if (data.success) {
 				if (!layoutId && data.data?.id) {
 					layoutId = data.data.id;
 				}
 				store.markSaved();
 				showSaveSuccess = true;
-				setTimeout(() => { showSaveSuccess = false; }, 3000);
+				setTimeout(() => {
+					showSaveSuccess = false;
+				}, 3000);
 			} else {
 				errorMessage = data.error || 'Failed to save layout';
 			}
@@ -147,12 +149,14 @@
 				const data = await adminFetch(`/api/admin/page-layouts/${layoutId}/publish`, {
 					method: 'POST'
 				});
-				
+
 				if (data.success) {
 					store.updateLayoutMeta({ status: 'published' });
 					store.markSaved();
 					showSaveSuccess = true;
-					setTimeout(() => { showSaveSuccess = false; }, 3000);
+					setTimeout(() => {
+						showSaveSuccess = false;
+					}, 3000);
 				} else {
 					errorMessage = data.error || 'Failed to publish layout';
 				}
@@ -176,7 +180,7 @@
 	// Warn before leaving with unsaved changes
 	$effect(() => {
 		if (typeof window === 'undefined') return;
-		
+
 		const handleBeforeUnload = (e: BeforeUnloadEvent) => {
 			if (store.hasUnsavedChanges) {
 				e.preventDefault();
@@ -204,10 +208,32 @@
 		<!-- Error Banner -->
 		{#if errorMessage}
 			<div class="error-banner">
-				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					><circle cx="12" cy="12" r="10" /><line x1="12" x2="12" y1="8" y2="12" /><line
+						x1="12"
+						x2="12.01"
+						y1="16"
+						y2="16"
+					/></svg
+				>
 				{errorMessage}
-				<button onclick={() => errorMessage = null} aria-label="Dismiss">
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+				<button onclick={() => (errorMessage = null)} aria-label="Dismiss">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"><path d="M18 6 6 18" /><path d="m6 6 12 12" /></svg
+					>
 				</button>
 			</div>
 		{/if}
@@ -216,7 +242,15 @@
 		<header class="builder-header">
 			<div class="header-left">
 				<button onclick={goBack} class="back-link">
-					<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m15 18-6-6 6-6"/></svg>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"><path d="m15 18-6-6 6-6" /></svg
+					>
 					{courseId ? 'Back to Course' : 'Back to Courses'}
 				</button>
 				{#if courseName}
@@ -237,7 +271,15 @@
 			<div class="header-right">
 				{#if showSaveSuccess}
 					<span class="save-success">
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 6 9 17l-5-5"/></svg>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"><path d="M20 6 9 17l-5-5" /></svg
+						>
 						Saved
 					</span>
 				{/if}
@@ -246,12 +288,34 @@
 						<span class="spinner"></span>
 						Saving...
 					{:else}
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+						<svg
+							xmlns="http://www.w3.org/2000/svg"
+							width="16"
+							height="16"
+							viewBox="0 0 24 24"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+							><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z" /><polyline
+								points="17 21 17 13 7 13 7 21"
+							/><polyline points="7 3 7 8 15 8" /></svg
+						>
 						Save Draft
 					{/if}
 				</button>
 				<button class="btn-primary" onclick={handlePublish} disabled={saving}>
-					<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" /><polyline
+							points="17 8 12 3 7 8"
+						/><line x1="12" x2="12" y1="3" y2="15" /></svg
+					>
 					Publish
 				</button>
 			</div>
@@ -278,7 +342,7 @@
 		align-items: center;
 		justify-content: center;
 		height: 100vh;
-		background: #F3F4F6;
+		background: #f3f4f6;
 	}
 
 	.loading-content {
@@ -288,15 +352,15 @@
 	.spinner-large {
 		width: 48px;
 		height: 48px;
-		border: 4px solid #E5E7EB;
-		border-top-color: #143E59;
+		border: 4px solid #e5e7eb;
+		border-top-color: #143e59;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 		margin: 0 auto 16px;
 	}
 
 	.loading-content p {
-		color: #6B7280;
+		color: #6b7280;
 		font-size: 14px;
 		margin: 0;
 	}
@@ -307,9 +371,9 @@
 		align-items: center;
 		gap: 10px;
 		padding: 12px 20px;
-		background: #FEF2F2;
-		border-bottom: 1px solid #FECACA;
-		color: #DC2626;
+		background: #fef2f2;
+		border-bottom: 1px solid #fecaca;
+		color: #dc2626;
 		font-size: 14px;
 	}
 
@@ -317,29 +381,29 @@
 		margin-left: auto;
 		background: none;
 		border: none;
-		color: #DC2626;
+		color: #dc2626;
 		cursor: pointer;
 		padding: 4px;
 		border-radius: 4px;
 	}
 
 	.error-banner button:hover {
-		background: #FEE2E2;
+		background: #fee2e2;
 	}
 
 	/* Course Name */
 	.course-name {
 		font-size: 14px;
 		font-weight: 600;
-		color: #1F2937;
+		color: #1f2937;
 		padding-left: 12px;
-		border-left: 2px solid #E5E7EB;
+		border-left: 2px solid #e5e7eb;
 	}
 
 	/* Layout Badge */
 	.layout-badge {
 		padding: 4px 10px;
-		background: #E5E7EB;
+		background: #e5e7eb;
 		color: #374151;
 		font-size: 11px;
 		font-weight: 500;
@@ -347,16 +411,17 @@
 	}
 
 	.layout-badge.new {
-		background: #DBEAFE;
-		color: #1D4ED8;
+		background: #dbeafe;
+		color: #1d4ed8;
 	}
 
 	.page-builder {
 		display: flex;
 		flex-direction: column;
 		height: 100vh;
-		background: #F3F4F6;
-		font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+		background: #f3f4f6;
+		font-family:
+			-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 	}
 
 	/* Header */
@@ -365,8 +430,8 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 12px 20px;
-		background: #FFFFFF;
-		border-bottom: 1px solid #E5E7EB;
+		background: #ffffff;
+		border-bottom: 1px solid #e5e7eb;
 		gap: 16px;
 		flex-shrink: 0;
 	}
@@ -388,7 +453,7 @@
 		display: flex;
 		align-items: center;
 		gap: 6px;
-		color: #6B7280;
+		color: #6b7280;
 		text-decoration: none;
 		font-size: 14px;
 		font-weight: 500;
@@ -396,14 +461,14 @@
 	}
 
 	.back-link:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.builder-badge {
 		display: inline-flex;
 		align-items: center;
 		padding: 4px 12px;
-		background: linear-gradient(135deg, #143E59 0%, #1E73BE 100%);
+		background: linear-gradient(135deg, #143e59 0%, #1e73be 100%);
 		color: white;
 		font-size: 12px;
 		font-weight: 600;
@@ -416,8 +481,8 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 4px 10px;
-		background: #FEF3C7;
-		color: #92400E;
+		background: #fef3c7;
+		color: #92400e;
 		font-size: 12px;
 		font-weight: 500;
 		border-radius: 12px;
@@ -428,8 +493,8 @@
 		align-items: center;
 		gap: 6px;
 		padding: 6px 12px;
-		background: #D1FAE5;
-		color: #065F46;
+		background: #d1fae5;
+		color: #065f46;
 		font-size: 13px;
 		font-weight: 500;
 		border-radius: 6px;
@@ -437,8 +502,14 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; transform: translateY(-4px); }
-		to { opacity: 1; transform: translateY(0); }
+		from {
+			opacity: 0;
+			transform: translateY(-4px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	.btn-secondary,
@@ -456,13 +527,13 @@
 	}
 
 	.btn-secondary {
-		background: #F3F4F6;
+		background: #f3f4f6;
 		color: #374151;
-		border: 1px solid #E5E7EB;
+		border: 1px solid #e5e7eb;
 	}
 
 	.btn-secondary:hover:not(:disabled) {
-		background: #E5E7EB;
+		background: #e5e7eb;
 	}
 
 	.btn-secondary:disabled {
@@ -471,12 +542,12 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #143E59 0%, #1E5A8A 100%);
+		background: linear-gradient(135deg, #143e59 0%, #1e5a8a 100%);
 		color: white;
 	}
 
 	.btn-primary:hover:not(:disabled) {
-		background: linear-gradient(135deg, #0F2D42 0%, #143E59 100%);
+		background: linear-gradient(135deg, #0f2d42 0%, #143e59 100%);
 		transform: translateY(-1px);
 		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
 	}
@@ -491,14 +562,16 @@
 	.spinner {
 		width: 14px;
 		height: 14px;
-		border: 2px solid #D1D5DB;
+		border: 2px solid #d1d5db;
 		border-top-color: #374151;
 		border-radius: 50%;
 		animation: spin 0.6s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Main Area */

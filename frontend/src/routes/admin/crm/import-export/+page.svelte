@@ -37,23 +37,58 @@
 	let activeTab = $state<'import' | 'export'>('import');
 
 	const importTypes = [
-		{ type: 'contacts', name: 'Contacts', icon: IconUsers, description: 'Import contacts from CSV' },
+		{
+			type: 'contacts',
+			name: 'Contacts',
+			icon: IconUsers,
+			description: 'Import contacts from CSV'
+		},
 		{ type: 'tags', name: 'Tags', icon: IconTags, description: 'Import contact tags' },
 		{ type: 'lists', name: 'Lists', icon: IconListDetails, description: 'Import contact lists' },
-		{ type: 'sequences', name: 'Email Sequences', icon: IconMailForward, description: 'Import email sequences' },
+		{
+			type: 'sequences',
+			name: 'Email Sequences',
+			icon: IconMailForward,
+			description: 'Import email sequences'
+		},
 		{ type: 'campaigns', name: 'Campaigns', icon: IconMail, description: 'Import campaigns' },
-		{ type: 'automations', name: 'Automations', icon: IconRoute, description: 'Import automation funnels' },
-		{ type: 'templates', name: 'Templates', icon: IconTemplate, description: 'Import email templates' }
+		{
+			type: 'automations',
+			name: 'Automations',
+			icon: IconRoute,
+			description: 'Import automation funnels'
+		},
+		{
+			type: 'templates',
+			name: 'Templates',
+			icon: IconTemplate,
+			description: 'Import email templates'
+		}
 	];
 
 	const exportTypes = [
 		{ type: 'contacts', name: 'Contacts', icon: IconUsers, description: 'Export all contacts' },
 		{ type: 'tags', name: 'Tags', icon: IconTags, description: 'Export contact tags' },
 		{ type: 'lists', name: 'Lists', icon: IconListDetails, description: 'Export contact lists' },
-		{ type: 'sequences', name: 'Email Sequences', icon: IconMailForward, description: 'Export email sequences' },
+		{
+			type: 'sequences',
+			name: 'Email Sequences',
+			icon: IconMailForward,
+			description: 'Export email sequences'
+		},
 		{ type: 'campaigns', name: 'Campaigns', icon: IconMail, description: 'Export campaigns' },
-		{ type: 'automations', name: 'Automations', icon: IconRoute, description: 'Export automation funnels' },
-		{ type: 'templates', name: 'Templates', icon: IconTemplate, description: 'Export email templates' }
+		{
+			type: 'automations',
+			name: 'Automations',
+			icon: IconRoute,
+			description: 'Export automation funnels'
+		},
+		{
+			type: 'templates',
+			name: 'Templates',
+			icon: IconTemplate,
+			description: 'Export email templates'
+		}
 	];
 
 	async function loadJobs() {
@@ -160,11 +195,19 @@
 
 	<!-- Tabs -->
 	<div class="tabs">
-		<button class="tab" class:active={activeTab === 'import'} onclick={() => (activeTab = 'import')}>
+		<button
+			class="tab"
+			class:active={activeTab === 'import'}
+			onclick={() => (activeTab = 'import')}
+		>
 			<IconUpload size={18} />
 			Import
 		</button>
-		<button class="tab" class:active={activeTab === 'export'} onclick={() => (activeTab = 'export')}>
+		<button
+			class="tab"
+			class:active={activeTab === 'export'}
+			onclick={() => (activeTab = 'export')}
+		>
 			<IconDownload size={18} />
 			Export
 		</button>
@@ -360,7 +403,7 @@
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -368,8 +411,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.tabs {
@@ -395,13 +442,13 @@
 	}
 
 	.tab:hover {
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.tab.active {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.section {
@@ -454,7 +501,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #FFD11A;
+		color: #ffd11a;
 		flex-shrink: 0;
 	}
 
@@ -508,7 +555,7 @@
 		border-radius: 9999px;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #FFD11A;
+		color: #ffd11a;
 		text-transform: capitalize;
 	}
 
@@ -570,7 +617,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
-		color: #FFD11A;
+		color: #ffd11a;
 		font-size: 0.85rem;
 		font-weight: 600;
 		cursor: pointer;

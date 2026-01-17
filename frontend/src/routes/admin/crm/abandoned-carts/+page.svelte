@@ -233,7 +233,10 @@
 	{#if !haveAutomation}
 		<div class="warning-banner">
 			<IconShoppingCart size={20} />
-			<span>No active abandoned cart automation found. Create an automation to start recovering lost revenue.</span>
+			<span
+				>No active abandoned cart automation found. Create an automation to start recovering lost
+				revenue.</span
+			>
 			<a href="/admin/crm/automations/new?trigger=fc_ab_cart_simulation_woo" class="btn-link">
 				Create Automation
 			</a>
@@ -357,7 +360,11 @@
 											<IconReceipt size={16} />
 										</a>
 									{/if}
-									<button class="btn-icon danger" title="Delete" onclick={() => deleteCart(cart.id)}>
+									<button
+										class="btn-icon danger"
+										title="Delete"
+										onclick={() => deleteCart(cart.id)}
+									>
 										<IconTrash size={16} />
 									</button>
 								</div>
@@ -417,7 +424,7 @@
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -505,7 +512,7 @@
 	}
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.stat-content {
@@ -671,7 +678,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.customer-info {
@@ -755,7 +762,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.btn-icon.danger:hover {
@@ -794,7 +801,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

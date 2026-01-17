@@ -58,8 +58,8 @@
 	// Derived state - form validation
 	let isFormValid = $derived(
 		formData.name.trim().length > 0 &&
-		formData.slug.trim().length > 0 &&
-		parseFloat(formData.price) > 0
+			formData.slug.trim().length > 0 &&
+			parseFloat(formData.price) > 0
 	);
 
 	// Derived state - formatted price preview
@@ -73,13 +73,15 @@
 	});
 
 	// Derived state - valid features count
-	let validFeatures = $derived(
-		formData.features.filter((f) => f.trim().length > 0)
-	);
+	let validFeatures = $derived(formData.features.filter((f) => f.trim().length > 0));
 
 	// Derived state - product type icon and color for preview
-	let previewTypeIcon = $derived(productTypes.find((t) => t.value === formData.type)?.icon || IconShoppingCart);
-	let previewTypeColor = $derived(productTypes.find((t) => t.value === formData.type)?.color || '#64748b');
+	let previewTypeIcon = $derived(
+		productTypes.find((t) => t.value === formData.type)?.icon || IconShoppingCart
+	);
+	let previewTypeColor = $derived(
+		productTypes.find((t) => t.value === formData.type)?.color || '#64748b'
+	);
 
 	// Generate slug from name
 	function generateSlug() {
@@ -411,11 +413,7 @@
 
 				<!-- Form Actions -->
 				<div class="form-actions">
-					<button
-						type="button"
-						class="btn-secondary"
-						onclick={() => goto('/admin/products')}
-					>
+					<button type="button" class="btn-secondary" onclick={() => goto('/admin/products')}>
 						Cancel
 					</button>
 					<button

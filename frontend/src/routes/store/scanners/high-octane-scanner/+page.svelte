@@ -14,7 +14,14 @@
 	import { goto } from '$app/navigation';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import { addToCart } from '$lib/stores/cart.svelte';
-	import { IconCheck, IconShoppingCart, IconChartLine, IconBell, IconFilter, IconClock } from '$lib/icons';
+	import {
+		IconCheck,
+		IconShoppingCart,
+		IconChartLine,
+		IconBell,
+		IconFilter,
+		IconClock
+	} from '$lib/icons';
 
 	// Product configuration
 	const product = {
@@ -22,7 +29,8 @@
 		name: 'High Octane Scanner',
 		slug: 'high-octane-scanner',
 		type: 'indicator' as const,
-		description: 'Professional-grade options scanner with real-time alerts and advanced filtering algorithms',
+		description:
+			'Professional-grade options scanner with real-time alerts and advanced filtering algorithms',
 		longDescription: `
 			The High Octane Scanner is your ultimate tool for finding high-probability options trades. 
 			Built by professional traders for serious market participants, this scanner uses proprietary 
@@ -72,8 +80,12 @@
 	let isAddingToCart = $state(false);
 	let showSuccessMessage = $state(false);
 
-	const currentPrice = $derived(selectedInterval === 'monthly' ? product.price : product.priceYearly);
-	const savingsPercent = $derived(Math.round((1 - (product.priceYearly / (product.price * 12))) * 100));
+	const currentPrice = $derived(
+		selectedInterval === 'monthly' ? product.price : product.priceYearly
+	);
+	const savingsPercent = $derived(
+		Math.round((1 - product.priceYearly / (product.price * 12)) * 100)
+	);
 
 	async function handleAddToCart() {
 		if (!$isAuthenticated) {
@@ -126,20 +138,20 @@
 				<div class="hero-text">
 					<h1>{product.name}</h1>
 					<p class="tagline">{product.description}</p>
-					
+
 					<div class="pricing-section">
 						<div class="interval-toggle">
 							<button
 								class="interval-btn"
 								class:active={selectedInterval === 'monthly'}
-								onclick={() => selectedInterval = 'monthly'}
+								onclick={() => (selectedInterval = 'monthly')}
 							>
 								Monthly
 							</button>
 							<button
 								class="interval-btn"
 								class:active={selectedInterval === 'yearly'}
-								onclick={() => selectedInterval = 'yearly'}
+								onclick={() => (selectedInterval = 'yearly')}
 							>
 								Yearly
 								{#if savingsPercent > 0}
@@ -161,19 +173,15 @@
 					</div>
 
 					<div class="cta-buttons">
-						<button 
-							class="btn-primary btn-large"
-							onclick={handleBuyNow}
-							disabled={isAddingToCart}
-						>
+						<button class="btn-primary btn-large" onclick={handleBuyNow} disabled={isAddingToCart}>
 							{#if isAddingToCart}
 								Processing...
 							{:else}
 								Buy Now
 							{/if}
 						</button>
-						
-						<button 
+
+						<button
 							class="btn-secondary btn-large"
 							onclick={handleAddToCart}
 							disabled={isAddingToCart}
@@ -241,10 +249,7 @@
 		<div class="container">
 			<h2>Ready to Start Scanning?</h2>
 			<p>Join thousands of traders using the High Octane Scanner</p>
-			<button 
-				class="btn-primary btn-large"
-				onclick={handleBuyNow}
-			>
+			<button class="btn-primary btn-large" onclick={handleBuyNow}>
 				Get Started Now - ${currentPrice}/{selectedInterval}
 			</button>
 		</div>
@@ -490,7 +495,9 @@
 		padding: 32px;
 		border-radius: 12px;
 		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-		transition: transform 0.3s ease, box-shadow 0.3s ease;
+		transition:
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
 	}
 
 	.feature-card:hover {

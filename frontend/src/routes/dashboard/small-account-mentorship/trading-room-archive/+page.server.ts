@@ -2,9 +2,9 @@
  * Trading Room Archive Page Server
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Implementation
- * 
+ *
  * Fetches room archive videos
- * 
+ *
  * @version 3.0.0
  */
 
@@ -66,11 +66,11 @@ export interface ArchivePageData {
 /** @type {import('./$types').PageServerLoad} */
 export const load = async ({ url, fetch }): Promise<ArchivePageData> => {
 	const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
-	
+
 	// Get query params
 	const page = url.searchParams.get('page') || '1';
 	const search = url.searchParams.get('search') || '';
-	
+
 	// TODO: Implement new video fetching approach
 	// Returning empty data until new implementation is ready
 	return {

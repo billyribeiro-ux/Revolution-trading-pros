@@ -2,7 +2,7 @@
  * Watchlist Rundown Archive - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 7 Principal Engineer Grade - January 2026
- * 
+ *
  * SvelteKit 2.0 / Svelte 5 Best Practices (Nov/Dec 2025):
  * - Explicit ServerLoadEvent type from @sveltejs/kit (no auto-gen dependency)
  * - async function syntax (preferred over arrow functions)
@@ -90,7 +90,8 @@ const MOCK_VIDEOS: WatchlistVideo[] = [
 		weekOf: 'Week of December 15, 2025',
 		image: 'https://cdn.simplertrading.com/2022/10/10141416/Chris-Member-Webinar.jpg',
 		href: '/watchlist/12152025-allison-ostrander',
-		description: 'Allison Ostrander breaks down the Weekly Watchlist for the week of December 15, 2025.'
+		description:
+			'Allison Ostrander breaks down the Weekly Watchlist for the week of December 15, 2025.'
 	},
 	{
 		id: '6',
@@ -106,20 +107,22 @@ const MOCK_VIDEOS: WatchlistVideo[] = [
 
 export async function load({ fetch }: ServerLoadEvent) {
 	try {
-		const response = await fetch('https://revolution-trading-pros-api.fly.dev/api/watchlist/entries');
-		
+		const response = await fetch(
+			'https://revolution-trading-pros-api.fly.dev/api/watchlist/entries'
+		);
+
 		if (!response.ok) {
 			console.error('[WatchlistRundown] API error:', response.status, '- using mock data');
 			return { videos: MOCK_VIDEOS };
 		}
 
 		const data: WatchlistApiResponse = await response.json();
-		
+
 		if (!data.entries || data.entries.length === 0) {
 			console.log('[WatchlistRundown] No API data - using mock data');
 			return { videos: MOCK_VIDEOS };
 		}
-		
+
 		const videos: WatchlistVideo[] = data.entries.map((entry) => ({
 			id: String(entry.id),
 			slug: entry.slug,
@@ -136,4 +139,4 @@ export async function load({ fetch }: ServerLoadEvent) {
 		console.error('[WatchlistRundown] Load error - using mock data:', error);
 		return { videos: MOCK_VIDEOS };
 	}
-};
+}

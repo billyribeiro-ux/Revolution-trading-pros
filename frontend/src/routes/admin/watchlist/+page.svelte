@@ -101,12 +101,14 @@
 
 	// Filter items
 	let filteredItems = $derived.by(() => {
-		return items.filter(item => {
+		return items.filter((item) => {
 			// Search filter
 			if (searchQuery) {
 				const query = searchQuery.toLowerCase();
-				if (!item.title.toLowerCase().includes(query) &&
-					!item.trader.toLowerCase().includes(query)) {
+				if (
+					!item.title.toLowerCase().includes(query) &&
+					!item.trader.toLowerCase().includes(query)
+				) {
 					return false;
 				}
 			}
@@ -124,9 +126,9 @@
 	let stats = $derived.by(() => {
 		return {
 			total: items.length,
-			published: items.filter(i => i.status === 'published').length,
-			draft: items.filter(i => i.status === 'draft').length,
-			archived: items.filter(i => i.status === 'archived').length
+			published: items.filter((i) => i.status === 'published').length,
+			draft: items.filter((i) => i.status === 'draft').length,
+			archived: items.filter((i) => i.status === 'archived').length
 		};
 	});
 
@@ -145,7 +147,7 @@
 
 		try {
 			await watchlistApi.delete(itemToDelete.slug);
-			items = items.filter(i => i.slug !== itemToDelete!.slug);
+			items = items.filter((i) => i.slug !== itemToDelete!.slug);
 		} catch (err) {
 			console.error('Failed to delete item:', err);
 		}
@@ -157,7 +159,7 @@
 	async function handlePublish(item: WatchlistItem) {
 		try {
 			const response = await watchlistApi.publish(item.slug);
-			items = items.map(i => i.slug === item.slug ? response.data : i);
+			items = items.map((i) => (i.slug === item.slug ? response.data : i));
 		} catch (err) {
 			console.error('Failed to publish item:', err);
 		}
@@ -167,7 +169,7 @@
 	async function handleArchive(item: WatchlistItem) {
 		try {
 			const response = await watchlistApi.archive(item.slug);
-			items = items.map(i => i.slug === item.slug ? response.data : i);
+			items = items.map((i) => (i.slug === item.slug ? response.data : i));
 		} catch (err) {
 			console.error('Failed to archive item:', err);
 		}
@@ -247,225 +249,219 @@
 
 <div class="admin-page">
 	<div class="admin-page-container">
-	<!-- Header -->
-	<header class="page-header">
-		<div class="header-left">
-			<h1>Weekly Watchlist</h1>
-			<p class="subtitle">Manage weekly watchlist videos and content</p>
-		</div>
-		<div class="header-actions">
-			<button type="button" class="btn-primary" onclick={() => showCreateModal = true}>
-				<IconPlus size={18} />
-				Add Watchlist
-			</button>
-		</div>
-	</header>
+		<!-- Header -->
+		<header class="page-header">
+			<div class="header-left">
+				<h1>Weekly Watchlist</h1>
+				<p class="subtitle">Manage weekly watchlist videos and content</p>
+			</div>
+			<div class="header-actions">
+				<button type="button" class="btn-primary" onclick={() => (showCreateModal = true)}>
+					<IconPlus size={18} />
+					Add Watchlist
+				</button>
+			</div>
+		</header>
 
-	<!-- Stats -->
-	<div class="stats-grid">
-		<div class="stat-card">
-			<span class="stat-value">{stats.total}</span>
-			<span class="stat-label">Total Items</span>
-		</div>
-		<div class="stat-card">
-			<span class="stat-value">{stats.published}</span>
-			<span class="stat-label">Published</span>
-		</div>
-		<div class="stat-card">
-			<span class="stat-value">{stats.draft}</span>
-			<span class="stat-label">Drafts</span>
-		</div>
-		<div class="stat-card">
-			<span class="stat-value">{stats.archived}</span>
-			<span class="stat-label">Archived</span>
-		</div>
-	</div>
-
-	<!-- Filters -->
-	<div class="filters-bar">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<input
-				type="text"
-				placeholder="Search watchlist items..."
-				bind:value={searchQuery}
-			/>
+		<!-- Stats -->
+		<div class="stats-grid">
+			<div class="stat-card">
+				<span class="stat-value">{stats.total}</span>
+				<span class="stat-label">Total Items</span>
+			</div>
+			<div class="stat-card">
+				<span class="stat-value">{stats.published}</span>
+				<span class="stat-label">Published</span>
+			</div>
+			<div class="stat-card">
+				<span class="stat-value">{stats.draft}</span>
+				<span class="stat-label">Drafts</span>
+			</div>
+			<div class="stat-card">
+				<span class="stat-value">{stats.archived}</span>
+				<span class="stat-label">Archived</span>
+			</div>
 		</div>
 
-		<div class="filter-group">
-			<select bind:value={selectedStatus}>
-				<option value="">All Status</option>
-				<option value="published">Published</option>
-				<option value="draft">Draft</option>
-				<option value="archived">Archived</option>
-			</select>
+		<!-- Filters -->
+		<div class="filters-bar">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<input type="text" placeholder="Search watchlist items..." bind:value={searchQuery} />
+			</div>
+
+			<div class="filter-group">
+				<select bind:value={selectedStatus}>
+					<option value="">All Status</option>
+					<option value="published">Published</option>
+					<option value="draft">Draft</option>
+					<option value="archived">Archived</option>
+				</select>
+			</div>
+
+			{#if searchQuery || selectedStatus}
+				<button type="button" class="clear-btn" onclick={clearFilters}> Clear filters </button>
+			{/if}
 		</div>
 
-		{#if searchQuery || selectedStatus}
-			<button type="button" class="clear-btn" onclick={clearFilters}>
-				Clear filters
-			</button>
-		{/if}
-	</div>
-
-	<!-- Content -->
-	{#if isLoading}
-		<div class="loading-state">
-			<div class="loading-spinner"></div>
-			<p>Loading watchlist items...</p>
-		</div>
-	{:else if error}
-		<div class="error-state">
-			<p>{error}</p>
-			<button type="button" onclick={() => location.reload()}>Try Again</button>
-		</div>
-	{:else}
-		<!-- Items Table -->
-		<div class="table-container">
-			<table class="data-table">
-				<thead>
-					<tr>
-						<th class="col-title">Watchlist</th>
-						<th class="col-trader">Trader</th>
-						<th class="col-week">Week Of</th>
-						<th class="col-rooms">Rooms</th>
-						<th class="col-status">Status</th>
-						<th class="col-actions">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filteredItems as item (item.slug)}
+		<!-- Content -->
+		{#if isLoading}
+			<div class="loading-state">
+				<div class="loading-spinner"></div>
+				<p>Loading watchlist items...</p>
+			</div>
+		{:else if error}
+			<div class="error-state">
+				<p>{error}</p>
+				<button type="button" onclick={() => location.reload()}>Try Again</button>
+			</div>
+		{:else}
+			<!-- Items Table -->
+			<div class="table-container">
+				<table class="data-table">
+					<thead>
 						<tr>
-							<td class="col-title">
-								<div class="item-cell">
-									<div class="item-thumb">
-										{#if item.video.poster}
-											<img src={item.video.poster} alt="" />
-										{:else}
-											<div class="thumb-placeholder">
-												<IconVideo size={20} />
-											</div>
-										{/if}
-									</div>
-									<div class="item-info">
-										<span class="item-title">{item.title}</span>
-										<span class="item-meta">{item.subtitle}</span>
-									</div>
-								</div>
-							</td>
-							<td class="col-trader">
-								<div class="trader-cell">
-									{#if item.traderImage}
-										<img src={item.traderImage} alt="" class="trader-avatar" />
-									{/if}
-									<span>{item.trader}</span>
-								</div>
-							</td>
-							<td class="col-week">
-								<div class="week-cell">
-									<IconCalendar size={14} />
-									{formatDate(item.weekOf)}
-								</div>
-							</td>
-							<td class="col-rooms">
-								<div class="rooms-cell">
-									{#if !item.rooms || item.rooms.length === 0}
-										<span class="rooms-badge rooms-none">None</span>
-									{:else if isAllRooms(item.rooms)}
-										<span class="rooms-badge rooms-all">All Rooms</span>
-									{:else}
-										<div class="rooms-tags">
-											{#each getRoomsByIds(item.rooms).slice(0, 2) as room}
-												<span class="room-tag" style="background-color: {room.color}20; color: {room.color}">{room.shortName}</span>
-											{/each}
-											{#if item.rooms.length > 2}
-												<span class="rooms-more">+{item.rooms.length - 2}</span>
+							<th class="col-title">Watchlist</th>
+							<th class="col-trader">Trader</th>
+							<th class="col-week">Week Of</th>
+							<th class="col-rooms">Rooms</th>
+							<th class="col-status">Status</th>
+							<th class="col-actions">Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each filteredItems as item (item.slug)}
+							<tr>
+								<td class="col-title">
+									<div class="item-cell">
+										<div class="item-thumb">
+											{#if item.video.poster}
+												<img src={item.video.poster} alt="" />
+											{:else}
+												<div class="thumb-placeholder">
+													<IconVideo size={20} />
+												</div>
 											{/if}
 										</div>
-									{/if}
-								</div>
-							</td>
-							<td class="col-status">
-								<span class="status-badge status-{item.status}">
-									{item.status}
-								</span>
-							</td>
-							<td class="col-actions">
-								<div class="actions-cell">
-									<a
-										href="/admin/watchlist/{item.slug}/edit"
-										class="action-btn"
-										title="Edit"
-									>
-										<IconEdit size={16} />
-									</a>
-									<a
-										href="/watchlist/{item.slug}"
-										class="action-btn"
-										title="View"
-										target="_blank"
-									>
-										<IconEye size={16} />
-									</a>
-									<div class="dropdown">
-										<button
-											type="button"
-											class="action-btn"
-											onclick={() => toggleDropdown(item.slug)}
-										>
-											<IconDots size={16} />
-										</button>
-										{#if activeDropdown === item.slug}
-											<div class="dropdown-menu">
-												{#if item.status === 'draft'}
-													<button onclick={() => handlePublish(item)}>
-														<IconCheck size={14} />
-														Publish
-													</button>
+										<div class="item-info">
+											<span class="item-title">{item.title}</span>
+											<span class="item-meta">{item.subtitle}</span>
+										</div>
+									</div>
+								</td>
+								<td class="col-trader">
+									<div class="trader-cell">
+										{#if item.traderImage}
+											<img src={item.traderImage} alt="" class="trader-avatar" />
+										{/if}
+										<span>{item.trader}</span>
+									</div>
+								</td>
+								<td class="col-week">
+									<div class="week-cell">
+										<IconCalendar size={14} />
+										{formatDate(item.weekOf)}
+									</div>
+								</td>
+								<td class="col-rooms">
+									<div class="rooms-cell">
+										{#if !item.rooms || item.rooms.length === 0}
+											<span class="rooms-badge rooms-none">None</span>
+										{:else if isAllRooms(item.rooms)}
+											<span class="rooms-badge rooms-all">All Rooms</span>
+										{:else}
+											<div class="rooms-tags">
+												{#each getRoomsByIds(item.rooms).slice(0, 2) as room}
+													<span
+														class="room-tag"
+														style="background-color: {room.color}20; color: {room.color}"
+														>{room.shortName}</span
+													>
+												{/each}
+												{#if item.rooms.length > 2}
+													<span class="rooms-more">+{item.rooms.length - 2}</span>
 												{/if}
-												{#if item.status === 'published'}
-													<button onclick={() => handleArchive(item)}>
-														<IconX size={14} />
-														Archive
-													</button>
-												{/if}
-												<button
-													class="danger"
-													onclick={() => handleDeleteClick(item)}
-												>
-													<IconTrash size={14} />
-													Delete
-												</button>
 											</div>
 										{/if}
 									</div>
-								</div>
-							</td>
-						</tr>
-					{:else}
-						<tr>
-							<td colspan="7" class="empty-state">
-								<p>No watchlist items found</p>
-								{#if searchQuery || selectedStatus}
-									<button type="button" onclick={clearFilters}>Clear filters</button>
-								{:else}
-									<button type="button" onclick={() => showCreateModal = true}>Create your first watchlist</button>
-								{/if}
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+								</td>
+								<td class="col-status">
+									<span class="status-badge status-{item.status}">
+										{item.status}
+									</span>
+								</td>
+								<td class="col-actions">
+									<div class="actions-cell">
+										<a href="/admin/watchlist/{item.slug}/edit" class="action-btn" title="Edit">
+											<IconEdit size={16} />
+										</a>
+										<a
+											href="/watchlist/{item.slug}"
+											class="action-btn"
+											title="View"
+											target="_blank"
+										>
+											<IconEye size={16} />
+										</a>
+										<div class="dropdown">
+											<button
+												type="button"
+												class="action-btn"
+												onclick={() => toggleDropdown(item.slug)}
+											>
+												<IconDots size={16} />
+											</button>
+											{#if activeDropdown === item.slug}
+												<div class="dropdown-menu">
+													{#if item.status === 'draft'}
+														<button onclick={() => handlePublish(item)}>
+															<IconCheck size={14} />
+															Publish
+														</button>
+													{/if}
+													{#if item.status === 'published'}
+														<button onclick={() => handleArchive(item)}>
+															<IconX size={14} />
+															Archive
+														</button>
+													{/if}
+													<button class="danger" onclick={() => handleDeleteClick(item)}>
+														<IconTrash size={14} />
+														Delete
+													</button>
+												</div>
+											{/if}
+										</div>
+									</div>
+								</td>
+							</tr>
+						{:else}
+							<tr>
+								<td colspan="7" class="empty-state">
+									<p>No watchlist items found</p>
+									{#if searchQuery || selectedStatus}
+										<button type="button" onclick={clearFilters}>Clear filters</button>
+									{:else}
+										<button type="button" onclick={() => (showCreateModal = true)}
+											>Create your first watchlist</button
+										>
+									{/if}
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <!-- Create Modal -->
 {#if showCreateModal}
 	<div
 		class="modal-overlay"
-		onclick={() => showCreateModal = false}
+		onclick={() => (showCreateModal = false)}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateModal = false)}
 		role="button"
 		tabindex="-1"
@@ -480,7 +476,12 @@
 			tabindex="0"
 		>
 			<h3>Create Weekly Watchlist</h3>
-			<form onsubmit={(e: Event) => { e.preventDefault(); handleCreate(); }}>
+			<form
+				onsubmit={(e: Event) => {
+					e.preventDefault();
+					handleCreate();
+				}}
+			>
 				<div class="form-grid">
 					<div class="form-group">
 						<label for="title">Title *</label>
@@ -506,12 +507,7 @@
 
 					<div class="form-group">
 						<label for="weekOf">Week Of *</label>
-						<input
-							id="weekOf"
-							type="date"
-							bind:value={newItem.weekOf}
-							required
-						/>
+						<input id="weekOf" type="date" bind:value={newItem.weekOf} required />
 					</div>
 
 					<div class="form-group">
@@ -568,7 +564,7 @@
 				</div>
 
 				<div class="modal-actions">
-					<button type="button" class="btn-cancel" onclick={() => showCreateModal = false}>
+					<button type="button" class="btn-cancel" onclick={() => (showCreateModal = false)}>
 						Cancel
 					</button>
 					<button type="submit" class="btn-primary" disabled={isSaving}>
@@ -584,7 +580,7 @@
 {#if showDeleteModal}
 	<div
 		class="modal-overlay"
-		onclick={() => showDeleteModal = false}
+		onclick={() => (showDeleteModal = false)}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showDeleteModal = false)}
 		role="button"
 		tabindex="-1"
@@ -601,12 +597,10 @@
 			<h3>Delete Watchlist?</h3>
 			<p>Are you sure you want to delete "{itemToDelete?.title}"? This action cannot be undone.</p>
 			<div class="modal-actions">
-				<button type="button" class="btn-cancel" onclick={() => showDeleteModal = false}>
+				<button type="button" class="btn-cancel" onclick={() => (showDeleteModal = false)}>
 					Cancel
 				</button>
-				<button type="button" class="btn-delete" onclick={handleConfirmDelete}>
-					Delete
-				</button>
+				<button type="button" class="btn-delete" onclick={handleConfirmDelete}> Delete </button>
 			</div>
 		</div>
 	</div>
@@ -784,7 +778,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.error-state button {
@@ -836,12 +832,24 @@
 	}
 
 	/* Column widths */
-	.col-title { width: 30%; }
-	.col-trader { width: 12%; }
-	.col-week { width: 12%; }
-	.col-rooms { width: 18%; }
-	.col-status { width: 10%; }
-	.col-actions { width: 10%; }
+	.col-title {
+		width: 30%;
+	}
+	.col-trader {
+		width: 12%;
+	}
+	.col-week {
+		width: 12%;
+	}
+	.col-rooms {
+		width: 18%;
+	}
+	.col-status {
+		width: 10%;
+	}
+	.col-actions {
+		width: 10%;
+	}
 
 	/* Item cell */
 	.item-cell {

@@ -67,14 +67,23 @@
 					return;
 				}
 				// Handle SQL errors with user-friendly messages
-				if (e.message.includes('SQLSTATE') || e.message.includes('Column not found') || e.message.includes('deleted_at')) {
-					error = 'Database configuration issue. Email templates feature is being set up. Please try again later or contact support.';
+				if (
+					e.message.includes('SQLSTATE') ||
+					e.message.includes('Column not found') ||
+					e.message.includes('deleted_at')
+				) {
+					error =
+						'Database configuration issue. Email templates feature is being set up. Please try again later or contact support.';
 				} else {
 					error = e.message;
 				}
-			} else if (e instanceof Error && (e.message?.includes('SQLSTATE') || e.message?.includes('deleted_at'))) {
+			} else if (
+				e instanceof Error &&
+				(e.message?.includes('SQLSTATE') || e.message?.includes('deleted_at'))
+			) {
 				// Handle raw SQL errors
-				error = 'Database configuration issue. Email templates feature is being set up. Please try again later or contact support.';
+				error =
+					'Database configuration issue. Email templates feature is being set up. Please try again later or contact support.';
 			} else {
 				error = 'Failed to load templates. Please refresh the page or contact support.';
 			}
@@ -173,7 +182,9 @@
 				<button class="btn-secondary" onclick={() => (searchQuery = '')}>Clear Search</button>
 			{:else}
 				<p>No templates found. Create one to get started.</p>
-				<button class="btn-primary" onclick={() => goto('/admin/email/templates/new')}>Create Template</button>
+				<button class="btn-primary" onclick={() => goto('/admin/email/templates/new')}
+					>Create Template</button
+				>
 			{/if}
 		</div>
 	{:else}
@@ -362,8 +373,8 @@
 		margin-right: 0.5rem;
 	}
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		padding: 0.5rem 1rem;
 		border-radius: 6px;
@@ -420,13 +431,15 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
 	}
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 	.empty-state {
 		text-align: center;

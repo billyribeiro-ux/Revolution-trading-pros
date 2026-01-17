@@ -14,7 +14,7 @@ export const load: PageServerLoad = async ({ parent, fetch }) => {
 		const response = await fetch('/api/my/orders', {
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json'
+				Accept: 'application/json'
 			},
 			credentials: 'include'
 		});
@@ -23,7 +23,7 @@ export const load: PageServerLoad = async ({ parent, fetch }) => {
 			const data = await response.json();
 			// API returns { success: true, data: [...] }
 			const orders = data.data || data.orders || [];
-			
+
 			if (orders.length > 0) {
 				return {
 					orders,

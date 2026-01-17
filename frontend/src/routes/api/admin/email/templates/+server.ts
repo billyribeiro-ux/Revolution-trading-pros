@@ -55,8 +55,8 @@ let emailTemplates = [
 		subject: 'This Week in Trading',
 		email_type: 'marketing',
 		is_active: true,
-		body_html: '<h1>Weekly Newsletter</h1><p>Here are this week\'s trading insights.</p>',
-		body_text: 'Weekly Newsletter - Here are this week\'s trading insights.',
+		body_html: "<h1>Weekly Newsletter</h1><p>Here are this week's trading insights.</p>",
+		body_text: "Weekly Newsletter - Here are this week's trading insights.",
 		created_at: '2024-01-15T10:00:00Z',
 		updated_at: '2024-01-15T10:00:00Z'
 	}
@@ -84,15 +84,12 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// Validate required fields
 		if (!body.name || !body.subject) {
-			return json(
-				{ success: false, error: 'Name and subject are required' },
-				{ status: 400 }
-			);
+			return json({ success: false, error: 'Name and subject are required' }, { status: 400 });
 		}
 
 		// Create new template
 		const newTemplate = {
-			id: Math.max(...emailTemplates.map(t => t.id), 0) + 1,
+			id: Math.max(...emailTemplates.map((t) => t.id), 0) + 1,
 			name: body.name,
 			slug: body.slug || body.name.toLowerCase().replace(/\s+/g, '-'),
 			subject: body.subject,
@@ -113,9 +110,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 	} catch (error) {
 		console.error('Failed to create email template:', error);
-		return json(
-			{ success: false, error: 'Failed to create template' },
-			{ status: 500 }
-		);
+		return json({ success: false, error: 'Failed to create template' }, { status: 500 });
 	}
 };

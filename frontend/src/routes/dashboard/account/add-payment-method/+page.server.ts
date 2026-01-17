@@ -49,8 +49,8 @@ export const actions = {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				return fail(response.status, { 
-					error: errorData.message || 'Failed to add payment method' 
+				return fail(response.status, {
+					error: errorData.message || 'Failed to add payment method'
 				});
 			}
 
@@ -61,7 +61,7 @@ export const actions = {
 			if (err instanceof Response && err.status === 303) {
 				throw err;
 			}
-			
+
 			console.error('Error adding payment method:', err);
 			return fail(500, { error: 'An error occurred while adding the payment method' });
 		}

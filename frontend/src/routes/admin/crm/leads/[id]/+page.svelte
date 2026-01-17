@@ -372,11 +372,7 @@
 				<div class="lead-identity">
 					<div class="name-row">
 						<h1>{lead.full_name}</h1>
-						<button
-							class="btn-star"
-							class:starred={lead.is_starred}
-							onclick={toggleStarred}
-						>
+						<button class="btn-star" class:starred={lead.is_starred} onclick={toggleStarred}>
 							{#if lead.is_starred}
 								<IconStarFilled size={20} />
 							{:else}
@@ -387,7 +383,9 @@
 					{#if lead.job_title || lead.company_name}
 						<p class="job-info">
 							{lead.job_title || ''}
-							{#if lead.job_title && lead.company_name} at {/if}
+							{#if lead.job_title && lead.company_name}
+								at
+							{/if}
 							{lead.company_name || ''}
 						</p>
 					{/if}
@@ -422,11 +420,7 @@
 					<IconEdit size={18} />
 					Edit Lead
 				</a>
-				<button
-					class="btn-icon danger"
-					onclick={() => (showDeleteModal = true)}
-					title="Delete"
-				>
+				<button class="btn-icon danger" onclick={() => (showDeleteModal = true)} title="Delete">
 					<IconTrash size={18} />
 				</button>
 			</div>
@@ -562,11 +556,7 @@
 									<IconWorld size={16} />
 									<div>
 										<span class="info-label">Website</span>
-										<a
-											href={lead.website}
-											target="_blank"
-											class="info-value link"
-										>
+										<a href={lead.website} target="_blank" class="info-value link">
 											{lead.website}
 										</a>
 									</div>
@@ -578,9 +568,7 @@
 									<div>
 										<span class="info-label">Location</span>
 										<span class="info-value">
-											{[lead.city, lead.state, lead.country]
-												.filter(Boolean)
-												.join(', ')}
+											{[lead.city, lead.state, lead.country].filter(Boolean).join(', ')}
 										</span>
 									</div>
 								</div>
@@ -646,7 +634,8 @@
 								{#each lead.tags as tag}
 									<span
 										class="tag-pill"
-										style="background-color: {tag.color || '#f97316'}20; color: {tag.color || '#f97316'}"
+										style="background-color: {tag.color || '#f97316'}20; color: {tag.color ||
+											'#f97316'}"
 									>
 										{tag.name}
 									</span>
@@ -673,7 +662,6 @@
 						</div>
 					{/if}
 				</div>
-
 			{:else if activeTab === 'activity'}
 				<div class="activity-section">
 					{#if timeline.length === 0}
@@ -708,14 +696,10 @@
 						</div>
 					{/if}
 				</div>
-
 			{:else if activeTab === 'notes'}
 				<div class="notes-section">
 					<div class="notes-header">
-						<button
-							class="btn-primary"
-							onclick={() => (showAddNoteModal = true)}
-						>
+						<button class="btn-primary" onclick={() => (showAddNoteModal = true)}>
 							<IconPlus size={18} />
 							Add Note
 						</button>
@@ -791,12 +775,7 @@
 				></textarea>
 			</div>
 			<div class="modal-footer">
-				<button
-					class="btn-secondary"
-					onclick={() => (showAddNoteModal = false)}
-				>
-					Cancel
-				</button>
+				<button class="btn-secondary" onclick={() => (showAddNoteModal = false)}> Cancel </button>
 				<button
 					class="btn-primary"
 					onclick={addNote}
@@ -842,22 +821,13 @@
 			</div>
 			<div class="modal-body">
 				<p class="confirm-text">
-					Convert <strong>{lead?.full_name}</strong> to a contact?
-					The lead will be moved to your contacts list with all associated data.
+					Convert <strong>{lead?.full_name}</strong> to a contact? The lead will be moved to your contacts
+					list with all associated data.
 				</p>
 			</div>
 			<div class="modal-footer">
-				<button
-					class="btn-secondary"
-					onclick={() => (showConvertModal = false)}
-				>
-					Cancel
-				</button>
-				<button
-					class="btn-primary"
-					onclick={convertToContact}
-					disabled={actionLoading}
-				>
+				<button class="btn-secondary" onclick={() => (showConvertModal = false)}> Cancel </button>
+				<button class="btn-primary" onclick={convertToContact} disabled={actionLoading}>
 					{#if actionLoading}
 						Converting...
 					{:else}
@@ -898,22 +868,13 @@
 			</div>
 			<div class="modal-body">
 				<p class="confirm-text">
-					Are you sure you want to delete <strong>{lead?.full_name}</strong>?
-					This action cannot be undone.
+					Are you sure you want to delete <strong>{lead?.full_name}</strong>? This action cannot be
+					undone.
 				</p>
 			</div>
 			<div class="modal-footer">
-				<button
-					class="btn-secondary"
-					onclick={() => (showDeleteModal = false)}
-				>
-					Cancel
-				</button>
-				<button
-					class="btn-danger"
-					onclick={deleteLead}
-					disabled={actionLoading}
-				>
+				<button class="btn-secondary" onclick={() => (showDeleteModal = false)}> Cancel </button>
+				<button class="btn-danger" onclick={deleteLead} disabled={actionLoading}>
 					{#if actionLoading}
 						Deleting...
 					{:else}

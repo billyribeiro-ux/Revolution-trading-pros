@@ -42,7 +42,9 @@ export const load = async ({ locals }) => {
 	// redirects to login if not authenticated
 	// ICT 7 FIX: Also pass accessToken for server-side API calls in child pages
 	return {
-		user: (locals as { user?: { id: string; email: string; name?: string; role?: string } }).user ?? null,
+		user:
+			(locals as { user?: { id: string; email: string; name?: string; role?: string } }).user ??
+			null,
 		accessToken: (locals as { accessToken?: string | null }).accessToken ?? null
 	};
 };

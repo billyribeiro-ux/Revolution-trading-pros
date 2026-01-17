@@ -45,149 +45,149 @@
 	<div class="dashboard__content-main">
 		<div class="billing-address-card">
 			<div class="woocommerce-notices-wrapper">
-			{#if form?.success}
-				<div class="woocommerce-message woocommerce-message--success">
-					<p>{form.message}</p>
-				</div>
-			{:else if form?.message}
-				<div class="woocommerce-error">
-					<p>{form.message}</p>
-				</div>
-			{/if}
+				{#if form?.success}
+					<div class="woocommerce-message woocommerce-message--success">
+						<p>{form.message}</p>
+					</div>
+				{:else if form?.message}
+					<div class="woocommerce-error">
+						<p>{form.message}</p>
+					</div>
+				{/if}
 			</div>
 
 			<h2 class="section-title">Billing Address</h2>
 
 			<form method="POST" use:enhance>
-			<div class="form-row">
-				<div class="form-group col-md-6">
-					<label for="firstName">First Name <span class="required">*</span></label>
+				<div class="form-row">
+					<div class="form-group col-md-6">
+						<label for="firstName">First Name <span class="required">*</span></label>
+						<input
+							type="text"
+							id="firstName"
+							name="firstName"
+							class="form-control"
+							value={address.firstName || ''}
+							required
+						/>
+					</div>
+					<div class="form-group col-md-6">
+						<label for="lastName">Last Name <span class="required">*</span></label>
+						<input
+							type="text"
+							id="lastName"
+							name="lastName"
+							class="form-control"
+							value={address.lastName || ''}
+							required
+						/>
+					</div>
+				</div>
+
+				<div class="form-group">
+					<label for="company">Company Name (optional)</label>
 					<input
 						type="text"
-						id="firstName"
-						name="firstName"
+						id="company"
+						name="company"
 						class="form-control"
-						value={address.firstName || ''}
+						value={address.company || ''}
+					/>
+				</div>
+
+				<div class="form-group">
+					<label for="country">Country / Region <span class="required">*</span></label>
+					<select id="country" name="country" class="form-control" required>
+						<option value="US" selected={address.country === 'US'}>United States</option>
+						<option value="CA" selected={address.country === 'CA'}>Canada</option>
+						<option value="GB" selected={address.country === 'GB'}>United Kingdom</option>
+					</select>
+				</div>
+
+				<div class="form-group">
+					<label for="address1">Street Address <span class="required">*</span></label>
+					<input
+						type="text"
+						id="address1"
+						name="address1"
+						class="form-control"
+						placeholder="House number and street name"
+						value={address.address1 || ''}
 						required
 					/>
 				</div>
-				<div class="form-group col-md-6">
-					<label for="lastName">Last Name <span class="required">*</span></label>
+
+				<div class="form-group">
 					<input
 						type="text"
-						id="lastName"
-						name="lastName"
+						id="address2"
+						name="address2"
 						class="form-control"
-						value={address.lastName || ''}
+						placeholder="Apartment, suite, unit, etc. (optional)"
+						value={address.address2 || ''}
+					/>
+				</div>
+
+				<div class="form-group">
+					<label for="city">Town / City <span class="required">*</span></label>
+					<input
+						type="text"
+						id="city"
+						name="city"
+						class="form-control"
+						value={address.city || ''}
 						required
 					/>
 				</div>
-			</div>
 
-			<div class="form-group">
-				<label for="company">Company Name (optional)</label>
-				<input
-					type="text"
-					id="company"
-					name="company"
-					class="form-control"
-					value={address.company || ''}
-				/>
-			</div>
+				<div class="form-row">
+					<div class="form-group col-md-6">
+						<label for="state">State <span class="required">*</span></label>
+						<input
+							type="text"
+							id="state"
+							name="state"
+							class="form-control"
+							value={address.state || ''}
+							required
+						/>
+					</div>
+					<div class="form-group col-md-6">
+						<label for="postcode">ZIP Code <span class="required">*</span></label>
+						<input
+							type="text"
+							id="postcode"
+							name="postcode"
+							class="form-control"
+							value={address.postcode || ''}
+							required
+						/>
+					</div>
+				</div>
 
-			<div class="form-group">
-				<label for="country">Country / Region <span class="required">*</span></label>
-				<select id="country" name="country" class="form-control" required>
-					<option value="US" selected={address.country === 'US'}>United States</option>
-					<option value="CA" selected={address.country === 'CA'}>Canada</option>
-					<option value="GB" selected={address.country === 'GB'}>United Kingdom</option>
-				</select>
-			</div>
-
-			<div class="form-group">
-				<label for="address1">Street Address <span class="required">*</span></label>
-				<input
-					type="text"
-					id="address1"
-					name="address1"
-					class="form-control"
-					placeholder="House number and street name"
-					value={address.address1 || ''}
-					required
-				/>
-			</div>
-
-			<div class="form-group">
-				<input
-					type="text"
-					id="address2"
-					name="address2"
-					class="form-control"
-					placeholder="Apartment, suite, unit, etc. (optional)"
-					value={address.address2 || ''}
-				/>
-			</div>
-
-			<div class="form-group">
-				<label for="city">Town / City <span class="required">*</span></label>
-				<input
-					type="text"
-					id="city"
-					name="city"
-					class="form-control"
-					value={address.city || ''}
-					required
-				/>
-			</div>
-
-			<div class="form-row">
-				<div class="form-group col-md-6">
-					<label for="state">State <span class="required">*</span></label>
+				<div class="form-group">
+					<label for="phone">Phone <span class="required">*</span></label>
 					<input
-						type="text"
-						id="state"
-						name="state"
+						type="tel"
+						id="phone"
+						name="phone"
 						class="form-control"
-						value={address.state || ''}
+						value={address.phone || ''}
 						required
 					/>
 				</div>
-				<div class="form-group col-md-6">
-					<label for="postcode">ZIP Code <span class="required">*</span></label>
+
+				<div class="form-group">
+					<label for="email">Email Address <span class="required">*</span></label>
 					<input
-						type="text"
-						id="postcode"
-						name="postcode"
+						type="email"
+						id="email"
+						name="email"
 						class="form-control"
-						value={address.postcode || ''}
+						value={address.email || ''}
 						required
 					/>
 				</div>
-			</div>
-
-			<div class="form-group">
-				<label for="phone">Phone <span class="required">*</span></label>
-				<input
-					type="tel"
-					id="phone"
-					name="phone"
-					class="form-control"
-					value={address.phone || ''}
-					required
-				/>
-			</div>
-
-			<div class="form-group">
-				<label for="email">Email Address <span class="required">*</span></label>
-				<input
-					type="email"
-					id="email"
-					name="email"
-					class="form-control"
-					value={address.email || ''}
-					required
-				/>
-			</div>
 
 				<button type="submit" class="btn btn-primary">Save Address</button>
 			</form>
@@ -301,7 +301,9 @@
 		background-color: #fff;
 		border: 1px solid #d4d4d4;
 		border-radius: 5px;
-		transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+		transition:
+			border-color 0.15s ease-in-out,
+			box-shadow 0.15s ease-in-out;
 		font-family: 'Open Sans', sans-serif;
 	}
 

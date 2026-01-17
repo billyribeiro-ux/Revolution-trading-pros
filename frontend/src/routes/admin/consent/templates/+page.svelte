@@ -11,7 +11,11 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { BANNER_TEMPLATES, getTemplateCategories, DEFAULT_TEMPLATE_ID } from '$lib/consent/templates/registry';
+	import {
+		BANNER_TEMPLATES,
+		getTemplateCategories,
+		DEFAULT_TEMPLATE_ID
+	} from '$lib/consent/templates/registry';
 	import {
 		activeTemplate,
 		allTemplates,
@@ -25,7 +29,7 @@
 		isPreviewMode,
 		getActiveTemplateConfig,
 		exportTemplateConfig,
-		importTemplateConfig,
+		importTemplateConfig
 	} from '$lib/consent/templates/store';
 	import TemplatePreviewCard from '$lib/consent/templates/TemplatePreviewCard.svelte';
 	import TemplateEditor from '$lib/consent/templates/TemplateEditor.svelte';
@@ -47,14 +51,16 @@
 	let categories = $derived(['all', ...getTemplateCategories()]);
 
 	// Filtered templates
-	let filteredTemplates = $derived($allTemplates.filter((t) => {
-		const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory;
-		const matchesSearch =
-			!searchQuery ||
-			t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			t.description.toLowerCase().includes(searchQuery.toLowerCase());
-		return matchesCategory && matchesSearch;
-	}));
+	let filteredTemplates = $derived(
+		$allTemplates.filter((t) => {
+			const matchesCategory = selectedCategory === 'all' || t.category === selectedCategory;
+			const matchesSearch =
+				!searchQuery ||
+				t.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				t.description.toLowerCase().includes(searchQuery.toLowerCase());
+			return matchesCategory && matchesSearch;
+		})
+	);
 
 	// Active template ID
 	let activeTemplateId = $derived(getActiveTemplateConfig().templateId);
@@ -97,7 +103,7 @@
 			name: 'My Custom Template',
 			description: 'A custom template created from scratch',
 			category: 'custom',
-			isEditable: true,
+			isEditable: true
 		};
 		isCreatingNew = true;
 		showEditor = true;
@@ -183,25 +189,49 @@
 		</div>
 		<div class="header-actions">
 			<button class="btn btn-secondary" onclick={handleExport}>
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-					<polyline points="17 8 12 3 7 8"/>
-					<line x1="12" y1="3" x2="12" y2="15"/>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+					<polyline points="17 8 12 3 7 8" />
+					<line x1="12" y1="3" x2="12" y2="15" />
 				</svg>
 				Export
 			</button>
 			<button class="btn btn-secondary" onclick={handleImport}>
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-					<polyline points="7 10 12 15 17 10"/>
-					<line x1="12" y1="15" x2="12" y2="3"/>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+					<polyline points="7 10 12 15 17 10" />
+					<line x1="12" y1="15" x2="12" y2="3" />
 				</svg>
 				Import
 			</button>
 			<button class="btn btn-primary" onclick={handleCreateNew}>
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M5 12h14"/>
-					<path d="M12 5v14"/>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path d="M5 12h14" />
+					<path d="M12 5v14" />
 				</svg>
 				Create New
 			</button>
@@ -211,15 +241,19 @@
 	<!-- Filters -->
 	<div class="filters">
 		<div class="search-box">
-			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<circle cx="11" cy="11" r="8"/>
-				<path d="m21 21-4.3-4.3"/>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="18"
+				height="18"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
+				<circle cx="11" cy="11" r="8" />
+				<path d="m21 21-4.3-4.3" />
 			</svg>
-			<input
-				type="text"
-				placeholder="Search templates..."
-				bind:value={searchQuery}
-			/>
+			<input type="text" placeholder="Search templates..." bind:value={searchQuery} />
 		</div>
 		<div class="category-tabs">
 			{#each categories as category}
@@ -257,7 +291,13 @@
 		{#if filteredTemplates.length === 0}
 			<div class="empty-state">
 				<p>No templates found matching your criteria.</p>
-				<button class="btn btn-secondary" onclick={() => { searchQuery = ''; selectedCategory = 'all'; }}>
+				<button
+					class="btn btn-secondary"
+					onclick={() => {
+						searchQuery = '';
+						selectedCategory = 'all';
+					}}
+				>
 					Clear Filters
 				</button>
 			</div>
@@ -279,9 +319,7 @@
 	{#if $isPreviewMode}
 		<div class="preview-controls">
 			<span>Preview Mode Active</span>
-			<button class="btn btn-secondary btn-sm" onclick={exitPreviewMode}>
-				Cancel
-			</button>
+			<button class="btn btn-secondary btn-sm" onclick={exitPreviewMode}> Cancel </button>
 			<button class="btn btn-primary btn-sm" onclick={handleApplyPreview}>
 				Apply This Template
 			</button>
@@ -300,7 +338,14 @@
 			onclick={() => (showImportModal = false)}
 			onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showImportModal = false)}
 		>
-			<div class="modal" role="dialog" aria-modal="true" tabindex="-1" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
+			<div
+				class="modal"
+				role="dialog"
+				aria-modal="true"
+				tabindex="-1"
+				onclick={(e: MouseEvent) => e.stopPropagation()}
+				onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			>
 				<h3>Import Configuration</h3>
 				<p>Paste your exported JSON configuration:</p>
 				<textarea
@@ -313,9 +358,7 @@
 					<button class="btn btn-secondary" onclick={() => (showImportModal = false)}>
 						Cancel
 					</button>
-					<button class="btn btn-primary" onclick={confirmImport}>
-						Import
-					</button>
+					<button class="btn btn-primary" onclick={confirmImport}> Import </button>
 				</div>
 			</div>
 		</div>
@@ -324,9 +367,17 @@
 	<!-- Notification -->
 	{#if notification}
 		<div class="notification">
-			<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<path d="m9 12 2 2 4-4"/>
-				<circle cx="12" cy="12" r="10"/>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="18"
+				height="18"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+			>
+				<path d="m9 12 2 2 4-4" />
+				<circle cx="12" cy="12" r="10" />
 			</svg>
 			{notification}
 		</div>

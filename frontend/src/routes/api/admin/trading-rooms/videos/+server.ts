@@ -18,7 +18,7 @@ const mockVideos = [
 		trading_room_id: 1,
 		trader_id: 1,
 		title: 'Morning Market Analysis - SPY Setup',
-		description: 'Analysis of today\'s market conditions and SPY trading opportunities.',
+		description: "Analysis of today's market conditions and SPY trading opportunities.",
 		video_url: 'https://vimeo.com/123456789',
 		video_platform: 'vimeo',
 		video_id: '123456789',
@@ -125,7 +125,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			...options,
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				...options?.headers
 			}
 		});
@@ -146,9 +146,12 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const perPage = parseInt(url.searchParams.get('per_page') || '20');
 
 	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/trading-rooms/videos?${url.searchParams.toString()}`, {
-		headers: { Authorization: request.headers.get('Authorization') || '' }
-	});
+	const backendData = await fetchFromBackend(
+		`/api/admin/trading-rooms/videos?${url.searchParams.toString()}`,
+		{
+			headers: { Authorization: request.headers.get('Authorization') || '' }
+		}
+	);
 
 	if (backendData?.success) {
 		return json(backendData);
@@ -158,19 +161,21 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	let filteredVideos = [...mockVideos];
 
 	if (roomId) {
-		filteredVideos = filteredVideos.filter(v => v.trading_room_id.toString() === roomId);
+		filteredVideos = filteredVideos.filter((v) => v.trading_room_id.toString() === roomId);
 	}
 
 	if (traderId && traderId !== 'all') {
-		filteredVideos = filteredVideos.filter(v => v.trader_id?.toString() === traderId);
+		filteredVideos = filteredVideos.filter((v) => v.trader_id?.toString() === traderId);
 	}
 
 	if (publishedOnly) {
-		filteredVideos = filteredVideos.filter(v => v.is_published);
+		filteredVideos = filteredVideos.filter((v) => v.is_published);
 	}
 
 	// Sort by date descending
-	filteredVideos.sort((a, b) => new Date(b.video_date).getTime() - new Date(a.video_date).getTime());
+	filteredVideos.sort(
+		(a, b) => new Date(b.video_date).getTime() - new Date(a.video_date).getTime()
+	);
 
 	// Paginate
 	const total = filteredVideos.length;

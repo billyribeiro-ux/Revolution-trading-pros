@@ -10,7 +10,8 @@ import type { RequestHandler } from '@sveltejs/kit';
 const manifest = {
 	name: 'Revolution Trading Pros',
 	short_name: 'RevTradingPros',
-	description: 'Master the markets with institutional-grade trading tools, live trading rooms, and professional trading education.',
+	description:
+		'Master the markets with institutional-grade trading tools, live trading rooms, and professional trading education.',
 	start_url: '/',
 	scope: '/',
 	display: 'standalone',

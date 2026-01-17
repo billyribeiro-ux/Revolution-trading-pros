@@ -74,81 +74,81 @@
 	<div class="dashboard__content-main">
 		<div class="coupons-card">
 			<div class="woocommerce-notices-wrapper"></div>
-			
+
 			<h2 class="section-title">My Coupons</h2>
 
-		{#if coupons.length === 0}
-			<div class="woocommerce-message woocommerce-message--info">
-				<p>You have no available coupons.</p>
-			</div>
-		{:else}
-			<div class="coupons-grid">
-				{#each coupons as coupon (coupon.id)}
-					<div class="coupon-card" class:expired={isExpired(coupon)}>
-						<div class="coupon-header">
-							<div class="coupon-code">
-								<span class="code-label">Code:</span>
-								<span class="code-value">{coupon.code}</span>
+			{#if coupons.length === 0}
+				<div class="woocommerce-message woocommerce-message--info">
+					<p>You have no available coupons.</p>
+				</div>
+			{:else}
+				<div class="coupons-grid">
+					{#each coupons as coupon (coupon.id)}
+						<div class="coupon-card" class:expired={isExpired(coupon)}>
+							<div class="coupon-header">
+								<div class="coupon-code">
+									<span class="code-label">Code:</span>
+									<span class="code-value">{coupon.code}</span>
+								</div>
+								<div class="coupon-amount">
+									{coupon.amount}
+								</div>
 							</div>
-							<div class="coupon-amount">
-								{coupon.amount}
-							</div>
-						</div>
-						
-						<div class="coupon-body">
-							{#if coupon.description || coupon.display_name}
-								<p class="coupon-description">{coupon.display_name || coupon.description}</p>
-							{/if}
-							
-							{#if coupon.min_purchase_amount > 0}
-								<p class="coupon-min-purchase">
-									Minimum purchase: ${coupon.min_purchase_amount.toFixed(2)}
-								</p>
-							{/if}
-							
-							<div class="coupon-meta">
-								{#if coupon.expiry_date}
-									<div class="coupon-expiry">
-										<i class="fa fa-calendar"></i>
-										<span>
-											{#if isExpired(coupon)}
-												Expired: {formatDate(coupon.expiry_date)}
-											{:else}
-												Expires: {formatDate(coupon.expiry_date)}
-											{/if}
-										</span>
-									</div>
+
+							<div class="coupon-body">
+								{#if coupon.description || coupon.display_name}
+									<p class="coupon-description">{coupon.display_name || coupon.description}</p>
 								{/if}
-								
-								{#if coupon.usage_limit > 0}
-									<div class="coupon-usage">
-										<i class="fa fa-check-circle"></i>
-										<span>Used {coupon.usage_count} of {coupon.usage_limit} times</span>
-									</div>
+
+								{#if coupon.min_purchase_amount > 0}
+									<p class="coupon-min-purchase">
+										Minimum purchase: ${coupon.min_purchase_amount.toFixed(2)}
+									</p>
 								{/if}
-							</div>
-						</div>
-						
-						<div class="coupon-footer">
-							{#if isAvailable(coupon)}
-								<button 
-									class="btn btn-primary btn-sm" 
-									class:btn-success={copiedCode === coupon.code}
-									onclick={() => copyCouponCode(coupon.code)}
-								>
-									{#if copiedCode === coupon.code}
-										<i class="fa fa-check"></i> Copied!
-									{:else}
-										<i class="fa fa-copy"></i> Copy Code
+
+								<div class="coupon-meta">
+									{#if coupon.expiry_date}
+										<div class="coupon-expiry">
+											<i class="fa fa-calendar"></i>
+											<span>
+												{#if isExpired(coupon)}
+													Expired: {formatDate(coupon.expiry_date)}
+												{:else}
+													Expires: {formatDate(coupon.expiry_date)}
+												{/if}
+											</span>
+										</div>
 									{/if}
-								</button>
-							{:else}
-								<span class="coupon-status-expired">Not Available</span>
-							{/if}
+
+									{#if coupon.usage_limit > 0}
+										<div class="coupon-usage">
+											<i class="fa fa-check-circle"></i>
+											<span>Used {coupon.usage_count} of {coupon.usage_limit} times</span>
+										</div>
+									{/if}
+								</div>
+							</div>
+
+							<div class="coupon-footer">
+								{#if isAvailable(coupon)}
+									<button
+										class="btn btn-primary btn-sm"
+										class:btn-success={copiedCode === coupon.code}
+										onclick={() => copyCouponCode(coupon.code)}
+									>
+										{#if copiedCode === coupon.code}
+											<i class="fa fa-check"></i> Copied!
+										{:else}
+											<i class="fa fa-copy"></i> Copy Code
+										{/if}
+									</button>
+								{:else}
+									<span class="coupon-status-expired">Not Available</span>
+								{/if}
+							</div>
 						</div>
-					</div>
-				{/each}
-			</div>
+					{/each}
+				</div>
 			{/if}
 		</div>
 	</div>
@@ -246,7 +246,7 @@
 	}
 
 	.coupon-header {
-		background: linear-gradient(135deg, #143E59 0%, #0f2f43 100%);
+		background: linear-gradient(135deg, #143e59 0%, #0f2f43 100%);
 		padding: 20px;
 		color: #fff;
 	}
@@ -333,7 +333,7 @@
 	}
 
 	.btn-primary {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -373,7 +373,7 @@
 	.woocommerce-message {
 		padding: 16px 20px;
 		background: #e7f3ff;
-		border-left: 4px solid #143E59;
+		border-left: 4px solid #143e59;
 		border-radius: 4px;
 		margin-bottom: 20px;
 	}

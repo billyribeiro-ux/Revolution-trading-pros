@@ -12,8 +12,11 @@ export default defineConfig({
 		setupFiles: ['src/lib/observability/__tests__/setup.ts'],
 		// Mock SvelteKit modules
 		alias: {
-			'$app/environment': new URL('./src/lib/observability/__tests__/mocks/app-environment.ts', import.meta.url).pathname,
-		},
+			'$app/environment': new URL(
+				'./src/lib/observability/__tests__/mocks/app-environment.ts',
+				import.meta.url
+			).pathname
+		}
 	},
 	plugins: [
 		tailwindcss(),
@@ -94,9 +97,7 @@ export default defineConfig({
 	},
 	optimizeDeps: {
 		// Pre-bundle only critical dependencies
-		include: [
-			'svelte'
-		],
+		include: ['svelte'],
 		// Exclude heavy dependencies - lazy load them
 		exclude: [
 			'@fortawesome/fontawesome-svg-core',
@@ -114,9 +115,7 @@ export default defineConfig({
 		// Force optimization
 		force: false,
 		// Optimize dependency discovery
-		entries: [
-			'src/routes/**/*.svelte'
-		]
+		entries: ['src/routes/**/*.svelte']
 	},
 	// CSS configuration - CORB prevention handled by SvelteKit's inlineStyleThreshold
 	css: {

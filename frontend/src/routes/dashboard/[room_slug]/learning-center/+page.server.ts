@@ -1,12 +1,12 @@
 /**
  * Learning Center Server-Side Loader - Dynamic Room
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Apple ICT 11+ Principal Engineer Grade - January 2026
- * 
+ *
  * Fetches learning center videos with pagination
  * Works with any trading room via [room_slug] parameter
- * 
+ *
  * @version 2.0.0
  */
 
@@ -20,7 +20,7 @@ const ROOM_IDS: Record<string, number> = {
 	'swing-trading-room': 2,
 	'small-accounts-room': 3,
 	'options-room': 4,
-	'high-octane-scanner': 5,
+	'high-octane-scanner': 5
 };
 
 export interface VideoResponse {
@@ -101,9 +101,15 @@ function getRoomName(slug: string): string {
 		'swing-trading-room': 'Swing Trading Room',
 		'small-accounts-room': 'Small Accounts Room',
 		'options-room': 'Options Room',
-		'high-octane-scanner': 'High Octane Scanner',
+		'high-octane-scanner': 'High Octane Scanner'
 	};
-	return roomNames[slug] || slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+	return (
+		roomNames[slug] ||
+		slug
+			.split('-')
+			.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+			.join(' ')
+	);
 }
 
 export const load: PageServerLoad = async ({ params, url, fetch, cookies }) => {
@@ -121,5 +127,5 @@ export const load: PageServerLoad = async ({ params, url, fetch, cookies }) => {
 		roomSlug: room_slug,
 		roomName: getRoomName(room_slug as string),
 		error: null
-	}
+	};
 };

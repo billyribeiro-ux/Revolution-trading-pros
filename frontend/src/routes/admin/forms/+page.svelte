@@ -30,20 +30,21 @@
 
 <div class="page">
 	<div class="admin-page-container">
-	<div class="page-header">
-		<h1>Forms</h1>
-		<p class="subtitle">Create and manage your forms</p>
-		<div class="actions">
-			<button class="btn-primary" onclick={handleCreate}> + Create New Form </button>
+		<div class="page-header">
+			<h1>Forms</h1>
+			<p class="subtitle">Create and manage your forms</p>
+			<div class="actions">
+				<button class="btn-primary" onclick={handleCreate}> + Create New Form </button>
+			</div>
 		</div>
-	</div>
 
-	<FormList
-		onEdit={handleEdit}
-		onViewSubmissions={handleViewSubmissions}
-		onViewAnalytics={handleViewAnalytics}
-	/>
-	</div><!-- End admin-page-container -->
+		<FormList
+			onEdit={handleEdit}
+			onViewSubmissions={handleViewSubmissions}
+			onViewAnalytics={handleViewAnalytics}
+		/>
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>

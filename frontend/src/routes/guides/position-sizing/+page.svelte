@@ -6,9 +6,9 @@
 	<title>Position Sizing Guide | Explosive Swings</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Explosive Swings" 
-	startHereUrl="/dashboard/explosive-swings/start-here" 
+<TradingRoomHeader
+	roomName="Explosive Swings"
+	startHereUrl="/dashboard/explosive-swings/start-here"
 />
 
 <div class="guide-page">
@@ -28,7 +28,7 @@
 
 		<section class="guide-section">
 			<h2>Step-by-Step Calculation</h2>
-			
+
 			<div class="strategy-box">
 				<h3>Example Trade Setup:</h3>
 				<ul>
@@ -48,7 +48,7 @@
 		<section class="guide-section">
 			<h2>Account Size Tiers</h2>
 			<p>Position sizing varies based on account size. Here are recommended approaches:</p>
-			
+
 			<div class="tier-grid">
 				<div class="tier-card">
 					<h4>Small Account ($5,000 - $25,000)</h4>
@@ -83,7 +83,7 @@
 		<section class="guide-section">
 			<h2>Options Position Sizing</h2>
 			<p>Options require different position sizing due to leverage and theta decay.</p>
-			
+
 			<div class="strategy-box">
 				<h3>Options Sizing Rules:</h3>
 				<ul>
@@ -106,7 +106,7 @@
 		<section class="guide-section">
 			<h2>Scaling Into Positions</h2>
 			<p>For larger accounts or volatile stocks, scale into positions to reduce risk.</p>
-			
+
 			<div class="strategy-box">
 				<h3>Scaling Strategy:</h3>
 				<ul>
@@ -121,7 +121,7 @@
 		<section class="guide-section">
 			<h2>Portfolio Heat Management</h2>
 			<p>Total portfolio risk should never exceed 10% at any given time.</p>
-			
+
 			<div class="warning-box">
 				<h3>Portfolio Risk Rules:</h3>
 				<ul>
@@ -225,7 +225,7 @@
 		background: #fff;
 		border-radius: 16px;
 		padding: 40px;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 	}
 
 	.guide-section {
@@ -239,7 +239,7 @@
 	.guide-section h2 {
 		font-size: 28px;
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 		margin: 0 0 20px 0;
 		font-family: 'Montserrat', sans-serif;
 	}
@@ -252,7 +252,7 @@
 	}
 
 	.formula-box {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 		padding: 30px;
 		border-radius: 8px;
@@ -269,7 +269,7 @@
 
 	.strategy-box {
 		background: #f8fafc;
-		border-left: 4px solid #143E59;
+		border-left: 4px solid #143e59;
 		padding: 25px;
 		border-radius: 8px;
 		margin: 20px 0;
@@ -295,7 +295,7 @@
 	}
 
 	.strategy-box li strong {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.calculation {
@@ -335,7 +335,7 @@
 	.tier-card h4 {
 		font-size: 16px;
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 		margin: 0 0 15px 0;
 	}
 
@@ -395,7 +395,7 @@
 	}
 
 	thead {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 

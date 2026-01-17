@@ -1,23 +1,23 @@
 /**
  * Premium Daily Videos - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * ICT 11+ Principal Engineer Grade
  * Fetches videos from backend API with pagination support
- * 
+ *
  * SSR Configuration (SvelteKit Official Docs):
  * - ssr: true - Server-side render for SEO and fast initial load
  * - csr: true - Enable client-side hydration for interactivity
  * - prerender: false - Dynamic content, cannot be prerendered
- * 
+ *
  * @version 2.0.0 - January 2026 - Connected to real backend
  */
 
 import type { PageServerLoad } from './$types';
 
 // SSR/SSG Configuration - Per SvelteKit Official Docs
-export const ssr = true;      // Enable server-side rendering
-export const csr = true;      // Enable client-side hydration
+export const ssr = true; // Enable server-side rendering
+export const csr = true; // Enable client-side hydration
 export const prerender = false; // Dynamic content - cannot prerender
 
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix - we add it here
@@ -63,8 +63,8 @@ export const load = (async ({ url, fetch, cookies }): Promise<PageData> => {
 		// Get auth token if available
 		const token = cookies.get('auth_token');
 		const headers: HeadersInit = {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json',
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
 		};
 		if (token) {
 			headers['Authorization'] = `Bearer ${token}`;
@@ -74,7 +74,7 @@ export const load = (async ({ url, fetch, cookies }): Promise<PageData> => {
 
 		if (response.ok) {
 			const data = await response.json();
-			
+
 			// Transform backend response to frontend format
 			const videos: DailyVideo[] = (data.data?.videos || []).map((v: any) => ({
 				id: v.id,
@@ -83,8 +83,10 @@ export const load = (async ({ url, fetch, cookies }): Promise<PageData> => {
 				date: formatDate(v.published_at),
 				trader: v.trader?.name || 'Trading Team',
 				excerpt: v.description || '',
-				thumbnail: v.thumbnail_url || 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-				isVideo: true,
+				thumbnail:
+					v.thumbnail_url ||
+					'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
+				isVideo: true
 			}));
 
 			return {
@@ -93,15 +95,14 @@ export const load = (async ({ url, fetch, cookies }): Promise<PageData> => {
 					page: data.data?.pagination?.page || page,
 					perPage: data.data?.pagination?.per_page || perPage,
 					total: data.data?.pagination?.total || 0,
-					totalPages: data.data?.pagination?.total_pages || 0,
-				},
+					totalPages: data.data?.pagination?.total_pages || 0
+				}
 			} satisfies PageData;
 		}
 
 		// If API fails, return fallback mock data for development
 		console.warn('Backend API unavailable, using mock data');
 		return getMockData(page, perPage, search);
-
 	} catch (error) {
 		console.error('Failed to fetch videos:', error);
 		// Return mock data as fallback
@@ -115,7 +116,7 @@ function formatDate(dateStr: string): string {
 		return date.toLocaleDateString('en-US', {
 			year: 'numeric',
 			month: 'long',
-			day: '2-digit',
+			day: '2-digit'
 		});
 	} catch {
 		return dateStr;
@@ -131,7 +132,8 @@ function getMockData(page: number, perPage: number, search: string): PageData {
 			slug: 'bookmap',
 			date: 'January 02, 2026',
 			trader: 'Kody Ashmore',
-			excerpt: "You asked for it, you got it. Here are Kody's Bookmap tools and how he uses them to make better informed trades.",
+			excerpt:
+				"You asked for it, you got it. Here are Kody's Bookmap tools and how he uses them to make better informed trades.",
 			thumbnail: 'https://cdn.simplertrading.com/2025/02/07135413/SimplerCentral_KA.jpg',
 			isVideo: true
 		},
@@ -141,7 +143,8 @@ function getMockData(page: number, perPage: number, search: string): PageData {
 			slug: 'cautious-entry-into-2026',
 			date: 'December 31, 2025',
 			trader: 'Henry Gambell',
-			excerpt: 'As we head into the new year, here are some key considerations for your trading strategy.',
+			excerpt:
+				'As we head into the new year, here are some key considerations for your trading strategy.',
 			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
 			isVideo: true
 		},
@@ -151,7 +154,8 @@ function getMockData(page: number, perPage: number, search: string): PageData {
 			slug: 'market-analysis',
 			date: 'December 23, 2025',
 			trader: 'HG',
-			excerpt: "Things can always change, but given how the market closed on Tuesday, it looks like Santa's on his way.",
+			excerpt:
+				"Things can always change, but given how the market closed on Tuesday, it looks like Santa's on his way.",
 			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
 			isVideo: true
 		},
@@ -162,10 +166,11 @@ function getMockData(page: number, perPage: number, search: string): PageData {
 			slug: `daily-update-${i + 4}`,
 			date: `December ${20 - i}, 2025`,
 			trader: i % 2 === 0 ? 'Kody Ashmore' : 'Henry Gambell',
-			excerpt: 'Expert analysis and trading insights for today\'s market conditions.',
-			thumbnail: i % 2 === 0 
-				? 'https://cdn.simplertrading.com/2025/02/07135413/SimplerCentral_KA.jpg'
-				: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
+			excerpt: "Expert analysis and trading insights for today's market conditions.",
+			thumbnail:
+				i % 2 === 0
+					? 'https://cdn.simplertrading.com/2025/02/07135413/SimplerCentral_KA.jpg'
+					: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
 			isVideo: true
 		}))
 	];
@@ -174,9 +179,9 @@ function getMockData(page: number, perPage: number, search: string): PageData {
 	let filtered = allVideos;
 	if (search) {
 		const searchLower = search.toLowerCase();
-		filtered = allVideos.filter(v => 
-			v.title.toLowerCase().includes(searchLower) ||
-			v.trader.toLowerCase().includes(searchLower)
+		filtered = allVideos.filter(
+			(v) =>
+				v.title.toLowerCase().includes(searchLower) || v.trader.toLowerCase().includes(searchLower)
 		);
 	}
 
@@ -192,7 +197,7 @@ function getMockData(page: number, perPage: number, search: string): PageData {
 			page,
 			perPage,
 			total,
-			totalPages,
-		},
+			totalPages
+		}
 	};
 }

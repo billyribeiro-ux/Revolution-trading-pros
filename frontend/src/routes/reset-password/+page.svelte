@@ -1,7 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
 	import { resetPassword } from '$lib/api/auth';
-	import { IconLock, IconAlertCircle, IconCheck, IconShieldCheck, IconEye, IconEyeOff } from '$lib/icons';
+	import {
+		IconLock,
+		IconAlertCircle,
+		IconCheck,
+		IconShieldCheck,
+		IconEye,
+		IconEyeOff
+	} from '$lib/icons';
 	import { onMount } from 'svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
@@ -169,7 +176,7 @@
 						<button
 							type="button"
 							class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-purple-400 transition-colors"
-							onclick={() => showPassword = !showPassword}
+							onclick={() => (showPassword = !showPassword)}
 							aria-label={showPassword ? 'Hide password' : 'Show password'}
 							tabindex={-1}
 						>
@@ -210,7 +217,7 @@
 						<button
 							type="button"
 							class="absolute right-4 top-1/2 -translate-y-1/2 text-slate-500 hover:text-purple-400 transition-colors"
-							onclick={() => showConfirmPassword = !showConfirmPassword}
+							onclick={() => (showConfirmPassword = !showConfirmPassword)}
 							aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
 							tabindex={-1}
 						>

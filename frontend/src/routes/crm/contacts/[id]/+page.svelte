@@ -8,13 +8,7 @@
 	import { goto } from '$app/navigation';
 	import { crmAPI } from '$lib/api/crm';
 	import type { Contact, TimelineEvent } from '$lib/crm/types';
-	import {
-		IconArrowLeft,
-		IconMail,
-		IconPhone,
-		IconActivity,
-		IconUserCircle
-	} from '$lib/icons';
+	import { IconArrowLeft, IconMail, IconPhone, IconActivity, IconUserCircle } from '$lib/icons';
 
 	let contact = $state<Contact | null>(null);
 	let timeline = $state<TimelineEvent[]>([]);
@@ -98,7 +92,9 @@
 						<div class="mt-4 grid gap-3 text-xs text-slate-300 md:grid-cols-2">
 							<div class="flex items-center gap-2">
 								<IconMail size={14} class="text-slate-400" />
-								<a href={`mailto:${contact.email || ''}`} class="hover:underline">{contact.email || ''}</a>
+								<a href={`mailto:${contact.email || ''}`} class="hover:underline"
+									>{contact.email || ''}</a
+								>
 							</div>
 							{#if contact.phone}
 								<div class="flex items-center gap-2">

@@ -26,14 +26,7 @@
 	 */
 
 	import { goto } from '$app/navigation';
-	import {
-		IconCrown,
-		IconPlus,
-		IconX,
-		IconCheck,
-		IconArrowLeft,
-		IconTarget
-	} from '$lib/icons';
+	import { IconCrown, IconPlus, IconX, IconCheck, IconArrowLeft, IconTarget } from '$lib/icons';
 	import { adminFetch } from '$lib/utils/adminFetch';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -78,14 +71,10 @@
 	// DERIVED STATE - Svelte 5 $derived
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let validFeatures = $derived(
-		membership.features.filter((f) => f.feature_name.trim())
-	);
+	let validFeatures = $derived(membership.features.filter((f) => f.feature_name.trim()));
 
 	let isFormValid = $derived(
-		membership.name.trim() !== '' &&
-		membership.price !== '' &&
-		parseFloat(membership.price) >= 0
+		membership.name.trim() !== '' && membership.price !== '' && parseFloat(membership.price) >= 0
 	);
 
 	let formattedPrice = $derived(
@@ -192,9 +181,7 @@
 						<IconCrown size={28} />
 						Create Membership Plan
 					</h1>
-					<p class="header-subtitle">
-						Design a premium membership tier for your subscribers
-					</p>
+					<p class="header-subtitle">Design a premium membership tier for your subscribers</p>
 				</div>
 			</div>
 		</div>
@@ -352,14 +339,8 @@
 				</div>
 
 				<div class="form-actions">
-					<button class="btn-secondary" onclick={() => goto('/admin/memberships')}>
-						Cancel
-					</button>
-					<button
-						class="btn-primary"
-						onclick={saveMembership}
-						disabled={saving || !isFormValid}
-					>
+					<button class="btn-secondary" onclick={() => goto('/admin/memberships')}> Cancel </button>
+					<button class="btn-primary" onclick={saveMembership} disabled={saving || !isFormValid}>
 						{#if saving}
 							Creating...
 						{:else}
@@ -544,7 +525,8 @@
 	}
 
 	@keyframes border-glow {
-		0%, 100% {
+		0%,
+		100% {
 			background-position: 0% 50%;
 			opacity: 0.6;
 		}
@@ -572,7 +554,8 @@
 	}
 
 	@keyframes crown-float {
-		0%, 100% {
+		0%,
+		100% {
 			transform: translateY(0) rotate(0deg);
 			filter: drop-shadow(0 0 20px rgba(251, 191, 36, 0.8));
 		}
@@ -613,7 +596,8 @@
 	}
 
 	@keyframes gold-shimmer {
-		0%, 100% {
+		0%,
+		100% {
 			background-position: 0% 50%;
 		}
 		50% {

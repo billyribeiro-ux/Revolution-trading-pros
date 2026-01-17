@@ -30,7 +30,7 @@ const templateStore = new Map<string, StoredTemplateConfig>();
 const DEFAULT_CONFIG: StoredTemplateConfig = {
 	templateId: 'minimal-dark',
 	customTemplates: [],
-	updatedAt: new Date().toISOString(),
+	updatedAt: new Date().toISOString()
 };
 
 /**
@@ -44,7 +44,7 @@ export const GET: RequestHandler = async ({ url }) => {
 
 		return json({
 			success: true,
-			config,
+			config
 		});
 	} catch (err) {
 		console.error('[TemplatesAPI] GET error:', err);
@@ -71,7 +71,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 			customization,
 			customTemplates: customTemplates || [],
 			updatedAt: new Date().toISOString(),
-			updatedBy,
+			updatedBy
 		};
 
 		templateStore.set(siteId, config);
@@ -81,7 +81,7 @@ export const POST: RequestHandler = async ({ request, url }) => {
 		return json({
 			success: true,
 			message: 'Template configuration saved',
-			config,
+			config
 		});
 	} catch (err) {
 		console.error('[TemplatesAPI] POST error:', err);
@@ -107,7 +107,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
 		const updated: StoredTemplateConfig = {
 			...existing,
 			...body,
-			updatedAt: new Date().toISOString(),
+			updatedAt: new Date().toISOString()
 		};
 
 		templateStore.set(siteId, updated);
@@ -115,7 +115,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
 		return json({
 			success: true,
 			message: 'Template configuration updated',
-			config: updated,
+			config: updated
 		});
 	} catch (err) {
 		console.error('[TemplatesAPI] PUT error:', err);
@@ -136,7 +136,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
 		return json({
 			success: true,
-			message: 'Template configuration reset to default',
+			message: 'Template configuration reset to default'
 		});
 	} catch (err) {
 		console.error('[TemplatesAPI] DELETE error:', err);

@@ -242,7 +242,9 @@
 	let generating = $state(false);
 	let testing = $state(false);
 	let errors = $state<ValidationError[]>([]);
-	let activeTab = $state<'basic' | 'restrictions' | 'advanced' | 'distribution' | 'testing'>('basic');
+	let activeTab = $state<'basic' | 'restrictions' | 'advanced' | 'distribution' | 'testing'>(
+		'basic'
+	);
 	let duplicateFrom: string | null = page.url.searchParams.get('duplicate');
 
 	// Form Data
@@ -860,9 +862,12 @@
 		});
 
 		// Remove empty arrays
-		if (Array.isArray(data['product_restrictions']) && data['product_restrictions'].length === 0) delete data['product_restrictions'];
-		if (Array.isArray(data['category_restrictions']) && data['category_restrictions'].length === 0) delete data['category_restrictions'];
-		if (Array.isArray(data['user_segments']) && data['user_segments'].length === 0) delete data['user_segments'];
+		if (Array.isArray(data['product_restrictions']) && data['product_restrictions'].length === 0)
+			delete data['product_restrictions'];
+		if (Array.isArray(data['category_restrictions']) && data['category_restrictions'].length === 0)
+			delete data['category_restrictions'];
+		if (Array.isArray(data['user_segments']) && data['user_segments'].length === 0)
+			delete data['user_segments'];
 
 		// Convert dates to ISO format
 		if (data['starts_at']) {
@@ -1847,7 +1852,7 @@
 	.preview-value {
 		font-size: 1.25rem;
 		font-weight: 600;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.preview-impact {
@@ -1886,8 +1891,8 @@
 	}
 
 	.tab.active {
-		color: #E6B800;
-		border-bottom-color: #E6B800;
+		color: #e6b800;
+		border-bottom-color: #e6b800;
 	}
 
 	.tab-highlight {
@@ -2076,8 +2081,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800, #B38F00);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800, #b38f00);
+		color: #0d1117;
 	}
 
 	.btn-primary:hover:not(:disabled) {
@@ -2170,7 +2175,7 @@
 	}
 
 	.toggle-checkbox:checked + .toggle-switch {
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		border-color: transparent;
 	}
 
@@ -2269,7 +2274,7 @@
 	}
 
 	.channel-option input[type='checkbox']:checked + .channel-label {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.channel-label {

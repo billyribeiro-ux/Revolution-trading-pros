@@ -16,7 +16,10 @@
 
 <svelte:head>
 	<title>Lead Trader | Day Trading Room | Revolution Trading Pros</title>
-	<meta name="description" content="Meet our lead trader and learn about their trading approach and expertise." />
+	<meta
+		name="description"
+		content="Meet our lead trader and learn about their trading approach and expertise."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -30,7 +33,9 @@
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Meet Our Lead Trader</h2>
-			<p>Learn about our lead trader's background, trading philosophy, and approach to day trading.</p>
+			<p>
+				Learn about our lead trader's background, trading philosophy, and approach to day trading.
+			</p>
 		</section>
 	</div>
 </div>

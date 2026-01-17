@@ -106,8 +106,8 @@
 
 			stats = {
 				total: campaigns.length,
-				sent: campaigns.filter(c => c.status === 'sent').length,
-				scheduled: campaigns.filter(c => c.status === 'scheduled').length,
+				sent: campaigns.filter((c) => c.status === 'sent').length,
+				scheduled: campaigns.filter((c) => c.status === 'scheduled').length,
 				totalSent: campaigns.reduce((sum, c) => sum + (c.sent_count || 0), 0)
 			};
 		} catch (err) {
@@ -190,8 +190,9 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredCampaigns = $derived(
-		campaigns.filter(campaign => {
-			const matchesSearch = !searchQuery ||
+		campaigns.filter((campaign) => {
+			const matchesSearch =
+				!searchQuery ||
 				campaign.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				campaign.subject?.toLowerCase().includes(searchQuery.toLowerCase());
 			const matchesStatus = selectedStatus === 'all' || campaign.status === selectedStatus;
@@ -344,14 +345,20 @@
 							</td>
 							<td>{formatNumber(campaign.recipients_count)}</td>
 							<td>
-								<span class="rate-value">{formatRate(campaign.sent_count, campaign.open_count)}</span>
+								<span class="rate-value"
+									>{formatRate(campaign.sent_count, campaign.open_count)}</span
+								>
 							</td>
 							<td>
-								<span class="rate-value">{formatRate(campaign.sent_count, campaign.click_count)}</span>
+								<span class="rate-value"
+									>{formatRate(campaign.sent_count, campaign.click_count)}</span
+								>
 							</td>
 							<td>
 								<span class="date-value">
-									{campaign.status === 'sent' ? formatDate(campaign.sent_at) : formatDate(campaign.scheduled_at)}
+									{campaign.status === 'sent'
+										? formatDate(campaign.sent_at)
+										: formatDate(campaign.scheduled_at)}
 								</span>
 							</td>
 							<td>
@@ -362,10 +369,18 @@
 									<a href="/admin/crm/campaigns/{campaign.id}/edit" class="btn-icon" title="Edit">
 										<IconEdit size={16} />
 									</a>
-									<button class="btn-icon" title="Duplicate" onclick={() => duplicateCampaign(campaign.id)}>
+									<button
+										class="btn-icon"
+										title="Duplicate"
+										onclick={() => duplicateCampaign(campaign.id)}
+									>
 										<IconCopy size={16} />
 									</button>
-									<button class="btn-icon danger" title="Delete" onclick={() => deleteCampaign(campaign.id)}>
+									<button
+										class="btn-icon danger"
+										title="Delete"
+										onclick={() => deleteCampaign(campaign.id)}
+									>
 										<IconTrash size={16} />
 									</button>
 								</div>
@@ -442,8 +457,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -493,10 +512,22 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.purple {
+		background: rgba(230, 184, 0, 0.15);
+		color: #e6b800;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
 
 	.stat-content {
 		display: flex;
@@ -687,7 +718,9 @@
 	}
 
 	/* States */
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;

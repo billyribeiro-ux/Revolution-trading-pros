@@ -17,7 +17,10 @@
 
 <svelte:head>
 	<title>Meet the Traders | Small Account Mentorship | Revolution Trading Pros</title>
-	<meta name="description" content="Meet our expert traders and learn from their years of experience in the markets." />
+	<meta
+		name="description"
+		content="Meet our expert traders and learn from their years of experience in the markets."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -33,7 +36,8 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<p class="intro-text">
-			Learn from our team of experienced traders. Each trader brings unique expertise and strategies to help you improve your trading.
+			Learn from our team of experienced traders. Each trader brings unique expertise and strategies
+			to help you improve your trading.
 		</p>
 
 		<div class="traders-grid">
@@ -42,11 +46,11 @@
 					<figure class="trader-card__image">
 						<img src={trader.image} alt={trader.name} loading="lazy" />
 					</figure>
-					
+
 					<div class="trader-card__content">
 						<h3 class="trader-card__name">{trader.name}</h3>
 						<p class="trader-card__title">{trader.title}</p>
-						
+
 						{#if trader.specialties}
 							<div class="trader-card__specialties">
 								{#each trader.specialties as specialty}
@@ -54,10 +58,13 @@
 								{/each}
 							</div>
 						{/if}
-						
+
 						<p class="trader-card__bio">{trader.whoIs.substring(0, 150)}...</p>
-						
-						<a href="/dashboard/small-account-mentorship/meet-the-traders/{trader.slug}" class="btn btn-primary">
+
+						<a
+							href="/dashboard/small-account-mentorship/meet-the-traders/{trader.slug}"
+							class="btn btn-primary"
+						>
 							View Profile
 						</a>
 					</div>
@@ -161,7 +168,7 @@
 	}
 
 	.btn-primary {
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
 		border: none;
 	}

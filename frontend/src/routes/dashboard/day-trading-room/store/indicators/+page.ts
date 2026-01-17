@@ -1,9 +1,9 @@
 /**
  * Indicators Store Page Load
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Client-side only page - no server data needed
- * 
+ *
  * @version 1.0.0
  */
 

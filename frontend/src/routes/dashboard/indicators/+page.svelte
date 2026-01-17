@@ -14,7 +14,7 @@
 -->
 <script lang="ts">
 	import IndicatorCard from '$lib/components/indicators/IndicatorCard.svelte';
-	
+
 	interface Indicator {
 		id: number;
 		name: string;
@@ -24,77 +24,501 @@
 		icon: string;
 		status: 'active' | 'inactive';
 	}
-	
+
 	// Pagination configuration - ICT 7 Enterprise Standard
 	let currentPage = $state(1);
 	const itemsPerPage = 12;
-	
+
 	// Mock data - replace with actual API call
 	// Set to empty array to show empty state, or populate with indicators
 	// All 53 indicators from WordPress my-indicators-yes reference
 	const indicators: Indicator[] = [
-		{ id: 1, name: 'Volume Max Tool Kit (formerly VWAP)', description: '', platform: 'TradingView', platformUrl: '/indicators/volume-max-i', icon: '', status: 'active' },
-		{ id: 2, name: 'Multi (EMA) Cross Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-cross-i', icon: '', status: 'active' },
-		{ id: 3, name: 'QuantPivots Tool', description: '', platform: 'TradingView', platformUrl: '/indicators/quantpivots-i', icon: '', status: 'active' },
-		{ id: 4, name: 'Trend and HiLo Oscillator Pro Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/trend-hilo-oscillator-pro-i', icon: '', status: 'active' },
-		{ id: 5, name: 'Darvas Box 3.0', description: '', platform: 'TradingView', platformUrl: '/indicators/darvas-3-i', icon: '', status: 'active' },
-		{ id: 6, name: 'Ready.Aim.Fire!® (RAF) Pro Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/ready-aim-fire-pro-i', icon: '', status: 'active' },
-		{ id: 7, name: 'Multi Squeeze Pro Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-squeeze-pro-i', icon: '', status: 'active' },
-		{ id: 8, name: 'TurboVZO Indicator & VZO Signals', description: '', platform: 'TradingView', platformUrl: '/indicators/turbovzo-indicator-i', icon: '', status: 'active' },
-		{ id: 9, name: 'Multi 10x', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-10x-i', icon: '', status: 'active' },
-		{ id: 10, name: 'Power Correlations', description: '', platform: 'TradingView', platformUrl: '/indicators/power-correlations', icon: '', status: 'active' },
-		{ id: 11, name: 'GRaB and Wave Premium', description: '', platform: 'TradingView', platformUrl: '/indicators/grab-and-wave-premium-i', icon: '', status: 'active' },
-		{ id: 12, name: 'Top Hat Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/top-hat-indicator', icon: '', status: 'active' },
-		{ id: 13, name: 'Multi-Squeeze Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-squeeze-indicator', icon: '', status: 'active' },
-		{ id: 14, name: 'Compound Breakout Tool', description: '', platform: 'TradingView', platformUrl: '/indicators/compound-breakout-tool-i', icon: '', status: 'active' },
-		{ id: 15, name: 'Divergent Bar', description: '', platform: 'TradingView', platformUrl: '/indicators/divergent-bar-i', icon: '', status: 'active' },
-		{ id: 16, name: 'Reversal Arrows (formerly HOLB/LOHB)', description: '', platform: 'TradingView', platformUrl: '/indicators/reversal-arrows-holblohb-i', icon: '', status: 'active' },
-		{ id: 17, name: 'Voodoo Lines®', description: '', platform: 'TradingView', platformUrl: '/indicators/voodoo-lines-i', icon: '', status: 'active' },
-		{ id: 18, name: 'Two Week Statistics Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/two-week-statistics-i', icon: '', status: 'active' },
-		{ id: 19, name: 'Weekly Price Statistics Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/weekly-price-statistics-i', icon: '', status: 'active' },
-		{ id: 20, name: 'Cumulative and Comparative TICK', description: '', platform: 'TradingView', platformUrl: '/indicators/cumulative-comparative-tick-i', icon: '', status: 'active' },
-		{ id: 21, name: 'Multi Time Frame (MTF) Trend', description: '', platform: 'TradingView', platformUrl: '/indicators/mtf-trend-i', icon: '', status: 'active' },
-		{ id: 22, name: 'Credit Sniper', description: '', platform: 'TradingView', platformUrl: '/indicators/credit-sniper-i', icon: '', status: 'active' },
-		{ id: 23, name: 'Earnings Indicator', description: '', platform: 'TradingView', platformUrl: '/indicators/earnings-indicator-i', icon: '', status: 'active' },
-		{ id: 24, name: '10x Bars', description: '', platform: 'TradingView', platformUrl: '/indicators/10x-bars-i', icon: '', status: 'active' },
-		{ id: 25, name: 'Probability Zones', description: '', platform: 'TradingView', platformUrl: '/indicators/probability-zones-i', icon: '', status: 'active' },
-		{ id: 26, name: 'Launch Pad', description: '', platform: 'TradingView', platformUrl: '/indicators/launch-pad-i', icon: '', status: 'active' },
-		{ id: 27, name: 'Squeeze Pro Stats', description: '', platform: 'TradingView', platformUrl: '/indicators/squeeze-pro-stats-i', icon: '', status: 'active' },
-		{ id: 28, name: 'EINO Pro', description: '', platform: 'TradingView', platformUrl: '/indicators/eino-pro-i', icon: '', status: 'active' },
-		{ id: 29, name: 'Squeeze Pro', description: '', platform: 'TradingView', platformUrl: '/indicators/squeeze-pro-i', icon: '', status: 'active' },
-		{ id: 30, name: 'Dynamic Profit Zones', description: '', platform: 'TradingView', platformUrl: '/indicators/dynamic-profit-zones-i', icon: '', status: 'active' },
-		{ id: 31, name: 'Phoenix Finder', description: '', platform: 'TradingView', platformUrl: '/indicators/phoenix-finder-i', icon: '', status: 'active' },
-		{ id: 32, name: 'Power Correlations TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/power-correlations-tsd', icon: '', status: 'active' },
-		{ id: 33, name: 'Multi-Squeeze Indicator TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-squeeze-indicator-tsd', icon: '', status: 'active' },
-		{ id: 34, name: 'Top Hat Indicator TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/top-hat-indicator-tsd', icon: '', status: 'active' },
-		{ id: 35, name: 'Compound Breakout Tool TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/compound-breakout-tool-tsd', icon: '', status: 'active' },
-		{ id: 36, name: 'Divergent Bar TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/divergent-bar-tsd', icon: '', status: 'active' },
-		{ id: 37, name: 'Reversal Arrows TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/reversal-arrows-holblohb-tsd', icon: '', status: 'active' },
-		{ id: 38, name: '10x Bars TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/10x-bars-tsd', icon: '', status: 'active' },
-		{ id: 39, name: 'Ready.Aim.Fire! Pro TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/ready-aim-fire-pro-tsd', icon: '', status: 'active' },
-		{ id: 40, name: 'Squeeze Pro Stats TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/squeeze-pro-stats-tsd', icon: '', status: 'active' },
-		{ id: 41, name: 'EINO Pro TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/eino-pro-tsd', icon: '', status: 'active' },
-		{ id: 42, name: 'Squeeze Pro TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/squeeze-pro-tsd', icon: '', status: 'active' },
-		{ id: 43, name: 'Dynamic Profit Zones Activated', description: '', platform: 'TradingView', platformUrl: '/indicators/dynamic-profit-zones-i-activated', icon: '', status: 'active' },
-		{ id: 44, name: 'Multi Cross Activated', description: '', platform: 'TradingView', platformUrl: '/indicators/multi-cross-i-activated', icon: '', status: 'active' },
-		{ id: 45, name: 'VX TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/vx-tsd', icon: '', status: 'active' },
-		{ id: 46, name: 'Probability Zones TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/probability-zones-tsd', icon: '', status: 'active' },
-		{ id: 47, name: 'Launch Pad TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/launch-pad-tsd', icon: '', status: 'active' },
-		{ id: 48, name: 'Two Week TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/twoweek-tsd', icon: '', status: 'active' },
-		{ id: 49, name: 'Phoenix Finder TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/phoenix-finder-tsd', icon: '', status: 'active' },
-		{ id: 50, name: 'Credit Sniper TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/credit-sniper-tsd', icon: '', status: 'active' },
-		{ id: 51, name: 'Weekly Statistics TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/weekly-statistics-tsd', icon: '', status: 'active' },
-		{ id: 52, name: 'CCTICK TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/cctick-tsd', icon: '', status: 'active' },
-		{ id: 53, name: 'TurboVZO TSD', description: '', platform: 'TradingView', platformUrl: '/indicators/turbovzo-tsd', icon: '', status: 'active' }
+		{
+			id: 1,
+			name: 'Volume Max Tool Kit (formerly VWAP)',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/volume-max-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 2,
+			name: 'Multi (EMA) Cross Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/multi-cross-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 3,
+			name: 'QuantPivots Tool',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/quantpivots-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 4,
+			name: 'Trend and HiLo Oscillator Pro Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/trend-hilo-oscillator-pro-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 5,
+			name: 'Darvas Box 3.0',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/darvas-3-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 6,
+			name: 'Ready.Aim.Fire!® (RAF) Pro Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/ready-aim-fire-pro-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 7,
+			name: 'Multi Squeeze Pro Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/multi-squeeze-pro-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 8,
+			name: 'TurboVZO Indicator & VZO Signals',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/turbovzo-indicator-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 9,
+			name: 'Multi 10x',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/multi-10x-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 10,
+			name: 'Power Correlations',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/power-correlations',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 11,
+			name: 'GRaB and Wave Premium',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/grab-and-wave-premium-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 12,
+			name: 'Top Hat Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/top-hat-indicator',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 13,
+			name: 'Multi-Squeeze Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/multi-squeeze-indicator',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 14,
+			name: 'Compound Breakout Tool',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/compound-breakout-tool-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 15,
+			name: 'Divergent Bar',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/divergent-bar-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 16,
+			name: 'Reversal Arrows (formerly HOLB/LOHB)',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/reversal-arrows-holblohb-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 17,
+			name: 'Voodoo Lines®',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/voodoo-lines-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 18,
+			name: 'Two Week Statistics Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/two-week-statistics-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 19,
+			name: 'Weekly Price Statistics Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/weekly-price-statistics-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 20,
+			name: 'Cumulative and Comparative TICK',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/cumulative-comparative-tick-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 21,
+			name: 'Multi Time Frame (MTF) Trend',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/mtf-trend-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 22,
+			name: 'Credit Sniper',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/credit-sniper-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 23,
+			name: 'Earnings Indicator',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/earnings-indicator-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 24,
+			name: '10x Bars',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/10x-bars-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 25,
+			name: 'Probability Zones',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/probability-zones-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 26,
+			name: 'Launch Pad',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/launch-pad-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 27,
+			name: 'Squeeze Pro Stats',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/squeeze-pro-stats-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 28,
+			name: 'EINO Pro',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/eino-pro-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 29,
+			name: 'Squeeze Pro',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/squeeze-pro-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 30,
+			name: 'Dynamic Profit Zones',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/dynamic-profit-zones-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 31,
+			name: 'Phoenix Finder',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/phoenix-finder-i',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 32,
+			name: 'Power Correlations TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/power-correlations-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 33,
+			name: 'Multi-Squeeze Indicator TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/multi-squeeze-indicator-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 34,
+			name: 'Top Hat Indicator TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/top-hat-indicator-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 35,
+			name: 'Compound Breakout Tool TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/compound-breakout-tool-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 36,
+			name: 'Divergent Bar TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/divergent-bar-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 37,
+			name: 'Reversal Arrows TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/reversal-arrows-holblohb-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 38,
+			name: '10x Bars TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/10x-bars-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 39,
+			name: 'Ready.Aim.Fire! Pro TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/ready-aim-fire-pro-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 40,
+			name: 'Squeeze Pro Stats TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/squeeze-pro-stats-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 41,
+			name: 'EINO Pro TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/eino-pro-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 42,
+			name: 'Squeeze Pro TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/squeeze-pro-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 43,
+			name: 'Dynamic Profit Zones Activated',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/dynamic-profit-zones-i-activated',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 44,
+			name: 'Multi Cross Activated',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/multi-cross-i-activated',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 45,
+			name: 'VX TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/vx-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 46,
+			name: 'Probability Zones TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/probability-zones-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 47,
+			name: 'Launch Pad TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/launch-pad-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 48,
+			name: 'Two Week TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/twoweek-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 49,
+			name: 'Phoenix Finder TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/phoenix-finder-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 50,
+			name: 'Credit Sniper TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/credit-sniper-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 51,
+			name: 'Weekly Statistics TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/weekly-statistics-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 52,
+			name: 'CCTICK TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/cctick-tsd',
+			icon: '',
+			status: 'active'
+		},
+		{
+			id: 53,
+			name: 'TurboVZO TSD',
+			description: '',
+			platform: 'TradingView',
+			platformUrl: '/indicators/turbovzo-tsd',
+			icon: '',
+			status: 'active'
+		}
 	];
-	
+
 	// Computed pagination values - Svelte 5
 	let totalPages = $derived(Math.ceil(indicators.length / itemsPerPage));
 	let startIndex = $derived((currentPage - 1) * itemsPerPage);
 	let endIndex = $derived(startIndex + itemsPerPage);
 	let paginatedIndicators = $derived(indicators.slice(startIndex, endIndex));
 	let pageNumbers = $derived(Array.from({ length: totalPages }, (_, i) => i + 1));
-	
+
 	// Pagination navigation functions
 	function goToPage(page: number) {
 		if (page >= 1 && page <= totalPages) {
@@ -102,13 +526,13 @@
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
-	
+
 	function nextPage() {
 		if (currentPage < totalPages) {
 			goToPage(currentPage + 1);
 		}
 	}
-	
+
 	function previousPage() {
 		if (currentPage > 1) {
 			goToPage(currentPage - 1);
@@ -130,7 +554,7 @@
 		<aside class="dashboard__sidebar">
 			<!-- Sidebar content if needed -->
 		</aside>
-		
+
 		<main class="dashboard__main">
 			<!-- Page Header with dashboard__header wrapper (matches WordPress) -->
 			<header class="dashboard__header">
@@ -138,7 +562,7 @@
 					<h1 class="dashboard__page-title">My Indicators</h1>
 				</div>
 			</header>
-			
+
 			<!-- Indicators Grid or Empty State -->
 			{#if indicators.length === 0}
 				<!-- Empty State -->
@@ -147,7 +571,11 @@
 						<section class="dashboard__content-section">
 							<div class="empty-state">
 								<p class="empty-state__message">You don't have any Indicators.</p>
-								<a href="https://www.simplertrading.com/product/product-category/indicators/" class="btn btn-orange" target="_blank">See All Indicators</a>
+								<a
+									href="https://www.simplertrading.com/product/product-category/indicators/"
+									class="btn btn-orange"
+									target="_blank">See All Indicators</a
+								>
 							</div>
 						</section>
 					</div>
@@ -162,11 +590,11 @@
 									<IndicatorCard {...indicator} />
 								{/each}
 							</div>
-							
+
 							<!-- Pagination Controls -->
 							{#if totalPages > 1}
 								<div class="pagination-wrapper">
-								<nav class="pagination" aria-label="Pagination">
+									<nav class="pagination" aria-label="Pagination">
 										<ul class="page-numbers">
 											<!-- Previous Button - Only show if not on first page -->
 											{#if currentPage > 1}
@@ -180,7 +608,7 @@
 													</button>
 												</li>
 											{/if}
-											
+
 											<!-- Page Numbers -->
 											{#each pageNumbers as pageNum}
 												<li>
@@ -197,7 +625,7 @@
 													{/if}
 												</li>
 											{/each}
-											
+
 											<!-- Next Button - Only show if not on last page -->
 											{#if currentPage < totalPages}
 												<li>
@@ -227,7 +655,7 @@
 	 * My Indicators Page Styles
 	 * Matches WordPress implementation exactly
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+
 	.dashboard__header {
 		display: flex;
 		flex-wrap: wrap;
@@ -238,7 +666,7 @@
 		border-right: 1px solid #dbdbdb;
 		padding: 20px;
 	}
-	
+
 	@media (min-width: 1024px) {
 		.dashboard__header {
 			padding: 30px;
@@ -250,11 +678,11 @@
 			padding: 30px 40px;
 		}
 	}
-	
+
 	.dashboard__header-left {
 		flex: 1;
 	}
-	
+
 	.dashboard__page-title {
 		font-size: 28px;
 		font-weight: 700;
@@ -262,7 +690,7 @@
 		margin: 0;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
-	
+
 	/* Empty State - Matches screenshot */
 	.empty-state {
 		background: #f5f5f5;
@@ -352,27 +780,27 @@
 			max-width: 33.333333%;
 		}
 	}
-	
+
 	/* Responsive */
 	@media (max-width: 768px) {
 		.dashboard__page-title {
 			font-size: 24px;
 		}
 	}
-	
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Pagination - Enterprise ICT 7 Standard
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+
 	.pagination-wrapper {
 		padding: 40px 0;
 		text-align: center;
 	}
-	
+
 	.pagination {
 		display: inline-block;
 	}
-	
+
 	.page-numbers {
 		list-style: none;
 		margin: 0;
@@ -383,13 +811,13 @@
 		justify-content: center;
 		flex-wrap: wrap;
 	}
-	
+
 	.page-numbers li {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
-	
+
 	.page-numbers button,
 	.page-numbers span {
 		display: inline-flex;
@@ -409,43 +837,43 @@
 		transition: all 0.2s ease;
 		cursor: pointer;
 	}
-	
+
 	.page-numbers button:hover:not(:disabled) {
 		background: #f5f5f5;
-		border-color: #143E59;
-		color: #143E59;
+		border-color: #143e59;
+		color: #143e59;
 		text-decoration: none;
 	}
-	
+
 	.page-numbers button:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
 		background: #f9f9f9;
 	}
-	
+
 	.page-numbers .current {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border-color: #143E59;
+		border-color: #143e59;
 		cursor: default;
 	}
-	
+
 	.page-numbers .prev,
 	.page-numbers .next {
 		min-width: auto;
 		padding: 8px 16px;
 		font-weight: 700;
 	}
-	
+
 	@media (max-width: 576px) {
 		.pagination-wrapper {
 			padding: 30px 0;
 		}
-		
+
 		.page-numbers {
 			gap: 4px;
 		}
-		
+
 		.page-numbers button,
 		.page-numbers span {
 			min-width: 36px;
@@ -453,7 +881,7 @@
 			padding: 6px 10px;
 			font-size: 13px;
 		}
-		
+
 		.page-numbers .prev,
 		.page-numbers .next {
 			padding: 6px 12px;

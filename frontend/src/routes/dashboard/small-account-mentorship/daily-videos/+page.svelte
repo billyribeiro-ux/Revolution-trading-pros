@@ -62,28 +62,32 @@
 	<title>Small Account Mentorship Premium Daily Videos - Revolution Trading Pros</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Small Account Mentorship" 
+<TradingRoomHeader
+	roomName="Small Account Mentorship"
 	pageTitle="Premium Daily Videos"
-	startHereUrl="/dashboard/small-account-mentorship/start-here" 
+	startHereUrl="/dashboard/small-account-mentorship/start-here"
 />
 
 <section class="dashboard__content-section">
-	
 	<!-- Dashboard Filters -->
 	<div class="dashboard-filters">
 		<div class="dashboard-filters__count">
-			Showing <span class="facetwp-counts">{pagination.page * pagination.perPage - pagination.perPage + 1}-{Math.min(pagination.page * pagination.perPage, pagination.total)} of {pagination.total}</span>
+			Showing <span class="facetwp-counts"
+				>{pagination.page * pagination.perPage - pagination.perPage + 1}-{Math.min(
+					pagination.page * pagination.perPage,
+					pagination.total
+				)} of {pagination.total}</span
+			>
 		</div>
 		<div class="dashboard-filters__search">
 			<form onsubmit={handleSearch}>
-				<input 
+				<input
 					type="text"
 					id="video-search"
 					name="search"
-					class="facetwp-autocomplete" 
+					class="facetwp-autocomplete"
 					bind:value={searchQuery}
-					placeholder="Search" 
+					placeholder="Search"
 					autocomplete="off"
 				/>
 				<button type="submit" class="facetwp-autocomplete-update">🔍</button>
@@ -99,7 +103,11 @@
 					<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
 						<div class="card flex-grid-panel">
 							<figure class="card-media card-media--video">
-								<a href={getVideoUrl(video)} class="card-image" style="background-image: url({video.thumbnail});">
+								<a
+									href={getVideoUrl(video)}
+									class="card-image"
+									style="background-image: url({video.thumbnail});"
+								>
 									<img class="default-background" width="325" height="183" alt={video.title} />
 								</a>
 							</figure>
@@ -109,7 +117,9 @@
 										{video.title}
 									</a>
 								</h4>
-								<span class="article-card__meta"><small>{video.date} with {video.trader}</small></span><br>
+								<span class="article-card__meta"
+									><small>{video.date} with {video.trader}</small></span
+								><br />
 								<div class="card-description">
 									<div class="u--hide-read-more u--squash">
 										<p>{video.excerpt}</p>
@@ -130,7 +140,12 @@
 			<nav class="facetwp-pager" aria-label="Pagination">
 				{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum}
 					{#if pageNum === pagination.page}
-						<a class="facetwp-page active" href={getPageUrl(pageNum)} data-page={pageNum} aria-current="page">{pageNum}</a>
+						<a
+							class="facetwp-page active"
+							href={getPageUrl(pageNum)}
+							data-page={pageNum}
+							aria-current="page">{pageNum}</a
+						>
 					{:else if pageNum === 1 || pageNum === pagination.totalPages || Math.abs(pageNum - pagination.page) <= 2}
 						<a class="facetwp-page" href={getPageUrl(pageNum)} data-page={pageNum}>{pageNum}</a>
 					{:else if Math.abs(pageNum - pagination.page) === 3}
@@ -256,7 +271,9 @@
 		border-radius: 8px;
 		overflow: hidden;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-		transition: box-shadow 0.3s ease, transform 0.2s ease;
+		transition:
+			box-shadow 0.3s ease,
+			transform 0.2s ease;
 	}
 
 	.card:hover {

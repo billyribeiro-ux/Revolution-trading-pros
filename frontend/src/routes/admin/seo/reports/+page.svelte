@@ -83,9 +83,7 @@
 			frequency: 'weekly',
 			format: 'html',
 			sections: defaultSections,
-			recipients: [
-				{ id: '1', name: 'Admin', email: 'admin@revolutiontradingpros.com' }
-			],
+			recipients: [{ id: '1', name: 'Admin', email: 'admin@revolutiontradingpros.com' }],
 			branding: defaultBranding,
 			schedule: {
 				dayOfWeek: 1, // Monday
@@ -126,7 +124,10 @@
 	}
 
 	function saveTemplate() {
-		const emails = formData.recipients.split(',').map((e) => e.trim()).filter(Boolean);
+		const emails = formData.recipients
+			.split(',')
+			.map((e) => e.trim())
+			.filter(Boolean);
 		const recipients = emails.map((email, i) => ({
 			id: String(i + 1),
 			name: email.split('@')[0] || '',
@@ -269,7 +270,9 @@
 						<div class="template-details">
 							<div class="detail">
 								<IconCalendar size={16} />
-								<span>{template.frequency.charAt(0).toUpperCase() + template.frequency.slice(1)}</span>
+								<span
+									>{template.frequency.charAt(0).toUpperCase() + template.frequency.slice(1)}</span
+								>
 							</div>
 							<div class="detail">
 								<IconClock size={16} />
@@ -288,7 +291,11 @@
 						{/if}
 
 						<div class="template-actions">
-							<button class="action-btn primary" onclick={() => runReport(template)} title="Run Now">
+							<button
+								class="action-btn primary"
+								onclick={() => runReport(template)}
+								title="Run Now"
+							>
 								<IconPlayerPlay size={16} />
 								Run Now
 							</button>
@@ -347,15 +354,22 @@
 </div>
 
 {#if showAddModal}
-	<div 
-		class="modal-overlay" 
+	<div
+		class="modal-overlay"
 		onclick={() => (showAddModal = false)}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddModal = false)}
 		role="button"
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal" role="dialog" aria-modal="true" tabindex="-1" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
+		<div
+			class="modal"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		>
 			<h3>{editingTemplate ? 'Edit Report Template' : 'New Report Template'}</h3>
 
 			<div class="form-group">
@@ -386,13 +400,7 @@
 			{#if formData.frequency === 'monthly' || formData.frequency === 'quarterly'}
 				<div class="form-group">
 					<label for="dayOfMonth">Day of Month</label>
-					<input
-						type="number"
-						id="dayOfMonth"
-						bind:value={formData.dayOfMonth}
-						min="1"
-						max="28"
-					/>
+					<input type="number" id="dayOfMonth" bind:value={formData.dayOfMonth} min="1" max="28" />
 				</div>
 			{/if}
 

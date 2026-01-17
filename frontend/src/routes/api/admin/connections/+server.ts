@@ -65,8 +65,20 @@ const serviceDefinitions: ServiceDefinition[] = [
 		is_oauth: false,
 		environments: ['production', 'sandbox'],
 		fields: [
-			{ key: 'api_key', label: 'API Key', type: 'password', required: true, placeholder: 'sk_live_...' },
-			{ key: 'webhook_secret', label: 'Webhook Secret', type: 'password', required: true, placeholder: 'whsec_...' }
+			{
+				key: 'api_key',
+				label: 'API Key',
+				type: 'password',
+				required: true,
+				placeholder: 'sk_live_...'
+			},
+			{
+				key: 'webhook_secret',
+				label: 'Webhook Secret',
+				type: 'password',
+				required: true,
+				placeholder: 'whsec_...'
+			}
 		]
 	},
 	{
@@ -105,7 +117,8 @@ const serviceDefinitions: ServiceDefinition[] = [
 		key: 'fluent_crm_pro',
 		name: 'FluentCRM Pro',
 		category: 'CRM',
-		description: 'Built-in CRM for email marketing, automation, and contact management (Already Installed)',
+		description:
+			'Built-in CRM for email marketing, automation, and contact management (Already Installed)',
 		icon: 'users',
 		color: '#7C3AED',
 		docs_url: 'https://fluentcrm.com/docs',
@@ -148,9 +161,7 @@ const serviceDefinitions: ServiceDefinition[] = [
 		color: '#1A82E2',
 		docs_url: 'https://docs.sendgrid.com',
 		is_oauth: false,
-		fields: [
-			{ key: 'api_key', label: 'API Key', type: 'password', required: true }
-		]
+		fields: [{ key: 'api_key', label: 'API Key', type: 'password', required: true }]
 	},
 	// NOTE: Email marketing is handled by built-in FluentCRM Pro
 	// External services like ConvertKit and ActiveCampaign removed to avoid duplication
@@ -166,7 +177,13 @@ const serviceDefinitions: ServiceDefinition[] = [
 		docs_url: 'https://developers.google.com/analytics',
 		is_oauth: true,
 		fields: [
-			{ key: 'measurement_id', label: 'Measurement ID', type: 'text', required: true, placeholder: 'G-XXXXXXXX' },
+			{
+				key: 'measurement_id',
+				label: 'Measurement ID',
+				type: 'text',
+				required: true,
+				placeholder: 'G-XXXXXXXX'
+			},
 			{ key: 'api_secret', label: 'API Secret', type: 'password', required: false }
 		]
 	},
@@ -193,9 +210,7 @@ const serviceDefinitions: ServiceDefinition[] = [
 		color: '#1D3D90',
 		docs_url: 'https://www.docs.developers.amplitude.com',
 		is_oauth: false,
-		fields: [
-			{ key: 'api_key', label: 'API Key', type: 'password', required: true }
-		]
+		fields: [{ key: 'api_key', label: 'API Key', type: 'password', required: true }]
 	},
 	{
 		key: 'segment',
@@ -206,9 +221,7 @@ const serviceDefinitions: ServiceDefinition[] = [
 		color: '#52BD94',
 		docs_url: 'https://segment.com/docs',
 		is_oauth: false,
-		fields: [
-			{ key: 'write_key', label: 'Write Key', type: 'password', required: true }
-		]
+		fields: [{ key: 'write_key', label: 'Write Key', type: 'password', required: true }]
 	},
 
 	// Cloud Storage
@@ -255,9 +268,7 @@ const serviceDefinitions: ServiceDefinition[] = [
 		color: '#FF7A59',
 		docs_url: 'https://developers.hubspot.com',
 		is_oauth: true,
-		fields: [
-			{ key: 'api_key', label: 'Private App Token', type: 'password', required: true }
-		]
+		fields: [{ key: 'api_key', label: 'Private App Token', type: 'password', required: true }]
 	},
 	{
 		key: 'salesforce',
@@ -321,7 +332,13 @@ const serviceDefinitions: ServiceDefinition[] = [
 		fields: [
 			{ key: 'account_sid', label: 'Account SID', type: 'text', required: true },
 			{ key: 'auth_token', label: 'Auth Token', type: 'password', required: true },
-			{ key: 'phone_number', label: 'Phone Number', type: 'text', required: true, placeholder: '+1234567890' }
+			{
+				key: 'phone_number',
+				label: 'Phone Number',
+				type: 'text',
+				required: true,
+				placeholder: '+1234567890'
+			}
 		]
 	},
 	{
@@ -376,9 +393,7 @@ const serviceDefinitions: ServiceDefinition[] = [
 		color: '#C4773B',
 		docs_url: 'https://docs.anthropic.com',
 		is_oauth: false,
-		fields: [
-			{ key: 'api_key', label: 'API Key', type: 'password', required: true }
-		]
+		fields: [{ key: 'api_key', label: 'API Key', type: 'password', required: true }]
 	},
 
 	// Search
@@ -452,9 +467,7 @@ const serviceDefinitions: ServiceDefinition[] = [
 		color: '#7C3AED',
 		docs_url: 'https://polygon.io/docs',
 		is_oauth: false,
-		fields: [
-			{ key: 'api_key', label: 'API Key', type: 'password', required: true }
-		]
+		fields: [{ key: 'api_key', label: 'API Key', type: 'password', required: true }]
 	},
 
 	// Video & Media
@@ -496,15 +509,13 @@ const serviceDefinitions: ServiceDefinition[] = [
 		color: '#1AB7EA',
 		docs_url: 'https://developer.vimeo.com',
 		is_oauth: true,
-		fields: [
-			{ key: 'access_token', label: 'Access Token', type: 'password', required: true }
-		]
+		fields: [{ key: 'access_token', label: 'Access Token', type: 'password', required: true }]
 	}
 ];
 
 // Helper to get service by key
 function getService(key: string): ServiceDefinition | undefined {
-	return serviceDefinitions.find(s => s.key === key);
+	return serviceDefinitions.find((s) => s.key === key);
 }
 
 // Helper to build category map
@@ -559,7 +570,7 @@ export const GET: RequestHandler = async () => {
 	const summary = buildSummary();
 
 	// Build flat connections list with service details
-	const connectionsList = serviceDefinitions.map(service => {
+	const connectionsList = serviceDefinitions.map((service) => {
 		const connection = connections.get(service.key);
 		return {
 			...service,

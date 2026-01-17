@@ -1,9 +1,9 @@
 /**
  * Learning Center Server-Side Loader
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Apple ICT 11+ Principal Engineer Grade - January 2026
- * 
+ *
  * Fetches learning center videos with pagination
  * Supports filtering by category/tags
  */
@@ -95,5 +95,5 @@ export const load: PageServerLoad = async ({ url, fetch, cookies }) => {
 		meta: { current_page: 1, per_page: perPage, total: 0, last_page: 1 },
 		activeFilter: category || 'all',
 		error: null
-	}
+	};
 };

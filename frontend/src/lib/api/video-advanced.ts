@@ -635,9 +635,7 @@ export const videoOpsApi = {
 	/**
 	 * Fetch video duration from Bunny.net
 	 */
-	async fetchDuration(
-		videoId: number
-	): Promise<{
+	async fetchDuration(videoId: number): Promise<{
 		success: boolean;
 		data?: { duration: number; width?: number; height?: number; formatted_duration: string };
 	}> {

@@ -32,11 +32,14 @@
 			id: 1,
 			title: 'Q3 Market Outlook July 2025',
 			trader: 'John Carter',
-			excerpt: "Using the economic cycle, John Carter will share insights on what's next in the stock market, commodities, Treasury yields, bonds, and more.",
+			excerpt:
+				"Using the economic cycle, John Carter will share insights on what's next in the stock market, commodities, Treasury yields, bonds, and more.",
 			slug: 'market-outlook-jul2025-john-carter',
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
+			thumbnail:
+				'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
 			categories: ['trade-setups'],
-			videoUrl: 'https://simpler-options.s3.amazonaws.com/webinars/MasteringTheTrade_JC_08282025.mp4',
+			videoUrl:
+				'https://simpler-options.s3.amazonaws.com/webinars/MasteringTheTrade_JC_08282025.mp4',
 			content: `<p>In this session, John walked through key cycle dates and what they mean for your trading plan:</p>
 <ul>
 <li>Aug 25–26: Timing for a short 1–2 week market peak (a "buy the pullback" opportunity).</li>
@@ -124,7 +127,8 @@
 			trader: 'John Carter',
 			excerpt: 'Master the basics of options trading with this comprehensive guide.',
 			slug: 'options-trading-fundamentals',
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
+			thumbnail:
+				'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
 			categories: ['methodology'],
 			videoUrl: 'https://simpler-options.s3.amazonaws.com/webinars/sample-video.mp4',
 			content: `<p>John Carter covers everything you need to know to start trading options.</p>
@@ -140,9 +144,11 @@
 			id: 7,
 			title: 'Using Squeeze Pro Indicator',
 			trader: 'John Carter',
-			excerpt: 'Learn how to use the Squeeze Pro indicator to identify high-probability trade setups.',
+			excerpt:
+				'Learn how to use the Squeeze Pro indicator to identify high-probability trade setups.',
 			slug: 'squeeze-pro-indicator',
-			thumbnail: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
+			thumbnail:
+				'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
 			categories: ['indicators'],
 			videoUrl: 'https://simpler-options.s3.amazonaws.com/webinars/sample-video.mp4',
 			content: `<p>Master the Squeeze Pro indicator with John Carter's expert guidance.</p>
@@ -197,16 +203,16 @@
 
 	onMount(() => {
 		const slug = page.params.slug;
-		resource = allResources.find(r => r.slug === slug) || null;
+		resource = allResources.find((r) => r.slug === slug) || null;
 		loading = false;
 	});
 
 	const categories: { [key: string]: string } = {
-		'methodology': 'Methodology',
+		methodology: 'Methodology',
 		'trade-setups': 'Trade Setups & Strategies',
 		'member-webinar': 'Member Webinar',
 		'trade-management': 'Trade & Money Management',
-		'indicators': 'Indicators & Tools'
+		indicators: 'Indicators & Tools'
 	};
 
 	function getCategoryLabel(categoryId: string): string {
@@ -262,13 +268,8 @@
 					<div class="ca-content-block">
 						<!-- Video Player -->
 						<div class="video-container">
-							<video 
-								controls 
-								width="100%" 
-								poster={resource.thumbnail}
-								preload="metadata"
-							>
-								<source src={resource.videoUrl} type="video/mp4">
+							<video controls width="100%" poster={resource.thumbnail} preload="metadata">
+								<source src={resource.videoUrl} type="video/mp4" />
 								<track kind="captions" />
 								Your browser does not support HTML5 video.
 							</video>
@@ -500,7 +501,7 @@
 	}
 
 	.btn-default {
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
 		border: none;
 	}
@@ -527,8 +528,12 @@
 	}
 
 	@keyframes spin {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Not Found */

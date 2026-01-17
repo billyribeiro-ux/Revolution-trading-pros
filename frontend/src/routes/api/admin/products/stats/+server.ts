@@ -37,8 +37,8 @@ export const GET: RequestHandler = async ({ cookies, fetch }) => {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				'Authorization': `Bearer ${token}`
+				Accept: 'application/json',
+				Authorization: `Bearer ${token}`
 			}
 		});
 

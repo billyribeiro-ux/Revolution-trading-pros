@@ -27,7 +27,7 @@
 		type Bias,
 		type AlertType
 	} from '$lib/api/room-content';
-	
+
 	// Icons
 	import IconTable from '@tabler/icons-svelte/icons/table';
 	import IconBell from '@tabler/icons-svelte/icons/bell';
@@ -160,9 +160,7 @@
 	);
 
 	/** Whether a save operation is in progress */
-	const isSavingAny = $derived(
-		isSavingTradePlan || isSavingAlert || isSavingVideo
-	);
+	const isSavingAny = $derived(isSavingTradePlan || isSavingAlert || isSavingVideo);
 
 	/** Trade plan form validation */
 	const isTradePlanFormValid = $derived(
@@ -172,8 +170,8 @@
 	/** Alert form validation */
 	const isAlertFormValid = $derived(
 		alertForm.ticker.trim() !== '' &&
-		alertForm.title.trim() !== '' &&
-		alertForm.message.trim() !== ''
+			alertForm.title.trim() !== '' &&
+			alertForm.message.trim() !== ''
 	);
 
 	/** Video form validation */
@@ -196,7 +194,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DATA FETCHING
 	// ═══════════════════════════════════════════════════════════════════════════════
-	
+
 	$effect(() => {
 		if (!browser || !slug) return;
 
@@ -207,7 +205,7 @@
 			loadRoomStats();
 		});
 	});
-	
+
 	async function loadTradePlan() {
 		isLoadingTradePlan = true;
 		try {
@@ -220,7 +218,7 @@
 			isLoadingTradePlan = false;
 		}
 	}
-	
+
 	async function loadAlerts() {
 		isLoadingAlerts = true;
 		try {
@@ -233,7 +231,7 @@
 			isLoadingAlerts = false;
 		}
 	}
-	
+
 	async function loadWeeklyVideo() {
 		isLoadingVideo = true;
 		try {
@@ -242,7 +240,7 @@
 				weeklyVideoApi.list(slug, { per_page: 10 })
 			]);
 			currentVideo = currentRes.data;
-			archivedVideos = (archiveRes.data || []).filter(v => !v.is_current);
+			archivedVideos = (archiveRes.data || []).filter((v) => !v.is_current);
 		} catch (err) {
 			console.error('Failed to load weekly video:', err);
 		} finally {
@@ -265,7 +263,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TRADE PLAN HANDLERS
 	// ═══════════════════════════════════════════════════════════════════════════════
-	
+
 	function openAddTradePlan() {
 		editingTradePlan = null;
 		tradePlanForm = {
@@ -283,7 +281,7 @@
 		};
 		showTradePlanModal = true;
 	}
-	
+
 	function openEditTradePlan(entry: TradePlanEntry) {
 		editingTradePlan = entry;
 		tradePlanForm = {
@@ -301,7 +299,7 @@
 		};
 		showTradePlanModal = true;
 	}
-	
+
 	async function saveTradePlan() {
 		if (!isTradePlanFormValid) {
 			errorMessage = 'Ticker and Bias are required';
@@ -310,7 +308,7 @@
 
 		isSavingTradePlan = true;
 		errorMessage = '';
-		
+
 		try {
 			if (editingTradePlan) {
 				await tradePlanApi.update(editingTradePlan.id, tradePlanForm);
@@ -330,10 +328,10 @@
 			isSavingTradePlan = false;
 		}
 	}
-	
+
 	async function deleteTradePlan(entry: TradePlanEntry) {
 		if (!confirm(`Delete ${entry.ticker} from trade plan?`)) return;
-		
+
 		try {
 			await tradePlanApi.delete(entry.id);
 			successMessage = 'Trade plan entry deleted';
@@ -346,7 +344,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// ALERTS HANDLERS
 	// ═══════════════════════════════════════════════════════════════════════════════
-	
+
 	function openAddAlert() {
 		editingAlert = null;
 		alertForm = {
@@ -360,7 +358,7 @@
 		};
 		showAlertModal = true;
 	}
-	
+
 	function openEditAlert(alert: RoomAlert) {
 		editingAlert = alert;
 		alertForm = {
@@ -374,7 +372,7 @@
 		};
 		showAlertModal = true;
 	}
-	
+
 	async function saveAlert() {
 		if (!isAlertFormValid) {
 			errorMessage = 'Ticker, Title, and Message are required';
@@ -383,7 +381,7 @@
 
 		isSavingAlert = true;
 		errorMessage = '';
-		
+
 		try {
 			if (editingAlert) {
 				await alertsApi.update(editingAlert.id, alertForm);
@@ -403,7 +401,7 @@
 			isSavingAlert = false;
 		}
 	}
-	
+
 	async function deleteAlert(alert: RoomAlert) {
 		if (!confirm(`Delete alert "${alert.title}"?`)) return;
 
@@ -439,11 +437,11 @@
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// WEEKLY VIDEO HANDLERS
 	// ═══════════════════════════════════════════════════════════════════════════════
-	
+
 	function openAddVideo() {
 		const today = new Date();
 		const weekTitle = `Week of ${today.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`;
-		
+
 		videoForm = {
 			week_of: today.toISOString().split('T')[0],
 			week_title: weekTitle,
@@ -456,7 +454,7 @@
 		};
 		showVideoModal = true;
 	}
-	
+
 	async function saveVideo() {
 		if (!isVideoFormValid) {
 			errorMessage = 'Video URL and Title are required';
@@ -465,7 +463,7 @@
 
 		isSavingVideo = true;
 		errorMessage = '';
-		
+
 		try {
 			await weeklyVideoApi.create({
 				room_slug: slug,
@@ -480,11 +478,11 @@
 			isSavingVideo = false;
 		}
 	}
-	
+
 	// Clear messages after delay
 	$effect(() => {
 		if (successMessage) {
-			const timeout = setTimeout(() => successMessage = '', 3000);
+			const timeout = setTimeout(() => (successMessage = ''), 3000);
 			return () => clearTimeout(timeout);
 		}
 		return undefined;
@@ -492,29 +490,37 @@
 
 	$effect(() => {
 		if (errorMessage) {
-			const timeout = setTimeout(() => errorMessage = '', 5000);
+			const timeout = setTimeout(() => (errorMessage = ''), 5000);
 			return () => clearTimeout(timeout);
 		}
 		return undefined;
 	});
-	
+
 	// Bias color helper
 	function getBiasColor(bias: string): string {
 		switch (bias) {
-			case 'BULLISH': return '#22c55e';
-			case 'BEARISH': return '#ef4444';
-			case 'NEUTRAL': return '#f59e0b';
-			default: return '#64748b';
+			case 'BULLISH':
+				return '#22c55e';
+			case 'BEARISH':
+				return '#ef4444';
+			case 'NEUTRAL':
+				return '#f59e0b';
+			default:
+				return '#64748b';
 		}
 	}
-	
+
 	// Alert type color helper
 	function getAlertTypeColor(type: string): string {
 		switch (type) {
-			case 'ENTRY': return '#22c55e';
-			case 'EXIT': return '#3b82f6';
-			case 'UPDATE': return '#f59e0b';
-			default: return '#64748b';
+			case 'ENTRY':
+				return '#22c55e';
+			case 'EXIT':
+				return '#3b82f6';
+			case 'UPDATE':
+				return '#f59e0b';
+			default:
+				return '#64748b';
 		}
 	}
 </script>
@@ -562,7 +568,7 @@
 			{/if}
 		</div>
 	</header>
-	
+
 	<!-- Messages -->
 	{#if successMessage}
 		<div class="message success">
@@ -574,16 +580,16 @@
 		<div class="message error">
 			<IconX size={20} />
 			{errorMessage}
-			<button onclick={() => errorMessage = ''}>×</button>
+			<button onclick={() => (errorMessage = '')}>×</button>
 		</div>
 	{/if}
-	
+
 	<!-- Tabs -->
 	<nav class="tabs">
 		<button
 			class="tab"
 			class:active={activeTab === 'trade-plan'}
-			onclick={() => activeTab = 'trade-plan'}
+			onclick={() => (activeTab = 'trade-plan')}
 		>
 			<IconTable size={20} />
 			<span>Trade Plan</span>
@@ -592,7 +598,7 @@
 		<button
 			class="tab"
 			class:active={activeTab === 'alerts'}
-			onclick={() => activeTab = 'alerts'}
+			onclick={() => (activeTab = 'alerts')}
 		>
 			<IconBell size={20} />
 			<span>Alerts</span>
@@ -601,7 +607,7 @@
 		<button
 			class="tab"
 			class:active={activeTab === 'weekly-video'}
-			onclick={() => activeTab = 'weekly-video'}
+			onclick={() => (activeTab = 'weekly-video')}
 		>
 			<IconVideo size={20} />
 			<span>Weekly Video</span>
@@ -610,7 +616,7 @@
 			{/if}
 		</button>
 	</nav>
-	
+
 	<!-- Tab Content -->
 	<div class="tab-content">
 		<!-- ═══════════════════════════════════════════════════════════════════════════
@@ -624,7 +630,7 @@
 					Add Entry
 				</button>
 			</div>
-			
+
 			{#if isLoadingTradePlan}
 				<div class="loading">Loading trade plan...</div>
 			{:else if !hasTradePlanEntries}
@@ -660,7 +666,9 @@
 								<tr>
 									<td class="ticker-cell"><strong>{entry.ticker}</strong></td>
 									<td>
-										<span class="bias-badge" style="background: {getBiasColor(entry.bias)}">{entry.bias}</span>
+										<span class="bias-badge" style="background: {getBiasColor(entry.bias)}"
+											>{entry.bias}</span
+										>
 									</td>
 									<td>{entry.entry || '-'}</td>
 									<td class="target-cell">{entry.target1 || '-'}</td>
@@ -674,7 +682,11 @@
 										<button class="icon-btn" onclick={() => openEditTradePlan(entry)} title="Edit">
 											<IconEdit size={16} />
 										</button>
-										<button class="icon-btn danger" onclick={() => deleteTradePlan(entry)} title="Delete">
+										<button
+											class="icon-btn danger"
+											onclick={() => deleteTradePlan(entry)}
+											title="Delete"
+										>
 											<IconTrash size={16} />
 										</button>
 									</td>
@@ -682,7 +694,8 @@
 								{#if entry.notes}
 									<tr class="notes-row">
 										<td colspan="11">
-											<span class="notes-label">Notes:</span> {entry.notes}
+											<span class="notes-label">Notes:</span>
+											{entry.notes}
 										</td>
 									</tr>
 								{/if}
@@ -692,7 +705,7 @@
 				</div>
 			{/if}
 		{/if}
-		
+
 		<!-- ═══════════════════════════════════════════════════════════════════════════
 		     ALERTS TAB
 		     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -704,7 +717,7 @@
 					New Alert
 				</button>
 			</div>
-			
+
 			{#if isLoadingAlerts}
 				<div class="loading">Loading alerts...</div>
 			{:else if !hasAlerts}
@@ -723,7 +736,9 @@
 						<div class="alert-card" class:is-new={alert.is_new} class:is-pinned={alert.is_pinned}>
 							<div class="alert-header">
 								<div class="alert-meta">
-									<span class="alert-type" style="background: {getAlertTypeColor(alert.alert_type)}">{alert.alert_type}</span>
+									<span class="alert-type" style="background: {getAlertTypeColor(alert.alert_type)}"
+										>{alert.alert_type}</span
+									>
 									<span class="alert-ticker">{alert.ticker}</span>
 									{#if alert.is_pinned}
 										<span class="pinned-badge">PINNED</span>
@@ -777,7 +792,7 @@
 				</div>
 			{/if}
 		{/if}
-		
+
 		<!-- ═══════════════════════════════════════════════════════════════════════════
 		     WEEKLY VIDEO TAB
 		     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -789,7 +804,7 @@
 					Publish New Video
 				</button>
 			</div>
-			
+
 			{#if isLoadingVideo}
 				<div class="loading">Loading video...</div>
 			{:else}
@@ -799,7 +814,10 @@
 						<div class="video-badge">CURRENT</div>
 						<div class="video-content">
 							{#if currentVideo.thumbnail_url}
-								<div class="video-thumbnail" style="background-image: url('{currentVideo.thumbnail_url}')">
+								<div
+									class="video-thumbnail"
+									style="background-image: url('{currentVideo.thumbnail_url}')"
+								>
 									{#if currentVideo.duration}
 										<span class="duration">{currentVideo.duration}</span>
 									{/if}
@@ -809,7 +827,9 @@
 								<h3>{currentVideo.week_title}</h3>
 								<h4>{currentVideo.video_title}</h4>
 								<p class="video-url">{currentVideo.video_url}</p>
-								<span class="video-date">Published: {new Date(currentVideo.published_at).toLocaleDateString()}</span>
+								<span class="video-date"
+									>Published: {new Date(currentVideo.published_at).toLocaleDateString()}</span
+								>
 							</div>
 						</div>
 					</div>
@@ -824,7 +844,7 @@
 						</button>
 					</div>
 				{/if}
-				
+
 				<!-- Archived Videos -->
 				{#if hasArchivedVideos}
 					<div class="archived-section">
@@ -834,7 +854,9 @@
 								<div class="archived-video">
 									<span class="archived-week">{video.week_title}</span>
 									<span class="archived-title">{video.video_title}</span>
-									<span class="archived-date">{new Date(video.published_at).toLocaleDateString()}</span>
+									<span class="archived-date"
+										>{new Date(video.published_at).toLocaleDateString()}</span
+									>
 								</div>
 							{/each}
 						</div>
@@ -850,22 +872,35 @@
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showTradePlanModal}
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => showTradePlanModal = false} role="presentation">
-		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="trade-plan-modal-title" tabindex="-1">
+	<div class="modal-overlay" onclick={() => (showTradePlanModal = false)} role="presentation">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="trade-plan-modal-title"
+			tabindex="-1"
+		>
 			<div class="modal-header">
 				<h2 id="trade-plan-modal-title">{editingTradePlan ? 'Edit' : 'Add'} Trade Plan Entry</h2>
-				<button class="close-btn" onclick={() => showTradePlanModal = false}>
+				<button class="close-btn" onclick={() => (showTradePlanModal = false)}>
 					<IconX size={24} />
 				</button>
 			</div>
-			<form class="modal-body" onsubmit={(e) => { e.preventDefault(); saveTradePlan(); }}>
+			<form
+				class="modal-body"
+				onsubmit={(e) => {
+					e.preventDefault();
+					saveTradePlan();
+				}}
+			>
 				<div class="form-row">
 					<div class="form-group">
 						<label for="ticker">Ticker *</label>
-						<input 
-							id="ticker" 
-							type="text" 
-							bind:value={tradePlanForm.ticker} 
+						<input
+							id="ticker"
+							type="text"
+							bind:value={tradePlanForm.ticker}
 							placeholder="NVDA"
 							style="text-transform: uppercase"
 						/>
@@ -879,7 +914,7 @@
 						</select>
 					</div>
 				</div>
-				
+
 				<div class="form-row">
 					<div class="form-group">
 						<label for="entry">Entry</label>
@@ -890,51 +925,82 @@
 						<input id="stop" type="text" bind:value={tradePlanForm.stop} placeholder="$136.00" />
 					</div>
 				</div>
-				
+
 				<div class="form-row targets">
 					<div class="form-group">
 						<label for="target1">Target 1</label>
-						<input id="target1" type="text" bind:value={tradePlanForm.target1} placeholder="$148.00" />
+						<input
+							id="target1"
+							type="text"
+							bind:value={tradePlanForm.target1}
+							placeholder="$148.00"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="target2">Target 2</label>
-						<input id="target2" type="text" bind:value={tradePlanForm.target2} placeholder="$152.00" />
+						<input
+							id="target2"
+							type="text"
+							bind:value={tradePlanForm.target2}
+							placeholder="$152.00"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="target3">Target 3</label>
-						<input id="target3" type="text" bind:value={tradePlanForm.target3} placeholder="$158.00" />
+						<input
+							id="target3"
+							type="text"
+							bind:value={tradePlanForm.target3}
+							placeholder="$158.00"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="runner">Runner</label>
-						<input id="runner" type="text" bind:value={tradePlanForm.runner} placeholder="$165.00+" />
+						<input
+							id="runner"
+							type="text"
+							bind:value={tradePlanForm.runner}
+							placeholder="$165.00+"
+						/>
 					</div>
 				</div>
-				
+
 				<div class="form-row">
 					<div class="form-group">
 						<label for="options_strike">Options Strike</label>
-						<input id="options_strike" type="text" bind:value={tradePlanForm.options_strike} placeholder="$145 Call" />
+						<input
+							id="options_strike"
+							type="text"
+							bind:value={tradePlanForm.options_strike}
+							placeholder="$145 Call"
+						/>
 					</div>
 					<div class="form-group">
 						<label for="options_exp">Options Exp</label>
 						<input id="options_exp" type="date" bind:value={tradePlanForm.options_exp} />
 					</div>
 				</div>
-				
+
 				<div class="form-group full-width">
 					<label for="notes">Notes</label>
-					<textarea 
-						id="notes" 
-						bind:value={tradePlanForm.notes} 
+					<textarea
+						id="notes"
+						bind:value={tradePlanForm.notes}
 						placeholder="Breakout above consolidation. Wait for pullback to entry..."
 						rows="3"
 					></textarea>
 				</div>
-				
+
 				<div class="modal-actions">
-					<button type="button" class="btn-secondary" onclick={() => showTradePlanModal = false}>Cancel</button>
-					<button type="submit" class="btn-primary" disabled={isSavingTradePlan || !isTradePlanFormValid}>
-						{isSavingTradePlan ? 'Saving...' : (editingTradePlan ? 'Update' : 'Add Entry')}
+					<button type="button" class="btn-secondary" onclick={() => (showTradePlanModal = false)}
+						>Cancel</button
+					>
+					<button
+						type="submit"
+						class="btn-primary"
+						disabled={isSavingTradePlan || !isTradePlanFormValid}
+					>
+						{isSavingTradePlan ? 'Saving...' : editingTradePlan ? 'Update' : 'Add Entry'}
 					</button>
 				</div>
 			</form>
@@ -947,15 +1013,28 @@
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showAlertModal}
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => showAlertModal = false} role="presentation">
-		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="alert-modal-title" tabindex="-1">
+	<div class="modal-overlay" onclick={() => (showAlertModal = false)} role="presentation">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="alert-modal-title"
+			tabindex="-1"
+		>
 			<div class="modal-header">
 				<h2 id="alert-modal-title">{editingAlert ? 'Edit' : 'Create'} Alert</h2>
-				<button class="close-btn" onclick={() => showAlertModal = false}>
+				<button class="close-btn" onclick={() => (showAlertModal = false)}>
 					<IconX size={24} />
 				</button>
 			</div>
-			<form class="modal-body" onsubmit={(e) => { e.preventDefault(); saveAlert(); }}>
+			<form
+				class="modal-body"
+				onsubmit={(e) => {
+					e.preventDefault();
+					saveAlert();
+				}}
+			>
 				<div class="form-row">
 					<div class="form-group">
 						<label for="alert_type">Type *</label>
@@ -967,41 +1046,46 @@
 					</div>
 					<div class="form-group">
 						<label for="alert_ticker">Ticker *</label>
-						<input 
-							id="alert_ticker" 
-							type="text" 
-							bind:value={alertForm.ticker} 
+						<input
+							id="alert_ticker"
+							type="text"
+							bind:value={alertForm.ticker}
 							placeholder="NVDA"
 							style="text-transform: uppercase"
 						/>
 					</div>
 				</div>
-				
+
 				<div class="form-group full-width">
 					<label for="alert_title">Title *</label>
-					<input id="alert_title" type="text" bind:value={alertForm.title} placeholder="Opening NVDA Swing Position" />
+					<input
+						id="alert_title"
+						type="text"
+						bind:value={alertForm.title}
+						placeholder="Opening NVDA Swing Position"
+					/>
 				</div>
-				
+
 				<div class="form-group full-width">
 					<label for="alert_message">Message *</label>
-					<textarea 
-						id="alert_message" 
-						bind:value={alertForm.message} 
+					<textarea
+						id="alert_message"
+						bind:value={alertForm.message}
 						placeholder="Entering NVDA at $142.50. First target $148, stop at $136..."
 						rows="3"
 					></textarea>
 				</div>
-				
+
 				<div class="form-group full-width">
 					<label for="alert_notes">Detailed Notes (for dropdown)</label>
-					<textarea 
-						id="alert_notes" 
-						bind:value={alertForm.notes} 
+					<textarea
+						id="alert_notes"
+						bind:value={alertForm.notes}
 						placeholder="Entry based on breakout above $142 resistance with strong volume confirmation..."
 						rows="4"
 					></textarea>
 				</div>
-				
+
 				<div class="form-row checkboxes">
 					<label class="checkbox-label">
 						<input type="checkbox" bind:checked={alertForm.is_new} />
@@ -1012,11 +1096,13 @@
 						<span>Published</span>
 					</label>
 				</div>
-				
+
 				<div class="modal-actions">
-					<button type="button" class="btn-secondary" onclick={() => showAlertModal = false}>Cancel</button>
+					<button type="button" class="btn-secondary" onclick={() => (showAlertModal = false)}
+						>Cancel</button
+					>
 					<button type="submit" class="btn-primary" disabled={isSavingAlert || !isAlertFormValid}>
-						{isSavingAlert ? 'Saving...' : (editingAlert ? 'Update' : 'Create Alert')}
+						{isSavingAlert ? 'Saving...' : editingAlert ? 'Update' : 'Create Alert'}
 					</button>
 				</div>
 			</form>
@@ -1029,15 +1115,28 @@
      ═══════════════════════════════════════════════════════════════════════════════════ -->
 {#if showVideoModal}
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
-	<div class="modal-overlay" onclick={() => showVideoModal = false} role="presentation">
-		<div class="modal" onclick={(e) => e.stopPropagation()} role="dialog" aria-modal="true" aria-labelledby="video-modal-title" tabindex="-1">
+	<div class="modal-overlay" onclick={() => (showVideoModal = false)} role="presentation">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="video-modal-title"
+			tabindex="-1"
+		>
 			<div class="modal-header">
 				<h2 id="video-modal-title">Publish Weekly Video</h2>
-				<button class="close-btn" onclick={() => showVideoModal = false}>
+				<button class="close-btn" onclick={() => (showVideoModal = false)}>
 					<IconX size={24} />
 				</button>
 			</div>
-			<form class="modal-body" onsubmit={(e) => { e.preventDefault(); saveVideo(); }}>
+			<form
+				class="modal-body"
+				onsubmit={(e) => {
+					e.preventDefault();
+					saveVideo();
+				}}
+			>
 				<div class="form-row">
 					<div class="form-group">
 						<label for="week_of">Week Of *</label>
@@ -1045,47 +1144,69 @@
 					</div>
 					<div class="form-group">
 						<label for="week_title">Week Title *</label>
-						<input id="week_title" type="text" bind:value={videoForm.week_title} placeholder="Week of January 13, 2026" />
+						<input
+							id="week_title"
+							type="text"
+							bind:value={videoForm.week_title}
+							placeholder="Week of January 13, 2026"
+						/>
 					</div>
 				</div>
-				
+
 				<div class="form-group full-width">
 					<label for="video_title">Video Title *</label>
-					<input id="video_title" type="text" bind:value={videoForm.video_title} placeholder="Weekly Breakdown: Top Swing Setups" />
+					<input
+						id="video_title"
+						type="text"
+						bind:value={videoForm.video_title}
+						placeholder="Weekly Breakdown: Top Swing Setups"
+					/>
 				</div>
-				
+
 				<div class="form-row">
 					<div class="form-group flex-2">
 						<label for="video_url">Video URL *</label>
-						<input id="video_url" type="url" bind:value={videoForm.video_url} placeholder="https://player.vimeo.com/video/..." />
+						<input
+							id="video_url"
+							type="url"
+							bind:value={videoForm.video_url}
+							placeholder="https://player.vimeo.com/video/..."
+						/>
 					</div>
 					<div class="form-group">
 						<label for="duration">Duration</label>
 						<input id="duration" type="text" bind:value={videoForm.duration} placeholder="24:35" />
 					</div>
 				</div>
-				
+
 				<div class="form-group full-width">
 					<label for="thumbnail_url">Thumbnail URL</label>
-					<input id="thumbnail_url" type="url" bind:value={videoForm.thumbnail_url} placeholder="https://..." />
+					<input
+						id="thumbnail_url"
+						type="url"
+						bind:value={videoForm.thumbnail_url}
+						placeholder="https://..."
+					/>
 				</div>
-				
+
 				<div class="form-group full-width">
 					<label for="description">Description</label>
-					<textarea 
-						id="description" 
-						bind:value={videoForm.description} 
+					<textarea
+						id="description"
+						bind:value={videoForm.description}
 						placeholder="This week's breakdown covers..."
 						rows="3"
 					></textarea>
 				</div>
-				
+
 				<div class="info-box">
 					<strong>Note:</strong> Publishing a new video will automatically archive the current video.
 				</div>
-				
+
 				<div class="modal-actions">
-					<button type="button" class="btn-secondary" onclick={() => showVideoModal = false}>Cancel</button>
+					<button type="button" class="btn-secondary" onclick={() => (showVideoModal = false)}
+						>Cancel</button
+					>
 					<button type="submit" class="btn-primary" disabled={isSavingVideo || !isVideoFormValid}>
 						{isSavingVideo ? 'Publishing...' : 'Publish Video'}
 					</button>
@@ -1102,7 +1223,7 @@
 		max-width: 1400px;
 		margin: 0 auto;
 	}
-	
+
 	/* Header */
 	.page-header {
 		margin-bottom: 32px;
@@ -1121,7 +1242,7 @@
 	}
 
 	.back-link:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.header-row {
@@ -1193,7 +1314,7 @@
 		letter-spacing: 0.05em;
 		margin-top: 4px;
 	}
-	
+
 	/* Messages */
 	.message {
 		display: flex;
@@ -1204,17 +1325,17 @@
 		margin-bottom: 20px;
 		font-weight: 500;
 	}
-	
+
 	.message.success {
 		background: #dcfce7;
 		color: #166534;
 	}
-	
+
 	.message.error {
 		background: #fef2f2;
 		color: #991b1b;
 	}
-	
+
 	.message button {
 		margin-left: auto;
 		background: none;
@@ -1223,7 +1344,7 @@
 		cursor: pointer;
 		opacity: 0.7;
 	}
-	
+
 	/* Tabs */
 	.tabs {
 		display: flex;
@@ -1231,7 +1352,7 @@
 		border-bottom: 2px solid #e2e8f0;
 		margin-bottom: 32px;
 	}
-	
+
 	.tab {
 		display: flex;
 		align-items: center;
@@ -1247,16 +1368,16 @@
 		margin-bottom: -2px;
 		transition: all 0.2s;
 	}
-	
+
 	.tab:hover {
 		color: #1e293b;
 	}
-	
+
 	.tab.active {
-		color: #143E59;
-		border-bottom-color: #143E59;
+		color: #143e59;
+		border-bottom-color: #143e59;
 	}
-	
+
 	.tab .badge {
 		background: #e2e8f0;
 		color: #64748b;
@@ -1264,9 +1385,9 @@
 		border-radius: 10px;
 		font-size: 12px;
 	}
-	
+
 	.tab.active .badge {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -1274,7 +1395,7 @@
 		background: #22c55e;
 		color: #fff;
 	}
-	
+
 	/* Section Header */
 	.section-header {
 		display: flex;
@@ -1282,21 +1403,21 @@
 		align-items: center;
 		margin-bottom: 24px;
 	}
-	
+
 	.section-header h2 {
 		font-size: 20px;
 		font-weight: 700;
 		color: #1e293b;
 		margin: 0;
 	}
-	
+
 	/* Buttons */
 	.btn-primary {
 		display: inline-flex;
 		align-items: center;
 		gap: 8px;
 		padding: 12px 24px;
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 		border: none;
 		border-radius: 10px;
@@ -1305,16 +1426,16 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-	
+
 	.btn-primary:hover {
 		background: #0f2d42;
 	}
-	
+
 	.btn-primary:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
 	}
-	
+
 	.btn-secondary {
 		display: inline-flex;
 		align-items: center;
@@ -1329,11 +1450,11 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-	
+
 	.btn-secondary:hover {
 		background: #e2e8f0;
 	}
-	
+
 	.icon-btn {
 		display: inline-flex;
 		align-items: center;
@@ -1347,12 +1468,12 @@
 		cursor: pointer;
 		transition: all 0.2s;
 	}
-	
+
 	.icon-btn:hover {
 		background: #e2e8f0;
-		color: #143E59;
+		color: #143e59;
 	}
-	
+
 	.icon-btn.danger:hover {
 		background: #fef2f2;
 		color: #dc2626;
@@ -1362,7 +1483,7 @@
 		background: #dbeafe;
 		color: #2563eb;
 	}
-	
+
 	/* Loading & Empty States */
 	.loading {
 		text-align: center;
@@ -1370,7 +1491,7 @@
 		color: #64748b;
 		font-size: 16px;
 	}
-	
+
 	.empty-state {
 		text-align: center;
 		padding: 80px 20px;
@@ -1378,23 +1499,23 @@
 		border-radius: 16px;
 		color: #64748b;
 	}
-	
+
 	.empty-state :global(svg) {
 		opacity: 0.4;
 		margin-bottom: 16px;
 	}
-	
+
 	.empty-state h3 {
 		font-size: 20px;
 		font-weight: 600;
 		color: #1e293b;
 		margin: 0 0 8px 0;
 	}
-	
+
 	.empty-state p {
 		margin: 0 0 24px 0;
 	}
-	
+
 	/* Trade Plan Table */
 	.table-wrapper {
 		overflow-x: auto;
@@ -1402,60 +1523,60 @@
 		border-radius: 12px;
 		border: 1px solid #e2e8f0;
 	}
-	
+
 	.data-table {
 		width: 100%;
 		border-collapse: collapse;
 		font-size: 14px;
 	}
-	
+
 	.data-table th {
 		text-align: left;
 		padding: 14px 16px;
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 		font-weight: 600;
 		font-size: 12px;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
-	
+
 	.data-table th:first-child {
 		border-radius: 12px 0 0 0;
 	}
-	
+
 	.data-table th:last-child {
 		border-radius: 0 12px 0 0;
 	}
-	
+
 	.data-table td {
 		padding: 14px 16px;
 		border-bottom: 1px solid #e2e8f0;
 		vertical-align: middle;
 	}
-	
+
 	.data-table tbody tr:hover {
 		background: #f8fafc;
 	}
-	
+
 	.ticker-cell {
 		font-weight: 700;
 		color: #1e293b;
 	}
-	
+
 	.target-cell {
 		color: #22c55e;
 	}
-	
+
 	.runner-cell {
 		color: #3b82f6;
 		font-weight: 600;
 	}
-	
+
 	.stop-cell {
 		color: #ef4444;
 	}
-	
+
 	.bias-badge {
 		display: inline-block;
 		padding: 4px 10px;
@@ -1465,12 +1586,12 @@
 		font-weight: 700;
 		letter-spacing: 0.05em;
 	}
-	
+
 	.actions-cell {
 		display: flex;
 		gap: 8px;
 	}
-	
+
 	.notes-row td {
 		padding: 12px 16px;
 		background: #f8fafc;
@@ -1478,19 +1599,19 @@
 		color: #64748b;
 		border-bottom: 2px solid #e2e8f0;
 	}
-	
+
 	.notes-label {
 		font-weight: 600;
 		color: #475569;
 	}
-	
+
 	/* Alerts List */
 	.alerts-list {
 		display: flex;
 		flex-direction: column;
 		gap: 16px;
 	}
-	
+
 	.alert-card {
 		background: #fff;
 		border: 1px solid #e2e8f0;
@@ -1498,11 +1619,11 @@
 		padding: 20px;
 		transition: all 0.2s;
 	}
-	
+
 	.alert-card:hover {
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 	}
-	
+
 	.alert-card.is-new {
 		border-left: 4px solid #22c55e;
 	}
@@ -1511,20 +1632,20 @@
 		border-left: 4px solid #2563eb;
 		background: #fafbff;
 	}
-	
+
 	.alert-header {
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
 		margin-bottom: 12px;
 	}
-	
+
 	.alert-meta {
 		display: flex;
 		align-items: center;
 		gap: 10px;
 	}
-	
+
 	.alert-type {
 		padding: 4px 10px;
 		border-radius: 6px;
@@ -1532,13 +1653,13 @@
 		font-size: 11px;
 		font-weight: 700;
 	}
-	
+
 	.alert-ticker {
 		font-weight: 700;
 		color: #1e293b;
 		font-size: 16px;
 	}
-	
+
 	.new-badge {
 		background: #dcfce7;
 		color: #166534;
@@ -1556,32 +1677,32 @@
 		font-size: 10px;
 		font-weight: 700;
 	}
-	
+
 	.alert-actions {
 		display: flex;
 		gap: 8px;
 	}
-	
+
 	.alert-card h3 {
 		font-size: 18px;
 		font-weight: 600;
 		color: #1e293b;
 		margin: 0 0 8px 0;
 	}
-	
+
 	.alert-message {
 		color: #64748b;
 		margin: 0 0 12px 0;
 		line-height: 1.6;
 	}
-	
+
 	.alert-notes {
 		background: #f8fafc;
 		padding: 12px 16px;
 		border-radius: 8px;
 		margin-bottom: 12px;
 	}
-	
+
 	.alert-notes .notes-label {
 		display: block;
 		font-size: 11px;
@@ -1589,38 +1710,38 @@
 		color: #64748b;
 		margin-bottom: 6px;
 	}
-	
+
 	.alert-notes p {
 		margin: 0;
 		font-size: 14px;
 		color: #475569;
 		line-height: 1.6;
 	}
-	
+
 	.alert-footer {
 		display: flex;
 		justify-content: flex-end;
 	}
-	
+
 	.alert-time {
 		font-size: 13px;
 		color: #94a3b8;
 	}
-	
+
 	/* Weekly Video */
 	.current-video-card {
 		background: #fff;
-		border: 2px solid #143E59;
+		border: 2px solid #143e59;
 		border-radius: 16px;
 		overflow: hidden;
 		position: relative;
 	}
-	
+
 	.video-badge {
 		position: absolute;
 		top: 16px;
 		left: 16px;
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 		padding: 6px 14px;
 		border-radius: 6px;
@@ -1628,13 +1749,13 @@
 		font-weight: 700;
 		z-index: 1;
 	}
-	
+
 	.video-content {
 		display: flex;
 		gap: 24px;
 		padding: 24px;
 	}
-	
+
 	.video-thumbnail {
 		width: 320px;
 		height: 180px;
@@ -1645,66 +1766,66 @@
 		flex-shrink: 0;
 		position: relative;
 	}
-	
+
 	.video-thumbnail .duration {
 		position: absolute;
 		bottom: 8px;
 		right: 8px;
-		background: rgba(0,0,0,0.8);
+		background: rgba(0, 0, 0, 0.8);
 		color: #fff;
 		padding: 4px 8px;
 		border-radius: 4px;
 		font-size: 12px;
 		font-weight: 600;
 	}
-	
+
 	.video-info {
 		flex: 1;
 	}
-	
+
 	.video-info h3 {
 		font-size: 20px;
 		font-weight: 700;
 		color: #1e293b;
 		margin: 0 0 8px 0;
 	}
-	
+
 	.video-info h4 {
 		font-size: 16px;
 		font-weight: 500;
 		color: #475569;
 		margin: 0 0 16px 0;
 	}
-	
+
 	.video-url {
 		font-size: 13px;
 		color: #3b82f6;
 		word-break: break-all;
 		margin: 0 0 12px 0;
 	}
-	
+
 	.video-date {
 		font-size: 13px;
 		color: #94a3b8;
 	}
-	
+
 	.archived-section {
 		margin-top: 32px;
 	}
-	
+
 	.archived-section h3 {
 		font-size: 16px;
 		font-weight: 600;
 		color: #64748b;
 		margin: 0 0 16px 0;
 	}
-	
+
 	.archived-list {
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
 	}
-	
+
 	.archived-video {
 		display: flex;
 		align-items: center;
@@ -1713,23 +1834,23 @@
 		background: #f8fafc;
 		border-radius: 10px;
 	}
-	
+
 	.archived-week {
 		font-weight: 600;
 		color: #1e293b;
 		min-width: 200px;
 	}
-	
+
 	.archived-title {
 		flex: 1;
 		color: #64748b;
 	}
-	
+
 	.archived-date {
 		font-size: 13px;
 		color: #94a3b8;
 	}
-	
+
 	/* Modal */
 	.modal-overlay {
 		position: fixed;
@@ -1744,7 +1865,7 @@
 		z-index: 1000;
 		padding: 20px;
 	}
-	
+
 	.modal {
 		background: #fff;
 		border-radius: 16px;
@@ -1753,7 +1874,7 @@
 		max-height: 90vh;
 		overflow-y: auto;
 	}
-	
+
 	.modal-header {
 		display: flex;
 		justify-content: space-between;
@@ -1761,14 +1882,14 @@
 		padding: 24px;
 		border-bottom: 1px solid #e2e8f0;
 	}
-	
+
 	.modal-header h2 {
 		font-size: 20px;
 		font-weight: 700;
 		color: #1e293b;
 		margin: 0;
 	}
-	
+
 	.close-btn {
 		background: none;
 		border: none;
@@ -1776,47 +1897,47 @@
 		cursor: pointer;
 		padding: 4px;
 	}
-	
+
 	.close-btn:hover {
 		color: #1e293b;
 	}
-	
+
 	.modal-body {
 		padding: 24px;
 	}
-	
+
 	.form-row {
 		display: flex;
 		gap: 16px;
 		margin-bottom: 20px;
 	}
-	
+
 	.form-row.targets {
 		display: grid;
 		grid-template-columns: repeat(4, 1fr);
 	}
-	
+
 	.form-group {
 		flex: 1;
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
 	}
-	
+
 	.form-group.full-width {
 		margin-bottom: 20px;
 	}
-	
+
 	.form-group.flex-2 {
 		flex: 2;
 	}
-	
+
 	.form-group label {
 		font-size: 13px;
 		font-weight: 600;
 		color: #475569;
 	}
-	
+
 	.form-group input,
 	.form-group select,
 	.form-group textarea {
@@ -1826,23 +1947,23 @@
 		font-size: 14px;
 		transition: border-color 0.2s;
 	}
-	
+
 	.form-group input:focus,
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
-	
+
 	.form-group textarea {
 		resize: vertical;
 	}
-	
+
 	.form-row.checkboxes {
 		display: flex;
 		gap: 24px;
 	}
-	
+
 	.checkbox-label {
 		display: flex;
 		align-items: center;
@@ -1851,13 +1972,13 @@
 		color: #475569;
 		cursor: pointer;
 	}
-	
-	.checkbox-label input[type="checkbox"] {
+
+	.checkbox-label input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
-		accent-color: #143E59;
+		accent-color: #143e59;
 	}
-	
+
 	.info-box {
 		background: #f0f9ff;
 		border: 1px solid #bae6fd;
@@ -1867,7 +1988,7 @@
 		color: #0369a1;
 		margin-bottom: 20px;
 	}
-	
+
 	.modal-actions {
 		display: flex;
 		justify-content: flex-end;
@@ -1875,7 +1996,7 @@
 		padding-top: 20px;
 		border-top: 1px solid #e2e8f0;
 	}
-	
+
 	@media (max-width: 768px) {
 		.admin-page {
 			padding: 20px;

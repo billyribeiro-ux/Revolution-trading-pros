@@ -116,7 +116,7 @@
 			// Room stats API may not exist yet - use empty defaults
 			console.warn('Failed to fetch room stats:', e);
 			// Initialize with zeros for each room
-			roomStats = ROOMS.map(room => ({
+			roomStats = ROOMS.map((room) => ({
 				room_id: room.id,
 				watchlist_count: 0,
 				modules_count: 0,
@@ -128,25 +128,23 @@
 	// Get stats for a specific room
 	function getStatsForRoom(roomId: string): RoomStats {
 		// Type check to ensure room exists in ROOMS config
-		const roomExists: Room | undefined = ROOMS.find(r => r.id === roomId);
+		const roomExists: Room | undefined = ROOMS.find((r) => r.id === roomId);
 		if (!roomExists) console.warn(`Room ${roomId} not found in ROOMS config`);
-		
-		return roomStats.find(s => s.room_id === roomId) || {
-			room_id: roomId,
-			watchlist_count: 0,
-			modules_count: 0,
-			articles_count: 0
-		};
+
+		return (
+			roomStats.find((s) => s.room_id === roomId) || {
+				room_id: roomId,
+				watchlist_count: 0,
+				modules_count: 0,
+				articles_count: 0
+			}
+		);
 	}
 
 	// Load dashboard data
 	async function loadDashboard() {
 		isLoading = true;
-		await Promise.all([
-			fetchConnectionStatus(),
-			fetchMetrics(),
-			fetchRoomStats()
-		]);
+		await Promise.all([fetchConnectionStatus(), fetchMetrics(), fetchRoomStats()]);
 		isLoading = false;
 	}
 
@@ -185,9 +183,7 @@
 	});
 
 	// Count connected services
-	let connectedCount = $derived(
-		Object.values(connections).filter(Boolean).length
-	);
+	let connectedCount = $derived(Object.values(connections).filter(Boolean).length);
 	let totalServices = $derived(Object.keys(connections).length);
 </script>
 
@@ -197,472 +193,528 @@
 
 <div class="dashboard-container">
 	<div class="admin-page-container">
-	<!-- Ambient Background Effects - Theme aware -->
-	<div class="ambient-effects">
-		<div class="ambient-blob ambient-blob-purple"></div>
-		<div class="ambient-blob ambient-blob-blue"></div>
-		<div class="ambient-blob ambient-blob-emerald"></div>
-	</div>
-
-	<div class="relative z-10 p-6 lg:p-8 max-w-[1800px] mx-auto">
-		<!-- Header -->
-		<header class="mb-8" in:fly={{ y: -20, duration: 600, easing: quintOut }}>
-			<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-				<div>
-					<h1 class="dashboard-title">
-						Admin Dashboard
-					</h1>
-					<p class="dashboard-subtitle">
-						Real-time metrics and system overview
-					</p>
-				</div>
-
-				<div class="flex items-center gap-4">
-					<!-- Connection Status Indicator -->
-					<div class="status-indicator">
-						<span class="status-dot {connectedCount > 0 ? 'online' : 'offline'}"></span>
-						<span class="status-text">{connectedCount}/{totalServices} Connected</span>
-					</div>
-
-					<!-- Last Updated -->
-					<div class="updated-text">
-						Updated {getTimeAgo(lastUpdated)}
-					</div>
-
-					<!-- Refresh Button -->
-					<button
-						onclick={() => loadDashboard()}
-						disabled={isLoading}
-						class="refresh-btn"
-						title="Refresh dashboard"
-						aria-label="Refresh dashboard"
-					>
-						<svg class="w-5 h-5 {isLoading ? 'animate-spin' : ''}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-						</svg>
-					</button>
-				</div>
-			</div>
-		</header>
-
-		<!-- Connection Alert Banner -->
-		{#if connectedCount === 0}
-			<div
-				class="alert-banner alert-warning"
-				in:fade={{ duration: 300 }}
-			>
-				<div class="alert-icon warning">
-					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-					</svg>
-				</div>
-				<div class="flex-1">
-					<h3 class="alert-title">No Services Connected</h3>
-					<p class="alert-description">Connect your services in Settings to see real metrics on this dashboard.</p>
-				</div>
-				<a href="/admin/settings" class="alert-action">
-					Connect Services
-				</a>
-			</div>
-		{/if}
-
-		<!-- Main Metrics Grid -->
-		<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
-			<!-- Visitors Widget -->
-			<div
-				class="metric-widget metric-widget-purple"
-				in:fly={{ y: 30, duration: 400, delay: 100, easing: quintOut }}
-			>
-				<div class="metric-widget-inner">
-					<div class="flex items-center justify-between mb-4">
-						<div class="metric-icon purple">
-							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-							</svg>
-						</div>
-						{#if !connections.google_analytics}
-							<span class="metric-badge disconnected">Not Connected</span>
-						{/if}
-					</div>
-
-					{#if connections.google_analytics}
-						<div class="metric-value">{formatNumber(metrics.visitors)}</div>
-						<div class="metric-label">Visitors Today</div>
-					{:else}
-						<div class="metric-value-empty">No Data</div>
-						<div class="metric-label-empty">Connect Google Analytics</div>
-					{/if}
-				</div>
-			</div>
-
-			<!-- Revenue Widget -->
-			<div
-				class="metric-widget metric-widget-emerald"
-				in:scale={{ duration: 400, delay: 150, start: 0.8 }}
-			>
-				<div class="metric-widget-inner">
-					<div class="flex items-center justify-between mb-4">
-						<div class="metric-icon emerald">
-							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-							</svg>
-						</div>
-						{#if !connections.stripe}
-							<span class="metric-badge disconnected">Not Connected</span>
-						{/if}
-					</div>
-
-					{#if connections.stripe}
-						<div class="metric-value">{formatCurrency(metrics.revenue)}</div>
-						<div class="metric-label">Revenue This Month</div>
-					{:else}
-						<div class="metric-value-empty">No Data</div>
-						<div class="metric-label-empty">Connect Stripe</div>
-					{/if}
-				</div>
-			</div>
-
-			<!-- SEO Score Widget -->
-			<div
-				class="metric-widget metric-widget-blue"
-				in:fly={{ y: 30, duration: 400, delay: 200, easing: quintOut }}
-			>
-				<div class="metric-widget-inner">
-					<div class="flex items-center justify-between mb-4">
-						<div class="metric-icon blue">
-							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-							</svg>
-						</div>
-						{#if !connections.google_search_console}
-							<span class="metric-badge disconnected">Not Connected</span>
-						{/if}
-					</div>
-
-					{#if connections.google_search_console}
-						<div class="metric-value">{metrics.seo_score ?? '—'}/100</div>
-						<div class="metric-label">SEO Health Score</div>
-					{:else}
-						<div class="metric-value-empty">No Data</div>
-						<div class="metric-label-empty">Connect Search Console</div>
-					{/if}
-				</div>
-			</div>
-
-			<!-- MRR Widget -->
-			<div
-				class="metric-widget metric-widget-amber"
-				in:fly={{ y: 30, duration: 400, delay: 250, easing: quintOut }}
-			>
-				<div class="metric-widget-inner">
-					<div class="flex items-center justify-between mb-4">
-						<div class="metric-icon amber">
-							<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
-							</svg>
-						</div>
-						{#if !connections.stripe}
-							<span class="metric-badge disconnected">Not Connected</span>
-						{/if}
-					</div>
-
-					{#if connections.stripe}
-						<div class="metric-value">{formatCurrency(metrics.mrr)}</div>
-						<div class="metric-label">Monthly Recurring Revenue</div>
-					{:else}
-						<div class="metric-value-empty">No Data</div>
-						<div class="metric-label-empty">Connect Stripe</div>
-					{/if}
-				</div>
-			</div>
+		<!-- Ambient Background Effects - Theme aware -->
+		<div class="ambient-effects">
+			<div class="ambient-blob ambient-blob-purple"></div>
+			<div class="ambient-blob ambient-blob-blue"></div>
+			<div class="ambient-blob ambient-blob-emerald"></div>
 		</div>
 
-		<!-- Integration Status Section -->
-		<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-			<!-- Google Services Status -->
-			<div
-				class="section-card"
-				in:fly={{ y: 30, duration: 400, delay: 300, easing: quintOut }}
-			>
-				<div class="section-header">
-					<h2 class="section-title">
-						<span class="section-icon">🔍</span> Google Integrations
-					</h2>
-					<a href="/admin/settings" class="section-link">
-						Manage →
-					</a>
+		<div class="relative z-10 p-6 lg:p-8 max-w-[1800px] mx-auto">
+			<!-- Header -->
+			<header class="mb-8" in:fly={{ y: -20, duration: 600, easing: quintOut }}>
+				<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+					<div>
+						<h1 class="dashboard-title">Admin Dashboard</h1>
+						<p class="dashboard-subtitle">Real-time metrics and system overview</p>
+					</div>
+
+					<div class="flex items-center gap-4">
+						<!-- Connection Status Indicator -->
+						<div class="status-indicator">
+							<span class="status-dot {connectedCount > 0 ? 'online' : 'offline'}"></span>
+							<span class="status-text">{connectedCount}/{totalServices} Connected</span>
+						</div>
+
+						<!-- Last Updated -->
+						<div class="updated-text">
+							Updated {getTimeAgo(lastUpdated)}
+						</div>
+
+						<!-- Refresh Button -->
+						<button
+							onclick={() => loadDashboard()}
+							disabled={isLoading}
+							class="refresh-btn"
+							title="Refresh dashboard"
+							aria-label="Refresh dashboard"
+						>
+							<svg
+								class="w-5 h-5 {isLoading ? 'animate-spin' : ''}"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+								/>
+							</svg>
+						</button>
+					</div>
+				</div>
+			</header>
+
+			<!-- Connection Alert Banner -->
+			{#if connectedCount === 0}
+				<div class="alert-banner alert-warning" in:fade={{ duration: 300 }}>
+					<div class="alert-icon warning">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+							/>
+						</svg>
+					</div>
+					<div class="flex-1">
+						<h3 class="alert-title">No Services Connected</h3>
+						<p class="alert-description">
+							Connect your services in Settings to see real metrics on this dashboard.
+						</p>
+					</div>
+					<a href="/admin/settings" class="alert-action"> Connect Services </a>
+				</div>
+			{/if}
+
+			<!-- Main Metrics Grid -->
+			<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5 mb-8">
+				<!-- Visitors Widget -->
+				<div
+					class="metric-widget metric-widget-purple"
+					in:fly={{ y: 30, duration: 400, delay: 100, easing: quintOut }}
+				>
+					<div class="metric-widget-inner">
+						<div class="flex items-center justify-between mb-4">
+							<div class="metric-icon purple">
+								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+									/>
+								</svg>
+							</div>
+							{#if !connections.google_analytics}
+								<span class="metric-badge disconnected">Not Connected</span>
+							{/if}
+						</div>
+
+						{#if connections.google_analytics}
+							<div class="metric-value">{formatNumber(metrics.visitors)}</div>
+							<div class="metric-label">Visitors Today</div>
+						{:else}
+							<div class="metric-value-empty">No Data</div>
+							<div class="metric-label-empty">Connect Google Analytics</div>
+						{/if}
+					</div>
 				</div>
 
-				<div class="space-y-4">
-					<!-- Google Analytics -->
-					<div class="integration-row">
-						<div class="flex items-center gap-3">
-							<div class="integration-icon amber">
-								<span class="text-sm font-bold">G</span>
+				<!-- Revenue Widget -->
+				<div
+					class="metric-widget metric-widget-emerald"
+					in:scale={{ duration: 400, delay: 150, start: 0.8 }}
+				>
+					<div class="metric-widget-inner">
+						<div class="flex items-center justify-between mb-4">
+							<div class="metric-icon emerald">
+								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+									/>
+								</svg>
 							</div>
-							<div>
-								<div class="integration-name">Google Analytics 4</div>
-								<div class="integration-desc">Traffic & behavior tracking</div>
-							</div>
+							{#if !connections.stripe}
+								<span class="metric-badge disconnected">Not Connected</span>
+							{/if}
 						</div>
-						{#if connections.google_analytics}
-							<span class="connection-badge connected">
-								<span class="connection-dot"></span>
-								Connected
-							</span>
+
+						{#if connections.stripe}
+							<div class="metric-value">{formatCurrency(metrics.revenue)}</div>
+							<div class="metric-label">Revenue This Month</div>
 						{:else}
-							<a href="/admin/settings" class="connect-btn">
-								Connect
-							</a>
+							<div class="metric-value-empty">No Data</div>
+							<div class="metric-label-empty">Connect Stripe</div>
 						{/if}
 					</div>
+				</div>
 
-					<!-- Google Search Console -->
-					<div class="integration-row">
-						<div class="flex items-center gap-3">
-							<div class="integration-icon blue">
-								<span class="text-sm font-bold">G</span>
+				<!-- SEO Score Widget -->
+				<div
+					class="metric-widget metric-widget-blue"
+					in:fly={{ y: 30, duration: 400, delay: 200, easing: quintOut }}
+				>
+					<div class="metric-widget-inner">
+						<div class="flex items-center justify-between mb-4">
+							<div class="metric-icon blue">
+								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+									/>
+								</svg>
 							</div>
-							<div>
-								<div class="integration-name">Search Console</div>
-								<div class="integration-desc">SEO & indexing status</div>
-							</div>
+							{#if !connections.google_search_console}
+								<span class="metric-badge disconnected">Not Connected</span>
+							{/if}
 						</div>
+
 						{#if connections.google_search_console}
-							<span class="connection-badge connected">
-								<span class="connection-dot"></span>
-								Connected
-							</span>
+							<div class="metric-value">{metrics.seo_score ?? '—'}/100</div>
+							<div class="metric-label">SEO Health Score</div>
 						{:else}
-							<a href="/admin/settings" class="connect-btn">
-								Connect
-							</a>
+							<div class="metric-value-empty">No Data</div>
+							<div class="metric-label-empty">Connect Search Console</div>
 						{/if}
 					</div>
+				</div>
 
-					<!-- Google Tag Manager -->
-					<div class="integration-row">
-						<div class="flex items-center gap-3">
-							<div class="integration-icon purple">
-								<span class="text-sm font-bold">G</span>
+				<!-- MRR Widget -->
+				<div
+					class="metric-widget metric-widget-amber"
+					in:fly={{ y: 30, duration: 400, delay: 250, easing: quintOut }}
+				>
+					<div class="metric-widget-inner">
+						<div class="flex items-center justify-between mb-4">
+							<div class="metric-icon amber">
+								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"
+									/>
+								</svg>
 							</div>
-							<div>
-								<div class="integration-name">Tag Manager</div>
-								<div class="integration-desc">Marketing tag management</div>
-							</div>
+							{#if !connections.stripe}
+								<span class="metric-badge disconnected">Not Connected</span>
+							{/if}
 						</div>
-						{#if connections.google_tag_manager}
-							<span class="connection-badge connected">
-								<span class="connection-dot"></span>
-								Connected
-							</span>
-						{:else}
-							<a href="/admin/settings" class="connect-btn">
-								Connect
-							</a>
-						{/if}
-					</div>
 
-					<!-- Google Ads -->
-					<div class="integration-row">
-						<div class="flex items-center gap-3">
-							<div class="integration-icon emerald">
-								<span class="text-sm font-bold">G</span>
-							</div>
-							<div>
-								<div class="integration-name">Google Ads</div>
-								<div class="integration-desc">Conversion tracking</div>
-							</div>
-						</div>
-						{#if connections.google_ads}
-							<span class="connection-badge connected">
-								<span class="connection-dot"></span>
-								Connected
-							</span>
+						{#if connections.stripe}
+							<div class="metric-value">{formatCurrency(metrics.mrr)}</div>
+							<div class="metric-label">Monthly Recurring Revenue</div>
 						{:else}
-							<a href="/admin/settings" class="connect-btn">
-								Connect
-							</a>
+							<div class="metric-value-empty">No Data</div>
+							<div class="metric-label-empty">Connect Stripe</div>
 						{/if}
 					</div>
 				</div>
 			</div>
 
-			<!-- System Health -->
+			<!-- Integration Status Section -->
+			<div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+				<!-- Google Services Status -->
+				<div class="section-card" in:fly={{ y: 30, duration: 400, delay: 300, easing: quintOut }}>
+					<div class="section-header">
+						<h2 class="section-title">
+							<span class="section-icon">🔍</span> Google Integrations
+						</h2>
+						<a href="/admin/settings" class="section-link"> Manage → </a>
+					</div>
+
+					<div class="space-y-4">
+						<!-- Google Analytics -->
+						<div class="integration-row">
+							<div class="flex items-center gap-3">
+								<div class="integration-icon amber">
+									<span class="text-sm font-bold">G</span>
+								</div>
+								<div>
+									<div class="integration-name">Google Analytics 4</div>
+									<div class="integration-desc">Traffic & behavior tracking</div>
+								</div>
+							</div>
+							{#if connections.google_analytics}
+								<span class="connection-badge connected">
+									<span class="connection-dot"></span>
+									Connected
+								</span>
+							{:else}
+								<a href="/admin/settings" class="connect-btn"> Connect </a>
+							{/if}
+						</div>
+
+						<!-- Google Search Console -->
+						<div class="integration-row">
+							<div class="flex items-center gap-3">
+								<div class="integration-icon blue">
+									<span class="text-sm font-bold">G</span>
+								</div>
+								<div>
+									<div class="integration-name">Search Console</div>
+									<div class="integration-desc">SEO & indexing status</div>
+								</div>
+							</div>
+							{#if connections.google_search_console}
+								<span class="connection-badge connected">
+									<span class="connection-dot"></span>
+									Connected
+								</span>
+							{:else}
+								<a href="/admin/settings" class="connect-btn"> Connect </a>
+							{/if}
+						</div>
+
+						<!-- Google Tag Manager -->
+						<div class="integration-row">
+							<div class="flex items-center gap-3">
+								<div class="integration-icon purple">
+									<span class="text-sm font-bold">G</span>
+								</div>
+								<div>
+									<div class="integration-name">Tag Manager</div>
+									<div class="integration-desc">Marketing tag management</div>
+								</div>
+							</div>
+							{#if connections.google_tag_manager}
+								<span class="connection-badge connected">
+									<span class="connection-dot"></span>
+									Connected
+								</span>
+							{:else}
+								<a href="/admin/settings" class="connect-btn"> Connect </a>
+							{/if}
+						</div>
+
+						<!-- Google Ads -->
+						<div class="integration-row">
+							<div class="flex items-center gap-3">
+								<div class="integration-icon emerald">
+									<span class="text-sm font-bold">G</span>
+								</div>
+								<div>
+									<div class="integration-name">Google Ads</div>
+									<div class="integration-desc">Conversion tracking</div>
+								</div>
+							</div>
+							{#if connections.google_ads}
+								<span class="connection-badge connected">
+									<span class="connection-dot"></span>
+									Connected
+								</span>
+							{:else}
+								<a href="/admin/settings" class="connect-btn"> Connect </a>
+							{/if}
+						</div>
+					</div>
+				</div>
+
+				<!-- System Health -->
+				<div class="section-card" in:fly={{ y: 30, duration: 400, delay: 350, easing: quintOut }}>
+					<div class="section-header">
+						<h2 class="section-title">
+							<span class="section-icon">🖥️</span> System Status
+						</h2>
+						<span class="connection-badge connected">
+							<span class="connection-dot"></span>
+							Operational
+						</span>
+					</div>
+
+					<div class="space-y-4">
+						<!-- API Status -->
+						<div class="integration-row">
+							<div class="flex items-center gap-3">
+								<div class="integration-icon emerald">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01"
+										/>
+									</svg>
+								</div>
+								<div>
+									<div class="integration-name">API Server</div>
+									<div class="integration-desc">Backend services</div>
+								</div>
+							</div>
+							<span class="status-text-online">Online</span>
+						</div>
+
+						<!-- Database -->
+						<div class="integration-row">
+							<div class="flex items-center gap-3">
+								<div class="integration-icon emerald">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4"
+										/>
+									</svg>
+								</div>
+								<div>
+									<div class="integration-name">Database</div>
+									<div class="integration-desc">MySQL connection</div>
+								</div>
+							</div>
+							<span class="status-text-online">Connected</span>
+						</div>
+
+						<!-- Cache -->
+						<div class="integration-row">
+							<div class="flex items-center gap-3">
+								<div class="integration-icon emerald">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M13 10V3L4 14h7v7l9-11h-7z"
+										/>
+									</svg>
+								</div>
+								<div>
+									<div class="integration-name">Cache</div>
+									<div class="integration-desc">Redis cache layer</div>
+								</div>
+							</div>
+							<span class="status-text-online">Active</span>
+						</div>
+
+						<!-- Queue -->
+						<div class="integration-row">
+							<div class="flex items-center gap-3">
+								<div class="integration-icon emerald">
+									<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+										<path
+											stroke-linecap="round"
+											stroke-linejoin="round"
+											stroke-width="2"
+											d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+										/>
+									</svg>
+								</div>
+								<div>
+									<div class="integration-name">Job Queue</div>
+									<div class="integration-desc">Background tasks</div>
+								</div>
+							</div>
+							<span class="status-text-online">Running</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Room Content Stats Section -->
 			<div
-				class="section-card"
+				class="section-card mb-8"
 				in:fly={{ y: 30, duration: 400, delay: 350, easing: quintOut }}
 			>
 				<div class="section-header">
 					<h2 class="section-title">
-						<span class="section-icon">🖥️</span> System Status
+						<span class="section-icon">📊</span> Room Content Stats
 					</h2>
-					<span class="connection-badge connected">
-						<span class="connection-dot"></span>
-						Operational
-					</span>
+					<a href="/admin/watchlist" class="section-link"> Manage Content → </a>
 				</div>
 
-				<div class="space-y-4">
-					<!-- API Status -->
-					<div class="integration-row">
-						<div class="flex items-center gap-3">
-							<div class="integration-icon emerald">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14M5 12a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v4a2 2 0 01-2 2M5 12a2 2 0 00-2 2v4a2 2 0 002 2h14a2 2 0 002-2v-4a2 2 0 00-2-2m-2-4h.01M17 16h.01" />
-								</svg>
+				<div class="room-stats-grid">
+					{#each ROOMS as room (room.id)}
+						{@const stats = getStatsForRoom(room.id)}
+						<div class="room-stats-card" style="--room-color: {room.color}">
+							<div class="room-stats-header">
+								<span class="room-stats-icon">{room.icon}</span>
+								<div class="room-stats-info">
+									<div class="room-stats-name">{room.shortName}</div>
+									<div class="room-stats-fullname">{room.name}</div>
+								</div>
 							</div>
-							<div>
-								<div class="integration-name">API Server</div>
-								<div class="integration-desc">Backend services</div>
-							</div>
-						</div>
-						<span class="status-text-online">Online</span>
-					</div>
-
-					<!-- Database -->
-					<div class="integration-row">
-						<div class="flex items-center gap-3">
-							<div class="integration-icon emerald">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4" />
-								</svg>
-							</div>
-							<div>
-								<div class="integration-name">Database</div>
-								<div class="integration-desc">MySQL connection</div>
+							<div class="room-stats-metrics">
+								<div class="room-stat">
+									<span class="room-stat-value">{stats.watchlist_count}</span>
+									<span class="room-stat-label">Watchlists</span>
+								</div>
+								<div class="room-stat">
+									<span class="room-stat-value">{stats.modules_count}</span>
+									<span class="room-stat-label">Modules</span>
+								</div>
+								<div class="room-stat">
+									<span class="room-stat-value">{stats.articles_count}</span>
+									<span class="room-stat-label">Articles</span>
+								</div>
 							</div>
 						</div>
-						<span class="status-text-online">Connected</span>
-					</div>
-
-					<!-- Cache -->
-					<div class="integration-row">
-						<div class="flex items-center gap-3">
-							<div class="integration-icon emerald">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
-								</svg>
-							</div>
-							<div>
-								<div class="integration-name">Cache</div>
-								<div class="integration-desc">Redis cache layer</div>
-							</div>
-						</div>
-						<span class="status-text-online">Active</span>
-					</div>
-
-					<!-- Queue -->
-					<div class="integration-row">
-						<div class="flex items-center gap-3">
-							<div class="integration-icon emerald">
-								<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
-								</svg>
-							</div>
-							<div>
-								<div class="integration-name">Job Queue</div>
-								<div class="integration-desc">Background tasks</div>
-							</div>
-						</div>
-						<span class="status-text-online">Running</span>
-					</div>
+					{/each}
 				</div>
 			</div>
-		</div>
 
-		<!-- Room Content Stats Section -->
-		<div
-			class="section-card mb-8"
-			in:fly={{ y: 30, duration: 400, delay: 350, easing: quintOut }}
-		>
-			<div class="section-header">
-				<h2 class="section-title">
-					<span class="section-icon">📊</span> Room Content Stats
-				</h2>
-				<a href="/admin/watchlist" class="section-link">
-					Manage Content →
+			<!-- Quick Actions -->
+			<div
+				class="grid grid-cols-2 md:grid-cols-4 gap-4"
+				in:fly={{ y: 30, duration: 400, delay: 400, easing: backOut }}
+			>
+				<a href="/admin/settings" class="quick-action-card purple">
+					<div class="quick-action-icon purple">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"
+							/>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+							/>
+						</svg>
+					</div>
+					<div class="quick-action-title">API Settings</div>
+					<div class="quick-action-desc">Connect services</div>
+				</a>
+
+				<a href="/admin/analytics" class="quick-action-card blue">
+					<div class="quick-action-icon blue">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+							/>
+						</svg>
+					</div>
+					<div class="quick-action-title">Analytics</div>
+					<div class="quick-action-desc">View reports</div>
+				</a>
+
+				<a href="/admin/members" class="quick-action-card emerald">
+					<div class="quick-action-icon emerald">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+							/>
+						</svg>
+					</div>
+					<div class="quick-action-title">Members</div>
+					<div class="quick-action-desc">Manage users</div>
+				</a>
+
+				<a href="/admin/seo" class="quick-action-card amber">
+					<div class="quick-action-icon amber">
+						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+							/>
+						</svg>
+					</div>
+					<div class="quick-action-title">SEO Tools</div>
+					<div class="quick-action-desc">Optimize search</div>
 				</a>
 			</div>
-
-			<div class="room-stats-grid">
-				{#each ROOMS as room (room.id)}
-					{@const stats = getStatsForRoom(room.id)}
-					<div class="room-stats-card" style="--room-color: {room.color}">
-						<div class="room-stats-header">
-							<span class="room-stats-icon">{room.icon}</span>
-							<div class="room-stats-info">
-								<div class="room-stats-name">{room.shortName}</div>
-								<div class="room-stats-fullname">{room.name}</div>
-							</div>
-						</div>
-						<div class="room-stats-metrics">
-							<div class="room-stat">
-								<span class="room-stat-value">{stats.watchlist_count}</span>
-								<span class="room-stat-label">Watchlists</span>
-							</div>
-							<div class="room-stat">
-								<span class="room-stat-value">{stats.modules_count}</span>
-								<span class="room-stat-label">Modules</span>
-							</div>
-							<div class="room-stat">
-								<span class="room-stat-value">{stats.articles_count}</span>
-								<span class="room-stat-label">Articles</span>
-							</div>
-						</div>
-					</div>
-				{/each}
-			</div>
-		</div>
-
-		<!-- Quick Actions -->
-		<div
-			class="grid grid-cols-2 md:grid-cols-4 gap-4"
-			in:fly={{ y: 30, duration: 400, delay: 400, easing: backOut }}
-		>
-			<a href="/admin/settings" class="quick-action-card purple">
-				<div class="quick-action-icon purple">
-					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-					</svg>
-				</div>
-				<div class="quick-action-title">API Settings</div>
-				<div class="quick-action-desc">Connect services</div>
-			</a>
-
-			<a href="/admin/analytics" class="quick-action-card blue">
-				<div class="quick-action-icon blue">
-					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-					</svg>
-				</div>
-				<div class="quick-action-title">Analytics</div>
-				<div class="quick-action-desc">View reports</div>
-			</a>
-
-			<a href="/admin/members" class="quick-action-card emerald">
-				<div class="quick-action-icon emerald">
-					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-					</svg>
-				</div>
-				<div class="quick-action-title">Members</div>
-				<div class="quick-action-desc">Manage users</div>
-			</a>
-
-			<a href="/admin/seo" class="quick-action-card amber">
-				<div class="quick-action-icon amber">
-					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
-					</svg>
-				</div>
-				<div class="quick-action-title">SEO Tools</div>
-				<div class="quick-action-desc">Optimize search</div>
-			</a>
 		</div>
 	</div>
-	</div><!-- End admin-page-container -->
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -1169,7 +1221,8 @@
 
 	/* Pulse Animation */
 	@keyframes pulse {
-		0%, 100% {
+		0%,
+		100% {
 			opacity: 1;
 		}
 		50% {

@@ -50,11 +50,26 @@
 
 	// Predefined color palette
 	const colorPalette = [
-		'#6366f1', '#8b5cf6', '#a855f7', '#d946ef',
-		'#ec4899', '#f43f5e', '#ef4444', '#f97316',
-		'#f59e0b', '#eab308', '#84cc16', '#22c55e',
-		'#10b981', '#14b8a6', '#06b6d4', '#0ea5e9',
-		'#3b82f6', '#6366f1', '#64748b', '#475569'
+		'#6366f1',
+		'#8b5cf6',
+		'#a855f7',
+		'#d946ef',
+		'#ec4899',
+		'#f43f5e',
+		'#ef4444',
+		'#f97316',
+		'#f59e0b',
+		'#eab308',
+		'#84cc16',
+		'#22c55e',
+		'#10b981',
+		'#14b8a6',
+		'#06b6d4',
+		'#0ea5e9',
+		'#3b82f6',
+		'#6366f1',
+		'#64748b',
+		'#475569'
 	];
 
 	function openCreateModal() {
@@ -135,7 +150,8 @@
 	}
 
 	async function deleteTag(id: string) {
-		if (!confirm('Are you sure you want to delete this tag? It will be removed from all contacts.')) return;
+		if (!confirm('Are you sure you want to delete this tag? It will be removed from all contacts.'))
+			return;
 
 		try {
 			await crmAPI.deleteContactTag(id);
@@ -154,7 +170,7 @@
 	}
 
 	let filteredTags = $derived(
-		tags.filter(tag => {
+		tags.filter((tag) => {
 			return !searchQuery || tag.title.toLowerCase().includes(searchQuery.toLowerCase());
 		})
 	);
@@ -279,14 +295,26 @@
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
 	<div class="modal-overlay" onclick={closeModal} role="dialog" aria-modal="true" tabindex="-1">
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div class="modal-content" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.key === 'Escape' && closeModal()} role="document" tabindex="-1">
+		<div
+			class="modal-content"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.key === 'Escape' && closeModal()}
+			role="document"
+			tabindex="-1"
+		>
 			<div class="modal-header">
 				<h2>{editingTag ? 'Edit Tag' : 'Create Tag'}</h2>
 				<button class="modal-close" onclick={closeModal}>
 					<IconX size={20} />
 				</button>
 			</div>
-			<form class="modal-body" onsubmit={(e) => { e.preventDefault(); saveTag(); }}>
+			<form
+				class="modal-body"
+				onsubmit={(e) => {
+					e.preventDefault();
+					saveTag();
+				}}
+			>
 				{#if formError}
 					<div class="form-error">
 						{formError}
@@ -324,7 +352,7 @@
 									class="color-swatch"
 									class:selected={formData.color === color}
 									style="background-color: {color}"
-									onclick={() => formData.color = color}
+									onclick={() => (formData.color = color)}
 									disabled={isSaving}
 								>
 									{#if formData.color === color}
@@ -408,8 +436,12 @@
 	}*/
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -417,8 +449,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -443,7 +475,9 @@
 	}
 
 	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.stat-card {
@@ -465,8 +499,14 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.gold { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.gold {
+		background: rgba(230, 184, 0, 0.15);
+		color: #e6b800;
+	}
 
 	.stat-content {
 		display: flex;
@@ -613,7 +653,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-icon.danger:hover {
@@ -622,7 +662,9 @@
 		border-color: rgba(239, 68, 68, 0.3);
 	}
 
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -650,7 +692,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

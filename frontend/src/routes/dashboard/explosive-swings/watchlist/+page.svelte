@@ -43,7 +43,8 @@
 			currentPrice: '$145.20',
 			change: '+1.9%',
 			status: 'active',
-			notes: 'Breakout above consolidation. Wait for pullback to entry zone. Strong momentum with volume confirmation.',
+			notes:
+				'Breakout above consolidation. Wait for pullback to entry zone. Strong momentum with volume confirmation.',
 			technicals: 'RSI: 62, MACD: Bullish crossover, Volume: Above average',
 			catalyst: 'AI chip demand, Q4 earnings upcoming'
 		},
@@ -81,7 +82,8 @@
 			currentPrice: '$187.50',
 			change: '+1.4%',
 			status: 'active',
-			notes: 'Breaking above key resistance. Strong volume confirmation. Cloud growth story intact.',
+			notes:
+				'Breaking above key resistance. Strong volume confirmation. Cloud growth story intact.',
 			technicals: 'RSI: 65, MACD: Bullish, Volume: High',
 			catalyst: 'AWS growth, holiday sales data'
 		},
@@ -149,9 +151,9 @@
 	<title>This Week's Watchlist | Explosive Swings</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Explosive Swings" 
-	startHereUrl="/dashboard/explosive-swings/start-here" 
+<TradingRoomHeader
+	roomName="Explosive Swings"
+	startHereUrl="/dashboard/explosive-swings/start-here"
 />
 
 <div class="watchlist-page">
@@ -170,7 +172,11 @@
 					</div>
 					<div class="stock-price">
 						<div class="current-price">{stock.currentPrice}</div>
-						<div class="price-change" class:positive={stock.change.startsWith('+')} class:negative={stock.change.startsWith('-')}>
+						<div
+							class="price-change"
+							class:positive={stock.change.startsWith('+')}
+							class:negative={stock.change.startsWith('-')}
+						>
 							{stock.change}
 						</div>
 					</div>
@@ -289,14 +295,14 @@
 		background: #fff;
 		border-radius: 16px;
 		padding: 25px;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 		transition: all 0.3s ease;
 		position: relative;
 	}
 
 	.stock-card:hover {
 		transform: translateY(-5px);
-		box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 	}
 
 	.stock-header {
@@ -310,7 +316,7 @@
 		font-size: 28px;
 		font-weight: 700;
 		margin: 0 0 5px 0;
-		color: #143E59;
+		color: #143e59;
 		font-family: 'Montserrat', sans-serif;
 	}
 
@@ -398,7 +404,7 @@
 	}
 
 	.plan-row .entry {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.plan-row .target {

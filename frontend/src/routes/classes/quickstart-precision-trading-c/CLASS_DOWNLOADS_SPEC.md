@@ -1,9 +1,11 @@
 # CLASS DOWNLOADS SECTION - COMPLETE TECHNICAL SPECIFICATION
+
 **Apple ICT 7 Principal Engineer Grade - Pixel-Perfect Implementation**
 
 ---
 
 ## TABLE OF CONTENTS
+
 1. [Overview](#overview)
 2. [HTML Structure](#html-structure)
 3. [JavaScript/Svelte Logic](#javascriptsvelte-logic)
@@ -19,9 +21,11 @@
 ## OVERVIEW
 
 ### Purpose
+
 The Class Downloads section displays embedded Box.com file listings for course materials (PowerPoint and PDF files) in a responsive, accessible container.
 
 ### Key Metrics
+
 - **Desktop Container**: 1080px × 512px
 - **Desktop Iframe**: 100% width × 518px height
 - **Mobile Container**: 100% width × auto height (min 350px)
@@ -40,10 +44,10 @@ The Class Downloads section displays embedded Box.com file listings for course m
 		<section class="class-subsection" id="class-downloads">
 			<h2>Class Downloads</h2>
 			<div class="class-downloads-container">
-				<iframe 
-					src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
-					width="500" 
-					height="400" 
+				<iframe
+					src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list"
+					width="500"
+					height="400"
 					allowfullscreen
 					title="Class Downloads"
 					loading="lazy"
@@ -51,7 +55,15 @@ The Class Downloads section displays embedded Box.com file listings for course m
 					sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
 				></iframe>
 				<noscript>
-					<p class="iframe-fallback">Please enable JavaScript to view class downloads, or <a href="https://simplertrading.app.box.com/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq" target="_blank" rel="noopener noreferrer">click here to open in Box.com</a>.</p>
+					<p class="iframe-fallback">
+						Please enable JavaScript to view class downloads, or
+						<a
+							href="https://simplertrading.app.box.com/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq"
+							target="_blank"
+							rel="noopener noreferrer"
+							>click here to open in Box.com</a
+						>.
+					</p>
 				</noscript>
 			</div>
 		</section>
@@ -62,53 +74,64 @@ The Class Downloads section displays embedded Box.com file listings for course m
 ### HTML Element Breakdown
 
 #### 1. Outer Section Container
+
 ```html
-<section class="class-section cpost-section" id="dl-rp-row">
+<section class="class-section cpost-section" id="dl-rp-row"></section>
 ```
+
 - **ID**: `dl-rp-row` (Downloads & Related Products Row)
 - **Classes**: `class-section`, `cpost-section`
 - **Purpose**: Top-level semantic container for the downloads section
 
 #### 2. Section Inner Wrapper
+
 ```html
-<div class="section-inner">
+<div class="section-inner"></div>
 ```
+
 - **Purpose**: Centers content and provides responsive padding
 - **Max-width**: 1100px
 - **Padding**: Responsive (0-40px based on viewport)
 
 #### 3. Downloads Subsection
+
 ```html
-<section class="class-subsection" id="class-downloads">
+<section class="class-subsection" id="class-downloads"></section>
 ```
+
 - **ID**: `class-downloads`
 - **Class**: `class-subsection`
 - **Purpose**: White background card containing heading and iframe
 - **Dimensions**: 1080px × 512px (desktop)
 
 #### 4. Section Heading
+
 ```html
 <h2>Class Downloads</h2>
 ```
+
 - **Font-size**: 1.75rem (28px)
 - **Font-weight**: 400 (normal)
 - **Color**: `#4a4a4a` (--color-text-heading)
 - **Margin-bottom**: 25px
 
 #### 5. Iframe Container
+
 ```html
-<div class="class-downloads-container">
+<div class="class-downloads-container"></div>
 ```
+
 - **Purpose**: Wrapper for iframe with exact dimensions
 - **Width**: 100%
 - **Height**: 518px (desktop), responsive on mobile
 
 #### 6. Box.com Iframe
+
 ```html
-<iframe 
-	src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list" 
-	width="500" 
-	height="400" 
+<iframe
+	src="https://simplertrading.app.box.com/embed/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq?sortColumn=date&view=list"
+	width="500"
+	height="400"
 	allowfullscreen
 	title="Class Downloads"
 	loading="lazy"
@@ -118,6 +141,7 @@ The Class Downloads section displays embedded Box.com file listings for course m
 ```
 
 **Iframe Attributes:**
+
 - **src**: Box.com embed URL with query params
   - `sortColumn=date`: Sort files by date
   - `view=list`: Display as list view
@@ -135,18 +159,22 @@ The Class Downloads section displays embedded Box.com file listings for course m
   - `allow-popups-to-escape-sandbox`: Popup navigation
 
 #### 7. Noscript Fallback
+
 ```html
 <noscript>
 	<p class="iframe-fallback">
-		Please enable JavaScript to view class downloads, or 
-		<a href="https://simplertrading.app.box.com/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq" 
-		   target="_blank" 
-		   rel="noopener noreferrer">
-			click here to open in Box.com
-		</a>.
+		Please enable JavaScript to view class downloads, or
+		<a
+			href="https://simplertrading.app.box.com/s/ith1lbi9t3v91z5qnrphr8q4dz0mu6xq"
+			target="_blank"
+			rel="noopener noreferrer"
+		>
+			click here to open in Box.com </a
+		>.
 	</p>
 </noscript>
 ```
+
 - **Purpose**: Fallback for users without JavaScript
 - **Class**: `iframe-fallback`
 - **Link**: Direct to Box.com folder
@@ -158,6 +186,7 @@ The Class Downloads section displays embedded Box.com file listings for course m
 ### Reactive State Management (Lines 10-53)
 
 #### 1. Imports
+
 ```typescript
 import { onMount } from 'svelte';
 import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
@@ -165,6 +194,7 @@ import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.
 ```
 
 #### 2. Svelte 5 Runes - State Variables
+
 ```typescript
 let viewportWidth = $state(0);
 let prefersReducedMotion = $state(false);
@@ -172,11 +202,13 @@ let isClient = $state(false);
 ```
 
 **State Variables:**
+
 - `viewportWidth`: Current window width in pixels
 - `prefersReducedMotion`: User's motion preference (accessibility)
 - `isClient`: Boolean flag for client-side rendering
 
 #### 3. Derived Breakpoint Logic
+
 ```typescript
 const breakpoint = $derived.by(() => {
 	if (viewportWidth === 0) return 'mobile';
@@ -189,6 +221,7 @@ const breakpoint = $derived.by(() => {
 ```
 
 **Breakpoint Ranges:**
+
 - `mobile-small`: 0-427px (iPhone SE, Mini)
 - `mobile`: 428-743px (iPhone Pro Max)
 - `tablet`: 744-1023px (iPad Mini, Air)
@@ -196,6 +229,7 @@ const breakpoint = $derived.by(() => {
 - `desktop-large`: 1366px+ (large displays)
 
 #### 4. Viewport Tracking Effect
+
 ```typescript
 $effect(() => {
 	if (!isClient) return;
@@ -223,6 +257,7 @@ $effect(() => {
 ```
 
 **Effect Workflow:**
+
 1. Check if client-side (`isClient`)
 2. Define `updateViewport()` function to capture window width
 3. Create media query for reduced motion preference
@@ -234,6 +269,7 @@ $effect(() => {
 9. Return cleanup function to remove listeners
 
 #### 5. Component Mount Lifecycle
+
 ```typescript
 onMount(() => {
 	isClient = true;
@@ -258,11 +294,13 @@ onMount(() => {
 ```
 
 **Mount Workflow:**
+
 1. Set `isClient = true` to enable reactive effects
 2. Track article view in Richpanel (support analytics)
 3. Track page view in Google Analytics (gtag)
 
 **Analytics Data:**
+
 - **Richpanel**: Article ID 1142327
 - **Google Analytics**: Page title, location, path, content type
 
@@ -273,11 +311,12 @@ onMount(() => {
 ### Root Variables (Lines 184-227)
 
 #### Color Tokens (Lines 185-197)
+
 ```css
 :root {
 	/* ═══ Color Tokens - CORRECTED ═══ */
-	--color-page-bg: #EFEFEF;
-	--color-content-bg: #FFFFFF;
+	--color-page-bg: #efefef;
+	--color-content-bg: #ffffff;
 	--color-video-bg: #0a2335;
 	--color-text-primary: #666666;
 	--color-text-heading: #4a4a4a;
@@ -308,18 +347,19 @@ onMount(() => {
 | `--color-border-light` | `#dddddd` | rgb(221, 221, 221) | Light border color |
 
 #### Spacing Tokens (Lines 199-209)
+
 ```css
 /* ═══ Spacing Tokens (8px grid) ═══ */
---space-1: 0.25rem;   /* 4px */
---space-2: 0.5rem;    /* 8px */
---space-3: 0.75rem;   /* 12px */
---space-4: 1rem;      /* 16px */
---space-5: 1.25rem;   /* 20px */
---space-6: 1.5rem;    /* 24px */
---space-8: 2rem;      /* 32px */
---space-10: 2.5rem;   /* 40px */
---space-12: 3rem;     /* 48px */
---space-15: 3.75rem;  /* 60px */
+--space-1: 0.25rem; /* 4px */
+--space-2: 0.5rem; /* 8px */
+--space-3: 0.75rem; /* 12px */
+--space-4: 1rem; /* 16px */
+--space-5: 1.25rem; /* 20px */
+--space-6: 1.5rem; /* 24px */
+--space-8: 2rem; /* 32px */
+--space-10: 2.5rem; /* 40px */
+--space-12: 3rem; /* 48px */
+--space-15: 3.75rem; /* 60px */
 ```
 
 **8px Grid System:**
@@ -337,6 +377,7 @@ onMount(() => {
 | `--space-15` | 3.75rem | 60px | Section padding (vertical) |
 
 #### Typography Tokens (Lines 211-217)
+
 ```css
 /* ═══ Fluid Typography ═══ */
 --font-size-sm: clamp(0.875rem, 0.8rem + 0.375vw, 1rem);
@@ -358,6 +399,7 @@ onMount(() => {
 | `--font-size-3xl` | 1.75rem (28px) | 1.5rem + 1.5vw | 2.5rem (40px) | Heading 1 |
 
 #### Safe Area Insets (Lines 219-223)
+
 ```css
 /* ═══ Safe Areas ═══ */
 --safe-area-inset-top: env(safe-area-inset-top, 0px);
@@ -369,6 +411,7 @@ onMount(() => {
 **Purpose**: Handle notched devices (iPhone X+, iPad Pro)
 
 #### Touch Target Minimum (Lines 225-226)
+
 ```css
 /* ═══ Touch Targets ═══ */
 --touch-target-min: 44px;
@@ -383,6 +426,7 @@ onMount(() => {
 ### Class Downloads Section Styles (Lines 432-496)
 
 #### 1. Outer Section Container (Lines 435-437)
+
 ```css
 #dl-rp-row {
 	padding: var(--space-10) 0;
@@ -390,10 +434,12 @@ onMount(() => {
 ```
 
 **Properties:**
+
 - **Padding**: 40px top/bottom, 0 left/right
 - **Purpose**: Vertical spacing around downloads section
 
 #### 2. Section Inner Wrapper (Lines 439-446)
+
 ```css
 #dl-rp-row .section-inner {
 	display: flex;
@@ -416,6 +462,7 @@ onMount(() => {
 | `padding` | 0 20px | Horizontal padding |
 
 #### 3. Downloads Subsection Container (Lines 448-456)
+
 ```css
 .class-subsection#class-downloads {
 	background-color: var(--color-content-bg);
@@ -440,6 +487,7 @@ onMount(() => {
 | `margin` | 0 auto | - | Horizontal centering |
 
 **Content Area Calculation:**
+
 - Total container: 1080px × 512px
 - Padding: 25px all sides
 - Content area: 1030px × 462px
@@ -447,6 +495,7 @@ onMount(() => {
 - Iframe available: 1030px × 409px (but set to 518px to overflow)
 
 #### 4. Section Heading (Lines 458-465)
+
 ```css
 #class-downloads h2 {
 	font-size: 1.75rem;
@@ -469,6 +518,7 @@ onMount(() => {
 | `line-height` | 1.2 | 33.6px | Tight line height |
 
 #### 5. Iframe Container (Lines 467-472)
+
 ```css
 .class-downloads-container {
 	width: 100%;
@@ -487,6 +537,7 @@ onMount(() => {
 | `background` | #FFFFFF | White background |
 
 **Height Calculation:**
+
 - Container height: 512px
 - Padding top: 25px
 - Heading height: ~28px
@@ -495,6 +546,7 @@ onMount(() => {
 - Iframe height: 518px (intentionally overflows by 84px)
 
 #### 6. Iframe Element (Lines 474-479)
+
 ```css
 .class-downloads-container iframe {
 	width: 100%;
@@ -513,11 +565,13 @@ onMount(() => {
 | `display` | block | Block-level element |
 
 **Critical Dimension:**
+
 - **518px height** is the exact specification for desktop
 - This creates a slight overflow within the 512px container
 - The overflow is intentional for the Box.com embed UI
 
 #### 7. Fallback Styles (Lines 481-496)
+
 ```css
 .iframe-fallback {
 	padding: var(--space-5);
@@ -602,6 +656,7 @@ onMount(() => {
 | `.class-downloads-container iframe` | height | 300px | Reduced from 518px |
 
 **Dimension Changes:**
+
 - Container: 100% width × auto height (min 350px)
 - Iframe: 100% width × 300px height
 - Padding: 16px (reduced for mobile)
@@ -745,22 +800,25 @@ onMount(() => {
 
 ### Responsive Dimension Summary
 
-| Breakpoint | Container Width | Container Height | Iframe Height | Padding |
-|------------|----------------|------------------|---------------|---------|
-| Mobile Small (< 428px) | 100% | auto (min 350px) | 300px | 16px |
-| Mobile (428-743px) | 100% | auto (min 400px) | 350px | 25px |
-| Tablet (744-1023px) | 100% (max 720px) | auto (min 450px) | 400px | 25px |
-| Desktop (1024-1365px) | 100% (max 1080px) | 512px | 518px | 25px |
-| Desktop Large (1366px+) | 1080px | 512px | 518px | 25px |
+| Breakpoint              | Container Width   | Container Height | Iframe Height | Padding |
+| ----------------------- | ----------------- | ---------------- | ------------- | ------- |
+| Mobile Small (< 428px)  | 100%              | auto (min 350px) | 300px         | 16px    |
+| Mobile (428-743px)      | 100%              | auto (min 400px) | 350px         | 25px    |
+| Tablet (744-1023px)     | 100% (max 720px)  | auto (min 450px) | 400px         | 25px    |
+| Desktop (1024-1365px)   | 100% (max 1080px) | 512px            | 518px         | 25px    |
+| Desktop Large (1366px+) | 1080px            | 512px            | 518px         | 25px    |
 
 ---
 
 ## ACCESSIBILITY FEATURES
 
 ### 1. Reduced Motion Support (Lines 232-239)
+
 ```css
 @media (prefers-reduced-motion: reduce) {
-	*, *::before, *::after {
+	*,
+	*::before,
+	*::after {
 		animation-duration: 0.01ms !important;
 		animation-iteration-count: 1 !important;
 		transition-duration: 0.01ms !important;
@@ -772,6 +830,7 @@ onMount(() => {
 **Purpose**: Respects user's motion sensitivity preferences (WCAG 2.2 AA)
 
 ### 2. Touch Target Compliance
+
 ```css
 .iframe-fallback a {
 	min-height: var(--touch-target-min); /* 44px */
@@ -782,20 +841,21 @@ onMount(() => {
 **Apple HIG**: Minimum 44pt touch target for all interactive elements
 
 ### 3. Semantic HTML
+
 - `<section>` for semantic structure
 - `<h2>` for proper heading hierarchy
 - `title` attribute on iframe
 - `<noscript>` fallback for accessibility
 
 ### 4. Iframe Accessibility Attributes
+
 ```html
-title="Class Downloads"
-loading="lazy"
-referrerpolicy="strict-origin-when-cross-origin"
+title="Class Downloads" loading="lazy" referrerpolicy="strict-origin-when-cross-origin"
 sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-to-escape-sandbox"
 ```
 
 ### 5. Focus Visible States (Lines 274-278)
+
 ```css
 :global(a:focus-visible) {
 	outline: 2px solid var(--color-link);
@@ -807,6 +867,7 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-t
 **Purpose**: Clear focus indicators for keyboard navigation
 
 ### 6. High Contrast Mode (Lines 667-678)
+
 ```css
 @media (prefers-contrast: high) {
 	:root {
@@ -849,7 +910,7 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-t
 	}
 
 	.class-downloads-container::after {
-		content: "Visit simplertrading.app.box.com for downloads";
+		content: 'Visit simplertrading.app.box.com for downloads';
 		display: block;
 		padding: var(--space-5);
 		text-align: center;
@@ -858,6 +919,7 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-t
 ```
 
 **Print Optimizations:**
+
 1. White background for body
 2. Light gray background for video section
 3. Black text for readability
@@ -869,6 +931,7 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-t
 ## IMPLEMENTATION WORKFLOW
 
 ### Step 1: HTML Structure Setup
+
 1. Create outer section with `id="dl-rp-row"`
 2. Add `.section-inner` wrapper for centering
 3. Create subsection with `id="class-downloads"`
@@ -878,6 +941,7 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-t
 7. Add `<noscript>` fallback with link
 
 ### Step 2: CSS Design Tokens
+
 1. Define color tokens in `:root`
 2. Define spacing tokens (8px grid)
 3. Define fluid typography scale
@@ -885,6 +949,7 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-t
 5. Define touch target minimum
 
 ### Step 3: Base Styles
+
 1. Style `#dl-rp-row` with vertical padding
 2. Style `.section-inner` with flexbox centering
 3. Style `.class-subsection#class-downloads` with exact dimensions (1080×512)
@@ -894,6 +959,7 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-t
 7. Style fallback message
 
 ### Step 4: Responsive Breakpoints
+
 1. Mobile Small (< 428px): 300px iframe, 16px padding
 2. Mobile (428-743px): 350px iframe
 3. Tablet (744-1023px): 400px iframe, 720px max-width
@@ -901,6 +967,7 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-t
 5. Desktop Large (1366px+): Fixed 1080px width
 
 ### Step 5: JavaScript/Svelte Logic
+
 1. Import Svelte lifecycle hooks
 2. Define reactive state variables
 3. Create derived breakpoint logic
@@ -909,6 +976,7 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-t
 6. Implement onMount analytics tracking
 
 ### Step 6: Accessibility
+
 1. Add reduced motion support
 2. Ensure touch target compliance
 3. Add semantic HTML structure
@@ -917,12 +985,14 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-t
 6. Add high contrast mode support
 
 ### Step 7: Print Styles
+
 1. Hide iframe in print view
 2. Display fallback message
 3. Optimize colors for print
 4. Ensure readable text
 
 ### Step 8: Testing Checklist
+
 - [ ] Desktop (1366px+): 1080×512 container, 518px iframe
 - [ ] Desktop (1024-1365px): Responsive container, 518px iframe
 - [ ] Tablet (744-1023px): 720px max-width, 400px iframe
@@ -942,6 +1012,7 @@ sandbox="allow-scripts allow-same-origin allow-forms allow-popups allow-popups-t
 ## CRITICAL MEASUREMENTS SUMMARY
 
 ### Desktop (1366px+) - EXACT SPECIFICATIONS
+
 ```
 Container: 1080px width × 512px height
 Padding: 25px all sides
@@ -953,6 +1024,7 @@ Border: none
 ```
 
 ### Content Area Calculation
+
 ```
 Total Container: 1080px × 512px
 Minus Padding: 1030px × 462px (content area)
@@ -962,6 +1034,7 @@ Iframe Height: 518px (overflows by 109px from content area)
 ```
 
 ### Color Specifications
+
 ```
 Background: #FFFFFF (white)
 Heading: #4a4a4a (dark gray)
@@ -971,6 +1044,7 @@ Border: #dddddd (light gray)
 ```
 
 ### Typography Specifications
+
 ```
 Heading: 1.75rem (28px), weight 400, line-height 1.2
 Font Family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif

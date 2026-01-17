@@ -34,12 +34,7 @@
 	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
 	import IconGripVertical from '@tabler/icons-svelte/icons/grip-vertical';
 	import { crmAPI } from '$lib/api/crm';
-	import type {
-		AutomationFunnel,
-		FunnelAction,
-		ActionType,
-		FunnelStatus
-	} from '$lib/crm/types';
+	import type { AutomationFunnel, FunnelAction, ActionType, FunnelStatus } from '$lib/crm/types';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// STATE
@@ -155,13 +150,14 @@
 		error = '';
 
 		try {
-			const [funnelResponse, actionsData, tagsResponse, listsResponse, sequencesResponse] = await Promise.all([
-				crmAPI.getAutomationFunnel(funnelId),
-				crmAPI.getFunnelActions(funnelId),
-				crmAPI.getContactTags(),
-				crmAPI.getContactLists(),
-				crmAPI.getSequences()
-			]);
+			const [funnelResponse, actionsData, tagsResponse, listsResponse, sequencesResponse] =
+				await Promise.all([
+					crmAPI.getAutomationFunnel(funnelId),
+					crmAPI.getFunnelActions(funnelId),
+					crmAPI.getContactTags(),
+					crmAPI.getContactLists(),
+					crmAPI.getSequences()
+				]);
 
 			funnel = funnelResponse.funnel;
 			triggerTypes = funnelResponse.trigger_types || {};
@@ -328,7 +324,7 @@
 	}
 
 	function getActionIcon(actionType: string) {
-		const found = actionTypeOptions.find(a => a.value === actionType);
+		const found = actionTypeOptions.find((a) => a.value === actionType);
 		return found?.icon || IconBolt;
 	}
 
@@ -384,12 +380,18 @@
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let canSaveAction = $derived(
-		actionForm.action_type !== '' && !isSaving
-	);
+	let canSaveAction = $derived(actionForm.action_type !== '' && !isSaving);
 
 	let requiresSettings = $derived(
-		['add_tag', 'remove_tag', 'add_to_list', 'remove_from_list', 'add_to_sequence', 'send_email', 'http_request'].includes(actionForm.action_type)
+		[
+			'add_tag',
+			'remove_tag',
+			'add_to_list',
+			'remove_from_list',
+			'add_to_sequence',
+			'send_email',
+			'http_request'
+		].includes(actionForm.action_type)
 	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -472,7 +474,7 @@
 			<div class="error-alert">
 				<IconAlertCircle size={18} />
 				<span>{error}</span>
-				<button onclick={() => error = ''}>
+				<button onclick={() => (error = '')}>
 					<IconX size={16} />
 				</button>
 			</div>
@@ -495,7 +497,8 @@
 					</div>
 					<div class="card-title">
 						<span class="card-type">TRIGGER</span>
-						<span class="card-name">{triggerTypes[funnel.trigger_type] || funnel.trigger_type}</span>
+						<span class="card-name">{triggerTypes[funnel.trigger_type] || funnel.trigger_type}</span
+						>
 					</div>
 				</div>
 				{#if funnel.trigger_settings && Object.keys(funnel.trigger_settings).length > 0}
@@ -524,15 +527,13 @@
 							<ActionIcon size={24} />
 						</div>
 						<div class="card-title">
-							<span class="card-type">{actionTypesMap[action.action_type] || action.action_type}</span>
+							<span class="card-type"
+								>{actionTypesMap[action.action_type] || action.action_type}</span
+							>
 							<span class="card-name">{action.title || `Step ${index + 1}`}</span>
 						</div>
 						<div class="card-actions">
-							<button
-								class="card-btn"
-								onclick={() => openEditActionModal(action)}
-								title="Edit"
-							>
+							<button class="card-btn" onclick={() => openEditActionModal(action)} title="Edit">
 								<IconEdit size={16} />
 							</button>
 							<button
@@ -613,7 +614,7 @@
 							{@const TypeIcon = actionType.icon}
 							<button
 								class="action-type-card"
-								onclick={() => actionForm.action_type = actionType.value as ActionType}
+								onclick={() => (actionForm.action_type = actionType.value as ActionType)}
 							>
 								<div class="action-type-icon {getIconColor(actionType.color)}">
 									<TypeIcon size={24} />
@@ -635,10 +636,11 @@
 							</div>
 							<div class="selected-action-info">
 								<span class="selected-action-type">
-									{actionTypeOptions.find(a => a.value === actionForm.action_type)?.label || actionForm.action_type}
+									{actionTypeOptions.find((a) => a.value === actionForm.action_type)?.label ||
+										actionForm.action_type}
 								</span>
 								{#if !editingAction}
-									<button class="change-type-btn" onclick={() => actionForm.action_type = ''}>
+									<button class="change-type-btn" onclick={() => (actionForm.action_type = '')}>
 										Change
 									</button>
 								{/if}
@@ -745,12 +747,18 @@
 						{:else if actionForm.action_type === 'wait'}
 							<div class="info-card">
 								<IconAlertCircle size={18} />
-								<p>The delay settings above configure how long to wait before proceeding to the next action.</p>
+								<p>
+									The delay settings above configure how long to wait before proceeding to the next
+									action.
+								</p>
 							</div>
 						{:else if actionForm.action_type === 'end_funnel'}
 							<div class="info-card">
 								<IconAlertCircle size={18} />
-								<p>This action will end the automation for the current contact. They will be marked as completed.</p>
+								<p>
+									This action will end the automation for the current contact. They will be marked
+									as completed.
+								</p>
 							</div>
 						{/if}
 					</div>
@@ -785,7 +793,8 @@
 	}
 
 	/* Loading/Error States */
-	.loading-state, .error-state {
+	.loading-state,
+	.error-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -911,7 +920,8 @@
 	}
 
 	/* Alerts */
-	.error-alert, .success-alert {
+	.error-alert,
+	.success-alert {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
@@ -932,7 +942,8 @@
 		color: #4ade80;
 	}
 
-	.error-alert span, .success-alert span {
+	.error-alert span,
+	.success-alert span {
 		flex: 1;
 	}
 
@@ -1381,8 +1392,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Responsive */

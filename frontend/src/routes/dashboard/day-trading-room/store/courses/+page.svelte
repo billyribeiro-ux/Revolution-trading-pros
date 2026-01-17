@@ -16,7 +16,10 @@
 
 <svelte:head>
 	<title>Advanced Courses | Day Trading Room | Revolution Trading Pros</title>
-	<meta name="description" content="Take your trading to the next level with our advanced courses and masterclasses." />
+	<meta
+		name="description"
+		content="Take your trading to the next level with our advanced courses and masterclasses."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 

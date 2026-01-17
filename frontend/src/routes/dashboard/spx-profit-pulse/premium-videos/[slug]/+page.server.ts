@@ -1,9 +1,9 @@
 /**
  * SPX Profit Pulse Video Detail - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Apple ICT 11+ Principal Engineer Grade - January 2026
- * 
+ *
  * Fetches individual video data from backend API
  * Provides navigation to previous/next videos
  */
@@ -33,10 +33,10 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
 		// Try to fetch from backend API
 		const apiUrl = `${BACKEND_URL}/trading-rooms/spx-profit-pulse/videos/${slug}`;
 		const token = cookies.get('auth_token');
-		
+
 		const headers: HeadersInit = {
-			'Accept': 'application/json',
-			'Content-Type': 'application/json',
+			Accept: 'application/json',
+			'Content-Type': 'application/json'
 		};
 		if (token) {
 			headers['Authorization'] = `Bearer ${token}`;
@@ -53,7 +53,6 @@ export const load: PageServerLoad = async ({ params, fetch, cookies }) => {
 
 		// Fallback to mock data
 		return getMockVideoData(slug);
-
 	} catch (error) {
 		console.error('Failed to fetch video:', error);
 		return getMockVideoData(slug);
@@ -70,8 +69,10 @@ function getMockVideoData(slug: string): { video: VideoDetail } {
 			date: 'January 08, 2026',
 			trader: 'Melissa Beegle',
 			traderImage: 'https://cdn.simplertrading.com/2024/01/25025702/melissa.png',
-			videoUrl: 'https://cloud-streaming.s3.amazonaws.com/chatrecordings/trendyspx/670d255d4c45202c5ee724bb_Tr3ndy_SPX_Melissa_01-08-2026__04.01.280_PM.mp4',
-			chatLogUrl: 'https://cloud-streaming.s3.amazonaws.com/chatrecordings/trendyspx/670d255d4c45202c5ee724bb_Tr3ndy_SPX_main_chat_01-08-2026__11.45.679_PM.txt',
+			videoUrl:
+				'https://cloud-streaming.s3.amazonaws.com/chatrecordings/trendyspx/670d255d4c45202c5ee724bb_Tr3ndy_SPX_Melissa_01-08-2026__04.01.280_PM.mp4',
+			chatLogUrl:
+				'https://cloud-streaming.s3.amazonaws.com/chatrecordings/trendyspx/670d255d4c45202c5ee724bb_Tr3ndy_SPX_main_chat_01-08-2026__11.45.679_PM.txt',
 			previousVideo: { slug: 'january-7-2026', title: 'January 7 2026' },
 			nextVideo: { slug: 'january-9-2026', title: 'January 9 2026' }
 		},
@@ -101,9 +102,16 @@ function getMockVideoData(slug: string): { video: VideoDetail } {
 
 	const video = mockVideos[slug] || {
 		id: '0',
-		title: slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+		title: slug
+			.split('-')
+			.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+			.join(' '),
 		slug: slug,
-		date: new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: '2-digit' }),
+		date: new Date().toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'long',
+			day: '2-digit'
+		}),
 		trader: 'SPX Trading Team',
 		traderImage: 'https://cdn.simplertrading.com/2024/01/29162759/SimplerCentral_JM.jpg',
 		videoUrl: 'https://simpler-options.s3.amazonaws.com/Tr3ndy/TrendySPXQuickstart2025.mp4'

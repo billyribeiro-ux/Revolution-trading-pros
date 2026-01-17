@@ -27,7 +27,8 @@
 			id: 'john-carter',
 			name: 'John Carter',
 			slug: 'john-carter',
-			image: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
+			image:
+				'https://cdn.simplertrading.com/dev/wp-content/uploads/2018/11/27111943/MemberWebinar-John.jpg',
 			description: 'Premium courses, indicators, and trading tools from John Carter.',
 			productCount: 12
 		},
@@ -100,7 +101,10 @@
 
 <svelte:head>
 	<title>Trader Store | Day Trading Room | Revolution Trading Pros</title>
-	<meta name="description" content="Browse courses, indicators, and trading tools from our expert traders." />
+	<meta
+		name="description"
+		content="Browse courses, indicators, and trading tools from our expert traders."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -116,7 +120,8 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<p class="intro-text">
-			Browse premium courses, indicators, and trading tools from our expert traders. Each store features exclusive content and resources.
+			Browse premium courses, indicators, and trading tools from our expert traders. Each store
+			features exclusive content and resources.
 		</p>
 
 		<div class="stores-grid">
@@ -125,7 +130,7 @@
 					<figure class="store-card__image">
 						<img src={store.image} alt={store.name} loading="lazy" />
 					</figure>
-					
+
 					<div class="store-card__content">
 						<h3 class="store-card__name">{store.name}'s Store</h3>
 						<p class="store-card__description">{store.description}</p>
@@ -184,7 +189,7 @@
 		left: 0;
 		right: 0;
 		bottom: 0;
-		background: linear-gradient(to bottom, transparent 50%, rgba(0,0,0,0.5) 100%);
+		background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.5) 100%);
 	}
 
 	.store-card__image img {
@@ -225,7 +230,7 @@
 	.view-store {
 		font-size: 14px;
 		font-weight: 600;
-		color: #F69532;
+		color: #f69532;
 	}
 
 	.store-card:hover .view-store {

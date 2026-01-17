@@ -154,7 +154,12 @@
 	}
 
 	async function handleCancel(sub: EnhancedSubscription) {
-		if (!confirm(`Cancel subscription for ${sub.customer?.name || sub.customer?.email}? This cannot be undone.`)) return;
+		if (
+			!confirm(
+				`Cancel subscription for ${sub.customer?.name || sub.customer?.email}? This cannot be undone.`
+			)
+		)
+			return;
 		try {
 			await cancelSubscription(sub.id, 'Admin cancelled', true);
 			toastStore.success('Subscription cancelled successfully');

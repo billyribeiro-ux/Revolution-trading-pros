@@ -6,9 +6,9 @@
 	<title>Risk Management Guide | Explosive Swings</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Explosive Swings" 
-	startHereUrl="/dashboard/explosive-swings/start-here" 
+<TradingRoomHeader
+	roomName="Explosive Swings"
+	startHereUrl="/dashboard/explosive-swings/start-here"
 />
 
 <div class="guide-page">
@@ -20,8 +20,11 @@
 	<div class="guide-content">
 		<section class="guide-section">
 			<h2>The 2% Rule</h2>
-			<p>Never risk more than 2% of your total account on any single trade. This is the foundation of proper risk management.</p>
-			
+			<p>
+				Never risk more than 2% of your total account on any single trade. This is the foundation of
+				proper risk management.
+			</p>
+
 			<div class="strategy-box">
 				<h3>Example Calculation:</h3>
 				<ul>
@@ -138,7 +141,7 @@
 		background: #fff;
 		border-radius: 16px;
 		padding: 40px;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 	}
 
 	.guide-section {
@@ -152,7 +155,7 @@
 	.guide-section h2 {
 		font-size: 28px;
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 		margin: 0 0 20px 0;
 		font-family: 'Montserrat', sans-serif;
 	}
@@ -166,7 +169,7 @@
 
 	.strategy-box {
 		background: #f8fafc;
-		border-left: 4px solid #143E59;
+		border-left: 4px solid #143e59;
 		padding: 25px;
 		border-radius: 8px;
 		margin: 20px 0;
@@ -192,11 +195,11 @@
 	}
 
 	.strategy-box li strong {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.formula-box {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 		padding: 25px;
 		border-radius: 8px;

@@ -334,7 +334,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			...options,
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				...options?.headers
 			}
 		});
@@ -361,9 +361,12 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const dayOfWeek = url.searchParams.get('day_of_week');
 
 	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/schedules?${url.searchParams.toString()}`, {
-		headers: { Authorization: request.headers.get('Authorization') || '' }
-	});
+	const backendData = await fetchFromBackend(
+		`/api/admin/schedules?${url.searchParams.toString()}`,
+		{
+			headers: { Authorization: request.headers.get('Authorization') || '' }
+		}
+	);
 
 	if (backendData?.success) {
 		return json(backendData);
@@ -373,15 +376,15 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	let filteredSchedules = [...mockSchedules];
 
 	if (roomId) {
-		filteredSchedules = filteredSchedules.filter(s => s.room_id === roomId);
+		filteredSchedules = filteredSchedules.filter((s) => s.room_id === roomId);
 	}
 
 	if (activeOnly) {
-		filteredSchedules = filteredSchedules.filter(s => s.is_active);
+		filteredSchedules = filteredSchedules.filter((s) => s.is_active);
 	}
 
 	if (dayOfWeek !== null && dayOfWeek !== '') {
-		filteredSchedules = filteredSchedules.filter(s => s.day_of_week === parseInt(dayOfWeek));
+		filteredSchedules = filteredSchedules.filter((s) => s.day_of_week === parseInt(dayOfWeek));
 	}
 
 	// Sort by day of week, then by start time
@@ -423,11 +426,20 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	// Validate required fields
-	if (!body.room_id || !body.title || body.day_of_week === undefined || !body.start_time || !body.end_time) {
-		return json({
-			success: false,
-			error: 'Missing required fields: room_id, title, day_of_week, start_time, end_time'
-		}, { status: 400 });
+	if (
+		!body.room_id ||
+		!body.title ||
+		body.day_of_week === undefined ||
+		!body.start_time ||
+		!body.end_time
+	) {
+		return json(
+			{
+				success: false,
+				error: 'Missing required fields: room_id, title, day_of_week, start_time, end_time'
+			},
+			{ status: 400 }
+		);
 	}
 
 	// Create new schedule

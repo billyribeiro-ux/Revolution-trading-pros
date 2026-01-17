@@ -215,15 +215,19 @@
 	// DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let filteredContacts = $derived(contacts.filter(contact => {
-		const matchesSearch = !searchQuery ||
-			contact.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			contact.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			contact.company?.toLowerCase().includes(searchQuery.toLowerCase());
-		const matchesStatus = selectedStatus === 'all' || contact.status === selectedStatus;
-		const matchesLifecycle = selectedLifecycle === 'all' || contact.lifecycle_stage === selectedLifecycle;
-		return matchesSearch && matchesStatus && matchesLifecycle;
-	}));
+	let filteredContacts = $derived(
+		contacts.filter((contact) => {
+			const matchesSearch =
+				!searchQuery ||
+				contact.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				contact.email?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				contact.company?.toLowerCase().includes(searchQuery.toLowerCase());
+			const matchesStatus = selectedStatus === 'all' || contact.status === selectedStatus;
+			const matchesLifecycle =
+				selectedLifecycle === 'all' || contact.lifecycle_stage === selectedLifecycle;
+			return matchesSearch && matchesStatus && matchesLifecycle;
+		})
+	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
@@ -247,235 +251,236 @@
 
 <div class="page">
 	<div class="admin-page-container">
-	<!-- Page Header - Centered -->
-	<header class="page-header">
-		<h1>CRM Contacts</h1>
-		<p class="subtitle">Manage contacts, track deals, and streamline customer relationships</p>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={loadData} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-				Refresh
-			</button>
-			<a href="/admin/crm/contacts/new" class="btn-primary">
-				<IconUserPlus size={18} />
-				Add Contact
-			</a>
-		</div>
-	</header>
-
-	<!-- Connection Check -->
-	{#if connectionLoading}
-		<SkeletonLoader variant="dashboard" />
-	{:else if !$isCrmConnected}
-		<ApiNotConnected
-			serviceName="CRM"
-			description="Connect to manage contacts, track deals, and streamline customer relationships."
-			serviceKey="hubspot"
-			icon="👥"
-			color="#6366f1"
-			features={[
-				'Centralized contact management',
-				'Email sequences and automations',
-				'Dynamic contact segments',
-				'Campaign management',
-				'Smart link tracking'
-			]}
-		/>
-	{:else}
-		<!-- Quick Links Navigation -->
-		<nav class="quick-links-bar">
-			{#each quickLinks as link}
-				{@const LinkIcon = link.icon}
-				<a
-					href={link.href}
-					class="quick-link-item"
-					target={link.external ? '_blank' : undefined}
-					rel={link.external ? 'noopener noreferrer' : undefined}
-				>
-					<LinkIcon size={16} />
-					<span>{link.name}</span>
+		<!-- Page Header - Centered -->
+		<header class="page-header">
+			<h1>CRM Contacts</h1>
+			<p class="subtitle">Manage contacts, track deals, and streamline customer relationships</p>
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={loadData} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+					Refresh
+				</button>
+				<a href="/admin/crm/contacts/new" class="btn-primary">
+					<IconUserPlus size={18} />
+					Add Contact
 				</a>
-			{/each}
-		</nav>
+			</div>
+		</header>
 
-		<!-- Stats Cards -->
-		<section class="stats-grid">
-			<div class="stat-card">
-				<div class="stat-icon blue">
-					<IconUsers size={24} />
-				</div>
-				<div class="stat-content">
-					<span class="stat-value">{stats.totalContacts.toLocaleString()}</span>
-					<span class="stat-label">Total Contacts</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon green">
-					<IconTrendingUp size={24} />
-				</div>
-				<div class="stat-content">
-					<span class="stat-value">{stats.highScoreContacts}</span>
-					<span class="stat-label">High Score</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon purple">
-					<IconChartBar size={24} />
-				</div>
-				<div class="stat-content">
-					<span class="stat-value">{stats.activeDeals}</span>
-					<span class="stat-label">Active Deals</span>
-				</div>
-			</div>
-			<div class="stat-card">
-				<div class="stat-icon amber">
-					<IconCurrencyDollar size={24} />
-				</div>
-				<div class="stat-content">
-					<span class="stat-value">{formatCurrency(stats.dealValue)}</span>
-					<span class="stat-label">Deal Value</span>
-				</div>
-			</div>
-		</section>
-
-		<!-- Search & Filters Bar -->
-		<div class="filters-bar">
-			<div class="search-box">
-				<IconSearch size={18} />
-				<input
-					type="text"
-					placeholder="Search contacts..."
-					bind:value={searchQuery}
-				/>
-			</div>
-			<select class="filter-select" bind:value={selectedStatus}>
-				{#each statusOptions as option}
-					<option value={option.value}>{option.label}</option>
-				{/each}
-			</select>
-			<select class="filter-select" bind:value={selectedLifecycle}>
-				{#each lifecycleStages as stage}
-					<option value={stage.value}>{stage.label}</option>
-				{/each}
-			</select>
-		</div>
-
-		<!-- Contacts Table -->
-		<div class="table-container">
-			{#if isLoading}
-				<div class="loading-state">
-					<div class="spinner"></div>
-					<p>Loading contacts...</p>
-				</div>
-			{:else if error}
-				<div class="error-state">
-					<p>{error}</p>
-					<button class="btn-primary" onclick={loadData}>Try Again</button>
-				</div>
-			{:else if filteredContacts.length === 0}
-				<div class="empty-state">
-					<IconUsers size={48} />
-					<h3>No contacts found</h3>
-					<p>Add your first contact to get started</p>
-					<a href="/admin/crm/contacts/new" class="btn-primary">
-						<IconUserPlus size={18} />
-						Add Contact
+		<!-- Connection Check -->
+		{#if connectionLoading}
+			<SkeletonLoader variant="dashboard" />
+		{:else if !$isCrmConnected}
+			<ApiNotConnected
+				serviceName="CRM"
+				description="Connect to manage contacts, track deals, and streamline customer relationships."
+				serviceKey="hubspot"
+				icon="👥"
+				color="#6366f1"
+				features={[
+					'Centralized contact management',
+					'Email sequences and automations',
+					'Dynamic contact segments',
+					'Campaign management',
+					'Smart link tracking'
+				]}
+			/>
+		{:else}
+			<!-- Quick Links Navigation -->
+			<nav class="quick-links-bar">
+				{#each quickLinks as link}
+					{@const LinkIcon = link.icon}
+					<a
+						href={link.href}
+						class="quick-link-item"
+						target={link.external ? '_blank' : undefined}
+						rel={link.external ? 'noopener noreferrer' : undefined}
+					>
+						<LinkIcon size={16} />
+						<span>{link.name}</span>
 					</a>
-				</div>
-			{:else}
-				<table class="data-table">
-					<thead>
-						<tr>
-							<th>
-								<input type="checkbox" class="checkbox" />
-							</th>
-							<th>Contact</th>
-							<th>Status</th>
-							<th>Lists</th>
-							<th>Tags</th>
-							<th>Last Activity</th>
-							<th></th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each filteredContacts as contact (contact.id || contact.email)}
-							<tr>
-								<td>
-									<input type="checkbox" class="checkbox" />
-								</td>
-								<td>
-									<a href="/admin/crm/contacts/{contact.id}" class="contact-cell">
-										<div class="contact-avatar">
-											{contact.name?.charAt(0).toUpperCase() || contact.email?.charAt(0).toUpperCase() || '?'}
-										</div>
-										<div class="contact-info">
-											<span class="contact-name">{contact.name || contact.full_name || 'Unknown'}</span>
-											<span class="contact-email">{contact.email || 'No email'}</span>
-										</div>
-									</a>
-								</td>
-								<td>
-									<span class="status-badge {contact.status || 'subscribed'}">
-										{contact.status || 'Subscribed'}
-									</span>
-								</td>
-								<td>
-									{#if contact.lists?.length > 0}
-										<span class="count-badge">{contact.lists.length}</span>
-									{:else}
-										<span class="text-muted">-</span>
-									{/if}
-								</td>
-								<td>
-									{#if contact.tags?.length > 0}
-										<div class="tags-preview">
-											{#each (contact.tags || []).slice(0, 2) as tag}
-												<span class="tag-pill">{tag.name || tag}</span>
-											{/each}
-											{#if contact.tags.length > 2}
-												<span class="tag-more">+{contact.tags.length - 2}</span>
-											{/if}
-										</div>
-									{:else}
-										<span class="text-muted">-</span>
-									{/if}
-								</td>
-								<td class="text-muted">
-									{formatDate(contact.last_activity_at || contact.updated_at)}
-								</td>
-								<td>
-									<div class="action-buttons">
-										<a href="/admin/crm/contacts/{contact.id}" class="btn-icon" title="View">
-											<IconEye size={16} />
-										</a>
-										<a href="/admin/crm/contacts/{contact.id}/edit" class="btn-icon" title="Edit">
-											<IconEdit size={16} />
-										</a>
-										<button class="btn-icon" title="More">
-											<IconDotsVertical size={16} />
-										</button>
-									</div>
-								</td>
-							</tr>
-						{/each}
-					</tbody>
-				</table>
+				{/each}
+			</nav>
 
-				<!-- Pagination -->
-				<div class="table-footer">
-					<span class="results-count">
-						Showing {filteredContacts.length} of {contacts.length} contacts
-					</span>
-					<div class="pagination">
-						<button class="pagination-btn" disabled>Previous</button>
-						<span class="pagination-info">Page 1 of 1</span>
-						<button class="pagination-btn" disabled>Next</button>
+			<!-- Stats Cards -->
+			<section class="stats-grid">
+				<div class="stat-card">
+					<div class="stat-icon blue">
+						<IconUsers size={24} />
+					</div>
+					<div class="stat-content">
+						<span class="stat-value">{stats.totalContacts.toLocaleString()}</span>
+						<span class="stat-label">Total Contacts</span>
 					</div>
 				</div>
-			{/if}
-		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+				<div class="stat-card">
+					<div class="stat-icon green">
+						<IconTrendingUp size={24} />
+					</div>
+					<div class="stat-content">
+						<span class="stat-value">{stats.highScoreContacts}</span>
+						<span class="stat-label">High Score</span>
+					</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-icon purple">
+						<IconChartBar size={24} />
+					</div>
+					<div class="stat-content">
+						<span class="stat-value">{stats.activeDeals}</span>
+						<span class="stat-label">Active Deals</span>
+					</div>
+				</div>
+				<div class="stat-card">
+					<div class="stat-icon amber">
+						<IconCurrencyDollar size={24} />
+					</div>
+					<div class="stat-content">
+						<span class="stat-value">{formatCurrency(stats.dealValue)}</span>
+						<span class="stat-label">Deal Value</span>
+					</div>
+				</div>
+			</section>
+
+			<!-- Search & Filters Bar -->
+			<div class="filters-bar">
+				<div class="search-box">
+					<IconSearch size={18} />
+					<input type="text" placeholder="Search contacts..." bind:value={searchQuery} />
+				</div>
+				<select class="filter-select" bind:value={selectedStatus}>
+					{#each statusOptions as option}
+						<option value={option.value}>{option.label}</option>
+					{/each}
+				</select>
+				<select class="filter-select" bind:value={selectedLifecycle}>
+					{#each lifecycleStages as stage}
+						<option value={stage.value}>{stage.label}</option>
+					{/each}
+				</select>
+			</div>
+
+			<!-- Contacts Table -->
+			<div class="table-container">
+				{#if isLoading}
+					<div class="loading-state">
+						<div class="spinner"></div>
+						<p>Loading contacts...</p>
+					</div>
+				{:else if error}
+					<div class="error-state">
+						<p>{error}</p>
+						<button class="btn-primary" onclick={loadData}>Try Again</button>
+					</div>
+				{:else if filteredContacts.length === 0}
+					<div class="empty-state">
+						<IconUsers size={48} />
+						<h3>No contacts found</h3>
+						<p>Add your first contact to get started</p>
+						<a href="/admin/crm/contacts/new" class="btn-primary">
+							<IconUserPlus size={18} />
+							Add Contact
+						</a>
+					</div>
+				{:else}
+					<table class="data-table">
+						<thead>
+							<tr>
+								<th>
+									<input type="checkbox" class="checkbox" />
+								</th>
+								<th>Contact</th>
+								<th>Status</th>
+								<th>Lists</th>
+								<th>Tags</th>
+								<th>Last Activity</th>
+								<th></th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each filteredContacts as contact (contact.id || contact.email)}
+								<tr>
+									<td>
+										<input type="checkbox" class="checkbox" />
+									</td>
+									<td>
+										<a href="/admin/crm/contacts/{contact.id}" class="contact-cell">
+											<div class="contact-avatar">
+												{contact.name?.charAt(0).toUpperCase() ||
+													contact.email?.charAt(0).toUpperCase() ||
+													'?'}
+											</div>
+											<div class="contact-info">
+												<span class="contact-name"
+													>{contact.name || contact.full_name || 'Unknown'}</span
+												>
+												<span class="contact-email">{contact.email || 'No email'}</span>
+											</div>
+										</a>
+									</td>
+									<td>
+										<span class="status-badge {contact.status || 'subscribed'}">
+											{contact.status || 'Subscribed'}
+										</span>
+									</td>
+									<td>
+										{#if contact.lists?.length > 0}
+											<span class="count-badge">{contact.lists.length}</span>
+										{:else}
+											<span class="text-muted">-</span>
+										{/if}
+									</td>
+									<td>
+										{#if contact.tags?.length > 0}
+											<div class="tags-preview">
+												{#each (contact.tags || []).slice(0, 2) as tag}
+													<span class="tag-pill">{tag.name || tag}</span>
+												{/each}
+												{#if contact.tags.length > 2}
+													<span class="tag-more">+{contact.tags.length - 2}</span>
+												{/if}
+											</div>
+										{:else}
+											<span class="text-muted">-</span>
+										{/if}
+									</td>
+									<td class="text-muted">
+										{formatDate(contact.last_activity_at || contact.updated_at)}
+									</td>
+									<td>
+										<div class="action-buttons">
+											<a href="/admin/crm/contacts/{contact.id}" class="btn-icon" title="View">
+												<IconEye size={16} />
+											</a>
+											<a href="/admin/crm/contacts/{contact.id}/edit" class="btn-icon" title="Edit">
+												<IconEdit size={16} />
+											</a>
+											<button class="btn-icon" title="More">
+												<IconDotsVertical size={16} />
+											</button>
+										</div>
+									</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+
+					<!-- Pagination -->
+					<div class="table-footer">
+						<span class="results-count">
+							Showing {filteredContacts.length} of {contacts.length} contacts
+						</span>
+						<div class="pagination">
+							<button class="pagination-btn" disabled>Previous</button>
+							<span class="pagination-info">Page 1 of 1</span>
+							<button class="pagination-btn" disabled>Next</button>
+						</div>
+					</div>
+				{/if}
+			</div>
+		{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -571,8 +576,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* =====================================================
@@ -642,10 +651,22 @@
 		flex-shrink: 0;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
 
 	.stat-content {
 		display: flex;
@@ -818,11 +839,26 @@
 		text-transform: capitalize;
 	}
 
-	.status-badge.subscribed { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.status-badge.pending { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
-	.status-badge.unsubscribed { background: rgba(148, 163, 184, 0.15); color: #94a3b8; }
-	.status-badge.bounced { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-	.status-badge.complained { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+	.status-badge.subscribed {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.status-badge.pending {
+		background: rgba(251, 191, 36, 0.15);
+		color: #fbbf24;
+	}
+	.status-badge.unsubscribed {
+		background: rgba(148, 163, 184, 0.15);
+		color: #94a3b8;
+	}
+	.status-badge.bounced {
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
+	.status-badge.complained {
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
 
 	.count-badge {
 		display: inline-block;
@@ -935,7 +971,9 @@
 	/* =====================================================
 	   States
 	   ===================================================== */
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;

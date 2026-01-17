@@ -89,7 +89,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			...options,
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				...options?.headers
 			}
 		});
@@ -106,9 +106,12 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const activeOnly = url.searchParams.get('active_only') === 'true';
 
 	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/trading-rooms/traders?${url.searchParams.toString()}`, {
-		headers: { Authorization: request.headers.get('Authorization') || '' }
-	});
+	const backendData = await fetchFromBackend(
+		`/api/admin/trading-rooms/traders?${url.searchParams.toString()}`,
+		{
+			headers: { Authorization: request.headers.get('Authorization') || '' }
+		}
+	);
 
 	if (backendData?.success) {
 		return json(backendData);
@@ -118,7 +121,7 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	let filteredTraders = [...mockTraders];
 
 	if (activeOnly) {
-		filteredTraders = filteredTraders.filter(t => t.is_active);
+		filteredTraders = filteredTraders.filter((t) => t.is_active);
 	}
 
 	filteredTraders.sort((a, b) => a.sort_order - b.sort_order);

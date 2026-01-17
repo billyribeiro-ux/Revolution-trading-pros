@@ -133,7 +133,8 @@
 						<input
 							type="text"
 							bind:value={searchQuery}
-							oninput={(e: Event) => mediaStore.setSearchQuery((e.currentTarget as HTMLInputElement).value)}
+							oninput={(e: Event) =>
+								mediaStore.setSearchQuery((e.currentTarget as HTMLInputElement).value)}
 							placeholder="Search files..."
 							class="search-input"
 						/>
@@ -144,7 +145,9 @@
 						bind:value={selectedFileType}
 						onchange={(e: Event) =>
 							mediaStore.setFilterType(
-								(e.currentTarget as HTMLSelectElement).value === 'all' ? null : (e.currentTarget as HTMLSelectElement).value
+								(e.currentTarget as HTMLSelectElement).value === 'all'
+									? null
+									: (e.currentTarget as HTMLSelectElement).value
 							)}
 						class="filter-select"
 					>
@@ -206,7 +209,8 @@
 								onclick={() => mediaStore.toggleFileSelection(file.id)}
 								role="button"
 								tabindex="0"
-								onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && mediaStore.toggleFileSelection(file.id)}
+								onkeydown={(e: KeyboardEvent) =>
+									e.key === 'Enter' && mediaStore.toggleFileSelection(file.id)}
 							>
 								{#if file.file_type === 'image'}
 									<div class="file-thumbnail">
@@ -215,10 +219,7 @@
 								{:else}
 									{@const FileIcon = getFileIcon(file.file_type)}
 									<div class="file-icon-wrapper">
-										<FileIcon
-											size={48}
-											class="text-gray-400"
-										/>
+										<FileIcon size={48} class="text-gray-400" />
 									</div>
 								{/if}
 

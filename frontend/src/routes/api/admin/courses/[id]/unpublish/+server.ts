@@ -19,8 +19,8 @@ export const POST: RequestHandler = async ({ cookies, fetch, params }) => {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				...(token ? { 'Authorization': `Bearer ${token}` } : {})
+				Accept: 'application/json',
+				...(token ? { Authorization: `Bearer ${token}` } : {})
 			}
 		});
 

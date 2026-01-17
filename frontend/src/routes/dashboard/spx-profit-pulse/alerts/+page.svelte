@@ -20,7 +20,8 @@
 			type: 'Trade Alert',
 			title: 'SPX 0DTE Call Spread',
 			date: 'January 10, 2026 at 9:45 AM ET',
-			excerpt: 'Opening bullish call spread on SPX expiring today. Entry at market open with tight risk management.',
+			excerpt:
+				'Opening bullish call spread on SPX expiring today. Entry at market open with tight risk management.',
 			status: 'Open',
 			profitLoss: null,
 			href: '/dashboard/spx-profit-pulse/alerts/spx-call-spread-011026'
@@ -30,7 +31,8 @@
 			type: 'Market Update',
 			title: 'SPX Technical Analysis',
 			date: 'January 10, 2026 at 8:30 AM ET',
-			excerpt: 'Key levels to watch for today\'s 0DTE trading session. Support and resistance zones identified.',
+			excerpt:
+				"Key levels to watch for today's 0DTE trading session. Support and resistance zones identified.",
 			status: 'Info',
 			profitLoss: null,
 			href: '/dashboard/spx-profit-pulse/alerts/spx-analysis-011026'
@@ -50,7 +52,8 @@
 			type: 'Trade Alert',
 			title: 'SPX Iron Condor Setup',
 			date: 'January 9, 2026 at 10:00 AM ET',
-			excerpt: 'Neutral strategy for range-bound market conditions. High probability setup with defined risk.',
+			excerpt:
+				'Neutral strategy for range-bound market conditions. High probability setup with defined risk.',
 			status: 'Closed',
 			profitLoss: '+$350',
 			href: '/dashboard/spx-profit-pulse/alerts/spx-condor-010926'
@@ -60,7 +63,8 @@
 			type: 'Market Update',
 			title: 'Weekly SPX Outlook',
 			date: 'January 8, 2026 at 4:00 PM ET',
-			excerpt: 'Market analysis and key levels for the upcoming week. Economic calendar highlights.',
+			excerpt:
+				'Market analysis and key levels for the upcoming week. Economic calendar highlights.',
 			status: 'Info',
 			profitLoss: null,
 			href: '/dashboard/spx-profit-pulse/alerts/weekly-outlook-010826'
@@ -70,7 +74,8 @@
 			type: 'Trade Alert',
 			title: 'SPX Butterfly Spread',
 			date: 'January 8, 2026 at 11:30 AM ET',
-			excerpt: 'Advanced options strategy targeting specific price level. Limited risk with high reward potential.',
+			excerpt:
+				'Advanced options strategy targeting specific price level. Limited risk with high reward potential.',
 			status: 'Closed',
 			profitLoss: '+$275',
 			href: '/dashboard/spx-profit-pulse/alerts/spx-butterfly-010826'
@@ -80,7 +85,8 @@
 			type: 'Trade Alert',
 			title: 'SPX Call Credit Spread',
 			date: 'January 7, 2026 at 1:45 PM ET',
-			excerpt: 'Bearish credit spread with high probability of profit. Market showing signs of exhaustion.',
+			excerpt:
+				'Bearish credit spread with high probability of profit. Market showing signs of exhaustion.',
 			status: 'Closed',
 			profitLoss: '+$300',
 			href: '/dashboard/spx-profit-pulse/alerts/spx-credit-010726'
@@ -90,7 +96,8 @@
 			type: 'Trade Alert',
 			title: 'SPX Straddle Entry',
 			date: 'January 7, 2026 at 9:30 AM ET',
-			excerpt: 'Volatility play ahead of major economic data release. Expecting significant move in either direction.',
+			excerpt:
+				'Volatility play ahead of major economic data release. Expecting significant move in either direction.',
 			status: 'Closed',
 			profitLoss: '-$150',
 			href: '/dashboard/spx-profit-pulse/alerts/spx-straddle-010726'
@@ -104,18 +111,17 @@
 		// Apply type filter
 		if (selectedFilter !== 'all') {
 			if (selectedFilter === 'trades') {
-				filtered = filtered.filter(a => a.type === 'Trade Alert');
+				filtered = filtered.filter((a) => a.type === 'Trade Alert');
 			} else if (selectedFilter === 'updates') {
-				filtered = filtered.filter(a => a.type === 'Market Update');
+				filtered = filtered.filter((a) => a.type === 'Market Update');
 			}
 		}
 
 		// Apply search filter
 		if (searchQuery.trim()) {
 			const query = searchQuery.toLowerCase();
-			filtered = filtered.filter(a => 
-				a.title.toLowerCase().includes(query) ||
-				a.excerpt.toLowerCase().includes(query)
+			filtered = filtered.filter(
+				(a) => a.title.toLowerCase().includes(query) || a.excerpt.toLowerCase().includes(query)
 			);
 		}
 
@@ -124,10 +130,14 @@
 
 	function getStatusClass(status: string): string {
 		switch (status) {
-			case 'Open': return 'status-open';
-			case 'Closed': return 'status-closed';
-			case 'Info': return 'status-info';
-			default: return '';
+			case 'Open':
+				return 'status-open';
+			case 'Closed':
+				return 'status-closed';
+			case 'Info':
+				return 'status-info';
+			default:
+				return '';
 		}
 	}
 
@@ -152,28 +162,27 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
-			
 			<!-- Filters & Search -->
 			<div class="filters-container">
 				<div class="filter-buttons">
-					<button 
-						class="filter-btn" 
+					<button
+						class="filter-btn"
 						class:active={selectedFilter === 'all'}
-						onclick={() => selectedFilter = 'all'}
+						onclick={() => (selectedFilter = 'all')}
 					>
 						All Alerts
 					</button>
-					<button 
-						class="filter-btn" 
+					<button
+						class="filter-btn"
 						class:active={selectedFilter === 'trades'}
-						onclick={() => selectedFilter = 'trades'}
+						onclick={() => (selectedFilter = 'trades')}
 					>
 						Trade Alerts
 					</button>
-					<button 
-						class="filter-btn" 
+					<button
+						class="filter-btn"
 						class:active={selectedFilter === 'updates'}
-						onclick={() => selectedFilter = 'updates'}
+						onclick={() => (selectedFilter = 'updates')}
 					>
 						Market Updates
 					</button>
@@ -181,9 +190,9 @@
 
 				<div class="search-container">
 					<IconSearch size={18} />
-					<input 
-						type="text" 
-						placeholder="Search alerts..." 
+					<input
+						type="text"
+						placeholder="Search alerts..."
 						bind:value={searchQuery}
 						class="search-input"
 					/>
@@ -192,7 +201,8 @@
 
 			<!-- Results Count -->
 			<div class="results-count">
-				Showing {filteredAlerts.length} {filteredAlerts.length === 1 ? 'alert' : 'alerts'}
+				Showing {filteredAlerts.length}
+				{filteredAlerts.length === 1 ? 'alert' : 'alerts'}
 			</div>
 
 			<!-- Alerts List -->
@@ -223,7 +233,6 @@
 					<p>No alerts found matching your criteria.</p>
 				</div>
 			{/if}
-
 		</section>
 	</div>
 </div>
@@ -328,13 +337,13 @@
 
 	.filter-btn:hover {
 		background: #e9ecef;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	.filter-btn.active {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	/* Search */
@@ -402,7 +411,7 @@
 	.alert-card:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	.alert-header {
@@ -458,7 +467,7 @@
 	}
 
 	.alert-title a:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.alert-date {
@@ -503,7 +512,7 @@
 	}
 
 	.alert-link:hover {
-		color: #143E59;
+		color: #143e59;
 		text-decoration: underline;
 	}
 

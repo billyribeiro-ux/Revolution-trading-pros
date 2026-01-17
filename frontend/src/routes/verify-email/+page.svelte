@@ -2,7 +2,7 @@
 	/**
 	 * Email Verification Page - Apple ICT 11+ Principal Engineer Grade
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 * 
+	 *
 	 * ENTERPRISE FEATURES:
 	 * - Comprehensive error handling with retry logic
 	 * - Analytics tracking for verification funnel
@@ -14,7 +14,7 @@
 	 * - Security best practices
 	 * - Progressive enhancement
 	 * - Error recovery flows
-	 * 
+	 *
 	 * @version 3.0.0
 	 * @author Revolution Trading Pros
 	 */
@@ -39,7 +39,13 @@
 	// State Management
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	type VerificationStatus = 'loading' | 'success' | 'error' | 'expired' | 'no-token' | 'rate-limited';
+	type VerificationStatus =
+		| 'loading'
+		| 'success'
+		| 'error'
+		| 'expired'
+		| 'no-token'
+		| 'rate-limited';
 
 	let status = $state<VerificationStatus>('loading');
 	let errorMessage = $state('');
@@ -144,7 +150,8 @@
 
 		if (!token) {
 			status = 'no-token';
-			errorMessage = 'No verification token provided. Please check your email for the correct link.';
+			errorMessage =
+				'No verification token provided. Please check your email for the correct link.';
 			trackEvent('verification_no_token');
 			return;
 		}
@@ -159,15 +166,15 @@
 			await verifyEmail(token);
 			status = 'success';
 			trackEvent('verification_success');
-			
+
 			// Start auto-redirect countdown
 			startAutoRedirect();
-			
+
 			// Announce to screen readers
 			announceToScreenReader('Email verified successfully! Redirecting to login...');
 		} catch (error: any) {
 			const errorType = error.message?.toLowerCase() || '';
-			
+
 			if (errorType.includes('expired')) {
 				status = 'expired';
 				errorMessage = 'This verification link has expired. Please request a new one.';
@@ -185,13 +192,13 @@
 				status = 'error';
 				errorMessage = error.message || 'Verification failed. Please try again.';
 				trackEvent('verification_error', { error: error.message });
-				
+
 				// Offer retry if not exceeded max attempts
 				if (retryCount < maxRetries) {
 					retryCount++;
 				}
 			}
-			
+
 			announceToScreenReader(errorMessage);
 		}
 	}
@@ -217,14 +224,14 @@
 		if (!validateEmail(userEmail)) {
 			return;
 		}
-		
+
 		if (!checkRateLimit()) {
 			return;
 		}
-		
+
 		resending = true;
 		trackEvent('verification_resend_attempt', { email: userEmail });
-		
+
 		try {
 			await resendVerificationEmail(userEmail);
 			resendSuccess = true;
@@ -265,7 +272,7 @@
 				handleResend();
 			}
 		}
-		
+
 		// Escape to cancel auto-redirect
 		if (e.key === 'Escape' && status === 'success' && redirectTimer) {
 			cancelAutoRedirect();
@@ -280,7 +287,7 @@
 	onMount(() => {
 		trackEvent('verification_page_view');
 		verify();
-		
+
 		// Add keyboard listener
 		window.addEventListener('keydown', handleKeydown);
 	});
@@ -338,12 +345,19 @@
 					<p class="mt-2 text-slate-300">
 						Your email has been successfully verified. You now have full access to your account.
 					</p>
-					
+
 					<!-- Auto-redirect countdown -->
 					{#if redirectTimer}
-						<div class="mt-4 flex items-center justify-center gap-2 text-sm text-slate-400" in:fly={{ y: 10, duration: 300 }}>
+						<div
+							class="mt-4 flex items-center justify-center gap-2 text-sm text-slate-400"
+							in:fly={{ y: 10, duration: 300 }}
+						>
 							<IconClock class="h-4 w-4" />
-							<span>Redirecting in {autoRedirectSeconds} second{autoRedirectSeconds !== 1 ? 's' : ''}...</span>
+							<span
+								>Redirecting in {autoRedirectSeconds} second{autoRedirectSeconds !== 1
+									? 's'
+									: ''}...</span
+							>
 							<button
 								onclick={cancelAutoRedirect}
 								class="ml-2 text-emerald-400 hover:text-emerald-300 underline"
@@ -377,7 +391,12 @@
 			{:else if status === 'expired' || status === 'error' || status === 'no-token' || status === 'rate-limited'}
 				<div class="text-center" in:fade={{ duration: 300 }}>
 					<div
-						class="mx-auto flex h-20 w-20 items-center justify-center rounded-full {status === 'expired' ? 'bg-yellow-500/20' : status === 'rate-limited' ? 'bg-orange-500/20' : 'bg-red-500/20'}"
+						class="mx-auto flex h-20 w-20 items-center justify-center rounded-full {status ===
+						'expired'
+							? 'bg-yellow-500/20'
+							: status === 'rate-limited'
+								? 'bg-orange-500/20'
+								: 'bg-red-500/20'}"
 						in:scale={{ duration: 300, easing: quintOut }}
 					>
 						{#if status === 'expired'}
@@ -398,7 +417,7 @@
 						{/if}
 					</h2>
 					<p class="mt-2 text-slate-300">{errorMessage}</p>
-					
+
 					<!-- Retry button for transient errors -->
 					{#if status === 'error' && retryCount < maxRetries}
 						<button
@@ -427,12 +446,18 @@
 									type="email"
 									bind:value={userEmail}
 									placeholder="Enter your email address"
-									class="w-full rounded-xl bg-white/5 border {emailError ? 'border-red-500' : 'border-white/10'} px-4 py-3 text-white placeholder-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition"
+									class="w-full rounded-xl bg-white/5 border {emailError
+										? 'border-red-500'
+										: 'border-white/10'} px-4 py-3 text-white placeholder-slate-400 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/20 focus:outline-none transition"
 									aria-invalid={emailError ? 'true' : 'false'}
 									aria-describedby={emailError ? 'email-error' : undefined}
 								/>
 								{#if emailError}
-									<p id="email-error" class="mt-2 text-sm text-red-400" in:fly={{ y: -10, duration: 200 }}>
+									<p
+										id="email-error"
+										class="mt-2 text-sm text-red-400"
+										in:fly={{ y: -10, duration: 200 }}
+									>
 										{emailError}
 									</p>
 								{/if}
@@ -466,11 +491,15 @@
 		<div class="mt-6 text-center">
 			<p class="text-sm text-slate-400">
 				Need help?
-				<a href="/support" class="text-emerald-400 hover:text-emerald-300 transition">Contact Support</a>
+				<a href="/support" class="text-emerald-400 hover:text-emerald-300 transition"
+					>Contact Support</a
+				>
 			</p>
 			{#if status === 'success' && redirectTimer}
 				<p class="mt-2 text-xs text-slate-500">
-					Press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono text-xs">ESC</kbd> to cancel redirect
+					Press <kbd class="px-1.5 py-0.5 rounded bg-white/10 text-slate-300 font-mono text-xs"
+						>ESC</kbd
+					> to cancel redirect
 				</p>
 			{/if}
 		</div>

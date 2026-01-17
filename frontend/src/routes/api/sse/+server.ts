@@ -12,14 +12,16 @@ export const GET: RequestHandler = async () => {
 	const headers = new Headers({
 		'Content-Type': 'text/event-stream',
 		'Cache-Control': 'no-cache',
-		'Connection': 'keep-alive'
+		Connection: 'keep-alive'
 	});
 
 	// Create a readable stream that sends a heartbeat and closes
 	const stream = new ReadableStream({
 		start(controller) {
 			// Send initial comment to indicate connection
-			controller.enqueue(new TextEncoder().encode(': SSE endpoint placeholder - backend SSE not configured\n\n'));
+			controller.enqueue(
+				new TextEncoder().encode(': SSE endpoint placeholder - backend SSE not configured\n\n')
+			);
 			// Close the stream immediately - SSE not implemented
 			controller.close();
 		}

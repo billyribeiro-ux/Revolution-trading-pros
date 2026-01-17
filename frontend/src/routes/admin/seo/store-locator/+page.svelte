@@ -144,8 +144,12 @@
 				addressCountry: formData.country
 			},
 			contacts: [
-				...(formData.phone ? [{ type: 'phone' as const, value: formData.phone, isPrimary: true }] : []),
-				...(formData.email ? [{ type: 'email' as const, value: formData.email, isPrimary: true }] : [])
+				...(formData.phone
+					? [{ type: 'phone' as const, value: formData.phone, isPrimary: true }]
+					: []),
+				...(formData.email
+					? [{ type: 'email' as const, value: formData.email, isPrimary: true }]
+					: [])
 			],
 			website: formData.website || '',
 			hours: daysOfWeek.map((day) => ({
@@ -337,15 +341,22 @@
 </div>
 
 {#if showAddModal}
-	<div 
-		class="modal-overlay" 
+	<div
+		class="modal-overlay"
 		onclick={() => (showAddModal = false)}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddModal = false)}
 		role="button"
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal" role="dialog" aria-modal="true" tabindex="-1" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
+		<div
+			class="modal"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		>
 			<h3>{editingLocation ? 'Edit Location' : 'Add New Location'}</h3>
 
 			<div class="form-grid">

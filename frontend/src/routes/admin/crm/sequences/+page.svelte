@@ -96,7 +96,7 @@
 
 			stats = {
 				total: sequences.length,
-				active: sequences.filter(s => s.status === 'active').length,
+				active: sequences.filter((s) => s.status === 'active').length,
 				totalSubscribers: sequences.reduce((sum, s) => sum + s.subscribers_count, 0),
 				totalSent: sequences.reduce((sum, s) => sum + s.total_sent, 0)
 			};
@@ -120,7 +120,8 @@
 	}
 
 	async function deleteSequence(id: string) {
-		if (!confirm('Are you sure you want to delete this sequence? This action cannot be undone.')) return;
+		if (!confirm('Are you sure you want to delete this sequence? This action cannot be undone.'))
+			return;
 
 		actionInProgress = id;
 		try {
@@ -140,7 +141,10 @@
 			await crmAPI.updateSequence(sequence.id, { status: newStatus });
 			await loadSequences();
 		} catch (err) {
-			error = err instanceof Error ? err.message : `Failed to ${sequence.status === 'active' ? 'pause' : 'activate'} sequence`;
+			error =
+				err instanceof Error
+					? err.message
+					: `Failed to ${sequence.status === 'active' ? 'pause' : 'activate'} sequence`;
 		} finally {
 			actionInProgress = null;
 		}
@@ -163,7 +167,7 @@
 
 			// Subscribe a test contact (this would typically be a dedicated test endpoint)
 			// For now, we'll simulate success - in production, you'd have a proper test email endpoint
-			await new Promise(resolve => setTimeout(resolve, 1000));
+			await new Promise((resolve) => setTimeout(resolve, 1000));
 
 			sendEmailForm.success = true;
 			setTimeout(() => {
@@ -256,9 +260,9 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredSequences = $derived(
-		sequences.filter(seq => {
-			const matchesSearch = !searchQuery ||
-				seq.title.toLowerCase().includes(searchQuery.toLowerCase());
+		sequences.filter((seq) => {
+			const matchesSearch =
+				!searchQuery || seq.title.toLowerCase().includes(searchQuery.toLowerCase());
 			const matchesStatus = selectedStatus === 'all' || seq.status === selectedStatus;
 			return matchesSearch && matchesStatus;
 		})
@@ -266,8 +270,8 @@
 
 	let canSendTestEmail = $derived(
 		sendEmailForm.testEmail.length > 0 &&
-		isValidEmail(sendEmailForm.testEmail) &&
-		!sendEmailForm.isLoading
+			isValidEmail(sendEmailForm.testEmail) &&
+			!sendEmailForm.isLoading
 	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -386,7 +390,7 @@
 				aria-label="Search sequences"
 			/>
 			{#if searchQuery}
-				<button class="search-clear" onclick={() => searchQuery = ''} aria-label="Clear search">
+				<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
 					<IconX size={14} />
 				</button>
 			{/if}
@@ -403,7 +407,7 @@
 		<div class="error-alert">
 			<IconAlertCircle size={18} />
 			<span>{error}</span>
-			<button onclick={() => error = ''} aria-label="Dismiss error">
+			<button onclick={() => (error = '')} aria-label="Dismiss error">
 				<IconX size={16} />
 			</button>
 		</div>
@@ -466,10 +470,14 @@
 							<td>{sequence.emails_count}</td>
 							<td>{formatNumber(sequence.subscribers_count)}</td>
 							<td>
-								<span class="rate-value">{formatRate(sequence.total_sent, sequence.total_opened)}</span>
+								<span class="rate-value"
+									>{formatRate(sequence.total_sent, sequence.total_opened)}</span
+								>
 							</td>
 							<td>
-								<span class="rate-value">{formatRate(sequence.total_sent, sequence.total_clicked)}</span>
+								<span class="rate-value"
+									>{formatRate(sequence.total_sent, sequence.total_clicked)}</span
+								>
 							</td>
 							<td>
 								<div class="action-buttons">
@@ -487,10 +495,18 @@
 											{/if}
 										</button>
 									{/if}
-									<a href="/admin/crm/sequences/{sequence.id}" class="btn-icon" title="View Analytics">
+									<a
+										href="/admin/crm/sequences/{sequence.id}"
+										class="btn-icon"
+										title="View Analytics"
+									>
 										<IconChartBar size={16} />
 									</a>
-									<a href="/admin/crm/sequences/{sequence.id}/subscribers" class="btn-icon" title="View Subscribers">
+									<a
+										href="/admin/crm/sequences/{sequence.id}/subscribers"
+										class="btn-icon"
+										title="View Subscribers"
+									>
 										<IconUsers size={16} />
 									</a>
 									<button
@@ -554,7 +570,8 @@
 			<div class="modal-body">
 				{#if selectedSequence}
 					<p class="modal-description">
-						Send a test email from the sequence "<strong>{selectedSequence.title}</strong>" to verify your content and design.
+						Send a test email from the sequence "<strong>{selectedSequence.title}</strong>" to
+						verify your content and design.
 					</p>
 
 					{#if sendEmailForm.success}
@@ -588,14 +605,14 @@
 
 			{#if !sendEmailForm.success}
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={closeSendEmailModal} disabled={sendEmailForm.isLoading}>
+					<button
+						class="btn-secondary"
+						onclick={closeSendEmailModal}
+						disabled={sendEmailForm.isLoading}
+					>
 						Cancel
 					</button>
-					<button
-						class="btn-primary"
-						onclick={sendTestEmail}
-						disabled={!canSendTestEmail}
-					>
+					<button class="btn-primary" onclick={sendTestEmail} disabled={!canSendTestEmail}>
 						{#if sendEmailForm.isLoading}
 							<div class="btn-spinner"></div>
 							Sending...
@@ -663,7 +680,7 @@
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.btn-refresh:disabled {
@@ -676,8 +693,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -685,8 +706,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -739,12 +760,18 @@
 	}
 
 	@media (max-width: 1200px) {
-		.stats-grid { grid-template-columns: repeat(2, 1fr); }
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
-		.page { padding: 1rem; }
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
+		.page {
+			padding: 1rem;
+		}
 	}
 
 	.stat-card {
@@ -766,10 +793,22 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.purple {
+		background: rgba(230, 184, 0, 0.15);
+		color: #ffd11a;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
 
 	.stat-content {
 		display: flex;
@@ -948,7 +987,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 10px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1029,7 +1068,9 @@
 	}
 
 	/* States */
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -1057,7 +1098,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

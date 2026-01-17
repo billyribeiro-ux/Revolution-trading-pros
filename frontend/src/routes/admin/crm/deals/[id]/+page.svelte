@@ -104,13 +104,11 @@
 
 	let dealId = $derived(page.params.id as string);
 
-	let currentStage = $derived(
-		pipeline?.stages?.find(s => s.id === deal?.stage_id) || null
-	);
+	let currentStage = $derived(pipeline?.stages?.find((s) => s.id === deal?.stage_id) || null);
 
 	let stageProgress = $derived(() => {
 		if (!pipeline?.stages || !deal) return 0;
-		const stageIndex = pipeline.stages.findIndex(s => s.id === deal?.stage_id);
+		const stageIndex = pipeline.stages.findIndex((s) => s.id === deal?.stage_id);
 		return stageIndex >= 0 ? ((stageIndex + 1) / pipeline.stages.length) * 100 : 0;
 	});
 
@@ -234,7 +232,8 @@
 
 	async function deleteDeal() {
 		if (!deal) return;
-		if (!confirm(`Are you sure you want to delete "${deal.name}"? This action cannot be undone.`)) return;
+		if (!confirm(`Are you sure you want to delete "${deal.name}"? This action cannot be undone.`))
+			return;
 
 		try {
 			await crmAPI.updateDeal(deal.id, { status: 'abandoned' } as any);
@@ -358,13 +357,21 @@
 		<!-- Header Section -->
 		<header class="deal-header">
 			<div class="deal-identity">
-				<div class="deal-icon" style="background: {getStageColor(currentStage)}20; color: {getStageColor(currentStage)}">
+				<div
+					class="deal-icon"
+					style="background: {getStageColor(currentStage)}20; color: {getStageColor(currentStage)}"
+				>
 					<IconBriefcase size={28} />
 				</div>
 				<div class="deal-info">
 					<div class="name-row">
 						<h1>{deal.name}</h1>
-						<span class="status-badge" style="background: {getStatusBadge(deal.status).bg}; color: {getStatusBadge(deal.status).color}">
+						<span
+							class="status-badge"
+							style="background: {getStatusBadge(deal.status).bg}; color: {getStatusBadge(
+								deal.status
+							).color}"
+						>
 							{getStatusBadge(deal.status).text}
 						</span>
 					</div>
@@ -395,11 +402,11 @@
 					<IconRefresh size={18} />
 				</button>
 				{#if isOpen}
-					<button class="btn-success" onclick={() => showWinModal = true}>
+					<button class="btn-success" onclick={() => (showWinModal = true)}>
 						<IconTrophy size={18} />
 						Mark Won
 					</button>
-					<button class="btn-danger-outline" onclick={() => showLoseModal = true}>
+					<button class="btn-danger-outline" onclick={() => (showLoseModal = true)}>
 						<IconX size={18} />
 						Mark Lost
 					</button>
@@ -448,9 +455,11 @@
 			<div class="stage-progress-section">
 				<h3>Stage Progress</h3>
 				<div class="stages-row">
-					{#each pipeline.stages.filter(s => !s.is_closed_won && !s.is_closed_lost) as stage (stage.id)}
+					{#each pipeline.stages.filter((s) => !s.is_closed_won && !s.is_closed_lost) as stage (stage.id)}
 						{@const isCurrent = stage.id === deal?.stage_id}
-						{@const isPast = pipeline.stages.findIndex(s => s.id === stage.id) < pipeline.stages.findIndex(s => s.id === deal?.stage_id)}
+						{@const isPast =
+							pipeline.stages.findIndex((s) => s.id === stage.id) <
+							pipeline.stages.findIndex((s) => s.id === deal?.stage_id)}
 						<button
 							class="stage-item"
 							class:current={isCurrent}
@@ -465,7 +474,7 @@
 								<span class="stage-probability">{stage.probability}%</span>
 							{/if}
 						</button>
-						{#if pipeline.stages.indexOf(stage) < pipeline.stages.filter(s => !s.is_closed_won && !s.is_closed_lost).length - 1}
+						{#if pipeline.stages.indexOf(stage) < pipeline.stages.filter((s) => !s.is_closed_won && !s.is_closed_lost).length - 1}
 							<div class="stage-connector" class:active={isPast}></div>
 						{/if}
 					{/each}
@@ -475,15 +484,27 @@
 
 		<!-- Tabs -->
 		<nav class="tabs-nav">
-			<button class="tab-btn" class:active={activeTab === 'overview'} onclick={() => activeTab = 'overview'}>
+			<button
+				class="tab-btn"
+				class:active={activeTab === 'overview'}
+				onclick={() => (activeTab = 'overview')}
+			>
 				<IconBriefcase size={18} />
 				Overview
 			</button>
-			<button class="tab-btn" class:active={activeTab === 'timeline'} onclick={() => activeTab = 'timeline'}>
+			<button
+				class="tab-btn"
+				class:active={activeTab === 'timeline'}
+				onclick={() => (activeTab = 'timeline')}
+			>
 				<IconHistory size={18} />
 				Timeline ({timeline.length})
 			</button>
-			<button class="tab-btn" class:active={activeTab === 'notes'} onclick={() => activeTab = 'notes'}>
+			<button
+				class="tab-btn"
+				class:active={activeTab === 'notes'}
+				onclick={() => (activeTab = 'notes')}
+			>
 				<IconNotes size={18} />
 				Notes ({notes.length})
 			</button>
@@ -617,7 +638,6 @@
 						</div>
 					{/if}
 				</div>
-
 			{:else if activeTab === 'timeline'}
 				<div class="timeline-section">
 					{#if timeline.length === 0}
@@ -648,11 +668,10 @@
 						</div>
 					{/if}
 				</div>
-
 			{:else if activeTab === 'notes'}
 				<div class="notes-section">
 					<div class="notes-header">
-						<button class="btn-primary" onclick={() => showAddNoteModal = true}>
+						<button class="btn-primary" onclick={() => (showAddNoteModal = true)}>
 							<IconPlus size={18} />
 							Add Note
 						</button>
@@ -693,18 +712,23 @@
 {#if showWinModal && deal}
 	<div
 		class="modal-overlay"
-		onclick={() => showWinModal = false}
+		onclick={() => (showWinModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showWinModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header success">
 				<IconTrophy size={24} />
 				<h3>Mark Deal as Won</h3>
-				<button class="modal-close" onclick={() => showWinModal = false}>
+				<button class="modal-close" onclick={() => (showWinModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -724,7 +748,11 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => showWinModal = false} disabled={processingAction}>
+				<button
+					class="btn-secondary"
+					onclick={() => (showWinModal = false)}
+					disabled={processingAction}
+				>
 					Cancel
 				</button>
 				<button class="btn-success" onclick={winDeal} disabled={processingAction}>
@@ -744,18 +772,23 @@
 {#if showLoseModal && deal}
 	<div
 		class="modal-overlay"
-		onclick={() => showLoseModal = false}
+		onclick={() => (showLoseModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showLoseModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header danger">
 				<IconX size={24} />
 				<h3>Mark Deal as Lost</h3>
-				<button class="modal-close" onclick={() => showLoseModal = false}>
+				<button class="modal-close" onclick={() => (showLoseModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -776,10 +809,18 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => showLoseModal = false} disabled={processingAction}>
+				<button
+					class="btn-secondary"
+					onclick={() => (showLoseModal = false)}
+					disabled={processingAction}
+				>
 					Cancel
 				</button>
-				<button class="btn-danger" onclick={loseDeal} disabled={processingAction || !lostReason.trim()}>
+				<button
+					class="btn-danger"
+					onclick={loseDeal}
+					disabled={processingAction || !lostReason.trim()}
+				>
 					{#if processingAction}
 						<div class="btn-spinner"></div>
 					{:else}
@@ -796,18 +837,23 @@
 {#if showStageChangeModal && selectedStage && deal}
 	<div
 		class="modal-overlay"
-		onclick={() => showStageChangeModal = false}
+		onclick={() => (showStageChangeModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showStageChangeModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<IconArrowRight size={24} />
 				<h3>Change Stage</h3>
-				<button class="modal-close" onclick={() => showStageChangeModal = false}>
+				<button class="modal-close" onclick={() => (showStageChangeModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -815,12 +861,16 @@
 				<div class="stage-change-preview">
 					<div class="stage-from">
 						<span class="stage-label">From</span>
-						<span class="stage-name" style="color: {getStageColor(currentStage)}">{currentStage?.name}</span>
+						<span class="stage-name" style="color: {getStageColor(currentStage)}"
+							>{currentStage?.name}</span
+						>
 					</div>
 					<IconArrowRight size={20} class="stage-arrow" />
 					<div class="stage-to">
 						<span class="stage-label">To</span>
-						<span class="stage-name" style="color: {getStageColor(selectedStage)}">{selectedStage.name}</span>
+						<span class="stage-name" style="color: {getStageColor(selectedStage)}"
+							>{selectedStage.name}</span
+						>
 					</div>
 				</div>
 				<div class="form-group">
@@ -834,7 +884,11 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => showStageChangeModal = false} disabled={processingAction}>
+				<button
+					class="btn-secondary"
+					onclick={() => (showStageChangeModal = false)}
+					disabled={processingAction}
+				>
 					Cancel
 				</button>
 				<button class="btn-primary" onclick={updateStage} disabled={processingAction}>
@@ -854,18 +908,23 @@
 {#if showAddNoteModal}
 	<div
 		class="modal-overlay"
-		onclick={() => showAddNoteModal = false}
+		onclick={() => (showAddNoteModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showAddNoteModal = false)}
 		role="dialog"
 		aria-modal="true"
 		tabindex="-1"
 	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()} role="document">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<IconNotes size={24} />
 				<h3>Add Note</h3>
-				<button class="modal-close" onclick={() => showAddNoteModal = false}>
+				<button class="modal-close" onclick={() => (showAddNoteModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -881,10 +940,18 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => showAddNoteModal = false} disabled={processingAction}>
+				<button
+					class="btn-secondary"
+					onclick={() => (showAddNoteModal = false)}
+					disabled={processingAction}
+				>
 					Cancel
 				</button>
-				<button class="btn-primary" onclick={addNote} disabled={processingAction || !newNoteContent.trim()}>
+				<button
+					class="btn-primary"
+					onclick={addNote}
+					disabled={processingAction || !newNoteContent.trim()}
+				>
 					{#if processingAction}
 						<div class="btn-spinner"></div>
 					{:else}
@@ -906,7 +973,7 @@
 			<IconX size={18} />
 		{/if}
 		<span>{toastMessage.text}</span>
-		<button class="toast-close" onclick={() => toastMessage = null} aria-label="Dismiss">
+		<button class="toast-close" onclick={() => (toastMessage = null)} aria-label="Dismiss">
 			<IconX size={14} />
 		</button>
 	</div>
@@ -1452,7 +1519,8 @@
 		color: #f97316;
 	}
 
-	.contact-email, .contact-phone {
+	.contact-email,
+	.contact-phone {
 		display: flex;
 		align-items: center;
 		gap: 6px;
@@ -1461,7 +1529,8 @@
 		text-decoration: none;
 	}
 
-	.contact-email:hover, .contact-phone:hover {
+	.contact-email:hover,
+	.contact-phone:hover {
 		text-decoration: underline;
 	}
 
@@ -1597,7 +1666,9 @@
 	}
 
 	/* Empty States */
-	.empty-state, .loading-state, .error-state {
+	.empty-state,
+	.loading-state,
+	.error-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -1642,8 +1713,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Modal */
@@ -1750,7 +1825,8 @@
 		margin-bottom: 20px;
 	}
 
-	.stage-from, .stage-to {
+	.stage-from,
+	.stage-to {
 		display: flex;
 		flex-direction: column;
 		gap: 4px;

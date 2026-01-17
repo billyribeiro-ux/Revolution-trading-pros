@@ -33,8 +33,7 @@
 			const query = searchQuery.toLowerCase();
 			result = result.filter(
 				(c) =>
-					c.code.toLowerCase().includes(query) ||
-					(c.type && c.type.toLowerCase().includes(query))
+					c.code.toLowerCase().includes(query) || (c.type && c.type.toLowerCase().includes(query))
 			);
 		}
 
@@ -82,7 +81,8 @@
 	}
 
 	async function deleteCoupon(id: number) {
-		if (!confirm('Are you sure you want to delete this coupon? This action cannot be undone.')) return;
+		if (!confirm('Are you sure you want to delete this coupon? This action cannot be undone.'))
+			return;
 
 		deleting = id;
 		try {
@@ -103,9 +103,7 @@
 	async function toggleCouponStatus(coupon: Coupon) {
 		try {
 			await couponsApi.update(coupon.id, { is_active: !coupon.is_active });
-			coupons = coupons.map((c) =>
-				c.id === coupon.id ? { ...c, is_active: !c.is_active } : c
-			);
+			coupons = coupons.map((c) => (c.id === coupon.id ? { ...c, is_active: !c.is_active } : c));
 		} catch (err) {
 			console.error('Toggle status error:', err);
 			alert('Failed to update coupon status');
@@ -144,174 +142,177 @@
 
 <div class="page">
 	<div class="admin-page-container">
-	<!-- Page Header -->
-	<div class="page-header">
-		<h1>Coupons Management</h1>
-		<p class="subtitle">Manage discount codes and promotional offers</p>
-	</div>
-
-	<!-- Actions Row -->
-	<div class="actions-row">
-		<button class="btn-secondary" onclick={loadCoupons} disabled={loading}>
-			<IconRefresh size={18} class={loading ? 'spinning' : ''} />
-			Refresh
-		</button>
-		<button class="btn-primary" onclick={() => goto('/admin/coupons/create')}>
-			<IconPlus size={18} />
-			Create Coupon
-		</button>
-	</div>
-
-	<!-- Stats Bar -->
-	{#if !loading && !error}
-		<div class="stats-bar">
-			<div class="stat-item">
-				<span class="stat-value">{totalCouponsCount}</span>
-				<span class="stat-label">Total Coupons</span>
-			</div>
-			<div class="stat-item">
-				<span class="stat-value stat-active">{activeCouponsCount}</span>
-				<span class="stat-label">Active</span>
-			</div>
-			<div class="stat-item">
-				<span class="stat-value stat-inactive">{totalCouponsCount - activeCouponsCount}</span>
-				<span class="stat-label">Inactive</span>
-			</div>
+		<!-- Page Header -->
+		<div class="page-header">
+			<h1>Coupons Management</h1>
+			<p class="subtitle">Manage discount codes and promotional offers</p>
 		</div>
-	{/if}
 
-	<!-- Filters -->
-	{#if !loading && coupons.length > 0}
-		<div class="filters-bar">
-			<div class="search-box">
-				<IconSearch size={18} />
-				<input
-					type="text"
-					placeholder="Search by code or type..."
-					bind:value={searchQuery}
-				/>
-			</div>
-			<div class="filter-tabs">
-				<button
-					class="filter-tab"
-					class:active={filterStatus === 'all'}
-					onclick={() => (filterStatus = 'all')}
-				>
-					All ({totalCouponsCount})
-				</button>
-				<button
-					class="filter-tab"
-					class:active={filterStatus === 'active'}
-					onclick={() => (filterStatus = 'active')}
-				>
-					Active ({activeCouponsCount})
-				</button>
-				<button
-					class="filter-tab"
-					class:active={filterStatus === 'inactive'}
-					onclick={() => (filterStatus = 'inactive')}
-				>
-					Inactive ({totalCouponsCount - activeCouponsCount})
-				</button>
-			</div>
-		</div>
-	{/if}
-
-	<!-- Content -->
-	{#if loading}
-		<div class="loading-state">
-			<IconRefresh size={32} class="spinning" />
-			<p>Loading coupons...</p>
-		</div>
-	{:else if error}
-		<div class="error-state">
-			<p>{error}</p>
-			<button class="btn-secondary" onclick={loadCoupons}>Try Again</button>
-		</div>
-	{:else if coupons.length === 0}
-		<div class="empty-state">
-			<div class="empty-icon">
-				<IconFilter size={48} />
-			</div>
-			<h2>No coupons yet</h2>
-			<p>Create your first coupon to start offering discounts to your customers.</p>
+		<!-- Actions Row -->
+		<div class="actions-row">
+			<button class="btn-secondary" onclick={loadCoupons} disabled={loading}>
+				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+				Refresh
+			</button>
 			<button class="btn-primary" onclick={() => goto('/admin/coupons/create')}>
 				<IconPlus size={18} />
-				Create First Coupon
+				Create Coupon
 			</button>
 		</div>
-	{:else if filteredCoupons.length === 0}
-		<div class="empty-state">
-			<p>No coupons match your search criteria.</p>
-			<button class="btn-secondary" onclick={() => { searchQuery = ''; filterStatus = 'all'; }}>
-				Clear Filters
-			</button>
-		</div>
-	{:else}
-		<div class="coupons-grid">
-			{#each filteredCoupons as coupon (coupon.id)}
-				<div class="coupon-card" class:expired={isExpired(coupon.valid_until)}>
-					<div class="coupon-header">
-						<div class="coupon-code">{coupon.code}</div>
-						<button
-							class="coupon-status"
-							class:active={coupon.is_active}
-							onclick={() => toggleCouponStatus(coupon)}
-							title="Click to toggle status"
-						>
-							{coupon.is_active ? 'Active' : 'Inactive'}
-						</button>
-					</div>
 
-					<div class="coupon-details">
-						<span class="coupon-type">{coupon.type}</span>
-						<span class="coupon-value">{formatDiscountValue(coupon)}</span>
-					</div>
-
-					<div class="coupon-meta">
-						{#if coupon.usage_limit}
-							<span class="meta-item">
-								Uses: {coupon.usage_count}/{coupon.usage_limit}
-							</span>
-						{/if}
-						{#if coupon.valid_until}
-							<span class="meta-item" class:expired={isExpired(coupon.valid_until)}>
-								Expires: {formatDate(coupon.valid_until)}
-							</span>
-						{/if}
-						{#if coupon.minimum_amount}
-							<span class="meta-item">
-								Min: ${coupon.minimum_amount}
-							</span>
-						{/if}
-					</div>
-
-					<div class="coupon-actions">
-						<button
-							class="action-btn edit"
-							onclick={() => goto(`/admin/coupons/edit/${coupon.id}`)}
-						>
-							<IconEdit size={16} />
-							Edit
-						</button>
-						<button
-							class="action-btn delete"
-							onclick={() => deleteCoupon(coupon.id)}
-							disabled={deleting === coupon.id}
-						>
-							{#if deleting === coupon.id}
-								<IconRefresh size={16} class="spinning" />
-							{:else}
-								<IconTrash size={16} />
-							{/if}
-							Delete
-						</button>
-					</div>
+		<!-- Stats Bar -->
+		{#if !loading && !error}
+			<div class="stats-bar">
+				<div class="stat-item">
+					<span class="stat-value">{totalCouponsCount}</span>
+					<span class="stat-label">Total Coupons</span>
 				</div>
-			{/each}
-		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+				<div class="stat-item">
+					<span class="stat-value stat-active">{activeCouponsCount}</span>
+					<span class="stat-label">Active</span>
+				</div>
+				<div class="stat-item">
+					<span class="stat-value stat-inactive">{totalCouponsCount - activeCouponsCount}</span>
+					<span class="stat-label">Inactive</span>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Filters -->
+		{#if !loading && coupons.length > 0}
+			<div class="filters-bar">
+				<div class="search-box">
+					<IconSearch size={18} />
+					<input type="text" placeholder="Search by code or type..." bind:value={searchQuery} />
+				</div>
+				<div class="filter-tabs">
+					<button
+						class="filter-tab"
+						class:active={filterStatus === 'all'}
+						onclick={() => (filterStatus = 'all')}
+					>
+						All ({totalCouponsCount})
+					</button>
+					<button
+						class="filter-tab"
+						class:active={filterStatus === 'active'}
+						onclick={() => (filterStatus = 'active')}
+					>
+						Active ({activeCouponsCount})
+					</button>
+					<button
+						class="filter-tab"
+						class:active={filterStatus === 'inactive'}
+						onclick={() => (filterStatus = 'inactive')}
+					>
+						Inactive ({totalCouponsCount - activeCouponsCount})
+					</button>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Content -->
+		{#if loading}
+			<div class="loading-state">
+				<IconRefresh size={32} class="spinning" />
+				<p>Loading coupons...</p>
+			</div>
+		{:else if error}
+			<div class="error-state">
+				<p>{error}</p>
+				<button class="btn-secondary" onclick={loadCoupons}>Try Again</button>
+			</div>
+		{:else if coupons.length === 0}
+			<div class="empty-state">
+				<div class="empty-icon">
+					<IconFilter size={48} />
+				</div>
+				<h2>No coupons yet</h2>
+				<p>Create your first coupon to start offering discounts to your customers.</p>
+				<button class="btn-primary" onclick={() => goto('/admin/coupons/create')}>
+					<IconPlus size={18} />
+					Create First Coupon
+				</button>
+			</div>
+		{:else if filteredCoupons.length === 0}
+			<div class="empty-state">
+				<p>No coupons match your search criteria.</p>
+				<button
+					class="btn-secondary"
+					onclick={() => {
+						searchQuery = '';
+						filterStatus = 'all';
+					}}
+				>
+					Clear Filters
+				</button>
+			</div>
+		{:else}
+			<div class="coupons-grid">
+				{#each filteredCoupons as coupon (coupon.id)}
+					<div class="coupon-card" class:expired={isExpired(coupon.valid_until)}>
+						<div class="coupon-header">
+							<div class="coupon-code">{coupon.code}</div>
+							<button
+								class="coupon-status"
+								class:active={coupon.is_active}
+								onclick={() => toggleCouponStatus(coupon)}
+								title="Click to toggle status"
+							>
+								{coupon.is_active ? 'Active' : 'Inactive'}
+							</button>
+						</div>
+
+						<div class="coupon-details">
+							<span class="coupon-type">{coupon.type}</span>
+							<span class="coupon-value">{formatDiscountValue(coupon)}</span>
+						</div>
+
+						<div class="coupon-meta">
+							{#if coupon.usage_limit}
+								<span class="meta-item">
+									Uses: {coupon.usage_count}/{coupon.usage_limit}
+								</span>
+							{/if}
+							{#if coupon.valid_until}
+								<span class="meta-item" class:expired={isExpired(coupon.valid_until)}>
+									Expires: {formatDate(coupon.valid_until)}
+								</span>
+							{/if}
+							{#if coupon.minimum_amount}
+								<span class="meta-item">
+									Min: ${coupon.minimum_amount}
+								</span>
+							{/if}
+						</div>
+
+						<div class="coupon-actions">
+							<button
+								class="action-btn edit"
+								onclick={() => goto(`/admin/coupons/edit/${coupon.id}`)}
+							>
+								<IconEdit size={16} />
+								Edit
+							</button>
+							<button
+								class="action-btn delete"
+								onclick={() => deleteCoupon(coupon.id)}
+								disabled={deleting === coupon.id}
+							>
+								{#if deleting === coupon.id}
+									<IconRefresh size={16} class="spinning" />
+								{:else}
+									<IconTrash size={16} />
+								{/if}
+								Delete
+							</button>
+						</div>
+					</div>
+				{/each}
+			</div>
+		{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>

@@ -39,8 +39,22 @@
 
 	// Chart data - Empty arrays, no fake data
 	let growthData: { month: string; members: number; new: number; churned: number }[] = [];
-	let cohortData: { cohort: string; m0: number; m1: number; m2: number; m3: number; m4: number; m5: number }[] = [];
-	let revenueData: { month: string; mrr: number; expansion: number; contraction: number; churn: number }[] = [];
+	let cohortData: {
+		cohort: string;
+		m0: number;
+		m1: number;
+		m2: number;
+		m3: number;
+		m4: number;
+		m5: number;
+	}[] = [];
+	let revenueData: {
+		month: string;
+		mrr: number;
+		expansion: number;
+		contraction: number;
+		churn: number;
+	}[] = [];
 	let churnReasons: { reason: string; count: number; percentage: number }[] = [];
 	let segmentData: { segment: string; count: number; revenue: number; churnRate: number }[] = [];
 
@@ -54,14 +68,15 @@
 
 		try {
 			// Call REAL API - no mock data fallback
-			const [metricsRes, growthRes, cohortRes, revenueRes, churnRes, segmentRes] = await Promise.allSettled([
-				fetch(`/api/admin/members/analytics/metrics?range=${dateRange}`),
-				fetch(`/api/admin/members/analytics/growth?range=${dateRange}`),
-				fetch(`/api/admin/members/analytics/cohorts?range=${dateRange}`),
-				fetch(`/api/admin/members/analytics/revenue?range=${dateRange}`),
-				fetch(`/api/admin/members/analytics/churn-reasons?range=${dateRange}`),
-				fetch(`/api/admin/members/analytics/segments?range=${dateRange}`)
-			]);
+			const [metricsRes, growthRes, cohortRes, revenueRes, churnRes, segmentRes] =
+				await Promise.allSettled([
+					fetch(`/api/admin/members/analytics/metrics?range=${dateRange}`),
+					fetch(`/api/admin/members/analytics/growth?range=${dateRange}`),
+					fetch(`/api/admin/members/analytics/cohorts?range=${dateRange}`),
+					fetch(`/api/admin/members/analytics/revenue?range=${dateRange}`),
+					fetch(`/api/admin/members/analytics/churn-reasons?range=${dateRange}`),
+					fetch(`/api/admin/members/analytics/segments?range=${dateRange}`)
+				]);
 
 			let dataReceived = false;
 
@@ -123,13 +138,15 @@
 			hasData = dataReceived;
 
 			if (!dataReceived) {
-				connectionError = 'Member analytics data is not available. Ensure your analytics service is connected and configured.';
+				connectionError =
+					'Member analytics data is not available. Ensure your analytics service is connected and configured.';
 			}
 		} catch (err) {
 			console.error('Failed to load member analytics:', err);
 			isConnected = false;
 			hasData = false;
-			connectionError = 'Failed to connect to analytics service. Please check your connection settings.';
+			connectionError =
+				'Failed to connect to analytics service. Please check your connection settings.';
 			// NO MOCK DATA - Show connection error instead
 		} finally {
 			loading = false;
@@ -223,7 +240,10 @@
 					<IconChartBar size={40} />
 				</div>
 				<h2>Member Analytics Not Available</h2>
-				<p>{connectionError || 'Connect your analytics service to view real member metrics, growth data, and churn analysis.'}</p>
+				<p>
+					{connectionError ||
+						'Connect your analytics service to view real member metrics, growth data, and churn analysis.'}
+				</p>
 				<div class="not-connected-actions">
 					<a href="/admin/connections" class="btn-connect">
 						<IconSettings size={18} />
@@ -255,12 +275,12 @@
 						<IconUsers size={24} />
 					</div>
 					<div class="metric-trend {(metrics.memberGrowth ?? 0) >= 0 ? 'positive' : 'negative'}">
-					{#if (metrics.memberGrowth ?? 0) >= 0}
-						<IconTrendingUp size={16} />
-					{:else}
-						<IconTrendingDown size={16} />
-					{/if}
-					{Math.abs(metrics.memberGrowth ?? 0)}%
+						{#if (metrics.memberGrowth ?? 0) >= 0}
+							<IconTrendingUp size={16} />
+						{:else}
+							<IconTrendingDown size={16} />
+						{/if}
+						{Math.abs(metrics.memberGrowth ?? 0)}%
 					</div>
 				</div>
 				<div class="metric-value">{formatNumber(metrics.totalMembers ?? 0)}</div>
@@ -273,12 +293,12 @@
 						<IconCurrencyDollar size={24} />
 					</div>
 					<div class="metric-trend {(metrics.mrrGrowth ?? 0) >= 0 ? 'positive' : 'negative'}">
-					{#if (metrics.mrrGrowth ?? 0) >= 0}
-						<IconTrendingUp size={16} />
-					{:else}
-						<IconTrendingDown size={16} />
-					{/if}
-					{Math.abs(metrics.mrrGrowth ?? 0)}%
+						{#if (metrics.mrrGrowth ?? 0) >= 0}
+							<IconTrendingUp size={16} />
+						{:else}
+							<IconTrendingDown size={16} />
+						{/if}
+						{Math.abs(metrics.mrrGrowth ?? 0)}%
 					</div>
 				</div>
 				<div class="metric-value">{formatCurrency(metrics.mrr ?? 0)}</div>
@@ -341,7 +361,8 @@
 								<div class="bar-container">
 									<div
 										class="bar bar-members"
-										style="height: {(data.members / getMaxValue(growthData.map((d) => d.members))) * 100}%"
+										style="height: {(data.members / getMaxValue(growthData.map((d) => d.members))) *
+											100}%"
 									></div>
 								</div>
 								<div class="bar-mini-group">
@@ -351,7 +372,8 @@
 									></div>
 									<div
 										class="bar bar-churned"
-										style="height: {(data.churned / getMaxValue(growthData.map((d) => d.churned))) * 60}px"
+										style="height: {(data.churned / getMaxValue(growthData.map((d) => d.churned))) *
+											60}px"
 									></div>
 								</div>
 								<span class="bar-label">{data.month}</span>
@@ -526,7 +548,13 @@
 										<td class="segment-name">{segment.segment}</td>
 										<td>{formatNumber(segment.count)}</td>
 										<td class="revenue">{formatCurrency(segment.revenue)}</td>
-										<td class="churn-rate {segment.churnRate <= 2 ? 'low' : segment.churnRate <= 5 ? 'medium' : 'high'}">
+										<td
+											class="churn-rate {segment.churnRate <= 2
+												? 'low'
+												: segment.churnRate <= 5
+													? 'medium'
+													: 'high'}"
+										>
 											{segment.churnRate}%
 										</td>
 									</tr>
@@ -563,7 +591,7 @@
 	}
 
 	.back-btn:hover {
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.header-content {
@@ -582,7 +610,7 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
@@ -643,8 +671,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 	}
 
 	.btn-secondary {
@@ -662,7 +690,12 @@
 	}
 
 	.skeleton {
-		background: linear-gradient(90deg, rgba(148, 163, 184, 0.1) 25%, rgba(148, 163, 184, 0.2) 50%, rgba(148, 163, 184, 0.1) 75%);
+		background: linear-gradient(
+			90deg,
+			rgba(148, 163, 184, 0.1) 25%,
+			rgba(148, 163, 184, 0.2) 50%,
+			rgba(148, 163, 184, 0.1) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 16px;
@@ -677,8 +710,12 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	/* Not Connected State - NO MOCK DATA */
@@ -737,8 +774,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		font-size: 0.875rem;
 		font-weight: 600;
 		border-radius: 10px;
@@ -838,10 +875,22 @@
 		justify-content: center;
 	}
 
-	.metric-icon.purple { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
-	.metric-icon.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-	.metric-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.metric-icon.red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+	.metric-icon.purple {
+		background: rgba(230, 184, 0, 0.15);
+		color: #ffd11a;
+	}
+	.metric-icon.emerald {
+		background: rgba(16, 185, 129, 0.15);
+		color: #34d399;
+	}
+	.metric-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.metric-icon.red {
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
 
 	.metric-trend {
 		display: flex;
@@ -851,8 +900,12 @@
 		font-weight: 600;
 	}
 
-	.metric-trend.positive { color: #34d399; }
-	.metric-trend.negative { color: #f87171; }
+	.metric-trend.positive {
+		color: #34d399;
+	}
+	.metric-trend.negative {
+		color: #f87171;
+	}
 
 	.metric-value {
 		font-size: 2rem;
@@ -925,9 +978,15 @@
 		border-radius: 50%;
 	}
 
-	.legend-dot.purple { background: #FFD11A; }
-	.legend-dot.emerald { background: #34d399; }
-	.legend-dot.red { background: #f87171; }
+	.legend-dot.purple {
+		background: #ffd11a;
+	}
+	.legend-dot.emerald {
+		background: #34d399;
+	}
+	.legend-dot.red {
+		background: #f87171;
+	}
 
 	.chart-body {
 		padding: 1.5rem;
@@ -965,7 +1024,7 @@
 
 	.bar-members {
 		width: 60%;
-		background: linear-gradient(180deg, #FFD11A, #E6B800);
+		background: linear-gradient(180deg, #ffd11a, #e6b800);
 	}
 
 	.bar-mini-group {
@@ -1041,7 +1100,7 @@
 	.cohort-name {
 		text-align: left;
 		font-weight: 500;
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	/* Bottom Grid */
@@ -1138,9 +1197,15 @@
 		font-weight: 600;
 	}
 
-	.churn-rate.low { color: #34d399; }
-	.churn-rate.medium { color: #fbbf24; }
-	.churn-rate.high { color: #f87171; }
+	.churn-rate.low {
+		color: #34d399;
+	}
+	.churn-rate.medium {
+		color: #fbbf24;
+	}
+	.churn-rate.high {
+		color: #f87171;
+	}
 
 	@media (max-width: 1200px) {
 		.metrics-grid {

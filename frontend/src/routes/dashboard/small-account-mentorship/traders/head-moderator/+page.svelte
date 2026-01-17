@@ -16,7 +16,10 @@
 
 <svelte:head>
 	<title>Head Moderator | Day Trading Room | Revolution Trading Pros</title>
-	<meta name="description" content="Meet our head moderator and learn about their role in the trading room." />
+	<meta
+		name="description"
+		content="Meet our head moderator and learn about their role in the trading room."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -30,7 +33,9 @@
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Meet Our Head Moderator</h2>
-			<p>Learn about our head moderator's role in managing the trading room and supporting members.</p>
+			<p>
+				Learn about our head moderator's role in managing the trading room and supporting members.
+			</p>
 		</section>
 	</div>
 </div>

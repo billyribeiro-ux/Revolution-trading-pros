@@ -1,11 +1,3 @@
-<svelte:head>
-	<title>Tax Loss Harvest - Simpler Trading</title>
-	<meta property="og:locale" content="en_US" />
-	<meta property="og:type" content="article" />
-	<meta property="og:title" content="Tax Loss Harvest" />
-	<meta property="og:site_name" content="Simpler Trading" />
-</svelte:head>
-
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import ClassHeaderSection from '$lib/components/classes/ClassHeaderSection.svelte';
@@ -60,6 +52,14 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Tax Loss Harvest - Simpler Trading</title>
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Tax Loss Harvest" />
+	<meta property="og:site_name" content="Simpler Trading" />
+</svelte:head>
+
 <div class="class-page-wrapper">
 	<div class="class-page-container">
 		<ClassHeaderSection title="Tax Loss Harvest" />
@@ -68,24 +68,24 @@
 			<div class="section-inner">
 				<div class="class-content-block cpost-content-block">
 					{#each videos as video, index}
-					<div class="current-vid" class:first-video={index === 0}>
-						{#if index === 0}
-							<h2 class="class-player-header">{video.title}</h2>
-							<h3 class="current-title">{video.subtitle}</h3>
-						{/if}
-						<ClassVideoSection 
-							videoUrl={video.url}
-							videoTitle={video.title}
-							overlayTitle={index > 0 ? video.title : ''}
-							showOverlay={index > 0}
-						/>
-					</div>
+						<div class="current-vid" class:first-video={index === 0}>
+							{#if index === 0}
+								<h2 class="class-player-header">{video.title}</h2>
+								<h3 class="current-title">{video.subtitle}</h3>
+							{/if}
+							<ClassVideoSection
+								videoUrl={video.url}
+								videoTitle={video.title}
+								overlayTitle={index > 0 ? video.title : ''}
+								showOverlay={index > 0}
+							/>
+						</div>
 					{/each}
 				</div>
 			</div>
 		</section>
 
-		<ClassDownloadsSection 
+		<ClassDownloadsSection
 			boxUrl="https://simplertrading.app.box.com/embed/s/tew1quydbn8be4o9jcif8b2ops3bpipc"
 		/>
 	</div>

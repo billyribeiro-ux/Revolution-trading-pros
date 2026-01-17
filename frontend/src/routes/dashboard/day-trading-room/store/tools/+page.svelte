@@ -16,7 +16,10 @@
 
 <svelte:head>
 	<title>Trading Tools | Day Trading Room | Revolution Trading Pros</title>
-	<meta name="description" content="Discover professional trading tools and software to enhance your trading performance." />
+	<meta
+		name="description"
+		content="Discover professional trading tools and software to enhance your trading performance."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 

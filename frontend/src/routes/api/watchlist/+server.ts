@@ -71,9 +71,21 @@ const mockWatchlistItems: WatchlistItem[] = [
 			src: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
 		},
 		watchlistDates: [
-			{ date: '1/3/2026', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' },
-			{ date: '5/28/2025', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' },
-			{ date: '3/9/2025', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' }
+			{
+				date: '1/3/2026',
+				spreadsheetUrl:
+					'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
+			},
+			{
+				date: '5/28/2025',
+				spreadsheetUrl:
+					'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
+			},
+			{
+				date: '3/9/2025',
+				spreadsheetUrl:
+					'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
+			}
 		],
 		description: 'Week starting on January 3, 2026.',
 		status: 'published',
@@ -87,12 +99,14 @@ const mockWatchlistItems: WatchlistItem[] = [
 		title: 'Weekly Watchlist with David Starr',
 		subtitle: 'Week of December 29, 2025',
 		trader: 'David Starr',
-		traderImage: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
+		traderImage:
+			'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
 		datePosted: 'December 29, 2025',
 		weekOf: '2025-12-29',
 		video: {
 			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-DS-12292025.mp4',
-			poster: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
+			poster:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
 			title: 'Weekly Watchlist with David Starr'
 		},
 		spreadsheet: {
@@ -115,7 +129,8 @@ const mockWatchlistItems: WatchlistItem[] = [
 		weekOf: '2025-12-22',
 		video: {
 			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-TG-12222025.mp4',
-			poster: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
+			poster:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 			title: 'Weekly Watchlist with TG Watkins'
 		},
 		spreadsheet: {
@@ -138,7 +153,8 @@ const mockWatchlistItems: WatchlistItem[] = [
 		weekOf: '2025-12-15',
 		video: {
 			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-AO-12152025.mp4',
-			poster: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
+			poster:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
 			title: 'Weekly Watchlist with Allison Ostrander'
 		},
 		spreadsheet: {
@@ -161,7 +177,8 @@ const mockWatchlistItems: WatchlistItem[] = [
 		weekOf: '2025-12-08',
 		video: {
 			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-TH-12082025.mp4',
-			poster: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
+			poster:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
 			title: 'Weekly Watchlist with Taylor Horton'
 		},
 		spreadsheet: {
@@ -187,7 +204,7 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 			...options,
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				...options.headers
 			}
 		});
@@ -216,7 +233,9 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const headers: Record<string, string> = {};
 	if (authHeader) headers['Authorization'] = authHeader;
 
-	const backendData = await fetchFromBackend(`/api/watchlist?${url.searchParams.toString()}`, { headers });
+	const backendData = await fetchFromBackend(`/api/watchlist?${url.searchParams.toString()}`, {
+		headers
+	});
 
 	if (backendData?.success) {
 		return json(backendData);
@@ -227,21 +246,22 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
 	// Filter by status
 	if (status) {
-		items = items.filter(item => item.status === status);
+		items = items.filter((item) => item.status === status);
 	}
 
 	// Filter by room - only return items that include this room
 	if (room) {
-		items = items.filter(item => item.rooms.includes(room));
+		items = items.filter((item) => item.rooms.includes(room));
 	}
 
 	// Search filter
 	if (search) {
 		const searchLower = search.toLowerCase();
-		items = items.filter(item =>
-			item.title.toLowerCase().includes(searchLower) ||
-			item.trader.toLowerCase().includes(searchLower) ||
-			item.description.toLowerCase().includes(searchLower)
+		items = items.filter(
+			(item) =>
+				item.title.toLowerCase().includes(searchLower) ||
+				item.trader.toLowerCase().includes(searchLower) ||
+				item.description.toLowerCase().includes(searchLower)
 		);
 	}
 
@@ -255,17 +275,23 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
 	// Add previous/next links
 	const itemsWithNav = paginatedItems.map((item, index) => {
-		const globalIndex = items.findIndex(i => i.id === item.id);
+		const globalIndex = items.findIndex((i) => i.id === item.id);
 		return {
 			...item,
-			previous: globalIndex < items.length - 1 ? {
-				slug: items[globalIndex + 1].slug,
-				title: items[globalIndex + 1].title
-			} : null,
-			next: globalIndex > 0 ? {
-				slug: items[globalIndex - 1].slug,
-				title: items[globalIndex - 1].title
-			} : null
+			previous:
+				globalIndex < items.length - 1
+					? {
+							slug: items[globalIndex + 1].slug,
+							title: items[globalIndex + 1].title
+						}
+					: null,
+			next:
+				globalIndex > 0
+					? {
+							slug: items[globalIndex - 1].slug,
+							title: items[globalIndex - 1].title
+						}
+					: null
 		};
 	});
 
@@ -305,7 +331,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	// Try backend first
 	const backendData = await fetchFromBackend('/api/admin/watchlist', {
 		method: 'POST',
-		headers: { 'Authorization': authHeader },
+		headers: { Authorization: authHeader },
 		body: JSON.stringify({ ...body, rooms })
 	});
 
@@ -314,9 +340,13 @@ export const POST: RequestHandler = async ({ request }) => {
 	}
 
 	// Mock create - generate new item
-	const newId = Math.max(...mockWatchlistItems.map(i => i.id), 0) + 1;
+	const newId = Math.max(...mockWatchlistItems.map((i) => i.id), 0) + 1;
 	const weekOfDate = new Date(body.weekOf);
-	const dateStr = weekOfDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+	const dateStr = weekOfDate.toLocaleDateString('en-US', {
+		month: 'long',
+		day: 'numeric',
+		year: 'numeric'
+	});
 	const slugDate = body.weekOf.replace(/-/g, '').substring(4) + body.weekOf.substring(0, 4);
 	const traderSlug = body.trader.toLowerCase().replace(/\s+/g, '-');
 
@@ -331,7 +361,9 @@ export const POST: RequestHandler = async ({ request }) => {
 		weekOf: body.weekOf,
 		video: {
 			src: body.videoSrc || '',
-			poster: body.videoPoster || 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
+			poster:
+				body.videoPoster ||
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 			title: body.title
 		},
 		spreadsheet: {
@@ -345,9 +377,12 @@ export const POST: RequestHandler = async ({ request }) => {
 		updatedAt: new Date().toISOString()
 	};
 
-	return json({
-		success: true,
-		data: newItem,
-		_mock: true
-	}, { status: 201 });
+	return json(
+		{
+			success: true,
+			data: newItem,
+			_mock: true
+		},
+		{ status: 201 }
+	);
 };

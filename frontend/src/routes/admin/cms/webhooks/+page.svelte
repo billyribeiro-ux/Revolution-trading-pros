@@ -154,7 +154,7 @@
 
 	function toggleEvent(event: string) {
 		if (formData.events.includes(event)) {
-			formData.events = formData.events.filter(e => e !== event);
+			formData.events = formData.events.filter((e) => e !== event);
 		} else {
 			formData.events = [...formData.events, event];
 		}
@@ -239,7 +239,11 @@
 								<button class="action-btn" title="Edit" onclick={() => openEditModal(webhook)}>
 									<IconEdit size={16} />
 								</button>
-								<button class="action-btn delete" title="Delete" onclick={() => deleteWebhook(webhook.id)}>
+								<button
+									class="action-btn delete"
+									title="Delete"
+									onclick={() => deleteWebhook(webhook.id)}
+								>
 									<IconTrash size={16} />
 								</button>
 							</div>
@@ -288,10 +292,12 @@
 
 	<!-- Create/Edit Modal -->
 	{#if showCreateModal}
-		<div 
-			class="modal-overlay" 
+		<div
+			class="modal-overlay"
 			onclick={closeModal}
-			onkeydown={(e) => { if (e.key === 'Escape') closeModal(); }}
+			onkeydown={(e) => {
+				if (e.key === 'Escape') closeModal();
+			}}
 			role="button"
 			tabindex="-1"
 			aria-label="Close modal"
@@ -305,7 +311,13 @@
 				</button>
 			</div>
 
-			<form class="modal-body" onsubmit={(e) => { e.preventDefault(); editingWebhook ? updateWebhook() : createWebhook(); }}>
+			<form
+				class="modal-body"
+				onsubmit={(e) => {
+					e.preventDefault();
+					editingWebhook ? updateWebhook() : createWebhook();
+				}}
+			>
 				<div class="form-group">
 					<label for="name">Name</label>
 					<input
@@ -348,19 +360,19 @@
 					<fieldset>
 						<legend id="events-label">Events</legend>
 						<div class="events-grid" role="group" aria-labelledby="events-label">
-						{#each availableEvents as event}
-							<button
-								type="button"
-								class="event-toggle"
-								class:selected={formData.events.includes(event)}
-								onclick={() => toggleEvent(event)}
-							>
-								{#if formData.events.includes(event)}
-									<IconCheck size={14} />
-								{/if}
-								{event}
-							</button>
-						{/each}
+							{#each availableEvents as event}
+								<button
+									type="button"
+									class="event-toggle"
+									class:selected={formData.events.includes(event)}
+									onclick={() => toggleEvent(event)}
+								>
+									{#if formData.events.includes(event)}
+										<IconCheck size={14} />
+									{/if}
+									{event}
+								</button>
+							{/each}
 						</div>
 					</fieldset>
 				</div>
@@ -372,7 +384,7 @@
 						type="button"
 						class="toggle-switch"
 						class:active={formData.is_active}
-						onclick={() => formData.is_active = !formData.is_active}
+						onclick={() => (formData.is_active = !formData.is_active)}
 						aria-label="Toggle webhook active status"
 						aria-pressed={formData.is_active}
 					>
@@ -381,9 +393,7 @@
 				</div>
 
 				<div class="modal-actions">
-					<button type="button" class="btn-cancel" onclick={closeModal}>
-						Cancel
-					</button>
+					<button type="button" class="btn-cancel" onclick={closeModal}> Cancel </button>
 					<button type="submit" class="btn-submit">
 						{editingWebhook ? 'Save Changes' : 'Create Webhook'}
 					</button>
@@ -424,7 +434,7 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #E6B800;
+		color: #e6b800;
 		text-decoration: none;
 		margin-bottom: 1rem;
 	}
@@ -443,7 +453,7 @@
 		align-items: center;
 		justify-content: center;
 		background: linear-gradient(135deg, rgba(230, 184, 0, 0.12) 0%, rgba(230, 184, 0, 0.06) 100%);
-		color: #B38F00;
+		color: #b38f00;
 	}
 
 	.header-title h1 {
@@ -464,12 +474,12 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border: none;
 		border-radius: 12px;
 		font-size: 0.9rem;
 		font-weight: 600;
-		color: #0D1117;
+		color: #0d1117;
 		cursor: pointer;
 		transition: all 0.25s;
 	}
@@ -564,7 +574,7 @@
 
 	.action-btn:hover {
 		background: #f8fafc;
-		color: #E6B800;
+		color: #e6b800;
 		border-color: rgba(230, 184, 0, 0.3);
 	}
 
@@ -606,7 +616,7 @@
 		border-radius: 6px;
 		font-size: 0.7rem;
 		font-weight: 500;
-		color: #B38F00;
+		color: #b38f00;
 	}
 
 	.event-more {
@@ -663,13 +673,15 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #f1f5f9;
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.empty-icon {
@@ -680,7 +692,7 @@
 		align-items: center;
 		justify-content: center;
 		background: linear-gradient(135deg, rgba(230, 184, 0, 0.1) 0%, rgba(230, 184, 0, 0.05) 100%);
-		color: #FFD11A;
+		color: #ffd11a;
 		margin-bottom: 1rem;
 	}
 
@@ -702,12 +714,12 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border: none;
 		border-radius: 10px;
 		font-size: 0.85rem;
 		font-weight: 600;
-		color: #0D1117;
+		color: #0d1117;
 		cursor: pointer;
 	}
 
@@ -800,7 +812,7 @@
 
 	.form-group input:focus {
 		outline: none;
-		border-color: #E6B800;
+		border-color: #e6b800;
 		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.15);
 	}
 
@@ -837,7 +849,7 @@
 	.event-toggle.selected {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.toggle-group {
@@ -858,7 +870,7 @@
 	}
 
 	.toggle-switch.active {
-		background: #E6B800;
+		background: #e6b800;
 	}
 
 	.toggle-knob {
@@ -898,12 +910,12 @@
 	.btn-submit {
 		flex: 1;
 		padding: 0.875rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border: none;
 		border-radius: 12px;
 		font-size: 0.9rem;
 		font-weight: 600;
-		color: #0D1117;
+		color: #0d1117;
 		cursor: pointer;
 	}
 

@@ -28,12 +28,25 @@
 			weekOf: 'January 3, 2026',
 			poster: 'https://cdn.simplertrading.com/2025/03/09130833/Melissa-WeeklyWatchlist.jpg',
 			videoUrl: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-MB-01032026.mp4',
-			spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml',
+			spreadsheetUrl:
+				'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml',
 			isLatest: true,
 			watchlistDates: [
-				{ date: '1/3/2026', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' },
-				{ date: '5/28/2025', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' },
-				{ date: '3/9/2025', spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml' }
+				{
+					date: '1/3/2026',
+					spreadsheetUrl:
+						'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
+				},
+				{
+					date: '5/28/2025',
+					spreadsheetUrl:
+						'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
+				},
+				{
+					date: '3/9/2025',
+					spreadsheetUrl:
+						'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml'
+				}
 			]
 		},
 		{
@@ -41,9 +54,11 @@
 			title: 'Weekly Watchlist with David Starr',
 			trader: 'David Starr',
 			weekOf: 'December 29, 2025',
-			poster: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
+			poster:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
 			videoUrl: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-DS-12292025.mp4',
-			spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml',
+			spreadsheetUrl:
+				'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml',
 			isLatest: false
 		},
 		{
@@ -51,18 +66,20 @@
 			title: 'Weekly Watchlist with TG Watkins',
 			trader: 'TG Watkins',
 			weekOf: 'December 22, 2025',
-			poster: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
+			poster:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 			videoUrl: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-TG-12222025.mp4',
-			spreadsheetUrl: 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml',
+			spreadsheetUrl:
+				'https://docs.google.com/spreadsheets/d/e/2PACX-1vS0DkJXxG0rA7tUzJl2-au8DRWf486KZyPbbjeaVNp4fJ1ZyO0qPWLUkHia-TWEdDRCnPFPMJjFc-1V/pubhtml',
 			isLatest: false
 		}
 	];
 
 	// State
 	let activeTab = $state<'rundown' | 'watchlist'>('rundown');
-	let currentEntry = $state<typeof watchlistEntries[0] | null>(null);
-	let previousEntry = $state<typeof watchlistEntries[0] | null>(null);
-	let nextEntry = $state<typeof watchlistEntries[0] | null>(null);
+	let currentEntry = $state<(typeof watchlistEntries)[0] | null>(null);
+	let previousEntry = $state<(typeof watchlistEntries)[0] | null>(null);
+	let nextEntry = $state<(typeof watchlistEntries)[0] | null>(null);
 	let selectedDateIndex = $state(0);
 	let currentSpreadsheetUrl = $state('');
 
@@ -71,23 +88,20 @@
 
 	// Find current entry and adjacent entries for pagination
 	$effect(() => {
-		const currentIndex = watchlistEntries.findIndex(e => e.slug === slug);
-		
+		const currentIndex = watchlistEntries.findIndex((e) => e.slug === slug);
+
 		if (currentIndex !== -1) {
 			currentEntry = watchlistEntries[currentIndex];
-			
+
 			// CRITICAL: Reset date index when switching watchlist entries
 			selectedDateIndex = 0;
-			
+
 			// Previous = older entry (higher index in array since newest is first)
-			previousEntry = currentIndex < watchlistEntries.length - 1 
-				? watchlistEntries[currentIndex + 1] 
-				: null;
-			
+			previousEntry =
+				currentIndex < watchlistEntries.length - 1 ? watchlistEntries[currentIndex + 1] : null;
+
 			// Next = newer entry (lower index in array since newest is first)
-			nextEntry = currentIndex > 0 
-				? watchlistEntries[currentIndex - 1] 
-				: null;
+			nextEntry = currentIndex > 0 ? watchlistEntries[currentIndex - 1] : null;
 		}
 	});
 
@@ -110,13 +124,16 @@
 			console.warn('Invalid date index:', index);
 			return;
 		}
-		
+
 		selectedDateIndex = index;
 		currentSpreadsheetUrl = currentEntry.watchlistDates[index].spreadsheetUrl;
 	}
 
 	function nextDate() {
-		if (currentEntry?.watchlistDates && selectedDateIndex < currentEntry.watchlistDates.length - 1) {
+		if (
+			currentEntry?.watchlistDates &&
+			selectedDateIndex < currentEntry.watchlistDates.length - 1
+		) {
 			selectDate(selectedDateIndex + 1);
 		}
 	}
@@ -133,7 +150,7 @@
 			currentSpreadsheetUrl = '';
 			return;
 		}
-		
+
 		// Priority 1: Use watchlistDates array if available
 		if (currentEntry.watchlistDates && currentEntry.watchlistDates.length > 0) {
 			// Ensure selectedDateIndex is valid
@@ -142,7 +159,7 @@
 				selectedDateIndex = validIndex;
 			}
 			currentSpreadsheetUrl = currentEntry.watchlistDates[validIndex].spreadsheetUrl;
-		} 
+		}
 		// Priority 2: Fallback to single spreadsheetUrl
 		else if (currentEntry.spreadsheetUrl) {
 			currentSpreadsheetUrl = currentEntry.spreadsheetUrl;
@@ -167,11 +184,11 @@
 				<li class="item-home">
 					<a class="breadcrumb-link" href="/">Home</a>
 				</li>
-				<li class="separator"> / </li>
+				<li class="separator">/</li>
 				<li class="item-cat">
 					<a class="breadcrumb-link" href="/dashboard/weekly-watchlist">Weekly Watchlist</a>
 				</li>
-				<li class="separator"> / </li>
+				<li class="separator">/</li>
 				<li class="item-current">
 					<strong class="breadcrumb-current">{currentEntry?.title || 'Loading...'}</strong>
 				</li>
@@ -185,7 +202,7 @@
 			<!-- Previous Button -->
 			<div id="w-previous" class="cpost-previous">
 				{#if previousEntry}
-					<a href="/watchlist/{previousEntry.slug}" title="{previousEntry.title}">
+					<a href="/watchlist/{previousEntry.slug}" title={previousEntry.title}>
 						<i class="fa fa-chevron-circle-left"></i><span> Previous</span>
 					</a>
 				{/if}
@@ -197,7 +214,7 @@
 			<!-- Next Button -->
 			<div id="ww-next" class="cpost-next">
 				{#if nextEntry}
-					<a href="/watchlist/{nextEntry.slug}" title="{nextEntry.title}">
+					<a href="/watchlist/{nextEntry.slug}" title={nextEntry.title}>
 						<span>Next </span><i class="fa fa-chevron-circle-right"></i>
 					</a>
 				{/if}
@@ -214,19 +231,19 @@
 			<!-- Tabs - WordPress Match -->
 			<div class="tr_tabs ww-single">
 				<div class="tab">
-					<button 
+					<button
 						id="tab-link-1"
 						data-tab="tab-1"
-						class="tablinks" 
+						class="tablinks"
 						class:active={activeTab === 'rundown'}
 						onclick={() => setTab('rundown')}
 					>
 						Rundown
 					</button>
-					<button 
+					<button
 						id="tab-link-2"
 						data-tab="tab-2"
-						class="tablinks" 
+						class="tablinks"
 						class:active={activeTab === 'watchlist'}
 						onclick={() => setTab('watchlist')}
 					>
@@ -241,14 +258,14 @@
 							<div class="current-vid">
 								<h3 class="current-title">{currentEntry.title}</h3>
 								<div class="video-container">
-									<video 
-										controls 
-										width="100%" 
+									<video
+										controls
+										width="100%"
 										poster={currentEntry.poster}
 										style="aspect-ratio: 16/9;"
 										title={currentEntry.title}
 									>
-										<source src={currentEntry.videoUrl} type="video/mp4">
+										<source src={currentEntry.videoUrl} type="video/mp4" />
 										Your browser does not support the video tag.
 									</video>
 								</div>
@@ -262,9 +279,9 @@
 				<div id="tab-2" class="tabcontent" class:active={activeTab === 'watchlist'}>
 					{#if currentSpreadsheetUrl}
 						<div id="ww-spreadsheet" class="ww-spreadsheet">
-							<iframe 
-								src={currentSpreadsheetUrl} 
-								width="100%" 
+							<iframe
+								src={currentSpreadsheetUrl}
+								width="100%"
 								height="700"
 								title="Weekly Watchlist Spreadsheet"
 							></iframe>
@@ -277,7 +294,7 @@
 									<tbody>
 										<tr>
 											{#each currentEntry.watchlistDates as dateOption, index}
-												<td 
+												<td
 													class:switcherItemActive={selectedDateIndex === index}
 													class:switcherItem={selectedDateIndex !== index}
 													onclick={() => selectDate(index)}
@@ -288,18 +305,18 @@
 										</tr>
 									</tbody>
 								</table>
-								
+
 								<div class="switcherArrows">
-									<button 
-										class="switcherArrow" 
-										disabled={selectedDateIndex >= (currentEntry.watchlistDates.length - 1)}
+									<button
+										class="switcherArrow"
+										disabled={selectedDateIndex >= currentEntry.watchlistDates.length - 1}
 										onclick={nextDate}
 										aria-label="Next date"
 									>
 										<b>&gt;</b>
 									</button>
-									<button 
-										class="switcherArrow" 
+									<button
+										class="switcherArrow"
 										disabled={selectedDateIndex <= 0}
 										onclick={previousDate}
 										aria-label="Previous date"
@@ -375,7 +392,7 @@
 
 	/* Header Section - WordPress Match */
 	.cpost-section.cpost-title-section {
-		background: #143E59;
+		background: #143e59;
 		padding: 40px 20px;
 		text-align: center;
 	}
@@ -478,8 +495,8 @@
 
 	.tablinks.active {
 		background: #fff;
-		color: #143E59;
-		border-bottom-color: #143E59;
+		color: #143e59;
+		border-bottom-color: #143e59;
 	}
 
 	.tabcontent {
@@ -580,9 +597,9 @@
 	}
 
 	.switcherItemActive {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border: 1px solid #143E59;
+		border: 1px solid #143e59;
 	}
 
 	.switcherArrows {
@@ -596,7 +613,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 		border: none;
 		border-radius: 5px;

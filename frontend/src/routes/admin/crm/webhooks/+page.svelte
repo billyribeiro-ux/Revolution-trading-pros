@@ -46,7 +46,9 @@
 	let togglingWebhook = $state<string | null>(null);
 
 	// Toast notifications state
-	let toasts = $state<Array<{ id: string; type: 'success' | 'error' | 'info'; message: string }>>([]);
+	let toasts = $state<Array<{ id: string; type: 'success' | 'error' | 'info'; message: string }>>(
+		[]
+	);
 
 	// =====================================================
 	// DERIVED STATE
@@ -96,7 +98,12 @@
 	}
 
 	async function deleteWebhook(id: string, name: string) {
-		if (!confirm(`Are you sure you want to delete the webhook "${name}"? This action cannot be undone.`)) return;
+		if (
+			!confirm(
+				`Are you sure you want to delete the webhook "${name}"? This action cannot be undone.`
+			)
+		)
+			return;
 
 		try {
 			await crmAPI.deleteWebhook(id);
@@ -257,7 +264,7 @@
 				aria-label="Search webhooks"
 			/>
 			{#if searchQuery}
-				<button class="search-clear" onclick={() => searchQuery = ''} aria-label="Clear search">
+				<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
 					<IconX size={16} />
 				</button>
 			{/if}
@@ -266,14 +273,14 @@
 			<button
 				class="filter-btn"
 				class:active={statusFilter === 'all'}
-				onclick={() => statusFilter = 'all'}
+				onclick={() => (statusFilter = 'all')}
 			>
 				All ({stats.total})
 			</button>
 			<button
 				class="filter-btn"
 				class:active={statusFilter === 'active'}
-				onclick={() => statusFilter = 'active'}
+				onclick={() => (statusFilter = 'active')}
 			>
 				<IconCheck size={14} />
 				Active ({stats.active})
@@ -281,7 +288,7 @@
 			<button
 				class="filter-btn"
 				class:active={statusFilter === 'inactive'}
-				onclick={() => statusFilter = 'inactive'}
+				onclick={() => (statusFilter = 'inactive')}
 			>
 				<IconX size={14} />
 				Inactive ({stats.total - stats.active})
@@ -320,7 +327,9 @@
 							class:active={webhook.is_active}
 							onclick={() => toggleWebhookStatus(webhook)}
 							disabled={togglingWebhook === webhook.id}
-							aria-label={webhook.is_active ? `Deactivate ${webhook.name}` : `Activate ${webhook.name}`}
+							aria-label={webhook.is_active
+								? `Deactivate ${webhook.name}`
+								: `Activate ${webhook.name}`}
 							title={webhook.is_active ? 'Click to deactivate' : 'Click to activate'}
 						>
 							{#if togglingWebhook === webhook.id}
@@ -359,7 +368,9 @@
 						</div>
 						{#if webhook.last_triggered_at}
 							<div class="stat-item">
-								<span class="stat-text">Last triggered: {formatDate(webhook.last_triggered_at)}</span>
+								<span class="stat-text"
+									>Last triggered: {formatDate(webhook.last_triggered_at)}</span
+								>
 							</div>
 						{/if}
 					</div>
@@ -483,7 +494,7 @@
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -491,8 +502,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -500,8 +515,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -523,11 +538,15 @@
 	}
 
 	@media (max-width: 1024px) {
-		.stats-grid { grid-template-columns: repeat(2, 1fr); }
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.stat-card {
@@ -549,10 +568,22 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.gold { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
-	.stat-icon.red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.gold {
+		background: rgba(230, 184, 0, 0.15);
+		color: #e6b800;
+	}
+	.stat-icon.red {
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
 
 	.stat-content {
 		display: flex;
@@ -769,7 +800,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border-radius: 4px;
 		font-size: 0.7rem;
-		color: #E6B800;
+		color: #e6b800;
 		text-transform: capitalize;
 	}
 
@@ -829,7 +860,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-icon:disabled {
@@ -843,7 +874,9 @@
 		border-color: rgba(239, 68, 68, 0.3);
 	}
 
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -871,7 +904,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

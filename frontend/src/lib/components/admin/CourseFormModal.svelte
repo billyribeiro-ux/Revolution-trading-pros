@@ -30,14 +30,7 @@
 		onClose: () => void;
 	}
 
-	let {
-		isOpen,
-		mode: modeProp,
-		course = null,
-		onSave,
-		onSaved,
-		onClose
-	}: Props = $props();
+	let { isOpen, mode: modeProp, course = null, onSave, onSaved, onClose }: Props = $props();
 
 	// Derive mode from props
 	let mode = $derived(modeProp ?? (course ? 'edit' : 'create'));
@@ -93,7 +86,7 @@
 			description = course.description || '';
 			cardDescription = course.card_description || '';
 			priceCents = course.price_cents || 0;
-			isFree = course.is_free ?? (course.price_cents === 0);
+			isFree = course.is_free ?? course.price_cents === 0;
 			level = course.level || '';
 			instructorName = course.instructor_name || '';
 			instructorTitle = course.instructor_title || '';
@@ -201,18 +194,28 @@
 
 				if (title.trim() !== course.title) data.title = title.trim();
 				if (slug.trim() !== course.slug) data.slug = slug.trim();
-				if (description.trim() !== (course.description || '')) data.description = description.trim() || undefined;
-				if (cardDescription.trim() !== (course.card_description || '')) data.card_description = cardDescription.trim() || undefined;
-				if ((isFree ? 0 : priceCents) !== course.price_cents) data.price_cents = isFree ? 0 : priceCents;
+				if (description.trim() !== (course.description || ''))
+					data.description = description.trim() || undefined;
+				if (cardDescription.trim() !== (course.card_description || ''))
+					data.card_description = cardDescription.trim() || undefined;
+				if ((isFree ? 0 : priceCents) !== course.price_cents)
+					data.price_cents = isFree ? 0 : priceCents;
 				if (isFree !== (course.is_free ?? false)) data.is_free = isFree;
 				if (level !== (course.level || '')) data.level = level || undefined;
-				if (instructorName.trim() !== (course.instructor_name || '')) data.instructor_name = instructorName.trim() || undefined;
-				if (instructorTitle.trim() !== (course.instructor_title || '')) data.instructor_title = instructorTitle.trim() || undefined;
-				if (instructorBio.trim() !== (course.instructor_bio || '')) data.instructor_bio = instructorBio.trim() || undefined;
-				if (cardBadge.trim() !== (course.card_badge || '')) data.card_badge = cardBadge.trim() || undefined;
-				if (cardBadgeColor !== (course.card_badge_color || '#6366f1')) data.card_badge_color = cardBadgeColor;
-				if (metaTitle.trim() !== (course.meta_title || '')) data.meta_title = metaTitle.trim() || undefined;
-				if (metaDescription.trim() !== (course.meta_description || '')) data.meta_description = metaDescription.trim() || undefined;
+				if (instructorName.trim() !== (course.instructor_name || ''))
+					data.instructor_name = instructorName.trim() || undefined;
+				if (instructorTitle.trim() !== (course.instructor_title || ''))
+					data.instructor_title = instructorTitle.trim() || undefined;
+				if (instructorBio.trim() !== (course.instructor_bio || ''))
+					data.instructor_bio = instructorBio.trim() || undefined;
+				if (cardBadge.trim() !== (course.card_badge || ''))
+					data.card_badge = cardBadge.trim() || undefined;
+				if (cardBadgeColor !== (course.card_badge_color || '#6366f1'))
+					data.card_badge_color = cardBadgeColor;
+				if (metaTitle.trim() !== (course.meta_title || ''))
+					data.meta_title = metaTitle.trim() || undefined;
+				if (metaDescription.trim() !== (course.meta_description || ''))
+					data.meta_description = metaDescription.trim() || undefined;
 
 				const result = await adminCoursesApi.update(course.id, data);
 				handleSaved(result);
@@ -271,7 +274,13 @@
 				<h2 id="modal-title" class="modal-title">
 					{mode === 'create' ? 'Create Course' : 'Edit Course'}
 				</h2>
-				<button type="button" class="btn-close" onclick={onClose} disabled={isLoading} aria-label="Close">
+				<button
+					type="button"
+					class="btn-close"
+					onclick={onClose}
+					disabled={isLoading}
+					aria-label="Close"
+				>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -282,7 +291,7 @@
 					type="button"
 					class="section-tab"
 					class:active={activeSection === 'basic'}
-					onclick={() => activeSection = 'basic'}
+					onclick={() => (activeSection = 'basic')}
 				>
 					<IconBook size={16} />
 					Basic
@@ -291,7 +300,7 @@
 					type="button"
 					class="section-tab"
 					class:active={activeSection === 'pricing'}
-					onclick={() => activeSection = 'pricing'}
+					onclick={() => (activeSection = 'pricing')}
 				>
 					<IconCurrencyDollar size={16} />
 					Pricing
@@ -300,7 +309,7 @@
 					type="button"
 					class="section-tab"
 					class:active={activeSection === 'instructor'}
-					onclick={() => activeSection = 'instructor'}
+					onclick={() => (activeSection = 'instructor')}
 				>
 					<IconUser size={16} />
 					Instructor
@@ -309,7 +318,7 @@
 					type="button"
 					class="section-tab"
 					class:active={activeSection === 'seo'}
-					onclick={() => activeSection = 'seo'}
+					onclick={() => (activeSection = 'seo')}
 				>
 					<IconTag size={16} />
 					SEO
@@ -317,7 +326,13 @@
 			</nav>
 
 			<!-- Form -->
-			<form class="modal-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+			<form
+				class="modal-form"
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSubmit();
+				}}
+			>
 				{#if error}
 					<div class="error-banner">{error}</div>
 				{/if}
@@ -325,7 +340,9 @@
 				{#if activeSection === 'basic'}
 					<div class="form-section">
 						<div class="form-group">
-							<label for="title" class="form-label">Course Title <span class="required">*</span></label>
+							<label for="title" class="form-label"
+								>Course Title <span class="required">*</span></label
+							>
 							<input
 								id="title"
 								type="text"
@@ -379,28 +396,18 @@
 
 						<div class="form-group">
 							<label for="level" class="form-label">Difficulty Level</label>
-							<select
-								id="level"
-								class="form-select"
-								bind:value={level}
-								disabled={isLoading}
-							>
+							<select id="level" class="form-select" bind:value={level} disabled={isLoading}>
 								{#each levels as lvl}
 									<option value={lvl.value}>{lvl.label}</option>
 								{/each}
 							</select>
 						</div>
 					</div>
-
 				{:else if activeSection === 'pricing'}
 					<div class="form-section">
 						<div class="form-group">
 							<label class="toggle-label">
-								<input
-									type="checkbox"
-									bind:checked={isFree}
-									disabled={isLoading}
-								/>
+								<input type="checkbox" bind:checked={isFree} disabled={isLoading} />
 								<span class="toggle-text">
 									<strong>Free Course</strong>
 									<span>Make this course available at no cost</span>
@@ -410,7 +417,9 @@
 
 						{#if !isFree}
 							<div class="form-group">
-								<label for="price" class="form-label">Price (USD) <span class="required">*</span></label>
+								<label for="price" class="form-label"
+									>Price (USD) <span class="required">*</span></label
+								>
 								<div class="price-input-wrapper">
 									<span class="price-symbol">$</span>
 									<input
@@ -451,7 +460,7 @@
 											class="color-option"
 											class:selected={cardBadgeColor === color.value}
 											style="--color: {color.value}"
-											onclick={() => cardBadgeColor = color.value}
+											onclick={() => (cardBadgeColor = color.value)}
 											disabled={isLoading}
 											title={color.label}
 										></button>
@@ -465,7 +474,6 @@
 							</div>
 						{/if}
 					</div>
-
 				{:else if activeSection === 'instructor'}
 					<div class="form-section">
 						<div class="form-group">
@@ -504,7 +512,6 @@
 							></textarea>
 						</div>
 					</div>
-
 				{:else if activeSection === 'seo'}
 					<div class="form-section">
 						<div class="form-group">
@@ -569,8 +576,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.modal-container {
@@ -726,7 +737,9 @@
 		color: var(--admin-text-primary);
 		font-family: var(--font-body), 'Roboto', sans-serif;
 		font-size: 0.9375rem;
-		transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	.form-textarea {
@@ -952,6 +965,8 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

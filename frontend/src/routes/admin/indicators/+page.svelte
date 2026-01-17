@@ -62,7 +62,7 @@
 			// ICT 11+ FIX: Use adminFetch for absolute URL on Pages.dev
 			const data = await adminFetch(`/api/admin/indicators/${id}`, { method: 'DELETE' });
 			if (data.success) {
-				indicators = indicators.filter(i => i.id !== id);
+				indicators = indicators.filter((i) => i.id !== id);
 				total--;
 			}
 		} catch (e) {
@@ -100,156 +100,254 @@
 
 <div class="page">
 	<div class="admin-page-container">
-	<header class="page-header">
-		<h1>Indicators</h1>
-		<p class="subtitle">{total} total indicators</p>
-		<div class="actions-row">
-			<a href="/admin/indicators/create" class="btn-primary">
-				<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<line x1="12" x2="12" y1="5" y2="19"/><line x1="5" x2="19" y1="12" y2="12"/>
-				</svg>
-				New Indicator
-			</a>
-		</div>
-	</header>
+		<header class="page-header">
+			<h1>Indicators</h1>
+			<p class="subtitle">{total} total indicators</p>
+			<div class="actions-row">
+				<a href="/admin/indicators/create" class="btn-primary">
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="20"
+						height="20"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<line x1="12" x2="12" y1="5" y2="19" /><line x1="5" x2="19" y1="12" y2="12" />
+					</svg>
+					New Indicator
+				</a>
+			</div>
+		</header>
 
-	<div class="filters">
-		<div class="search-box">
-			<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>
-			</svg>
-			<input
-				type="text"
-				placeholder="Search indicators..."
-				bind:value={search}
-				onkeyup={(e) => e.key === 'Enter' && fetchIndicators()}
-			/>
-		</div>
+		<div class="filters">
+			<div class="search-box">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="20"
+					height="20"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
+				</svg>
+				<input
+					type="text"
+					placeholder="Search indicators..."
+					bind:value={search}
+					onkeyup={(e) => e.key === 'Enter' && fetchIndicators()}
+				/>
+			</div>
 			<!-- ICT 7 FIX: Backend uses is_active boolean, not status string -->
 			<select bind:value={statusFilter} onchange={fetchIndicators}>
-			<option value="">All Status</option>
-			<option value="true">Active</option>
-			<option value="false">Inactive</option>
-		</select>
-		<button class="btn-secondary" onclick={fetchIndicators}>
-			<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-				<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/><path d="M3 3v5h5"/><path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/><path d="M16 16h5v5"/>
-			</svg>
-			Refresh
-		</button>
-	</div>
-
-	{#if loading}
-		<div class="loading">
-			<div class="spinner"></div>
-			<p>Loading indicators...</p>
-		</div>
-	{:else if indicators.length === 0}
-		<div class="empty-state">
-			<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1">
-				<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
-			</svg>
-			<h3>No indicators yet</h3>
-			<p>Create your first trading indicator to get started.</p>
-			<a href="/admin/indicators/create" class="btn-primary">Create Indicator</a>
-		</div>
-	{:else}
-		<div class="table-container">
-			<table>
-				<thead>
-					<tr>
-						<th>Indicator</th>
-						<th>Price</th>
-						<th>Status</th>
-						<th>Platform</th>
-						<th>Created</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each indicators as indicator}
-						<tr>
-							<td class="indicator-cell">
-								{#if indicator.thumbnail}
-									<img src={indicator.thumbnail} alt="" class="logo" />
-								{:else}
-									<div class="logo-placeholder">
-										<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-											<path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/>
-										</svg>
-									</div>
-								{/if}
-								<div class="indicator-info">
-									<a href="/admin/indicators/{indicator.id}" class="name">{indicator.name}</a>
-									{#if indicator.description}
-										<span class="tagline">{indicator.description.slice(0, 60)}{indicator.description.length > 60 ? '...' : ''}</span>
-									{/if}
-								</div>
-							</td>
-							<td class="price">{formatPrice(indicator.price)}</td>
-							<td>
-								<span class="status" class:status--published={indicator.is_active} class:status--draft={!indicator.is_active}>
-									{indicator.is_active ? 'Active' : 'Inactive'}
-								</span>
-							</td>
-							<td class="platform">{indicator.platform || '-'}</td>
-							<td class="date">{formatDate(indicator.created_at)}</td>
-							<td class="actions">
-								<a href="/admin/indicators/{indicator.id}" class="btn-icon" title="Edit" aria-label="Edit {indicator.name}">
-									<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-										<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/>
-									</svg>
-								</a>
-								<a href="/indicators/{indicator.slug}" target="_blank" class="btn-icon" title="View" aria-label="View {indicator.name}">
-									<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-										<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/>
-									</svg>
-								</a>
-								<button
-									class="btn-icon btn-danger"
-									onclick={() => deleteIndicator(indicator.id, indicator.name)}
-									disabled={deleting === indicator.id.toString()}
-									title="Delete"
-									aria-label="Delete {indicator.name}"
-								>
-									{#if deleting === indicator.id.toString()}
-										<div class="spinner-small"></div>
-									{:else}
-										<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-											<path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/>
-										</svg>
-									{/if}
-								</button>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
+				<option value="">All Status</option>
+				<option value="true">Active</option>
+				<option value="false">Inactive</option>
+			</select>
+			<button class="btn-secondary" onclick={fetchIndicators}>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" /><path d="M3 3v5h5" /><path
+						d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"
+					/><path d="M16 16h5v5" />
+				</svg>
+				Refresh
+			</button>
 		</div>
 
-		{#if total > perPage}
-			<div class="pagination">
-				<button
-					class="btn-page"
-					disabled={page === 1}
-					onclick={() => { page--; fetchIndicators(); }}
-					aria-label="Previous page"
-				>
-					← Previous
-				</button>
-				<span class="page-info">Page {page} of {Math.ceil(total / perPage)}</span>
-				<button
-					class="btn-page"
-					disabled={page >= Math.ceil(total / perPage)}
-					onclick={() => { page++; fetchIndicators(); }}
-					aria-label="Next page"
-				>
-					Next →
-				</button>
+		{#if loading}
+			<div class="loading">
+				<div class="spinner"></div>
+				<p>Loading indicators...</p>
 			</div>
+		{:else if indicators.length === 0}
+			<div class="empty-state">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="64"
+					height="64"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1"
+				>
+					<path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
+				</svg>
+				<h3>No indicators yet</h3>
+				<p>Create your first trading indicator to get started.</p>
+				<a href="/admin/indicators/create" class="btn-primary">Create Indicator</a>
+			</div>
+		{:else}
+			<div class="table-container">
+				<table>
+					<thead>
+						<tr>
+							<th>Indicator</th>
+							<th>Price</th>
+							<th>Status</th>
+							<th>Platform</th>
+							<th>Created</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each indicators as indicator}
+							<tr>
+								<td class="indicator-cell">
+									{#if indicator.thumbnail}
+										<img src={indicator.thumbnail} alt="" class="logo" />
+									{:else}
+										<div class="logo-placeholder">
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="24"
+												height="24"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2"
+											>
+												<path d="M3 3v18h18" /><path d="m19 9-5 5-4-4-3 3" />
+											</svg>
+										</div>
+									{/if}
+									<div class="indicator-info">
+										<a href="/admin/indicators/{indicator.id}" class="name">{indicator.name}</a>
+										{#if indicator.description}
+											<span class="tagline"
+												>{indicator.description.slice(0, 60)}{indicator.description.length > 60
+													? '...'
+													: ''}</span
+											>
+										{/if}
+									</div>
+								</td>
+								<td class="price">{formatPrice(indicator.price)}</td>
+								<td>
+									<span
+										class="status"
+										class:status--published={indicator.is_active}
+										class:status--draft={!indicator.is_active}
+									>
+										{indicator.is_active ? 'Active' : 'Inactive'}
+									</span>
+								</td>
+								<td class="platform">{indicator.platform || '-'}</td>
+								<td class="date">{formatDate(indicator.created_at)}</td>
+								<td class="actions">
+									<a
+										href="/admin/indicators/{indicator.id}"
+										class="btn-icon"
+										title="Edit"
+										aria-label="Edit {indicator.name}"
+									>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="18"
+											height="18"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+										>
+											<path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z" />
+										</svg>
+									</a>
+									<a
+										href="/indicators/{indicator.slug}"
+										target="_blank"
+										class="btn-icon"
+										title="View"
+										aria-label="View {indicator.name}"
+									>
+										<svg
+											xmlns="http://www.w3.org/2000/svg"
+											width="18"
+											height="18"
+											viewBox="0 0 24 24"
+											fill="none"
+											stroke="currentColor"
+											stroke-width="2"
+										>
+											<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z" /><circle
+												cx="12"
+												cy="12"
+												r="3"
+											/>
+										</svg>
+									</a>
+									<button
+										class="btn-icon btn-danger"
+										onclick={() => deleteIndicator(indicator.id, indicator.name)}
+										disabled={deleting === indicator.id.toString()}
+										title="Delete"
+										aria-label="Delete {indicator.name}"
+									>
+										{#if deleting === indicator.id.toString()}
+											<div class="spinner-small"></div>
+										{:else}
+											<svg
+												xmlns="http://www.w3.org/2000/svg"
+												width="18"
+												height="18"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2"
+											>
+												<path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" /><path
+													d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"
+												/>
+											</svg>
+										{/if}
+									</button>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+
+			{#if total > perPage}
+				<div class="pagination">
+					<button
+						class="btn-page"
+						disabled={page === 1}
+						onclick={() => {
+							page--;
+							fetchIndicators();
+						}}
+						aria-label="Previous page"
+					>
+						← Previous
+					</button>
+					<span class="page-info">Page {page} of {Math.ceil(total / perPage)}</span>
+					<button
+						class="btn-page"
+						disabled={page >= Math.ceil(total / perPage)}
+						onclick={() => {
+							page++;
+							fetchIndicators();
+						}}
+						aria-label="Next page"
+					>
+						Next →
+					</button>
+				</div>
+			{/if}
 		{/if}
-	{/if}
-	</div><!-- End admin-page-container -->
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -383,7 +481,8 @@
 	}
 
 	/* Loading and Empty State */
-	.loading, .empty-state {
+	.loading,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -430,7 +529,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Table - Dark styling */

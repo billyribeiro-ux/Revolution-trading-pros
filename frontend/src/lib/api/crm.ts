@@ -347,9 +347,7 @@ export class CrmAPI {
 		return apiClient.get('/admin/crm/automations', { params: filters });
 	}
 
-	async getAutomationFunnel(
-		id: string
-	): Promise<{
+	async getAutomationFunnel(id: string): Promise<{
 		funnel: AutomationFunnel;
 		stats: FunnelStats;
 		trigger_types: Record<string, string>;
@@ -549,9 +547,7 @@ export class CrmAPI {
 		return apiClient.get('/admin/crm/companies', { params: filters });
 	}
 
-	async getCompany(
-		id: string
-	): Promise<{
+	async getCompany(id: string): Promise<{
 		company: CrmCompany;
 		stats: CompanyStats;
 		industries: Record<string, string>;

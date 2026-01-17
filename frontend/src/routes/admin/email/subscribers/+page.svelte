@@ -45,7 +45,6 @@
 		bounced: 0
 	});
 
-
 	onMount(async () => {
 		await loadSubscribers();
 		await loadStats();
@@ -161,7 +160,9 @@
 
 	async function handleExport() {
 		try {
-			const response = await adminFetch<Response>('/api/admin/email/subscribers/export', { rawResponse: true });
+			const response = await adminFetch<Response>('/api/admin/email/subscribers/export', {
+				rawResponse: true
+			});
 			const blob = await response.blob();
 			const url = window.URL.createObjectURL(blob);
 			const a = document.createElement('a');
@@ -390,7 +391,8 @@
 									</div>
 									<div>
 										<div class="subscriber-name">
-											{subscriber.first_name || ''} {subscriber.last_name || ''}
+											{subscriber.first_name || ''}
+											{subscriber.last_name || ''}
 										</div>
 										<div class="subscriber-email">{subscriber.email || ''}</div>
 									</div>
@@ -488,7 +490,9 @@
 		tabindex="0"
 		aria-label="Close modal"
 		onclick={() => (showAddModal = false)}
-		onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showAddModal = false; }}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showAddModal = false;
+		}}
 	>
 		<div
 			class="modal-content"
@@ -575,7 +579,7 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
@@ -757,7 +761,7 @@
 	.subscriber-avatar {
 		width: 36px;
 		height: 36px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -794,7 +798,7 @@
 	.tag {
 		padding: 0.125rem 0.5rem;
 		background: rgba(230, 184, 0, 0.15);
-		color: #FFD11A;
+		color: #ffd11a;
 		border-radius: 4px;
 		font-size: 0.6875rem;
 	}
@@ -825,7 +829,7 @@
 		top: 0;
 		height: 100%;
 		width: var(--width, 0%);
-		background: linear-gradient(90deg, #E6B800, #B38F00);
+		background: linear-gradient(90deg, #e6b800, #b38f00);
 		border-radius: 3px;
 	}
 
@@ -879,7 +883,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(148, 163, 184, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -907,8 +911,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 	}
 
 	.btn-secondary {

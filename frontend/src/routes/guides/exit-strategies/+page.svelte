@@ -6,9 +6,9 @@
 	<title>Exit Strategies Guide | Explosive Swings</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Explosive Swings" 
-	startHereUrl="/dashboard/explosive-swings/start-here" 
+<TradingRoomHeader
+	roomName="Explosive Swings"
+	startHereUrl="/dashboard/explosive-swings/start-here"
 />
 
 <div class="guide-page">
@@ -21,12 +21,14 @@
 		<section class="guide-section">
 			<h2>The Scaling Out Method</h2>
 			<p>The most effective exit strategy for swing trades is scaling out at multiple targets.</p>
-			
+
 			<div class="strategy-box">
 				<h3>Standard Scaling Plan:</h3>
 				<ul>
 					<li><strong>33% at Target 1:</strong> Lock in quick profit, move stop to breakeven</li>
-					<li><strong>33% at Target 2:</strong> Secure more profit, trail stop below recent swing low</li>
+					<li>
+						<strong>33% at Target 2:</strong> Secure more profit, trail stop below recent swing low
+					</li>
 					<li><strong>34% at Target 3 or Runner:</strong> Let winners run or take final profit</li>
 				</ul>
 			</div>
@@ -43,7 +45,7 @@
 		<section class="guide-section">
 			<h2>Trailing Stop Strategy</h2>
 			<p>After hitting T1, use trailing stops to protect profits while allowing for upside.</p>
-			
+
 			<div class="strategy-box">
 				<h3>Trailing Stop Methods:</h3>
 				<ul>
@@ -58,7 +60,7 @@
 		<section class="guide-section">
 			<h2>Time-Based Exits</h2>
 			<p>Sometimes the best exit is based on time, not price.</p>
-			
+
 			<div class="warning-box">
 				<h3>Exit If:</h3>
 				<ul>
@@ -73,7 +75,7 @@
 		<section class="guide-section">
 			<h2>Breakeven Stop Management</h2>
 			<p>Once T1 is hit, immediately move your stop to breakeven (or slightly above entry).</p>
-			
+
 			<div class="strategy-box">
 				<h3>Benefits:</h3>
 				<ul>
@@ -88,7 +90,7 @@
 		<section class="guide-section">
 			<h2>Runner Strategy</h2>
 			<p>For exceptional setups, let a small portion run for outsized gains.</p>
-			
+
 			<div class="example-box">
 				<h4>Runner Rules:</h4>
 				<p>• Only use 10-20% of position for runner</p>
@@ -158,7 +160,7 @@
 		background: #fff;
 		border-radius: 16px;
 		padding: 40px;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 	}
 
 	.guide-section {
@@ -172,7 +174,7 @@
 	.guide-section h2 {
 		font-size: 28px;
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 		margin: 0 0 20px 0;
 		font-family: 'Montserrat', sans-serif;
 	}
@@ -186,7 +188,7 @@
 
 	.strategy-box {
 		background: #f8fafc;
-		border-left: 4px solid #143E59;
+		border-left: 4px solid #143e59;
 		padding: 25px;
 		border-radius: 8px;
 		margin: 20px 0;
@@ -212,7 +214,7 @@
 	}
 
 	.strategy-box li strong {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.example-box {

@@ -205,11 +205,11 @@ export const GET: RequestHandler = async ({ url }) => {
 	let filteredCategories = [...mockCategories];
 
 	if (featured === 'true') {
-		filteredCategories = filteredCategories.filter(c => c.is_featured);
+		filteredCategories = filteredCategories.filter((c) => c.is_featured);
 	}
 
 	if (parent_id) {
-		filteredCategories = filteredCategories.filter(c =>
+		filteredCategories = filteredCategories.filter((c) =>
 			parent_id === 'null' ? c.parent_id === null : c.parent_id?.toString() === parent_id
 		);
 	}

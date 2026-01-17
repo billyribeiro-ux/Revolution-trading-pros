@@ -180,7 +180,7 @@
 							label="Internal Name *"
 							bind:value={formData['name']}
 							placeholder="e.g., Exit Intent - Newsletter"
-							{...(errors['name'] && { error: errors['name'] })}
+							{...errors['name'] && { error: errors['name'] }}
 						/>
 						<p class="text-xs text-gray-500 mt-1">For your reference only, not shown to users</p>
 					</div>
@@ -230,7 +230,7 @@
 							label="Title *"
 							bind:value={formData['title']}
 							placeholder="e.g., Wait! Don't Leave Yet"
-							{...(errors['title'] && { error: errors['title'] })}
+							{...errors['title'] && { error: errors['title'] }}
 						/>
 					</div>
 
@@ -241,7 +241,9 @@
 						<textarea
 							id="popup-content"
 							bind:value={formData['content']}
-							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 {errors['content']
+							class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 {errors[
+								'content'
+							]
 								? ' border-red-500'
 								: ''}"
 							rows="4"
@@ -742,9 +744,9 @@
 	}
 
 	/* Form inputs */
-	:global(.page input[type="text"]),
-	:global(.page input[type="number"]),
-	:global(.page input[type="color"]),
+	:global(.page input[type='text']),
+	:global(.page input[type='number']),
+	:global(.page input[type='color']),
 	:global(.page textarea),
 	:global(.page select) {
 		background: rgba(15, 23, 42, 0.6) !important;
@@ -761,7 +763,7 @@
 	}
 
 	/* Checkboxes */
-	:global(.page input[type="checkbox"]) {
+	:global(.page input[type='checkbox']) {
 		accent-color: #e6b800;
 	}
 

@@ -821,7 +821,6 @@
 		}, 2000);
 	}
 
-
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Complete File Upload System
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -841,7 +840,12 @@
 	 * Resize image to max dimensions while maintaining aspect ratio
 	 * Converts to optimized JPEG format for faster uploads
 	 */
-	async function resizeImage(file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.85): Promise<Blob> {
+	async function resizeImage(
+		file: File,
+		maxWidth = 1200,
+		maxHeight = 1200,
+		quality = 0.85
+	): Promise<Blob> {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
 			const canvas = document.createElement('canvas');
@@ -1684,7 +1688,10 @@
 		</div>
 		<div class="progress-details">
 			<span class="progress-text">{completionStatus.percentage}% Complete</span>
-			<span class="progress-items">{completionStatus.completed}/{completionStatus.total} items • {course.modules.length} modules • {course.duration_hours}h</span>
+			<span class="progress-items"
+				>{completionStatus.completed}/{completionStatus.total} items • {course.modules.length} modules
+				• {course.duration_hours}h</span
+			>
 		</div>
 	</div>
 
@@ -2027,11 +2034,7 @@
 					<div class="form-card">
 						<h2>
 							Target Audience
-							<button
-								class="ai-btn"
-								onclick={() => generateWithAI('target')}
-								disabled={generating}
-							>
+							<button class="ai-btn" onclick={() => generateWithAI('target')} disabled={generating}>
 								<IconSparkles size={14} />
 							</button>
 						</h2>
@@ -2197,10 +2200,7 @@
 													>
 														<IconCopy size={14} />
 													</button>
-													<button
-														onclick={() => removeLesson(module.id, lesson.id)}
-														title="Delete"
-													>
+													<button onclick={() => removeLesson(module.id, lesson.id)} title="Delete">
 														<IconX size={16} />
 													</button>
 												</div>
@@ -2990,7 +2990,7 @@
 	}
 
 	.pricing-details h4 {
-		color: #E6B800;
+		color: #e6b800;
 		font-size: 1rem;
 		margin: 1.5rem 0 0.75rem;
 	}
@@ -3238,7 +3238,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
-		color: #E6B800;
+		color: #e6b800;
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -3475,7 +3475,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
-		color: #E6B800;
+		color: #e6b800;
 		cursor: pointer;
 		transition: all 0.2s;
 		display: inline-flex;

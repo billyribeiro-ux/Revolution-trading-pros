@@ -209,9 +209,7 @@ class CampaignsApiClient {
 	// Campaign CRUD
 	// ═══════════════════════════════════════════════════════════════════════
 
-	async getCampaigns(
-		filters?: CampaignFilters
-	): Promise<{
+	async getCampaigns(filters?: CampaignFilters): Promise<{
 		data: Campaign[];
 		meta: { total: number; current_page: number; last_page: number };
 	}> {

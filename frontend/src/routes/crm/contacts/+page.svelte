@@ -9,13 +9,7 @@
 	import { crmAPI } from '$lib/api/crm';
 	import { contacts, contactFilters, isLoading, error } from '$lib/stores/crm.svelte';
 	import type { Contact, ContactStatus, LifecycleStage } from '$lib/crm/types';
-	import {
-		IconUser,
-		IconSearch,
-		IconFilter,
-		IconTrendingUp,
-		IconAlertTriangle
-	} from '$lib/icons';
+	import { IconUser, IconSearch, IconFilter, IconTrendingUp, IconAlertTriangle } from '$lib/icons';
 
 	let localSearch = $state('');
 	let localStatus = $state<ContactStatus | 'all'>('all');
@@ -75,9 +69,9 @@
 
 	let totalContacts = $derived($contacts.length);
 	let highScoreContacts = $derived($contacts.filter((c) => c.lead_score >= 75).length);
-	let atRiskCustomers = $derived($contacts.filter(
-		(c) => c.status === 'customer' && c.health_score < 50
-	).length);
+	let atRiskCustomers = $derived(
+		$contacts.filter((c) => c.status === 'customer' && c.health_score < 50).length
+	);
 </script>
 
 <svelte:head>

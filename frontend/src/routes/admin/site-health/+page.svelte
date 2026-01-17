@@ -111,7 +111,9 @@
 	let isRunningTests = $state(false);
 	let healthData = $state<SiteHealthData | null>(null);
 	let lastUpdated = $state<Date | null>(null);
-	let activeTab = $state<'overview' | 'performance' | 'security' | 'database' | 'server'>('overview');
+	let activeTab = $state<'overview' | 'performance' | 'security' | 'database' | 'server'>(
+		'overview'
+	);
 
 	// Animated score display
 	const scoreDisplay = tweened(0, { duration: 1500, easing: cubicOut });
@@ -158,28 +160,53 @@
 				lastChecked: check.lastChecked ? new Date(check.lastChecked) : null
 			})),
 			performance: {
-				responseTime: (apiData['performance'] as Record<string, unknown>)?.['response_time'] as number | null ?? null,
-				memoryUsage: (apiData['performance'] as Record<string, unknown>)?.['memory_usage'] as number | null ?? null,
-				cpuUsage: (apiData['performance'] as Record<string, unknown>)?.['cpu_usage'] as number | null ?? null,
-				diskUsage: (apiData['performance'] as Record<string, unknown>)?.['disk_usage'] as number | null ?? null
+				responseTime:
+					((apiData['performance'] as Record<string, unknown>)?.['response_time'] as
+						| number
+						| null) ?? null,
+				memoryUsage:
+					((apiData['performance'] as Record<string, unknown>)?.['memory_usage'] as
+						| number
+						| null) ?? null,
+				cpuUsage:
+					((apiData['performance'] as Record<string, unknown>)?.['cpu_usage'] as number | null) ??
+					null,
+				diskUsage:
+					((apiData['performance'] as Record<string, unknown>)?.['disk_usage'] as number | null) ??
+					null
 			},
 			security: {
-				sslValid: (apiData['security'] as Record<string, unknown>)?.['ssl_valid'] as boolean | null ?? null,
-				sslExpiry: (apiData['security'] as Record<string, unknown>)?.['ssl_expiry'] ? new Date((apiData['security'] as Record<string, unknown>)['ssl_expiry'] as string) : null,
-				headersScore: (apiData['security'] as Record<string, unknown>)?.['headers_score'] as number | null ?? null,
-				vulnerabilities: (apiData['security'] as Record<string, unknown>)?.['vulnerabilities'] as number ?? 0
+				sslValid:
+					((apiData['security'] as Record<string, unknown>)?.['ssl_valid'] as boolean | null) ??
+					null,
+				sslExpiry: (apiData['security'] as Record<string, unknown>)?.['ssl_expiry']
+					? new Date((apiData['security'] as Record<string, unknown>)['ssl_expiry'] as string)
+					: null,
+				headersScore:
+					((apiData['security'] as Record<string, unknown>)?.['headers_score'] as number | null) ??
+					null,
+				vulnerabilities:
+					((apiData['security'] as Record<string, unknown>)?.['vulnerabilities'] as number) ?? 0
 			},
 			database: {
-				connected: (apiData['database'] as Record<string, unknown>)?.['connected'] as boolean ?? false,
-				responseTime: (apiData['database'] as Record<string, unknown>)?.['response_time'] as number | null ?? null,
-				size: (apiData['database'] as Record<string, unknown>)?.['size'] as string | null ?? null,
-				tables: (apiData['database'] as Record<string, unknown>)?.['tables'] as number | null ?? null
+				connected:
+					((apiData['database'] as Record<string, unknown>)?.['connected'] as boolean) ?? false,
+				responseTime:
+					((apiData['database'] as Record<string, unknown>)?.['response_time'] as number | null) ??
+					null,
+				size: ((apiData['database'] as Record<string, unknown>)?.['size'] as string | null) ?? null,
+				tables:
+					((apiData['database'] as Record<string, unknown>)?.['tables'] as number | null) ?? null
 			},
 			server: {
-				phpVersion: (apiData['server'] as Record<string, unknown>)?.['php_version'] as string | null ?? null,
-				webServer: (apiData['server'] as Record<string, unknown>)?.['web_server'] as string | null ?? null,
-				os: (apiData['server'] as Record<string, unknown>)?.['os'] as string | null ?? null,
-				uptime: (apiData['server'] as Record<string, unknown>)?.['uptime'] as string | null ?? null
+				phpVersion:
+					((apiData['server'] as Record<string, unknown>)?.['php_version'] as string | null) ??
+					null,
+				webServer:
+					((apiData['server'] as Record<string, unknown>)?.['web_server'] as string | null) ?? null,
+				os: ((apiData['server'] as Record<string, unknown>)?.['os'] as string | null) ?? null,
+				uptime:
+					((apiData['server'] as Record<string, unknown>)?.['uptime'] as string | null) ?? null
 			}
 		};
 	}
@@ -307,641 +334,718 @@
 
 <div class="page">
 	<div class="admin-page-container">
-	<!-- Header Section - Centered -->
-	<header class="page-header" in:fly={{ y: -20, duration: 500, delay: 100 }}>
-		<h1>Site Health</h1>
-		<p class="subtitle">Monitor your site's performance, security, and overall health</p>
+		<!-- Header Section - Centered -->
+		<header class="page-header" in:fly={{ y: -20, duration: 500, delay: 100 }}>
+			<h1>Site Health</h1>
+			<p class="subtitle">Monitor your site's performance, security, and overall health</p>
 
-		<div class="header-actions">
-			<!-- API Connections Status -->
-			<div class="connections-status">
-				<div class="connection-indicator" class:healthy={$connectedCount > 0}>
-					{#if $connectedCount > 0}
-						<IconPlugConnected size={14} />
-					{:else}
-						<IconPlugConnectedX size={14} />
-					{/if}
-					<span>{$connectedCount} APIs Connected</span>
-				</div>
-				{#if $servicesWithErrors.length > 0}
-					<div class="error-indicator">
-						<IconAlertTriangle size={14} />
-						<span>{$servicesWithErrors.length} with issues</span>
-					</div>
-				{/if}
-			</div>
-
-			<button class="btn-primary" onclick={runHealthTests} disabled={isRunningTests}>
-				<span class="icon-wrapper" class:spinning={isRunningTests}>
-					<IconPlayerPlay size={18} />
-				</span>
-				<span>{isRunningTests ? 'Running...' : 'Run Tests'}</span>
-			</button>
-
-			<button class="btn-secondary" onclick={handleRefresh} disabled={isRefreshing}>
-				<span class="icon-wrapper" class:spinning={isRefreshing}>
-					<IconRefresh size={18} />
-				</span>
-				<span>Refresh</span>
-			</button>
-		</div>
-	</header>
-
-	{#if isLoading}
-		<!-- Loading State -->
-		<div class="loading-state" in:fade>
-			<div class="loading-spinner"></div>
-			<p>Checking site health...</p>
-		</div>
-	{:else}
-		<!-- Health Score Card -->
-		<div class="score-section" in:scale={{ duration: 500, start: 0.9, delay: 100 }}>
-			<div class="score-card">
-				<div class="score-ring" style="--score-color: {getScoreColor($scoreDisplay)}">
-					<svg viewBox="0 0 120 120">
-						<circle class="ring-bg" cx="60" cy="60" r="54" />
-						<circle
-							class="ring-progress"
-							cx="60"
-							cy="60"
-							r="54"
-							style="stroke-dashoffset: {339.3 - (339.3 * $scoreDisplay) / 100}"
-						/>
-					</svg>
-					<div class="score-value">
-						<span class="score-number">{Math.round($scoreDisplay)}</span>
-						<span class="score-unit">%</span>
-					</div>
-				</div>
-				<div class="score-info">
-					<h2 class="score-label" style="color: {getScoreColor($scoreDisplay)}">
-						{getScoreLabel(Math.round($scoreDisplay))}
-					</h2>
-					<p class="score-description">
-						{#if healthData && healthData.overallScore >= 90}
-							Your site is in great shape! All systems are functioning optimally.
-						{:else if healthData && healthData.overallScore >= 70}
-							Your site is healthy with minor areas for improvement.
-						{:else if healthData && healthData.overallScore >= 50}
-							Several issues need attention to improve site health.
-						{:else if healthData && healthData.overallScore > 0}
-							Critical issues detected. Immediate action recommended.
+			<div class="header-actions">
+				<!-- API Connections Status -->
+				<div class="connections-status">
+					<div class="connection-indicator" class:healthy={$connectedCount > 0}>
+						{#if $connectedCount > 0}
+							<IconPlugConnected size={14} />
 						{:else}
-							Run health tests to check your site's status.
+							<IconPlugConnectedX size={14} />
 						{/if}
-					</p>
-				</div>
-			</div>
-
-			<!-- Quick Stats -->
-			<div class="quick-stats">
-				{#if healthData}
-					<div class="stat-item good">
-						<IconCircleCheck size={20} />
-						<span class="stat-value">{healthData.checks.filter((c) => c.status === 'good').length}</span>
-						<span class="stat-label">Passed</span>
+						<span>{$connectedCount} APIs Connected</span>
 					</div>
-					<div class="stat-item warning">
-						<IconAlertTriangle size={20} />
-						<span class="stat-value">{healthData.checks.filter((c) => c.status === 'warning').length}</span>
-						<span class="stat-label">Warnings</span>
-					</div>
-					<div class="stat-item critical">
-						<IconCircleX size={20} />
-						<span class="stat-value">{healthData.checks.filter((c) => c.status === 'critical').length}</span>
-						<span class="stat-label">Critical</span>
-					</div>
-				{:else}
-					<div class="stat-item unknown">
-						<IconInfoCircle size={20} />
-						<span class="stat-value">—</span>
-						<span class="stat-label">No data</span>
-					</div>
-				{/if}
-			</div>
-		</div>
-
-		<!-- Tabs -->
-		<div class="tabs-section" in:fly={{ y: 20, duration: 500, delay: 200 }}>
-			<div class="tabs">
-				{#each tabs as tab}
-					{@const TabIcon = tab.icon}
-					<button
-						class="tab"
-						class:active={activeTab === tab.id}
-						onclick={() => (activeTab = tab.id)}
-					>
-						<TabIcon size={18} />
-						<span>{tab.label}</span>
-					</button>
-				{/each}
-			</div>
-		</div>
-
-		<!-- Tab Content -->
-		<div class="tab-content" in:fade={{ duration: 200 }}>
-			{#if activeTab === 'overview'}
-				<!-- Overview Tab -->
-				<div class="overview-grid">
-					<!-- Performance Overview -->
-					<div class="overview-card performance">
-						<div class="card-header">
-							<div class="card-icon">
-								<IconRocket size={24} />
-							</div>
-							<div class="card-title">
-								<h3>Performance</h3>
-								<p>Response times and resource usage</p>
-							</div>
-						</div>
-						<div class="card-metrics">
-							{#if healthData?.performance.responseTime !== null}
-								<div class="metric">
-									<span class="metric-label">Response Time</span>
-									<span class="metric-value">{formatMs(healthData?.performance.responseTime ?? 0)}</span>
-								</div>
-							{/if}
-							{#if healthData?.performance.memoryUsage !== null}
-								<div class="metric">
-									<span class="metric-label">Memory Usage</span>
-									<span class="metric-value">{healthData?.performance.memoryUsage ?? 0}%</span>
-								</div>
-							{/if}
-							{#if healthData?.performance.responseTime === null && healthData?.performance.memoryUsage === null}
-								<p class="no-data">Run tests to see performance metrics</p>
-							{/if}
-						</div>
-						<button class="card-action" onclick={() => (activeTab = 'performance')}>
-							<span>View Details</span>
-							<IconArrowRight size={16} />
-						</button>
-					</div>
-
-					<!-- Security Overview -->
-					<div class="overview-card security">
-						<div class="card-header">
-							<div class="card-icon">
-								<IconShieldCheck size={24} />
-							</div>
-							<div class="card-title">
-								<h3>Security</h3>
-								<p>SSL, headers, and vulnerabilities</p>
-							</div>
-						</div>
-						<div class="card-metrics">
-							{#if healthData?.security.sslValid !== null}
-								<div class="metric">
-									<span class="metric-label">SSL Certificate</span>
-									<span class="metric-value" class:good={healthData?.security.sslValid} class:bad={!healthData?.security.sslValid}>
-										{healthData?.security.sslValid ? 'Valid' : 'Invalid'}
-									</span>
-								</div>
-							{/if}
-							{#if healthData?.security.vulnerabilities !== undefined}
-								<div class="metric">
-									<span class="metric-label">Vulnerabilities</span>
-									<span class="metric-value" class:good={healthData.security.vulnerabilities === 0} class:bad={healthData.security.vulnerabilities > 0}>
-										{healthData.security.vulnerabilities}
-									</span>
-								</div>
-							{/if}
-							{#if healthData?.security.sslValid === null}
-								<p class="no-data">Run tests to check security status</p>
-							{/if}
-						</div>
-						<button class="card-action" onclick={() => (activeTab = 'security')}>
-							<span>View Details</span>
-							<IconArrowRight size={16} />
-						</button>
-					</div>
-
-					<!-- Database Overview -->
-					<div class="overview-card database">
-						<div class="card-header">
-							<div class="card-icon">
-								<IconDatabase size={24} />
-							</div>
-							<div class="card-title">
-								<h3>Database</h3>
-								<p>Connection and query performance</p>
-							</div>
-						</div>
-						<div class="card-metrics">
-							{#if healthData?.database.connected !== undefined}
-								<div class="metric">
-									<span class="metric-label">Status</span>
-									<span class="metric-value" class:good={healthData.database.connected} class:bad={!healthData.database.connected}>
-										{healthData.database.connected ? 'Connected' : 'Disconnected'}
-									</span>
-								</div>
-							{/if}
-							{#if healthData?.database.size}
-								<div class="metric">
-									<span class="metric-label">Database Size</span>
-									<span class="metric-value">{healthData.database.size}</span>
-								</div>
-							{/if}
-							{#if !healthData?.database.connected && healthData?.database.size === null}
-								<p class="no-data">Run tests to check database health</p>
-							{/if}
-						</div>
-						<button class="card-action" onclick={() => (activeTab = 'database')}>
-							<span>View Details</span>
-							<IconArrowRight size={16} />
-						</button>
-					</div>
-
-					<!-- Server Overview -->
-					<div class="overview-card server">
-						<div class="card-header">
-							<div class="card-icon">
-								<IconServer size={24} />
-							</div>
-							<div class="card-title">
-								<h3>Server</h3>
-								<p>PHP, web server, and environment</p>
-							</div>
-						</div>
-						<div class="card-metrics">
-							{#if healthData?.server.phpVersion}
-								<div class="metric">
-									<span class="metric-label">PHP Version</span>
-									<span class="metric-value">{healthData.server.phpVersion}</span>
-								</div>
-							{/if}
-							{#if healthData?.server.webServer}
-								<div class="metric">
-									<span class="metric-label">Web Server</span>
-									<span class="metric-value">{healthData.server.webServer}</span>
-								</div>
-							{/if}
-							{#if !healthData?.server.phpVersion && !healthData?.server.webServer}
-								<p class="no-data">Run tests to see server info</p>
-							{/if}
-						</div>
-						<button class="card-action" onclick={() => (activeTab = 'server')}>
-							<span>View Details</span>
-							<IconArrowRight size={16} />
-						</button>
-					</div>
-				</div>
-
-				<!-- API Connections Health -->
-				<div class="api-health-section" in:fly={{ y: 20, duration: 500, delay: 300 }}>
-					<h3>API Connections Health</h3>
-					<div class="api-health-grid">
-						<div class="api-health-card">
-							<div class="api-health-header">
-								<IconApiApp size={20} />
-								<span>Connected APIs</span>
-							</div>
-							<div class="api-health-value">{$connectedCount}</div>
-							<button class="api-health-action" onclick={() => goto('/admin/connections')}>
-								Manage Connections
-							</button>
-						</div>
-						<div class="api-health-card" class:has-errors={$servicesWithErrors.length > 0}>
-							<div class="api-health-header">
-								<IconAlertTriangle size={20} />
-								<span>Connection Issues</span>
-							</div>
-							<div class="api-health-value">{$servicesWithErrors.length}</div>
-							{#if $servicesWithErrors.length > 0}
-								<button class="api-health-action error" onclick={() => goto('/admin/connections')}>
-									View Issues
-								</button>
-							{:else}
-								<span class="api-health-status">All connections healthy</span>
-							{/if}
-						</div>
-						<div class="api-health-card">
-							<div class="api-health-header">
-								<IconHeartbeat size={20} />
-								<span>Overall API Health</span>
-							</div>
-							<div class="api-health-value">{$overallHealth}%</div>
-							<div class="api-health-bar">
-								<div class="api-health-progress" style="width: {$overallHealth}%; background: {getScoreColor($overallHealth)}"></div>
-							</div>
-						</div>
-					</div>
-				</div>
-
-				<!-- Health Checks List -->
-				{#if healthData && healthData.checks.length > 0}
-					<div class="checks-section" in:fly={{ y: 20, duration: 500, delay: 400 }}>
-						<h3>All Health Checks</h3>
-						<div class="checks-list">
-							{#each healthData.checks as check, i}
-								{@const StatusIcon = getStatusIcon(check.status)}
-								<div
-									class="check-item"
-									class:good={check.status === 'good'}
-									class:warning={check.status === 'warning'}
-									class:critical={check.status === 'critical'}
-									in:fly={{ y: 10, duration: 300, delay: 50 * i }}
-								>
-									<div class="check-icon" style="color: {getStatusColor(check.status)}">
-										<StatusIcon size={20} />
-									</div>
-									<div class="check-info">
-										<h4>{check.name}</h4>
-										<p>{check.message}</p>
-									</div>
-									{#if check.action}
-										{#if check.action.href}
-											<a href={check.action.href} class="check-action">
-												{check.action.label}
-												<IconExternalLink size={14} />
-											</a>
-										{:else if check.action.onClick}
-											<button class="check-action" onclick={check.action.onClick}>
-												{check.action.label}
-											</button>
-										{/if}
-									{/if}
-								</div>
-							{/each}
-						</div>
-					</div>
-				{/if}
-			{:else if activeTab === 'performance'}
-				<!-- Performance Tab -->
-				<div class="detail-section">
-					<h3>Performance Metrics</h3>
-					{#if healthData?.performance.responseTime !== null || healthData?.performance.memoryUsage !== null}
-						<div class="metrics-grid">
-							{#if healthData?.performance.responseTime !== null}
-								<div class="metric-card">
-									<div class="metric-icon">
-										<IconClock size={24} />
-									</div>
-									<div class="metric-content">
-										<span class="metric-label">Response Time</span>
-										<span class="metric-value large">{formatMs(healthData?.performance.responseTime ?? 0)}</span>
-									</div>
-								</div>
-							{/if}
-							{#if healthData?.performance.memoryUsage !== null}
-								<div class="metric-card">
-									<div class="metric-icon">
-										<IconServer size={24} />
-									</div>
-									<div class="metric-content">
-										<span class="metric-label">Memory Usage</span>
-										<span class="metric-value large">{healthData?.performance.memoryUsage ?? 0}%</span>
-										<div class="metric-bar">
-											<div class="metric-progress" style="width: {healthData?.performance.memoryUsage ?? 0}%"></div>
-										</div>
-									</div>
-								</div>
-							{/if}
-							{#if healthData?.performance.cpuUsage !== null}
-								<div class="metric-card">
-									<div class="metric-icon">
-										<IconChartLine size={24} />
-									</div>
-									<div class="metric-content">
-										<span class="metric-label">CPU Usage</span>
-										<span class="metric-value large">{healthData?.performance.cpuUsage ?? 0}%</span>
-										<div class="metric-bar">
-											<div class="metric-progress" style="width: {healthData?.performance.cpuUsage ?? 0}%"></div>
-										</div>
-									</div>
-								</div>
-							{/if}
-							{#if healthData?.performance.diskUsage !== null}
-								<div class="metric-card">
-									<div class="metric-icon">
-										<IconFolder size={24} />
-									</div>
-									<div class="metric-content">
-										<span class="metric-label">Disk Usage</span>
-										<span class="metric-value large">{healthData?.performance.diskUsage ?? 0}%</span>
-										<div class="metric-bar">
-											<div class="metric-progress" style="width: {healthData?.performance.diskUsage ?? 0}%"></div>
-										</div>
-									</div>
-								</div>
-							{/if}
-						</div>
-					{:else}
-						<div class="empty-state">
-							<IconRocket size={48} />
-							<h4>No Performance Data</h4>
-							<p>Run health tests to collect performance metrics</p>
-							<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
-								<IconPlayerPlay size={18} />
-								<span>Run Tests</span>
-							</button>
+					{#if $servicesWithErrors.length > 0}
+						<div class="error-indicator">
+							<IconAlertTriangle size={14} />
+							<span>{$servicesWithErrors.length} with issues</span>
 						</div>
 					{/if}
 				</div>
-			{:else if activeTab === 'security'}
-				<!-- Security Tab -->
-				<div class="detail-section">
-					<h3>Security Status</h3>
-					{#if healthData?.security.sslValid !== null}
-						<div class="metrics-grid">
-							<div class="metric-card ssl" class:valid={healthData?.security.sslValid} class:invalid={!healthData?.security.sslValid}>
-								<div class="metric-icon">
-									<IconCertificate size={24} />
+
+				<button class="btn-primary" onclick={runHealthTests} disabled={isRunningTests}>
+					<span class="icon-wrapper" class:spinning={isRunningTests}>
+						<IconPlayerPlay size={18} />
+					</span>
+					<span>{isRunningTests ? 'Running...' : 'Run Tests'}</span>
+				</button>
+
+				<button class="btn-secondary" onclick={handleRefresh} disabled={isRefreshing}>
+					<span class="icon-wrapper" class:spinning={isRefreshing}>
+						<IconRefresh size={18} />
+					</span>
+					<span>Refresh</span>
+				</button>
+			</div>
+		</header>
+
+		{#if isLoading}
+			<!-- Loading State -->
+			<div class="loading-state" in:fade>
+				<div class="loading-spinner"></div>
+				<p>Checking site health...</p>
+			</div>
+		{:else}
+			<!-- Health Score Card -->
+			<div class="score-section" in:scale={{ duration: 500, start: 0.9, delay: 100 }}>
+				<div class="score-card">
+					<div class="score-ring" style="--score-color: {getScoreColor($scoreDisplay)}">
+						<svg viewBox="0 0 120 120">
+							<circle class="ring-bg" cx="60" cy="60" r="54" />
+							<circle
+								class="ring-progress"
+								cx="60"
+								cy="60"
+								r="54"
+								style="stroke-dashoffset: {339.3 - (339.3 * $scoreDisplay) / 100}"
+							/>
+						</svg>
+						<div class="score-value">
+							<span class="score-number">{Math.round($scoreDisplay)}</span>
+							<span class="score-unit">%</span>
+						</div>
+					</div>
+					<div class="score-info">
+						<h2 class="score-label" style="color: {getScoreColor($scoreDisplay)}">
+							{getScoreLabel(Math.round($scoreDisplay))}
+						</h2>
+						<p class="score-description">
+							{#if healthData && healthData.overallScore >= 90}
+								Your site is in great shape! All systems are functioning optimally.
+							{:else if healthData && healthData.overallScore >= 70}
+								Your site is healthy with minor areas for improvement.
+							{:else if healthData && healthData.overallScore >= 50}
+								Several issues need attention to improve site health.
+							{:else if healthData && healthData.overallScore > 0}
+								Critical issues detected. Immediate action recommended.
+							{:else}
+								Run health tests to check your site's status.
+							{/if}
+						</p>
+					</div>
+				</div>
+
+				<!-- Quick Stats -->
+				<div class="quick-stats">
+					{#if healthData}
+						<div class="stat-item good">
+							<IconCircleCheck size={20} />
+							<span class="stat-value"
+								>{healthData.checks.filter((c) => c.status === 'good').length}</span
+							>
+							<span class="stat-label">Passed</span>
+						</div>
+						<div class="stat-item warning">
+							<IconAlertTriangle size={20} />
+							<span class="stat-value"
+								>{healthData.checks.filter((c) => c.status === 'warning').length}</span
+							>
+							<span class="stat-label">Warnings</span>
+						</div>
+						<div class="stat-item critical">
+							<IconCircleX size={20} />
+							<span class="stat-value"
+								>{healthData.checks.filter((c) => c.status === 'critical').length}</span
+							>
+							<span class="stat-label">Critical</span>
+						</div>
+					{:else}
+						<div class="stat-item unknown">
+							<IconInfoCircle size={20} />
+							<span class="stat-value">—</span>
+							<span class="stat-label">No data</span>
+						</div>
+					{/if}
+				</div>
+			</div>
+
+			<!-- Tabs -->
+			<div class="tabs-section" in:fly={{ y: 20, duration: 500, delay: 200 }}>
+				<div class="tabs">
+					{#each tabs as tab}
+						{@const TabIcon = tab.icon}
+						<button
+							class="tab"
+							class:active={activeTab === tab.id}
+							onclick={() => (activeTab = tab.id)}
+						>
+							<TabIcon size={18} />
+							<span>{tab.label}</span>
+						</button>
+					{/each}
+				</div>
+			</div>
+
+			<!-- Tab Content -->
+			<div class="tab-content" in:fade={{ duration: 200 }}>
+				{#if activeTab === 'overview'}
+					<!-- Overview Tab -->
+					<div class="overview-grid">
+						<!-- Performance Overview -->
+						<div class="overview-card performance">
+							<div class="card-header">
+								<div class="card-icon">
+									<IconRocket size={24} />
 								</div>
-								<div class="metric-content">
-									<span class="metric-label">SSL Certificate</span>
-									<span class="metric-value large">{healthData?.security.sslValid ? 'Valid' : 'Invalid'}</span>
-									{#if healthData?.security.sslExpiry}
-										<span class="metric-detail">Expires: {healthData?.security.sslExpiry.toLocaleDateString()}</span>
-									{/if}
-								</div>
-								<div class="metric-status">
-									{#if healthData?.security.sslValid}
-										<IconCheck size={24} />
-									{:else}
-										<IconX size={24} />
-									{/if}
+								<div class="card-title">
+									<h3>Performance</h3>
+									<p>Response times and resource usage</p>
 								</div>
 							</div>
-							{#if healthData?.security.headersScore !== null}
-								<div class="metric-card">
-									<div class="metric-icon">
-										<IconShieldCheck size={24} />
+							<div class="card-metrics">
+								{#if healthData?.performance.responseTime !== null}
+									<div class="metric">
+										<span class="metric-label">Response Time</span>
+										<span class="metric-value"
+											>{formatMs(healthData?.performance.responseTime ?? 0)}</span
+										>
 									</div>
-									<div class="metric-content">
-										<span class="metric-label">Security Headers</span>
-										<span class="metric-value large">{healthData?.security.headersScore ?? 0}%</span>
-										<div class="metric-bar">
-											<div class="metric-progress" style="width: {healthData?.security.headersScore ?? 0}%; background: {getScoreColor(healthData?.security.headersScore ?? 0)}"></div>
+								{/if}
+								{#if healthData?.performance.memoryUsage !== null}
+									<div class="metric">
+										<span class="metric-label">Memory Usage</span>
+										<span class="metric-value">{healthData?.performance.memoryUsage ?? 0}%</span>
+									</div>
+								{/if}
+								{#if healthData?.performance.responseTime === null && healthData?.performance.memoryUsage === null}
+									<p class="no-data">Run tests to see performance metrics</p>
+								{/if}
+							</div>
+							<button class="card-action" onclick={() => (activeTab = 'performance')}>
+								<span>View Details</span>
+								<IconArrowRight size={16} />
+							</button>
+						</div>
+
+						<!-- Security Overview -->
+						<div class="overview-card security">
+							<div class="card-header">
+								<div class="card-icon">
+									<IconShieldCheck size={24} />
+								</div>
+								<div class="card-title">
+									<h3>Security</h3>
+									<p>SSL, headers, and vulnerabilities</p>
+								</div>
+							</div>
+							<div class="card-metrics">
+								{#if healthData?.security.sslValid !== null}
+									<div class="metric">
+										<span class="metric-label">SSL Certificate</span>
+										<span
+											class="metric-value"
+											class:good={healthData?.security.sslValid}
+											class:bad={!healthData?.security.sslValid}
+										>
+											{healthData?.security.sslValid ? 'Valid' : 'Invalid'}
+										</span>
+									</div>
+								{/if}
+								{#if healthData?.security.vulnerabilities !== undefined}
+									<div class="metric">
+										<span class="metric-label">Vulnerabilities</span>
+										<span
+											class="metric-value"
+											class:good={healthData.security.vulnerabilities === 0}
+											class:bad={healthData.security.vulnerabilities > 0}
+										>
+											{healthData.security.vulnerabilities}
+										</span>
+									</div>
+								{/if}
+								{#if healthData?.security.sslValid === null}
+									<p class="no-data">Run tests to check security status</p>
+								{/if}
+							</div>
+							<button class="card-action" onclick={() => (activeTab = 'security')}>
+								<span>View Details</span>
+								<IconArrowRight size={16} />
+							</button>
+						</div>
+
+						<!-- Database Overview -->
+						<div class="overview-card database">
+							<div class="card-header">
+								<div class="card-icon">
+									<IconDatabase size={24} />
+								</div>
+								<div class="card-title">
+									<h3>Database</h3>
+									<p>Connection and query performance</p>
+								</div>
+							</div>
+							<div class="card-metrics">
+								{#if healthData?.database.connected !== undefined}
+									<div class="metric">
+										<span class="metric-label">Status</span>
+										<span
+											class="metric-value"
+											class:good={healthData.database.connected}
+											class:bad={!healthData.database.connected}
+										>
+											{healthData.database.connected ? 'Connected' : 'Disconnected'}
+										</span>
+									</div>
+								{/if}
+								{#if healthData?.database.size}
+									<div class="metric">
+										<span class="metric-label">Database Size</span>
+										<span class="metric-value">{healthData.database.size}</span>
+									</div>
+								{/if}
+								{#if !healthData?.database.connected && healthData?.database.size === null}
+									<p class="no-data">Run tests to check database health</p>
+								{/if}
+							</div>
+							<button class="card-action" onclick={() => (activeTab = 'database')}>
+								<span>View Details</span>
+								<IconArrowRight size={16} />
+							</button>
+						</div>
+
+						<!-- Server Overview -->
+						<div class="overview-card server">
+							<div class="card-header">
+								<div class="card-icon">
+									<IconServer size={24} />
+								</div>
+								<div class="card-title">
+									<h3>Server</h3>
+									<p>PHP, web server, and environment</p>
+								</div>
+							</div>
+							<div class="card-metrics">
+								{#if healthData?.server.phpVersion}
+									<div class="metric">
+										<span class="metric-label">PHP Version</span>
+										<span class="metric-value">{healthData.server.phpVersion}</span>
+									</div>
+								{/if}
+								{#if healthData?.server.webServer}
+									<div class="metric">
+										<span class="metric-label">Web Server</span>
+										<span class="metric-value">{healthData.server.webServer}</span>
+									</div>
+								{/if}
+								{#if !healthData?.server.phpVersion && !healthData?.server.webServer}
+									<p class="no-data">Run tests to see server info</p>
+								{/if}
+							</div>
+							<button class="card-action" onclick={() => (activeTab = 'server')}>
+								<span>View Details</span>
+								<IconArrowRight size={16} />
+							</button>
+						</div>
+					</div>
+
+					<!-- API Connections Health -->
+					<div class="api-health-section" in:fly={{ y: 20, duration: 500, delay: 300 }}>
+						<h3>API Connections Health</h3>
+						<div class="api-health-grid">
+							<div class="api-health-card">
+								<div class="api-health-header">
+									<IconApiApp size={20} />
+									<span>Connected APIs</span>
+								</div>
+								<div class="api-health-value">{$connectedCount}</div>
+								<button class="api-health-action" onclick={() => goto('/admin/connections')}>
+									Manage Connections
+								</button>
+							</div>
+							<div class="api-health-card" class:has-errors={$servicesWithErrors.length > 0}>
+								<div class="api-health-header">
+									<IconAlertTriangle size={20} />
+									<span>Connection Issues</span>
+								</div>
+								<div class="api-health-value">{$servicesWithErrors.length}</div>
+								{#if $servicesWithErrors.length > 0}
+									<button
+										class="api-health-action error"
+										onclick={() => goto('/admin/connections')}
+									>
+										View Issues
+									</button>
+								{:else}
+									<span class="api-health-status">All connections healthy</span>
+								{/if}
+							</div>
+							<div class="api-health-card">
+								<div class="api-health-header">
+									<IconHeartbeat size={20} />
+									<span>Overall API Health</span>
+								</div>
+								<div class="api-health-value">{$overallHealth}%</div>
+								<div class="api-health-bar">
+									<div
+										class="api-health-progress"
+										style="width: {$overallHealth}%; background: {getScoreColor($overallHealth)}"
+									></div>
+								</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Health Checks List -->
+					{#if healthData && healthData.checks.length > 0}
+						<div class="checks-section" in:fly={{ y: 20, duration: 500, delay: 400 }}>
+							<h3>All Health Checks</h3>
+							<div class="checks-list">
+								{#each healthData.checks as check, i}
+									{@const StatusIcon = getStatusIcon(check.status)}
+									<div
+										class="check-item"
+										class:good={check.status === 'good'}
+										class:warning={check.status === 'warning'}
+										class:critical={check.status === 'critical'}
+										in:fly={{ y: 10, duration: 300, delay: 50 * i }}
+									>
+										<div class="check-icon" style="color: {getStatusColor(check.status)}">
+											<StatusIcon size={20} />
+										</div>
+										<div class="check-info">
+											<h4>{check.name}</h4>
+											<p>{check.message}</p>
+										</div>
+										{#if check.action}
+											{#if check.action.href}
+												<a href={check.action.href} class="check-action">
+													{check.action.label}
+													<IconExternalLink size={14} />
+												</a>
+											{:else if check.action.onClick}
+												<button class="check-action" onclick={check.action.onClick}>
+													{check.action.label}
+												</button>
+											{/if}
+										{/if}
+									</div>
+								{/each}
+							</div>
+						</div>
+					{/if}
+				{:else if activeTab === 'performance'}
+					<!-- Performance Tab -->
+					<div class="detail-section">
+						<h3>Performance Metrics</h3>
+						{#if healthData?.performance.responseTime !== null || healthData?.performance.memoryUsage !== null}
+							<div class="metrics-grid">
+								{#if healthData?.performance.responseTime !== null}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconClock size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">Response Time</span>
+											<span class="metric-value large"
+												>{formatMs(healthData?.performance.responseTime ?? 0)}</span
+											>
 										</div>
 									</div>
-								</div>
-							{/if}
-							<div class="metric-card" class:critical={(healthData?.security.vulnerabilities ?? 0) > 0}>
-								<div class="metric-icon">
-									<IconBug size={24} />
-								</div>
-								<div class="metric-content">
-									<span class="metric-label">Vulnerabilities</span>
-									<span class="metric-value large" class:good={(healthData?.security.vulnerabilities ?? 0) === 0}>{healthData?.security.vulnerabilities ?? 0}</span>
-								</div>
-								{#if (healthData?.security.vulnerabilities ?? 0) === 0}
-									<div class="metric-status good">
-										<IconCheck size={24} />
+								{/if}
+								{#if healthData?.performance.memoryUsage !== null}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconServer size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">Memory Usage</span>
+											<span class="metric-value large"
+												>{healthData?.performance.memoryUsage ?? 0}%</span
+											>
+											<div class="metric-bar">
+												<div
+													class="metric-progress"
+													style="width: {healthData?.performance.memoryUsage ?? 0}%"
+												></div>
+											</div>
+										</div>
+									</div>
+								{/if}
+								{#if healthData?.performance.cpuUsage !== null}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconChartLine size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">CPU Usage</span>
+											<span class="metric-value large"
+												>{healthData?.performance.cpuUsage ?? 0}%</span
+											>
+											<div class="metric-bar">
+												<div
+													class="metric-progress"
+													style="width: {healthData?.performance.cpuUsage ?? 0}%"
+												></div>
+											</div>
+										</div>
+									</div>
+								{/if}
+								{#if healthData?.performance.diskUsage !== null}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconFolder size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">Disk Usage</span>
+											<span class="metric-value large"
+												>{healthData?.performance.diskUsage ?? 0}%</span
+											>
+											<div class="metric-bar">
+												<div
+													class="metric-progress"
+													style="width: {healthData?.performance.diskUsage ?? 0}%"
+												></div>
+											</div>
+										</div>
 									</div>
 								{/if}
 							</div>
-						</div>
-					{:else}
-						<div class="empty-state">
-							<IconShieldCheck size={48} />
-							<h4>No Security Data</h4>
-							<p>Run health tests to check security status</p>
-							<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
-								<IconPlayerPlay size={18} />
-								<span>Run Tests</span>
-							</button>
-						</div>
-					{/if}
-				</div>
-			{:else if activeTab === 'database'}
-				<!-- Database Tab -->
-				<div class="detail-section">
-					<h3>Database Health</h3>
-					{#if healthData?.database.connected}
-						<div class="metrics-grid">
-							<div class="metric-card connection" class:connected={healthData.database.connected}>
-								<div class="metric-icon">
-									<IconDatabase size={24} />
+						{:else}
+							<div class="empty-state">
+								<IconRocket size={48} />
+								<h4>No Performance Data</h4>
+								<p>Run health tests to collect performance metrics</p>
+								<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
+									<IconPlayerPlay size={18} />
+									<span>Run Tests</span>
+								</button>
+							</div>
+						{/if}
+					</div>
+				{:else if activeTab === 'security'}
+					<!-- Security Tab -->
+					<div class="detail-section">
+						<h3>Security Status</h3>
+						{#if healthData?.security.sslValid !== null}
+							<div class="metrics-grid">
+								<div
+									class="metric-card ssl"
+									class:valid={healthData?.security.sslValid}
+									class:invalid={!healthData?.security.sslValid}
+								>
+									<div class="metric-icon">
+										<IconCertificate size={24} />
+									</div>
+									<div class="metric-content">
+										<span class="metric-label">SSL Certificate</span>
+										<span class="metric-value large"
+											>{healthData?.security.sslValid ? 'Valid' : 'Invalid'}</span
+										>
+										{#if healthData?.security.sslExpiry}
+											<span class="metric-detail"
+												>Expires: {healthData?.security.sslExpiry.toLocaleDateString()}</span
+											>
+										{/if}
+									</div>
+									<div class="metric-status">
+										{#if healthData?.security.sslValid}
+											<IconCheck size={24} />
+										{:else}
+											<IconX size={24} />
+										{/if}
+									</div>
 								</div>
-								<div class="metric-content">
-									<span class="metric-label">Connection Status</span>
-									<span class="metric-value large">Connected</span>
-								</div>
-								<div class="metric-status good">
-									<IconCheck size={24} />
+								{#if healthData?.security.headersScore !== null}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconShieldCheck size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">Security Headers</span>
+											<span class="metric-value large"
+												>{healthData?.security.headersScore ?? 0}%</span
+											>
+											<div class="metric-bar">
+												<div
+													class="metric-progress"
+													style="width: {healthData?.security.headersScore ??
+														0}%; background: {getScoreColor(
+														healthData?.security.headersScore ?? 0
+													)}"
+												></div>
+											</div>
+										</div>
+									</div>
+								{/if}
+								<div
+									class="metric-card"
+									class:critical={(healthData?.security.vulnerabilities ?? 0) > 0}
+								>
+									<div class="metric-icon">
+										<IconBug size={24} />
+									</div>
+									<div class="metric-content">
+										<span class="metric-label">Vulnerabilities</span>
+										<span
+											class="metric-value large"
+											class:good={(healthData?.security.vulnerabilities ?? 0) === 0}
+											>{healthData?.security.vulnerabilities ?? 0}</span
+										>
+									</div>
+									{#if (healthData?.security.vulnerabilities ?? 0) === 0}
+										<div class="metric-status good">
+											<IconCheck size={24} />
+										</div>
+									{/if}
 								</div>
 							</div>
-							{#if healthData.database.responseTime !== null}
-								<div class="metric-card">
+						{:else}
+							<div class="empty-state">
+								<IconShieldCheck size={48} />
+								<h4>No Security Data</h4>
+								<p>Run health tests to check security status</p>
+								<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
+									<IconPlayerPlay size={18} />
+									<span>Run Tests</span>
+								</button>
+							</div>
+						{/if}
+					</div>
+				{:else if activeTab === 'database'}
+					<!-- Database Tab -->
+					<div class="detail-section">
+						<h3>Database Health</h3>
+						{#if healthData?.database.connected}
+							<div class="metrics-grid">
+								<div class="metric-card connection" class:connected={healthData.database.connected}>
 									<div class="metric-icon">
-										<IconClock size={24} />
+										<IconDatabase size={24} />
 									</div>
 									<div class="metric-content">
-										<span class="metric-label">Query Response</span>
-										<span class="metric-value large">{formatMs(healthData.database.responseTime)}</span>
+										<span class="metric-label">Connection Status</span>
+										<span class="metric-value large">Connected</span>
+									</div>
+									<div class="metric-status good">
+										<IconCheck size={24} />
 									</div>
 								</div>
-							{/if}
-							{#if healthData.database.size}
-								<div class="metric-card">
-									<div class="metric-icon">
-										<IconFolder size={24} />
+								{#if healthData.database.responseTime !== null}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconClock size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">Query Response</span>
+											<span class="metric-value large"
+												>{formatMs(healthData.database.responseTime)}</span
+											>
+										</div>
 									</div>
-									<div class="metric-content">
-										<span class="metric-label">Database Size</span>
-										<span class="metric-value large">{healthData.database.size}</span>
+								{/if}
+								{#if healthData.database.size}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconFolder size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">Database Size</span>
+											<span class="metric-value large">{healthData.database.size}</span>
+										</div>
 									</div>
-								</div>
-							{/if}
-							{#if healthData.database.tables !== null}
-								<div class="metric-card">
-									<div class="metric-icon">
-										<IconSettings size={24} />
+								{/if}
+								{#if healthData.database.tables !== null}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconSettings size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">Tables</span>
+											<span class="metric-value large">{healthData.database.tables}</span>
+										</div>
 									</div>
-									<div class="metric-content">
-										<span class="metric-label">Tables</span>
-										<span class="metric-value large">{healthData.database.tables}</span>
+								{/if}
+							</div>
+						{:else}
+							<div class="empty-state" class:error={healthData?.database.connected === false}>
+								<IconDatabase size={48} />
+								<h4>
+									{healthData?.database.connected === false
+										? 'Database Disconnected'
+										: 'No Database Data'}
+								</h4>
+								<p>
+									{healthData?.database.connected === false
+										? 'Unable to connect to database'
+										: 'Run health tests to check database status'}
+								</p>
+								<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
+									<IconPlayerPlay size={18} />
+									<span>Run Tests</span>
+								</button>
+							</div>
+						{/if}
+					</div>
+				{:else if activeTab === 'server'}
+					<!-- Server Tab -->
+					<div class="detail-section">
+						<h3>Server Information</h3>
+						{#if healthData?.server.phpVersion || healthData?.server.webServer}
+							<div class="metrics-grid">
+								{#if healthData.server.phpVersion}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconCode size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">PHP Version</span>
+											<span class="metric-value large">{healthData.server.phpVersion}</span>
+										</div>
 									</div>
-								</div>
-							{/if}
-						</div>
-					{:else}
-						<div class="empty-state" class:error={healthData?.database.connected === false}>
-							<IconDatabase size={48} />
-							<h4>{healthData?.database.connected === false ? 'Database Disconnected' : 'No Database Data'}</h4>
-							<p>{healthData?.database.connected === false ? 'Unable to connect to database' : 'Run health tests to check database status'}</p>
-							<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
-								<IconPlayerPlay size={18} />
-								<span>Run Tests</span>
-							</button>
-						</div>
-					{/if}
-				</div>
-			{:else if activeTab === 'server'}
-				<!-- Server Tab -->
-				<div class="detail-section">
-					<h3>Server Information</h3>
-					{#if healthData?.server.phpVersion || healthData?.server.webServer}
-						<div class="metrics-grid">
-							{#if healthData.server.phpVersion}
-								<div class="metric-card">
-									<div class="metric-icon">
-										<IconCode size={24} />
+								{/if}
+								{#if healthData.server.webServer}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconCloud size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">Web Server</span>
+											<span class="metric-value large">{healthData.server.webServer}</span>
+										</div>
 									</div>
-									<div class="metric-content">
-										<span class="metric-label">PHP Version</span>
-										<span class="metric-value large">{healthData.server.phpVersion}</span>
+								{/if}
+								{#if healthData.server.os}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconServer size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">Operating System</span>
+											<span class="metric-value large">{healthData.server.os}</span>
+										</div>
 									</div>
-								</div>
-							{/if}
-							{#if healthData.server.webServer}
-								<div class="metric-card">
-									<div class="metric-icon">
-										<IconCloud size={24} />
+								{/if}
+								{#if healthData.server.uptime}
+									<div class="metric-card">
+										<div class="metric-icon">
+											<IconClock size={24} />
+										</div>
+										<div class="metric-content">
+											<span class="metric-label">Uptime</span>
+											<span class="metric-value large">{healthData.server.uptime}</span>
+										</div>
 									</div>
-									<div class="metric-content">
-										<span class="metric-label">Web Server</span>
-										<span class="metric-value large">{healthData.server.webServer}</span>
-									</div>
-								</div>
-							{/if}
-							{#if healthData.server.os}
-								<div class="metric-card">
-									<div class="metric-icon">
-										<IconServer size={24} />
-									</div>
-									<div class="metric-content">
-										<span class="metric-label">Operating System</span>
-										<span class="metric-value large">{healthData.server.os}</span>
-									</div>
-								</div>
-							{/if}
-							{#if healthData.server.uptime}
-								<div class="metric-card">
-									<div class="metric-icon">
-										<IconClock size={24} />
-									</div>
-									<div class="metric-content">
-										<span class="metric-label">Uptime</span>
-										<span class="metric-value large">{healthData.server.uptime}</span>
-									</div>
-								</div>
-							{/if}
-						</div>
-					{:else}
-						<div class="empty-state">
-							<IconServer size={48} />
-							<h4>No Server Data</h4>
-							<p>Run health tests to collect server information</p>
-							<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
-								<IconPlayerPlay size={18} />
-								<span>Run Tests</span>
-							</button>
-						</div>
-					{/if}
+								{/if}
+							</div>
+						{:else}
+							<div class="empty-state">
+								<IconServer size={48} />
+								<h4>No Server Data</h4>
+								<p>Run health tests to collect server information</p>
+								<button class="run-tests-btn" onclick={runHealthTests} disabled={isRunningTests}>
+									<IconPlayerPlay size={18} />
+									<span>Run Tests</span>
+								</button>
+							</div>
+						{/if}
+					</div>
+				{/if}
+			</div>
+
+			<!-- Last Updated Footer -->
+			{#if lastUpdated}
+				<div class="last-updated" in:fade={{ delay: 500 }}>
+					<IconClock size={14} />
+					<span>Last updated: {lastUpdated.toLocaleString()}</span>
 				</div>
 			{/if}
-		</div>
-
-		<!-- Last Updated Footer -->
-		{#if lastUpdated}
-			<div class="last-updated" in:fade={{ delay: 500 }}>
-				<IconClock size={14} />
-				<span>Last updated: {lastUpdated.toLocaleString()}</span>
-			</div>
 		{/if}
-	{/if}
-	</div><!-- End admin-page-container -->
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -955,7 +1059,6 @@
 		background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
 		overflow: hidden;
 	}
-
 
 	/* ═══════════════════════════════════════════════════════════════════════════════
 	   Header - CENTERED
@@ -1103,7 +1206,7 @@
 		width: 48px;
 		height: 48px;
 		border: 3px solid rgba(148, 163, 184, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
@@ -1329,7 +1432,7 @@
 	}
 
 	.overview-card.database .card-icon {
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 	}
 
 	.overview-card.server .card-icon {
@@ -1652,7 +1755,7 @@
 
 	.metric-progress {
 		height: 100%;
-		background: linear-gradient(90deg, #E6B800, #FFD11A);
+		background: linear-gradient(90deg, #e6b800, #ffd11a);
 		border-radius: 3px;
 		transition: width 0.5s ease-out;
 	}
@@ -1732,7 +1835,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border: none;
 		border-radius: 6px;
 		color: white;

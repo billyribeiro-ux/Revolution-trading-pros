@@ -1,11 +1,11 @@
 /**
  * Live Trading Rooms - Server Load Function
- * 
+ *
  * Implements proper SSR/SSG patterns for Svelte 5:
  * - Static generation with dynamic data
  * - SEO metadata for server-side rendering
  * - Performance optimizations
- * 
+ *
  * @see https://kit.svelte.dev/docs/load
  * @module routes/live-trading-rooms/+page.server
  * @version 1.0.0
@@ -20,7 +20,8 @@ const tradingRoomsData = [
 		iconType: 'volatility',
 		name: 'Day Trading Command',
 		tagline: 'Trade the Open with Professionals',
-		description: 'High-velocity execution. Join expert traders for the opening bell, real-time scanners, and rapid-fire trade calls.',
+		description:
+			'High-velocity execution. Join expert traders for the opening bell, real-time scanners, and rapid-fire trade calls.',
 		liveCount: 842,
 		features: [
 			'Daily Live Session (9:30 AM - 12:00 PM ET)',
@@ -38,7 +39,8 @@ const tradingRoomsData = [
 		iconType: 'trend',
 		name: 'Swing Alpha Room',
 		tagline: 'Catch Multi-Day Moves',
-		description: 'Strategic positioning for 3-7 day holds. Perfect for those who cannot watch the screen all day but want institutional returns.',
+		description:
+			'Strategic positioning for 3-7 day holds. Perfect for those who cannot watch the screen all day but want institutional returns.',
 		liveCount: 1250,
 		features: [
 			'Weekly Deep-Dive Strategy Session',
@@ -56,7 +58,8 @@ const tradingRoomsData = [
 		iconType: 'growth',
 		name: 'Growth Accelerator',
 		tagline: 'Small Account → Big Future',
-		description: 'The disciplined path to $25K and beyond. Learn risk management and compounding strategies specifically for smaller capital bases.',
+		description:
+			'The disciplined path to $25K and beyond. Learn risk management and compounding strategies specifically for smaller capital bases.',
 		liveCount: 430,
 		features: [
 			'Under $25K Specific Strategies',
@@ -72,25 +75,25 @@ const tradingRoomsData = [
 ];
 
 const benefitsData = [
-	{ 
-		iconType: 'analysis', 
-		title: 'Institutional Mentorship', 
-		desc: 'Learn from professionals with decades of combined experience at major firms and prop desks.' 
+	{
+		iconType: 'analysis',
+		title: 'Institutional Mentorship',
+		desc: 'Learn from professionals with decades of combined experience at major firms and prop desks.'
 	},
-	{ 
-		iconType: 'radar', 
-		title: 'Sub-Second Alerts', 
-		desc: 'Get trade alerts as they happen via SMS, email, and Discord. Never miss a breakout.' 
+	{
+		iconType: 'radar',
+		title: 'Sub-Second Alerts',
+		desc: 'Get trade alerts as they happen via SMS, email, and Discord. Never miss a breakout.'
 	},
-	{ 
-		iconType: 'strategy', 
-		title: 'Continuous Education', 
-		desc: 'Access a library of strategy breakdowns, market analysis, and psychological training.' 
+	{
+		iconType: 'strategy',
+		title: 'Continuous Education',
+		desc: 'Access a library of strategy breakdowns, market analysis, and psychological training.'
 	},
-	{ 
-		iconType: 'network', 
-		title: 'Elite Community', 
-		desc: 'Join thousands of focused traders who help each other succeed, share alpha, and grow.' 
+	{
+		iconType: 'network',
+		title: 'Elite Community',
+		desc: 'Join thousands of focused traders who help each other succeed, share alpha, and grow.'
 	}
 ];
 
@@ -99,15 +102,19 @@ const tickerSymbols = [
 	{ sym: 'QQQ', price: '408.12', change: '+0.82%', up: true },
 	{ sym: 'IWM', price: '198.40', change: '-0.12%', up: false },
 	{ sym: 'AMD', price: '138.00', change: '+1.05%', up: true },
-	{ sym: 'BTC', price: '42,100', change: '+1.2%', up: true },
+	{ sym: 'BTC', price: '42,100', change: '+1.2%', up: true }
 ];
 
-export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (headers: Record<string, string>) => void }) => {
+export const load: PageServerLoad = async ({
+	setHeaders
+}: {
+	setHeaders: (headers: Record<string, string>) => void;
+}) => {
 	// Set caching headers for Google December 2025 Core Web Vitals compliance
 	// Note: Content-Encoding is handled by the server/CDN at runtime, not during prerender
 	setHeaders({
 		'Cache-Control': 'public, max-age=300, s-maxage=600, stale-while-revalidate=60',
-		'Vary': 'Accept-Encoding, Accept',
+		Vary: 'Accept-Encoding, Accept',
 		// Performance headers for LCP < 2.0s
 		'X-DNS-Prefetch-Control': 'on',
 		// Security headers for trustworthiness signals
@@ -119,8 +126,10 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 	// Generate SEO metadata aligned with Google December 2025 updates
 	const seoMetadata = {
 		title: 'Live Trading Rooms | Professional Trading Mentorship | Revolution Trading Pros',
-		description: 'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals with 15+ years experience.',
-		keywords: 'live trading rooms, professional trading mentorship, day trading education, swing trading strategies, small account growth, institutional trading, real-time trading alerts, expert traders',
+		description:
+			'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals with 15+ years experience.',
+		keywords:
+			'live trading rooms, professional trading mentorship, day trading education, swing trading strategies, small account growth, institutional trading, real-time trading alerts, expert traders',
 		canonical: 'https://revolution-trading-pros.com/live-trading-rooms',
 		author: 'Revolution Trading Pros - Professional Trading Education',
 		publisher: 'Revolution Trading Pros',
@@ -128,7 +137,8 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 		dateModified: new Date().toISOString(),
 		openGraph: {
 			title: 'Live Trading Rooms | Professional Trading Mentorship | Revolution Trading Pros',
-			description: 'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals.',
+			description:
+				'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals.',
 			type: 'website',
 			url: 'https://revolution-trading-pros.com/live-trading-rooms',
 			images: [
@@ -153,7 +163,8 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 		twitter: {
 			card: 'summary_large_image',
 			title: 'Live Trading Rooms | Professional Trading Mentorship',
-			description: 'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts.',
+			description:
+				'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts.',
 			images: ['https://revolution-trading-pros.com/images/live-trading-rooms-twitter.jpg'],
 			site: '@revolutiontrading',
 			creator: '@revolutiontrading',
@@ -163,7 +174,11 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 		eeat: {
 			expertise: {
 				level: 'professional',
-				authorCredentials: ['15+ years institutional trading', 'Series 7 & 63 licensed', 'Former hedge fund trader'],
+				authorCredentials: [
+					'15+ years institutional trading',
+					'Series 7 & 63 licensed',
+					'Former hedge fund trader'
+				],
 				originalResearch: 'Real-time market analysis and proprietary trading strategies',
 				contentDepth: 'Comprehensive trading education with live demonstrations'
 			},
@@ -190,7 +205,8 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 				'@id': 'https://revolution-trading-pros.com/live-trading-rooms',
 				url: 'https://revolution-trading-pros.com/live-trading-rooms',
 				name: 'Live Trading Rooms | Professional Trading Mentorship',
-				description: 'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals.',
+				description:
+					'Join expert traders in our live trading rooms. Learn day trading, swing trading, and small account strategies with real-time alerts from institutional professionals.',
 				inLanguage: 'en-US',
 				isPartOf: {
 					'@type': 'WebSite',
@@ -262,7 +278,8 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 				'@type': 'Service',
 				'@id': 'https://revolution-trading-pros.com/live-trading-rooms#service',
 				name: 'Live Trading Rooms',
-				description: 'Professional live trading rooms with real-time alerts and mentorship from institutional traders',
+				description:
+					'Professional live trading rooms with real-time alerts and mentorship from institutional traders',
 				provider: {
 					'@type': 'Organization',
 					'@id': 'https://revolution-trading-pros.com#organization',
@@ -274,7 +291,7 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 					serviceUrl: 'https://revolution-trading-pros.com/live-trading-rooms',
 					availableLanguage: ['English']
 				},
-				offers: tradingRoomsData.map(room => ({
+				offers: tradingRoomsData.map((room) => ({
 					'@type': 'Offer',
 					'@id': `https://revolution-trading-pros.com/live-trading-rooms#${room.id}`,
 					name: room.name,
@@ -293,7 +310,7 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 				hasOfferCatalog: {
 					'@type': 'OfferCatalog',
 					name: 'Trading Room Services',
-					itemListElement: tradingRoomsData.map(room => ({
+					itemListElement: tradingRoomsData.map((room) => ({
 						'@type': 'Offer',
 						itemOffered: {
 							'@type': 'Service',
@@ -307,7 +324,8 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 				'@type': 'EducationalOrganization',
 				'@id': 'https://revolution-trading-pros.com#organization',
 				name: 'Revolution Trading Pros',
-				description: 'Professional trading education and mentorship platform with institutional expertise',
+				description:
+					'Professional trading education and mentorship platform with institutional expertise',
 				url: 'https://revolution-trading-pros.com',
 				foundingDate: '2020',
 				address: {
@@ -333,7 +351,8 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 			{
 				'@type': 'Course',
 				name: 'Live Trading Mentorship Program',
-				description: 'Comprehensive live trading education with real-time mentorship from professional traders',
+				description:
+					'Comprehensive live trading education with real-time mentorship from professional traders',
 				provider: {
 					'@type': 'Organization',
 					'@id': 'https://revolution-trading-pros.com#organization',
@@ -341,7 +360,13 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 				},
 				educationalLevel: 'Intermediate to Advanced',
 				inLanguage: 'English',
-				about: ['Day Trading', 'Swing Trading', 'Risk Management', 'Technical Analysis', 'Market Psychology'],
+				about: [
+					'Day Trading',
+					'Swing Trading',
+					'Risk Management',
+					'Technical Analysis',
+					'Market Psychology'
+				],
 				teaches: [
 					'Professional trading strategies',
 					'Real-time market analysis',
@@ -390,11 +415,11 @@ export const load: PageServerLoad = async ({ setHeaders }: { setHeaders: (header
 		rooms: tradingRoomsData,
 		benefits: benefitsData,
 		symbols: tickerSymbols,
-		
+
 		// SEO metadata
 		seo: seoMetadata,
 		structuredData,
-		
+
 		// Performance metrics
 		generatedAt: new Date().toISOString(),
 		buildTime: process.env.NODE_ENV === 'production' ? 'static' : 'dynamic'

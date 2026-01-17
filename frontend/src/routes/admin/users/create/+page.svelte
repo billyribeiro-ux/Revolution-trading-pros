@@ -300,13 +300,7 @@
 	let loadingManagers = $state(false);
 	let errors = $state<ValidationError[]>([]);
 	let activeStep = $state<
-		| 'identity'
-		| 'security'
-		| 'role'
-		| 'organization'
-		| 'preferences'
-		| 'compliance'
-		| 'review'
+		'identity' | 'security' | 'role' | 'organization' | 'preferences' | 'compliance' | 'review'
 	>('identity');
 	let passwordVisible = $state(false);
 	let confirmPasswordVisible = $state(false);
@@ -422,19 +416,20 @@
 	async function loadLookupData() {
 		try {
 			// Load REAL data from APIs using Promise.allSettled for resilience
-			const [deptRes, teamsRes, managersRes, locationsRes, trainingRes, onboardingRes] = await Promise.allSettled([
-				fetch('/api/admin/organization/departments'),
-				fetch('/api/admin/organization/teams'),
-				fetch('/api/admin/users?role=manager&limit=50'),
-				fetch('/api/admin/organization/locations'),
-				fetch('/api/admin/organization/training-modules'),
-				fetch('/api/admin/organization/onboarding-plans')
-			]);
+			const [deptRes, teamsRes, managersRes, locationsRes, trainingRes, onboardingRes] =
+				await Promise.allSettled([
+					fetch('/api/admin/organization/departments'),
+					fetch('/api/admin/organization/teams'),
+					fetch('/api/admin/users?role=manager&limit=50'),
+					fetch('/api/admin/organization/locations'),
+					fetch('/api/admin/organization/training-modules'),
+					fetch('/api/admin/organization/onboarding-plans')
+				]);
 
 			// Process departments - provide sensible defaults if API fails
 			if (deptRes.status === 'fulfilled' && deptRes.value.ok) {
 				const data = await deptRes.value.json();
-				departments = Array.isArray(data) ? data : (data.data || []);
+				departments = Array.isArray(data) ? data : data.data || [];
 			}
 			// Default departments only if API returns empty
 			if (departments.length === 0) {
@@ -444,19 +439,19 @@
 			// Process teams
 			if (teamsRes.status === 'fulfilled' && teamsRes.value.ok) {
 				const data = await teamsRes.value.json();
-				teams = Array.isArray(data) ? data : (data.data || []);
+				teams = Array.isArray(data) ? data : data.data || [];
 			}
 
 			// Process managers
 			if (managersRes.status === 'fulfilled' && managersRes.value.ok) {
 				const data = await managersRes.value.json();
-				managers = Array.isArray(data) ? data : (data.data || []);
+				managers = Array.isArray(data) ? data : data.data || [];
 			}
 
 			// Process locations - provide remote as default
 			if (locationsRes.status === 'fulfilled' && locationsRes.value.ok) {
 				const data = await locationsRes.value.json();
-				locations = Array.isArray(data) ? data : (data.data || []);
+				locations = Array.isArray(data) ? data : data.data || [];
 			}
 			if (locations.length === 0) {
 				locations = [{ id: 'remote', name: 'Remote', timezone: 'UTC' }];
@@ -465,13 +460,13 @@
 			// Process training modules
 			if (trainingRes.status === 'fulfilled' && trainingRes.value.ok) {
 				const data = await trainingRes.value.json();
-				trainingModules = Array.isArray(data) ? data : (data.data || []);
+				trainingModules = Array.isArray(data) ? data : data.data || [];
 			}
 
 			// Process onboarding plans
 			if (onboardingRes.status === 'fulfilled' && onboardingRes.value.ok) {
 				const data = await onboardingRes.value.json();
-				onboardingPlans = Array.isArray(data) ? data : (data.data || []);
+				onboardingPlans = Array.isArray(data) ? data : data.data || [];
 			}
 			if (onboardingPlans.length === 0) {
 				onboardingPlans = [{ id: 'standard', name: 'Standard Onboarding', duration: 5 }];
@@ -725,7 +720,9 @@
 		checkingUsername = true;
 		try {
 			// Call REAL API to check username availability
-			const response = await fetch(`/api/admin/users/check-username?username=${encodeURIComponent(formData.username)}`);
+			const response = await fetch(
+				`/api/admin/users/check-username?username=${encodeURIComponent(formData.username)}`
+			);
 			if (response.ok) {
 				const data = await response.json();
 				usernameAvailable = data.available === true;
@@ -750,7 +747,9 @@
 		checkingEmail = true;
 		try {
 			// Call REAL API to check email availability
-			const response = await fetch(`/api/admin/users/check-email?email=${encodeURIComponent(formData.email)}`);
+			const response = await fetch(
+				`/api/admin/users/check-email?email=${encodeURIComponent(formData.email)}`
+			);
 			if (response.ok) {
 				const data = await response.json();
 				emailAvailable = data.available === true;

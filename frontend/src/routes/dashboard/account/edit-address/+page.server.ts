@@ -15,12 +15,12 @@ export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
 	try {
 		// Get auth token from cookies
 		const token = cookies.get('rtp_access_token');
-		
+
 		// Fetch user profile which includes basic info
 		const response = await fetch('/api/user/profile', {
 			headers: {
 				'Content-Type': 'application/json',
-				...(token && { 'Authorization': `Bearer ${token}` })
+				...(token && { Authorization: `Bearer ${token}` })
 			},
 			credentials: 'include'
 		});
@@ -93,13 +93,13 @@ export const actions = {
 		try {
 			// Get auth token from cookies
 			const token = cookies.get('rtp_access_token');
-			
+
 			// Update user profile with billing address
 			const response = await fetch('/api/user/profile', {
 				method: 'PUT',
 				headers: {
 					'Content-Type': 'application/json',
-					...(token && { 'Authorization': `Bearer ${token}` })
+					...(token && { Authorization: `Bearer ${token}` })
 				},
 				credentials: 'include',
 				body: JSON.stringify({
@@ -121,8 +121,8 @@ export const actions = {
 
 			if (!response.ok) {
 				const errorData = await response.json();
-				return fail(response.status, { 
-					message: errorData.message || 'Failed to update address' 
+				return fail(response.status, {
+					message: errorData.message || 'Failed to update address'
 				});
 			}
 

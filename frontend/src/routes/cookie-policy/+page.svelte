@@ -11,17 +11,12 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import {
-		scanCookies,
-		openPreferencesModal,
-		consentStore,
-		getVendorInfo,
-	} from '$lib/consent';
+	import { scanCookies, openPreferencesModal, consentStore, getVendorInfo } from '$lib/consent';
 	import { t, currentLanguage, getSupportedLanguages, setLanguage } from '$lib/consent/i18n';
 	import {
 		generateConsentReceipt,
 		downloadReceiptAsJSON,
-		printReceipt,
+		printReceipt
 	} from '$lib/consent/consent-receipt';
 	import { getVersionInfo } from '$lib/consent/versioning';
 	import type { CookieScanResult } from '$lib/consent';
@@ -57,7 +52,7 @@
 		lt: 'Lietuvių',
 		ja: '日本語',
 		zh: '中文',
-		ko: '한국어',
+		ko: '한국어'
 	};
 
 	onMount(() => {
@@ -94,7 +89,7 @@
 		analytics: 'bg-blue-500/20 text-blue-400 border-blue-500/30',
 		marketing: 'bg-purple-500/20 text-purple-400 border-purple-500/30',
 		preferences: 'bg-amber-500/20 text-amber-400 border-amber-500/30',
-		unknown: 'bg-gray-500/20 text-gray-400 border-gray-500/30',
+		unknown: 'bg-gray-500/20 text-gray-400 border-gray-500/30'
 	};
 </script>
 
@@ -109,11 +104,7 @@
 		<header class="header">
 			<div class="header-top">
 				<h1>{$t.cookiePolicyTitle}</h1>
-				<select
-					class="language-select"
-					value={$currentLanguage}
-					onchange={handleLanguageChange}
-				>
+				<select class="language-select" value={$currentLanguage} onchange={handleLanguageChange}>
 					{#each getSupportedLanguages().slice(0, 7) as lang}
 						<option value={lang}>{languageNames[lang]}</option>
 					{/each}
@@ -128,26 +119,52 @@
 		<!-- Quick Actions -->
 		<section class="quick-actions">
 			<button class="btn btn-primary" onclick={handleManageCookies}>
-				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"/>
-					<circle cx="12" cy="12" r="3"/>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
+					<path
+						d="M12.22 2h-.44a2 2 0 0 0-2 2v.18a2 2 0 0 1-1 1.73l-.43.25a2 2 0 0 1-2 0l-.15-.08a2 2 0 0 0-2.73.73l-.22.38a2 2 0 0 0 .73 2.73l.15.1a2 2 0 0 1 1 1.72v.51a2 2 0 0 1-1 1.74l-.15.09a2 2 0 0 0-.73 2.73l.22.38a2 2 0 0 0 2.73.73l.15-.08a2 2 0 0 1 2 0l.43.25a2 2 0 0 1 1 1.73V20a2 2 0 0 0 2 2h.44a2 2 0 0 0 2-2v-.18a2 2 0 0 1 1-1.73l.43-.25a2 2 0 0 1 2 0l.15.08a2 2 0 0 0 2.73-.73l.22-.39a2 2 0 0 0-.73-2.73l-.15-.08a2 2 0 0 1-1-1.74v-.5a2 2 0 0 1 1-1.74l.15-.09a2 2 0 0 0 .73-2.73l-.22-.38a2 2 0 0 0-2.73-.73l-.15.08a2 2 0 0 1-2 0l-.43-.25a2 2 0 0 1-1-1.73V4a2 2 0 0 0-2-2z"
+					/>
+					<circle cx="12" cy="12" r="3" />
 				</svg>
 				{$t.cookieSettings}
 			</button>
 			{#if $consentStore.hasInteracted}
 				<button class="btn btn-secondary" onclick={handleDownloadReceipt}>
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-						<polyline points="7 10 12 15 17 10"/>
-						<line x1="12" y1="15" x2="12" y2="3"/>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+						<polyline points="7 10 12 15 17 10" />
+						<line x1="12" y1="15" x2="12" y2="3" />
 					</svg>
 					{$t.downloadReceipt}
 				</button>
 				<button class="btn btn-secondary" onclick={handlePrintReceipt}>
-					<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-						<polyline points="6 9 6 2 18 2 18 9"/>
-						<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
-						<rect x="6" y="14" width="12" height="8"/>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="18"
+						height="18"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<polyline points="6 9 6 2 18 2 18 9" />
+						<path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2" />
+						<rect x="6" y="14" width="12" height="8" />
 					</svg>
 					Print Receipt
 				</button>
@@ -259,7 +276,9 @@
 					{#if cookies.length > 0}
 						<div class="cookie-category-section">
 							<h3 class="category-title">
-								<span class="category-badge {categoryColors[category] || categoryColors['unknown']}">
+								<span
+									class="category-badge {categoryColors[category] || categoryColors['unknown']}"
+								>
 									{category}
 								</span>
 								({cookies.length} cookies)
@@ -281,7 +300,10 @@
 												<td>{cookie.purpose || 'Not specified'}</td>
 												<td>{cookie.duration || 'Session'}</td>
 												<td>
-													<span class="type-badge" class:first-party={cookie.type === 'first-party'}>
+													<span
+														class="type-badge"
+														class:first-party={cookie.type === 'first-party'}
+													>
 														{cookie.type || 'Unknown'}
 													</span>
 												</td>
@@ -318,7 +340,12 @@
 								{/if}
 							</div>
 							{#if vendor.privacyPolicyUrl}
-								<a href={vendor.privacyPolicyUrl} target="_blank" rel="noopener noreferrer" class="vendor-link">
+								<a
+									href={vendor.privacyPolicyUrl}
+									target="_blank"
+									rel="noopener noreferrer"
+									class="vendor-link"
+								>
 									Privacy Policy →
 								</a>
 							{/if}

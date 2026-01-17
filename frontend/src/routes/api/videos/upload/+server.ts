@@ -123,7 +123,8 @@ async function handlePresignRequest(request: Request, token?: string) {
 		const data = await response.json();
 
 		// Create local session for tracking
-		const uploadId = data.data?.upload_id || `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+		const uploadId =
+			data.data?.upload_id || `upload_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
 		const session: UploadSession = {
 			id: uploadId,
 			filename,
@@ -199,7 +200,7 @@ async function handleDirectUpload(request: Request, token?: string) {
 	try {
 		const formData = await request.formData();
 		const file = formData.get('file') as File | null;
-		const type = formData.get('type') as string || 'video';
+		const type = (formData.get('type') as string) || 'video';
 		const sessionId = formData.get('session_id') as string | null;
 
 		if (!file) {

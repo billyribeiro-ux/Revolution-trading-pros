@@ -82,7 +82,9 @@
 				<div
 					class="inline-flex items-center justify-center w-16 h-16 sm:w-20 sm:h-20 rounded-xl sm:rounded-2xl bg-gradient-to-br from-amber-500 to-orange-500 p-0.5 mb-4 sm:mb-6"
 				>
-					<div class="w-full h-full bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-center">
+					<div
+						class="w-full h-full bg-slate-900 rounded-xl sm:rounded-2xl flex items-center justify-center"
+					>
 						<IconMail size={32} class="text-amber-400 sm:hidden" />
 						<IconMail size={40} class="text-amber-400 hidden sm:block" />
 					</div>

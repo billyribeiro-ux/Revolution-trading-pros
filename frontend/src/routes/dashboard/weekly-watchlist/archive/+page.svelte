@@ -33,7 +33,7 @@
 			currentPage: number;
 		};
 	}>();
-	
+
 	// Svelte 5 $derived for computed values
 	const hasMorePages = $derived(data.currentPage < data.totalPages);
 	const latestWatchlist = $derived(data.latestWatchlist);
@@ -62,12 +62,17 @@
 	<!-- Pagination -->
 	{#if data.totalPages > 1}
 		<div class="pagination">
-			<span aria-current="page" class="pagination__number pagination__number--active">{data.currentPage}</span>
+			<span aria-current="page" class="pagination__number pagination__number--active"
+				>{data.currentPage}</span
+			>
 			{#if hasMorePages}
 				<a class="pagination__number" href="/dashboard/weekly-watchlist/archive?pg=2">2</a>
 				<a class="pagination__number" href="/dashboard/weekly-watchlist/archive?pg=3">3</a>
 				<span class="pagination__dots">&hellip;</span>
-				<a class="pagination__number" href="/dashboard/weekly-watchlist/archive?pg={data.totalPages}">{data.totalPages}</a>
+				<a
+					class="pagination__number"
+					href="/dashboard/weekly-watchlist/archive?pg={data.totalPages}">{data.totalPages}</a
+				>
 				<a class="pagination__next" href="/dashboard/weekly-watchlist/archive?pg=2">&raquo;</a>
 			{/if}
 		</div>
@@ -164,7 +169,8 @@
 		font-size: 13px;
 		font-weight: 600;
 		color: #fff;
-		background: transparent linear-gradient(180deg, #17a2b8 0%, #138496 100%) 0% 0% no-repeat padding-box;
+		background: transparent linear-gradient(180deg, #17a2b8 0%, #138496 100%) 0% 0% no-repeat
+			padding-box;
 		border-radius: 50px;
 		text-decoration: none;
 		transition: all 0.2s;
@@ -172,7 +178,8 @@
 	}
 
 	.archive-item__btn:hover {
-		background: transparent linear-gradient(180deg, #138496 0%, #0f6674 100%) 0% 0% no-repeat padding-box;
+		background: transparent linear-gradient(180deg, #138496 0%, #0f6674 100%) 0% 0% no-repeat
+			padding-box;
 	}
 
 	/* Pagination */
@@ -194,9 +201,9 @@
 	}
 
 	.pagination__number--active {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	.pagination__number:first-child {

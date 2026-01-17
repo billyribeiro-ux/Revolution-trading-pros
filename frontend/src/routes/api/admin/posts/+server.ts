@@ -23,7 +23,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			...options,
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				...(options?.headers || {})
 			}
 		});
@@ -45,7 +45,8 @@ const mockPosts = [
 		id: 1,
 		title: 'Getting Started with Options Trading',
 		slug: 'getting-started-options-trading',
-		excerpt: 'Learn the fundamentals of options trading and how to get started with your first trade.',
+		excerpt:
+			'Learn the fundamentals of options trading and how to get started with your first trade.',
 		content: '<p>Options trading can be a powerful tool in your investing arsenal...</p>',
 		blocks: [],
 		status: 'published',
@@ -68,7 +69,8 @@ const mockPosts = [
 		id: 2,
 		title: 'Risk Management Strategies for Day Traders',
 		slug: 'risk-management-day-traders',
-		excerpt: 'Protect your capital with proven risk management techniques used by professional traders.',
+		excerpt:
+			'Protect your capital with proven risk management techniques used by professional traders.',
 		content: '<p>Effective risk management is the cornerstone of successful trading...</p>',
 		blocks: [],
 		status: 'published',
@@ -92,7 +94,8 @@ const mockPosts = [
 		title: 'Technical Analysis 101: Chart Patterns',
 		slug: 'technical-analysis-chart-patterns',
 		excerpt: 'Master the most important chart patterns every trader needs to know.',
-		content: '<p>Technical analysis involves analyzing price charts to predict future movements...</p>',
+		content:
+			'<p>Technical analysis involves analyzing price charts to predict future movements...</p>',
 		blocks: [],
 		status: 'draft',
 		category_id: 3,
@@ -142,21 +145,22 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
 	// Apply filters
 	if (status && status !== 'all') {
-		filteredPosts = filteredPosts.filter(p => p.status === status);
+		filteredPosts = filteredPosts.filter((p) => p.status === status);
 	}
 
 	if (category && category !== 'all') {
-		filteredPosts = filteredPosts.filter(p =>
-			p.category?.slug === category || p.category_id?.toString() === category
+		filteredPosts = filteredPosts.filter(
+			(p) => p.category?.slug === category || p.category_id?.toString() === category
 		);
 	}
 
 	if (search) {
 		const searchLower = search.toLowerCase();
-		filteredPosts = filteredPosts.filter(p =>
-			p.title.toLowerCase().includes(searchLower) ||
-			p.excerpt.toLowerCase().includes(searchLower) ||
-			p.tags?.some(t => t.toLowerCase().includes(searchLower))
+		filteredPosts = filteredPosts.filter(
+			(p) =>
+				p.title.toLowerCase().includes(searchLower) ||
+				p.excerpt.toLowerCase().includes(searchLower) ||
+				p.tags?.some((t) => t.toLowerCase().includes(searchLower))
 		);
 	}
 
@@ -275,7 +279,7 @@ export const PUT: RequestHandler = async ({ request, url }) => {
 		}
 
 		// Fallback: update in mock
-		const index = mockPosts.findIndex(p => p.id === parseInt(postId));
+		const index = mockPosts.findIndex((p) => p.id === parseInt(postId));
 		if (index === -1) {
 			throw error(404, 'Post not found');
 		}
@@ -318,7 +322,7 @@ export const DELETE: RequestHandler = async ({ url, request }) => {
 	}
 
 	// Fallback: delete from mock
-	const index = mockPosts.findIndex(p => p.id === parseInt(postId));
+	const index = mockPosts.findIndex((p) => p.id === parseInt(postId));
 	if (index === -1) {
 		throw error(404, 'Post not found');
 	}

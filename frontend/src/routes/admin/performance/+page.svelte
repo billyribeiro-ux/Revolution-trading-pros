@@ -40,7 +40,9 @@
 		try {
 			const [dashboardData, recommendationsData] = await Promise.all([
 				bingSeoApi.getPerformanceDashboard().catch(() => null),
-				bingSeoApi.getRecommendations().catch(() => ({ recommendations: [], cdn: null, core_web_vitals: null }))
+				bingSeoApi
+					.getRecommendations()
+					.catch(() => ({ recommendations: [], cdn: null, core_web_vitals: null }))
 			]);
 
 			dashboard = dashboardData;
@@ -112,278 +114,284 @@
 
 <div class="performance-page">
 	<div class="admin-page-container">
-	<!-- Header -->
-	<div class="page-header">
-		<div class="header-content">
-			<div class="header-title">
-				<div class="title-icon">
-					<IconGauge size={28} />
+		<!-- Header -->
+		<div class="page-header">
+			<div class="header-content">
+				<div class="header-title">
+					<div class="title-icon">
+						<IconGauge size={28} />
+					</div>
+					<div>
+						<h1>Performance Dashboard</h1>
+						<p class="subtitle">Monitor and optimize your website performance</p>
+					</div>
 				</div>
-				<div>
-					<h1>Performance Dashboard</h1>
-					<p class="subtitle">Monitor and optimize your website performance</p>
+
+				<div class="header-actions">
+					<button class="btn-secondary" onclick={loadData}>
+						<IconRefresh size={18} />
+						Refresh
+					</button>
+					<button class="btn-primary" onclick={handleWarmCaches} disabled={warmingCaches}>
+						{#if warmingCaches}
+							Warming...
+						{:else}
+							<IconFlame size={18} />
+							Warm Caches
+						{/if}
+					</button>
 				</div>
 			</div>
+		</div>
 
-			<div class="header-actions">
-				<button class="btn-secondary" onclick={loadData}>
-					<IconRefresh size={18} />
-					Refresh
-				</button>
-				<button class="btn-primary" onclick={handleWarmCaches} disabled={warmingCaches}>
-					{#if warmingCaches}
-						Warming...
-					{:else}
-						<IconFlame size={18} />
-						Warm Caches
+		{#if loading}
+			<div class="loading-grid">
+				{#each [1, 2, 3, 4] as _}
+					<div class="skeleton skeleton-metric"></div>
+				{/each}
+			</div>
+		{:else}
+			<!-- Core Web Vitals -->
+			<div class="section">
+				<h2 class="section-title">
+					<IconBolt size={20} />
+					Core Web Vitals
+				</h2>
+				<p class="section-description">
+					Google's metrics for user experience. Aim for "Good" on all metrics to boost search
+					rankings.
+				</p>
+
+				<div class="vitals-grid">
+					{#if true}
+						{@const lcpRating = getVitalRating(coreWebVitals?.lcp_rating)}
+						<div class="vital-card">
+							<div class="vital-header">
+								<span class="vital-name">LCP</span>
+								<span class="vital-label">Largest Contentful Paint</span>
+							</div>
+							<div class="vital-value">{formatMs(coreWebVitals?.lcp)}</div>
+							<div class="vital-rating {lcpRating.color}">
+								<lcpRating.icon size={16} />
+								{lcpRating.label}
+							</div>
+							<div class="vital-target">Target: &lt; 2.5s</div>
+						</div>
 					{/if}
-				</button>
-			</div>
-		</div>
-	</div>
 
-	{#if loading}
-		<div class="loading-grid">
-			{#each [1, 2, 3, 4] as _}
-				<div class="skeleton skeleton-metric"></div>
-			{/each}
-		</div>
-	{:else}
-		<!-- Core Web Vitals -->
-		<div class="section">
-			<h2 class="section-title">
-				<IconBolt size={20} />
-				Core Web Vitals
-			</h2>
-			<p class="section-description">
-				Google's metrics for user experience. Aim for "Good" on all metrics to boost search rankings.
-			</p>
-
-			<div class="vitals-grid">
-				{#if true}
-					{@const lcpRating = getVitalRating(coreWebVitals?.lcp_rating)}
-					<div class="vital-card">
-						<div class="vital-header">
-							<span class="vital-name">LCP</span>
-							<span class="vital-label">Largest Contentful Paint</span>
-						</div>
-						<div class="vital-value">{formatMs(coreWebVitals?.lcp)}</div>
-						<div class="vital-rating {lcpRating.color}">
-							<lcpRating.icon size={16} />
-							{lcpRating.label}
-						</div>
-						<div class="vital-target">Target: &lt; 2.5s</div>
-					</div>
-				{/if}
-
-				{#if true}
-					{@const fidRating = getVitalRating(coreWebVitals?.fid_rating)}
-					<div class="vital-card">
-						<div class="vital-header">
-							<span class="vital-name">FID</span>
-							<span class="vital-label">First Input Delay</span>
-						</div>
-						<div class="vital-value">{formatMs(coreWebVitals?.fid)}</div>
-						<div class="vital-rating {fidRating.color}">
-							<fidRating.icon size={16} />
-							{fidRating.label}
-						</div>
-						<div class="vital-target">Target: &lt; 100ms</div>
-					</div>
-				{/if}
-
-				{#if true}
-					{@const clsRating = getVitalRating(coreWebVitals?.cls_rating)}
-					<div class="vital-card">
-						<div class="vital-header">
-							<span class="vital-name">CLS</span>
-							<span class="vital-label">Cumulative Layout Shift</span>
-						</div>
-						<div class="vital-value">{coreWebVitals?.cls?.toFixed(3) || '-'}</div>
-						<div class="vital-rating {clsRating.color}">
-							<clsRating.icon size={16} />
-							{clsRating.label}
-						</div>
-						<div class="vital-target">Target: &lt; 0.1</div>
-					</div>
-				{/if}
-
-				{#if true}
-					{@const inpRating = getVitalRating(coreWebVitals?.inp_rating)}
-					<div class="vital-card">
-						<div class="vital-header">
-							<span class="vital-name">INP</span>
-							<span class="vital-label">Interaction to Next Paint</span>
-						</div>
-						<div class="vital-value">{formatMs(coreWebVitals?.inp)}</div>
-						<div class="vital-rating {inpRating.color}">
-							<inpRating.icon size={16} />
-							{inpRating.label}
-						</div>
-						<div class="vital-target">Target: &lt; 200ms</div>
-					</div>
-				{/if}
-			</div>
-		</div>
-
-		<!-- Server Metrics -->
-		<div class="metrics-grid">
-			<div class="metric-card">
-				<div class="metric-header">
-					<div class="metric-icon server">
-						<IconServer size={24} />
-					</div>
-					<h3>Server</h3>
-				</div>
-				<div class="metric-content">
-					<div class="metric-row">
-						<span>CPU Usage</span>
-						<div class="metric-bar-container">
-							<div
-								class="metric-bar"
-								class:warning={(dashboard?.server?.cpu_usage || 0) > 70}
-								class:danger={(dashboard?.server?.cpu_usage || 0) > 90}
-								style="width: {dashboard?.server?.cpu_usage || 0}%"
-							></div>
-						</div>
-						<span class="metric-value">{formatPercent(dashboard?.server?.cpu_usage)}</span>
-					</div>
-					<div class="metric-row">
-						<span>Memory</span>
-						<div class="metric-bar-container">
-							<div
-								class="metric-bar"
-								class:warning={(dashboard?.server?.memory_usage || 0) > 70}
-								class:danger={(dashboard?.server?.memory_usage || 0) > 90}
-								style="width: {dashboard?.server?.memory_usage || 0}%"
-							></div>
-						</div>
-						<span class="metric-value">{formatPercent(dashboard?.server?.memory_usage)}</span>
-					</div>
-					<div class="metric-row">
-						<span>Disk</span>
-						<div class="metric-bar-container">
-							<div
-								class="metric-bar"
-								class:warning={(dashboard?.server?.disk_usage || 0) > 70}
-								class:danger={(dashboard?.server?.disk_usage || 0) > 90}
-								style="width: {dashboard?.server?.disk_usage || 0}%"
-							></div>
-						</div>
-						<span class="metric-value">{formatPercent(dashboard?.server?.disk_usage)}</span>
-					</div>
-					<div class="metric-row">
-						<span>Uptime</span>
-						<span class="metric-value">{dashboard?.server?.uptime || '-'}</span>
-					</div>
-				</div>
-			</div>
-
-			<div class="metric-card">
-				<div class="metric-header">
-					<div class="metric-icon database">
-						<IconDatabase size={24} />
-					</div>
-					<h3>Database</h3>
-				</div>
-				<div class="metric-content">
-					<div class="metric-stat">
-						<span class="stat-value">{dashboard?.database?.query_count?.toLocaleString() || 0}</span>
-						<span class="stat-label">Total Queries</span>
-					</div>
-					<div class="metric-stat">
-						<span class="stat-value">{dashboard?.database?.slow_queries || 0}</span>
-						<span class="stat-label">Slow Queries</span>
-					</div>
-					<div class="metric-stat">
-						<span class="stat-value">{dashboard?.database?.connection_pool || 0}</span>
-						<span class="stat-label">Connection Pool</span>
-					</div>
-					<div class="metric-stat">
-						<span class="stat-value">{formatMs(dashboard?.database?.avg_query_time)}</span>
-						<span class="stat-label">Avg Query Time</span>
-					</div>
-				</div>
-			</div>
-
-			<div class="metric-card">
-				<div class="metric-header">
-					<div class="metric-icon cache">
-						<IconActivity size={24} />
-					</div>
-					<h3>Cache</h3>
-				</div>
-				<div class="metric-content">
-					<div class="metric-row">
-						<span>Hit Rate</span>
-						<div class="metric-bar-container">
-							<div
-								class="metric-bar success"
-								style="width: {dashboard?.cache?.hit_rate || 0}%"
-							></div>
-						</div>
-						<span class="metric-value">{formatPercent(dashboard?.cache?.hit_rate)}</span>
-					</div>
-					<div class="metric-stat">
-						<span class="stat-value">{dashboard?.cache?.memory_used || '-'}</span>
-						<span class="stat-label">Memory Used</span>
-					</div>
-					<div class="metric-stat">
-						<span class="stat-value">{dashboard?.cache?.keys_count?.toLocaleString() || 0}</span>
-						<span class="stat-label">Cached Keys</span>
-					</div>
-					<div class="metric-stat">
-						<span class="stat-value">{dashboard?.cache?.evictions?.toLocaleString() || 0}</span>
-						<span class="stat-label">Evictions</span>
-					</div>
-				</div>
-			</div>
-		</div>
-
-		<!-- Recommendations -->
-		<div class="section">
-			<h2 class="section-title">
-				<IconChartBar size={20} />
-				Optimization Recommendations
-			</h2>
-
-			{#if recommendations.length === 0}
-				<div class="empty-state">
-					<IconCheck size={48} stroke={1} />
-					<h3>All Good!</h3>
-					<p>No immediate optimizations recommended</p>
-				</div>
-			{:else}
-				<div class="recommendations-list">
-					{#each recommendations as rec}
-						<div class="recommendation-card">
-							<div class="rec-priority {getPriorityColor(rec.priority)}">
-								{rec.priority}
+					{#if true}
+						{@const fidRating = getVitalRating(coreWebVitals?.fid_rating)}
+						<div class="vital-card">
+							<div class="vital-header">
+								<span class="vital-name">FID</span>
+								<span class="vital-label">First Input Delay</span>
 							</div>
-							<div class="rec-content">
-								<div class="rec-header">
-									<h4>{rec.title}</h4>
-									<span class="rec-category">{rec.category}</span>
+							<div class="vital-value">{formatMs(coreWebVitals?.fid)}</div>
+							<div class="vital-rating {fidRating.color}">
+								<fidRating.icon size={16} />
+								{fidRating.label}
+							</div>
+							<div class="vital-target">Target: &lt; 100ms</div>
+						</div>
+					{/if}
+
+					{#if true}
+						{@const clsRating = getVitalRating(coreWebVitals?.cls_rating)}
+						<div class="vital-card">
+							<div class="vital-header">
+								<span class="vital-name">CLS</span>
+								<span class="vital-label">Cumulative Layout Shift</span>
+							</div>
+							<div class="vital-value">{coreWebVitals?.cls?.toFixed(3) || '-'}</div>
+							<div class="vital-rating {clsRating.color}">
+								<clsRating.icon size={16} />
+								{clsRating.label}
+							</div>
+							<div class="vital-target">Target: &lt; 0.1</div>
+						</div>
+					{/if}
+
+					{#if true}
+						{@const inpRating = getVitalRating(coreWebVitals?.inp_rating)}
+						<div class="vital-card">
+							<div class="vital-header">
+								<span class="vital-name">INP</span>
+								<span class="vital-label">Interaction to Next Paint</span>
+							</div>
+							<div class="vital-value">{formatMs(coreWebVitals?.inp)}</div>
+							<div class="vital-rating {inpRating.color}">
+								<inpRating.icon size={16} />
+								{inpRating.label}
+							</div>
+							<div class="vital-target">Target: &lt; 200ms</div>
+						</div>
+					{/if}
+				</div>
+			</div>
+
+			<!-- Server Metrics -->
+			<div class="metrics-grid">
+				<div class="metric-card">
+					<div class="metric-header">
+						<div class="metric-icon server">
+							<IconServer size={24} />
+						</div>
+						<h3>Server</h3>
+					</div>
+					<div class="metric-content">
+						<div class="metric-row">
+							<span>CPU Usage</span>
+							<div class="metric-bar-container">
+								<div
+									class="metric-bar"
+									class:warning={(dashboard?.server?.cpu_usage || 0) > 70}
+									class:danger={(dashboard?.server?.cpu_usage || 0) > 90}
+									style="width: {dashboard?.server?.cpu_usage || 0}%"
+								></div>
+							</div>
+							<span class="metric-value">{formatPercent(dashboard?.server?.cpu_usage)}</span>
+						</div>
+						<div class="metric-row">
+							<span>Memory</span>
+							<div class="metric-bar-container">
+								<div
+									class="metric-bar"
+									class:warning={(dashboard?.server?.memory_usage || 0) > 70}
+									class:danger={(dashboard?.server?.memory_usage || 0) > 90}
+									style="width: {dashboard?.server?.memory_usage || 0}%"
+								></div>
+							</div>
+							<span class="metric-value">{formatPercent(dashboard?.server?.memory_usage)}</span>
+						</div>
+						<div class="metric-row">
+							<span>Disk</span>
+							<div class="metric-bar-container">
+								<div
+									class="metric-bar"
+									class:warning={(dashboard?.server?.disk_usage || 0) > 70}
+									class:danger={(dashboard?.server?.disk_usage || 0) > 90}
+									style="width: {dashboard?.server?.disk_usage || 0}%"
+								></div>
+							</div>
+							<span class="metric-value">{formatPercent(dashboard?.server?.disk_usage)}</span>
+						</div>
+						<div class="metric-row">
+							<span>Uptime</span>
+							<span class="metric-value">{dashboard?.server?.uptime || '-'}</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="metric-card">
+					<div class="metric-header">
+						<div class="metric-icon database">
+							<IconDatabase size={24} />
+						</div>
+						<h3>Database</h3>
+					</div>
+					<div class="metric-content">
+						<div class="metric-stat">
+							<span class="stat-value"
+								>{dashboard?.database?.query_count?.toLocaleString() || 0}</span
+							>
+							<span class="stat-label">Total Queries</span>
+						</div>
+						<div class="metric-stat">
+							<span class="stat-value">{dashboard?.database?.slow_queries || 0}</span>
+							<span class="stat-label">Slow Queries</span>
+						</div>
+						<div class="metric-stat">
+							<span class="stat-value">{dashboard?.database?.connection_pool || 0}</span>
+							<span class="stat-label">Connection Pool</span>
+						</div>
+						<div class="metric-stat">
+							<span class="stat-value">{formatMs(dashboard?.database?.avg_query_time)}</span>
+							<span class="stat-label">Avg Query Time</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="metric-card">
+					<div class="metric-header">
+						<div class="metric-icon cache">
+							<IconActivity size={24} />
+						</div>
+						<h3>Cache</h3>
+					</div>
+					<div class="metric-content">
+						<div class="metric-row">
+							<span>Hit Rate</span>
+							<div class="metric-bar-container">
+								<div
+									class="metric-bar success"
+									style="width: {dashboard?.cache?.hit_rate || 0}%"
+								></div>
+							</div>
+							<span class="metric-value">{formatPercent(dashboard?.cache?.hit_rate)}</span>
+						</div>
+						<div class="metric-stat">
+							<span class="stat-value">{dashboard?.cache?.memory_used || '-'}</span>
+							<span class="stat-label">Memory Used</span>
+						</div>
+						<div class="metric-stat">
+							<span class="stat-value">{dashboard?.cache?.keys_count?.toLocaleString() || 0}</span>
+							<span class="stat-label">Cached Keys</span>
+						</div>
+						<div class="metric-stat">
+							<span class="stat-value">{dashboard?.cache?.evictions?.toLocaleString() || 0}</span>
+							<span class="stat-label">Evictions</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- Recommendations -->
+			<div class="section">
+				<h2 class="section-title">
+					<IconChartBar size={20} />
+					Optimization Recommendations
+				</h2>
+
+				{#if recommendations.length === 0}
+					<div class="empty-state">
+						<IconCheck size={48} stroke={1} />
+						<h3>All Good!</h3>
+						<p>No immediate optimizations recommended</p>
+					</div>
+				{:else}
+					<div class="recommendations-list">
+						{#each recommendations as rec}
+							<div class="recommendation-card">
+								<div class="rec-priority {getPriorityColor(rec.priority)}">
+									{rec.priority}
 								</div>
-								<p class="rec-description">{rec.description}</p>
-								<div class="rec-details">
-									<div class="rec-impact">
-										<strong>Impact:</strong> {rec.impact}
+								<div class="rec-content">
+									<div class="rec-header">
+										<h4>{rec.title}</h4>
+										<span class="rec-category">{rec.category}</span>
 									</div>
-									{#if rec.implementation}
-										<div class="rec-implementation">
-											<strong>How to fix:</strong> {rec.implementation}
+									<p class="rec-description">{rec.description}</p>
+									<div class="rec-details">
+										<div class="rec-impact">
+											<strong>Impact:</strong>
+											{rec.impact}
 										</div>
-									{/if}
+										{#if rec.implementation}
+											<div class="rec-implementation">
+												<strong>How to fix:</strong>
+												{rec.implementation}
+											</div>
+										{/if}
+									</div>
 								</div>
 							</div>
-						</div>
-					{/each}
-				</div>
-			{/if}
-		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+						{/each}
+					</div>
+				{/if}
+			</div>
+		{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -563,7 +571,7 @@
 
 	.metric-icon.server {
 		background: rgba(230, 184, 0, 0.15);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 	.metric-icon.database {
 		background: rgba(16, 185, 129, 0.15);
@@ -605,7 +613,7 @@
 
 	.metric-bar {
 		height: 100%;
-		background: linear-gradient(90deg, #E6B800, #B38F00);
+		background: linear-gradient(90deg, #e6b800, #b38f00);
 		border-radius: 4px;
 		transition: width 0.3s;
 	}

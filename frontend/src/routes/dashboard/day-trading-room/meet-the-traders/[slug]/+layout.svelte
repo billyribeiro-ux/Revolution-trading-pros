@@ -138,14 +138,13 @@
 	}
 
 	.btn-default {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border: 1px solid #143E59;
+		border: 1px solid #143e59;
 	}
 
 	.btn-default:hover {
 		background: #0c2638;
 		border-color: #0c2638;
 	}
-
 </style>

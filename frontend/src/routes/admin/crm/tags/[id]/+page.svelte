@@ -49,7 +49,7 @@
 
 	// Filter contacts locally
 	let filteredContacts = $derived(
-		contacts.filter(contact => {
+		contacts.filter((contact) => {
 			if (!searchQuery) return true;
 			const query = searchQuery.toLowerCase();
 			return (
@@ -113,13 +113,15 @@
 
 	function getInitials(name: string): string {
 		if (!name) return 'U';
-		return name
-			.split(' ')
-			.filter(n => n.length > 0)
-			.map(n => n[0])
-			.join('')
-			.toUpperCase()
-			.slice(0, 2) || 'U';
+		return (
+			name
+				.split(' ')
+				.filter((n) => n.length > 0)
+				.map((n) => n[0])
+				.join('')
+				.toUpperCase()
+				.slice(0, 2) || 'U'
+		);
 	}
 
 	function getStatusColor(status: string): string {
@@ -257,7 +259,12 @@
 										</a>
 									</td>
 									<td>
-										<span class="status-badge" style="background-color: {getStatusColor(contact.status)}20; color: {getStatusColor(contact.status)}">
+										<span
+											class="status-badge"
+											style="background-color: {getStatusColor(
+												contact.status
+											)}20; color: {getStatusColor(contact.status)}"
+										>
 											{contact.status}
 										</span>
 									</td>
@@ -270,7 +277,11 @@
 									</td>
 									<td>
 										<div class="action-buttons">
-											<a href="/admin/crm/contacts/{contact.id}" class="btn-icon" title="View Contact">
+											<a
+												href="/admin/crm/contacts/{contact.id}"
+												class="btn-icon"
+												title="View Contact"
+											>
 												<IconUser size={16} />
 											</a>
 											<button
@@ -294,7 +305,10 @@
 						<button
 							class="page-btn"
 							disabled={currentPage === 1}
-							onclick={() => { currentPage--; loadContacts(); }}
+							onclick={() => {
+								currentPage--;
+								loadContacts();
+							}}
 						>
 							<IconChevronLeft size={18} />
 						</button>
@@ -302,7 +316,10 @@
 						<button
 							class="page-btn"
 							disabled={currentPage === totalPages}
-							onclick={() => { currentPage++; loadContacts(); }}
+							onclick={() => {
+								currentPage++;
+								loadContacts();
+							}}
 						>
 							<IconChevronRight size={18} />
 						</button>
@@ -405,8 +422,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.stats-grid {
@@ -418,7 +439,9 @@
 	}
 
 	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.stat-card {
@@ -440,8 +463,14 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
 
 	.stat-content {
 		display: flex;
@@ -666,7 +695,9 @@
 		color: #94a3b8;
 	}
 
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;

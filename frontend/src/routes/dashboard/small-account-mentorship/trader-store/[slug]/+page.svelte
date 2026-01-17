@@ -42,7 +42,8 @@
 			name: 'The New Squeeze Pro System',
 			price: 2197,
 			formattedPrice: '$2,197',
-			image: 'https://cdn.simplertrading.com/dev/wp-content/uploads/2019/08/22154121/Squeeze-Pro-Trailer-Cardxx-300x169.jpg',
+			image:
+				'https://cdn.simplertrading.com/dev/wp-content/uploads/2019/08/22154121/Squeeze-Pro-Trailer-Cardxx-300x169.jpg',
 			description: '',
 			url: '#',
 			traders: ['John Carter'],
@@ -55,8 +56,10 @@
 			name: 'Monster Momo Method Basic',
 			price: 997,
 			formattedPrice: '$997',
-			image: 'https://cdn.simplertrading.com/2025/05/27173247/Store-Card-176x112-JC-Monster-Momo-Method-300x191.jpg',
-			description: "Discover John's NEW Tools for Targeting Big breakouts and Sudden Reversals with Clarity and Confidence",
+			image:
+				'https://cdn.simplertrading.com/2025/05/27173247/Store-Card-176x112-JC-Monster-Momo-Method-300x191.jpg',
+			description:
+				"Discover John's NEW Tools for Targeting Big breakouts and Sudden Reversals with Clarity and Confidence",
 			url: '#',
 			traders: ['John Carter'],
 			markets: 'Options',
@@ -68,7 +71,8 @@
 			name: 'Mastering the Trade University – All 12 Courses',
 			price: 997,
 			formattedPrice: '$997',
-			image: 'https://cdn.simplertrading.com/2025/05/12141240/Store-Card-JC-MasteringTheTrade-University.jpg',
+			image:
+				'https://cdn.simplertrading.com/2025/05/12141240/Store-Card-JC-MasteringTheTrade-University.jpg',
 			description: 'Attend 12 immersive sessions with the Simpler Trading Team',
 			url: '#',
 			traders: ['Danielle Shay', 'Henry Gambell', 'John Carter', 'Sam Shames', 'Taylor Horton'],
@@ -81,7 +85,8 @@
 			name: 'Sandbox Elite Package',
 			price: 997,
 			formattedPrice: '$997',
-			image: 'https://cdn.simplertrading.com/2024/04/01103716/Store-Card-Sandbox-Strategy-Class-300x191.jpg',
+			image:
+				'https://cdn.simplertrading.com/2024/04/01103716/Store-Card-Sandbox-Strategy-Class-300x191.jpg',
 			description: "Discover How to Exploit Wall Street's Biggest Blind Spot",
 			url: '#',
 			traders: ['John Carter'],
@@ -94,7 +99,8 @@
 			name: 'New Micro Voodoo Line Strategy Basic Bundle',
 			price: 797,
 			formattedPrice: '$797',
-			image: 'https://cdn.simplertrading.com/2023/03/21162031/Micro-voodoo-lines-video-bg-300x169.jpg',
+			image:
+				'https://cdn.simplertrading.com/2023/03/21162031/Micro-voodoo-lines-video-bg-300x169.jpg',
 			description: 'How to Automatically Predict Tradeable Levels in a Violently Choppy Market',
 			url: '#',
 			traders: ['David Starr', 'Henry Gambell', 'John Carter'],
@@ -107,7 +113,8 @@
 			name: "The 'Quick Hits' Strategy Basic",
 			price: 797,
 			formattedPrice: '$797',
-			image: 'https://cdn.simplertrading.com/2022/08/07092727/Quick-Hits-Strategy-Video-bg-300x169.jpg',
+			image:
+				'https://cdn.simplertrading.com/2022/08/07092727/Quick-Hits-Strategy-Video-bg-300x169.jpg',
 			description: "Get John's Simple New Formula for Consistent Daily Income",
 			url: '#',
 			traders: ['John Carter', 'Kody Ashmore'],
@@ -221,24 +228,29 @@
 		}
 	];
 
-	const traderData: { [key: string]: { name: string; title: string; image: string; quote: string } } = {
+	const traderData: {
+		[key: string]: { name: string; title: string; image: string; quote: string };
+	} = {
 		'john-carter': {
 			name: 'John Carter',
 			title: 'Founder of Simpler Trading®',
 			image: 'https://cdn.simplertrading.com/2021/10/08113910/john-headshot-2020.png',
-			quote: '"I think there are a lot of parallels between being a good trader and living a good life. The market truly is the ultimate psychologist."'
+			quote:
+				'"I think there are a lot of parallels between being a good trader and living a good life. The market truly is the ultimate psychologist."'
 		},
 		'henry-gambell': {
 			name: 'Henry Gambell',
 			title: 'Director of Options',
 			image: 'https://cdn.simplertrading.com/2021/10/08114059/henry-headshot-2020.png',
-			quote: '"Every trade is an opportunity to learn something new about yourself and the markets."'
+			quote:
+				'"Every trade is an opportunity to learn something new about yourself and the markets."'
 		},
 		'taylor-horton': {
 			name: 'Taylor Horton',
 			title: 'Senior Trader',
 			image: 'https://cdn.simplertrading.com/2021/10/08114206/taylor-headshot-2020.png',
-			quote: '"Success in trading comes from consistency and discipline, not from hitting home runs."'
+			quote:
+				'"Success in trading comes from consistency and discipline, not from hitting home runs."'
 		},
 		'bruce-marshall': {
 			name: 'Bruce Marshall',
@@ -250,7 +262,8 @@
 			name: 'Danielle Shay',
 			title: 'Director of Options',
 			image: 'https://cdn.simplertrading.com/2021/10/08113828/danielle-headshot-2020.png',
-			quote: '"The best trades are the ones where you manage your risk before thinking about reward."'
+			quote:
+				'"The best trades are the ones where you manage your risk before thinking about reward."'
 		},
 		'allison-ostrander': {
 			name: 'Allison Ostrander',
@@ -291,7 +304,7 @@
 	let currentSlug = $state('');
 
 	function getTraderProducts(traderName: string): Product[] {
-		return allProducts.filter(p => p.traders.includes(traderName));
+		return allProducts.filter((p) => p.traders.includes(traderName));
 	}
 
 	// Svelte 5: Use $effect for reactive slug changes
@@ -300,7 +313,7 @@
 		if (slug !== currentSlug) {
 			currentSlug = slug;
 			const trader = traderData[slug];
-			
+
 			if (trader) {
 				store = {
 					id: slug,
@@ -322,7 +335,10 @@
 <svelte:head>
 	{#if store}
 		<title>{store.name}'s Trader Store | Revolution Trading Pros</title>
-		<meta name="description" content="Browse courses and indicators from {store.name}. {store.quote}" />
+		<meta
+			name="description"
+			content="Browse courses and indicators from {store.name}. {store.quote}"
+		/>
 	{:else}
 		<title>Store Not Found | Revolution Trading Pros</title>
 	{/if}
@@ -344,7 +360,9 @@
 				<div class="trader-header trader-header--full-width trader-header--bg-color">
 					<div class="trader-header__wrap">
 						<div class="trader-header__content trader-header--fixed-width">
-							<div class="trader-header__columns trader-header__columns--equal-height trader-header__columns--align-bottom">
+							<div
+								class="trader-header__columns trader-header__columns--equal-height trader-header__columns--align-bottom"
+							>
 								<!-- Left Column - Photo -->
 								<div class="trader-header__col trader-header__col--small">
 									<div class="trader-header__col-content">
@@ -352,11 +370,11 @@
 											<div class="trader-photo__wrapper">
 												<div class="trader-photo__frame trader-photo__frame--center">
 													<div class="trader-photo__content">
-														<img 
-															class="trader-photo__img" 
-															src={store.image} 
+														<img
+															class="trader-photo__img"
+															src={store.image}
 															alt={store.name}
-															width="2000" 
+															width="2000"
 															height="2000"
 														/>
 													</div>
@@ -405,16 +423,21 @@
 												<div class="trader_pills">
 													{#each traderPills as pill}
 														<div class="trader_pill">
-															<a href="/dashboard/day-trading-room/meet-the-traders/{store.slug}{pill.path === '/trader-store' ? '' : pill.path}"
-															   class:active={pill.path === '/trader-store'}
-															   onclick={(e) => {
-																   e.preventDefault();
-																   if (pill.path === '') {
-																	   window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}`;
-																   } else if (pill.path !== '/trader-store') {
-																	   window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}${pill.path}`;
-																   }
-															   }}>
+															<a
+																href="/dashboard/day-trading-room/meet-the-traders/{store.slug}{pill.path ===
+																'/trader-store'
+																	? ''
+																	: pill.path}"
+																class:active={pill.path === '/trader-store'}
+																onclick={(e) => {
+																	e.preventDefault();
+																	if (pill.path === '') {
+																		window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}`;
+																	} else if (pill.path !== '/trader-store') {
+																		window.location.href = `/dashboard/day-trading-room/meet-the-traders/${store?.slug}${pill.path}`;
+																	}
+																}}
+															>
 																{pill.label}
 															</a>
 														</div>
@@ -435,7 +458,7 @@
 					<div class="products u--margin-bottom-20" data-products-view="grid">
 						<div class="flex-grid">
 							{#each store.products as product (product.id)}
-								<article 
+								<article
 									class="product flex-grid-item store-product"
 									data-traders={product.traders.join(',')}
 									data-markets={product.markets}
@@ -447,7 +470,11 @@
 								>
 									<div class="card">
 										<figure class="card-media">
-											<a href={product.url} class="card-image" style="background-image: url({product.image});">
+											<a
+												href={product.url}
+												class="card-image"
+												style="background-image: url({product.image});"
+											>
 												<img src="https://placehold.it/540x256" alt={product.name} />
 											</a>
 										</figure>
@@ -463,11 +490,18 @@
 										</section>
 										<footer class="card-footer">
 											<div class="product-add-to-cart">
-												<a href={product.url} class="btn btn-xs btn-orange" title="View {product.name}">Learn&nbsp;More</a>
+												<a
+													href={product.url}
+													class="btn btn-xs btn-orange"
+													title="View {product.name}">Learn&nbsp;More</a
+												>
 											</div>
 											<div class="product-price">
 												<span class="woocommerce-Price-amount amount">
-													<bdi><span class="woocommerce-Price-currencySymbol">$</span>{product.price.toLocaleString()}</bdi>
+													<bdi
+														><span class="woocommerce-Price-currencySymbol">$</span
+														>{product.price.toLocaleString()}</bdi
+													>
 												</span>
 											</div>
 										</footer>
@@ -522,13 +556,15 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #e6e6e6;
-		border-top-color: #143E59;
+		border-top-color: #143e59;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Trader Header Section */
@@ -543,7 +579,7 @@
 	}
 
 	.trader-header--bg-color {
-		background-color: #E5E9F4;
+		background-color: #e5e9f4;
 	}
 
 	.trader-nav--bg-none {
@@ -668,7 +704,7 @@
 	}
 
 	.trader-info__separator {
-		border-top: 2px solid #F69532;
+		border-top: 2px solid #f69532;
 		width: 60px;
 	}
 
@@ -718,15 +754,15 @@
 	}
 
 	.trader_pill a:hover {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	.trader_pill a.active {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	/* Products Container */
@@ -819,7 +855,7 @@
 	}
 
 	.card-title a:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.card-description {
@@ -875,9 +911,9 @@
 	}
 
 	.btn-orange {
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
-		border: 1px solid #F69532;
+		border: 1px solid #f69532;
 	}
 
 	.btn-orange:hover {
@@ -886,9 +922,9 @@
 	}
 
 	.btn-default {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border: 1px solid #143E59;
+		border: 1px solid #143e59;
 	}
 
 	.btn-default:hover {

@@ -33,8 +33,8 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				...(token && { 'Authorization': `Bearer ${token}` }),
+				Accept: 'application/json',
+				...(token && { Authorization: `Bearer ${token}` }),
 				...(sessionId && { 'X-Session-ID': sessionId })
 			}
 		});

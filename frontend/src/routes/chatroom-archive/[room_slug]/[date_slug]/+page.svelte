@@ -31,7 +31,10 @@
 
 <svelte:head>
 	<title>{data.displayDate} | {data.roomName} Archives | Revolution Trading Pros</title>
-	<meta name="description" content="Watch recorded trading sessions from {data.displayDate} in the {data.roomName}." />
+	<meta
+		name="description"
+		content="Watch recorded trading sessions from {data.displayDate} in the {data.roomName}."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -118,9 +121,9 @@
 						</header>
 
 						<div class="video-player-container">
-							<video 
-								controls 
-								width="100%" 
+							<video
+								controls
+								width="100%"
 								poster={video.thumbnail_url || getTraderPoster(video.trader?.slug)}
 								title={video.title}
 								preload="metadata"
@@ -155,7 +158,7 @@
 <style>
 	/* Breadcrumbs */
 	.breadcrumbs {
-		background: #143E59;
+		background: #143e59;
 		padding: 12px 0;
 	}
 
@@ -210,7 +213,8 @@
 		gap: 20px;
 	}
 
-	.nav-prev, .nav-next {
+	.nav-prev,
+	.nav-next {
 		flex: 0 0 120px;
 	}
 
@@ -382,7 +386,7 @@
 	}
 
 	.btn-default {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -422,7 +426,8 @@
 			flex-direction: column;
 		}
 
-		.nav-prev, .nav-next {
+		.nav-prev,
+		.nav-next {
 			flex: 0 0 auto;
 		}
 

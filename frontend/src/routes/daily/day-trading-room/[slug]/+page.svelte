@@ -51,8 +51,10 @@
 			title: 'How to use Bookmap to make more informed trades',
 			date: 'January 02, 2026',
 			trader: 'Kody Ashmore',
-			excerpt: "You asked for it, you got it. Here are Kody's Bookmap tools and how he uses them to make better informed trades.",
-			description: "You asked for it, you got it. Here are Kody's Bookmap tools and how he uses them to make better informed trades.",
+			excerpt:
+				"You asked for it, you got it. Here are Kody's Bookmap tools and how he uses them to make better informed trades.",
+			description:
+				"You asked for it, you got it. Here are Kody's Bookmap tools and how he uses them to make better informed trades.",
 			slug: 'bookmap',
 			thumbnail: 'https://cdn.simplertrading.com/2025/02/07135413/SimplerCentral_KA.jpg',
 			videoUrl: 'https://simpler-options.s3.amazonaws.com/nightlyvids/2025/sample.mp4',
@@ -63,8 +65,10 @@
 			title: 'Ho Ho Whoa!',
 			date: 'December 18, 2025',
 			trader: 'Bruce Marshall',
-			excerpt: "In this video, Bruce discusses today's market action and the outlook for the end of the year.",
-			description: "In this video, Bruce discusses today's market action and the outlook for the end of the year. After CPI this morning, we got a nice bounce and relief rally after a long and messy chop phase since Thanksgiving. We have Quad Witching tomorrow after today's monthly (AM) expiration in the indices and then PCE next Tuesday, so lots more volatility to come. We are clinging onto the 50 SMA on the ES, and if this can hold, we still have a shot at seeing our Santa Rally this year. Bruce will continue to be a cautious Bull until we get more clarity, but don't load the sleigh too heavy just yet, as we don't have clear skies to fly in as of now.",
+			excerpt:
+				"In this video, Bruce discusses today's market action and the outlook for the end of the year.",
+			description:
+				"In this video, Bruce discusses today's market action and the outlook for the end of the year. After CPI this morning, we got a nice bounce and relief rally after a long and messy chop phase since Thanksgiving. We have Quad Witching tomorrow after today's monthly (AM) expiration in the indices and then PCE next Tuesday, so lots more volatility to come. We are clinging onto the 50 SMA on the ES, and if this can hold, we still have a shot at seeing our Santa Rally this year. Bruce will continue to be a cautious Bull until we get more clarity, but don't load the sleigh too heavy just yet, as we don't have clear skies to fly in as of now.",
 			slug: 'ho-ho-whoa',
 			thumbnail: 'https://cdn.simplertrading.com/2025/04/07135027/SimplerCentral_BM.jpg',
 			videoUrl: 'https://simpler-options.s3.amazonaws.com/nightlyvids/2025/dec18BM.mp4',
@@ -76,7 +80,8 @@
 			date: 'December 31, 2025',
 			trader: 'Henry Gambell',
 			excerpt: "If Santa doesn't show up, the first bit of 2026 may be a little precarious.",
-			description: "If Santa doesn't show up, the first bit of 2026 may be a little precarious. With that in mind, let's dive in to some of the most important charts for the new year.",
+			description:
+				"If Santa doesn't show up, the first bit of 2026 may be a little precarious. With that in mind, let's dive in to some of the most important charts for the new year.",
 			slug: 'cautious-entry-into-2026',
 			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
 			videoUrl: 'https://simpler-options.s3.amazonaws.com/nightlyvids/2025/sample2.mp4',
@@ -86,11 +91,11 @@
 
 	onMount(() => {
 		// Find current video
-		const videoIndex = allVideos.findIndex(v => v.slug === slug);
-		
+		const videoIndex = allVideos.findIndex((v) => v.slug === slug);
+
 		if (videoIndex !== -1) {
 			currentVideo = allVideos[videoIndex];
-			
+
 			// Get previous and next videos
 			if (videoIndex > 0) {
 				previousVideo = allVideos[videoIndex - 1];
@@ -98,13 +103,11 @@
 			if (videoIndex < allVideos.length - 1) {
 				nextVideo = allVideos[videoIndex + 1];
 			}
-			
+
 			// Get related videos (exclude current)
-			relatedVideos = allVideos
-				.filter(v => v.slug !== slug)
-				.slice(0, 3);
+			relatedVideos = allVideos.filter((v) => v.slug !== slug).slice(0, 3);
 		}
-		
+
 		loading = false;
 	});
 </script>
@@ -140,15 +143,21 @@
 				<li class="item-home">
 					<a class="breadcrumb-link breadcrumb-home" href="/" title="Home">Home</a>
 				</li>
-				<li class="separator separator-home"> / </li>
+				<li class="separator separator-home">/</li>
 				<li class="item-cat item-custom-post-type-daily">
-					<a class="breadcrumb-cat breadcrumb-custom-post-type-daily" href="/dashboard/day-trading-room/daily-videos" title="Daily Videos">Daily Videos</a>
+					<a
+						class="breadcrumb-cat breadcrumb-custom-post-type-daily"
+						href="/dashboard/day-trading-room/daily-videos"
+						title="Daily Videos">Daily Videos</a
+					>
 				</li>
-				<li class="separator"> / </li>
+				<li class="separator">/</li>
 				<li class="item-cat"></li>
-				<li class="separator"> / </li>
+				<li class="separator">/</li>
 				<li class="item-current item-{currentVideo.id}">
-					<strong class="breadcrumb-current breadcrumb-{currentVideo.id}" title="{currentVideo.title}">{currentVideo.title}</strong>
+					<strong class="breadcrumb-current breadcrumb-{currentVideo.id}" title={currentVideo.title}
+						>{currentVideo.title}</strong
+					>
 				</li>
 			</ul>
 		</div>
@@ -182,11 +191,11 @@
 			<div class="dv-content-block cpost-content-block w-desc">
 				<div class="current-vid">
 					<div class="video-container current">
-						<video 
-							id="dv-player" 
+						<video
+							id="dv-player"
 							bind:this={videoElement}
-							controls 
-							width="100%" 
+							controls
+							width="100%"
 							poster={currentVideo.thumbnail}
 							style="aspect-ratio: 16/9;"
 							onended={handleVideoEnded}
@@ -207,15 +216,15 @@
 	<section id="dv-recent" class="dv-section cpost-recent-section cpost-section">
 		<div class="section-inner">
 			<h2>Recent Day Trading Room Daily Videos</h2>
-			
+
 			<div class="card-grid flex-grid row">
 				{#each relatedVideos as video (video.id)}
 					<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
 						<div class="card flex-grid-panel">
 							<figure class="card-media card-media--video">
-								<a 
-									href="/daily/day-trading-room/{video.slug}" 
-									class="card-image" 
+								<a
+									href="/daily/day-trading-room/{video.slug}"
+									class="card-image"
 									style="background-image: url({video.thumbnail});"
 								>
 									<img src="https://placehold.it/325x183" alt={video.title} />
@@ -287,7 +296,7 @@
 
 	.breadcrumb-link:hover,
 	.breadcrumb-cat:hover {
-		color: #F69532;
+		color: #f69532;
 	}
 
 	.separator {
@@ -318,14 +327,18 @@
 		width: 40px;
 		height: 40px;
 		border: 4px solid #f3f3f3;
-		border-top: 4px solid #F69532;
+		border-top: 4px solid #f69532;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
 
 	@keyframes spin {
-		0% { transform: rotate(0deg); }
-		100% { transform: rotate(360deg); }
+		0% {
+			transform: rotate(0deg);
+		}
+		100% {
+			transform: rotate(360deg);
+		}
 	}
 
 	.loading-message {
@@ -407,7 +420,7 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		color: #F69532;
+		color: #f69532;
 		text-decoration: none;
 		font-size: 14px;
 		font-weight: 600;
@@ -563,7 +576,7 @@
 	}
 
 	.card-title a:hover {
-		color: #F69532;
+		color: #f69532;
 	}
 
 	.article-card__meta {
@@ -614,7 +627,7 @@
 	}
 
 	.btn-default {
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
 		border: none;
 	}
@@ -629,7 +642,7 @@
 		.col-md-6 {
 			width: 50%;
 		}
-		
+
 		.cpost-title {
 			font-size: 28px;
 			padding: 0 100px;
@@ -640,16 +653,16 @@
 		.col-sm-6 {
 			width: 50%;
 		}
-		
+
 		.cpost-title {
 			font-size: 24px;
 			padding: 0 80px;
 		}
-		
+
 		.card-title {
 			font-size: 16px;
 		}
-		
+
 		.cpost-previous span,
 		.cpost-next span {
 			display: none;
@@ -660,25 +673,25 @@
 		.col-xs-12 {
 			width: 100%;
 		}
-		
+
 		.card-grid {
 			margin: 0 -10px;
 		}
-		
+
 		.card-grid-spacer {
 			padding: 0 10px 20px;
 		}
-		
+
 		.cpost-title {
 			font-size: 20px;
 			padding: 0 60px;
 		}
-		
+
 		.cpost-previous,
 		.cpost-next {
 			left: 10px;
 		}
-		
+
 		.cpost-next {
 			right: 10px;
 			left: auto;

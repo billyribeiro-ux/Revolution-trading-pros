@@ -61,8 +61,16 @@
 
 	const traderPills = [
 		{ label: 'Overview', path: '/dashboard/spx-profit-pulse/billy-ribeiro', active: true },
-		{ label: 'Trading Strategies', path: '/dashboard/spx-profit-pulse/billy-ribeiro/strategies', active: false },
-		{ label: 'Trader Store', path: '/dashboard/spx-profit-pulse/billy-ribeiro/store', active: false }
+		{
+			label: 'Trading Strategies',
+			path: '/dashboard/spx-profit-pulse/billy-ribeiro/strategies',
+			active: false
+		},
+		{
+			label: 'Trader Store',
+			path: '/dashboard/spx-profit-pulse/billy-ribeiro/store',
+			active: false
+		}
 	];
 </script>
 
@@ -72,9 +80,9 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="SPX Profit Pulse" 
-	startHereUrl="/dashboard/spx-profit-pulse/start-here" 
+<TradingRoomHeader
+	roomName="SPX Profit Pulse"
+	startHereUrl="/dashboard/spx-profit-pulse/start-here"
 />
 
 <div class="dashboard__content">
@@ -89,11 +97,7 @@
 							<div class="trader-header__col trader-header__col--photo">
 								<div class="trader-photo">
 									<div class="trader-photo__frame">
-										<img 
-											class="trader-photo__img" 
-											src={trader.image} 
-											alt={trader.name}
-										/>
+										<img class="trader-photo__img" src={trader.image} alt={trader.name} />
 									</div>
 								</div>
 							</div>
@@ -116,10 +120,7 @@
 			<!-- Navigation Pills -->
 			<nav class="trader-pills">
 				{#each traderPills as pill}
-					<a 
-						href={pill.path} 
-						class="trader-pill {pill.active ? 'trader-pill--active' : ''}"
-					>
+					<a href={pill.path} class="trader-pill {pill.active ? 'trader-pill--active' : ''}">
 						{pill.label}
 					</a>
 				{/each}
@@ -175,7 +176,7 @@
 
 	/* Trader Header */
 	.trader-header {
-		background: linear-gradient(135deg, #143E59 0%, #0c2638 100%);
+		background: linear-gradient(135deg, #143e59 0%, #0c2638 100%);
 		border-radius: 12px;
 		padding: 30px;
 		margin-bottom: 30px;
@@ -247,7 +248,7 @@
 	.trader-info__separator {
 		width: 60px;
 		height: 3px;
-		background: linear-gradient(90deg, #FFB834 0%, #C68000 100%);
+		background: linear-gradient(90deg, #ffb834 0%, #c68000 100%);
 		margin: 0 auto 20px auto;
 	}
 
@@ -293,8 +294,8 @@
 	}
 
 	.trader-pill--active {
-		background: #143E59;
-		border-color: #143E59;
+		background: #143e59;
+		border-color: #143e59;
 		color: #fff;
 	}
 
@@ -330,7 +331,9 @@
 		border-radius: 8px;
 		overflow: hidden;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-		transition: box-shadow 0.3s ease, transform 0.2s ease;
+		transition:
+			box-shadow 0.3s ease,
+			transform 0.2s ease;
 	}
 
 	.product-card:hover {
@@ -375,20 +378,22 @@
 	.product-card__price {
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 		margin-bottom: 15px;
 	}
 
 	.product-card__btn {
 		display: inline-block;
 		padding: 10px 24px;
-		background: linear-gradient(180deg, #FFB834 0%, #C68000 100%);
+		background: linear-gradient(180deg, #ffb834 0%, #c68000 100%);
 		color: #fff;
 		text-decoration: none;
 		border-radius: 25px;
 		font-size: 14px;
 		font-weight: 600;
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			transform 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	.product-card__btn:hover {

@@ -112,7 +112,9 @@
 		});
 
 		if (invalidUrls.length > 0) {
-			toastStore.error(`Invalid URLs: ${invalidUrls.slice(0, 3).join(', ')}${invalidUrls.length > 3 ? '...' : ''}`);
+			toastStore.error(
+				`Invalid URLs: ${invalidUrls.slice(0, 3).join(', ')}${invalidUrls.length > 3 ? '...' : ''}`
+			);
 			return;
 		}
 
@@ -168,7 +170,9 @@
 				</div>
 				<div>
 					<h1>Bing SEO & IndexNow</h1>
-					<p class="subtitle">Instant URL indexing - get your content in Bing search within minutes</p>
+					<p class="subtitle">
+						Instant URL indexing - get your content in Bing search within minutes
+					</p>
 				</div>
 			</div>
 
@@ -413,7 +417,9 @@
 		tabindex="0"
 		aria-label="Close modal"
 		onclick={() => (showBatchModal = false)}
-		onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showBatchModal = false; }}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showBatchModal = false;
+		}}
 	>
 		<div
 			class="modal-content"
@@ -595,7 +601,7 @@ https://yourdomain.com/page-3"
 	}
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
-		color: #E6B800;
+		color: #e6b800;
 	}
 	.stat-icon.yellow {
 		background: rgba(251, 191, 36, 0.15);
@@ -975,8 +981,8 @@ https://yourdomain.com/page-3"
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 	}
 
 	.btn-primary.bing {

@@ -22,31 +22,31 @@
 	import TrainingVideosSection from '$lib/components/indicators/TrainingVideosSection.svelte';
 	import PlatformDownloads from '$lib/components/indicators/PlatformDownloads.svelte';
 	import SupportDocsSection from '$lib/components/indicators/SupportDocsSection.svelte';
-	
+
 	interface DownloadFile {
 		name: string;
 		downloadUrl: string;
 	}
-	
+
 	interface PlatformDownloads {
 		platform: string;
 		logo: string;
 		files: DownloadFile[];
 		notes?: string;
 	}
-	
+
 	interface TrainingVideo {
 		id: string;
 		title: string;
 		videoUrl: string;
 		posterUrl: string;
 	}
-	
+
 	interface SupportDoc {
 		title: string;
 		url: string;
 	}
-	
+
 	interface Indicator {
 		id: string;
 		name: string;
@@ -55,7 +55,7 @@
 		downloads: PlatformDownloads[];
 		supportDocs: SupportDoc[];
 	}
-	
+
 	// Get indicator ID from URL
 	let indicator = $derived.by(() => {
 		const id = page.params.id;
@@ -70,14 +70,18 @@
 				{
 					id: '1',
 					title: 'Indicator Setup and Q&A, with Eric Purdy',
-					videoUrl: 'https://cloud-streaming.s3.amazonaws.com/classes/SubmarketSonar-IndicatorSetup-EP.mp4',
-					posterUrl: 'https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg'
+					videoUrl:
+						'https://cloud-streaming.s3.amazonaws.com/classes/SubmarketSonar-IndicatorSetup-EP.mp4',
+					posterUrl:
+						'https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg'
 				},
 				{
 					id: '2',
 					title: 'VWAP Training and Live Trading Recorded Session with Raghee Horner',
-					videoUrl: 'https://s3.amazonaws.com/cloud-streaming/chatrecordings%2FSTWebinars/1176-RH-06-12-2019__09.01.394_AM.mp4',
-					posterUrl: 'https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg'
+					videoUrl:
+						'https://s3.amazonaws.com/cloud-streaming/chatrecordings%2FSTWebinars/1176-RH-06-12-2019__09.01.394_AM.mp4',
+					posterUrl:
+						'https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg'
 				}
 			],
 			downloads: [
@@ -85,34 +89,89 @@
 					platform: 'ThinkorSwim',
 					logo: '/logos/platforms/thinkorswim.png',
 					files: [
-						{ name: 'Volume Max Indicator', downloadUrl: '/?st-download-file=452914b18dc78691e6c98731b9e094fe' },
-						{ name: 'VScore EOD Study', downloadUrl: '/?st-download-file=12ab53eb7e85a005a6a21f800db57777' },
-						{ name: 'VScore Intraday Signals Study', downloadUrl: '/?st-download-file=4bd68f7bbfec21d14c099258f6833a9c' },
-						{ name: 'VScore Bands EOD Study', downloadUrl: '/?st-download-file=4fb2197916c551be4acb037afccc607f' },
-						{ name: 'VScore Bands Intraday Study', downloadUrl: '/?st-download-file=560ebea65a1229c04c0c268107fdb693' },
-						{ name: 'VProfile EOD Study', downloadUrl: '/?st-download-file=da8f1193496d5cf4bed2cdd049a2d70b' },
-						{ name: 'VProfile Intraday Study', downloadUrl: '/?st-download-file=ab0357f17694826819f632d50f6cfccc' },
-						{ name: 'Volume Labels', downloadUrl: '/?st-download-file=7aa9537ae79f082d9b8ff2ede9c2561b' }
+						{
+							name: 'Volume Max Indicator',
+							downloadUrl: '/?st-download-file=452914b18dc78691e6c98731b9e094fe'
+						},
+						{
+							name: 'VScore EOD Study',
+							downloadUrl: '/?st-download-file=12ab53eb7e85a005a6a21f800db57777'
+						},
+						{
+							name: 'VScore Intraday Signals Study',
+							downloadUrl: '/?st-download-file=4bd68f7bbfec21d14c099258f6833a9c'
+						},
+						{
+							name: 'VScore Bands EOD Study',
+							downloadUrl: '/?st-download-file=4fb2197916c551be4acb037afccc607f'
+						},
+						{
+							name: 'VScore Bands Intraday Study',
+							downloadUrl: '/?st-download-file=560ebea65a1229c04c0c268107fdb693'
+						},
+						{
+							name: 'VProfile EOD Study',
+							downloadUrl: '/?st-download-file=da8f1193496d5cf4bed2cdd049a2d70b'
+						},
+						{
+							name: 'VProfile Intraday Study',
+							downloadUrl: '/?st-download-file=ab0357f17694826819f632d50f6cfccc'
+						},
+						{
+							name: 'Volume Labels',
+							downloadUrl: '/?st-download-file=7aa9537ae79f082d9b8ff2ede9c2561b'
+						}
 					]
 				},
 				{
 					platform: 'TradingView',
 					logo: '/logos/platforms/tradingview.png',
 					files: [],
-					notes: 'Please email your TradingView Username to <a href="mailto:support@simplertrading.com">support@simplertrading.com</a>. The TradingView chart indicator is very easy to get set up in your online charting profile. Once you are logged into TradingView, locate your Notifications area. Once we receive your Username, you should have a notification letting you know the new chart study has been made available. Clicking on the notification will bring up a chart for the study to be displayed.'
+					notes:
+						'Please email your TradingView Username to <a href="mailto:support@simplertrading.com">support@simplertrading.com</a>. The TradingView chart indicator is very easy to get set up in your online charting profile. Once you are logged into TradingView, locate your Notifications area. Once we receive your Username, you should have a notification letting you know the new chart study has been made available. Clicking on the notification will bring up a chart for the study to be displayed.'
 				}
 			],
 			supportDocs: [
-				{ title: 'TOS Installation Guide', url: 'https://intercom.help/simpler-trading/en/articles/3263969' },
-				{ title: 'Troubleshooting within TOS', url: 'https://intercom.help/simpler-trading/en/articles/3481530-tos-indicator-will-not-import' },
-				{ title: 'TradingView - Installing an Indicator', url: 'https://intercom.help/simpler-trading/en/articles/3498380' },
-				{ title: 'TradingView - What is my Username', url: 'https://intercom.help/simpler-trading/en/articles/3606861' },
-				{ title: 'What is Volume Max Tool Kit (formerly VWAP)?', url: 'https://intercom.help/simpler-trading/en/articles/3160130' },
-				{ title: 'What are Volume Max Tool Kit (formerly VWAP) Settings?', url: 'https://intercom.help/simpler-trading/en/articles/3311644' },
-				{ title: 'What is VScore?', url: 'https://intercom.help/simpler-trading/en/articles/3210561' },
-				{ title: 'VScore Settings and Configuration', url: 'https://intercom.help/simpler-trading/en/articles/3210408' },
-				{ title: 'What is VProfile?', url: 'https://intercom.help/simpler-trading/en/articles/3341484' },
-				{ title: 'What are VProfile Settings?', url: 'https://intercom.help/simpler-trading/en/articles/3341233' }
+				{
+					title: 'TOS Installation Guide',
+					url: 'https://intercom.help/simpler-trading/en/articles/3263969'
+				},
+				{
+					title: 'Troubleshooting within TOS',
+					url: 'https://intercom.help/simpler-trading/en/articles/3481530-tos-indicator-will-not-import'
+				},
+				{
+					title: 'TradingView - Installing an Indicator',
+					url: 'https://intercom.help/simpler-trading/en/articles/3498380'
+				},
+				{
+					title: 'TradingView - What is my Username',
+					url: 'https://intercom.help/simpler-trading/en/articles/3606861'
+				},
+				{
+					title: 'What is Volume Max Tool Kit (formerly VWAP)?',
+					url: 'https://intercom.help/simpler-trading/en/articles/3160130'
+				},
+				{
+					title: 'What are Volume Max Tool Kit (formerly VWAP) Settings?',
+					url: 'https://intercom.help/simpler-trading/en/articles/3311644'
+				},
+				{
+					title: 'What is VScore?',
+					url: 'https://intercom.help/simpler-trading/en/articles/3210561'
+				},
+				{
+					title: 'VScore Settings and Configuration',
+					url: 'https://intercom.help/simpler-trading/en/articles/3210408'
+				},
+				{
+					title: 'What is VProfile?',
+					url: 'https://intercom.help/simpler-trading/en/articles/3341484'
+				},
+				{
+					title: 'What are VProfile Settings?',
+					url: 'https://intercom.help/simpler-trading/en/articles/3341233'
+				}
 			]
 		} as Indicator;
 	});
@@ -120,7 +179,10 @@
 
 <svelte:head>
 	<title>{indicator.name} - Simpler Trading</title>
-	<meta name="description" content="Download and install {indicator.name} for your trading platform" />
+	<meta
+		name="description"
+		content="Download and install {indicator.name} for your trading platform"
+	/>
 </svelte:head>
 
 <!-- Breadcrumbs - Auto-generated from path -->
@@ -133,24 +195,21 @@
 		<div class="indicators">
 			<main>
 				<!-- Indicator Header Component -->
-				<IndicatorHeader 
-					name={indicator.name}
-					platforms={indicator.platforms}
-				/>
-				
+				<IndicatorHeader name={indicator.name} platforms={indicator.platforms} />
+
 				<!-- Training Videos Component -->
 				<TrainingVideosSection videos={indicator.trainingVideos} />
-				
+
 				<!-- Platform Downloads Components -->
 				{#each indicator.downloads as platformDownload}
-					<PlatformDownloads 
+					<PlatformDownloads
 						platform={platformDownload.platform}
 						logo={platformDownload.logo}
 						files={platformDownload.files}
 						notes={platformDownload.notes}
 					/>
 				{/each}
-				
+
 				<!-- Support Documentation Component -->
 				<SupportDocsSection docs={indicator.supportDocs} />
 			</main>
@@ -159,10 +218,10 @@
 </div>
 
 <!-- Have Questions Section -->
-<HaveQuestionsSection 
-	email="support@revolutiontradingpros.com" 
-	phone="8002668659" 
-	phoneDisplay="(800) 266-8659" 
+<HaveQuestionsSection
+	email="support@revolutiontradingpros.com"
+	phone="8002668659"
+	phoneDisplay="(800) 266-8659"
 />
 
 <style>
@@ -174,16 +233,19 @@
 	/* 1. BODY BACKGROUND - White columns on sides */
 	:global(html),
 	:global(body) {
-		background-color: #FFFFFF !important;
+		background-color: #ffffff !important;
 		color: #666666;
-		font-family: "Open Sans", sans-serif;
+		font-family: 'Open Sans', sans-serif;
 	}
 
-	:global(a), :global(a:visited) {
+	:global(a),
+	:global(a:visited) {
 		color: #1e73be;
 	}
 
-	:global(a:hover), :global(a:focus), :global(a:active) {
+	:global(a:hover),
+	:global(a:focus),
+	:global(a:active) {
 		color: #000000;
 	}
 

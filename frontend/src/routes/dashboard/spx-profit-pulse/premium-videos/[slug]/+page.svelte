@@ -25,13 +25,16 @@
 
 <svelte:head>
 	<title>{video.title} | SPX Profit Pulse | Revolution Trading Pros</title>
-	<meta name="description" content="Watch {video.title} with {video.trader} from SPX Profit Pulse" />
+	<meta
+		name="description"
+		content="Watch {video.title} with {video.trader} from SPX Profit Pulse"
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="SPX Profit Pulse" 
-	startHereUrl="/dashboard/spx-profit-pulse/start-here" 
+<TradingRoomHeader
+	roomName="SPX Profit Pulse"
+	startHereUrl="/dashboard/spx-profit-pulse/start-here"
 />
 
 <div class="dashboard__content">
@@ -52,22 +55,28 @@
 			<div class="section-inner">
 				{#if video.previousVideo}
 					<div class="cpost-previous">
-						<a href="/dashboard/spx-profit-pulse/premium-videos/{video.previousVideo.slug}" title={video.previousVideo.title}>
+						<a
+							href="/dashboard/spx-profit-pulse/premium-videos/{video.previousVideo.slug}"
+							title={video.previousVideo.title}
+						>
 							<i class="fa fa-chevron-circle-left"></i><span> Previous</span>
 						</a>
 					</div>
 				{/if}
-				
+
 				<h1 class="cpost-title">{video.title}</h1>
-				
+
 				{#if video.nextVideo}
 					<div class="cpost-next">
-						<a href="/dashboard/spx-profit-pulse/premium-videos/{video.nextVideo.slug}" title={video.nextVideo.title}>
+						<a
+							href="/dashboard/spx-profit-pulse/premium-videos/{video.nextVideo.slug}"
+							title={video.nextVideo.title}
+						>
 							<span>Next </span><i class="fa fa-chevron-circle-right"></i>
 						</a>
 					</div>
 				{/if}
-				
+
 				{#if video.chatLogUrl}
 					<h2 class="cpost-subtitle">
 						<a href={video.chatLogUrl} target="_blank" rel="nofollow">View Chat Log</a>
@@ -90,9 +99,9 @@
 								<p class="d-none">{video.trader}</p>
 							</div>
 							<div class="video-player">
-								<video 
-									controls 
-									width="100%" 
+								<video
+									controls
+									width="100%"
 									poster={video.traderImage}
 									style="aspect-ratio: 16/9;"
 									title={video.title}
@@ -148,7 +157,7 @@
 	}
 
 	.breadcrumbs a {
-		color: #143E59;
+		color: #143e59;
 		text-decoration: none;
 		transition: color 0.2s ease;
 	}
@@ -203,7 +212,7 @@
 	}
 
 	.cpost-subtitle a {
-		color: #143E59;
+		color: #143e59;
 		text-decoration: none;
 		transition: color 0.2s ease;
 	}
@@ -234,7 +243,7 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		color: #143E59;
+		color: #143e59;
 		text-decoration: none;
 		font-size: 14px;
 		font-weight: 600;
@@ -371,11 +380,11 @@
 	}
 
 	.fa-chevron-circle-left:before {
-		content: "\f137";
+		content: '\f137';
 	}
 
 	.fa-chevron-circle-right:before {
-		content: "\f138";
+		content: '\f138';
 	}
 
 	/* CRITICAL: Hide sidebar on SPX Profit Pulse pages */

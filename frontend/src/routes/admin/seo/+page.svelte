@@ -43,11 +43,7 @@
 		IconClock,
 		IconTarget
 	} from '$lib/icons';
-	import {
-		connections,
-		isSeoConnected,
-		SERVICE_KEYS
-	} from '$lib/stores/connections.svelte';
+	import { connections, isSeoConnected, SERVICE_KEYS } from '$lib/stores/connections.svelte';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// State
@@ -320,197 +316,200 @@
 
 <div class="seo-dashboard">
 	<div class="admin-page-container">
-	<!-- Animated Background -->
-	<div class="animated-bg">
-		<div class="blob blob-1"></div>
-		<div class="blob blob-2"></div>
-		<div class="blob blob-3"></div>
-	</div>
-
-	<!-- Header Section -->
-	<header class="dashboard-header" in:fly={{ y: -20, duration: 500, delay: 100 }}>
-		<div class="header-content">
-			<div class="header-icon">
-				<IconSearch size={32} />
-			</div>
-			<div class="header-text">
-				<h1>SEO Command Center</h1>
-				<p>Comprehensive SEO tools to optimize your site's search visibility</p>
-			</div>
+		<!-- Animated Background -->
+		<div class="animated-bg">
+			<div class="blob blob-1"></div>
+			<div class="blob blob-2"></div>
+			<div class="blob blob-3"></div>
 		</div>
 
-		<div class="header-actions">
-			<!-- Built-in SEO Status Badge -->
-			<div class="connection-badge connected">
-				<IconPlugConnected size={16} />
-				<span>Built-in SEO Active</span>
+		<!-- Header Section -->
+		<header class="dashboard-header" in:fly={{ y: -20, duration: 500, delay: 100 }}>
+			<div class="header-content">
+				<div class="header-icon">
+					<IconSearch size={32} />
+				</div>
+				<div class="header-text">
+					<h1>SEO Command Center</h1>
+					<p>Comprehensive SEO tools to optimize your site's search visibility</p>
+				</div>
 			</div>
 
-			<button class="refresh-btn" onclick={handleRefresh} disabled={isLoading}>
-				<span class="refresh-icon" class:spinning={isLoading}>
-					<IconRefresh size={18} />
-				</span>
-				<span>Refresh</span>
-			</button>
-		</div>
-	</header>
-
-	{#if isLoading}
-		<!-- Loading State -->
-		<div class="loading-state" in:fade>
-			<div class="loading-spinner"></div>
-			<p>Loading SEO data...</p>
-		</div>
-	{:else}
-		<!-- Connected State with Real Data -->
-		<div class="connected-content" in:fade={{ duration: 300 }}>
-			<!-- Quick Stats Cards -->
-			{#if seoData}
-				<div class="stats-grid" in:fly={{ y: 20, duration: 500, delay: 100 }}>
-					<!-- Search Visibility Card -->
-					<div class="stat-card visibility">
-						<div class="stat-header">
-							<div class="stat-icon">
-								<IconWorld size={24} />
-							</div>
-							<span class="stat-label">Search Visibility</span>
-						</div>
-						<div class="stat-value">
-							<span class="value">{seoData.searchVisibility.score}</span>
-							<span class="unit">%</span>
-						</div>
-						<div class="stat-change" class:positive={seoData.searchVisibility.change > 0}>
-							{#if seoData.searchVisibility.change > 0}
-								<IconTrendingUp size={14} />
-							{:else}
-								<IconTrendingDown size={14} />
-							{/if}
-							<span>{Math.abs(seoData.searchVisibility.change)}% this month</span>
-						</div>
-					</div>
-
-					<!-- Keywords Card -->
-					<div class="stat-card keywords">
-						<div class="stat-header">
-							<div class="stat-icon">
-								<IconKey size={24} />
-							</div>
-							<span class="stat-label">Keywords Tracked</span>
-						</div>
-						<div class="stat-value">
-							<span class="value">{formatNumber(seoData.keywords.total)}</span>
-						</div>
-						<div class="stat-detail">
-							<span class="detail-item positive">{seoData.keywords.top10} in top 10</span>
-							<span class="detail-item highlight">{seoData.keywords.top3} in top 3</span>
-						</div>
-					</div>
-
-					<!-- Backlinks Card -->
-					<div class="stat-card backlinks">
-						<div class="stat-header">
-							<div class="stat-icon">
-								<IconLink size={24} />
-							</div>
-							<span class="stat-label">Total Backlinks</span>
-						</div>
-						<div class="stat-value">
-							<span class="value">{formatNumber(seoData.backlinks.total)}</span>
-						</div>
-						<div class="stat-detail">
-							<span class="detail-item positive">+{seoData.backlinks.newThisMonth} new</span>
-							<span class="detail-item negative">-{seoData.backlinks.lostThisMonth} lost</span>
-						</div>
-					</div>
-
-					<!-- Technical Health Card -->
-					<div class="stat-card technical">
-						<div class="stat-header">
-							<div class="stat-icon">
-								<IconTarget size={24} />
-							</div>
-							<span class="stat-label">Indexed Pages</span>
-						</div>
-						<div class="stat-value">
-							<span class="value">{formatNumber(seoData.technical.indexedPages)}</span>
-						</div>
-						<div class="stat-detail">
-							{#if seoData.technical.crawlErrors > 0}
-								<span class="detail-item negative">{seoData.technical.crawlErrors} errors</span>
-							{:else}
-								<span class="detail-item positive">No crawl errors</span>
-							{/if}
-						</div>
-					</div>
+			<div class="header-actions">
+				<!-- Built-in SEO Status Badge -->
+				<div class="connection-badge connected">
+					<IconPlugConnected size={16} />
+					<span>Built-in SEO Active</span>
 				</div>
-			{:else}
-				<!-- No data yet message -->
-				<div class="no-data-message" in:fade>
-					<IconClock size={48} />
-					<h3>Syncing SEO Data</h3>
-					<p>Your SEO tools are connected. Data will appear here once the first sync completes.</p>
-				</div>
-			{/if}
 
-			<!-- Connected Services Indicator -->
-			<div class="connected-services" in:fly={{ y: 20, duration: 500, delay: 200 }}>
-				<h3>Connected Services</h3>
-				<div class="connected-services-list">
-					{#each seoServices as service}
-						{@const status = getConnectionStatus(service.key)}
-						{#if status?.isConnected}
-							<div class="connected-service">
-								<span class="service-icon-small">{service.icon}</span>
-								<span class="service-name">{service.name}</span>
-								<IconCheck size={16} class="check-icon" />
-							</div>
-						{/if}
-					{/each}
-				</div>
-				<button class="manage-connections-btn" onclick={navigateToConnections}>
-					<IconSettings size={16} />
-					<span>Manage Connections</span>
+				<button class="refresh-btn" onclick={handleRefresh} disabled={isLoading}>
+					<span class="refresh-icon" class:spinning={isLoading}>
+						<IconRefresh size={18} />
+					</span>
+					<span>Refresh</span>
 				</button>
 			</div>
-		</div>
-	{/if}
+		</header>
 
-	<!-- SEO Sections Grid - Built-in SEO tools (like RankMath Pro) -->
-	<div class="sections-wrapper" in:fly={{ y: 20, duration: 500, delay: 300 }}>
-		<h2 class="sections-title">SEO Tools</h2>
-		<div class="sections-grid">
-			{#each sections as section, i}
-				{@const SectionIcon = section.icon}
-				<a
-					href={section.href}
-					class="section-card"
-					style="--card-color: {section.color}; --card-gradient: {section.gradient}"
-					in:fly={{ y: 20, duration: 400, delay: 400 + i * 30 }}
-				>
-					{#if section.isNew}
-						<span class="new-badge">NEW</span>
-					{/if}
-					<div class="card-icon" style="background: {section.gradient}">
-						<SectionIcon size={24} />
+		{#if isLoading}
+			<!-- Loading State -->
+			<div class="loading-state" in:fade>
+				<div class="loading-spinner"></div>
+				<p>Loading SEO data...</p>
+			</div>
+		{:else}
+			<!-- Connected State with Real Data -->
+			<div class="connected-content" in:fade={{ duration: 300 }}>
+				<!-- Quick Stats Cards -->
+				{#if seoData}
+					<div class="stats-grid" in:fly={{ y: 20, duration: 500, delay: 100 }}>
+						<!-- Search Visibility Card -->
+						<div class="stat-card visibility">
+							<div class="stat-header">
+								<div class="stat-icon">
+									<IconWorld size={24} />
+								</div>
+								<span class="stat-label">Search Visibility</span>
+							</div>
+							<div class="stat-value">
+								<span class="value">{seoData.searchVisibility.score}</span>
+								<span class="unit">%</span>
+							</div>
+							<div class="stat-change" class:positive={seoData.searchVisibility.change > 0}>
+								{#if seoData.searchVisibility.change > 0}
+									<IconTrendingUp size={14} />
+								{:else}
+									<IconTrendingDown size={14} />
+								{/if}
+								<span>{Math.abs(seoData.searchVisibility.change)}% this month</span>
+							</div>
+						</div>
+
+						<!-- Keywords Card -->
+						<div class="stat-card keywords">
+							<div class="stat-header">
+								<div class="stat-icon">
+									<IconKey size={24} />
+								</div>
+								<span class="stat-label">Keywords Tracked</span>
+							</div>
+							<div class="stat-value">
+								<span class="value">{formatNumber(seoData.keywords.total)}</span>
+							</div>
+							<div class="stat-detail">
+								<span class="detail-item positive">{seoData.keywords.top10} in top 10</span>
+								<span class="detail-item highlight">{seoData.keywords.top3} in top 3</span>
+							</div>
+						</div>
+
+						<!-- Backlinks Card -->
+						<div class="stat-card backlinks">
+							<div class="stat-header">
+								<div class="stat-icon">
+									<IconLink size={24} />
+								</div>
+								<span class="stat-label">Total Backlinks</span>
+							</div>
+							<div class="stat-value">
+								<span class="value">{formatNumber(seoData.backlinks.total)}</span>
+							</div>
+							<div class="stat-detail">
+								<span class="detail-item positive">+{seoData.backlinks.newThisMonth} new</span>
+								<span class="detail-item negative">-{seoData.backlinks.lostThisMonth} lost</span>
+							</div>
+						</div>
+
+						<!-- Technical Health Card -->
+						<div class="stat-card technical">
+							<div class="stat-header">
+								<div class="stat-icon">
+									<IconTarget size={24} />
+								</div>
+								<span class="stat-label">Indexed Pages</span>
+							</div>
+							<div class="stat-value">
+								<span class="value">{formatNumber(seoData.technical.indexedPages)}</span>
+							</div>
+							<div class="stat-detail">
+								{#if seoData.technical.crawlErrors > 0}
+									<span class="detail-item negative">{seoData.technical.crawlErrors} errors</span>
+								{:else}
+									<span class="detail-item positive">No crawl errors</span>
+								{/if}
+							</div>
+						</div>
 					</div>
-					<h3>{section.title}</h3>
-					<p>{section.description}</p>
-					<div class="card-arrow">
-						<IconExternalLink size={18} />
+				{:else}
+					<!-- No data yet message -->
+					<div class="no-data-message" in:fade>
+						<IconClock size={48} />
+						<h3>Syncing SEO Data</h3>
+						<p>
+							Your SEO tools are connected. Data will appear here once the first sync completes.
+						</p>
 					</div>
-				</a>
-			{/each}
+				{/if}
+
+				<!-- Connected Services Indicator -->
+				<div class="connected-services" in:fly={{ y: 20, duration: 500, delay: 200 }}>
+					<h3>Connected Services</h3>
+					<div class="connected-services-list">
+						{#each seoServices as service}
+							{@const status = getConnectionStatus(service.key)}
+							{#if status?.isConnected}
+								<div class="connected-service">
+									<span class="service-icon-small">{service.icon}</span>
+									<span class="service-name">{service.name}</span>
+									<IconCheck size={16} class="check-icon" />
+								</div>
+							{/if}
+						{/each}
+					</div>
+					<button class="manage-connections-btn" onclick={navigateToConnections}>
+						<IconSettings size={16} />
+						<span>Manage Connections</span>
+					</button>
+				</div>
+			</div>
+		{/if}
+
+		<!-- SEO Sections Grid - Built-in SEO tools (like RankMath Pro) -->
+		<div class="sections-wrapper" in:fly={{ y: 20, duration: 500, delay: 300 }}>
+			<h2 class="sections-title">SEO Tools</h2>
+			<div class="sections-grid">
+				{#each sections as section, i}
+					{@const SectionIcon = section.icon}
+					<a
+						href={section.href}
+						class="section-card"
+						style="--card-color: {section.color}; --card-gradient: {section.gradient}"
+						in:fly={{ y: 20, duration: 400, delay: 400 + i * 30 }}
+					>
+						{#if section.isNew}
+							<span class="new-badge">NEW</span>
+						{/if}
+						<div class="card-icon" style="background: {section.gradient}">
+							<SectionIcon size={24} />
+						</div>
+						<h3>{section.title}</h3>
+						<p>{section.description}</p>
+						<div class="card-arrow">
+							<IconExternalLink size={18} />
+						</div>
+					</a>
+				{/each}
+			</div>
 		</div>
+
+		<!-- Last Updated Footer -->
+		{#if lastUpdated}
+			<div class="last-updated" in:fade={{ delay: 600 }}>
+				<IconClock size={14} />
+				<span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
+			</div>
+		{/if}
 	</div>
-
-	<!-- Last Updated Footer -->
-	{#if lastUpdated}
-		<div class="last-updated" in:fade={{ delay: 600 }}>
-			<IconClock size={14} />
-			<span>Last updated: {lastUpdated.toLocaleTimeString()}</span>
-		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -568,7 +567,7 @@
 	.blob-3 {
 		width: 350px;
 		height: 350px;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		top: 50%;
 		right: 10%;
 		animation-delay: -14s;
@@ -620,9 +619,9 @@
 		justify-content: center;
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border-radius: 16px;
-		color: #0D1117;
+		color: #0d1117;
 		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.3);
 	}
 
@@ -663,7 +662,7 @@
 	.connection-badge.connected {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.refresh-btn {
@@ -721,7 +720,7 @@
 		width: 48px;
 		height: 48px;
 		border: 3px solid rgba(148, 163, 184, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
@@ -774,7 +773,7 @@
 	}
 
 	.visibility .stat-icon {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 	}
 
 	.keywords .stat-icon {
@@ -786,7 +785,7 @@
 	}
 
 	.technical .stat-icon {
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 	}
 
 	.stat-label {
@@ -880,7 +879,7 @@
 	.connected-services h3 {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #FFD11A;
+		color: #ffd11a;
 		margin: 0;
 	}
 
@@ -899,7 +898,7 @@
 		background: rgba(230, 184, 0, 0.15);
 		border-radius: 8px;
 		font-size: 0.8125rem;
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.service-icon-small {
@@ -907,7 +906,7 @@
 	}
 
 	:global(.check-icon) {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.manage-connections-btn {
@@ -918,7 +917,7 @@
 		background: rgba(230, 184, 0, 0.2);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 8px;
-		color: #FFD11A;
+		color: #ffd11a;
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -984,7 +983,9 @@
 	.section-card:hover {
 		transform: translateY(-4px);
 		border-color: var(--card-color);
-		box-shadow: 0 16px 48px rgba(0, 0, 0, 0.3), 0 0 0 1px rgba(var(--card-color), 0.2);
+		box-shadow:
+			0 16px 48px rgba(0, 0, 0, 0.3),
+			0 0 0 1px rgba(var(--card-color), 0.2);
 	}
 
 	.card-icon {

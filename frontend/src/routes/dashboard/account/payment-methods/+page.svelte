@@ -30,10 +30,12 @@
 	function confirmDelete(event: Event, method: PaymentMethod): boolean {
 		if (method.subscriptions && method.subscriptions.length > 0) {
 			event.preventDefault();
-			alert('That payment method cannot be deleted because it is linked to an automatic subscription. Please add a payment method or choose a default payment method, before trying again.');
+			alert(
+				'That payment method cannot be deleted because it is linked to an automatic subscription. Please add a payment method or choose a default payment method, before trying again.'
+			);
 			return false;
 		}
-		
+
 		const confirmed = confirm('Are you sure you want to delete this payment method?');
 		if (!confirmed) {
 			event.preventDefault();
@@ -73,115 +75,139 @@
 	<div class="dashboard__content-main">
 		<div class="payment-methods-card">
 			<div class="woocommerce-notices-wrapper">
-			{#if form?.success}
-				<div class="woocommerce-message" role="alert">
-					{form.message}
-				</div>
-			{/if}
+				{#if form?.success}
+					<div class="woocommerce-message" role="alert">
+						{form.message}
+					</div>
+				{/if}
 
-			{#if form?.error}
-				<div class="woocommerce-error" role="alert">
-					{form.error}
-				</div>
-			{/if}
-		</div>
-		
-		<div class="row">
-			<div class="col-md-6">
-				<h2 class="section-title">Payment Methods</h2>
+				{#if form?.error}
+					<div class="woocommerce-error" role="alert">
+						{form.error}
+					</div>
+				{/if}
 			</div>
-			<div class="col-md-6 text-right hidden-xs hidden-sm">
+
+			<div class="row">
+				<div class="col-md-6">
+					<h2 class="section-title">Payment Methods</h2>
+				</div>
+				<div class="col-md-6 text-right hidden-xs hidden-sm">
+					<a class="btn btn-white btn-xs" href="/dashboard/account/add-payment-method">
+						Add payment method
+					</a>
+				</div>
+			</div>
+
+			<p class="visible-xs visible-sm">
 				<a class="btn btn-white btn-xs" href="/dashboard/account/add-payment-method">
 					Add payment method
 				</a>
-			</div>
-		</div>
+			</p>
 
-		<p class="visible-xs visible-sm">
-			<a class="btn btn-white btn-xs" href="/dashboard/account/add-payment-method">
-				Add payment method
-			</a>
-		</p>
-
-		{#if paymentMethods.length === 0}
-			<div class="woocommerce-message woocommerce-message--info">
-				<p>No saved payment methods.</p>
-			</div>
-		{:else}
-			<table class="table woocommerce-MyAccount-paymentMethods">
-				<thead>
-					<tr>
-						<th class="woocommerce-PaymentMethod woocommerce-PaymentMethod--method payment-method-method">
-							<span class="nobr">Method</span>
-						</th>
-						<th class="woocommerce-PaymentMethod woocommerce-PaymentMethod--details payment-method-details">
-							<span class="nobr">Details</span>
-						</th>
-						<th class="woocommerce-PaymentMethod woocommerce-PaymentMethod--expires payment-method-expires">
-							<span class="nobr">Expires</span>
-						</th>
-						<th class="woocommerce-PaymentMethod woocommerce-PaymentMethod--default payment-method-default">
-							<span class="nobr">Default?</span>
-						</th>
-						<th class="woocommerce-PaymentMethod woocommerce-PaymentMethod--subscriptions payment-method-subscriptions">
-							<span class="nobr">Subscriptions</span>
-						</th>
-						<th class="woocommerce-PaymentMethod woocommerce-PaymentMethod--actions payment-method-actions">
-							<span class="nobr">&nbsp;</span>
-						</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each paymentMethods as method (method.id)}
-						<tr class:default-payment-method={method.isDefault}>
-							<td class="woocommerce-PaymentMethod woocommerce-PaymentMethod--method payment-method-method" data-title="Method">
-								{method.type || 'Card'}
-							</td>
-							<td class="woocommerce-PaymentMethod woocommerce-PaymentMethod--details payment-method-details" data-title="Details">
-								{formatDetails(method)}
-							</td>
-							<td class="woocommerce-PaymentMethod woocommerce-PaymentMethod--expires payment-method-expires" data-title="Expires">
-								{formatExpiry(method)}
-							</td>
-							<td class="woocommerce-PaymentMethod woocommerce-PaymentMethod--default payment-method-default" data-title="Default?">
-								{#if method.isDefault}
-									<mark class="default">Default</mark>
-								{/if}
-							</td>
-							<td class="woocommerce-PaymentMethod woocommerce-PaymentMethod--subscriptions payment-method-subscriptions" data-title="Subscriptions">
-								{#if method.subscriptions && method.subscriptions.length > 0}
-									{method.subscriptions.join(', ')}
-								{/if}
-							</td>
-							<td class="woocommerce-PaymentMethod woocommerce-PaymentMethod--actions payment-method-actions" data-title="&nbsp;">
-								{#if !method.isDefault}
-									<form 
-										method="post" 
-										action="?/delete"
-										use:enhance={() => {
-											isSubmitting = true;
-											return async ({ update }) => {
-												await update();
-												isSubmitting = false;
-											};
-										}}
-										onsubmit={(e) => confirmDelete(e, method)}
-									>
-										<input type="hidden" name="payment_method_id" value={method.id} />
-										<button 
-											type="submit" 
-											class="button"
-											disabled={isSubmitting}
-										>
-											Delete
-										</button>
-									</form>
-								{/if}
-							</td>
+			{#if paymentMethods.length === 0}
+				<div class="woocommerce-message woocommerce-message--info">
+					<p>No saved payment methods.</p>
+				</div>
+			{:else}
+				<table class="table woocommerce-MyAccount-paymentMethods">
+					<thead>
+						<tr>
+							<th
+								class="woocommerce-PaymentMethod woocommerce-PaymentMethod--method payment-method-method"
+							>
+								<span class="nobr">Method</span>
+							</th>
+							<th
+								class="woocommerce-PaymentMethod woocommerce-PaymentMethod--details payment-method-details"
+							>
+								<span class="nobr">Details</span>
+							</th>
+							<th
+								class="woocommerce-PaymentMethod woocommerce-PaymentMethod--expires payment-method-expires"
+							>
+								<span class="nobr">Expires</span>
+							</th>
+							<th
+								class="woocommerce-PaymentMethod woocommerce-PaymentMethod--default payment-method-default"
+							>
+								<span class="nobr">Default?</span>
+							</th>
+							<th
+								class="woocommerce-PaymentMethod woocommerce-PaymentMethod--subscriptions payment-method-subscriptions"
+							>
+								<span class="nobr">Subscriptions</span>
+							</th>
+							<th
+								class="woocommerce-PaymentMethod woocommerce-PaymentMethod--actions payment-method-actions"
+							>
+								<span class="nobr">&nbsp;</span>
+							</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						{#each paymentMethods as method (method.id)}
+							<tr class:default-payment-method={method.isDefault}>
+								<td
+									class="woocommerce-PaymentMethod woocommerce-PaymentMethod--method payment-method-method"
+									data-title="Method"
+								>
+									{method.type || 'Card'}
+								</td>
+								<td
+									class="woocommerce-PaymentMethod woocommerce-PaymentMethod--details payment-method-details"
+									data-title="Details"
+								>
+									{formatDetails(method)}
+								</td>
+								<td
+									class="woocommerce-PaymentMethod woocommerce-PaymentMethod--expires payment-method-expires"
+									data-title="Expires"
+								>
+									{formatExpiry(method)}
+								</td>
+								<td
+									class="woocommerce-PaymentMethod woocommerce-PaymentMethod--default payment-method-default"
+									data-title="Default?"
+								>
+									{#if method.isDefault}
+										<mark class="default">Default</mark>
+									{/if}
+								</td>
+								<td
+									class="woocommerce-PaymentMethod woocommerce-PaymentMethod--subscriptions payment-method-subscriptions"
+									data-title="Subscriptions"
+								>
+									{#if method.subscriptions && method.subscriptions.length > 0}
+										{method.subscriptions.join(', ')}
+									{/if}
+								</td>
+								<td
+									class="woocommerce-PaymentMethod woocommerce-PaymentMethod--actions payment-method-actions"
+									data-title="&nbsp;"
+								>
+									{#if !method.isDefault}
+										<form
+											method="post"
+											action="?/delete"
+											use:enhance={() => {
+												isSubmitting = true;
+												return async ({ update }) => {
+													await update();
+													isSubmitting = false;
+												};
+											}}
+											onsubmit={(e) => confirmDelete(e, method)}
+										>
+											<input type="hidden" name="payment_method_id" value={method.id} />
+											<button type="submit" class="button" disabled={isSubmitting}> Delete </button>
+										</form>
+									{/if}
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
 			{/if}
 		</div>
 	</div>

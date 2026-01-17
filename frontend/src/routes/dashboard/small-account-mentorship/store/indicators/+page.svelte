@@ -16,7 +16,10 @@
 
 <svelte:head>
 	<title>Trading Indicators | Day Trading Room | Revolution Trading Pros</title>
-	<meta name="description" content="Browse and purchase professional trading indicators and technical analysis tools." />
+	<meta
+		name="description"
+		content="Browse and purchase professional trading indicators and technical analysis tools."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 

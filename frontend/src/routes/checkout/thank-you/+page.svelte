@@ -67,7 +67,7 @@
 			<li class="item-home">
 				<a class="breadcrumb-link breadcrumb-home" href="/" title="Home">Home</a>
 			</li>
-			<li class="separator separator-home"> / </li>
+			<li class="separator separator-home">/</li>
 			<li class="item-current">
 				<strong class="breadcrumb-current">Order Confirmation</strong>
 			</li>
@@ -78,7 +78,6 @@
 <!-- Main Thank You Content -->
 <main class="typ-page">
 	<div class="container">
-
 		<!-- Success Header -->
 		<section class="typ-header">
 			<div class="typ-header__icon">
@@ -149,31 +148,33 @@
 					<span class="typ-step__number">1</span>
 					<div class="typ-step__content">
 						<h3 class="typ-step__title">Access Your Dashboard</h3>
-						<p class="typ-step__text">Click the button below to go to your member dashboard and explore your new membership.</p>
+						<p class="typ-step__text">
+							Click the button below to go to your member dashboard and explore your new membership.
+						</p>
 					</div>
 				</div>
 				<div class="typ-step">
 					<span class="typ-step__number">2</span>
 					<div class="typ-step__content">
 						<h3 class="typ-step__title">Watch the Getting Started Video</h3>
-						<p class="typ-step__text">We've prepared a quick orientation video to help you make the most of your membership.</p>
+						<p class="typ-step__text">
+							We've prepared a quick orientation video to help you make the most of your membership.
+						</p>
 					</div>
 				</div>
 				<div class="typ-step">
 					<span class="typ-step__number">3</span>
 					<div class="typ-step__content">
 						<h3 class="typ-step__title">Join the Trading Room</h3>
-						<p class="typ-step__text">Our live trading room opens at 9:00 AM ET. Join us to see our strategies in action!</p>
+						<p class="typ-step__text">
+							Our live trading room opens at 9:00 AM ET. Join us to see our strategies in action!
+						</p>
 					</div>
 				</div>
 			</div>
 			<div class="typ-next-steps__actions">
-				<a href="/account" class="btn btn-orange btn-lg">
-					Go to My Account
-				</a>
-				<a href="/courses" class="btn btn-outline-light btn-lg">
-					Browse Courses
-				</a>
+				<a href="/account" class="btn btn-orange btn-lg"> Go to My Account </a>
+				<a href="/courses" class="btn btn-outline-light btn-lg"> Browse Courses </a>
 			</div>
 		</section>
 
@@ -181,7 +182,9 @@
 		<section class="typ-upsell">
 			<div class="typ-upsell__header">
 				<h2 class="typ-upsell__title">Exclusive Member Offers</h2>
-				<p class="typ-upsell__subtitle">Special pricing available only for new members - limited time!</p>
+				<p class="typ-upsell__subtitle">
+					Special pricing available only for new members - limited time!
+				</p>
 			</div>
 			<div class="row">
 				{#each upsellProducts as product}
@@ -222,7 +225,6 @@
 				</div>
 			</div>
 		</section>
-
 	</div>
 </main>
 
@@ -296,7 +298,7 @@
 	}
 
 	.typ-header__icon .st-icon::before {
-		content: "\2713";
+		content: '\2713';
 	}
 
 	.typ-header__title {
@@ -397,7 +399,9 @@
 		padding: 2rem;
 		text-align: center;
 		height: 100%;
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			transform 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	.typ-benefit-card:hover {
@@ -704,7 +708,9 @@
 			font-size: 1.75rem;
 		}
 
-		.col-sm-6, .col-lg-3, .col-md-6 {
+		.col-sm-6,
+		.col-lg-3,
+		.col-md-6 {
 			flex: 0 0 100%;
 			max-width: 100%;
 		}

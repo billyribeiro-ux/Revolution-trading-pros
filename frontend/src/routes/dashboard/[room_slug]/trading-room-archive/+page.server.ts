@@ -2,10 +2,10 @@
  * Trading Room Archive Page Server (Dynamic Route)
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Implementation
- * 
+ *
  * Fetches room archive videos for any trading room.
  * Supports: day-trading-room, swing-trading-room, small-account-mentorship
- * 
+ *
  * @version 3.0.0
  */
 
@@ -87,17 +87,20 @@ export interface DynamicArchivePageData {
 export const load = async ({ url, fetch, params }): Promise<DynamicArchivePageData> => {
 	const API_URL = env.API_URL || 'https://revolution-trading-pros-api.fly.dev';
 	const roomSlug = params.room_slug;
-	
+
 	// Get room config
 	const roomConfig = ROOM_CONFIG[roomSlug] || {
-		name: roomSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+		name: roomSlug
+			.split('-')
+			.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+			.join(' '),
 		startHereUrl: `/dashboard/${roomSlug}/start-here`
 	};
-	
+
 	// Get query params
 	const page = url.searchParams.get('page') || '1';
 	const search = url.searchParams.get('search') || '';
-	
+
 	// TODO: Implement new video fetching approach
 	// Returning empty data until new implementation is ready
 	return {

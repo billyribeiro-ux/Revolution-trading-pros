@@ -13,7 +13,6 @@
 	@version 1.1.0 - January 2026
 -->
 <script lang="ts">
-	
 	interface ClassItem {
 		id: number;
 		title: string;
@@ -24,11 +23,11 @@
 		instructor?: string;
 		date?: string;
 	}
-	
+
 	// Pagination configuration - ICT 7 Enterprise Standard
 	let currentPage = $state(1);
 	const itemsPerPage = 12;
-	
+
 	// Mock data - replace with actual API call
 	// Set to empty array to show empty state, or populate with classes
 	const classes: ClassItem[] = [
@@ -96,14 +95,14 @@
 			instructor: 'John Carter'
 		}
 	];
-	
+
 	// Computed pagination values - Svelte 5
 	let totalPages = $derived(Math.ceil(classes.length / itemsPerPage));
 	let startIndex = $derived((currentPage - 1) * itemsPerPage);
 	let endIndex = $derived(startIndex + itemsPerPage);
 	let paginatedClasses = $derived(classes.slice(startIndex, endIndex));
 	let pageNumbers = $derived(Array.from({ length: totalPages }, (_, i) => i + 1));
-	
+
 	// Pagination navigation functions
 	function goToPage(page: number) {
 		if (page >= 1 && page <= totalPages) {
@@ -111,13 +110,13 @@
 			window.scrollTo({ top: 0, behavior: 'smooth' });
 		}
 	}
-	
+
 	function nextPage() {
 		if (currentPage < totalPages) {
 			goToPage(currentPage + 1);
 		}
 	}
-	
+
 	function previousPage() {
 		if (currentPage > 1) {
 			goToPage(currentPage - 1);
@@ -136,7 +135,7 @@
 		<aside class="dashboard__sidebar">
 			<!-- Sidebar content if needed -->
 		</aside>
-		
+
 		<main class="dashboard__main">
 			<!-- Page Header with dashboard__header wrapper (matches WordPress) -->
 			<header class="dashboard__header">
@@ -144,100 +143,100 @@
 					<h1 class="dashboard__page-title">My Classes</h1>
 				</div>
 			</header>
-			
+
 			<!-- Classes Grid or Empty State -->
-		{#if classes.length === 0}
-			<!-- Empty State -->
-			<div class="dashboard__content">
-				<div class="dashboard__content-main">
-					<section class="dashboard__content-section">
-						<div class="empty-state">
-							<p class="empty-state__message">You don't have any Classes.</p>
-							<a href="/courses" class="btn btn-orange">See All Courses</a>
-						</div>
-					</section>
-				</div>
-			</div>
-		{:else}
-			<!-- Classes Grid -->
-			<div class="dashboard__content">
-				<div class="dashboard__content-main">
-					<section class="dashboard__content-section">
-						<div class="class-grid">
-							{#each paginatedClasses as { id, title, slug, date, instructor } (id)}
-								<article class="class-grid__item">
-									<div class="class-card">
-										<section class="class-card__body">
-											<h4 class="class-card__title">
-												<a href="/classes/{slug}">{title}</a>
-											</h4>
-											{#if date && instructor}
-												<p class="class-card__meta">
-													<small>{date} with {instructor}</small>
-												</p>
-											{/if}
-										</section>
-										<footer class="class-card__footer">
-											<a class="btn btn-tiny btn-default" href="/classes/{slug}">Watch Now</a>
-										</footer>
-									</div>
-								</article>
-							{/each}
-						</div>
-						
-						<!-- Pagination Controls -->
-						{#if totalPages > 1}
-							<div class="pagination-wrapper">
-								<nav class="pagination" aria-label="Pagination">
-									<ul class="page-numbers">
-										<!-- Previous Button -->
-										<li>
-											<button
-												class="page-numbers prev"
-												onclick={previousPage}
-												disabled={currentPage === 1}
-												aria-label="Previous page"
-											>
-												← Previous
-											</button>
-										</li>
-										
-										<!-- Page Numbers -->
-										{#each pageNumbers as pageNum}
-											<li>
-												{#if pageNum === currentPage}
-													<span class="page-numbers current" aria-current="page">{pageNum}</span>
-												{:else}
-													<button
-														class="page-numbers"
-														onclick={() => goToPage(pageNum)}
-														aria-label="Go to page {pageNum}"
-													>
-														{pageNum}
-													</button>
-												{/if}
-											</li>
-										{/each}
-										
-										<!-- Next Button -->
-										<li>
-											<button
-												class="page-numbers next"
-												onclick={nextPage}
-												disabled={currentPage === totalPages}
-												aria-label="Next page"
-											>
-												Next →
-											</button>
-										</li>
-									</ul>
-								</nav>
+			{#if classes.length === 0}
+				<!-- Empty State -->
+				<div class="dashboard__content">
+					<div class="dashboard__content-main">
+						<section class="dashboard__content-section">
+							<div class="empty-state">
+								<p class="empty-state__message">You don't have any Classes.</p>
+								<a href="/courses" class="btn btn-orange">See All Courses</a>
 							</div>
-						{/if}
-					</section>
+						</section>
+					</div>
 				</div>
-			</div>
-		{/if}
+			{:else}
+				<!-- Classes Grid -->
+				<div class="dashboard__content">
+					<div class="dashboard__content-main">
+						<section class="dashboard__content-section">
+							<div class="class-grid">
+								{#each paginatedClasses as { id, title, slug, date, instructor } (id)}
+									<article class="class-grid__item">
+										<div class="class-card">
+											<section class="class-card__body">
+												<h4 class="class-card__title">
+													<a href="/classes/{slug}">{title}</a>
+												</h4>
+												{#if date && instructor}
+													<p class="class-card__meta">
+														<small>{date} with {instructor}</small>
+													</p>
+												{/if}
+											</section>
+											<footer class="class-card__footer">
+												<a class="btn btn-tiny btn-default" href="/classes/{slug}">Watch Now</a>
+											</footer>
+										</div>
+									</article>
+								{/each}
+							</div>
+
+							<!-- Pagination Controls -->
+							{#if totalPages > 1}
+								<div class="pagination-wrapper">
+									<nav class="pagination" aria-label="Pagination">
+										<ul class="page-numbers">
+											<!-- Previous Button -->
+											<li>
+												<button
+													class="page-numbers prev"
+													onclick={previousPage}
+													disabled={currentPage === 1}
+													aria-label="Previous page"
+												>
+													← Previous
+												</button>
+											</li>
+
+											<!-- Page Numbers -->
+											{#each pageNumbers as pageNum}
+												<li>
+													{#if pageNum === currentPage}
+														<span class="page-numbers current" aria-current="page">{pageNum}</span>
+													{:else}
+														<button
+															class="page-numbers"
+															onclick={() => goToPage(pageNum)}
+															aria-label="Go to page {pageNum}"
+														>
+															{pageNum}
+														</button>
+													{/if}
+												</li>
+											{/each}
+
+											<!-- Next Button -->
+											<li>
+												<button
+													class="page-numbers next"
+													onclick={nextPage}
+													disabled={currentPage === totalPages}
+													aria-label="Next page"
+												>
+													Next →
+												</button>
+											</li>
+										</ul>
+									</nav>
+								</div>
+							{/if}
+						</section>
+					</div>
+				</div>
+			{/if}
 		</main>
 	</div>
 </div>
@@ -247,7 +246,7 @@
 	 * My Classes Page Styles
 	 * Matches WordPress implementation exactly
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+
 	.dashboard__header {
 		display: flex;
 		flex-wrap: wrap;
@@ -258,7 +257,7 @@
 		border-right: 1px solid #dbdbdb;
 		padding: 20px;
 	}
-	
+
 	@media (min-width: 1024px) {
 		.dashboard__header {
 			padding: 30px;
@@ -270,11 +269,11 @@
 			padding: 30px 40px;
 		}
 	}
-	
+
 	.dashboard__header-left {
 		flex: 1;
 	}
-	
+
 	.dashboard__page-title {
 		font-size: 28px;
 		font-weight: 700;
@@ -402,7 +401,7 @@
 	}
 
 	.class-card__title a:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.class-card__meta {
@@ -523,20 +522,20 @@
 			font-size: 22px;
 		}
 	}
-	
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Pagination - Enterprise ICT 7 Standard
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+
 	.pagination-wrapper {
 		padding: 40px 0;
 		text-align: center;
 	}
-	
+
 	.pagination {
 		display: inline-block;
 	}
-	
+
 	.page-numbers {
 		list-style: none;
 		margin: 0;
@@ -547,13 +546,13 @@
 		justify-content: center;
 		flex-wrap: wrap;
 	}
-	
+
 	.page-numbers li {
 		list-style: none;
 		margin: 0;
 		padding: 0;
 	}
-	
+
 	.page-numbers button,
 	.page-numbers span {
 		display: inline-flex;
@@ -573,43 +572,43 @@
 		transition: all 0.2s ease;
 		cursor: pointer;
 	}
-	
+
 	.page-numbers button:hover:not(:disabled) {
 		background: #f5f5f5;
-		border-color: #143E59;
-		color: #143E59;
+		border-color: #143e59;
+		color: #143e59;
 		text-decoration: none;
 	}
-	
+
 	.page-numbers button:disabled {
 		opacity: 0.5;
 		cursor: not-allowed;
 		background: #f9f9f9;
 	}
-	
+
 	.page-numbers .current {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border-color: #143E59;
+		border-color: #143e59;
 		cursor: default;
 	}
-	
+
 	.page-numbers .prev,
 	.page-numbers .next {
 		min-width: auto;
 		padding: 8px 16px;
 		font-weight: 700;
 	}
-	
+
 	@media (max-width: 576px) {
 		.pagination-wrapper {
 			padding: 30px 0;
 		}
-		
+
 		.page-numbers {
 			gap: 4px;
 		}
-		
+
 		.page-numbers button,
 		.page-numbers span {
 			min-width: 36px;
@@ -617,7 +616,7 @@
 			padding: 6px 10px;
 			font-size: 13px;
 		}
-		
+
 		.page-numbers .prev,
 		.page-numbers .next {
 			padding: 6px 12px;

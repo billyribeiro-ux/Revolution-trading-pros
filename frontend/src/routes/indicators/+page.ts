@@ -1,10 +1,10 @@
 /**
  * Indicators Page Configuration - Apple ICT 7
- * 
+ *
  * SSG Configuration:
  * - prerender: true (inherited from root, explicit for clarity)
  * - ssr: true (server-side rendering for SEO)
- * 
+ *
  * @version 1.0.0
  */
 

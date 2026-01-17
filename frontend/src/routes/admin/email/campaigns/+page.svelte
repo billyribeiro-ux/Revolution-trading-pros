@@ -137,11 +137,9 @@
 		loading = true;
 		error = '';
 		try {
-			const statusFilter = activeTab === 'all' ? undefined : 
-			activeTab === 'drafts' ? 'draft' : activeTab;
-		const response = await getCampaigns(
-			statusFilter ? { status: statusFilter } : {}
-		);
+			const statusFilter =
+				activeTab === 'all' ? undefined : activeTab === 'drafts' ? 'draft' : activeTab;
+			const response = await getCampaigns(statusFilter ? { status: statusFilter } : {});
 			campaigns = response.data;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load campaigns';
@@ -162,7 +160,10 @@
 	async function loadTemplates() {
 		try {
 			const data = await adminFetch('/api/admin/email/templates');
-			templates = (data.data || data || []).map((t: { id: number; name: string }) => ({ id: t.id, name: t.name }));
+			templates = (data.data || data || []).map((t: { id: number; name: string }) => ({
+				id: t.id,
+				name: t.name
+			}));
 		} catch (err) {
 			console.error('Failed to load templates:', err);
 		}
@@ -263,17 +264,19 @@
 				template_id: parseInt(newCampaign.templateId),
 				segment_id: newCampaign.segmentId ? parseInt(newCampaign.segmentId) : null,
 				scheduled_at: newCampaign.scheduledFor || null,
-				ab_test_config: newCampaign.useABTest ? {
-					enabled: true,
-					subject_b: newCampaign.subjectB,
-					split_percentage: newCampaign.abTestSplit
-				} : null
+				ab_test_config: newCampaign.useABTest
+					? {
+							enabled: true,
+							subject_b: newCampaign.subjectB,
+							split_percentage: newCampaign.abTestSplit
+						}
+					: null
 			};
 
 			await createCampaign(campaignData);
 			showCreateModal = false;
 			toastStore.success('Campaign created successfully');
-			
+
 			// Reset form
 			newCampaign = {
 				name: '',
@@ -341,7 +344,7 @@
 	// Helper to get segment name
 	function getSegmentName(segmentId: number | null): string {
 		if (!segmentId) return 'All Members';
-		const segment = segments.find(s => s.id === segmentId);
+		const segment = segments.find((s) => s.id === segmentId);
 		return segment?.name || 'Unknown';
 	}
 </script>
@@ -547,12 +550,16 @@
 									<div class="ab-variant" class:winner={campaign.ab_test_config.winner === 'a'}>
 										<span class="variant-label">A:</span>
 										<span class="variant-subject">{campaign.subject}</span>
-										<span class="variant-rate">{campaign.ab_test_config.variant_a?.open_rate || 0}%</span>
+										<span class="variant-rate"
+											>{campaign.ab_test_config.variant_a?.open_rate || 0}%</span
+										>
 									</div>
 									<div class="ab-variant" class:winner={campaign.ab_test_config.winner === 'b'}>
 										<span class="variant-label">B:</span>
 										<span class="variant-subject">{campaign.ab_test_config.subject_b}</span>
-										<span class="variant-rate">{campaign.ab_test_config.variant_b?.open_rate || 0}%</span>
+										<span class="variant-rate"
+											>{campaign.ab_test_config.variant_b?.open_rate || 0}%</span
+										>
 									</div>
 								</div>
 							</div>
@@ -682,7 +689,9 @@
 								max="90"
 								bind:value={newCampaign.abTestSplit}
 							/>
-							<span class="split-label">{newCampaign.abTestSplit}% / {100 - newCampaign.abTestSplit}%</span>
+							<span class="split-label"
+								>{newCampaign.abTestSplit}% / {100 - newCampaign.abTestSplit}%</span
+							>
 						</div>
 					{/if}
 
@@ -757,7 +766,7 @@
 	}
 
 	.back-btn:hover {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.header-content {
@@ -776,12 +785,12 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #0D1117;
+		color: #0d1117;
 	}
 
 	.header-title h1 {
@@ -828,10 +837,22 @@
 		justify-content: center;
 	}
 
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
-	.stat-icon.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.yellow { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+	.stat-icon.purple {
+		background: rgba(230, 184, 0, 0.15);
+		color: #ffd11a;
+	}
+	.stat-icon.emerald {
+		background: rgba(16, 185, 129, 0.15);
+		color: #34d399;
+	}
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.yellow {
+		background: rgba(251, 191, 36, 0.15);
+		color: #fbbf24;
+	}
 
 	.stat-content .stat-value {
 		font-size: 1.5rem;
@@ -872,12 +893,12 @@
 	}
 
 	.tabs button:hover {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.tabs button.active {
-		color: #E6B800;
-		border-bottom-color: #E6B800;
+		color: #e6b800;
+		border-bottom-color: #e6b800;
 	}
 
 	/* Campaign List */
@@ -1040,7 +1061,7 @@
 
 	.variant-label {
 		font-weight: 600;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.variant-subject {
@@ -1084,8 +1105,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 	}
 
 	.btn-secondary {
@@ -1154,7 +1175,12 @@
 	}
 
 	.skeleton {
-		background: linear-gradient(90deg, rgba(148, 163, 184, 0.1) 25%, rgba(148, 163, 184, 0.2) 50%, rgba(148, 163, 184, 0.1) 75%);
+		background: linear-gradient(
+			90deg,
+			rgba(148, 163, 184, 0.1) 25%,
+			rgba(148, 163, 184, 0.2) 50%,
+			rgba(148, 163, 184, 0.1) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 16px;
@@ -1165,8 +1191,12 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	/* Modal */
@@ -1291,10 +1321,10 @@
 		cursor: pointer;
 	}
 
-	.checkbox-label input[type="checkbox"] {
+	.checkbox-label input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
-		accent-color: #E6B800;
+		accent-color: #e6b800;
 	}
 
 	.checkbox-label span {
@@ -1310,9 +1340,9 @@
 		margin-top: 0.25rem;
 	}
 
-	input[type="range"] {
+	input[type='range'] {
 		width: 100%;
-		accent-color: #E6B800;
+		accent-color: #e6b800;
 	}
 
 	@media (max-width: 768px) {

@@ -27,7 +27,10 @@
 
 <svelte:head>
 	<title>My Orders - Revolution Trading Pros</title>
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" />
+	<link
+		rel="stylesheet"
+		href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css"
+	/>
 </svelte:head>
 
 <!-- My Account Header -->
@@ -44,56 +47,67 @@
 			<div class="orders-container">
 				<div class="orders-content">
 					<div class="woocommerce">
-														<div class="woocommerce-MyAccount-content">
-															<div class="woocommerce-notices-wrapper"></div>
-															<h2 class="section-title">My Orders</h2>
+						<div class="woocommerce-MyAccount-content">
+							<div class="woocommerce-notices-wrapper"></div>
+							<h2 class="section-title">My Orders</h2>
 
-															{#if orders.length === 0}
-																<div class="woocommerce-message woocommerce-info">
-																	No order has been made yet.
-																</div>
-															{:else}
-																<table class="table">
-																	<thead>
-																		<tr>
-																			<th class="col-xs-2">Order</th><th class="col-xs-3">Date</th><th class="col-xs-2 text-right">Actions</th>
-																		</tr>
-																	</thead>
-																	<tbody class="u--font-size-sm">
-																		{#each orders as order (order.id)}
-																			<tr>
-																				<td class="col-xs-2">
-																					<a href="/dashboard/account/view-order/{order.id}">
-																						#{order.number}
-																					</a>
-																				</td>
-																				<td class="col-xs-3">
-																					<time datetime={order.date}>{formatDate(order.date)}</time>
-																				</td>
-																				<td class="col-xs-2 text-right table__actions">
-																					<div class="dropdown">
-																						<button type="button" class="btn btn-xs btn-white table__more-actions" id="dLabel-{order.id}" data-bs-toggle="dropdown" aria-expanded="false" aria-label="Order actions for #{order.number}">
-																							<span class="st-icon-ellipsis-h icon--md"></span>
-																						</button>
-																						<nav class="dropdown-menu" data-append-to-body="1" aria-labelledby="dLabel-{order.id}">
-																							<div class="dropdown-menu__content">
-																								<ul class="dropdown-menu__menu dropdown-menu__menu--compact">
-																									<li>
-																										<a href="/dashboard/account/view-order/{order.id}">
-																											<i class="fa fa-eye icon--sm"></i>View
-																										</a>
-																									</li>
-																								</ul>
-																							</div>
-																						</nav>
-																					</div>
-																				</td>
-																			</tr>
-																		{/each}
-																	</tbody>
-																</table>
-															{/if}
-														</div>
+							{#if orders.length === 0}
+								<div class="woocommerce-message woocommerce-info">No order has been made yet.</div>
+							{:else}
+								<table class="table">
+									<thead>
+										<tr>
+											<th class="col-xs-2">Order</th><th class="col-xs-3">Date</th><th
+												class="col-xs-2 text-right">Actions</th
+											>
+										</tr>
+									</thead>
+									<tbody class="u--font-size-sm">
+										{#each orders as order (order.id)}
+											<tr>
+												<td class="col-xs-2">
+													<a href="/dashboard/account/view-order/{order.id}">
+														#{order.number}
+													</a>
+												</td>
+												<td class="col-xs-3">
+													<time datetime={order.date}>{formatDate(order.date)}</time>
+												</td>
+												<td class="col-xs-2 text-right table__actions">
+													<div class="dropdown">
+														<button
+															type="button"
+															class="btn btn-xs btn-white table__more-actions"
+															id="dLabel-{order.id}"
+															data-bs-toggle="dropdown"
+															aria-expanded="false"
+															aria-label="Order actions for #{order.number}"
+														>
+															<span class="st-icon-ellipsis-h icon--md"></span>
+														</button>
+														<nav
+															class="dropdown-menu"
+															data-append-to-body="1"
+															aria-labelledby="dLabel-{order.id}"
+														>
+															<div class="dropdown-menu__content">
+																<ul class="dropdown-menu__menu dropdown-menu__menu--compact">
+																	<li>
+																		<a href="/dashboard/account/view-order/{order.id}">
+																			<i class="fa fa-eye icon--sm"></i>View
+																		</a>
+																	</li>
+																</ul>
+															</div>
+														</nav>
+													</div>
+												</td>
+											</tr>
+										{/each}
+									</tbody>
+								</table>
+							{/if}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -178,7 +192,15 @@
 		border-radius: 4px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 		padding: 20px;
-		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+		font-family:
+			'Open Sans',
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			Roboto,
+			Oxygen,
+			Ubuntu,
+			sans-serif;
 		line-height: 1.6;
 	}
 
@@ -446,7 +468,6 @@
 	.text-right {
 		text-align: right;
 	}
-
 
 	/* Responsive */
 	@media (max-width: 768px) {

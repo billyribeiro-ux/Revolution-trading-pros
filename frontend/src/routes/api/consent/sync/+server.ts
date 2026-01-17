@@ -17,20 +17,23 @@ import type { RequestHandler } from '@sveltejs/kit';
  * In-memory store for demo purposes.
  * In production, replace with database (PostgreSQL, MongoDB, etc.)
  */
-const consentStore = new Map<string, {
-	consentId: string;
-	userId?: string;
-	consent: {
-		necessary: boolean;
-		analytics: boolean;
-		marketing: boolean;
-		preferences: boolean;
-	};
-	metadata: Record<string, unknown>;
-	auditLog?: unknown[];
-	createdAt: string;
-	updatedAt: string;
-}>();
+const consentStore = new Map<
+	string,
+	{
+		consentId: string;
+		userId?: string;
+		consent: {
+			necessary: boolean;
+			analytics: boolean;
+			marketing: boolean;
+			preferences: boolean;
+		};
+		metadata: Record<string, unknown>;
+		auditLog?: unknown[];
+		createdAt: string;
+		updatedAt: string;
+	}
+>();
 
 /**
  * POST: Save or update consent
@@ -56,12 +59,12 @@ export const POST: RequestHandler = async ({ request }) => {
 				necessary: consent.necessary ?? true,
 				analytics: consent.analytics ?? false,
 				marketing: consent.marketing ?? false,
-				preferences: consent.preferences ?? false,
+				preferences: consent.preferences ?? false
 			},
 			metadata: metadata || {},
 			auditLog: auditLog || [],
 			createdAt: consentStore.get(consentId)?.createdAt || now,
-			updatedAt: now,
+			updatedAt: now
 		};
 
 		consentStore.set(consentId, record);
@@ -77,7 +80,7 @@ export const POST: RequestHandler = async ({ request }) => {
 			success: true,
 			consentId,
 			serverTimestamp: now,
-			message: 'Consent saved successfully',
+			message: 'Consent saved successfully'
 		});
 	} catch (err) {
 		console.error('[ConsentAPI] POST error:', err);
@@ -121,8 +124,8 @@ export const GET: RequestHandler = async ({ url }) => {
 				marketing: record.consent.marketing,
 				preferences: record.consent.preferences,
 				updatedAt: record.updatedAt,
-				...record.metadata,
-			},
+				...record.metadata
+			}
 		});
 	} catch (err) {
 		console.error('[ConsentAPI] GET error:', err);
@@ -166,7 +169,7 @@ export const DELETE: RequestHandler = async ({ url }) => {
 
 		return json({
 			success: true,
-			message: 'Consent deleted successfully',
+			message: 'Consent deleted successfully'
 		});
 	} catch (err) {
 		console.error('[ConsentAPI] DELETE error:', err);

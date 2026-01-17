@@ -37,10 +37,12 @@
 		}
 	}
 
-	let filteredWorkflows = $derived(workflows.filter((w) => {
-		if (filter === 'all') return true;
-		return w.status === filter;
-	}));
+	let filteredWorkflows = $derived(
+		workflows.filter((w) => {
+			if (filter === 'all') return true;
+			return w.status === filter;
+		})
+	);
 
 	onMount(() => {
 		loadWorkflows();

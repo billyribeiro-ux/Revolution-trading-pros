@@ -17,7 +17,8 @@
 			id: 'explosive-swings',
 			name: 'Explosive Swings',
 			tagline: 'Multi-Day Swing Trading Alerts',
-			description: 'Premium swing trading alerts for 3-7 day opportunities. Catch the big moves without staring at screens all day.',
+			description:
+				'Premium swing trading alerts for 3-7 day opportunities. Catch the big moves without staring at screens all day.',
 			features: [
 				'2-4 Premium Swing Alerts Weekly',
 				'Instant SMS & Email Delivery',
@@ -35,7 +36,8 @@
 			id: 'spx-profit-pulse',
 			name: 'SPX Profit Pulse',
 			tagline: 'Daily SPX/SPY Options Alerts',
-			description: 'High-precision daily options alerts focused on SPX and SPY. Designed for active traders who want consistent opportunities.',
+			description:
+				'High-precision daily options alerts focused on SPX and SPY. Designed for active traders who want consistent opportunities.',
 			features: [
 				'Daily SPX/SPY Options Alerts',
 				'Real-time Entry & Exit Signals',
@@ -52,37 +54,42 @@
 	];
 
 	// --- Apple ICT9+ Scroll Animations ---
-	
+
 	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
 		const delay = params.delay ?? 0;
 		const translateY = params.y ?? 30;
-		
-		if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+
+		if (
+			typeof window !== 'undefined' &&
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		) {
 			return;
 		}
-		
+
 		node.style.opacity = '0';
 		node.style.transform = `translateY(${translateY}px)`;
 		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
 		node.style.transitionDelay = `${delay}ms`;
 		node.style.willChange = 'opacity, transform';
-		
+
 		const observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
 						node.style.opacity = '1';
 						node.style.transform = 'translateY(0)';
-						setTimeout(() => { node.style.willChange = 'auto'; }, 800 + delay);
+						setTimeout(() => {
+							node.style.willChange = 'auto';
+						}, 800 + delay);
 						observer.unobserve(node);
 					}
 				});
 			},
 			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
 		);
-		
+
 		observer.observe(node);
-		
+
 		return {
 			destroy() {
 				observer.disconnect();
@@ -96,7 +103,14 @@
 	description="Get premium trading alerts delivered to your phone. Swing trading and day trading alerts with precise entries, exits, and risk management."
 	canonical="/alerts"
 	ogType="website"
-	keywords={['trading alerts', 'swing trading alerts', 'SPX alerts', 'options alerts', 'trade signals', 'stock alerts']}
+	keywords={[
+		'trading alerts',
+		'swing trading alerts',
+		'SPX alerts',
+		'options alerts',
+		'trade signals',
+		'stock alerts'
+	]}
 />
 
 <main class="alerts-page">
@@ -113,8 +127,8 @@
 				<span class="gradient-text">Delivered.</span>
 			</h1>
 			<p use:reveal={{ delay: 200 }}>
-				Stop guessing. Get high-probability trade alerts sent directly to your phone.
-				Choose the service that matches your style.
+				Stop guessing. Get high-probability trade alerts sent directly to your phone. Choose the
+				service that matches your style.
 			</p>
 		</div>
 	</section>
@@ -128,10 +142,7 @@
 
 		<div class="services-grid">
 			{#each alertServices as service, i}
-				<article
-					class="service-card service-card--{service.color}"
-					use:reveal={{ delay: i * 150 }}
-				>
+				<article class="service-card service-card--{service.color}" use:reveal={{ delay: i * 150 }}>
 					<div class="service-header">
 						<span class="service-icon">{service.icon}</span>
 						<div>
@@ -163,7 +174,12 @@
 						{#each service.features as feature}
 							<li>
 								<svg class="check-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M5 13l4 4L19 7"
+									/>
 								</svg>
 								{feature}
 							</li>
@@ -179,7 +195,8 @@
 						</div>
 						{#if service.price.annual}
 							<p class="price-annual">
-								or ${service.price.annual}/year (save ${service.price.monthly * 12 - service.price.annual})
+								or ${service.price.annual}/year (save ${service.price.monthly * 12 -
+									service.price.annual})
 							</p>
 						{/if}
 					</div>
@@ -187,7 +204,12 @@
 					<a href={service.href} class="service-cta">
 						View Details & Subscribe
 						<svg class="arrow-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M13 7l5 5m0 0l-5 5m5-5H6"
+							/>
 						</svg>
 					</a>
 				</article>
@@ -231,19 +253,31 @@
 			<div class="faq-grid">
 				<div class="faq-item">
 					<h3>How are alerts delivered?</h3>
-					<p>Alerts are sent via SMS, email, and Discord simultaneously so you never miss a trade opportunity.</p>
+					<p>
+						Alerts are sent via SMS, email, and Discord simultaneously so you never miss a trade
+						opportunity.
+					</p>
 				</div>
 				<div class="faq-item">
 					<h3>Can I cancel anytime?</h3>
-					<p>Yes! All subscriptions can be cancelled at any time. We also offer a 30-day money-back guarantee.</p>
+					<p>
+						Yes! All subscriptions can be cancelled at any time. We also offer a 30-day money-back
+						guarantee.
+					</p>
 				</div>
 				<div class="faq-item">
 					<h3>What markets do you trade?</h3>
-					<p>We primarily trade US equities and options, focusing on liquid stocks like SPY, QQQ, and the Magnificent 7.</p>
+					<p>
+						We primarily trade US equities and options, focusing on liquid stocks like SPY, QQQ, and
+						the Magnificent 7.
+					</p>
 				</div>
 				<div class="faq-item">
 					<h3>Is this financial advice?</h3>
-					<p>No. Our alerts are educational in nature. Always do your own research and manage your own risk.</p>
+					<p>
+						No. Our alerts are educational in nature. Always do your own research and manage your
+						own risk.
+					</p>
 				</div>
 			</div>
 		</div>
@@ -318,8 +352,13 @@
 	}
 
 	@keyframes pulse {
-		0%, 100% { opacity: 1; }
-		50% { opacity: 0.5; }
+		0%,
+		100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
 	}
 
 	.hero h1 {
@@ -388,8 +427,12 @@
 		box-shadow: 0 20px 40px -12px rgba(0, 0, 0, 0.3);
 	}
 
-	.service-card--emerald:hover { border-color: rgba(16, 185, 129, 0.5); }
-	.service-card--blue:hover { border-color: rgba(59, 130, 246, 0.5); }
+	.service-card--emerald:hover {
+		border-color: rgba(16, 185, 129, 0.5);
+	}
+	.service-card--blue:hover {
+		border-color: rgba(59, 130, 246, 0.5);
+	}
 
 	.service-header {
 		display: flex;
@@ -449,8 +492,12 @@
 		color: #64748b;
 	}
 
-	.service-card--emerald .stat-value { color: #34d399; }
-	.service-card--blue .stat-value { color: #60a5fa; }
+	.service-card--emerald .stat-value {
+		color: #34d399;
+	}
+	.service-card--blue .stat-value {
+		color: #60a5fa;
+	}
 
 	/* Features */
 	.service-features {

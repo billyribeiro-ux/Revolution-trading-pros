@@ -23,13 +23,17 @@
 <script lang="ts">
 	// Dashboard Design System - Only loaded in dashboard area, not globally
 	import '$lib/styles/main.css';
-	
+
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { browser } from '$app/environment';
 	import { onMount, type Snippet } from 'svelte';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
-	import { getUserMemberships, type UserMembershipsResponse, type MembershipType } from '$lib/api/user-memberships';
+	import {
+		getUserMemberships,
+		type UserMembershipsResponse,
+		type MembershipType
+	} from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 
@@ -83,13 +87,14 @@
 			...(membershipsData?.scanners ?? []),
 			...(membershipsData?.weeklyWatchlist ?? []),
 			...(membershipsData?.premiumReports ?? [])
-		].filter((m: { status: string }) => m.status === 'active')
-		 .map((m: { name: string; slug: string; icon?: string; type: MembershipType }) => ({
-			name: m.name,
-			slug: m.slug,
-			icon: m.icon,
-			type: m.type
-		}))
+		]
+			.filter((m: { status: string }) => m.status === 'active')
+			.map((m: { name: string; slug: string; icon?: string; type: MembershipType }) => ({
+				name: m.name,
+				slug: m.slug,
+				icon: m.icon,
+				type: m.type
+			}))
 	});
 
 	// Auth is handled server-side, but we still check client store for logout detection
@@ -171,22 +176,61 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Routes that should auto-collapse the main sidebar and show secondary nav
-	const membershipRoutes: Record<string, { title: string; items: Array<{ href: string; icon: string; text: string; submenu?: Array<{ href: string; icon: string; text: string }> }> }> = {
+	const membershipRoutes: Record<
+		string,
+		{
+			title: string;
+			items: Array<{
+				href: string;
+				icon: string;
+				text: string;
+				submenu?: Array<{ href: string; icon: string; text: string }>;
+			}>;
+		}
+	> = {
 		'/dashboard/day-trading-room': {
 			title: 'Day Trading Room',
 			items: [
-				{ href: '/dashboard/day-trading-room', icon: 'layout-dashboard', text: 'Day Trading Room Dashboard' },
-				{ href: '/dashboard/day-trading-room/daily-videos', icon: 'video', text: 'Premium Daily Videos' },
-				{ href: '/dashboard/day-trading-room/learning-center', icon: 'school', text: 'Learning Center' },
-				{ href: '/dashboard/day-trading-room/trading-room-archive', icon: 'archive', text: 'Trading Room Archives' },
+				{
+					href: '/dashboard/day-trading-room',
+					icon: 'layout-dashboard',
+					text: 'Day Trading Room Dashboard'
+				},
+				{
+					href: '/dashboard/day-trading-room/daily-videos',
+					icon: 'video',
+					text: 'Premium Daily Videos'
+				},
+				{
+					href: '/dashboard/day-trading-room/learning-center',
+					icon: 'school',
+					text: 'Learning Center'
+				},
+				{
+					href: '/dashboard/day-trading-room/trading-room-archive',
+					icon: 'archive',
+					text: 'Trading Room Archives'
+				},
 				{
 					href: '#',
 					icon: 'users',
 					text: 'Meet the Traders',
 					submenu: [
-						{ href: '/dashboard/day-trading-room/meet-the-traders/billy-ribeiro', icon: '', text: 'Billy Ribeiro' },
-						{ href: '/dashboard/day-trading-room/meet-the-traders/freddie-ferber', icon: '', text: 'Freddie Ferber' },
-						{ href: '/dashboard/day-trading-room/meet-the-traders/shao-wan', icon: '', text: 'Shao Wan' }
+						{
+							href: '/dashboard/day-trading-room/meet-the-traders/billy-ribeiro',
+							icon: '',
+							text: 'Billy Ribeiro'
+						},
+						{
+							href: '/dashboard/day-trading-room/meet-the-traders/freddie-ferber',
+							icon: '',
+							text: 'Freddie Ferber'
+						},
+						{
+							href: '/dashboard/day-trading-room/meet-the-traders/shao-wan',
+							icon: '',
+							text: 'Shao Wan'
+						}
 					]
 				},
 				{
@@ -194,9 +238,21 @@
 					icon: 'shopping-cart',
 					text: 'Trader Store',
 					submenu: [
-						{ href: '/dashboard/day-trading-room/meet-the-traders/billy-ribeiro/trader-store', icon: '', text: 'Billy Ribeiro' },
-						{ href: '/dashboard/day-trading-room/meet-the-traders/freddie-ferber/trader-store', icon: '', text: 'Freddie Ferber' },
-						{ href: '/dashboard/day-trading-room/meet-the-traders/shao-wan/trader-store', icon: '', text: 'Shao Wan' }
+						{
+							href: '/dashboard/day-trading-room/meet-the-traders/billy-ribeiro/trader-store',
+							icon: '',
+							text: 'Billy Ribeiro'
+						},
+						{
+							href: '/dashboard/day-trading-room/meet-the-traders/freddie-ferber/trader-store',
+							icon: '',
+							text: 'Freddie Ferber'
+						},
+						{
+							href: '/dashboard/day-trading-room/meet-the-traders/shao-wan/trader-store',
+							icon: '',
+							text: 'Shao Wan'
+						}
 					]
 				}
 			]
@@ -204,18 +260,46 @@
 		'/dashboard/small-account-mentorship': {
 			title: 'Small Account Mentorship',
 			items: [
-				{ href: '/dashboard/small-account-mentorship', icon: 'layout-dashboard', text: 'Small Account Mentorship Dashboard' },
-				{ href: '/dashboard/small-account-mentorship/daily-videos', icon: 'video', text: 'Premium Daily Videos' },
-				{ href: '/dashboard/small-account-mentorship/learning-center', icon: 'school', text: 'Learning Center' },
-				{ href: '/dashboard/small-account-mentorship/trading-room-archive', icon: 'archive', text: 'Trading Room Archives' },
+				{
+					href: '/dashboard/small-account-mentorship',
+					icon: 'layout-dashboard',
+					text: 'Small Account Mentorship Dashboard'
+				},
+				{
+					href: '/dashboard/small-account-mentorship/daily-videos',
+					icon: 'video',
+					text: 'Premium Daily Videos'
+				},
+				{
+					href: '/dashboard/small-account-mentorship/learning-center',
+					icon: 'school',
+					text: 'Learning Center'
+				},
+				{
+					href: '/dashboard/small-account-mentorship/trading-room-archive',
+					icon: 'archive',
+					text: 'Trading Room Archives'
+				},
 				{
 					href: '#',
 					icon: 'users',
 					text: 'Meet the Traders',
 					submenu: [
-						{ href: '/dashboard/small-account-mentorship/meet-the-traders/billy-ribeiro', icon: '', text: 'Billy Ribeiro' },
-						{ href: '/dashboard/small-account-mentorship/meet-the-traders/freddie-ferber', icon: '', text: 'Freddie Ferber' },
-						{ href: '/dashboard/small-account-mentorship/meet-the-traders/shao-wan', icon: '', text: 'Shao Wan' }
+						{
+							href: '/dashboard/small-account-mentorship/meet-the-traders/billy-ribeiro',
+							icon: '',
+							text: 'Billy Ribeiro'
+						},
+						{
+							href: '/dashboard/small-account-mentorship/meet-the-traders/freddie-ferber',
+							icon: '',
+							text: 'Freddie Ferber'
+						},
+						{
+							href: '/dashboard/small-account-mentorship/meet-the-traders/shao-wan',
+							icon: '',
+							text: 'Shao Wan'
+						}
 					]
 				},
 				{
@@ -223,9 +307,21 @@
 					icon: 'shopping-cart',
 					text: 'Trader Store',
 					submenu: [
-						{ href: '/dashboard/small-account-mentorship/meet-the-traders/billy-ribeiro/trader-store', icon: '', text: 'Billy Ribeiro' },
-						{ href: '/dashboard/small-account-mentorship/meet-the-traders/freddie-ferber/trader-store', icon: '', text: 'Freddie Ferber' },
-						{ href: '/dashboard/small-account-mentorship/meet-the-traders/shao-wan/trader-store', icon: '', text: 'Shao Wan' }
+						{
+							href: '/dashboard/small-account-mentorship/meet-the-traders/billy-ribeiro/trader-store',
+							icon: '',
+							text: 'Billy Ribeiro'
+						},
+						{
+							href: '/dashboard/small-account-mentorship/meet-the-traders/freddie-ferber/trader-store',
+							icon: '',
+							text: 'Freddie Ferber'
+						},
+						{
+							href: '/dashboard/small-account-mentorship/meet-the-traders/shao-wan/trader-store',
+							icon: '',
+							text: 'Shao Wan'
+						}
 					]
 				}
 			]
@@ -233,45 +329,101 @@
 		'/dashboard/swing-trading-room': {
 			title: 'Swing Trading Room',
 			items: [
-				{ href: '/dashboard/swing-trading-room', icon: 'layout-dashboard', text: 'Swing Trading Dashboard' },
-				{ href: '/dashboard/swing-trading-room/daily-videos', icon: 'video', text: 'Premium Daily Videos' },
-				{ href: '/dashboard/swing-trading-room/learning-center', icon: 'school', text: 'Learning Center' }
+				{
+					href: '/dashboard/swing-trading-room',
+					icon: 'layout-dashboard',
+					text: 'Swing Trading Dashboard'
+				},
+				{
+					href: '/dashboard/swing-trading-room/daily-videos',
+					icon: 'video',
+					text: 'Premium Daily Videos'
+				},
+				{
+					href: '/dashboard/swing-trading-room/learning-center',
+					icon: 'school',
+					text: 'Learning Center'
+				}
 			]
 		},
 		'/dashboard/small-accounts-room': {
 			title: 'Small Accounts Room',
 			items: [
-				{ href: '/dashboard/small-accounts-room', icon: 'layout-dashboard', text: 'Small Accounts Dashboard' },
-				{ href: '/dashboard/small-accounts-room/daily-videos', icon: 'video', text: 'Premium Daily Videos' },
-				{ href: '/dashboard/small-accounts-room/learning-center', icon: 'school', text: 'Learning Center' }
+				{
+					href: '/dashboard/small-accounts-room',
+					icon: 'layout-dashboard',
+					text: 'Small Accounts Dashboard'
+				},
+				{
+					href: '/dashboard/small-accounts-room/daily-videos',
+					icon: 'video',
+					text: 'Premium Daily Videos'
+				},
+				{
+					href: '/dashboard/small-accounts-room/learning-center',
+					icon: 'school',
+					text: 'Learning Center'
+				}
 			]
 		},
 		'/dashboard/spx-profit-pulse': {
 			title: 'SPX Profit Pulse',
 			items: [
-				{ href: '/dashboard/spx-profit-pulse', icon: 'layout-dashboard', text: 'Tr3ndy SPX Alerts Service Dashboard' },
-				{ href: '/dashboard/spx-profit-pulse/premium-videos', icon: 'video', text: 'Premium Videos' },
-				{ href: '/dashboard/spx-profit-pulse/learning-center', icon: 'school', text: 'Learning Center' },
+				{
+					href: '/dashboard/spx-profit-pulse',
+					icon: 'layout-dashboard',
+					text: 'Tr3ndy SPX Alerts Service Dashboard'
+				},
+				{
+					href: '/dashboard/spx-profit-pulse/premium-videos',
+					icon: 'video',
+					text: 'Premium Videos'
+				},
+				{
+					href: '/dashboard/spx-profit-pulse/learning-center',
+					icon: 'school',
+					text: 'Learning Center'
+				},
 				{
 					href: '#',
 					icon: 'users',
 					text: 'Meet Jonathan',
 					submenu: [
 						{ href: '/dashboard/spx-profit-pulse/jonathan-mckeever', icon: '', text: 'Overview' },
-						{ href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trading-strategies', icon: '', text: 'Trading Strategies' },
-						{ href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trader-store', icon: '', text: 'Trader Store' }
+						{
+							href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trading-strategies',
+							icon: '',
+							text: 'Trading Strategies'
+						},
+						{
+							href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trader-store',
+							icon: '',
+							text: 'Trader Store'
+						}
 					]
 				},
-				{ href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trader-store', icon: 'shopping-cart', text: 'Trader Store' }
+				{
+					href: '/dashboard/spx-profit-pulse/jonathan-mckeever/trader-store',
+					icon: 'shopping-cart',
+					text: 'Trader Store'
+				}
 			]
 		},
 		'/dashboard/explosive-swings': {
 			title: 'Explosive Swings',
 			items: [
-				{ href: '/dashboard/explosive-swings', icon: 'layout-dashboard', text: 'Explosive Swings Dashboard' },
+				{
+					href: '/dashboard/explosive-swings',
+					icon: 'layout-dashboard',
+					text: 'Explosive Swings Dashboard'
+				},
 				{ href: '/dashboard/explosive-swings/start-here', icon: 'info', text: 'Start Here' },
 				{ href: '/dashboard/explosive-swings/alerts', icon: 'bolt', text: 'Alerts' },
-				{ href: '/dashboard/explosive-swings/trade-tracker', icon: 'chart-line', text: 'Trade Tracker' },
+				{
+					href: '/dashboard/explosive-swings/trade-tracker',
+					icon: 'chart-line',
+					text: 'Trade Tracker'
+				},
 				{ href: '/dashboard/explosive-swings/watchlist', icon: 'list', text: 'Watchlist' },
 				{ href: '/dashboard/explosive-swings/video-library', icon: 'video', text: 'Video Library' },
 				{ href: '/dashboard/explosive-swings/favorites', icon: 'star', text: 'Favorites' }
@@ -281,8 +433,16 @@
 			title: 'Weekly Watchlist',
 			items: [
 				{ href: '/dashboard/weekly-watchlist', icon: 'layout-dashboard', text: 'Weekly Watchlist' },
-				{ href: '/dashboard/weekly-watchlist/watchlist-rundown-archive', icon: 'video', text: 'Watchlist Rundown Archive' },
-				{ href: '/dashboard/weekly-watchlist/archive', icon: 'file', text: 'Weekly Watchlist Archive' }
+				{
+					href: '/dashboard/weekly-watchlist/watchlist-rundown-archive',
+					icon: 'video',
+					text: 'Watchlist Rundown Archive'
+				},
+				{
+					href: '/dashboard/weekly-watchlist/archive',
+					icon: 'file',
+					text: 'Weekly Watchlist Archive'
+				}
 			]
 		},
 		'/dashboard/account': {
@@ -322,7 +482,7 @@
 	// SVELTE 5 BEST PRACTICE: Use $derived for computed state, not $effect to mutate state
 	// This prevents layout shift by computing correct value BEFORE first render
 	let sidebarCollapsed = $derived(
-		isDashboardHome ? false : (userToggledSidebar !== null ? userToggledSidebar : isOnMembershipRoute)
+		isDashboardHome ? false : userToggledSidebar !== null ? userToggledSidebar : isOnMembershipRoute
 	);
 
 	// Handler for user manually toggling sidebar
@@ -407,7 +567,7 @@
 	 * 
 	 * NO width change = NO layout shift
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+
 	/* Show tooltip labels on hover - these are absolutely positioned OUTSIDE sidebar */
 	:global(.dashboard__nav-primary.is-collapsed a:hover .dashboard__nav-item-text),
 	:global(.dashboard__nav-primary.is-collapsed a:hover .dashboard__profile-name) {
@@ -415,17 +575,17 @@
 		visibility: visible;
 		transform: translate(0);
 	}
-	
+
 	/* Hover state visual feedback on the icon background */
 	:global(.dashboard__nav-primary.is-collapsed a:hover:before) {
 		transform: scale(1);
 		background-color: rgba(0, 0, 0, 0.2);
 	}
-	
+
 	:global(.dashboard__nav-primary.is-collapsed a:hover:after) {
 		transform: scaleX(0);
 	}
-	
+
 	:global(.dashboard__nav-primary.is-collapsed a:hover .dashboard__nav-item-icon),
 	:global(.dashboard__nav-primary.is-collapsed a:hover .dashboard__profile-photo) {
 		transform: scale(0.9);
@@ -589,7 +749,6 @@
 			border-width: 4px;
 		}
 	}
-
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * CONTAINER QUERIES - Component-level responsiveness

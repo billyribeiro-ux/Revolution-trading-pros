@@ -91,7 +91,7 @@
 
 			stats = {
 				total: segments.length,
-				active: segments.filter(s => s.is_active).length,
+				active: segments.filter((s) => s.is_active).length,
 				totalContacts: segments.reduce((sum, s) => sum + (s.contacts_count || 0), 0)
 			};
 		} catch (err) {
@@ -159,8 +159,9 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredSegments = $derived(
-		segments.filter(segment => {
-			const matchesSearch = !searchQuery ||
+		segments.filter((segment) => {
+			const matchesSearch =
+				!searchQuery ||
 				segment.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				segment.description?.toLowerCase().includes(searchQuery.toLowerCase());
 			const matchesActive = filterActive === 'all' || segment.is_active === filterActive;
@@ -189,7 +190,9 @@
 				<IconFilter size={28} class="header-icon" />
 				Dynamic Segments
 			</h1>
-			<p class="page-description">Create smart segments that auto-update based on contact conditions</p>
+			<p class="page-description">
+				Create smart segments that auto-update based on contact conditions
+			</p>
 		</div>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadSegments()} disabled={isLoading}>
@@ -323,10 +326,18 @@
 						<button class="btn-action" title="Sync Now" onclick={() => syncSegment(segment.id)}>
 							<IconReload size={16} />
 						</button>
-						<button class="btn-action" title="Duplicate" onclick={() => duplicateSegment(segment.id)}>
+						<button
+							class="btn-action"
+							title="Duplicate"
+							onclick={() => duplicateSegment(segment.id)}
+						>
 							<IconCopy size={16} />
 						</button>
-						<button class="btn-action danger" title="Delete" onclick={() => deleteSegment(segment.id)}>
+						<button
+							class="btn-action danger"
+							title="Delete"
+							onclick={() => deleteSegment(segment.id)}
+						>
 							<IconTrash size={16} />
 						</button>
 					</div>
@@ -400,8 +411,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -451,10 +466,22 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.purple {
+		background: rgba(230, 184, 0, 0.15);
+		color: #e6b800;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
 
 	.stat-content {
 		display: flex;
@@ -663,7 +690,9 @@
 	}
 
 	/* States */
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;

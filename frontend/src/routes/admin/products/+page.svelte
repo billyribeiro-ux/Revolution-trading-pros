@@ -170,165 +170,160 @@
 
 	<div class="admin-page-container">
 		<div class="page-header">
-		<h1>Products Management</h1>
-		<p class="subtitle">Manage courses, indicators, and memberships</p>
-	</div>
-
-	<!-- Actions row below header centered -->
-	<div class="actions-row">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<input
-				type="text"
-				placeholder="Search products..."
-				bind:value={searchQuery}
-			/>
+			<h1>Products Management</h1>
+			<p class="subtitle">Manage courses, indicators, and memberships</p>
 		</div>
-		<button class="btn-secondary" onclick={() => loadProducts()} disabled={loading}>
-			<IconRefresh size={18} class={loading ? 'spinning' : ''} />
-			Refresh
-		</button>
-		<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
-			<IconPlus size={18} />
-			Add Product
-		</button>
-	</div>
 
-	<!-- Type Filter Bar -->
-	<div class="filter-bar">
-		<div class="type-filter">
-			{#each productTypes as type}
-				{@const Icon = type.icon}
-				<button
-					class="type-btn"
-					class:active={selectedType === type.value}
-					onclick={() => (selectedType = type.value)}
-				>
-					<Icon size={18} />
-					{type.label}
-					{#if type.value !== 'all' && productCountByType[type.value]}
-						<span class="count-badge">{productCountByType[type.value]}</span>
-					{/if}
-				</button>
-			{/each}
+		<!-- Actions row below header centered -->
+		<div class="actions-row">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<input type="text" placeholder="Search products..." bind:value={searchQuery} />
+			</div>
+			<button class="btn-secondary" onclick={() => loadProducts()} disabled={loading}>
+				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+				Refresh
+			</button>
+			<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
+				<IconPlus size={18} />
+				Add Product
+			</button>
 		</div>
-	</div>
 
-	<!-- Results summary -->
-	{#if !loading && products.length > 0}
-		<div class="results-summary">
-			Showing {totalCount} of {products.length} products
-			{#if searchQuery}
-				<span class="search-term">matching "{searchQuery}"</span>
-			{/if}
-		</div>
-	{/if}
-
-	<!-- Error Alert -->
-	{#if error}
-		<div class="alert error">
-			<span>{error}</span>
-			<button class="alert-dismiss" onclick={() => (error = '')}>Dismiss</button>
-		</div>
-	{/if}
-
-	{#if loading}
-		<div class="loading">
-			<div class="spinner"></div>
-			<p>Loading products...</p>
-		</div>
-	{:else if filteredProducts.length === 0}
-		<div class="empty-state">
-			<IconShoppingCart size={64} stroke={1} />
-			<h3>No products found</h3>
-			{#if searchQuery}
-				<p>No products match your search "{searchQuery}"</p>
-				<button class="btn-secondary" onclick={() => (searchQuery = '')}>
-					Clear Search
-				</button>
-			{:else}
-				<p>Create your first {selectedType === 'all' ? 'product' : selectedType}</p>
-				<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
-					<IconPlus size={18} />
-					Add Product
-				</button>
-			{/if}
-		</div>
-	{:else}
-		<div class="products-grid">
-			{#each filteredProducts as product (product.id)}
-				{@const TypeIcon = getTypeIcon(product.type)}
-				{@const pricing = formatPrice(product.price, product.sale_price)}
-				<div class="product-card" class:deleting={deleting === product.id}>
-					<div class="product-header">
-						<div class="product-type-badge">
-							<TypeIcon size={14} />
-							{product.type}
-						</div>
-						<button
-							class="status-toggle"
-							class:active={product.is_active}
-							onclick={() => toggleActive(product)}
-							title={product.is_active ? 'Click to deactivate' : 'Click to activate'}
-						>
-							{#if product.is_active}
-								<span class="status-badge active">Active</span>
-							{:else}
-								<span class="status-badge inactive">Inactive</span>
-							{/if}
-						</button>
-					</div>
-
-					{#if product.thumbnail}
-						<div class="product-thumbnail">
-							<img src={product.thumbnail} alt={product.name} />
-						</div>
-					{/if}
-
-					<div class="product-content">
-						<h3>{product.name}</h3>
-						<p class="slug">/{product.slug}</p>
-						{#if product.description}
-							<p class="description">{product.description}</p>
+		<!-- Type Filter Bar -->
+		<div class="filter-bar">
+			<div class="type-filter">
+				{#each productTypes as type}
+					{@const Icon = type.icon}
+					<button
+						class="type-btn"
+						class:active={selectedType === type.value}
+						onclick={() => (selectedType = type.value)}
+					>
+						<Icon size={18} />
+						{type.label}
+						{#if type.value !== 'all' && productCountByType[type.value]}
+							<span class="count-badge">{productCountByType[type.value]}</span>
 						{/if}
-						<div class="product-price">
-							{#if pricing.sale}
-								<span class="original-price">{pricing.original}</span>
-								<span class="sale-price">{pricing.sale}</span>
-							{:else}
-								<span class="price-badge">{pricing.original}</span>
+					</button>
+				{/each}
+			</div>
+		</div>
+
+		<!-- Results summary -->
+		{#if !loading && products.length > 0}
+			<div class="results-summary">
+				Showing {totalCount} of {products.length} products
+				{#if searchQuery}
+					<span class="search-term">matching "{searchQuery}"</span>
+				{/if}
+			</div>
+		{/if}
+
+		<!-- Error Alert -->
+		{#if error}
+			<div class="alert error">
+				<span>{error}</span>
+				<button class="alert-dismiss" onclick={() => (error = '')}>Dismiss</button>
+			</div>
+		{/if}
+
+		{#if loading}
+			<div class="loading">
+				<div class="spinner"></div>
+				<p>Loading products...</p>
+			</div>
+		{:else if filteredProducts.length === 0}
+			<div class="empty-state">
+				<IconShoppingCart size={64} stroke={1} />
+				<h3>No products found</h3>
+				{#if searchQuery}
+					<p>No products match your search "{searchQuery}"</p>
+					<button class="btn-secondary" onclick={() => (searchQuery = '')}> Clear Search </button>
+				{:else}
+					<p>Create your first {selectedType === 'all' ? 'product' : selectedType}</p>
+					<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
+						<IconPlus size={18} />
+						Add Product
+					</button>
+				{/if}
+			</div>
+		{:else}
+			<div class="products-grid">
+				{#each filteredProducts as product (product.id)}
+					{@const TypeIcon = getTypeIcon(product.type)}
+					{@const pricing = formatPrice(product.price, product.sale_price)}
+					<div class="product-card" class:deleting={deleting === product.id}>
+						<div class="product-header">
+							<div class="product-type-badge">
+								<TypeIcon size={14} />
+								{product.type}
+							</div>
+							<button
+								class="status-toggle"
+								class:active={product.is_active}
+								onclick={() => toggleActive(product)}
+								title={product.is_active ? 'Click to deactivate' : 'Click to activate'}
+							>
+								{#if product.is_active}
+									<span class="status-badge active">Active</span>
+								{:else}
+									<span class="status-badge inactive">Inactive</span>
+								{/if}
+							</button>
+						</div>
+
+						{#if product.thumbnail}
+							<div class="product-thumbnail">
+								<img src={product.thumbnail} alt={product.name} />
+							</div>
+						{/if}
+
+						<div class="product-content">
+							<h3>{product.name}</h3>
+							<p class="slug">/{product.slug}</p>
+							{#if product.description}
+								<p class="description">{product.description}</p>
 							{/if}
+							<div class="product-price">
+								{#if pricing.sale}
+									<span class="original-price">{pricing.original}</span>
+									<span class="sale-price">{pricing.sale}</span>
+								{:else}
+									<span class="price-badge">{pricing.original}</span>
+								{/if}
+							</div>
+						</div>
+
+						<div class="product-actions">
+							<button
+								class="action-btn edit"
+								onclick={() => goto(`/admin/products/${product.id}/edit`)}
+								title="Edit"
+							>
+								<IconEdit size={16} />
+								Edit
+							</button>
+							<button
+								class="action-btn delete"
+								onclick={() => deleteProduct(product.id, product.name)}
+								disabled={deleting === product.id}
+								title="Delete"
+							>
+								{#if deleting === product.id}
+									<div class="btn-spinner"></div>
+								{:else}
+									<IconTrash size={16} />
+								{/if}
+								Delete
+							</button>
 						</div>
 					</div>
-
-					<div class="product-actions">
-						<button
-							class="action-btn edit"
-							onclick={() => goto(`/admin/products/${product.id}/edit`)}
-							title="Edit"
-						>
-							<IconEdit size={16} />
-							Edit
-						</button>
-						<button
-							class="action-btn delete"
-							onclick={() => deleteProduct(product.id, product.name)}
-							disabled={deleting === product.id}
-							title="Delete"
-						>
-							{#if deleting === product.id}
-								<div class="btn-spinner"></div>
-							{:else}
-								<IconTrash size={16} />
-							{/if}
-							Delete
-						</button>
-					</div>
-				</div>
-			{/each}
-		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+				{/each}
+			</div>
+		{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -543,9 +538,9 @@
 	}
 
 	.type-btn.active {
-		background: var(--admin-btn-primary-bg, linear-gradient(135deg, #E6B800 0%, #B38F00 100%));
+		background: var(--admin-btn-primary-bg, linear-gradient(135deg, #e6b800 0%, #b38f00 100%));
 		border-color: transparent;
-		color: var(--admin-btn-primary-text, #0D1117);
+		color: var(--admin-btn-primary-text, #0d1117);
 	}
 
 	.count-badge {
@@ -578,7 +573,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(148, 163, 184, 0.1);
-		border-top-color: var(--admin-accent-primary, #E6B800);
+		border-top-color: var(--admin-accent-primary, #e6b800);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin: 0 auto 1rem;
@@ -769,7 +764,7 @@
 		border-radius: 6px;
 		font-size: 1rem;
 		font-weight: 700;
-		color: var(--admin-accent-primary, #E6B800);
+		color: var(--admin-accent-primary, #e6b800);
 	}
 
 	.original-price {

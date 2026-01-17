@@ -83,10 +83,12 @@
 		}
 	}
 
-	let formOptions = $derived(forms.map((form) => ({
-		value: form.id,
-		label: form.title
-	})));
+	let formOptions = $derived(
+		forms.map((form) => ({
+			value: form.id,
+			label: form.title
+		}))
+	);
 </script>
 
 <svelte:head>

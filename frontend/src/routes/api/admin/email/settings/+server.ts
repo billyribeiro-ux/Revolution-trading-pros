@@ -30,10 +30,7 @@ export const GET: RequestHandler = async () => {
 		});
 	} catch (error) {
 		console.error('Failed to get email settings:', error);
-		return json(
-			{ error: 'Failed to load email settings' },
-			{ status: 500 }
-		);
+		return json({ error: 'Failed to load email settings' }, { status: 500 });
 	}
 };
 
@@ -43,10 +40,7 @@ export const POST: RequestHandler = async ({ request }) => {
 
 		// Validate required fields
 		if (!body.host || !body.port || !body.from_address || !body.from_name) {
-			return json(
-				{ success: false, error: 'Missing required fields' },
-				{ status: 400 }
-			);
+			return json({ success: false, error: 'Missing required fields' }, { status: 400 });
 		}
 
 		// Update settings (only update password if a new one is provided)
@@ -55,7 +49,8 @@ export const POST: RequestHandler = async ({ request }) => {
 			host: body.host,
 			port: parseInt(body.port),
 			username: body.username || '',
-			password: body.password && body.password !== '••••••••' ? body.password : emailSettings.password,
+			password:
+				body.password && body.password !== '••••••••' ? body.password : emailSettings.password,
 			encryption: body.encryption || 'tls',
 			from_address: body.from_address,
 			from_name: body.from_name
@@ -70,9 +65,6 @@ export const POST: RequestHandler = async ({ request }) => {
 		});
 	} catch (error) {
 		console.error('Failed to save email settings:', error);
-		return json(
-			{ success: false, error: 'Failed to save settings' },
-			{ status: 500 }
-		);
+		return json({ success: false, error: 'Failed to save settings' }, { status: 500 });
 	}
 };

@@ -16,7 +16,10 @@
 
 <svelte:head>
 	<title>Senior Analyst | Day Trading Room | Revolution Trading Pros</title>
-	<meta name="description" content="Meet our senior analyst and learn about their market analysis expertise." />
+	<meta
+		name="description"
+		content="Meet our senior analyst and learn about their market analysis expertise."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -30,7 +33,10 @@
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Meet Our Senior Analyst</h2>
-			<p>Learn about our senior analyst's background, market analysis approach, and technical expertise.</p>
+			<p>
+				Learn about our senior analyst's background, market analysis approach, and technical
+				expertise.
+			</p>
 		</section>
 	</div>
 </div>
