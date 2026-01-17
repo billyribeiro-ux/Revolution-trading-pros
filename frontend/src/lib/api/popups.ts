@@ -52,6 +52,7 @@ import { browser } from '$app/environment';
 import { writable, derived, get } from 'svelte/store';
 import { getAuthToken } from '$lib/stores/auth.svelte';
 import type { Popup } from '$lib/stores/popups.svelte';
+import { ML_API_URL } from './config';
 
 // Re-export Popup type for convenience
 export type { Popup } from '$lib/stores/popups.svelte';
@@ -62,6 +63,8 @@ export type { Popup } from '$lib/stores/popups.svelte';
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_BASE = '/api';
+
+const ML_API = ML_API_URL;
 
 const CONVERSION_TIMEOUT = 30000; // 30 seconds
 const CACHE_TTL = 300000; // 5 minutes
