@@ -292,8 +292,15 @@
 	<title>Subscription Management - Admin</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 py-12 px-4">
-	<div class="max-w-7xl mx-auto">
+<div class="admin-subscriptions">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
 		<!-- Header -->
 		<div class="flex items-start justify-between mb-8">
 			<div>
@@ -819,6 +826,85 @@
 />
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RTP ADMIN SUBSCRIPTIONS - Apple ICT7+ Principal Engineer Grade
+	 * Consistent with Analytics Dashboard styling
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Outer Container with Gradient Background */
+	.admin-subscriptions {
+		min-height: 100vh;
+		background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+		color: white;
+		position: relative;
+		overflow: hidden;
+	}
+
+	/* Inner Container */
+	.admin-page-container {
+		position: relative;
+		z-index: 10;
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 3rem 1rem;
+	}
+
+	/* Background Effects - Animated Blobs */
+	.bg-effects {
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	.bg-blob {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(80px);
+		opacity: 0.15;
+	}
+
+	.bg-blob-1 {
+		width: 600px;
+		height: 600px;
+		top: -200px;
+		right: -200px;
+		background: linear-gradient(135deg, #e6b800, #b38f00);
+		animation: float 20s ease-in-out infinite;
+	}
+
+	.bg-blob-2 {
+		width: 500px;
+		height: 500px;
+		bottom: -150px;
+		left: -150px;
+		background: linear-gradient(135deg, #3b82f6, #b38f00);
+		animation: float 25s ease-in-out infinite reverse;
+	}
+
+	.bg-blob-3 {
+		width: 400px;
+		height: 400px;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: linear-gradient(135deg, #10b981, #14b8a6);
+		animation: float 30s ease-in-out infinite;
+	}
+
+	@keyframes float {
+		0%,
+		100% {
+			transform: translate(0, 0) scale(1);
+		}
+		33% {
+			transform: translate(30px, -30px) scale(1.05);
+		}
+		66% {
+			transform: translate(-20px, 20px) scale(0.95);
+		}
+	}
+
 	/* Custom scrollbar for table */
 	.overflow-x-auto::-webkit-scrollbar {
 		height: 8px;
