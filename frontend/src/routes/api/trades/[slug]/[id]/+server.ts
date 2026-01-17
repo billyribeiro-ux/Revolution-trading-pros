@@ -168,7 +168,7 @@ function calculateHoldingDays(entryDate: string, exitDate: string): number {
 // GET - Get single trade
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ params, request }) => {
+export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug, id } = params;
 
 	if (!slug || !id) {
@@ -182,10 +182,15 @@ export const GET: RequestHandler = async ({ params, request }) => {
 
 	// Try backend first
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 	const headers: Record<string, string> = {};
-	if (authHeader) headers['Authorization'] = authHeader;
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
+	}
 
-	const backendData = await fetchFromBackend(`/api/trades/${slug}/${id}`, { headers });
+	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/trades/${id}`, { headers });
 
 	if (backendData?.success) {
 		return json(backendData);
@@ -210,11 +215,12 @@ export const GET: RequestHandler = async ({ params, request }) => {
 // PUT - Update trade / Close trade
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const PUT: RequestHandler = async ({ params, request }) => {
+export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug, id } = params;
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 
-	if (!authHeader) {
+	if (!authHeader && !sessionCookie) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -229,10 +235,18 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 
 	const body: TradeUpdateInput = await request.json();
 
+	// Build headers
+	const headers: Record<string, string> = {};
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
+	}
+
 	// Try backend first
-	const backendData = await fetchFromBackend(`/api/trades/${slug}/${id}`, {
+	const backendData = await fetchFromBackend(`/api/admin/room-content/trades/${id}`, {
 		method: 'PUT',
-		headers: { Authorization: authHeader },
+		headers,
 		body: JSON.stringify(body)
 	});
 
@@ -305,11 +319,12 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 // DELETE - Delete trade (admin only)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const DELETE: RequestHandler = async ({ params, request }) => {
+export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug, id } = params;
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 
-	if (!authHeader) {
+	if (!authHeader && !sessionCookie) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -322,10 +337,18 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 		throw error(400, 'Invalid trade ID');
 	}
 
+	// Build headers
+	const headers: Record<string, string> = {};
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
+	}
+
 	// Try backend first
-	const backendData = await fetchFromBackend(`/api/trades/${slug}/${id}`, {
+	const backendData = await fetchFromBackend(`/api/admin/room-content/trades/${id}`, {
 		method: 'DELETE',
-		headers: { Authorization: authHeader }
+		headers
 	});
 
 	if (backendData?.success) {
