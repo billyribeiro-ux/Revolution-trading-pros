@@ -651,7 +651,7 @@
 									</span>
 								{/if}
 							</div>
-							<div class="segment-actions" onclick={(e: MouseEvent) => e.stopPropagation()}>
+							<div class="segment-actions">
 								<button class="btn-icon" type="button" onclick={() => viewSegmentMembers(segment)} title="View members">
 									<IconUsers size={16} />
 								</button>
