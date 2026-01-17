@@ -421,7 +421,7 @@ CREATE TABLE IF NOT EXISTS preview_tokens (
 -- Indexes
 CREATE INDEX idx_preview_tokens_content ON preview_tokens(content_type, content_id);
 CREATE INDEX idx_preview_tokens_token ON preview_tokens(token);
-CREATE INDEX idx_preview_tokens_expires ON preview_tokens(expires_at) WHERE expires_at > NOW();
+CREATE INDEX idx_preview_tokens_expires ON preview_tokens(expires_at);
 
 -- ─────────────────────────────────────────────────────────────────────────────
 -- 8. ADDITIONAL ENHANCEMENTS
