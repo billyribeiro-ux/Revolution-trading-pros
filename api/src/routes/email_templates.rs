@@ -84,7 +84,7 @@ async fn list_templates(
 
     let templates: Vec<EmailTemplateRow> = sqlx::query_as(
         r#"
-        SELECT id, name, slug, subject, body, variables, is_active, created_at, updated_at
+        SELECT id, name, slug, subject, html_content AS body, variables, is_active, created_at, updated_at
         FROM email_templates
         WHERE ($1::text IS NULL OR name ILIKE $1 OR subject ILIKE $1)
         ORDER BY created_at DESC
@@ -133,7 +133,7 @@ async fn get_template(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let template: EmailTemplateRow = sqlx::query_as(
-        "SELECT id, name, slug, subject, body, variables, is_active, created_at, updated_at FROM email_templates WHERE id = $1"
+        "SELECT id, name, slug, subject, html_content AS body, variables, is_active, created_at, updated_at FROM email_templates WHERE id = $1"
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
@@ -163,9 +163,9 @@ async fn create_template(
 
     let template: EmailTemplateRow = sqlx::query_as(
         r#"
-        INSERT INTO email_templates (name, slug, subject, body, variables, is_active, created_at, updated_at)
+        INSERT INTO email_templates (name, slug, subject, html_content, variables, is_active, created_at, updated_at)
         VALUES ($1, $2, $3, $4, $5, $6, NOW(), NOW())
-        RETURNING id, name, slug, subject, body, variables, is_active, created_at, updated_at
+        RETURNING id, name, slug, subject, html_content AS body, variables, is_active, created_at, updated_at
         "#
     )
     .bind(&input.name)
@@ -207,12 +207,12 @@ async fn update_template(
             name = COALESCE($2, name),
             slug = CASE WHEN $2 IS NOT NULL THEN LOWER(REPLACE($2, ' ', '-')) ELSE slug END,
             subject = COALESCE($3, subject),
-            body = COALESCE($4, body),
+            html_content = COALESCE($4, html_content),
             variables = COALESCE($5, variables),
             is_active = COALESCE($6, is_active),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING id, name, slug, subject, body, variables, is_active, created_at, updated_at
+        RETURNING id, name, slug, subject, html_content AS body, variables, is_active, created_at, updated_at
         "#,
     )
     .bind(id)
@@ -284,7 +284,7 @@ async fn preview_template(
     Json(input): Json<PreviewRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let template: EmailTemplateRow = sqlx::query_as(
-        "SELECT id, name, slug, subject, body, variables, is_active, created_at, updated_at FROM email_templates WHERE id = $1"
+        "SELECT id, name, slug, subject, html_content AS body, variables, is_active, created_at, updated_at FROM email_templates WHERE id = $1"
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
