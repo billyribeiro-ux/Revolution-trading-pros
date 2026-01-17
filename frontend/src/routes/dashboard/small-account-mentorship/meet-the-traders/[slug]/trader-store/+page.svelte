@@ -20,7 +20,7 @@
 		featured?: boolean;
 	}
 
-	let trader = $derived(getTraderBySlug(page.params.slug));
+	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
 
 	// Trader-specific products - in production, fetch from API
 	const products: Product[] = [

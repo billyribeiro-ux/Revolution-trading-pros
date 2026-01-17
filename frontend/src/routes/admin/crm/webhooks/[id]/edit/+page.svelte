@@ -31,7 +31,7 @@
 	// STATE MANAGEMENT - Svelte 5 Runes
 	// =====================================================
 
-	let webhookId = $derived(page.params.id);
+	let webhookId = $derived(page.params.id ?? '');
 	let originalWebhook = $state<Webhook | null>(null);
 
 	let name = $state('');

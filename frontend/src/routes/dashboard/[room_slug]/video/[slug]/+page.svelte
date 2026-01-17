@@ -29,7 +29,7 @@
 		{
 			name: 'Day Trading Room',
 			href: '#', // TODO: Provide URL
-			icon: 'chart-line'
+			icon: 'bolt'
 		},
 		{
 			name: 'Swing Trading Room',
@@ -285,8 +285,8 @@
 	.dashboard__page-title {
 		margin: 0;
 		color: #333;
-		font-size: 36px;
-		font-weight: 400;
+		font-size: 28px;
+		font-weight: 700;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 	}
 

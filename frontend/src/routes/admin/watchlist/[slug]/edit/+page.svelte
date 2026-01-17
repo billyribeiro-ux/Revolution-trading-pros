@@ -32,7 +32,7 @@
 	import IconEye from '@tabler/icons-svelte/icons/eye';
 
 	// Get slug from URL using Svelte 5 $derived
-	const slug = $derived(page.params.slug);
+	const slug = $derived(page.params.slug ?? '');
 
 	// State
 	let isLoading = $state(true);

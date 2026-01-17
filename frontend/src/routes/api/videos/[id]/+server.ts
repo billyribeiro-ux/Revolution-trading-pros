@@ -41,7 +41,7 @@ const videos: Map<string, Video> = new Map();
 // GET - Get single video by ID
 export const GET: RequestHandler = async ({ params }) => {
 	const { id } = params;
-	const video = videos.get(id);
+	const video = videos.get(id ?? '');
 
 	if (!video) {
 		throw error(404, 'Video not found');
@@ -49,7 +49,7 @@ export const GET: RequestHandler = async ({ params }) => {
 
 	// Increment view count
 	video.view_count++;
-	videos.set(id, video);
+	videos.set(id ?? '', video);
 
 	return json({
 		success: true,
@@ -60,7 +60,7 @@ export const GET: RequestHandler = async ({ params }) => {
 // PUT - Update video
 export const PUT: RequestHandler = async ({ params, request }) => {
 	const { id } = params;
-	const video = videos.get(id);
+	const video = videos.get(id ?? '');
 
 	if (!video) {
 		throw error(404, 'Video not found');
@@ -96,7 +96,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 			updatedVideo.published_at = new Date().toISOString();
 		}
 
-		videos.set(id, updatedVideo);
+		videos.set(id ?? '', updatedVideo);
 
 		return json({
 			success: true,
@@ -111,11 +111,11 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 export const DELETE: RequestHandler = async ({ params }) => {
 	const { id } = params;
 
-	if (!videos.has(id)) {
+	if (!videos.has(id ?? '')) {
 		throw error(404, 'Video not found');
 	}
 
-	videos.delete(id);
+	videos.delete(id ?? '');
 
 	return json({
 		success: true,

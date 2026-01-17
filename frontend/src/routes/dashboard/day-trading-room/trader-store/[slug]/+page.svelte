@@ -311,14 +311,14 @@
 	$effect(() => {
 		const slug = page.params.slug;
 		if (slug !== currentSlug) {
-			currentSlug = slug;
-			const trader = traderData[slug];
+			currentSlug = slug ?? '';
+			const trader = traderData[slug ?? ''];
 
 			if (trader) {
 				store = {
-					id: slug,
+					id: slug ?? '',
 					name: trader.name,
-					slug: slug,
+					slug: slug ?? '',
 					title: trader.title,
 					image: trader.image,
 					quote: trader.quote,

@@ -186,7 +186,7 @@ async fn get_course(
 
     let modules: Vec<CourseModule> = sqlx::query_as(
         r#"
-        SELECT * FROM course_modules 
+        SELECT * FROM course_modules_v2 
         WHERE course_id = $1 
         ORDER BY sort_order
         "#,
@@ -596,7 +596,7 @@ async fn list_modules(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let modules: Vec<CourseModule> = sqlx::query_as(
         r#"
-        SELECT * FROM course_modules 
+        SELECT * FROM course_modules_v2 
         WHERE course_id = $1 
         ORDER BY sort_order
         "#,
@@ -624,7 +624,7 @@ async fn create_module(
     Json(input): Json<CreateModuleRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let max_order: (Option<i32>,) =
-        sqlx::query_as("SELECT MAX(sort_order) FROM course_modules WHERE course_id = $1")
+        sqlx::query_as("SELECT MAX(sort_order) FROM course_modules_v2 WHERE course_id = $1")
             .bind(course_id)
             .fetch_one(&state.db.pool)
             .await
@@ -634,7 +634,7 @@ async fn create_module(
 
     let module: CourseModule = sqlx::query_as(
         r#"
-        INSERT INTO course_modules (course_id, title, description, sort_order, is_published, drip_enabled, drip_days)
+        INSERT INTO course_modules_v2 (course_id, title, description, sort_order, is_published, drip_enabled, drip_days)
         VALUES ($1, $2, $3, $4, $5, $6, $7)
         RETURNING *
         "#,
@@ -670,7 +670,7 @@ async fn update_module(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let module: CourseModule = sqlx::query_as(
         r#"
-        UPDATE course_modules SET
+        UPDATE course_modules_v2 SET
             title = COALESCE($1, title),
             description = COALESCE($2, description),
             sort_order = COALESCE($3, sort_order),
@@ -717,7 +717,7 @@ async fn delete_module(
         .await
         .ok();
 
-    sqlx::query("DELETE FROM course_modules WHERE id = $1 AND course_id = $2")
+    sqlx::query("DELETE FROM course_modules_v2 WHERE id = $1 AND course_id = $2")
         .bind(module_id)
         .bind(course_id)
         .execute(&state.db.pool)
@@ -744,7 +744,7 @@ async fn reorder_modules(
     for item in input.items {
         let module_id: i64 = item.id.parse().unwrap_or(0);
         sqlx::query(
-            "UPDATE course_modules SET sort_order = $1, updated_at = NOW() WHERE id = $2 AND course_id = $3",
+            "UPDATE course_modules_v2 SET sort_order = $1, updated_at = NOW() WHERE id = $2 AND course_id = $3",
         )
         .bind(item.sort_order)
         .bind(module_id)

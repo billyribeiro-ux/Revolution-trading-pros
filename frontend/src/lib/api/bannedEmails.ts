@@ -59,6 +59,7 @@ import { getAuthToken } from '$lib/stores/auth.svelte';
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 // All API calls go through SvelteKit proxy routes
 const API_BASE = '/api';
+const ML_API = '/api/ml';
 
 const CACHE_TTL = 300000; // 5 minutes
 const SYNC_INTERVAL = 60000; // 1 minute

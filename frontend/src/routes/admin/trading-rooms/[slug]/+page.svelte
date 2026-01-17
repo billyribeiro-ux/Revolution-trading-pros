@@ -52,7 +52,7 @@
 	// ROUTE DERIVED STATE
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	const slug = $derived(page.params.slug);
+	const slug = $derived(page.params.slug ?? '');
 	const room = $derived(getRoomById(slug));
 
 	// ═══════════════════════════════════════════════════════════════════════════════

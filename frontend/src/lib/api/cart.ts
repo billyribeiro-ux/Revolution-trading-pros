@@ -60,6 +60,7 @@ import { websocketService, type CartUpdatePayload } from '$lib/services/websocke
 
 // ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_URL = '/api';
+const ML_API = '/api/ml';
 
 const CART_SYNC_INTERVAL = 30000; // 30 seconds
 const CART_PERSISTENCE_KEY = 'rtp_cart';

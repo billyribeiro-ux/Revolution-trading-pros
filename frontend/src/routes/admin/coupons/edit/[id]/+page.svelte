@@ -65,7 +65,7 @@
 	// State Management - Svelte 5 Runes
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let couponId = $derived(parseInt(page.params.id));
+	let couponId = $derived(parseInt(page.params.id ?? '0'));
 	let loading = $state(true);
 	let saving = $state(false);
 	let deleting = $state(false);

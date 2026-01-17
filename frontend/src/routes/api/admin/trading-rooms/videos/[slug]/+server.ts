@@ -172,7 +172,7 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 	}
 
 	// Fallback to mock data
-	const roomId = roomSlugToId[slug];
+	const roomId = roomSlugToId[slug ?? ''];
 	if (!roomId) {
 		throw error(404, `Trading room '${slug}' not found`);
 	}

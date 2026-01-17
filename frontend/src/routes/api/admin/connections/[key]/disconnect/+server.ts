@@ -17,14 +17,14 @@ export const POST: RequestHandler = async ({ params }) => {
 	const { key } = params;
 
 	try {
-		const connection = connections.get(key);
+		const connection = connections.get(key ?? '');
 
 		if (!connection) {
 			throw error(404, `No connection found for service '${key}'`);
 		}
 
 		// Remove connection
-		connections.delete(key);
+		connections.delete(key ?? '');
 
 		// In production, you would also:
 		// 1. Revoke OAuth tokens if applicable

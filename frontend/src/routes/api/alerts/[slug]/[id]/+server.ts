@@ -6,7 +6,9 @@
  * PUT /api/alerts/[room-slug]/[id] - Update alert (admin)
  * DELETE /api/alerts/[room-slug]/[id] - Delete alert (admin)
  *
- * @version 1.0.0
+ * Connects to backend at /api/admin/room-content/alerts/:id
+ *
+ * @version 2.0.0 - ICT 11 Principal Engineer Grade
  */
 
 import { json, error } from '@sveltejs/kit';
@@ -15,8 +17,46 @@ import { env } from '$env/dynamic/private';
 import type { RoomAlert, AlertUpdateInput } from '$lib/types/trading';
 import { buildTosString, validateTosParams } from '$lib/utils/tos-builder';
 
-// Reference to mock data from parent route (shared module pattern)
-// In production, this would come from database
+// ═══════════════════════════════════════════════════════════════════════════
+// BACKEND CONFIGURATION
+// ═══════════════════════════════════════════════════════════════════════════
+
+const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// BACKEND FETCH HELPER
+// ═══════════════════════════════════════════════════════════════════════════
+
+async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
+	try {
+		console.log(`[Alert API] Fetching: ${BACKEND_URL}${endpoint}`);
+		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+			...options,
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				...options.headers
+			}
+		});
+
+		if (!response.ok) {
+			console.error(`[Alert API] Backend error: ${response.status} ${response.statusText}`);
+			return null;
+		}
+
+		const data = await response.json();
+		console.log(`[Alert API] Backend success`);
+		return data;
+	} catch (err) {
+		console.error('[Alert API] Backend fetch failed:', err);
+		return null;
+	}
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FALLBACK MOCK DATA
+// ═══════════════════════════════════════════════════════════════════════════
+
 const mockAlerts: Record<string, RoomAlert[]> = {
 	'explosive-swings': [
 		{
@@ -44,42 +84,18 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			is_new: true,
 			is_published: true,
 			is_pinned: false,
-			published_at: '2026-01-17T10:32:00Z',
-			created_at: '2026-01-17T10:32:00Z',
-			updated_at: '2026-01-17T10:32:00Z'
+			published_at: new Date().toISOString(),
+			created_at: new Date().toISOString(),
+			updated_at: new Date().toISOString()
 		}
 	]
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// BACKEND FETCH
-// ═══════════════════════════════════════════════════════════════════════════
-
-async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
-
-	try {
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
-			...options,
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				...options.headers
-			}
-		});
-
-		if (!response.ok) return null;
-		return await response.json();
-	} catch {
-		return null;
-	}
-}
-
-// ═══════════════════════════════════════════════════════════════════════════
 // GET - Get single alert
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const GET: RequestHandler = async ({ params, request }) => {
+export const GET: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug, id } = params;
 
 	if (!slug || !id) {
@@ -91,15 +107,30 @@ export const GET: RequestHandler = async ({ params, request }) => {
 		throw error(400, 'Invalid alert ID');
 	}
 
-	// Try backend first
+	// Get auth headers
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 	const headers: Record<string, string> = {};
-	if (authHeader) headers['Authorization'] = authHeader;
 
-	const backendData = await fetchFromBackend(`/api/alerts/${slug}/${id}`, { headers });
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
+	}
 
-	if (backendData?.success) {
-		return json(backendData);
+	// Try backend - note: there's no single alert GET endpoint in room_content.rs
+	// So we fetch all and filter
+	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/alerts`, { headers });
+
+	if (backendData?.data) {
+		const alert = backendData.data.find((a: RoomAlert) => a.id === alertId);
+		if (alert) {
+			return json({
+				success: true,
+				data: alert,
+				_source: 'backend'
+			});
+		}
 	}
 
 	// Fallback to mock data
@@ -113,7 +144,7 @@ export const GET: RequestHandler = async ({ params, request }) => {
 	return json({
 		success: true,
 		data: alert,
-		_mock: true
+		_source: 'mock'
 	});
 };
 
@@ -121,11 +152,12 @@ export const GET: RequestHandler = async ({ params, request }) => {
 // PUT - Update alert (admin only)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const PUT: RequestHandler = async ({ params, request }) => {
+export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug, id } = params;
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 
-	if (!authHeader) {
+	if (!authHeader && !sessionCookie) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -140,15 +172,28 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 
 	const body: AlertUpdateInput = await request.json();
 
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/alerts/${slug}/${id}`, {
+	// Build headers
+	const headers: Record<string, string> = {};
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
+	}
+
+	// Call backend at /api/admin/room-content/alerts/:id
+	const backendData = await fetchFromBackend(`/api/admin/room-content/alerts/${id}`, {
 		method: 'PUT',
-		headers: { Authorization: authHeader },
+		headers,
 		body: JSON.stringify(body)
 	});
 
-	if (backendData?.success) {
-		return json(backendData);
+	if (backendData) {
+		return json({
+			success: true,
+			data: backendData,
+			message: 'Alert updated successfully',
+			_source: 'backend'
+		});
 	}
 
 	// Fallback to mock update
@@ -213,14 +258,13 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 		updated_at: new Date().toISOString()
 	};
 
-	// Update in mock data
 	mockAlerts[slug][alertIndex] = updatedAlert;
 
 	return json({
 		success: true,
 		data: updatedAlert,
 		message: 'Alert updated successfully',
-		_mock: true
+		_source: 'mock'
 	});
 };
 
@@ -228,11 +272,12 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 // DELETE - Delete alert (admin only)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const DELETE: RequestHandler = async ({ params, request }) => {
+export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug, id } = params;
 	const authHeader = request.headers.get('Authorization');
+	const sessionCookie = cookies.get('session');
 
-	if (!authHeader) {
+	if (!authHeader && !sessionCookie) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -245,14 +290,26 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 		throw error(400, 'Invalid alert ID');
 	}
 
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/alerts/${slug}/${id}`, {
+	// Build headers
+	const headers: Record<string, string> = {};
+	if (authHeader) {
+		headers['Authorization'] = authHeader;
+	} else if (sessionCookie) {
+		headers['Cookie'] = `session=${sessionCookie}`;
+	}
+
+	// Call backend at /api/admin/room-content/alerts/:id
+	const backendData = await fetchFromBackend(`/api/admin/room-content/alerts/${id}`, {
 		method: 'DELETE',
-		headers: { Authorization: authHeader }
+		headers
 	});
 
-	if (backendData?.success) {
-		return json(backendData);
+	if (backendData) {
+		return json({
+			success: true,
+			message: `Alert ${id} deleted successfully`,
+			_source: 'backend'
+		});
 	}
 
 	// Fallback to mock delete
@@ -263,12 +320,11 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 		throw error(404, `Alert ${id} not found`);
 	}
 
-	// Remove from mock data
 	mockAlerts[slug].splice(alertIndex, 1);
 
 	return json({
 		success: true,
 		message: `Alert ${id} deleted successfully`,
-		_mock: true
+		_source: 'mock'
 	});
 };

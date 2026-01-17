@@ -66,7 +66,7 @@
 	let availableLists = $state<{ id: string; title: string }[]>([]);
 	let availableSequences = $state<{ id: string; title: string }[]>([]);
 
-	const funnelId = page.params.id;
+	const funnelId = page.params.id ?? '';
 
 	const actionTypeOptions = [
 		{

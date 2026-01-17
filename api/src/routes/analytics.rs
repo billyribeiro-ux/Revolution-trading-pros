@@ -130,12 +130,38 @@ async fn get_overview(
 }
 
 /// Performance tracking (public - for frontend)
-/// Accepts any content type to avoid 415 errors from beacon API
-async fn track_performance(body: Option<axum::body::Bytes>) -> Json<serde_json::Value> {
-    // Placeholder for performance tracking - accepts any content type
-    // The frontend uses navigator.sendBeacon which may send different content types
-    let _ = body; // Ignore body for now
-    Json(json!({"status": "ok"}))
+/// Accepts performance metrics from frontend monitoring
+/// Supports both JSON and text/plain (from navigator.sendBeacon)
+async fn track_performance(
+    State(state): State<AppState>,
+    body: axum::body::Bytes,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Parse body - could be JSON or text/plain from sendBeacon
+    let input: serde_json::Value = if body.is_empty() {
+        json!({})
+    } else {
+        serde_json::from_slice(&body).unwrap_or_else(|e| {
+            tracing::warn!("Failed to parse performance metrics as JSON: {:?}", e);
+            json!({})
+        })
+    };
+
+    // Store performance metrics in analytics_events table - fail silently if table doesn't exist
+    let _ = sqlx::query(
+        r#"
+        INSERT INTO analytics_events (event_type, event_name, properties, created_at)
+        VALUES ('performance', 'web_vitals', $1, NOW())
+        "#,
+    )
+    .bind(&input)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::debug!("Performance metrics not stored (table may not exist yet): {:?}", e);
+    });
+
+    // Always return success to prevent frontend errors
+    Ok(Json(json!({"status": "ok"})))
 }
 
 pub fn router() -> Router<AppState> {

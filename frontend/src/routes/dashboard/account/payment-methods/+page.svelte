@@ -242,9 +242,9 @@
 	}
 
 	.dashboard__page-title {
-		font-family: 'Open Sans', sans-serif;
+		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		font-size: 28px;
-		font-weight: 400;
+		font-weight: 700;
 		font-style: italic;
 		color: #333333;
 		margin: 0;

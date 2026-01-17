@@ -10,7 +10,7 @@
 	import { page } from '$app/state';
 	import { getTraderBySlug } from '$lib/data/traders';
 
-	let trader = $derived(getTraderBySlug(page.params.slug));
+	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
 </script>
 
 <!-- Page Content -->

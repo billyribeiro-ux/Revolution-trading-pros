@@ -557,7 +557,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			slug: 'day-trading-room',
 			status: 'active',
 			membershipType: 'complimentary',
-			icon: 'chart-line',
+			icon: 'bolt',
 			startDate: new Date().toISOString(),
 			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
 			price: 0,

@@ -31,7 +31,7 @@
 	import type { ContactTag, Contact } from '$lib/crm/types';
 
 	// Get tag ID from route params
-	let tagId = $derived(page.params.id);
+	let tagId = $derived(page.params.id ?? '');
 
 	// State
 	let tag = $state<ContactTag | null>(null);
