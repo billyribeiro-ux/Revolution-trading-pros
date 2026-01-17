@@ -63,17 +63,8 @@ import type {
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
-// Production fallbacks - NEVER use localhost in production
-// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
-
-const isDev = import.meta.env.DEV;
-const API_ROOT = browser ? (isDev ? '' : import.meta.env['VITE_API_URL'] || PROD_API) : '';
-// In dev mode, use /api for Vite proxy. In production, append /api to root URL
-const API_BASE = isDev ? '/api' : API_ROOT ? `${API_ROOT}/api` : '';
-const WS_BASE = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+const API_BASE = '/api';
 // Analytics API - only enable if explicitly configured (microservice is optional)
 const ANALYTICS_API =
 	browser && import.meta.env['VITE_ANALYTICS_API'] ? import.meta.env['VITE_ANALYTICS_API'] : null; // Disabled by default - microservice not required

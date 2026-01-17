@@ -22,7 +22,8 @@
 	import SocialMediaSection from '$lib/components/sections/SocialMediaSection.svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
-	const API_URL = 'https://revolution-trading-pros-api.fly.dev';
+	// ICT 11+ CORB Fix: Use same-origin endpoints
+	const API_URL = '';
 
 	let { data }: { data: any } = $props();
 

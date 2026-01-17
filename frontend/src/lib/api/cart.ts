@@ -58,14 +58,8 @@ import { websocketService, type CartUpdatePayload } from '$lib/services/websocke
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Production fallbacks - NEVER use localhost in production
-// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
-const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
-const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/ml';
-
-const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API_ROOT : '';
-const API_URL = API_ROOT ? `${API_ROOT}/api` : '';
-const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+const API_URL = '/api';
 
 const CART_SYNC_INTERVAL = 30000; // 30 seconds
 const CART_PERSISTENCE_KEY = 'rtp_cart';

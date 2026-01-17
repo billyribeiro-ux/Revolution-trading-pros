@@ -16,8 +16,9 @@
 		const token = hash;
 
 		try {
+			// ICT 11+ CORB Fix: Use same-origin SvelteKit proxy endpoint
 			const response = await fetch(
-				`${import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev'}/api/auth/verify-email?token=${encodeURIComponent(token)}`,
+				`/api/auth/verify-email?token=${encodeURIComponent(token)}`,
 				{
 					method: 'GET',
 					headers: {

@@ -56,13 +56,7 @@ import { api, type ApiResponse } from './client.svelte';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Production fallbacks - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
-const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
-const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/ai';
-
-const WS_BASE = import.meta.env['VITE_WS_URL'] || PROD_WS;
-const AI_API = import.meta.env['VITE_AI_API_URL'] || PROD_AI;
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 
 const CACHE_TTL = 300000; // 5 minutes
 const ANALYSIS_DEBOUNCE = 2000; // 2 seconds

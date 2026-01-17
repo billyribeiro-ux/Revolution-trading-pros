@@ -15,9 +15,8 @@
 
 import { browser } from '$app/environment';
 
-const API_BASE = browser
-	? import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev'
-	: 'https://revolution-trading-pros-api.fly.dev';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+const API_BASE = '';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

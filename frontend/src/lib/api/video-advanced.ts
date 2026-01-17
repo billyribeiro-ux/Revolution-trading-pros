@@ -16,7 +16,8 @@
  * - Drag & Drop Reorder
  */
 
-const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+const API_BASE = '';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

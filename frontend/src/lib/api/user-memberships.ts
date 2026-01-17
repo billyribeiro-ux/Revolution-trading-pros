@@ -20,13 +20,8 @@ import { isSuperadminEmail, isDeveloperEmail } from '$lib/config/roles';
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Production fallback - NEVER use localhost in production
-// API routes are nested under /api in the backend
-const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
-// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
-// We must append /api here since this file calls endpoints directly
-const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API_ROOT : '';
-const API_BASE = API_ROOT ? `${API_ROOT}/api` : '';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+const API_BASE = '/api';
 
 // Cache TTLs (in milliseconds)
 const CACHE_TTL = {
