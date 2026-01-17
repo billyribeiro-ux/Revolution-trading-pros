@@ -528,7 +528,7 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
  */
 function getDefaultIcon(type: MembershipType): string {
 	const iconMap: Record<MembershipType, string> = {
-		'trading-room': 'bolt',
+		'trading-room': 'chart-line',
 		'alert-service': 'bell',
 		course: 'book',
 		indicator: 'chart-candle',
@@ -536,7 +536,7 @@ function getDefaultIcon(type: MembershipType): string {
 		'weekly-watchlist': 'calendar',
 		'premium-report': 'file-text'
 	};
-	return iconMap[type] || 'bolt';
+	return iconMap[type] || 'chart-line';
 }
 
 /**
@@ -557,7 +557,7 @@ function getDeveloperMockMemberships(): UserMembershipsResponse {
 			slug: 'day-trading-room',
 			status: 'active',
 			membershipType: 'complimentary',
-			icon: 'bolt',
+			icon: 'chart-line',
 			startDate: new Date().toISOString(),
 			nextBillingDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString(),
 			price: 0,

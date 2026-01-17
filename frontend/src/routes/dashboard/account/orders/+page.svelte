@@ -148,9 +148,9 @@
 	}
 
 	.dashboard__page-title {
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
+		font-family: 'Open Sans', sans-serif;
 		font-size: 28px;
-		font-weight: 700;
+		font-weight: 400;
 		font-style: italic;
 		color: #333333;
 		margin: 0;

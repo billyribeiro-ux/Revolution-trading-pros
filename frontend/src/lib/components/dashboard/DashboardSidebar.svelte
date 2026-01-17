@@ -168,9 +168,9 @@
 	// Navigation items - RTP Product Structure
 	// Icons use RTP naming convention (rtp-icon-*)
 	const mainLinks: NavLink[] = [
-		{ href: '/dashboard/', icon: 'layout-dashboard', text: 'Member Dashboard' },
+		{ href: '/dashboard/', icon: 'home', text: 'Member Dashboard' },
 		{ href: '/dashboard/classes/', icon: 'classes', text: 'My Classes', bold: true },
-		{ href: '/dashboard/indicators/', icon: 'chart-candle', text: 'My Indicators', bold: true }
+		{ href: '/dashboard/indicators/', icon: 'activity', text: 'My Indicators', bold: true }
 	];
 
 	// Membership links - Dynamically generated from user's actual memberships
