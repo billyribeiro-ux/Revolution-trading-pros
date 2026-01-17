@@ -236,8 +236,8 @@
 					</div>
 
 					<div class="form-group half">
-						<label class="form-label">Status</label>
-						<div class="status-toggle">
+						<span class="form-label">Status</span>
+						<div class="status-toggle" role="group" aria-label="Module status">
 							<button
 								type="button"
 								class="status-btn"
