@@ -269,23 +269,11 @@ INSERT INTO locales (code, name, native_name, is_default, is_active)
 VALUES ('en', 'English', 'English', true, true)
 ON CONFLICT (code) DO UPDATE SET flag_emoji = '🇺🇸';
 
--- Content translations table
-CREATE TABLE IF NOT EXISTS content_translations (
-    id BIGSERIAL PRIMARY KEY,
-    content_type VARCHAR(50) NOT NULL,
-    content_id BIGINT NOT NULL,
-    locale_code VARCHAR(10) NOT NULL REFERENCES locales(code) ON DELETE CASCADE,
-    field_name VARCHAR(100) NOT NULL,
-    translated_value TEXT,
-    is_machine_translated BOOLEAN DEFAULT false,
-    translator_id BIGINT REFERENCES users(id) ON DELETE SET NULL,
-    created_at TIMESTAMPTZ DEFAULT NOW(),
-    updated_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(content_type, content_id, locale_code, field_name)
-);
-
-CREATE INDEX IF NOT EXISTS idx_content_translations_lookup
-    ON content_translations(content_type, content_id, locale_code);
+-- Content translations table already created in migration 14
+-- Just add any missing columns
+ALTER TABLE content_translations ADD COLUMN IF NOT EXISTS field_name VARCHAR(100);
+ALTER TABLE content_translations ADD COLUMN IF NOT EXISTS translated_value TEXT;
+ALTER TABLE content_translations ADD COLUMN IF NOT EXISTS is_machine_translated BOOLEAN DEFAULT false;
 
 -- ═══════════════════════════════════════════════════════════════════════════════════
 -- 6. ADD MISSING COLUMNS TO INDICATORS TABLE
