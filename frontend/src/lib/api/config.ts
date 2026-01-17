@@ -209,8 +209,8 @@ export const API_ENDPOINTS = {
 		events: '/api/timers/events'
 	},
 
-	// Health
-	health: '/api/health'
+	// Health - Note: health endpoints are at root level, not under /api
+	health: '/health'
 } as const;
 
 /**
