@@ -313,10 +313,16 @@
 	// Derived: Check if on membership route (secondary sidebar visible)
 	let isOnMembershipRoute = $derived(currentMembershipData !== null);
 
+	// Dashboard home should never start in collapsed state
+	let isDashboardHome = $derived.by(() => {
+		const path = page?.url?.pathname ?? '';
+		return path === '/dashboard' || path === '/dashboard/';
+	});
+
 	// SVELTE 5 BEST PRACTICE: Use $derived for computed state, not $effect to mutate state
 	// This prevents layout shift by computing correct value BEFORE first render
 	let sidebarCollapsed = $derived(
-		userToggledSidebar !== null ? userToggledSidebar : isOnMembershipRoute
+		isDashboardHome ? false : (userToggledSidebar !== null ? userToggledSidebar : isOnMembershipRoute)
 	);
 
 	// Handler for user manually toggling sidebar
