@@ -636,7 +636,7 @@
 										{formatDate(subscription.nextPaymentDate)}
 									</td>
 									<td class="px-6 py-4">
-										<div class="flex items-center gap-2" onclick={(e) => e.stopPropagation()}>
+										<div class="flex items-center gap-2" role="group" aria-label="Subscription actions" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 											<button
 												onclick={() => openSubscriptionDetail(subscription)}
 												class="text-blue-400 hover:text-blue-300 text-sm font-medium"

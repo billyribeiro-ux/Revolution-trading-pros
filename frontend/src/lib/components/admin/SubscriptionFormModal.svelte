@@ -358,8 +358,8 @@
 							</div>
 						</div>
 
-						<div class="form-group">
-							<label class="form-label">Billing Interval</label>
+						<div class="form-group" role="radiogroup" aria-labelledby="interval-label">
+							<span id="interval-label" class="form-label">Billing Interval</span>
 							<div class="interval-options">
 								{#each intervals as int (int.value)}
 									<label class="interval-option" class:selected={interval === int.value}>
@@ -393,8 +393,8 @@
 						{/if}
 
 						{#if mode === 'create'}
-							<div class="form-group">
-								<label class="form-label">Payment Method Type</label>
+							<div class="form-group" role="radiogroup" aria-labelledby="payment-type-label">
+								<span id="payment-type-label" class="form-label">Payment Method Type</span>
 								<div class="payment-type-options">
 									<label class="payment-type-option" class:selected={paymentMethodType === 'card'}>
 										<input
