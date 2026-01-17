@@ -281,17 +281,80 @@ CREATE INDEX IF NOT EXISTS idx_content_translations_lookup
     ON content_translations(content_type, content_id, locale_code);
 
 -- ═══════════════════════════════════════════════════════════════════════════════════
--- 6. ADD TAGLINE TO INDICATORS TABLE
+-- 6. ADD MISSING COLUMNS TO INDICATORS TABLE
+-- The member_indicators route expects these columns
 -- ═══════════════════════════════════════════════════════════════════════════════════
 DO $$
 BEGIN
-    IF NOT EXISTS (
-        SELECT 1 FROM information_schema.columns
-        WHERE table_name = 'indicators' AND column_name = 'tagline'
-    ) THEN
+    -- Add tagline
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'indicators' AND column_name = 'tagline') THEN
         ALTER TABLE indicators ADD COLUMN tagline VARCHAR(500);
     END IF;
+
+    -- Add price_cents (convert from price decimal to cents integer)
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'indicators' AND column_name = 'price_cents') THEN
+        ALTER TABLE indicators ADD COLUMN price_cents INTEGER DEFAULT 0;
+        -- Migrate existing price data to price_cents
+        UPDATE indicators SET price_cents = COALESCE((price * 100)::INTEGER, 0) WHERE price IS NOT NULL;
+    END IF;
+
+    -- Add is_free
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'indicators' AND column_name = 'is_free') THEN
+        ALTER TABLE indicators ADD COLUMN is_free BOOLEAN DEFAULT false;
+        UPDATE indicators SET is_free = (price_cents = 0 OR price_cents IS NULL);
+    END IF;
+
+    -- Add sale_price_cents
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'indicators' AND column_name = 'sale_price_cents') THEN
+        ALTER TABLE indicators ADD COLUMN sale_price_cents INTEGER;
+    END IF;
+
+    -- Add logo_url
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'indicators' AND column_name = 'logo_url') THEN
+        ALTER TABLE indicators ADD COLUMN logo_url VARCHAR(500);
+        -- Use thumbnail as logo if exists
+        UPDATE indicators SET logo_url = thumbnail WHERE thumbnail IS NOT NULL AND logo_url IS NULL;
+    END IF;
+
+    -- Add card_image_url
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'indicators' AND column_name = 'card_image_url') THEN
+        ALTER TABLE indicators ADD COLUMN card_image_url VARCHAR(500);
+    END IF;
+
+    -- Add status
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'indicators' AND column_name = 'status') THEN
+        ALTER TABLE indicators ADD COLUMN status VARCHAR(50) DEFAULT 'draft';
+        UPDATE indicators SET status = CASE WHEN is_active = true THEN 'published' ELSE 'draft' END;
+    END IF;
+
+    -- Add is_published
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'indicators' AND column_name = 'is_published') THEN
+        ALTER TABLE indicators ADD COLUMN is_published BOOLEAN DEFAULT false;
+        UPDATE indicators SET is_published = (is_active = true);
+    END IF;
+
+    -- Add view_count
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'indicators' AND column_name = 'view_count') THEN
+        ALTER TABLE indicators ADD COLUMN view_count INTEGER DEFAULT 0;
+    END IF;
+
+    -- Add download_count
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'indicators' AND column_name = 'download_count') THEN
+        ALTER TABLE indicators ADD COLUMN download_count INTEGER DEFAULT 0;
+    END IF;
+
+    -- Add supported_platforms (JSONB for multiple platforms)
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'indicators' AND column_name = 'supported_platforms') THEN
+        ALTER TABLE indicators ADD COLUMN supported_platforms JSONB DEFAULT '[]'::jsonb;
+        -- Migrate existing platform column to supported_platforms array
+        UPDATE indicators SET supported_platforms = jsonb_build_array(platform) WHERE platform IS NOT NULL;
+    END IF;
 END $$;
+
+-- Add indexes for indicator queries
+CREATE INDEX IF NOT EXISTS idx_indicators_is_published ON indicators(is_published);
+CREATE INDEX IF NOT EXISTS idx_indicators_status ON indicators(status);
+CREATE INDEX IF NOT EXISTS idx_indicators_is_free ON indicators(is_free);
 
 -- ═══════════════════════════════════════════════════════════════════════════════════
 -- 7. TRIGGERS FOR UPDATED_AT
