@@ -13,14 +13,14 @@
  * @version 4.0.0 - SvelteKit 2.0+ satisfies pattern
  */
 
+import type { ServerLoad } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 import { getLatestWatchlist } from '$lib/server/watchlist';
-import type { PageServerLoad } from './$types';
 import type { RoomResource } from '$lib/api/room-resources';
 
 const SMALL_ACCOUNT_MENTORSHIP_ID = 1;
 
-export const load = (async ({ fetch }) => {
+export const load: ServerLoad = async ({ fetch }) => {
 	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
 	
 	// Parallel fetch for optimal performance
@@ -51,4 +51,4 @@ export const load = (async ({ fetch }) => {
 		documents: (documentsRes.data || []) as RoomResource[],
 		roomId: SMALL_ACCOUNT_MENTORSHIP_ID
 	};
-}) satisfies PageServerLoad;
+};
