@@ -439,6 +439,7 @@ async fn create_member(
     }
 
     // Generate password hash
+    let password_was_generated = input.password.is_none();
     let password = input.password.unwrap_or_else(|| {
         use rand::Rng;
         let mut rng = rand::thread_rng();
@@ -490,7 +491,7 @@ async fn create_member(
     Ok(Json(json!({
         "message": "Member created successfully",
         "member": member,
-        "temporary_password": if input.password.is_none() { Some(password) } else { None }
+        "temporary_password": if password_was_generated { Some(password) } else { None }
     })))
 }
 
