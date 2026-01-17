@@ -14,17 +14,16 @@
  * @version 1.0.0
  */
 
-import type { PageServerLoad } from './$types';
 import { getLatestWatchlist } from '$lib/server/watchlist';
+import type { ServerLoad } from '@sveltejs/kit';
 
 // SSR/SSG Configuration - Per SvelteKit Official Docs
 export const ssr = true;       // Enable server-side rendering
 export const csr = true;       // Enable client-side hydration for interactivity
 export const prerender = false; // Dynamic watchlist content - cannot prerender
 
-export const load: PageServerLoad = async ({ fetch }) => {
-	// Pre-fetch latest watchlist for day-trading-room (SSR)
-	const watchlist = await getLatestWatchlist('day-trading-room', fetch);
+export const load: ServerLoad = async ({ fetch }) => {
+	const watchlist = await getLatestWatchlist('small-account-mentorship', fetch);
 
 	return {
 		watchlist

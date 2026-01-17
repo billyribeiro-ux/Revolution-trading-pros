@@ -19,7 +19,7 @@
 	let currentPath = $derived.by(() => {
 		const slug = page.params.slug;
 		const fullPath = page.url.pathname;
-		const basePath = `/dashboard/day-trading-room/meet-the-traders/${slug}`;
+		const basePath = `/dashboard/small-account-mentorship/meet-the-traders/${slug}`;
 		return fullPath.replace(basePath, '') || '';
 	});
 </script>
@@ -60,7 +60,7 @@
 				<div class="not-found">
 					<h1>Trader Not Found</h1>
 					<p>The trader you're looking for could not be found.</p>
-					<a href="/dashboard/day-trading-room/meet-the-traders" class="btn btn-default">
+					<a href="/dashboard/small-account-mentorship/meet-the-traders" class="btn btn-default">
 						← Back to All Traders
 					</a>
 				</div>

@@ -53,7 +53,7 @@ export const load = (async ({ url, fetch, cookies }): Promise<PageData> => {
 
 	try {
 		// Try to fetch from backend API
-		const apiUrl = new URL(`${BACKEND_URL}/trading-rooms/day-trading-room/videos`);
+		const apiUrl = new URL(`${BACKEND_URL}/trading-rooms/small-account-mentorship/videos`);
 		apiUrl.searchParams.set('page', page.toString());
 		apiUrl.searchParams.set('per_page', perPage.toString());
 		if (search) {

@@ -13,5 +13,5 @@ import type { RequestEvent } from '@sveltejs/kit';
 
 export const GET = async ({ params }: RequestEvent) => {
 	const { slug } = params;
-	throw redirect(301, `/dashboard/day-trading-room/video/${slug}`);
+	throw redirect(301, `/dashboard/small-account-mentorship/video/${slug}`);
 };

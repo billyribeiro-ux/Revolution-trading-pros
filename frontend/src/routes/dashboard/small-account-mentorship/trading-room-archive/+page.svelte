@@ -24,20 +24,20 @@
 </script>
 
 <svelte:head>
-	<title>Trading Room Archives | Day Trading Room | Revolution Trading Pros</title>
+	<title>Trading Room Archives | Small Account Mentorship | Revolution Trading Pros</title>
 	<meta name="description" content="Access recordings of past live trading sessions and chat logs." />
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <TradingRoomHeader 
-	roomName="Day Trading Room" 
+	roomName="Small Account Mentorship" 
 	pageTitle="Trading Room Archives"
-	startHereUrl="/dashboard/day-trading-room/start-here" 
+	startHereUrl="/dashboard/small-account-mentorship/start-here" 
 />
 
 <TradingRoomArchive 
-	roomSlug="day-trading-room"
-	roomName="Day Trading Room"
+	roomSlug="small-account-mentorship"
+	roomName="Small Account Mentorship"
 	videos={data.videos || []}
 	meta={data.meta || { current_page: 1, per_page: 50, total: 0, last_page: 1 }}
 	search={data.search}

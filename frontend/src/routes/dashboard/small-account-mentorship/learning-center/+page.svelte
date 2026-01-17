@@ -148,14 +148,14 @@
 </script>
 
 <svelte:head>
-	<title>Learning Center | Day Trading Room | Revolution Trading Pros</title>
+	<title>Learning Center | Small Account Mentorship | Revolution Trading Pros</title>
 	<meta name="description" content="Access educational resources, training materials, and courses for day trading mastery." />
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <TradingRoomHeader 
-	roomName="Day Trading Room" 
-	startHereUrl="/dashboard/day-trading-room/start-here" 
+	roomName="Small Account Mentorship" 
+	startHereUrl="/dashboard/small-account-mentorship/start-here" 
 />
 
 <div class="dashboard__content">
@@ -179,7 +179,7 @@
 			</div>
 			<div class="filter_btn"><input type="radio" id="529" value="529" name="categoryfilter" onchange={() => filterResources('529')}><label for="529">Trade Setups &amp; Strategies</label></div><div class="filter_btn"><input type="radio" id="528" value="528" name="categoryfilter" onchange={() => filterResources('528')}><label for="528">Methodology</label></div><div class="filter_btn"><input type="radio" id="329" value="329" name="categoryfilter" onchange={() => filterResources('329')}><label for="329">Member Webinar</label></div><div class="filter_btn"><input type="radio" id="2932" value="2932" name="categoryfilter" onchange={() => filterResources('2932')}><label for="2932">Trade &amp; Money Management/Trading Plan</label></div><div class="filter_btn"><input type="radio" id="531" value="531" name="categoryfilter" onchange={() => filterResources('531')}><label for="531">Indicators</label></div><div class="filter_btn"><input type="radio" id="3260" value="3260" name="categoryfilter" onchange={() => filterResources('3260')}><label for="3260">Options</label></div><div class="filter_btn"><input type="radio" id="469" value="469" name="categoryfilter" onchange={() => filterResources('469')}><label for="469">foundation</label></div><div class="filter_btn"><input type="radio" id="527" value="527" name="categoryfilter" onchange={() => filterResources('527')}><label for="527">Fundamentals</label></div><div class="filter_btn"><input type="radio" id="522" value="522" name="categoryfilter" onchange={() => filterResources('522')}><label for="522">Simpler Tech</label></div><div class="filter_btn"><input type="radio" id="2929" value="2929" name="categoryfilter" onchange={() => filterResources('2929')}><label for="2929">Charting/Indicators/Tools</label></div><div class="filter_btn"><input type="radio" id="530" value="530" name="categoryfilter" onchange={() => filterResources('530')}><label for="530">Charting</label></div><div class="filter_btn"><input type="radio" id="3515" value="3515" name="categoryfilter" onchange={() => filterResources('3515')}><label for="3515">Drama Free Daytrades</label></div><div class="filter_btn"><input type="radio" id="3516" value="3516" name="categoryfilter" onchange={() => filterResources('3516')}><label for="3516">Quick Hits Daytrades</label></div><div class="filter_btn"><input type="radio" id="537" value="537" name="categoryfilter" onchange={() => filterResources('537')}><label for="537">Psychology</label></div><div class="filter_btn"><input type="radio" id="775" value="775" name="categoryfilter" onchange={() => filterResources('775')}><label for="775">Trading Platform</label></div><div class="filter_btn"><input type="radio" id="3055" value="3055" name="categoryfilter" onchange={() => filterResources('3055')}><label for="3055">Calls</label></div><div class="filter_btn"><input type="radio" id="447" value="447" name="categoryfilter" onchange={() => filterResources('447')}><label for="447">ThinkorSwim</label></div><div class="filter_btn"><input type="radio" id="446" value="446" name="categoryfilter" onchange={() => filterResources('446')}><label for="446">TradeStation</label></div><div class="filter_btn"><input type="radio" id="776" value="776" name="categoryfilter" onchange={() => filterResources('776')}><label for="776">Charting Software</label></div><div class="filter_btn"><input type="radio" id="772" value="772" name="categoryfilter" onchange={() => filterResources('772')}><label for="772">Trading Computer</label></div><div class="filter_btn"><input type="radio" id="3057" value="3057" name="categoryfilter" onchange={() => filterResources('3057')}><label for="3057">Calls Puts Credit Spreads</label></div><div class="filter_btn"><input type="radio" id="3056" value="3056" name="categoryfilter" onchange={() => filterResources('3056')}><label for="3056">Puts</label></div><div class="filter_btn"><input type="radio" id="3514" value="3514" name="categoryfilter" onchange={() => filterResources('3514')}><label for="3514">Profit Recycling</label></div><div class="filter_btn"><input type="radio" id="791" value="791" name="categoryfilter" onchange={() => filterResources('791')}><label for="791">Trade Strategies</label></div><div class="filter_btn"><input type="radio" id="774" value="774" name="categoryfilter" onchange={() => filterResources('774')}><label for="774">Website Support</label></div><div class="filter_btn"><input type="radio" id="2927" value="2927" name="categoryfilter" onchange={() => filterResources('2927')}><label for="2927">Options Strategies (Level 2 &amp; 3)</label></div><div class="filter_btn"><input type="radio" id="457" value="457" name="categoryfilter" onchange={() => filterResources('457')}><label for="457">Crypto</label></div><div class="filter_btn"><input type="radio" id="2931" value="2931" name="categoryfilter" onchange={() => filterResources('2931')}><label for="2931">Fibonacci &amp; Options Trading</label></div><div class="filter_btn"><input type="radio" id="2928" value="2928" name="categoryfilter" onchange={() => filterResources('2928')}><label for="2928">Pricing/Volatility</label></div><div class="filter_btn"><input type="radio" id="459" value="459" name="categoryfilter" onchange={() => filterResources('459')}><label for="459">Crypto Indicators &amp; Trading</label></div><div class="filter_btn"><input type="radio" id="771" value="771" name="categoryfilter" onchange={() => filterResources('771')}><label for="771">Browser Support</label></div><div class="filter_btn"><input type="radio" id="2930" value="2930" name="categoryfilter" onchange={() => filterResources('2930')}><label for="2930">Earnings &amp; Options Expiration</label></div>
 			<input type="hidden" name="page_id" value="402087">
-			<input type="hidden" name="pagination_base" value="/dashboard/day-trading-room/learning-center/page/%#%">
+			<input type="hidden" name="pagination_base" value="/dashboard/small-account-mentorship/learning-center/page/%#%">
 			
 			<button class="apply_filter">Apply filter</button>
 			<input type="hidden" name="action" value="myfilter">
@@ -187,7 +187,7 @@
 
 		<!-- Section Title - matches WordPress exactly -->
 		<section class="dashboard__content-section">
-			<h2 class="section-title">Day Trading Room Learning Center<span> | </span><span>Overview</span></h2>
+			<h2 class="section-title">Small Account Mentorship Learning Center<span> | </span><span>Overview</span></h2>
 			<p></p>
 		</section>
 

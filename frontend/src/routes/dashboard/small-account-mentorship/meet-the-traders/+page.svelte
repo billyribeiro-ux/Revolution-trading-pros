@@ -16,7 +16,7 @@
 </script>
 
 <svelte:head>
-	<title>Meet the Traders | Day Trading Room | Revolution Trading Pros</title>
+	<title>Meet the Traders | Small Account Mentorship | Revolution Trading Pros</title>
 	<meta name="description" content="Meet our expert traders and learn from their years of experience in the markets." />
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
@@ -57,7 +57,7 @@
 						
 						<p class="trader-card__bio">{trader.whoIs.substring(0, 150)}...</p>
 						
-						<a href="/dashboard/day-trading-room/meet-the-traders/{trader.slug}" class="btn btn-primary">
+						<a href="/dashboard/small-account-mentorship/meet-the-traders/{trader.slug}" class="btn btn-primary">
 							View Profile
 						</a>
 					</div>

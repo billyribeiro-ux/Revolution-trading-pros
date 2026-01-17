@@ -201,6 +201,35 @@
 				}
 			]
 		},
+		'/dashboard/small-account-mentorship': {
+			title: 'Small Account Mentorship',
+			items: [
+				{ href: '/dashboard/small-account-mentorship', icon: 'layout-dashboard', text: 'Small Account Mentorship Dashboard' },
+				{ href: '/dashboard/small-account-mentorship/daily-videos', icon: 'video', text: 'Premium Daily Videos' },
+				{ href: '/dashboard/small-account-mentorship/learning-center', icon: 'school', text: 'Learning Center' },
+				{ href: '/dashboard/small-account-mentorship/trading-room-archive', icon: 'archive', text: 'Trading Room Archives' },
+				{
+					href: '#',
+					icon: 'users',
+					text: 'Meet the Traders',
+					submenu: [
+						{ href: '/dashboard/small-account-mentorship/meet-the-traders/billy-ribeiro', icon: '', text: 'Billy Ribeiro' },
+						{ href: '/dashboard/small-account-mentorship/meet-the-traders/freddie-ferber', icon: '', text: 'Freddie Ferber' },
+						{ href: '/dashboard/small-account-mentorship/meet-the-traders/shao-wan', icon: '', text: 'Shao Wan' }
+					]
+				},
+				{
+					href: '#',
+					icon: 'shopping-cart',
+					text: 'Trader Store',
+					submenu: [
+						{ href: '/dashboard/small-account-mentorship/meet-the-traders/billy-ribeiro/trader-store', icon: '', text: 'Billy Ribeiro' },
+						{ href: '/dashboard/small-account-mentorship/meet-the-traders/freddie-ferber/trader-store', icon: '', text: 'Freddie Ferber' },
+						{ href: '/dashboard/small-account-mentorship/meet-the-traders/shao-wan/trader-store', icon: '', text: 'Shao Wan' }
+					]
+				}
+			]
+		},
 		'/dashboard/swing-trading-room': {
 			title: 'Swing Trading Room',
 			items: [

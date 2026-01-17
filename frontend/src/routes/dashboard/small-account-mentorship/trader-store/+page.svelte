@@ -99,7 +99,7 @@
 </script>
 
 <svelte:head>
-	<title>Trader Store | Day Trading Room | Revolution Trading Pros</title>
+	<title>Trader Store | Small Account Mentorship | Revolution Trading Pros</title>
 	<meta name="description" content="Browse courses, indicators, and trading tools from our expert traders." />
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
@@ -121,7 +121,7 @@
 
 		<div class="stores-grid">
 			{#each traderStores as store (store.id)}
-				<a href="/dashboard/day-trading-room/trader-store/{store.slug}" class="store-card">
+				<a href="/dashboard/small-account-mentorship/trader-store/{store.slug}" class="store-card">
 					<figure class="store-card__image">
 						<img src={store.image} alt={store.name} loading="lazy" />
 					</figure>

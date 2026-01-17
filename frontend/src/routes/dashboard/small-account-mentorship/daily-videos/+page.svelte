@@ -14,8 +14,7 @@
 	@version 1.0.0 - January 2026
 -->
 <script lang="ts">
-	import type { PageData } from './$types';
-	import type { DailyVideo } from './+page.server';
+	import type { DailyVideo, PageData } from './+page.server';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 
 	// Svelte 5 props with SvelteKit typing
@@ -55,18 +54,18 @@
 
 	// Generate video detail URL
 	function getVideoUrl(video: DailyVideo): string {
-		return `/dashboard/day-trading-room/daily-videos/${video.slug}`;
+		return `/dashboard/small-account-mentorship/daily-videos/${video.slug}`;
 	}
 </script>
 
 <svelte:head>
-	<title>Day Trading Room Premium Daily Videos - Revolution Trading Pros</title>
+	<title>Small Account Mentorship Premium Daily Videos - Revolution Trading Pros</title>
 </svelte:head>
 
 <TradingRoomHeader 
-	roomName="Day Trading Room" 
+	roomName="Small Account Mentorship" 
 	pageTitle="Premium Daily Videos"
-	startHereUrl="/dashboard/day-trading-room/start-here" 
+	startHereUrl="/dashboard/small-account-mentorship/start-here" 
 />
 
 <section class="dashboard__content-section">
