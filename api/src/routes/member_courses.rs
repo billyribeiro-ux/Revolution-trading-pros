@@ -99,7 +99,7 @@ async fn get_course_detail(
 
     let modules: Vec<CourseModule> = sqlx::query_as(
         r#"
-        SELECT * FROM course_modules 
+        SELECT * FROM course_modules_v2 
         WHERE course_id = $1 AND is_published = true
         ORDER BY sort_order
         "#,
@@ -243,7 +243,7 @@ async fn get_course_player(
     .flatten();
 
     let modules: Vec<CourseModule> =
-        sqlx::query_as("SELECT * FROM course_modules WHERE course_id = $1 ORDER BY sort_order")
+        sqlx::query_as("SELECT * FROM course_modules_v2 WHERE course_id = $1 ORDER BY sort_order")
             .bind(course.id)
             .fetch_all(&state.db.pool)
             .await

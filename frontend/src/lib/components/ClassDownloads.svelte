@@ -71,21 +71,24 @@
 		error = '';
 		try {
 			let url = '';
-			if (courseId) {
-				url = `/api/courses/${courseId}/downloads`;
-			} else if (courseSlug) {
-				url = `/api/courses/slug/${courseSlug}/downloads`;
+			if (courseSlug) {
+				// Use member courses API endpoint
+				url = `/api/my/courses/${courseSlug}/downloads`;
+			} else if (courseId) {
+				// Fallback to course ID if no slug
+				url = `/api/my/courses/${courseId}/downloads`;
 			} else {
 				error = 'No course ID or slug provided';
 				loading = false;
 				return;
 			}
 
-			const res = await fetch(url);
+			const res = await fetch(url, { credentials: 'include' });
 			const data = await res.json();
 
 			if (data.success) {
-				downloads = data.data || [];
+				// Handle both response formats
+				downloads = data.data?.downloads || data.data || [];
 			} else {
 				error = data.error || 'Failed to load downloads';
 			}
