@@ -82,6 +82,7 @@ fn generate_webhook_signature(payload: &str, secret: &str) -> String {
 }
 
 /// Process pending webhook deliveries
+/// ICT 7: Fails silently if tables/columns don't exist
 async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
     #[derive(Debug, sqlx::FromRow)]
     struct WebhookDeliveryRow {
@@ -89,7 +90,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
         webhook_id: i64,
         event_type: String,
         payload: serde_json::Value,
-        attempts: i32,
+        attempt_count: i32,  // Fixed: use actual column name
     }
 
     #[derive(Debug, sqlx::FromRow)]
@@ -101,10 +102,10 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
         headers: Option<serde_json::Value>,
     }
 
-    // Get pending webhook deliveries
-    let deliveries: Vec<WebhookDeliveryRow> = sqlx::query_as(
+    // Get pending webhook deliveries - fail silently if table doesn't exist
+    let deliveries: Vec<WebhookDeliveryRow> = match sqlx::query_as(
         r#"
-        SELECT wd.id, wd.webhook_id, wd.event_type, wd.payload, wd.attempts
+        SELECT wd.id, wd.webhook_id, wd.event_type, wd.payload, wd.attempt_count
         FROM webhook_deliveries wd
         JOIN webhooks w ON w.id = wd.webhook_id AND w.is_active = true
         WHERE wd.status = 'pending'
@@ -115,7 +116,13 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
         "#,
     )
     .fetch_all(pool)
-    .await?;
+    .await {
+        Ok(d) => d,
+        Err(e) => {
+            tracing::debug!("Webhook deliveries table not ready: {}", e);
+            return Ok(0);
+        }
+    };
 
     let mut processed = 0u32;
 
@@ -215,7 +222,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
                     );
                 } else {
                     // HTTP error, schedule retry if attempts remaining
-                    let new_attempts = delivery.attempts + 1;
+                    let new_attempts = delivery.attempt_count + 1;
                     if new_attempts >= webhook.retry_count {
                         sqlx::query(
                             r#"
@@ -272,7 +279,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
             }
             Err(e) => {
                 // Network error, schedule retry
-                let new_attempts = delivery.attempts + 1;
+                let new_attempts = delivery.attempt_count + 1;
                 let error_msg = e.to_string();
 
                 if new_attempts >= webhook.retry_count {
@@ -564,9 +571,11 @@ pub async fn run(db: Database) {
 }
 
 /// Fetch and process the next available job
+/// ICT 7: Fails silently if jobs table doesn't exist or has wrong schema
 async fn process_next_job(db: &Database) -> anyhow::Result<Option<i64>> {
     // Fetch next job using SELECT FOR UPDATE SKIP LOCKED
-    let job: Option<Job> = sqlx::query_as(
+    // Fail silently if table/columns don't exist
+    let job: Option<Job> = match sqlx::query_as(
         r#"
         SELECT * FROM jobs
         WHERE status = 'pending'
@@ -578,7 +587,13 @@ async fn process_next_job(db: &Database) -> anyhow::Result<Option<i64>> {
         "#,
     )
     .fetch_optional(&db.pool)
-    .await?;
+    .await {
+        Ok(j) => j,
+        Err(e) => {
+            tracing::debug!("Jobs table not ready: {}", e);
+            return Ok(None);
+        }
+    };
 
     let job = match job {
         Some(j) => j,
