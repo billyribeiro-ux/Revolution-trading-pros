@@ -5,10 +5,12 @@
 	 *
 	 * Complete archive of all swing trade alerts and market updates
 	 *
-	 * @version 1.0.0
+	 * @version 1.1.0
 	 * @svelte5 Fully compliant with Svelte 5 Nov/Dec 2025 best practices
 	 */
+	import { onMount } from 'svelte';
 	import { IconFilter, IconSearch } from '$lib/icons';
+	import type { RoomAlert } from '$lib/types/trading';
 
 	// Props interface for SSR data - Svelte 5 best practice
 	interface Props {
@@ -22,6 +24,37 @@
 	// Svelte 5 $state for filter state
 	let selectedFilter = $state('all');
 	let searchQuery = $state('');
+	let apiAlerts = $state<RoomAlert[]>([]);
+	let isLoading = $state(false);
+	let pagination = $state({ total: 0, limit: 50, offset: 0 });
+
+	const ROOM_SLUG = 'explosive-swings';
+
+	// Fetch alerts from API
+	async function fetchAlerts() {
+		isLoading = true;
+		try {
+			const params = new URLSearchParams({
+				limit: pagination.limit.toString(),
+				offset: pagination.offset.toString()
+			});
+
+			const response = await fetch(`/api/alerts/${ROOM_SLUG}?${params}`);
+			const data = await response.json();
+			if (data.success) {
+				apiAlerts = data.data;
+				pagination.total = data.total;
+			}
+		} catch (err) {
+			console.error('Failed to fetch alerts:', err);
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	onMount(() => {
+		fetchAlerts();
+	});
 
 	// All alerts data
 	const allAlerts = [
@@ -112,9 +145,42 @@
 		}
 	];
 
+	// Transform API alerts to display format
+	function formatAlertDate(dateString: string): string {
+		const date = new Date(dateString);
+		return date.toLocaleDateString('en-US', {
+			month: 'long',
+			day: 'numeric',
+			year: 'numeric'
+		}) + ' at ' + date.toLocaleTimeString('en-US', {
+			hour: 'numeric',
+			minute: '2-digit',
+			timeZoneName: 'short'
+		});
+	}
+
+	// Derive display alerts from API or fallback
+	const displayAlerts = $derived(
+		apiAlerts.length > 0
+			? apiAlerts.map((a) => ({
+					id: a.id,
+					type: a.alert_type === 'UPDATE' ? 'Market Update' : 'Trade Alert',
+					alertType: a.alert_type,
+					title: a.title,
+					date: formatAlertDate(a.published_at),
+					excerpt: a.message,
+					status: a.alert_type === 'UPDATE' ? 'Info' : (a.alert_type === 'EXIT' ? 'Closed' : 'Open'),
+					profitLoss: null as string | null, // Would come from linked trade
+					href: `/dashboard/explosive-swings/alerts/${a.id}`,
+					tosString: a.tos_string,
+					ticker: a.ticker
+				}))
+			: allAlerts
+	);
+
 	// Filtered alerts based on selection and search
 	const filteredAlerts = $derived.by(() => {
-		let filtered = allAlerts;
+		let filtered = displayAlerts;
 
 		// Apply type filter
 		if (selectedFilter !== 'all') {
@@ -218,13 +284,23 @@
 				{#each filteredAlerts as alert (alert.id)}
 					<article class="alert-card">
 						<div class="alert-header">
-							<span class="alert-type">{alert.type}</span>
+							<div class="alert-header-left">
+								<span class="alert-type">{alert.type}</span>
+								{#if 'ticker' in alert && alert.ticker}
+									<span class="alert-ticker">{alert.ticker}</span>
+								{/if}
+							</div>
 							<span class="alert-status {getStatusClass(alert.status)}">{alert.status}</span>
 						</div>
 						<h3 class="alert-title">
 							<a href={alert.href}>{alert.title}</a>
 						</h3>
 						<p class="alert-date">{alert.date}</p>
+						{#if 'tosString' in alert && alert.tosString}
+							<div class="tos-display">
+								<code>{alert.tosString}</code>
+							</div>
+						{/if}
 						<p class="alert-excerpt">{alert.excerpt}</p>
 						{#if alert.profitLoss}
 							<div class="alert-profit-loss {getProfitLossClass(alert.profitLoss)}">
@@ -420,6 +496,35 @@
 		justify-content: space-between;
 		align-items: center;
 		margin-bottom: 12px;
+	}
+
+	.alert-header-left {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+
+	.alert-ticker {
+		font-size: 14px;
+		font-weight: 700;
+		color: #143e59;
+		background: #e0f2fe;
+		padding: 4px 10px;
+		border-radius: 4px;
+	}
+
+	.tos-display {
+		background: #1a1a2e;
+		border-radius: 6px;
+		padding: 10px 14px;
+		margin-bottom: 12px;
+	}
+
+	.tos-display code {
+		color: #22c55e;
+		font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+		font-size: 12px;
+		font-weight: 600;
 	}
 
 	.alert-type {

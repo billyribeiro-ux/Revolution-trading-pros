@@ -6,10 +6,19 @@
 	 * 1. This week's video breakdown
 	 * 2. The exact trade plan (entries, targets, stops, options)
 	 *
-	 * @version 2.2.0
+	 * @version 2.3.0
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
+	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import TradeAlertModal from '$lib/components/dashboard/TradeAlertModal.svelte';
+	import type {
+		TradePlanEntry as ApiTradePlanEntry,
+		RoomAlert,
+		RoomStats,
+		AlertCreateInput,
+		AlertUpdateInput
+	} from '$lib/types/trading';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS - Principal Engineer ICT 11 Standards
@@ -46,6 +55,7 @@
 		message: string;
 		isNew: boolean;
 		notes: string;
+		tosString?: string;
 	}
 
 	interface QuickStats {
@@ -93,6 +103,19 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	let heroTab = $state<HeroTab>('video');
 	let selectedFilter = $state<AlertFilter>('all');
+
+	// Admin state
+	let isAdmin = $state(false);
+	let isAlertModalOpen = $state(false);
+	let editingAlert = $state<RoomAlert | null>(null);
+	let apiAlerts = $state<RoomAlert[]>([]);
+	let apiTradePlan = $state<ApiTradePlanEntry[]>([]);
+	let apiStats = $state<RoomStats | null>(null);
+	let isLoadingAlerts = $state(false);
+	let isLoadingTradePlan = $state(false);
+	let isLoadingStats = $state(false);
+
+	const ROOM_SLUG = 'explosive-swings';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DATA - This Week's Content (fetched from API with fallback)
@@ -266,10 +289,6 @@
 			: fallbackWeeklyContent
 	);
 
-	// Use fallback trade plan and alerts for now (unified API doesn't include these yet)
-	const tradePlan = $derived<TradePlanEntry[]>(fallbackTradePlan);
-	const stats = $derived<QuickStats>(fallbackStats);
-
 	// Fallback alerts
 	const fallbackAlerts: Alert[] = [
 		{
@@ -330,7 +349,195 @@
 		}
 	];
 
-	const alerts = $derived<Alert[]>(fallbackAlerts);
+	// ═══════════════════════════════════════════════════════════════════════════
+	// API FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function fetchAlerts() {
+		isLoadingAlerts = true;
+		try {
+			const response = await fetch(`/api/alerts/${ROOM_SLUG}?limit=10`);
+			const data = await response.json();
+			if (data.success) {
+				apiAlerts = data.data;
+			}
+		} catch (err) {
+			console.error('Failed to fetch alerts:', err);
+		} finally {
+			isLoadingAlerts = false;
+		}
+	}
+
+	async function fetchTradePlan() {
+		isLoadingTradePlan = true;
+		try {
+			const response = await fetch(`/api/trade-plans/${ROOM_SLUG}`);
+			const data = await response.json();
+			if (data.success) {
+				apiTradePlan = data.data;
+			}
+		} catch (err) {
+			console.error('Failed to fetch trade plan:', err);
+		} finally {
+			isLoadingTradePlan = false;
+		}
+	}
+
+	async function fetchStats() {
+		isLoadingStats = true;
+		try {
+			const response = await fetch(`/api/stats/${ROOM_SLUG}`);
+			const data = await response.json();
+			if (data.success) {
+				apiStats = data.data;
+			}
+		} catch (err) {
+			console.error('Failed to fetch stats:', err);
+		} finally {
+			isLoadingStats = false;
+		}
+	}
+
+	async function checkAdminStatus() {
+		// Check if user has admin role from session/cookie
+		// For now, we'll check a simple flag - in production this comes from auth
+		try {
+			const response = await fetch('/api/auth/me');
+			const data = await response.json();
+			isAdmin = data.user?.role === 'admin' || data.user?.role === 'super_admin';
+		} catch {
+			isAdmin = false;
+		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// ADMIN HANDLERS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function openNewAlertModal() {
+		editingAlert = null;
+		isAlertModalOpen = true;
+	}
+
+	function openEditAlertModal(alert: RoomAlert) {
+		editingAlert = alert;
+		isAlertModalOpen = true;
+	}
+
+	function closeAlertModal() {
+		isAlertModalOpen = false;
+		editingAlert = null;
+	}
+
+	async function handleSaveAlert(alertData: AlertCreateInput | AlertUpdateInput, isEdit: boolean) {
+		const url = isEdit && editingAlert
+			? `/api/alerts/${ROOM_SLUG}/${editingAlert.id}`
+			: `/api/alerts/${ROOM_SLUG}`;
+
+		const response = await fetch(url, {
+			method: isEdit ? 'PUT' : 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(alertData)
+		});
+
+		if (!response.ok) {
+			throw new Error('Failed to save alert');
+		}
+
+		// Refresh alerts after save
+		await fetchAlerts();
+	}
+
+	async function handleDeleteAlert(alertId: number) {
+		if (!confirm('Are you sure you want to delete this alert?')) return;
+
+		const response = await fetch(`/api/alerts/${ROOM_SLUG}/${alertId}`, {
+			method: 'DELETE'
+		});
+
+		if (response.ok) {
+			await fetchAlerts();
+		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// LIFECYCLE
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	onMount(() => {
+		checkAdminStatus();
+		fetchAlerts();
+		fetchTradePlan();
+		fetchStats();
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DERIVED STATE - Transform API data to display format
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Format time ago helper
+	function formatTimeAgo(dateString: string): string {
+		const date = new Date(dateString);
+		const now = new Date();
+		const diffMs = now.getTime() - date.getTime();
+		const diffMins = Math.floor(diffMs / 60000);
+		const diffHours = Math.floor(diffMs / 3600000);
+		const diffDays = Math.floor(diffMs / 86400000);
+
+		if (diffMins < 60) return `${diffMins} min ago`;
+		if (diffHours < 24) return `${diffHours}h ago`;
+		if (diffDays === 0) return `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+		if (diffDays === 1) return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ` at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+	}
+
+	// Derive alerts from API or fallback
+	const alerts = $derived<Alert[]>(
+		apiAlerts.length > 0
+			? apiAlerts.map((a) => ({
+					id: a.id,
+					type: a.alert_type,
+					ticker: a.ticker,
+					title: a.title,
+					time: formatTimeAgo(a.published_at),
+					message: a.message,
+					isNew: a.is_new,
+					notes: a.notes || '',
+					tosString: a.tos_string || undefined
+				}))
+			: fallbackAlerts
+	);
+
+	// Derive trade plan from API or fallback
+	const tradePlan = $derived<TradePlanEntry[]>(
+		apiTradePlan.length > 0
+			? apiTradePlan.map((t) => ({
+					ticker: t.ticker,
+					bias: t.bias,
+					entry: t.entry,
+					target1: t.target1,
+					target2: t.target2,
+					target3: t.target3,
+					runner: t.runner,
+					stop: t.stop,
+					optionsStrike: t.options_strike || '-',
+					optionsExp: t.options_exp || '-',
+					notes: t.notes || ''
+				}))
+			: fallbackTradePlan
+	);
+
+	// Derive stats from API or fallback
+	const stats = $derived<QuickStats>(
+		apiStats
+			? {
+					winRate: apiStats.win_rate,
+					weeklyProfit: apiStats.weekly_profit,
+					activeTrades: apiStats.active_trades,
+					closedThisWeek: apiStats.closed_this_week
+				}
+			: fallbackStats
+	);
 
 	// Track which alert notes are expanded
 	let expandedNotes = $state<Set<number>>(new Set());
@@ -637,7 +844,17 @@
 		<!-- ALERTS FEED -->
 		<section class="alerts-section">
 			<div class="section-header">
-				<h2>Live Alerts</h2>
+				<div class="section-title-row">
+					<h2>Live Alerts</h2>
+					{#if isAdmin}
+						<button class="admin-btn" onclick={openNewAlertModal}>
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+								<path d="M12 5v14M5 12h14" />
+							</svg>
+							New Alert
+						</button>
+					{/if}
+				</div>
 				<div class="filter-pills">
 					<button
 						class="pill"
@@ -704,6 +921,13 @@
 						<h3>{alert.title}</h3>
 						<p class="alert-message">{alert.message}</p>
 
+						<!-- TOS String (if available) -->
+						{#if alert.tosString}
+							<div class="tos-display">
+								<code>{alert.tosString}</code>
+							</div>
+						{/if}
+
 						<!-- Expandable Notes Panel -->
 						{#if expandedNotes.has(alert.id)}
 							<div class="notes-panel">
@@ -714,6 +938,27 @@
 								<div class="notes-panel-body">
 									<p>{alert.notes}</p>
 								</div>
+							</div>
+						{/if}
+
+						<!-- Admin Actions -->
+						{#if isAdmin}
+							<div class="admin-actions">
+								<button
+									class="admin-action-btn edit"
+									onclick={() => {
+										const apiAlert = apiAlerts.find((a) => a.id === alert.id);
+										if (apiAlert) openEditAlertModal(apiAlert);
+									}}
+								>
+									Edit
+								</button>
+								<button
+									class="admin-action-btn delete"
+									onclick={() => handleDeleteAlert(alert.id)}
+								>
+									Delete
+								</button>
 							</div>
 						{/if}
 					</div>
@@ -807,6 +1052,16 @@
 		</div>
 	</section>
 </div>
+
+<!-- Admin Modal for Creating/Editing Alerts -->
+<TradeAlertModal
+	bind:isOpen={isAlertModalOpen}
+	roomSlug={ROOM_SLUG}
+	editAlert={editingAlert}
+	entryAlerts={apiAlerts.filter((a) => a.alert_type === 'ENTRY')}
+	onClose={closeAlertModal}
+	onSave={handleSaveAlert}
+/>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1841,5 +2096,85 @@
 		color: #666;
 		line-height: 1.6;
 		margin: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ADMIN STYLES
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.section-title-row {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	.admin-btn {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		background: linear-gradient(135deg, #f69532 0%, #e8860d 100%);
+		color: #fff;
+		border: none;
+		padding: 8px 16px;
+		border-radius: 8px;
+		font-size: 13px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+		box-shadow: 0 2px 8px rgba(246, 149, 50, 0.3);
+	}
+
+	.admin-btn:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(246, 149, 50, 0.4);
+	}
+
+	.admin-actions {
+		display: flex;
+		gap: 8px;
+		margin-top: 12px;
+		padding-top: 12px;
+		border-top: 1px solid #e5e7eb;
+	}
+
+	.admin-action-btn {
+		padding: 6px 14px;
+		border-radius: 6px;
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+		border: none;
+	}
+
+	.admin-action-btn.edit {
+		background: #e0f2fe;
+		color: #0369a1;
+	}
+
+	.admin-action-btn.edit:hover {
+		background: #bae6fd;
+	}
+
+	.admin-action-btn.delete {
+		background: #fee2e2;
+		color: #991b1b;
+	}
+
+	.admin-action-btn.delete:hover {
+		background: #fecaca;
+	}
+
+	.tos-display {
+		background: #1a1a2e;
+		border-radius: 8px;
+		padding: 10px 14px;
+		margin-top: 12px;
+	}
+
+	.tos-display code {
+		color: #22c55e;
+		font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+		font-size: 13px;
+		font-weight: 600;
 	}
 </style>

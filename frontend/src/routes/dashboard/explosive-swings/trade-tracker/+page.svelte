@@ -1,10 +1,12 @@
 <script lang="ts">
 	/**
 	 * Trade Tracker - Explosive Swings
-	 * @version 1.0.0
+	 * @version 1.1.0
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
+	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import type { Trade as ApiTrade } from '$lib/types/trading';
 
 	// TYPE DEFINITIONS
 	interface Trade {
@@ -18,9 +20,10 @@
 		profit: number;
 		profitPercent: number;
 		duration: number;
-		setup: 'Breakout' | 'Momentum' | 'Reversal' | 'Earnings';
+		setup: 'Breakout' | 'Momentum' | 'Reversal' | 'Earnings' | 'Pullback';
 		result: 'WIN' | 'LOSS' | 'ACTIVE';
 		notes: string;
+		tradeType?: 'shares' | 'options';
 	}
 
 	interface TradeStats {
@@ -38,6 +41,38 @@
 
 	// REACTIVE STATE
 	let filterStatus = $state<FilterStatus>('all');
+	let apiTrades = $state<ApiTrade[]>([]);
+	let apiStats = $state<{ total_pnl: number; win_rate: number; wins: number; losses: number; avg_win: number; avg_loss: number; profit_factor: number } | null>(null);
+	let isLoading = $state(false);
+
+	const ROOM_SLUG = 'explosive-swings';
+
+	// Fetch trades from API
+	async function fetchTrades() {
+		isLoading = true;
+		try {
+			const response = await fetch(`/api/trades/${ROOM_SLUG}?limit=100`);
+			const data = await response.json();
+			if (data.success) {
+				apiTrades = data.data;
+				apiStats = data.stats;
+			}
+		} catch (err) {
+			console.error('Failed to fetch trades:', err);
+		} finally {
+			isLoading = false;
+		}
+	}
+
+	onMount(() => {
+		fetchTrades();
+	});
+
+	// Format date for display
+	function formatDate(dateString: string): string {
+		const date = new Date(dateString);
+		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+	}
 
 	const trades: Trade[] = [
 		{
@@ -162,34 +197,72 @@
 		}
 	];
 
-	const filteredTrades = $derived(
-		filterStatus === 'all'
-			? trades
-			: filterStatus === 'active'
-				? trades.filter((t) => t.result === 'ACTIVE')
-				: trades.filter((t) => t.result === filterStatus.toUpperCase())
+	// Transform API trades to display format or use fallback
+	const displayTrades = $derived<Trade[]>(
+		apiTrades.length > 0
+			? apiTrades.map((t) => ({
+					id: t.id,
+					ticker: t.ticker,
+					entryDate: formatDate(t.entry_date),
+					exitDate: t.exit_date ? formatDate(t.exit_date) : null,
+					entryPrice: t.entry_price,
+					exitPrice: t.exit_price,
+					shares: t.quantity,
+					profit: t.pnl || 0,
+					profitPercent: t.pnl_percent || 0,
+					duration: t.holding_days || 0,
+					setup: (t.setup || 'Breakout') as Trade['setup'],
+					result: t.status === 'open' ? 'ACTIVE' : ((t.pnl || 0) >= 0 ? 'WIN' : 'LOSS'),
+					notes: t.notes || '',
+					tradeType: t.trade_type
+				}))
+			: trades
 	);
 
-	const stats = $derived.by(() => {
-		const closedTrades = trades.filter((t) => t.result !== 'ACTIVE');
+	const filteredTrades = $derived(
+		filterStatus === 'all'
+			? displayTrades
+			: filterStatus === 'active'
+				? displayTrades.filter((t) => t.result === 'ACTIVE')
+				: displayTrades.filter((t) => t.result === filterStatus.toUpperCase())
+	);
+
+	const stats = $derived.by((): TradeStats => {
+		// Use API stats if available
+		if (apiStats) {
+			return {
+				totalTrades: apiStats.wins + apiStats.losses,
+				wins: apiStats.wins,
+				losses: apiStats.losses,
+				winRate: apiStats.win_rate.toFixed(1),
+				totalProfit: apiStats.total_pnl,
+				avgWin: apiStats.avg_win.toFixed(0),
+				avgLoss: apiStats.avg_loss.toFixed(0),
+				profitFactor: apiStats.profit_factor.toFixed(2)
+			};
+		}
+
+		// Fallback to calculating from displayTrades
+		const closedTrades = displayTrades.filter((t) => t.result !== 'ACTIVE');
 		const wins = closedTrades.filter((t) => t.result === 'WIN').length;
 		const losses = closedTrades.filter((t) => t.result === 'LOSS').length;
 		const totalProfit = closedTrades.reduce((sum, t) => sum + t.profit, 0);
-		const avgWin =
-			closedTrades.filter((t) => t.result === 'WIN').reduce((sum, t) => sum + t.profit, 0) / wins;
-		const avgLoss = Math.abs(
-			closedTrades.filter((t) => t.result === 'LOSS').reduce((sum, t) => sum + t.profit, 0) / losses
-		);
+		const avgWin = wins > 0
+			? closedTrades.filter((t) => t.result === 'WIN').reduce((sum, t) => sum + t.profit, 0) / wins
+			: 0;
+		const avgLoss = losses > 0
+			? Math.abs(closedTrades.filter((t) => t.result === 'LOSS').reduce((sum, t) => sum + t.profit, 0) / losses)
+			: 0;
 
 		return {
 			totalTrades: closedTrades.length,
 			wins,
 			losses,
-			winRate: ((wins / closedTrades.length) * 100).toFixed(1),
+			winRate: closedTrades.length > 0 ? ((wins / closedTrades.length) * 100).toFixed(1) : '0.0',
 			totalProfit,
 			avgWin: avgWin.toFixed(0),
 			avgLoss: avgLoss.toFixed(0),
-			profitFactor: (avgWin / avgLoss).toFixed(2)
+			profitFactor: avgLoss > 0 ? (avgWin / avgLoss).toFixed(2) : '0.00'
 		};
 	});
 </script>
