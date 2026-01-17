@@ -293,30 +293,25 @@
 	<title>Connections | System</title>
 </svelte:head>
 
-<div class="min-h-screen bg-[#0a0a0b]">
-	<!-- Subtle gradient background -->
-	<div class="fixed inset-0 bg-gradient-to-b from-gray-900/50 via-transparent to-transparent pointer-events-none"></div>
-
-	<div class="relative max-w-7xl mx-auto px-6 py-8">
+<div class="connections-page">
+	<div class="connections-container">
 		<!-- Header -->
-		<header class="mb-12" in:fly={{ y: -20, duration: 500, easing: cubicOut }}>
-			<div class="flex items-start justify-between">
+		<header class="connections-header" in:fly={{ y: -20, duration: 500, easing: cubicOut }}>
+			<div class="header-content">
 				<div>
-					<h1 class="text-3xl font-semibold text-white tracking-tight">
-						Connections
-					</h1>
-					<p class="mt-2 text-gray-500 text-base max-w-xl">
+					<h1 class="page-title">Connections</h1>
+					<p class="page-description">
 						Manage your platform integrations and third-party services
 					</p>
 				</div>
 
 				<!-- View Toggle & Search -->
-				<div class="flex items-center gap-4">
+				<div class="header-actions">
 					<!-- View Mode Toggle -->
-					<div class="flex items-center bg-white/5 rounded-lg p-1">
+					<div class="view-toggle">
 						<button
 							onclick={() => viewMode = 'grid'}
-							class="p-2 rounded-md transition-all {viewMode === 'grid' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}"
+							class="view-btn {viewMode === 'grid' ? 'active' : ''}"
 							aria-label="Grid view"
 						>
 							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -325,7 +320,7 @@
 						</button>
 						<button
 							onclick={() => viewMode = 'list'}
-							class="p-2 rounded-md transition-all {viewMode === 'list' ? 'bg-white/10 text-white' : 'text-gray-500 hover:text-gray-300'}"
+							class="view-btn {viewMode === 'list' ? 'active' : ''}"
 							aria-label="List view"
 						>
 							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -335,14 +330,14 @@
 					</div>
 
 					<!-- Search -->
-					<div class="relative">
+					<div class="search-wrapper">
 						<input
 							type="text"
 							placeholder="Search..."
 							bind:value={searchQuery}
-							class="w-64 px-4 py-2.5 pl-10 bg-white/5 border border-white/10 rounded-xl text-white text-sm placeholder-gray-500 focus:outline-none focus:border-white/20 transition-colors"
+							class="search-input"
 						/>
-						<svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+						<svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
 						</svg>
 					</div>
@@ -352,49 +347,47 @@
 
 		{#if isLoading}
 			<!-- Loading State -->
-			<div class="flex items-center justify-center h-96">
-				<div class="flex flex-col items-center gap-4">
-					<div class="relative w-12 h-12">
-						<div class="absolute inset-0 border-2 border-white/10 rounded-full"></div>
-						<div class="absolute inset-0 border-2 border-white rounded-full animate-spin border-t-transparent"></div>
+			<div class="loading-container">
+				<div class="loading-content">
+					<div class="spinner-wrapper">
+						<div class="spinner-track"></div>
+						<div class="spinner"></div>
 					</div>
-					<p class="text-gray-500 text-sm">Loading connections...</p>
+					<p class="loading-text">Loading connections...</p>
 				</div>
 			</div>
 		{:else}
 			<!-- Built-in Features Section -->
 			{#if builtInServices.length > 0}
-				<section class="mb-12" in:fly={{ y: 20, duration: 500, delay: 100, easing: cubicOut }}>
-					<div class="flex items-center gap-3 mb-6">
-						<div class="flex items-center justify-center w-8 h-8 bg-emerald-500/10 rounded-lg">
-							<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+				<section class="section-builtin" in:fly={{ y: 20, duration: 500, delay: 100, easing: cubicOut }}>
+					<div class="section-header-row">
+						<div class="section-icon-wrapper builtin">
+							<svg class="section-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
 							</svg>
 						</div>
 						<div>
-							<h2 class="text-lg font-medium text-white">Built-in Features</h2>
-							<p class="text-sm text-gray-500">Pre-installed and ready to use</p>
+							<h2 class="section-heading">Built-in Features</h2>
+							<p class="section-subheading">Pre-installed and ready to use</p>
 						</div>
 					</div>
 
-					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					<div class="services-grid">
 						{#each builtInServices as service, index}
 							<div
-								class="group relative bg-gradient-to-br from-emerald-500/5 to-transparent border border-emerald-500/20 rounded-2xl p-5 hover:border-emerald-500/30 transition-all duration-300"
+								class="service-card builtin-card"
 								in:fly={{ y: 20, duration: 400, delay: 150 + index * 50, easing: cubicOut }}
 							>
-								<div class="flex items-start gap-4">
-									<div class="flex-shrink-0 w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center text-xl">
+								<div class="service-card-content">
+									<div class="service-icon builtin-icon">
 										{getServiceIcon(service)}
 									</div>
-									<div class="flex-1 min-w-0">
-										<div class="flex items-center gap-2">
-											<h3 class="font-medium text-white truncate">{service.name}</h3>
-											<span class="flex-shrink-0 px-2 py-0.5 bg-emerald-500/20 text-emerald-400 text-xs font-medium rounded-full">
-												Active
-											</span>
+									<div class="service-info">
+										<div class="service-name-row">
+											<h3 class="service-name">{service.name}</h3>
+											<span class="status-badge active">Active</span>
 										</div>
-										<p class="mt-1 text-sm text-gray-500 line-clamp-2">{service.description}</p>
+										<p class="service-description line-clamp-2">{service.description}</p>
 									</div>
 								</div>
 							</div>
@@ -405,72 +398,64 @@
 
 			<!-- Connected Integrations -->
 			{#if connectedExternal.length > 0}
-				<section class="mb-12" in:fly={{ y: 20, duration: 500, delay: 200, easing: cubicOut }}>
-					<div class="flex items-center justify-between mb-6">
-						<div class="flex items-center gap-3">
-							<div class="flex items-center justify-center w-8 h-8 bg-blue-500/10 rounded-lg">
-								<svg class="w-4 h-4 text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
-								</svg>
-							</div>
-							<div>
-								<h2 class="text-lg font-medium text-white">Connected</h2>
-								<p class="text-sm text-gray-500">{connectedExternal.length} active integration{connectedExternal.length !== 1 ? 's' : ''}</p>
-							</div>
+				<section class="section-connected" in:fly={{ y: 20, duration: 500, delay: 200, easing: cubicOut }}>
+					<div class="section-header-row">
+						<div class="section-icon-wrapper connected">
+							<svg class="section-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+							</svg>
+						</div>
+						<div>
+							<h2 class="section-heading">Connected</h2>
+							<p class="section-subheading">{connectedExternal.length} active integration{connectedExternal.length !== 1 ? 's' : ''}</p>
 						</div>
 					</div>
 
-					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+					<div class="services-grid">
 						{#each connectedExternal as service, index}
 							<div
-								class="group relative bg-white/[0.02] border border-white/10 rounded-2xl p-5 hover:bg-white/[0.04] hover:border-white/15 transition-all duration-300"
+								class="service-card connected-card"
 								in:fly={{ y: 20, duration: 400, delay: 200 + index * 50, easing: cubicOut }}
 							>
-								<div class="flex items-start justify-between mb-4">
-									<div class="flex items-center gap-3">
+								<div class="connected-card-header">
+									<div class="connected-service-info">
 										<div
-											class="w-10 h-10 rounded-xl flex items-center justify-center text-lg"
+											class="service-icon"
 											style="background: {service.color}15; color: {service.color};"
 										>
 											{getServiceIcon(service)}
 										</div>
 										<div>
-											<h3 class="font-medium text-white">{service.name}</h3>
-											<p class="text-xs text-gray-500">{service.category}</p>
+											<h3 class="service-name">{service.name}</h3>
+											<p class="service-category">{service.category}</p>
 										</div>
 									</div>
-									<div class="flex items-center gap-1.5">
-										<div class="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-										<span class="text-xs text-emerald-400">Connected</span>
+									<div class="connected-status">
+										<div class="status-dot"></div>
+										<span class="status-text">Connected</span>
 									</div>
 								</div>
 
 								{#if service.connection}
-									<div class="space-y-2 mb-4 p-3 bg-black/20 rounded-xl">
-										<div class="flex justify-between text-xs">
-											<span class="text-gray-500">Health</span>
-											<span class="{service.connection.health_score >= 90 ? 'text-emerald-400' : service.connection.health_score >= 70 ? 'text-yellow-400' : 'text-red-400'}">
+									<div class="connection-stats">
+										<div class="stat-row">
+											<span class="stat-label">Health</span>
+											<span class="stat-value {service.connection.health_score >= 90 ? 'health-high' : service.connection.health_score >= 70 ? 'health-medium' : 'health-low'}">
 												{service.connection.health_score}%
 											</span>
 										</div>
-										<div class="flex justify-between text-xs">
-											<span class="text-gray-500">Last verified</span>
-											<span class="text-gray-300">{formatDate(service.connection.last_verified_at)}</span>
+										<div class="stat-row">
+											<span class="stat-label">Last verified</span>
+											<span class="stat-value">{formatDate(service.connection.last_verified_at)}</span>
 										</div>
 									</div>
 								{/if}
 
-								<div class="flex gap-2">
-									<button
-										onclick={() => openConnectModal(service)}
-										class="flex-1 px-3 py-2 bg-white/5 hover:bg-white/10 text-gray-300 text-sm rounded-lg transition-colors"
-									>
+								<div class="card-actions">
+									<button onclick={() => openConnectModal(service)} class="btn-configure">
 										Configure
 									</button>
-									<button
-										onclick={() => openDisconnectConfirm(service)}
-										class="px-3 py-2 text-red-400 hover:bg-red-500/10 text-sm rounded-lg transition-colors"
-									>
+									<button onclick={() => openDisconnectConfirm(service)} class="btn-disconnect">
 										Disconnect
 									</button>
 								</div>
@@ -606,6 +591,7 @@
 		{/if}
 	</div>
 </div>
+<!-- End connections-page -->
 
 <!-- Connect Modal -->
 {#if showConnectModal && selectedService}
@@ -824,11 +810,746 @@
 {/if}
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Connections Page - Admin Design System Aligned Styles
+	 * Uses RTP Admin color tokens from tokens/colors.css
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.connections-page {
+		min-height: 100vh;
+		background: var(--bg-base, #0d1117);
+	}
+
+	.connections-container {
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem 1.5rem;
+	}
+
+	/* Header */
+	.connections-header {
+		margin-bottom: 2.5rem;
+	}
+
+	.header-content {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		gap: 2rem;
+	}
+
+	.page-title {
+		font-family: var(--font-heading, 'Montserrat', sans-serif);
+		font-size: 1.75rem;
+		font-weight: 600;
+		color: var(--text-primary, #f0f6fc);
+		margin: 0;
+	}
+
+	.page-description {
+		margin-top: 0.5rem;
+		font-size: 0.9375rem;
+		color: var(--text-secondary, #8b949e);
+	}
+
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	/* View Toggle */
+	.view-toggle {
+		display: flex;
+		align-items: center;
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-muted, #21262d);
+		border-radius: 0.5rem;
+		padding: 0.25rem;
+	}
+
+	.view-btn {
+		padding: 0.5rem;
+		border-radius: 0.375rem;
+		border: none;
+		background: transparent;
+		color: var(--text-tertiary, #6e7681);
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.view-btn:hover {
+		color: var(--text-secondary, #8b949e);
+	}
+
+	.view-btn.active {
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
+	}
+
+	/* Search */
+	.search-wrapper {
+		position: relative;
+	}
+
+	.search-input {
+		width: 16rem;
+		padding: 0.625rem 1rem 0.625rem 2.5rem;
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 0.5rem;
+		color: var(--text-primary, #f0f6fc);
+		font-size: 0.875rem;
+		transition: border-color 0.2s ease;
+	}
+
+	.search-input::placeholder {
+		color: var(--text-muted, #484f58);
+	}
+
+	.search-input:focus {
+		outline: none;
+		border-color: var(--primary-500, #e6b800);
+	}
+
+	.search-icon {
+		position: absolute;
+		left: 0.75rem;
+		top: 50%;
+		transform: translateY(-50%);
+		width: 1rem;
+		height: 1rem;
+		color: var(--text-tertiary, #6e7681);
+	}
+
+	/* Loading State */
+	.loading-container {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		min-height: 24rem;
+	}
+
+	.loading-content {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		gap: 1rem;
+	}
+
+	.spinner-wrapper {
+		position: relative;
+		width: 3rem;
+		height: 3rem;
+	}
+
+	.spinner-track {
+		position: absolute;
+		inset: 0;
+		border: 2px solid var(--border-muted, #21262d);
+		border-radius: 50%;
+	}
+
+	.spinner {
+		position: absolute;
+		inset: 0;
+		border: 2px solid var(--primary-500, #e6b800);
+		border-radius: 50%;
+		border-top-color: transparent;
+		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.loading-text {
+		font-size: 0.875rem;
+		color: var(--text-tertiary, #6e7681);
+	}
+
+	/* Sections */
+	.section-builtin,
+	.section-connected,
+	.section-available {
+		margin-bottom: 2.5rem;
+	}
+
+	.section-header-row {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.section-icon-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 2rem;
+		height: 2rem;
+		border-radius: 0.5rem;
+	}
+
+	.section-icon-wrapper.builtin {
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+	}
+
+	.section-icon-wrapper.connected {
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
+	}
+
+	.section-icon-wrapper.available {
+		background: var(--bg-hover, #252b33);
+	}
+
+	.section-icon-svg {
+		width: 1rem;
+		height: 1rem;
+	}
+
+	.section-icon-wrapper.builtin .section-icon-svg {
+		color: var(--success-emphasis, #3fb950);
+	}
+
+	.section-icon-wrapper.connected .section-icon-svg {
+		color: var(--info-emphasis, #58a6ff);
+	}
+
+	.section-icon-wrapper.available .section-icon-svg {
+		color: var(--text-tertiary, #6e7681);
+	}
+
+	.section-heading {
+		font-family: var(--font-heading, 'Montserrat', sans-serif);
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: var(--text-primary, #f0f6fc);
+		margin: 0;
+	}
+
+	.section-subheading {
+		font-size: 0.8125rem;
+		color: var(--text-secondary, #8b949e);
+		margin: 0;
+	}
+
+	/* Services Grid */
+	.services-grid {
+		display: grid;
+		grid-template-columns: repeat(1, 1fr);
+		gap: 1rem;
+	}
+
+	@media (min-width: 768px) {
+		.services-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.services-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.services-grid.available {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	/* Service Cards */
+	.service-card {
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 0.75rem;
+		padding: 1.25rem;
+		transition: all 0.2s ease;
+	}
+
+	.service-card:hover {
+		background: var(--bg-surface, #1c2128);
+		border-color: var(--border-emphasis, #8b949e);
+	}
+
+	.builtin-card {
+		background: linear-gradient(135deg, rgba(46, 160, 67, 0.05), transparent);
+		border-color: rgba(46, 160, 67, 0.2);
+	}
+
+	.builtin-card:hover {
+		border-color: rgba(46, 160, 67, 0.4);
+	}
+
+	.connected-card {
+		background: var(--bg-elevated, #161b22);
+	}
+
+	.service-card-content {
+		display: flex;
+		align-items: flex-start;
+		gap: 1rem;
+	}
+
+	.service-icon {
+		flex-shrink: 0;
+		width: 3rem;
+		height: 3rem;
+		border-radius: 0.75rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1.25rem;
+	}
+
+	.builtin-icon {
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+	}
+
+	.service-info {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.service-name-row {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.25rem;
+	}
+
+	.service-name {
+		font-weight: 500;
+		color: var(--text-primary, #f0f6fc);
+		margin: 0;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.status-badge {
+		flex-shrink: 0;
+		padding: 0.125rem 0.5rem;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		border-radius: 999px;
+	}
+
+	.status-badge.active {
+		background: var(--success-soft, rgba(46, 160, 67, 0.15));
+		color: var(--success-emphasis, #3fb950);
+	}
+
+	.status-badge.connected {
+		background: var(--info-soft, rgba(56, 139, 253, 0.15));
+		color: var(--info-emphasis, #58a6ff);
+	}
+
+	.service-description {
+		font-size: 0.8125rem;
+		color: var(--text-secondary, #8b949e);
+		margin: 0;
+		line-height: 1.5;
+	}
+
+	.service-category {
+		font-size: 0.75rem;
+		color: var(--text-tertiary, #6e7681);
+	}
+
+	/* Connected Card Specific */
+	.connected-card-header {
+		display: flex;
+		align-items: flex-start;
+		justify-content: space-between;
+		margin-bottom: 1rem;
+	}
+
+	.connected-service-info {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+	}
+
+	.connected-status {
+		display: flex;
+		align-items: center;
+		gap: 0.375rem;
+	}
+
+	.status-dot {
+		width: 0.5rem;
+		height: 0.5rem;
+		background: var(--success-emphasis, #3fb950);
+		border-radius: 50%;
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	@keyframes pulse {
+		0%, 100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
+	}
+
+	.status-text {
+		font-size: 0.75rem;
+		color: var(--success-emphasis, #3fb950);
+	}
+
+	.connection-stats {
+		background: var(--bg-base, #0d1117);
+		border-radius: 0.5rem;
+		padding: 0.75rem;
+		margin-bottom: 1rem;
+	}
+
+	.stat-row {
+		display: flex;
+		justify-content: space-between;
+		font-size: 0.75rem;
+	}
+
+	.stat-row + .stat-row {
+		margin-top: 0.5rem;
+	}
+
+	.stat-label {
+		color: var(--text-tertiary, #6e7681);
+	}
+
+	.stat-value {
+		color: var(--text-secondary, #8b949e);
+	}
+
+	.stat-value.health-high {
+		color: var(--success-emphasis, #3fb950);
+	}
+
+	.stat-value.health-medium {
+		color: var(--warning-emphasis, #d29922);
+	}
+
+	.stat-value.health-low {
+		color: var(--error-emphasis, #f85149);
+	}
+
+	.card-actions {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	.btn-configure {
+		flex: 1;
+		padding: 0.5rem 0.75rem;
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-muted, #21262d);
+		border-radius: 0.5rem;
+		color: var(--text-secondary, #8b949e);
+		font-size: 0.8125rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.btn-configure:hover {
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
+	}
+
+	.btn-disconnect {
+		padding: 0.5rem 0.75rem;
+		background: transparent;
+		border: none;
+		border-radius: 0.5rem;
+		color: var(--error-base, #da3633);
+		font-size: 0.8125rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.btn-disconnect:hover {
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
+	}
+
+	/* Service Cards */
+	:global(.service-card) {
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 0.75rem;
+		padding: 1.25rem;
+		transition: all 0.2s ease;
+	}
+
+	:global(.service-card:hover) {
+		background: var(--bg-surface, #1c2128);
+		border-color: var(--border-emphasis, #8b949e);
+	}
+
+	:global(.service-card.builtin) {
+		background: linear-gradient(135deg, rgba(46, 160, 67, 0.05), transparent);
+		border-color: rgba(46, 160, 67, 0.2);
+	}
+
+	:global(.service-card.builtin:hover) {
+		border-color: rgba(46, 160, 67, 0.4);
+	}
+
+	/* Category Pills */
+	:global(.category-pill) {
+		padding: 0.375rem 0.75rem;
+		font-size: 0.8125rem;
+		border-radius: 0.5rem;
+		border: none;
+		cursor: pointer;
+		white-space: nowrap;
+		transition: all 0.2s ease;
+		background: transparent;
+		color: var(--text-tertiary, #6e7681);
+	}
+
+	:global(.category-pill:hover) {
+		color: var(--text-primary, #f0f6fc);
+		background: var(--bg-hover, #252b33);
+	}
+
+	:global(.category-pill.active) {
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
+		font-weight: 600;
+	}
+
+	/* Connection Status */
+	:global(.status-connected) {
+		color: var(--success-emphasis, #3fb950);
+	}
+
+	:global(.status-pending) {
+		color: var(--text-tertiary, #6e7681);
+	}
+
+	/* Buttons */
+	:global(.btn-connect) {
+		width: 100%;
+		padding: 0.625rem 1rem;
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 0.5rem;
+		color: var(--text-primary, #f0f6fc);
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	:global(.btn-connect:hover) {
+		background: var(--bg-hover, #252b33);
+		border-color: var(--border-emphasis, #8b949e);
+	}
+
+	:global(.btn-configure) {
+		flex: 1;
+		padding: 0.5rem 0.75rem;
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-muted, #21262d);
+		border-radius: 0.5rem;
+		color: var(--text-secondary, #8b949e);
+		font-size: 0.8125rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	:global(.btn-configure:hover) {
+		background: var(--bg-hover, #252b33);
+		color: var(--text-primary, #f0f6fc);
+	}
+
+	:global(.btn-disconnect) {
+		padding: 0.5rem 0.75rem;
+		background: transparent;
+		border: none;
+		border-radius: 0.5rem;
+		color: var(--error-base, #da3633);
+		font-size: 0.8125rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	:global(.btn-disconnect:hover) {
+		background: var(--error-soft, rgba(218, 54, 51, 0.15));
+	}
+
+	/* Modal Styles */
+	:global(.modal-backdrop) {
+		background: rgba(0, 0, 0, 0.8);
+		backdrop-filter: blur(4px);
+	}
+
+	:global(.modal-content) {
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 1rem;
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+	}
+
+	:global(.modal-input) {
+		width: 100%;
+		padding: 0.75rem 1rem;
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 0.5rem;
+		color: var(--text-primary, #f0f6fc);
+		font-size: 0.875rem;
+		transition: border-color 0.2s ease;
+	}
+
+	:global(.modal-input::placeholder) {
+		color: var(--text-muted, #484f58);
+	}
+
+	:global(.modal-input:focus) {
+		outline: none;
+		border-color: var(--primary-500, #e6b800);
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.15);
+	}
+
+	:global(.modal-label) {
+		display: block;
+		font-size: 0.6875rem;
+		font-weight: 600;
+		color: var(--text-secondary, #8b949e);
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-bottom: 0.5rem;
+	}
+
+	:global(.btn-primary) {
+		flex: 1;
+		padding: 0.75rem 1rem;
+		background: var(--primary-500, #e6b800);
+		border: none;
+		border-radius: 0.5rem;
+		color: var(--bg-base, #0d1117);
+		font-size: 0.875rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background 0.2s ease;
+	}
+
+	:global(.btn-primary:hover) {
+		background: var(--primary-400, #ffd11a);
+	}
+
+	:global(.btn-primary:disabled) {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	:global(.btn-secondary) {
+		flex: 1;
+		padding: 0.75rem 1rem;
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 0.5rem;
+		color: var(--text-primary, #f0f6fc);
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	:global(.btn-secondary:hover) {
+		background: var(--bg-hover, #252b33);
+	}
+
+	:global(.btn-danger) {
+		flex: 1;
+		padding: 0.625rem 1rem;
+		background: var(--error-base, #da3633);
+		border: none;
+		border-radius: 0.5rem;
+		color: white;
+		font-size: 0.875rem;
+		font-weight: 600;
+		cursor: pointer;
+		transition: background 0.2s ease;
+	}
+
+	:global(.btn-danger:hover) {
+		background: var(--error-emphasis, #f85149);
+	}
+
+	/* Health Score */
+	:global(.health-high) {
+		color: var(--success-emphasis, #3fb950);
+	}
+
+	:global(.health-medium) {
+		color: var(--warning-emphasis, #d29922);
+	}
+
+	:global(.health-low) {
+		color: var(--error-emphasis, #f85149);
+	}
+
+	/* Utility */
 	.line-clamp-2 {
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
 		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
+	}
+
+	/* Empty State */
+	:global(.empty-state) {
+		text-align: center;
+		padding: 4rem 1rem;
+	}
+
+	:global(.empty-state-icon) {
+		width: 4rem;
+		height: 4rem;
+		margin: 0 auto 1rem;
+		background: var(--bg-surface, #1c2128);
+		border-radius: 1rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--text-tertiary, #6e7681);
+	}
+
+	:global(.empty-state-title) {
+		font-size: 1.125rem;
+		font-weight: 500;
+		color: var(--text-secondary, #8b949e);
+		margin-bottom: 0.25rem;
+	}
+
+	:global(.empty-state-text) {
+		font-size: 0.875rem;
+		color: var(--text-tertiary, #6e7681);
+	}
+
+	/* Responsive */
+	@media (max-width: 768px) {
+		.header-content {
+			flex-direction: column;
+			gap: 1rem;
+		}
+
+		.header-actions {
+			width: 100%;
+			justify-content: space-between;
+		}
+
+		.search-input {
+			width: 100%;
+			flex: 1;
+		}
 	}
 </style>
