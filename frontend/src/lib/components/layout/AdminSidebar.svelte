@@ -264,7 +264,7 @@
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
-	/* Gold left border indicator for active/hover states */
+	/* Gold left border indicator for active/hover states - RTP Brand Gold */
 	.nav-item::before {
 		content: '';
 		position: absolute;
@@ -273,34 +273,46 @@
 		transform: translateY(-50%);
 		width: 3px;
 		height: 0;
-		background: var(--admin-accent-primary, #e6b800);
+		background: #e6b800; /* RTP Gold - hardcoded for reliability */
 		border-radius: 0 2px 2px 0;
-		transition: height 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		transition: height 0.15s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.nav-item:hover {
-		background: var(--admin-nav-bg-hover);
-		color: var(--admin-nav-text-hover);
+		background: var(--admin-nav-bg-hover, rgba(37, 43, 51, 0.8));
+		color: var(--admin-nav-text-hover, #f0f6fc);
 	}
 
 	.nav-item:hover::before {
 		height: 50%;
+		background: #e6b800; /* RTP Gold */
+	}
+
+	/* Clear hover state immediately when mouse leaves */
+	.nav-item:not(:hover)::before {
+		height: 0;
+		transition: height 0.1s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.nav-item:focus-visible {
-		box-shadow: var(--admin-focus-ring);
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.35); /* Gold focus ring */
 		outline: none;
 	}
 
 	.nav-item.active {
-		background: var(--admin-nav-bg-active);
-		color: var(--admin-nav-text-active);
+		background: rgba(230, 184, 0, 0.12); /* Gold soft background */
+		color: #ffd11a; /* Gold text */
 		font-weight: 600;
 	}
 
 	.nav-item.active::before {
 		height: 60%;
-		background: var(--admin-accent-primary-hover, #ffd11a);
+		background: #ffd11a; /* Bright gold for active */
+	}
+
+	/* Ensure active state is not affected by hover transition leak */
+	.nav-item.active:not(:hover)::before {
+		height: 60%;
 	}
 
 	/* Sidebar Footer */

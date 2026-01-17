@@ -557,9 +557,9 @@
             case 'expired':
                 return { bg: 'bg-amber-500/15', text: 'text-amber-400', label: 'Expired', dot: 'bg-amber-400' };
             case 'pending':
-                return { bg: 'bg-blue-500/15', text: 'text-blue-400', label: 'Pending', dot: 'bg-blue-400' };
+                return { bg: 'bg-amber-500/15', text: 'text-amber-400', label: 'Pending', dot: 'bg-amber-400' };
             case 'connecting':
-                return { bg: 'bg-purple-500/15', text: 'text-purple-400', label: 'Connecting...', dot: 'bg-purple-400' };
+                return { bg: 'bg-amber-500/15', text: 'text-amber-400', label: 'Connecting...', dot: 'bg-amber-400' };
             default:
                 return { bg: 'bg-slate-500/15', text: 'text-slate-400', label: 'Not Connected', dot: 'bg-slate-400' };
         }
@@ -599,15 +599,15 @@
 </svelte:head>
 
 <!-- Apple-grade Settings Dashboard -->
-<div class="settings-container">
-    <!-- Ambient Background Effects -->
-    <div class="ambient-effects">
-        <div class="ambient-glow ambient-glow-1"></div>
-        <div class="ambient-glow ambient-glow-2"></div>
-        <div class="ambient-glow ambient-glow-3"></div>
+<div class="admin-settings">
+    <!-- Animated Background -->
+    <div class="bg-effects">
+        <div class="bg-blob bg-blob-1"></div>
+        <div class="bg-blob bg-blob-2"></div>
+        <div class="bg-blob bg-blob-3"></div>
     </div>
 
-    <div class="settings-content">
+    <div class="admin-page-container">
         <!-- Header -->
         <header class="mb-8" in:fly={{ y: -20, duration: 600, easing: quintOut }}>
             <div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
@@ -739,7 +739,7 @@
                                 {:else}
                                     <button
                                         onclick={() => openConnectModal(service)}
-                                        class="w-full px-4 py-2 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-blue-500/20"
+                                        class="w-full px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-amber-500/20"
                                     >
                                         Connect
                                     </button>
@@ -760,7 +760,7 @@
                         type="text"
                         placeholder="Search integrations..."
                         bind:value={searchQuery}
-                        class="w-full px-5 py-3 pl-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                        class="w-full px-5 py-3 pl-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
                     />
                     <svg class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
@@ -795,8 +795,8 @@
             {#if isLoading}
                 <div class="flex items-center justify-center h-64">
                     <div class="relative">
-                        <div class="w-16 h-16 border-4 border-purple-500/20 rounded-full"></div>
-                        <div class="absolute top-0 left-0 w-16 h-16 border-4 border-purple-500 rounded-full animate-spin border-t-transparent"></div>
+                        <div class="w-16 h-16 border-4 border-amber-500/20 rounded-full"></div>
+                        <div class="absolute top-0 left-0 w-16 h-16 border-4 border-amber-500 rounded-full animate-spin border-t-transparent"></div>
                     </div>
                 </div>
             {:else}
@@ -880,7 +880,7 @@
                                     {:else}
                                         <button
                                             onclick={() => openConnectModal(service)}
-                                            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-purple-500/20 hover:shadow-purple-500/40"
+                                            class="flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30"
                                         >
                                             Connect
                                         </button>
@@ -931,7 +931,7 @@
                                 name="site_name"
                                 type="text"
                                 value="Revolution Trading Pros"
-                                class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-purple-500/50"
+                                class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50"
                             />
                         </div>
 
@@ -966,7 +966,7 @@
                         </div>
 
                         <div class="pt-4">
-                            <button class="px-6 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-purple-500/20">
+                            <button class="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-amber-500/20">
                                 Save Settings
                             </button>
                         </div>
@@ -975,6 +975,7 @@
             </div>
         {/if}
     </div>
+    <!-- End admin-page-container -->
 </div>
 
 <!-- Connect Modal -->
@@ -1060,7 +1061,7 @@
                             placeholder={field.placeholder || `Enter ${field.label.toLowerCase()}`}
                             bind:value={credentialValues[field.key]}
                             autocomplete={field.type === 'password' ? 'current-password' : 'off'}
-                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-purple-500/50 focus:border-purple-500/50 transition-all"
+                            class="w-full px-4 py-3 bg-white/5 border border-white/10 rounded-xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
                         />
                     </div>
                 {/each}
@@ -1112,7 +1113,7 @@
                 <button
                     onclick={connectService}
                     disabled={isConnecting}
-                    class="flex-1 px-4 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-500 hover:to-blue-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-purple-500/20 disabled:opacity-50"
+                    class="flex-1 px-4 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-amber-500/20 disabled:opacity-50"
                 >
                     {#if isConnecting}
                         <span class="flex items-center justify-center gap-2">
@@ -1185,59 +1186,58 @@
 <style>
     /* ═══════════════════════════════════════════════════════════════════════════
      * ADMIN SETTINGS - Apple ICT7 Principal Engineer Grade
-     * Color Hierarchy: #143E59 (dark teal/navy) primary accent
+     * Color Hierarchy: RTP Gold (#e6b800, #b38f00) primary accent
      * ═══════════════════════════════════════════════════════════════════════════ */
 
-    /* Container - works within admin layout */
-    .settings-container {
-        position: relative;
-        min-height: 100%;
-        background: linear-gradient(135deg, rgb(2 6 23) 0%, rgb(15 23 42) 50%, rgb(2 6 23) 100%);
+    /* Main container - consistent with other admin pages */
+    .admin-settings {
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
         color: white;
-        margin: -2rem;
-        padding: 2rem;
-    }
-
-    /* Ambient effects - absolute within container, not fixed */
-    .ambient-effects {
-        position: absolute;
-        inset: 0;
+        position: relative;
         overflow: hidden;
-        pointer-events: none;
-        z-index: 0;
     }
 
-    .ambient-glow {
+    /* Background Effects - fixed position for parallax */
+    .bg-effects {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        overflow: hidden;
+    }
+
+    .bg-blob {
         position: absolute;
         border-radius: 50%;
         filter: blur(80px);
         opacity: 0.15;
     }
 
-    .ambient-glow-1 {
-        top: -10rem;
-        right: -10rem;
-        width: 24rem;
-        height: 24rem;
-        background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+    .bg-blob-1 {
+        width: 600px;
+        height: 600px;
+        top: -200px;
+        right: -200px;
+        background: linear-gradient(135deg, #e6b800, #b38f00);
         animation: float 20s ease-in-out infinite;
     }
 
-    .ambient-glow-2 {
-        bottom: -10rem;
-        left: -10rem;
-        width: 24rem;
-        height: 24rem;
-        background: linear-gradient(135deg, #3b82f6 0%, #b38f00 100%);
+    .bg-blob-2 {
+        width: 500px;
+        height: 500px;
+        bottom: -150px;
+        left: -150px;
+        background: linear-gradient(135deg, #3b82f6, #b38f00);
         animation: float 25s ease-in-out infinite reverse;
     }
 
-    .ambient-glow-3 {
-        top: 33%;
+    .bg-blob-3 {
+        width: 400px;
+        height: 400px;
+        top: 50%;
         left: 50%;
-        width: 16rem;
-        height: 16rem;
-        background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+        transform: translate(-50%, -50%);
+        background: linear-gradient(135deg, #10b981, #14b8a6);
         animation: float 30s ease-in-out infinite;
     }
 
@@ -1248,11 +1248,12 @@
     }
 
     /* Content wrapper */
-    .settings-content {
+    .admin-page-container {
         position: relative;
         z-index: 10;
         max-width: 1800px;
         margin: 0 auto;
+        padding: 2rem;
     }
 
     .line-clamp-2 {
@@ -1263,89 +1264,78 @@
         overflow: hidden;
     }
 
-    /* Design System CSS Variables */
-    :root {
-        --primary-500: #143E59;
-        --primary-400: #1a5070;
-        --primary-600: #0f2d42;
-        --bg-base: #0D1117;
-        --bg-elevated: #161B22;
-        --bg-surface: #1C2128;
-        --text-primary: #F0F6FC;
-        --text-secondary: #8B949E;
-        --border-default: #30363D;
+    /* ═══════════════════════════════════════════════════════════════════════════
+     * RTP COLOR HIERARCHY - Gold Accent System
+     * Gold: #e6b800 (primary), #f5c800 (hover), #b38f00 (dark)
+     * ═══════════════════════════════════════════════════════════════════════════ */
+
+    /* Active tab styling - use RTP Gold */
+    :global(.admin-settings .bg-white.text-slate-900) {
+        background: linear-gradient(135deg, #e6b800, #b38f00) !important;
+        color: #0d1117 !important;
     }
 
-    /* Active tab styling - use primary color */
-    :global(.bg-white.text-slate-900) {
-        background: var(--primary-500) !important;
-        color: white !important;
+    /* Primary button text should be dark on gold background */
+    :global(.admin-settings .from-amber-500),
+    :global(.admin-settings .from-amber-600),
+    :global(.admin-settings .to-amber-500),
+    :global(.admin-settings .to-amber-600) {
+        color: #0d1117 !important;
     }
 
-    /* Primary button gradients - use teal accent */
-    :global(.from-purple-600.to-blue-600),
-    :global(.from-blue-600.to-purple-600) {
-        background: linear-gradient(135deg, var(--primary-500), var(--primary-400)) !important;
+    /* Focus rings - use gold */
+    :global(.admin-settings .focus\:ring-amber-500\/50:focus) {
+        --tw-ring-color: rgba(230, 184, 0, 0.5) !important;
     }
 
-    :global(.from-purple-600.to-blue-600:hover),
-    :global(.from-blue-600.to-purple-600:hover) {
-        background: linear-gradient(135deg, var(--primary-400), var(--primary-500)) !important;
+    :global(.admin-settings .focus\:border-amber-500\/50:focus) {
+        border-color: rgba(230, 184, 0, 0.5) !important;
     }
 
-    /* Shadow colors */
-    :global(.shadow-purple-500\/20),
-    :global(.shadow-blue-500\/20) {
-        --tw-shadow-color: rgba(20, 62, 89, 0.3) !important;
+    /* Shadow colors - use gold */
+    :global(.admin-settings .shadow-amber-500\/20) {
+        --tw-shadow-color: rgba(230, 184, 0, 0.25) !important;
     }
 
-    /* Focus rings - use primary color */
-    :global(.focus\:ring-purple-500\/50:focus) {
-        --tw-ring-color: rgba(20, 62, 89, 0.5) !important;
+    :global(.admin-settings .hover\:shadow-amber-500\/30:hover) {
+        --tw-shadow-color: rgba(230, 184, 0, 0.3) !important;
     }
 
     /* ═══════════════════════════════════════════════════════════════════════════
      * RESPONSIVE BREAKPOINTS - Apple ICT7 Principal Engineer Grade
      * ═══════════════════════════════════════════════════════════════════════════ */
 
-    /* Tablet and below - adjust container padding */
     @media (max-width: 1024px) {
-        .settings-container {
-            margin: -1.5rem;
+        .admin-page-container {
             padding: 1.5rem;
         }
     }
 
-    /* Mobile portrait */
     @media (max-width: 640px) {
-        .settings-container {
-            margin: -1rem;
+        .admin-page-container {
             padding: 1rem;
         }
     }
 
-    /* Extra Small Mobile (< 380px) */
     @media (max-width: 380px) {
-        .settings-container {
-            margin: -0.75rem;
+        .admin-page-container {
             padding: 0.75rem;
         }
-        :global(.p-6) { padding: 0.75rem !important; }
-        :global(.gap-4) { gap: 0.5rem !important; }
-        :global(.text-3xl) { font-size: 1.5rem !important; }
-        :global(.grid.grid-cols-2) { grid-template-columns: 1fr !important; }
+        :global(.admin-settings .p-6) { padding: 0.75rem !important; }
+        :global(.admin-settings .gap-4) { gap: 0.5rem !important; }
+        :global(.admin-settings .text-3xl) { font-size: 1.5rem !important; }
+        :global(.admin-settings .grid.grid-cols-2) { grid-template-columns: 1fr !important; }
     }
 
-    /* Small Mobile (381px - 480px) */
     @media (min-width: 381px) and (max-width: 480px) {
-        :global(.p-6) { padding: 1rem !important; }
-        :global(.text-3xl) { font-size: 1.75rem !important; }
+        :global(.admin-settings .p-6) { padding: 1rem !important; }
+        :global(.admin-settings .text-3xl) { font-size: 1.75rem !important; }
     }
 
     /* Touch Device Optimizations - 44pt minimum */
     @media (hover: none) and (pointer: coarse) {
-        :global(button) { min-height: 44px; }
-        :global(input), :global(select) {
+        :global(.admin-settings button) { min-height: 44px; }
+        :global(.admin-settings input), :global(.admin-settings select) {
             min-height: 48px !important;
             font-size: 16px !important;
         }
@@ -1353,22 +1343,16 @@
 
     /* Reduced Motion */
     @media (prefers-reduced-motion: reduce) {
-        :global(*) {
-            animation-duration: 0.01ms !important;
-            transition-duration: 0.01ms !important;
+        .bg-blob, .bg-blob-1, .bg-blob-2, .bg-blob-3 {
+            animation: none !important;
         }
     }
 
     /* High Contrast Mode */
     @media (prefers-contrast: high) {
-        :global(.border-white\/10) {
+        :global(.admin-settings .border-white\/10) {
             border-width: 2px !important;
             border-color: currentColor !important;
         }
     }
-
-    /* Scrollbar styling */
-    :global(::-webkit-scrollbar) { width: 8px; height: 8px; }
-    :global(::-webkit-scrollbar-track) { background: var(--bg-base); }
-    :global(::-webkit-scrollbar-thumb) { background: var(--border-default); border-radius: 4px; }
 </style>
