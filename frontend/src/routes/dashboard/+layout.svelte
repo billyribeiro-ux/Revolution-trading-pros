@@ -23,6 +23,7 @@
 <script lang="ts">
 	// Dashboard Design System - Only loaded in dashboard area, not globally
 	import '$lib/styles/main.css';
+	import '$lib/styles/dashboard.css'; // Dashboard-specific styles - ISOLATED from front pages
 
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
