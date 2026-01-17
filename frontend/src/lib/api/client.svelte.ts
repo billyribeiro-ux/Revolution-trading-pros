@@ -1218,16 +1218,16 @@ class EnterpriseApiClient {
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	private buildUrl(endpoint: string, params?: Record<string, any>): string {
-		// ICT 7 Fix: Add /api prefix for endpoints that don't already have it
+		// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 		let url: string;
 		if (endpoint.startsWith('http://') || endpoint.startsWith('https://')) {
 			url = endpoint;
 		} else if (endpoint.startsWith('/api/')) {
-			url = `${API_BASE_URL}${endpoint}`;
+			url = endpoint;
 		} else if (endpoint.startsWith('/')) {
-			url = `${API_BASE_URL}/api${endpoint}`;
+			url = `/api${endpoint}`;
 		} else {
-			url = `${API_BASE_URL}/api/${endpoint}`;
+			url = `/api/${endpoint}`;
 		}
 
 		if (!params || Object.keys(params).length === 0) {

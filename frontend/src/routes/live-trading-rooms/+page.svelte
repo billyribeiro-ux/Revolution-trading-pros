@@ -464,7 +464,7 @@
 				<div class="hero-floater absolute top-20 right-1/4 text-[10px] font-mono text-zinc-600">
 					<div class="flex gap-1">
 						<div class="w-1 h-1 bg-zinc-500 rounded-full"></div>
-						 CONNECTED
+						CONNECTED
 					</div>
 				</div>
 			</div>

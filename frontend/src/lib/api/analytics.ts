@@ -14,10 +14,8 @@ import { authStore } from '$lib/stores/auth.svelte';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Production fallback - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE_URL = import.meta.env['VITE_API_BASE_URL'] || PROD_API;
+// ICT 11+ CORB Fix: Use same-origin proxies for client-side analytics calls
+// Admin endpoints still go to external API (server-side calls are CORB-safe)
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Type Definitions
@@ -349,9 +347,9 @@ class AnalyticsApiClient {
 		body?: any,
 		params?: Record<string, any>
 	): Promise<T> {
-		// ICT 11+ Fix: Add /api prefix if endpoint doesn't already have it
+		// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 		const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
-		let url = `${API_BASE_URL}${apiEndpoint}`;
+		let url = apiEndpoint;
 
 		if (params) {
 			const searchParams = new URLSearchParams();

@@ -2,9 +2,9 @@
 /**
  * Playwright Global Setup
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Apple ICT 11+ Principal Engineer Grade - January 2026
- * 
+ *
  * Runs once before all tests to:
  * - Verify environment configuration
  * - Set up any global state
@@ -15,7 +15,7 @@ import { FullConfig } from '@playwright/test';
 
 async function globalSetup(config: FullConfig) {
 	const baseURL = config.projects[0]?.use?.baseURL || process.env.E2E_BASE_URL;
-	
+
 	console.log('╔═══════════════════════════════════════════════════════════╗');
 	console.log('║          Revolution Trading Pros - E2E Test Suite         ║');
 	console.log('╠═══════════════════════════════════════════════════════════╣');
@@ -23,12 +23,12 @@ async function globalSetup(config: FullConfig) {
 	console.log(`║  Projects: ${config.projects.length.toString().padEnd(46)} ║`);
 	console.log(`║  Workers:  ${(config.workers?.toString() || 'auto').padEnd(46)} ║`);
 	console.log('╚═══════════════════════════════════════════════════════════╝');
-	
+
 	// Environment validation
 	if (!baseURL) {
 		console.warn('⚠️  Warning: E2E_BASE_URL not set, using default');
 	}
-	
+
 	// Store start time for duration calculation
 	process.env.E2E_START_TIME = Date.now().toString();
 }

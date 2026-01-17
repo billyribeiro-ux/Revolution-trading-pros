@@ -52,16 +52,15 @@
 		isAnalyticsConnected,
 		isSeoConnected
 	} from '$lib/stores/connections.svelte';
-	import { API_BASE_URL } from '$lib/api/config';
 	import { getAuthToken } from '$lib/stores/auth.svelte';
 
-	// ICT 11+ FIX: Use absolute API URL for Pages.dev compatibility (no proxy)
+	// ICT 11+ CORB Fix: Use same-origin SvelteKit proxy endpoints
 	async function localFetch<T = any>(endpoint: string): Promise<T> {
 		const url = endpoint.startsWith('http')
 			? endpoint
 			: endpoint.startsWith('/api/')
-				? `${API_BASE_URL}${endpoint}`
-				: `${API_BASE_URL}/api${endpoint}`;
+				? endpoint
+				: `/api${endpoint}`;
 
 		const token = getAuthToken();
 		const headers: Record<string, string> = {

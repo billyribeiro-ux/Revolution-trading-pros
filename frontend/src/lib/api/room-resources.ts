@@ -11,7 +11,7 @@
  * @version 1.0.0
  */
 
-import { API_BASE_URL } from './config';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -208,7 +208,7 @@ export async function listResources(
 	fetchFn: typeof fetch = fetch
 ): Promise<ResourceListResponse> {
 	const query = buildQueryString(params);
-	const url = `${API_BASE_URL}/api/room-resources${query ? `?${query}` : ''}`;
+	const url = `/api/room-resources${query ? `?${query}` : ''}`;
 	const response = await fetchFn(url);
 	return handleResponse<ResourceListResponse>(response);
 }
@@ -220,7 +220,7 @@ export async function getResource(
 	idOrSlug: number | string,
 	fetchFn: typeof fetch = fetch
 ): Promise<ResourceResponse> {
-	const url = `${API_BASE_URL}/api/room-resources/${idOrSlug}`;
+	const url = `/api/room-resources/${idOrSlug}`;
 	const response = await fetchFn(url);
 	return handleResponse<ResourceResponse>(response);
 }
@@ -232,7 +232,7 @@ export async function trackDownload(
 	id: number,
 	fetchFn: typeof fetch = fetch
 ): Promise<{ success: boolean }> {
-	const url = `${API_BASE_URL}/api/room-resources/${id}/download`;
+	const url = `/api/room-resources/${id}/download`;
 	const response = await fetchFn(url, { method: 'POST' });
 	return handleResponse<{ success: boolean }>(response);
 }
@@ -249,7 +249,7 @@ export async function adminListResources(
 	fetchFn: typeof fetch = fetch
 ): Promise<ResourceListResponse> {
 	const query = buildQueryString(params);
-	const url = `${API_BASE_URL}/api/admin/room-resources${query ? `?${query}` : ''}`;
+	const url = `/api/admin/room-resources${query ? `?${query}` : ''}`;
 	const response = await fetchFn(url, { credentials: 'include' });
 	return handleResponse<ResourceListResponse>(response);
 }
@@ -261,7 +261,7 @@ export async function createResource(
 	data: CreateResourceRequest,
 	fetchFn: typeof fetch = fetch
 ): Promise<ResourceResponse> {
-	const url = `${API_BASE_URL}/api/admin/room-resources`;
+	const url = `/api/admin/room-resources`;
 	const response = await fetchFn(url, {
 		method: 'POST',
 		headers: { 'Content-Type': 'application/json' },
@@ -279,7 +279,7 @@ export async function updateResource(
 	data: UpdateResourceRequest,
 	fetchFn: typeof fetch = fetch
 ): Promise<ResourceResponse> {
-	const url = `${API_BASE_URL}/api/admin/room-resources/${id}`;
+	const url = `/api/admin/room-resources/${id}`;
 	const response = await fetchFn(url, {
 		method: 'PUT',
 		headers: { 'Content-Type': 'application/json' },
@@ -296,7 +296,7 @@ export async function deleteResource(
 	id: number,
 	fetchFn: typeof fetch = fetch
 ): Promise<{ success: boolean; message: string }> {
-	const url = `${API_BASE_URL}/api/admin/room-resources/${id}`;
+	const url = `/api/admin/room-resources/${id}`;
 	const response = await fetchFn(url, {
 		method: 'DELETE',
 		credentials: 'include'

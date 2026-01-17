@@ -21,7 +21,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { API_BASE_URL } from '$lib/api/config';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// TYPE DEFINITIONS - ICT 11+ TypeScript Best Practice
@@ -79,9 +78,9 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Backend API configuration
-	// ICT 11+ Fix: Use full API URL to prevent 404 on Pages.dev (client-side)
+	// ICT 11+ CORB Fix: Use same-origin SvelteKit proxy to prevent CORB
 	const API_CONFIG = {
-		baseUrl: `${API_BASE_URL}/api/schedules`,
+		baseUrl: '/api/schedules',
 		daysAhead: 7
 	};
 

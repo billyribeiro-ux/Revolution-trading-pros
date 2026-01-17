@@ -2,9 +2,9 @@
 /**
  * Homepage Smoke Tests
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Apple ICT 11+ Principal Engineer Grade - January 2026
- * 
+ *
  * Fast smoke tests to verify basic site functionality:
  * - Page loads without errors
  * - Critical elements are visible
@@ -17,62 +17,63 @@ test.describe('Homepage Smoke Tests', () => {
 	test('homepage loads successfully', async ({ page }) => {
 		// Navigate to homepage
 		const response = await page.goto('/');
-		
+
 		// Verify successful response
 		expect(response?.status()).toBeLessThan(400);
-		
+
 		// Verify page has loaded (check for body)
 		await expect(page.locator('body')).toBeVisible();
 	});
 
 	test('homepage has correct title', async ({ page }) => {
 		await page.goto('/');
-		
+
 		// Check page title contains site name
 		await expect(page).toHaveTitle(/Revolution Trading|Trading/i);
 	});
 
 	test('no critical JavaScript errors', async ({ page }) => {
 		const errors: string[] = [];
-		
+
 		// Collect console errors
 		page.on('console', (msg) => {
 			if (msg.type() === 'error') {
 				errors.push(msg.text());
 			}
 		});
-		
+
 		await page.goto('/');
-		
+
 		// Wait for page to settle
 		await page.waitForLoadState('networkidle');
-		
+
 		// Filter out known non-critical errors (CORS, extensions, API failures during tests, etc.)
 		// ICT 7: These are infrastructure/browser errors, not application bugs
-		const criticalErrors = errors.filter(err => 
-			!err.includes('favicon') &&
-			!err.includes('CORS') &&
-			!err.includes('Access-Control-Allow-Origin') && // Safari CORS messages
-			!err.includes('extension') &&
-			!err.includes('third-party') &&
-			!err.includes('ERR_FAILED') &&
-			!err.includes('Failed to fetch') &&
-			!err.includes('Failed to load resource') &&
-			!err.includes('Origin http://localhost') && // Safari strict origin policy
-			// ICT 7: Errors caught by hooks.client.ts global handler are infrastructure-handled
-			// Format: [err_xxx] where xxx is a unique error ID - these ARE being handled
-			!/\[err_[a-z0-9_]+\]/.test(err) &&
-			// ICT 7: Generic "Error: Error" from global handler's console.error('Error:', error)
-			!err.match(/^Error:\s*Error$/)
+		const criticalErrors = errors.filter(
+			(err) =>
+				!err.includes('favicon') &&
+				!err.includes('CORS') &&
+				!err.includes('Access-Control-Allow-Origin') && // Safari CORS messages
+				!err.includes('extension') &&
+				!err.includes('third-party') &&
+				!err.includes('ERR_FAILED') &&
+				!err.includes('Failed to fetch') &&
+				!err.includes('Failed to load resource') &&
+				!err.includes('Origin http://localhost') && // Safari strict origin policy
+				// ICT 7: Errors caught by hooks.client.ts global handler are infrastructure-handled
+				// Format: [err_xxx] where xxx is a unique error ID - these ARE being handled
+				!/\[err_[a-z0-9_]+\]/.test(err) &&
+				// ICT 7: Generic "Error: Error" from global handler's console.error('Error:', error)
+				!err.match(/^Error:\s*Error$/)
 		);
-		
+
 		// Should have no critical errors
 		expect(criticalErrors).toHaveLength(0);
 	});
 
 	test('navigation is visible', async ({ page }) => {
 		await page.goto('/');
-		
+
 		// Check that navigation/header exists
 		const nav = page.locator('nav, header, [role="navigation"]').first();
 		await expect(nav).toBeVisible({ timeout: 10000 });
