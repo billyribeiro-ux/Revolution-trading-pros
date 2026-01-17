@@ -1,0 +1,311 @@
+/**
+ * Revolution Trading Pros - Dashboard Styles
+ * ═══════════════════════════════════════════════════════════════════════════
+ * ISOLATED: Only imported in /routes/dashboard/+layout.svelte
+ * These styles ONLY apply to dashboard pages, not front pages.
+ * ═══════════════════════════════════════════════════════════════════════════
+ */
+
+/* Dashboard Content Layout - Main + Sidebar Grid */
+.dashboard__content {
+	display: flex;
+	flex-direction: row;
+	gap: 0;
+	width: 100%;
+}
+
+.dashboard__content-main {
+	flex: 1 1 auto;
+	min-width: 0;
+}
+
+.dashboard__content-sidebar {
+	flex: 0 0 300px;
+	width: 300px;
+	background: #fff;
+	border-left: 1px solid #e5e5e5;
+	padding: 0;
+}
+
+/* Dashboard Header */
+.dashboard__header {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	justify-content: space-between;
+	padding: 30px;
+	background: #fff;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.dashboard__header-left {
+	display: flex;
+	align-items: center;
+	gap: 15px;
+	flex: 1;
+}
+
+.dashboard__header-right {
+	display: flex;
+	flex-direction: column;
+	align-items: flex-end;
+	gap: 10px;
+}
+
+.dashboard__page-title {
+	margin: 0;
+	color: #333;
+	font-size: 36px;
+	font-weight: 700;
+	font-family: var(--font-heading), 'Montserrat', sans-serif;
+}
+
+/* Dashboard Content Sections */
+.dashboard__content-section {
+	padding: 30px;
+}
+
+.dashboard__content-section-member {
+	padding: 30px;
+}
+
+/* Section Titles */
+.section-title {
+	font-size: 28px;
+	font-weight: 800;
+	color: #191717;
+	margin: 0 0 20px;
+	font-family: var(--font-heading), 'Montserrat', sans-serif;
+}
+
+.section-title-alt {
+	font-size: 28px;
+	font-weight: 800;
+	color: #191717;
+	margin: 0 0 16px;
+	font-family: var(--font-heading), 'Montserrat', sans-serif;
+}
+
+.section-title-alt--underline {
+	border-bottom: 3px solid #143e59;
+	padding-bottom: 12px;
+	display: inline-block;
+}
+
+/* Content Sidebar Sections */
+.content-sidebar__section {
+	padding: 30px;
+	border-bottom: 1px solid #e5e5e5;
+}
+
+.content-sidebar__section:last-child {
+	border-bottom: none;
+}
+
+.content-sidebar__heading {
+	font-size: 16px;
+	font-weight: 700;
+	text-transform: uppercase;
+	color: #191717;
+	margin: 0 0 15px;
+	font-family: var(--font-heading), 'Montserrat', sans-serif;
+}
+
+/* Link Lists in Sidebar */
+.link-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.link-list li {
+	margin-bottom: 10px;
+}
+
+.link-list a {
+	color: #143e59;
+	text-decoration: none;
+	font-size: 14px;
+	font-weight: 600;
+	transition: color 0.2s ease;
+}
+
+.link-list a:hover {
+	color: #0a5a75;
+	text-decoration: underline;
+}
+
+/* Utility Classes */
+.u--background-color-white {
+	background-color: #fff;
+}
+
+.u--border-radius {
+	border-radius: 8px;
+}
+
+.u--hide-read-more p {
+	margin: 0;
+}
+
+.u--font-weight-bold {
+	font-weight: 700;
+}
+
+/* Bootstrap Grid Utilities for Dashboard */
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	margin-right: -15px;
+	margin-left: -15px;
+}
+
+.flex-grid {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.flex-grid-item {
+	display: flex;
+}
+
+.col-xs-12,
+.col-sm-6,
+.col-md-6,
+.col-lg-5,
+.col-lg-7,
+.col-xl-4 {
+	position: relative;
+	width: 100%;
+	padding-right: 15px;
+	padding-left: 15px;
+}
+
+.col-xs-12 {
+	flex: 0 0 100%;
+	max-width: 100%;
+}
+
+@media (min-width: 576px) {
+	.col-sm-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
+}
+
+@media (min-width: 768px) {
+	.col-md-6 {
+		flex: 0 0 50%;
+		max-width: 50%;
+	}
+}
+
+@media (min-width: 992px) {
+	.col-lg-5 {
+		flex: 0 0 41.666667%;
+		max-width: 41.666667%;
+	}
+
+	.col-lg-7 {
+		flex: 0 0 58.333333%;
+		max-width: 58.333333%;
+	}
+}
+
+@media (min-width: 1200px) {
+	.col-xl-4 {
+		flex: 0 0 33.333333%;
+		max-width: 33.333333%;
+	}
+}
+
+/* Bootstrap Display Utilities */
+.hidden-xs {
+	display: none !important;
+}
+
+.hidden-sm {
+	display: none !important;
+}
+
+.hidden-md {
+	display: block !important;
+}
+
+.d-none {
+	display: none !important;
+}
+
+.d-lg-none {
+	display: none !important;
+}
+
+.d-lg-block {
+	display: block !important;
+}
+
+@media (min-width: 992px) {
+	.hidden-xs,
+	.hidden-sm {
+		display: block !important;
+	}
+
+	.hidden-md {
+		display: none !important;
+	}
+
+	.d-lg-none {
+		display: none !important;
+	}
+
+	.d-lg-block {
+		display: block !important;
+	}
+}
+
+/* Bootstrap Spacing Utilities */
+.pb-2 {
+	padding-bottom: 0.5rem;
+}
+
+/* Responsive - Hide sidebar on mobile */
+@media (max-width: 1024px) {
+	.dashboard__content {
+		flex-direction: column;
+	}
+
+	.dashboard__content-sidebar {
+		flex: 1 1 auto;
+		width: 100%;
+		border-left: none;
+		border-top: 1px solid #e5e5e5;
+	}
+}
+
+@media (min-width: 1280px) {
+	.dashboard__header {
+		padding: 30px;
+	}
+
+	.dashboard__content-section {
+		padding: 30px;
+	}
+
+	.dashboard__content-section-member {
+		padding: 30px;
+	}
+}
+
+@media (min-width: 1440px) {
+	.dashboard__header {
+		padding: 30px 40px;
+	}
+
+	.dashboard__content-section {
+		padding: 40px;
+	}
+
+	.dashboard__content-section-member {
+		padding: 40px;
+	}
+}

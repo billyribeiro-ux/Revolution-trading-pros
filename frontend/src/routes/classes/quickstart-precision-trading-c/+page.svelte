@@ -208,7 +208,7 @@
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * BASE STYLES
+	 * PAGE WRAPPER (scoped styles - no global leaks)
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	:global(html) {
 		font-size: 100%;
@@ -231,8 +231,6 @@
 		font-size: 1rem;
 		line-height: 1.5;
 		min-height: 100dvh;
-		margin: 0;
-		padding: 0;
 		-webkit-font-smoothing: antialiased;
 		-moz-osx-font-smoothing: grayscale;
 	}
@@ -249,7 +247,7 @@
 		color: #000000;
 	}
 
-	:global(a:focus-visible) {
+	#page a:focus-visible {
 		outline: 2px solid #1e73be;
 		outline-offset: 2px;
 		border-radius: 4px;
@@ -490,7 +488,7 @@
 
 	/* Print */
 	@media print {
-		:global(body) {
+		#page {
 			background-color: white !important;
 		}
 

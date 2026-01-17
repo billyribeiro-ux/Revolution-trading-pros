@@ -249,12 +249,6 @@
 		color: #000000;
 	}
 
-	/* 2. PAGE WRAPPER - WordPress structure */
-	#page {
-		padding: 0;
-		max-width: 100%;
-	}
-
 	#content.site-content {
 		width: 100%;
 	}

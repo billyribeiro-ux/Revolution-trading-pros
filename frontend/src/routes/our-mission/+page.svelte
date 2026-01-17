@@ -1127,11 +1127,6 @@
 		letter-spacing: -0.03em;
 	}
 
-	/* Smooth Scrolling */
-	:global(html) {
-		scroll-behavior: smooth;
-	}
-
 	/* Gradient Text Utility */
 	.text-gradient {
 		background-clip: text;
