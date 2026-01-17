@@ -348,9 +348,15 @@
 	});
 </script>
 
-<div class="page">
-	<!-- Outer Container with Thin Border -->
+<div class="admin-dashboard">
 	<div class="admin-page-container">
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
+		</div>
+
 		<!-- Header - Centered Style -->
 		<header class="page-header" in:fly={{ y: -20, duration: 400 }}>
 			<h1>Analytics Dashboard</h1>
@@ -805,14 +811,82 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RTP ADMIN DASHBOARD - Email Templates Style (Centered Header)
+	 * RTP ADMIN DASHBOARD - Apple ICT7+ Principal Engineer Grade
+	 * Consistent with Analytics Dashboard styling
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Page Container - Email Templates Style */
-	.page {
+	/* Outer Container with Gradient Background */
+	.admin-dashboard {
+		min-height: 100vh;
+		background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+		color: white;
+		position: relative;
+		overflow: hidden;
+	}
+
+	/* Inner Container */
+	.admin-page-container {
+		position: relative;
+		z-index: 10;
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
+	}
+
+	/* Background Effects - Animated Blobs */
+	.bg-effects {
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	.bg-blob {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(80px);
+		opacity: 0.15;
+	}
+
+	.bg-blob-1 {
+		width: 600px;
+		height: 600px;
+		top: -200px;
+		right: -200px;
+		background: linear-gradient(135deg, #e6b800, #b38f00);
+		animation: float 20s ease-in-out infinite;
+	}
+
+	.bg-blob-2 {
+		width: 500px;
+		height: 500px;
+		bottom: -150px;
+		left: -150px;
+		background: linear-gradient(135deg, #3b82f6, #b38f00);
+		animation: float 25s ease-in-out infinite reverse;
+	}
+
+	.bg-blob-3 {
+		width: 400px;
+		height: 400px;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: linear-gradient(135deg, #10b981, #14b8a6);
+		animation: float 30s ease-in-out infinite;
+	}
+
+	@keyframes float {
+		0%,
+		100% {
+			transform: translate(0, 0) scale(1);
+		}
+		33% {
+			transform: translate(30px, -30px) scale(1.05);
+		}
+		66% {
+			transform: translate(-20px, 20px) scale(0.95);
+		}
 	}
 
 	/* Page Header - CENTERED */
@@ -1036,15 +1110,16 @@
 		font-weight: 400;
 	}
 
-	/* Glass Panel - Email Templates Style */
+	/* Glass Panel - Analytics Dashboard Style */
 	.glass-panel {
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 12px;
+		border-radius: 16px;
 		padding: 1.5rem;
 		margin-bottom: 1.5rem;
 		position: relative;
 		overflow: hidden;
+		backdrop-filter: blur(10px);
 	}
 
 	.panel-header {
@@ -1151,9 +1226,9 @@
 
 	.metric-card {
 		position: relative;
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		border-radius: 12px;
 		padding: 1.25rem;
 		transition: all 0.2s;
 		overflow: hidden;
@@ -1330,9 +1405,9 @@
 	}
 
 	.seo-metric-card {
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		border-radius: 12px;
 		padding: 1rem;
 		transition: all 0.2s;
 	}
@@ -1418,9 +1493,9 @@
 	}
 
 	.health-card {
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		border-radius: 12px;
 		padding: 1rem;
 	}
 
@@ -1540,9 +1615,9 @@
 		align-items: center;
 		gap: 0.875rem;
 		padding: 1rem;
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		border-radius: 12px;
 		text-decoration: none;
 		transition: all 0.2s;
 		position: relative;
@@ -1659,9 +1734,9 @@
 		align-items: center;
 		gap: 0.875rem;
 		padding: 0.875rem 1rem;
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		border-radius: 12px;
 		text-decoration: none;
 		transition: all 0.2s;
 	}
@@ -1751,7 +1826,7 @@
 
 	/* Small Mobile (< 480px) */
 	@media (max-width: 480px) {
-		.page {
+		.admin-page-container {
 			padding: 1rem;
 		}
 
@@ -1945,7 +2020,7 @@
 
 	/* Print Styles */
 	@media print {
-		.page {
+		.admin-dashboard {
 			background: white;
 			color: black;
 		}

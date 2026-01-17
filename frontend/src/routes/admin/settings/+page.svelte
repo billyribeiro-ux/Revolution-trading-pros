@@ -1219,7 +1219,8 @@
         right: -10rem;
         width: 24rem;
         height: 24rem;
-        background: rgb(168 85 247 / 0.4);
+        background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+        animation: float 20s ease-in-out infinite;
     }
 
     .ambient-glow-2 {
@@ -1227,7 +1228,8 @@
         left: -10rem;
         width: 24rem;
         height: 24rem;
-        background: rgb(59 130 246 / 0.4);
+        background: linear-gradient(135deg, #3b82f6 0%, #b38f00 100%);
+        animation: float 25s ease-in-out infinite reverse;
     }
 
     .ambient-glow-3 {
@@ -1235,7 +1237,14 @@
         left: 50%;
         width: 16rem;
         height: 16rem;
-        background: rgb(16 185 129 / 0.2);
+        background: linear-gradient(135deg, #10b981 0%, #14b8a6 100%);
+        animation: float 30s ease-in-out infinite;
+    }
+
+    @keyframes float {
+        0%, 100% { transform: translate(0, 0) scale(1); }
+        33% { transform: translate(30px, -30px) scale(1.05); }
+        66% { transform: translate(-20px, 20px) scale(0.95); }
     }
 
     /* Content wrapper */

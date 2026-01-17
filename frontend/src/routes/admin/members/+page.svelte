@@ -365,9 +365,16 @@
 	<title>Members Management | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="page">
+<div class="admin-members">
 	<div class="admin-page-container">
-	<!-- Error Banner -->
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
+		</div>
+
+		<!-- Error Banner -->
 	{#if initError}
 		<div class="error-banner">
 			<IconAlertTriangle size={20} />
@@ -920,12 +927,83 @@
 {/if}
 
 <style>
-	/* Page wrapper - email templates style */
-	.page {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RTP ADMIN MEMBERS - Apple ICT7+ Principal Engineer Grade
+	 * Consistent with Analytics Dashboard styling
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Outer Container with Gradient Background */
+	.admin-members {
+		min-height: 100vh;
+		background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+		color: white;
+		position: relative;
+		overflow: hidden;
+	}
+
+	/* Inner Container */
+	.admin-page-container {
+		position: relative;
+		z-index: 10;
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
-		min-height: 100vh;
+	}
+
+	/* Background Effects - Animated Blobs */
+	.bg-effects {
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	.bg-blob {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(80px);
+		opacity: 0.15;
+	}
+
+	.bg-blob-1 {
+		width: 600px;
+		height: 600px;
+		top: -200px;
+		right: -200px;
+		background: linear-gradient(135deg, #e6b800, #b38f00);
+		animation: float 20s ease-in-out infinite;
+	}
+
+	.bg-blob-2 {
+		width: 500px;
+		height: 500px;
+		bottom: -150px;
+		left: -150px;
+		background: linear-gradient(135deg, #3b82f6, #b38f00);
+		animation: float 25s ease-in-out infinite reverse;
+	}
+
+	.bg-blob-3 {
+		width: 400px;
+		height: 400px;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: linear-gradient(135deg, #10b981, #14b8a6);
+		animation: float 30s ease-in-out infinite;
+	}
+
+	@keyframes float {
+		0%,
+		100% {
+			transform: translate(0, 0) scale(1);
+		}
+		33% {
+			transform: translate(30px, -30px) scale(1.05);
+		}
+		66% {
+			transform: translate(-20px, 20px) scale(0.95);
+		}
 	}
 
 	/* Header - CENTERED */
@@ -979,8 +1057,8 @@
 	}
 
 	.stat-card {
-		background: rgba(30, 41, 59, 0.4);
-		border-radius: 8px;
+		background: rgba(30, 41, 59, 0.6);
+		border-radius: 12px;
 		padding: 1.5rem;
 		position: relative;
 		overflow: hidden;
@@ -1130,9 +1208,9 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 1rem 1.5rem;
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		border-radius: 12px;
 		cursor: pointer;
 		transition: all 0.2s;
 		min-width: 200px;
@@ -1188,9 +1266,9 @@
 		align-items: center;
 		gap: 0.75rem;
 		padding: 0.75rem 1rem;
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		border-radius: 12px;
 		color: #94a3b8;
 	}
 
@@ -1221,7 +1299,7 @@
 		padding: 0.75rem 1rem;
 		background: rgba(100, 116, 139, 0.2);
 		border: 1px solid rgba(100, 116, 139, 0.3);
-		border-radius: 8px;
+		border-radius: 12px;
 		color: #cbd5e1;
 		font-weight: 500;
 		cursor: pointer;
@@ -1251,9 +1329,9 @@
 		display: flex;
 		gap: 1rem;
 		padding: 1rem;
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		border-radius: 12px;
 		margin-bottom: 1rem;
 	}
 
@@ -1274,9 +1352,9 @@
 	.filter-group select {
 		width: 100%;
 		padding: 0.625rem 0.875rem;
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
+		border-radius: 12px;
 		color: #f1f5f9;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -1286,7 +1364,7 @@
 		padding: 0.625rem 1rem;
 		background: rgba(100, 116, 139, 0.2);
 		border: 1px solid rgba(100, 116, 139, 0.3);
-		border-radius: 8px;
+		border-radius: 12px;
 		color: #cbd5e1;
 		font-weight: 500;
 		cursor: pointer;
@@ -1301,9 +1379,9 @@
 
 	/* Members Table */
 	.members-table-container {
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		border-radius: 12px;
 		overflow: hidden;
 	}
 
@@ -1519,7 +1597,7 @@
 		justify-content: center;
 		background: rgba(148, 163, 184, 0.1);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
+		border-radius: 12px;
 		color: #94a3b8;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -1557,7 +1635,7 @@
 	.modal-content {
 		background: rgba(30, 41, 59, 0.95);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
+		border-radius: 12px;
 		width: 100%;
 		max-width: 600px;
 		max-height: 90vh;
@@ -1587,7 +1665,7 @@
 		justify-content: center;
 		background: rgba(148, 163, 184, 0.1);
 		border: none;
-		border-radius: 8px;
+		border-radius: 12px;
 		color: #94a3b8;
 		cursor: pointer;
 	}
@@ -1620,7 +1698,7 @@
 		padding: 0.5rem 1rem;
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 8px;
+		border-radius: 12px;
 		color: #E6B800;
 		font-size: 0.8125rem;
 		font-weight: 500;
@@ -1648,9 +1726,9 @@
 	.form-group textarea {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
+		border-radius: 12px;
 		color: #f1f5f9;
 		font-size: 0.9375rem;
 		font-family: inherit;
@@ -1678,7 +1756,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		border-radius: 8px;
+		border-radius: 12px;
 		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s ease;
@@ -1739,7 +1817,7 @@
 
 	/* Mobile Landscape (< 768px) */
 	@media (max-width: 768px) {
-		.page {
+		.admin-page-container {
 			padding: 1rem;
 		}
 
@@ -1776,7 +1854,7 @@
 
 	/* Mobile Portrait (< 640px) */
 	@media (max-width: 640px) {
-		.page {
+		.admin-page-container {
 			padding: 0.75rem;
 		}
 
@@ -1805,7 +1883,7 @@
 
 	/* Extra Small Mobile (< 380px) - iPhone SE, Galaxy Fold */
 	@media (max-width: 380px) {
-		.page {
+		.admin-page-container {
 			padding: 0.5rem;
 		}
 
@@ -1913,7 +1991,7 @@
 
 	/* Print Styles */
 	@media print {
-		.page {
+		.admin-members {
 			background: white;
 			color: black;
 		}
@@ -1939,7 +2017,7 @@
 
 	/* Landscape Mode - Short viewport */
 	@media (max-height: 500px) and (orientation: landscape) {
-		.page {
+		.admin-page-container {
 			padding: 0.5rem 1rem;
 		}
 
@@ -1958,9 +2036,9 @@
 
 	/* Import Modal */
 	.import-instructions {
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.1);
-		border-radius: 8px;
+		border-radius: 12px;
 		padding: 1rem 1.25rem;
 		margin-bottom: 1.5rem;
 	}
@@ -1998,9 +2076,9 @@
 		align-items: center;
 		justify-content: center;
 		padding: 2rem;
-		background: rgba(30, 41, 59, 0.4);
+		background: rgba(30, 41, 59, 0.6);
 		border: 2px dashed rgba(148, 163, 184, 0.3);
-		border-radius: 8px;
+		border-radius: 12px;
 		cursor: pointer;
 		color: #94a3b8;
 		text-align: center;
@@ -2143,7 +2221,7 @@
 		padding: 1rem 1.5rem;
 		background: rgba(239, 68, 68, 0.1);
 		border: 1px solid rgba(239, 68, 68, 0.3);
-		border-radius: 8px;
+		border-radius: 12px;
 		color: #f87171;
 		margin-bottom: 1.5rem;
 	}
