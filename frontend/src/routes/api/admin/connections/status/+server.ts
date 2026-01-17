@@ -85,7 +85,10 @@ const BUILTIN_SERVICES: ConnectionStatus[] = [
 const storedConnections: Map<string, ConnectionStatus> = new Map();
 
 // All available external services
-const EXTERNAL_SERVICES: Omit<ConnectionStatus, 'is_connected' | 'status' | 'health_score' | 'last_verified_at' | 'last_error'>[] = [
+const EXTERNAL_SERVICES: Omit<
+	ConnectionStatus,
+	'is_connected' | 'status' | 'health_score' | 'last_verified_at' | 'last_error'
+>[] = [
 	// Analytics
 	{ key: 'google_analytics', name: 'Google Analytics 4', category: 'Analytics' },
 	{ key: 'mixpanel', name: 'Mixpanel', category: 'Analytics' },
@@ -161,12 +164,12 @@ export const GET: RequestHandler = async () => {
 		...BUILTIN_SERVICES,
 
 		// External services - check stored connection status
-		...EXTERNAL_SERVICES.map(service => {
+		...EXTERNAL_SERVICES.map((service) => {
 			const stored = storedConnections.get(service.key);
 			return {
 				...service,
 				is_connected: stored?.is_connected ?? false,
-				status: stored?.status ?? 'disconnected' as const,
+				status: stored?.status ?? ('disconnected' as const),
 				health_score: stored?.health_score ?? 0,
 				last_verified_at: stored?.last_verified_at ?? null,
 				last_error: stored?.last_error ?? null
@@ -175,8 +178,8 @@ export const GET: RequestHandler = async () => {
 	];
 
 	// Calculate summary
-	const connected = connections.filter(c => c.is_connected);
-	const errors = connections.filter(c => c.status === 'error');
+	const connected = connections.filter((c) => c.is_connected);
+	const errors = connections.filter((c) => c.status === 'error');
 
 	return json({
 		success: true,
@@ -186,9 +189,10 @@ export const GET: RequestHandler = async () => {
 			connected: connected.length,
 			disconnected: connections.length - connected.length,
 			errors: errors.length,
-			health: connected.length > 0
-				? Math.round(connected.reduce((sum, c) => sum + c.health_score, 0) / connected.length)
-				: 0
+			health:
+				connected.length > 0
+					? Math.round(connected.reduce((sum, c) => sum + c.health_score, 0) / connected.length)
+					: 0
 		}
 	});
 };

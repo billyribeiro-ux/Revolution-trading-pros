@@ -1,10 +1,10 @@
 /**
  * Explosive Swings Favorites - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * SSR pre-fetch for user's favorited alerts/trades
  * Note: Favorites are user-specific and may require auth
- * 
+ *
  * @version 1.0.0
  */
 

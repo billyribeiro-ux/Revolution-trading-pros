@@ -12,7 +12,8 @@
 			'@type': 'CollectionPage',
 			'@id': 'https://revolution-trading-pros.pages.dev/resources/#collection',
 			name: 'Free Trading Resources',
-			description: 'Free trading resources, guides, calculators, and educational tools for traders.',
+			description:
+				'Free trading resources, guides, calculators, and educational tools for traders.',
 			url: 'https://revolution-trading-pros.pages.dev/resources',
 			mainEntity: {
 				'@type': 'ItemList',
@@ -27,7 +28,8 @@
 						'@type': 'ListItem',
 						position: 2,
 						name: 'Free Trading Tools',
-						description: 'Position size calculator, risk/reward calculator, and trading journal templates.'
+						description:
+							'Position size calculator, risk/reward calculator, and trading journal templates.'
 					},
 					{
 						'@type': 'ListItem',

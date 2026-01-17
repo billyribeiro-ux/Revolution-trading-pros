@@ -122,7 +122,7 @@
 	}
 
 	function getScheduledForDate(date: Date) {
-		return scheduledItems.filter(item => {
+		return scheduledItems.filter((item) => {
 			const itemDate = new Date(item.scheduled_for);
 			return itemDate.toDateString() === date.toDateString();
 		});
@@ -177,7 +177,11 @@
 				<span class="stat-label">Scheduled</span>
 			</div>
 			<div class="stat-card">
-				<span class="stat-value">{scheduledItems.filter(i => new Date(i.scheduled_for) <= new Date(Date.now() + 86400000)).length}</span>
+				<span class="stat-value"
+					>{scheduledItems.filter(
+						(i) => new Date(i.scheduled_for) <= new Date(Date.now() + 86400000)
+					).length}</span
+				>
 				<span class="stat-label">Next 24h</span>
 			</div>
 		</div>
@@ -215,7 +219,7 @@
 							class:past={isPast(date)}
 							class:has-items={scheduled.length > 0}
 							class:selected={selectedDate?.toDateString() === date.toDateString()}
-							onclick={() => selectedDate = date}
+							onclick={() => (selectedDate = date)}
 						>
 							<span class="day-number">{date.getDate()}</span>
 							{#if scheduled.length > 0}
@@ -239,15 +243,17 @@
 			<div class="items-header">
 				<h2>
 					{#if selectedDate}
-						{selectedDate.toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}
+						{selectedDate.toLocaleDateString('en-US', {
+							weekday: 'long',
+							month: 'long',
+							day: 'numeric'
+						})}
 					{:else}
 						All Scheduled Items
 					{/if}
 				</h2>
 				{#if selectedDate}
-					<button class="clear-btn" onclick={() => selectedDate = null}>
-						Clear Selection
-					</button>
+					<button class="clear-btn" onclick={() => (selectedDate = null)}> Clear Selection </button>
 				{/if}
 			</div>
 
@@ -265,7 +271,9 @@
 						</div>
 						<h3>No scheduled items</h3>
 						<p>
-							{selectedDate ? 'Nothing scheduled for this date' : 'Schedule content from the content editor'}
+							{selectedDate
+								? 'Nothing scheduled for this date'
+								: 'Schedule content from the content editor'}
 						</p>
 					</div>
 				{:else}
@@ -350,7 +358,7 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #E6B800;
+		color: #e6b800;
 		text-decoration: none;
 		margin-bottom: 1rem;
 	}
@@ -463,7 +471,7 @@
 
 	.nav-btn:hover {
 		background: #f1f5f9;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.weekdays {
@@ -524,8 +532,8 @@
 	}
 
 	.day-cell.selected {
-		background: #E6B800;
-		border-color: #E6B800;
+		background: #e6b800;
+		border-color: #e6b800;
 	}
 
 	.day-cell.selected .day-number {
@@ -727,7 +735,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.empty-icon {

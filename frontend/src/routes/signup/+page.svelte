@@ -71,16 +71,25 @@
 	description="Join Revolution Trading Pros. Create your free account to access live trading rooms, professional alerts, courses, and our trading community."
 	canonical="/signup"
 	ogType="website"
-	keywords={['trading signup', 'create trading account', 'join revolution trading pros', 'trading membership']}
+	keywords={[
+		'trading signup',
+		'create trading account',
+		'join revolution trading pros',
+		'trading membership'
+	]}
 />
 
-<div class="min-h-[calc(100vh-120px)] flex items-center justify-center bg-rtp-bg px-4 sm:px-6 py-8 sm:py-12">
+<div
+	class="min-h-[calc(100vh-120px)] flex items-center justify-center bg-rtp-bg px-4 sm:px-6 py-8 sm:py-12"
+>
 	<div class="w-full max-w-md">
 		<!-- Card -->
 		<div class="bg-rtp-surface rounded-2xl shadow-xl p-6 sm:p-8 border border-rtp-border">
 			<!-- Logo/Header -->
 			<div class="text-center mb-6 sm:mb-8">
-				<h1 class="text-2xl sm:text-3xl font-heading font-bold text-rtp-text mb-2">Join Revolution Trading</h1>
+				<h1 class="text-2xl sm:text-3xl font-heading font-bold text-rtp-text mb-2">
+					Join Revolution Trading
+				</h1>
 				<p class="text-rtp-muted">Start your trading journey today</p>
 			</div>
 

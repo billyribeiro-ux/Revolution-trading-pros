@@ -19,7 +19,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			...options,
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				...options?.headers
 			}
 		});
@@ -36,10 +36,13 @@ export const POST: RequestHandler = async ({ request }) => {
 	const { ids } = body;
 
 	if (!ids || !Array.isArray(ids) || ids.length === 0) {
-		return json({
-			success: false,
-			error: 'Missing or invalid ids array'
-		}, { status: 400 });
+		return json(
+			{
+				success: false,
+				error: 'Missing or invalid ids array'
+			},
+			{ status: 400 }
+		);
 	}
 
 	// Try backend first

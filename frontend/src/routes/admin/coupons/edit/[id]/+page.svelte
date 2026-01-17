@@ -19,12 +19,7 @@
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import { fade, slide } from 'svelte/transition';
-	import {
-		couponsApi,
-		AdminApiError,
-		type Coupon,
-		type CouponUpdateData
-	} from '$lib/api/admin';
+	import { couponsApi, AdminApiError, type Coupon, type CouponUpdateData } from '$lib/api/admin';
 	import {
 		IconTicket,
 		IconCheck,
@@ -46,7 +41,15 @@
 
 	interface CouponFormData {
 		code: string;
-		type: 'fixed' | 'percentage' | 'bogo' | 'free_shipping' | 'tiered' | 'bundle' | 'cashback' | 'points';
+		type:
+			| 'fixed'
+			| 'percentage'
+			| 'bogo'
+			| 'free_shipping'
+			| 'tiered'
+			| 'bundle'
+			| 'cashback'
+			| 'points';
 		value: number;
 		description: string;
 		minimum_amount: number | null;
@@ -158,7 +161,13 @@
 				} else if (err.status === 404) {
 					errors = [{ field: 'general', message: 'Coupon not found', severity: 'error' }];
 				} else if (err.status === 403) {
-					errors = [{ field: 'general', message: 'You are not authorized to edit this coupon', severity: 'error' }];
+					errors = [
+						{
+							field: 'general',
+							message: 'You are not authorized to edit this coupon',
+							severity: 'error'
+						}
+					];
 				} else {
 					errors = [{ field: 'general', message: err.message, severity: 'error' }];
 				}
@@ -201,7 +210,9 @@
 				max_discount_amount: formData.max_discount_amount || undefined,
 				usage_limit: formData.usage_limit || undefined,
 				valid_from: formData.valid_from ? new Date(formData.valid_from).toISOString() : undefined,
-				valid_until: formData.valid_until ? new Date(formData.valid_until).toISOString() : undefined,
+				valid_until: formData.valid_until
+					? new Date(formData.valid_until).toISOString()
+					: undefined,
 				is_active: formData.is_active,
 				stackable: formData.stackable
 			};
@@ -234,7 +245,9 @@
 			goto('/admin/coupons');
 		} catch (err) {
 			if (err instanceof AdminApiError) {
-				errors = [{ field: 'general', message: `Failed to delete: ${err.message}`, severity: 'error' }];
+				errors = [
+					{ field: 'general', message: `Failed to delete: ${err.message}`, severity: 'error' }
+				];
 			} else {
 				errors = [{ field: 'general', message: 'Failed to delete coupon', severity: 'error' }];
 			}
@@ -378,11 +391,7 @@
 				<IconX size={18} />
 				Cancel
 			</button>
-			<button
-				class="btn-danger"
-				onclick={handleDelete}
-				disabled={deleting || loading}
-			>
+			<button class="btn-danger" onclick={handleDelete} disabled={deleting || loading}>
 				{#if deleting}
 					<IconRefresh size={18} class="spinning" />
 				{:else}

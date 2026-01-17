@@ -250,10 +250,7 @@ async fn get_member_full(
     .unwrap_or(None);
 
     // Calculate stats
-    let total_spent: f64 = subscriptions
-        .iter()
-        .filter_map(|s| s.price)
-        .sum();
+    let total_spent: f64 = subscriptions.iter().filter_map(|s| s.price).sum();
     let active_subs = subscriptions
         .iter()
         .filter(|s| s.status == "active")
@@ -318,7 +315,10 @@ fn calculate_engagement_score(
     let mut score = 0;
 
     // Active subscriptions boost
-    let active_count = subscriptions.iter().filter(|s| s.status == "active").count();
+    let active_count = subscriptions
+        .iter()
+        .filter(|s| s.status == "active")
+        .count();
     score += (active_count * 20).min(40) as i32;
 
     // Activity recency
@@ -439,6 +439,7 @@ async fn create_member(
     }
 
     // Generate password hash
+    let password_was_generated = input.password.is_none();
     let password = input.password.unwrap_or_else(|| {
         use rand::Rng;
         let mut rng = rand::thread_rng();
@@ -447,13 +448,12 @@ async fn create_member(
             .collect()
     });
 
-    let password_hash =
-        bcrypt::hash(&password, bcrypt::DEFAULT_COST).map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Failed to hash password: {}", e)})),
-            )
-        })?;
+    let password_hash = bcrypt::hash(&password, bcrypt::DEFAULT_COST).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Failed to hash password: {}", e)})),
+        )
+    })?;
 
     // Create user
     let member: MemberDetail = sqlx::query_as(
@@ -490,7 +490,7 @@ async fn create_member(
     Ok(Json(json!({
         "message": "Member created successfully",
         "member": member,
-        "temporary_password": if input.password.is_none() { Some(password) } else { None }
+        "temporary_password": if password_was_generated { Some(password) } else { None }
     })))
 }
 
@@ -755,9 +755,9 @@ async fn ban_member(
     }
 
     // Calculate ban expiry
-    let banned_until = input.duration_days.map(|days| {
-        Utc::now().naive_utc() + chrono::Duration::days(days as i64)
-    });
+    let banned_until = input
+        .duration_days
+        .map(|days| Utc::now().naive_utc() + chrono::Duration::days(days as i64));
 
     // Upsert user status
     sqlx::query(
@@ -828,9 +828,9 @@ async fn suspend_member(
         ));
     }
 
-    let suspended_until = input.duration_days.map(|days| {
-        Utc::now().naive_utc() + chrono::Duration::days(days as i64)
-    });
+    let suspended_until = input
+        .duration_days
+        .map(|days| Utc::now().naive_utc() + chrono::Duration::days(days as i64));
 
     sqlx::query(
         r#"
@@ -1078,13 +1078,12 @@ async fn get_activity(
         .unwrap_or_default()
     };
 
-    let total: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM user_activity_log WHERE user_id = $1",
-    )
-    .bind(id)
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or(0);
+    let total: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM user_activity_log WHERE user_id = $1")
+            .bind(id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or(0);
 
     Ok(Json(json!({
         "activity": activity,
@@ -1141,24 +1140,26 @@ async fn export_members(
     };
 
     // Fetch members
-    let members: Vec<(i64, Option<String>, String, Option<String>, NaiveDateTime)> = sqlx::query_as(&format!(
-        r#"
+    #[allow(clippy::type_complexity)]
+    let members: Vec<(i64, Option<String>, String, Option<String>, NaiveDateTime)> =
+        sqlx::query_as(&format!(
+            r#"
         SELECT u.id, u.name, u.email, u.role, u.created_at
         FROM users u
         WHERE {}
         ORDER BY u.created_at DESC
         LIMIT 10000
         "#,
-        where_clause
-    ))
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+            where_clause
+        ))
+        .fetch_all(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     match format {
         "xlsx" => {
@@ -1166,11 +1167,18 @@ async fn export_members(
             let xlsx_content = generate_xlsx(&members);
             Ok((
                 [
-                    (header::CONTENT_TYPE, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"),
-                    (header::CONTENT_DISPOSITION, "attachment; filename=\"members.xlsx\""),
+                    (
+                        header::CONTENT_TYPE,
+                        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+                    ),
+                    (
+                        header::CONTENT_DISPOSITION,
+                        "attachment; filename=\"members.xlsx\"",
+                    ),
                 ],
                 xlsx_content,
-            ).into_response())
+            )
+                .into_response())
         }
         "pdf" => {
             // Generate PDF (simplified - in production use a proper PDF library)
@@ -1178,10 +1186,14 @@ async fn export_members(
             Ok((
                 [
                     (header::CONTENT_TYPE, "application/pdf"),
-                    (header::CONTENT_DISPOSITION, "attachment; filename=\"members.pdf\""),
+                    (
+                        header::CONTENT_DISPOSITION,
+                        "attachment; filename=\"members.pdf\"",
+                    ),
                 ],
                 pdf_content,
-            ).into_response())
+            )
+                .into_response())
         }
         _ => {
             // CSV (default)
@@ -1199,10 +1211,14 @@ async fn export_members(
             Ok((
                 [
                     (header::CONTENT_TYPE, "text/csv"),
-                    (header::CONTENT_DISPOSITION, "attachment; filename=\"members.csv\""),
+                    (
+                        header::CONTENT_DISPOSITION,
+                        "attachment; filename=\"members.csv\"",
+                    ),
                 ],
                 csv,
-            ).into_response())
+            )
+                .into_response())
         }
     }
 }
@@ -1216,11 +1232,15 @@ fn is_valid_date(date: &str) -> bool {
         && parts.iter().all(|p| p.chars().all(|c| c.is_ascii_digit()))
 }
 
-fn generate_xlsx(members: &[(i64, Option<String>, String, Option<String>, NaiveDateTime)]) -> Vec<u8> {
+#[allow(clippy::type_complexity)]
+fn generate_xlsx(
+    members: &[(i64, Option<String>, String, Option<String>, NaiveDateTime)],
+) -> Vec<u8> {
     // Simple XLSX generation using xlsx-writer pattern
     // In production, use the `rust_xlsxwriter` or `calamine` crate
     // For now, return a simple XML-based spreadsheet
-    let mut content = String::from(r#"<?xml version="1.0" encoding="UTF-8"?>
+    let mut content = String::from(
+        r#"<?xml version="1.0" encoding="UTF-8"?>
 <Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
  xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet">
  <Worksheet ss:Name="Members">
@@ -1232,7 +1252,8 @@ fn generate_xlsx(members: &[(i64, Option<String>, String, Option<String>, NaiveD
     <Cell><Data ss:Type="String">Role</Data></Cell>
     <Cell><Data ss:Type="String">Created At</Data></Cell>
    </Row>
-"#);
+"#,
+    );
 
     for (id, name, email, role, created_at) in members {
         content.push_str(&format!(
@@ -1252,14 +1273,19 @@ fn generate_xlsx(members: &[(i64, Option<String>, String, Option<String>, NaiveD
         ));
     }
 
-    content.push_str(r#"  </Table>
+    content.push_str(
+        r#"  </Table>
  </Worksheet>
-</Workbook>"#);
+</Workbook>"#,
+    );
 
     content.into_bytes()
 }
 
-fn generate_pdf(members: &[(i64, Option<String>, String, Option<String>, NaiveDateTime)]) -> Vec<u8> {
+#[allow(clippy::type_complexity)]
+fn generate_pdf(
+    members: &[(i64, Option<String>, String, Option<String>, NaiveDateTime)],
+) -> Vec<u8> {
     // Simple PDF generation
     // In production, use a proper PDF library like `printpdf` or `genpdf`
     // For now, generate a text-based PDF structure
@@ -1357,7 +1383,12 @@ pub fn router() -> Router<AppState> {
         // CRUD
         .route("/", post(create_member))
         .route("/export", get(export_members))
-        .route("/:id", get(get_member_full).put(update_member).delete(delete_member))
+        .route(
+            "/:id",
+            get(get_member_full)
+                .put(update_member)
+                .delete(delete_member),
+        )
         // Ban/Suspend/Unban
         .route("/:id/ban", post(ban_member))
         .route("/:id/suspend", post(suspend_member))

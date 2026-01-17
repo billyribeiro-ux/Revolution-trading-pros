@@ -12,7 +12,7 @@
 		"module": "ESNext",
 		"target": "ES2022",
 		"lib": ["ES2022", "DOM", "DOM.Iterable"],
-		
+
 		// SvelteKit Specific
 		"allowImportingTsExtensions": true,
 		"allowArbitraryExtensions": true,
@@ -20,7 +20,7 @@
 		"isolatedModules": true,
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
-		
+
 		// ═══════════════════════════════════════════════════════════════════════════
 		// CORE STRICT MODE - ALL ENABLED (ICT11+ Standard)
 		// ═══════════════════════════════════════════════════════════════════════════
@@ -54,8 +54,8 @@
 		// ═══════════════════════════════════════════════════════════════════════════
 		"useUnknownInCatchVariables": true,
 		"forceConsistentCasingInFileNames": true,
-		"skipLibCheck": true,  // ICT11+: Skip third-party lib type validation for faster builds
-		
+		"skipLibCheck": true, // ICT11+: Skip third-party lib type validation for faster builds
+
 		// ═══════════════════════════════════════════════════════════════════════════
 		// CODE QUALITY & MAINTAINABILITY
 		// ═══════════════════════════════════════════════════════════════════════════
@@ -64,7 +64,7 @@
 		"removeComments": false,
 		"sourceMap": true,
 		"declaration": false,
-		"declarationMap": false,
+		"declarationMap": false
 
 		// PATH MAPPINGS: Defined in svelte.config.js kit.alias
 		// SvelteKit auto-generates these in .svelte-kit/tsconfig.json

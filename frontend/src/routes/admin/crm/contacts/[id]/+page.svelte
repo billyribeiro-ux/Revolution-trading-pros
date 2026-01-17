@@ -79,7 +79,14 @@
 		company_name?: string;
 		company_id?: string;
 		status: 'subscribed' | 'pending' | 'unsubscribed' | 'bounced' | 'complained';
-		lifecycle_stage: 'subscriber' | 'lead' | 'mql' | 'sql' | 'opportunity' | 'customer' | 'evangelist';
+		lifecycle_stage:
+			| 'subscriber'
+			| 'lead'
+			| 'mql'
+			| 'sql'
+			| 'opportunity'
+			| 'customer'
+			| 'evangelist';
 		lead_score: number;
 		health_score: number;
 		engagement_score: number;
@@ -300,7 +307,8 @@
 	}
 
 	async function deleteContact() {
-		if (!confirm('Are you sure you want to delete this contact? This action cannot be undone.')) return;
+		if (!confirm('Are you sure you want to delete this contact? This action cannot be undone.'))
+			return;
 		try {
 			await api.delete(`/api/admin/crm/contacts/${contactId}`);
 			goto('/admin/crm');
@@ -401,9 +409,7 @@
 			await loadContact();
 		} catch (e: unknown) {
 			const errorMessage =
-				e instanceof Error
-					? e.message
-					: 'Failed to send email. Please try again.';
+				e instanceof Error ? e.message : 'Failed to send email. Please try again.';
 			console.error('Failed to send email:', e);
 			showToast('error', errorMessage);
 		} finally {
@@ -557,7 +563,9 @@
 					{#if contact.job_title || contact.company_name}
 						<p class="job-info">
 							{contact.job_title || ''}
-							{#if contact.job_title && contact.company_name} at {/if}
+							{#if contact.job_title && contact.company_name}
+								at
+							{/if}
 							{contact.company_name || ''}
 						</p>
 					{/if}
@@ -638,19 +646,35 @@
 
 		<!-- Tabs -->
 		<nav class="tabs-nav">
-			<button class="tab-btn" class:active={activeTab === 'overview'} onclick={() => activeTab = 'overview'}>
+			<button
+				class="tab-btn"
+				class:active={activeTab === 'overview'}
+				onclick={() => (activeTab = 'overview')}
+			>
 				<IconUserCircle size={18} />
 				Overview
 			</button>
-			<button class="tab-btn" class:active={activeTab === 'emails'} onclick={() => activeTab = 'emails'}>
+			<button
+				class="tab-btn"
+				class:active={activeTab === 'emails'}
+				onclick={() => (activeTab = 'emails')}
+			>
 				<IconMail size={18} />
 				Emails ({emailHistory.length})
 			</button>
-			<button class="tab-btn" class:active={activeTab === 'notes'} onclick={() => activeTab = 'notes'}>
+			<button
+				class="tab-btn"
+				class:active={activeTab === 'notes'}
+				onclick={() => (activeTab = 'notes')}
+			>
 				<IconNotes size={18} />
 				Notes ({notes.length})
 			</button>
-			<button class="tab-btn" class:active={activeTab === 'activity'} onclick={() => activeTab = 'activity'}>
+			<button
+				class="tab-btn"
+				class:active={activeTab === 'activity'}
+				onclick={() => (activeTab = 'activity')}
+			>
 				<IconActivity size={18} />
 				Activity ({timeline.length})
 			</button>
@@ -668,7 +692,9 @@
 								<IconMail size={16} />
 								<div>
 									<span class="info-label">Email</span>
-									<a href="mailto:{contact.email || ''}" class="info-value link">{contact.email || ''}</a>
+									<a href="mailto:{contact.email || ''}" class="info-value link"
+										>{contact.email || ''}</a
+									>
 								</div>
 							</div>
 							{#if contact.phone}
@@ -712,7 +738,9 @@
 									<IconWorld size={16} />
 									<div>
 										<span class="info-label">Website</span>
-										<a href="{contact.website}" target="_blank" class="info-value link">{contact.website}</a>
+										<a href={contact.website} target="_blank" class="info-value link"
+											>{contact.website}</a
+										>
 									</div>
 								</div>
 							{/if}
@@ -751,7 +779,7 @@
 								<IconTag size={18} />
 								Tags
 							</h3>
-							<button class="btn-add" onclick={() => showAddTagModal = true}>
+							<button class="btn-add" onclick={() => (showAddTagModal = true)}>
 								<IconPlus size={14} />
 								Add
 							</button>
@@ -759,7 +787,11 @@
 						<div class="tags-list">
 							{#if contact.tags && contact.tags.length > 0}
 								{#each contact.tags as tag}
-									<span class="tag-pill" style="background-color: {tag.color || '#E6B800'}20; color: {tag.color || '#E6B800'}">
+									<span
+										class="tag-pill"
+										style="background-color: {tag.color || '#E6B800'}20; color: {tag.color ||
+											'#E6B800'}"
+									>
 										{tag.name}
 										<button class="tag-remove" onclick={() => removeTag(tag.id)}>
 											<IconX size={12} />
@@ -779,7 +811,7 @@
 								<IconList size={18} />
 								Lists
 							</h3>
-							<button class="btn-add" onclick={() => showAddListModal = true}>
+							<button class="btn-add" onclick={() => (showAddListModal = true)}>
 								<IconPlus size={14} />
 								Add
 							</button>
@@ -832,7 +864,6 @@
 						</div>
 					</div>
 				</div>
-
 			{:else if activeTab === 'emails'}
 				<div class="emails-section">
 					{#if emailHistory.length === 0}
@@ -873,11 +904,10 @@
 						</div>
 					{/if}
 				</div>
-
 			{:else if activeTab === 'notes'}
 				<div class="notes-section">
 					<div class="notes-header">
-						<button class="btn-primary" onclick={() => showAddNoteModal = true}>
+						<button class="btn-primary" onclick={() => (showAddNoteModal = true)}>
 							<IconPlus size={18} />
 							Add Note
 						</button>
@@ -902,7 +932,6 @@
 						</div>
 					{/if}
 				</div>
-
 			{:else if activeTab === 'activity'}
 				<div class="activity-section">
 					{#if timeline.length === 0}
@@ -948,11 +977,24 @@
 <!-- Add Tag Modal -->
 {#if showAddTagModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_interactive_supports_focus -->
-	<div class="modal-overlay" onclick={() => showAddTagModal = false} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddTagModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-tag-title" tabindex="-1">
-		<div class="modal" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
+	<div
+		class="modal-overlay"
+		onclick={() => (showAddTagModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddTagModal = false)}
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="add-tag-title"
+		tabindex="-1"
+	>
+		<div
+			class="modal"
+			role="document"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		>
 			<div class="modal-header">
 				<h3 id="add-tag-title">Add Tag</h3>
-				<button class="modal-close" onclick={() => showAddTagModal = false}>
+				<button class="modal-close" onclick={() => (showAddTagModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -977,11 +1019,24 @@
 <!-- Add List Modal -->
 {#if showAddListModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div class="modal-overlay" onclick={() => showAddListModal = false} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddListModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-list-title" tabindex="-1">
-		<div class="modal" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
+	<div
+		class="modal-overlay"
+		onclick={() => (showAddListModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddListModal = false)}
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="add-list-title"
+		tabindex="-1"
+	>
+		<div
+			class="modal"
+			role="document"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		>
 			<div class="modal-header">
 				<h3 id="add-list-title">Add to List</h3>
-				<button class="modal-close" onclick={() => showAddListModal = false}>
+				<button class="modal-close" onclick={() => (showAddListModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -1006,11 +1061,24 @@
 <!-- Add Note Modal -->
 {#if showAddNoteModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions a11y_interactive_supports_focus -->
-	<div class="modal-overlay" onclick={() => showAddNoteModal = false} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddNoteModal = false)} role="dialog" aria-modal="true" aria-labelledby="add-note-title" tabindex="-1">
-		<div class="modal" role="document" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
+	<div
+		class="modal-overlay"
+		onclick={() => (showAddNoteModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddNoteModal = false)}
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="add-note-title"
+		tabindex="-1"
+	>
+		<div
+			class="modal"
+			role="document"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		>
 			<div class="modal-header">
 				<h3 id="add-note-title">Add Note</h3>
-				<button class="modal-close" onclick={() => showAddNoteModal = false}>
+				<button class="modal-close" onclick={() => (showAddNoteModal = false)}>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -1023,7 +1091,7 @@
 				></textarea>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => showAddNoteModal = false}>Cancel</button>
+				<button class="btn-secondary" onclick={() => (showAddNoteModal = false)}>Cancel</button>
 				<button class="btn-primary" onclick={addNote} disabled={!newNoteContent.trim()}>
 					<IconCheck size={18} />
 					Save Note
@@ -1125,9 +1193,7 @@
 						rows="10"
 						disabled={sendingEmail}
 					></textarea>
-					<p class="form-hint">
-						You can use basic text formatting. HTML tags will be preserved.
-					</p>
+					<p class="form-hint">You can use basic text formatting. HTML tags will be preserved.</p>
 				</div>
 			</div>
 
@@ -1162,7 +1228,7 @@
 			<IconX size={18} />
 		{/if}
 		<span>{toastMessage.text}</span>
-		<button class="toast-close" onclick={() => toastMessage = null} aria-label="Dismiss">
+		<button class="toast-close" onclick={() => (toastMessage = null)} aria-label="Dismiss">
 			<IconX size={14} />
 		</button>
 	</div>
@@ -1193,8 +1259,8 @@
 
 	.back-btn:hover {
 		background: #1e293b;
-		color: #E6B800;
-		border-color: #E6B800;
+		color: #e6b800;
+		border-color: #e6b800;
 	}
 
 	/* Header */
@@ -1221,7 +1287,7 @@
 		width: 80px;
 		height: 80px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1302,7 +1368,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		color: #e6b800;
 		border-color: rgba(230, 184, 0, 0.3);
 	}
 
@@ -1317,7 +1383,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -1381,12 +1447,24 @@
 		flex-shrink: 0;
 	}
 
-	.stat-box :global(.green) { color: #4ade80; }
-	.stat-box :global(.blue) { color: #60a5fa; }
-	.stat-box :global(.gold) { color: #E6B800; }
-	.stat-box :global(.cyan) { color: #22d3ee; }
-	.stat-box :global(.amber) { color: #fbbf24; }
-	.stat-box :global(.emerald) { color: #34d399; }
+	.stat-box :global(.green) {
+		color: #4ade80;
+	}
+	.stat-box :global(.blue) {
+		color: #60a5fa;
+	}
+	.stat-box :global(.gold) {
+		color: #e6b800;
+	}
+	.stat-box :global(.cyan) {
+		color: #22d3ee;
+	}
+	.stat-box :global(.amber) {
+		color: #fbbf24;
+	}
+	.stat-box :global(.emerald) {
+		color: #34d399;
+	}
 
 	.stat-info {
 		display: flex;
@@ -1440,7 +1518,7 @@
 	}
 
 	.tab-btn.active {
-		background: linear-gradient(135deg, #E6B800, #B38F00);
+		background: linear-gradient(135deg, #e6b800, #b38f00);
 		color: white;
 	}
 
@@ -1474,7 +1552,7 @@
 	}
 
 	.info-card h3 :global(svg) {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.card-header {
@@ -1496,7 +1574,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 6px;
-		color: #E6B800;
+		color: #e6b800;
 		font-size: 0.75rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -1684,7 +1762,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border-radius: 10px;
 		color: white;
 		flex-shrink: 0;
@@ -1808,7 +1886,7 @@
 		width: 12px;
 		height: 12px;
 		border-radius: 50%;
-		background: #E6B800;
+		background: #e6b800;
 		flex-shrink: 0;
 		margin-top: 4px;
 	}
@@ -1895,15 +1973,19 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 16px;
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.error-state {
@@ -1918,7 +2000,7 @@
 	.error-state button {
 		margin-top: 16px;
 		padding: 10px 20px;
-		background: #E6B800;
+		background: #e6b800;
 		color: white;
 		border: none;
 		border-radius: 8px;
@@ -1985,13 +2067,15 @@
 		border-top: 1px solid #334155;
 	}
 
-	.tag-options, .list-options {
+	.tag-options,
+	.list-options {
 		display: flex;
 		flex-direction: column;
 		gap: 8px;
 	}
 
-	.tag-option, .list-option {
+	.tag-option,
+	.list-option {
 		display: flex;
 		align-items: center;
 		gap: 10px;
@@ -2005,10 +2089,11 @@
 		transition: all 0.2s;
 	}
 
-	.tag-option:hover, .list-option:hover {
+	.tag-option:hover,
+	.list-option:hover {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.note-input {
@@ -2026,7 +2111,7 @@
 
 	.note-input:focus {
 		outline: none;
-		border-color: #E6B800;
+		border-color: #e6b800;
 	}
 
 	/* Responsive */

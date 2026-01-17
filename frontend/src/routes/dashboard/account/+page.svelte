@@ -21,20 +21,21 @@
 			const lastName = data.profile?.lastName || '';
 			const fullName = `${firstName} ${lastName}`.trim();
 			if (fullName) return fullName;
-			
+
 			// Try parent layout's user.name (from auth)
 			if (data.user?.name) return data.user.name;
-			
+
 			// Try email from profile or user
 			const email = data.profile?.email || data.user?.email || '';
 			if (email) {
-				return email.split('@')[0]
+				return email
+					.split('@')[0]
 					.replace(/[._]/g, ' ')
 					.split(' ')
 					.map((w: string) => w.charAt(0).toUpperCase() + w.slice(1))
 					.join(' ');
 			}
-			
+
 			return 'Member';
 		})()
 	);
@@ -64,10 +65,17 @@
 								<div class="content-box content-box--centered">
 									<div class="content-box__section">
 										<p>
-											Hello <strong>{displayName}</strong> (not <strong>{displayName}</strong>? <a href="/logout">Log out</a>)
+											Hello <strong>{displayName}</strong> (not <strong>{displayName}</strong>?
+											<a href="/logout">Log out</a>)
 										</p>
 										<p class="account-text--no-margin">
-											From your account dashboard you can view your <a href="/dashboard/account/orders">recent orders</a>, manage your <a href="/dashboard/account/edit-address">billing address</a>, and <a href="/dashboard/account/edit-account">edit your password and account details</a>.
+											From your account dashboard you can view your <a
+												href="/dashboard/account/orders">recent orders</a
+											>, manage your <a href="/dashboard/account/edit-address">billing address</a>,
+											and
+											<a href="/dashboard/account/edit-account"
+												>edit your password and account details</a
+											>.
 										</p>
 									</div>
 								</div>
@@ -205,7 +213,6 @@
 	.woocommerce-MyAccount-content p:last-child {
 		margin-bottom: 0;
 	}
-
 
 	.woocommerce-MyAccount-content a {
 		color: #0984ae;

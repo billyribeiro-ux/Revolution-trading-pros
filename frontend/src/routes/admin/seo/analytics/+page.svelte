@@ -132,93 +132,93 @@
 		</div>
 
 		{#if stats}
-		<div class="metrics-grid">
-			<div class="metric-card">
-				<div class="metric-label">Total Impressions</div>
-				<div class="metric-value">{formatNumber(stats.total_impressions || 0)}</div>
-				{#if comparison?.change?.impressions}
-					{@const ImpressionsIcon = getTrendIcon(comparison.change.impressions.direction)}
-					<div class="metric-change {getTrendClass(comparison.change.impressions.direction)}">
-						<ImpressionsIcon size={16} />
-						{Math.abs(comparison.change.impressions.percentage)}%
-					</div>
-				{/if}
-			</div>
+			<div class="metrics-grid">
+				<div class="metric-card">
+					<div class="metric-label">Total Impressions</div>
+					<div class="metric-value">{formatNumber(stats.total_impressions || 0)}</div>
+					{#if comparison?.change?.impressions}
+						{@const ImpressionsIcon = getTrendIcon(comparison.change.impressions.direction)}
+						<div class="metric-change {getTrendClass(comparison.change.impressions.direction)}">
+							<ImpressionsIcon size={16} />
+							{Math.abs(comparison.change.impressions.percentage)}%
+						</div>
+					{/if}
+				</div>
 
-			<div class="metric-card">
-				<div class="metric-label">Total Clicks</div>
-				<div class="metric-value">{formatNumber(stats.total_clicks || 0)}</div>
-				{#if comparison?.change?.clicks}
-					{@const ClicksIcon = getTrendIcon(comparison.change.clicks.direction)}
-					<div class="metric-change {getTrendClass(comparison.change.clicks.direction)}">
-						<ClicksIcon size={16} />
-						{Math.abs(comparison.change.clicks.percentage)}%
-					</div>
-				{/if}
-			</div>
+				<div class="metric-card">
+					<div class="metric-label">Total Clicks</div>
+					<div class="metric-value">{formatNumber(stats.total_clicks || 0)}</div>
+					{#if comparison?.change?.clicks}
+						{@const ClicksIcon = getTrendIcon(comparison.change.clicks.direction)}
+						<div class="metric-change {getTrendClass(comparison.change.clicks.direction)}">
+							<ClicksIcon size={16} />
+							{Math.abs(comparison.change.clicks.percentage)}%
+						</div>
+					{/if}
+				</div>
 
-			<div class="metric-card">
-				<div class="metric-label">Average CTR</div>
-				<div class="metric-value">{(stats.avg_ctr * 100).toFixed(2)}%</div>
-				{#if comparison?.change?.ctr}
-					{@const CtrIcon = getTrendIcon(comparison.change.ctr.direction)}
-					<div class="metric-change {getTrendClass(comparison.change.ctr.direction)}">
-						<CtrIcon size={16} />
-						{Math.abs(comparison.change.ctr.percentage)}%
-					</div>
-				{/if}
-			</div>
+				<div class="metric-card">
+					<div class="metric-label">Average CTR</div>
+					<div class="metric-value">{(stats.avg_ctr * 100).toFixed(2)}%</div>
+					{#if comparison?.change?.ctr}
+						{@const CtrIcon = getTrendIcon(comparison.change.ctr.direction)}
+						<div class="metric-change {getTrendClass(comparison.change.ctr.direction)}">
+							<CtrIcon size={16} />
+							{Math.abs(comparison.change.ctr.percentage)}%
+						</div>
+					{/if}
+				</div>
 
-			<div class="metric-card">
-				<div class="metric-label">Average Position</div>
-				<div class="metric-value">{stats.avg_position ? stats.avg_position.toFixed(1) : '—'}</div>
-				{#if comparison?.change?.position}
-					{@const PositionIcon = getTrendIcon(comparison.change.position.direction)}
-					<div class="metric-change {getTrendClass(comparison.change.position.direction)}">
-						<PositionIcon size={16} />
-						{Math.abs(comparison.change.position.percentage)}%
-					</div>
-				{/if}
+				<div class="metric-card">
+					<div class="metric-label">Average Position</div>
+					<div class="metric-value">{stats.avg_position ? stats.avg_position.toFixed(1) : '—'}</div>
+					{#if comparison?.change?.position}
+						{@const PositionIcon = getTrendIcon(comparison.change.position.direction)}
+						<div class="metric-change {getTrendClass(comparison.change.position.direction)}">
+							<PositionIcon size={16} />
+							{Math.abs(comparison.change.position.percentage)}%
+						</div>
+					{/if}
+				</div>
 			</div>
-		</div>
-	{/if}
+		{/if}
 
-	{#if topPages.length > 0}
-		<div class="top-pages-section">
-			<h2>Top Performing Pages</h2>
-			<div class="pages-table">
-				<table>
-					<thead>
-						<tr>
-							<th>URL</th>
-							<th>Impressions</th>
-							<th>Clicks</th>
-							<th>CTR</th>
-							<th>Avg. Position</th>
-						</tr>
-					</thead>
-					<tbody>
-						{#each topPages as page}
+		{#if topPages.length > 0}
+			<div class="top-pages-section">
+				<h2>Top Performing Pages</h2>
+				<div class="pages-table">
+					<table>
+						<thead>
 							<tr>
-								<td>
-									<div class="url-cell">{page.url}</div>
-								</td>
-								<td class="number">{formatNumber(page.total_impressions || 0)}</td>
-								<td class="number">{formatNumber(page.total_clicks || 0)}</td>
-								<td class="number">{(page.avg_ctr * 100).toFixed(2)}%</td>
-								<td class="number">{page.avg_position ? page.avg_position.toFixed(1) : '—'}</td>
+								<th>URL</th>
+								<th>Impressions</th>
+								<th>Clicks</th>
+								<th>CTR</th>
+								<th>Avg. Position</th>
 							</tr>
-						{/each}
-					</tbody>
-				</table>
+						</thead>
+						<tbody>
+							{#each topPages as page}
+								<tr>
+									<td>
+										<div class="url-cell">{page.url}</div>
+									</td>
+									<td class="number">{formatNumber(page.total_impressions || 0)}</td>
+									<td class="number">{formatNumber(page.total_clicks || 0)}</td>
+									<td class="number">{(page.avg_ctr * 100).toFixed(2)}%</td>
+									<td class="number">{page.avg_position ? page.avg_position.toFixed(1) : '—'}</td>
+								</tr>
+							{/each}
+						</tbody>
+					</table>
+				</div>
 			</div>
-		</div>
-	{:else if !loading}
-		<div class="empty-state">
-			<h3>No analytics data available</h3>
-			<p>Data will appear once search engines begin indexing your pages</p>
-		</div>
-	{/if}
+		{:else if !loading}
+			<div class="empty-state">
+				<h3>No analytics data available</h3>
+				<p>Data will appear once search engines begin indexing your pages</p>
+			</div>
+		{/if}
 	{/if}
 </div>
 

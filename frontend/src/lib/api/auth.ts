@@ -339,7 +339,8 @@ class AuthenticationService {
 				endpoint as (typeof AUTH_PROXY_ENDPOINTS)[number]
 			);
 			const useLocalProxy = browser && isAuthEndpoint;
-			const requestUrl = useLocalProxy ? endpoint : `${API_BASE_URL}${endpoint}`;
+			// ICT 11+ CORB Fix: Always use same-origin endpoints to prevent CORB
+			const requestUrl = useLocalProxy ? endpoint : endpoint;
 
 			if (useLocalProxy) {
 				console.debug('[AuthService] Using local proxy for:', endpoint);

@@ -46,13 +46,7 @@
 		onRefresh?: () => void;
 	}
 
-	let {
-		isOpen,
-		subscription,
-		onClose,
-		onEdit,
-		onRefresh
-	}: Props = $props();
+	let { isOpen, subscription, onClose, onEdit, onRefresh }: Props = $props();
 
 	// State
 	let isLoading = $state(false);
@@ -95,7 +89,7 @@
 		historyLoading = true;
 		try {
 			const history = await getPaymentHistory(subscription.id);
-			paymentHistory = history.map(h => ({
+			paymentHistory = history.map((h) => ({
 				id: h.id,
 				amount: h.amount,
 				status: h.status === 'succeeded' ? 'paid' : h.status === 'failed' ? 'failed' : 'pending',
@@ -249,14 +243,18 @@
 
 	function getIntervalLabel(interval: string): string {
 		switch (interval) {
-			case 'monthly': return 'Monthly';
-			case 'quarterly': return 'Quarterly';
-			case 'yearly': return 'Yearly';
-			default: return interval.charAt(0).toUpperCase() + interval.slice(1);
+			case 'monthly':
+				return 'Monthly';
+			case 'quarterly':
+				return 'Quarterly';
+			case 'yearly':
+				return 'Yearly';
+			default:
+				return interval.charAt(0).toUpperCase() + interval.slice(1);
 		}
 	}
 
-	function handleBackdropClick(e: MouseEvent) {
+	function handleBackdropClick(e: MouseEvent | KeyboardEvent) {
 		if (e.target === e.currentTarget) {
 			onClose();
 		}
@@ -264,7 +262,14 @@
 </script>
 
 {#if isOpen && subscription}
-	<div class="drawer-backdrop" onclick={handleBackdropClick}>
+	<div
+		class="drawer-backdrop"
+		role="presentation"
+		onclick={handleBackdropClick}
+		onkeydown={(e) => {
+			if (e.key === 'Escape') handleBackdropClick(e);
+		}}
+	>
 		<aside class="drawer" class:open={isOpen}>
 			<!-- Header -->
 			<header class="drawer-header">
@@ -275,10 +280,7 @@
 					<h2 class="subscription-name">{subscription.productName}</h2>
 					<p class="subscription-id">ID: {subscription.id.slice(0, 12)}...</p>
 					<div class="subscription-badges">
-						<span
-							class="status-badge"
-							style="--badge-color: {getStatusColor(subscription.status)}"
-						>
+						<span class="status-badge" style="--badge-color: {getStatusColor(subscription.status)}">
 							{subscription.status}
 						</span>
 						<span class="interval-badge">{getIntervalLabel(subscription.interval)}</span>
@@ -323,30 +325,43 @@
 					Edit
 				</button>
 				{#if subscription.status === 'active'}
-					<button type="button" class="btn-action warning" onclick={() => showPauseModal = true}>
+					<button type="button" class="btn-action warning" onclick={() => (showPauseModal = true)}>
 						<IconPlayerPause size={16} />
 						Pause
 					</button>
-					<button type="button" class="btn-action danger" onclick={() => showCancelModal = true}>
+					<button type="button" class="btn-action danger" onclick={() => (showCancelModal = true)}>
 						<IconBan size={16} />
 						Cancel
 					</button>
 				{:else if subscription.status === 'on-hold'}
-					<button type="button" class="btn-action success" onclick={handleResume} disabled={isProcessingAction}>
+					<button
+						type="button"
+						class="btn-action success"
+						onclick={handleResume}
+						disabled={isProcessingAction}
+					>
 						<IconPlayerPlay size={16} />
 						Resume
 					</button>
-					<button type="button" class="btn-action danger" onclick={() => showCancelModal = true}>
+					<button type="button" class="btn-action danger" onclick={() => (showCancelModal = true)}>
 						<IconBan size={16} />
 						Cancel
 					</button>
 				{:else if subscription.status === 'cancelled' || subscription.status === 'expired'}
-					<button type="button" class="btn-action success" onclick={() => showReactivateModal = true}>
+					<button
+						type="button"
+						class="btn-action success"
+						onclick={() => (showReactivateModal = true)}
+					>
 						<IconRefresh size={16} />
 						Reactivate
 					</button>
 				{:else if subscription.status === 'pending-cancel'}
-					<button type="button" class="btn-action success" onclick={() => showReactivateModal = true}>
+					<button
+						type="button"
+						class="btn-action success"
+						onclick={() => (showReactivateModal = true)}
+					>
 						<IconRefresh size={16} />
 						Keep Active
 					</button>
@@ -359,7 +374,7 @@
 					type="button"
 					class="tab"
 					class:active={activeTab === 'billing'}
-					onclick={() => activeTab = 'billing'}
+					onclick={() => (activeTab = 'billing')}
 				>
 					<IconCurrencyDollar size={16} />
 					Billing
@@ -368,7 +383,7 @@
 					type="button"
 					class="tab"
 					class:active={activeTab === 'usage'}
-					onclick={() => activeTab = 'usage'}
+					onclick={() => (activeTab = 'usage')}
 				>
 					<IconChartBar size={16} />
 					Usage
@@ -377,7 +392,7 @@
 					type="button"
 					class="tab"
 					class:active={activeTab === 'history'}
-					onclick={() => activeTab = 'history'}
+					onclick={() => (activeTab = 'history')}
 				>
 					<IconReceipt size={16} />
 					History
@@ -431,14 +446,19 @@
 									</div>
 									<div class="payment-method-details">
 										<span class="payment-method-type">
-											{subscription.paymentMethod.brand || subscription.paymentMethod.type || 'Card'}
+											{subscription.paymentMethod.brand ||
+												subscription.paymentMethod.type ||
+												'Card'}
 										</span>
 										{#if subscription.paymentMethod.last4}
-											<span class="payment-method-info">•••• {subscription.paymentMethod.last4}</span>
+											<span class="payment-method-info"
+												>•••• {subscription.paymentMethod.last4}</span
+											>
 										{/if}
 										{#if subscription.paymentMethod.expiryMonth && subscription.paymentMethod.expiryYear}
 											<span class="payment-method-expiry">
-												Expires {subscription.paymentMethod.expiryMonth}/{subscription.paymentMethod.expiryYear}
+												Expires {subscription.paymentMethod.expiryMonth}/{subscription.paymentMethod
+													.expiryYear}
 											</span>
 										{/if}
 									</div>
@@ -489,7 +509,6 @@
 							</section>
 						{/if}
 					</div>
-
 				{:else if activeTab === 'usage'}
 					<div class="tab-content">
 						<section class="info-section">
@@ -576,7 +595,6 @@
 							</section>
 						{/if}
 					</div>
-
 				{:else if activeTab === 'history'}
 					<div class="tab-content">
 						{#if historyLoading}
@@ -591,7 +609,7 @@
 							</div>
 						{:else}
 							<div class="payments-list">
-								{#each (paymentHistory.length > 0 ? paymentHistory : subscription.paymentHistory || []) as payment}
+								{#each paymentHistory.length > 0 ? paymentHistory : subscription.paymentHistory || [] as payment}
 									<div class="payment-card">
 										<div class="payment-header">
 											<span class="payment-amount">{formatCurrency(payment.amount)}</span>
@@ -653,7 +671,10 @@
 	inputPlaceholder="Enter pause reason..."
 	bind:inputValue={actionReason}
 	onConfirm={handlePause}
-	onCancel={() => { showPauseModal = false; actionReason = ''; }}
+	onCancel={() => {
+		showPauseModal = false;
+		actionReason = '';
+	}}
 />
 
 <!-- Cancel Modal -->
@@ -669,7 +690,11 @@
 	inputPlaceholder="Enter cancellation reason..."
 	bind:inputValue={actionReason}
 	onConfirm={handleCancel}
-	onCancel={() => { showCancelModal = false; actionReason = ''; cancelImmediate = false; }}
+	onCancel={() => {
+		showCancelModal = false;
+		actionReason = '';
+		cancelImmediate = false;
+	}}
 />
 
 <!-- Reactivate Modal -->
@@ -681,7 +706,7 @@
 	variant="success"
 	isLoading={isProcessingAction}
 	onConfirm={handleReactivate}
-	onCancel={() => showReactivateModal = false}
+	onCancel={() => (showReactivateModal = false)}
 />
 
 <style>
@@ -694,8 +719,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.drawer {
@@ -744,7 +773,11 @@
 		width: 56px;
 		height: 56px;
 		border-radius: var(--radius-lg, 0.75rem);
-		background: linear-gradient(135deg, var(--admin-accent-primary), var(--admin-widget-purple-icon));
+		background: linear-gradient(
+			135deg,
+			var(--admin-accent-primary),
+			var(--admin-widget-purple-icon)
+		);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -970,7 +1003,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.empty-state p,
@@ -1318,7 +1353,7 @@
 
 	.btn-retry-payment:hover:not(:disabled) {
 		background: var(--admin-accent-primary);
-		color: #0D1117;
+		color: #0d1117;
 	}
 
 	.btn-retry-payment:disabled {

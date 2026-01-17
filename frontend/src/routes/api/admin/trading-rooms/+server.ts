@@ -63,7 +63,8 @@ const mockTradingRooms = [
 		name: 'Small Account Mentorship',
 		slug: 'small-account-mentorship',
 		type: 'trading_room',
-		description: 'Specialized mentorship for growing small trading accounts with disciplined strategies.',
+		description:
+			'Specialized mentorship for growing small trading accounts with disciplined strategies.',
 		short_description: 'Grow your small account the right way',
 		icon: 'st-icon-mentorship',
 		color: '#f59e0b',
@@ -139,7 +140,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			...options,
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				...options?.headers
 			}
 		});
@@ -162,9 +163,12 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	const activeOnly = url.searchParams.get('active_only') === 'true';
 
 	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/trading-rooms?${url.searchParams.toString()}`, {
-		headers: { Authorization: request.headers.get('Authorization') || '' }
-	});
+	const backendData = await fetchFromBackend(
+		`/api/admin/trading-rooms?${url.searchParams.toString()}`,
+		{
+			headers: { Authorization: request.headers.get('Authorization') || '' }
+		}
+	);
 
 	if (backendData?.success) {
 		return json(backendData);
@@ -174,11 +178,11 @@ export const GET: RequestHandler = async ({ url, request }) => {
 	let filteredRooms = [...mockTradingRooms];
 
 	if (type) {
-		filteredRooms = filteredRooms.filter(r => r.type === type);
+		filteredRooms = filteredRooms.filter((r) => r.type === type);
 	}
 
 	if (activeOnly) {
-		filteredRooms = filteredRooms.filter(r => r.is_active);
+		filteredRooms = filteredRooms.filter((r) => r.is_active);
 	}
 
 	filteredRooms.sort((a, b) => a.sort_order - b.sort_order);

@@ -181,7 +181,7 @@
 					Preview
 				</a>
 			{/if}
-			<button type="button" class="btn-danger" onclick={() => showDeleteModal = true}>
+			<button type="button" class="btn-danger" onclick={() => (showDeleteModal = true)}>
 				<IconTrash size={18} />
 				Delete
 			</button>
@@ -207,12 +207,17 @@
 		{#if error}
 			<div class="alert alert-error">
 				<span>{error}</span>
-				<button type="button" class="alert-dismiss" onclick={() => error = null}>Dismiss</button>
+				<button type="button" class="alert-dismiss" onclick={() => (error = null)}>Dismiss</button>
 			</div>
 		{/if}
 		<!-- Edit Form -->
 		<div class="form-container">
-			<form onsubmit={(e) => { e.preventDefault(); handleSave(); }}>
+			<form
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSave();
+				}}
+			>
 				<!-- Basic Info Section -->
 				<section class="form-section">
 					<h2 class="section-title">Basic Information</h2>
@@ -241,12 +246,7 @@
 
 						<div class="form-group">
 							<label for="weekOf">Week Of *</label>
-							<input
-								id="weekOf"
-								type="date"
-								bind:value={formData.weekOf}
-								required
-							/>
+							<input id="weekOf" type="date" bind:value={formData.weekOf} required />
 						</div>
 
 						<div class="form-group">
@@ -327,7 +327,9 @@
 				<!-- Room Targeting Section -->
 				<section class="form-section">
 					<h2 class="section-title">Room Targeting</h2>
-					<p class="section-description">Select which rooms and services can access this watchlist.</p>
+					<p class="section-description">
+						Select which rooms and services can access this watchlist.
+					</p>
 					<RoomSelector bind:selectedRooms={formData.rooms} />
 				</section>
 			</form>
@@ -339,7 +341,7 @@
 {#if showDeleteModal}
 	<div
 		class="modal-overlay"
-		onclick={() => showDeleteModal = false}
+		onclick={() => (showDeleteModal = false)}
 		onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)}
 		role="button"
 		tabindex="-1"
@@ -355,12 +357,10 @@
 			<h3>Delete Watchlist?</h3>
 			<p>Are you sure you want to delete "{originalItem?.title}"? This action cannot be undone.</p>
 			<div class="modal-actions">
-				<button type="button" class="btn-cancel" onclick={() => showDeleteModal = false}>
+				<button type="button" class="btn-cancel" onclick={() => (showDeleteModal = false)}>
 					Cancel
 				</button>
-				<button type="button" class="btn-delete" onclick={handleDelete}>
-					Delete
-				</button>
+				<button type="button" class="btn-delete" onclick={handleDelete}> Delete </button>
 			</div>
 		</div>
 	</div>
@@ -495,7 +495,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Alert */

@@ -42,8 +42,19 @@
 	import IconCloudUpload from '@tabler/icons-svelte/icons/cloud-upload';
 	import IconFileUpload from '@tabler/icons-svelte/icons/file-upload';
 	import IconProgressCheck from '@tabler/icons-svelte/icons/progress-check';
-	import { tradingRoomApi, type TradingRoom, type Trader, type DailyVideo } from '$lib/api/trading-rooms';
-	import { bulkUploadApi, analyticsApi, videoOpsApi, type AnalyticsDashboard, type BatchStatus } from '$lib/api/video-advanced';
+	import {
+		tradingRoomApi,
+		type TradingRoom,
+		type Trader,
+		type DailyVideo
+	} from '$lib/api/trading-rooms';
+	import {
+		bulkUploadApi,
+		analyticsApi,
+		videoOpsApi,
+		type AnalyticsDashboard,
+		type BatchStatus
+	} from '$lib/api/video-advanced';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LOCAL TYPES (extending API types)
@@ -87,7 +98,7 @@
 
 	// Helper to get category by ID
 	function getCategoryById(id: string): VideoCategory | undefined {
-		return availableCategories.find(c => c.id === id);
+		return availableCategories.find((c) => c.id === id);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -164,7 +175,7 @@
 		if (index === -1) {
 			formData.categories = [...formData.categories, categoryId];
 		} else {
-			formData.categories = formData.categories.filter(c => c !== categoryId);
+			formData.categories = formData.categories.filter((c) => c !== categoryId);
 		}
 	}
 
@@ -227,7 +238,7 @@
 
 			if (response.success && response.data) {
 				// Map backend 'tags' to frontend 'categories'
-				videos = response.data.data.map(video => ({
+				videos = response.data.data.map((video) => ({
 					...video,
 					categories: video.tags || []
 				}));
@@ -289,7 +300,8 @@
 			video_url: video.video_url,
 			video_platform: video.video_platform,
 			thumbnail_url: video.thumbnail_url || '',
-			video_date: typeof video.video_date === 'string' ? video.video_date.split('T')[0] : video.video_date,
+			video_date:
+				typeof video.video_date === 'string' ? video.video_date.split('T')[0] : video.video_date,
 			is_published: video.is_published,
 			is_featured: video.is_featured,
 			categories: video.categories || []
@@ -426,8 +438,12 @@
 	function handleBunnyFileSelect(event: Event) {
 		const input = event.target as HTMLInputElement;
 		if (input.files) {
-			bunnyUploadFiles = Array.from(input.files).filter(f =>
-				f.type.startsWith('video/') || f.name.endsWith('.mp4') || f.name.endsWith('.mov') || f.name.endsWith('.webm')
+			bunnyUploadFiles = Array.from(input.files).filter(
+				(f) =>
+					f.type.startsWith('video/') ||
+					f.name.endsWith('.mp4') ||
+					f.name.endsWith('.mov') ||
+					f.name.endsWith('.webm')
 			);
 		}
 	}
@@ -435,8 +451,12 @@
 	function handleBunnyFileDrop(event: DragEvent) {
 		event.preventDefault();
 		if (event.dataTransfer?.files) {
-			bunnyUploadFiles = Array.from(event.dataTransfer.files).filter(f =>
-				f.type.startsWith('video/') || f.name.endsWith('.mp4') || f.name.endsWith('.mov') || f.name.endsWith('.webm')
+			bunnyUploadFiles = Array.from(event.dataTransfer.files).filter(
+				(f) =>
+					f.type.startsWith('video/') ||
+					f.name.endsWith('.mp4') ||
+					f.name.endsWith('.mov') ||
+					f.name.endsWith('.webm')
 			);
 		}
 	}
@@ -454,7 +474,7 @@
 		try {
 			// Initialize bulk upload with Bunny.net
 			const response = await bulkUploadApi.init({
-				files: bunnyUploadFiles.map(f => ({
+				files: bunnyUploadFiles.map((f) => ({
 					filename: f.name,
 					file_size_bytes: f.size,
 					content_type: f.type,
@@ -552,7 +572,7 @@
 				}
 			}
 
-			await new Promise(resolve => setTimeout(resolve, 5000));
+			await new Promise((resolve) => setTimeout(resolve, 5000));
 			attempts++;
 		}
 	}
@@ -617,11 +637,17 @@
 		const h = Math.floor(seconds / 3600);
 		const m = Math.floor((seconds % 3600) / 60);
 		const s = seconds % 60;
-		return h > 0 ? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}` : `${m}:${s.toString().padStart(2, '0')}`;
+		return h > 0
+			? `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`
+			: `${m}:${s.toString().padStart(2, '0')}`;
 	}
 
 	function formatDate(dateString: string): string {
-		return new Date(dateString).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+		return new Date(dateString).toLocaleDateString('en-US', {
+			month: 'short',
+			day: 'numeric',
+			year: 'numeric'
+		});
 	}
 
 	function formatViews(views: number): string {
@@ -649,36 +675,45 @@
 	// DERIVED
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const tradingRooms = $derived(rooms.filter(r => r.type === 'trading_room'));
-	const alertServices = $derived(rooms.filter(r => r.type === 'alert_service'));
+	const tradingRooms = $derived(rooms.filter((r) => r.type === 'trading_room'));
+	const alertServices = $derived(rooms.filter((r) => r.type === 'alert_service'));
 
 	// Filter videos by search, trader, and category
-	const filteredVideos = $derived(videos.filter(video => {
-		// Search matches title, description, or category names
-		const searchLower = searchQuery.toLowerCase();
-		const categoryNames = video.categories.map(c => getCategoryById(c)?.name.toLowerCase() || '');
-		const matchesSearch = !searchQuery ||
-			video.title.toLowerCase().includes(searchLower) ||
-			video.description?.toLowerCase().includes(searchLower) ||
-			categoryNames.some(name => name.includes(searchLower));
+	const filteredVideos = $derived(
+		videos.filter((video) => {
+			// Search matches title, description, or category names
+			const searchLower = searchQuery.toLowerCase();
+			const categoryNames = video.categories.map(
+				(c) => getCategoryById(c)?.name.toLowerCase() || ''
+			);
+			const matchesSearch =
+				!searchQuery ||
+				video.title.toLowerCase().includes(searchLower) ||
+				video.description?.toLowerCase().includes(searchLower) ||
+				categoryNames.some((name) => name.includes(searchLower));
 
-		// Trader filter
-		const matchesTrader = selectedTrader === 'all' || video.trader_id?.toString() === selectedTrader;
+			// Trader filter
+			const matchesTrader =
+				selectedTrader === 'all' || video.trader_id?.toString() === selectedTrader;
 
-		// Category filter
-		const matchesCategory = selectedCategory === 'all' || video.categories.includes(selectedCategory);
+			// Category filter
+			const matchesCategory =
+				selectedCategory === 'all' || video.categories.includes(selectedCategory);
 
-		return matchesSearch && matchesTrader && matchesCategory;
-	}));
+			return matchesSearch && matchesTrader && matchesCategory;
+		})
+	);
 
 	const totalViews = $derived(videos.reduce((sum, v) => sum + v.views_count, 0));
-	const publishedCount = $derived(videos.filter(v => v.is_published).length);
+	const publishedCount = $derived(videos.filter((v) => v.is_published).length);
 
 	// Get unique categories used in current videos
 	const usedCategories = $derived.by(() => {
 		const categoryIds = new Set<string>();
-		videos.forEach(v => v.categories.forEach(c => categoryIds.add(c)));
-		return Array.from(categoryIds).map(id => getCategoryById(id)).filter(Boolean) as VideoCategory[];
+		videos.forEach((v) => v.categories.forEach((c) => categoryIds.add(c)));
+		return Array.from(categoryIds)
+			.map((id) => getCategoryById(id))
+			.filter(Boolean) as VideoCategory[];
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -708,369 +743,391 @@
 
 <div class="videos-page">
 	<div class="admin-page-container">
-	<!-- Success/Error Messages -->
-	{#if successMessage}
-		<div class="alert alert-success">
-			<IconCheck size={18} />
-			{successMessage}
-		</div>
-	{/if}
-
-	{#if error}
-		<div class="alert alert-error">
-			<IconAlertCircle size={18} />
-			{error}
-			<button class="alert-close" onclick={() => error = ''}>
-				<IconX size={16} />
-			</button>
-		</div>
-	{/if}
-
-	<!-- Header -->
-	<div class="page-header">
-		<h1>Trading Room Videos</h1>
-		<p class="subtitle">Manage daily videos with category tags for each room and service</p>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={toggleAnalyticsPanel} title="View Analytics">
-				<IconChartBar size={18} />
-				Analytics
-			</button>
-			<button class="btn-bunny" onclick={openBunnyUploadModal} disabled={!selectedRoom} title="Upload to Bunny.net">
-				<IconCloudUpload size={18} />
-				Bunny Upload
-			</button>
-			<button class="btn-refresh" onclick={() => loadVideos()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			<button class="btn-primary" onclick={openUploadModal} disabled={!selectedRoom}>
-				<IconPlus size={18} />
-				Add Video
-			</button>
-		</div>
-	</div>
-
-	<!-- Room Selector Tabs -->
-	{#if isLoadingRooms}
-		<div class="room-selector loading">
-			<div class="spinner"></div>
-			<p>Loading rooms...</p>
-		</div>
-	{:else if rooms.length === 0}
-		<div class="room-selector empty">
-			<IconBuilding size={32} />
-			<p>No trading rooms found. Create rooms in the Trading Rooms admin.</p>
-		</div>
-	{:else}
-		<div class="room-selector">
-			<!-- Trading Rooms -->
-			<div class="room-group">
-				<h3 class="room-group-title">
-					<IconBuilding size={16} />
-					Trading Rooms
-				</h3>
-				<div class="room-tabs">
-					{#each tradingRooms as room}
-						<button
-							class="room-tab"
-							class:active={selectedRoom?.id === room.id}
-							style:--room-color={room.color || '#E6B800'}
-							onclick={() => selectRoom(room)}
-						>
-							<span class="room-name">{room.name}</span>
-							<span class="room-count">{room.daily_videos_count || 0}</span>
-						</button>
-					{/each}
-					{#if tradingRooms.length === 0}
-						<p class="no-rooms">No trading rooms</p>
-					{/if}
-				</div>
+		<!-- Success/Error Messages -->
+		{#if successMessage}
+			<div class="alert alert-success">
+				<IconCheck size={18} />
+				{successMessage}
 			</div>
+		{/if}
 
-			<!-- Alert Services -->
-			<div class="room-group">
-				<h3 class="room-group-title">
-					<IconChartBar size={16} />
-					Alert Services
-				</h3>
-				<div class="room-tabs">
-					{#each alertServices as service}
-						<button
-							class="room-tab"
-							class:active={selectedRoom?.id === service.id}
-							style:--room-color={service.color || '#B38F00'}
-							onclick={() => selectRoom(service)}
-						>
-							<span class="room-name">{service.name}</span>
-							<span class="room-count">{service.daily_videos_count || 0}</span>
-						</button>
-					{/each}
-					{#if alertServices.length === 0}
-						<p class="no-rooms">No alert services</p>
-					{/if}
-				</div>
+		{#if error}
+			<div class="alert alert-error">
+				<IconAlertCircle size={18} />
+				{error}
+				<button class="alert-close" onclick={() => (error = '')}>
+					<IconX size={16} />
+				</button>
+			</div>
+		{/if}
+
+		<!-- Header -->
+		<div class="page-header">
+			<h1>Trading Room Videos</h1>
+			<p class="subtitle">Manage daily videos with category tags for each room and service</p>
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={toggleAnalyticsPanel} title="View Analytics">
+					<IconChartBar size={18} />
+					Analytics
+				</button>
+				<button
+					class="btn-bunny"
+					onclick={openBunnyUploadModal}
+					disabled={!selectedRoom}
+					title="Upload to Bunny.net"
+				>
+					<IconCloudUpload size={18} />
+					Bunny Upload
+				</button>
+				<button class="btn-refresh" onclick={() => loadVideos()} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				</button>
+				<button class="btn-primary" onclick={openUploadModal} disabled={!selectedRoom}>
+					<IconPlus size={18} />
+					Add Video
+				</button>
 			</div>
 		</div>
-	{/if}
 
-	<!-- Selected Room Header -->
-	{#if selectedRoom}
-		<div class="selected-room-header" style:--room-color={selectedRoom.color}>
-			<div class="selected-room-info">
-				<h2>{selectedRoom.name}</h2>
-				<span class="room-type-badge">{selectedRoom.type === 'trading_room' ? 'Trading Room' : 'Alert Service'}</span>
+		<!-- Room Selector Tabs -->
+		{#if isLoadingRooms}
+			<div class="room-selector loading">
+				<div class="spinner"></div>
+				<p>Loading rooms...</p>
 			</div>
-			<div class="selected-room-stats">
-				<div class="stat">
-					<span class="stat-value">{videos.length}</span>
-					<span class="stat-label">Videos</span>
-				</div>
-				<div class="stat">
-					<span class="stat-value">{formatViews(totalViews)}</span>
-					<span class="stat-label">Total Views</span>
-				</div>
-				<div class="stat">
-					<span class="stat-value">{publishedCount}</span>
-					<span class="stat-label">Published</span>
-				</div>
+		{:else if rooms.length === 0}
+			<div class="room-selector empty">
+				<IconBuilding size={32} />
+				<p>No trading rooms found. Create rooms in the Trading Rooms admin.</p>
 			</div>
-		</div>
-	{/if}
+		{:else}
+			<div class="room-selector">
+				<!-- Trading Rooms -->
+				<div class="room-group">
+					<h3 class="room-group-title">
+						<IconBuilding size={16} />
+						Trading Rooms
+					</h3>
+					<div class="room-tabs">
+						{#each tradingRooms as room}
+							<button
+								class="room-tab"
+								class:active={selectedRoom?.id === room.id}
+								style:--room-color={room.color || '#E6B800'}
+								onclick={() => selectRoom(room)}
+							>
+								<span class="room-name">{room.name}</span>
+								<span class="room-count">{room.daily_videos_count || 0}</span>
+							</button>
+						{/each}
+						{#if tradingRooms.length === 0}
+							<p class="no-rooms">No trading rooms</p>
+						{/if}
+					</div>
+				</div>
 
-	<!-- Analytics Panel -->
-	{#if showAnalyticsPanel}
-		<div class="analytics-panel">
-			<div class="analytics-header">
-				<h3><IconChartBar size={20} /> Video Analytics</h3>
-				<div class="analytics-controls">
-					<label for="analytics-period" class="sr-only">Analytics period</label>
-					<select id="analytics-period" class="filter-select" bind:value={analyticsPeriod}>
-						<option value="7d">Last 7 days</option>
-						<option value="30d">Last 30 days</option>
-						<option value="90d">Last 90 days</option>
-					</select>
-					<button class="btn-icon" onclick={() => showAnalyticsPanel = false} title="Close">
-						<IconX size={18} />
-					</button>
+				<!-- Alert Services -->
+				<div class="room-group">
+					<h3 class="room-group-title">
+						<IconChartBar size={16} />
+						Alert Services
+					</h3>
+					<div class="room-tabs">
+						{#each alertServices as service}
+							<button
+								class="room-tab"
+								class:active={selectedRoom?.id === service.id}
+								style:--room-color={service.color || '#B38F00'}
+								onclick={() => selectRoom(service)}
+							>
+								<span class="room-name">{service.name}</span>
+								<span class="room-count">{service.daily_videos_count || 0}</span>
+							</button>
+						{/each}
+						{#if alertServices.length === 0}
+							<p class="no-rooms">No alert services</p>
+						{/if}
+					</div>
 				</div>
 			</div>
+		{/if}
 
-			{#if isLoadingAnalytics}
-				<div class="analytics-loading">
-					<div class="spinner"></div>
-					<p>Loading analytics...</p>
+		<!-- Selected Room Header -->
+		{#if selectedRoom}
+			<div class="selected-room-header" style:--room-color={selectedRoom.color}>
+				<div class="selected-room-info">
+					<h2>{selectedRoom.name}</h2>
+					<span class="room-type-badge"
+						>{selectedRoom.type === 'trading_room' ? 'Trading Room' : 'Alert Service'}</span
+					>
 				</div>
-			{:else if analyticsData}
-				<div class="analytics-grid">
-					<div class="analytics-stat">
-						<span class="stat-value">{formatViews(analyticsData.total_views)}</span>
+				<div class="selected-room-stats">
+					<div class="stat">
+						<span class="stat-value">{videos.length}</span>
+						<span class="stat-label">Videos</span>
+					</div>
+					<div class="stat">
+						<span class="stat-value">{formatViews(totalViews)}</span>
 						<span class="stat-label">Total Views</span>
 					</div>
-					<div class="analytics-stat">
-						<span class="stat-value">{analyticsData.unique_viewers.toLocaleString()}</span>
-						<span class="stat-label">Unique Viewers</span>
+					<div class="stat">
+						<span class="stat-value">{publishedCount}</span>
+						<span class="stat-label">Published</span>
 					</div>
-					<div class="analytics-stat">
-						<span class="stat-value">{analyticsData.total_watch_time_hours.toFixed(1)}h</span>
-						<span class="stat-label">Watch Time</span>
-					</div>
-					<div class="analytics-stat">
-						<span class="stat-value">{(analyticsData.avg_completion_rate * 100).toFixed(0)}%</span>
-						<span class="stat-label">Avg Completion</span>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Analytics Panel -->
+		{#if showAnalyticsPanel}
+			<div class="analytics-panel">
+				<div class="analytics-header">
+					<h3><IconChartBar size={20} /> Video Analytics</h3>
+					<div class="analytics-controls">
+						<label for="analytics-period" class="sr-only">Analytics period</label>
+						<select id="analytics-period" class="filter-select" bind:value={analyticsPeriod}>
+							<option value="7d">Last 7 days</option>
+							<option value="30d">Last 30 days</option>
+							<option value="90d">Last 90 days</option>
+						</select>
+						<button class="btn-icon" onclick={() => (showAnalyticsPanel = false)} title="Close">
+							<IconX size={18} />
+						</button>
 					</div>
 				</div>
 
-				{#if analyticsData.top_videos && analyticsData.top_videos.length > 0}
-					<div class="top-videos-section">
-						<h4>Top Performing Videos</h4>
-						<div class="top-videos-list">
-							{#each analyticsData.top_videos.slice(0, 5) as topVideo, index}
-								<div class="top-video-item">
-									<span class="rank">#{index + 1}</span>
-									<span class="title">{topVideo.title}</span>
-									<span class="views">{formatViews(topVideo.views)} views</span>
-								</div>
-							{/each}
+				{#if isLoadingAnalytics}
+					<div class="analytics-loading">
+						<div class="spinner"></div>
+						<p>Loading analytics...</p>
+					</div>
+				{:else if analyticsData}
+					<div class="analytics-grid">
+						<div class="analytics-stat">
+							<span class="stat-value">{formatViews(analyticsData.total_views)}</span>
+							<span class="stat-label">Total Views</span>
+						</div>
+						<div class="analytics-stat">
+							<span class="stat-value">{analyticsData.unique_viewers.toLocaleString()}</span>
+							<span class="stat-label">Unique Viewers</span>
+						</div>
+						<div class="analytics-stat">
+							<span class="stat-value">{analyticsData.total_watch_time_hours.toFixed(1)}h</span>
+							<span class="stat-label">Watch Time</span>
+						</div>
+						<div class="analytics-stat">
+							<span class="stat-value">{(analyticsData.avg_completion_rate * 100).toFixed(0)}%</span
+							>
+							<span class="stat-label">Avg Completion</span>
 						</div>
 					</div>
-				{/if}
 
-				<!-- Used Categories Quick Stats -->
-				{#if usedCategories.length > 0}
-					<div class="categories-stats-section">
-						<h4>Categories in Use</h4>
-						<div class="used-categories-tags">
-							{#each usedCategories as category}
-								<span class="category-tag" style:--tag-color={category.color}>
-									{category.name}
-								</span>
-							{/each}
+					{#if analyticsData.top_videos && analyticsData.top_videos.length > 0}
+						<div class="top-videos-section">
+							<h4>Top Performing Videos</h4>
+							<div class="top-videos-list">
+								{#each analyticsData.top_videos.slice(0, 5) as topVideo, index}
+									<div class="top-video-item">
+										<span class="rank">#{index + 1}</span>
+										<span class="title">{topVideo.title}</span>
+										<span class="views">{formatViews(topVideo.views)} views</span>
+									</div>
+								{/each}
+							</div>
 						</div>
-					</div>
-				{/if}
-			{:else}
-				<div class="analytics-empty">
-					<p>No analytics data available yet.</p>
-				</div>
-			{/if}
-		</div>
-	{/if}
+					{/if}
 
-	<!-- Filters -->
-	<div class="filters-bar">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<label for="search-videos" class="sr-only">Search videos or categories</label>
-			<input type="text" id="search-videos" placeholder="Search videos, categories..." bind:value={searchQuery} />
-		</div>
-		<div class="filter-group">
-			<label for="category-filter" class="sr-only">Filter by category</label>
-			<select id="category-filter" class="filter-select" bind:value={selectedCategory}>
-				<option value="all">All Categories</option>
-				{#each availableCategories as category}
-					<option value={category.id}>{category.name}</option>
-				{/each}
-			</select>
-		</div>
-		<div class="filter-group">
-			<label for="trader-filter" class="sr-only">Filter by trader</label>
-			<select id="trader-filter" class="filter-select" bind:value={selectedTrader}>
-				<option value="all">All Traders</option>
-				{#each traders as trader}
-					<option value={trader.id.toString()}>{trader.name}</option>
-				{/each}
-			</select>
-		</div>
-	</div>
-
-	<!-- Content -->
-	{#if isLoading}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading videos...</p>
-		</div>
-	{:else if error}
-		<div class="error-state">
-			<p>{error}</p>
-			<button onclick={() => loadVideos()}>Try Again</button>
-		</div>
-	{:else if filteredVideos.length === 0}
-		<div class="empty-state">
-			<IconVideo size={64} />
-			<h3>No videos found</h3>
-			<p>
-				{#if searchQuery || selectedCategory !== 'all' || selectedTrader !== 'all'}
-					No videos match your filters. Try adjusting your search.
+					<!-- Used Categories Quick Stats -->
+					{#if usedCategories.length > 0}
+						<div class="categories-stats-section">
+							<h4>Categories in Use</h4>
+							<div class="used-categories-tags">
+								{#each usedCategories as category}
+									<span class="category-tag" style:--tag-color={category.color}>
+										{category.name}
+									</span>
+								{/each}
+							</div>
+						</div>
+					{/if}
 				{:else}
-					Add your first video to {selectedRoom?.name}
+					<div class="analytics-empty">
+						<p>No analytics data available yet.</p>
+					</div>
 				{/if}
-			</p>
-			<button class="btn-primary" onclick={openUploadModal}>
-				<IconPlus size={18} />
-				Add Video
-			</button>
-		</div>
-	{:else}
-		<div class="videos-table-wrapper">
-			<table class="videos-table">
-				<thead>
-					<tr>
-						<th>Video</th>
-						<th>Categories</th>
-						<th>Trader</th>
-						<th>Date</th>
-						<th>Views</th>
-						<th>Status</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each filteredVideos as video}
-						<tr>
-							<td class="video-cell">
-								<div class="video-thumbnail-small">
-									{#if video.thumbnail_url}
-										<img src={video.thumbnail_url} alt="" />
-									{:else}
-										<div class="thumbnail-placeholder-small">
-											<IconVideo size={20} />
-										</div>
-									{/if}
-									{#if video.duration}
-										<span class="duration-badge">{formatDuration(video.duration)}</span>
-									{/if}
-								</div>
-								<div class="video-info">
-									<span class="video-title">{video.title}</span>
-									<span class="video-platform">{video.video_platform}</span>
-								</div>
-							</td>
-							<td class="categories-cell">
-								<div class="category-tags">
-									{#each (video.categories || []).slice(0, 3) as categoryId}
-										{@const category = getCategoryById(categoryId)}
-										{#if category}
-											<span class="category-tag" style:--tag-color={category.color}>
-												{category.name}
-											</span>
-										{/if}
-									{/each}
-									{#if video.categories.length > 3}
-										<span class="category-more">+{video.categories.length - 3}</span>
-									{/if}
-								</div>
-							</td>
-							<td>
-								<div class="trader-cell">
-									{#if video.trader?.photo_url}
-										<img src={video.trader.photo_url} alt="" class="trader-avatar" />
-									{:else}
-										<div class="trader-avatar-placeholder">
-											<IconUser size={16} />
-										</div>
-									{/if}
-									<span>{video.trader?.name || 'Unassigned'}</span>
-								</div>
-							</td>
-							<td>{formatDate(video.video_date)}</td>
-							<td>{formatViews(video.views_count)}</td>
-							<td>
-								<button
-									class="status-toggle"
-									class:published={video.is_published}
-									onclick={() => togglePublished(video)}
-								>
-									{#if video.is_published}
-										<IconCheck size={14} />
-										Published
-									{:else}
-										<IconX size={14} />
-										Draft
-									{/if}
-								</button>
-							</td>
-							<td>
-								<div class="action-buttons">
-									<button class="btn-icon" title="Replace Video" onclick={() => openReplaceModal(video)}>
-										<IconLink size={16} />
-									</button>
-									<button class="btn-icon" title="Edit" onclick={() => openEditModal(video)}>
-										<IconEdit size={16} />
-									</button>
-									<button class="btn-icon" title="Preview">
-										<IconPlayerPlay size={16} />
-									</button>
-									<button class="btn-icon danger" title="Delete" onclick={() => deleteVideo(video)}>
-										<IconTrash size={16} />
-									</button>
-								</div>
-							</td>
-						</tr>
+			</div>
+		{/if}
+
+		<!-- Filters -->
+		<div class="filters-bar">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<label for="search-videos" class="sr-only">Search videos or categories</label>
+				<input
+					type="text"
+					id="search-videos"
+					placeholder="Search videos, categories..."
+					bind:value={searchQuery}
+				/>
+			</div>
+			<div class="filter-group">
+				<label for="category-filter" class="sr-only">Filter by category</label>
+				<select id="category-filter" class="filter-select" bind:value={selectedCategory}>
+					<option value="all">All Categories</option>
+					{#each availableCategories as category}
+						<option value={category.id}>{category.name}</option>
 					{/each}
-				</tbody>
-			</table>
+				</select>
+			</div>
+			<div class="filter-group">
+				<label for="trader-filter" class="sr-only">Filter by trader</label>
+				<select id="trader-filter" class="filter-select" bind:value={selectedTrader}>
+					<option value="all">All Traders</option>
+					{#each traders as trader}
+						<option value={trader.id.toString()}>{trader.name}</option>
+					{/each}
+				</select>
+			</div>
 		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+
+		<!-- Content -->
+		{#if isLoading}
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<p>Loading videos...</p>
+			</div>
+		{:else if error}
+			<div class="error-state">
+				<p>{error}</p>
+				<button onclick={() => loadVideos()}>Try Again</button>
+			</div>
+		{:else if filteredVideos.length === 0}
+			<div class="empty-state">
+				<IconVideo size={64} />
+				<h3>No videos found</h3>
+				<p>
+					{#if searchQuery || selectedCategory !== 'all' || selectedTrader !== 'all'}
+						No videos match your filters. Try adjusting your search.
+					{:else}
+						Add your first video to {selectedRoom?.name}
+					{/if}
+				</p>
+				<button class="btn-primary" onclick={openUploadModal}>
+					<IconPlus size={18} />
+					Add Video
+				</button>
+			</div>
+		{:else}
+			<div class="videos-table-wrapper">
+				<table class="videos-table">
+					<thead>
+						<tr>
+							<th>Video</th>
+							<th>Categories</th>
+							<th>Trader</th>
+							<th>Date</th>
+							<th>Views</th>
+							<th>Status</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each filteredVideos as video}
+							<tr>
+								<td class="video-cell">
+									<div class="video-thumbnail-small">
+										{#if video.thumbnail_url}
+											<img src={video.thumbnail_url} alt="" />
+										{:else}
+											<div class="thumbnail-placeholder-small">
+												<IconVideo size={20} />
+											</div>
+										{/if}
+										{#if video.duration}
+											<span class="duration-badge">{formatDuration(video.duration)}</span>
+										{/if}
+									</div>
+									<div class="video-info">
+										<span class="video-title">{video.title}</span>
+										<span class="video-platform">{video.video_platform}</span>
+									</div>
+								</td>
+								<td class="categories-cell">
+									<div class="category-tags">
+										{#each (video.categories || []).slice(0, 3) as categoryId}
+											{@const category = getCategoryById(categoryId)}
+											{#if category}
+												<span class="category-tag" style:--tag-color={category.color}>
+													{category.name}
+												</span>
+											{/if}
+										{/each}
+										{#if video.categories.length > 3}
+											<span class="category-more">+{video.categories.length - 3}</span>
+										{/if}
+									</div>
+								</td>
+								<td>
+									<div class="trader-cell">
+										{#if video.trader?.photo_url}
+											<img src={video.trader.photo_url} alt="" class="trader-avatar" />
+										{:else}
+											<div class="trader-avatar-placeholder">
+												<IconUser size={16} />
+											</div>
+										{/if}
+										<span>{video.trader?.name || 'Unassigned'}</span>
+									</div>
+								</td>
+								<td>{formatDate(video.video_date)}</td>
+								<td>{formatViews(video.views_count)}</td>
+								<td>
+									<button
+										class="status-toggle"
+										class:published={video.is_published}
+										onclick={() => togglePublished(video)}
+									>
+										{#if video.is_published}
+											<IconCheck size={14} />
+											Published
+										{:else}
+											<IconX size={14} />
+											Draft
+										{/if}
+									</button>
+								</td>
+								<td>
+									<div class="action-buttons">
+										<button
+											class="btn-icon"
+											title="Replace Video"
+											onclick={() => openReplaceModal(video)}
+										>
+											<IconLink size={16} />
+										</button>
+										<button class="btn-icon" title="Edit" onclick={() => openEditModal(video)}>
+											<IconEdit size={16} />
+										</button>
+										<button class="btn-icon" title="Preview">
+											<IconPlayerPlay size={16} />
+										</button>
+										<button
+											class="btn-icon danger"
+											title="Delete"
+											onclick={() => deleteVideo(video)}
+										>
+											<IconTrash size={16} />
+										</button>
+									</div>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <!-- Upload/Edit Modal -->
@@ -1079,13 +1136,32 @@
 		class="modal-overlay"
 		role="button"
 		tabindex="0"
-		onclick={() => { showUploadModal = false; showEditModal = false; }}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showUploadModal = false, showEditModal = false)}
+		onclick={() => {
+			showUploadModal = false;
+			showEditModal = false;
+		}}
+		onkeydown={(e: KeyboardEvent) =>
+			e.key === 'Escape' && ((showUploadModal = false), (showEditModal = false))}
 	>
-		<div class="modal modal-large" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
+		<div
+			class="modal modal-large"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+		>
 			<div class="modal-header">
 				<h2>{showEditModal ? 'Edit Video' : 'Add New Video'}</h2>
-				<button class="modal-close" onclick={() => { showUploadModal = false; showEditModal = false; }} type="button" aria-label="Close">&times;</button>
+				<button
+					class="modal-close"
+					onclick={() => {
+						showUploadModal = false;
+						showEditModal = false;
+					}}
+					type="button"
+					aria-label="Close">&times;</button
+				>
 			</div>
 			<div class="modal-body">
 				<!-- Room Selector (for new videos) -->
@@ -1110,7 +1186,12 @@
 				<!-- Video URL -->
 				<div class="form-group">
 					<label for="video-url">Video URL</label>
-					<input type="url" id="video-url" placeholder="https://vimeo.com/..." bind:value={formData.video_url} />
+					<input
+						type="url"
+						id="video-url"
+						placeholder="https://vimeo.com/..."
+						bind:value={formData.video_url}
+					/>
 					<span class="form-hint">
 						Supports: Vimeo, YouTube, Bunny.net, Wistia, or direct URL
 						{#if formData.video_platform !== 'direct'}
@@ -1122,19 +1203,32 @@
 				<!-- Title -->
 				<div class="form-group">
 					<label for="video-title">Title</label>
-					<input type="text" id="video-title" placeholder="Risk Management Fundamentals" bind:value={formData.title} />
+					<input
+						type="text"
+						id="video-title"
+						placeholder="Risk Management Fundamentals"
+						bind:value={formData.title}
+					/>
 				</div>
 
 				<!-- Description -->
 				<div class="form-group">
 					<label for="video-description">Description</label>
-					<textarea id="video-description" rows="3" placeholder="Brief description of the video content..." bind:value={formData.description}></textarea>
+					<textarea
+						id="video-description"
+						rows="3"
+						placeholder="Brief description of the video content..."
+						bind:value={formData.description}
+					></textarea>
 				</div>
 
 				<!-- Categories Section -->
 				<div class="form-group">
 					<label>
-						<IconTags size={16} style="display: inline; vertical-align: middle; margin-right: 4px;" />
+						<IconTags
+							size={16}
+							style="display: inline; vertical-align: middle; margin-right: 4px;"
+						/>
 						Categories (select all that apply)
 					</label>
 					<div class="categories-grid">
@@ -1161,7 +1255,11 @@
 								{#if category}
 									<span class="selected-tag" style:--tag-color={category.color}>
 										{category.name}
-										<button type="button" onclick={() => toggleCategory(categoryId)} aria-label="Remove {category.name}">
+										<button
+											type="button"
+											onclick={() => toggleCategory(categoryId)}
+											aria-label="Remove {category.name}"
+										>
 											<IconX size={12} />
 										</button>
 									</span>
@@ -1191,7 +1289,12 @@
 				<!-- Thumbnail URL -->
 				<div class="form-group">
 					<label for="thumbnail-url">Thumbnail URL (optional)</label>
-					<input type="url" id="thumbnail-url" placeholder="https://..." bind:value={formData.thumbnail_url} />
+					<input
+						type="url"
+						id="thumbnail-url"
+						placeholder="https://..."
+						bind:value={formData.thumbnail_url}
+					/>
 				</div>
 
 				<!-- Options -->
@@ -1207,8 +1310,19 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => { showUploadModal = false; showEditModal = false; }} type="button">Cancel</button>
-				<button class="btn-primary" onclick={saveVideo} disabled={isSaving || !formData.title || !formData.video_url}>
+				<button
+					class="btn-secondary"
+					onclick={() => {
+						showUploadModal = false;
+						showEditModal = false;
+					}}
+					type="button">Cancel</button
+				>
+				<button
+					class="btn-primary"
+					onclick={saveVideo}
+					disabled={isSaving || !formData.title || !formData.video_url}
+				>
 					{#if isSaving}
 						<span class="btn-spinner"></span>
 						Saving...
@@ -1227,18 +1341,43 @@
 		class="modal-overlay"
 		role="button"
 		tabindex="0"
-		onclick={() => { showReplaceModal = false; replacingVideo = null; newVideoUrl = ''; }}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showReplaceModal = false, replacingVideo = null, newVideoUrl = '')}
+		onclick={() => {
+			showReplaceModal = false;
+			replacingVideo = null;
+			newVideoUrl = '';
+		}}
+		onkeydown={(e: KeyboardEvent) =>
+			e.key === 'Escape' &&
+			((showReplaceModal = false), (replacingVideo = null), (newVideoUrl = ''))}
 	>
-		<div class="modal" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
+		<div
+			class="modal"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+		>
 			<div class="modal-header">
 				<h2>Replace Video</h2>
-				<button class="modal-close" onclick={() => { showReplaceModal = false; replacingVideo = null; newVideoUrl = ''; }} type="button" aria-label="Close">&times;</button>
+				<button
+					class="modal-close"
+					onclick={() => {
+						showReplaceModal = false;
+						replacingVideo = null;
+						newVideoUrl = '';
+					}}
+					type="button"
+					aria-label="Close">&times;</button
+				>
 			</div>
 			<div class="modal-body">
 				<div class="replace-info">
 					<p><strong>Current video:</strong> {replacingVideo.title}</p>
-					<p class="text-muted">All metadata (title, description, categories, featured status) will be kept. Only the video URL will be replaced.</p>
+					<p class="text-muted">
+						All metadata (title, description, categories, featured status) will be kept. Only the
+						video URL will be replaced.
+					</p>
 				</div>
 
 				<div class="form-group">
@@ -1259,7 +1398,15 @@
 				{/if}
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => { showReplaceModal = false; replacingVideo = null; newVideoUrl = ''; }} type="button">Cancel</button>
+				<button
+					class="btn-secondary"
+					onclick={() => {
+						showReplaceModal = false;
+						replacingVideo = null;
+						newVideoUrl = '';
+					}}
+					type="button">Cancel</button
+				>
 				<button class="btn-primary" onclick={replaceVideo} disabled={isSaving || !newVideoUrl}>
 					{#if isSaving}
 						<span class="btn-spinner"></span>
@@ -1280,21 +1427,49 @@
 		class="modal-overlay"
 		role="button"
 		tabindex="0"
-		onclick={() => { if (!isUploadingToBunny) { showBunnyUploadModal = false; bunnyUploadFiles = []; } }}
-		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && !isUploadingToBunny && (showBunnyUploadModal = false, bunnyUploadFiles = [])}
+		onclick={() => {
+			if (!isUploadingToBunny) {
+				showBunnyUploadModal = false;
+				bunnyUploadFiles = [];
+			}
+		}}
+		onkeydown={(e: KeyboardEvent) =>
+			e.key === 'Escape' &&
+			!isUploadingToBunny &&
+			((showBunnyUploadModal = false), (bunnyUploadFiles = []))}
 	>
-		<div class="modal modal-large" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="dialog" aria-modal="true" tabindex="-1">
+		<div
+			class="modal modal-large"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+		>
 			<div class="modal-header bunny-header">
 				<h2>
 					<IconCloudUpload size={24} />
 					Upload to Bunny.net
 				</h2>
-				<button class="modal-close" onclick={() => { if (!isUploadingToBunny) { showBunnyUploadModal = false; bunnyUploadFiles = []; } }} type="button" aria-label="Close" disabled={isUploadingToBunny}>&times;</button>
+				<button
+					class="modal-close"
+					onclick={() => {
+						if (!isUploadingToBunny) {
+							showBunnyUploadModal = false;
+							bunnyUploadFiles = [];
+						}
+					}}
+					type="button"
+					aria-label="Close"
+					disabled={isUploadingToBunny}>&times;</button
+				>
 			</div>
 			<div class="modal-body">
 				<div class="bunny-info">
 					<p>Upload video files directly to Bunny.net CDN for fast, reliable streaming.</p>
-					<p class="text-muted">Videos will be uploaded to: <strong>{selectedRoom?.name}</strong></p>
+					<p class="text-muted">
+						Videos will be uploaded to: <strong>{selectedRoom?.name}</strong>
+					</p>
 				</div>
 
 				<!-- Drop Zone -->
@@ -1313,7 +1488,13 @@
 						<p class="text-muted">or</p>
 						<label class="btn-secondary">
 							Browse Files
-							<input type="file" accept="video/*,.mp4,.mov,.webm" multiple onchange={handleBunnyFileSelect} hidden />
+							<input
+								type="file"
+								accept="video/*,.mp4,.mov,.webm"
+								multiple
+								onchange={handleBunnyFileSelect}
+								hidden
+							/>
 						</label>
 						<p class="file-types">Supported: MP4, MOV, WebM</p>
 					{:else}
@@ -1325,7 +1506,11 @@
 										<span class="file-name">{file.name}</span>
 										<span class="file-size">{(file.size / (1024 * 1024)).toFixed(1)} MB</span>
 										{#if !isUploadingToBunny}
-											<button class="btn-remove" onclick={() => removeBunnyFile(index)} aria-label="Remove {file.name}">
+											<button
+												class="btn-remove"
+												onclick={() => removeBunnyFile(index)}
+												aria-label="Remove {file.name}"
+											>
 												<IconX size={14} />
 											</button>
 										{/if}
@@ -1347,7 +1532,9 @@
 						{#if bunnyUploadStatus}
 							<div class="batch-status">
 								<span class="status-item completed">Completed: {bunnyUploadStatus.completed}</span>
-								<span class="status-item in-progress">In Progress: {bunnyUploadStatus.in_progress}</span>
+								<span class="status-item in-progress"
+									>In Progress: {bunnyUploadStatus.in_progress}</span
+								>
 								<span class="status-item pending">Pending: {bunnyUploadStatus.pending}</span>
 								{#if bunnyUploadStatus.failed > 0}
 									<span class="status-item failed">Failed: {bunnyUploadStatus.failed}</span>
@@ -1358,8 +1545,20 @@
 				{/if}
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => { showBunnyUploadModal = false; bunnyUploadFiles = []; }} type="button" disabled={isUploadingToBunny}>Cancel</button>
-				<button class="btn-bunny" onclick={startBunnyUpload} disabled={isUploadingToBunny || bunnyUploadFiles.length === 0}>
+				<button
+					class="btn-secondary"
+					onclick={() => {
+						showBunnyUploadModal = false;
+						bunnyUploadFiles = [];
+					}}
+					type="button"
+					disabled={isUploadingToBunny}>Cancel</button
+				>
+				<button
+					class="btn-bunny"
+					onclick={startBunnyUpload}
+					disabled={isUploadingToBunny || bunnyUploadFiles.length === 0}
+				>
 					{#if isUploadingToBunny}
 						<span class="btn-spinner"></span>
 						Uploading...
@@ -1421,7 +1620,7 @@
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -1429,8 +1628,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -1438,8 +1641,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 6px;
 		font-weight: 600;
@@ -1629,8 +1832,8 @@
 	}
 
 	.room-tab.active {
-		background: var(--room-color, #E6B800);
-		border-color: var(--room-color, #E6B800);
+		background: var(--room-color, #e6b800);
+		border-color: var(--room-color, #e6b800);
 		color: white;
 	}
 
@@ -1656,7 +1859,7 @@
 		border: 1px solid rgba(230, 184, 0, 0.1);
 		border-radius: 14px;
 		margin-bottom: 1.5rem;
-		border-left: 4px solid var(--room-color, #E6B800);
+		border-left: 4px solid var(--room-color, #e6b800);
 	}
 
 	.selected-room-info h2 {
@@ -1866,12 +2069,12 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 0.25rem 0.5rem;
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.7rem;
 		font-weight: 500;
-		color: var(--tag-color, #E6B800);
+		color: var(--tag-color, #e6b800);
 		white-space: nowrap;
 	}
 
@@ -1952,7 +2155,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-icon.danger:hover {
@@ -1962,7 +2165,8 @@
 	}
 
 	/* States */
-	.loading-state, .error-state {
+	.loading-state,
+	.error-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -1999,7 +2203,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
@@ -2008,7 +2212,7 @@
 	.checkbox-label input {
 		width: 18px;
 		height: 18px;
-		accent-color: #E6B800;
+		accent-color: #e6b800;
 	}
 
 	/* Modal */
@@ -2152,15 +2356,15 @@
 	}
 
 	.category-btn:hover {
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
-		border-color: color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
-		color: var(--tag-color, #E6B800);
+		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
+		border-color: color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
+		color: var(--tag-color, #e6b800);
 	}
 
 	.category-btn.selected {
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 20%, transparent);
-		border-color: var(--tag-color, #E6B800);
-		color: var(--tag-color, #E6B800);
+		background: color-mix(in srgb, var(--tag-color, #e6b800) 20%, transparent);
+		border-color: var(--tag-color, #e6b800);
+		color: var(--tag-color, #e6b800);
 	}
 
 	.selected-categories {
@@ -2184,12 +2388,12 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.375rem 0.625rem;
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #E6B800) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: var(--tag-color, #E6B800);
+		color: var(--tag-color, #e6b800);
 	}
 
 	.selected-tag button {
@@ -2227,7 +2431,7 @@
 	.checkbox-label input {
 		width: 18px;
 		height: 18px;
-		accent-color: #E6B800;
+		accent-color: #e6b800;
 	}
 
 	.modal-footer {
@@ -2316,7 +2520,8 @@
 		gap: 0.75rem;
 	}
 
-	.analytics-loading, .analytics-empty {
+	.analytics-loading,
+	.analytics-empty {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -2352,13 +2557,15 @@
 		color: #64748b;
 	}
 
-	.top-videos-section, .categories-stats-section {
+	.top-videos-section,
+	.categories-stats-section {
 		margin-top: 1.5rem;
 		padding-top: 1.5rem;
 		border-top: 1px solid rgba(99, 102, 241, 0.1);
 	}
 
-	.top-videos-section h4, .categories-stats-section h4 {
+	.top-videos-section h4,
+	.categories-stats-section h4 {
 		font-size: 0.9rem;
 		font-weight: 600;
 		color: #94a3b8;
@@ -2430,7 +2637,8 @@
 		background: rgba(255, 149, 0, 0.05);
 	}
 
-	.bunny-dropzone:hover, .bunny-dropzone:focus {
+	.bunny-dropzone:hover,
+	.bunny-dropzone:focus {
 		border-color: rgba(255, 149, 0, 0.5);
 		background: rgba(255, 149, 0, 0.1);
 	}
@@ -2544,10 +2752,18 @@
 		font-size: 0.85rem;
 	}
 
-	.status-item.completed { color: #4ade80; }
-	.status-item.in-progress { color: #fbbf24; }
-	.status-item.pending { color: #94a3b8; }
-	.status-item.failed { color: #f87171; }
+	.status-item.completed {
+		color: #4ade80;
+	}
+	.status-item.in-progress {
+		color: #fbbf24;
+	}
+	.status-item.pending {
+		color: #94a3b8;
+	}
+	.status-item.failed {
+		color: #f87171;
+	}
 
 	@media (max-width: 768px) {
 		.room-tabs {

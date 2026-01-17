@@ -23,7 +23,9 @@
 	let newVideoUrl = $state('');
 
 	// Computed
-	let sitemapUrl = $derived(`${typeof window !== 'undefined' ? window.location.origin : ''}/video-sitemap.xml`);
+	let sitemapUrl = $derived(
+		`${typeof window !== 'undefined' ? window.location.origin : ''}/video-sitemap.xml`
+	);
 	let totalDuration = $derived(videos.reduce((acc, v) => acc + (v.duration || 0), 0));
 
 	onMount(async () => {
@@ -109,7 +111,6 @@
 		const minutes = Math.floor((seconds % 3600) / 60);
 		return `${hours}h ${minutes}m`;
 	}
-
 
 	function getPlatformColor(platform: string): string {
 		const colors: Record<string, string> = {
@@ -214,7 +215,8 @@
 								}
 							}}
 						/>
-						<span class="platform-name">{platform.charAt(0).toUpperCase() + platform.slice(1)}</span>
+						<span class="platform-name">{platform.charAt(0).toUpperCase() + platform.slice(1)}</span
+						>
 					</label>
 				{/each}
 			</div>
@@ -256,7 +258,9 @@
 							<div class="video-meta">
 								<span
 									class="platform-badge"
-									style="background: {getPlatformColor(video.platform)}20; color: {getPlatformColor(video.platform)}"
+									style="background: {getPlatformColor(video.platform)}20; color: {getPlatformColor(
+										video.platform
+									)}"
 								>
 									{video.platform}
 								</span>
@@ -286,36 +290,39 @@
 			<div class="info-card">
 				<h4>Platform Auto-Detection</h4>
 				<p>
-					Automatically detects videos from YouTube, Vimeo, Dailymotion, TED, and Wistia embedded
-					in your content.
+					Automatically detects videos from YouTube, Vimeo, Dailymotion, TED, and Wistia embedded in
+					your content.
 				</p>
 			</div>
 			<div class="info-card">
 				<h4>Thumbnail Extraction</h4>
-				<p>
-					Extracts high-quality thumbnails from video platforms for rich search results.
-				</p>
+				<p>Extracts high-quality thumbnails from video platforms for rich search results.</p>
 			</div>
 			<div class="info-card">
 				<h4>Live Stream Support</h4>
-				<p>
-					Supports live video markup for real-time streams with start/end times.
-				</p>
+				<p>Supports live video markup for real-time streams with start/end times.</p>
 			</div>
 		</div>
 	</div>
 </div>
 
 {#if showAddModal}
-	<div 
-		class="modal-overlay" 
+	<div
+		class="modal-overlay"
 		onclick={() => (showAddModal = false)}
 		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showAddModal = false)}
 		role="button"
 		tabindex="-1"
 		aria-label="Close modal"
 	>
-		<div class="modal" role="dialog" aria-modal="true" tabindex="-1" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()}>
+		<div
+			class="modal"
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+		>
 			<h3>Add Video URL</h3>
 			<p>Enter a video URL from YouTube, Vimeo, or other supported platforms.</p>
 			<input

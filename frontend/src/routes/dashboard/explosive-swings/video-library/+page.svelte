@@ -31,7 +31,8 @@
 			duration: '24:35',
 			category: 'weekly',
 			thumbnail: 'https://placehold.co/640x360/143E59/FFFFFF/png?text=Weekly+Breakdown',
-			excerpt: 'Complete breakdown of this week\'s top swing trade opportunities with technical analysis.',
+			excerpt:
+				"Complete breakdown of this week's top swing trade opportunities with technical analysis.",
 			href: '/dashboard/explosive-swings/video/weekly-011326'
 		},
 		{
@@ -91,7 +92,7 @@
 			duration: '26:15',
 			category: 'weekly',
 			thumbnail: 'https://placehold.co/640x360/143E59/FFFFFF/png?text=Weekly+Breakdown',
-			excerpt: 'Last week\'s complete market breakdown and swing trade opportunities.',
+			excerpt: "Last week's complete market breakdown and swing trade opportunities.",
 			href: '/dashboard/explosive-swings/video/weekly-010626'
 		},
 		{
@@ -147,9 +148,7 @@
 	];
 
 	const filteredVideos = $derived(
-		selectedCategory === 'all'
-			? videos
-			: videos.filter(v => v.category === selectedCategory)
+		selectedCategory === 'all' ? videos : videos.filter((v) => v.category === selectedCategory)
 	);
 </script>
 
@@ -157,9 +156,9 @@
 	<title>Video Library | Explosive Swings</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Explosive Swings" 
-	startHereUrl="/dashboard/explosive-swings/start-here" 
+<TradingRoomHeader
+	roomName="Explosive Swings"
+	startHereUrl="/dashboard/explosive-swings/start-here"
 />
 
 <div class="video-library">
@@ -169,22 +168,46 @@
 	</div>
 
 	<div class="filter-section">
-		<button class="filter-btn" class:active={selectedCategory === 'all'} onclick={() => selectedCategory = 'all'}>
+		<button
+			class="filter-btn"
+			class:active={selectedCategory === 'all'}
+			onclick={() => (selectedCategory = 'all')}
+		>
 			All Videos
 		</button>
-		<button class="filter-btn" class:active={selectedCategory === 'weekly'} onclick={() => selectedCategory = 'weekly'}>
+		<button
+			class="filter-btn"
+			class:active={selectedCategory === 'weekly'}
+			onclick={() => (selectedCategory = 'weekly')}
+		>
 			Weekly Breakdowns
 		</button>
-		<button class="filter-btn" class:active={selectedCategory === 'entry'} onclick={() => selectedCategory = 'entry'}>
+		<button
+			class="filter-btn"
+			class:active={selectedCategory === 'entry'}
+			onclick={() => (selectedCategory = 'entry')}
+		>
 			Entry Alerts
 		</button>
-		<button class="filter-btn" class:active={selectedCategory === 'exit'} onclick={() => selectedCategory = 'exit'}>
+		<button
+			class="filter-btn"
+			class:active={selectedCategory === 'exit'}
+			onclick={() => (selectedCategory = 'exit')}
+		>
 			Exit Alerts
 		</button>
-		<button class="filter-btn" class:active={selectedCategory === 'analysis'} onclick={() => selectedCategory = 'analysis'}>
+		<button
+			class="filter-btn"
+			class:active={selectedCategory === 'analysis'}
+			onclick={() => (selectedCategory = 'analysis')}
+		>
 			Market Analysis
 		</button>
-		<button class="filter-btn" class:active={selectedCategory === 'education'} onclick={() => selectedCategory = 'education'}>
+		<button
+			class="filter-btn"
+			class:active={selectedCategory === 'education'}
+			onclick={() => (selectedCategory = 'education')}
+		>
 			Education
 		</button>
 	</div>
@@ -195,7 +218,7 @@
 				<div class="video-thumbnail" style="background-image: url('{video.thumbnail}')">
 					<div class="play-overlay">
 						<svg viewBox="0 0 24 24" fill="currentColor" width="56" height="56">
-							<path d="M8 5v14l11-7z"/>
+							<path d="M8 5v14l11-7z" />
 						</svg>
 					</div>
 					<div class="video-duration">{video.duration}</div>
@@ -259,13 +282,13 @@
 	}
 
 	.filter-btn:hover {
-		border-color: #143E59;
-		color: #143E59;
+		border-color: #143e59;
+		color: #143e59;
 	}
 
 	.filter-btn.active {
-		background: #143E59;
-		border-color: #143E59;
+		background: #143e59;
+		border-color: #143e59;
 		color: #fff;
 	}
 
@@ -293,7 +316,7 @@
 		background: #fff;
 		border-radius: 16px;
 		overflow: hidden;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 		transition: all 0.3s ease;
 		text-decoration: none;
 		color: inherit;
@@ -302,7 +325,7 @@
 
 	.video-card:hover {
 		transform: translateY(-8px);
-		box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 	}
 
 	.video-thumbnail {
@@ -316,7 +339,7 @@
 	.play-overlay {
 		position: absolute;
 		inset: 0;
-		background: rgba(0,0,0,0.4);
+		background: rgba(0, 0, 0, 0.4);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -324,7 +347,7 @@
 	}
 
 	.video-card:hover .play-overlay {
-		background: rgba(0,0,0,0.6);
+		background: rgba(0, 0, 0, 0.6);
 	}
 
 	.play-overlay svg {
@@ -342,7 +365,7 @@
 		position: absolute;
 		bottom: 12px;
 		right: 12px;
-		background: rgba(0,0,0,0.85);
+		background: rgba(0, 0, 0, 0.85);
 		color: #fff;
 		padding: 5px 10px;
 		border-radius: 6px;
@@ -357,7 +380,7 @@
 
 	.video-category {
 		display: inline-block;
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
 		font-size: 10px;
 		font-weight: 700;

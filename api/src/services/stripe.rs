@@ -144,7 +144,7 @@ impl StripeService {
 
         let response: serde_json::Value = self
             .client
-            .get(&format!("{}/customers", STRIPE_API_BASE))
+            .get(format!("{}/customers", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .query(&search_params)
@@ -174,7 +174,7 @@ impl StripeService {
 
         let response: StripeCustomer = self
             .client
-            .post(&format!("{}/customers", STRIPE_API_BASE))
+            .post(format!("{}/customers", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .form(
@@ -288,7 +288,7 @@ impl StripeService {
 
         let response = self
             .client
-            .post(&format!("{}/checkout/sessions", STRIPE_API_BASE))
+            .post(format!("{}/checkout/sessions", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .form(
@@ -352,7 +352,7 @@ impl StripeService {
     pub async fn get_checkout_session(&self, session_id: &str) -> Result<StripeCheckoutSession> {
         let response: StripeCheckoutSession = self
             .client
-            .get(&format!(
+            .get(format!(
                 "{}/checkout/sessions/{}",
                 STRIPE_API_BASE, session_id
             ))
@@ -377,7 +377,7 @@ impl StripeService {
 
         let response: StripeBillingPortal = self
             .client
-            .post(&format!("{}/billing_portal/sessions", STRIPE_API_BASE))
+            .post(format!("{}/billing_portal/sessions", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .form(&params)
@@ -393,7 +393,7 @@ impl StripeService {
     pub async fn get_subscription(&self, subscription_id: &str) -> Result<StripeSubscription> {
         let response: StripeSubscription = self
             .client
-            .get(&format!(
+            .get(format!(
                 "{}/subscriptions/{}",
                 STRIPE_API_BASE, subscription_id
             ))
@@ -416,7 +416,7 @@ impl StripeService {
         if immediately {
             let response: StripeSubscription = self
                 .client
-                .delete(&format!(
+                .delete(format!(
                     "{}/subscriptions/{}",
                     STRIPE_API_BASE, subscription_id
                 ))
@@ -431,7 +431,7 @@ impl StripeService {
         } else {
             let response: StripeSubscription = self
                 .client
-                .post(&format!(
+                .post(format!(
                     "{}/subscriptions/{}",
                     STRIPE_API_BASE, subscription_id
                 ))
@@ -467,7 +467,7 @@ impl StripeService {
 
         let response: StripeRefund = self
             .client
-            .post(&format!("{}/refunds", STRIPE_API_BASE))
+            .post(format!("{}/refunds", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .form(

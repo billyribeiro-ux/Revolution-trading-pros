@@ -278,28 +278,14 @@
 				</div>
 			</div>
 			<div class="header-actions">
-				<button
-					class="btn-icon"
-					onclick={() => loadFunnel()}
-					disabled={isLoading}
-					title="Refresh"
-				>
+				<button class="btn-icon" onclick={() => loadFunnel()} disabled={isLoading} title="Refresh">
 					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
 				</button>
-				<button
-					class="btn-icon"
-					onclick={exportFunnel}
-					disabled={actionInProgress}
-					title="Export"
-				>
+				<button class="btn-icon" onclick={exportFunnel} disabled={actionInProgress} title="Export">
 					<IconDownload size={18} />
 				</button>
 				{#if funnel.status !== 'draft'}
-					<button
-						class="btn-secondary"
-						onclick={toggleStatus}
-						disabled={actionInProgress}
-					>
+					<button class="btn-secondary" onclick={toggleStatus} disabled={actionInProgress}>
 						{#if funnel.status === 'active'}
 							<IconPlayerPause size={18} />
 							Pause
@@ -321,7 +307,7 @@
 			<div class="error-alert">
 				<IconAlertCircle size={18} />
 				<span>{error}</span>
-				<button onclick={() => error = ''}>
+				<button onclick={() => (error = '')}>
 					<IconX size={16} />
 				</button>
 			</div>
@@ -381,21 +367,21 @@
 			<button
 				class="tab"
 				class:active={activeTab === 'overview'}
-				onclick={() => activeTab = 'overview'}
+				onclick={() => (activeTab = 'overview')}
 			>
 				Overview
 			</button>
 			<button
 				class="tab"
 				class:active={activeTab === 'workflow'}
-				onclick={() => activeTab = 'workflow'}
+				onclick={() => (activeTab = 'workflow')}
 			>
 				Workflow ({actions.length})
 			</button>
 			<button
 				class="tab"
 				class:active={activeTab === 'subscribers'}
-				onclick={() => activeTab = 'subscribers'}
+				onclick={() => (activeTab = 'subscribers')}
 			>
 				Subscribers ({stats?.total_subscribers || 0})
 			</button>
@@ -470,7 +456,9 @@
 							</div>
 							<div class="node-content">
 								<span class="node-type">Trigger</span>
-								<span class="node-title">{triggerTypes[funnel.trigger_type] || funnel.trigger_type}</span>
+								<span class="node-title"
+									>{triggerTypes[funnel.trigger_type] || funnel.trigger_type}</span
+								>
 							</div>
 						</div>
 
@@ -485,7 +473,9 @@
 									<ActionIcon size={20} />
 								</div>
 								<div class="node-content">
-									<span class="node-type">{actionTypes[action.action_type] || action.action_type}</span>
+									<span class="node-type"
+										>{actionTypes[action.action_type] || action.action_type}</span
+									>
 									<span class="node-title">{action.title || `Step ${index + 1}`}</span>
 									{#if action.delay_seconds > 0}
 										<span class="node-delay">
@@ -586,7 +576,8 @@
 	}
 
 	/* Loading/Error States */
-	.loading-state, .error-state {
+	.loading-state,
+	.error-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -762,7 +753,8 @@
 	}
 
 	/* Alerts */
-	.error-alert, .success-alert {
+	.error-alert,
+	.success-alert {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
@@ -783,7 +775,8 @@
 		color: #4ade80;
 	}
 
-	.error-alert span, .success-alert span {
+	.error-alert span,
+	.success-alert span {
 		flex: 1;
 	}
 
@@ -808,11 +801,15 @@
 	}
 
 	@media (max-width: 1200px) {
-		.stats-grid { grid-template-columns: repeat(2, 1fr); }
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.stat-card {
@@ -834,10 +831,22 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
 
 	.stat-content {
 		display: flex;
@@ -1159,8 +1168,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Responsive */

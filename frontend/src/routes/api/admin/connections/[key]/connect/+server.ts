@@ -65,9 +65,12 @@ export const POST: RequestHandler = async ({ params, request }) => {
 };
 
 // Simulate connection test (in production, this would make actual API calls)
-async function simulateConnectionTest(serviceKey: string, credentials: Record<string, string>): Promise<void> {
+async function simulateConnectionTest(
+	serviceKey: string,
+	credentials: Record<string, string>
+): Promise<void> {
 	// Add a small delay to simulate network request
-	await new Promise(resolve => setTimeout(resolve, 500));
+	await new Promise((resolve) => setTimeout(resolve, 500));
 
 	// Basic validation - check that required fields are present
 	const requiredFields: Record<string, string[]> = {
@@ -79,7 +82,7 @@ async function simulateConnectionTest(serviceKey: string, credentials: Record<st
 		openai: ['api_key'],
 		anthropic: ['api_key'],
 		twilio: ['account_sid', 'auth_token'],
-		aws_s3: ['access_key_id', 'secret_access_key', 'bucket_name'],
+		aws_s3: ['access_key_id', 'secret_access_key', 'bucket_name']
 		// Add more as needed
 	};
 

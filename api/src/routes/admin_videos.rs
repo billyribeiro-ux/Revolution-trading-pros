@@ -721,3 +721,77 @@ pub fn router() -> Router<AppState> {
         .route("/bulk/delete", post(bulk_delete))
         .route("/bulk/assign", post(bulk_assign))
 }
+
+/// Analytics router for /video-advanced endpoints
+/// ICT 7 Grade - Frontend compatibility
+pub fn analytics_router() -> Router<AppState> {
+    Router::new().route("/analytics/dashboard", get(analytics_dashboard))
+}
+
+/// GET /video-advanced/analytics/dashboard - Video analytics dashboard
+async fn analytics_dashboard(
+    State(state): State<AppState>,
+    Query(params): Query<AnalyticsPeriodQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let period = params.period.as_deref().unwrap_or("30d");
+    let days: i32 = match period {
+        "7d" => 7,
+        "30d" => 30,
+        "90d" => 90,
+        "1y" => 365,
+        _ => 30,
+    };
+
+    // Total videos
+    let total: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
+
+    // Total views
+    let total_views: (i64,) = sqlx::query_as(
+        "SELECT COALESCE(SUM(views_count), 0) FROM unified_videos WHERE deleted_at IS NULL",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
+
+    // Videos created in period
+    let recent_videos: (i64,) = sqlx::query_as(&format!(
+        "SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL AND created_at >= NOW() - INTERVAL '{} days'",
+        days
+    ))
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
+
+    // Top videos by views
+    let top_videos: Vec<(i64, String, i32)> = sqlx::query_as(
+        "SELECT id, title, views_count FROM unified_videos 
+         WHERE deleted_at IS NULL 
+         ORDER BY views_count DESC LIMIT 5",
+    )
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
+
+    Ok(Json(json!({
+        "success": true,
+        "data": {
+            "period": period,
+            "total_videos": total.0,
+            "total_views": total_views.0,
+            "recent_videos": recent_videos.0,
+            "avg_views_per_video": if total.0 > 0 { total_views.0 / total.0 } else { 0 },
+            "top_videos": top_videos.iter().map(|(id, title, views)| {
+                json!({ "id": id, "title": title, "views": views })
+            }).collect::<Vec<_>>()
+        }
+    })))
+}
+
+#[derive(Debug, Deserialize)]
+struct AnalyticsPeriodQuery {
+    period: Option<String>,
+}

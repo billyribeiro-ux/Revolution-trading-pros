@@ -120,150 +120,165 @@
 			<div class="subscription-container">
 				<div class="subscription-content">
 					<div class="woocommerce">
-														<div class="woocommerce-MyAccount-content">
-															<div class="woocommerce-notices-wrapper">
-																{#if form?.success}
-																	<div class="woocommerce-message" role="alert">
-																		{form.message}
-																	</div>
-																{/if}
+						<div class="woocommerce-MyAccount-content">
+							<div class="woocommerce-notices-wrapper">
+								{#if form?.success}
+									<div class="woocommerce-message" role="alert">
+										{form.message}
+									</div>
+								{/if}
 
-																{#if form?.error}
-																	<div class="woocommerce-error" role="alert">
-																		{form.error}
-																	</div>
-																{/if}
-															</div>
+								{#if form?.error}
+									<div class="woocommerce-error" role="alert">
+										{form.error}
+									</div>
+								{/if}
+							</div>
 
-															<h2 class="section-title">Subscription #{subscription.id}</h2>
+							<h2 class="section-title">Subscription #{subscription.id}</h2>
 
-															<div class="content-box u--margin-bottom-20">
-																<div class="content-box__section">
-																	<table class="shop_table subscription_details u--margin-bottom-0">
-																		<tbody>
-																			<tr>
-																				<td>Status</td>
-																				<td class={getStatusClass(subscription.status)}>
-																					{subscription.status}
-																				</td>
-																			</tr>
-																			<tr>
-																				<td>Start Date</td>
-																				<td>{formatDate(subscription.startDate)}</td>
-																			</tr>
-																			{#if subscription.lastPaymentDate}
-																				<tr>
-																					<td>Last Payment Date</td>
-																					<td>{formatDate(subscription.lastPaymentDate)}</td>
-																				</tr>
-																			{/if}
-																			{#if subscription.nextPaymentDate}
-																				<tr>
-																					<td>Next Payment Date</td>
-																					<td>{formatDate(subscription.nextPaymentDate)}</td>
-																				</tr>
-																			{/if}
-																			{#if subscription.trialEndDate}
-																				<tr>
-																					<td>Trial End Date</td>
-																					<td>{formatDate(subscription.trialEndDate)}</td>
-																				</tr>
-																			{/if}
-																			<tr>
-																				<td>Price</td>
-																				<td>{formatCurrency(subscription.price, subscription.currency)} / {subscription.interval}</td>
-																			</tr>
-																			<tr>
-																				<td>Total Paid</td>
-																				<td>{formatCurrency(subscription.totalPaid, subscription.currency)}</td>
-																			</tr>
-																			<tr>
-																				<td>Actions</td>
-																				<td class="subscription-actions">
-																					{#if canCancel(subscription)}
-																						<form method="post" action="?/cancel" use:enhance={() => {
-																							isSubmitting = true;
-																							return async ({ update }) => {
-																								await update();
-																								isSubmitting = false;
-																							};
-																						}} style="display: inline;">
-																							<button 
-																								type="submit" 
-																								class="btn btn-xs btn-default cancel"
-																								disabled={isSubmitting}
-																							>
-																								Cancel
-																							</button>
-																						</form>
-																					{/if}
-																					{#if canPause(subscription)}
-																						<form method="post" action="?/pause" use:enhance={() => {
-																							isSubmitting = true;
-																							return async ({ update }) => {
-																								await update();
-																								isSubmitting = false;
-																							};
-																						}} style="display: inline;">
-																							<button 
-																								type="submit" 
-																								class="btn btn-xs btn-default suspend"
-																								disabled={isSubmitting}
-																							>
-																								Pause
-																							</button>
-																						</form>
-																					{/if}
-																					<a href="/dashboard/account/payment-methods" class="btn btn-xs btn-default change_payment_method">
-																						Change payment
-																					</a>
-																				</td>
-																			</tr>
-																		</tbody>
-																	</table>
-																</div>
-															</div>
+							<div class="content-box u--margin-bottom-20">
+								<div class="content-box__section">
+									<table class="shop_table subscription_details u--margin-bottom-0">
+										<tbody>
+											<tr>
+												<td>Status</td>
+												<td class={getStatusClass(subscription.status)}>
+													{subscription.status}
+												</td>
+											</tr>
+											<tr>
+												<td>Start Date</td>
+												<td>{formatDate(subscription.startDate)}</td>
+											</tr>
+											{#if subscription.lastPaymentDate}
+												<tr>
+													<td>Last Payment Date</td>
+													<td>{formatDate(subscription.lastPaymentDate)}</td>
+												</tr>
+											{/if}
+											{#if subscription.nextPaymentDate}
+												<tr>
+													<td>Next Payment Date</td>
+													<td>{formatDate(subscription.nextPaymentDate)}</td>
+												</tr>
+											{/if}
+											{#if subscription.trialEndDate}
+												<tr>
+													<td>Trial End Date</td>
+													<td>{formatDate(subscription.trialEndDate)}</td>
+												</tr>
+											{/if}
+											<tr>
+												<td>Price</td>
+												<td
+													>{formatCurrency(subscription.price, subscription.currency)} / {subscription.interval}</td
+												>
+											</tr>
+											<tr>
+												<td>Total Paid</td>
+												<td>{formatCurrency(subscription.totalPaid, subscription.currency)}</td>
+											</tr>
+											<tr>
+												<td>Actions</td>
+												<td class="subscription-actions">
+													{#if canCancel(subscription)}
+														<form
+															method="post"
+															action="?/cancel"
+															use:enhance={() => {
+																isSubmitting = true;
+																return async ({ update }) => {
+																	await update();
+																	isSubmitting = false;
+																};
+															}}
+															style="display: inline;"
+														>
+															<button
+																type="submit"
+																class="btn btn-xs btn-default cancel"
+																disabled={isSubmitting}
+															>
+																Cancel
+															</button>
+														</form>
+													{/if}
+													{#if canPause(subscription)}
+														<form
+															method="post"
+															action="?/pause"
+															use:enhance={() => {
+																isSubmitting = true;
+																return async ({ update }) => {
+																	await update();
+																	isSubmitting = false;
+																};
+															}}
+															style="display: inline;"
+														>
+															<button
+																type="submit"
+																class="btn btn-xs btn-default suspend"
+																disabled={isSubmitting}
+															>
+																Pause
+															</button>
+														</form>
+													{/if}
+													<a
+														href="/dashboard/account/payment-methods"
+														class="btn btn-xs btn-default change_payment_method"
+													>
+														Change payment
+													</a>
+												</td>
+											</tr>
+										</tbody>
+									</table>
+								</div>
+							</div>
 
-															{#if subscription.paymentHistory && subscription.paymentHistory.length > 0}
-																<div class="content-box u--margin-bottom-20">
-																	<div class="content-box__section">
-																		<header>
-																			<h2>Payment History</h2>
-																		</header>
+							{#if subscription.paymentHistory && subscription.paymentHistory.length > 0}
+								<div class="content-box u--margin-bottom-20">
+									<div class="content-box__section">
+										<header>
+											<h2>Payment History</h2>
+										</header>
 
-																		<table class="shop_table shop_table_responsive">
-																			<thead>
-																				<tr>
-																					<th>Payment Date</th>
-																					<th>Amount</th>
-																					<th>Status</th>
-																					<th>Method</th>
-																				</tr>
-																			</thead>
+										<table class="shop_table shop_table_responsive">
+											<thead>
+												<tr>
+													<th>Payment Date</th>
+													<th>Amount</th>
+													<th>Status</th>
+													<th>Method</th>
+												</tr>
+											</thead>
 
-																			<tbody>
-																				{#each subscription.paymentHistory as payment (payment.id)}
-																					<tr>
-																						<td data-title="Payment Date">
-																							{formatDate(payment.paymentDate)}
-																						</td>
-																						<td data-title="Amount">
-																							{formatCurrency(payment.amount, subscription.currency)}
-																						</td>
-																						<td data-title="Status" style="text-transform: capitalize;">
-																							{payment.status}
-																						</td>
-																						<td data-title="Method" style="text-transform: capitalize;">
-																							{payment.paymentMethod}
-																						</td>
-																					</tr>
-																				{/each}
-																			</tbody>
-																		</table>
-																	</div>
-																</div>
-															{/if}
-														</div>
+											<tbody>
+												{#each subscription.paymentHistory as payment (payment.id)}
+													<tr>
+														<td data-title="Payment Date">
+															{formatDate(payment.paymentDate)}
+														</td>
+														<td data-title="Amount">
+															{formatCurrency(payment.amount, subscription.currency)}
+														</td>
+														<td data-title="Status" style="text-transform: capitalize;">
+															{payment.status}
+														</td>
+														<td data-title="Method" style="text-transform: capitalize;">
+															{payment.paymentMethod}
+														</td>
+													</tr>
+												{/each}
+											</tbody>
+										</table>
+									</div>
+								</div>
+							{/if}
+						</div>
 					</div>
 				</div>
 			</div>
@@ -520,7 +535,6 @@
 		font-size: 14px;
 		border-bottom: 1px solid #e9ecef;
 	}
-
 
 	@media (max-width: 768px) {
 		.subscription_details td:first-child {

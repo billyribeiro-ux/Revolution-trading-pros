@@ -26,7 +26,8 @@
 			symbol: 'SPX',
 			ticker: '$SPX',
 			name: 'S&P 500',
-			description: 'Tracks the 500 largest companies listed on major U.S. exchanges. Market capitalization-weighted, offering comprehensive representation of the U.S. stock market.',
+			description:
+				'Tracks the 500 largest companies listed on major U.S. exchanges. Market capitalization-weighted, offering comprehensive representation of the U.S. stock market.',
 			etfs: ['SPY', 'VOO', 'IVV'],
 			region: 'US',
 			companies: 500,
@@ -36,7 +37,8 @@
 			symbol: 'DJI',
 			ticker: '$DJI',
 			name: 'Dow Jones Industrial Average',
-			description: 'Measures the top 30 U.S. large-cap stocks. One of the oldest and most widely followed indexes, representing blue-chip companies.',
+			description:
+				'Measures the top 30 U.S. large-cap stocks. One of the oldest and most widely followed indexes, representing blue-chip companies.',
 			etfs: ['DIA'],
 			region: 'US',
 			companies: 30,
@@ -46,7 +48,8 @@
 			symbol: 'COMPQ',
 			ticker: '$COMPQ',
 			name: 'NASDAQ Composite',
-			description: 'Includes all stocks listed on the NASDAQ exchange. Heavily weighted toward technology and growth companies.',
+			description:
+				'Includes all stocks listed on the NASDAQ exchange. Heavily weighted toward technology and growth companies.',
 			etfs: ['QQQ', 'ONEQ'],
 			region: 'US',
 			companies: 3000,
@@ -56,7 +59,8 @@
 			symbol: 'NDX',
 			ticker: '$NDX',
 			name: 'NASDAQ 100',
-			description: 'Measures the top 100 largest non-financial companies listed on NASDAQ. Known for its tech-heavy composition.',
+			description:
+				'Measures the top 100 largest non-financial companies listed on NASDAQ. Known for its tech-heavy composition.',
 			etfs: ['QQQ', 'QQQM'],
 			region: 'US',
 			companies: 100,
@@ -66,7 +70,8 @@
 			symbol: 'RUT',
 			ticker: '$RUT',
 			name: 'Russell 2000',
-			description: 'Tracks 2,000 small-cap U.S. companies. A benchmark for small-cap stock performance and economic health.',
+			description:
+				'Tracks 2,000 small-cap U.S. companies. A benchmark for small-cap stock performance and economic health.',
 			etfs: ['IWM', 'VTWO'],
 			region: 'US',
 			companies: 2000,
@@ -76,7 +81,8 @@
 			symbol: 'VIX',
 			ticker: '$VIX',
 			name: 'CBOE Volatility Index',
-			description: 'Measures market expectations of near-term volatility. Known as the "fear gauge" of the market.',
+			description:
+				'Measures market expectations of near-term volatility. Known as the "fear gauge" of the market.',
 			etfs: ['VXX', 'UVXY'],
 			region: 'US',
 			companies: 0,
@@ -86,7 +92,8 @@
 			symbol: 'FTSE',
 			ticker: 'FTSE',
 			name: 'FTSE 100',
-			description: 'Tracks the 100 largest companies listed on the London Stock Exchange by market capitalization.',
+			description:
+				'Tracks the 100 largest companies listed on the London Stock Exchange by market capitalization.',
 			etfs: ['ISF', 'VUKE'],
 			region: 'UK',
 			companies: 100,
@@ -96,7 +103,8 @@
 			symbol: 'DAX',
 			ticker: 'DAX',
 			name: 'DAX 40',
-			description: 'Germany\'s premier stock index, tracking the 40 largest and most liquid companies on the Frankfurt Stock Exchange.',
+			description:
+				"Germany's premier stock index, tracking the 40 largest and most liquid companies on the Frankfurt Stock Exchange.",
 			etfs: ['EWG', 'DAX'],
 			region: 'Germany',
 			companies: 40,
@@ -106,7 +114,8 @@
 			symbol: 'N225',
 			ticker: 'N225',
 			name: 'Nikkei 225',
-			description: 'Japan\'s leading stock index, tracking 225 large, publicly owned companies from a wide range of industries.',
+			description:
+				"Japan's leading stock index, tracking 225 large, publicly owned companies from a wide range of industries.",
 			etfs: ['EWJ', 'DXJ'],
 			region: 'Japan',
 			companies: 225,
@@ -116,7 +125,8 @@
 			symbol: 'HSI',
 			ticker: 'HSI',
 			name: 'Hang Seng Index',
-			description: 'Tracks the largest companies listed on the Hong Kong Stock Exchange, representing about 60% of total market cap.',
+			description:
+				'Tracks the largest companies listed on the Hong Kong Stock Exchange, representing about 60% of total market cap.',
 			etfs: ['EWH', 'FXI'],
 			region: 'Hong Kong',
 			companies: 82,
@@ -128,23 +138,28 @@
 	const faqItems = [
 		{
 			question: 'What are the three major stock indexes?',
-			answer: '1. S&P 500: measures 500 large-caps in U.S. stock market\n2. Dow Jones 30: measures the top 30 U.S. large-cap stocks\n3. Nasdaq 100: measures the top 100 largest non-financial companies'
+			answer:
+				'1. S&P 500: measures 500 large-caps in U.S. stock market\n2. Dow Jones 30: measures the top 30 U.S. large-cap stocks\n3. Nasdaq 100: measures the top 100 largest non-financial companies'
 		},
 		{
 			question: 'What is the difference between a stock and an index?',
-			answer: 'A stock allows investors partial ownership in a company. An index gives investors the option of investing in a basket of companies through products like ETFs, mutual funds, and derivatives.'
+			answer:
+				'A stock allows investors partial ownership in a company. An index gives investors the option of investing in a basket of companies through products like ETFs, mutual funds, and derivatives.'
 		},
 		{
 			question: 'Can you invest directly in an index?',
-			answer: 'An index cannot be traded or invested in directly. Many different products, such as ETFs, mutual funds, and derivatives, are available to investors to gain exposure to index performance.'
+			answer:
+				'An index cannot be traded or invested in directly. Many different products, such as ETFs, mutual funds, and derivatives, are available to investors to gain exposure to index performance.'
 		},
 		{
 			question: 'What are the ticker symbols for major indexes?',
-			answer: '1. S&P 500 – SPX or $SPX\n2. Dow Jones Industrial Average (DJIA) – $DJI\n3. Nasdaq Composite – COMPQ or $COMPQ\n4. NYSE Composite – (DJ)\n5. Russell 2000 – RUT or $RUT'
+			answer:
+				'1. S&P 500 – SPX or $SPX\n2. Dow Jones Industrial Average (DJIA) – $DJI\n3. Nasdaq Composite – COMPQ or $COMPQ\n4. NYSE Composite – (DJ)\n5. Russell 2000 – RUT or $RUT'
 		},
 		{
 			question: 'What is the most widely cited US stock market index?',
-			answer: 'The most widely cited US stock market index is the S&P 500, which measures 500 large-cap stocks and is considered the best representation of the overall U.S. stock market.'
+			answer:
+				'The most widely cited US stock market index is the S&P 500, which measures 500 large-cap stocks and is considered the best representation of the overall U.S. stock market.'
 		}
 	];
 
@@ -153,9 +168,11 @@
 
 	let regions = $derived(['all', ...new Set(majorIndexes.map((i) => i.region))]);
 
-	let filteredIndexes = $derived(majorIndexes.filter((index) => {
-		return selectedRegion === 'all' || index.region === selectedRegion;
-	}));
+	let filteredIndexes = $derived(
+		majorIndexes.filter((index) => {
+			return selectedRegion === 'all' || index.region === selectedRegion;
+		})
+	);
 
 	function toggleFaq(index: number) {
 		expandedFaq = expandedFaq === index ? null : index;
@@ -167,7 +184,15 @@
 	description="The S&P 500 is a prominent stock index that tracks the 500 largest companies listed on major U.S. exchanges. Learn about major stock indexes and how to trade them."
 	canonical="/resources/stock-indexes-list"
 	ogType="website"
-	keywords={['stock indexes', 'S&P 500', 'Dow Jones', 'NASDAQ', 'Russell 2000', 'market indexes', 'stock market']}
+	keywords={[
+		'stock indexes',
+		'S&P 500',
+		'Dow Jones',
+		'NASDAQ',
+		'Russell 2000',
+		'market indexes',
+		'stock market'
+	]}
 />
 
 <main class="indexes-page">
@@ -184,8 +209,8 @@
 			</div>
 			<h1 class="hero__title">Stock Indexes List</h1>
 			<p class="hero__subtitle">
-				Your comprehensive guide to major stock market indexes. Understand how indexes work, 
-				track market performance, and discover the best ways to gain exposure.
+				Your comprehensive guide to major stock market indexes. Understand how indexes work, track
+				market performance, and discover the best ways to gain exposure.
 			</p>
 		</div>
 	</section>
@@ -198,33 +223,52 @@
 					<div class="sp500-feature__badge">Featured Index</div>
 					<h2 class="sp500-feature__title">S&P 500 Index</h2>
 					<p class="sp500-feature__text">
-						The S&P 500 is a prominent stock index that tracks the 500 largest companies listed on major U.S. exchanges, 
-						such as the NYSE and NASDAQ. This index is weighted based on the total market capitalization of each company's 
-						outstanding shares, which means it offers a comprehensive representation of the overall U.S. stock market, 
-						more so than other indexes like the Dow Jones Industrial Average (DJIA) or the Russell 2000.
+						The S&P 500 is a prominent stock index that tracks the 500 largest companies listed on
+						major U.S. exchanges, such as the NYSE and NASDAQ. This index is weighted based on the
+						total market capitalization of each company's outstanding shares, which means it offers
+						a comprehensive representation of the overall U.S. stock market, more so than other
+						indexes like the Dow Jones Industrial Average (DJIA) or the Russell 2000.
 					</p>
 					<p class="sp500-feature__text">
-						Recognized globally as one of the most influential stock indexes, the S&P 500 is market capitalization-weighted. 
-						This indicates that companies with larger market values have a more significant impact on the index's overall 
-						performance compared to smaller companies. In essence, bigger companies exert more influence over the market's 
-						overall movement.
+						Recognized globally as one of the most influential stock indexes, the S&P 500 is market
+						capitalization-weighted. This indicates that companies with larger market values have a
+						more significant impact on the index's overall performance compared to smaller
+						companies. In essence, bigger companies exert more influence over the market's overall
+						movement.
 					</p>
 					<p class="sp500-feature__text sp500-feature__text--highlight">
-						<strong>Pro Tip:</strong> Investors aiming for exposure to large-cap stocks (such as Apple or Microsoft) might find it 
-						beneficial to invest in ETFs like <span class="ticker">VOO</span> or <span class="ticker">IVV</span> rather than 
-						picking individual stocks for their portfolio.
+						<strong>Pro Tip:</strong> Investors aiming for exposure to large-cap stocks (such as
+						Apple or Microsoft) might find it beneficial to invest in ETFs like
+						<span class="ticker">VOO</span>
+						or <span class="ticker">IVV</span> rather than picking individual stocks for their portfolio.
 					</p>
 					<p class="sp500-feature__text">
-						To closely monitor market trends, <span class="ticker">$SPY</span> and <span class="ticker">$ES</span> (S&P 500 futures) 
-						are commonly used instruments. Having a chart of either SPY or SPY futures is crucial when trading stocks, as the 
-						majority of stocks tend to move in tandem with the broader market.
+						To closely monitor market trends, <span class="ticker">$SPY</span> and
+						<span class="ticker">$ES</span> (S&P 500 futures) are commonly used instruments. Having a
+						chart of either SPY or SPY futures is crucial when trading stocks, as the majority of stocks
+						tend to move in tandem with the broader market.
 					</p>
 					<div class="sp500-feature__etfs">
 						<span class="sp500-feature__etfs-label">Popular S&P 500 ETFs:</span>
 						<div class="sp500-feature__etfs-list">
-							<a href="https://www.tradingview.com/symbols/AMEX-SPY/" target="_blank" rel="noopener noreferrer" class="etf-chip">SPY</a>
-							<a href="https://www.tradingview.com/symbols/AMEX-VOO/" target="_blank" rel="noopener noreferrer" class="etf-chip">VOO</a>
-							<a href="https://www.tradingview.com/symbols/AMEX-IVV/" target="_blank" rel="noopener noreferrer" class="etf-chip">IVV</a>
+							<a
+								href="https://www.tradingview.com/symbols/AMEX-SPY/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="etf-chip">SPY</a
+							>
+							<a
+								href="https://www.tradingview.com/symbols/AMEX-VOO/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="etf-chip">VOO</a
+							>
+							<a
+								href="https://www.tradingview.com/symbols/AMEX-IVV/"
+								target="_blank"
+								rel="noopener noreferrer"
+								class="etf-chip">IVV</a
+							>
 						</div>
 					</div>
 				</div>
@@ -232,9 +276,9 @@
 					<div class="chart-placeholder">
 						<IconChartLine size={64} />
 						<span>SPY Chart</span>
-						<a 
-							href="https://www.tradingview.com/symbols/AMEX-SPY/" 
-							target="_blank" 
+						<a
+							href="https://www.tradingview.com/symbols/AMEX-SPY/"
+							target="_blank"
 							rel="noopener noreferrer"
 							class="chart-link"
 						>
@@ -294,9 +338,9 @@
 							<span class="index-card__etfs-label">Related ETFs:</span>
 							<div class="index-card__etfs-list">
 								{#each index.etfs as etf}
-									<a 
-										href="https://www.tradingview.com/symbols/AMEX-{etf}/" 
-										target="_blank" 
+									<a
+										href="https://www.tradingview.com/symbols/AMEX-{etf}/"
+										target="_blank"
 										rel="noopener noreferrer"
 										class="etf-chip etf-chip--small"
 									>
@@ -327,14 +371,18 @@
 						<button class="faq-item__question" onclick={() => toggleFaq(i)}>
 							<IconQuestionMark size={20} class="faq-item__icon" />
 							<span>{faq.question}</span>
-							<svg 
-								class="faq-item__chevron" 
-								width="20" 
-								height="20" 
-								viewBox="0 0 20 20" 
+							<svg
+								class="faq-item__chevron"
+								width="20"
+								height="20"
+								viewBox="0 0 20 20"
 								fill="currentColor"
 							>
-								<path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+								<path
+									fill-rule="evenodd"
+									d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
+									clip-rule="evenodd"
+								/>
 							</svg>
 						</button>
 						{#if expandedFaq === i}
@@ -356,7 +404,8 @@
 			<div class="cta-content">
 				<h2 class="cta-title">Ready to Start Trading?</h2>
 				<p class="cta-text">
-					Join Revolution Trading Pros and get access to live trading rooms, expert alerts, and professional education.
+					Join Revolution Trading Pros and get access to live trading rooms, expert alerts, and
+					professional education.
 				</p>
 				<div class="cta-buttons">
 					<a href="/live-trading-rooms" class="cta-btn cta-btn--primary">

@@ -25,21 +25,71 @@ const BASE_URL = process.env.E2E_BASE_URL || 'http://localhost:5174';
 async function createTestImage(): Promise<Buffer> {
 	// Create a minimal valid PNG (1x1 red pixel)
 	const pngHeader = Buffer.from([
-		0x89, 0x50, 0x4E, 0x47, 0x0D, 0x0A, 0x1A, 0x0A, // PNG signature
-		0x00, 0x00, 0x00, 0x0D, // IHDR length
-		0x49, 0x48, 0x44, 0x52, // IHDR
-		0x00, 0x00, 0x00, 0x01, // width: 1
-		0x00, 0x00, 0x00, 0x01, // height: 1
-		0x08, 0x02, // bit depth: 8, color type: RGB
-		0x00, 0x00, 0x00, // compression, filter, interlace
-		0x90, 0x77, 0x53, 0xDE, // CRC
-		0x00, 0x00, 0x00, 0x0C, // IDAT length
-		0x49, 0x44, 0x41, 0x54, // IDAT
-		0x08, 0xD7, 0x63, 0xF8, 0xCF, 0xC0, 0x00, 0x00, // compressed data
-		0x01, 0xA0, 0x01, 0x3D, // CRC
-		0x00, 0x00, 0x00, 0x00, // IEND length
-		0x49, 0x45, 0x4E, 0x44, // IEND
-		0xAE, 0x42, 0x60, 0x82  // CRC
+		0x89,
+		0x50,
+		0x4e,
+		0x47,
+		0x0d,
+		0x0a,
+		0x1a,
+		0x0a, // PNG signature
+		0x00,
+		0x00,
+		0x00,
+		0x0d, // IHDR length
+		0x49,
+		0x48,
+		0x44,
+		0x52, // IHDR
+		0x00,
+		0x00,
+		0x00,
+		0x01, // width: 1
+		0x00,
+		0x00,
+		0x00,
+		0x01, // height: 1
+		0x08,
+		0x02, // bit depth: 8, color type: RGB
+		0x00,
+		0x00,
+		0x00, // compression, filter, interlace
+		0x90,
+		0x77,
+		0x53,
+		0xde, // CRC
+		0x00,
+		0x00,
+		0x00,
+		0x0c, // IDAT length
+		0x49,
+		0x44,
+		0x41,
+		0x54, // IDAT
+		0x08,
+		0xd7,
+		0x63,
+		0xf8,
+		0xcf,
+		0xc0,
+		0x00,
+		0x00, // compressed data
+		0x01,
+		0xa0,
+		0x01,
+		0x3d, // CRC
+		0x00,
+		0x00,
+		0x00,
+		0x00, // IEND length
+		0x49,
+		0x45,
+		0x4e,
+		0x44, // IEND
+		0xae,
+		0x42,
+		0x60,
+		0x82 // CRC
 	]);
 	return pngHeader;
 }
@@ -144,7 +194,7 @@ test.describe('Admin Indicator Create Page', () => {
 
 			// Should load, redirect to login, or return error (500 acceptable in CI without full backend)
 			const status = response?.status() || 200;
-			
+
 			// ICT 7: In CI, backend may not be fully configured - 500 is acceptable
 			if (status >= 500) {
 				console.log(`Admin page returned ${status} - backend may not be configured in CI`);
@@ -166,31 +216,33 @@ test.describe('Admin Indicator Create Page', () => {
 	test('indicator create page has upload elements', async ({ page }) => {
 		try {
 			const response = await page.goto('/admin/indicators/create');
-			
+
 			// ICT 7: Handle server errors gracefully in CI
 			if (response?.status() && response.status() >= 500) {
 				console.log('Server error - skipping form element check');
 				return;
 			}
-			
+
 			await page.waitForLoadState('domcontentloaded');
 
 			const url = page.url();
 
-		// If redirected to login, that's expected behavior
-		if (url.includes('/login') || url.includes('/auth')) {
-			console.log('Redirected to login - admin auth required');
-			return;
-		}
+			// If redirected to login, that's expected behavior
+			if (url.includes('/login') || url.includes('/auth')) {
+				console.log('Redirected to login - admin auth required');
+				return;
+			}
 
-		// Check for form elements
-		const nameInput = page.locator('input[id="name"], input[name="name"]');
-		const priceInput = page.locator('input[id="price"], input[name="price"]');
-		const uploadButton = page.locator('label:has-text("Upload Image"), button:has-text("Upload")');
+			// Check for form elements
+			const nameInput = page.locator('input[id="name"], input[name="name"]');
+			const priceInput = page.locator('input[id="price"], input[name="price"]');
+			const uploadButton = page.locator(
+				'label:has-text("Upload Image"), button:has-text("Upload")'
+			);
 
 			// At least name and price inputs should exist
-			const hasNameInput = await nameInput.count() > 0;
-			const hasPriceInput = await priceInput.count() > 0;
+			const hasNameInput = (await nameInput.count()) > 0;
+			const hasPriceInput = (await priceInput.count()) > 0;
 
 			if (hasNameInput && hasPriceInput) {
 				expect(hasNameInput).toBe(true);
@@ -209,7 +261,7 @@ test.describe('Admin Course Create Page', () => {
 
 			// Should load, redirect to login, or return error (500 acceptable in CI)
 			const status = response?.status() || 200;
-			
+
 			// ICT 7: In CI, backend may not be fully configured - 500 is acceptable
 			if (status >= 500) {
 				console.log(`Admin page returned ${status} - backend may not be configured in CI`);
@@ -229,22 +281,22 @@ test.describe('Admin Course Create Page', () => {
 	test('course create page has upload elements', async ({ page }) => {
 		try {
 			const response = await page.goto('/admin/courses/create');
-			
+
 			// ICT 7: Handle server errors gracefully in CI
 			if (response?.status() && response.status() >= 500) {
 				console.log('Server error - skipping form element check');
 				return;
 			}
-			
+
 			await page.waitForLoadState('domcontentloaded');
 
 			const url = page.url();
 
-		// If redirected to login, that's expected behavior
-		if (url.includes('/login') || url.includes('/auth')) {
-			console.log('Redirected to login - admin auth required');
-			return;
-		}
+			// If redirected to login, that's expected behavior
+			if (url.includes('/login') || url.includes('/auth')) {
+				console.log('Redirected to login - admin auth required');
+				return;
+			}
 
 			// Check for upload-related elements
 			const uploadLabels = page.locator('text=upload, text=thumbnail, text=image').first();
@@ -306,27 +358,35 @@ test.describe('Integration: Upload Flow Simulation', () => {
 
 			// Step 1: Navigate to indicator create page
 			const response = await page.goto('/admin/indicators/create');
-			
+
 			// ICT 7: Handle server errors gracefully in CI
 			if (response?.status() && response.status() >= 500) {
 				console.log(`Server error ${response.status()} - backend may not be configured in CI`);
 				return;
 			}
-			
+
 			await page.waitForLoadState('domcontentloaded');
 
 			const url = page.url();
 
-		// If we're on the login page, verify it's accessible
-		if (url.includes('/login') || url.includes('/auth')) {
-			const loginFormExists = await page.locator('form, input[type="email"], input[type="password"]').first().isVisible().catch(() => false);
-			console.log('Redirected to login page - form visible:', loginFormExists);
-			expect(true).toBe(true); // Pass - redirect to login is correct behavior
-			return;
-		}
+			// If we're on the login page, verify it's accessible
+			if (url.includes('/login') || url.includes('/auth')) {
+				const loginFormExists = await page
+					.locator('form, input[type="email"], input[type="password"]')
+					.first()
+					.isVisible()
+					.catch(() => false);
+				console.log('Redirected to login page - form visible:', loginFormExists);
+				expect(true).toBe(true); // Pass - redirect to login is correct behavior
+				return;
+			}
 
 			// Step 2: If on create page, verify form structure
-			const formExists = await page.locator('form, .form-card, .form-section').first().isVisible().catch(() => false);
+			const formExists = await page
+				.locator('form, .form-card, .form-section')
+				.first()
+				.isVisible()
+				.catch(() => false);
 			if (formExists) {
 				console.log('Create form is visible');
 
@@ -349,13 +409,13 @@ test.describe('Integration: Upload Flow Simulation', () => {
 		try {
 			// Navigate to course create page
 			const response = await page.goto('/admin/courses/create');
-			
+
 			// ICT 7: Handle server errors gracefully in CI
 			if (response?.status() && response.status() >= 500) {
 				console.log(`Server error ${response.status()} - backend may not be configured in CI`);
 				return;
 			}
-			
+
 			await page.waitForLoadState('domcontentloaded');
 
 			const url = page.url();

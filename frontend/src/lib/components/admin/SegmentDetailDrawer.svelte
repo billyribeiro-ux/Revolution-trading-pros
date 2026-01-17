@@ -278,13 +278,7 @@
 	<button class="drawer-backdrop" onclick={onClose} aria-label="Close drawer"></button>
 
 	<!-- Drawer -->
-	<aside
-		class="drawer"
-		class:open={isOpen}
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="drawer-title"
-	>
+	<aside class="drawer" class:open={isOpen} aria-labelledby="drawer-title">
 		<!-- Header -->
 		<header class="drawer-header">
 			<div class="header-content">

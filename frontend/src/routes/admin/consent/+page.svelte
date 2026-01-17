@@ -17,7 +17,7 @@
 		getAuditLog,
 		getAuditStats,
 		scanCookies,
-		exportConsentData,
+		exportConsentData
 	} from '$lib/consent';
 	import { getABTestAnalytics, exportABTestData } from '$lib/consent/ab-testing';
 	import { getVersionInfo } from '$lib/consent/versioning';
@@ -92,341 +92,366 @@
 
 <div class="dashboard">
 	<div class="admin-page-container">
-	<header class="header">
-		<div class="header-content">
-			<h1>Consent Analytics Dashboard</h1>
-			<p>Monitor consent metrics, audit logs, and A/B test performance</p>
+		<header class="header">
+			<div class="header-content">
+				<h1>Consent Analytics Dashboard</h1>
+				<p>Monitor consent metrics, audit logs, and A/B test performance</p>
+			</div>
+			<div class="header-actions">
+				<button class="btn btn-secondary" onclick={loadData}>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8" />
+						<path d="M3 3v5h5" />
+						<path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16" />
+						<path d="M16 21h5v-5" />
+					</svg>
+					Refresh
+				</button>
+				<button class="btn btn-primary" onclick={handleExportData}>
+					<svg
+						xmlns="http://www.w3.org/2000/svg"
+						width="16"
+						height="16"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+					>
+						<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+						<polyline points="7 10 12 15 17 10" />
+						<line x1="12" y1="15" x2="12" y2="3" />
+					</svg>
+					Export All Data
+				</button>
+			</div>
+		</header>
+
+		<!-- Quick Actions -->
+		<div class="quick-actions">
+			<a href="/admin/consent/settings" class="action-card">
+				<span class="action-icon">⚙️</span>
+				<span class="action-label">Settings</span>
+				<span class="action-desc">Configure consent system</span>
+			</a>
+			<a href="/admin/consent/templates" class="action-card">
+				<span class="action-icon">🎨</span>
+				<span class="action-label">Templates</span>
+				<span class="action-desc">Customize banner design</span>
+			</a>
 		</div>
-		<div class="header-actions">
-			<button class="btn btn-secondary" onclick={loadData}>
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M21 12a9 9 0 0 0-9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-					<path d="M3 3v5h5"/>
-					<path d="M3 12a9 9 0 0 0 9 9 9.75 9.75 0 0 0 6.74-2.74L21 16"/>
-					<path d="M16 21h5v-5"/>
-				</svg>
-				Refresh
+
+		<!-- Tabs -->
+		<nav class="tabs">
+			<button
+				class="tab"
+				class:active={activeTab === 'overview'}
+				onclick={() => (activeTab = 'overview')}
+			>
+				Overview
 			</button>
-			<button class="btn btn-primary" onclick={handleExportData}>
-				<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-					<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
-					<polyline points="7 10 12 15 17 10"/>
-					<line x1="12" y1="15" x2="12" y2="3"/>
-				</svg>
-				Export All Data
+			<button
+				class="tab"
+				class:active={activeTab === 'audit'}
+				onclick={() => (activeTab = 'audit')}
+			>
+				Audit Log
 			</button>
-		</div>
-	</header>
+			<button
+				class="tab"
+				class:active={activeTab === 'cookies'}
+				onclick={() => (activeTab = 'cookies')}
+			>
+				Cookies
+			</button>
+			<button
+				class="tab"
+				class:active={activeTab === 'ab-tests'}
+				onclick={() => (activeTab = 'ab-tests')}
+			>
+				A/B Tests
+			</button>
+		</nav>
 
-	<!-- Quick Actions -->
-	<div class="quick-actions">
-		<a href="/admin/consent/settings" class="action-card">
-			<span class="action-icon">⚙️</span>
-			<span class="action-label">Settings</span>
-			<span class="action-desc">Configure consent system</span>
-		</a>
-		<a href="/admin/consent/templates" class="action-card">
-			<span class="action-icon">🎨</span>
-			<span class="action-label">Templates</span>
-			<span class="action-desc">Customize banner design</span>
-		</a>
-	</div>
-
-	<!-- Tabs -->
-	<nav class="tabs">
-		<button
-			class="tab"
-			class:active={activeTab === 'overview'}
-			onclick={() => (activeTab = 'overview')}
-		>
-			Overview
-		</button>
-		<button
-			class="tab"
-			class:active={activeTab === 'audit'}
-			onclick={() => (activeTab = 'audit')}
-		>
-			Audit Log
-		</button>
-		<button
-			class="tab"
-			class:active={activeTab === 'cookies'}
-			onclick={() => (activeTab = 'cookies')}
-		>
-			Cookies
-		</button>
-		<button
-			class="tab"
-			class:active={activeTab === 'ab-tests'}
-			onclick={() => (activeTab = 'ab-tests')}
-		>
-			A/B Tests
-		</button>
-	</nav>
-
-	<!-- Overview Tab -->
-	{#if activeTab === 'overview'}
-		<div class="tab-content">
-			<!-- Key Metrics -->
-			{#if analytics}
-				<section class="section">
-					<h2>Key Metrics</h2>
-					<div class="metrics-grid">
-						<div class="metric-card">
-							<span class="metric-value">{analytics.totalInteractions}</span>
-							<span class="metric-label">Total Interactions</span>
-						</div>
-						<div class="metric-card highlight-green">
-							<span class="metric-value">{formatPercent(analytics.acceptAllRate)}</span>
-							<span class="metric-label">Accept All Rate</span>
-						</div>
-						<div class="metric-card highlight-red">
-							<span class="metric-value">{formatPercent(analytics.rejectAllRate)}</span>
-							<span class="metric-label">Reject All Rate</span>
-						</div>
-						<div class="metric-card">
-							<span class="metric-value">{formatPercent(analytics.customRate)}</span>
-							<span class="metric-label">Custom Preferences</span>
-						</div>
-						<div class="metric-card">
-							<span class="metric-value">{formatDuration(analytics.avgTimeToDecision)}</span>
-							<span class="metric-label">Avg. Decision Time</span>
-						</div>
-						<div class="metric-card">
-							<span class="metric-value">{analytics.bannerImpressions}</span>
-							<span class="metric-label">Banner Impressions</span>
-						</div>
-					</div>
-				</section>
-
-				<!-- Category Rates -->
-				<section class="section">
-					<h2>Category Consent Rates</h2>
-					<div class="category-bars">
-						{#each Object.entries(analytics.categoryRates) as [category, rate]}
-							<div class="category-bar-item">
-								<div class="category-bar-header">
-									<span class="category-name">{category}</span>
-									<span class="category-value">{formatPercent(rate)}</span>
-								</div>
-								<div class="category-bar-track">
-									<div
-										class="category-bar-fill"
-										style:width={`${rate * 100}%`}
-										class:low={rate < 0.3}
-										class:medium={rate >= 0.3 && rate < 0.6}
-										class:high={rate >= 0.6}
-									></div>
-								</div>
+		<!-- Overview Tab -->
+		{#if activeTab === 'overview'}
+			<div class="tab-content">
+				<!-- Key Metrics -->
+				{#if analytics}
+					<section class="section">
+						<h2>Key Metrics</h2>
+						<div class="metrics-grid">
+							<div class="metric-card">
+								<span class="metric-value">{analytics.totalInteractions}</span>
+								<span class="metric-label">Total Interactions</span>
 							</div>
-						{/each}
-					</div>
-				</section>
-			{/if}
-
-			<!-- Insights -->
-			{#if insights.length > 0}
-				<section class="section">
-					<h2>Insights</h2>
-					<div class="insights-list">
-						{#each insights as insight}
-							<div class="insight-item">
-								<span class="insight-icon">💡</span>
-								<span>{insight}</span>
+							<div class="metric-card highlight-green">
+								<span class="metric-value">{formatPercent(analytics.acceptAllRate)}</span>
+								<span class="metric-label">Accept All Rate</span>
 							</div>
-						{/each}
-					</div>
-				</section>
-			{/if}
+							<div class="metric-card highlight-red">
+								<span class="metric-value">{formatPercent(analytics.rejectAllRate)}</span>
+								<span class="metric-label">Reject All Rate</span>
+							</div>
+							<div class="metric-card">
+								<span class="metric-value">{formatPercent(analytics.customRate)}</span>
+								<span class="metric-label">Custom Preferences</span>
+							</div>
+							<div class="metric-card">
+								<span class="metric-value">{formatDuration(analytics.avgTimeToDecision)}</span>
+								<span class="metric-label">Avg. Decision Time</span>
+							</div>
+							<div class="metric-card">
+								<span class="metric-value">{analytics.bannerImpressions}</span>
+								<span class="metric-label">Banner Impressions</span>
+							</div>
+						</div>
+					</section>
 
-			<!-- Version Info -->
-			<section class="section">
-				<h2>Policy Version</h2>
-				<div class="version-info">
-					<p><strong>Current Version:</strong> {versionInfo.version}</p>
-					<p><strong>Last Updated:</strong> {versionInfo.formattedDate}</p>
-				</div>
-			</section>
-		</div>
-	{/if}
-
-	<!-- Audit Log Tab -->
-	{#if activeTab === 'audit'}
-		<div class="tab-content">
-			{#if auditStats}
-				<section class="section">
-					<h2>Audit Statistics</h2>
-					<div class="metrics-grid small">
-						<div class="metric-card">
-							<span class="metric-value">{auditStats.totalEntries}</span>
-							<span class="metric-label">Total Entries</span>
+					<!-- Category Rates -->
+					<section class="section">
+						<h2>Category Consent Rates</h2>
+						<div class="category-bars">
+							{#each Object.entries(analytics.categoryRates) as [category, rate]}
+								<div class="category-bar-item">
+									<div class="category-bar-header">
+										<span class="category-name">{category}</span>
+										<span class="category-value">{formatPercent(rate)}</span>
+									</div>
+									<div class="category-bar-track">
+										<div
+											class="category-bar-fill"
+											style:width={`${rate * 100}%`}
+											class:low={rate < 0.3}
+											class:medium={rate >= 0.3 && rate < 0.6}
+											class:high={rate >= 0.6}
+										></div>
+									</div>
+								</div>
+							{/each}
 						</div>
-						<div class="metric-card">
-							<span class="metric-value">{auditStats.consentGivenCount}</span>
-							<span class="metric-label">Consent Given</span>
-						</div>
-						<div class="metric-card">
-							<span class="metric-value">{auditStats.consentUpdatedCount}</span>
-							<span class="metric-label">Consent Updated</span>
-						</div>
-						<div class="metric-card">
-							<span class="metric-value">{auditStats.consentRevokedCount}</span>
-							<span class="metric-label">Consent Revoked</span>
-						</div>
-					</div>
-				</section>
-			{/if}
-
-			<section class="section">
-				<h2>Audit Log ({auditLog.length} entries)</h2>
-				{#if auditLog.length > 0}
-					<div class="table-wrapper">
-						<table class="data-table">
-							<thead>
-								<tr>
-									<th>Timestamp</th>
-									<th>Action</th>
-									<th>Method</th>
-									<th>Categories</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each auditLog.slice().reverse() as entry}
-									<tr>
-										<td>{formatDate(entry.timestamp)}</td>
-										<td>
-											<span class="action-badge" class:given={entry.action === 'consent_given'} class:updated={entry.action === 'consent_updated'} class:revoked={entry.action === 'consent_revoked'}>
-												{entry.action.replace('consent_', '')}
-											</span>
-										</td>
-										<td>{entry.method || 'N/A'}</td>
-										<td>
-											{#if entry.categories}
-												<span class="categories-list">
-													{Object.entries(entry.categories)
-														.filter(([, v]) => v)
-														.map(([k]) => k)
-														.join(', ') || 'None'}
-												</span>
-											{/if}
-										</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
-				{:else}
-					<p class="empty-state">No audit entries yet.</p>
+					</section>
 				{/if}
-			</section>
-		</div>
-	{/if}
 
-	<!-- Cookies Tab -->
-	{#if activeTab === 'cookies'}
-		<div class="tab-content">
-			{#if cookieScan}
+				<!-- Insights -->
+				{#if insights.length > 0}
+					<section class="section">
+						<h2>Insights</h2>
+						<div class="insights-list">
+							{#each insights as insight}
+								<div class="insight-item">
+									<span class="insight-icon">💡</span>
+									<span>{insight}</span>
+								</div>
+							{/each}
+						</div>
+					</section>
+				{/if}
+
+				<!-- Version Info -->
 				<section class="section">
-					<h2>Cookie Summary</h2>
-					<div class="metrics-grid small">
-						<div class="metric-card">
-							<span class="metric-value">{cookieScan.totalCookies}</span>
-							<span class="metric-label">Total Cookies</span>
-						</div>
-						<div class="metric-card highlight-green">
-							<span class="metric-value">{cookieScan.categorizedCookies}</span>
-							<span class="metric-label">Categorized</span>
-						</div>
-						<div class="metric-card highlight-yellow">
-							<span class="metric-value">{cookieScan.uncategorizedCookies}</span>
-							<span class="metric-label">Uncategorized</span>
-						</div>
+					<h2>Policy Version</h2>
+					<div class="version-info">
+						<p><strong>Current Version:</strong> {versionInfo.version}</p>
+						<p><strong>Last Updated:</strong> {versionInfo.formattedDate}</p>
 					</div>
 				</section>
+			</div>
+		{/if}
 
-				{#each Object.entries(cookieScan.byCategory) as [category, cookies]}
-					{#if cookies.length > 0}
-						<section class="section">
-							<h2 class="category-header">
-								<span class="category-badge {category}">{category}</span>
-								({cookies.length} cookies)
-							</h2>
-							<div class="table-wrapper">
-								<table class="data-table">
-									<thead>
+		<!-- Audit Log Tab -->
+		{#if activeTab === 'audit'}
+			<div class="tab-content">
+				{#if auditStats}
+					<section class="section">
+						<h2>Audit Statistics</h2>
+						<div class="metrics-grid small">
+							<div class="metric-card">
+								<span class="metric-value">{auditStats.totalEntries}</span>
+								<span class="metric-label">Total Entries</span>
+							</div>
+							<div class="metric-card">
+								<span class="metric-value">{auditStats.consentGivenCount}</span>
+								<span class="metric-label">Consent Given</span>
+							</div>
+							<div class="metric-card">
+								<span class="metric-value">{auditStats.consentUpdatedCount}</span>
+								<span class="metric-label">Consent Updated</span>
+							</div>
+							<div class="metric-card">
+								<span class="metric-value">{auditStats.consentRevokedCount}</span>
+								<span class="metric-label">Consent Revoked</span>
+							</div>
+						</div>
+					</section>
+				{/if}
+
+				<section class="section">
+					<h2>Audit Log ({auditLog.length} entries)</h2>
+					{#if auditLog.length > 0}
+						<div class="table-wrapper">
+							<table class="data-table">
+								<thead>
+									<tr>
+										<th>Timestamp</th>
+										<th>Action</th>
+										<th>Method</th>
+										<th>Categories</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each auditLog.slice().reverse() as entry}
 										<tr>
-											<th>Name</th>
-											<th>Purpose</th>
-											<th>Duration</th>
-											<th>Type</th>
+											<td>{formatDate(entry.timestamp)}</td>
+											<td>
+												<span
+													class="action-badge"
+													class:given={entry.action === 'consent_given'}
+													class:updated={entry.action === 'consent_updated'}
+													class:revoked={entry.action === 'consent_revoked'}
+												>
+													{entry.action.replace('consent_', '')}
+												</span>
+											</td>
+											<td>{entry.method || 'N/A'}</td>
+											<td>
+												{#if entry.categories}
+													<span class="categories-list">
+														{Object.entries(entry.categories)
+															.filter(([, v]) => v)
+															.map(([k]) => k)
+															.join(', ') || 'None'}
+													</span>
+												{/if}
+											</td>
 										</tr>
-									</thead>
-									<tbody>
-										{#each cookies as cookie}
-											<tr>
-												<td><code>{cookie.name}</code></td>
-												<td>{cookie.purpose || 'Unknown'}</td>
-												<td>{cookie.duration || 'Session'}</td>
-												<td>{cookie.type || 'Unknown'}</td>
-											</tr>
-										{/each}
-									</tbody>
-								</table>
-							</div>
-						</section>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					{:else}
+						<p class="empty-state">No audit entries yet.</p>
 					{/if}
-				{/each}
-			{:else}
-				<p class="empty-state">Loading cookie data...</p>
-			{/if}
-		</div>
-	{/if}
+				</section>
+			</div>
+		{/if}
 
-	<!-- A/B Tests Tab -->
-	{#if activeTab === 'ab-tests'}
-		<div class="tab-content">
-			<section class="section">
-				<div class="section-header">
-					<h2>A/B Test Results</h2>
-					<button class="btn btn-secondary btn-sm" onclick={handleExportABData}>
-						Export A/B Data
-					</button>
-				</div>
+		<!-- Cookies Tab -->
+		{#if activeTab === 'cookies'}
+			<div class="tab-content">
+				{#if cookieScan}
+					<section class="section">
+						<h2>Cookie Summary</h2>
+						<div class="metrics-grid small">
+							<div class="metric-card">
+								<span class="metric-value">{cookieScan.totalCookies}</span>
+								<span class="metric-label">Total Cookies</span>
+							</div>
+							<div class="metric-card highlight-green">
+								<span class="metric-value">{cookieScan.categorizedCookies}</span>
+								<span class="metric-label">Categorized</span>
+							</div>
+							<div class="metric-card highlight-yellow">
+								<span class="metric-value">{cookieScan.uncategorizedCookies}</span>
+								<span class="metric-label">Uncategorized</span>
+							</div>
+						</div>
+					</section>
 
-				{#if abTestAnalytics.length > 0}
-					<div class="table-wrapper">
-						<table class="data-table">
-							<thead>
-								<tr>
-									<th>Variant</th>
-									<th>Impressions</th>
-									<th>Accept Rate</th>
-									<th>Reject Rate</th>
-									<th>Customize Rate</th>
-									<th>Avg. Decision Time</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each abTestAnalytics as variant}
-									<tr>
-										<td><strong>{variant.variantId}</strong></td>
-										<td>{variant.impressions}</td>
-										<td class="highlight-green">{formatPercent(variant.acceptRate)}</td>
-										<td class="highlight-red">{formatPercent(variant.rejectRate)}</td>
-										<td>{formatPercent(variant.customizeRate)}</td>
-										<td>{formatDuration(variant.avgTimeToDecision)}</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
+					{#each Object.entries(cookieScan.byCategory) as [category, cookies]}
+						{#if cookies.length > 0}
+							<section class="section">
+								<h2 class="category-header">
+									<span class="category-badge {category}">{category}</span>
+									({cookies.length} cookies)
+								</h2>
+								<div class="table-wrapper">
+									<table class="data-table">
+										<thead>
+											<tr>
+												<th>Name</th>
+												<th>Purpose</th>
+												<th>Duration</th>
+												<th>Type</th>
+											</tr>
+										</thead>
+										<tbody>
+											{#each cookies as cookie}
+												<tr>
+													<td><code>{cookie.name}</code></td>
+													<td>{cookie.purpose || 'Unknown'}</td>
+													<td>{cookie.duration || 'Session'}</td>
+													<td>{cookie.type || 'Unknown'}</td>
+												</tr>
+											{/each}
+										</tbody>
+									</table>
+								</div>
+							</section>
+						{/if}
+					{/each}
 				{:else}
-					<p class="empty-state">No A/B test data yet. Tests will be recorded as users interact with the consent banner.</p>
+					<p class="empty-state">Loading cookie data...</p>
 				{/if}
-			</section>
-		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+			</div>
+		{/if}
+
+		<!-- A/B Tests Tab -->
+		{#if activeTab === 'ab-tests'}
+			<div class="tab-content">
+				<section class="section">
+					<div class="section-header">
+						<h2>A/B Test Results</h2>
+						<button class="btn btn-secondary btn-sm" onclick={handleExportABData}>
+							Export A/B Data
+						</button>
+					</div>
+
+					{#if abTestAnalytics.length > 0}
+						<div class="table-wrapper">
+							<table class="data-table">
+								<thead>
+									<tr>
+										<th>Variant</th>
+										<th>Impressions</th>
+										<th>Accept Rate</th>
+										<th>Reject Rate</th>
+										<th>Customize Rate</th>
+										<th>Avg. Decision Time</th>
+									</tr>
+								</thead>
+								<tbody>
+									{#each abTestAnalytics as variant}
+										<tr>
+											<td><strong>{variant.variantId}</strong></td>
+											<td>{variant.impressions}</td>
+											<td class="highlight-green">{formatPercent(variant.acceptRate)}</td>
+											<td class="highlight-red">{formatPercent(variant.rejectRate)}</td>
+											<td>{formatPercent(variant.customizeRate)}</td>
+											<td>{formatDuration(variant.avgTimeToDecision)}</td>
+										</tr>
+									{/each}
+								</tbody>
+							</table>
+						</div>
+					{:else}
+						<p class="empty-state">
+							No A/B test data yet. Tests will be recorded as users interact with the consent
+							banner.
+						</p>
+					{/if}
+				</section>
+			</div>
+		{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -570,8 +595,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.section {
@@ -626,9 +655,15 @@
 		display: block;
 	}
 
-	.highlight-green .metric-value { color: #4ade80; }
-	.highlight-red .metric-value { color: #f87171; }
-	.highlight-yellow .metric-value { color: #fbbf24; }
+	.highlight-green .metric-value {
+		color: #4ade80;
+	}
+	.highlight-red .metric-value {
+		color: #f87171;
+	}
+	.highlight-yellow .metric-value {
+		color: #fbbf24;
+	}
 
 	.category-bars {
 		display: flex;
@@ -671,9 +706,15 @@
 		transition: width 0.3s ease;
 	}
 
-	.category-bar-fill.low { background: #ef4444; }
-	.category-bar-fill.medium { background: #f59e0b; }
-	.category-bar-fill.high { background: #22c55e; }
+	.category-bar-fill.low {
+		background: #ef4444;
+	}
+	.category-bar-fill.medium {
+		background: #f59e0b;
+	}
+	.category-bar-fill.high {
+		background: #22c55e;
+	}
 
 	.insights-list {
 		display: flex;
@@ -744,9 +785,18 @@
 		background: rgba(148, 163, 184, 0.2);
 	}
 
-	.action-badge.given { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-	.action-badge.updated { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-	.action-badge.revoked { background: rgba(239, 68, 68, 0.2); color: #f87171; }
+	.action-badge.given {
+		background: rgba(34, 197, 94, 0.2);
+		color: #4ade80;
+	}
+	.action-badge.updated {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+	.action-badge.revoked {
+		background: rgba(239, 68, 68, 0.2);
+		color: #f87171;
+	}
 
 	.category-badge {
 		padding: 0.25rem 0.75rem;
@@ -755,11 +805,26 @@
 		text-transform: capitalize;
 	}
 
-	.category-badge.necessary { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-	.category-badge.analytics { background: rgba(59, 130, 246, 0.2); color: #60a5fa; }
-	.category-badge.marketing { background: rgba(168, 85, 247, 0.2); color: #c084fc; }
-	.category-badge.preferences { background: rgba(245, 158, 11, 0.2); color: #fbbf24; }
-	.category-badge.unknown { background: rgba(148, 163, 184, 0.2); color: #94a3b8; }
+	.category-badge.necessary {
+		background: rgba(34, 197, 94, 0.2);
+		color: #4ade80;
+	}
+	.category-badge.analytics {
+		background: rgba(59, 130, 246, 0.2);
+		color: #60a5fa;
+	}
+	.category-badge.marketing {
+		background: rgba(168, 85, 247, 0.2);
+		color: #c084fc;
+	}
+	.category-badge.preferences {
+		background: rgba(245, 158, 11, 0.2);
+		color: #fbbf24;
+	}
+	.category-badge.unknown {
+		background: rgba(148, 163, 184, 0.2);
+		color: #94a3b8;
+	}
 
 	.empty-state {
 		text-align: center;
@@ -769,8 +834,12 @@
 		border-radius: 8px;
 	}
 
-	.highlight-green { color: #4ade80; }
-	.highlight-red { color: #f87171; }
+	.highlight-green {
+		color: #4ade80;
+	}
+	.highlight-red {
+		color: #f87171;
+	}
 
 	@media (max-width: 768px) {
 		.dashboard {

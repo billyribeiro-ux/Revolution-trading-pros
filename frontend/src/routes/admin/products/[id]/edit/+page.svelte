@@ -75,8 +75,8 @@
 	// Derived state - form validation
 	let isFormValid = $derived(
 		formData.name.trim().length > 0 &&
-		formData.slug.trim().length > 0 &&
-		parseFloat(formData.price) > 0
+			formData.slug.trim().length > 0 &&
+			parseFloat(formData.price) > 0
 	);
 
 	// Derived state - has changes
@@ -89,10 +89,12 @@
 			formData.description !== (originalProduct.description || '') ||
 			formData.long_description !== (originalProduct.long_description || '') ||
 			formData.price !== String(originalProduct.price) ||
-			formData.sale_price !== (originalProduct.sale_price ? String(originalProduct.sale_price) : '') ||
+			formData.sale_price !==
+				(originalProduct.sale_price ? String(originalProduct.sale_price) : '') ||
 			formData.is_active !== originalProduct.is_active ||
 			formData.thumbnail !== (originalProduct.thumbnail || '') ||
-			JSON.stringify(formData.features.filter(f => f.trim())) !== JSON.stringify(originalProduct.features || [])
+			JSON.stringify(formData.features.filter((f) => f.trim())) !==
+				JSON.stringify(originalProduct.features || [])
 		);
 	});
 
@@ -107,13 +109,15 @@
 	});
 
 	// Derived state - valid features count
-	let validFeatures = $derived(
-		formData.features.filter((f) => f.trim().length > 0)
-	);
+	let validFeatures = $derived(formData.features.filter((f) => f.trim().length > 0));
 
 	// Derived state - product type icon and color for preview
-	let previewTypeIcon = $derived(productTypes.find((t) => t.value === formData.type)?.icon || IconShoppingCart);
-	let previewTypeColor = $derived(productTypes.find((t) => t.value === formData.type)?.color || '#64748b');
+	let previewTypeIcon = $derived(
+		productTypes.find((t) => t.value === formData.type)?.icon || IconShoppingCart
+	);
+	let previewTypeColor = $derived(
+		productTypes.find((t) => t.value === formData.type)?.color || '#64748b'
+	);
 
 	// Load product data
 	async function loadProduct() {
@@ -283,11 +287,7 @@
 				{/if}
 			</div>
 			{#if originalProduct}
-				<button
-					class="btn-danger"
-					onclick={() => (showDeleteConfirm = true)}
-					disabled={deleting}
-				>
+				<button class="btn-danger" onclick={() => (showDeleteConfirm = true)} disabled={deleting}>
 					<IconTrash size={18} />
 					Delete Product
 				</button>
@@ -547,11 +547,7 @@
 
 					<!-- Form Actions -->
 					<div class="form-actions">
-						<button
-							type="button"
-							class="btn-secondary"
-							onclick={() => goto('/admin/products')}
-						>
+						<button type="button" class="btn-secondary" onclick={() => goto('/admin/products')}>
 							Cancel
 						</button>
 						<button
@@ -638,11 +634,15 @@
 						</div>
 						<div class="info-row">
 							<span class="info-label">Created:</span>
-							<span class="info-value">{new Date(originalProduct.created_at).toLocaleDateString()}</span>
+							<span class="info-value"
+								>{new Date(originalProduct.created_at).toLocaleDateString()}</span
+							>
 						</div>
 						<div class="info-row">
 							<span class="info-label">Updated:</span>
-							<span class="info-value">{new Date(originalProduct.updated_at).toLocaleDateString()}</span>
+							<span class="info-value"
+								>{new Date(originalProduct.updated_at).toLocaleDateString()}</span
+							>
 						</div>
 					</div>
 				{/if}
@@ -653,11 +653,26 @@
 	<!-- Delete Confirmation Modal -->
 	{#if showDeleteConfirm}
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
-		<div class="modal-overlay" onclick={() => (showDeleteConfirm = false)} role="dialog" aria-modal="true" tabindex="-1">
+		<div
+			class="modal-overlay"
+			onclick={() => (showDeleteConfirm = false)}
+			role="dialog"
+			aria-modal="true"
+			tabindex="-1"
+		>
 			<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-			<div class="modal" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.key === 'Escape' && (showDeleteConfirm = false)} role="document" tabindex="-1">
+			<div
+				class="modal"
+				onclick={(e) => e.stopPropagation()}
+				onkeydown={(e) => e.key === 'Escape' && (showDeleteConfirm = false)}
+				role="document"
+				tabindex="-1"
+			>
 				<h3>Delete Product?</h3>
-				<p>Are you sure you want to delete <strong>{originalProduct?.name}</strong>? This action cannot be undone.</p>
+				<p>
+					Are you sure you want to delete <strong>{originalProduct?.name}</strong>? This action
+					cannot be undone.
+				</p>
 				<div class="modal-actions">
 					<button class="btn-secondary" onclick={() => (showDeleteConfirm = false)}>
 						Cancel

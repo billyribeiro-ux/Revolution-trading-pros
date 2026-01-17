@@ -5,7 +5,7 @@
 	 * Member-first design - What do traders need?
 	 * 1. This week's video breakdown
 	 * 2. The exact trade plan (entries, targets, stops, options)
-	 * 
+	 *
 	 * @version 1.0.0
 	 * @requires Svelte 5.0+ / SvelteKit 2.0+
 	 */
@@ -75,7 +75,7 @@
 	import type { WatchlistResponse } from '$lib/types/watchlist';
 	import type { RoomResource } from '$lib/api/room-resources';
 	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
-	
+
 	// SvelteKit 2.0+ / Svelte 5: Use PageProps from generated types for full type safety
 	// Falls back to inline interface when types not yet generated
 	interface PageData {
@@ -85,7 +85,7 @@
 		documents?: RoomResource[];
 		roomId?: number;
 	}
-	
+
 	// Svelte 5 $props() rune - the official way to receive page data
 	const { data }: { data: PageData } = $props();
 
@@ -98,43 +98,140 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DATA - This Week's Content (fetched from API with fallback)
 	// ═══════════════════════════════════════════════════════════════════════════
-	
+
 	// Fallback data constants
 	const fallbackWeeklyContent: WeeklyContent = {
-		title: "Week of January 13, 2026",
-		videoTitle: "Weekly Breakdown: Top Swing Setups",
-		videoUrl: "https://player.vimeo.com/video/123456789",
+		title: 'Week of January 13, 2026',
+		videoTitle: 'Weekly Breakdown: Top Swing Setups',
+		videoUrl: 'https://player.vimeo.com/video/123456789',
 		thumbnail: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video+Breakdown',
 		duration: '24:35',
 		publishedDate: 'January 13, 2026 at 9:00 AM ET'
 	};
 
 	const fallbackTradePlan: TradePlanEntry[] = [
-		{ ticker: 'NVDA', bias: 'BULLISH', entry: '$142.50', target1: '$148.00', target2: '$152.00', target3: '$158.00', runner: '$165.00+', stop: '$136.00', optionsStrike: '$145 Call', optionsExp: 'Jan 24, 2026', notes: 'Breakout above consolidation. Wait for pullback to entry.' },
-		{ ticker: 'TSLA', bias: 'BULLISH', entry: '$248.00', target1: '$255.00', target2: '$265.00', target3: '$275.00', runner: '$290.00+', stop: '$235.00', optionsStrike: '$250 Call', optionsExp: 'Jan 31, 2026', notes: 'Momentum building. Earnings catalyst ahead.' },
-		{ ticker: 'AMZN', bias: 'BULLISH', entry: '$185.00', target1: '$190.00', target2: '$195.00', target3: '$198.00', runner: '$205.00+', stop: '$178.00', optionsStrike: '$185 Call', optionsExp: 'Jan 24, 2026', notes: 'Breaking resistance. Strong volume confirmation.' },
-		{ ticker: 'GOOGL', bias: 'NEUTRAL', entry: '$175.50', target1: '$180.00', target2: '$185.00', target3: '$188.00', runner: '$195.00+', stop: '$168.00', optionsStrike: '$177.50 Call', optionsExp: 'Feb 7, 2026', notes: 'Watching for breakout. Not triggered yet.' },
-		{ ticker: 'META', bias: 'BULLISH', entry: '$585.00', target1: '$600.00', target2: '$615.00', target3: '$630.00', runner: '$650.00+', stop: '$565.00', optionsStrike: '$590 Call', optionsExp: 'Jan 24, 2026', notes: 'Strong trend. Buy dips to support.' },
-		{ ticker: 'AMD', bias: 'BEARISH', entry: '$125.00', target1: '$120.00', target2: '$115.00', target3: '$110.00', runner: '$100.00', stop: '$132.00', optionsStrike: '$122 Put', optionsExp: 'Jan 31, 2026', notes: 'Breakdown in progress. Short on bounces.' }
+		{
+			ticker: 'NVDA',
+			bias: 'BULLISH',
+			entry: '$142.50',
+			target1: '$148.00',
+			target2: '$152.00',
+			target3: '$158.00',
+			runner: '$165.00+',
+			stop: '$136.00',
+			optionsStrike: '$145 Call',
+			optionsExp: 'Jan 24, 2026',
+			notes: 'Breakout above consolidation. Wait for pullback to entry.'
+		},
+		{
+			ticker: 'TSLA',
+			bias: 'BULLISH',
+			entry: '$248.00',
+			target1: '$255.00',
+			target2: '$265.00',
+			target3: '$275.00',
+			runner: '$290.00+',
+			stop: '$235.00',
+			optionsStrike: '$250 Call',
+			optionsExp: 'Jan 31, 2026',
+			notes: 'Momentum building. Earnings catalyst ahead.'
+		},
+		{
+			ticker: 'AMZN',
+			bias: 'BULLISH',
+			entry: '$185.00',
+			target1: '$190.00',
+			target2: '$195.00',
+			target3: '$198.00',
+			runner: '$205.00+',
+			stop: '$178.00',
+			optionsStrike: '$185 Call',
+			optionsExp: 'Jan 24, 2026',
+			notes: 'Breaking resistance. Strong volume confirmation.'
+		},
+		{
+			ticker: 'GOOGL',
+			bias: 'NEUTRAL',
+			entry: '$175.50',
+			target1: '$180.00',
+			target2: '$185.00',
+			target3: '$188.00',
+			runner: '$195.00+',
+			stop: '$168.00',
+			optionsStrike: '$177.50 Call',
+			optionsExp: 'Feb 7, 2026',
+			notes: 'Watching for breakout. Not triggered yet.'
+		},
+		{
+			ticker: 'META',
+			bias: 'BULLISH',
+			entry: '$585.00',
+			target1: '$600.00',
+			target2: '$615.00',
+			target3: '$630.00',
+			runner: '$650.00+',
+			stop: '$565.00',
+			optionsStrike: '$590 Call',
+			optionsExp: 'Jan 24, 2026',
+			notes: 'Strong trend. Buy dips to support.'
+		},
+		{
+			ticker: 'AMD',
+			bias: 'BEARISH',
+			entry: '$125.00',
+			target1: '$120.00',
+			target2: '$115.00',
+			target3: '$110.00',
+			runner: '$100.00',
+			stop: '$132.00',
+			optionsStrike: '$122 Put',
+			optionsExp: 'Jan 31, 2026',
+			notes: 'Breakdown in progress. Short on bounces.'
+		}
 	];
 
-	const fallbackStats: QuickStats = { winRate: 82, weeklyProfit: '+$4,850', activeTrades: 4, closedThisWeek: 2 };
+	const fallbackStats: QuickStats = {
+		winRate: 82,
+		weeklyProfit: '+$4,850',
+		activeTrades: 4,
+		closedThisWeek: 2
+	};
 
 	const fallbackVideoUpdates: VideoUpdate[] = [
-		{ id: 1, title: 'Market Analysis & Trading Strategies', date: 'January 13, 2026', excerpt: 'Weekly breakdown of top swing setups', href: '/daily/high-octane-scanner/market-analysis', image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg', isVideo: true, duration: '24:35' },
-		{ id: 2, title: 'Technical Setup Review', date: 'January 12, 2026', excerpt: 'Key levels and entry points', href: '/daily/high-octane-scanner/technical-setup', image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg', isVideo: true, duration: '18:20' }
+		{
+			id: 1,
+			title: 'Market Analysis & Trading Strategies',
+			date: 'January 13, 2026',
+			excerpt: 'Weekly breakdown of top swing setups',
+			href: '/daily/high-octane-scanner/market-analysis',
+			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			isVideo: true,
+			duration: '24:35'
+		},
+		{
+			id: 2,
+			title: 'Technical Setup Review',
+			date: 'January 12, 2026',
+			excerpt: 'Key levels and entry points',
+			href: '/daily/high-octane-scanner/technical-setup',
+			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+			isVideo: true,
+			duration: '18:20'
+		}
 	];
 
 	// Derive display items from API or fallback to static
 	const displayUpdates = $derived(
 		data.latestUpdates && data.latestUpdates.length > 0
-			? data.latestUpdates.map(r => ({
+			? data.latestUpdates.map((r) => ({
 					id: r.id,
 					title: r.title,
 					date: r.formatted_date,
 					excerpt: r.description || '',
 					href: `/daily/high-octane-scanner/${r.slug}`,
-					image: r.thumbnail_url || 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
+					image:
+						r.thumbnail_url ||
+						'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
 					isVideo: r.resource_type === 'video',
 					duration: r.formatted_duration || ''
 				}))
@@ -142,24 +239,61 @@
 	);
 
 	// Reactive data derived from server props - use $derived for reactivity
-	const weeklyContent = $derived<WeeklyContent>(data.watchlist?.video ? {
-		title: data.watchlist.week_title || 'This Week',
-		videoTitle: data.watchlist.video.title,
-		videoUrl: data.watchlist.video.video_url,
-		thumbnail: data.watchlist.video.thumbnail_url || 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
-		duration: data.watchlist.video.formatted_duration || '',
-		publishedDate: data.watchlist.video.formatted_date || ''
-	} : fallbackWeeklyContent);
-	
+	const weeklyContent = $derived<WeeklyContent>(
+		data.watchlist?.video
+			? {
+					title: data.watchlist.week_title || 'This Week',
+					videoTitle: data.watchlist.video.title,
+					videoUrl: data.watchlist.video.video_url,
+					thumbnail:
+						data.watchlist.video.thumbnail_url ||
+						'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
+					duration: data.watchlist.video.formatted_duration || '',
+					publishedDate: data.watchlist.video.formatted_date || ''
+				}
+			: fallbackWeeklyContent
+	);
+
 	// Use fallback trade plan and alerts for now (unified API doesn't include these yet)
 	const tradePlan = $derived<TradePlanEntry[]>(fallbackTradePlan);
 	const stats = $derived<QuickStats>(fallbackStats);
 
 	// Fallback alerts
 	const fallbackAlerts: Alert[] = [
-		{ id: 1, type: 'ENTRY', ticker: 'NVDA', title: 'Opening NVDA Swing Position', time: 'Today at 10:32 AM', message: 'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.', isNew: true, notes: 'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.' },
-		{ id: 2, type: 'UPDATE', ticker: 'TSLA', title: 'TSLA Approaching Entry Zone', time: 'Today at 9:15 AM', message: 'TSLA pulling back to our entry zone. Be ready. Will alert when triggered.', isNew: true, notes: 'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.' },
-		{ id: 3, type: 'EXIT', ticker: 'MSFT', title: 'Closing MSFT for +8.2%', time: 'Yesterday at 3:45 PM', message: 'Taking profits on MSFT. Hit second target. +$2,450 on this trade.', isNew: false, notes: 'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.' }
+		{
+			id: 1,
+			type: 'ENTRY',
+			ticker: 'NVDA',
+			title: 'Opening NVDA Swing Position',
+			time: 'Today at 10:32 AM',
+			message:
+				'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.',
+			isNew: true,
+			notes:
+				'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.'
+		},
+		{
+			id: 2,
+			type: 'UPDATE',
+			ticker: 'TSLA',
+			title: 'TSLA Approaching Entry Zone',
+			time: 'Today at 9:15 AM',
+			message: 'TSLA pulling back to our entry zone. Be ready. Will alert when triggered.',
+			isNew: true,
+			notes:
+				'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.'
+		},
+		{
+			id: 3,
+			type: 'EXIT',
+			ticker: 'MSFT',
+			title: 'Closing MSFT for +8.2%',
+			time: 'Yesterday at 3:45 PM',
+			message: 'Taking profits on MSFT. Hit second target. +$2,450 on this trade.',
+			isNew: false,
+			notes:
+				'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.'
+		}
 	];
 
 	const alerts = $derived<Alert[]>(fallbackAlerts);
@@ -192,9 +326,9 @@
 
 	// Filter alerts
 	const filteredAlerts = $derived(
-		selectedFilter === 'all' 
-			? alerts 
-			: alerts.filter(a => a.type.toLowerCase() === selectedFilter)
+		selectedFilter === 'all'
+			? alerts
+			: alerts.filter((a) => a.type.toLowerCase() === selectedFilter)
 	);
 
 	const latestUpdates: VideoUpdate[] = [
@@ -202,7 +336,8 @@
 			id: 1,
 			title: 'NVDA Entry Alert - Opening Swing Position',
 			date: 'January 13, 2026 at 10:32 AM ET',
-			excerpt: 'Entering NVDA at $142.50. Watch this video breakdown for entry reasoning, targets, and risk management.',
+			excerpt:
+				'Entering NVDA at $142.50. Watch this video breakdown for entry reasoning, targets, and risk management.',
 			href: '/dashboard/explosive-swings/updates/nvda-entry-011326',
 			image: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=NVDA+ENTRY',
 			isVideo: true,
@@ -212,7 +347,8 @@
 			id: 2,
 			title: 'MSFT Exit - Closing for +8.2% Profit',
 			date: 'January 12, 2026 at 3:45 PM ET',
-			excerpt: 'Taking profits on MSFT swing trade. Hit second target. Watch the exit strategy breakdown and lessons learned.',
+			excerpt:
+				'Taking profits on MSFT swing trade. Hit second target. Watch the exit strategy breakdown and lessons learned.',
 			href: '/dashboard/explosive-swings/updates/msft-exit-011226',
 			image: 'https://placehold.co/640x360/3b82f6/FFFFFF/png?text=MSFT+EXIT',
 			isVideo: true,
@@ -222,7 +358,8 @@
 			id: 3,
 			title: 'META Entry - Momentum Play Setup',
 			date: 'January 11, 2026 at 11:20 AM ET',
-			excerpt: 'META triggered our entry at $585. Full breakdown of the momentum setup and what to watch for.',
+			excerpt:
+				'META triggered our entry at $585. Full breakdown of the momentum setup and what to watch for.',
 			href: '/dashboard/explosive-swings/updates/meta-entry-011126',
 			image: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=META+ENTRY',
 			isVideo: true,
@@ -242,7 +379,8 @@
 			id: 5,
 			title: 'AMD Short Setup - Bearish Breakdown',
 			date: 'January 10, 2026 at 2:30 PM ET',
-			excerpt: 'AMD short position triggered at $125. Breakdown of the bearish setup and downside targets.',
+			excerpt:
+				'AMD short position triggered at $125. Breakdown of the bearish setup and downside targets.',
 			href: '/dashboard/explosive-swings/updates/amd-short-011026',
 			image: 'https://placehold.co/640x360/ef4444/FFFFFF/png?text=AMD+SHORT',
 			isVideo: true,
@@ -265,9 +403,9 @@
 	<title>High Octane Scanner Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="High Octane Scanner" 
-	startHereUrl="/dashboard/high-octane-scanner/start-here" 
+<TradingRoomHeader
+	roomName="High Octane Scanner"
+	startHereUrl="/dashboard/high-octane-scanner/start-here"
 />
 
 <div class="dashboard">
@@ -278,24 +416,31 @@
 		<div class="hero-header">
 			<h1>{weeklyContent.title}</h1>
 			<div class="hero-tabs">
-				<button 
-					class="hero-tab" 
+				<button
+					class="hero-tab"
 					class:active={heroTab === 'video'}
-					onclick={() => heroTab = 'video'}
+					onclick={() => (heroTab = 'video')}
 				>
 					<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-						<path d="M8 5v14l11-7z"/>
+						<path d="M8 5v14l11-7z" />
 					</svg>
 					Video Breakdown
 				</button>
-				<button 
-					class="hero-tab" 
+				<button
+					class="hero-tab"
 					class:active={heroTab === 'entries'}
-					onclick={() => heroTab = 'entries'}
+					onclick={() => (heroTab = 'entries')}
 				>
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-						<rect x="3" y="3" width="18" height="18" rx="2"/>
-						<path d="M3 9h18M9 21V9"/>
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="18"
+						height="18"
+					>
+						<rect x="3" y="3" width="18" height="18" rx="2" />
+						<path d="M3 9h18M9 21V9" />
 					</svg>
 					Trade Plan & Entries
 				</button>
@@ -310,7 +455,7 @@
 						<div class="video-overlay">
 							<button class="play-btn" aria-label="Play video">
 								<svg viewBox="0 0 24 24" fill="currentColor">
-									<path d="M8 5v14l11-7z"/>
+									<path d="M8 5v14l11-7z" />
 								</svg>
 							</button>
 						</div>
@@ -321,8 +466,15 @@
 						<p>Published {weeklyContent.publishedDate}</p>
 						<a href="/dashboard/high-octane-scanner/video/weekly" class="watch-btn">
 							Watch Full Video
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-								<path d="M5 12h14M12 5l7 7-7 7"/>
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="18"
+								height="18"
+							>
+								<path d="M5 12h14M12 5l7 7-7 7" />
 							</svg>
 						</a>
 					</div>
@@ -369,14 +521,22 @@
 										<td class="options-cell">{trade.optionsStrike}</td>
 										<td class="exp-cell">{trade.optionsExp}</td>
 										<td class="notes-toggle-cell">
-											<button 
-												class="table-notes-btn" 
+											<button
+												class="table-notes-btn"
 												class:expanded={expandedTradeNotes.has(trade.ticker)}
 												onclick={() => toggleTradeNotes(trade.ticker)}
 												aria-label="Toggle notes for {trade.ticker}"
 											>
-												<svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
-													<path d="M19 9l-7 7-7-7"/>
+												<svg
+													class="chevron-icon"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="2.5"
+													width="18"
+													height="18"
+												>
+													<path d="M19 9l-7 7-7-7" />
 												</svg>
 											</button>
 										</td>
@@ -396,9 +556,15 @@
 						</table>
 					</div>
 					<div class="sheet-footer">
-						<a href="https://docs.google.com/spreadsheets/d/your-sheet-id" target="_blank" class="google-sheet-link">
+						<a
+							href="https://docs.google.com/spreadsheets/d/your-sheet-id"
+							target="_blank"
+							class="google-sheet-link"
+						>
 							<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-								<path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 17h2v-7H7v7zm4 0h2V7h-2v10zm4 0h2v-4h-2v4z"/>
+								<path
+									d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 17h2v-7H7v7zm4 0h2V7h-2v10zm4 0h2v-4h-2v4z"
+								/>
 							</svg>
 							Open in Google Sheets
 						</a>
@@ -439,20 +605,40 @@
 			<div class="section-header">
 				<h2>Live Alerts</h2>
 				<div class="filter-pills">
-					<button class="pill" class:active={selectedFilter === 'all'} onclick={() => selectedFilter = 'all'}>All</button>
-					<button class="pill" class:active={selectedFilter === 'entry'} onclick={() => selectedFilter = 'entry'}>Entries</button>
-					<button class="pill" class:active={selectedFilter === 'exit'} onclick={() => selectedFilter = 'exit'}>Exits</button>
-					<button class="pill" class:active={selectedFilter === 'update'} onclick={() => selectedFilter = 'update'}>Updates</button>
+					<button
+						class="pill"
+						class:active={selectedFilter === 'all'}
+						onclick={() => (selectedFilter = 'all')}>All</button
+					>
+					<button
+						class="pill"
+						class:active={selectedFilter === 'entry'}
+						onclick={() => (selectedFilter = 'entry')}>Entries</button
+					>
+					<button
+						class="pill"
+						class:active={selectedFilter === 'exit'}
+						onclick={() => (selectedFilter = 'exit')}>Exits</button
+					>
+					<button
+						class="pill"
+						class:active={selectedFilter === 'update'}
+						onclick={() => (selectedFilter = 'update')}>Updates</button
+					>
 				</div>
 			</div>
 
 			<div class="alerts-list">
 				{#each filteredAlerts as alert}
-					<div class="alert-card" class:is-new={alert.isNew} class:has-notes-open={expandedNotes.has(alert.id)}>
+					<div
+						class="alert-card"
+						class:is-new={alert.isNew}
+						class:has-notes-open={expandedNotes.has(alert.id)}
+					>
 						{#if alert.isNew}
 							<span class="new-badge">NEW</span>
 						{/if}
-						
+
 						<!-- Alert Header Row with Inline Chevron -->
 						<div class="alert-row">
 							<div class="alert-info">
@@ -460,22 +646,30 @@
 								<span class="alert-ticker">{alert.ticker}</span>
 								<span class="alert-time">{alert.time}</span>
 							</div>
-							<button 
-								class="notes-chevron" 
+							<button
+								class="notes-chevron"
 								class:expanded={expandedNotes.has(alert.id)}
 								onclick={() => toggleNotes(alert.id)}
 								aria-label="Toggle trade notes"
 							>
 								<span class="notes-label">Notes</span>
-								<svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
-									<path d="M19 9l-7 7-7-7"/>
+								<svg
+									class="chevron-icon"
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2.5"
+									width="18"
+									height="18"
+								>
+									<path d="M19 9l-7 7-7-7" />
 								</svg>
 							</button>
 						</div>
-						
+
 						<h3>{alert.title}</h3>
 						<p class="alert-message">{alert.message}</p>
-						
+
 						<!-- Expandable Notes Panel -->
 						{#if expandedNotes.has(alert.id)}
 							<div class="notes-panel">
@@ -492,9 +686,7 @@
 				{/each}
 			</div>
 
-			<a href="/dashboard/high-octane-scanner/alerts" class="view-all-link">
-				View All Alerts →
-			</a>
+			<a href="/dashboard/high-octane-scanner/alerts" class="view-all-link"> View All Alerts → </a>
 		</section>
 
 		<!-- SIDEBAR -->
@@ -506,12 +698,20 @@
 					<svg viewBox="0 0 200 100" class="mini-chart">
 						<defs>
 							<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-								<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.3"/>
-								<stop offset="100%" style="stop-color:#22c55e;stop-opacity:0"/>
+								<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.3" />
+								<stop offset="100%" style="stop-color:#22c55e;stop-opacity:0" />
 							</linearGradient>
 						</defs>
-						<path d="M0,80 L30,70 L60,55 L90,45 L120,50 L150,30 L180,20 L200,15 L200,100 L0,100 Z" fill="url(#chartGrad)"/>
-						<polyline points="0,80 30,70 60,55 90,45 120,50 150,30 180,20 200,15" fill="none" stroke="#22c55e" stroke-width="2.5"/>
+						<path
+							d="M0,80 L30,70 L60,55 L90,45 L120,50 L150,30 L180,20 L200,15 L200,100 L0,100 Z"
+							fill="url(#chartGrad)"
+						/>
+						<polyline
+							points="0,80 30,70 60,55 90,45 120,50 150,30 180,20 200,15"
+							fill="none"
+							stroke="#22c55e"
+							stroke-width="2.5"
+						/>
 					</svg>
 					<div class="perf-total">+$18,750</div>
 				</div>
@@ -558,7 +758,7 @@
 					<div class="update-thumbnail" style="background-image: url('{update.image}')">
 						<div class="play-overlay">
 							<svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-								<path d="M8 5v14l11-7z"/>
+								<path d="M8 5v14l11-7z" />
 							</svg>
 						</div>
 						<div class="update-duration">{update.duration}</div>
@@ -587,7 +787,7 @@
 	   HERO SECTION - The Main Event
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.hero {
-		background: linear-gradient(135deg, #F69532 0%, #e8850d 100%);
+		background: linear-gradient(135deg, #f69532 0%, #e8850d 100%);
 		padding: 0;
 	}
 
@@ -596,7 +796,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 25px 40px;
-		border-bottom: 1px solid rgba(255,255,255,0.2);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.2);
 		flex-wrap: wrap;
 		gap: 20px;
 	}
@@ -620,8 +820,8 @@
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		background: rgba(255,255,255,0.15);
-		border: 2px solid rgba(255,255,255,0.3);
+		background: rgba(255, 255, 255, 0.15);
+		border: 2px solid rgba(255, 255, 255, 0.3);
 		color: #fff;
 		padding: 12px 24px;
 		border-radius: 8px;
@@ -632,12 +832,12 @@
 	}
 
 	.hero-tab:hover {
-		background: rgba(255,255,255,0.25);
+		background: rgba(255, 255, 255, 0.25);
 	}
 
 	.hero-tab.active {
 		background: #fff;
-		color: #F69532;
+		color: #f69532;
 		border-color: #fff;
 	}
 
@@ -662,13 +862,13 @@
 		background-position: center;
 		border-radius: 16px;
 		overflow: hidden;
-		box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
 	}
 
 	.video-overlay {
 		position: absolute;
 		inset: 0;
-		background: rgba(0,0,0,0.3);
+		background: rgba(0, 0, 0, 0.3);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -676,7 +876,7 @@
 	}
 
 	.video-player:hover .video-overlay {
-		background: rgba(0,0,0,0.4);
+		background: rgba(0, 0, 0, 0.4);
 	}
 
 	.play-btn {
@@ -690,13 +890,13 @@
 		justify-content: center;
 		cursor: pointer;
 		transition: transform 0.3s;
-		box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
 	}
 
 	.play-btn svg {
 		width: 32px;
 		height: 32px;
-		color: #F69532;
+		color: #f69532;
 		margin-left: 4px;
 	}
 
@@ -708,7 +908,7 @@
 		position: absolute;
 		bottom: 15px;
 		right: 15px;
-		background: rgba(0,0,0,0.8);
+		background: rgba(0, 0, 0, 0.8);
 		color: #fff;
 		padding: 6px 12px;
 		border-radius: 6px;
@@ -739,7 +939,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 10px;
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 		padding: 16px 32px;
 		border-radius: 10px;
@@ -783,7 +983,7 @@
 		background: #fff;
 		border-radius: 16px;
 		overflow: hidden;
-		box-shadow: 0 20px 60px rgba(0,0,0,0.2);
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
 	}
 
 	.trade-sheet {
@@ -793,7 +993,7 @@
 	}
 
 	.trade-sheet thead {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -806,8 +1006,8 @@
 		letter-spacing: 0.05em;
 	}
 
-	.trade-sheet tbody tr:nth-child(4n+1),
-	.trade-sheet tbody tr:nth-child(4n+2) {
+	.trade-sheet tbody tr:nth-child(4n + 1),
+	.trade-sheet tbody tr:nth-child(4n + 2) {
 		background: #f8fafc;
 	}
 
@@ -819,7 +1019,7 @@
 
 	.ticker-cell strong {
 		font-size: 16px;
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.bias {
@@ -847,7 +1047,7 @@
 
 	.entry-cell {
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.target-cell {
@@ -903,13 +1103,13 @@
 
 	.table-notes-btn:hover {
 		background: #e2e8f0;
-		border-color: #143E59;
-		color: #143E59;
+		border-color: #143e59;
+		color: #143e59;
 	}
 
 	.table-notes-btn.expanded {
-		background: #143E59;
-		border-color: #143E59;
+		background: #143e59;
+		border-color: #143e59;
 		color: #fff;
 	}
 
@@ -931,7 +1131,7 @@
 		text-align: left;
 		padding: 0;
 		background: transparent !important;
-		border-bottom: 2px solid #143E59;
+		border-bottom: 2px solid #143e59;
 	}
 
 	.trade-notes-panel {
@@ -956,7 +1156,7 @@
 
 	.trade-notes-badge {
 		flex-shrink: 0;
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 		font-size: 12px;
 		font-weight: 800;
@@ -983,7 +1183,7 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 10px;
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 		padding: 14px 28px;
 		border-radius: 10px;
@@ -1055,7 +1255,7 @@
 		display: block;
 		font-size: 32px;
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 		font-family: 'Montserrat', sans-serif;
 	}
 
@@ -1103,7 +1303,7 @@
 		background: #fff;
 		border-radius: 16px;
 		padding: 25px;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 	}
 
 	.section-header {
@@ -1146,7 +1346,7 @@
 	}
 
 	.pill.active {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -1167,21 +1367,21 @@
 	}
 
 	.alert-card:hover {
-		border-color: #143E59;
+		border-color: #143e59;
 		transform: translateY(-2px);
-		box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+		box-shadow: 0 8px 25px rgba(0, 0, 0, 0.08);
 	}
 
 	.alert-card.is-new {
 		background: #fffbf5;
-		border-color: #F69532;
+		border-color: #f69532;
 	}
 
 	.new-badge {
 		position: absolute;
 		top: -10px;
 		right: 15px;
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
 		font-size: 10px;
 		font-weight: 700;
@@ -1221,11 +1421,11 @@
 
 	.notes-chevron:hover {
 		background: #f1f5f9;
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.notes-chevron.expanded {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -1268,7 +1468,7 @@
 	.alert-ticker {
 		font-size: 16px;
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.alert-time {
@@ -1292,7 +1492,7 @@
 
 	/* Card state when notes are open */
 	.alert-card.has-notes-open {
-		border-color: #143E59;
+		border-color: #143e59;
 		box-shadow: 0 8px 30px rgba(20, 62, 89, 0.12);
 	}
 
@@ -1322,13 +1522,13 @@
 		align-items: center;
 		gap: 12px;
 		padding: 14px 18px;
-		background: linear-gradient(135deg, #143E59 0%, #1e5175 100%);
-		border-bottom: 1px solid rgba(255,255,255,0.1);
+		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
+		border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 	}
 
 	.notes-ticker-badge {
 		background: #fff;
-		color: #143E59;
+		color: #143e59;
 		font-size: 12px;
 		font-weight: 800;
 		padding: 5px 12px;
@@ -1337,7 +1537,7 @@
 	}
 
 	.notes-title {
-		color: rgba(255,255,255,0.9);
+		color: rgba(255, 255, 255, 0.9);
 		font-size: 13px;
 		font-weight: 600;
 		letter-spacing: 0.02em;
@@ -1365,7 +1565,7 @@
 	}
 
 	.view-all-link:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	/* SIDEBAR */
@@ -1379,7 +1579,7 @@
 		background: #fff;
 		border-radius: 16px;
 		padding: 25px;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 		text-align: center;
 	}
 
@@ -1414,7 +1614,7 @@
 
 	.perf-stats span {
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.quick-links {
@@ -1437,12 +1637,12 @@
 	}
 
 	.quick-links a:hover {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
 	.support-card {
-		background: linear-gradient(135deg, #143E59, #0984ae);
+		background: linear-gradient(135deg, #143e59, #0984ae);
 		color: #fff;
 	}
 
@@ -1459,7 +1659,7 @@
 	.support-btn {
 		display: inline-block;
 		background: #fff;
-		color: #143E59;
+		color: #143e59;
 		padding: 12px 24px;
 		border-radius: 8px;
 		font-weight: 700;
@@ -1469,7 +1669,7 @@
 
 	.support-btn:hover {
 		transform: translateY(-2px);
-		box-shadow: 0 5px 20px rgba(0,0,0,0.2);
+		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1525,7 +1725,7 @@
 		background: #fff;
 		border-radius: 16px;
 		overflow: hidden;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 		transition: all 0.3s ease;
 		text-decoration: none;
 		color: inherit;
@@ -1534,7 +1734,7 @@
 
 	.update-card:hover {
 		transform: translateY(-8px);
-		box-shadow: 0 12px 40px rgba(0,0,0,0.15);
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
 	}
 
 	.update-thumbnail {
@@ -1549,7 +1749,7 @@
 	.play-overlay {
 		position: absolute;
 		inset: 0;
-		background: rgba(0,0,0,0.4);
+		background: rgba(0, 0, 0, 0.4);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1557,7 +1757,7 @@
 	}
 
 	.update-card:hover .play-overlay {
-		background: rgba(0,0,0,0.6);
+		background: rgba(0, 0, 0, 0.6);
 	}
 
 	.play-overlay svg {
@@ -1575,7 +1775,7 @@
 		position: absolute;
 		bottom: 12px;
 		right: 12px;
-		background: rgba(0,0,0,0.85);
+		background: rgba(0, 0, 0, 0.85);
 		color: #fff;
 		padding: 5px 10px;
 		border-radius: 6px;

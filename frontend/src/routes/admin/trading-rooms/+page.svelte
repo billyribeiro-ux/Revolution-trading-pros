@@ -32,7 +32,7 @@
 	 * Includes alerts-only services and day trading room
 	 */
 	const managedRooms = $derived(
-		ROOMS.filter(r => r.type === 'alerts-only' || r.slug === 'day-trading-room')
+		ROOMS.filter((r) => r.type === 'alerts-only' || r.slug === 'day-trading-room')
 	);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -66,71 +66,74 @@
 
 <div class="page">
 	<div class="admin-page-container">
-	<!-- Header -->
-	<header class="page-header">
-		<h1>Trading Rooms Content</h1>
-		<p class="subtitle">Manage trade plans, alerts, and weekly videos for each trading room</p>
-	</header>
+		<!-- Header -->
+		<header class="page-header">
+			<h1>Trading Rooms Content</h1>
+			<p class="subtitle">Manage trade plans, alerts, and weekly videos for each trading room</p>
+		</header>
 
-	<!-- Room Cards Grid -->
-	<div class="rooms-grid">
-		{#each managedRooms as room}
-			{@const RoomIcon = getIconForRoom(room.slug)}
-			<button 
-				class="room-card"
-				onclick={() => navigateToRoom(room)}
-				style="--room-color: {room.color}"
-			>
-				<div class="room-icon" style="background: {room.color}">
-					<RoomIcon size={32} />
-				</div>
-				<div class="room-info">
-					<h2>{room.name}</h2>
-					<span class="room-type">{room.type === 'alerts-only' ? 'Alert Service' : 'Trading Room'}</span>
-				</div>
-				<div class="room-features">
-					<div class="feature">
-						<IconTable size={16} />
-						<span>Trade Plan</span>
+		<!-- Room Cards Grid -->
+		<div class="rooms-grid">
+			{#each managedRooms as room}
+				{@const RoomIcon = getIconForRoom(room.slug)}
+				<button
+					class="room-card"
+					onclick={() => navigateToRoom(room)}
+					style="--room-color: {room.color}"
+				>
+					<div class="room-icon" style="background: {room.color}">
+						<RoomIcon size={32} />
 					</div>
-					<div class="feature">
-						<IconBell size={16} />
-						<span>Alerts</span>
+					<div class="room-info">
+						<h2>{room.name}</h2>
+						<span class="room-type"
+							>{room.type === 'alerts-only' ? 'Alert Service' : 'Trading Room'}</span
+						>
 					</div>
-					<div class="feature">
-						<IconVideo size={16} />
-						<span>Weekly Video</span>
+					<div class="room-features">
+						<div class="feature">
+							<IconTable size={16} />
+							<span>Trade Plan</span>
+						</div>
+						<div class="feature">
+							<IconBell size={16} />
+							<span>Alerts</span>
+						</div>
+						<div class="feature">
+							<IconVideo size={16} />
+							<span>Weekly Video</span>
+						</div>
 					</div>
-				</div>
-				<div class="room-arrow">
-					<IconArrowRight size={24} />
-				</div>
-			</button>
-		{/each}
-	</div>
-
-	<!-- Quick Stats -->
-	<section class="quick-stats">
-		<h2>Quick Actions</h2>
-		<div class="action-cards">
-			<a href="/admin/videos" class="action-card">
-				<IconVideo size={24} />
-				<span>Video Library</span>
-				<p>Manage all room videos</p>
-			</a>
-			<a href="/admin/watchlist" class="action-card">
-				<IconTable size={24} />
-				<span>Weekly Watchlist</span>
-				<p>Manage watchlist entries</p>
-			</a>
-			<a href="/admin/schedules" class="action-card">
-				<IconChartBar size={24} />
-				<span>Schedules</span>
-				<p>Room schedules & calendar</p>
-			</a>
+					<div class="room-arrow">
+						<IconArrowRight size={24} />
+					</div>
+				</button>
+			{/each}
 		</div>
-	</section>
-	</div><!-- End admin-page-container -->
+
+		<!-- Quick Stats -->
+		<section class="quick-stats">
+			<h2>Quick Actions</h2>
+			<div class="action-cards">
+				<a href="/admin/videos" class="action-card">
+					<IconVideo size={24} />
+					<span>Video Library</span>
+					<p>Manage all room videos</p>
+				</a>
+				<a href="/admin/watchlist" class="action-card">
+					<IconTable size={24} />
+					<span>Weekly Watchlist</span>
+					<p>Manage watchlist entries</p>
+				</a>
+				<a href="/admin/schedules" class="action-card">
+					<IconChartBar size={24} />
+					<span>Schedules</span>
+					<p>Room schedules & calendar</p>
+				</a>
+			</div>
+		</section>
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -285,12 +288,12 @@
 	}
 
 	.action-card:hover {
-		border-color: #E6B800;
+		border-color: #e6b800;
 		box-shadow: 0 4px 20px rgba(230, 184, 0, 0.2);
 	}
 
 	.action-card :global(svg) {
-		color: #E6B800;
+		color: #e6b800;
 		margin-bottom: 12px;
 	}
 

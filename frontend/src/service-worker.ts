@@ -78,8 +78,8 @@ const VIDEO_MANIFEST_TTL = 5 * 60 * 1000; // 5 minutes
 // Filter out any potentially problematic paths
 const ASSETS = [
 	...build, // Built app chunks
-	...files  // Static files
-].filter(asset => {
+	...files // Static files
+].filter((asset) => {
 	// Skip assets that might cause issues
 	if (!asset) return false;
 	// Skip API routes (should never be cached)
@@ -101,18 +101,18 @@ const MAX_CONCURRENT_CACHE = 50;
 async function cacheAssetsIndividually(cache: Cache, assets: string[]): Promise<void> {
 	let successCount = 0;
 	let failCount = 0;
-	
+
 	// Process assets in batches to avoid overwhelming the browser
 	for (let i = 0; i < assets.length; i += MAX_CONCURRENT_CACHE) {
 		const batch = assets.slice(i, i + MAX_CONCURRENT_CACHE);
-		
+
 		const results = await Promise.allSettled(
 			batch.map(async (asset) => {
 				try {
 					// Create a proper request with cache busting for fresh assets
 					const request = new Request(asset, { cache: 'reload' });
 					const response = await fetch(request);
-					
+
 					// Only cache successful responses
 					if (response.ok) {
 						await cache.put(asset, response);
@@ -128,7 +128,7 @@ async function cacheAssetsIndividually(cache: Cache, assets: string[]): Promise<
 				}
 			})
 		);
-		
+
 		// Count successes and failures
 		results.forEach((result) => {
 			if (result.status === 'fulfilled' && result.value) {
@@ -138,7 +138,7 @@ async function cacheAssetsIndividually(cache: Cache, assets: string[]): Promise<
 			}
 		});
 	}
-	
+
 	log(`[SW] Cached ${successCount}/${assets.length} assets (${failCount} failed)`);
 }
 
@@ -146,9 +146,10 @@ async function cacheAssetsIndividually(cache: Cache, assets: string[]): Promise<
 sw.addEventListener('install', (event) => {
 	log(`[SW] Installing version ${version}`);
 	log(`[SW] Preparing to cache ${ASSETS.length} assets`);
-	
+
 	event.waitUntil(
-		caches.open(CACHE_NAME)
+		caches
+			.open(CACHE_NAME)
 			.then(async (cache) => {
 				// Use resilient individual caching instead of atomic addAll
 				await cacheAssetsIndividually(cache, ASSETS);
@@ -220,51 +221,47 @@ sw.addEventListener('fetch', (event) => {
 
 	// Skip API requests - always go to network
 	if (url.pathname.startsWith('/api')) return;
-	
+
 	// For navigation requests (HTML pages), use network-first
 	if (event.request.mode === 'navigate') {
 		event.respondWith(
-			fetch(event.request)
-				.catch(async () => {
-					// If offline, try to serve cached page or offline fallback
-					const cached = await caches.match(event.request);
-					if (cached) return cached;
-					
-					// ICT 11+ FIX: Inline offline response (no external file dependency)
-					return new Response(
-						`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline - Revolution Trading Pros</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;background:linear-gradient(135deg,#0a101c 0%,#1a2332 100%);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:2rem}div{text-align:center;max-width:500px}.icon{font-size:5rem;margin-bottom:2rem;opacity:0.8}h1{font-size:2.5rem;margin-bottom:1rem;font-weight:700}p{font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.8);margin-bottom:2rem}button{display:inline-block;padding:1rem 2rem;background:#facc15;color:#0a101c;border:none;border-radius:9999px;font-weight:600;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}button:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(250,204,21,0.3)}</style></head><body><div><div class="icon">📡</div><h1>You're Offline</h1><p>It looks like you've lost your internet connection. Please check your network and try again.</p><button onclick="location.reload()">Try Again</button></div></body></html>`,
-						{ status: 503, headers: { 'Content-Type': 'text/html' } }
-					);
-				})
+			fetch(event.request).catch(async () => {
+				// If offline, try to serve cached page or offline fallback
+				const cached = await caches.match(event.request);
+				if (cached) return cached;
+
+				// ICT 11+ FIX: Inline offline response (no external file dependency)
+				return new Response(
+					`<!DOCTYPE html><html><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Offline - Revolution Trading Pros</title><style>body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,Oxygen,Ubuntu,Cantarell,sans-serif;background:linear-gradient(135deg,#0a101c 0%,#1a2332 100%);color:#fff;min-height:100vh;display:flex;align-items:center;justify-content:center;margin:0;padding:2rem}div{text-align:center;max-width:500px}.icon{font-size:5rem;margin-bottom:2rem;opacity:0.8}h1{font-size:2.5rem;margin-bottom:1rem;font-weight:700}p{font-size:1.125rem;line-height:1.6;color:rgba(255,255,255,0.8);margin-bottom:2rem}button{display:inline-block;padding:1rem 2rem;background:#facc15;color:#0a101c;border:none;border-radius:9999px;font-weight:600;cursor:pointer;transition:transform 0.2s,box-shadow 0.2s}button:hover{transform:translateY(-2px);box-shadow:0 10px 25px rgba(250,204,21,0.3)}</style></head><body><div><div class="icon">📡</div><h1>You're Offline</h1><p>It looks like you've lost your internet connection. Please check your network and try again.</p><button onclick="location.reload()">Try Again</button></div></body></html>`,
+					{ status: 503, headers: { 'Content-Type': 'text/html' } }
+				);
+			})
 		);
 		return;
 	}
-	
+
 	// For static assets (JS, CSS, images), use cache-first
 	if (ASSETS.includes(url.pathname)) {
 		event.respondWith(
-			caches.match(event.request)
-				.then((cached) => {
-					if (cached) return cached;
-					
-					// Not in cache, fetch from network
-					return fetch(event.request)
-						.then((response) => {
-							// Don't cache error responses
-							if (!response.ok) return response;
-							
-							// Cache the fresh response
-							const responseClone = response.clone();
-							caches.open(CACHE_NAME)
-								.then((cache) => cache.put(event.request, responseClone));
-							
-							return response;
-						});
-				})
+			caches.match(event.request).then((cached) => {
+				if (cached) return cached;
+
+				// Not in cache, fetch from network
+				return fetch(event.request).then((response) => {
+					// Don't cache error responses
+					if (!response.ok) return response;
+
+					// Cache the fresh response
+					const responseClone = response.clone();
+					caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
+
+					return response;
+				});
+			})
 		);
 		return;
 	}
-	
+
 	// For everything else, network-first with cache fallback
 	event.respondWith(
 		fetch(event.request)
@@ -272,8 +269,7 @@ sw.addEventListener('fetch', (event) => {
 				// Cache successful responses
 				if (response.ok) {
 					const responseClone = response.clone();
-					caches.open(CACHE_NAME)
-						.then((cache) => cache.put(event.request, responseClone));
+					caches.open(CACHE_NAME).then((cache) => cache.put(event.request, responseClone));
 				}
 				return response;
 			})

@@ -145,7 +145,10 @@
 					<span>Continue Shopping</span>
 				</a>
 				<h1 class="page-title">CART</h1>
-				<p class="cart-count">{$cartItemCount} {$cartItemCount === 1 ? 'item' : 'items'} in your cart</p>
+				<p class="cart-count">
+					{$cartItemCount}
+					{$cartItemCount === 1 ? 'item' : 'items'} in your cart
+				</p>
 			</header>
 
 			{#if $cartStore.items.length === 0}
@@ -203,7 +206,9 @@
 																	<span class="rtp-price-amount amount">
 																		{formatPrice(item.price)}
 																	</span>
-																	<span class="subscription-details"> {getIntervalText(item.interval)}</span>
+																	<span class="subscription-details">
+																		{getIntervalText(item.interval)}</span
+																	>
 																</span>
 															</div>
 														{/if}
@@ -238,11 +243,7 @@
 								</div>
 
 								<div class="clear-cart">
-									<button
-										type="button"
-										class="btn btn-lg btn-default"
-										onclick={clearCart}
-									>
+									<button type="button" class="btn btn-lg btn-default" onclick={clearCart}>
 										Clear Cart
 									</button>
 								</div>
@@ -396,7 +397,13 @@
 		min-height: 100vh;
 		background: var(--st-bg);
 		padding: 40px 0;
-		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		font-family:
+			'Open Sans',
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			Roboto,
+			sans-serif;
 	}
 
 	.container {

@@ -6,7 +6,7 @@
  */
 declare module '@tabler/icons-svelte/icons/*' {
 	import type { Component } from 'svelte';
-	
+
 	interface IconProps {
 		size?: number | string;
 		stroke?: number | string;
@@ -15,7 +15,7 @@ declare module '@tabler/icons-svelte/icons/*' {
 		style?: string;
 		[key: string]: unknown;
 	}
-	
+
 	const Icon: Component<IconProps>;
 	export default Icon;
 }

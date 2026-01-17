@@ -1,7 +1,7 @@
 /**
  * @type {import('./$types').PageServerLoad}
  */
-export const load = (async () => {
+export const load = async () => {
 	// Mock archive data matching WordPress reference - will be replaced with API call
 	const archiveEntries = [
 		{
@@ -83,7 +83,8 @@ export const load = (async () => {
 		slug: '01122026-tg-watkins',
 		trader: 'TG Watkins',
 		weekText: 'Week of January 12, 2026.',
-		image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg'
+		image:
+			'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg'
 	};
 
 	return {
@@ -92,4 +93,4 @@ export const load = (async () => {
 		totalPages: 22,
 		currentPage: 1
 	};
-});
+};

@@ -2,10 +2,7 @@
 	import { goto } from '$app/navigation';
 	import { IconDeviceFloppy, IconEye, IconArrowLeft } from '$lib/icons';
 	import { createPopup } from '$lib/api/popups';
-	import {
-		defaultPopupConfig,
-		type Popup
-	} from '$lib/stores/popups.svelte';
+	import { defaultPopupConfig, type Popup } from '$lib/stores/popups.svelte';
 	import { sanitizePopupContent } from '$lib/utils/sanitize';
 
 	let activeTab = $state<'content' | 'design' | 'display' | 'buttons' | 'form'>('content');
@@ -543,8 +540,7 @@
 								<div class="button-config">
 									<div class="button-header">
 										<h4>Field {index + 1}</h4>
-										<button class="btn-remove" onclick={() => removeFormField(index)}
-											>Remove</button
+										<button class="btn-remove" onclick={() => removeFormField(index)}>Remove</button
 										>
 									</div>
 
@@ -671,7 +667,7 @@
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		color: #e6b800;
 		border-radius: 8px;
 		text-decoration: none;
 		font-size: 0.875rem;
@@ -716,8 +712,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 	}
 
 	.btn-primary:hover:not(:disabled) {
@@ -732,7 +728,7 @@
 
 	.btn-secondary {
 		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-secondary:hover {
@@ -778,8 +774,8 @@
 	}
 
 	.tab.active {
-		color: #E6B800;
-		border-bottom-color: #E6B800;
+		color: #e6b800;
+		border-bottom-color: #e6b800;
 		background: rgba(230, 184, 0, 0.05);
 	}
 
@@ -814,8 +810,8 @@
 
 	.btn-add {
 		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;

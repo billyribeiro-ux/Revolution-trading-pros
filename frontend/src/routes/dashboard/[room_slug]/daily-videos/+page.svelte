@@ -114,37 +114,44 @@
 
 	function getPaginationRange(): (number | string)[] {
 		const range: (number | string)[] = [];
-		
+
 		// Always show first page
 		range.push(1);
-		
+
 		if (currentPage > 3) {
 			range.push('...');
 		}
-		
+
 		// Show pages around current page
-		for (let i = Math.max(2, currentPage - 1); i <= Math.min(totalPages - 1, currentPage + 1); i++) {
+		for (
+			let i = Math.max(2, currentPage - 1);
+			i <= Math.min(totalPages - 1, currentPage + 1);
+			i++
+		) {
 			if (!range.includes(i)) {
 				range.push(i);
 			}
 		}
-		
+
 		if (currentPage < totalPages - 2) {
 			range.push('...');
 		}
-		
+
 		// Always show last page
 		if (totalPages > 1 && !range.includes(totalPages)) {
 			range.push(totalPages);
 		}
-		
+
 		return range;
 	}
 </script>
 
 <svelte:head>
 	<title>Premium Daily Videos | {roomName} | Revolution Trading Pros</title>
-	<meta name="description" content="Access daily video analysis and market commentary from our expert traders." />
+	<meta
+		name="description"
+		content="Access daily video analysis and market commentary from our expert traders."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
@@ -171,12 +178,7 @@
 			{#if isDropdownOpen}
 				<div class="dropdown-menu" role="menu">
 					{#each tradingRooms as room}
-						<a 
-							href={room.href} 
-							class="dropdown-item" 
-							onclick={closeDropdown}
-							role="menuitem"
-						>
+						<a href={room.href} class="dropdown-item" onclick={closeDropdown} role="menuitem">
 							<span class="dropdown-item__icon">
 								<RtpIcon name={room.icon} size={20} />
 							</span>
@@ -193,106 +195,111 @@
 	<h2 class="section-title">{roomName} Premium Daily Videos</h2>
 	<p></p>
 	<div class="dashboard-filters">
-				<div class="dashboard-filters__count">
-					Showing <span class="facetwp-counts">{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of {totalItems}</span>
-				</div>
-				<div class="dashboard-filters__search">
-					<input 
-						type="text"
-						id="video-search"
-						name="video-search"
-						class="facetwp-autocomplete" 
-						placeholder="Search" 
-						value={searchQuery}
-						oninput={handleSearch}
-						aria-label="Search premium daily videos"
-						autocomplete="off"
-					/>
-					<button 
-						type="button" 
-						class="facetwp-autocomplete-update"
-						aria-label="Search"
-					>
-						<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-							<circle cx="11" cy="11" r="8"></circle>
-							<path d="m21 21-4.35-4.35"></path>
-						</svg>
-					</button>
-				</div>
+		<div class="dashboard-filters__count">
+			Showing <span class="facetwp-counts"
+				>{(currentPage - 1) * itemsPerPage + 1}-{Math.min(currentPage * itemsPerPage, totalItems)} of
+				{totalItems}</span
+			>
+		</div>
+		<div class="dashboard-filters__search">
+			<input
+				type="text"
+				id="video-search"
+				name="video-search"
+				class="facetwp-autocomplete"
+				placeholder="Search"
+				value={searchQuery}
+				oninput={handleSearch}
+				aria-label="Search premium daily videos"
+				autocomplete="off"
+			/>
+			<button type="button" class="facetwp-autocomplete-update" aria-label="Search">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="16"
+					height="16"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+					stroke-linecap="round"
+					stroke-linejoin="round"
+				>
+					<circle cx="11" cy="11" r="8"></circle>
+					<path d="m21 21-4.35-4.35"></path>
+				</svg>
+			</button>
+		</div>
+	</div>
+	<div id="products-list" class="facetwp-template">
+		{#if displayedVideos.length === 0}
+			<div class="empty-state">
+				<p>No videos found. Please check back later.</p>
 			</div>
-			<div id="products-list" class="facetwp-template">
-				{#if displayedVideos.length === 0}
-					<div class="empty-state">
-						<p>No videos found. Please check back later.</p>
-					</div>
-				{:else}
-				<div class="card-grid flex-grid row">
-			{#each displayedVideos as video (video.id)}
-				<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
-					<div class="card flex-grid-panel">
-						<figure class="card-media card-media--video">
-							<a 
-								href="/dashboard/{roomSlug}/video/{video.slug}" 
-								class="card-image" 
-								style="background-image: url({video.thumbnail});"
-							>
-								<img 
-									class="default-background" 
-									width="325" 
-									height="183" 
-									alt={video.title}
-									loading="lazy"
-								/>
-							</a>
-						</figure>
-						
-						<section class="card-body">
-							<h4 class="h5 card-title">
-								<a href="/dashboard/{roomSlug}/video/{video.slug}">
-									{video.title}
-								</a>
-							</h4>
-							<span class="article-card__meta">
-								<small>{video.date} with {video.trader}</small>
-							</span>
-							<br>
-							<div class="card-description">
-								<div class="u--hide-read-more u--squash">
-									<p>{video.excerpt}</p>
-								</div>
-							</div>
-						</section>
-						
-						<footer class="card-footer">
-							<a class="btn btn-tiny btn-default" href="/dashboard/{roomSlug}/video/{video.slug}">
-								Watch Now
-							</a>
-						</footer>
-					</div>
-				</article>
-			{/each}
-				</div>
-				<div class="facetwp-pagination">
-					<div class="facetwp-pager">
-						{#each getPaginationRange() as pageNum}
-							{#if pageNum === '...'}
-								<span class="facetwp-page dots">…</span>
-							{:else if pageNum === currentPage}
-								<span class="facetwp-page active">{pageNum}</span>
-							{:else}
-								<button 
-									type="button"
-									class="facetwp-page" 
-									onclick={() => goToPage(Number(pageNum))}
+		{:else}
+			<div class="card-grid flex-grid row">
+				{#each displayedVideos as video (video.id)}
+					<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
+						<div class="card flex-grid-panel">
+							<figure class="card-media card-media--video">
+								<a
+									href="/dashboard/{roomSlug}/video/{video.slug}"
+									class="card-image"
+									style="background-image: url({video.thumbnail});"
 								>
-									{pageNum}
-								</button>
-							{/if}
-						{/each}
-					</div>
-				</div>
-				{/if}
+									<img
+										class="default-background"
+										width="325"
+										height="183"
+										alt={video.title}
+										loading="lazy"
+									/>
+								</a>
+							</figure>
+
+							<section class="card-body">
+								<h4 class="h5 card-title">
+									<a href="/dashboard/{roomSlug}/video/{video.slug}">
+										{video.title}
+									</a>
+								</h4>
+								<span class="article-card__meta">
+									<small>{video.date} with {video.trader}</small>
+								</span>
+								<br />
+								<div class="card-description">
+									<div class="u--hide-read-more u--squash">
+										<p>{video.excerpt}</p>
+									</div>
+								</div>
+							</section>
+
+							<footer class="card-footer">
+								<a class="btn btn-tiny btn-default" href="/dashboard/{roomSlug}/video/{video.slug}">
+									Watch Now
+								</a>
+							</footer>
+						</div>
+					</article>
+				{/each}
 			</div>
+			<div class="facetwp-pagination">
+				<div class="facetwp-pager">
+					{#each getPaginationRange() as pageNum}
+						{#if pageNum === '...'}
+							<span class="facetwp-page dots">…</span>
+						{:else if pageNum === currentPage}
+							<span class="facetwp-page active">{pageNum}</span>
+						{:else}
+							<button type="button" class="facetwp-page" onclick={() => goToPage(Number(pageNum))}>
+								{pageNum}
+							</button>
+						{/if}
+					{/each}
+				</div>
+			</div>
+		{/if}
+	</div>
 </section>
 
 <style>
@@ -310,7 +317,7 @@
 		border-right: 1px solid #dbdbdb;
 		padding: 20px;
 	}
-    
+
 	@media (min-width: 1024px) {
 		.dashboard__header {
 			padding: 30px;
@@ -460,7 +467,7 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.dropdown-item__text {
@@ -521,7 +528,7 @@
 	}
 
 	.facetwp-autocomplete:focus {
-		border-color: #F69532;
+		border-color: #f69532;
 	}
 
 	.facetwp-autocomplete-update {
@@ -530,7 +537,7 @@
 		border: 1px solid #ddd;
 		border-left: none;
 		border-radius: 0 4px 4px 0;
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
 		cursor: pointer;
 		transition: all 0.2s ease;
@@ -651,7 +658,7 @@
 	}
 
 	.card-title a:hover {
-		color: #F69532;
+		color: #f69532;
 	}
 
 	.article-card__meta {
@@ -700,7 +707,7 @@
 	}
 
 	.btn-default {
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
 	}
 
@@ -744,13 +751,13 @@
 
 	.facetwp-page:hover {
 		background: #f5f5f5;
-		border-color: #F69532;
-		color: #F69532;
+		border-color: #f69532;
+		color: #f69532;
 	}
 
 	.facetwp-page.active {
-		background: #F69532;
-		border-color: #F69532;
+		background: #f69532;
+		border-color: #f69532;
 		color: #fff;
 		cursor: default;
 	}

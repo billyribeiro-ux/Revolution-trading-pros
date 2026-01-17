@@ -57,19 +57,9 @@ import { getAuthToken, getSessionId as _getAuthSessionId } from '$lib/stores/aut
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// ICT11+ Pattern: Use relative URLs in development to leverage Vite proxy
-// Production fallbacks - NEVER use localhost in production
-// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
-const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/ai';
-
-const isDev = import.meta.env.DEV;
-const API_ROOT = browser ? (isDev ? '' : import.meta.env['VITE_API_URL'] || PROD_API) : '';
-// In dev mode, empty string works with Vite proxy. In production, append /api
-const API_BASE = isDev ? '' : API_ROOT ? `${API_ROOT}/api` : '';
-const WS_BASE = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
-const AI_API = browser ? import.meta.env['VITE_AI_API_URL'] || PROD_AI : '';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+// All API calls go through SvelteKit proxy routes
+const API_BASE = '/api';
 
 const CACHE_TTL = 300000; // 5 minutes
 const MAX_RETRIES = 3;

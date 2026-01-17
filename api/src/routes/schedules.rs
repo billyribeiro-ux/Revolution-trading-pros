@@ -8,6 +8,8 @@
 // - Admin endpoints for CRUD operations
 // - Comprehensive audit logging
 // - Exception handling for holidays/cancellations
+
+#![allow(clippy::useless_format)]
 // ═══════════════════════════════════════════════════════════════════════════
 
 use axum::{

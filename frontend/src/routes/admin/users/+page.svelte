@@ -63,109 +63,110 @@
 
 <div class="admin-page">
 	<div class="admin-page-container">
-	<div class="page-header">
-		<div>
-			<h1>Users Management</h1>
-			<p>Manage admin users and permissions</p>
-		</div>
-		<button class="btn-primary" onclick={() => goto('/admin/users/create')}>
-			<IconPlus size={18} />
-			Add Admin User
-		</button>
-	</div>
-
-	{#if loading}
-		<div class="loading">
-			<div class="spinner"></div>
-			<p>Loading users...</p>
-		</div>
-	{:else if error}
-		<div class="error-state">
-			<p>{error}</p>
-			<button class="btn-secondary" onclick={loadUsers}>Try Again</button>
-		</div>
-	{:else if users.length === 0}
-		<div class="empty-state">
-			<IconUser size={64} stroke={1} />
-			<h3>No users found</h3>
-			<p>Add your first admin user to get started</p>
+		<div class="page-header">
+			<div>
+				<h1>Users Management</h1>
+				<p>Manage admin users and permissions</p>
+			</div>
 			<button class="btn-primary" onclick={() => goto('/admin/users/create')}>
 				<IconPlus size={18} />
 				Add Admin User
 			</button>
 		</div>
-	{:else}
-		<div class="users-table">
-			<table>
-				<thead>
-					<tr>
-						<th>Name</th>
-						<th>Email</th>
-						<th>Roles</th>
-						<th>Created</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each users as user}
+
+		{#if loading}
+			<div class="loading">
+				<div class="spinner"></div>
+				<p>Loading users...</p>
+			</div>
+		{:else if error}
+			<div class="error-state">
+				<p>{error}</p>
+				<button class="btn-secondary" onclick={loadUsers}>Try Again</button>
+			</div>
+		{:else if users.length === 0}
+			<div class="empty-state">
+				<IconUser size={64} stroke={1} />
+				<h3>No users found</h3>
+				<p>Add your first admin user to get started</p>
+				<button class="btn-primary" onclick={() => goto('/admin/users/create')}>
+					<IconPlus size={18} />
+					Add Admin User
+				</button>
+			</div>
+		{:else}
+			<div class="users-table">
+				<table>
+					<thead>
 						<tr>
-							<td>
-								<div class="user-info">
-									<div class="user-avatar">
-										{user.name?.charAt(0).toUpperCase() || 'U'}
+							<th>Name</th>
+							<th>Email</th>
+							<th>Roles</th>
+							<th>Created</th>
+							<th>Actions</th>
+						</tr>
+					</thead>
+					<tbody>
+						{#each users as user}
+							<tr>
+								<td>
+									<div class="user-info">
+										<div class="user-avatar">
+											{user.name?.charAt(0).toUpperCase() || 'U'}
+										</div>
+										<div>
+											<div class="user-name">{user.name || 'Unnamed User'}</div>
+											{#if user.first_name || user.last_name}
+												<div class="user-full-name">
+													{user.first_name}
+													{user.last_name}
+												</div>
+											{/if}
+										</div>
 									</div>
-									<div>
-										<div class="user-name">{user.name || 'Unnamed User'}</div>
-										{#if user.first_name || user.last_name}
-											<div class="user-full-name">
-												{user.first_name}
-												{user.last_name}
-											</div>
+								</td>
+								<td class="email">{user.email || ''}</td>
+								<td>
+									<div class="roles">
+										{#if user.roles && user.roles.length > 0}
+											{#each user.roles as role}
+												<span class="role-badge">
+													<IconShield size={14} />
+													{role.name}
+												</span>
+											{/each}
+										{:else}
+											<span class="role-badge user">User</span>
 										{/if}
 									</div>
-								</div>
-							</td>
-							<td class="email">{user.email || ''}</td>
-							<td>
-								<div class="roles">
-									{#if user.roles && user.roles.length > 0}
-										{#each user.roles as role}
-											<span class="role-badge">
-												<IconShield size={14} />
-												{role.name}
-											</span>
-										{/each}
-									{:else}
-										<span class="role-badge user">User</span>
-									{/if}
-								</div>
-							</td>
-							<td class="date">{formatDate(user.created_at)}</td>
-							<td>
-								<div class="actions">
-									<button
-										class="action-btn edit"
-										onclick={() => goto(`/admin/users/edit/${user.id}`)}
-										title="Edit user"
-									>
-										<IconEdit size={16} />
-									</button>
-									<button
-										class="action-btn delete"
-										onclick={() => deleteUser(user.id)}
-										title="Delete user"
-									>
-										<IconTrash size={16} />
-									</button>
-								</div>
-							</td>
-						</tr>
-					{/each}
-				</tbody>
-			</table>
-		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+								</td>
+								<td class="date">{formatDate(user.created_at)}</td>
+								<td>
+									<div class="actions">
+										<button
+											class="action-btn edit"
+											onclick={() => goto(`/admin/users/edit/${user.id}`)}
+											title="Edit user"
+										>
+											<IconEdit size={16} />
+										</button>
+										<button
+											class="action-btn delete"
+											onclick={() => deleteUser(user.id)}
+											title="Delete user"
+										>
+											<IconTrash size={16} />
+										</button>
+									</div>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
+			</div>
+		{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -211,8 +212,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 	}
 
 	.btn-primary:hover {
@@ -242,7 +243,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(148, 163, 184, 0.1);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin: 0 auto 1rem;
@@ -330,7 +331,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -370,7 +371,7 @@
 		border-radius: 6px;
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #E6B800;
+		color: #e6b800;
 		text-transform: uppercase;
 	}
 
@@ -411,7 +412,7 @@
 	.action-btn.edit:hover {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.action-btn.delete:hover {

@@ -13,6 +13,7 @@ platform-name-dark.png     → Dark mode variant (optional)
 ## Supported Platforms
 
 Add logos for:
+
 - `thinkorswim.png` - ThinkorSwim platform
 - `tradingview.png` - TradingView platform
 - `ninjatrader.png` - NinjaTrader platform
@@ -22,11 +23,11 @@ Add logos for:
 ## Usage in Code
 
 ```svelte
-<img 
-    src="/logos/platforms/thinkorswim.png"
-    srcset="/logos/platforms/thinkorswim@2x.png 2x"
-    alt="ThinkorSwim"
-    width="200"
+<img
+	src="/logos/platforms/thinkorswim.png"
+	srcset="/logos/platforms/thinkorswim@2x.png 2x"
+	alt="ThinkorSwim"
+	width="200"
 />
 ```
 

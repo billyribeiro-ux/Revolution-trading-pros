@@ -33,9 +33,9 @@
 	<title>Favorites | Explosive Swings</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Explosive Swings" 
-	startHereUrl="/dashboard/explosive-swings/start-here" 
+<TradingRoomHeader
+	roomName="Explosive Swings"
+	startHereUrl="/dashboard/explosive-swings/start-here"
 />
 
 <div class="favorites-page">
@@ -46,8 +46,17 @@
 
 	{#if favorites.length === 0}
 		<div class="empty-state">
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="64" height="64">
-				<path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+			<svg
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="2"
+				width="64"
+				height="64"
+			>
+				<path
+					d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
+				/>
 			</svg>
 			<h2>No favorites yet</h2>
 			<p>Click the star icon on any alert or video to save it here</p>
@@ -60,7 +69,13 @@
 					<h3>{item.title}</h3>
 					<p class="favorite-date">{item.date}</p>
 					<p class="favorite-excerpt">{item.excerpt}</p>
-					<button class="remove-btn" onclick={(e) => { e.preventDefault(); alert('Remove from favorites'); }}>
+					<button
+						class="remove-btn"
+						onclick={(e) => {
+							e.preventDefault();
+							alert('Remove from favorites');
+						}}
+					>
 						Remove
 					</button>
 				</a>
@@ -133,7 +148,7 @@
 		background: #fff;
 		border-radius: 16px;
 		padding: 25px;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 		text-decoration: none;
 		color: inherit;
 		display: block;
@@ -143,12 +158,12 @@
 
 	.favorite-card:hover {
 		transform: translateY(-3px);
-		box-shadow: 0 8px 30px rgba(0,0,0,0.12);
+		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.12);
 	}
 
 	.favorite-type {
 		display: inline-block;
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
 		font-size: 10px;
 		font-weight: 700;

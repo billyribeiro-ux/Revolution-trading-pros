@@ -28,7 +28,7 @@ const API_URL = `${API_ROOT}/api`;
 export const POST: RequestHandler = async ({ request, cookies }) => {
 	const requestId = crypto.randomUUID().slice(0, 8);
 	const startTime = performance.now();
-	
+
 	try {
 		const sessionId = request.headers.get('X-Session-ID') || '';
 
@@ -53,17 +53,14 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		// If still no token, return error
 		if (!body.refresh_token) {
 			console.warn(`[Refresh:${requestId}] No refresh token available`);
-			return json(
-				{ error: 'No refresh token', message: 'Please log in again' },
-				{ status: 401 }
-			);
+			return json({ error: 'No refresh token', message: 'Please log in again' }, { status: 401 });
 		}
 
 		const response = await fetch(`${API_URL}/auth/refresh`, {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				'X-Session-ID': sessionId
 			},
 			body: JSON.stringify(body)
@@ -76,7 +73,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		// Backend currently returns flat: { token, refresh_token, expires_in }
 		// But some responses may be wrapped: { data: { access_token, refresh_token, expires_in } }
 		const authData = rawData.data || rawData;
-		
+
 		// ICT 7: Extract tokens with fallbacks for different field names
 		const accessToken = authData.access_token || authData.token;
 		const refreshToken = authData.refresh_token;
@@ -106,15 +103,18 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			}
 
 			console.debug(`[Refresh:${requestId}] Success (${duration}ms)`);
-			
+
 			// Return normalized response with data wrapper for frontend compatibility
-			return json({
-				data: {
-					access_token: accessToken,
-					refresh_token: refreshToken,
-					expires_in: expiresIn
-				}
-			}, { status: response.status });
+			return json(
+				{
+					data: {
+						access_token: accessToken,
+						refresh_token: refreshToken,
+						expires_in: expiresIn
+					}
+				},
+				{ status: response.status }
+			);
 		} else {
 			console.warn(`[Refresh:${requestId}] Backend returned ${response.status} (${duration}ms)`);
 			return json(rawData, { status: response.status });

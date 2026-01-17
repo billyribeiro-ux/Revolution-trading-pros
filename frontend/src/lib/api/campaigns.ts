@@ -20,11 +20,8 @@ import { authStore } from '$lib/stores/auth.svelte';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Production fallback - NEVER use localhost in production
-// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
-const API_BASE = API_ROOT ? `${API_ROOT}/api` : '';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+const API_BASE = '/api';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -209,9 +206,7 @@ class CampaignsApiClient {
 	// Campaign CRUD
 	// ═══════════════════════════════════════════════════════════════════════
 
-	async getCampaigns(
-		filters?: CampaignFilters
-	): Promise<{
+	async getCampaigns(filters?: CampaignFilters): Promise<{
 		data: Campaign[];
 		meta: { total: number; current_page: number; last_page: number };
 	}> {

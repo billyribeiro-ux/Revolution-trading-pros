@@ -56,15 +56,16 @@
 	// Derived statistics from loaded data
 	let computedStats = $derived({
 		total: smartLinks.length,
-		active: smartLinks.filter(l => l.is_active).length,
+		active: smartLinks.filter((l) => l.is_active).length,
 		totalClicks: smartLinks.reduce((sum, l) => sum + (l.click_count || 0), 0),
 		uniqueClicks: smartLinks.reduce((sum, l) => sum + (l.unique_clicks || 0), 0)
 	});
 
 	// Filtered links for display (client-side filtering for immediate feedback)
 	let filteredLinks = $derived(
-		smartLinks.filter(link => {
-			const matchesSearch = !searchQuery ||
+		smartLinks.filter((link) => {
+			const matchesSearch =
+				!searchQuery ||
 				link.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				link.short.toLowerCase().includes(searchQuery.toLowerCase());
 			const matchesActive = filterActive === 'all' || link.is_active === filterActive;
@@ -107,7 +108,7 @@
 			});
 
 			// Update local state optimistically
-			smartLinks = smartLinks.map(l =>
+			smartLinks = smartLinks.map((l) =>
 				l.id === link.id ? { ...l, is_active: updated.is_active } : l
 			);
 
@@ -122,12 +123,13 @@
 
 	// Delete smart link with confirmation
 	async function deleteSmartLink(id: string) {
-		if (!confirm('Are you sure you want to delete this smart link? This action cannot be undone.')) return;
+		if (!confirm('Are you sure you want to delete this smart link? This action cannot be undone.'))
+			return;
 
 		try {
 			await crmAPI.deleteSmartLink(id);
 			// Remove from local state immediately
-			smartLinks = smartLinks.filter(l => l.id !== id);
+			smartLinks = smartLinks.filter((l) => l.id !== id);
 			stats = computedStats;
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to delete smart link';
@@ -350,7 +352,11 @@
 							</td>
 							<td>
 								<span class="target-url" title={link.target_url}>
-									{link.target_url ? (link.target_url.length > 40 ? link.target_url.slice(0, 40) + '...' : link.target_url) : '-'}
+									{link.target_url
+										? link.target_url.length > 40
+											? link.target_url.slice(0, 40) + '...'
+											: link.target_url
+										: '-'}
 								</span>
 							</td>
 							<td>
@@ -363,13 +369,21 @@
 							</td>
 							<td>
 								<div class="action-buttons">
-									<a href="/admin/crm/smart-links/{link.id}" class="btn-icon" title="View Analytics">
+									<a
+										href="/admin/crm/smart-links/{link.id}"
+										class="btn-icon"
+										title="View Analytics"
+									>
 										<IconChartBar size={16} />
 									</a>
 									<a href="/admin/crm/smart-links/{link.id}/edit" class="btn-icon" title="Edit">
 										<IconEdit size={16} />
 									</a>
-									<button class="btn-icon danger" title="Delete" onclick={() => deleteSmartLink(link.id)}>
+									<button
+										class="btn-icon danger"
+										title="Delete"
+										onclick={() => deleteSmartLink(link.id)}
+									>
 										<IconTrash size={16} />
 									</button>
 								</div>
@@ -436,8 +450,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -445,8 +463,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -468,11 +486,15 @@
 	}
 
 	@media (max-width: 1200px) {
-		.stats-grid { grid-template-columns: repeat(2, 1fr); }
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.stat-card {
@@ -494,10 +516,22 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.gold { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.gold {
+		background: rgba(230, 184, 0, 0.15);
+		color: #e6b800;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
 
 	.stat-content {
 		display: flex;
@@ -642,7 +676,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border-radius: 4px;
 		font-size: 0.8rem;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-copy {
@@ -661,7 +695,7 @@
 
 	.btn-copy:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-copy.copied {
@@ -747,7 +781,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-icon.danger:hover {
@@ -756,7 +790,9 @@
 		border-color: rgba(239, 68, 68, 0.3);
 	}
 
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -784,7 +820,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

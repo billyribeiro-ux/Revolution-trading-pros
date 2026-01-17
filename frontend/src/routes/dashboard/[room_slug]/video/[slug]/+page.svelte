@@ -84,7 +84,8 @@
 			author: 'HG',
 			date: 'December 31, 2025',
 			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			excerpt: 'If Santa doesn\'t show up, the first bit of 2026 may be a little precarious. With that in mind, let\'s dive in to some of the most important charts for the new year.'
+			excerpt:
+				"If Santa doesn't show up, the first bit of 2026 may be a little precarious. With that in mind, let's dive in to some of the most important charts for the new year."
 		},
 		{
 			title: 'SPX Snoozefest',
@@ -92,7 +93,8 @@
 			author: 'Heather',
 			date: 'December 30, 2025',
 			thumbnail: 'https://cdn.simplertrading.com/2025/11/18171423/MTT_HV.jpg',
-			excerpt: 'We\'ve had two days of some very narrow ranges in the indices. It\'s almost as though the market has had an amazing year and just needs to rest a bit before making its next move!'
+			excerpt:
+				"We've had two days of some very narrow ranges in the indices. It's almost as though the market has had an amazing year and just needs to rest a bit before making its next move!"
 		},
 		{
 			title: 'Signal & Noise',
@@ -100,7 +102,8 @@
 			author: 'Sam',
 			date: 'December 26, 2025',
 			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134553/SimplerCentral_SS.jpg',
-			excerpt: 'The signal we have been tracking in the Nasdaq continues to build. As we approach the new year, where are the pockets of strength?'
+			excerpt:
+				'The signal we have been tracking in the Nasdaq continues to build. As we approach the new year, where are the pockets of strength?'
 		}
 	];
 </script>
@@ -134,12 +137,7 @@
 			{#if isDropdownOpen}
 				<div class="dropdown-menu" role="menu">
 					{#each tradingRooms as room}
-						<a 
-							href={room.href} 
-							class="dropdown-item" 
-							onclick={closeDropdown}
-							role="menuitem"
-						>
+						<a href={room.href} class="dropdown-item" onclick={closeDropdown} role="menuitem">
 							<span class="dropdown-item__icon">
 								<RtpIcon name={room.icon} size={20} />
 							</span>
@@ -157,14 +155,17 @@
 	<div class="section-inner">
 		{#if video.previousVideo}
 			<div id="dv-previous" class="cpost-previous">
-				<a href="/dashboard/{roomSlug}/video/{video.previousVideo.slug}" title={video.previousVideo.title}>
+				<a
+					href="/dashboard/{roomSlug}/video/{video.previousVideo.slug}"
+					title={video.previousVideo.title}
+				>
 					<i class="fa fa-chevron-circle-left"></i><span> Previous</span>
 				</a>
 			</div>
 		{/if}
-		
+
 		<h1 class="cpost-title">{video.title}</h1>
-		
+
 		{#if video.nextVideo}
 			<div id="dv-next" class="cpost-next">
 				<a href="/dashboard/{roomSlug}/video/{video.nextVideo.slug}" title={video.nextVideo.title}>
@@ -172,7 +173,7 @@
 				</a>
 			</div>
 		{/if}
-		
+
 		<h2 class="cpost-subtitle">With {video.author}</h2>
 	</div>
 </section>
@@ -183,8 +184,14 @@
 		<div class="dv-content-block cpost-content-block w-desc">
 			<div class="current-vid">
 				<div class="video-container current">
-					<video id="dv-player" controls width="100%" poster={video.thumbnailUrl} style="aspect-ratio: 16/9;">
-						<source src={video.videoUrl} type="video/mp4">
+					<video
+						id="dv-player"
+						controls
+						width="100%"
+						poster={video.thumbnailUrl}
+						style="aspect-ratio: 16/9;"
+					>
+						<source src={video.videoUrl} type="video/mp4" />
 						Your browser does not support the video tag.
 					</video>
 				</div>
@@ -200,14 +207,18 @@
 <section id="dv-recent" class="dv-section cpost-recent-section cpost-section">
 	<div class="section-inner">
 		<h2>Recent Day Trading Room Daily Videos</h2>
-		
+
 		<div class="card-grid flex-grid row">
 			{#each relatedVideos as relatedVideo}
 				<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
 					<div class="card flex-grid-panel">
 						<figure class="card-media card-media--video">
-							<a href="/dashboard/{roomSlug}/video/{relatedVideo.slug}" class="card-image" style="background-image: url({relatedVideo.thumbnail});">
-								<img src="https://placehold.it/325x183" alt={relatedVideo.title}>
+							<a
+								href="/dashboard/{roomSlug}/video/{relatedVideo.slug}"
+								class="card-image"
+								style="background-image: url({relatedVideo.thumbnail});"
+							>
+								<img src="https://placehold.it/325x183" alt={relatedVideo.title} />
 							</a>
 						</figure>
 						<section class="card-body">
@@ -216,13 +227,18 @@
 									{relatedVideo.title}
 								</a>
 							</h4>
-							<span class="article-card__meta"><small>{relatedVideo.date} with {relatedVideo.author}</small></span><br>
+							<span class="article-card__meta"
+								><small>{relatedVideo.date} with {relatedVideo.author}</small></span
+							><br />
 							<div class="card-description">
 								<div class="u--hide-read-more u--squash">{relatedVideo.excerpt}</div>
 							</div>
 						</section>
 						<footer class="card-footer">
-							<a class="btn btn-tiny btn-default" href="/dashboard/{roomSlug}/video/{relatedVideo.slug}">Watch Now</a>
+							<a
+								class="btn btn-tiny btn-default"
+								href="/dashboard/{roomSlug}/video/{relatedVideo.slug}">Watch Now</a
+							>
 						</footer>
 					</div>
 				</article>
@@ -246,7 +262,7 @@
 		border-right: 1px solid #dbdbdb;
 		padding: 20px;
 	}
-    
+
 	@media (min-width: 1024px) {
 		.dashboard__header {
 			padding: 30px;
@@ -396,7 +412,7 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.dropdown-item__text {
@@ -459,7 +475,7 @@
 
 	.cpost-previous a,
 	.cpost-next a {
-		color: #143E59;
+		color: #143e59;
 		text-decoration: none;
 		font-size: 1rem;
 		font-weight: 600;
@@ -602,7 +618,7 @@
 	}
 
 	.card-title a:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.card-description {

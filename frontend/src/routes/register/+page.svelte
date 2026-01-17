@@ -380,7 +380,7 @@
 							<button
 								type="button"
 								class="password-toggle"
-								onclick={() => showPassword = !showPassword}
+								onclick={() => (showPassword = !showPassword)}
 								aria-label={showPassword ? 'Hide password' : 'Show password'}
 								tabindex={-1}
 							>
@@ -417,7 +417,7 @@
 							<button
 								type="button"
 								class="password-toggle"
-								onclick={() => showConfirmPassword = !showConfirmPassword}
+								onclick={() => (showConfirmPassword = !showConfirmPassword)}
 								aria-label={showConfirmPassword ? 'Hide password' : 'Show password'}
 								tabindex={-1}
 							>
@@ -867,7 +867,10 @@
 		align-items: center;
 		justify-content: center;
 		border-radius: 6px;
-		transition: color 0.2s ease, background 0.2s ease, opacity 0.2s ease;
+		transition:
+			color 0.2s ease,
+			background 0.2s ease,
+			opacity 0.2s ease;
 		z-index: 2;
 	}
 

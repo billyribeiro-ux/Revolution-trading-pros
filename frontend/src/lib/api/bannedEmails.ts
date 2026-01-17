@@ -56,16 +56,9 @@ import { getAuthToken } from '$lib/stores/auth.svelte';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Production fallbacks - NEVER use localhost in production
-// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
-const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
-const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
-const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/api/ml';
-
-const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API_ROOT : '';
-const API_BASE = API_ROOT ? `${API_ROOT}/api` : '';
-const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
-const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+// All API calls go through SvelteKit proxy routes
+const API_BASE = '/api';
 
 const CACHE_TTL = 300000; // 5 minutes
 const SYNC_INTERVAL = 60000; // 1 minute

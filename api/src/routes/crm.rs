@@ -369,7 +369,7 @@ async fn create_contact(
     _user: User,
     Json(input): Json<CreateContactInput>,
 ) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
-    let tags = input.tags.map(|t| serde_json::to_value(t).ok()).flatten();
+    let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
     let status = input.status.unwrap_or_else(|| "lead".to_string());
 
     let contact: CrmContact = sqlx::query_as(
@@ -410,7 +410,7 @@ async fn update_contact(
     Path(id): Path<i64>,
     Json(input): Json<UpdateContactInput>,
 ) -> Result<Json<CrmContact>, (StatusCode, Json<serde_json::Value>)> {
-    let tags = input.tags.map(|t| serde_json::to_value(t).ok()).flatten();
+    let tags = input.tags.and_then(|t| serde_json::to_value(t).ok());
 
     let contact: CrmContact = sqlx::query_as(
         r#"
@@ -981,7 +981,7 @@ async fn create_campaign(
     )
     .bind(&input.title)
     .bind(&input.subject)
-    .bind(&input.template_id)
+    .bind(input.template_id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;

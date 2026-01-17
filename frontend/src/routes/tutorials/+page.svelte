@@ -46,7 +46,10 @@
 
 <svelte:head>
 	<title>Platform Tutorials - Revolution Trading Pros</title>
-	<meta name="description" content="Tutorials, Tips and Platform Features for ThinkorSwim and TradeStation trading platforms." />
+	<meta
+		name="description"
+		content="Tutorials, Tips and Platform Features for ThinkorSwim and TradeStation trading platforms."
+	/>
 </svelte:head>
 
 <div class="fl-builder-content">
@@ -67,9 +70,13 @@
 			<div class="fl-row-content fl-row-fixed-width">
 				<div class="fl-rich-text platform-links">
 					<p>
-						<button type="button" class="link-btn" onclick={() => scrollToSection('think')}>ThinkorSwim</button>
+						<button type="button" class="link-btn" onclick={() => scrollToSection('think')}
+							>ThinkorSwim</button
+						>
 						<span class="separator">|</span>
-						<button type="button" class="link-btn" onclick={() => scrollToSection('trade')}>TradeStation</button>
+						<button type="button" class="link-btn" onclick={() => scrollToSection('trade')}
+							>TradeStation</button
+						>
 					</p>
 				</div>
 			</div>
@@ -84,16 +91,16 @@
 					<h1 class="section-title"><strong>ThinkorSwim Tutorials</strong></h1>
 				</div>
 				<div class="fl-separator"></div>
-				
+
 				<div id="think" class="fl-post-grid">
 					{#each tosTutorials as tutorial (tutorial.id)}
 						<div class="fl-post-grid-post">
 							<div class="fl-post-image">
 								<a href={tutorial.url} title={tutorial.title}>
-									<img 
-										loading="lazy" 
-										decoding="async" 
-										src={tutorial.thumbnail} 
+									<img
+										loading="lazy"
+										decoding="async"
+										src={tutorial.thumbnail}
 										alt={tutorial.title}
 										width="1024"
 										height="576"
@@ -128,7 +135,11 @@
 								{/if}
 							{/each}
 							{#if pagination.page < pagination.totalPages}
-								<li><a class="next page-numbers" href={getPageUrl(pagination.page + 1)}>Next &raquo;</a></li>
+								<li>
+									<a class="next page-numbers" href={getPageUrl(pagination.page + 1)}
+										>Next &raquo;</a
+									>
+								</li>
 							{/if}
 						</ul>
 					</div>
@@ -145,16 +156,16 @@
 					<h1 class="section-title"><strong>TradeStation Tutorials</strong></h1>
 				</div>
 				<div class="fl-separator"></div>
-				
+
 				<div id="trade" class="fl-post-grid">
 					{#each tradestationTutorials as tutorial (tutorial.id)}
 						<div class="fl-post-grid-post">
 							<div class="fl-post-image">
 								<a href={tutorial.url} title={tutorial.title}>
-									<img 
-										loading="lazy" 
-										decoding="async" 
-										src={tutorial.thumbnail} 
+									<img
+										loading="lazy"
+										decoding="async"
+										src={tutorial.thumbnail}
 										alt={tutorial.title}
 										width="1024"
 										height="576"
@@ -302,7 +313,9 @@
 		border-radius: 4px;
 		overflow: hidden;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-		transition: box-shadow 0.3s ease, transform 0.2s ease;
+		transition:
+			box-shadow 0.3s ease,
+			transform 0.2s ease;
 	}
 
 	.fl-post-grid-post:hover {

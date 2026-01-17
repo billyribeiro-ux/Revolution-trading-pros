@@ -71,7 +71,10 @@
 
 <svelte:head>
 	<title>Classes | Revolution Trading Pros</title>
-	<meta name="description" content="Browse our trading courses and classes. Learn from professional traders and improve your trading skills." />
+	<meta
+		name="description"
+		content="Browse our trading courses and classes. Learn from professional traders and improve your trading skills."
+	/>
 </svelte:head>
 
 <div class="courses-page">
@@ -109,7 +112,16 @@
 		</div>
 	{:else if courses.length === 0}
 		<div class="empty-state">
-			<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+			<svg
+				xmlns="http://www.w3.org/2000/svg"
+				width="64"
+				height="64"
+				viewBox="0 0 24 24"
+				fill="none"
+				stroke="currentColor"
+				stroke-width="1.5"
+				><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></svg
+			>
 			<h3>No courses available yet</h3>
 			<p>Check back soon for new trading courses</p>
 		</div>
@@ -187,7 +199,8 @@
 		border-color: #143e59;
 	}
 
-	.loading, .empty-state {
+	.loading,
+	.empty-state {
 		text-align: center;
 		padding: 80px 24px;
 	}
@@ -203,7 +216,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.loading p {

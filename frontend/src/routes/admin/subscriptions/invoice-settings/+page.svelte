@@ -197,8 +197,18 @@
 				class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2"
 			>
 				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+					/>
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+					/>
 				</svg>
 				Preview
 			</button>
@@ -207,7 +217,12 @@
 				class="px-4 py-2 bg-gray-100 dark:bg-gray-700 text-gray-700 dark:text-gray-300 rounded-lg hover:bg-gray-200 dark:hover:bg-gray-600 transition flex items-center gap-2"
 			>
 				<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+					<path
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						stroke-width="2"
+						d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+					/>
 				</svg>
 				Download PDF
 			</button>
@@ -218,13 +233,23 @@
 			>
 				{#if saving}
 					<svg class="animate-spin w-5 h-5" fill="none" viewBox="0 0 24 24">
-						<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-						<path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+						<circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"
+						></circle>
+						<path
+							class="opacity-75"
+							fill="currentColor"
+							d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+						></path>
 					</svg>
 					Saving...
 				{:else}
 					<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M5 13l4 4L19 7"
+						/>
 					</svg>
 					Save Changes
 				{/if}
@@ -234,18 +259,32 @@
 
 	<!-- Alerts -->
 	{#if error}
-		<div transition:slide class="mb-6 p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg flex items-center gap-3">
+		<div
+			transition:slide
+			class="mb-6 p-4 bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-400 rounded-lg flex items-center gap-3"
+		>
 			<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-				<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+				<path
+					fill-rule="evenodd"
+					d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+					clip-rule="evenodd"
+				/>
 			</svg>
 			{error}
 		</div>
 	{/if}
 
 	{#if success}
-		<div transition:slide class="mb-6 p-4 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg flex items-center gap-3">
+		<div
+			transition:slide
+			class="mb-6 p-4 bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-400 rounded-lg flex items-center gap-3"
+		>
 			<svg class="w-5 h-5 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
-				<path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+				<path
+					fill-rule="evenodd"
+					d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z"
+					clip-rule="evenodd"
+				/>
 			</svg>
 			{success}
 		</div>
@@ -260,7 +299,9 @@
 			<!-- Settings Panel -->
 			<div class="lg:col-span-2">
 				<!-- Tabs -->
-				<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+				<div
+					class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+				>
 					<div class="border-b border-gray-200 dark:border-gray-700">
 						<nav class="flex overflow-x-auto">
 							{#each tabs as tab}
@@ -287,20 +328,44 @@
 										Company Logo
 									</div>
 									<div class="flex items-start gap-6">
-										<div class="w-40 h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-900 overflow-hidden">
+										<div
+											class="w-40 h-24 border-2 border-dashed border-gray-300 dark:border-gray-600 rounded-lg flex items-center justify-center bg-gray-50 dark:bg-gray-900 overflow-hidden"
+										>
 											{#if logoUrl}
-												<img src={logoUrl} alt="Logo" class="max-w-full max-h-full object-contain" />
+												<img
+													src={logoUrl}
+													alt="Logo"
+													class="max-w-full max-h-full object-contain"
+												/>
 											{:else}
-												<svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-													<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+												<svg
+													class="w-10 h-10 text-gray-400"
+													fill="none"
+													stroke="currentColor"
+													viewBox="0 0 24 24"
+												>
+													<path
+														stroke-linecap="round"
+														stroke-linejoin="round"
+														stroke-width="2"
+														d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+													/>
 												</svg>
 											{/if}
 										</div>
 										<div class="flex-1">
 											<div class="flex gap-3">
-												<label class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition">
+												<label
+													class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 cursor-pointer transition"
+												>
 													{uploading ? 'Uploading...' : 'Upload Logo'}
-													<input type="file" class="hidden" accept="image/*" onchange={uploadLogo} disabled={uploading} />
+													<input
+														type="file"
+														class="hidden"
+														accept="image/*"
+														onchange={uploadLogo}
+														disabled={uploading}
+													/>
 												</label>
 												{#if logoUrl}
 													<button
@@ -318,14 +383,23 @@
 
 								<!-- Show Logo Toggle -->
 								<label for="show-logo-toggle" class="flex items-center gap-3 cursor-pointer">
-									<input type="checkbox" id="show-logo-toggle" bind:checked={settings.show_logo} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
-									<span class="text-sm text-gray-700 dark:text-gray-300">Show logo on invoices</span>
+									<input
+										type="checkbox"
+										id="show-logo-toggle"
+										bind:checked={settings.show_logo}
+										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+									/>
+									<span class="text-sm text-gray-700 dark:text-gray-300">Show logo on invoices</span
+									>
 								</label>
 
 								<!-- Colors -->
 								<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
 									<div>
-										<label for="primary-color" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label
+											for="primary-color"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										>
 											Primary Color
 										</label>
 										<div class="flex items-center gap-3">
@@ -344,7 +418,10 @@
 										</div>
 									</div>
 									<div>
-										<label for="secondary-color" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label
+											for="secondary-color"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										>
 											Secondary Color
 										</label>
 										<div class="flex items-center gap-3">
@@ -363,7 +440,10 @@
 										</div>
 									</div>
 									<div>
-										<label for="accent-color" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label
+											for="accent-color"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										>
 											Accent Color
 										</label>
 										<div class="flex items-center gap-3">
@@ -385,7 +465,10 @@
 
 								<!-- Font Family -->
 								<div>
-									<label for="font-family" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label
+										for="font-family"
+										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+									>
 										Font Family
 									</label>
 									<select
@@ -406,7 +489,10 @@
 							<div class="space-y-6" transition:fade>
 								<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 									<div>
-										<label for="company-name" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label
+											for="company-name"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										>
 											Company Name
 										</label>
 										<input
@@ -418,7 +504,10 @@
 										/>
 									</div>
 									<div>
-										<label for="company-email" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label
+											for="company-email"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										>
 											Email Address
 										</label>
 										<input
@@ -433,7 +522,10 @@
 
 								<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 									<div>
-										<label for="company-phone" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label
+											for="company-phone"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										>
 											Phone Number
 										</label>
 										<input
@@ -445,7 +537,10 @@
 										/>
 									</div>
 									<div>
-										<label for="tax-id" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label
+											for="tax-id"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										>
 											Tax ID / VAT Number
 										</label>
 										<input
@@ -459,7 +554,10 @@
 								</div>
 
 								<div>
-									<label for="company-address" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label
+										for="company-address"
+										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+									>
 										Street Address
 									</label>
 									<input
@@ -473,7 +571,11 @@
 
 								<div class="grid grid-cols-2 md:grid-cols-4 gap-4">
 									<div>
-										<label for="company-city" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">City</label>
+										<label
+											for="company-city"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+											>City</label
+										>
 										<input
 											type="text"
 											id="company-city"
@@ -482,7 +584,11 @@
 										/>
 									</div>
 									<div>
-										<label for="company-state" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">State</label>
+										<label
+											for="company-state"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+											>State</label
+										>
 										<input
 											type="text"
 											id="company-state"
@@ -491,7 +597,11 @@
 										/>
 									</div>
 									<div>
-										<label for="company-zip" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">ZIP</label>
+										<label
+											for="company-zip"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+											>ZIP</label
+										>
 										<input
 											type="text"
 											id="company-zip"
@@ -500,7 +610,11 @@
 										/>
 									</div>
 									<div>
-										<label for="company-country" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Country</label>
+										<label
+											for="company-country"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+											>Country</label
+										>
 										<select
 											id="company-country"
 											bind:value={settings.company_country}
@@ -520,7 +634,10 @@
 							<div class="space-y-6" transition:fade>
 								<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
 									<div>
-										<label for="header-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label
+											for="header-text"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										>
 											Header Text
 										</label>
 										<input
@@ -532,7 +649,10 @@
 										/>
 									</div>
 									<div>
-										<label for="invoice-prefix" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+										<label
+											for="invoice-prefix"
+											class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+										>
 											Invoice Prefix
 										</label>
 										<input
@@ -546,7 +666,10 @@
 								</div>
 
 								<div>
-									<label for="payment-terms" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label
+										for="payment-terms"
+										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+									>
 										Payment Terms
 									</label>
 									<input
@@ -559,7 +682,10 @@
 								</div>
 
 								<div>
-									<label for="footer-text" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label
+										for="footer-text"
+										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+									>
 										Footer Text
 									</label>
 									<input
@@ -572,7 +698,10 @@
 								</div>
 
 								<div>
-									<label for="notes-template" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label
+										for="notes-template"
+										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+									>
 										Default Notes (shown on all invoices)
 									</label>
 									<textarea
@@ -593,35 +722,83 @@
 									Choose which elements to display on your invoices:
 								</p>
 
-								<label for="display-show-logo" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-									<input type="checkbox" id="display-show-logo" bind:checked={settings.show_logo} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+								<label
+									for="display-show-logo"
+									class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+								>
+									<input
+										type="checkbox"
+										id="display-show-logo"
+										bind:checked={settings.show_logo}
+										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+									/>
 									<div>
-										<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Show Company Logo</span>
-										<p class="text-xs text-gray-500">Display your uploaded logo at the top of invoices</p>
+										<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+											>Show Company Logo</span
+										>
+										<p class="text-xs text-gray-500">
+											Display your uploaded logo at the top of invoices
+										</p>
 									</div>
 								</label>
 
-								<label for="display-show-tax-id" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-									<input type="checkbox" id="display-show-tax-id" bind:checked={settings.show_tax_id} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+								<label
+									for="display-show-tax-id"
+									class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+								>
+									<input
+										type="checkbox"
+										id="display-show-tax-id"
+										bind:checked={settings.show_tax_id}
+										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+									/>
 									<div>
-										<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Show Tax ID / VAT Number</span>
-										<p class="text-xs text-gray-500">Include your tax identification number in the header</p>
+										<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+											>Show Tax ID / VAT Number</span
+										>
+										<p class="text-xs text-gray-500">
+											Include your tax identification number in the header
+										</p>
 									</div>
 								</label>
 
-								<label for="display-show-payment-method" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-									<input type="checkbox" id="display-show-payment-method" bind:checked={settings.show_payment_method} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+								<label
+									for="display-show-payment-method"
+									class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+								>
+									<input
+										type="checkbox"
+										id="display-show-payment-method"
+										bind:checked={settings.show_payment_method}
+										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+									/>
 									<div>
-										<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Show Payment Method</span>
-										<p class="text-xs text-gray-500">Display the card type and last 4 digits used for payment</p>
+										<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+											>Show Payment Method</span
+										>
+										<p class="text-xs text-gray-500">
+											Display the card type and last 4 digits used for payment
+										</p>
 									</div>
 								</label>
 
-								<label for="display-show-due-date" class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition">
-									<input type="checkbox" id="display-show-due-date" bind:checked={settings.show_due_date} class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500" />
+								<label
+									for="display-show-due-date"
+									class="flex items-center gap-3 p-4 bg-gray-50 dark:bg-gray-900 rounded-lg cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition"
+								>
+									<input
+										type="checkbox"
+										id="display-show-due-date"
+										bind:checked={settings.show_due_date}
+										class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+									/>
 									<div>
-										<span class="text-sm font-medium text-gray-700 dark:text-gray-300">Show Due Date</span>
-										<p class="text-xs text-gray-500">Include payment due date in the invoice details</p>
+										<span class="text-sm font-medium text-gray-700 dark:text-gray-300"
+											>Show Due Date</span
+										>
+										<p class="text-xs text-gray-500">
+											Include payment due date in the invoice details
+										</p>
 									</div>
 								</label>
 							</div>
@@ -631,11 +808,17 @@
 						{#if activeTab === 'advanced'}
 							<div class="space-y-6" transition:fade>
 								<div>
-									<label for="custom-css" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+									<label
+										for="custom-css"
+										class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2"
+									>
 										Custom CSS
 									</label>
 									<p class="text-sm text-gray-500 mb-3">
-										Add custom CSS to further customize your invoice appearance. Use CSS variables like <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded">var(--primary-color)</code>.
+										Add custom CSS to further customize your invoice appearance. Use CSS variables
+										like <code class="bg-gray-100 dark:bg-gray-700 px-1 rounded"
+											>var(--primary-color)</code
+										>.
 									</p>
 									<textarea
 										id="custom-css"
@@ -665,7 +848,9 @@
 			<!-- Live Preview Panel -->
 			<div class="lg:col-span-1">
 				<div class="sticky top-4">
-					<div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden">
+					<div
+						class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 overflow-hidden"
+					>
 						<div class="px-4 py-3 border-b border-gray-200 dark:border-gray-700">
 							<h3 class="font-semibold text-gray-900 dark:text-white">Live Preview</h3>
 						</div>
@@ -677,16 +862,23 @@
 							>
 								<div class="p-3">
 									<!-- Header -->
-									<div class="flex justify-between items-start border-b-2 pb-2 mb-2" style="border-color: {settings.primary_color};">
+									<div
+										class="flex justify-between items-start border-b-2 pb-2 mb-2"
+										style="border-color: {settings.primary_color};"
+									>
 										<div>
 											{#if settings.show_logo && logoUrl}
 												<img src={logoUrl} alt="Logo" class="h-6 object-contain" />
 											{:else}
-												<div class="font-bold text-[8px]" style="color: {settings.primary_color};">{settings.company_name || 'Company'}</div>
+												<div class="font-bold text-[8px]" style="color: {settings.primary_color};">
+													{settings.company_name || 'Company'}
+												</div>
 											{/if}
 										</div>
 										<div class="text-right">
-											<div class="font-bold text-[10px]" style="color: {settings.secondary_color};">{settings.header_text || 'INVOICE'}</div>
+											<div class="font-bold text-[10px]" style="color: {settings.secondary_color};">
+												{settings.header_text || 'INVOICE'}
+											</div>
 											<div class="text-gray-500 text-[5px]">#{settings.invoice_prefix}001</div>
 										</div>
 									</div>
@@ -694,11 +886,15 @@
 									<!-- Addresses -->
 									<div class="flex justify-between mb-2">
 										<div>
-											<div class="text-[4px] font-bold" style="color: {settings.primary_color};">FROM</div>
+											<div class="text-[4px] font-bold" style="color: {settings.primary_color};">
+												FROM
+											</div>
 											<div class="text-[5px]">{settings.company_name || 'Your Company'}</div>
 										</div>
 										<div class="text-right">
-											<div class="text-[4px] font-bold" style="color: {settings.primary_color};">BILL TO</div>
+											<div class="text-[4px] font-bold" style="color: {settings.primary_color};">
+												BILL TO
+											</div>
 											<div class="text-[5px]">John Doe</div>
 										</div>
 									</div>
@@ -721,7 +917,10 @@
 
 									<!-- Total -->
 									<div class="flex justify-end">
-										<div class="text-right p-1 rounded" style="background: {settings.primary_color}; color: white;">
+										<div
+											class="text-right p-1 rounded"
+											style="background: {settings.primary_color}; color: white;"
+										>
 											<span class="text-[5px] font-bold">Total: $99.00</span>
 										</div>
 									</div>
@@ -756,17 +955,34 @@
 
 	<!-- Preview Modal -->
 	{#if showPreviewModal}
-		<div class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" transition:fade>
-			<div class="bg-white dark:bg-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col">
-				<div class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between">
+		<div
+			class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+			transition:fade
+		>
+			<div
+				class="bg-white dark:bg-gray-800 rounded-xl max-w-4xl w-full max-h-[90vh] overflow-hidden flex flex-col"
+			>
+				<div
+					class="px-6 py-4 border-b border-gray-200 dark:border-gray-700 flex items-center justify-between"
+				>
 					<h3 class="text-lg font-semibold text-gray-900 dark:text-white">Invoice Preview</h3>
 					<button
 						onclick={() => (showPreviewModal = false)}
 						class="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition"
 						aria-label="Close preview"
 					>
-						<svg class="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+						<svg
+							class="w-5 h-5 text-gray-500"
+							fill="none"
+							stroke="currentColor"
+							viewBox="0 0 24 24"
+						>
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M6 18L18 6M6 6l12 12"
+							/>
 						</svg>
 					</button>
 				</div>

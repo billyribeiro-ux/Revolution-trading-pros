@@ -43,10 +43,10 @@
 	import IconPin from '@tabler/icons-svelte/icons/pin';
 	import IconPinFilled from '@tabler/icons-svelte/icons/pin-filled';
 	import IconAlertCircle from '@tabler/icons-svelte/icons/alert-circle';
-	import { 
-		roomResourcesApi, 
-		type RoomResource, 
-		type ResourceType, 
+	import {
+		roomResourcesApi,
+		type RoomResource,
+		type ResourceType,
 		type ContentType,
 		type VideoPlatform,
 		type CreateResourceRequest
@@ -77,17 +77,52 @@
 		{ id: 'screenshot', name: 'Screenshot', resourceTypes: ['image'] },
 		{ id: 'template', name: 'Template', resourceTypes: ['document', 'spreadsheet'] },
 		{ id: 'cheat_sheet', name: 'Cheat Sheet', resourceTypes: ['pdf', 'image'] },
-		{ id: 'other', name: 'Other', resourceTypes: ['video', 'pdf', 'document', 'image', 'spreadsheet', 'archive', 'other'] }
+		{
+			id: 'other',
+			name: 'Other',
+			resourceTypes: ['video', 'pdf', 'document', 'image', 'spreadsheet', 'archive', 'other']
+		}
 	];
 
 	// ICT 7: Section definitions for dashboard organization
 	const ROOM_SECTIONS = [
-		{ id: 'introduction', name: 'Introduction', icon: IconVideo, description: 'Main welcome and overview videos' },
-		{ id: 'latest_updates', name: 'Latest Updates', icon: IconRefresh, description: 'Recent announcements and updates' },
-		{ id: 'premium_daily_videos', name: 'Premium Daily Videos', icon: IconVideo, description: 'Daily trading analysis' },
-		{ id: 'watchlist', name: 'Watchlist', icon: IconFileText, description: 'Weekly stock watchlist' },
-		{ id: 'weekly_alerts', name: 'Weekly Alerts', icon: IconAlertCircle, description: 'Weekly alert summaries', roomsOnly: ['explosive-swings'] },
-		{ id: 'learning_center', name: 'Learning Center', icon: IconFileText, description: 'Educational content' }
+		{
+			id: 'introduction',
+			name: 'Introduction',
+			icon: IconVideo,
+			description: 'Main welcome and overview videos'
+		},
+		{
+			id: 'latest_updates',
+			name: 'Latest Updates',
+			icon: IconRefresh,
+			description: 'Recent announcements and updates'
+		},
+		{
+			id: 'premium_daily_videos',
+			name: 'Premium Daily Videos',
+			icon: IconVideo,
+			description: 'Daily trading analysis'
+		},
+		{
+			id: 'watchlist',
+			name: 'Watchlist',
+			icon: IconFileText,
+			description: 'Weekly stock watchlist'
+		},
+		{
+			id: 'weekly_alerts',
+			name: 'Weekly Alerts',
+			icon: IconAlertCircle,
+			description: 'Weekly alert summaries',
+			roomsOnly: ['explosive-swings']
+		},
+		{
+			id: 'learning_center',
+			name: 'Learning Center',
+			icon: IconFileText,
+			description: 'Educational content'
+		}
 	];
 
 	const VIDEO_PLATFORMS: { id: VideoPlatform; name: string }[] = [
@@ -171,21 +206,26 @@
 	// COMPUTED
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	const filteredResources = $derived(resources.filter(resource => {
-		const matchesSearch = !searchQuery || 
-			resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-			resource.description?.toLowerCase().includes(searchQuery.toLowerCase());
-		
-		const matchesType = selectedResourceType === 'all' || resource.resource_type === selectedResourceType;
-		const matchesContent = selectedContentType === 'all' || resource.content_type === selectedContentType;
-		const matchesSection = selectedSection === 'all' || resource.section === selectedSection; // ICT 7: Section filter
-		
-		return matchesSearch && matchesType && matchesContent && matchesSection;
-	}));
+	const filteredResources = $derived(
+		resources.filter((resource) => {
+			const matchesSearch =
+				!searchQuery ||
+				resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+				resource.description?.toLowerCase().includes(searchQuery.toLowerCase());
+
+			const matchesType =
+				selectedResourceType === 'all' || resource.resource_type === selectedResourceType;
+			const matchesContent =
+				selectedContentType === 'all' || resource.content_type === selectedContentType;
+			const matchesSection = selectedSection === 'all' || resource.section === selectedSection; // ICT 7: Section filter
+
+			return matchesSearch && matchesType && matchesContent && matchesSection;
+		})
+	);
 
 	// ICT 7: Get available sections for the selected room
 	const availableSections = $derived(
-		ROOM_SECTIONS.filter(section => {
+		ROOM_SECTIONS.filter((section) => {
 			// Check if section is restricted to specific rooms
 			if (section.roomsOnly && selectedRoom) {
 				return section.roomsOnly.includes(selectedRoom.slug);
@@ -199,7 +239,7 @@
 	);
 
 	const availableContentTypes = $derived(
-		CONTENT_TYPES.filter(ct => 
+		CONTENT_TYPES.filter((ct) =>
 			formData.resource_type === 'video' || formData.resource_type === 'other'
 				? true
 				: ct.resourceTypes.includes(formData.resource_type)
@@ -208,12 +248,12 @@
 
 	const stats = $derived({
 		total: resources.length,
-		videos: resources.filter(r => r.resource_type === 'video').length,
-		pdfs: resources.filter(r => r.resource_type === 'pdf').length,
-		documents: resources.filter(r => r.resource_type === 'document').length,
-		images: resources.filter(r => r.resource_type === 'image').length,
-		published: resources.filter(r => r.is_published).length,
-		featured: resources.filter(r => r.is_featured).length
+		videos: resources.filter((r) => r.resource_type === 'video').length,
+		pdfs: resources.filter((r) => r.resource_type === 'pdf').length,
+		documents: resources.filter((r) => r.resource_type === 'document').length,
+		images: resources.filter((r) => r.resource_type === 'image').length,
+		published: resources.filter((r) => r.is_published).length,
+		featured: resources.filter((r) => r.is_featured).length
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -222,12 +262,124 @@
 
 	// ICT 7: All 6 trading rooms in correct order
 	const FALLBACK_ROOMS: TradingRoom[] = [
-		{ id: 1, name: 'Day Trading Room', slug: 'day-trading-room', type: 'trading_room', is_active: true, is_featured: true, sort_order: 1, icon: 'chart-line', color: '#3b82f6', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'watchlist', 'learning_center'], created_at: '', updated_at: '' },
-		{ id: 2, name: 'Swing Trading Room', slug: 'swing-trading-room', type: 'trading_room', is_active: true, is_featured: false, sort_order: 2, icon: 'trending-up', color: '#10b981', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'watchlist', 'learning_center'], created_at: '', updated_at: '' },
-		{ id: 3, name: 'Small Account Mentorship', slug: 'small-account-mentorship', type: 'mentorship', is_active: true, is_featured: false, sort_order: 3, icon: 'wallet', color: '#f59e0b', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'learning_center'], created_at: '', updated_at: '' },
-		{ id: 4, name: 'Explosive Swings', slug: 'explosive-swings', type: 'alert_service', is_active: true, is_featured: false, sort_order: 4, icon: 'rocket', color: '#ef4444', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'watchlist', 'weekly_alerts', 'learning_center'], created_at: '', updated_at: '' },
-		{ id: 5, name: 'SPX Profit Pulse', slug: 'spx-profit-pulse', type: 'alert_service', is_active: true, is_featured: false, sort_order: 5, icon: 'activity', color: '#8b5cf6', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'learning_center'], created_at: '', updated_at: '' },
-		{ id: 6, name: 'High Octane Scanner', slug: 'high-octane-scanner', type: 'alert_service', is_active: true, is_featured: false, sort_order: 6, icon: 'radar', color: '#06b6d4', available_sections: ['introduction', 'latest_updates', 'premium_daily_videos', 'learning_center'], created_at: '', updated_at: '' }
+		{
+			id: 1,
+			name: 'Day Trading Room',
+			slug: 'day-trading-room',
+			type: 'trading_room',
+			is_active: true,
+			is_featured: true,
+			sort_order: 1,
+			icon: 'chart-line',
+			color: '#3b82f6',
+			available_sections: [
+				'introduction',
+				'latest_updates',
+				'premium_daily_videos',
+				'watchlist',
+				'learning_center'
+			],
+			created_at: '',
+			updated_at: ''
+		},
+		{
+			id: 2,
+			name: 'Swing Trading Room',
+			slug: 'swing-trading-room',
+			type: 'trading_room',
+			is_active: true,
+			is_featured: false,
+			sort_order: 2,
+			icon: 'trending-up',
+			color: '#10b981',
+			available_sections: [
+				'introduction',
+				'latest_updates',
+				'premium_daily_videos',
+				'watchlist',
+				'learning_center'
+			],
+			created_at: '',
+			updated_at: ''
+		},
+		{
+			id: 3,
+			name: 'Small Account Mentorship',
+			slug: 'small-account-mentorship',
+			type: 'mentorship',
+			is_active: true,
+			is_featured: false,
+			sort_order: 3,
+			icon: 'wallet',
+			color: '#f59e0b',
+			available_sections: [
+				'introduction',
+				'latest_updates',
+				'premium_daily_videos',
+				'learning_center'
+			],
+			created_at: '',
+			updated_at: ''
+		},
+		{
+			id: 4,
+			name: 'Explosive Swings',
+			slug: 'explosive-swings',
+			type: 'alert_service',
+			is_active: true,
+			is_featured: false,
+			sort_order: 4,
+			icon: 'rocket',
+			color: '#ef4444',
+			available_sections: [
+				'introduction',
+				'latest_updates',
+				'premium_daily_videos',
+				'watchlist',
+				'weekly_alerts',
+				'learning_center'
+			],
+			created_at: '',
+			updated_at: ''
+		},
+		{
+			id: 5,
+			name: 'SPX Profit Pulse',
+			slug: 'spx-profit-pulse',
+			type: 'alert_service',
+			is_active: true,
+			is_featured: false,
+			sort_order: 5,
+			icon: 'activity',
+			color: '#8b5cf6',
+			available_sections: [
+				'introduction',
+				'latest_updates',
+				'premium_daily_videos',
+				'learning_center'
+			],
+			created_at: '',
+			updated_at: ''
+		},
+		{
+			id: 6,
+			name: 'High Octane Scanner',
+			slug: 'high-octane-scanner',
+			type: 'alert_service',
+			is_active: true,
+			is_featured: false,
+			sort_order: 6,
+			icon: 'radar',
+			color: '#06b6d4',
+			available_sections: [
+				'introduction',
+				'latest_updates',
+				'premium_daily_videos',
+				'learning_center'
+			],
+			created_at: '',
+			updated_at: ''
+		}
 	];
 
 	async function loadRoomsAndTraders() {
@@ -301,7 +453,7 @@
 
 	function showSuccess(message: string) {
 		successMessage = message;
-		setTimeout(() => successMessage = '', 3000);
+		setTimeout(() => (successMessage = ''), 3000);
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -477,12 +629,12 @@
 	}
 
 	function getCategoryById(id: string) {
-		return CATEGORIES.find(c => c.id === id);
+		return CATEGORIES.find((c) => c.id === id);
 	}
 
 	function toggleTag(tagId: string) {
 		if (formData.tags?.includes(tagId)) {
-			formData.tags = formData.tags.filter(t => t !== tagId);
+			formData.tags = formData.tags.filter((t) => t !== tagId);
 		} else {
 			formData.tags = [...(formData.tags || []), tagId];
 		}
@@ -512,7 +664,12 @@
 	$effect(() => {
 		// Only load if room changed and not during initial load
 		// selectRoom() handles its own loadResources() call
-		if (selectedRoom && !isLoadingRooms && previousRoomId !== null && previousRoomId !== selectedRoom.id) {
+		if (
+			selectedRoom &&
+			!isLoadingRooms &&
+			previousRoomId !== null &&
+			previousRoomId !== selectedRoom.id
+		) {
 			loadResources();
 		}
 		if (selectedRoom) {
@@ -527,245 +684,301 @@
 
 <div class="page">
 	<div class="admin-page-container">
-	<!-- Alerts -->
-	{#if successMessage}
-		<div class="alert alert-success">
-			<IconCheck size={18} />
-			{successMessage}
-		</div>
-	{/if}
+		<!-- Alerts -->
+		{#if successMessage}
+			<div class="alert alert-success">
+				<IconCheck size={18} />
+				{successMessage}
+			</div>
+		{/if}
 
-	{#if error}
-		<div class="alert alert-error">
-			<IconAlertCircle size={18} />
-			{error}
-			<button class="alert-close" onclick={() => error = ''}>
-				<IconX size={16} />
-			</button>
-		</div>
-	{/if}
-
-	<!-- Header -->
-	<div class="page-header">
-		<h1>Room Resources</h1>
-		<p class="subtitle">Manage videos, PDFs, documents, and images for each trading room</p>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={() => loadResources()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			<button class="btn-primary" onclick={openCreateModal} disabled={!selectedRoom}>
-				<IconPlus size={18} />
-				Add Resource
-			</button>
-		</div>
-	</div>
-
-	<!-- Room Tabs -->
-	{#if isLoadingRooms}
-		<div class="room-tabs loading">
-			<div class="spinner"></div>
-			<span>Loading rooms...</span>
-		</div>
-	{:else}
-		<div class="room-tabs">
-			{#each rooms as room}
-				<button
-					class="room-tab"
-					class:active={selectedRoom?.id === room.id}
-					onclick={() => selectRoom(room)}
-				>
-					{room.name}
+		{#if error}
+			<div class="alert alert-error">
+				<IconAlertCircle size={18} />
+				{error}
+				<button class="alert-close" onclick={() => (error = '')}>
+					<IconX size={16} />
 				</button>
-			{/each}
-		</div>
-	{/if}
+			</div>
+		{/if}
 
-	<!-- Stats Bar -->
-	{#if selectedRoom}
-		<div class="stats-bar">
-			<div class="stat">
-				<span class="stat-value">{stats.total}</span>
-				<span class="stat-label">Total</span>
-			</div>
-			<div class="stat">
-				<IconVideo size={16} />
-				<span class="stat-value">{stats.videos}</span>
-				<span class="stat-label">Videos</span>
-			</div>
-			<div class="stat">
-				<IconFileText size={16} />
-				<span class="stat-value">{stats.pdfs}</span>
-				<span class="stat-label">PDFs</span>
-			</div>
-			<div class="stat">
-				<IconPhoto size={16} />
-				<span class="stat-value">{stats.images}</span>
-				<span class="stat-label">Images</span>
-			</div>
-			<div class="stat">
-				<IconCheck size={16} />
-				<span class="stat-value">{stats.published}</span>
-				<span class="stat-label">Published</span>
-			</div>
-			<div class="stat">
-				<IconStarFilled size={16} />
-				<span class="stat-value">{stats.featured}</span>
-				<span class="stat-label">Featured</span>
+		<!-- Header -->
+		<div class="page-header">
+			<h1>Room Resources</h1>
+			<p class="subtitle">Manage videos, PDFs, documents, and images for each trading room</p>
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={() => loadResources()} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				</button>
+				<button class="btn-primary" onclick={openCreateModal} disabled={!selectedRoom}>
+					<IconPlus size={18} />
+					Add Resource
+				</button>
 			</div>
 		</div>
-	{/if}
 
-	<!-- Filters -->
-	<div class="filters-bar">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<input type="text" placeholder="Search resources..." bind:value={searchQuery} />
-		</div>
-		<div class="filter-group">
-			<select bind:value={selectedResourceType}>
-				<option value="all">All Types</option>
-				{#each RESOURCE_TYPES as type}
-					<option value={type.id}>{type.name}</option>
+		<!-- Room Tabs -->
+		{#if isLoadingRooms}
+			<div class="room-tabs loading">
+				<div class="spinner"></div>
+				<span>Loading rooms...</span>
+			</div>
+		{:else}
+			<div class="room-tabs">
+				{#each rooms as room}
+					<button
+						class="room-tab"
+						class:active={selectedRoom?.id === room.id}
+						onclick={() => selectRoom(room)}
+					>
+						{room.name}
+					</button>
 				{/each}
-			</select>
-			<select bind:value={selectedContentType}>
-				<option value="all">All Content</option>
-				{#each CONTENT_TYPES as type}
-					<option value={type.id}>{type.name}</option>
-				{/each}
-			</select>
-			<!-- ICT 7: Section filter -->
-			<select bind:value={selectedSection}>
-				<option value="all">All Sections</option>
-				{#each availableSections as section}
-					<option value={section.id}>{section.name}</option>
-				{/each}
-			</select>
-		</div>
-	</div>
+			</div>
+		{/if}
 
-	<!-- Resources Grid -->
-	{#if isLoading}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading resources...</p>
-		</div>
-	{:else if filteredResources.length === 0}
-		<div class="empty-state">
-			<IconFile size={64} />
-			<h3>No resources found</h3>
-			<p>Add your first resource to {selectedRoom?.name}</p>
-			<button class="btn-primary" onclick={openCreateModal}>
-				<IconPlus size={18} />
-				Add Resource
-			</button>
-		</div>
-	{:else}
-		<div class="resources-grid">
-			{#each filteredResources as resource}
-				<div class="resource-card" class:featured={resource.is_featured} class:pinned={resource.is_pinned} class:unpublished={!resource.is_published}>
-					<!-- Thumbnail -->
-					<div class="resource-thumbnail">
-						{#if resource.thumbnail_url}
-							<img src={resource.thumbnail_url} alt={resource.title} />
-						{:else}
-							<div class="thumbnail-placeholder">
-								<!-- svelte-ignore svelte_component_deprecated -->
-								<svelte:component this={getResourceIcon(resource.resource_type)} size={32} />
-							</div>
-						{/if}
-						
-						<!-- Type Badge -->
-						<span class="type-badge" class:video={resource.resource_type === 'video'} class:pdf={resource.resource_type === 'pdf'} class:image={resource.resource_type === 'image'}>
-							{resource.resource_type.toUpperCase()}
-						</span>
-						
-						<!-- Featured/Pinned indicators -->
-						{#if resource.is_featured}
-							<span class="featured-badge"><IconStarFilled size={14} /></span>
-						{/if}
-						{#if resource.is_pinned}
-							<span class="pinned-badge"><IconPinFilled size={14} /></span>
-						{/if}
-					</div>
-
-					<!-- Content -->
-					<div class="resource-content">
-						<h3 class="resource-title">{resource.title}</h3>
-						<div class="resource-meta">
-							<span class="content-type">{resource.content_type.replace('_', ' ')}</span>
-							<span class="date">{resource.formatted_date}</span>
-						</div>
-						{#if resource.tags && resource.tags.length > 0}
-							<div class="resource-tags">
-								{#each (resource.tags || []).slice(0, 3) as tagId}
-									{@const tag = getCategoryById(tagId)}
-									{#if tag}
-										<span class="tag" style:--tag-color={tag.color}>{tag.name}</span>
-									{/if}
-								{/each}
-							</div>
-						{/if}
-					</div>
-
-					<!-- Actions -->
-					<div class="resource-actions">
-						<button class="btn-icon" title="Replace" onclick={() => openReplaceModal(resource)}>
-							<IconLink size={16} />
-						</button>
-						<button class="btn-icon" title="Edit" onclick={() => openEditModal(resource)}>
-							<IconEdit size={16} />
-						</button>
-						<button class="btn-icon" title={resource.is_featured ? 'Unfeature' : 'Feature'} onclick={() => toggleFeatured(resource)}>
-							{#if resource.is_featured}
-								<IconStarFilled size={16} />
-							{:else}
-								<IconStar size={16} />
-							{/if}
-						</button>
-						<button class="btn-icon" title={resource.is_pinned ? 'Unpin' : 'Pin to top'} onclick={() => togglePinned(resource)}>
-							{#if resource.is_pinned}
-								<IconPinFilled size={16} />
-							{:else}
-								<IconPin size={16} />
-							{/if}
-						</button>
-						<button class="btn-icon" class:active={resource.is_published} title={resource.is_published ? 'Unpublish' : 'Publish'} onclick={() => togglePublished(resource)}>
-							<IconEye size={16} />
-						</button>
-						<button class="btn-icon danger" title="Delete" onclick={() => deleteResource(resource)}>
-							<IconTrash size={16} />
-						</button>
-					</div>
+		<!-- Stats Bar -->
+		{#if selectedRoom}
+			<div class="stats-bar">
+				<div class="stat">
+					<span class="stat-value">{stats.total}</span>
+					<span class="stat-label">Total</span>
 				</div>
-			{/each}
+				<div class="stat">
+					<IconVideo size={16} />
+					<span class="stat-value">{stats.videos}</span>
+					<span class="stat-label">Videos</span>
+				</div>
+				<div class="stat">
+					<IconFileText size={16} />
+					<span class="stat-value">{stats.pdfs}</span>
+					<span class="stat-label">PDFs</span>
+				</div>
+				<div class="stat">
+					<IconPhoto size={16} />
+					<span class="stat-value">{stats.images}</span>
+					<span class="stat-label">Images</span>
+				</div>
+				<div class="stat">
+					<IconCheck size={16} />
+					<span class="stat-value">{stats.published}</span>
+					<span class="stat-label">Published</span>
+				</div>
+				<div class="stat">
+					<IconStarFilled size={16} />
+					<span class="stat-value">{stats.featured}</span>
+					<span class="stat-label">Featured</span>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Filters -->
+		<div class="filters-bar">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<input type="text" placeholder="Search resources..." bind:value={searchQuery} />
+			</div>
+			<div class="filter-group">
+				<select bind:value={selectedResourceType}>
+					<option value="all">All Types</option>
+					{#each RESOURCE_TYPES as type}
+						<option value={type.id}>{type.name}</option>
+					{/each}
+				</select>
+				<select bind:value={selectedContentType}>
+					<option value="all">All Content</option>
+					{#each CONTENT_TYPES as type}
+						<option value={type.id}>{type.name}</option>
+					{/each}
+				</select>
+				<!-- ICT 7: Section filter -->
+				<select bind:value={selectedSection}>
+					<option value="all">All Sections</option>
+					{#each availableSections as section}
+						<option value={section.id}>{section.name}</option>
+					{/each}
+				</select>
+			</div>
 		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+
+		<!-- Resources Grid -->
+		{#if isLoading}
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<p>Loading resources...</p>
+			</div>
+		{:else if filteredResources.length === 0}
+			<div class="empty-state">
+				<IconFile size={64} />
+				<h3>No resources found</h3>
+				<p>Add your first resource to {selectedRoom?.name}</p>
+				<button class="btn-primary" onclick={openCreateModal}>
+					<IconPlus size={18} />
+					Add Resource
+				</button>
+			</div>
+		{:else}
+			<div class="resources-grid">
+				{#each filteredResources as resource}
+					<div
+						class="resource-card"
+						class:featured={resource.is_featured}
+						class:pinned={resource.is_pinned}
+						class:unpublished={!resource.is_published}
+					>
+						<!-- Thumbnail -->
+						<div class="resource-thumbnail">
+							{#if resource.thumbnail_url}
+								<img src={resource.thumbnail_url} alt={resource.title} />
+							{:else}
+								<div class="thumbnail-placeholder">
+									<!-- svelte-ignore svelte_component_deprecated -->
+									<svelte:component this={getResourceIcon(resource.resource_type)} size={32} />
+								</div>
+							{/if}
+
+							<!-- Type Badge -->
+							<span
+								class="type-badge"
+								class:video={resource.resource_type === 'video'}
+								class:pdf={resource.resource_type === 'pdf'}
+								class:image={resource.resource_type === 'image'}
+							>
+								{resource.resource_type.toUpperCase()}
+							</span>
+
+							<!-- Featured/Pinned indicators -->
+							{#if resource.is_featured}
+								<span class="featured-badge"><IconStarFilled size={14} /></span>
+							{/if}
+							{#if resource.is_pinned}
+								<span class="pinned-badge"><IconPinFilled size={14} /></span>
+							{/if}
+						</div>
+
+						<!-- Content -->
+						<div class="resource-content">
+							<h3 class="resource-title">{resource.title}</h3>
+							<div class="resource-meta">
+								<span class="content-type">{resource.content_type.replace('_', ' ')}</span>
+								<span class="date">{resource.formatted_date}</span>
+							</div>
+							{#if resource.tags && resource.tags.length > 0}
+								<div class="resource-tags">
+									{#each (resource.tags || []).slice(0, 3) as tagId}
+										{@const tag = getCategoryById(tagId)}
+										{#if tag}
+											<span class="tag" style:--tag-color={tag.color}>{tag.name}</span>
+										{/if}
+									{/each}
+								</div>
+							{/if}
+						</div>
+
+						<!-- Actions -->
+						<div class="resource-actions">
+							<button class="btn-icon" title="Replace" onclick={() => openReplaceModal(resource)}>
+								<IconLink size={16} />
+							</button>
+							<button class="btn-icon" title="Edit" onclick={() => openEditModal(resource)}>
+								<IconEdit size={16} />
+							</button>
+							<button
+								class="btn-icon"
+								title={resource.is_featured ? 'Unfeature' : 'Feature'}
+								onclick={() => toggleFeatured(resource)}
+							>
+								{#if resource.is_featured}
+									<IconStarFilled size={16} />
+								{:else}
+									<IconStar size={16} />
+								{/if}
+							</button>
+							<button
+								class="btn-icon"
+								title={resource.is_pinned ? 'Unpin' : 'Pin to top'}
+								onclick={() => togglePinned(resource)}
+							>
+								{#if resource.is_pinned}
+									<IconPinFilled size={16} />
+								{:else}
+									<IconPin size={16} />
+								{/if}
+							</button>
+							<button
+								class="btn-icon"
+								class:active={resource.is_published}
+								title={resource.is_published ? 'Unpublish' : 'Publish'}
+								onclick={() => togglePublished(resource)}
+							>
+								<IconEye size={16} />
+							</button>
+							<button
+								class="btn-icon danger"
+								title="Delete"
+								onclick={() => deleteResource(resource)}
+							>
+								<IconTrash size={16} />
+							</button>
+						</div>
+					</div>
+				{/each}
+			</div>
+		{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <!-- Create/Edit Modal -->
 {#if showCreateModal || showEditModal}
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
-	<div class="modal-overlay" onclick={() => { showCreateModal = false; showEditModal = false; editingResource = null; }} role="dialog" aria-modal="true" tabindex="-1">
+	<div
+		class="modal-overlay"
+		onclick={() => {
+			showCreateModal = false;
+			showEditModal = false;
+			editingResource = null;
+		}}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_no_noninteractive_element_interactions -->
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div class="modal modal-large" onclick={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>{showEditModal ? 'Edit Resource' : 'Add New Resource'}</h2>
-				<button class="modal-close" onclick={() => { showCreateModal = false; showEditModal = false; editingResource = null; }}>&times;</button>
+				<button
+					class="modal-close"
+					onclick={() => {
+						showCreateModal = false;
+						showEditModal = false;
+						editingResource = null;
+					}}>&times;</button
+				>
 			</div>
 			<div class="modal-body">
 				<!-- Title -->
 				<div class="form-group">
 					<label for="title">Title *</label>
-					<input type="text" id="title" bind:value={formData.title} placeholder="Resource title" required />
+					<input
+						type="text"
+						id="title"
+						bind:value={formData.title}
+						placeholder="Resource title"
+						required
+					/>
 				</div>
 
 				<!-- Description -->
 				<div class="form-group">
 					<label for="description">Description</label>
-					<textarea id="description" bind:value={formData.description} placeholder="Brief description..." rows="3"></textarea>
+					<textarea
+						id="description"
+						bind:value={formData.description}
+						placeholder="Brief description..."
+						rows="3"
+					></textarea>
 				</div>
 
 				<!-- Type Selection -->
@@ -802,9 +1015,17 @@
 				<!-- File URL -->
 				<div class="form-group">
 					<label for="file-url">File/Video URL *</label>
-					<input type="url" id="file-url" bind:value={formData.file_url} placeholder="https://..." required />
+					<input
+						type="url"
+						id="file-url"
+						bind:value={formData.file_url}
+						placeholder="https://..."
+						required
+					/>
 					{#if formData.resource_type === 'video' && formData.video_platform}
-						<small class="form-hint">Detected platform: <strong>{formData.video_platform}</strong></small>
+						<small class="form-hint"
+							>Detected platform: <strong>{formData.video_platform}</strong></small
+						>
 					{/if}
 				</div>
 
@@ -835,7 +1056,12 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="thumbnail-url">Thumbnail URL</label>
-						<input type="url" id="thumbnail-url" bind:value={formData.thumbnail_url} placeholder="https://..." />
+						<input
+							type="url"
+							id="thumbnail-url"
+							bind:value={formData.thumbnail_url}
+							placeholder="https://..."
+						/>
 					</div>
 					<div class="form-group">
 						<label for="resource-date">Date</label>
@@ -882,8 +1108,19 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => { showCreateModal = false; showEditModal = false; editingResource = null; }}>Cancel</button>
-				<button class="btn-primary" onclick={saveResource} disabled={isSaving || !formData.title || !formData.file_url}>
+				<button
+					class="btn-secondary"
+					onclick={() => {
+						showCreateModal = false;
+						showEditModal = false;
+						editingResource = null;
+					}}>Cancel</button
+				>
+				<button
+					class="btn-primary"
+					onclick={saveResource}
+					disabled={isSaving || !formData.title || !formData.file_url}
+				>
 					{#if isSaving}
 						<span class="spinner-small"></span>
 						Saving...
@@ -899,13 +1136,30 @@
 <!-- Replace Modal -->
 {#if showReplaceModal && replacingResource}
 	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_interactive_supports_focus -->
-	<div class="modal-overlay" onclick={() => { showReplaceModal = false; replacingResource = null; newFileUrl = ''; }} role="dialog" aria-modal="true" tabindex="-1">
+	<div
+		class="modal-overlay"
+		onclick={() => {
+			showReplaceModal = false;
+			replacingResource = null;
+			newFileUrl = '';
+		}}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
 		<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions a11y_no_noninteractive_element_interactions -->
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div class="modal" onclick={(e) => e.stopPropagation()} role="document">
 			<div class="modal-header">
 				<h2>Replace Resource</h2>
-				<button class="modal-close" onclick={() => { showReplaceModal = false; replacingResource = null; newFileUrl = ''; }}>&times;</button>
+				<button
+					class="modal-close"
+					onclick={() => {
+						showReplaceModal = false;
+						replacingResource = null;
+						newFileUrl = '';
+					}}>&times;</button
+				>
 			</div>
 			<div class="modal-body">
 				<div class="replace-info">
@@ -915,11 +1169,24 @@
 				<div class="form-group">
 					<label for="new-file-url">New File URL</label>
 					<!-- svelte-ignore a11y_autofocus -->
-					<input type="url" id="new-file-url" bind:value={newFileUrl} placeholder="https://..." autofocus />
+					<input
+						type="url"
+						id="new-file-url"
+						bind:value={newFileUrl}
+						placeholder="https://..."
+						autofocus
+					/>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => { showReplaceModal = false; replacingResource = null; newFileUrl = ''; }}>Cancel</button>
+				<button
+					class="btn-secondary"
+					onclick={() => {
+						showReplaceModal = false;
+						replacingResource = null;
+						newFileUrl = '';
+					}}>Cancel</button
+				>
 				<button class="btn-primary" onclick={replaceResource} disabled={isSaving || !newFileUrl}>
 					{#if isSaving}
 						<span class="spinner-small"></span>
@@ -972,8 +1239,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -1046,7 +1313,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-icon.danger:hover {
@@ -1091,8 +1358,8 @@
 	}
 
 	.room-tab.active {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 	}
 
 	/* Stats Bar */
@@ -1247,9 +1514,15 @@
 		letter-spacing: 0.5px;
 	}
 
-	.type-badge.video { color: #E6B800; }
-	.type-badge.pdf { color: #f87171; }
-	.type-badge.image { color: #4ade80; }
+	.type-badge.video {
+		color: #e6b800;
+	}
+	.type-badge.pdf {
+		color: #f87171;
+	}
+	.type-badge.image {
+		color: #4ade80;
+	}
 
 	.featured-badge {
 		position: absolute;
@@ -1302,11 +1575,11 @@
 
 	.tag {
 		padding: 0.2rem 0.5rem;
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 20%, transparent);
+		background: color-mix(in srgb, var(--tag-color, #e6b800) 20%, transparent);
 		border-radius: 4px;
 		font-size: 0.7rem;
 		font-weight: 500;
-		color: var(--tag-color, #FFD11A);
+		color: var(--tag-color, #ffd11a);
 	}
 
 	.resource-actions {
@@ -1318,7 +1591,8 @@
 	}
 
 	/* Empty & Loading States */
-	.empty-state, .loading-state {
+	.empty-state,
+	.loading-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -1337,7 +1611,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -1352,7 +1626,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Alerts */
@@ -1486,7 +1762,7 @@
 	.form-group textarea:focus,
 	.form-group select:focus {
 		outline: none;
-		border-color: #E6B800;
+		border-color: #e6b800;
 	}
 
 	.form-group textarea {
@@ -1534,14 +1810,14 @@
 	}
 
 	.tag-btn:hover {
-		border-color: var(--tag-color, #E6B800);
-		color: var(--tag-color, #FFD11A);
+		border-color: var(--tag-color, #e6b800);
+		color: var(--tag-color, #ffd11a);
 	}
 
 	.tag-btn.selected {
-		background: color-mix(in srgb, var(--tag-color, #E6B800) 20%, transparent);
-		border-color: var(--tag-color, #E6B800);
-		color: var(--tag-color, #FFD11A);
+		background: color-mix(in srgb, var(--tag-color, #e6b800) 20%, transparent);
+		border-color: var(--tag-color, #e6b800);
+		color: var(--tag-color, #ffd11a);
 	}
 
 	/* Form Options */
@@ -1560,10 +1836,10 @@
 		font-size: 0.9rem;
 	}
 
-	.checkbox-label input[type="checkbox"] {
+	.checkbox-label input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
-		accent-color: #E6B800;
+		accent-color: #e6b800;
 	}
 
 	/* Replace Modal */

@@ -43,7 +43,9 @@
 </script>
 
 <svelte:head>
-	<title>{product ? `Checkout - ${product.name}` : 'Product Not Found'} | Revolution Trading Pros</title>
+	<title
+		>{product ? `Checkout - ${product.name}` : 'Product Not Found'} | Revolution Trading Pros</title
+	>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 

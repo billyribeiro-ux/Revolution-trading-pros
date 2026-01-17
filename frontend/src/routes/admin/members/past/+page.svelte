@@ -415,9 +415,7 @@
 			</div>
 			<h3>Failed to load dashboard</h3>
 			<p>{error}</p>
-			<button class="btn-primary" onclick={loadDashboard}>
-				Try Again
-			</button>
+			<button class="btn-primary" onclick={loadDashboard}> Try Again </button>
 		</div>
 	{:else}
 		<!-- Period Selector Cards -->
@@ -514,7 +512,9 @@
 		<div class="campaign-bar">
 			<div class="campaign-info">
 				<IconSparkles size={20} />
-				<span>Ready to win back <strong>{periodStats?.total_count || 0}</strong> members from {periodLabel}?</span>
+				<span
+					>Ready to win back <strong>{periodStats?.total_count || 0}</strong> members from {periodLabel}?</span
+				>
 			</div>
 			<div class="campaign-actions">
 				<button class="campaign-btn free" onclick={() => openEmailModal('30_free')}>
@@ -638,7 +638,10 @@
 				<!-- Pagination -->
 				<div class="pagination">
 					<div class="pagination-info">
-						Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total}
+						Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(
+							pagination.current_page * pagination.per_page,
+							pagination.total
+						)} of {pagination.total}
 					</div>
 					<div class="pagination-controls">
 						<button
@@ -649,7 +652,9 @@
 						>
 							<IconChevronLeft size={18} />
 						</button>
-						<span class="page-indicator">Page {pagination.current_page} of {pagination.last_page}</span>
+						<span class="page-indicator"
+							>Page {pagination.current_page} of {pagination.last_page}</span
+						>
 						<button
 							class="page-btn"
 							disabled={pagination.current_page === pagination.last_page}
@@ -673,7 +678,9 @@
 		tabindex="0"
 		aria-label="Close modal"
 		onclick={() => (showEmailModal = false)}
-		onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showEmailModal = false; }}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showEmailModal = false;
+		}}
 	>
 		<div
 			class="modal-content"
@@ -790,7 +797,7 @@
 						<textarea
 							id="custom-body"
 							rows="8"
-							placeholder="Enter email body... Use {{name}} for personalization"
+							placeholder="Enter email body... Use {{ name }} for personalization"
 							bind:value={customBody}
 						></textarea>
 					</div>
@@ -820,7 +827,9 @@
 		tabindex="0"
 		aria-label="Close modal"
 		onclick={() => (showSurveyModal = false)}
-		onkeydown={(e: KeyboardEvent) => { if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showSurveyModal = false; }}
+		onkeydown={(e: KeyboardEvent) => {
+			if (e.key === 'Escape' || e.key === 'Enter' || e.key === ' ') showSurveyModal = false;
+		}}
 	>
 		<div
 			class="modal-content survey-modal"
@@ -836,7 +845,11 @@
 					<h2 id="survey-modal-title">Send Feedback Survey</h2>
 					<p>Gather insights from {periodStats?.total_count || 0} past members</p>
 				</div>
-				<button class="close-btn" onclick={() => (showSurveyModal = false)} aria-label="Close modal">
+				<button
+					class="close-btn"
+					onclick={() => (showSurveyModal = false)}
+					aria-label="Close modal"
+				>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -844,7 +857,10 @@
 			<div class="modal-body">
 				<div class="survey-info">
 					<IconFileAnalytics size={48} />
-					<p>Send a feedback survey to understand why members canceled and what would bring them back.</p>
+					<p>
+						Send a feedback survey to understand why members canceled and what would bring them
+						back.
+					</p>
 				</div>
 
 				<div class="form-group">
@@ -855,7 +871,9 @@
 						placeholder="e.g., Complete the survey for 10% off your next month"
 						bind:value={surveyIncentive}
 					/>
-					<span class="form-hint">Offering an incentive can increase response rates by up to 30%</span>
+					<span class="form-hint"
+						>Offering an incentive can increase response rates by up to 30%</span
+					>
 				</div>
 			</div>
 
@@ -886,8 +904,8 @@
 		--pm-text: #f1f5f9;
 		--pm-text-muted: #94a3b8;
 		--pm-text-dim: #64748b;
-		--pm-primary: #E6B800;
-		--pm-primary-light: #FFD11A;
+		--pm-primary: #e6b800;
+		--pm-primary-light: #ffd11a;
 		--pm-success: #34d399;
 		--pm-warning: #fbbf24;
 		--pm-error: #f87171;
@@ -943,7 +961,7 @@
 	.title-icon {
 		width: 64px;
 		height: 64px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border-radius: 20px;
 		display: flex;
 		align-items: center;
@@ -1169,7 +1187,7 @@
 
 	.stat-card.primary .stat-icon {
 		background: rgba(230, 184, 0, 0.15);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.stat-card.success .stat-icon {
@@ -1409,10 +1427,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border: none;
 		border-radius: 10px;
-		color: #0D1117;
+		color: #0d1117;
 		font-weight: 600;
 		cursor: pointer;
 		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
@@ -1870,10 +1888,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border: none;
 		border-radius: 12px;
-		color: #0D1117;
+		color: #0d1117;
 		font-weight: 600;
 		cursor: pointer;
 		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);

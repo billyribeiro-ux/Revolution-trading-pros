@@ -148,7 +148,7 @@
 
 			stats = {
 				total: funnels.length,
-				active: funnels.filter(f => f.status === 'active').length,
+				active: funnels.filter((f) => f.status === 'active').length,
 				totalSubscribers: funnels.reduce((sum, f) => sum + f.subscribers_count, 0),
 				completed: funnels.reduce((sum, f) => sum + f.completed_count, 0)
 			};
@@ -169,7 +169,10 @@
 			showSuccess(`Automation ${newStatus === 'active' ? 'activated' : 'paused'} successfully`);
 			await loadFunnels();
 		} catch (err) {
-			error = err instanceof Error ? err.message : `Failed to ${funnel.status === 'active' ? 'pause' : 'activate'} automation`;
+			error =
+				err instanceof Error
+					? err.message
+					: `Failed to ${funnel.status === 'active' ? 'pause' : 'activate'} automation`;
 		} finally {
 			actionInProgress = null;
 		}
@@ -191,7 +194,8 @@
 	}
 
 	async function deleteFunnel(id: string) {
-		if (!confirm('Are you sure you want to delete this automation? This action cannot be undone.')) return;
+		if (!confirm('Are you sure you want to delete this automation? This action cannot be undone.'))
+			return;
 
 		actionInProgress = id;
 		error = '';
@@ -271,8 +275,8 @@
 		try {
 			const contactIds = addContactsForm.contactIds
 				.split(/[,\n]/)
-				.map(id => id.trim())
-				.filter(id => id.length > 0);
+				.map((id) => id.trim())
+				.filter((id) => id.length > 0);
 
 			if (contactIds.length === 0) {
 				addContactsForm.error = 'Please enter valid contact IDs';
@@ -429,18 +433,16 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let filteredFunnels = $derived(
-		funnels.filter(funnel => {
-			const matchesSearch = !searchQuery ||
-				funnel.title.toLowerCase().includes(searchQuery.toLowerCase());
+		funnels.filter((funnel) => {
+			const matchesSearch =
+				!searchQuery || funnel.title.toLowerCase().includes(searchQuery.toLowerCase());
 			const matchesStatus = selectedStatus === 'all' || funnel.status === selectedStatus;
 			const matchesTrigger = selectedTrigger === 'all' || funnel.trigger_type === selectedTrigger;
 			return matchesSearch && matchesStatus && matchesTrigger;
 		})
 	);
 
-	let canImport = $derived(
-		importForm.jsonData.trim().length > 0 && !importForm.isLoading
-	);
+	let canImport = $derived(importForm.jsonData.trim().length > 0 && !importForm.isLoading);
 
 	let canAddContacts = $derived(
 		addContactsForm.contactIds.trim().length > 0 && !addContactsForm.isLoading
@@ -471,7 +473,7 @@
 	// Auto-dismiss success message - Svelte 5 $effect requires consistent return
 	$effect(() => {
 		if (!successMessage) return;
-		
+
 		const timeout = setTimeout(() => {
 			successMessage = '';
 		}, 3000);
@@ -520,7 +522,7 @@
 		<div class="success-alert">
 			<IconCheck size={18} />
 			<span>{successMessage}</span>
-			<button onclick={() => successMessage = ''} aria-label="Dismiss">
+			<button onclick={() => (successMessage = '')} aria-label="Dismiss">
 				<IconX size={16} />
 			</button>
 		</div>
@@ -531,7 +533,7 @@
 		<div class="error-alert">
 			<IconAlertCircle size={18} />
 			<span>{error}</span>
-			<button onclick={() => error = ''} aria-label="Dismiss error">
+			<button onclick={() => (error = '')} aria-label="Dismiss error">
 				<IconX size={16} />
 			</button>
 		</div>
@@ -588,7 +590,7 @@
 				aria-label="Search automations"
 			/>
 			{#if searchQuery}
-				<button class="search-clear" onclick={() => searchQuery = ''} aria-label="Clear search">
+				<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
 					<IconX size={14} />
 				</button>
 			{/if}
@@ -684,7 +686,11 @@
 											{/if}
 										</button>
 									{/if}
-									<a href="/admin/crm/automations/{funnel.id}" class="btn-icon" title="View Analytics">
+									<a
+										href="/admin/crm/automations/{funnel.id}"
+										class="btn-icon"
+										title="View Analytics"
+									>
 										<IconEye size={16} />
 									</a>
 									<button
@@ -790,7 +796,7 @@
 						<label for="import-json">Paste JSON Data</label>
 						<textarea
 							id="import-json"
-							placeholder={"Paste JSON automation config here..."}
+							placeholder={'Paste JSON automation config here...'}
 							bind:value={importForm.jsonData}
 							disabled={importForm.isLoading}
 							rows="8"
@@ -803,7 +809,10 @@
 
 					<div class="modal-info">
 						<IconAlertCircle size={16} />
-						<span>The JSON should contain automation configuration including trigger type, conditions, and actions.</span>
+						<span
+							>The JSON should contain automation configuration including trigger type, conditions,
+							and actions.</span
+						>
 					</div>
 				{/if}
 			</div>
@@ -813,11 +822,7 @@
 					<button class="btn-secondary" onclick={closeImportModal} disabled={importForm.isLoading}>
 						Cancel
 					</button>
-					<button
-						class="btn-primary"
-						onclick={importFunnel}
-						disabled={!canImport}
-					>
+					<button class="btn-primary" onclick={importFunnel} disabled={!canImport}>
 						{#if importForm.isLoading}
 							<div class="btn-spinner"></div>
 							Importing...
@@ -862,7 +867,8 @@
 					</div>
 				{:else}
 					<p class="modal-description">
-						Add contacts to the automation "<strong>{selectedFunnel.title}</strong>" by entering their IDs below.
+						Add contacts to the automation "<strong>{selectedFunnel.title}</strong>" by entering
+						their IDs below.
 					</p>
 
 					<div class="form-group">
@@ -886,21 +892,23 @@ contact_789"
 
 					<div class="modal-info">
 						<IconAlertCircle size={16} />
-						<span>Contacts will enter the automation and begin processing from the first action.</span>
+						<span
+							>Contacts will enter the automation and begin processing from the first action.</span
+						>
 					</div>
 				{/if}
 			</div>
 
 			{#if !addContactsForm.success}
 				<div class="modal-footer">
-					<button class="btn-secondary" onclick={closeAddContactsModal} disabled={addContactsForm.isLoading}>
+					<button
+						class="btn-secondary"
+						onclick={closeAddContactsModal}
+						disabled={addContactsForm.isLoading}
+					>
 						Cancel
 					</button>
-					<button
-						class="btn-primary"
-						onclick={addContactsToFunnel}
-						disabled={!canAddContacts}
-					>
+					<button class="btn-primary" onclick={addContactsToFunnel} disabled={!canAddContacts}>
 						{#if addContactsForm.isLoading}
 							<div class="btn-spinner"></div>
 							Adding...
@@ -976,8 +984,12 @@ contact_789"
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -1056,11 +1068,13 @@ contact_789"
 		margin-bottom: 1.5rem;
 	}
 
-	.success-alert span, .error-alert span {
+	.success-alert span,
+	.error-alert span {
 		flex: 1;
 	}
 
-	.success-alert button, .error-alert button {
+	.success-alert button,
+	.error-alert button {
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1074,7 +1088,8 @@ contact_789"
 		transition: opacity 0.2s;
 	}
 
-	.success-alert button:hover, .error-alert button:hover {
+	.success-alert button:hover,
+	.error-alert button:hover {
 		opacity: 1;
 	}
 
@@ -1087,12 +1102,18 @@ contact_789"
 	}
 
 	@media (max-width: 1200px) {
-		.stats-grid { grid-template-columns: repeat(2, 1fr); }
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
-		.page { padding: 1rem; }
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
+		.page {
+			padding: 1rem;
+		}
 	}
 
 	.stat-card {
@@ -1114,10 +1135,22 @@ contact_789"
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
 
 	.stat-content {
 		display: flex;
@@ -1347,7 +1380,9 @@ contact_789"
 	}
 
 	/* States */
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -1517,7 +1552,7 @@ contact_789"
 		position: relative;
 	}
 
-	.file-upload input[type="file"] {
+	.file-upload input[type='file'] {
 		position: absolute;
 		inset: 0;
 		width: 100%;

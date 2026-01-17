@@ -7,6 +7,9 @@
 //! - Admin coupon CRUD
 //! - Usage tracking and limits
 
+#![allow(clippy::map_flatten)]
+#![allow(clippy::collapsible_if)]
+
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,

@@ -89,15 +89,19 @@
 	}
 
 	function getStageInfo(stage: string) {
-		return stages.find(s => s.id === stage) || stages[0];
+		return stages.find((s) => s.id === stage) || stages[0];
 	}
 
 	function getPriorityClass(priority: string): string {
 		switch (priority) {
-			case 'urgent': return 'priority-urgent';
-			case 'high': return 'priority-high';
-			case 'normal': return 'priority-normal';
-			default: return 'priority-low';
+			case 'urgent':
+				return 'priority-urgent';
+			case 'high':
+				return 'priority-high';
+			case 'normal':
+				return 'priority-normal';
+			default:
+				return 'priority-low';
 		}
 	}
 
@@ -128,7 +132,7 @@
 
 		<div class="header-stats">
 			{#each stages.slice(1) as stage}
-				{@const count = workflows.filter(w => w.current_stage === stage.id).length}
+				{@const count = workflows.filter((w) => w.current_stage === stage.id).length}
 				{#if count > 0}
 					<div class="stat-pill {stage.color}">
 						<span class="stat-count">{count}</span>
@@ -156,7 +160,10 @@
 				<button
 					class="stage-tab {stage.color}"
 					class:active={filterStage === stage.id}
-					onclick={() => { filterStage = stage.id; fetchWorkflows(); }}
+					onclick={() => {
+						filterStage = stage.id;
+						fetchWorkflows();
+					}}
 				>
 					{stage.label}
 				</button>
@@ -186,8 +193,13 @@
 					<div
 						class="workflow-card"
 						in:fly={{ y: 20, duration: 400, delay: i * 50 }}
-						onclick={() => selectedWorkflow = workflow}
-						onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectedWorkflow = workflow; }}}
+						onclick={() => (selectedWorkflow = workflow)}
+						onkeydown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								e.preventDefault();
+								selectedWorkflow = workflow;
+							}
+						}}
 						role="button"
 						tabindex="0"
 						aria-label="View workflow for {workflow.content_type} #{workflow.content_id}"
@@ -235,14 +247,20 @@
 								<button
 									class="quick-action approve"
 									title="Approve"
-									onclick={(e) => { e.stopPropagation(); transitionWorkflow(workflow.id, 'approve'); }}
+									onclick={(e) => {
+										e.stopPropagation();
+										transitionWorkflow(workflow.id, 'approve');
+									}}
 								>
 									<IconCheck size={16} />
 								</button>
 								<button
 									class="quick-action reject"
 									title="Reject"
-									onclick={(e) => { e.stopPropagation(); transitionWorkflow(workflow.id, 'reject'); }}
+									onclick={(e) => {
+										e.stopPropagation();
+										transitionWorkflow(workflow.id, 'reject');
+									}}
 								>
 									<IconX size={16} />
 								</button>
@@ -251,7 +269,10 @@
 								<button
 									class="quick-action publish"
 									title="Publish"
-									onclick={(e) => { e.stopPropagation(); transitionWorkflow(workflow.id, 'publish'); }}
+									onclick={(e) => {
+										e.stopPropagation();
+										transitionWorkflow(workflow.id, 'publish');
+									}}
 								>
 									<IconSend size={16} />
 								</button>
@@ -265,10 +286,12 @@
 
 	<!-- Detail Panel -->
 	{#if selectedWorkflow}
-		<div 
-			class="overlay" 
-			onclick={() => selectedWorkflow = null}
-			onkeydown={(e) => { if (e.key === 'Escape') selectedWorkflow = null; }}
+		<div
+			class="overlay"
+			onclick={() => (selectedWorkflow = null)}
+			onkeydown={(e) => {
+				if (e.key === 'Escape') selectedWorkflow = null;
+			}}
 			role="button"
 			tabindex="-1"
 			aria-label="Close workflow details"
@@ -277,7 +300,7 @@
 		<aside class="detail-panel" in:fly={{ x: 300, duration: 400 }}>
 			<div class="panel-header">
 				<h2>Workflow Details</h2>
-				<button class="close-btn" onclick={() => selectedWorkflow = null}>
+				<button class="close-btn" onclick={() => (selectedWorkflow = null)}>
 					<IconX size={18} />
 				</button>
 			</div>
@@ -287,7 +310,7 @@
 					{#each ['draft', 'review', 'pending_approval', 'approved', 'published'] as stage, i}
 						{@const info = getStageInfo(stage)}
 						{@const isActive = selectedWorkflow.current_stage === stage}
-						{@const isPast = stages.findIndex(s => s.id === selectedWorkflow.current_stage) > i}
+						{@const isPast = stages.findIndex((s) => s.id === selectedWorkflow.current_stage) > i}
 						<div class="stage-item" class:active={isActive} class:completed={isPast}>
 							<div class="stage-dot"></div>
 							<span class="stage-name">{info.label}</span>
@@ -301,7 +324,9 @@
 				<div class="info-grid">
 					<div class="info-item">
 						<span class="info-label">Content</span>
-						<span class="info-value">{selectedWorkflow.content_type} #{selectedWorkflow.content_id}</span>
+						<span class="info-value"
+							>{selectedWorkflow.content_type} #{selectedWorkflow.content_id}</span
+						>
 					</div>
 					{#if selectedWorkflow.assigned_to_email}
 						<div class="info-item">
@@ -330,25 +355,43 @@
 
 				<div class="action-buttons">
 					{#if selectedWorkflow.current_stage === 'draft'}
-						<button class="btn-action amber" onclick={() => transitionWorkflow(selectedWorkflow.id, 'submit_for_review')}>
+						<button
+							class="btn-action amber"
+							onclick={() => transitionWorkflow(selectedWorkflow.id, 'submit_for_review')}
+						>
 							Submit for Review
 						</button>
 					{:else if selectedWorkflow.current_stage === 'review'}
-						<button class="btn-action emerald" onclick={() => transitionWorkflow(selectedWorkflow.id, 'approve')}>
+						<button
+							class="btn-action emerald"
+							onclick={() => transitionWorkflow(selectedWorkflow.id, 'approve')}
+						>
 							<IconCheck size={16} /> Approve
 						</button>
-						<button class="btn-action red" onclick={() => transitionWorkflow(selectedWorkflow.id, 'reject')}>
+						<button
+							class="btn-action red"
+							onclick={() => transitionWorkflow(selectedWorkflow.id, 'reject')}
+						>
 							<IconX size={16} /> Reject
 						</button>
 					{:else if selectedWorkflow.current_stage === 'pending_approval'}
-						<button class="btn-action emerald" onclick={() => transitionWorkflow(selectedWorkflow.id, 'approve')}>
+						<button
+							class="btn-action emerald"
+							onclick={() => transitionWorkflow(selectedWorkflow.id, 'approve')}
+						>
 							<IconCheck size={16} /> Final Approval
 						</button>
-						<button class="btn-action red" onclick={() => transitionWorkflow(selectedWorkflow.id, 'reject')}>
+						<button
+							class="btn-action red"
+							onclick={() => transitionWorkflow(selectedWorkflow.id, 'reject')}
+						>
 							<IconX size={16} /> Reject
 						</button>
 					{:else if selectedWorkflow.current_stage === 'approved'}
-						<button class="btn-action blue" onclick={() => transitionWorkflow(selectedWorkflow.id, 'publish')}>
+						<button
+							class="btn-action blue"
+							onclick={() => transitionWorkflow(selectedWorkflow.id, 'publish')}
+						>
 							<IconSend size={16} /> Publish Now
 						</button>
 					{/if}
@@ -389,7 +432,7 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #E6B800;
+		color: #e6b800;
 		text-decoration: none;
 		margin-bottom: 1rem;
 	}
@@ -439,12 +482,30 @@
 		font-size: 0.8rem;
 	}
 
-	.stat-pill.slate { background: rgba(100, 116, 139, 0.1); color: #475569; }
-	.stat-pill.amber { background: rgba(245, 158, 11, 0.1); color: #b45309; }
-	.stat-pill.purple { background: rgba(230, 184, 0, 0.1); color: #B38F00; }
-	.stat-pill.emerald { background: rgba(16, 185, 129, 0.1); color: #059669; }
-	.stat-pill.blue { background: rgba(59, 130, 246, 0.1); color: #2563eb; }
-	.stat-pill.red { background: rgba(239, 68, 68, 0.1); color: #dc2626; }
+	.stat-pill.slate {
+		background: rgba(100, 116, 139, 0.1);
+		color: #475569;
+	}
+	.stat-pill.amber {
+		background: rgba(245, 158, 11, 0.1);
+		color: #b45309;
+	}
+	.stat-pill.purple {
+		background: rgba(230, 184, 0, 0.1);
+		color: #b38f00;
+	}
+	.stat-pill.emerald {
+		background: rgba(16, 185, 129, 0.1);
+		color: #059669;
+	}
+	.stat-pill.blue {
+		background: rgba(59, 130, 246, 0.1);
+		color: #2563eb;
+	}
+	.stat-pill.red {
+		background: rgba(239, 68, 68, 0.1);
+		color: #dc2626;
+	}
 
 	.stat-count {
 		font-weight: 700;
@@ -505,12 +566,30 @@
 		color: #ffffff;
 	}
 
-	.stage-tab.active.slate { background: #475569; border-color: #475569; }
-	.stage-tab.active.amber { background: #d97706; border-color: #d97706; }
-	.stage-tab.active.purple { background: #B38F00; border-color: #B38F00; }
-	.stage-tab.active.emerald { background: #059669; border-color: #059669; }
-	.stage-tab.active.blue { background: #2563eb; border-color: #2563eb; }
-	.stage-tab.active.red { background: #dc2626; border-color: #dc2626; }
+	.stage-tab.active.slate {
+		background: #475569;
+		border-color: #475569;
+	}
+	.stage-tab.active.amber {
+		background: #d97706;
+		border-color: #d97706;
+	}
+	.stage-tab.active.purple {
+		background: #b38f00;
+		border-color: #b38f00;
+	}
+	.stage-tab.active.emerald {
+		background: #059669;
+		border-color: #059669;
+	}
+	.stage-tab.active.blue {
+		background: #2563eb;
+		border-color: #2563eb;
+	}
+	.stage-tab.active.red {
+		background: #dc2626;
+		border-color: #dc2626;
+	}
 
 	/* Kanban Board */
 	.kanban-board {
@@ -558,12 +637,30 @@
 		text-transform: uppercase;
 	}
 
-	.stage-badge.slate { background: rgba(100, 116, 139, 0.12); color: #475569; }
-	.stage-badge.amber { background: rgba(245, 158, 11, 0.12); color: #b45309; }
-	.stage-badge.purple { background: rgba(230, 184, 0, 0.12); color: #B38F00; }
-	.stage-badge.emerald { background: rgba(16, 185, 129, 0.12); color: #059669; }
-	.stage-badge.blue { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
-	.stage-badge.red { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
+	.stage-badge.slate {
+		background: rgba(100, 116, 139, 0.12);
+		color: #475569;
+	}
+	.stage-badge.amber {
+		background: rgba(245, 158, 11, 0.12);
+		color: #b45309;
+	}
+	.stage-badge.purple {
+		background: rgba(230, 184, 0, 0.12);
+		color: #b38f00;
+	}
+	.stage-badge.emerald {
+		background: rgba(16, 185, 129, 0.12);
+		color: #059669;
+	}
+	.stage-badge.blue {
+		background: rgba(59, 130, 246, 0.12);
+		color: #2563eb;
+	}
+	.stage-badge.red {
+		background: rgba(239, 68, 68, 0.12);
+		color: #dc2626;
+	}
 
 	.priority-indicator {
 		font-size: 0.65rem;
@@ -573,10 +670,22 @@
 		text-transform: uppercase;
 	}
 
-	.priority-urgent { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
-	.priority-high { background: rgba(249, 115, 22, 0.12); color: #c2410c; }
-	.priority-normal { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
-	.priority-low { background: rgba(148, 163, 184, 0.12); color: #64748b; }
+	.priority-urgent {
+		background: rgba(239, 68, 68, 0.12);
+		color: #dc2626;
+	}
+	.priority-high {
+		background: rgba(249, 115, 22, 0.12);
+		color: #c2410c;
+	}
+	.priority-normal {
+		background: rgba(59, 130, 246, 0.12);
+		color: #2563eb;
+	}
+	.priority-low {
+		background: rgba(148, 163, 184, 0.12);
+		color: #64748b;
+	}
 
 	.card-content {
 		margin-bottom: 1rem;
@@ -702,13 +811,15 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #f1f5f9;
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.empty-icon {
@@ -822,7 +933,7 @@
 	}
 
 	.stage-item.active .stage-dot {
-		background: #E6B800;
+		background: #e6b800;
 		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.2);
 	}
 
@@ -831,7 +942,7 @@
 	}
 
 	.stage-item.active .stage-name {
-		color: #E6B800;
+		color: #e6b800;
 		font-weight: 600;
 	}
 
@@ -911,10 +1022,18 @@
 		transition: all 0.25s;
 	}
 
-	.btn-action.amber { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
-	.btn-action.emerald { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-	.btn-action.red { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
-	.btn-action.blue { background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); }
+	.btn-action.amber {
+		background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+	}
+	.btn-action.emerald {
+		background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+	}
+	.btn-action.red {
+		background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+	}
+	.btn-action.blue {
+		background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+	}
 
 	.btn-action:hover {
 		transform: translateY(-2px);

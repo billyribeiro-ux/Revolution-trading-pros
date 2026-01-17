@@ -16,7 +16,11 @@
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
 	import { sanitizeBlogContent } from '$lib/utils/sanitize';
-	import { initReadingAnalytics, calculateReadingTime, formatReadingTime } from '$lib/utils/readingAnalytics';
+	import {
+		initReadingAnalytics,
+		calculateReadingTime,
+		formatReadingTime
+	} from '$lib/utils/readingAnalytics';
 
 	// Import print stylesheet
 	import '$lib/styles/print.css';
@@ -99,17 +103,20 @@
 	let readingTime = $derived.by(() => {
 		if (!post) return 0;
 		// Extract text from content blocks
-		const text = post.content_blocks
-			?.map((block: ContentBlock) => {
-				if (block.type === 'paragraph' || block.type === 'heading') {
-					return block.data?.text || '';
-				}
-				if (block.type === 'list') {
-					return (block.data?.items || []).join(' ');
-				}
-				return '';
-			})
-			.join(' ') || post.excerpt || '';
+		const text =
+			post.content_blocks
+				?.map((block: ContentBlock) => {
+					if (block.type === 'paragraph' || block.type === 'heading') {
+						return block.data?.text || '';
+					}
+					if (block.type === 'list') {
+						return (block.data?.items || []).join(' ');
+					}
+					return '';
+				})
+				.join(' ') ||
+			post.excerpt ||
+			'';
 		return calculateReadingTime(text);
 	});
 
@@ -123,7 +130,7 @@
 				contentSelector: '.post-body',
 				options: {
 					debug: import.meta.env.DEV,
-					endpoint: '/api/analytics/reading',
+					endpoint: '/api/analytics/reading'
 				}
 			});
 			return cleanup;
@@ -138,31 +145,33 @@
 	// Derived SEO values - Svelte 5 runes
 	let articleSchema = $derived(
 		post &&
-		(post.schema_markup || {
-			'@context': 'https://schema.org',
-			'@type': 'Article',
-			headline: post.title,
-			description: post.excerpt || post.meta_description || '',
-			image: post.featured_image || 'https://revolution-trading-pros.pages.dev/revolution-trading-pros.png',
-			datePublished: post.published_at,
-			dateModified: post.published_at,
-			author: {
-				'@type': 'Person',
-				name: post.author?.name || 'Revolution Trading Pros'
-			},
-			publisher: {
-				'@type': 'Organization',
-				name: 'Revolution Trading Pros',
-				logo: {
-					'@type': 'ImageObject',
-					url: 'https://revolution-trading-pros.pages.dev/revolution-trading-pros.png'
+			(post.schema_markup || {
+				'@context': 'https://schema.org',
+				'@type': 'Article',
+				headline: post.title,
+				description: post.excerpt || post.meta_description || '',
+				image:
+					post.featured_image ||
+					'https://revolution-trading-pros.pages.dev/revolution-trading-pros.png',
+				datePublished: post.published_at,
+				dateModified: post.published_at,
+				author: {
+					'@type': 'Person',
+					name: post.author?.name || 'Revolution Trading Pros'
+				},
+				publisher: {
+					'@type': 'Organization',
+					name: 'Revolution Trading Pros',
+					logo: {
+						'@type': 'ImageObject',
+						url: 'https://revolution-trading-pros.pages.dev/revolution-trading-pros.png'
+					}
+				},
+				mainEntityOfPage: {
+					'@type': 'WebPage',
+					'@id': `https://revolution-trading-pros.pages.dev/blog/${post.slug}`
 				}
-			},
-			mainEntityOfPage: {
-				'@type': 'WebPage',
-				'@id': `https://revolution-trading-pros.pages.dev/blog/${post.slug}`
-			}
-		})
+			})
 	);
 
 	let seoTitle = $derived(post && (post.meta_title || post.title));
@@ -183,12 +192,7 @@
 {/if}
 
 <!-- Reading Progress Indicator -->
-<ReadingProgress
-	contentSelector=".post-body"
-	height={4}
-	color="#3b82f6"
-	position="top"
-/>
+<ReadingProgress contentSelector=".post-body" height={4} color="#3b82f6" position="top" />
 
 <div class="blog-post-container">
 	{#if loading}
@@ -254,7 +258,11 @@
 				<div class="post-meta">
 					<div class="author-info">
 						{#if post.author_image}
-							<img src={post.author_image} alt={post.author?.name ?? 'Author'} class="author-avatar" />
+							<img
+								src={post.author_image}
+								alt={post.author?.name ?? 'Author'}
+								class="author-avatar"
+							/>
 						{:else if post.author}
 							<div class="author-avatar-placeholder">
 								{post.author.name.charAt(0).toUpperCase()}
@@ -281,15 +289,15 @@
 			{#if post.featured_image}
 				<div class="featured-image">
 					<BlurHashImage
-					src={post.featured_image}
-					alt={post.title}
-					blurhash={(post.featured_image_blurhash || post.blurhash) ?? null}
-					width="100%"
-					height="100%"
-					loading="eager"
-					decoding="async"
-					sizes="(max-width: 768px) 100vw, 800px"
-				/>
+						src={post.featured_image}
+						alt={post.title}
+						blurhash={(post.featured_image_blurhash || post.blurhash) ?? null}
+						width="100%"
+						height="100%"
+						loading="eager"
+						decoding="async"
+						sizes="(max-width: 768px) 100vw, 800px"
+					/>
 				</div>
 			{/if}
 

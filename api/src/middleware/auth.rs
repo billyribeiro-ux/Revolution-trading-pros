@@ -25,19 +25,31 @@ impl FromRequestParts<AppState> for User {
         let TypedHeader(Authorization(bearer)) = parts
             .extract::<TypedHeader<Authorization<Bearer>>>()
             .await
-            .map_err(|_| (StatusCode::UNAUTHORIZED, "Missing authorization header"))?;
+            .map_err(|e| {
+                tracing::warn!("Missing or invalid Authorization header: {:?}", e);
+                (StatusCode::UNAUTHORIZED, "Missing or invalid authorization header")
+            })?;
 
         // Verify JWT
         let claims = verify_jwt(bearer.token(), &state.config.jwt_secret)
-            .map_err(|_| (StatusCode::UNAUTHORIZED, "Invalid token"))?;
+            .map_err(|e| {
+                tracing::warn!("JWT verification failed: {:?}", e);
+                (StatusCode::UNAUTHORIZED, "Invalid or expired token")
+            })?;
 
         // Get user from database
         let user: User = sqlx::query_as("SELECT * FROM users WHERE id = $1")
             .bind(claims.sub)
             .fetch_optional(&state.db.pool)
             .await
-            .map_err(|_| (StatusCode::INTERNAL_SERVER_ERROR, "Database error"))?
-            .ok_or((StatusCode::UNAUTHORIZED, "User not found"))?;
+            .map_err(|e| {
+                tracing::error!("Database error fetching user: {:?}", e);
+                (StatusCode::INTERNAL_SERVER_ERROR, "Database error")
+            })?
+            .ok_or_else(|| {
+                tracing::warn!("User not found for id: {}", claims.sub);
+                (StatusCode::UNAUTHORIZED, "User not found")
+            })?;
 
         Ok(user)
     }

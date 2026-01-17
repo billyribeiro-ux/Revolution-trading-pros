@@ -2,13 +2,13 @@
  * Class Detail Page - SSR Load Function
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Grade - January 2026
- * 
+ *
  * Features:
  * - Server-side rendering for SEO
  * - Pre-fetches course data from API
  * - Generates meta tags for social sharing
  * - Hydration-ready data structure
- * 
+ *
  * @version 1.0.0
  */
 
@@ -62,14 +62,14 @@ interface CourseData {
 /** @type {import('./$types').PageServerLoad} */
 export const load = async ({ params, cookies, fetch }) => {
 	const { slug } = params;
-	
+
 	// Get auth token for API request
 	const accessToken = cookies.get('access_token');
-	
+
 	const headers: Record<string, string> = {
-		'Content-Type': 'application/json',
+		'Content-Type': 'application/json'
 	};
-	
+
 	if (accessToken) {
 		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
@@ -96,13 +96,20 @@ export const load = async ({ params, cookies, fetch }) => {
 	}
 
 	// Format slug to title as fallback
-	const formatTitle = (str: string) => 
-		str.split('-').map((word: string) => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+	const formatTitle = (str: string) =>
+		str
+			.split('-')
+			.map((word: string) => word.charAt(0).toUpperCase() + word.slice(1))
+			.join(' ');
 
 	// Build SEO metadata
 	const title = courseData?.course?.meta_title || courseData?.course?.title || formatTitle(slug);
-	const description = courseData?.course?.meta_description || courseData?.course?.description || `Learn ${formatTitle(slug)} trading strategies`;
-	const ogImage = courseData?.course?.og_image_url || courseData?.course?.card_image_url || '/logos/rtp-logo.png';
+	const description =
+		courseData?.course?.meta_description ||
+		courseData?.course?.description ||
+		`Learn ${formatTitle(slug)} trading strategies`;
+	const ogImage =
+		courseData?.course?.og_image_url || courseData?.course?.card_image_url || '/logos/rtp-logo.png';
 
 	return {
 		slug,
@@ -116,35 +123,39 @@ export const load = async ({ params, cookies, fetch }) => {
 			canonical: `https://revolution-trading-pros.com/classes/${slug}`
 		},
 		// Legacy support for existing page structure
-		classData: courseData ? {
-			id: courseData.course.id,
-			title: courseData.course.title,
-			slug: courseData.course.slug,
-			description: courseData.course.description || '',
-			videoUrl: '',
-			sections: courseData.modules?.map(m => ({
-				title: m.module.title,
-				lessons: m.lessons?.map(l => ({
-					title: l.title,
-					duration: l.duration_minutes ? `${l.duration_minutes} min` : '',
-					videoId: l.bunny_video_guid || ''
-				})) || []
-			})) || [],
-			metadata: {
-				pageType: 'article',
-				contentTitle: courseData.course.title
-			}
-		} : {
-			id: 0,
-			title: formatTitle(slug),
-			slug,
-			description: `Learn ${formatTitle(slug)} strategies`,
-			videoUrl: '',
-			sections: [],
-			metadata: {
-				pageType: 'article',
-				contentTitle: formatTitle(slug)
-			}
-		}
+		classData: courseData
+			? {
+					id: courseData.course.id,
+					title: courseData.course.title,
+					slug: courseData.course.slug,
+					description: courseData.course.description || '',
+					videoUrl: '',
+					sections:
+						courseData.modules?.map((m) => ({
+							title: m.module.title,
+							lessons:
+								m.lessons?.map((l) => ({
+									title: l.title,
+									duration: l.duration_minutes ? `${l.duration_minutes} min` : '',
+									videoId: l.bunny_video_guid || ''
+								})) || []
+						})) || [],
+					metadata: {
+						pageType: 'article',
+						contentTitle: courseData.course.title
+					}
+				}
+			: {
+					id: 0,
+					title: formatTitle(slug),
+					slug,
+					description: `Learn ${formatTitle(slug)} strategies`,
+					videoUrl: '',
+					sections: [],
+					metadata: {
+						pageType: 'article',
+						contentTitle: formatTitle(slug)
+					}
+				}
 	};
 };

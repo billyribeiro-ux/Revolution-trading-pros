@@ -27,10 +27,13 @@
 	// --- Apple ICT9+ Scroll Animations ---
 	function reveal(node: HTMLElement, { delay = 0, y = 30 } = {}) {
 		// Check for reduced motion preference
-		if (typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+		if (
+			typeof window !== 'undefined' &&
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		) {
 			return;
 		}
-		
+
 		node.style.opacity = '0';
 		node.style.transform = `translateY(${y}px)`;
 		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
@@ -43,7 +46,9 @@
 					if (entry.isIntersecting) {
 						node.style.opacity = '1';
 						node.style.transform = 'translateY(0)';
-						setTimeout(() => { node.style.willChange = 'auto'; }, 800 + delay);
+						setTimeout(() => {
+							node.style.willChange = 'auto';
+						}, 800 + delay);
 						observer.unobserve(node);
 					}
 				});
@@ -70,7 +75,9 @@
 	// Svelte 5 derived runes
 	let riskAmount = $derived(Math.round(simAccount * (simRisk / 100)));
 	let winAmount = $derived(Math.round(riskAmount * simRR));
-	let expectedValue = $derived((simWinRate / 100) * winAmount - (1 - simWinRate / 100) * riskAmount);
+	let expectedValue = $derived(
+		(simWinRate / 100) * winAmount - (1 - simWinRate / 100) * riskAmount
+	);
 	let tradesToDouble = $derived(Math.ceil(simAccount / expectedValue));
 	let riskOfRuin = $derived(
 		simRisk > 5

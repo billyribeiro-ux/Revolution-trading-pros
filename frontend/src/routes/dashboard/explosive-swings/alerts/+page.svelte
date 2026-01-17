@@ -30,7 +30,8 @@
 			type: 'Trade Alert',
 			title: 'NVDA Swing Trade Setup',
 			date: 'January 10, 2026 at 2:30 PM ET',
-			excerpt: 'Opening swing position on NVDA with bullish momentum. Multi-day hold targeting key resistance levels.',
+			excerpt:
+				'Opening swing position on NVDA with bullish momentum. Multi-day hold targeting key resistance levels.',
 			status: 'Open',
 			profitLoss: null,
 			href: '/dashboard/explosive-swings/alerts/nvda-swing-011026'
@@ -40,7 +41,8 @@
 			type: 'Market Update',
 			title: 'Weekly Swing Trade Outlook',
 			date: 'January 10, 2026 at 9:00 AM ET',
-			excerpt: 'Key swing trade setups for the week ahead. Technical analysis on major tech stocks and market leaders.',
+			excerpt:
+				'Key swing trade setups for the week ahead. Technical analysis on major tech stocks and market leaders.',
 			status: 'Info',
 			profitLoss: null,
 			href: '/dashboard/explosive-swings/alerts/weekly-outlook-011026'
@@ -70,7 +72,8 @@
 			type: 'Market Update',
 			title: 'Sector Rotation Analysis',
 			date: 'January 8, 2026 at 4:30 PM ET',
-			excerpt: 'Identifying the strongest sectors for swing trading opportunities. Technology and healthcare showing strength.',
+			excerpt:
+				'Identifying the strongest sectors for swing trading opportunities. Technology and healthcare showing strength.',
 			status: 'Info',
 			profitLoss: null,
 			href: '/dashboard/explosive-swings/alerts/sector-analysis-010826'
@@ -80,7 +83,8 @@
 			type: 'Trade Alert',
 			title: 'GOOGL Options Swing',
 			date: 'January 8, 2026 at 10:00 AM ET',
-			excerpt: 'Multi-week options swing trade on GOOGL. Targeting earnings catalyst with defined risk.',
+			excerpt:
+				'Multi-week options swing trade on GOOGL. Targeting earnings catalyst with defined risk.',
 			status: 'Closed',
 			profitLoss: '+$875',
 			href: '/dashboard/explosive-swings/alerts/googl-options-010826'
@@ -100,7 +104,8 @@
 			type: 'Trade Alert',
 			title: 'AAPL Pullback Entry',
 			date: 'January 7, 2026 at 9:45 AM ET',
-			excerpt: 'AAPL pulling back to support. High-probability swing entry with favorable risk/reward.',
+			excerpt:
+				'AAPL pulling back to support. High-probability swing entry with favorable risk/reward.',
 			status: 'Closed',
 			profitLoss: '-$320',
 			href: '/dashboard/explosive-swings/alerts/aapl-pullback-010726'
@@ -114,18 +119,17 @@
 		// Apply type filter
 		if (selectedFilter !== 'all') {
 			if (selectedFilter === 'trades') {
-				filtered = filtered.filter(a => a.type === 'Trade Alert');
+				filtered = filtered.filter((a) => a.type === 'Trade Alert');
 			} else if (selectedFilter === 'updates') {
-				filtered = filtered.filter(a => a.type === 'Market Update');
+				filtered = filtered.filter((a) => a.type === 'Market Update');
 			}
 		}
 
 		// Apply search filter
 		if (searchQuery.trim()) {
 			const query = searchQuery.toLowerCase();
-			filtered = filtered.filter(a => 
-				a.title.toLowerCase().includes(query) ||
-				a.excerpt.toLowerCase().includes(query)
+			filtered = filtered.filter(
+				(a) => a.title.toLowerCase().includes(query) || a.excerpt.toLowerCase().includes(query)
 			);
 		}
 
@@ -134,10 +138,14 @@
 
 	function getStatusClass(status: string): string {
 		switch (status) {
-			case 'Open': return 'status-open';
-			case 'Closed': return 'status-closed';
-			case 'Info': return 'status-info';
-			default: return '';
+			case 'Open':
+				return 'status-open';
+			case 'Closed':
+				return 'status-closed';
+			case 'Info':
+				return 'status-info';
+			default:
+				return '';
 		}
 	}
 
@@ -162,28 +170,27 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
-			
 			<!-- Filters & Search -->
 			<div class="filters-container">
 				<div class="filter-buttons">
-					<button 
-						class="filter-btn" 
+					<button
+						class="filter-btn"
 						class:active={selectedFilter === 'all'}
-						onclick={() => selectedFilter = 'all'}
+						onclick={() => (selectedFilter = 'all')}
 					>
 						All Alerts
 					</button>
-					<button 
-						class="filter-btn" 
+					<button
+						class="filter-btn"
 						class:active={selectedFilter === 'trades'}
-						onclick={() => selectedFilter = 'trades'}
+						onclick={() => (selectedFilter = 'trades')}
 					>
 						Trade Alerts
 					</button>
-					<button 
-						class="filter-btn" 
+					<button
+						class="filter-btn"
 						class:active={selectedFilter === 'updates'}
-						onclick={() => selectedFilter = 'updates'}
+						onclick={() => (selectedFilter = 'updates')}
 					>
 						Market Updates
 					</button>
@@ -191,9 +198,9 @@
 
 				<div class="search-container">
 					<IconSearch size={18} />
-					<input 
-						type="text" 
-						placeholder="Search alerts..." 
+					<input
+						type="text"
+						placeholder="Search alerts..."
 						bind:value={searchQuery}
 						class="search-input"
 					/>
@@ -202,7 +209,8 @@
 
 			<!-- Results Count -->
 			<div class="results-count">
-				Showing {filteredAlerts.length} {filteredAlerts.length === 1 ? 'alert' : 'alerts'}
+				Showing {filteredAlerts.length}
+				{filteredAlerts.length === 1 ? 'alert' : 'alerts'}
 			</div>
 
 			<!-- Alerts List -->
@@ -233,7 +241,6 @@
 					<p>No alerts found matching your criteria.</p>
 				</div>
 			{/if}
-
 		</section>
 	</div>
 </div>
@@ -335,13 +342,13 @@
 
 	.filter-btn:hover {
 		background: #e9ecef;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	.filter-btn.active {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	.search-container {
@@ -405,7 +412,7 @@
 	.alert-card:hover {
 		transform: translateY(-2px);
 		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	.alert-header {
@@ -461,7 +468,7 @@
 	}
 
 	.alert-title a:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.alert-date {
@@ -506,7 +513,7 @@
 	}
 
 	.alert-link:hover {
-		color: #143E59;
+		color: #143e59;
 		text-decoration: underline;
 	}
 

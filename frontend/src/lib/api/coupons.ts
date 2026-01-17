@@ -56,14 +56,8 @@ import { getAuthToken } from '$lib/stores/auth.svelte';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Production fallbacks - NEVER use localhost in production
-// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
-const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
-const PROD_ML = 'https://revolution-trading-pros-api.fly.dev/ml';
-
-const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API_ROOT : '';
-const API_URL = API_ROOT ? `${API_ROOT}/api` : '';
-const ML_API = browser ? import.meta.env['VITE_ML_API'] || PROD_ML : '';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+const API_URL = '/api';
 
 const CACHE_TTL = 300000; // 5 minutes
 const VALIDATION_CACHE_TTL = 60000; // 1 minute
@@ -75,11 +69,9 @@ const ANALYTICS_INTERVAL = 60000; // 1 minute
 // ═══════════════════════════════════════════════════════════════════════════
 // WebSocket Feature Flag - Set VITE_WS_ENABLED=true in .env to enable real-time updates
 // Backend: Laravel Reverb WebSocket server with coupon channels implemented
-// Channels: coupons.public, coupons.user.{userId}, coupons.admin, coupons.analytics
+// WebSocket disabled by default - enable via VITE_WS_ENABLED=true
 const WS_ENABLED = browser ? import.meta.env['VITE_WS_ENABLED'] === 'true' : false;
-const WS_URL = browser
-	? import.meta.env['VITE_WS_URL'] || 'wss://revolution-trading-pros-api.fly.dev'
-	: '';
+const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || '' : '';
 const WS_RECONNECT_DELAY = 1000; // Start with 1 second
 const WS_MAX_RECONNECT_DELAY = 30000; // Max 30 seconds
 const WS_RECONNECT_BACKOFF = 1.5; // Exponential backoff multiplier

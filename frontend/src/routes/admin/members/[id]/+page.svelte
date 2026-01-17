@@ -37,13 +37,15 @@
 
 	// State
 	let member = $state<Member | null>(null);
-	let timeline = $state<Array<{
-		type: string;
-		title: string;
-		date: string;
-		icon: string;
-		meta?: Record<string, unknown>;
-	}>>([]);
+	let timeline = $state<
+		Array<{
+			type: string;
+			title: string;
+			date: string;
+			icon: string;
+			meta?: Record<string, unknown>;
+		}>
+	>([]);
 	let engagementScore = $state(0);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
@@ -59,7 +61,9 @@
 	let emailSending = $state(false);
 
 	// Notes
-	let notes = $state<Array<{ id: number; content: string; created_at: string; author: string }>>([]);
+	let notes = $state<Array<{ id: number; content: string; created_at: string; author: string }>>(
+		[]
+	);
 	let newNote = $state('');
 
 	// Tags
@@ -82,13 +86,15 @@
 	let grantExpiresAt = $state('');
 
 	// Email history (mock)
-	let emailHistory = $state<Array<{
-		id: number;
-		subject: string;
-		sent_at: string;
-		status: 'sent' | 'opened' | 'clicked' | 'bounced';
-		campaign_type: string;
-	}>>([]);
+	let emailHistory = $state<
+		Array<{
+			id: number;
+			subject: string;
+			sent_at: string;
+			status: 'sent' | 'opened' | 'clicked' | 'bounced';
+			campaign_type: string;
+		}>
+	>([]);
 
 	onMount(async () => {
 		await loadMember();
@@ -885,7 +891,12 @@
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
+		<div
+			class="modal-content"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<h2>Send Email to {member?.name}</h2>
 				<button class="close-btn" onclick={() => (showEmailModal = false)}>
@@ -938,7 +949,12 @@
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
+		<div
+			class="modal-content"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<h2>Add Note</h2>
 				<button class="close-btn" onclick={() => (showNoteModal = false)}>
@@ -978,7 +994,12 @@
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
+		<div
+			class="modal-content"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<h2>Manage Tags</h2>
 				<button class="close-btn" onclick={() => (showTagModal = false)}>
@@ -1038,7 +1059,12 @@
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
+		<div
+			class="modal-content"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<h2>Extend Membership</h2>
 				<button class="close-btn" onclick={() => (showExtendModal = false)}>
@@ -1074,11 +1100,18 @@
 					/>
 				</div>
 				<p class="extend-preview">
-					New expiration: <strong>{
-						selectedSubscription.next_payment
-							? formatDate(new Date(new Date(selectedSubscription.next_payment).getTime() + extendDays * 24 * 60 * 60 * 1000).toISOString())
-							: formatDate(new Date(Date.now() + extendDays * 24 * 60 * 60 * 1000).toISOString())
-					}</strong>
+					New expiration: <strong
+						>{selectedSubscription.next_payment
+							? formatDate(
+									new Date(
+										new Date(selectedSubscription.next_payment).getTime() +
+											extendDays * 24 * 60 * 60 * 1000
+									).toISOString()
+								)
+							: formatDate(
+									new Date(Date.now() + extendDays * 24 * 60 * 60 * 1000).toISOString()
+								)}</strong
+					>
 				</p>
 			</div>
 			<div class="modal-footer">
@@ -1103,7 +1136,12 @@
 		tabindex="-1"
 		aria-modal="true"
 	>
-		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
+		<div
+			class="modal-content"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<h2>Grant Membership</h2>
 				<button class="close-btn" onclick={() => (showGrantModal = false)}>
@@ -1158,7 +1196,12 @@
 	}
 
 	.skeleton {
-		background: linear-gradient(90deg, rgba(148, 163, 184, 0.1) 25%, rgba(148, 163, 184, 0.2) 50%, rgba(148, 163, 184, 0.1) 75%);
+		background: linear-gradient(
+			90deg,
+			rgba(148, 163, 184, 0.1) 25%,
+			rgba(148, 163, 184, 0.2) 50%,
+			rgba(148, 163, 184, 0.1) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 8px;
@@ -1247,7 +1290,7 @@
 	}
 
 	.back-btn:hover {
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.header-content {
@@ -1266,7 +1309,7 @@
 		width: 80px;
 		height: 80px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1316,7 +1359,7 @@
 		border-radius: 9999px;
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.tag-remove {
@@ -1350,7 +1393,7 @@
 	.tag-add:hover {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.header-actions {
@@ -1398,7 +1441,7 @@
 
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 	.stat-icon.emerald {
 		background: rgba(16, 185, 129, 0.15);
@@ -1462,12 +1505,12 @@
 	}
 
 	.tabs button:hover {
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.tabs button.active {
-		color: #FFD11A;
-		border-bottom-color: #E6B800;
+		color: #ffd11a;
+		border-bottom-color: #e6b800;
 	}
 
 	/* Panels */
@@ -1530,7 +1573,7 @@
 		height: 32px;
 		border-radius: 8px;
 		background: rgba(230, 184, 0, 0.15);
-		color: #FFD11A;
+		color: #ffd11a;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1683,7 +1726,7 @@
 
 	.order-number {
 		font-weight: 600;
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.order-total {
@@ -1809,8 +1852,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 	}
 
 	.btn-primary:disabled {
@@ -1852,7 +1895,7 @@
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.btn-icon.small {
@@ -1992,13 +2035,13 @@
 	.tag-option:hover {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.tag-option.selected {
 		background: rgba(230, 184, 0, 0.2);
 		border-color: rgba(230, 184, 0, 0.4);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.custom-tag-input {
@@ -2117,13 +2160,13 @@
 	.extend-option:hover {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.extend-option.selected {
 		background: rgba(230, 184, 0, 0.2);
 		border-color: rgba(230, 184, 0, 0.5);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.extend-custom {

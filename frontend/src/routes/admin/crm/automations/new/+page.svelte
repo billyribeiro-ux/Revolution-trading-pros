@@ -124,7 +124,7 @@
 		{
 			value: 'birthday',
 			label: 'Birthday',
-			description: 'Trigger on the contact\'s birthday',
+			description: "Trigger on the contact's birthday",
 			icon: IconCalendar,
 			color: 'pink'
 		},
@@ -186,9 +186,8 @@
 				title: formData.title,
 				description: formData.description || undefined,
 				trigger_type: formData.trigger_type as TriggerType,
-				trigger_settings: Object.keys(formData.trigger_settings).length > 0
-					? formData.trigger_settings
-					: undefined,
+				trigger_settings:
+					Object.keys(formData.trigger_settings).length > 0 ? formData.trigger_settings : undefined,
 				conditions: formData.conditions.length > 0 ? formData.conditions : undefined,
 				status
 			};
@@ -275,7 +274,7 @@
 	}
 
 	function getTriggerInfo(type: string) {
-		return triggerTypes.find(t => t.value === type);
+		return triggerTypes.find((t) => t.value === type);
 	}
 
 	function getIconColor(color: string): string {
@@ -302,9 +301,11 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	let canProceed = $derived(
-		currentStep === 1 ? formData.title.trim().length > 0 :
-		currentStep === 2 ? formData.trigger_type !== '' :
-		true
+		currentStep === 1
+			? formData.title.trim().length > 0
+			: currentStep === 2
+				? formData.trigger_type !== ''
+				: true
 	);
 
 	let selectedTriggerInfo = $derived(
@@ -312,7 +313,9 @@
 	);
 
 	let requiresTriggerSettings = $derived(
-		['tag_applied', 'tag_removed', 'list_applied', 'list_removed', 'form_submitted'].includes(formData.trigger_type)
+		['tag_applied', 'tag_removed', 'list_applied', 'list_removed', 'form_submitted'].includes(
+			formData.trigger_type
+		)
 	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -372,7 +375,7 @@
 		<div class="error-alert">
 			<IconAlertCircle size={18} />
 			<span>{error}</span>
-			<button onclick={() => error = ''} aria-label="Dismiss error">
+			<button onclick={() => (error = '')} aria-label="Dismiss error">
 				<IconX size={16} />
 			</button>
 		</div>
@@ -464,10 +467,7 @@
 				{#if formData.trigger_type === 'tag_applied' || formData.trigger_type === 'tag_removed'}
 					<div class="form-group">
 						<label for="tag-select">Select Tag <span class="required">*</span></label>
-						<select
-							id="tag-select"
-							bind:value={formData.trigger_settings.tag_id}
-						>
+						<select id="tag-select" bind:value={formData.trigger_settings.tag_id}>
 							<option value="">Choose a tag...</option>
 							{#each availableTags as tag}
 								<option value={tag.id}>{tag.title}</option>
@@ -477,10 +477,7 @@
 				{:else if formData.trigger_type === 'list_applied' || formData.trigger_type === 'list_removed'}
 					<div class="form-group">
 						<label for="list-select">Select List <span class="required">*</span></label>
-						<select
-							id="list-select"
-							bind:value={formData.trigger_settings.list_id}
-						>
+						<select id="list-select" bind:value={formData.trigger_settings.list_id}>
 							<option value="">Choose a list...</option>
 							{#each availableLists as list}
 								<option value={list.id}>{list.title}</option>
@@ -511,24 +508,21 @@
 				{:else}
 					<div class="info-card">
 						<IconAlertCircle size={20} />
-						<p>This trigger type doesn't require additional configuration. You can proceed to the next step.</p>
+						<p>
+							This trigger type doesn't require additional configuration. You can proceed to the
+							next step.
+						</p>
 					</div>
 				{/if}
 
 				<div class="advanced-options">
 					<h3>Advanced Options</h3>
 					<label class="checkbox-group">
-						<input
-							type="checkbox"
-							bind:checked={formData.trigger_settings.run_once}
-						/>
+						<input type="checkbox" bind:checked={formData.trigger_settings.run_once} />
 						<span>Run only once per contact</span>
 					</label>
 					<label class="checkbox-group">
-						<input
-							type="checkbox"
-							bind:checked={formData.trigger_settings.skip_if_active}
-						/>
+						<input type="checkbox" bind:checked={formData.trigger_settings.skip_if_active} />
 						<span>Skip if contact is already in this automation</span>
 					</label>
 				</div>
@@ -569,9 +563,11 @@
 							<span class="review-label">Trigger Settings</span>
 							<span class="review-value">
 								{#if formData.trigger_settings.tag_id}
-									Tag: {availableTags.find(t => t.id === formData.trigger_settings.tag_id)?.title || formData.trigger_settings.tag_id}
+									Tag: {availableTags.find((t) => t.id === formData.trigger_settings.tag_id)
+										?.title || formData.trigger_settings.tag_id}
 								{:else if formData.trigger_settings.list_id}
-									List: {availableLists.find(l => l.id === formData.trigger_settings.list_id)?.title || formData.trigger_settings.list_id}
+									List: {availableLists.find((l) => l.id === formData.trigger_settings.list_id)
+										?.title || formData.trigger_settings.list_id}
 								{:else if formData.trigger_settings.event_name}
 									Event: {formData.trigger_settings.event_name}
 								{/if}
@@ -582,7 +578,10 @@
 
 				<div class="info-card">
 					<IconAlertCircle size={20} />
-					<p>After creating the automation, you'll be redirected to the editor where you can add actions to the workflow.</p>
+					<p>
+						After creating the automation, you'll be redirected to the editor where you can add
+						actions to the workflow.
+					</p>
 				</div>
 			</div>
 		{/if}
@@ -783,7 +782,8 @@
 		margin-bottom: 1.5rem;
 	}
 
-	.error-alert span, .success-alert span {
+	.error-alert span,
+	.success-alert span {
 		flex: 1;
 	}
 
@@ -983,7 +983,7 @@
 		font-size: 0.875rem;
 	}
 
-	.checkbox-group input[type="checkbox"] {
+	.checkbox-group input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
 		border-radius: 4px;
@@ -1061,7 +1061,8 @@
 		align-items: center;
 	}
 
-	.nav-left, .nav-right {
+	.nav-left,
+	.nav-right {
 		display: flex;
 		gap: 0.75rem;
 	}
@@ -1119,8 +1120,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Responsive */
@@ -1142,7 +1147,8 @@
 			gap: 1rem;
 		}
 
-		.nav-left, .nav-right {
+		.nav-left,
+		.nav-right {
 			width: 100%;
 		}
 

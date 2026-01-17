@@ -59,7 +59,8 @@ const mockWatchlistItems: Record<string, WatchlistItem> = {
 		weekOf: '2025-12-22',
 		video: {
 			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-TG-12222025.mp4',
-			poster: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
+			poster:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 			title: 'Weekly Watchlist with TG Watkins'
 		},
 		spreadsheet: {
@@ -87,7 +88,8 @@ const mockWatchlistItems: Record<string, WatchlistItem> = {
 		weekOf: '2025-12-15',
 		video: {
 			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-AO-12152025.mp4',
-			poster: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
+			poster:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
 			title: 'Weekly Watchlist with Allison Ostrander'
 		},
 		spreadsheet: {
@@ -118,7 +120,8 @@ const mockWatchlistItems: Record<string, WatchlistItem> = {
 		weekOf: '2025-12-08',
 		video: {
 			src: 'https://cloud-streaming.s3.amazonaws.com/WeeklyWatchlist/WW-TH-12082025.mp4',
-			poster: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
+			poster:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
 			title: 'Weekly Watchlist with Taylor Horton'
 		},
 		spreadsheet: {
@@ -149,7 +152,7 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 			...options,
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				...options.headers
 			}
 		});
@@ -218,7 +221,7 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 	// Try backend first
 	const backendData = await fetchFromBackend(`/api/admin/watchlist/${slug}`, {
 		method: 'PUT',
-		headers: { 'Authorization': authHeader },
+		headers: { Authorization: authHeader },
 		body: JSON.stringify(body)
 	});
 
@@ -278,7 +281,7 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 	// Try backend first
 	const backendData = await fetchFromBackend(`/api/admin/watchlist/${slug}`, {
 		method: 'DELETE',
-		headers: { 'Authorization': authHeader }
+		headers: { Authorization: authHeader }
 	});
 
 	if (backendData?.success) {

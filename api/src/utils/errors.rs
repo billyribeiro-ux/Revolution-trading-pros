@@ -7,6 +7,8 @@
 //! - Supports validation errors with field-level details
 //! - Provides security-conscious error messages
 
+#![allow(dead_code)]
+
 use axum::{
     http::StatusCode,
     response::{IntoResponse, Response},
@@ -69,10 +71,7 @@ impl ApiError {
     /// Add a single field error
     pub fn with_field_error(mut self, field: impl Into<String>, error: impl Into<String>) -> Self {
         let mut errors = self.errors.unwrap_or_default();
-        errors
-            .entry(field.into())
-            .or_insert_with(Vec::new)
-            .push(error.into());
+        errors.entry(field.into()).or_default().push(error.into());
         self.errors = Some(errors);
         self
     }
@@ -276,6 +275,7 @@ pub fn validate_max_length(field: &str, value: &str, max: usize) -> Result<(), (
 }
 
 /// Collect validation errors and return ApiError if any
+#[allow(clippy::result_large_err)]
 pub fn collect_validation_errors(
     validations: Vec<Result<(), (String, String)>>,
 ) -> Result<(), ApiError> {

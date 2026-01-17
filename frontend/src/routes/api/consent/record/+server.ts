@@ -46,13 +46,16 @@ export const POST: RequestHandler = async ({ request, getClientAddress }) => {
 		// 2. Associate with user ID if logged in
 		// 3. Maintain audit trail for compliance
 
-		return json({
-			success: true,
-			data: {
-				id,
-				recorded_at: record.timestamp
-			}
-		}, { status: 201 });
+		return json(
+			{
+				success: true,
+				data: {
+					id,
+					recorded_at: record.timestamp
+				}
+			},
+			{ status: 201 }
+		);
 	} catch (err) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;

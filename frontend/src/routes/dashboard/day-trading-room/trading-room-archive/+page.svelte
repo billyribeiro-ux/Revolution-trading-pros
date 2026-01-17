@@ -25,17 +25,20 @@
 
 <svelte:head>
 	<title>Trading Room Archives | Day Trading Room | Revolution Trading Pros</title>
-	<meta name="description" content="Access recordings of past live trading sessions and chat logs." />
+	<meta
+		name="description"
+		content="Access recordings of past live trading sessions and chat logs."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Day Trading Room" 
+<TradingRoomHeader
+	roomName="Day Trading Room"
 	pageTitle="Trading Room Archives"
-	startHereUrl="/dashboard/day-trading-room/start-here" 
+	startHereUrl="/dashboard/day-trading-room/start-here"
 />
 
-<TradingRoomArchive 
+<TradingRoomArchive
 	roomSlug="day-trading-room"
 	roomName="Day Trading Room"
 	videos={data.videos || []}

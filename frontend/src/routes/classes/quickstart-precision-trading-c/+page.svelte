@@ -1,12 +1,3 @@
-<svelte:head>
-	<title>Quickstart To Precision Trading - Revolution Trading Pros</title>
-	<meta property="og:locale" content="en_US" />
-	<meta property="og:type" content="article" />
-	<meta property="og:title" content="Quickstart To Precision Trading" />
-	<meta property="og:site_name" content="Simpler Trading" />
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-</svelte:head>
-
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
@@ -75,6 +66,15 @@
 	});
 </script>
 
+<svelte:head>
+	<title>Quickstart To Precision Trading - Revolution Trading Pros</title>
+	<meta property="og:locale" content="en_US" />
+	<meta property="og:type" content="article" />
+	<meta property="og:title" content="Quickstart To Precision Trading" />
+	<meta property="og:site_name" content="Simpler Trading" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+</svelte:head>
+
 <!-- Breadcrumbs -->
 <DashboardBreadcrumbs />
 
@@ -112,15 +112,18 @@
 								<h3>Quickstart To Precision Trading</h3>
 							</div>
 							<div id="quickstart-to-precision-trading" class="class-video-player"></div>
-							<video 
-								id="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4" 
-								controls 
-								width="100%" 
-								poster="" 
-								style="aspect-ratio: 16/9;" 
+							<video
+								id="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4"
+								controls
+								width="100%"
+								poster=""
+								style="aspect-ratio: 16/9;"
 								title="quickstart-to-precision-trading"
 							>
-								<source src="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4" type="video/mp4">
+								<source
+									src="https://simpler-options.s3.amazonaws.com/Moxie/MoxieQuickstart_A1.mp4"
+									type="video/mp4"
+								/>
 								Your browser does not support the video tag.
 							</video>
 						</div>
@@ -133,8 +136,8 @@
 		<section class="class-section" id="downloads-section">
 			<div class="section-inner">
 				<div id="downloads-box">
-					<ClassDownloads 
-						courseSlug="quickstart-precision-trading-c" 
+					<ClassDownloads
+						courseSlug="quickstart-precision-trading-c"
 						title="Class Downloads"
 						maxHeight="400px"
 					/>
@@ -145,10 +148,10 @@
 </div>
 
 <!-- Have Questions Section -->
-<HaveQuestionsSection 
-	email="support@revolutiontradingpros.com" 
-	phone="8002668659" 
-	phoneDisplay="(800) 266-8659" 
+<HaveQuestionsSection
+	email="support@revolutiontradingpros.com"
+	phone="8002668659"
+	phoneDisplay="(800) 266-8659"
 />
 
 <style>
@@ -160,7 +163,6 @@
 	 * DESIGN TOKENS
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	:root {
-
 		/* ═══ Spacing Tokens (8px grid) ═══ */
 		--space-1: 0.25rem;
 		--space-2: 0.5rem;
@@ -195,7 +197,9 @@
 	 * REDUCED MOTION
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	@media (prefers-reduced-motion: reduce) {
-		*, *::before, *::after {
+		*,
+		*::before,
+		*::after {
 			animation-duration: 0.01ms !important;
 			animation-iteration-count: 1 !important;
 			transition-duration: 0.01ms !important;
@@ -206,13 +210,24 @@
 	/* ─────────────────────────────────────────────────────────────────────────────
 	 * PAGE WRAPPER (scoped styles - no global leaks)
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	#page {
-		max-width: 100%;
-		margin: 0;
-		padding: 0;
-		background-color: #EFEFEF;
+	:global(html) {
+		font-size: 100%;
+		-webkit-text-size-adjust: 100%;
+		text-size-adjust: 100%;
+		scroll-behavior: smooth;
+	}
+
+	:global(html),
+	:global(body) {
+		background-color: #efefef !important;
 		color: #666666;
-		font-family: "Open Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+		font-family:
+			'Open Sans',
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			Roboto,
+			sans-serif;
 		font-size: 1rem;
 		line-height: 1.5;
 		min-height: 100dvh;
@@ -220,13 +235,15 @@
 		-moz-osx-font-smoothing: grayscale;
 	}
 
-	#page a, #page a:visited {
+	:global(a),
+	:global(a:visited) {
 		color: #1e73be;
 		text-decoration: none;
 		transition: color 150ms ease-out;
 	}
 
-	#page a:hover, #page a:focus {
+	:global(a:hover),
+	:global(a:focus) {
 		color: #000000;
 	}
 
@@ -236,9 +253,19 @@
 		border-radius: 4px;
 	}
 
+	/* ─────────────────────────────────────────────────────────────────────────────
+	 * PAGE WRAPPER
+	 * ───────────────────────────────────────────────────────────────────────────── */
+	#page {
+		max-width: 100%;
+		margin: 0;
+		padding: 0;
+		background-color: #efefef;
+	}
+
 	#content {
 		max-width: 100%;
-		background-color: #EFEFEF;
+		background-color: #efefef;
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
@@ -246,7 +273,7 @@
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	.class-section {
 		padding: clamp(var(--space-10), 5vw, var(--space-15)) 0;
-		background-color: #EFEFEF;
+		background-color: #efefef;
 	}
 
 	.class-section .section-inner {
@@ -269,7 +296,7 @@
 		align-items: center;
 		text-align: center;
 		padding: 30px 40px;
-		background-color: #FFFFFF !important;
+		background-color: #ffffff !important;
 		max-width: 1180px;
 		min-height: 148px;
 		margin: 0 auto;
@@ -366,13 +393,12 @@
 		display: none;
 	}
 
-
 	/* ─────────────────────────────────────────────────────────────────────────────
 	 * DOWNLOADS SECTION
 	 * ───────────────────────────────────────────────────────────────────────────── */
 	#downloads-section {
 		padding: 40px 0;
-		background-color: #EFEFEF;
+		background-color: #efefef;
 	}
 
 	#downloads-section .section-inner {
@@ -385,14 +411,13 @@
 	}
 
 	#downloads-box {
-		background-color: #FFFFFF;
+		background-color: #ffffff;
 		padding: 25px;
 		width: 100%;
 		max-width: 1180px;
 		box-sizing: border-box;
 		margin: 0 auto;
 	}
-
 
 	/* ─────────────────────────────────────────────────────────────────────────────
 	 * RESPONSIVE BREAKPOINTS - Page-specific (non-downloads)

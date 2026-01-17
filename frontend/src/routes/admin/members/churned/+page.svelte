@@ -50,7 +50,9 @@
 
 	async function handlePotentialFilter(potential: string) {
 		winbackPotential = potential;
-		await churnedStore.setFilters({ winback_potential: potential as 'high' | 'medium' | 'low' | undefined });
+		await churnedStore.setFilters({
+			winback_potential: potential as 'high' | 'medium' | 'low' | undefined
+		});
 	}
 
 	async function handleDaysFilter(days: string) {
@@ -110,13 +112,13 @@
 
 		switch (type) {
 			case 'free_trial':
-				template = presets.find(t => t.id === 'winback_30_free');
+				template = presets.find((t) => t.id === 'winback_30_free');
 				break;
 			case 'promo':
-				template = presets.find(t => t.id === 'winback_discount');
+				template = presets.find((t) => t.id === 'winback_discount');
 				break;
 			default:
-				template = presets.find(t => t.id === 'winback_missed');
+				template = presets.find((t) => t.id === 'winback_missed');
 		}
 
 		if (template) {
@@ -196,7 +198,13 @@
 
 	<!-- Campaign Actions -->
 	<div class="campaign-actions">
-		<button class="campaign-card free-trial" onclick={() => { selectedMembers = new Set(members.map(m => m.id)); startCampaign('free_trial'); }}>
+		<button
+			class="campaign-card free-trial"
+			onclick={() => {
+				selectedMembers = new Set(members.map((m) => m.id));
+				startCampaign('free_trial');
+			}}
+		>
 			<div class="campaign-icon">
 				<IconGift size={28} />
 			</div>
@@ -207,7 +215,13 @@
 			<span class="campaign-tag">Popular</span>
 		</button>
 
-		<button class="campaign-card promo" onclick={() => { selectedMembers = new Set(members.map(m => m.id)); startCampaign('promo'); }}>
+		<button
+			class="campaign-card promo"
+			onclick={() => {
+				selectedMembers = new Set(members.map((m) => m.id));
+				startCampaign('promo');
+			}}
+		>
 			<div class="campaign-icon">
 				<IconCurrencyDollar size={28} />
 			</div>
@@ -217,7 +231,13 @@
 			</div>
 		</button>
 
-		<button class="campaign-card winback" onclick={() => { selectedMembers = new Set(members.map(m => m.id)); startCampaign('winback'); }}>
+		<button
+			class="campaign-card winback"
+			onclick={() => {
+				selectedMembers = new Set(members.map((m) => m.id));
+				startCampaign('winback');
+			}}
+		>
 			<div class="campaign-icon">
 				<IconMail size={28} />
 			</div>
@@ -286,7 +306,10 @@
 		<div class="filters">
 			<div class="filter-group">
 				<IconFilter size={16} />
-				<select bind:value={winbackPotential} onchange={() => handlePotentialFilter(winbackPotential)}>
+				<select
+					bind:value={winbackPotential}
+					onchange={() => handlePotentialFilter(winbackPotential)}
+				>
 					<option value="">All Value</option>
 					<option value="high">High Value ($500+)</option>
 					<option value="medium">Medium ($100-$500)</option>
@@ -379,7 +402,9 @@
 								<span class="product-name">{member.last_product || '-'}</span>
 							</td>
 							<td>
-								<span class="spending {getPotentialColor(member.total_spent)}">{formatCurrency(member.total_spent)}</span>
+								<span class="spending {getPotentialColor(member.total_spent)}"
+									>{formatCurrency(member.total_spent)}</span
+								>
 							</td>
 							<td>
 								<div class="churn-date">
@@ -394,13 +419,35 @@
 							</td>
 							<td>
 								<div class="actions">
-									<button class="action-btn winback" title="Start Win-Back" onclick={() => { selectedMembers.clear(); selectedMembers.add(member.id); selectedMembers = selectedMembers; startCampaign('free_trial'); }}>
+									<button
+										class="action-btn winback"
+										title="Start Win-Back"
+										onclick={() => {
+											selectedMembers.clear();
+											selectedMembers.add(member.id);
+											selectedMembers = selectedMembers;
+											startCampaign('free_trial');
+										}}
+									>
 										<IconGift size={16} />
 									</button>
-									<button class="action-btn" title="Send Email" onclick={() => { selectedMembers.clear(); selectedMembers.add(member.id); selectedMembers = selectedMembers; showEmailModal = true; }}>
+									<button
+										class="action-btn"
+										title="Send Email"
+										onclick={() => {
+											selectedMembers.clear();
+											selectedMembers.add(member.id);
+											selectedMembers = selectedMembers;
+											showEmailModal = true;
+										}}
+									>
 										<IconMail size={16} />
 									</button>
-									<button class="action-btn" title="View Details" onclick={() => goto(`/admin/members/${member.id}`)}>
+									<button
+										class="action-btn"
+										title="View Details"
+										onclick={() => goto(`/admin/members/${member.id}`)}
+									>
 										<IconExternalLink size={16} />
 									</button>
 								</div>
@@ -414,7 +461,10 @@
 			{#if pagination}
 				<div class="pagination">
 					<div class="pagination-info">
-						Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total}
+						Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(
+							pagination.current_page * pagination.per_page,
+							pagination.total
+						)} of {pagination.total}
 					</div>
 					<div class="pagination-controls">
 						<button
@@ -424,7 +474,9 @@
 						>
 							<IconChevronLeft size={18} />
 						</button>
-						<span class="page-indicator">Page {pagination.current_page} of {pagination.last_page}</span>
+						<span class="page-indicator"
+							>Page {pagination.current_page} of {pagination.last_page}</span
+						>
 						<button
 							class="page-btn"
 							disabled={pagination.current_page === pagination.last_page}
@@ -442,8 +494,20 @@
 <!-- Email Modal -->
 {#if showEmailModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showEmailModal = false)} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmailModal = false)} role="dialog" tabindex="-1" aria-modal="true">
-		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
+	<div
+		class="modal-overlay"
+		onclick={() => (showEmailModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmailModal = false)}
+		role="dialog"
+		tabindex="-1"
+		aria-modal="true"
+	>
+		<div
+			class="modal-content"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<div>
 					<h2>Win-Back Campaign</h2>
@@ -458,15 +522,36 @@
 				<div class="campaign-type-selector">
 					<span class="selector-label">Campaign Type</span>
 					<div class="campaign-type-buttons">
-						<button class:active={campaignType === 'free_trial'} onclick={() => { campaignType = 'free_trial'; const t = $emailStore.presetTemplates.find(t => t.id === 'winback_30_free'); if (t) applyTemplate(t); }}>
+						<button
+							class:active={campaignType === 'free_trial'}
+							onclick={() => {
+								campaignType = 'free_trial';
+								const t = $emailStore.presetTemplates.find((t) => t.id === 'winback_30_free');
+								if (t) applyTemplate(t);
+							}}
+						>
 							<IconGift size={18} />
 							30 Days Free
 						</button>
-						<button class:active={campaignType === 'promo'} onclick={() => { campaignType = 'promo'; const t = $emailStore.presetTemplates.find(t => t.id === 'winback_discount'); if (t) applyTemplate(t); }}>
+						<button
+							class:active={campaignType === 'promo'}
+							onclick={() => {
+								campaignType = 'promo';
+								const t = $emailStore.presetTemplates.find((t) => t.id === 'winback_discount');
+								if (t) applyTemplate(t);
+							}}
+						>
 							<IconCurrencyDollar size={18} />
 							50% Off
 						</button>
-						<button class:active={campaignType === 'winback'} onclick={() => { campaignType = 'winback'; const t = $emailStore.presetTemplates.find(t => t.id === 'winback_missed'); if (t) applyTemplate(t); }}>
+						<button
+							class:active={campaignType === 'winback'}
+							onclick={() => {
+								campaignType = 'winback';
+								const t = $emailStore.presetTemplates.find((t) => t.id === 'winback_missed');
+								if (t) applyTemplate(t);
+							}}
+						>
 							<IconHeart size={18} />
 							We Miss You
 						</button>
@@ -475,19 +560,35 @@
 
 				<div class="form-group">
 					<label for="email-subject">Subject Line</label>
-					<input id="email-subject" type="text" bind:value={emailSubject} placeholder="Email subject..." />
+					<input
+						id="email-subject"
+						type="text"
+						bind:value={emailSubject}
+						placeholder="Email subject..."
+					/>
 				</div>
 
 				<div class="form-group">
 					<label for="email-body">Email Body</label>
-					<textarea id="email-body" bind:value={emailBody} rows="12" placeholder="Email body... Use {{name}} for personalization"></textarea>
-					<p class="form-hint">Available variables: {"{{name}}"}, {"{{first_name}}"}, {"{{email}}"}</p>
+					<textarea
+						id="email-body"
+						bind:value={emailBody}
+						rows="12"
+						placeholder="Email body... Use {{ name }} for personalization"
+					></textarea>
+					<p class="form-hint">
+						Available variables: {'{{name}}'}, {'{{first_name}}'}, {'{{email}}'}
+					</p>
 				</div>
 			</div>
 
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showEmailModal = false)}>Cancel</button>
-				<button class="btn-primary" onclick={handleBulkEmail} disabled={!emailSubject || !emailBody}>
+				<button
+					class="btn-primary"
+					onclick={handleBulkEmail}
+					disabled={!emailSubject || !emailBody}
+				>
 					<IconSend size={18} />
 					Send Win-Back Email
 				</button>
@@ -518,7 +619,7 @@
 	}
 
 	.back-btn:hover {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.header-content {
@@ -577,7 +678,7 @@
 
 	.btn-refresh:hover {
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	/* Campaign Actions */
@@ -851,7 +952,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.empty-state h3 {
@@ -966,7 +1069,7 @@
 	}
 
 	.product-name {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.spending {
@@ -1025,7 +1128,7 @@
 	.action-btn:hover {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.action-btn.winback:hover {
@@ -1071,7 +1174,7 @@
 	.page-btn:hover:not(:disabled) {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.page-btn:disabled {

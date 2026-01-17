@@ -136,9 +136,7 @@
 	/**
 	 * Currently selected room from ROOMS config
 	 */
-	const selectedRoom = $derived(
-		ROOMS.find(r => r.id === selectedRoomId) || ROOMS[0]
-	);
+	const selectedRoom = $derived(ROOMS.find((r) => r.id === selectedRoomId) || ROOMS[0]);
 
 	/**
 	 * Filtered schedules based on active/inactive filter
@@ -147,13 +145,13 @@
 		let result = schedules;
 
 		if (filterActive === 'active') {
-			result = result.filter(s => s.is_active);
+			result = result.filter((s) => s.is_active);
 		} else if (filterActive === 'inactive') {
-			result = result.filter(s => !s.is_active);
+			result = result.filter((s) => !s.is_active);
 		}
 
 		if (filterDay !== null) {
-			result = result.filter(s => s.day_of_week === filterDay);
+			result = result.filter((s) => s.day_of_week === filterDay);
 		}
 
 		return result;
@@ -195,7 +193,7 @@
 	/**
 	 * Active schedule count
 	 */
-	const activeSchedules = $derived(schedules.filter(s => s.is_active).length);
+	const activeSchedules = $derived(schedules.filter((s) => s.is_active).length);
 
 	/**
 	 * Week dates for calendar header
@@ -224,8 +222,7 @@
 	 * Check if all visible schedules are selected
 	 */
 	const allSelected = $derived(
-		filteredSchedules.length > 0 &&
-		filteredSchedules.every(s => selectedIds.has(s.id))
+		filteredSchedules.length > 0 && filteredSchedules.every((s) => selectedIds.has(s.id))
 	);
 
 	/**
@@ -585,7 +582,7 @@
 
 	function navigateWeek(direction: number) {
 		const newDate = new Date(currentWeekStart);
-		newDate.setDate(newDate.getDate() + (direction * 7));
+		newDate.setDate(newDate.getDate() + direction * 7);
 		currentWeekStart = newDate;
 	}
 
@@ -606,7 +603,7 @@
 		if (allSelected) {
 			selectedIds = new Set();
 		} else {
-			selectedIds = new Set(filteredSchedules.map(s => s.id));
+			selectedIds = new Set(filteredSchedules.map((s) => s.id));
 		}
 	}
 
@@ -621,270 +618,182 @@
 
 <div class="admin-schedules">
 	<div class="admin-page-container">
-	<!-- Header -->
-	<header class="page-header">
-		<div class="header-content">
-			<div class="header-title">
-				<IconCalendar size={32} />
-				<div>
-					<h1>Trading Room Schedules</h1>
-					<p class="subtitle">Manage weekly schedules for each trading room and service</p>
+		<!-- Header -->
+		<header class="page-header">
+			<div class="header-content">
+				<div class="header-title">
+					<IconCalendar size={32} />
+					<div>
+						<h1>Trading Room Schedules</h1>
+						<p class="subtitle">Manage weekly schedules for each trading room and service</p>
+					</div>
+				</div>
+				<div class="header-actions">
+					{#if hasConflicts}
+						<div class="conflict-warning">
+							<IconAlertCircle size={18} />
+							<span>{conflicts.length} time conflict{conflicts.length !== 1 ? 's' : ''}</span>
+						</div>
+					{/if}
+					<button class="btn btn-primary" onclick={openCreateModal}>
+						<IconPlus size={18} />
+						Add Schedule
+					</button>
 				</div>
 			</div>
-			<div class="header-actions">
-				{#if hasConflicts}
-					<div class="conflict-warning">
-						<IconAlertCircle size={18} />
-						<span>{conflicts.length} time conflict{conflicts.length !== 1 ? 's' : ''}</span>
-					</div>
-				{/if}
-				<button class="btn btn-primary" onclick={openCreateModal}>
-					<IconPlus size={18} />
-					Add Schedule
+		</header>
+
+		<!-- Alerts -->
+		{#if error}
+			<div class="alert alert-error" role="alert">
+				<IconAlertCircle size={18} />
+				<span>{error}</span>
+				<button onclick={() => (error = null)} aria-label="Dismiss">
+					<IconX size={18} />
 				</button>
 			</div>
-		</div>
-	</header>
+		{/if}
 
-	<!-- Alerts -->
-	{#if error}
-		<div class="alert alert-error" role="alert">
-			<IconAlertCircle size={18} />
-			<span>{error}</span>
-			<button onclick={() => error = null} aria-label="Dismiss">
-				<IconX size={18} />
-			</button>
-		</div>
-	{/if}
-
-	{#if success}
-		<div class="alert alert-success" role="status">
-			<IconCheck size={18} />
-			<span>{success}</span>
-			<button onclick={() => success = null} aria-label="Dismiss">
-				<IconX size={18} />
-			</button>
-		</div>
-	{/if}
-
-	<!-- Room Selector Tabs -->
-	<div class="room-selector">
-		<div class="room-tabs" role="tablist">
-			{#each ROOMS as room}
-				<button
-					class="room-tab"
-					class:active={selectedRoomId === room.id}
-					onclick={() => selectRoom(room.id)}
-					role="tab"
-					aria-selected={selectedRoomId === room.id}
-					style="--room-color: {room.color}"
-				>
-					<span class="room-icon">{room.icon}</span>
-					<span class="room-name">{room.shortName}</span>
-				</button>
-			{/each}
-		</div>
-
-		<div class="room-info">
-			{#if selectedRoom}
-				<span class="room-full-name" style="color: {selectedRoom.color}">{selectedRoom.name}</span>
-				<span class="room-stats">
-					{activeSchedules} active / {totalSchedules} total
-				</span>
-			{/if}
-		</div>
-	</div>
-
-	<!-- Toolbar -->
-	<div class="toolbar">
-		<!-- Week Navigation -->
-		<div class="week-nav">
-			<button class="btn btn-icon" onclick={() => navigateWeek(-1)} title="Previous week">
-				<IconChevronLeft size={20} />
-			</button>
-			<span class="week-label">{weekRangeText}</span>
-			<button class="btn btn-icon" onclick={() => navigateWeek(1)} title="Next week">
-				<IconChevronRight size={20} />
-			</button>
-			<button class="btn btn-text" onclick={goToCurrentWeek}>Today</button>
-		</div>
-
-		<!-- Filters -->
-		<div class="filters">
-			<select bind:value={filterActive} class="filter-select">
-				<option value="all">All Schedules</option>
-				<option value="active">Active Only</option>
-				<option value="inactive">Inactive Only</option>
-			</select>
-
-			<select bind:value={filterDay} class="filter-select">
-				<option value={null}>All Days</option>
-				{#each DAYS as day, index}
-					<option value={index}>{day}</option>
-				{/each}
-			</select>
-
-			<button class="btn btn-icon" onclick={loadSchedules} title="Refresh">
-				<IconRefresh size={18} />
-			</button>
-		</div>
-	</div>
-
-	<!-- Bulk Actions Bar -->
-	{#if showBulkActions}
-		<div class="bulk-actions">
-			<span class="bulk-count">{selectedIds.size} selected</span>
-			<button class="btn btn-sm" onclick={() => bulkToggleActive(true)}>
-				<IconCheck size={16} />
-				Activate
-			</button>
-			<button class="btn btn-sm" onclick={() => bulkToggleActive(false)}>
-				<IconX size={16} />
-				Deactivate
-			</button>
-			<button class="btn btn-sm btn-danger" onclick={bulkDelete}>
-				<IconTrash size={16} />
-				Delete
-			</button>
-			<button class="btn btn-sm btn-text" onclick={() => selectedIds = new Set()}>
-				Clear
-			</button>
-		</div>
-	{/if}
-
-	<!-- Schedule Grid -->
-	<div class="schedule-container">
-		{#if loading}
-			<div class="loading-state">
-				<div class="spinner"></div>
-				<p>Loading schedules...</p>
-			</div>
-		{:else if !hasSchedules}
-			<div class="empty-state">
-				<IconCalendar size={64} stroke={1} />
-				<h3>No Schedules Yet</h3>
-				<p>Create your first schedule for {selectedRoom?.name || 'this room'}</p>
-				<button class="btn btn-primary" onclick={openCreateModal}>
-					<IconPlus size={18} />
-					Create Schedule
+		{#if success}
+			<div class="alert alert-success" role="status">
+				<IconCheck size={18} />
+				<span>{success}</span>
+				<button onclick={() => (success = null)} aria-label="Dismiss">
+					<IconX size={18} />
 				</button>
 			</div>
-		{:else}
-			<!-- Weekly Calendar Grid -->
-			<div class="weekly-grid">
-				{#each [1, 2, 3, 4, 5] as dayIndex}
-					{@const daySchedules = schedulesByDay[dayIndex] || []}
-					{@const dayDate = weekDates[dayIndex]}
-					<div class="day-column">
-						<div class="day-header">
-							<span class="day-name">{DAYS[dayIndex]}</span>
-							<span class="day-date">{formatDate(dayDate)}</span>
-						</div>
-						<div class="day-events">
-							{#each daySchedules as event}
-								<div
-									class="event-card"
-									class:inactive={!event.is_active}
-									class:selected={selectedIds.has(event.id)}
-									class:conflict={isConflicting(event.id)}
-								>
-									<div class="event-checkbox">
-										<input
-											type="checkbox"
-											checked={selectedIds.has(event.id)}
-											onchange={() => toggleSelection(event.id)}
-											aria-label="Select schedule"
-										/>
-									</div>
-									<div class="event-content">
-										<div class="event-time">
-											<IconClock size={14} />
-											{formatTime(event.start_time)} - {formatTime(event.end_time)}
-										</div>
-										<div class="event-title">{event.title}</div>
-										{#if event.trader_name}
-											<div class="event-trader">
-												<IconUser size={12} />
-												{event.trader_name}
-											</div>
-										{/if}
-										<div class="event-badges">
-											<span class="badge badge-{event.room_type}">{event.room_type}</span>
-											{#if !event.is_active}
-												<span class="badge badge-inactive">Inactive</span>
-											{/if}
-										</div>
-									</div>
-									<div class="event-actions">
-										<button
-											class="btn-icon"
-											onclick={() => toggleScheduleActive(event)}
-											title={event.is_active ? 'Deactivate' : 'Activate'}
-										>
-											{#if event.is_active}
-												<IconCheck size={16} />
-											{:else}
-												<IconX size={16} />
-											{/if}
-										</button>
-										<button
-											class="btn-icon"
-											onclick={() => duplicateSchedule(event)}
-											title="Duplicate"
-										>
-											<IconCopy size={16} />
-										</button>
-										<button
-											class="btn-icon"
-											onclick={() => openEditModal(event)}
-											title="Edit"
-										>
-											<IconEdit size={16} />
-										</button>
-										<button
-											class="btn-icon btn-danger"
-											onclick={() => deleteSchedule(event.id)}
-											title="Delete"
-										>
-											<IconTrash size={16} />
-										</button>
-									</div>
-								</div>
-							{/each}
-							{#if daySchedules.length === 0}
-								<div class="no-events">
-									<span>No events</span>
-									<button class="btn-link" onclick={() => { formData.day_of_week = dayIndex; openCreateModal(); }}>
-										+ Add
-									</button>
-								</div>
-							{/if}
-						</div>
-					</div>
+		{/if}
+
+		<!-- Room Selector Tabs -->
+		<div class="room-selector">
+			<div class="room-tabs" role="tablist">
+				{#each ROOMS as room}
+					<button
+						class="room-tab"
+						class:active={selectedRoomId === room.id}
+						onclick={() => selectRoom(room.id)}
+						role="tab"
+						aria-selected={selectedRoomId === room.id}
+						style="--room-color: {room.color}"
+					>
+						<span class="room-icon">{room.icon}</span>
+						<span class="room-name">{room.shortName}</span>
+					</button>
 				{/each}
 			</div>
 
-			<!-- Weekend Section -->
-			<details class="weekend-section">
-				<summary>
-					<span>Weekend Schedule</span>
-					<span class="weekend-count">
-						{(schedulesByDay[0]?.length || 0) + (schedulesByDay[6]?.length || 0)} events
+			<div class="room-info">
+				{#if selectedRoom}
+					<span class="room-full-name" style="color: {selectedRoom.color}">{selectedRoom.name}</span
+					>
+					<span class="room-stats">
+						{activeSchedules} active / {totalSchedules} total
 					</span>
-				</summary>
-				<div class="weekend-grid">
-					{#each [6, 0] as dayIndex}
+				{/if}
+			</div>
+		</div>
+
+		<!-- Toolbar -->
+		<div class="toolbar">
+			<!-- Week Navigation -->
+			<div class="week-nav">
+				<button class="btn btn-icon" onclick={() => navigateWeek(-1)} title="Previous week">
+					<IconChevronLeft size={20} />
+				</button>
+				<span class="week-label">{weekRangeText}</span>
+				<button class="btn btn-icon" onclick={() => navigateWeek(1)} title="Next week">
+					<IconChevronRight size={20} />
+				</button>
+				<button class="btn btn-text" onclick={goToCurrentWeek}>Today</button>
+			</div>
+
+			<!-- Filters -->
+			<div class="filters">
+				<select bind:value={filterActive} class="filter-select">
+					<option value="all">All Schedules</option>
+					<option value="active">Active Only</option>
+					<option value="inactive">Inactive Only</option>
+				</select>
+
+				<select bind:value={filterDay} class="filter-select">
+					<option value={null}>All Days</option>
+					{#each DAYS as day, index}
+						<option value={index}>{day}</option>
+					{/each}
+				</select>
+
+				<button class="btn btn-icon" onclick={loadSchedules} title="Refresh">
+					<IconRefresh size={18} />
+				</button>
+			</div>
+		</div>
+
+		<!-- Bulk Actions Bar -->
+		{#if showBulkActions}
+			<div class="bulk-actions">
+				<span class="bulk-count">{selectedIds.size} selected</span>
+				<button class="btn btn-sm" onclick={() => bulkToggleActive(true)}>
+					<IconCheck size={16} />
+					Activate
+				</button>
+				<button class="btn btn-sm" onclick={() => bulkToggleActive(false)}>
+					<IconX size={16} />
+					Deactivate
+				</button>
+				<button class="btn btn-sm btn-danger" onclick={bulkDelete}>
+					<IconTrash size={16} />
+					Delete
+				</button>
+				<button class="btn btn-sm btn-text" onclick={() => (selectedIds = new Set())}>
+					Clear
+				</button>
+			</div>
+		{/if}
+
+		<!-- Schedule Grid -->
+		<div class="schedule-container">
+			{#if loading}
+				<div class="loading-state">
+					<div class="spinner"></div>
+					<p>Loading schedules...</p>
+				</div>
+			{:else if !hasSchedules}
+				<div class="empty-state">
+					<IconCalendar size={64} stroke={1} />
+					<h3>No Schedules Yet</h3>
+					<p>Create your first schedule for {selectedRoom?.name || 'this room'}</p>
+					<button class="btn btn-primary" onclick={openCreateModal}>
+						<IconPlus size={18} />
+						Create Schedule
+					</button>
+				</div>
+			{:else}
+				<!-- Weekly Calendar Grid -->
+				<div class="weekly-grid">
+					{#each [1, 2, 3, 4, 5] as dayIndex}
 						{@const daySchedules = schedulesByDay[dayIndex] || []}
+						{@const dayDate = weekDates[dayIndex]}
 						<div class="day-column">
 							<div class="day-header">
 								<span class="day-name">{DAYS[dayIndex]}</span>
+								<span class="day-date">{formatDate(dayDate)}</span>
 							</div>
 							<div class="day-events">
 								{#each daySchedules as event}
 									<div
 										class="event-card"
 										class:inactive={!event.is_active}
+										class:selected={selectedIds.has(event.id)}
+										class:conflict={isConflicting(event.id)}
 									>
+										<div class="event-checkbox">
+											<input
+												type="checkbox"
+												checked={selectedIds.has(event.id)}
+												onchange={() => toggleSelection(event.id)}
+												aria-label="Select schedule"
+											/>
+										</div>
 										<div class="event-content">
 											<div class="event-time">
 												<IconClock size={14} />
@@ -897,28 +806,120 @@
 													{event.trader_name}
 												</div>
 											{/if}
+											<div class="event-badges">
+												<span class="badge badge-{event.room_type}">{event.room_type}</span>
+												{#if !event.is_active}
+													<span class="badge badge-inactive">Inactive</span>
+												{/if}
+											</div>
 										</div>
 										<div class="event-actions">
-											<button class="btn-icon" onclick={() => openEditModal(event)}>
+											<button
+												class="btn-icon"
+												onclick={() => toggleScheduleActive(event)}
+												title={event.is_active ? 'Deactivate' : 'Activate'}
+											>
+												{#if event.is_active}
+													<IconCheck size={16} />
+												{:else}
+													<IconX size={16} />
+												{/if}
+											</button>
+											<button
+												class="btn-icon"
+												onclick={() => duplicateSchedule(event)}
+												title="Duplicate"
+											>
+												<IconCopy size={16} />
+											</button>
+											<button class="btn-icon" onclick={() => openEditModal(event)} title="Edit">
 												<IconEdit size={16} />
 											</button>
-											<button class="btn-icon btn-danger" onclick={() => deleteSchedule(event.id)}>
+											<button
+												class="btn-icon btn-danger"
+												onclick={() => deleteSchedule(event.id)}
+												title="Delete"
+											>
 												<IconTrash size={16} />
 											</button>
 										</div>
 									</div>
 								{/each}
 								{#if daySchedules.length === 0}
-									<div class="no-events">No weekend events</div>
+									<div class="no-events">
+										<span>No events</span>
+										<button
+											class="btn-link"
+											onclick={() => {
+												formData.day_of_week = dayIndex;
+												openCreateModal();
+											}}
+										>
+											+ Add
+										</button>
+									</div>
 								{/if}
 							</div>
 						</div>
 					{/each}
 				</div>
-			</details>
-		{/if}
+
+				<!-- Weekend Section -->
+				<details class="weekend-section">
+					<summary>
+						<span>Weekend Schedule</span>
+						<span class="weekend-count">
+							{(schedulesByDay[0]?.length || 0) + (schedulesByDay[6]?.length || 0)} events
+						</span>
+					</summary>
+					<div class="weekend-grid">
+						{#each [6, 0] as dayIndex}
+							{@const daySchedules = schedulesByDay[dayIndex] || []}
+							<div class="day-column">
+								<div class="day-header">
+									<span class="day-name">{DAYS[dayIndex]}</span>
+								</div>
+								<div class="day-events">
+									{#each daySchedules as event}
+										<div class="event-card" class:inactive={!event.is_active}>
+											<div class="event-content">
+												<div class="event-time">
+													<IconClock size={14} />
+													{formatTime(event.start_time)} - {formatTime(event.end_time)}
+												</div>
+												<div class="event-title">{event.title}</div>
+												{#if event.trader_name}
+													<div class="event-trader">
+														<IconUser size={12} />
+														{event.trader_name}
+													</div>
+												{/if}
+											</div>
+											<div class="event-actions">
+												<button class="btn-icon" onclick={() => openEditModal(event)}>
+													<IconEdit size={16} />
+												</button>
+												<button
+													class="btn-icon btn-danger"
+													onclick={() => deleteSchedule(event.id)}
+												>
+													<IconTrash size={16} />
+												</button>
+											</div>
+										</div>
+									{/each}
+									{#if daySchedules.length === 0}
+										<div class="no-events">No weekend events</div>
+									{/if}
+								</div>
+							</div>
+						{/each}
+					</div>
+				</details>
+			{/if}
+		</div>
 	</div>
-	</div><!-- End admin-page-container -->
+	<!-- End admin-page-container -->
 </div>
 
 <!-- Create/Edit Modal -->
@@ -942,7 +943,13 @@
 				</button>
 			</div>
 
-			<form class="modal-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+			<form
+				class="modal-form"
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSubmit();
+				}}
+			>
 				<div class="form-group">
 					<label for="title">Event Title <span class="required">*</span></label>
 					<input
@@ -999,22 +1006,12 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="start_time">Start Time <span class="required">*</span></label>
-						<input
-							type="time"
-							id="start_time"
-							bind:value={formData.start_time}
-							required
-						/>
+						<input type="time" id="start_time" bind:value={formData.start_time} required />
 					</div>
 
 					<div class="form-group">
 						<label for="end_time">End Time <span class="required">*</span></label>
-						<input
-							type="time"
-							id="end_time"
-							bind:value={formData.end_time}
-							required
-						/>
+						<input type="time" id="end_time" bind:value={formData.end_time} required />
 					</div>
 				</div>
 
@@ -1045,9 +1042,7 @@
 				</div>
 
 				<div class="modal-actions">
-					<button type="button" class="btn btn-secondary" onclick={closeModal}>
-						Cancel
-					</button>
+					<button type="button" class="btn btn-secondary" onclick={closeModal}> Cancel </button>
 					<button type="submit" class="btn btn-primary" disabled={saving}>
 						{#if saving}
 							<span class="spinner-sm"></span>
@@ -1095,7 +1090,7 @@
 	}
 
 	.header-title :global(svg) {
-		color: #143E59;
+		color: #143e59;
 		flex-shrink: 0;
 		margin-top: 4px;
 	}
@@ -1195,13 +1190,13 @@
 	}
 
 	.room-tab:hover {
-		border-color: var(--room-color, #143E59);
+		border-color: var(--room-color, #143e59);
 		background: #f8fafc;
 	}
 
 	.room-tab.active {
-		background: var(--room-color, #143E59);
-		border-color: var(--room-color, #143E59);
+		background: var(--room-color, #143e59);
+		border-color: var(--room-color, #143e59);
 		color: #fff;
 	}
 
@@ -1269,7 +1264,7 @@
 
 	.filter-select:focus {
 		outline: none;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	/* Bulk Actions */
@@ -1278,7 +1273,7 @@
 		align-items: center;
 		gap: 12px;
 		padding: 12px 16px;
-		background: #143E59;
+		background: #143e59;
 		border-radius: 8px;
 		margin-bottom: 16px;
 	}
@@ -1327,7 +1322,7 @@
 		display: block;
 		font-size: 14px;
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.day-date {
@@ -1365,7 +1360,7 @@
 	}
 
 	.event-card.selected {
-		border-color: #143E59;
+		border-color: #143e59;
 		background: #f0f9ff;
 	}
 
@@ -1396,7 +1391,7 @@
 		gap: 4px;
 		font-size: 12px;
 		font-weight: 600;
-		color: #143E59;
+		color: #143e59;
 		margin-bottom: 4px;
 	}
 
@@ -1472,7 +1467,7 @@
 	.btn-link {
 		background: none;
 		border: none;
-		color: #143E59;
+		color: #143e59;
 		font-size: 13px;
 		font-weight: 500;
 		cursor: pointer;
@@ -1550,7 +1545,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #e2e8f0;
-		border-top-color: #143E59;
+		border-top-color: #143e59;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -1566,7 +1561,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* Buttons */
@@ -1585,7 +1582,7 @@
 	}
 
 	.btn-primary {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -1645,7 +1642,7 @@
 	.btn-text {
 		background: none;
 		border: none;
-		color: #143E59;
+		color: #143e59;
 		font-weight: 600;
 		cursor: pointer;
 		padding: 8px 12px;
@@ -1738,7 +1735,9 @@
 		font-size: 14px;
 		border: 1px solid #e2e8f0;
 		border-radius: 8px;
-		transition: border-color 0.2s, box-shadow 0.2s;
+		transition:
+			border-color 0.2s,
+			box-shadow 0.2s;
 		background: #fff;
 	}
 
@@ -1746,7 +1745,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #143E59;
+		border-color: #143e59;
 		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.1);
 	}
 
@@ -1774,7 +1773,7 @@
 		margin: 0;
 	}
 
-	.form-checkbox input[type="checkbox"] {
+	.form-checkbox input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
 		cursor: pointer;

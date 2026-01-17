@@ -94,137 +94,131 @@
 
 <div class="contacts-page">
 	<div class="admin-page-container">
-	<!-- Header -->
-	<div class="page-header">
-		<div>
-			<h1 class="page-title">Contacts</h1>
-			<p class="page-subtitle">Manage your contact list and leads</p>
+		<!-- Header -->
+		<div class="page-header">
+			<div>
+				<h1 class="page-title">Contacts</h1>
+				<p class="page-subtitle">Manage your contact list and leads</p>
+			</div>
+			<Button>
+				<a href="/admin/contacts/new" class="flex items-center gap-2">
+					<IconPlus size={20} />
+					Add Contact
+				</a>
+			</Button>
 		</div>
-		<Button>
-			<a href="/admin/contacts/new" class="flex items-center gap-2">
-				<IconPlus size={20} />
-				Add Contact
-			</a>
-		</Button>
-	</div>
 
-	<!-- Filters -->
-	<div class="filters-grid">
-		<Input
-			placeholder="Search contacts..."
-			bind:value={searchQuery}
-			oninput={handleSearch}
-		/>
-		<Select options={statusOptions} bind:value={statusFilter} placeholder="Filter by status" />
-	</div>
+		<!-- Filters -->
+		<div class="filters-grid">
+			<Input placeholder="Search contacts..." bind:value={searchQuery} oninput={handleSearch} />
+			<Select options={statusOptions} bind:value={statusFilter} placeholder="Filter by status" />
+		</div>
 
-	<!-- Contact Stats -->
-	<div class="stats-grid">
-		<Card>
-			<p class="stat-label">Total Contacts</p>
-			<p class="stat-value">{pagination.total}</p>
-		</Card>
-		<Card>
-			<p class="stat-label">Customers</p>
-			<p class="stat-value stat-success">
-				{contacts.filter((c) => c.status === 'customer').length}
-			</p>
-		</Card>
-		<Card>
-			<p class="stat-label">Prospects</p>
-			<p class="stat-value stat-info">
-				{contacts.filter((c) => c.status === 'prospect').length}
-			</p>
-		</Card>
-		<Card>
-			<p class="stat-label">Leads</p>
-			<p class="stat-value stat-warning">
-				{contacts.filter((c) => c.status === 'lead').length}
-			</p>
-		</Card>
-	</div>
-
-	<!-- Contacts List -->
-	{#if loading}
-		<Card>
-			<div class="loading-state">
-				<div class="loading-spinner"></div>
-				<p class="loading-text">Loading contacts...</p>
-			</div>
-		</Card>
-	{:else if contacts.length === 0}
-		<Card>
-			<div class="empty-state">
-				<p class="empty-title">No contacts found.</p>
-				<p class="empty-description">Form submissions will automatically create contacts here.</p>
-			</div>
-		</Card>
-	{:else}
-		<Card padding={false}>
-			<Table headers={['Name', 'Email', 'Phone', 'Job Title', 'Status', 'Lead Score', 'Last Activity']}>
-				{#each contacts as contact}
-					<tr>
-						<td>
-							<a
-								href="/admin/contacts/{contact.id}"
-								class="contact-name-link"
-							>
-								{contact.full_name || `${contact.first_name} ${contact.last_name}`}
-							</a>
-						</td>
-						<td>
-							<a
-								href="mailto:{contact.email || ''}"
-								class="contact-link"
-							>
-								<IconMail size={16} />
-								{contact.email || ''}
-							</a>
-						</td>
-						<td>
-							{#if contact.phone}
-								<a
-									href="tel:{contact.phone}"
-									class="contact-link"
-								>
-									<IconPhone size={16} />
-									{contact.phone}
-								</a>
-							{:else}
-								<span class="text-muted">—</span>
-							{/if}
-						</td>
-						<td>{contact.job_title || '—'}</td>
-						<td>
-							<Badge variant={getStatusColor(contact.status)}>
-								{contact.status}
-							</Badge>
-						</td>
-						<td>
-							<span class="lead-score" class:high={contact.lead_score >= 70} class:medium={contact.lead_score >= 40 && contact.lead_score < 70}>
-								{contact.lead_score || 0}
-							</span>
-						</td>
-						<td class="text-secondary">
-							{contact.last_activity_at
-								? new Date(contact.last_activity_at).toLocaleDateString()
-								: '—'}
-						</td>
-					</tr>
-				{/each}
-			</Table>
-		</Card>
-
-		<!-- Pagination -->
-		{#if pagination.last_page > 1}
-			<div class="pagination-info">
-				<p>
-					Page {pagination.current_page} of {pagination.last_page} ({pagination.total} contacts)
+		<!-- Contact Stats -->
+		<div class="stats-grid">
+			<Card>
+				<p class="stat-label">Total Contacts</p>
+				<p class="stat-value">{pagination.total}</p>
+			</Card>
+			<Card>
+				<p class="stat-label">Customers</p>
+				<p class="stat-value stat-success">
+					{contacts.filter((c) => c.status === 'customer').length}
 				</p>
-			</div>
+			</Card>
+			<Card>
+				<p class="stat-label">Prospects</p>
+				<p class="stat-value stat-info">
+					{contacts.filter((c) => c.status === 'prospect').length}
+				</p>
+			</Card>
+			<Card>
+				<p class="stat-label">Leads</p>
+				<p class="stat-value stat-warning">
+					{contacts.filter((c) => c.status === 'lead').length}
+				</p>
+			</Card>
+		</div>
+
+		<!-- Contacts List -->
+		{#if loading}
+			<Card>
+				<div class="loading-state">
+					<div class="loading-spinner"></div>
+					<p class="loading-text">Loading contacts...</p>
+				</div>
+			</Card>
+		{:else if contacts.length === 0}
+			<Card>
+				<div class="empty-state">
+					<p class="empty-title">No contacts found.</p>
+					<p class="empty-description">Form submissions will automatically create contacts here.</p>
+				</div>
+			</Card>
+		{:else}
+			<Card padding={false}>
+				<Table
+					headers={['Name', 'Email', 'Phone', 'Job Title', 'Status', 'Lead Score', 'Last Activity']}
+				>
+					{#each contacts as contact}
+						<tr>
+							<td>
+								<a href="/admin/contacts/{contact.id}" class="contact-name-link">
+									{contact.full_name || `${contact.first_name} ${contact.last_name}`}
+								</a>
+							</td>
+							<td>
+								<a href="mailto:{contact.email || ''}" class="contact-link">
+									<IconMail size={16} />
+									{contact.email || ''}
+								</a>
+							</td>
+							<td>
+								{#if contact.phone}
+									<a href="tel:{contact.phone}" class="contact-link">
+										<IconPhone size={16} />
+										{contact.phone}
+									</a>
+								{:else}
+									<span class="text-muted">—</span>
+								{/if}
+							</td>
+							<td>{contact.job_title || '—'}</td>
+							<td>
+								<Badge variant={getStatusColor(contact.status)}>
+									{contact.status}
+								</Badge>
+							</td>
+							<td>
+								<span
+									class="lead-score"
+									class:high={contact.lead_score >= 70}
+									class:medium={contact.lead_score >= 40 && contact.lead_score < 70}
+								>
+									{contact.lead_score || 0}
+								</span>
+							</td>
+							<td class="text-secondary">
+								{contact.last_activity_at
+									? new Date(contact.last_activity_at).toLocaleDateString()
+									: '—'}
+							</td>
+						</tr>
+					{/each}
+				</Table>
+			</Card>
+
+			<!-- Pagination -->
+			{#if pagination.last_page > 1}
+				<div class="pagination-info">
+					<p>
+						Page {pagination.current_page} of {pagination.last_page} ({pagination.total} contacts)
+					</p>
+				</div>
+			{/if}
 		{/if}
-	{/if}
-	</div><!-- End admin-page-container -->
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>

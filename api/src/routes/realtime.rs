@@ -7,6 +7,8 @@
 //! - Publishing events
 //! - User notifications
 
+#![allow(clippy::unnecessary_map_or)]
+
 use axum::{
     extract::{Query, State},
     http::StatusCode,

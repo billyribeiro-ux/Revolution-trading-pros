@@ -119,7 +119,12 @@
 		<div class="search-box">
 			<IconSearch size={20} />
 			<label for="search-keywords" class="sr-only">Search keywords</label>
-			<input type="text" id="search-keywords" bind:value={searchQuery} placeholder="Search keywords..." />
+			<input
+				type="text"
+				id="search-keywords"
+				bind:value={searchQuery}
+				placeholder="Search keywords..."
+			/>
 		</div>
 
 		<button class="btn-secondary" onclick={loadKeywords}>

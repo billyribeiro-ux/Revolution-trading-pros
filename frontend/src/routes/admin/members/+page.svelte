@@ -299,7 +299,13 @@
 			{ id: 'view', label: 'View Details', icon: IconExternalLink },
 			{ id: 'edit', label: 'Edit Member', icon: IconEdit },
 			{ id: 'email', label: 'Send Email', icon: IconMail },
-			{ id: 'delete', label: 'Delete Member', icon: IconTrash, variant: 'danger' as const, dividerBefore: true }
+			{
+				id: 'delete',
+				label: 'Delete Member',
+				icon: IconTrash,
+				variant: 'danger' as const,
+				dividerBefore: true
+			}
 		];
 	}
 
@@ -375,389 +381,433 @@
 		</div>
 
 		<!-- Error Banner -->
-	{#if initError}
-		<div class="error-banner">
-			<IconAlertTriangle size={20} />
-			<span>{initError}</span>
-			<button onclick={() => window.location.reload()}>Refresh Page</button>
-		</div>
-	{/if}
+		{#if initError}
+			<div class="error-banner">
+				<IconAlertTriangle size={20} />
+				<span>{initError}</span>
+				<button onclick={() => window.location.reload()}>Refresh Page</button>
+			</div>
+		{/if}
 
-	<!-- Header -->
-	<div class="page-header">
-		<h1>Members Command Center</h1>
-		<p class="subtitle">Comprehensive member management and analytics</p>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={() => (showImportModal = true)}>
-				<IconUpload size={18} />
-				Import
-			</button>
-			<div class="export-dropdown">
-				<button class="btn-secondary" onclick={handleExport} disabled={exporting}>
+		<!-- Header -->
+		<div class="page-header">
+			<h1>Members Command Center</h1>
+			<p class="subtitle">Comprehensive member management and analytics</p>
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={() => (showImportModal = true)}>
+					<IconUpload size={18} />
+					Import
+				</button>
+				<div class="export-dropdown">
+					<button class="btn-secondary" onclick={handleExport} disabled={exporting}>
+						<IconDownload size={18} />
+						{exporting ? 'Exporting...' : 'Export'}
+					</button>
+					<div class="export-options">
+						<button onclick={() => handleExportAdvanced('csv')} disabled={exporting}>
+							<IconDownload size={14} />
+							CSV
+						</button>
+						<button onclick={() => handleExportAdvanced('xlsx')} disabled={exporting}>
+							<IconFileSpreadsheet size={14} />
+							Excel
+						</button>
+						<button onclick={() => handleExportAdvanced('pdf')} disabled={exporting}>
+							<IconPdf size={14} />
+							PDF
+						</button>
+					</div>
+				</div>
+				<button class="btn-secondary" onclick={() => goto('/admin/members/churned')}>
+					<IconAlertTriangle size={18} />
+					Win-Back
+				</button>
+				<button class="btn-primary" onclick={() => (showCreateModal = true)}>
+					<IconUserPlus size={18} />
+					Create Member
+				</button>
+			</div>
+		</div>
+
+		<!-- Stats Grid -->
+		{#if stats}
+			<div class="stats-grid">
+				<!-- Total Members -->
+				<div class="stat-card gradient-purple">
+					<div class="stat-icon">
+						<IconUsers size={28} />
+					</div>
+					<div class="stat-content">
+						<div class="stat-label">Total Members</div>
+						<div class="stat-value">{stats.overview.total_members.toLocaleString()}</div>
+						<div class="stat-change positive">
+							<IconTrendingUp size={14} />
+							+{stats.overview.new_this_month} this month
+						</div>
+					</div>
+					<div class="stat-sparkline">
+						{#each (stats.growth_trend || []).slice(-6) as point}
+							<div
+								class="sparkline-bar"
+								style="height: {(point.new /
+									Math.max(...(stats.growth_trend || []).map((p) => p.new))) *
+									100}%"
+							></div>
+						{/each}
+					</div>
+				</div>
+
+				<!-- Active Subscribers -->
+				<div class="stat-card gradient-emerald">
+					<div class="stat-icon">
+						<IconUserCheck size={28} />
+					</div>
+					<div class="stat-content">
+						<div class="stat-label">Active Subscribers</div>
+						<div class="stat-value">{stats.subscriptions.active.toLocaleString()}</div>
+						<div class="stat-change neutral">
+							<IconCrown size={14} />
+							{stats.subscriptions.trial} in trial
+						</div>
+					</div>
+					<div class="stat-ring">
+						<svg viewBox="0 0 36 36">
+							<circle
+								cx="18"
+								cy="18"
+								r="16"
+								fill="none"
+								stroke="currentColor"
+								stroke-opacity="0.2"
+								stroke-width="3"
+							></circle>
+							<circle
+								cx="18"
+								cy="18"
+								r="16"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="3"
+								stroke-dasharray="{(stats.subscriptions.active / stats.overview.total_members) *
+									100} 100"
+								stroke-linecap="round"
+								transform="rotate(-90 18 18)"
+							></circle>
+						</svg>
+						<span
+							>{Math.round(
+								(stats.subscriptions.active / stats.overview.total_members) * 100
+							)}%</span
+						>
+					</div>
+				</div>
+
+				<!-- Monthly Recurring Revenue -->
+				<div class="stat-card gradient-gold">
+					<div class="stat-icon">
+						<IconCreditCard size={28} />
+					</div>
+					<div class="stat-content">
+						<div class="stat-label">Monthly Revenue</div>
+						<div class="stat-value">{formatCurrency(stats.revenue.mrr)}</div>
+						<div class="stat-change neutral">
+							<IconCurrencyDollar size={14} />
+							{formatCurrency(stats.revenue.avg_ltv)} avg LTV
+						</div>
+					</div>
+					<div class="stat-glow"></div>
+				</div>
+
+				<!-- Churn Rate -->
+				<div class="stat-card gradient-red">
+					<div class="stat-icon">
+						<IconTrendingDown size={28} />
+					</div>
+					<div class="stat-content">
+						<div class="stat-label">Churn Rate</div>
+						<div class="stat-value">{stats.subscriptions.churn_rate}%</div>
+						<div class="stat-change negative">
+							<IconAlertTriangle size={14} />
+							{stats.subscriptions.churned} churned
+						</div>
+					</div>
+					<button class="stat-action" onclick={() => goto('/admin/members/churned')}>
+						Recover <IconExternalLink size={14} />
+					</button>
+				</div>
+			</div>
+		{/if}
+
+		<!-- Top Services -->
+		{#if stats?.top_services && stats.top_services.length > 0}
+			<div class="top-services-section">
+				<h3>Top Services by Members</h3>
+				<div class="services-grid">
+					{#each stats.top_services as service}
+						<button
+							class="service-card"
+							onclick={() => goto(`/admin/members/service/${service.id}`)}
+						>
+							<div class="service-icon">
+								<IconChartBar size={20} />
+							</div>
+							<div class="service-info">
+								<div class="service-name">{service.name}</div>
+								<div class="service-type">{service.type}</div>
+							</div>
+							<div class="service-count">{service.members_count}</div>
+						</button>
+					{/each}
+				</div>
+			</div>
+		{/if}
+
+		<!-- Toolbar -->
+		<div class="toolbar">
+			<div class="search-box">
+				<IconSearch size={18} />
+				<input
+					id="search-members"
+					type="text"
+					placeholder="Search members by name or email..."
+					bind:value={searchQuery}
+					oninput={handleSearchInput}
+					onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
+				/>
+			</div>
+
+			<div class="toolbar-actions">
+				<button
+					class="filter-toggle"
+					class:active={showFilters}
+					onclick={() => (showFilters = !showFilters)}
+					aria-expanded={showFilters}
+					aria-label="Toggle filters"
+				>
+					<IconFilter size={18} />
+					Filters
+				</button>
+
+				{#if selectedMembers.size > 0}
+					<button class="btn-email" onclick={() => (showEmailModal = true)}>
+						<IconMail size={18} />
+						Email ({selectedMembers.size})
+					</button>
+				{/if}
+
+				<button class="btn-export" onclick={() => goto('/admin/members/export')}>
 					<IconDownload size={18} />
-					{exporting ? 'Exporting...' : 'Export'}
+					Export
 				</button>
-				<div class="export-options">
-					<button onclick={() => handleExportAdvanced('csv')} disabled={exporting}>
-						<IconDownload size={14} />
-						CSV
-					</button>
-					<button onclick={() => handleExportAdvanced('xlsx')} disabled={exporting}>
-						<IconFileSpreadsheet size={14} />
-						Excel
-					</button>
-					<button onclick={() => handleExportAdvanced('pdf')} disabled={exporting}>
-						<IconPdf size={14} />
-						PDF
-					</button>
-				</div>
 			</div>
-			<button class="btn-secondary" onclick={() => goto('/admin/members/churned')}>
-				<IconAlertTriangle size={18} />
-				Win-Back
-			</button>
-			<button class="btn-primary" onclick={() => showCreateModal = true}>
-				<IconUserPlus size={18} />
-				Create Member
-			</button>
 		</div>
-	</div>
 
-	<!-- Stats Grid -->
-	{#if stats}
-		<div class="stats-grid">
-			<!-- Total Members -->
-			<div class="stat-card gradient-purple">
-				<div class="stat-icon">
-					<IconUsers size={28} />
-				</div>
-				<div class="stat-content">
-					<div class="stat-label">Total Members</div>
-					<div class="stat-value">{stats.overview.total_members.toLocaleString()}</div>
-					<div class="stat-change positive">
-						<IconTrendingUp size={14} />
-						+{stats.overview.new_this_month} this month
-					</div>
-				</div>
-				<div class="stat-sparkline">
-					{#each (stats.growth_trend || []).slice(-6) as point}
-						<div
-							class="sparkline-bar"
-							style="height: {(point.new / Math.max(...(stats.growth_trend || []).map((p) => p.new))) * 100}%"
-						></div>
-					{/each}
-				</div>
-			</div>
-
-			<!-- Active Subscribers -->
-			<div class="stat-card gradient-emerald">
-				<div class="stat-icon">
-					<IconUserCheck size={28} />
-				</div>
-				<div class="stat-content">
-					<div class="stat-label">Active Subscribers</div>
-					<div class="stat-value">{stats.subscriptions.active.toLocaleString()}</div>
-					<div class="stat-change neutral">
-						<IconCrown size={14} />
-						{stats.subscriptions.trial} in trial
-					</div>
-				</div>
-				<div class="stat-ring">
-					<svg viewBox="0 0 36 36">
-						<circle
-							cx="18"
-							cy="18"
-							r="16"
-							fill="none"
-							stroke="currentColor"
-							stroke-opacity="0.2"
-							stroke-width="3"
-						></circle>
-						<circle
-							cx="18"
-							cy="18"
-							r="16"
-							fill="none"
-							stroke="currentColor"
-							stroke-width="3"
-							stroke-dasharray="{(stats.subscriptions.active / stats.overview.total_members) * 100} 100"
-							stroke-linecap="round"
-							transform="rotate(-90 18 18)"
-						></circle>
-					</svg>
-					<span
-						>{Math.round((stats.subscriptions.active / stats.overview.total_members) * 100)}%</span
+		<!-- Filters Panel -->
+		{#if showFilters}
+			<div class="filters-panel">
+				<div class="filter-group">
+					<label for="status-filter">Status</label>
+					<select
+						id="status-filter"
+						bind:value={statusFilter}
+						onchange={() => handleStatusFilter(statusFilter)}
 					>
+						<option value="">All Status</option>
+						<option value="active">Active</option>
+						<option value="trial">Trial</option>
+						<option value="churned">Churned</option>
+						<option value="never_subscribed">Never Subscribed</option>
+					</select>
 				</div>
-			</div>
 
-			<!-- Monthly Recurring Revenue -->
-			<div class="stat-card gradient-gold">
-				<div class="stat-icon">
-					<IconCreditCard size={28} />
-				</div>
-				<div class="stat-content">
-					<div class="stat-label">Monthly Revenue</div>
-					<div class="stat-value">{formatCurrency(stats.revenue.mrr)}</div>
-					<div class="stat-change neutral">
-						<IconCurrencyDollar size={14} />
-						{formatCurrency(stats.revenue.avg_ltv)} avg LTV
-					</div>
-				</div>
-				<div class="stat-glow"></div>
-			</div>
-
-			<!-- Churn Rate -->
-			<div class="stat-card gradient-red">
-				<div class="stat-icon">
-					<IconTrendingDown size={28} />
-				</div>
-				<div class="stat-content">
-					<div class="stat-label">Churn Rate</div>
-					<div class="stat-value">{stats.subscriptions.churn_rate}%</div>
-					<div class="stat-change negative">
-						<IconAlertTriangle size={14} />
-						{stats.subscriptions.churned} churned
-					</div>
-				</div>
-				<button class="stat-action" onclick={() => goto('/admin/members/churned')}>
-					Recover <IconExternalLink size={14} />
-				</button>
-			</div>
-		</div>
-	{/if}
-
-	<!-- Top Services -->
-	{#if stats?.top_services && stats.top_services.length > 0}
-		<div class="top-services-section">
-			<h3>Top Services by Members</h3>
-			<div class="services-grid">
-				{#each stats.top_services as service}
-					<button
-						class="service-card"
-						onclick={() => goto(`/admin/members/service/${service.id}`)}
+				<div class="filter-group">
+					<label for="service-filter">Service</label>
+					<select
+						id="service-filter"
+						bind:value={serviceFilter}
+						onchange={() => handleServiceFilter(serviceFilter)}
 					>
-						<div class="service-icon">
-							<IconChartBar size={20} />
-						</div>
-						<div class="service-info">
-							<div class="service-name">{service.name}</div>
-							<div class="service-type">{service.type}</div>
-						</div>
-						<div class="service-count">{service.members_count}</div>
-					</button>
-				{/each}
-			</div>
-		</div>
-	{/if}
+						<option value="">All Services</option>
+						{#each services as service}
+							<option value={service.id}>{service.name}</option>
+						{/each}
+					</select>
+				</div>
 
-	<!-- Toolbar -->
-	<div class="toolbar">
-		<div class="search-box">
-			<IconSearch size={18} />
-			<input
-				id="search-members"
-				type="text"
-				placeholder="Search members by name or email..."
-				bind:value={searchQuery}
-				oninput={handleSearchInput}
-				onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSearch()}
-			/>
-		</div>
+				<div class="filter-group">
+					<label for="spending-filter">Spending Tier</label>
+					<select
+						id="spending-filter"
+						bind:value={spendingFilter}
+						onchange={() => handleSpendingFilter(spendingFilter)}
+					>
+						<option value="">All Tiers</option>
+						<option value="whale">Whale ($5000+)</option>
+						<option value="high">High ($1000-$4999)</option>
+						<option value="medium">Medium ($100-$999)</option>
+						<option value="low">Low (&lt;$100)</option>
+					</select>
+				</div>
 
-		<div class="toolbar-actions">
-			<button
-				class="filter-toggle"
-				class:active={showFilters}
-				onclick={() => (showFilters = !showFilters)}
-				aria-expanded={showFilters}
-				aria-label="Toggle filters"
-			>
-				<IconFilter size={18} />
-				Filters
-			</button>
-
-			{#if selectedMembers.size > 0}
-				<button class="btn-email" onclick={() => (showEmailModal = true)}>
-					<IconMail size={18} />
-					Email ({selectedMembers.size})
+				<button
+					class="clear-filters"
+					onclick={() => {
+						statusFilter = '';
+						serviceFilter = '';
+						spendingFilter = '';
+						searchQuery = '';
+						membersStore.setFilters({
+							status: undefined,
+							product_id: undefined,
+							spending_tier: undefined,
+							search: undefined
+						});
+					}}
+				>
+					Clear All
 				</button>
-			{/if}
-
-			<button class="btn-export" onclick={() => goto('/admin/members/export')}>
-				<IconDownload size={18} />
-				Export
-			</button>
-		</div>
-	</div>
-
-	<!-- Filters Panel -->
-	{#if showFilters}
-		<div class="filters-panel">
-			<div class="filter-group">
-				<label for="status-filter">Status</label>
-				<select id="status-filter" bind:value={statusFilter} onchange={() => handleStatusFilter(statusFilter)}>
-					<option value="">All Status</option>
-					<option value="active">Active</option>
-					<option value="trial">Trial</option>
-					<option value="churned">Churned</option>
-					<option value="never_subscribed">Never Subscribed</option>
-				</select>
 			</div>
+		{/if}
 
-			<div class="filter-group">
-				<label for="service-filter">Service</label>
-				<select id="service-filter" bind:value={serviceFilter} onchange={() => handleServiceFilter(serviceFilter)}>
-					<option value="">All Services</option>
-					{#each services as service}
-						<option value={service.id}>{service.name}</option>
-					{/each}
-				</select>
-			</div>
-
-			<div class="filter-group">
-				<label for="spending-filter">Spending Tier</label>
-				<select id="spending-filter" bind:value={spendingFilter} onchange={() => handleSpendingFilter(spendingFilter)}>
-					<option value="">All Tiers</option>
-					<option value="whale">Whale ($5000+)</option>
-					<option value="high">High ($1000-$4999)</option>
-					<option value="medium">Medium ($100-$999)</option>
-					<option value="low">Low (&lt;$100)</option>
-				</select>
-			</div>
-
-			<button
-				class="clear-filters"
-				onclick={() => {
-					statusFilter = '';
-					serviceFilter = '';
-					spendingFilter = '';
-					searchQuery = '';
-					membersStore.setFilters({ status: undefined, product_id: undefined, spending_tier: undefined, search: undefined });
-				}}
-			>
-				Clear All
-			</button>
-		</div>
-	{/if}
-
-	<!-- Members Table -->
-	<div class="members-table-container">
-		{#if loading}
-			<div class="loading-state">
-				<div class="loader"></div>
-				<p>Loading members...</p>
-			</div>
-		{:else if members.length === 0}
-			<div class="empty-state">
-				<IconUsers size={64} stroke={1} />
-				<h3>No members found</h3>
-				<p>Try adjusting your filters or search query</p>
-			</div>
-		{:else}
-			<table class="members-table">
-				<thead>
-					<tr>
-						<th class="checkbox-col">
-							<input
-								type="checkbox"
-								checked={selectedMembers.size === members.length && members.length > 0}
-								onchange={selectAllMembers}
-								aria-label="Select all members"
-							/>
-						</th>
-						<th>Member</th>
-						<th>Status</th>
-						<th>Current Plan</th>
-						<th>Total Spent</th>
-						<th>Joined</th>
-						<th>Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each members as member}
-						<tr class:selected={selectedMembers.has(member.id)}>
-							<td class="checkbox-col">
+		<!-- Members Table -->
+		<div class="members-table-container">
+			{#if loading}
+				<div class="loading-state">
+					<div class="loader"></div>
+					<p>Loading members...</p>
+				</div>
+			{:else if members.length === 0}
+				<div class="empty-state">
+					<IconUsers size={64} stroke={1} />
+					<h3>No members found</h3>
+					<p>Try adjusting your filters or search query</p>
+				</div>
+			{:else}
+				<table class="members-table">
+					<thead>
+						<tr>
+							<th class="checkbox-col">
 								<input
 									type="checkbox"
-									checked={selectedMembers.has(member.id)}
-									onchange={() => toggleMemberSelection(member.id)}
-									aria-label="Select {member.name}"
+									checked={selectedMembers.size === members.length && members.length > 0}
+									onchange={selectAllMembers}
+									aria-label="Select all members"
 								/>
-							</td>
-							<td>
-								<button class="member-info-btn" onclick={() => openMemberDetail(member)}>
-									<div class="member-avatar">
-										{getMemberInitials(member)}
-									</div>
-									<div class="member-details">
-										<div class="member-name">{member.name || ''}</div>
-										<div class="member-email">{member.email || ''}</div>
-									</div>
-								</button>
-							</td>
-							<td>
-								<span class="status-badge {getStatusColor(member.status)}">
-									{member.status_label}
-								</span>
-							</td>
-							<td>
-								<span class="plan-name">{member.current_plan || '-'}</span>
-							</td>
-							<td>
-								<span class="spending" class:whale={member.total_spent >= 5000} class:high={member.total_spent >= 1000 && member.total_spent < 5000}>
-									{formatCurrency(member.total_spent)}
-								</span>
-							</td>
-							<td>
-								<span class="date">{formatDate(member.joined_at)}</span>
-							</td>
-							<td>
-								<ActionsDropdown
-									actions={getMemberActions(member)}
-									onAction={(actionId) => handleMemberAction(actionId, member)}
-								/>
-							</td>
+							</th>
+							<th>Member</th>
+							<th>Status</th>
+							<th>Current Plan</th>
+							<th>Total Spent</th>
+							<th>Joined</th>
+							<th>Actions</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						{#each members as member}
+							<tr class:selected={selectedMembers.has(member.id)}>
+								<td class="checkbox-col">
+									<input
+										type="checkbox"
+										checked={selectedMembers.has(member.id)}
+										onchange={() => toggleMemberSelection(member.id)}
+										aria-label="Select {member.name}"
+									/>
+								</td>
+								<td>
+									<button class="member-info-btn" onclick={() => openMemberDetail(member)}>
+										<div class="member-avatar">
+											{getMemberInitials(member)}
+										</div>
+										<div class="member-details">
+											<div class="member-name">{member.name || ''}</div>
+											<div class="member-email">{member.email || ''}</div>
+										</div>
+									</button>
+								</td>
+								<td>
+									<span class="status-badge {getStatusColor(member.status)}">
+										{member.status_label}
+									</span>
+								</td>
+								<td>
+									<span class="plan-name">{member.current_plan || '-'}</span>
+								</td>
+								<td>
+									<span
+										class="spending"
+										class:whale={member.total_spent >= 5000}
+										class:high={member.total_spent >= 1000 && member.total_spent < 5000}
+									>
+										{formatCurrency(member.total_spent)}
+									</span>
+								</td>
+								<td>
+									<span class="date">{formatDate(member.joined_at)}</span>
+								</td>
+								<td>
+									<ActionsDropdown
+										actions={getMemberActions(member)}
+										onAction={(actionId) => handleMemberAction(actionId, member)}
+									/>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
 
-			<!-- Pagination -->
-			{#if pagination}
-				<div class="pagination">
-					<div class="pagination-info">
-						Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total} members
+				<!-- Pagination -->
+				{#if pagination}
+					<div class="pagination">
+						<div class="pagination-info">
+							Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(
+								pagination.current_page * pagination.per_page,
+								pagination.total
+							)} of {pagination.total} members
+						</div>
+						<div class="pagination-controls">
+							<button
+								class="page-btn"
+								disabled={pagination.current_page === 1}
+								onclick={() => membersStore.goToPage(pagination.current_page - 1)}
+							>
+								<IconChevronLeft size={18} />
+							</button>
+							<span class="page-indicator"
+								>Page {pagination.current_page} of {pagination.last_page}</span
+							>
+							<button
+								class="page-btn"
+								disabled={pagination.current_page === pagination.last_page}
+								onclick={() => membersStore.goToPage(pagination.current_page + 1)}
+							>
+								<IconChevronRight size={18} />
+							</button>
+						</div>
 					</div>
-					<div class="pagination-controls">
-						<button
-							class="page-btn"
-							disabled={pagination.current_page === 1}
-							onclick={() => membersStore.goToPage(pagination.current_page - 1)}
-						>
-							<IconChevronLeft size={18} />
-						</button>
-						<span class="page-indicator">Page {pagination.current_page} of {pagination.last_page}</span>
-						<button
-							class="page-btn"
-							disabled={pagination.current_page === pagination.last_page}
-							onclick={() => membersStore.goToPage(pagination.current_page + 1)}
-						>
-							<IconChevronRight size={18} />
-						</button>
-					</div>
-				</div>
+				{/if}
 			{/if}
-		{/if}
+		</div>
 	</div>
-	</div><!-- End admin-page-container -->
+	<!-- End admin-page-container -->
 </div>
 
 <!-- Email Modal -->
 {#if showEmailModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showEmailModal = false)} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmailModal = false)} role="dialog" tabindex="-1" aria-modal="true">
-		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
+	<div
+		class="modal-overlay"
+		onclick={() => (showEmailModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmailModal = false)}
+		role="dialog"
+		tabindex="-1"
+		aria-modal="true"
+	>
+		<div
+			class="modal-content"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<h2>Send Email to {selectedMembers.size} Member{selectedMembers.size > 1 ? 's' : ''}</h2>
 				<button class="close-btn" onclick={() => (showEmailModal = false)}>
@@ -779,18 +829,32 @@
 
 				<div class="form-group">
 					<label for="email-subject">Subject</label>
-					<input id="email-subject" type="text" bind:value={emailSubject} placeholder="Email subject..." />
+					<input
+						id="email-subject"
+						type="text"
+						bind:value={emailSubject}
+						placeholder="Email subject..."
+					/>
 				</div>
 
 				<div class="form-group">
 					<label for="email-body">Body</label>
-					<textarea id="email-body" bind:value={emailBody} rows="10" placeholder="Email body... Use {{name}} for personalization"></textarea>
+					<textarea
+						id="email-body"
+						bind:value={emailBody}
+						rows="10"
+						placeholder="Email body... Use {{ name }} for personalization"
+					></textarea>
 				</div>
 			</div>
 
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showEmailModal = false)}>Cancel</button>
-				<button class="btn-primary" onclick={handleBulkEmail} disabled={!emailSubject || !emailBody}>
+				<button
+					class="btn-primary"
+					onclick={handleBulkEmail}
+					disabled={!emailSubject || !emailBody}
+				>
 					<IconSend size={18} />
 					Send Email
 				</button>
@@ -802,9 +866,21 @@
 <!-- Import Modal -->
 {#if showImportModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showImportModal = false)} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showImportModal = false)} role="dialog" tabindex="-1" aria-modal="true">
+	<div
+		class="modal-overlay"
+		onclick={() => (showImportModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showImportModal = false)}
+		role="dialog"
+		tabindex="-1"
+		aria-modal="true"
+	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
+		<div
+			class="modal-content"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<h2>Import Members</h2>
 				<button class="close-btn" onclick={() => (showImportModal = false)}>
@@ -818,7 +894,10 @@
 					<ul>
 						<li>First row must contain column headers</li>
 						<li>Required columns: <code>email</code>, <code>name</code></li>
-						<li>Optional: <code>first_name</code>, <code>last_name</code>, <code>phone</code>, <code>tags</code></li>
+						<li>
+							Optional: <code>first_name</code>, <code>last_name</code>, <code>phone</code>,
+							<code>tags</code>
+						</li>
 						<li>Maximum file size: 10MB</li>
 					</ul>
 				</div>
@@ -844,7 +923,11 @@
 				</div>
 
 				{#if importFile}
-					<button class="btn-secondary" style="margin-top: 1rem" onclick={() => (importFile = null)}>
+					<button
+						class="btn-secondary"
+						style="margin-top: 1rem"
+						onclick={() => (importFile = null)}
+					>
 						<IconX size={16} />
 						Remove File
 					</button>
@@ -914,7 +997,8 @@
 	<ConfirmationModal
 		isOpen={showDeleteModal}
 		title="Delete Member"
-		message="Are you sure you want to delete {selectedMemberForDelete.name || selectedMemberForDelete.email}? This action cannot be undone and will remove all associated data including subscriptions, orders, and activity history."
+		message="Are you sure you want to delete {selectedMemberForDelete.name ||
+			selectedMemberForDelete.email}? This action cannot be undone and will remove all associated data including subscriptions, orders, and activity history."
 		confirmLabel="Delete Member"
 		variant="danger"
 		isLoading={isDeleting}
@@ -1069,10 +1153,18 @@
 		backdrop-filter: blur(10px);
 	}
 
-	.stat-card.gradient-purple { border-color: rgba(230, 184, 0, 0.3); }
-	.stat-card.gradient-emerald { border-color: rgba(16, 185, 129, 0.3); }
-	.stat-card.gradient-gold { border-color: rgba(251, 191, 36, 0.3); }
-	.stat-card.gradient-red { border-color: rgba(239, 68, 68, 0.3); }
+	.stat-card.gradient-purple {
+		border-color: rgba(230, 184, 0, 0.3);
+	}
+	.stat-card.gradient-emerald {
+		border-color: rgba(16, 185, 129, 0.3);
+	}
+	.stat-card.gradient-gold {
+		border-color: rgba(251, 191, 36, 0.3);
+	}
+	.stat-card.gradient-red {
+		border-color: rgba(239, 68, 68, 0.3);
+	}
 
 	.stat-icon {
 		width: 48px;
@@ -1083,10 +1175,22 @@
 		justify-content: center;
 	}
 
-	.gradient-purple .stat-icon { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
-	.gradient-emerald .stat-icon { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-	.gradient-gold .stat-icon { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
-	.gradient-red .stat-icon { background: rgba(239, 68, 68, 0.15); color: #f87171; }
+	.gradient-purple .stat-icon {
+		background: rgba(230, 184, 0, 0.15);
+		color: #ffd11a;
+	}
+	.gradient-emerald .stat-icon {
+		background: rgba(16, 185, 129, 0.15);
+		color: #34d399;
+	}
+	.gradient-gold .stat-icon {
+		background: rgba(251, 191, 36, 0.15);
+		color: #fbbf24;
+	}
+	.gradient-red .stat-icon {
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
 
 	.stat-label {
 		font-size: 0.8125rem;
@@ -1110,9 +1214,15 @@
 		font-weight: 500;
 	}
 
-	.stat-change.positive { color: var(--admin-success); }
-	.stat-change.neutral { color: var(--admin-text-muted); }
-	.stat-change.negative { color: var(--admin-error); }
+	.stat-change.positive {
+		color: var(--admin-success);
+	}
+	.stat-change.neutral {
+		color: var(--admin-text-muted);
+	}
+	.stat-change.negative {
+		color: var(--admin-error);
+	}
 
 	.stat-sparkline {
 		position: absolute;
@@ -1231,7 +1341,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.service-name {
@@ -1249,7 +1359,7 @@
 		margin-left: auto;
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	/* Toolbar */
@@ -1317,13 +1427,13 @@
 	.filter-toggle:hover,
 	.btn-export:hover {
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.filter-toggle.active {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-email {
@@ -1415,13 +1525,15 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.empty-state h3 {
@@ -1470,7 +1582,7 @@
 		width: 48px;
 	}
 
-	.checkbox-col input[type="checkbox"] {
+	.checkbox-col input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
 		cursor: pointer;
@@ -1582,7 +1694,7 @@
 	.action-btn:hover {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	/* Pagination */
@@ -1622,7 +1734,7 @@
 	.page-btn:hover:not(:disabled) {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.page-btn:disabled {
@@ -1716,7 +1828,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 12px;
-		color: #E6B800;
+		color: #e6b800;
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -2078,7 +2190,7 @@
 
 	.import-instructions code {
 		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		color: #e6b800;
 		padding: 0.125rem 0.375rem;
 		border-radius: 4px;
 		font-size: 0.75rem;
@@ -2106,7 +2218,7 @@
 	.upload-zone:hover {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.4);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.upload-zone.has-file {
@@ -2190,7 +2302,7 @@
 
 	.export-options button:hover:not(:disabled) {
 		background: var(--admin-surface-hover, rgba(230, 184, 0, 0.1));
-		color: var(--admin-accent-primary, #E6B800);
+		color: var(--admin-accent-primary, #e6b800);
 	}
 
 	.export-options button:disabled {
@@ -2217,11 +2329,11 @@
 	}
 
 	.member-info-btn:hover .member-name {
-		color: var(--admin-accent-primary, #E6B800);
+		color: var(--admin-accent-primary, #e6b800);
 	}
 
 	.member-info-btn:focus-visible {
-		outline: 2px solid var(--admin-accent-primary, #E6B800);
+		outline: 2px solid var(--admin-accent-primary, #e6b800);
 		outline-offset: 2px;
 	}
 

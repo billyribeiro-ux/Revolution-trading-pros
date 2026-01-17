@@ -4,7 +4,7 @@ import type { RequestEvent } from '@sveltejs/kit';
 /**
  * Logout Page Server Load
  * ICT 11 Protocol: Secure session termination with complete cleanup
- * 
+ *
  * Security measures:
  * - Revokes session on backend via API call
  * - Clears all auth-related cookies

@@ -39,7 +39,7 @@
 	function handleSearch(e: Event): void {
 		e.preventDefault();
 		if (!browser) return;
-		
+
 		const url = new URL(window.location.href);
 		if (searchQuery) {
 			url.searchParams.set('search', searchQuery);
@@ -68,30 +68,35 @@
 	<title>SPX Profit Pulse Premium Videos - Revolution Trading Pros</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="SPX Profit Pulse" 
-	startHereUrl="/dashboard/spx-profit-pulse/start-here" 
+<TradingRoomHeader
+	roomName="SPX Profit Pulse"
+	startHereUrl="/dashboard/spx-profit-pulse/start-here"
 />
 
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<section class="dashboard__content-section">
 			<h2 class="section-title">Premium Videos</h2>
-			
+
 			<!-- Dashboard Filters -->
 			<div class="dashboard-filters">
 				<div class="dashboard-filters__count">
-					Showing <span class="facetwp-counts">{pagination.page * pagination.perPage - pagination.perPage + 1}-{Math.min(pagination.page * pagination.perPage, pagination.total)} of {pagination.total}</span>
+					Showing <span class="facetwp-counts"
+						>{pagination.page * pagination.perPage - pagination.perPage + 1}-{Math.min(
+							pagination.page * pagination.perPage,
+							pagination.total
+						)} of {pagination.total}</span
+					>
 				</div>
 				<div class="dashboard-filters__search">
 					<form onsubmit={handleSearch}>
-						<input 
+						<input
 							type="text"
 							id="video-search"
 							name="search"
-							class="facetwp-autocomplete" 
+							class="facetwp-autocomplete"
 							bind:value={searchQuery}
-							placeholder="Search" 
+							placeholder="Search"
 							autocomplete="off"
 						/>
 						<button type="submit" class="facetwp-autocomplete-update">🔍</button>
@@ -107,7 +112,11 @@
 							<article class="card-grid-spacer flex-grid-item col-xs-12 col-sm-6 col-md-6 col-lg-4">
 								<div class="card flex-grid-panel">
 									<figure class="card-media">
-										<a href={getVideoUrl(video)} class="card-image" style="background-image: url({video.thumbnail});">
+										<a
+											href={getVideoUrl(video)}
+											class="card-image"
+											style="background-image: url({video.thumbnail});"
+										>
 											<img class="default-background" width="325" height="183" alt={video.title} />
 										</a>
 									</figure>
@@ -137,7 +146,12 @@
 					<nav class="facetwp-pager" aria-label="Pagination">
 						{#each Array.from({ length: pagination.totalPages }, (_, i) => i + 1) as pageNum}
 							{#if pageNum === pagination.page}
-								<a class="facetwp-page active" href={getPageUrl(pageNum)} data-page={pageNum} aria-current="page">{pageNum}</a>
+								<a
+									class="facetwp-page active"
+									href={getPageUrl(pageNum)}
+									data-page={pageNum}
+									aria-current="page">{pageNum}</a
+								>
 							{:else if pageNum === 1 || pageNum === pagination.totalPages || Math.abs(pageNum - pagination.page) <= 2}
 								<a class="facetwp-page" href={getPageUrl(pageNum)} data-page={pageNum}>{pageNum}</a>
 							{:else if Math.abs(pageNum - pagination.page) === 3}
@@ -230,13 +244,13 @@
 	}
 
 	.dashboard-filters__search .facetwp-autocomplete:focus {
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	.dashboard-filters__search .facetwp-autocomplete-update {
 		padding: 8px 12px;
-		background: #143E59;
-		border: 1px solid #143E59;
+		background: #143e59;
+		border: 1px solid #143e59;
 		border-left: none;
 		border-radius: 0 4px 4px 0;
 		cursor: pointer;
@@ -294,7 +308,9 @@
 		border-radius: 8px;
 		overflow: hidden;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-		transition: box-shadow 0.3s ease, transform 0.2s ease;
+		transition:
+			box-shadow 0.3s ease,
+			transform 0.2s ease;
 	}
 
 	.card:hover {
@@ -384,7 +400,7 @@
 	}
 
 	.card-title a:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.card-description {
@@ -435,9 +451,9 @@
 	}
 
 	.btn-default {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border: 1px solid #143E59;
+		border: 1px solid #143e59;
 	}
 
 	.btn-default:hover {
@@ -477,8 +493,8 @@
 	}
 
 	.facetwp-page.active {
-		background: #143E59;
-		border-color: #143E59;
+		background: #143e59;
+		border-color: #143e59;
 		color: #fff;
 	}
 

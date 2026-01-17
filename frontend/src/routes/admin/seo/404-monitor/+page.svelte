@@ -151,7 +151,13 @@
 		<div class="search-box">
 			<IconSearch size={20} />
 			<label for="search-urls" class="sr-only">Search URLs</label>
-			<input type="text" id="search-urls" name="search" bind:value={searchQuery} placeholder="Search URLs..." />
+			<input
+				type="text"
+				id="search-urls"
+				name="search"
+				bind:value={searchQuery}
+				placeholder="Search URLs..."
+			/>
 		</div>
 
 		<select class="sort-select" bind:value={sortBy}>

@@ -132,10 +132,14 @@
 
 	function getIntervalLabel(interval?: string): string {
 		switch (interval) {
-			case 'monthly': return '/ month';
-			case 'quarterly': return 'every 3 months';
-			case 'yearly': return '/ year';
-			default: return '';
+			case 'monthly':
+				return '/ month';
+			case 'quarterly':
+				return 'every 3 months';
+			case 'yearly':
+				return '/ year';
+			default:
+				return '';
 		}
 	}
 
@@ -284,7 +288,10 @@
 		<div class="checkout-content">
 			<!-- Main Form Area -->
 			<div class="checkout-form-section">
-				<form class="checkout woocommerce-checkout" onsubmit={(e: SubmitEvent) => e.preventDefault()}>
+				<form
+					class="checkout woocommerce-checkout"
+					onsubmit={(e: SubmitEvent) => e.preventDefault()}
+				>
 					<!-- Step 1: Billing -->
 					<div id="checkout-billing" class="checkout-step" class:active={currentStep === 'billing'}>
 						<div class="card">
@@ -302,7 +309,9 @@
 
 								<div class="billing-fields">
 									<div class="form-row form-row-first">
-										<label for="billing_first_name">First name <abbr class="required">*</abbr></label>
+										<label for="billing_first_name"
+											>First name <abbr class="required">*</abbr></label
+										>
 										<input
 											type="text"
 											id="billing_first_name"
@@ -344,7 +353,8 @@
 									</div>
 
 									<div class="form-row form-row-wide">
-										<label for="billing_phone">Phone <span class="optional">(optional)</span></label>
+										<label for="billing_phone">Phone <span class="optional">(optional)</span></label
+										>
 										<input
 											type="tel"
 											id="billing_phone"
@@ -354,7 +364,9 @@
 									</div>
 
 									<div class="form-row form-row-wide">
-										<label for="billing_address_1">Street address <abbr class="required">*</abbr></label>
+										<label for="billing_address_1"
+											>Street address <abbr class="required">*</abbr></label
+										>
 										<input
 											type="text"
 											id="billing_address_1"
@@ -369,7 +381,9 @@
 									</div>
 
 									<div class="form-row form-row-wide">
-										<label for="billing_address_2" class="screen-reader-text">Apartment, suite, unit, etc.</label>
+										<label for="billing_address_2" class="screen-reader-text"
+											>Apartment, suite, unit, etc.</label
+										>
 										<input
 											type="text"
 											id="billing_address_2"
@@ -449,8 +463,13 @@
 									<div
 										class="payment-method"
 										class:selected={paymentMethod === 'stripe'}
-										onclick={() => paymentMethod = 'stripe'}
-										onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); paymentMethod = 'stripe'; } }}
+										onclick={() => (paymentMethod = 'stripe')}
+										onkeydown={(e: KeyboardEvent) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.preventDefault();
+												paymentMethod = 'stripe';
+											}
+										}}
 										role="button"
 										tabindex="0"
 									>
@@ -460,17 +479,28 @@
 											name="payment_method"
 											value="stripe"
 											checked={paymentMethod === 'stripe'}
-											onchange={() => paymentMethod = 'stripe'}
+											onchange={() => (paymentMethod = 'stripe')}
 										/>
 										<label for="payment_stripe">
 											<IconCreditCard size={24} />
 											<span class="method-title">Credit Card</span>
-											<span class="method-description">Pay securely with your credit or debit card</span>
+											<span class="method-description"
+												>Pay securely with your credit or debit card</span
+											>
 										</label>
 										<div class="card-icons">
-											<img src="https://js.stripe.com/v3/fingerprinted/img/visa-729c05c240c4bdb47b03ac81d9945bfe.svg" alt="Visa" />
-											<img src="https://js.stripe.com/v3/fingerprinted/img/mastercard-4d8844094130711885b5e41b28c9848f.svg" alt="Mastercard" />
-											<img src="https://js.stripe.com/v3/fingerprinted/img/amex-a49b82f46c5cd6a96a6e418a6ca1717c.svg" alt="Amex" />
+											<img
+												src="https://js.stripe.com/v3/fingerprinted/img/visa-729c05c240c4bdb47b03ac81d9945bfe.svg"
+												alt="Visa"
+											/>
+											<img
+												src="https://js.stripe.com/v3/fingerprinted/img/mastercard-4d8844094130711885b5e41b28c9848f.svg"
+												alt="Mastercard"
+											/>
+											<img
+												src="https://js.stripe.com/v3/fingerprinted/img/amex-a49b82f46c5cd6a96a6e418a6ca1717c.svg"
+												alt="Amex"
+											/>
 										</div>
 									</div>
 
@@ -478,8 +508,13 @@
 									<div
 										class="payment-method"
 										class:selected={paymentMethod === 'paypal'}
-										onclick={() => paymentMethod = 'paypal'}
-										onkeydown={(e: KeyboardEvent) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); paymentMethod = 'paypal'; } }}
+										onclick={() => (paymentMethod = 'paypal')}
+										onkeydown={(e: KeyboardEvent) => {
+											if (e.key === 'Enter' || e.key === ' ') {
+												e.preventDefault();
+												paymentMethod = 'paypal';
+											}
+										}}
 										role="button"
 										tabindex="0"
 									>
@@ -489,25 +524,34 @@
 											name="payment_method"
 											value="paypal"
 											checked={paymentMethod === 'paypal'}
-											onchange={() => paymentMethod = 'paypal'}
+											onchange={() => (paymentMethod = 'paypal')}
 										/>
 										<label for="payment_paypal">
 											<IconCreditCard size={24} />
 											<span class="method-title">PayPal</span>
-											<span class="method-description">You will be redirected to PayPal to complete payment</span>
+											<span class="method-description"
+												>You will be redirected to PayPal to complete payment</span
+											>
 										</label>
 									</div>
 								</div>
 
 								<div class="security-notice">
 									<IconLock size={18} />
-									<span>Your payment information is encrypted and secure. We never store your card details.</span>
+									<span
+										>Your payment information is encrypted and secure. We never store your card
+										details.</span
+									>
 								</div>
 							</div>
 
 							<div class="card-footer">
 								<div class="checkout-steps-actions">
-									<button type="button" class="btn btn-default back-to-billing" onclick={goToBilling}>
+									<button
+										type="button"
+										class="btn btn-default back-to-billing"
+										onclick={goToBilling}
+									>
 										<IconArrowLeft size={16} />
 										Back to Billing
 									</button>
@@ -605,16 +649,17 @@
 							</div>
 
 							<!-- Recurring totals for subscriptions -->
-							{#if $cartStore.items.some(i => i.interval)}
+							{#if $cartStore.items.some((i) => i.interval)}
 								<table class="cart-table recurring-table">
 									<tbody>
 										<tr class="recurring-totals-header">
 											<th colspan="2">Recurring Totals</th>
 										</tr>
-										{#each $cartStore.items.filter(i => i.interval) as item}
+										{#each $cartStore.items.filter((i) => i.interval) as item}
 											<tr class="recurring-total">
 												<td colspan="2">
-													{formatPrice(item.price)} {getIntervalLabel(item.interval)}
+													{formatPrice(item.price)}
+													{getIntervalLabel(item.interval)}
 												</td>
 											</tr>
 										{/each}
@@ -629,7 +674,7 @@
 								<button
 									type="button"
 									class="showcoupon"
-									onclick={() => couponFormVisible = !couponFormVisible}
+									onclick={() => (couponFormVisible = !couponFormVisible)}
 								>
 									<IconTicket size={16} />
 									Have a coupon? Click here to enter your code
@@ -707,7 +752,13 @@
 		min-height: 100vh;
 		background: var(--checkout-bg);
 		padding: 40px 0;
-		font-family: 'Open Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+		font-family:
+			'Open Sans',
+			-apple-system,
+			BlinkMacSystemFont,
+			'Segoe UI',
+			Roboto,
+			sans-serif;
 	}
 
 	.container {
@@ -1003,7 +1054,7 @@
 		background: rgba(9, 132, 174, 0.05);
 	}
 
-	.payment-method input[type="radio"] {
+	.payment-method input[type='radio'] {
 		margin-top: 4px;
 	}
 
@@ -1110,7 +1161,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1168,7 +1221,6 @@
 		flex-shrink: 0;
 	}
 
-	
 	.product-placeholder {
 		width: 100%;
 		height: 100%;
@@ -1193,7 +1245,6 @@
 		color: var(--checkout-primary);
 	}
 
-	
 	.product-total {
 		font-weight: 700;
 		font-size: 14px;

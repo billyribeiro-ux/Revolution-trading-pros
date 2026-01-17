@@ -1,22 +1,22 @@
 /**
  * Scanners Landing Page - Load Configuration
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Google December 2025 SEO Standards:
  * - Static Site Generation (SSG) for optimal performance
  * - Prerendering for instant page loads
  * - Proper hydration strategy
  * - Core Web Vitals optimization
- * 
+ *
  * Apple ICT 11+ Standards:
  * - Type-safe data loading
  * - Error boundary handling
  * - Progressive enhancement
- * 
+ *
  * Svelte 5 / SvelteKit (Dec 2025):
  * - No ./$types imports needed in universal load functions
  * - Explicit typing for load function parameters
- * 
+ *
  * @version 2.0.0
  * @author Revolution Trading Pros
  */
@@ -104,7 +104,8 @@ export const load = async ({ url }: { url: URL }): Promise<PageData> => {
 			id: 'high-octane-scanner',
 			name: 'High Octane Scanner',
 			slug: 'high-octane-scanner',
-			description: 'Professional-grade options scanner with real-time alerts and advanced filtering',
+			description:
+				'Professional-grade options scanner with real-time alerts and advanced filtering',
 			price: 119,
 			priceYearly: 1190,
 			interval: 'monthly' as const,
@@ -129,7 +130,8 @@ export const load = async ({ url }: { url: URL }): Promise<PageData> => {
 	// SEO metadata
 	const seo = {
 		title: 'Trading Scanners - Professional Options & Stock Analysis Tools',
-		description: 'Professional trading scanners for options and stock analysis. Real-time scanning, advanced filters, and smart alerts. Starting at $119/month.',
+		description:
+			'Professional trading scanners for options and stock analysis. Real-time scanning, advanced filters, and smart alerts. Starting at $119/month.',
 		canonical: `${url.origin}/store/scanners/`,
 		keywords: [
 			'options scanner',

@@ -134,6 +134,7 @@ jobs:
 
       - name: Security audit
         working-directory: api
+        # Uses .cargo/audit.toml for documented security exemptions (ICT 7)
         run: cargo audit
 
   docker:

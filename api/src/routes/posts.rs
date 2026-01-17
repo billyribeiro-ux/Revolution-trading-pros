@@ -1,6 +1,8 @@
 //! Blog/Post routes - Revolution Trading Pros
 //! Apple ICT 11+ Principal Engineer Grade - December 2025
 
+#![allow(clippy::needless_borrows_for_generic_args)]
+
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,

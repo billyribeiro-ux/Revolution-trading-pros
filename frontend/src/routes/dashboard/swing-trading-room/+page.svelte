@@ -33,7 +33,8 @@
 			type: 'Daily Video',
 			title: 'Swing Trading Market Analysis',
 			date: 'January 14, 2026',
-			excerpt: 'Analyzing key swing trading opportunities in the current market environment. Looking at multi-day setups and position management strategies.',
+			excerpt:
+				'Analyzing key swing trading opportunities in the current market environment. Looking at multi-day setups and position management strategies.',
 			href: '/daily/swing-trading-room/market-analysis',
 			image: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
 			isVideo: true
@@ -53,7 +54,8 @@
 			type: 'Daily Video',
 			title: 'Weekly Swing Trade Setups',
 			date: 'January 12, 2026',
-			excerpt: 'Reviewing the best swing trading setups for the week ahead. Focus on technical analysis and risk management for multi-day positions.',
+			excerpt:
+				'Reviewing the best swing trading setups for the week ahead. Focus on technical analysis and risk management for multi-day positions.',
 			href: '/daily/swing-trading-room/weekly-setups',
 			image: 'https://cdn.simplertrading.com/2025/05/07134911/SimplerCentral_DShay.jpg',
 			isVideo: true
@@ -73,7 +75,8 @@
 			type: 'Daily Video',
 			title: 'Position Management Strategies',
 			date: 'January 9, 2026',
-			excerpt: 'How to manage swing trades effectively. Discussing entry points, stop losses, and profit targets for longer-term positions.',
+			excerpt:
+				'How to manage swing trades effectively. Discussing entry points, stop losses, and profit targets for longer-term positions.',
 			href: '/daily/swing-trading-room/position-management',
 			image: 'https://cdn.simplertrading.com/2025/05/07134553/SimplerCentral_SS.jpg',
 			isVideo: true
@@ -128,42 +131,46 @@
 			// @ts-ignore
 			gapi.load('client', () => {
 				// @ts-ignore
-				gapi.client.init({
-					apiKey: API_KEY,
-					clientId: CLIENT_ID,
-					discoveryDocs: DISCOVERY_DOCS,
-					scope: SCOPES
-				}).then(() => {
-					// @ts-ignore
-					return gapi.client.calendar.events.list({
-						'calendarId': 'simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com',
-						'timeMin': (new Date()).toISOString(),
-						'showDeleted': false,
-						'singleEvents': true,
-						'maxResults': 10,
-						'orderBy': 'startTime',
-						'fields': 'items(summary,start/dateTime)'
-					});
-				}).then((response: any) => {
-					const dateOptions: Intl.DateTimeFormatOptions = {
-						month: 'short',
-						day: 'numeric',
-						year: 'numeric',
-						hour: 'numeric',
-						minute: 'numeric',
-						timeZoneName: 'short'
-					};
-					const container = document.querySelector('.room-sched');
-					if (container && response.result.items) {
-						for (let i = 0; i < response.result.items.length; i++) {
-							const eventStart = new Date(response.result.items[i].start.dateTime);
-							const eventHtml = `<h4>${response.result.items[i].summary}</h4><span>${eventStart.toLocaleString('en-US', dateOptions)}</span>`;
-							container.innerHTML += eventHtml;
+				gapi.client
+					.init({
+						apiKey: API_KEY,
+						clientId: CLIENT_ID,
+						discoveryDocs: DISCOVERY_DOCS,
+						scope: SCOPES
+					})
+					.then(() => {
+						// @ts-ignore
+						return gapi.client.calendar.events.list({
+							calendarId: 'simpleroptions.com_sabio00har0rd4odbrsa705904@group.calendar.google.com',
+							timeMin: new Date().toISOString(),
+							showDeleted: false,
+							singleEvents: true,
+							maxResults: 10,
+							orderBy: 'startTime',
+							fields: 'items(summary,start/dateTime)'
+						});
+					})
+					.then((response: any) => {
+						const dateOptions: Intl.DateTimeFormatOptions = {
+							month: 'short',
+							day: 'numeric',
+							year: 'numeric',
+							hour: 'numeric',
+							minute: 'numeric',
+							timeZoneName: 'short'
+						};
+						const container = document.querySelector('.room-sched');
+						if (container && response.result.items) {
+							for (let i = 0; i < response.result.items.length; i++) {
+								const eventStart = new Date(response.result.items[i].start.dateTime);
+								const eventHtml = `<h4>${response.result.items[i].summary}</h4><span>${eventStart.toLocaleString('en-US', dateOptions)}</span>`;
+								container.innerHTML += eventHtml;
+							}
 						}
-					}
-				}).catch((error: any) => {
-					console.warn('Calendar Error:', error);
-				});
+					})
+					.catch((error: any) => {
+						console.warn('Calendar Error:', error);
+					});
 			});
 		} catch (error) {
 			console.warn('Failed to initialize Google Calendar:', error);
@@ -176,19 +183,26 @@
 	<script src="https://apis.google.com/js/api.js"></script>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Swing Trading Room" 
-	startHereUrl="/dashboard/swing-trading-room/start-here" 
+<TradingRoomHeader
+	roomName="Swing Trading Room"
+	startHereUrl="/dashboard/swing-trading-room/start-here"
 />
 
 <!-- DASHBOARD CONTENT - Exact WordPress Structure -->
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-
 		<!-- VIDEO TUTORIAL SECTION -->
 		<section class="dashboard__content-section-member">
-			<video controls width="100%" poster="https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg" style="aspect-ratio: 2 / 1;">
-				<source src="https://simpler-options.s3.amazonaws.com/tutorials/SwingTrading_tutorial2026.mp4" type="video/mp4">
+			<video
+				controls
+				width="100%"
+				poster="https://cdn.simplertrading.com/2025/06/03161600/SCR-20250603-nmuc.jpeg"
+				style="aspect-ratio: 2 / 1;"
+			>
+				<source
+					src="https://simpler-options.s3.amazonaws.com/tutorials/SwingTrading_tutorial2026.mp4"
+					type="video/mp4"
+				/>
 				Your browser does not support the video tag.
 			</video>
 		</section>
@@ -200,7 +214,6 @@
 		<div class="dashboard__content-section u--background-color-white">
 			<WeeklyWatchlist data={(data as { watchlist?: any }).watchlist} />
 		</div>
-
 	</div>
 
 	<!-- SIDEBAR - Using TradingRoomSidebar Component -->

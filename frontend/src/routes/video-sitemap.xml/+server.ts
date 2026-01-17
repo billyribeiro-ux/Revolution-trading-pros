@@ -191,7 +191,6 @@ function escapeXml(str: string): string {
 		.replace(/'/g, '&apos;');
 }
 
-
 /**
  * Generate video sitemap URL entry
  */

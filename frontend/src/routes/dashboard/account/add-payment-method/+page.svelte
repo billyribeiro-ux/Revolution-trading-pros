@@ -35,11 +35,11 @@
 		// Get Stripe publishable key from environment or config
 		// For now, we'll need to fetch it from the backend
 		fetch('/api/stripe/config')
-			.then(res => res.json())
-			.then(config => {
+			.then((res) => res.json())
+			.then((config) => {
 				stripe = (window as any).Stripe(config.publishableKey);
 				elements = stripe.elements();
-				
+
 				// Create card element
 				cardElement = elements.create('card', {
 					style: {
@@ -57,9 +57,9 @@
 						}
 					}
 				});
-				
+
 				cardElement.mount('#card-element');
-				
+
 				cardElement.on('change', (event: any) => {
 					if (event.error) {
 						errorMessage = event.error.message;
@@ -70,7 +70,7 @@
 
 				stripeLoaded = true;
 			})
-			.catch(err => {
+			.catch((err) => {
 				console.error('Error loading Stripe:', err);
 				errorMessage = 'Failed to load payment form. Please refresh the page.';
 			});
@@ -78,7 +78,7 @@
 
 	async function handleSubmit(event: SubmitEvent) {
 		event.preventDefault();
-		
+
 		if (!stripe || !cardElement) {
 			errorMessage = 'Payment form not loaded. Please refresh the page.';
 			return;
@@ -135,84 +135,80 @@
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
 		<div class="add-payment-card">
-		<div class="woocommerce-notices-wrapper">
-			{#if form?.error}
-				<div class="woocommerce-error" role="alert">
-					{form.error}
-				</div>
-			{/if}
+			<div class="woocommerce-notices-wrapper">
+				{#if form?.error}
+					<div class="woocommerce-error" role="alert">
+						{form.error}
+					</div>
+				{/if}
 
-			{#if errorMessage}
-				<div class="woocommerce-error" role="alert">
-					{errorMessage}
-				</div>
-			{/if}
-		</div>
+				{#if errorMessage}
+					<div class="woocommerce-error" role="alert">
+						{errorMessage}
+					</div>
+				{/if}
+			</div>
 
-		<h2 class="section-title">Add Payment Method</h2>
+			<h2 class="section-title">Add Payment Method</h2>
 
-		<form 
-			method="post" 
-			id="add_payment_method"
-			onsubmit={handleSubmit}
-		>
-			<input type="hidden" id="payment_method_id" name="payment_method_id" value="" />
-			<input type="hidden" name="set_as_default" value={setAsDefault.toString()} />
+			<form method="post" id="add_payment_method" onsubmit={handleSubmit}>
+				<input type="hidden" id="payment_method_id" name="payment_method_id" value="" />
+				<input type="hidden" name="set_as_default" value={setAsDefault.toString()} />
 
-			<div class="woocommerce-PaymentMethods payment_methods methods">
-				<div class="woocommerce-PaymentMethod woocommerce-PaymentMethod--stripe payment_method_stripe">
-					<label for="payment_method_stripe">
-						<input 
-							id="payment_method_stripe" 
-							type="radio" 
-							class="input-radio" 
-							name="payment_method" 
-							value="stripe" 
-							checked 
-						/>
-						Credit Card (Stripe)
-					</label>
+				<div class="woocommerce-PaymentMethods payment_methods methods">
+					<div
+						class="woocommerce-PaymentMethod woocommerce-PaymentMethod--stripe payment_method_stripe"
+					>
+						<label for="payment_method_stripe">
+							<input
+								id="payment_method_stripe"
+								type="radio"
+								class="input-radio"
+								name="payment_method"
+								value="stripe"
+								checked
+							/>
+							Credit Card (Stripe)
+						</label>
 
-					<div class="woocommerce-PaymentBox woocommerce-PaymentBox--stripe payment_box payment_method_stripe">
-						<fieldset id="wc-stripe-cc-form" class="wc-credit-card-form wc-payment-form">
-							<div class="form-row form-row-wide">
-								<label for="card-element">
-									Card Number <span class="required">*</span>
-								</label>
-								<div id="card-element" class="wc-stripe-elements-field"></div>
-							</div>
+						<div
+							class="woocommerce-PaymentBox woocommerce-PaymentBox--stripe payment_box payment_method_stripe"
+						>
+							<fieldset id="wc-stripe-cc-form" class="wc-credit-card-form wc-payment-form">
+								<div class="form-row form-row-wide">
+									<label for="card-element">
+										Card Number <span class="required">*</span>
+									</label>
+									<div id="card-element" class="wc-stripe-elements-field"></div>
+								</div>
 
-							<div class="form-row form-row-wide">
-								<label for="set_as_default_checkbox">
-									<input 
-										id="set_as_default_checkbox"
-										type="checkbox" 
-										bind:checked={setAsDefault}
-									/>
-									Set as default payment method
-								</label>
-							</div>
-						</fieldset>
+								<div class="form-row form-row-wide">
+									<label for="set_as_default_checkbox">
+										<input
+											id="set_as_default_checkbox"
+											type="checkbox"
+											bind:checked={setAsDefault}
+										/>
+										Set as default payment method
+									</label>
+								</div>
+							</fieldset>
+						</div>
 					</div>
 				</div>
-			</div>
 
-			<div class="form-row">
-				<button 
-					type="submit" 
-					class="button alt" 
-					disabled={isLoading || !stripeLoaded}
-				>
-					{#if isLoading}
-						Processing...
-					{:else}
-						Add Payment Method
-					{/if}
-				</button>
+				<div class="form-row">
+					<button type="submit" class="button alt" disabled={isLoading || !stripeLoaded}>
+						{#if isLoading}
+							Processing...
+						{:else}
+							Add Payment Method
+						{/if}
+					</button>
 
-				<a href="/dashboard/account/payment-methods" class="button">Cancel</a>
-			</div>
-		</form>
+					<a href="/dashboard/account/payment-methods" class="button">Cancel</a>
+				</div>
+			</form>
 		</div>
 	</div>
 </div>
@@ -372,9 +368,9 @@
 	}
 
 	.button.alt {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	.button.alt:hover {
@@ -388,7 +384,7 @@
 	}
 
 	.button:disabled:hover {
-		background: #143E59;
-		border-color: #143E59;
+		background: #143e59;
+		border-color: #143e59;
 	}
 </style>

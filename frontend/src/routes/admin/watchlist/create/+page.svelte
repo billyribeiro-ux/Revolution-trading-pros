@@ -73,7 +73,10 @@
 		const month = String(date.getMonth() + 1).padStart(2, '0');
 		const day = String(date.getDate()).padStart(2, '0');
 		const year = date.getFullYear();
-		const traderSlug = trader.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+		const traderSlug = trader
+			.toLowerCase()
+			.replace(/[^a-z0-9]+/g, '-')
+			.replace(/^-+|-+$/g, '');
 		return `${month}${day}${year}-${traderSlug}`;
 	});
 
@@ -93,11 +96,13 @@
 
 	// Form validation
 	const isFormValid = $derived.by(() => {
-		return trader.trim() !== '' &&
+		return (
+			trader.trim() !== '' &&
 			weekOf !== '' &&
 			videoUrl.trim() !== '' &&
 			spreadsheetUrl.trim() !== '' &&
-			rooms.length > 0;
+			rooms.length > 0
+		);
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -110,10 +115,13 @@
 			return;
 		}
 
-		watchlistDates = [...watchlistDates, {
-			date: newDate,
-			spreadsheetUrl: newDateSpreadsheet
-		}];
+		watchlistDates = [
+			...watchlistDates,
+			{
+				date: newDate,
+				spreadsheetUrl: newDateSpreadsheet
+			}
+		];
 
 		newDate = '';
 		newDateSpreadsheet = '';
@@ -234,12 +242,7 @@
 
 					<div class="form-group">
 						<label for="weekOf">Week Of <span class="required">*</span></label>
-						<input
-							id="weekOf"
-							type="date"
-							bind:value={weekOf}
-							required
-						/>
+						<input id="weekOf" type="date" bind:value={weekOf} required />
 						<small>Monday of the week this watchlist covers</small>
 					</div>
 
@@ -330,7 +333,9 @@
 				</div>
 				<div class="form-grid">
 					<div class="form-group full-width">
-						<label for="spreadsheetUrl">Default Spreadsheet URL <span class="required">*</span></label>
+						<label for="spreadsheetUrl"
+							>Default Spreadsheet URL <span class="required">*</span></label
+						>
 						<input
 							id="spreadsheetUrl"
 							type="url"
@@ -350,8 +355,8 @@
 					<h2 class="section-title">Date Switcher (Optional)</h2>
 				</div>
 				<p class="section-description">
-					Add multiple date versions if this watchlist has historical data.
-					Users can switch between dates using tabs below the spreadsheet.
+					Add multiple date versions if this watchlist has historical data. Users can switch between
+					dates using tabs below the spreadsheet.
 				</p>
 
 				{#if watchlistDates.length > 0}
@@ -379,12 +384,7 @@
 					<div class="date-adder-row">
 						<div class="form-group">
 							<label for="newDate">Date Label</label>
-							<input
-								type="text"
-								id="newDate"
-								bind:value={newDate}
-								placeholder="e.g., 1/3/2026"
-							/>
+							<input type="text" id="newDate" bind:value={newDate} placeholder="e.g., 1/3/2026" />
 						</div>
 
 						<div class="form-group flex-grow">
@@ -397,11 +397,7 @@
 							/>
 						</div>
 
-						<button
-							type="button"
-							class="btn-add"
-							onclick={addDateVersion}
-						>
+						<button type="button" class="btn-add" onclick={addDateVersion}>
 							<IconPlus size={16} />
 							Add Date
 						</button>
@@ -412,7 +408,9 @@
 			<!-- Room Targeting Section -->
 			<section class="form-section">
 				<h2 class="section-title">Room Targeting</h2>
-				<p class="section-description">Select which rooms and services can access this watchlist.</p>
+				<p class="section-description">
+					Select which rooms and services can access this watchlist.
+				</p>
 				<RoomSelector bind:selectedRooms={rooms} />
 			</section>
 		</form>

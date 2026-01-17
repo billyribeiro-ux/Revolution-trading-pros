@@ -1,9 +1,9 @@
 /**
  * Explosive Swings Trade Tracker - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * SSR pre-fetch for trade plan data
- * 
+ *
  * @version 1.0.0
  */
 
@@ -14,7 +14,7 @@ const ROOM_SLUG = 'explosive-swings';
 
 export const load: PageServerLoad = async ({ fetch }) => {
 	const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev/api';
-	
+
 	try {
 		const [tradePlanRes, statsRes] = await Promise.all([
 			fetch(`${baseUrl}/room-content/rooms/${ROOM_SLUG}/trade-plan`).catch(() => null),

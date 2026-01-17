@@ -55,7 +55,12 @@
 	 * Resize image to max dimensions while maintaining aspect ratio
 	 * Converts to optimized format for faster uploads
 	 */
-	async function resizeImage(file: File, maxWidth = 1200, maxHeight = 1200, quality = 0.85): Promise<Blob> {
+	async function resizeImage(
+		file: File,
+		maxWidth = 1200,
+		maxHeight = 1200,
+		quality = 0.85
+	): Promise<Blob> {
 		return new Promise((resolve, reject) => {
 			const img = new Image();
 			const canvas = document.createElement('canvas');
@@ -301,12 +306,7 @@
 
 					<div class="form-group">
 						<label for="version">Version</label>
-						<input
-							id="version"
-							type="text"
-							bind:value={indicator.version}
-							placeholder="1.0"
-						/>
+						<input id="version" type="text" bind:value={indicator.version} placeholder="1.0" />
 					</div>
 				</div>
 
@@ -463,7 +463,7 @@
 		inset: 0;
 		border-radius: 20px;
 		padding: 2px;
-		background: linear-gradient(135deg, #E6B800, #B38F00, #FFD11A);
+		background: linear-gradient(135deg, #e6b800, #b38f00, #ffd11a);
 		-webkit-mask:
 			linear-gradient(#fff 0 0) content-box,
 			linear-gradient(#fff 0 0);
@@ -563,7 +563,7 @@
 	.price {
 		font-size: 2rem;
 		font-weight: 700;
-		background: linear-gradient(135deg, #E6B800, #B38F00, #FFD11A);
+		background: linear-gradient(135deg, #e6b800, #b38f00, #ffd11a);
 		background-size: 200% 200%;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
@@ -576,7 +576,7 @@
 		content: attr(data-price);
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		-webkit-background-clip: text;
 		background-clip: text;
 		-webkit-text-fill-color: transparent;
@@ -599,8 +599,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -614,7 +614,7 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(135deg, #B38F00, #FFD11A);
+		background: linear-gradient(135deg, #b38f00, #ffd11a);
 		opacity: 0;
 		transition: opacity 0.3s;
 	}
@@ -715,7 +715,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #E6B800;
+		border-color: #e6b800;
 		background: rgba(15, 23, 42, 0.8);
 		box-shadow:
 			0 0 0 3px rgba(230, 184, 0, 0.15),
@@ -737,7 +737,7 @@
 	.price-input .currency {
 		position: absolute;
 		left: 1rem;
-		color: #E6B800;
+		color: #e6b800;
 		font-weight: 600;
 		font-size: 1.125rem;
 	}
@@ -791,7 +791,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 8px;
-		color: #FFD11A;
+		color: #ffd11a;
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -881,7 +881,7 @@
 
 	.btn-secondary {
 		background: rgba(230, 184, 0, 0.1);
-		color: #FFD11A;
+		color: #ffd11a;
 		border: 1px solid rgba(230, 184, 0, 0.3);
 	}
 
@@ -904,15 +904,15 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 	}
 
 	.btn-primary::before {
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: linear-gradient(135deg, #B38F00, #FFD11A);
+		background: linear-gradient(135deg, #b38f00, #ffd11a);
 		opacity: 0;
 		transition: opacity 0.3s;
 	}

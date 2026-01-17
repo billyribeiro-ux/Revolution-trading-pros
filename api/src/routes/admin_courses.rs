@@ -70,6 +70,7 @@ async fn list_courses(
     query.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
 
     // Query base course data
+    #[allow(clippy::type_complexity)]
     let rows: Vec<(
         Uuid,
         String,

@@ -8,6 +8,8 @@
 //! - Payment processing
 //! - Report generation
 
+#![allow(clippy::manual_range_contains)]
+
 use anyhow::Result;
 use chrono::Utc;
 use hmac::{Hmac, Mac};

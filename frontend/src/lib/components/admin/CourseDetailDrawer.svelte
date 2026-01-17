@@ -45,15 +45,7 @@
 		onRefresh?: () => void;
 	}
 
-	let {
-		isOpen,
-		courseId,
-		onClose,
-		onEdit,
-		onEditModule,
-		onAddModule,
-		onRefresh
-	}: Props = $props();
+	let { isOpen, courseId, onClose, onEdit, onEditModule, onAddModule, onRefresh }: Props = $props();
 
 	// State
 	let courseData = $state<CourseWithContent | null>(null);
@@ -201,7 +193,7 @@
 		}
 	}
 
-	function handleBackdropClick(e: MouseEvent) {
+	function handleBackdropClick(e: MouseEvent | KeyboardEvent) {
 		if (e.target === e.currentTarget) {
 			onClose();
 		}
@@ -209,7 +201,14 @@
 </script>
 
 {#if isOpen}
-	<div class="drawer-backdrop" onclick={handleBackdropClick}>
+	<div
+		class="drawer-backdrop"
+		role="presentation"
+		onclick={handleBackdropClick}
+		onkeydown={(e) => {
+			if (e.key === 'Escape') handleBackdropClick(e);
+		}}
+	>
 		<aside class="drawer" class:open={isOpen}>
 			{#if isLoading}
 				<div class="loading-state">
@@ -238,7 +237,9 @@
 						<div class="course-badges">
 							<span
 								class="status-badge"
-								style="--badge-color: {getStatusColor(courseData.status || (courseData.is_published ? 'published' : 'draft'))}"
+								style="--badge-color: {getStatusColor(
+									courseData.status || (courseData.is_published ? 'published' : 'draft')
+								)}"
 							>
 								{courseData.status || (courseData.is_published ? 'Published' : 'Draft')}
 							</span>
@@ -269,7 +270,10 @@
 						<span class="stat-label">Modules</span>
 					</div>
 					<div class="stat-item">
-						<span class="stat-value">{courseData.lesson_count || courseData.modules.reduce((sum, m) => sum + (m.lessons?.length || 0), 0)}</span>
+						<span class="stat-value"
+							>{courseData.lesson_count ||
+								courseData.modules.reduce((sum, m) => sum + (m.lessons?.length || 0), 0)}</span
+						>
 						<span class="stat-label">Lessons</span>
 					</div>
 					<div class="stat-item">
@@ -297,7 +301,7 @@
 						class="btn-action"
 						class:success={!courseData.is_published}
 						class:warning={courseData.is_published}
-						onclick={() => showPublishModal = true}
+						onclick={() => (showPublishModal = true)}
 					>
 						{#if courseData.is_published}
 							<IconEyeOff size={16} />
@@ -315,7 +319,7 @@
 						type="button"
 						class="tab"
 						class:active={activeTab === 'modules'}
-						onclick={() => activeTab = 'modules'}
+						onclick={() => (activeTab = 'modules')}
 					>
 						<IconBook size={16} />
 						Modules
@@ -324,7 +328,7 @@
 						type="button"
 						class="tab"
 						class:active={activeTab === 'enrollments'}
-						onclick={() => activeTab = 'enrollments'}
+						onclick={() => (activeTab = 'enrollments')}
 					>
 						<IconUsers size={16} />
 						Enrollments
@@ -333,7 +337,7 @@
 						type="button"
 						class="tab"
 						class:active={activeTab === 'analytics'}
-						onclick={() => activeTab = 'analytics'}
+						onclick={() => (activeTab = 'analytics')}
 					>
 						<IconChartBar size={16} />
 						Analytics
@@ -364,7 +368,18 @@
 								<div class="modules-list">
 									{#each courseData.modules as module, idx}
 										<div class="module-card" class:expanded={expandedModules.has(module.id)}>
-											<div class="module-header" onclick={() => toggleModuleExpand(module.id)}>
+											<div
+												class="module-header"
+												role="button"
+												tabindex="0"
+												onclick={() => toggleModuleExpand(module.id)}
+												onkeydown={(e) => {
+													if (e.key === 'Enter' || e.key === ' ') {
+														e.preventDefault();
+														toggleModuleExpand(module.id);
+													}
+												}}
+											>
 												<div class="module-drag">
 													<IconGripVertical size={16} />
 												</div>
@@ -385,7 +400,7 @@
 														</span>
 													{/if}
 												</div>
-												<div class="module-actions" onclick={(e) => e.stopPropagation()}>
+												<div class="module-actions">
 													<button
 														type="button"
 														class="btn-module-action"
@@ -397,7 +412,10 @@
 													<button
 														type="button"
 														class="btn-module-action danger"
-														onclick={() => { selectedModuleId = module.id; showDeleteModuleModal = true; }}
+														onclick={() => {
+															selectedModuleId = module.id;
+															showDeleteModuleModal = true;
+														}}
 														title="Delete module"
 													>
 														<IconTrash size={14} />
@@ -422,7 +440,9 @@
 																<div class="lesson-info">
 																	<span class="lesson-title">{lesson.title}</span>
 																	{#if lesson.duration_minutes}
-																		<span class="lesson-duration">{lesson.duration_minutes} min</span>
+																		<span class="lesson-duration"
+																			>{lesson.duration_minutes} min</span
+																		>
 																	{/if}
 																</div>
 																<div class="lesson-badges">
@@ -443,7 +463,6 @@
 								</div>
 							{/if}
 						</div>
-
 					{:else if activeTab === 'enrollments'}
 						<div class="tab-content">
 							<div class="enrollment-stats">
@@ -470,7 +489,9 @@
 										<IconChartBar size={20} />
 									</div>
 									<div class="enroll-stat-content">
-										<span class="enroll-stat-value">{courseData.avg_rating?.toFixed(1) || 'N/A'}</span>
+										<span class="enroll-stat-value"
+											>{courseData.avg_rating?.toFixed(1) || 'N/A'}</span
+										>
 										<span class="enroll-stat-label">Avg Rating</span>
 									</div>
 								</div>
@@ -484,7 +505,6 @@
 								</div>
 							</div>
 						</div>
-
 					{:else if activeTab === 'analytics'}
 						<div class="tab-content">
 							<div class="analytics-grid">
@@ -546,7 +566,11 @@
 										<IconClock size={16} />
 										<div>
 											<span class="info-label">Total Duration</span>
-											<span class="info-value">{formatDuration(courseData.total_duration_minutes || courseData.duration_minutes)}</span>
+											<span class="info-value"
+												>{formatDuration(
+													courseData.total_duration_minutes || courseData.duration_minutes
+												)}</span
+											>
 										</div>
 									</div>
 									<div class="info-item">
@@ -564,7 +588,11 @@
 									<h3 class="section-title">Instructor</h3>
 									<div class="instructor-card">
 										{#if courseData.instructor_avatar_url}
-											<img src={courseData.instructor_avatar_url} alt={courseData.instructor_name} class="instructor-avatar" />
+											<img
+												src={courseData.instructor_avatar_url}
+												alt={courseData.instructor_name}
+												class="instructor-avatar"
+											/>
 										{:else}
 											<div class="instructor-avatar-placeholder">
 												{courseData.instructor_name[0].toUpperCase()}
@@ -598,7 +626,7 @@
 	variant={courseData?.is_published ? 'warning' : 'success'}
 	isLoading={isProcessingAction}
 	onConfirm={handlePublishToggle}
-	onCancel={() => showPublishModal = false}
+	onCancel={() => (showPublishModal = false)}
 />
 
 <!-- Delete Module Modal -->
@@ -610,7 +638,10 @@
 	variant="danger"
 	isLoading={isProcessingAction}
 	onConfirm={handleDeleteModule}
-	onCancel={() => { showDeleteModuleModal = false; selectedModuleId = null; }}
+	onCancel={() => {
+		showDeleteModuleModal = false;
+		selectedModuleId = null;
+	}}
 />
 
 <style>
@@ -623,8 +654,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.drawer {
@@ -668,12 +703,14 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-retry {
 		background: var(--admin-accent-primary);
-		color: #0D1117;
+		color: #0d1117;
 		border: none;
 		padding: 0.5rem 1rem;
 		border-radius: var(--radius-md, 0.5rem);
@@ -965,7 +1002,7 @@
 	.btn-add-module:hover {
 		background: var(--admin-accent-primary);
 		border-style: solid;
-		color: #0D1117;
+		color: #0d1117;
 	}
 
 	/* Modules List */
@@ -1304,7 +1341,11 @@
 		width: 48px;
 		height: 48px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, var(--admin-accent-primary), var(--admin-widget-purple-icon));
+		background: linear-gradient(
+			135deg,
+			var(--admin-accent-primary),
+			var(--admin-widget-purple-icon)
+		);
 		display: flex;
 		align-items: center;
 		justify-content: center;

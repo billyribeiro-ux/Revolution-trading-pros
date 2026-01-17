@@ -23,25 +23,23 @@ const mockSchedules: any[] = [];
 function getOrInitMockData(): any[] {
 	if (mockSchedules.length === 0) {
 		// Default mock schedules
-		mockSchedules.push(
-			{
-				id: 1,
-				room_id: 'day-trading-room',
-				title: 'Pre-Market Analysis',
-				description: 'Daily pre-market analysis and game plan for the trading day.',
-				trader_name: 'Taylor Horton',
-				day_of_week: 1,
-				start_time: '08:30',
-				end_time: '09:15',
-				timezone: 'America/New_York',
-				is_active: true,
-				room_type: 'live',
-				recurrence: 'weekly',
-				exceptions: [],
-				created_at: '2025-12-01T00:00:00Z',
-				updated_at: '2025-12-01T00:00:00Z'
-			}
-		);
+		mockSchedules.push({
+			id: 1,
+			room_id: 'day-trading-room',
+			title: 'Pre-Market Analysis',
+			description: 'Daily pre-market analysis and game plan for the trading day.',
+			trader_name: 'Taylor Horton',
+			day_of_week: 1,
+			start_time: '08:30',
+			end_time: '09:15',
+			timezone: 'America/New_York',
+			is_active: true,
+			room_type: 'live',
+			recurrence: 'weekly',
+			exceptions: [],
+			created_at: '2025-12-01T00:00:00Z',
+			updated_at: '2025-12-01T00:00:00Z'
+		});
 	}
 	return mockSchedules;
 }
@@ -59,7 +57,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			...options,
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				...options?.headers
 			}
 		});
@@ -94,13 +92,16 @@ export const GET: RequestHandler = async ({ params, request }) => {
 
 	// Fallback to mock data
 	const schedules = getOrInitMockData();
-	const schedule = schedules.find(s => s.id === id);
+	const schedule = schedules.find((s) => s.id === id);
 
 	if (!schedule) {
-		return json({
-			success: false,
-			error: 'Schedule not found'
-		}, { status: 404 });
+		return json(
+			{
+				success: false,
+				error: 'Schedule not found'
+			},
+			{ status: 404 }
+		);
 	}
 
 	return json({
@@ -131,13 +132,16 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 
 	// Fallback to mock data
 	const schedules = getOrInitMockData();
-	const scheduleIndex = schedules.findIndex(s => s.id === id);
+	const scheduleIndex = schedules.findIndex((s) => s.id === id);
 
 	if (scheduleIndex === -1) {
-		return json({
-			success: false,
-			error: 'Schedule not found'
-		}, { status: 404 });
+		return json(
+			{
+				success: false,
+				error: 'Schedule not found'
+			},
+			{ status: 404 }
+		);
 	}
 
 	// Update the schedule
@@ -177,13 +181,16 @@ export const DELETE: RequestHandler = async ({ params, request }) => {
 
 	// Fallback to mock data
 	const schedules = getOrInitMockData();
-	const scheduleIndex = schedules.findIndex(s => s.id === id);
+	const scheduleIndex = schedules.findIndex((s) => s.id === id);
 
 	if (scheduleIndex === -1) {
-		return json({
-			success: false,
-			error: 'Schedule not found'
-		}, { status: 404 });
+		return json(
+			{
+				success: false,
+				error: 'Schedule not found'
+			},
+			{ status: 404 }
+		);
 	}
 
 	// Remove the schedule

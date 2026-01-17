@@ -12,7 +12,8 @@
 			title: 'Weekly Watchlist with TG Watkins',
 			date: 'January 12, 2026',
 			description: 'Week of January 12, 2026.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 			href: '/watchlist/01122026-tg-watkins'
 		},
 		{
@@ -28,7 +29,8 @@
 			title: 'Weekly Watchlist with David Starr',
 			date: 'December 29, 2025',
 			description: 'Week of December 29, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
 			href: '/watchlist/12292025-david-starr'
 		},
 		{
@@ -36,7 +38,8 @@
 			title: 'Weekly Watchlist with TG Watkins',
 			date: 'December 22, 2025',
 			description: 'Week of December 22, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/TG-Watchlist-Rundown.jpg',
 			href: '/watchlist/12222025-tg-watkins'
 		},
 		{
@@ -44,7 +47,8 @@
 			title: 'Weekly Watchlist with Allison Ostrander',
 			date: 'December 15, 2025',
 			description: 'Week of December 15, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Allison-Watchlist-Rundown.jpg',
 			href: '/watchlist/12152025-allison-ostrander'
 		},
 		{
@@ -52,7 +56,8 @@
 			title: 'Weekly Watchlist with Taylor Horton',
 			date: 'December 08, 2025',
 			description: 'Week of December 8, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Taylor-Watchlist-Rundown.jpg',
 			href: '/watchlist/12082025-taylor-horton'
 		},
 		{
@@ -60,7 +65,8 @@
 			title: 'Weekly Watchlist with Raghee Horner',
 			date: 'December 01, 2025',
 			description: 'Week of December 1, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Raghee-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/Raghee-Watchlist-Rundown.jpg',
 			href: '/watchlist/12012025-raghee-horner'
 		},
 		{
@@ -68,7 +74,8 @@
 			title: 'Weekly Watchlist with David Starr',
 			date: 'November 24, 2025',
 			description: 'Week of November 24, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/David-Watchlist-Rundown.jpg',
 			href: '/watchlist/11242025-david-starr'
 		},
 		{
@@ -76,7 +83,8 @@
 			title: 'Weekly Watchlist with Mike Teeto',
 			date: 'November 17, 2025',
 			description: 'Week of November 17, 2025.',
-			image: 'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/WeeklyWatchlist_MT.jpg',
+			image:
+				'https://simpler-cdn.s3.amazonaws.com/azure-blob-files/weekly-watchlist/WeeklyWatchlist_MT.jpg',
 			href: '/watchlist/11172025-mike-teeto'
 		}
 	];
@@ -103,7 +111,10 @@
 						<figure class="weekly_watchlist">
 							<div class="article-card__image" style="background-image: url({video.image});">
 								<a href={video.href}>
-									<img src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg" alt={video.title} />
+									<img
+										src="https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg"
+										alt={video.title}
+									/>
 								</a>
 							</div>
 							<div class="card_content">
@@ -127,11 +138,20 @@
 	<div class="text-center">
 		<div class="pagination">
 			<span aria-current="page" class="page-numbers current">{currentPage}</span>
-			<a class="page-numbers" href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=2">2</a>
+			<a class="page-numbers" href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=2"
+				>2</a
+			>
 			<span class="page-numbers dots">&hellip;</span>
-			<a class="page-numbers" href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=28">28</a>
-			<a class="page-numbers" href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=29">{totalPages}</a>
-			<a class="next page-numbers" href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=2">&raquo;</a>
+			<a class="page-numbers" href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=28"
+				>28</a
+			>
+			<a class="page-numbers" href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=29"
+				>{totalPages}</a
+			>
+			<a
+				class="next page-numbers"
+				href="/dashboard/weekly-watchlist/watchlist-rundown-archive?page=2">&raquo;</a
+			>
 		</div>
 	</div>
 </div>
@@ -200,13 +220,17 @@
 		height: 100%;
 		display: flex;
 		flex-direction: column;
-		transition: transform 0.3s ease, box-shadow 0.3s ease;
+		transition:
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
 		will-change: transform;
 	}
 
 	.article-card:hover {
 		transform: translateY(-8px);
-		box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+		box-shadow:
+			0 12px 24px rgba(0, 0, 0, 0.15),
+			0 4px 8px rgba(0, 0, 0, 0.1);
 	}
 
 	.weekly_watchlist {
@@ -274,7 +298,7 @@
 	}
 
 	.article-card__title a:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.article-card__date {
@@ -296,14 +320,14 @@
 
 	.watch-now-link {
 		display: inline-block;
-		background: #F69532;
+		background: #f69532;
 		color: #fff;
 		padding: 10px 20px;
 		font-size: 14px;
 		font-weight: 600;
 		text-decoration: none;
 		border-radius: 4px;
-		border: 1px solid #F69532;
+		border: 1px solid #f69532;
 		transition: all 0.2s ease;
 	}
 
@@ -351,9 +375,9 @@
 	}
 
 	.page-numbers.current {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border-color: #143E59;
+		border-color: #143e59;
 	}
 
 	.page-numbers.dots {

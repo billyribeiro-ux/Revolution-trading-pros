@@ -114,7 +114,9 @@
 		margin-bottom: 1rem;
 	}
 
-	.back-link:hover { color: #E6B800; }
+	.back-link:hover {
+		color: #e6b800;
+	}
 
 	.page-header h1 {
 		font-size: 1.75rem;
@@ -177,8 +179,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;

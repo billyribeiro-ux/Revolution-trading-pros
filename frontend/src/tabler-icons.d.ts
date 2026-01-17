@@ -4,7 +4,7 @@
  */
 declare module '@tabler/icons-svelte' {
 	import type { SvelteComponent } from 'svelte';
-	
+
 	interface IconProps {
 		size?: number | string;
 		stroke?: number | string;
@@ -15,9 +15,9 @@ declare module '@tabler/icons-svelte' {
 		'aria-label'?: string;
 		[key: string]: any;
 	}
-	
+
 	type IconComponent = typeof SvelteComponent<IconProps>;
-	
+
 	// Export all icons as any to bypass TS checking
 	export const IconAB: IconComponent;
 	export const IconAB2: IconComponent;
@@ -181,7 +181,7 @@ declare module '@tabler/icons-svelte' {
 	export const IconZoomIn: IconComponent;
 	export const IconZoomMoney: IconComponent;
 	export const IconZoomOut: IconComponent;
-	
+
 	// Catch-all for any other icons
 	const icons: Record<string, IconComponent>;
 	export default icons;

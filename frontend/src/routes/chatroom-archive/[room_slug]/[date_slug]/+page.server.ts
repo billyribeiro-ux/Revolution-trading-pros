@@ -2,11 +2,11 @@
  * Chatroom Archive Video Detail Page Server
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Implementation
- * 
+ *
  * Fetches videos for a specific date from the chatroom archive.
  * URL: /chatroom-archive/{room_slug}/{date_slug}
  * Example: /chatroom-archive/day-trading-room/01052026
- * 
+ *
  * @version 1.0.0
  */
 
@@ -95,10 +95,10 @@ function parseDateSlug(slug: string): Date | null {
 
 // Format date for display
 function formatDisplayDate(date: Date): string {
-	return date.toLocaleDateString('en-US', { 
-		month: 'long', 
-		day: 'numeric', 
-		year: 'numeric' 
+	return date.toLocaleDateString('en-US', {
+		month: 'long',
+		day: 'numeric',
+		year: 'numeric'
 	});
 }
 
@@ -118,7 +118,10 @@ export const load = async ({ params, fetch }): Promise<ArchiveDetailPageData> =>
 
 	// Get room config
 	const roomConfig = ROOM_CONFIG[roomSlug] || {
-		name: roomSlug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' '),
+		name: roomSlug
+			.split('-')
+			.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+			.join(' '),
 		archiveUrl: `/dashboard/${roomSlug}/trading-room-archive`
 	};
 
@@ -145,7 +148,7 @@ export const load = async ({ params, fetch }): Promise<ArchiveDetailPageData> =>
 			content_type: 'room_archive',
 			room_slug: roomSlug,
 			video_date: apiDateStr,
-			per_page: '50',
+			per_page: '50'
 		});
 
 		const response = await fetch(`${API_URL}/api/videos?${apiParams.toString()}`);

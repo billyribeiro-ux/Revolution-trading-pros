@@ -183,7 +183,11 @@
 	</div>
 
 	<div class="tabs">
-		<button class="tab" class:active={activeTab === 'images'} onclick={() => (activeTab = 'images')}>
+		<button
+			class="tab"
+			class:active={activeTab === 'images'}
+			onclick={() => (activeTab = 'images')}
+		>
 			<IconPhoto size={18} />
 			Images
 		</button>

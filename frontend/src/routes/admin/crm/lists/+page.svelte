@@ -53,8 +53,8 @@
 
 			stats = {
 				total: lists.length,
-				public: lists.filter(l => l.is_public).length,
-				private: lists.filter(l => !l.is_public).length,
+				public: lists.filter((l) => l.is_public).length,
+				private: lists.filter((l) => !l.is_public).length,
 				totalContacts: lists.reduce((sum, l) => sum + l.contacts_count, 0)
 			};
 		} catch (err) {
@@ -65,7 +65,8 @@
 	}
 
 	async function deleteList(id: string) {
-		if (!confirm('Are you sure you want to delete this list? Contacts will NOT be deleted.')) return;
+		if (!confirm('Are you sure you want to delete this list? Contacts will NOT be deleted.'))
+			return;
 
 		try {
 			await crmAPI.deleteContactList(id);
@@ -84,9 +85,9 @@
 	}
 
 	let filteredLists = $derived(
-		lists.filter(list => {
-			const matchesSearch = !searchQuery ||
-				list.title.toLowerCase().includes(searchQuery.toLowerCase());
+		lists.filter((list) => {
+			const matchesSearch =
+				!searchQuery || list.title.toLowerCase().includes(searchQuery.toLowerCase());
 			const matchesPublic = filterPublic === 'all' || list.is_public === filterPublic;
 			return matchesSearch && matchesPublic;
 		})
@@ -242,7 +243,11 @@
 									<a href="/admin/crm/lists/{list.id}/edit" class="btn-icon" title="Edit">
 										<IconEdit size={16} />
 									</a>
-									<button class="btn-icon danger" title="Delete" onclick={() => deleteList(list.id)}>
+									<button
+										class="btn-icon danger"
+										title="Delete"
+										onclick={() => deleteList(list.id)}
+									>
 										<IconTrash size={16} />
 									</button>
 								</div>
@@ -302,7 +307,7 @@
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -310,8 +315,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -319,8 +328,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -342,11 +351,15 @@
 	}
 
 	@media (max-width: 1200px) {
-		.stats-grid { grid-template-columns: repeat(2, 1fr); }
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.stat-card {
@@ -368,10 +381,22 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #FFD11A; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.purple {
+		background: rgba(230, 184, 0, 0.15);
+		color: #ffd11a;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
 
 	.stat-content {
 		display: flex;
@@ -547,7 +572,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.btn-icon.danger:hover {
@@ -556,7 +581,9 @@
 		border-color: rgba(239, 68, 68, 0.3);
 	}
 
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -584,7 +611,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

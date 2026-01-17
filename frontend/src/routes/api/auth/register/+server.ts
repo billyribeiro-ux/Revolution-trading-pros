@@ -27,9 +27,9 @@ export const POST = async ({ request }: RequestEvent) => {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json'
 			},
-			body: JSON.stringify(body),
+			body: JSON.stringify(body)
 		});
 
 		// Get response text first to handle non-JSON responses
@@ -51,12 +51,8 @@ export const POST = async ({ request }: RequestEvent) => {
 
 		// Return the response with proper status
 		return json(data, { status: response.status });
-
 	} catch (error) {
 		console.error('[Auth Proxy] Register error:', error);
-		return json(
-			{ error: 'Registration service unavailable' },
-			{ status: 503 }
-		);
+		return json({ error: 'Registration service unavailable' }, { status: 503 });
 	}
 };

@@ -4,6 +4,9 @@
 //! Enterprise-grade admin API with role-based access control.
 //! All routes require admin or super-admin role.
 
+#![allow(clippy::type_complexity)]
+#![allow(clippy::needless_borrows_for_generic_args)]
+
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,

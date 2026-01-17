@@ -32,18 +32,33 @@
 	// --- MOTION ENGINE ---
 	onMount(async () => {
 		if (!browser) return;
-		
+
 		// Dynamic GSAP import for SSR safety
 		const { gsap } = await import('gsap');
-		
+
 		// 1. Hero Sequence (Timeline)
 		const tl = gsap.timeline({ defaults: { ease: 'power4.out' } });
 
-		if (heroBadge) tl.fromTo(heroBadge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
-		if (heroTitle) tl.fromTo(heroTitle, { y: 40, opacity: 0 }, { y: 0, opacity: 1, duration: 1.2, stagger: 0.1 }, '-=0.8');
-		if (heroDesc) tl.fromTo(heroDesc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
-		if (heroMetrics) tl.fromTo(heroMetrics, { opacity: 0, scale: 0.98 }, { opacity: 1, scale: 1, duration: 1.2 }, '-=0.6');
-		if (heroGraphic) tl.fromTo(heroGraphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
+		if (heroBadge)
+			tl.fromTo(heroBadge, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1, delay: 0.2 });
+		if (heroTitle)
+			tl.fromTo(
+				heroTitle,
+				{ y: 40, opacity: 0 },
+				{ y: 0, opacity: 1, duration: 1.2, stagger: 0.1 },
+				'-=0.8'
+			);
+		if (heroDesc)
+			tl.fromTo(heroDesc, { y: 20, opacity: 0 }, { y: 0, opacity: 1, duration: 1 }, '-=0.8');
+		if (heroMetrics)
+			tl.fromTo(
+				heroMetrics,
+				{ opacity: 0, scale: 0.98 },
+				{ opacity: 1, scale: 1, duration: 1.2 },
+				'-=0.6'
+			);
+		if (heroGraphic)
+			tl.fromTo(heroGraphic, { x: 40, opacity: 0 }, { x: 0, opacity: 1, duration: 1.5 }, '-=1.0');
 
 		// 2. Scroll Reveal Logic
 		const observer = new IntersectionObserver(
@@ -54,9 +69,24 @@
 						const children = target.querySelectorAll('.gsap-reveal-item');
 
 						if (children.length > 0) {
-							gsap.fromTo(children, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, stagger: 0.1, ease: 'power2.out', overwrite: true });
+							gsap.fromTo(
+								children,
+								{ y: 30, opacity: 0 },
+								{
+									y: 0,
+									opacity: 1,
+									duration: 0.8,
+									stagger: 0.1,
+									ease: 'power2.out',
+									overwrite: true
+								}
+							);
 						} else {
-							gsap.fromTo(target, { y: 30, opacity: 0 }, { y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true });
+							gsap.fromTo(
+								target,
+								{ y: 30, opacity: 0 },
+								{ y: 0, opacity: 1, duration: 0.8, ease: 'power2.out', overwrite: true }
+							);
 						}
 						observer.unobserve(target);
 					}
@@ -260,8 +290,8 @@
 							</p>
 							<p>
 								At institutional size, your entry <em>is</em> the market. Alpha decays the moment you
-								execute. Without optimizing your participation rate, dark pool routing, and variance
-								drag, you are simply paying a "Size Tax" to HFT firms.
+								execute. Without optimizing your participation rate, dark pool routing, and variance drag,
+								you are simply paying a "Size Tax" to HFT firms.
 							</p>
 							<p class="text-white border-l-2 border-white/20 pl-6 py-2">
 								Revolution Trading Pros intervenes at this inflection point. We do not teach you <em

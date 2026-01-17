@@ -23,7 +23,7 @@ function getAuthHeaders(request: Request): HeadersInit {
 	const authHeader = request.headers.get('Authorization');
 	const headers: HeadersInit = {
 		'Content-Type': 'application/json',
-		'Accept': 'application/json',
+		Accept: 'application/json'
 	};
 	if (authHeader) {
 		headers['Authorization'] = authHeader;
@@ -57,17 +57,20 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
 		const response = await fetch(backendUrl, {
 			method: 'GET',
-			headers: getAuthHeaders(request),
+			headers: getAuthHeaders(request)
 		});
 
 		if (!response.ok) {
 			const errorData = await response.json().catch(() => ({ message: 'Failed to fetch deals' }));
-			return json({
-				success: false,
-				error: errorData.message || 'Failed to fetch deals',
-				data: [],
-				meta: { page: 1, limit: 20, total: 0, total_pages: 0 }
-			}, { status: response.status });
+			return json(
+				{
+					success: false,
+					error: errorData.message || 'Failed to fetch deals',
+					data: [],
+					meta: { page: 1, limit: 20, total: 0, total_pages: 0 }
+				},
+				{ status: response.status }
+			);
 		}
 
 		const data = await response.json();
@@ -85,12 +88,15 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		});
 	} catch (err) {
 		console.error('CRM Deals API proxy error:', err);
-		return json({
-			success: false,
-			error: 'Failed to connect to backend',
-			data: [],
-			meta: { page: 1, limit: 20, total: 0, total_pages: 0 }
-		}, { status: 503 });
+		return json(
+			{
+				success: false,
+				error: 'Failed to connect to backend',
+				data: [],
+				meta: { page: 1, limit: 20, total: 0, total_pages: 0 }
+			},
+			{ status: 503 }
+		);
 	}
 };
 
@@ -122,25 +128,31 @@ export const POST: RequestHandler = async ({ request }) => {
 				owner_id: body.owner_id,
 				source_channel: body.source_channel,
 				tags: body.tags || [],
-				custom_fields: body.custom_fields || {},
-			}),
+				custom_fields: body.custom_fields || {}
+			})
 		});
 
 		if (!response.ok) {
 			const errorData = await response.json().catch(() => ({ message: 'Failed to create deal' }));
-			return json({
-				success: false,
-				error: errorData.message || 'Failed to create deal',
-				errors: errorData.errors
-			}, { status: response.status });
+			return json(
+				{
+					success: false,
+					error: errorData.message || 'Failed to create deal',
+					errors: errorData.errors
+				},
+				{ status: response.status }
+			);
 		}
 
 		const data = await response.json();
 
-		return json({
-			success: true,
-			data: data
-		}, { status: 201 });
+		return json(
+			{
+				success: true,
+				data: data
+			},
+			{ status: 201 }
+		);
 	} catch (err) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;

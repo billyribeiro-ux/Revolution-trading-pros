@@ -27,7 +27,11 @@
 	import IconClock from '@tabler/icons-svelte/icons/clock';
 	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
 	import { crmAPI } from '$lib/api/crm';
-	import type { RecurringCampaign, RecurringCampaignFilters, RecurringCampaignStatus } from '$lib/crm/types';
+	import type {
+		RecurringCampaign,
+		RecurringCampaignFilters,
+		RecurringCampaignStatus
+	} from '$lib/crm/types';
 
 	let campaigns = $state<RecurringCampaign[]>([]);
 	let isLoading = $state(true);
@@ -64,7 +68,7 @@
 
 			stats = {
 				total: campaigns.length,
-				active: campaigns.filter(c => c.status === 'active').length,
+				active: campaigns.filter((c) => c.status === 'active').length,
 				totalSent: campaigns.reduce((sum, c) => sum + c.total_emails_sent, 0),
 				totalRevenue: campaigns.reduce((sum, c) => sum + c.total_revenue, 0)
 			};
@@ -122,9 +126,9 @@
 	}
 
 	let filteredCampaigns = $derived(
-		campaigns.filter(campaign => {
-			const matchesSearch = !searchQuery ||
-				campaign.title.toLowerCase().includes(searchQuery.toLowerCase());
+		campaigns.filter((campaign) => {
+			const matchesSearch =
+				!searchQuery || campaign.title.toLowerCase().includes(searchQuery.toLowerCase());
 			const matchesStatus = selectedStatus === 'all' || campaign.status === selectedStatus;
 			return matchesSearch && matchesStatus;
 		})
@@ -279,16 +283,32 @@
 							<td>{formatNumber(campaign.total_emails_sent)}</td>
 							<td>
 								<div class="action-buttons">
-									<a href="/admin/crm/recurring-campaigns/{campaign.id}" class="btn-icon" title="View">
+									<a
+										href="/admin/crm/recurring-campaigns/{campaign.id}"
+										class="btn-icon"
+										title="View"
+									>
 										<IconEye size={16} />
 									</a>
-									<a href="/admin/crm/recurring-campaigns/{campaign.id}/edit" class="btn-icon" title="Edit">
+									<a
+										href="/admin/crm/recurring-campaigns/{campaign.id}/edit"
+										class="btn-icon"
+										title="Edit"
+									>
 										<IconEdit size={16} />
 									</a>
-									<button class="btn-icon" title="Duplicate" onclick={() => duplicateCampaign(campaign.id)}>
+									<button
+										class="btn-icon"
+										title="Duplicate"
+										onclick={() => duplicateCampaign(campaign.id)}
+									>
 										<IconCopy size={16} />
 									</button>
-									<button class="btn-icon danger" title="Delete" onclick={() => deleteCampaign(campaign.id)}>
+									<button
+										class="btn-icon danger"
+										title="Delete"
+										onclick={() => deleteCampaign(campaign.id)}
+									>
 										<IconTrash size={16} />
 									</button>
 								</div>
@@ -348,7 +368,7 @@
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -356,8 +376,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -365,8 +389,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -388,11 +412,15 @@
 	}
 
 	@media (max-width: 1200px) {
-		.stats-grid { grid-template-columns: repeat(2, 1fr); }
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.stat-card {
@@ -414,10 +442,22 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.purple {
+		background: rgba(230, 184, 0, 0.15);
+		color: #e6b800;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
 
 	.stat-content {
 		display: flex;
@@ -582,7 +622,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-icon.danger:hover {
@@ -591,7 +631,9 @@
 		border-color: rgba(239, 68, 68, 0.3);
 	}
 
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -619,7 +661,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

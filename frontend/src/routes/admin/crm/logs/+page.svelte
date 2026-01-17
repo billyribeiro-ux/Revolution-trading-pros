@@ -55,7 +55,8 @@
 	}
 
 	async function clearLogs() {
-		if (!confirm('Are you sure you want to clear system logs? This action cannot be undone.')) return;
+		if (!confirm('Are you sure you want to clear system logs? This action cannot be undone.'))
+			return;
 
 		try {
 			await crmAPI.clearSystemLogs({
@@ -195,7 +196,12 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input type="text" placeholder="Search logs..." bind:value={searchQuery} onchange={loadLogs} />
+			<input
+				type="text"
+				placeholder="Search logs..."
+				bind:value={searchQuery}
+				onchange={loadLogs}
+			/>
 		</div>
 		<select bind:value={levelFilter} class="filter-select" onchange={loadLogs}>
 			<option value="">All Levels</option>
@@ -261,9 +267,7 @@
 					{/if}
 					{#if log.contact_id}
 						<div class="log-meta">
-							<a href="/admin/crm/contacts/{log.contact_id}" class="contact-link">
-								View Contact
-							</a>
+							<a href="/admin/crm/contacts/{log.contact_id}" class="contact-link"> View Contact </a>
 						</div>
 					{/if}
 				</div>
@@ -327,8 +331,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-danger {
@@ -357,11 +365,15 @@
 	}
 
 	@media (max-width: 1024px) {
-		.stats-grid { grid-template-columns: repeat(2, 1fr); }
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.stat-card {
@@ -383,10 +395,22 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-	.stat-icon.yellow { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.red {
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
+	.stat-icon.yellow {
+		background: rgba(251, 191, 36, 0.15);
+		color: #fbbf24;
+	}
+	.stat-icon.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
 
 	.stat-content {
 		display: flex;
@@ -466,11 +490,21 @@
 		border-left: 3px solid;
 	}
 
-	.log-entry.gray { border-left-color: #64748b; }
-	.log-entry.blue { border-left-color: #3b82f6; }
-	.log-entry.yellow { border-left-color: #fbbf24; }
-	.log-entry.red { border-left-color: #ef4444; }
-	.log-entry.purple { border-left-color: #8b5cf6; }
+	.log-entry.gray {
+		border-left-color: #64748b;
+	}
+	.log-entry.blue {
+		border-left-color: #3b82f6;
+	}
+	.log-entry.yellow {
+		border-left-color: #fbbf24;
+	}
+	.log-entry.red {
+		border-left-color: #ef4444;
+	}
+	.log-entry.purple {
+		border-left-color: #8b5cf6;
+	}
 
 	.log-header {
 		display: flex;
@@ -488,11 +522,21 @@
 		text-transform: uppercase;
 	}
 
-	.log-entry.gray .log-level { color: #64748b; }
-	.log-entry.blue .log-level { color: #60a5fa; }
-	.log-entry.yellow .log-level { color: #fbbf24; }
-	.log-entry.red .log-level { color: #f87171; }
-	.log-entry.purple .log-level { color: #a78bfa; }
+	.log-entry.gray .log-level {
+		color: #64748b;
+	}
+	.log-entry.blue .log-level {
+		color: #60a5fa;
+	}
+	.log-entry.yellow .log-level {
+		color: #fbbf24;
+	}
+	.log-entry.red .log-level {
+		color: #f87171;
+	}
+	.log-entry.purple .log-level {
+		color: #a78bfa;
+	}
 
 	.log-category {
 		display: flex;
@@ -554,7 +598,9 @@
 		text-decoration: underline;
 	}
 
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;

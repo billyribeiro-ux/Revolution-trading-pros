@@ -19,8 +19,8 @@ export const GET: RequestHandler = async ({ cookies, fetch, params }) => {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				...(token ? { 'Authorization': `Bearer ${token}` } : {})
+				Accept: 'application/json',
+				...(token ? { Authorization: `Bearer ${token}` } : {})
 			}
 		});
 
@@ -47,8 +47,8 @@ export const PUT: RequestHandler = async ({ cookies, fetch, params, request }) =
 			method: 'PUT',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				...(token ? { 'Authorization': `Bearer ${token}` } : {})
+				Accept: 'application/json',
+				...(token ? { Authorization: `Bearer ${token}` } : {})
 			},
 			body: JSON.stringify(body)
 		});
@@ -70,8 +70,8 @@ export const DELETE: RequestHandler = async ({ cookies, fetch, params }) => {
 			method: 'DELETE',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				...(token ? { 'Authorization': `Bearer ${token}` } : {})
+				Accept: 'application/json',
+				...(token ? { Authorization: `Bearer ${token}` } : {})
 			}
 		});
 

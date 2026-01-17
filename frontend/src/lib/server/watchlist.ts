@@ -10,7 +10,8 @@
  * @version 1.0.0
  */
 
-const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
+// ICT 11+ CORB Fix: Server-side code uses env variable
+const API_BASE = process.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 export interface WatchlistData {
 	id: number;

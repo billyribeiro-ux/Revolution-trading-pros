@@ -53,54 +53,57 @@
 	<div class="dashboard__content-main">
 		<div class="subscriptions-card">
 			<div class="woocommerce-notices-wrapper"></div>
-			
+
 			<h2 class="section-title">My Subscriptions</h2>
 
-		{#if subscriptions.length === 0}
-			<div class="woocommerce-message woocommerce-message--info">
-				<p>You have no active subscriptions.</p>
-			</div>
-		{:else}
-			<table class="table shop_table_responsive">
-				<thead>
-					<tr>
-						<th class="subscription-id">Subscription</th>
-						<th class="subscription-status">Status</th>
-						<th class="subscription-next-payment">Next Payment</th>
-						<th class="subscription-total">Total</th>
-						<th class="subscription-actions">Actions</th>
-					</tr>
-				</thead>
-				<tbody>
-					{#each subscriptions as subscription (subscription.id)}
-						<tr class="subscription">
-							<td class="subscription-id" data-title="Subscription">
-								<a href="/dashboard/account/view-subscription/{subscription.id}">
-									#{subscription.id}
-								</a>
-								<br />
-								<small>Started: {formatDate(subscription.startDate)}</small>
-							</td>
-							<td class="subscription-status" data-title="Status">
-								<span class="subscription-status-badge {getStatusClass(subscription.status)}">
-									{subscription.status}
-								</span>
-							</td>
-							<td class="subscription-next-payment" data-title="Next Payment">
-								{subscription.nextPayment ? formatDate(subscription.nextPayment) : 'N/A'}
-							</td>
-							<td class="subscription-total" data-title="Total">
-								{subscription.total}
-							</td>
-							<td class="subscription-actions" data-title="Actions">
-								<a href="/dashboard/account/view-subscription/{subscription.id}" class="btn btn-sm btn-white">
-									View
-								</a>
-							</td>
+			{#if subscriptions.length === 0}
+				<div class="woocommerce-message woocommerce-message--info">
+					<p>You have no active subscriptions.</p>
+				</div>
+			{:else}
+				<table class="table shop_table_responsive">
+					<thead>
+						<tr>
+							<th class="subscription-id">Subscription</th>
+							<th class="subscription-status">Status</th>
+							<th class="subscription-next-payment">Next Payment</th>
+							<th class="subscription-total">Total</th>
+							<th class="subscription-actions">Actions</th>
 						</tr>
-					{/each}
-				</tbody>
-			</table>
+					</thead>
+					<tbody>
+						{#each subscriptions as subscription (subscription.id)}
+							<tr class="subscription">
+								<td class="subscription-id" data-title="Subscription">
+									<a href="/dashboard/account/view-subscription/{subscription.id}">
+										#{subscription.id}
+									</a>
+									<br />
+									<small>Started: {formatDate(subscription.startDate)}</small>
+								</td>
+								<td class="subscription-status" data-title="Status">
+									<span class="subscription-status-badge {getStatusClass(subscription.status)}">
+										{subscription.status}
+									</span>
+								</td>
+								<td class="subscription-next-payment" data-title="Next Payment">
+									{subscription.nextPayment ? formatDate(subscription.nextPayment) : 'N/A'}
+								</td>
+								<td class="subscription-total" data-title="Total">
+									{subscription.total}
+								</td>
+								<td class="subscription-actions" data-title="Actions">
+									<a
+										href="/dashboard/account/view-subscription/{subscription.id}"
+										class="btn btn-sm btn-white"
+									>
+										View
+									</a>
+								</td>
+							</tr>
+						{/each}
+					</tbody>
+				</table>
 			{/if}
 		</div>
 	</div>
@@ -217,7 +220,7 @@
 	}
 
 	.table tbody td a {
-		color: #143E59;
+		color: #143e59;
 		font-weight: 600;
 		text-decoration: none;
 		transition: color 0.15s ease;
@@ -276,12 +279,12 @@
 
 	.btn-white {
 		background: #fff;
-		color: #143E59;
-		border-color: #143E59;
+		color: #143e59;
+		border-color: #143e59;
 	}
 
 	.btn-white:hover {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -293,7 +296,7 @@
 	.woocommerce-message {
 		padding: 16px 20px;
 		background: #e7f3ff;
-		border-left: 4px solid #143E59;
+		border-left: 4px solid #143e59;
 		border-radius: 4px;
 		margin-bottom: 20px;
 	}

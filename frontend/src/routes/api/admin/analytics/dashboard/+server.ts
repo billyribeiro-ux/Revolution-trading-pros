@@ -21,7 +21,7 @@ async function fetchFromBackend(endpoint: string, options?: RequestInit): Promis
 			...options,
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
+				Accept: 'application/json',
 				...options?.headers
 			}
 		});

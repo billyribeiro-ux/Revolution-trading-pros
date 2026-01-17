@@ -16,32 +16,32 @@
 <script lang="ts">
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import { page } from '$app/state';
-	
+
 	interface DownloadFile {
 		name: string;
 		downloadUrl: string;
 	}
-	
+
 	interface PlatformDownloads {
 		platform: string;
 		logo: string;
 		files: DownloadFile[];
 		notes?: string;
 	}
-	
+
 	interface TrainingVideo {
 		id: string;
 		title: string;
 		videoUrl: string;
 		posterUrl: string;
 	}
-	
+
 	interface SupportDoc {
 		title: string;
 		url: string;
 		type: 'view' | 'download';
 	}
-	
+
 	interface Indicator {
 		id: string;
 		name: string;
@@ -51,65 +51,117 @@
 		downloads: PlatformDownloads[];
 		supportDocs: SupportDoc[];
 	}
-	
+
 	// Get indicator ID from URL - access directly in derived context
 	let indicator = $derived.by(() => {
 		const id = page.params.id;
 		return {
 			id: id,
-		name: 'Volume Max Tool Kit (formerly VWAP)',
-		description: 'Professional volume analysis tools for advanced trading',
-		platforms: ['ThinkorSwim', 'TradingView'],
-		trainingVideos: [
-			{
-				id: '1',
-				title: 'Indicator Setup and Q&A, with Eric Purdy',
-				videoUrl: 'https://cloud-streaming.s3.amazonaws.com/classes/SubmarketSonar-IndicatorSetup-EP.mp4',
-				posterUrl: 'https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg'
-			},
-			{
-				id: '2',
-				title: 'VWAP Training and Live Trading Recorded Session with Raghee Horner',
-				videoUrl: 'https://s3.amazonaws.com/cloud-streaming/chatrecordings%2FSTWebinars/1176-RH-06-12-2019__09.01.394_AM.mp4',
-				posterUrl: 'https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg'
-			}
-		],
-		downloads: [
-			{
-				platform: 'ThinkorSwim',
-				logo: '/logos/platforms/thinkorswim.png',
-				files: [
-					{ name: 'Volume Max Indicator', downloadUrl: '/?st-download-file=452914b18dc78691e6c98731b9e094fe' },
-					{ name: 'VScore EOD Study', downloadUrl: '/?st-download-file=12ab53eb7e85a005a6a21f800db57777' },
-					{ name: 'VScore Intraday Signals Study', downloadUrl: '/?st-download-file=4bd68f7bbfec21d14c099258f6833a9c' },
-					{ name: 'VScore Bands EOD Study', downloadUrl: '/?st-download-file=4fb2197916c551be4acb037afccc607f' },
-					{ name: 'VScore Bands Intraday Study', downloadUrl: '/?st-download-file=560ebea65a1229c04c0c268107fdb693' },
-					{ name: 'VProfile EOD Study', downloadUrl: '/?st-download-file=da8f1193496d5cf4bed2cdd049a2d70b' },
-					{ name: 'VProfile Intraday Study', downloadUrl: '/?st-download-file=ab0357f17694826819f632d50f6cfccc' },
-					{ name: 'Volume Labels', downloadUrl: '/?st-download-file=7aa9537ae79f082d9b8ff2ede9c2561b' }
-				]
-			},
-			{
-				platform: 'TradingView',
-				logo: '/logos/platforms/tradingview.png',
-				files: [],
-				notes: 'Please email your TradingView Username to support@simplertrading.com. The TradingView chart indicator is very easy to get set up in your online charting profile. Once you are logged into TradingView, locate your Notifications area. Once we receive your Username, you should have a notification letting you know the new chart study has been made available.'
-			}
-		],
-		supportDocs: [
-			{ title: 'TOS Installation Guide', url: 'https://intercom.help/simpler-trading/en/articles/3263969', type: 'view' },
-			{ title: 'Troubleshooting within TOS', url: 'https://intercom.help/simpler-trading/en/articles/3481530-tos-indicator-will-not-import', type: 'view' },
-			{ title: 'TradingView - Installing an Indicator', url: 'https://intercom.help/simpler-trading/en/articles/3498380', type: 'view' },
-			{ title: 'TradingView - What is my Username', url: 'https://intercom.help/simpler-trading/en/articles/3606861', type: 'view' },
-			{ title: 'What is Volume Max Tool Kit (formerly VWAP)?', url: 'https://intercom.help/simpler-trading/en/articles/3160130', type: 'view' }
-		]
-	} as Indicator;
+			name: 'Volume Max Tool Kit (formerly VWAP)',
+			description: 'Professional volume analysis tools for advanced trading',
+			platforms: ['ThinkorSwim', 'TradingView'],
+			trainingVideos: [
+				{
+					id: '1',
+					title: 'Indicator Setup and Q&A, with Eric Purdy',
+					videoUrl:
+						'https://cloud-streaming.s3.amazonaws.com/classes/SubmarketSonar-IndicatorSetup-EP.mp4',
+					posterUrl:
+						'https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg'
+				},
+				{
+					id: '2',
+					title: 'VWAP Training and Live Trading Recorded Session with Raghee Horner',
+					videoUrl:
+						'https://s3.amazonaws.com/cloud-streaming/chatrecordings%2FSTWebinars/1176-RH-06-12-2019__09.01.394_AM.mp4',
+					posterUrl:
+						'https://cdn.simplertrading.com/2020/03/25163022/simpler-geenric-video-bg-768x432.jpg'
+				}
+			],
+			downloads: [
+				{
+					platform: 'ThinkorSwim',
+					logo: '/logos/platforms/thinkorswim.png',
+					files: [
+						{
+							name: 'Volume Max Indicator',
+							downloadUrl: '/?st-download-file=452914b18dc78691e6c98731b9e094fe'
+						},
+						{
+							name: 'VScore EOD Study',
+							downloadUrl: '/?st-download-file=12ab53eb7e85a005a6a21f800db57777'
+						},
+						{
+							name: 'VScore Intraday Signals Study',
+							downloadUrl: '/?st-download-file=4bd68f7bbfec21d14c099258f6833a9c'
+						},
+						{
+							name: 'VScore Bands EOD Study',
+							downloadUrl: '/?st-download-file=4fb2197916c551be4acb037afccc607f'
+						},
+						{
+							name: 'VScore Bands Intraday Study',
+							downloadUrl: '/?st-download-file=560ebea65a1229c04c0c268107fdb693'
+						},
+						{
+							name: 'VProfile EOD Study',
+							downloadUrl: '/?st-download-file=da8f1193496d5cf4bed2cdd049a2d70b'
+						},
+						{
+							name: 'VProfile Intraday Study',
+							downloadUrl: '/?st-download-file=ab0357f17694826819f632d50f6cfccc'
+						},
+						{
+							name: 'Volume Labels',
+							downloadUrl: '/?st-download-file=7aa9537ae79f082d9b8ff2ede9c2561b'
+						}
+					]
+				},
+				{
+					platform: 'TradingView',
+					logo: '/logos/platforms/tradingview.png',
+					files: [],
+					notes:
+						'Please email your TradingView Username to support@simplertrading.com. The TradingView chart indicator is very easy to get set up in your online charting profile. Once you are logged into TradingView, locate your Notifications area. Once we receive your Username, you should have a notification letting you know the new chart study has been made available.'
+				}
+			],
+			supportDocs: [
+				{
+					title: 'TOS Installation Guide',
+					url: 'https://intercom.help/simpler-trading/en/articles/3263969',
+					type: 'view'
+				},
+				{
+					title: 'Troubleshooting within TOS',
+					url: 'https://intercom.help/simpler-trading/en/articles/3481530-tos-indicator-will-not-import',
+					type: 'view'
+				},
+				{
+					title: 'TradingView - Installing an Indicator',
+					url: 'https://intercom.help/simpler-trading/en/articles/3498380',
+					type: 'view'
+				},
+				{
+					title: 'TradingView - What is my Username',
+					url: 'https://intercom.help/simpler-trading/en/articles/3606861',
+					type: 'view'
+				},
+				{
+					title: 'What is Volume Max Tool Kit (formerly VWAP)?',
+					url: 'https://intercom.help/simpler-trading/en/articles/3160130',
+					type: 'view'
+				}
+			]
+		} as Indicator;
 	});
 </script>
 
 <svelte:head>
 	<title>{indicator.name} - Simpler Trading</title>
-	<meta name="description" content="Download and install {indicator.name} for your trading platform" />
+	<meta
+		name="description"
+		content="Download and install {indicator.name} for your trading platform"
+	/>
 	<meta property="og:title" content={indicator.name} />
 	<meta property="og:type" content="article" />
 </svelte:head>
@@ -168,7 +220,9 @@
 							<img
 								width="200"
 								src={platformDownload.logo}
-								srcset={platformDownload.platform === 'TradingView' ? '/logos/platforms/tradingview@2x.png 2x' : ''}
+								srcset={platformDownload.platform === 'TradingView'
+									? '/logos/platforms/tradingview@2x.png 2x'
+									: ''}
 								alt={platformDownload.platform}
 								onerror={(e) => {
 									const img = e.currentTarget as HTMLImageElement;
@@ -221,13 +275,9 @@
 									<tr>
 										<td>{doc.title}</td>
 										<td class="text-right">
-											<a
-												class="orng_btn"
-												href={doc.url}
-												target="_blank"
-												rel="noopener noreferrer"
-											>
-												<span class="fa fa-{doc.type === 'view' ? 'external-link' : 'download'}"></span>
+											<a class="orng_btn" href={doc.url} target="_blank" rel="noopener noreferrer">
+												<span class="fa fa-{doc.type === 'view' ? 'external-link' : 'download'}"
+												></span>
 												Click to {doc.type === 'view' ? 'View' : 'Download'}
 											</a>
 										</td>
@@ -414,7 +464,7 @@
 	.orng_btn {
 		display: inline-block;
 		padding: 8px 20px;
-		background: #F69532;
+		background: #f69532;
 		color: #ffffff;
 		text-decoration: none;
 		border-radius: 20px;

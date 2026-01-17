@@ -1,19 +1,19 @@
 /**
  * Account Dashboard Server - Load & Form Actions
  * Apple ICT 11 Principal Engineer Grade Implementation
- * 
+ *
  * ARCHITECTURE:
  * - Explicit RequestEvent types for all parameters (no implicit any)
  * - Proper parent data typing with ParentData interface
  * - Type-safe form actions with proper error handling
  * - No ts-expect-error suppressions or lazy patches
- * 
+ *
  * TYPE SAFETY APPROACH:
  * SvelteKit's type system uses type inference for actions. The ActionResult
  * type mismatch warnings are expected during development as TypeScript infers
  * the union type from our return statements. At runtime, SvelteKit properly
  * handles both ActionFailure and success objects.
- * 
+ *
  * This is the correct, production-grade pattern per SvelteKit documentation.
  *
  * @version 2.0.0 - Apple ICT 11 Grade
@@ -21,7 +21,11 @@
  */
 
 import { fail, type RequestEvent } from '@sveltejs/kit';
-import { accountApi, type UpdateProfileRequest, type UpdatePasswordRequest } from '$lib/api/account';
+import {
+	accountApi,
+	type UpdateProfileRequest,
+	type UpdatePasswordRequest
+} from '$lib/api/account';
 // SvelteKit auto-generates types - this import will be available after build
 import type { PageServerLoad, Actions } from './$types';
 
@@ -30,7 +34,16 @@ import type { PageServerLoad, Actions } from './$types';
  * Parent layout already handles auth - we just add account-specific data
  * ICT 7 FIX: Now receives accessToken from parent for server-side API calls
  */
-export const load: PageServerLoad = async ({ parent, fetch }: { parent: () => Promise<{ user: { id: string; email: string; name?: string; role?: string } | null; accessToken?: string | null }>; fetch: typeof globalThis.fetch }) => {
+export const load: PageServerLoad = async ({
+	parent,
+	fetch
+}: {
+	parent: () => Promise<{
+		user: { id: string; email: string; name?: string; role?: string } | null;
+		accessToken?: string | null;
+	}>;
+	fetch: typeof globalThis.fetch;
+}) => {
 	// Get user data from parent layout
 	const parentData = await parent();
 
@@ -62,7 +75,7 @@ export const load: PageServerLoad = async ({ parent, fetch }: { parent: () => Pr
 
 	// ICT 7 FIX: Use accessToken from parent for server-side API calls
 	const accessToken = parentData.accessToken;
-	
+
 	if (!accessToken) {
 		console.warn('[Account Page] No access token from parent - using user data only');
 		return {
@@ -92,19 +105,19 @@ export const load: PageServerLoad = async ({ parent, fetch }: { parent: () => Pr
 		const API_BASE_URL = process.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
 		const profileResponse = await fetch(`${API_BASE_URL}/api/user/profile`, {
 			headers: {
-				'Authorization': `Bearer ${accessToken}`,
+				Authorization: `Bearer ${accessToken}`,
 				'Content-Type': 'application/json',
-				'Accept': 'application/json'
+				Accept: 'application/json'
 			}
 		});
-		
+
 		if (!profileResponse.ok) {
 			throw new Error(`Profile fetch failed: ${profileResponse.status}`);
 		}
-		
+
 		const profileJson = await profileResponse.json();
 		const profileData = profileJson.data || profileJson;
-		
+
 		// ICT 7 FIX: Build response directly from profile data
 		// Memberships and billing are not yet available from this endpoint
 		const profile = {
@@ -132,7 +145,7 @@ export const load: PageServerLoad = async ({ parent, fetch }: { parent: () => Pr
 		};
 	} catch (error) {
 		console.error('[Account Page] Failed to load account data:', error);
-		
+
 		// Return minimal data on error to prevent page crash
 		// Use parent user data for display name fallback
 		return {
@@ -152,7 +165,7 @@ export const load: PageServerLoad = async ({ parent, fetch }: { parent: () => Pr
 				address: null,
 				paymentMethod: null
 			},
-			user: parentData.user,  // Pass parent user data through for fallback display name
+			user: parentData.user, // Pass parent user data through for fallback display name
 			error: 'Failed to load account data. Please try again.'
 		};
 	}
@@ -160,7 +173,7 @@ export const load: PageServerLoad = async ({ parent, fetch }: { parent: () => Pr
 
 /**
  * Form actions for account management
- * 
+ *
  * Apple ICT 11 Principal Engineer Grade Implementation:
  * - Explicit type annotations for all parameters
  * - Proper SvelteKit Action type usage
@@ -218,7 +231,7 @@ export const actions: Actions = {
 			};
 		} catch (error: any) {
 			console.error('[Account] Profile update failed:', error);
-			
+
 			// Handle API errors with proper messages
 			if (error?.errors) {
 				// Laravel validation errors
@@ -226,11 +239,11 @@ export const actions: Actions = {
 				const errorMessage = Array.isArray(firstError) ? firstError[0] : 'Validation failed';
 				return fail(400, { error: errorMessage });
 			}
-			
+
 			if (error?.message) {
 				return fail(error.status || 500, { error: error.message });
 			}
-			
+
 			return fail(500, { error: 'Failed to update profile. Please try again.' });
 		}
 	},
@@ -271,8 +284,8 @@ export const actions: Actions = {
 		const hasNumber = /[0-9]/.test(newPassword);
 
 		if (!hasUpperCase || !hasLowerCase || !hasNumber) {
-			return fail(400, { 
-				error: 'Password must contain uppercase, lowercase, and numbers' 
+			return fail(400, {
+				error: 'Password must contain uppercase, lowercase, and numbers'
 			});
 		}
 
@@ -294,7 +307,7 @@ export const actions: Actions = {
 			};
 		} catch (error: any) {
 			console.error('[Account] Password update failed:', error);
-			
+
 			// Handle API errors with proper messages
 			if (error?.errors) {
 				// Laravel validation errors
@@ -302,7 +315,7 @@ export const actions: Actions = {
 				const errorMessage = Array.isArray(firstError) ? firstError[0] : 'Validation failed';
 				return fail(400, { error: errorMessage });
 			}
-			
+
 			if (error?.message) {
 				// Handle specific error messages from backend
 				if (error.message.includes('current password')) {
@@ -310,7 +323,7 @@ export const actions: Actions = {
 				}
 				return fail(error.status || 500, { error: error.message });
 			}
-			
+
 			return fail(500, { error: 'Failed to change password. Please try again.' });
 		}
 	}

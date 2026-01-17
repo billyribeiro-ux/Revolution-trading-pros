@@ -1,13 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconNews,
-		IconRefresh,
-		IconExternalLink,
-		IconCheck,
-		IconX,
-		IconClock
-	} from '$lib/icons';
+	import { IconNews, IconRefresh, IconExternalLink, IconCheck, IconX, IconClock } from '$lib/icons';
 
 	// State using Svelte 5 runes
 	let articles = $state<any[]>([]);
@@ -23,7 +16,9 @@
 	let lastGenerated = $state<string | null>(null);
 
 	// Computed
-	let sitemapUrl = $derived(`${typeof window !== 'undefined' ? window.location.origin : ''}/news-sitemap.xml`);
+	let sitemapUrl = $derived(
+		`${typeof window !== 'undefined' ? window.location.origin : ''}/news-sitemap.xml`
+	);
 
 	onMount(async () => {
 		await loadArticles();

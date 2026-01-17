@@ -79,14 +79,17 @@
 		newsletterMessage = '';
 
 		try {
-			const response = await fetch('https://revolution-trading-pros-api.fly.dev/api/newsletter/subscribe', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Accept: 'application/json'
-				},
-				body: JSON.stringify({ email: newsletterEmail })
-			});
+			const response = await fetch(
+				'https://revolution-trading-pros-api.fly.dev/api/newsletter/subscribe',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Accept: 'application/json'
+					},
+					body: JSON.stringify({ email: newsletterEmail })
+				}
+			);
 
 			const data = await response.json();
 
@@ -110,14 +113,17 @@
 		popupMessage = '';
 
 		try {
-			const response = await fetch('https://revolution-trading-pros-api.fly.dev/api/newsletter/subscribe', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json',
-					Accept: 'application/json'
-				},
-				body: JSON.stringify({ email: popupEmail })
-			});
+			const response = await fetch(
+				'https://revolution-trading-pros-api.fly.dev/api/newsletter/subscribe',
+				{
+					method: 'POST',
+					headers: {
+						'Content-Type': 'application/json',
+						Accept: 'application/json'
+					},
+					body: JSON.stringify({ email: popupEmail })
+				}
+			);
 
 			const data = await response.json();
 

@@ -11,14 +11,7 @@
 		type CreateModuleRequest,
 		type UpdateModuleRequest
 	} from '$lib/api/courses';
-	import {
-		IconX,
-		IconFolder,
-		IconPlus,
-		IconEdit,
-		IconCalendar,
-		IconClock
-	} from '$lib/icons';
+	import { IconX, IconFolder, IconPlus, IconEdit, IconCalendar, IconClock } from '$lib/icons';
 
 	interface Props {
 		isOpen: boolean;
@@ -133,11 +126,13 @@
 				const data: UpdateModuleRequest = {};
 
 				if (title.trim() !== module.title) data.title = title.trim();
-				if (description.trim() !== (module.description || '')) data.description = description.trim() || undefined;
+				if (description.trim() !== (module.description || ''))
+					data.description = description.trim() || undefined;
 				if (sortOrder !== module.sort_order) data.sort_order = sortOrder;
 				if (isPublished !== module.is_published) data.is_published = isPublished;
 				if (dripEnabled !== (module.drip_enabled ?? false)) data.drip_enabled = dripEnabled;
-				if (dripDays !== (module.drip_days || 0)) data.drip_days = dripEnabled ? dripDays : undefined;
+				if (dripDays !== (module.drip_days || 0))
+					data.drip_days = dripEnabled ? dripDays : undefined;
 
 				const result = await adminCoursesApi.updateModule(courseId, module.id, data);
 				handleSaved(result);
@@ -186,13 +181,25 @@
 				<h2 id="modal-title" class="modal-title">
 					{mode === 'create' ? 'Add Module' : 'Edit Module'}
 				</h2>
-				<button type="button" class="btn-close" onclick={onClose} disabled={isLoading} aria-label="Close">
+				<button
+					type="button"
+					class="btn-close"
+					onclick={onClose}
+					disabled={isLoading}
+					aria-label="Close"
+				>
 					<IconX size={20} />
 				</button>
 			</div>
 
 			<!-- Form -->
-			<form class="modal-form" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+			<form
+				class="modal-form"
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSubmit();
+				}}
+			>
 				{#if error}
 					<div class="error-banner">{error}</div>
 				{/if}
@@ -236,13 +243,13 @@
 					</div>
 
 					<div class="form-group half">
-						<label class="form-label">Status</label>
-						<div class="status-toggle">
+						<span class="form-label">Status</span>
+						<div class="status-toggle" role="group" aria-label="Module status">
 							<button
 								type="button"
 								class="status-btn"
 								class:active={isPublished}
-								onclick={() => isPublished = true}
+								onclick={() => (isPublished = true)}
 								disabled={isLoading}
 							>
 								Published
@@ -251,7 +258,7 @@
 								type="button"
 								class="status-btn"
 								class:active={!isPublished}
-								onclick={() => isPublished = false}
+								onclick={() => (isPublished = false)}
 								disabled={isLoading}
 							>
 								Draft
@@ -262,11 +269,7 @@
 
 				<div class="form-group">
 					<label class="toggle-label">
-						<input
-							type="checkbox"
-							bind:checked={dripEnabled}
-							disabled={isLoading}
-						/>
+						<input type="checkbox" bind:checked={dripEnabled} disabled={isLoading} />
 						<span class="toggle-text">
 							<strong>Content Dripping</strong>
 							<span>Release this module after a delay</span>
@@ -292,7 +295,9 @@
 							<span class="drip-suffix">days</span>
 						</div>
 						<span class="form-hint">
-							Students will unlock this module {dripDays === 0 ? 'immediately' : `${dripDays} day${dripDays > 1 ? 's' : ''} after enrolling`}
+							Students will unlock this module {dripDays === 0
+								? 'immediately'
+								: `${dripDays} day${dripDays > 1 ? 's' : ''} after enrolling`}
 						</span>
 					</div>
 				{/if}
@@ -331,8 +336,12 @@
 	}
 
 	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
+		from {
+			opacity: 0;
+		}
+		to {
+			opacity: 1;
+		}
 	}
 
 	.modal-container {
@@ -460,7 +469,9 @@
 		color: var(--admin-text-primary);
 		font-family: var(--font-body), 'Roboto', sans-serif;
 		font-size: 0.9375rem;
-		transition: border-color 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			border-color 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	.form-textarea {
@@ -613,7 +624,7 @@
 	.btn-submit {
 		background: var(--admin-accent-primary);
 		border: none;
-		color: #0D1117;
+		color: #0d1117;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -641,6 +652,8 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 </style>

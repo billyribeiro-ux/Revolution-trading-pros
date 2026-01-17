@@ -78,159 +78,162 @@
 		return ((popup.conversions / popup.impressions) * 100).toFixed(1) + '%';
 	}
 
-	let filteredPopups = $derived(popups.filter((popup) => {
-		if (selectedTab === 'active') return popup.isActive;
-		if (selectedTab === 'inactive') return !popup.isActive;
-		return true;
-	}));
+	let filteredPopups = $derived(
+		popups.filter((popup) => {
+			if (selectedTab === 'active') return popup.isActive;
+			if (selectedTab === 'inactive') return !popup.isActive;
+			return true;
+		})
+	);
 </script>
 
 <div class="page">
 	<div class="admin-page-container">
-	<!-- Header -->
-	<div class="page-header">
-		<h1>Popup Manager</h1>
-		<p class="subtitle">Create and manage custom popups for your site</p>
-		<div class="header-actions">
-			<a href="/admin/popups/create" class="btn-primary">
-				<IconPlus size={18} />
-				<span>Create Popup</span>
-			</a>
+		<!-- Header -->
+		<div class="page-header">
+			<h1>Popup Manager</h1>
+			<p class="subtitle">Create and manage custom popups for your site</p>
+			<div class="header-actions">
+				<a href="/admin/popups/create" class="btn-primary">
+					<IconPlus size={18} />
+					<span>Create Popup</span>
+				</a>
+			</div>
 		</div>
-	</div>
 
-	<!-- Tabs -->
-	<div class="tabs">
-		<button
-			class="tab"
-			class:active={selectedTab === 'all'}
-			onclick={() => (selectedTab = 'all')}
-			role="tab"
-			aria-selected={selectedTab === 'all'}
-		>
-			All Popups ({popups.length})
-		</button>
-		<button
-			class="tab"
-			class:active={selectedTab === 'active'}
-			onclick={() => (selectedTab = 'active')}
-			role="tab"
-			aria-selected={selectedTab === 'active'}
-		>
-			Active ({popups.filter((p) => p.isActive).length})
-		</button>
-		<button
-			class="tab"
-			class:active={selectedTab === 'inactive'}
-			onclick={() => (selectedTab = 'inactive')}
-			role="tab"
-			aria-selected={selectedTab === 'inactive'}
-		>
-			Inactive ({popups.filter((p) => !p.isActive).length})
-		</button>
-	</div>
+		<!-- Tabs -->
+		<div class="tabs">
+			<button
+				class="tab"
+				class:active={selectedTab === 'all'}
+				onclick={() => (selectedTab = 'all')}
+				role="tab"
+				aria-selected={selectedTab === 'all'}
+			>
+				All Popups ({popups.length})
+			</button>
+			<button
+				class="tab"
+				class:active={selectedTab === 'active'}
+				onclick={() => (selectedTab = 'active')}
+				role="tab"
+				aria-selected={selectedTab === 'active'}
+			>
+				Active ({popups.filter((p) => p.isActive).length})
+			</button>
+			<button
+				class="tab"
+				class:active={selectedTab === 'inactive'}
+				onclick={() => (selectedTab = 'inactive')}
+				role="tab"
+				aria-selected={selectedTab === 'inactive'}
+			>
+				Inactive ({popups.filter((p) => !p.isActive).length})
+			</button>
+		</div>
 
-	<!-- Popups Grid -->
-	{#if loading}
-		<div class="loading-state">
-			<div class="spinner"></div>
-			<p>Loading popups...</p>
-		</div>
-	{:else if filteredPopups.length === 0}
-		<div class="empty-state">
-			<IconSettings size={48} />
-			<h3>No popups found</h3>
-			<p>Create your first popup to get started</p>
-			<a href="/admin/popups/create" class="btn-primary">
-				<IconPlus size={18} />
-				<span>Create Popup</span>
-			</a>
-		</div>
-	{:else}
-		<div class="popups-grid">
-			{#each filteredPopups as popup}
-				<div class="popup-card">
-					<!-- Status Badge -->
-					<div class="card-header">
-						<div class="status-badge" class:active={popup.isActive}>
-							{popup.isActive ? 'Active' : 'Inactive'}
+		<!-- Popups Grid -->
+		{#if loading}
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<p>Loading popups...</p>
+			</div>
+		{:else if filteredPopups.length === 0}
+			<div class="empty-state">
+				<IconSettings size={48} />
+				<h3>No popups found</h3>
+				<p>Create your first popup to get started</p>
+				<a href="/admin/popups/create" class="btn-primary">
+					<IconPlus size={18} />
+					<span>Create Popup</span>
+				</a>
+			</div>
+		{:else}
+			<div class="popups-grid">
+				{#each filteredPopups as popup}
+					<div class="popup-card">
+						<!-- Status Badge -->
+						<div class="card-header">
+							<div class="status-badge" class:active={popup.isActive}>
+								{popup.isActive ? 'Active' : 'Inactive'}
+							</div>
+							<button
+								class="icon-btn"
+								onclick={() => handleToggleStatus(popup)}
+								title={popup.isActive ? 'Deactivate' : 'Activate'}
+							>
+								{#if popup.isActive}
+									<IconEye size={18} />
+								{:else}
+									<IconEyeOff size={18} />
+								{/if}
+							</button>
 						</div>
-						<button
-							class="icon-btn"
-							onclick={() => handleToggleStatus(popup)}
-							title={popup.isActive ? 'Deactivate' : 'Activate'}
-						>
-							{#if popup.isActive}
-								<IconEye size={18} />
-							{:else}
-								<IconEyeOff size={18} />
+
+						<!-- Popup Info -->
+						<div class="card-body">
+							<h3 class="popup-name">{popup.name}</h3>
+							{#if popup.title}
+								<p class="popup-title">"{popup.title}"</p>
 							{/if}
-						</button>
-					</div>
 
-					<!-- Popup Info -->
-					<div class="card-body">
-						<h3 class="popup-name">{popup.name}</h3>
-						{#if popup.title}
-							<p class="popup-title">"{popup.title}"</p>
-						{/if}
-
-						<!-- Stats -->
-						<div class="popup-stats">
-							<div class="stat">
-								<span class="stat-label">Impressions</span>
-								<span class="stat-value">{popup.impressions.toLocaleString()}</span>
-							</div>
-							<div class="stat">
-								<span class="stat-label">Conversions</span>
-								<span class="stat-value">{popup.conversions.toLocaleString()}</span>
-							</div>
-							<div class="stat">
-								<span class="stat-label">CVR</span>
-								<span class="stat-value">{getConversionRate(popup)}</span>
-							</div>
-						</div>
-
-						<!-- Display Rules Preview -->
-						<div class="rules-preview">
-							<div class="rule-tag">
-								{popup.displayRules.frequency}
-							</div>
-							<div class="rule-tag">
-								{popup.displayRules.delaySeconds}s delay
-							</div>
-							{#if popup.displayRules.showOnScroll}
-								<div class="rule-tag">
-									Scroll {popup.displayRules.scrollPercentage}%
+							<!-- Stats -->
+							<div class="popup-stats">
+								<div class="stat">
+									<span class="stat-label">Impressions</span>
+									<span class="stat-value">{popup.impressions.toLocaleString()}</span>
 								</div>
-							{/if}
+								<div class="stat">
+									<span class="stat-label">Conversions</span>
+									<span class="stat-value">{popup.conversions.toLocaleString()}</span>
+								</div>
+								<div class="stat">
+									<span class="stat-label">CVR</span>
+									<span class="stat-value">{getConversionRate(popup)}</span>
+								</div>
+							</div>
+
+							<!-- Display Rules Preview -->
+							<div class="rules-preview">
+								<div class="rule-tag">
+									{popup.displayRules.frequency}
+								</div>
+								<div class="rule-tag">
+									{popup.displayRules.delaySeconds}s delay
+								</div>
+								{#if popup.displayRules.showOnScroll}
+									<div class="rule-tag">
+										Scroll {popup.displayRules.scrollPercentage}%
+									</div>
+								{/if}
+							</div>
+						</div>
+
+						<!-- Actions -->
+						<div class="card-actions">
+							<a href="/admin/popups/{popup.id}/edit" class="action-btn">
+								<IconEdit size={16} />
+								<span>Edit</span>
+							</a>
+							<button class="action-btn" onclick={() => handleDuplicate(popup.id)}>
+								<IconCopy size={16} />
+								<span>Duplicate</span>
+							</button>
+							<a href="/admin/popups/{popup.id}/analytics" class="action-btn">
+								<IconChartBar size={16} />
+								<span>Analytics</span>
+							</a>
+							<button class="action-btn danger" onclick={() => handleDelete(popup.id)}>
+								<IconTrash size={16} />
+								<span>Delete</span>
+							</button>
 						</div>
 					</div>
-
-					<!-- Actions -->
-					<div class="card-actions">
-						<a href="/admin/popups/{popup.id}/edit" class="action-btn">
-							<IconEdit size={16} />
-							<span>Edit</span>
-						</a>
-						<button class="action-btn" onclick={() => handleDuplicate(popup.id)}>
-							<IconCopy size={16} />
-							<span>Duplicate</span>
-						</button>
-						<a href="/admin/popups/{popup.id}/analytics" class="action-btn">
-							<IconChartBar size={16} />
-							<span>Analytics</span>
-						</a>
-						<button class="action-btn danger" onclick={() => handleDelete(popup.id)}>
-							<IconTrash size={16} />
-							<span>Delete</span>
-						</button>
-					</div>
-				</div>
-			{/each}
-		</div>
-	{/if}
-	</div><!-- End admin-page-container -->
+				{/each}
+			</div>
+		{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>
@@ -269,8 +272,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		font-weight: 600;
 		border-radius: 6px;
 		border: none;
@@ -309,8 +312,8 @@
 	}
 
 	.tab.active {
-		color: #E6B800;
-		border-bottom-color: #E6B800;
+		color: #e6b800;
+		border-bottom-color: #e6b800;
 	}
 
 	/* Popups Grid */
@@ -361,7 +364,7 @@
 		border: none;
 		border-radius: 8px;
 		padding: 0.5rem;
-		color: #E6B800;
+		color: #e6b800;
 		cursor: pointer;
 		transition: all 0.2s;
 		display: flex;
@@ -431,7 +434,7 @@
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
 		font-size: 0.75rem;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.card-actions {
@@ -481,7 +484,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(230, 184, 0, 0.1);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

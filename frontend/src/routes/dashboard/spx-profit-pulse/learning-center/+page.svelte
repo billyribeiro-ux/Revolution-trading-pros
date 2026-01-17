@@ -97,7 +97,11 @@
 			}
 
 			// Pages around current
-			for (let i = Math.max(2, currentPage - delta); i <= Math.min(totalPages - 1, currentPage + delta); i++) {
+			for (
+				let i = Math.max(2, currentPage - delta);
+				i <= Math.min(totalPages - 1, currentPage + delta);
+				i++
+			) {
 				if (!range.includes(i)) {
 					range.push(i);
 				}
@@ -117,20 +121,23 @@
 	}
 
 	function getCategoryLabel(categoryId: string): string {
-		const category = categories.find(c => c.id === categoryId);
+		const category = categories.find((c) => c.id === categoryId);
 		return category?.label || categoryId;
 	}
 </script>
 
 <svelte:head>
 	<title>Learning Center | SPX Profit Pulse | Revolution Trading Pros</title>
-	<meta name="description" content="Access educational resources, training materials, and courses for SPX trading mastery." />
+	<meta
+		name="description"
+		content="Access educational resources, training materials, and courses for SPX trading mastery."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="SPX Profit Pulse" 
-	startHereUrl="/dashboard/spx-profit-pulse/start-here" 
+<TradingRoomHeader
+	roomName="SPX Profit Pulse"
+	startHereUrl="/dashboard/spx-profit-pulse/start-here"
 />
 
 <div class="dashboard__content">
@@ -138,26 +145,38 @@
 		<!-- Category Filter Form - matches WordPress exactly -->
 		<form action="#" method="POST" id="term_filter" onsubmit={(e) => e.preventDefault()}>
 			<div class="reset_filter">
-				<input 
-					type="radio" 
-					id="0" 
-					value="0" 
+				<input
+					type="radio"
+					id="0"
+					value="0"
 					name="categoryfilter"
 					checked={activeFilter === 'all'}
 					onchange={() => filterResources('all')}
 				/>
 				<label for="0">
-					<svg aria-hidden="true" focusable="false" data-prefix="fas" data-icon="undo" class="svg-inline--fa fa-undo fa-w-16" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-						<path fill="currentColor" d="M212.333 224.333H12c-6.627 0-12-5.373-12-12V12C0 5.373 5.373 0 12 0h48c6.627 0 12 5.373 12 12v78.112C117.773 39.279 184.26 7.47 258.175 8.007c136.906.994 246.448 111.623 246.157 248.532C504.041 393.258 393.12 504 256.333 504c-64.089 0-122.496-24.313-166.51-64.215-5.099-4.622-5.334-12.554-.467-17.42l33.967-33.967c4.474-4.474 11.662-4.717 16.401-.525C170.76 415.336 211.58 432 256.333 432c97.268 0 176-78.716 176-176 0-97.267-78.716-176-176-176-58.496 0-110.28 28.476-142.274 72.333h98.274c6.627 0 12 5.373 12 12v48c0 6.627-5.373 12-12 12z"></path>
+					<svg
+						aria-hidden="true"
+						focusable="false"
+						data-prefix="fas"
+						data-icon="undo"
+						class="svg-inline--fa fa-undo fa-w-16"
+						role="img"
+						xmlns="http://www.w3.org/2000/svg"
+						viewBox="0 0 512 512"
+					>
+						<path
+							fill="currentColor"
+							d="M212.333 224.333H12c-6.627 0-12-5.373-12-12V12C0 5.373 5.373 0 12 0h48c6.627 0 12 5.373 12 12v78.112C117.773 39.279 184.26 7.47 258.175 8.007c136.906.994 246.448 111.623 246.157 248.532C504.041 393.258 393.12 504 256.333 504c-64.089 0-122.496-24.313-166.51-64.215-5.099-4.622-5.334-12.554-.467-17.42l33.967-33.967c4.474-4.474 11.662-4.717 16.401-.525C170.76 415.336 211.58 432 256.333 432c97.268 0 176-78.716 176-176 0-97.267-78.716-176-176-176-58.496 0-110.28 28.476-142.274 72.333h98.274c6.627 0 12 5.373 12 12v48c0 6.627-5.373 12-12 12z"
+						></path>
 					</svg>
 				</label>
 			</div>
 			{#each categories as category}
 				<div class="filter_btn">
-					<input 
-						type="radio" 
-						id={category.id} 
-						value={category.id} 
+					<input
+						type="radio"
+						id={category.id}
+						value={category.id}
 						name="categoryfilter"
 						checked={activeFilter === category.id}
 						onchange={() => filterResources(category.id)}
@@ -165,16 +184,22 @@
 					<label for={category.id}>{category.label}</label>
 				</div>
 			{/each}
-			<input type="hidden" name="page_id" value="2055757">
-			<input type="hidden" name="pagination_base" value="/dashboard/spx-profit-pulse/learning-center/page/%#%">
-			
+			<input type="hidden" name="page_id" value="2055757" />
+			<input
+				type="hidden"
+				name="pagination_base"
+				value="/dashboard/spx-profit-pulse/learning-center/page/%#%"
+			/>
+
 			<button class="apply_filter">Apply filter</button>
-			<input type="hidden" name="action" value="myfilter">
+			<input type="hidden" name="action" value="myfilter" />
 		</form>
 
 		<!-- Section Title - matches WordPress exactly -->
 		<section class="dashboard__content-section">
-			<h2 class="section-title">SPX Profit Pulse Learning Center<span> | </span><span>Overview</span></h2>
+			<h2 class="section-title">
+				SPX Profit Pulse Learning Center<span> | </span><span>Overview</span>
+			</h2>
 			<p></p>
 		</section>
 
@@ -193,8 +218,16 @@
 					{#each videos as video}
 						<div class="col-xs-12 col-sm-6 col-md-6 col-xl-4 flex-grid-item">
 							<article class="article-card">
-								<figure class="article-card__image" style="background-image: url({video.thumbnail_url || 'https://cdn.simplertrading.com/2024/09/23132611/Jon-Generic.jpg'});">
-									<img src={video.thumbnail_url || 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'} alt={video.title} />
+								<figure
+									class="article-card__image"
+									style="background-image: url({video.thumbnail_url ||
+										'https://cdn.simplertrading.com/2024/09/23132611/Jon-Generic.jpg'});"
+								>
+									<img
+										src={video.thumbnail_url ||
+											'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg'}
+										alt={video.title}
+									/>
 								</figure>
 								{#if video.tag_details && video.tag_details.length > 0}
 									<div class="article-card__type">
@@ -204,7 +237,9 @@
 									</div>
 								{/if}
 								<h4 class="h5 article-card__title">
-									<a href="/dashboard/spx-profit-pulse/learning-center/{video.slug}">{video.title}</a>
+									<a href="/dashboard/spx-profit-pulse/learning-center/{video.slug}"
+										>{video.title}</a
+									>
 								</h4>
 								{#if video.trader}
 									<div class="u--margin-top-0">
@@ -214,7 +249,10 @@
 								<div class="article-card__excerpt u--hide-read-more">
 									<p>{video.description || ''}</p>
 								</div>
-								<a href="/dashboard/spx-profit-pulse/learning-center/{video.slug}" class="btn btn-tiny btn-default">Watch Now</a>
+								<a
+									href="/dashboard/spx-profit-pulse/learning-center/{video.slug}"
+									class="btn btn-tiny btn-default">Watch Now</a
+								>
 							</article>
 						</div>
 					{/each}
@@ -226,7 +264,7 @@
 				<div class="facetwp-pager">
 					{#each getPaginationRange() as item}
 						{#if typeof item === 'number'}
-							<button 
+							<button
 								type="button"
 								class="facetwp-page {item === currentPage ? 'active' : ''}"
 								onclick={() => goToPage(item)}
@@ -303,7 +341,7 @@
 		margin-right: 10px;
 	}
 
-	.reset_filter input[type="radio"] {
+	.reset_filter input[type='radio'] {
 		display: none;
 	}
 
@@ -321,16 +359,16 @@
 	}
 
 	.reset_filter label:hover {
-		border-color: #143E59;
+		border-color: #143e59;
 		background: #f0f0f0;
 	}
 
-	.reset_filter input[type="radio"]:checked + label {
-		border-color: #143E59;
-		background: #143E59;
+	.reset_filter input[type='radio']:checked + label {
+		border-color: #143e59;
+		background: #143e59;
 	}
 
-	.reset_filter input[type="radio"]:checked + label svg {
+	.reset_filter input[type='radio']:checked + label svg {
 		fill: #fff;
 	}
 
@@ -345,7 +383,7 @@
 		display: inline-block;
 	}
 
-	.filter_btn input[type="radio"] {
+	.filter_btn input[type='radio'] {
 		display: none;
 	}
 
@@ -364,19 +402,19 @@
 	}
 
 	.filter_btn label:hover {
-		border-color: #143E59;
+		border-color: #143e59;
 		background: #f0f0f0;
 	}
 
-	.filter_btn input[type="radio"]:checked + label {
-		background: #143E59;
-		border-color: #143E59;
+	.filter_btn input[type='radio']:checked + label {
+		background: #143e59;
+		border-color: #143e59;
 		color: #fff;
 	}
 
 	.apply_filter {
 		padding: 10px 24px;
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 		border: none;
 		border-radius: 25px;
@@ -441,7 +479,9 @@
 		border-radius: 8px;
 		overflow: hidden;
 		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-		transition: box-shadow 0.3s ease, transform 0.2s ease;
+		transition:
+			box-shadow 0.3s ease,
+			transform 0.2s ease;
 	}
 
 	.article-card:hover {
@@ -487,7 +527,7 @@
 	}
 
 	.label--info {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -505,7 +545,7 @@
 	}
 
 	.article-card__title a:hover {
-		color: #143E59;
+		color: #143e59;
 	}
 
 	.u--margin-top-0 {
@@ -564,9 +604,9 @@
 	}
 
 	.btn-default {
-		background: #143E59;
+		background: #143e59;
 		color: #fff;
-		border: 1px solid #143E59;
+		border: 1px solid #143e59;
 	}
 
 	.btn-default:hover {
@@ -607,8 +647,8 @@
 	}
 
 	.facetwp-page.active {
-		background: #143E59;
-		border-color: #143E59;
+		background: #143e59;
+		border-color: #143e59;
 		color: #fff;
 	}
 

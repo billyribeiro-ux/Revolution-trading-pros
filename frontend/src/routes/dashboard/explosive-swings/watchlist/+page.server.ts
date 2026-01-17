@@ -1,9 +1,9 @@
 /**
  * Explosive Swings Watchlist - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * SSR pre-fetch for watchlist data
- * 
+ *
  * @version 1.0.0
  */
 

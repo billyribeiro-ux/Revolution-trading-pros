@@ -45,8 +45,8 @@
 			ticker: 'MSFT',
 			entryDate: 'Jan 5, 2026',
 			exitDate: 'Jan 10, 2026',
-			entryPrice: 425.00,
-			exitPrice: 460.00,
+			entryPrice: 425.0,
+			exitPrice: 460.0,
 			shares: 100,
 			profit: 2450,
 			profitPercent: 8.2,
@@ -60,8 +60,8 @@
 			ticker: 'META',
 			entryDate: 'Jan 8, 2026',
 			exitDate: 'Jan 12, 2026',
-			entryPrice: 575.00,
-			exitPrice: 610.00,
+			entryPrice: 575.0,
+			exitPrice: 610.0,
 			shares: 50,
 			profit: 1820,
 			profitPercent: 6.1,
@@ -75,23 +75,23 @@
 			ticker: 'AMD',
 			entryDate: 'Jan 9, 2026',
 			exitDate: 'Jan 11, 2026',
-			entryPrice: 130.00,
-			exitPrice: 127.00,
+			entryPrice: 130.0,
+			exitPrice: 127.0,
 			shares: 200,
 			profit: -680,
 			profitPercent: -2.3,
 			duration: 2,
 			setup: 'Reversal',
 			result: 'LOSS',
-			notes: 'Stopped out. Reversal didn\'t materialize.'
+			notes: "Stopped out. Reversal didn't materialize."
 		},
 		{
 			id: 4,
 			ticker: 'NFLX',
 			entryDate: 'Jan 2, 2026',
 			exitDate: 'Jan 9, 2026',
-			entryPrice: 520.00,
-			exitPrice: 570.00,
+			entryPrice: 520.0,
+			exitPrice: 570.0,
 			shares: 60,
 			profit: 3100,
 			profitPercent: 9.5,
@@ -105,7 +105,7 @@
 			ticker: 'NVDA',
 			entryDate: 'Jan 13, 2026',
 			exitDate: null,
-			entryPrice: 142.50,
+			entryPrice: 142.5,
 			exitPrice: null,
 			shares: 150,
 			profit: 0,
@@ -120,8 +120,8 @@
 			ticker: 'TSLA',
 			entryDate: 'Dec 28, 2025',
 			exitDate: 'Jan 5, 2026',
-			entryPrice: 235.00,
-			exitPrice: 265.00,
+			entryPrice: 235.0,
+			exitPrice: 265.0,
 			shares: 80,
 			profit: 2400,
 			profitPercent: 12.8,
@@ -135,7 +135,7 @@
 			ticker: 'AMZN',
 			entryDate: 'Jan 11, 2026',
 			exitDate: null,
-			entryPrice: 185.00,
+			entryPrice: 185.0,
 			exitPrice: null,
 			shares: 100,
 			profit: 0,
@@ -150,8 +150,8 @@
 			ticker: 'GOOGL',
 			entryDate: 'Dec 20, 2025',
 			exitDate: 'Dec 30, 2025',
-			entryPrice: 168.00,
-			exitPrice: 175.00,
+			entryPrice: 168.0,
+			exitPrice: 175.0,
 			shares: 120,
 			profit: 840,
 			profitPercent: 4.2,
@@ -166,18 +166,21 @@
 		filterStatus === 'all'
 			? trades
 			: filterStatus === 'active'
-			? trades.filter(t => t.result === 'ACTIVE')
-			: trades.filter(t => t.result === filterStatus.toUpperCase())
+				? trades.filter((t) => t.result === 'ACTIVE')
+				: trades.filter((t) => t.result === filterStatus.toUpperCase())
 	);
 
 	const stats = $derived.by(() => {
-		const closedTrades = trades.filter(t => t.result !== 'ACTIVE');
-		const wins = closedTrades.filter(t => t.result === 'WIN').length;
-		const losses = closedTrades.filter(t => t.result === 'LOSS').length;
+		const closedTrades = trades.filter((t) => t.result !== 'ACTIVE');
+		const wins = closedTrades.filter((t) => t.result === 'WIN').length;
+		const losses = closedTrades.filter((t) => t.result === 'LOSS').length;
 		const totalProfit = closedTrades.reduce((sum, t) => sum + t.profit, 0);
-		const avgWin = closedTrades.filter(t => t.result === 'WIN').reduce((sum, t) => sum + t.profit, 0) / wins;
-		const avgLoss = Math.abs(closedTrades.filter(t => t.result === 'LOSS').reduce((sum, t) => sum + t.profit, 0) / losses);
-		
+		const avgWin =
+			closedTrades.filter((t) => t.result === 'WIN').reduce((sum, t) => sum + t.profit, 0) / wins;
+		const avgLoss = Math.abs(
+			closedTrades.filter((t) => t.result === 'LOSS').reduce((sum, t) => sum + t.profit, 0) / losses
+		);
+
 		return {
 			totalTrades: closedTrades.length,
 			wins,
@@ -195,9 +198,9 @@
 	<title>Trade Tracker | Explosive Swings</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="Explosive Swings" 
-	startHereUrl="/dashboard/explosive-swings/start-here" 
+<TradingRoomHeader
+	roomName="Explosive Swings"
+	startHereUrl="/dashboard/explosive-swings/start-here"
 />
 
 <div class="trade-tracker">
@@ -244,16 +247,32 @@
 
 	<!-- Filter Buttons -->
 	<div class="filter-section">
-		<button class="filter-btn" class:active={filterStatus === 'all'} onclick={() => filterStatus = 'all'}>
+		<button
+			class="filter-btn"
+			class:active={filterStatus === 'all'}
+			onclick={() => (filterStatus = 'all')}
+		>
 			All Trades
 		</button>
-		<button class="filter-btn" class:active={filterStatus === 'active'} onclick={() => filterStatus = 'active'}>
+		<button
+			class="filter-btn"
+			class:active={filterStatus === 'active'}
+			onclick={() => (filterStatus = 'active')}
+		>
 			Active
 		</button>
-		<button class="filter-btn" class:active={filterStatus === 'win'} onclick={() => filterStatus = 'win'}>
+		<button
+			class="filter-btn"
+			class:active={filterStatus === 'win'}
+			onclick={() => (filterStatus = 'win')}
+		>
 			Wins
 		</button>
-		<button class="filter-btn" class:active={filterStatus === 'loss'} onclick={() => filterStatus = 'loss'}>
+		<button
+			class="filter-btn"
+			class:active={filterStatus === 'loss'}
+			onclick={() => (filterStatus = 'loss')}
+		>
 			Losses
 		</button>
 	</div>
@@ -284,15 +303,20 @@
 						{trade.profit !== 0 ? `$${trade.profit.toLocaleString()}` : '-'}
 					</div>
 					<div class:green={trade.profitPercent > 0} class:red={trade.profitPercent < 0}>
-						{trade.profitPercent !== 0 ? `${trade.profitPercent > 0 ? '+' : ''}${trade.profitPercent}%` : '-'}
+						{trade.profitPercent !== 0
+							? `${trade.profitPercent > 0 ? '+' : ''}${trade.profitPercent}%`
+							: '-'}
 					</div>
 					<div>{trade.duration || '-'}</div>
 					<div><span class="setup-badge">{trade.setup}</span></div>
-					<div><span class="result-badge result--{trade.result.toLowerCase()}">{trade.result}</span></div>
+					<div>
+						<span class="result-badge result--{trade.result.toLowerCase()}">{trade.result}</span>
+					</div>
 				</div>
 				<div class="notes-row">
 					<div class="notes-content">
-						<strong>Notes:</strong> {trade.notes}
+						<strong>Notes:</strong>
+						{trade.notes}
 					</div>
 				</div>
 			{/each}
@@ -352,13 +376,13 @@
 		border-radius: 12px;
 		padding: 20px;
 		text-align: center;
-		box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+		box-shadow: 0 2px 10px rgba(0, 0, 0, 0.06);
 	}
 
 	.stat-value {
 		font-size: 28px;
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 		font-family: 'Montserrat', sans-serif;
 		margin-bottom: 5px;
 	}
@@ -399,13 +423,13 @@
 	}
 
 	.filter-btn:hover {
-		border-color: #143E59;
-		color: #143E59;
+		border-color: #143e59;
+		color: #143e59;
 	}
 
 	.filter-btn.active {
-		background: #143E59;
-		border-color: #143E59;
+		background: #143e59;
+		border-color: #143e59;
 		color: #fff;
 	}
 
@@ -415,7 +439,7 @@
 		background: #fff;
 		border-radius: 16px;
 		padding: 25px;
-		box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 		overflow-x: auto;
 	}
 
@@ -453,7 +477,7 @@
 
 	.ticker-cell {
 		font-weight: 700;
-		color: #143E59;
+		color: #143e59;
 		font-size: 16px;
 	}
 

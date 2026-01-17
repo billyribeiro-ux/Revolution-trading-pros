@@ -81,12 +81,18 @@
 
 	function getChangeTypeColor(changeType: string): string {
 		switch (changeType) {
-			case 'create': return 'emerald';
-			case 'update': return 'blue';
-			case 'publish': return 'purple';
-			case 'unpublish': return 'amber';
-			case 'delete': return 'red';
-			default: return 'slate';
+			case 'create':
+				return 'emerald';
+			case 'update':
+				return 'blue';
+			case 'publish':
+				return 'purple';
+			case 'unpublish':
+				return 'amber';
+			case 'delete':
+				return 'red';
+			default:
+				return 'slate';
 		}
 	}
 
@@ -138,7 +144,10 @@
 					<button
 						class="filter-chip"
 						class:active={filterType === type}
-						onclick={() => { filterType = type; fetchVersions(); }}
+						onclick={() => {
+							filterType = type;
+							fetchVersions();
+						}}
 					>
 						{type === 'all' ? 'All Types' : type}
 					</button>
@@ -169,8 +178,13 @@
 						class="version-card"
 						in:fly={{ x: -20, duration: 400, delay: i * 50 }}
 						class:selected={selectedVersion?.id === version.id}
-						onclick={() => selectedVersion = selectedVersion?.id === version.id ? null : version}
-						onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); selectedVersion = selectedVersion?.id === version.id ? null : version; }}}
+						onclick={() => (selectedVersion = selectedVersion?.id === version.id ? null : version)}
+						onkeydown={(e) => {
+							if (e.key === 'Enter' || e.key === ' ') {
+								e.preventDefault();
+								selectedVersion = selectedVersion?.id === version.id ? null : version;
+							}
+						}}
 						role="button"
 						tabindex="0"
 						aria-label="View version {version.version_number} details"
@@ -216,7 +230,10 @@
 							<button
 								class="action-btn rollback"
 								title="Rollback"
-								onclick={(e) => { e.stopPropagation(); rollbackVersion(version.id); }}
+								onclick={(e) => {
+									e.stopPropagation();
+									rollbackVersion(version.id);
+								}}
 							>
 								<IconRefresh size={16} />
 							</button>
@@ -232,7 +249,7 @@
 		<aside class="detail-panel" in:fly={{ x: 300, duration: 400 }}>
 			<div class="panel-header">
 				<h2>Version Details</h2>
-				<button class="close-btn" onclick={() => selectedVersion = null}>
+				<button class="close-btn" onclick={() => (selectedVersion = null)}>
 					<IconX size={18} />
 				</button>
 			</div>
@@ -280,14 +297,14 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #E6B800;
+		color: #e6b800;
 		text-decoration: none;
 		margin-bottom: 1rem;
 		transition: color 0.2s;
 	}
 
 	.back-link:hover {
-		color: #B38F00;
+		color: #b38f00;
 	}
 
 	.header-title {
@@ -304,7 +321,7 @@
 		align-items: center;
 		justify-content: center;
 		background: linear-gradient(135deg, rgba(230, 184, 0, 0.12) 0%, rgba(230, 184, 0, 0.06) 100%);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.header-title h1 {
@@ -398,7 +415,7 @@
 	.filter-chip.active {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	/* Versions Timeline */
@@ -463,12 +480,30 @@
 		box-shadow: 0 0 0 2px currentColor;
 	}
 
-	.version-timeline-dot.emerald { background: #10b981; color: rgba(16, 185, 129, 0.3); }
-	.version-timeline-dot.blue { background: #3b82f6; color: rgba(59, 130, 246, 0.3); }
-	.version-timeline-dot.purple { background: #B38F00; color: rgba(230, 184, 0, 0.3); }
-	.version-timeline-dot.amber { background: #f59e0b; color: rgba(245, 158, 11, 0.3); }
-	.version-timeline-dot.red { background: #ef4444; color: rgba(239, 68, 68, 0.3); }
-	.version-timeline-dot.slate { background: #64748b; color: rgba(100, 116, 139, 0.3); }
+	.version-timeline-dot.emerald {
+		background: #10b981;
+		color: rgba(16, 185, 129, 0.3);
+	}
+	.version-timeline-dot.blue {
+		background: #3b82f6;
+		color: rgba(59, 130, 246, 0.3);
+	}
+	.version-timeline-dot.purple {
+		background: #b38f00;
+		color: rgba(230, 184, 0, 0.3);
+	}
+	.version-timeline-dot.amber {
+		background: #f59e0b;
+		color: rgba(245, 158, 11, 0.3);
+	}
+	.version-timeline-dot.red {
+		background: #ef4444;
+		color: rgba(239, 68, 68, 0.3);
+	}
+	.version-timeline-dot.slate {
+		background: #64748b;
+		color: rgba(100, 116, 139, 0.3);
+	}
 
 	.version-main {
 		flex: 1;
@@ -489,12 +524,30 @@
 		text-transform: uppercase;
 	}
 
-	.change-badge.emerald { background: rgba(16, 185, 129, 0.12); color: #059669; }
-	.change-badge.blue { background: rgba(59, 130, 246, 0.12); color: #2563eb; }
-	.change-badge.purple { background: rgba(230, 184, 0, 0.12); color: #B38F00; }
-	.change-badge.amber { background: rgba(245, 158, 11, 0.12); color: #b45309; }
-	.change-badge.red { background: rgba(239, 68, 68, 0.12); color: #dc2626; }
-	.change-badge.slate { background: rgba(100, 116, 139, 0.12); color: #475569; }
+	.change-badge.emerald {
+		background: rgba(16, 185, 129, 0.12);
+		color: #059669;
+	}
+	.change-badge.blue {
+		background: rgba(59, 130, 246, 0.12);
+		color: #2563eb;
+	}
+	.change-badge.purple {
+		background: rgba(230, 184, 0, 0.12);
+		color: #b38f00;
+	}
+	.change-badge.amber {
+		background: rgba(245, 158, 11, 0.12);
+		color: #b45309;
+	}
+	.change-badge.red {
+		background: rgba(239, 68, 68, 0.12);
+		color: #dc2626;
+	}
+	.change-badge.slate {
+		background: rgba(100, 116, 139, 0.12);
+		color: #475569;
+	}
 
 	.version-number {
 		font-size: 0.8rem;
@@ -562,7 +615,7 @@
 
 	.action-btn:hover {
 		background: #f8fafc;
-		color: #E6B800;
+		color: #e6b800;
 		border-color: rgba(230, 184, 0, 0.3);
 	}
 
@@ -586,13 +639,15 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #f1f5f9;
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.empty-icon {
@@ -602,7 +657,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, rgba(148, 163, 184, 0.1) 0%, rgba(148, 163, 184, 0.05) 100%);
+		background: linear-gradient(
+			135deg,
+			rgba(148, 163, 184, 0.1) 0%,
+			rgba(148, 163, 184, 0.05) 100%
+		);
 		color: #cbd5e1;
 		margin-bottom: 1rem;
 	}
@@ -709,12 +768,12 @@
 		gap: 0.5rem;
 		width: 100%;
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border: none;
 		border-radius: 12px;
 		font-size: 0.9rem;
 		font-weight: 600;
-		color: #0D1117;
+		color: #0d1117;
 		cursor: pointer;
 		transition: all 0.25s;
 	}

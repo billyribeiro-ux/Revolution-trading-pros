@@ -115,11 +115,7 @@
 					<div class="card-header">
 						<div class="schema-type">{schema.schema_type}</div>
 						<div class="actions">
-							<button
-								class="action-btn"
-								onclick={() => viewJsonLd(schema.id)}
-								title="View JSON-LD"
-							>
+							<button class="action-btn" onclick={() => viewJsonLd(schema.id)} title="View JSON-LD">
 								<IconEye size={18} />
 							</button>
 							<button
@@ -272,7 +268,7 @@
 	.schema-type {
 		font-size: 0.85rem;
 		font-weight: 600;
-		color: #B38F00;
+		color: #b38f00;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
@@ -388,7 +384,7 @@
 	}
 
 	.type-card:hover {
-		border-color: #B38F00;
+		border-color: #b38f00;
 		box-shadow: 0 2px 8px rgba(230, 184, 0, 0.1);
 	}
 
@@ -400,7 +396,7 @@
 
 	.use-template {
 		font-size: 0.85rem;
-		color: #B38F00;
+		color: #b38f00;
 		text-decoration: none;
 	}
 

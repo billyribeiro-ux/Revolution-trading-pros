@@ -305,7 +305,8 @@
 					won: data?.won || leads.filter((l) => l.status === 'won').length,
 					lost: data?.lost || leads.filter((l) => l.status === 'lost').length,
 					hot_leads: data?.hot_leads || leads.filter((l) => l.is_hot).length,
-					total_value: data?.total_value || leads.reduce((sum, l) => sum + (l.estimated_value || 0), 0),
+					total_value:
+						data?.total_value || leads.reduce((sum, l) => sum + (l.estimated_value || 0), 0),
 					conversion_rate: data?.conversion_rate || 0
 				};
 			}
@@ -584,9 +585,7 @@
 			<IconUsers size={28} />
 			Lead Management
 		</h1>
-		<p class="subtitle">
-			Track, qualify, and convert leads through your sales pipeline
-		</p>
+		<p class="subtitle">Track, qualify, and convert leads through your sales pipeline</p>
 	</header>
 
 	{#if connectionLoading}
@@ -670,11 +669,7 @@
 			<div class="search-section">
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input
-						type="text"
-						placeholder="Search leads..."
-						bind:value={searchQuery}
-					/>
+					<input type="text" placeholder="Search leads..." bind:value={searchQuery} />
 				</div>
 				<button class="btn-filter" onclick={() => (showFilters = !showFilters)}>
 					<IconFilter size={18} />
@@ -690,9 +685,7 @@
 						<button class="btn-bulk" onclick={() => bulkUpdateStatus('qualified')}>
 							Mark Qualified
 						</button>
-						<button class="btn-bulk danger" onclick={bulkDelete}>
-							Delete
-						</button>
+						<button class="btn-bulk danger" onclick={bulkDelete}> Delete </button>
 					</div>
 				{/if}
 
@@ -794,11 +787,7 @@
 					<thead>
 						<tr>
 							<th class="checkbox-col">
-								<input
-									type="checkbox"
-									checked={isAllSelected}
-									onchange={toggleSelectAll}
-								/>
+								<input type="checkbox" checked={isAllSelected} onchange={toggleSelectAll} />
 							</th>
 							<th></th>
 							<th>Lead</th>
@@ -858,7 +847,8 @@
 									<select
 										class="status-select {getStatusColor(lead.status)}"
 										value={lead.status}
-										onchange={(e) => updateLeadStatus(lead.id, (e.target as HTMLSelectElement).value)}
+										onchange={(e) =>
+											updateLeadStatus(lead.id, (e.target as HTMLSelectElement).value)}
 									>
 										{#each statusOptions.filter((o) => o.value !== 'all') as option}
 											<option value={option.value}>{option.label}</option>
@@ -871,10 +861,7 @@
 											{lead.lead_score}
 										</span>
 										<div class="score-bar">
-											<div
-												class="score-fill"
-												style="width: {lead.lead_score}%"
-											></div>
+											<div class="score-fill" style="width: {lead.lead_score}%"></div>
 										</div>
 									</div>
 								</td>
@@ -892,18 +879,10 @@
 								</td>
 								<td>
 									<div class="action-buttons-cell">
-										<a
-											href="/admin/crm/leads/{lead.id}"
-											class="btn-icon"
-											title="View"
-										>
+										<a href="/admin/crm/leads/{lead.id}" class="btn-icon" title="View">
 											<IconEye size={16} />
 										</a>
-										<button
-											class="btn-icon"
-											title="Edit"
-											onclick={() => openEditModal(lead)}
-										>
+										<button class="btn-icon" title="Edit" onclick={() => openEditModal(lead)}>
 											<IconEdit size={16} />
 										</button>
 										<button
@@ -930,7 +909,10 @@
 				<!-- Pagination -->
 				<div class="table-footer">
 					<span class="results-count">
-						Showing {(currentPage - 1) * perPage + 1} - {Math.min(currentPage * perPage, filteredLeads.length)} of {filteredLeads.length} leads
+						Showing {(currentPage - 1) * perPage + 1} - {Math.min(
+							currentPage * perPage,
+							filteredLeads.length
+						)} of {filteredLeads.length} leads
 					</span>
 					<div class="pagination">
 						<button
@@ -960,7 +942,14 @@
 <!-- Add Lead Modal -->
 {#if showAddModal}
 	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
-	<div class="modal-overlay" onclick={() => (showAddModal = false)} onkeydown={(e) => e.key === 'Escape' && (showAddModal = false)} role="dialog" aria-modal="true" tabindex="-1">
+	<div
+		class="modal-overlay"
+		onclick={() => (showAddModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showAddModal = false)}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal"
@@ -984,30 +973,15 @@
 				<div class="form-grid">
 					<div class="form-group">
 						<label for="first_name">First Name *</label>
-						<input
-							id="first_name"
-							type="text"
-							bind:value={formData.first_name}
-							required
-						/>
+						<input id="first_name" type="text" bind:value={formData.first_name} required />
 					</div>
 					<div class="form-group">
 						<label for="last_name">Last Name *</label>
-						<input
-							id="last_name"
-							type="text"
-							bind:value={formData.last_name}
-							required
-						/>
+						<input id="last_name" type="text" bind:value={formData.last_name} required />
 					</div>
 					<div class="form-group full-width">
 						<label for="email">Email *</label>
-						<input
-							id="email"
-							type="email"
-							bind:value={formData.email}
-							required
-						/>
+						<input id="email" type="email" bind:value={formData.email} required />
 					</div>
 					<div class="form-group">
 						<label for="phone">Phone</label>
@@ -1015,19 +989,11 @@
 					</div>
 					<div class="form-group">
 						<label for="company">Company</label>
-						<input
-							id="company"
-							type="text"
-							bind:value={formData.company_name}
-						/>
+						<input id="company" type="text" bind:value={formData.company_name} />
 					</div>
 					<div class="form-group">
 						<label for="job_title">Job Title</label>
-						<input
-							id="job_title"
-							type="text"
-							bind:value={formData.job_title}
-						/>
+						<input id="job_title" type="text" bind:value={formData.job_title} />
 					</div>
 					<div class="form-group">
 						<label for="source">Lead Source</label>
@@ -1048,18 +1014,12 @@
 					</div>
 					<div class="form-group full-width">
 						<label for="notes">Notes</label>
-						<textarea
-							id="notes"
-							rows="3"
-							bind:value={formData.notes}
-						></textarea>
+						<textarea id="notes" rows="3" bind:value={formData.notes}></textarea>
 					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showAddModal = false)}>
-					Cancel
-				</button>
+				<button class="btn-secondary" onclick={() => (showAddModal = false)}> Cancel </button>
 				<button
 					class="btn-primary"
 					onclick={createLead}
@@ -1080,7 +1040,14 @@
 <!-- Edit Lead Modal -->
 {#if showEditModal && editingLead}
 	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
-	<div class="modal-overlay" onclick={() => (showEditModal = false)} onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)} role="dialog" aria-modal="true" tabindex="-1">
+	<div
+		class="modal-overlay"
+		onclick={() => (showEditModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showEditModal = false)}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal"
@@ -1104,30 +1071,15 @@
 				<div class="form-grid">
 					<div class="form-group">
 						<label for="edit_first_name">First Name *</label>
-						<input
-							id="edit_first_name"
-							type="text"
-							bind:value={formData.first_name}
-							required
-						/>
+						<input id="edit_first_name" type="text" bind:value={formData.first_name} required />
 					</div>
 					<div class="form-group">
 						<label for="edit_last_name">Last Name *</label>
-						<input
-							id="edit_last_name"
-							type="text"
-							bind:value={formData.last_name}
-							required
-						/>
+						<input id="edit_last_name" type="text" bind:value={formData.last_name} required />
 					</div>
 					<div class="form-group full-width">
 						<label for="edit_email">Email *</label>
-						<input
-							id="edit_email"
-							type="email"
-							bind:value={formData.email}
-							required
-						/>
+						<input id="edit_email" type="email" bind:value={formData.email} required />
 					</div>
 					<div class="form-group">
 						<label for="edit_phone">Phone</label>
@@ -1135,19 +1087,11 @@
 					</div>
 					<div class="form-group">
 						<label for="edit_company">Company</label>
-						<input
-							id="edit_company"
-							type="text"
-							bind:value={formData.company_name}
-						/>
+						<input id="edit_company" type="text" bind:value={formData.company_name} />
 					</div>
 					<div class="form-group">
 						<label for="edit_job_title">Job Title</label>
-						<input
-							id="edit_job_title"
-							type="text"
-							bind:value={formData.job_title}
-						/>
+						<input id="edit_job_title" type="text" bind:value={formData.job_title} />
 					</div>
 					<div class="form-group">
 						<label for="edit_source">Lead Source</label>
@@ -1169,9 +1113,7 @@
 				</div>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showEditModal = false)}>
-					Cancel
-				</button>
+				<button class="btn-secondary" onclick={() => (showEditModal = false)}> Cancel </button>
 				<button
 					class="btn-primary"
 					onclick={updateLead}
@@ -1192,7 +1134,14 @@
 <!-- Delete Confirmation Modal -->
 {#if showDeleteModal && deletingLead}
 	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
-	<div class="modal-overlay" onclick={() => (showDeleteModal = false)} onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)} role="dialog" aria-modal="true" tabindex="-1">
+	<div
+		class="modal-overlay"
+		onclick={() => (showDeleteModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showDeleteModal = false)}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal modal-small"
@@ -1211,14 +1160,12 @@
 			</div>
 			<div class="modal-body">
 				<p class="confirm-text">
-					Are you sure you want to delete <strong>{deletingLead.full_name}</strong>?
-					This action cannot be undone.
+					Are you sure you want to delete <strong>{deletingLead.full_name}</strong>? This action
+					cannot be undone.
 				</p>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showDeleteModal = false)}>
-					Cancel
-				</button>
+				<button class="btn-secondary" onclick={() => (showDeleteModal = false)}> Cancel </button>
 				<button class="btn-danger" onclick={deleteLead}>
 					<IconTrash size={18} />
 					Delete Lead
@@ -1231,7 +1178,14 @@
 <!-- Convert to Contact Modal -->
 {#if showConvertModal && convertingLead}
 	<!-- svelte-ignore a11y_no_static_element_interactions a11y_click_events_have_key_events a11y_interactive_supports_focus -->
-	<div class="modal-overlay" onclick={() => (showConvertModal = false)} onkeydown={(e) => e.key === 'Escape' && (showConvertModal = false)} role="dialog" aria-modal="true" tabindex="-1">
+	<div
+		class="modal-overlay"
+		onclick={() => (showConvertModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showConvertModal = false)}
+		role="dialog"
+		aria-modal="true"
+		tabindex="-1"
+	>
 		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="modal modal-small"
@@ -1250,14 +1204,12 @@
 			</div>
 			<div class="modal-body">
 				<p class="confirm-text">
-					Convert <strong>{convertingLead.full_name}</strong> to a contact?
-					The lead will be moved to your contacts list with all associated data.
+					Convert <strong>{convertingLead.full_name}</strong> to a contact? The lead will be moved to
+					your contacts list with all associated data.
 				</p>
 			</div>
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showConvertModal = false)}>
-					Cancel
-				</button>
+				<button class="btn-secondary" onclick={() => (showConvertModal = false)}> Cancel </button>
 				<button class="btn-primary" onclick={convertToContact}>
 					<IconArrowRight size={18} />
 					Convert Lead
@@ -1344,12 +1296,30 @@
 		flex-shrink: 0;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-	.stat-icon.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.cyan {
+		background: rgba(6, 182, 212, 0.15);
+		color: #22d3ee;
+	}
+	.stat-icon.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
+	.stat-icon.emerald {
+		background: rgba(16, 185, 129, 0.15);
+		color: #34d399;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
 
 	.stat-content {
 		display: flex;
@@ -1516,8 +1486,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {

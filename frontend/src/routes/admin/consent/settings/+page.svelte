@@ -101,7 +101,7 @@
 		geo_default_strict: true,
 		proof_consent_enabled: true,
 		proof_retention_days: 365,
-		proof_auto_delete: true,
+		proof_auto_delete: true
 	};
 
 	let activeTab = 'general';
@@ -117,7 +117,7 @@
 		{ id: 'scripts', label: 'Script Blocking', icon: 'code' },
 		{ id: 'integrations', label: 'Integrations', icon: 'plug' },
 		{ id: 'geolocation', label: 'Geolocation', icon: 'globe' },
-		{ id: 'proof', label: 'Proof of Consent', icon: 'file-check' },
+		{ id: 'proof', label: 'Proof of Consent', icon: 'file-check' }
 	];
 
 	// Script blocking options
@@ -126,74 +126,74 @@
 			key: 'block_google_analytics',
 			label: 'Google Analytics',
 			description: 'Block GA4 and Universal Analytics tracking scripts',
-			category: 'analytics',
+			category: 'analytics'
 		},
 		{
 			key: 'block_google_tag_manager',
 			label: 'Google Tag Manager',
 			description: 'Block GTM container scripts',
-			category: 'marketing',
+			category: 'marketing'
 		},
 		{
 			key: 'block_facebook_pixel',
 			label: 'Facebook/Meta Pixel',
 			description: 'Block Meta Pixel for conversion tracking and remarketing',
-			category: 'marketing',
+			category: 'marketing'
 		},
 		{
 			key: 'block_tiktok_pixel',
 			label: 'TikTok Pixel',
 			description: 'Block TikTok Pixel for ad tracking',
-			category: 'marketing',
+			category: 'marketing'
 		},
 		{
 			key: 'block_twitter_pixel',
 			label: 'Twitter/X Pixel',
 			description: 'Block Twitter conversion tracking',
-			category: 'marketing',
+			category: 'marketing'
 		},
 		{
 			key: 'block_linkedin_pixel',
 			label: 'LinkedIn Insight Tag',
 			description: 'Block LinkedIn conversion tracking',
-			category: 'marketing',
+			category: 'marketing'
 		},
 		{
 			key: 'block_pinterest_tag',
 			label: 'Pinterest Tag',
 			description: 'Block Pinterest conversion tracking',
-			category: 'marketing',
+			category: 'marketing'
 		},
 		{
 			key: 'block_reddit_pixel',
 			label: 'Reddit Pixel',
 			description: 'Block Reddit conversion tracking',
-			category: 'marketing',
+			category: 'marketing'
 		},
 		{
 			key: 'block_hotjar',
 			label: 'Hotjar',
 			description: 'Block Hotjar heatmaps and session recordings',
-			category: 'analytics',
+			category: 'analytics'
 		},
 		{
 			key: 'block_youtube_embeds',
 			label: 'YouTube Embeds',
 			description: 'Replace YouTube embeds with privacy-friendly placeholders',
-			category: 'embedded_video',
+			category: 'embedded_video'
 		},
 		{
 			key: 'block_vimeo_embeds',
 			label: 'Vimeo Embeds',
 			description: 'Replace Vimeo embeds with privacy-friendly placeholders',
-			category: 'embedded_video',
+			category: 'embedded_video'
 		},
 		{
 			key: 'block_google_maps',
 			label: 'Google Maps',
 			description: 'Block Google Maps embeds until consent is given',
-			category: 'analytics',
-		},
+			category: 'analytics'
+		}
 	];
 
 	onMount(async () => {
@@ -221,7 +221,7 @@
 		try {
 			await adminFetch('/api/admin/consent/settings/bulk', {
 				method: 'POST',
-				body: JSON.stringify({ settings }),
+				body: JSON.stringify({ settings })
 			});
 			showNotification('Settings saved successfully', 'success');
 		} catch (error) {
@@ -292,12 +292,20 @@
 	<!-- Navigation Tabs -->
 	<nav class="tabs">
 		{#each tabs as tab}
-			<button
-				class="tab"
-				class:active={activeTab === tab.id}
-				onclick={() => (activeTab = tab.id)}
-			>
-				<span class="tab-icon">{tab.icon === 'settings' ? '⚙️' : tab.icon === 'layout' ? '🎨' : tab.icon === 'code' ? '📜' : tab.icon === 'plug' ? '🔌' : tab.icon === 'globe' ? '🌍' : '📋'}</span>
+			<button class="tab" class:active={activeTab === tab.id} onclick={() => (activeTab = tab.id)}>
+				<span class="tab-icon"
+					>{tab.icon === 'settings'
+						? '⚙️'
+						: tab.icon === 'layout'
+							? '🎨'
+							: tab.icon === 'code'
+								? '📜'
+								: tab.icon === 'plug'
+									? '🔌'
+									: tab.icon === 'globe'
+										? '🌍'
+										: '📋'}</span
+				>
 				{tab.label}
 			</button>
 		{/each}
@@ -319,7 +327,9 @@
 						<label class="setting-row toggle-row">
 							<div class="setting-info">
 								<span class="setting-label">Enable Consent System</span>
-								<span class="setting-description">Enable or disable the entire consent management system</span>
+								<span class="setting-description"
+									>Enable or disable the entire consent management system</span
+								>
 							</div>
 							<div class="toggle">
 								<input type="checkbox" bind:checked={settings.consent_enabled} />
@@ -330,7 +340,9 @@
 						<label class="setting-row toggle-row">
 							<div class="setting-info">
 								<span class="setting-label">Test Mode</span>
-								<span class="setting-description">Show the consent banner to logged-in admins only</span>
+								<span class="setting-description"
+									>Show the consent banner to logged-in admins only</span
+								>
 							</div>
 							<div class="toggle">
 								<input type="checkbox" bind:checked={settings.test_mode} />
@@ -343,7 +355,9 @@
 						<div class="setting-row">
 							<div class="setting-info">
 								<span class="setting-label">Consent Expiry (Days)</span>
-								<span class="setting-description">How long before consent expires and banner is shown again</span>
+								<span class="setting-description"
+									>How long before consent expires and banner is shown again</span
+								>
 							</div>
 							<input
 								type="number"
@@ -357,7 +371,9 @@
 						<div class="setting-row">
 							<div class="setting-info">
 								<span class="setting-label">Consent Version</span>
-								<span class="setting-description">Increment to invalidate existing consents when policy changes</span>
+								<span class="setting-description"
+									>Increment to invalidate existing consents when policy changes</span
+								>
 							</div>
 							<div class="version-input">
 								<input
@@ -367,16 +383,16 @@
 									min="1"
 									readonly
 								/>
-								<button class="btn btn-sm" onclick={incrementVersion}>
-									Increment Version
-								</button>
+								<button class="btn btn-sm" onclick={incrementVersion}> Increment Version </button>
 							</div>
 						</div>
 
 						<div class="setting-row">
 							<div class="setting-info">
 								<span class="setting-label">Policy Version</span>
-								<span class="setting-description">Version string for your privacy policy (e.g., 1.0.0)</span>
+								<span class="setting-description"
+									>Version string for your privacy policy (e.g., 1.0.0)</span
+								>
 							</div>
 							<input
 								type="text"
@@ -440,7 +456,9 @@
 						<label class="setting-row toggle-row">
 							<div class="setting-info">
 								<span class="setting-label">Show Reject Button</span>
-								<span class="setting-description">Display a "Reject All" button (required for GDPR compliance)</span>
+								<span class="setting-description"
+									>Display a "Reject All" button (required for GDPR compliance)</span
+								>
 							</div>
 							<div class="toggle">
 								<input type="checkbox" bind:checked={settings.show_reject_button} />
@@ -466,7 +484,9 @@
 						<label class="setting-row toggle-row">
 							<div class="setting-info">
 								<span class="setting-label">Close on Scroll</span>
-								<span class="setting-description">Automatically accept all cookies when user scrolls (not GDPR compliant)</span>
+								<span class="setting-description"
+									>Automatically accept all cookies when user scrolls (not GDPR compliant)</span
+								>
 							</div>
 							<div class="toggle">
 								<input type="checkbox" bind:checked={settings.close_on_scroll} />
@@ -504,8 +524,8 @@
 				<section class="settings-section">
 					<h2>Script Blocking</h2>
 					<p class="section-description">
-						Configure which third-party scripts should be blocked until consent is given.
-						Scripts are categorized by their purpose.
+						Configure which third-party scripts should be blocked until consent is given. Scripts
+						are categorized by their purpose.
 					</p>
 
 					<div class="setting-group">
@@ -636,15 +656,17 @@
 				<section class="settings-section">
 					<h2>Geolocation Rules</h2>
 					<p class="section-description">
-						Configure different consent behaviors based on visitor location.
-						Requires a MaxMind GeoIP2 license for production use.
+						Configure different consent behaviors based on visitor location. Requires a MaxMind
+						GeoIP2 license for production use.
 					</p>
 
 					<div class="setting-group">
 						<label class="setting-row toggle-row">
 							<div class="setting-info">
 								<span class="setting-label">Enable Geolocation</span>
-								<span class="setting-description">Apply different rules based on visitor country</span>
+								<span class="setting-description"
+									>Apply different rules based on visitor country</span
+								>
 							</div>
 							<div class="toggle">
 								<input type="checkbox" bind:checked={settings.geolocation_enabled} />
@@ -655,7 +677,8 @@
 						<label class="setting-row toggle-row">
 							<div class="setting-info">
 								<span class="setting-label">Default to Strict Mode</span>
-								<span class="setting-description">Require explicit consent for unknown regions</span>
+								<span class="setting-description">Require explicit consent for unknown regions</span
+								>
 							</div>
 							<div class="toggle">
 								<input type="checkbox" bind:checked={settings.geo_default_strict} />
@@ -759,7 +782,9 @@
 							<label class="setting-row toggle-row">
 								<div class="setting-info">
 									<span class="setting-label">Auto-Delete Expired Records</span>
-									<span class="setting-description">Automatically delete records older than retention period</span>
+									<span class="setting-description"
+										>Automatically delete records older than retention period</span
+									>
 								</div>
 								<div class="toggle">
 									<input type="checkbox" bind:checked={settings.proof_auto_delete} />
@@ -791,12 +816,28 @@
 	{#if notification}
 		<div class="notification" class:error={notificationType === 'error'}>
 			{#if notificationType === 'success'}
-				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<path d="m9 12 2 2 4-4" />
 					<circle cx="12" cy="12" r="10" />
 				</svg>
 			{:else}
-				<svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="18"
+					height="18"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="2"
+				>
 					<circle cx="12" cy="12" r="10" />
 					<line x1="15" y1="9" x2="9" y2="15" />
 					<line x1="9" y1="9" x2="15" y2="15" />

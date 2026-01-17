@@ -23,7 +23,7 @@ function getAuthHeaders(request: Request): HeadersInit {
 	const authHeader = request.headers.get('Authorization');
 	const headers: HeadersInit = {
 		'Content-Type': 'application/json',
-		'Accept': 'application/json',
+		Accept: 'application/json'
 	};
 	if (authHeader) {
 		headers['Authorization'] = authHeader;
@@ -59,17 +59,22 @@ export const GET: RequestHandler = async ({ url, request }) => {
 
 		const response = await fetch(backendUrl, {
 			method: 'GET',
-			headers: getAuthHeaders(request),
+			headers: getAuthHeaders(request)
 		});
 
 		if (!response.ok) {
-			const errorData = await response.json().catch(() => ({ message: 'Failed to fetch contacts' }));
-			return json({
-				success: false,
-				error: errorData.message || 'Failed to fetch contacts',
-				data: [],
-				meta: { page: 1, limit: 20, total: 0, total_pages: 0 }
-			}, { status: response.status });
+			const errorData = await response
+				.json()
+				.catch(() => ({ message: 'Failed to fetch contacts' }));
+			return json(
+				{
+					success: false,
+					error: errorData.message || 'Failed to fetch contacts',
+					data: [],
+					meta: { page: 1, limit: 20, total: 0, total_pages: 0 }
+				},
+				{ status: response.status }
+			);
 		}
 
 		const data = await response.json();
@@ -87,12 +92,15 @@ export const GET: RequestHandler = async ({ url, request }) => {
 		});
 	} catch (err) {
 		console.error('CRM Contacts API proxy error:', err);
-		return json({
-			success: false,
-			error: 'Failed to connect to backend',
-			data: [],
-			meta: { page: 1, limit: 20, total: 0, total_pages: 0 }
-		}, { status: 503 });
+		return json(
+			{
+				success: false,
+				error: 'Failed to connect to backend',
+				data: [],
+				meta: { page: 1, limit: 20, total: 0, total_pages: 0 }
+			},
+			{ status: 503 }
+		);
 	}
 };
 
@@ -117,31 +125,39 @@ export const POST: RequestHandler = async ({ request }) => {
 				job_title: body.job_title,
 				source: body.source || 'manual',
 				owner_id: body.owner_id,
-				status: body.status || 'lead',
-			}),
+				status: body.status || 'lead'
+			})
 		});
 
 		if (!response.ok) {
-			const errorData = await response.json().catch(() => ({ message: 'Failed to create contact' }));
+			const errorData = await response
+				.json()
+				.catch(() => ({ message: 'Failed to create contact' }));
 
 			// Handle duplicate email error
 			if (response.status === 422 && errorData.errors?.email) {
 				throw error(409, 'Contact with this email already exists');
 			}
 
-			return json({
-				success: false,
-				error: errorData.message || 'Failed to create contact',
-				errors: errorData.errors
-			}, { status: response.status });
+			return json(
+				{
+					success: false,
+					error: errorData.message || 'Failed to create contact',
+					errors: errorData.errors
+				},
+				{ status: response.status }
+			);
 		}
 
 		const data = await response.json();
 
-		return json({
-			success: true,
-			data: data
-		}, { status: 201 });
+		return json(
+			{
+				success: true,
+				data: data
+			},
+			{ status: 201 }
+		);
 	} catch (err) {
 		if (err instanceof Error && 'status' in err) {
 			throw err;

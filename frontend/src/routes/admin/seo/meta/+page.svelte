@@ -1,12 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import {
-		IconSearch,
-		IconFileText,
-		IconEye,
-		IconDeviceFloppy,
-		IconRefresh
-	} from '$lib/icons';
+	import { IconSearch, IconFileText, IconEye, IconDeviceFloppy, IconRefresh } from '$lib/icons';
 	import SeoMetaEditor from '$lib/components/seo/SeoMetaEditor.svelte';
 	import SeoAnalyzer from '$lib/components/seo/SeoAnalyzer.svelte';
 
@@ -26,9 +20,7 @@
 	}
 
 	let filteredEntities = $derived(
-		entities.filter((entity) =>
-			entity.title.toLowerCase().includes(searchQuery.toLowerCase())
-		)
+		entities.filter((entity) => entity.title.toLowerCase().includes(searchQuery.toLowerCase()))
 	);
 </script>
 
@@ -49,7 +41,13 @@
 			<div class="search-box">
 				<IconSearch size={20} />
 				<label for="search-entities" class="sr-only">Search entities</label>
-				<input type="text" id="search-entities" name="search" bind:value={searchQuery} placeholder="Search entities..." />
+				<input
+					type="text"
+					id="search-entities"
+					name="search"
+					bind:value={searchQuery}
+					placeholder="Search entities..."
+				/>
 			</div>
 
 			<div class="entities-list">

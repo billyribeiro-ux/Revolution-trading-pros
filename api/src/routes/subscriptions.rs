@@ -368,6 +368,7 @@ async fn export_subscriptions(
     let format = params.get("format").map(|s| s.as_str()).unwrap_or("csv");
 
     // Fetch subscriptions with user info
+    #[allow(clippy::type_complexity)]
     let subscriptions: Vec<(
         i64,
         i64,

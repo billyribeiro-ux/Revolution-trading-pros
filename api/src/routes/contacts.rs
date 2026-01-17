@@ -1,6 +1,8 @@
 //! CRM Contacts routes - Revolution Trading Pros
 //! Apple ICT 11+ Principal Engineer Grade - December 2025
 
+#![allow(clippy::map_flatten)]
+
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,

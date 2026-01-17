@@ -28,17 +28,20 @@
 
 <svelte:head>
 	<title>Trading Room Archives | {data.roomName} | Revolution Trading Pros</title>
-	<meta name="description" content="Access recordings of past live trading sessions and chat logs from {data.roomName}." />
+	<meta
+		name="description"
+		content="Access recordings of past live trading sessions and chat logs from {data.roomName}."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<TradingRoomHeader 
+<TradingRoomHeader
 	roomName={data.roomName}
 	pageTitle="Trading Room Archives"
 	startHereUrl={data.startHereUrl}
 />
 
-<TradingRoomArchive 
+<TradingRoomArchive
 	roomSlug={data.roomSlug}
 	roomName={data.roomName}
 	videos={data.videos || []}

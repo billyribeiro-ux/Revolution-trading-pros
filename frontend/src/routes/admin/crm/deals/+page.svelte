@@ -99,8 +99,9 @@
 	let stages = $derived(selectedPipeline?.stages || []);
 
 	let filteredDeals = $derived(
-		deals.filter(deal => {
-			const matchesSearch = !searchQuery ||
+		deals.filter((deal) => {
+			const matchesSearch =
+				!searchQuery ||
 				deal.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
 				deal.contact?.full_name?.toLowerCase().includes(searchQuery.toLowerCase());
 			const matchesStatus = selectedStatus === 'all' || deal.status === selectedStatus;
@@ -110,10 +111,13 @@
 	);
 
 	let dealsByStage = $derived(
-		stages.reduce((acc, stage) => {
-			acc[stage.id] = filteredDeals.filter(deal => deal.stage_id === stage.id);
-			return acc;
-		}, {} as Record<string, Deal[]>)
+		stages.reduce(
+			(acc, stage) => {
+				acc[stage.id] = filteredDeals.filter((deal) => deal.stage_id === stage.id);
+				return acc;
+			},
+			{} as Record<string, Deal[]>
+		)
 	);
 
 	let pipelineStats = $derived({
@@ -144,7 +148,7 @@
 			if (pipelinesRes.status === 'fulfilled') {
 				pipelines = pipelinesRes.value || [];
 				if (pipelines.length > 0 && !selectedPipeline) {
-					selectedPipeline = pipelines.find(p => p.is_default) || pipelines[0];
+					selectedPipeline = pipelines.find((p) => p.is_default) || pipelines[0];
 				}
 			}
 
@@ -153,9 +157,9 @@
 			}
 
 			// Calculate stats
-			const openDeals = deals.filter(d => d.status === 'open');
-			const wonDeals = deals.filter(d => d.status === 'won');
-			const lostDeals = deals.filter(d => d.status === 'lost');
+			const openDeals = deals.filter((d) => d.status === 'open');
+			const wonDeals = deals.filter((d) => d.status === 'won');
+			const lostDeals = deals.filter((d) => d.status === 'lost');
 
 			stats = {
 				totalDeals: deals.length,
@@ -164,12 +168,14 @@
 				lostDeals: lostDeals.length,
 				totalValue: openDeals.reduce((sum, d) => sum + d.amount, 0),
 				weightedValue: openDeals.reduce((sum, d) => sum + d.weighted_value, 0),
-				avgDealSize: openDeals.length > 0
-					? openDeals.reduce((sum, d) => sum + d.amount, 0) / openDeals.length
-					: 0,
-				winRate: (wonDeals.length + lostDeals.length) > 0
-					? (wonDeals.length / (wonDeals.length + lostDeals.length)) * 100
-					: 0
+				avgDealSize:
+					openDeals.length > 0
+						? openDeals.reduce((sum, d) => sum + d.amount, 0) / openDeals.length
+						: 0,
+				winRate:
+					wonDeals.length + lostDeals.length > 0
+						? (wonDeals.length / (wonDeals.length + lostDeals.length)) * 100
+						: 0
 			};
 		} catch (err) {
 			error = err instanceof Error ? err.message : 'Failed to load deals';
@@ -222,7 +228,8 @@
 	}
 
 	async function deleteDeal(deal: Deal) {
-		if (!confirm(`Are you sure you want to delete "${deal.name}"? This action cannot be undone.`)) return;
+		if (!confirm(`Are you sure you want to delete "${deal.name}"? This action cannot be undone.`))
+			return;
 
 		try {
 			await crmAPI.updateDeal(deal.id, { status: 'abandoned' } as any);
@@ -352,14 +359,14 @@
 				<button
 					class="toggle-btn"
 					class:active={viewMode === 'kanban'}
-					onclick={() => viewMode = 'kanban'}
+					onclick={() => (viewMode = 'kanban')}
 				>
 					<IconLayoutKanban size={18} />
 				</button>
 				<button
 					class="toggle-btn"
 					class:active={viewMode === 'list'}
-					onclick={() => viewMode = 'list'}
+					onclick={() => (viewMode = 'list')}
 				>
 					<IconList size={18} />
 				</button>
@@ -436,11 +443,7 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input
-				type="text"
-				placeholder="Search deals..."
-				bind:value={searchQuery}
-			/>
+			<input type="text" placeholder="Search deals..." bind:value={searchQuery} />
 		</div>
 
 		{#if pipelines.length > 0}
@@ -552,7 +555,12 @@
 									</div>
 
 									{#if deal.priority && deal.priority !== 'normal'}
-										<span class="priority-badge" style="background: {getPriorityColor(deal.priority)}15; color: {getPriorityColor(deal.priority)}">
+										<span
+											class="priority-badge"
+											style="background: {getPriorityColor(
+												deal.priority
+											)}15; color: {getPriorityColor(deal.priority)}"
+										>
 											{deal.priority}
 										</span>
 									{/if}
@@ -575,11 +583,7 @@
 											<IconX size={14} />
 										</button>
 									{/if}
-									<a
-										href="/admin/crm/deals/{deal.id}/edit"
-										class="action-btn"
-										title="Edit"
-									>
+									<a href="/admin/crm/deals/{deal.id}/edit" class="action-btn" title="Edit">
 										<IconEdit size={14} />
 									</a>
 								</div>
@@ -631,7 +635,9 @@
 										{#if deal.priority && deal.priority !== 'normal'}
 											<span
 												class="priority-badge small"
-												style="background: {getPriorityColor(deal.priority)}15; color: {getPriorityColor(deal.priority)}"
+												style="background: {getPriorityColor(
+													deal.priority
+												)}15; color: {getPriorityColor(deal.priority)}"
 											>
 												{deal.priority}
 											</span>
@@ -650,9 +656,15 @@
 								<td>
 									<span
 										class="stage-badge"
-										style="background: {getStageColor(deal.stage || stages.find(s => s.id === deal.stage_id) || {} as Stage)}15; color: {getStageColor(deal.stage || stages.find(s => s.id === deal.stage_id) || {} as Stage)}"
+										style="background: {getStageColor(
+											deal.stage || stages.find((s) => s.id === deal.stage_id) || ({} as Stage)
+										)}15; color: {getStageColor(
+											deal.stage || stages.find((s) => s.id === deal.stage_id) || ({} as Stage)
+										)}"
 									>
-										{deal.stage?.name || stages.find(s => s.id === deal.stage_id)?.name || 'Unknown'}
+										{deal.stage?.name ||
+											stages.find((s) => s.id === deal.stage_id)?.name ||
+											'Unknown'}
 									</span>
 								</td>
 								<td class="amount-cell">
@@ -696,11 +708,7 @@
 										<a href="/admin/crm/deals/{deal.id}/edit" class="btn-icon" title="Edit">
 											<IconEdit size={16} />
 										</a>
-										<button
-											class="btn-icon danger"
-											title="Delete"
-											onclick={() => deleteDeal(deal)}
-										>
+										<button class="btn-icon danger" title="Delete" onclick={() => deleteDeal(deal)}>
 											<IconTrash size={16} />
 										</button>
 									</div>
@@ -724,7 +732,10 @@
 {#if showWinModal && selectedDeal}
 	<div
 		class="modal-overlay"
-		onclick={() => { showWinModal = false; selectedDeal = null; }}
+		onclick={() => {
+			showWinModal = false;
+			selectedDeal = null;
+		}}
 		onkeydown={(e) => e.key === 'Escape' && (showWinModal = false)}
 		role="dialog"
 		aria-modal="true"
@@ -740,7 +751,13 @@
 			<div class="modal-header success">
 				<IconTrophy size={24} />
 				<h3>Mark Deal as Won</h3>
-				<button class="modal-close" onclick={() => { showWinModal = false; selectedDeal = null; }}>
+				<button
+					class="modal-close"
+					onclick={() => {
+						showWinModal = false;
+						selectedDeal = null;
+					}}
+				>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -762,16 +779,15 @@
 			<div class="modal-footer">
 				<button
 					class="btn-secondary"
-					onclick={() => { showWinModal = false; selectedDeal = null; }}
+					onclick={() => {
+						showWinModal = false;
+						selectedDeal = null;
+					}}
 					disabled={processingAction}
 				>
 					Cancel
 				</button>
-				<button
-					class="btn-success"
-					onclick={winDeal}
-					disabled={processingAction}
-				>
+				<button class="btn-success" onclick={winDeal} disabled={processingAction}>
 					{#if processingAction}
 						<div class="btn-spinner"></div>
 					{:else}
@@ -788,7 +804,10 @@
 {#if showLoseModal && selectedDeal}
 	<div
 		class="modal-overlay"
-		onclick={() => { showLoseModal = false; selectedDeal = null; }}
+		onclick={() => {
+			showLoseModal = false;
+			selectedDeal = null;
+		}}
 		onkeydown={(e) => e.key === 'Escape' && (showLoseModal = false)}
 		role="dialog"
 		aria-modal="true"
@@ -804,7 +823,13 @@
 			<div class="modal-header danger">
 				<IconX size={24} />
 				<h3>Mark Deal as Lost</h3>
-				<button class="modal-close" onclick={() => { showLoseModal = false; selectedDeal = null; }}>
+				<button
+					class="modal-close"
+					onclick={() => {
+						showLoseModal = false;
+						selectedDeal = null;
+					}}
+				>
 					<IconX size={20} />
 				</button>
 			</div>
@@ -827,7 +852,10 @@
 			<div class="modal-footer">
 				<button
 					class="btn-secondary"
-					onclick={() => { showLoseModal = false; selectedDeal = null; }}
+					onclick={() => {
+						showLoseModal = false;
+						selectedDeal = null;
+					}}
 					disabled={processingAction}
 				>
 					Cancel
@@ -951,8 +979,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -985,15 +1017,21 @@
 	}
 
 	@media (max-width: 1400px) {
-		.stats-grid { grid-template-columns: repeat(3, 1fr); }
+		.stats-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
 	}
 
 	@media (max-width: 900px) {
-		.stats-grid { grid-template-columns: repeat(2, 1fr); }
+		.stats-grid {
+			grid-template-columns: repeat(2, 1fr);
+		}
 	}
 
 	@media (max-width: 640px) {
-		.stats-grid { grid-template-columns: 1fr; }
+		.stats-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	.stat-card {
@@ -1015,12 +1053,30 @@
 		justify-content: center;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-	.stat-icon.cyan { background: rgba(6, 182, 212, 0.15); color: #22d3ee; }
-	.stat-icon.amber { background: rgba(245, 158, 11, 0.15); color: #fbbf24; }
-	.stat-icon.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
+	.stat-icon.cyan {
+		background: rgba(6, 182, 212, 0.15);
+		color: #22d3ee;
+	}
+	.stat-icon.amber {
+		background: rgba(245, 158, 11, 0.15);
+		color: #fbbf24;
+	}
+	.stat-icon.emerald {
+		background: rgba(16, 185, 129, 0.15);
+		color: #34d399;
+	}
 
 	.stat-content {
 		display: flex;
@@ -1476,7 +1532,9 @@
 	}
 
 	/* States */
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;

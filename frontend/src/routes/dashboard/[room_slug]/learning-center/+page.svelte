@@ -71,14 +71,14 @@
 
 <svelte:head>
 	<title>Learning Center | {roomName} | Revolution Trading Pros</title>
-	<meta name="description" content="Access educational resources, training materials, and courses for {roomName}." />
+	<meta
+		name="description"
+		content="Access educational resources, training materials, and courses for {roomName}."
+	/>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName={roomName}
-	startHereUrl="/dashboard/{roomSlug}/start-here" 
-/>
+<TradingRoomHeader {roomName} startHereUrl="/dashboard/{roomSlug}/start-here" />
 
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
@@ -100,9 +100,9 @@
 		{/if}
 
 		<!-- Video Grid with Pagination -->
-		<VideoGrid 
-			{videos} 
-			{currentPage} 
+		<VideoGrid
+			{videos}
+			{currentPage}
 			{totalPages}
 			basePath="/dashboard/{roomSlug}/learning-center"
 			emptyMessage="No learning resources found"

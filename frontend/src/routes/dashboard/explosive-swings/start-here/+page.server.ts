@@ -1,9 +1,9 @@
 /**
  * Explosive Swings Start Here - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * SSR pre-fetch for getting started content
- * 
+ *
  * @version 1.0.0
  */
 

@@ -570,10 +570,9 @@ export class RateLimitError extends Error {
 // Default Instance
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Production fallback - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE_URL = browser ? import.meta.env['VITE_API_URL'] || PROD_API : '';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+// Empty base URL means all requests go to same-origin SvelteKit proxy routes
+const API_BASE_URL = '';
 
 export const apiClient = new EnhancedApiClient(API_BASE_URL);
 

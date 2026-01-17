@@ -15,7 +15,7 @@
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import ClassVideos from '$lib/components/ClassVideos.svelte';
 	import ClassDownloads from '$lib/components/ClassDownloads.svelte';
-	
+
 	interface Props {
 		data: {
 			slug: string;
@@ -48,27 +48,36 @@
 			};
 		};
 	}
-	
+
 	let { data }: Props = $props();
 	let classData = $derived(data.classData);
 	let seo = $derived(data.seo);
 	let slug = $derived(data.slug);
 	let mounted = $state(false);
-	
+
 	onMount(() => {
 		mounted = true;
-		
+
 		// Track article view event
-		if (typeof window !== 'undefined' && (window as unknown as { richpanel?: { track: (event: string, data: unknown) => void } }).richpanel) {
-			(window as unknown as { richpanel: { track: (event: string, data: unknown) => void } }).richpanel.track('view_article', {
+		if (
+			typeof window !== 'undefined' &&
+			(window as unknown as { richpanel?: { track: (event: string, data: unknown) => void } })
+				.richpanel
+		) {
+			(
+				window as unknown as { richpanel: { track: (event: string, data: unknown) => void } }
+			).richpanel.track('view_article', {
 				id: classData.id,
 				name: classData.title,
 				url: window.location.href
 			});
 		}
-		
+
 		// Track with Google Analytics if available
-		if (typeof window !== 'undefined' && (window as unknown as { gtag?: (...args: unknown[]) => void }).gtag) {
+		if (
+			typeof window !== 'undefined' &&
+			(window as unknown as { gtag?: (...args: unknown[]) => void }).gtag
+		) {
 			(window as unknown as { gtag: (...args: unknown[]) => void }).gtag('event', 'page_view', {
 				page_title: classData.title,
 				page_location: window.location.href,
@@ -82,17 +91,23 @@
 <svelte:head>
 	<title>{seo?.title || classData.title}</title>
 	<meta name="description" content={seo?.description || classData.description} />
-	<link rel="canonical" href={seo?.canonical || `https://revolution-trading-pros.com/classes/${classData.slug}`} />
-	
+	<link
+		rel="canonical"
+		href={seo?.canonical || `https://revolution-trading-pros.com/classes/${classData.slug}`}
+	/>
+
 	<!-- Open Graph -->
 	<meta property="og:title" content={seo?.title || classData.title} />
 	<meta property="og:description" content={seo?.description || classData.description} />
-	<meta property="og:url" content={seo?.canonical || `https://revolution-trading-pros.com/classes/${classData.slug}`} />
+	<meta
+		property="og:url"
+		content={seo?.canonical || `https://revolution-trading-pros.com/classes/${classData.slug}`}
+	/>
 	<meta property="og:type" content={seo?.ogType || 'article'} />
 	{#if seo?.ogImage}
 		<meta property="og:image" content={seo.ogImage} />
 	{/if}
-	
+
 	<!-- Twitter Card -->
 	<meta name="twitter:card" content="summary_large_image" />
 	<meta name="twitter:title" content={seo?.title || classData.title} />
@@ -108,16 +123,13 @@
 		<main class="dashboard__main class-detail">
 			<!-- Page Title -->
 			<h1>{classData.title}</h1>
-			
+
 			<!-- Class Content -->
 			<div class="class-content">
 				<!-- Video Player Section - API-driven with Bunny.net -->
 				<section class="class-videos-section">
 					{#if mounted}
-						<ClassVideos 
-							courseSlug={slug}
-							title="Course Videos"
-						/>
+						<ClassVideos courseSlug={slug} title="Course Videos" />
 					{:else}
 						<div class="video-loading-placeholder">
 							<div class="spinner"></div>
@@ -125,20 +137,17 @@
 						</div>
 					{/if}
 				</section>
-				
+
 				<!-- Class Description -->
 				{#if classData.description}
 					<div class="class-description">
 						<p>{classData.description}</p>
 					</div>
 				{/if}
-				
+
 				<!-- Downloads Section - API-driven -->
 				<section class="class-downloads-section">
-					<ClassDownloads 
-						courseSlug={slug}
-						title="Class Downloads"
-					/>
+					<ClassDownloads courseSlug={slug} title="Class Downloads" />
 				</section>
 			</div>
 		</main>
@@ -150,13 +159,13 @@
 	 * Class Detail Page Styles
 	 * Apple ICT 11+ Principal Engineer Grade - January 2026
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+
 	.class-detail {
 		max-width: 1200px;
 		margin: 0 auto;
 		padding: 20px;
 	}
-	
+
 	.class-detail h1 {
 		font-size: 32px;
 		font-weight: 700;
@@ -165,7 +174,7 @@
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		line-height: 1.2;
 	}
-	
+
 	.class-content {
 		display: flex;
 		flex-direction: column;
@@ -177,7 +186,7 @@
 	.class-downloads-section {
 		width: 100%;
 	}
-	
+
 	/* Class Description */
 	.class-description {
 		padding: 20px;
@@ -185,7 +194,7 @@
 		border-radius: 8px;
 		border: 1px solid #e0e0e0;
 	}
-	
+
 	.class-description p {
 		font-size: 16px;
 		line-height: 1.6;
@@ -216,15 +225,17 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
-	
+
 	/* Responsive */
 	@media (max-width: 768px) {
 		.class-detail {
 			padding: 15px;
 		}
-		
+
 		.class-detail h1 {
 			font-size: 24px;
 			margin-bottom: 20px;

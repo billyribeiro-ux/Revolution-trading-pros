@@ -16,7 +16,8 @@
  * - Drag & Drop Reorder
  */
 
-const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+const API_BASE = '';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -635,9 +636,7 @@ export const videoOpsApi = {
 	/**
 	 * Fetch video duration from Bunny.net
 	 */
-	async fetchDuration(
-		videoId: number
-	): Promise<{
+	async fetchDuration(videoId: number): Promise<{
 		success: boolean;
 		data?: { duration: number; width?: number; height?: number; formatted_duration: string };
 	}> {

@@ -45,7 +45,10 @@
 	});
 
 	async function handleSearch() {
-		await serviceMembersStore.loadServiceMembers(serviceId, { search: searchQuery, status: statusFilter });
+		await serviceMembersStore.loadServiceMembers(serviceId, {
+			search: searchQuery,
+			status: statusFilter
+		});
 	}
 
 	async function handleStatusFilter(status: string) {
@@ -97,10 +100,14 @@
 
 	function getStatusColor(status: string): string {
 		switch (status) {
-			case 'active': return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
-			case 'trial': return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
-			case 'churned': return 'bg-red-500/20 text-red-400 border-red-500/30';
-			default: return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
+			case 'active':
+				return 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30';
+			case 'trial':
+				return 'bg-blue-500/20 text-blue-400 border-blue-500/30';
+			case 'churned':
+				return 'bg-red-500/20 text-red-400 border-red-500/30';
+			default:
+				return 'bg-slate-500/20 text-slate-400 border-slate-500/30';
 		}
 	}
 
@@ -284,10 +291,23 @@
 							</td>
 							<td>
 								<div class="actions">
-									<button class="action-btn" title="View Details" onclick={() => goto(`/admin/members/${member.id}`)}>
+									<button
+										class="action-btn"
+										title="View Details"
+										onclick={() => goto(`/admin/members/${member.id}`)}
+									>
 										<IconExternalLink size={16} />
 									</button>
-									<button class="action-btn" title="Send Email" onclick={() => { selectedMembers.clear(); selectedMembers.add(member.id); selectedMembers = selectedMembers; showEmailModal = true; }}>
+									<button
+										class="action-btn"
+										title="Send Email"
+										onclick={() => {
+											selectedMembers.clear();
+											selectedMembers.add(member.id);
+											selectedMembers = selectedMembers;
+											showEmailModal = true;
+										}}
+									>
 										<IconMail size={16} />
 									</button>
 								</div>
@@ -301,21 +321,32 @@
 			{#if pagination}
 				<div class="pagination">
 					<div class="pagination-info">
-						Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(pagination.current_page * pagination.per_page, pagination.total)} of {pagination.total}
+						Showing {(pagination.current_page - 1) * pagination.per_page + 1} to {Math.min(
+							pagination.current_page * pagination.per_page,
+							pagination.total
+						)} of {pagination.total}
 					</div>
 					<div class="pagination-controls">
 						<button
 							class="page-btn"
 							disabled={pagination.current_page === 1}
-							onclick={() => serviceMembersStore.loadServiceMembers(serviceId, { page: pagination.current_page - 1 })}
+							onclick={() =>
+								serviceMembersStore.loadServiceMembers(serviceId, {
+									page: pagination.current_page - 1
+								})}
 						>
 							<IconChevronLeft size={18} />
 						</button>
-						<span class="page-indicator">Page {pagination.current_page} of {pagination.last_page}</span>
+						<span class="page-indicator"
+							>Page {pagination.current_page} of {pagination.last_page}</span
+						>
 						<button
 							class="page-btn"
 							disabled={pagination.current_page === pagination.last_page}
-							onclick={() => serviceMembersStore.loadServiceMembers(serviceId, { page: pagination.current_page + 1 })}
+							onclick={() =>
+								serviceMembersStore.loadServiceMembers(serviceId, {
+									page: pagination.current_page + 1
+								})}
 						>
 							<IconChevronRight size={18} />
 						</button>
@@ -329,8 +360,20 @@
 <!-- Email Modal -->
 {#if showEmailModal}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<div class="modal-overlay" onclick={() => (showEmailModal = false)} onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmailModal = false)} role="dialog" tabindex="-1" aria-modal="true">
-		<div class="modal-content" onclick={(e: MouseEvent) => e.stopPropagation()} onkeydown={(e: KeyboardEvent) => e.stopPropagation()} role="document">
+	<div
+		class="modal-overlay"
+		onclick={() => (showEmailModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showEmailModal = false)}
+		role="dialog"
+		tabindex="-1"
+		aria-modal="true"
+	>
+		<div
+			class="modal-content"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<h2>Send Email to {selectedMembers.size} Member{selectedMembers.size > 1 ? 's' : ''}</h2>
 				<button class="close-btn" onclick={() => (showEmailModal = false)}>
@@ -352,18 +395,28 @@
 
 				<div class="form-group">
 					<label for="email-subject">Subject</label>
-					<input id="email-subject" type="text" bind:value={emailSubject} placeholder="Email subject..." />
+					<input
+						id="email-subject"
+						type="text"
+						bind:value={emailSubject}
+						placeholder="Email subject..."
+					/>
 				</div>
 
 				<div class="form-group">
 					<label for="email-body">Body</label>
-					<textarea id="email-body" bind:value={emailBody} rows="10" placeholder="Email body..."></textarea>
+					<textarea id="email-body" bind:value={emailBody} rows="10" placeholder="Email body..."
+					></textarea>
 				</div>
 			</div>
 
 			<div class="modal-footer">
 				<button class="btn-secondary" onclick={() => (showEmailModal = false)}>Cancel</button>
-				<button class="btn-primary" onclick={handleBulkEmail} disabled={!emailSubject || !emailBody}>
+				<button
+					class="btn-primary"
+					onclick={handleBulkEmail}
+					disabled={!emailSubject || !emailBody}
+				>
 					<IconSend size={18} />
 					Send Email
 				</button>
@@ -394,7 +447,7 @@
 	}
 
 	.back-btn:hover {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.header-content {
@@ -413,7 +466,7 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
@@ -460,11 +513,26 @@
 		margin: 0 auto 0.75rem;
 	}
 
-	.stat-icon.purple { background: rgba(230, 184, 0, 0.15); color: #E6B800; }
-	.stat-icon.emerald { background: rgba(16, 185, 129, 0.15); color: #34d399; }
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.red { background: rgba(239, 68, 68, 0.15); color: #f87171; }
-	.stat-icon.gold { background: rgba(251, 191, 36, 0.15); color: #fbbf24; }
+	.stat-icon.purple {
+		background: rgba(230, 184, 0, 0.15);
+		color: #e6b800;
+	}
+	.stat-icon.emerald {
+		background: rgba(16, 185, 129, 0.15);
+		color: #34d399;
+	}
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.red {
+		background: rgba(239, 68, 68, 0.15);
+		color: #f87171;
+	}
+	.stat-icon.gold {
+		background: rgba(251, 191, 36, 0.15);
+		color: #fbbf24;
+	}
 
 	.stat-value {
 		font-size: 1.5rem;
@@ -551,13 +619,15 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.empty-state h3 {
@@ -622,7 +692,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -651,7 +721,7 @@
 	}
 
 	.plan-name {
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.revenue {
@@ -686,7 +756,7 @@
 	.action-btn:hover {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	/* Pagination */
@@ -726,7 +796,7 @@
 	.page-btn:hover:not(:disabled) {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.page-btn:disabled {
@@ -819,7 +889,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
-		color: #E6B800;
+		color: #e6b800;
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -884,8 +954,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 	}
 
 	.btn-primary:disabled {

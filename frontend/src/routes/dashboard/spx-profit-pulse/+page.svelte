@@ -84,29 +84,27 @@
 	<title>SPX Profit Pulse Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<TradingRoomHeader 
-	roomName="SPX Profit Pulse" 
-	startHereUrl="/dashboard/spx-profit-pulse/start-here" 
+<TradingRoomHeader
+	roomName="SPX Profit Pulse"
+	startHereUrl="/dashboard/spx-profit-pulse/start-here"
 />
 
 <!-- DASHBOARD CONTENT - Exact WordPress Structure -->
 <div class="dashboard__content">
 	<div class="dashboard__content-main">
-
 		<!-- MAIN CONTENT SECTION - Video + Featured Cards -->
 		<section class="dashboard__content-section-member">
-			
 			<!-- Welcome Video -->
 			<div class="video-container">
-				<video 
-					controls 
+				<video
+					controls
 					poster="https://cdn.simplertrading.com/2025/07/02134158/FTR-Jonathan.png"
 					class="welcome-video"
 				>
-					<source 
-						src="https://simpler-options.s3.amazonaws.com/Tr3ndy/TrendySPXQuickstart2025.mp4" 
+					<source
+						src="https://simpler-options.s3.amazonaws.com/Tr3ndy/TrendySPXQuickstart2025.mp4"
 						type="video/mp4"
-					>
+					/>
 					Your browser doesn't support HTML5 video.
 				</video>
 			</div>
@@ -116,7 +114,9 @@
 				<div class="card-col">
 					<div class="img_1">
 						<h2 class="card_title">Start Here</h2>
-						<p class="featured-desc">Key steps for getting started with your SPX Profit Pulse membership</p>
+						<p class="featured-desc">
+							Key steps for getting started with your SPX Profit Pulse membership
+						</p>
 						<div class="card-button-wrapper">
 							<a href="/dashboard/spx-profit-pulse/start-here">CHECK IT OUT</a>
 						</div>
@@ -134,19 +134,21 @@
 				<div class="card-col">
 					<div class="img_3">
 						<h2 class="card_title_3">Continued Education</h2>
-						<p class="featured-desc">Grow your trading skills and learn to read the market better.</p>
+						<p class="featured-desc">
+							Grow your trading skills and learn to read the market better.
+						</p>
 						<div class="card-button-wrapper">
-							<a target="_blank" href="https://www.youtube.com/@Revolutiontradingpros">LEARN MORE</a>
+							<a target="_blank" href="https://www.youtube.com/@Revolutiontradingpros">LEARN MORE</a
+							>
 						</div>
 					</div>
 				</div>
 			</div>
-
 		</section>
 
 		<!-- Latest Updates Section - Exact WordPress Match -->
 		<section class="dashboard__content-section">
-			<LatestUpdates 
+			<LatestUpdates
 				items={latestUpdatesItems}
 				title="Latest Updates"
 				roomSlug="spx-profit-pulse"
@@ -158,7 +160,6 @@
 		<div class="dashboard__content-section u--background-color-white">
 			<WeeklyWatchlist />
 		</div>
-
 	</div>
 </div>
 
@@ -167,7 +168,7 @@
 	   SPX PROFIT PULSE - Pixel-Perfect WordPress Match
 	   Reference: Tr3ndy SPX Alerts Service Dashboard
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	
+
 	.dashboard__content {
 		display: block;
 		width: 100%;
@@ -244,7 +245,7 @@
 			flex: 0 1 360px;
 			max-width: 360px;
 		}
-		
+
 		/* Third card: force to new row and center */
 		.card-col:nth-child(3) {
 			flex: 0 1 360px;
@@ -255,7 +256,7 @@
 
 	/* Card Title Styles - Exact WordPress Match */
 	.card_title {
-		background-color: #2E88E2;
+		background-color: #2e88e2;
 		opacity: 0.81;
 		border-radius: 8px 8px 0 0;
 		padding: 12px 15px;
@@ -304,14 +305,17 @@
 	.featured_cards a {
 		color: #fff !important;
 		display: inline-block;
-		font-family: "Open Sans Condensed", sans-serif;
+		font-family: 'Open Sans Condensed', sans-serif;
 		font-weight: 700;
-		background: transparent linear-gradient(180deg, #FFB834 0%, #C68000 100%) 0% 0% no-repeat padding-box;
+		background: transparent linear-gradient(180deg, #ffb834 0%, #c68000 100%) 0% 0% no-repeat
+			padding-box;
 		border-radius: 50px;
 		padding: 5px 30px;
 		margin-bottom: 20px;
 		text-decoration: none;
-		transition: transform 0.2s ease, box-shadow 0.2s ease;
+		transition:
+			transform 0.2s ease,
+			box-shadow 0.2s ease;
 	}
 
 	.featured_cards a:hover {
@@ -328,7 +332,9 @@
 	}
 
 	/* Card Background Images - 360x212 on large devices */
-	.img_1, .img_2, .img_3 {
+	.img_1,
+	.img_2,
+	.img_3 {
 		width: 100%;
 		height: 212px;
 		border-radius: 8px;

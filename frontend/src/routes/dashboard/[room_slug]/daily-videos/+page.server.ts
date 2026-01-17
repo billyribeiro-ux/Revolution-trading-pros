@@ -1,11 +1,11 @@
 /**
  * Premium Daily Videos - Server Load Function
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * ICT 11+ Principal Engineer Grade
  * Fetches videos with pagination support
  * NOW SUPPORTS DYNAMIC ROOM SELECTION via [room_slug] parameter
- * 
+ *
  * @version 5.0.0 - January 2026
  */
 
@@ -17,7 +17,7 @@ const ROOM_IDS: Record<string, number> = {
 	'swing-trading-room': 2,
 	'small-accounts-room': 3,
 	'options-room': 4,
-	'high-octane-scanner': 5,
+	'high-octane-scanner': 5
 };
 
 export interface DailyVideo {
@@ -66,7 +66,7 @@ function formatDate(dateStr: string): string {
 		return date.toLocaleDateString('en-US', {
 			year: 'numeric',
 			month: 'long',
-			day: 'numeric',
+			day: 'numeric'
 		});
 	} catch {
 		return dateStr;
@@ -78,9 +78,15 @@ function getRoomName(slug: string): string {
 		'day-trading-room': 'Day Trading Room',
 		'high-octane-scanner': 'High Octane Scanner',
 		'swing-trading-room': 'Swing Trading Room',
-		'options-room': 'Options Room',
+		'options-room': 'Options Room'
 	};
-	return roomNames[slug] || slug.split('-').map(w => w.charAt(0).toUpperCase() + w.slice(1)).join(' ');
+	return (
+		roomNames[slug] ||
+		slug
+			.split('-')
+			.map((w) => w.charAt(0).toUpperCase() + w.slice(1))
+			.join(' ')
+	);
 }
 
 function getMockData(roomSlug: string, page: number, perPage: number, search: string): PageData {
@@ -92,9 +98,10 @@ function getMockData(roomSlug: string, page: number, perPage: number, search: st
 			slug: 'bookmap',
 			date: 'January 2, 2026',
 			trader: 'Kody Ashmore',
-			excerpt: 'You asked for it, you got it. Here are Kody\'s Bookmap tools and how he uses them to make better informed trades.',
+			excerpt:
+				"You asked for it, you got it. Here are Kody's Bookmap tools and how he uses them to make better informed trades.",
 			thumbnail: 'https://cdn.simplertrading.com/2025/02/07135413/SimplerCentral_KA.jpg',
-			isVideo: true,
+			isVideo: true
 		},
 		{
 			id: 2,
@@ -102,9 +109,10 @@ function getMockData(roomSlug: string, page: number, perPage: number, search: st
 			slug: 'cautious-entry-into-2026',
 			date: 'December 31, 2025',
 			trader: 'Henry Gambell',
-			excerpt: 'If Santa doesn\'t show up, the first bit of 2026 may be a little precarious. With that in mind, let\'s dive in to some of the most important charts for the new year.',
+			excerpt:
+				"If Santa doesn't show up, the first bit of 2026 may be a little precarious. With that in mind, let's dive in to some of the most important charts for the new year.",
 			thumbnail: 'https://cdn.simplertrading.com/2025/05/07134745/SimplerCentral_HG.jpg',
-			isVideo: true,
+			isVideo: true
 		},
 		{
 			id: 3,
@@ -112,15 +120,16 @@ function getMockData(roomSlug: string, page: number, perPage: number, search: st
 			slug: 'spx-snoozefest',
 			date: 'December 30, 2025',
 			trader: 'Heather',
-			excerpt: 'We\'ve had two days of some very narrow ranges in the indices. It\'s almost as though the market has had an amazing year and just needs to rest a bit before making its next move!',
+			excerpt:
+				"We've had two days of some very narrow ranges in the indices. It's almost as though the market has had an amazing year and just needs to rest a bit before making its next move!",
 			thumbnail: 'https://cdn.simplertrading.com/2025/11/18171423/MTT_HV.jpg',
-			isVideo: true,
-		},
+			isVideo: true
+		}
 	];
 
 	// Filter by search if provided
 	const filteredVideos = search
-		? allVideos.filter(v => v.title.toLowerCase().includes(search.toLowerCase()))
+		? allVideos.filter((v) => v.title.toLowerCase().includes(search.toLowerCase()))
 		: allVideos;
 
 	const total = filteredVideos.length;
@@ -134,9 +143,9 @@ function getMockData(roomSlug: string, page: number, perPage: number, search: st
 			page,
 			perPage,
 			total,
-			totalPages,
+			totalPages
 		},
 		roomSlug,
-		roomName: getRoomName(roomSlug),
+		roomName: getRoomName(roomSlug)
 	};
 }

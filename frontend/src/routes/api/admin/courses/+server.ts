@@ -19,8 +19,8 @@ export const GET: RequestHandler = async ({ cookies, fetch, url }) => {
 			method: 'GET',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				...(token ? { 'Authorization': `Bearer ${token}` } : {})
+				Accept: 'application/json',
+				...(token ? { Authorization: `Bearer ${token}` } : {})
 			}
 		});
 
@@ -68,8 +68,8 @@ export const POST: RequestHandler = async ({ cookies, fetch, request }) => {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json',
-				'Accept': 'application/json',
-				...(token ? { 'Authorization': `Bearer ${token}` } : {})
+				Accept: 'application/json',
+				...(token ? { Authorization: `Bearer ${token}` } : {})
 			},
 			body: JSON.stringify(body)
 		});

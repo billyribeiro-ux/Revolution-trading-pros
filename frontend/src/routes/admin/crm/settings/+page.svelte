@@ -33,7 +33,8 @@
 	let doubleOptIn = $state<DoubleOptInSettings>({
 		enabled: false,
 		email_subject: 'Please confirm your subscription',
-		email_body: '<p>Hi {{first_name}},</p><p>Please click the button below to confirm your email address.</p><p><a href="{{confirmation_link}}">Confirm Email</a></p>',
+		email_body:
+			'<p>Hi {{first_name}},</p><p>Please click the button below to confirm your email address.</p><p><a href="{{confirmation_link}}">Confirm Email</a></p>',
 		confirmation_page_url: '',
 		redirect_url: '',
 		after_confirmation_status: 'subscribed',
@@ -109,7 +110,12 @@
 		{ id: 'double-optin', name: 'Double Opt-In', icon: IconMailCheck },
 		{ id: 'email-preferences', name: 'Email Preferences', icon: IconMail },
 		{ id: 'managers', name: 'Managers', icon: IconUsers, href: '/admin/crm/managers' },
-		{ id: 'abandoned-cart', name: 'Abandoned Cart', icon: IconShoppingCart, href: '/admin/crm/abandoned-carts/settings' }
+		{
+			id: 'abandoned-cart',
+			name: 'Abandoned Cart',
+			icon: IconShoppingCart,
+			href: '/admin/crm/abandoned-carts/settings'
+		}
 	];
 
 	onMount(() => {
@@ -155,7 +161,11 @@
 						<span>{tab.name}</span>
 					</a>
 				{:else}
-					<button class="tab" class:active={activeTab === tab.id} onclick={() => (activeTab = tab.id)}>
+					<button
+						class="tab"
+						class:active={activeTab === tab.id}
+						onclick={() => (activeTab = tab.id)}
+					>
 						<TabIcon size={18} />
 						<span>{tab.name}</span>
 					</button>
@@ -184,7 +194,10 @@
 							<span class="toggle-switch"></span>
 							<span>Enable Double Opt-In</span>
 						</label>
-						<p class="form-help">When enabled, new subscribers will receive a confirmation email before being added to your list.</p>
+						<p class="form-help">
+							When enabled, new subscribers will receive a confirmation email before being added to
+							your list.
+						</p>
 					</div>
 
 					{#if doubleOptIn.enabled}
@@ -206,7 +219,9 @@
 								rows={8}
 								placeholder="HTML email content..."
 							></textarea>
-							<p class="form-help">Available smart tags: {"{{first_name}}"}, {"{{last_name}}"}, {"{{email}}"}, {"{{confirmation_link}}"}</p>
+							<p class="form-help">
+								Available smart tags: {'{{first_name}}'}, {'{{last_name}}'}, {'{{email}}'}, {'{{confirmation_link}}'}
+							</p>
 						</div>
 
 						<div class="form-group">
@@ -253,7 +268,9 @@
 							<span class="toggle-switch"></span>
 							<span>Enable Email Preferences Page</span>
 						</label>
-						<p class="form-help">Allow subscribers to manage their email preferences through a dedicated page.</p>
+						<p class="form-help">
+							Allow subscribers to manage their email preferences through a dedicated page.
+						</p>
 					</div>
 
 					{#if emailPreferences.enabled}
@@ -281,22 +298,25 @@
 							<fieldset class="checkbox-fieldset">
 								<legend class="form-label">Display Options</legend>
 								<div class="checkbox-group">
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={emailPreferences.show_lists} />
-									<span>Show Lists</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={emailPreferences.show_tags} />
-									<span>Show Tags</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={emailPreferences.show_communication_types} />
-									<span>Show Communication Types</span>
-								</label>
-								<label class="checkbox-label">
-									<input type="checkbox" bind:checked={emailPreferences.show_unsubscribe_all} />
-									<span>Show Unsubscribe All Option</span>
-								</label>
+									<label class="checkbox-label">
+										<input type="checkbox" bind:checked={emailPreferences.show_lists} />
+										<span>Show Lists</span>
+									</label>
+									<label class="checkbox-label">
+										<input type="checkbox" bind:checked={emailPreferences.show_tags} />
+										<span>Show Tags</span>
+									</label>
+									<label class="checkbox-label">
+										<input
+											type="checkbox"
+											bind:checked={emailPreferences.show_communication_types}
+										/>
+										<span>Show Communication Types</span>
+									</label>
+									<label class="checkbox-label">
+										<input type="checkbox" bind:checked={emailPreferences.show_unsubscribe_all} />
+										<span>Show Unsubscribe All Option</span>
+									</label>
 								</div>
 							</fieldset>
 						</div>
@@ -359,7 +379,8 @@
 		margin: 0;
 	}
 
-	.success-message, .error-message {
+	.success-message,
+	.error-message {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
@@ -420,7 +441,7 @@
 	}
 
 	.tab.active {
-		color: #FFD11A;
+		color: #ffd11a;
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
 	}
@@ -464,7 +485,7 @@
 		margin-bottom: 0.5rem;
 	}
 
-	.form-group input[type="text"],
+	.form-group input[type='text'],
 	.form-group textarea,
 	.form-group select {
 		width: 100%;
@@ -528,7 +549,7 @@
 	}
 
 	.toggle-label input:checked + .toggle-switch {
-		background: #E6B800;
+		background: #e6b800;
 	}
 
 	.toggle-label input:checked + .toggle-switch::after {
@@ -552,7 +573,7 @@
 	.checkbox-label input {
 		width: 18px;
 		height: 18px;
-		accent-color: #E6B800;
+		accent-color: #e6b800;
 	}
 
 	.form-actions {
@@ -566,8 +587,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -590,8 +611,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.loading-state {
@@ -608,7 +633,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

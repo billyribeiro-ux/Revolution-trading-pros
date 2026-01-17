@@ -12,6 +12,8 @@
 //! - Session ID generation
 //! - Constant-time comparison utilities
 
+#![allow(dead_code)]
+
 pub mod errors;
 
 use anyhow::Result;

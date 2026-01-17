@@ -11,10 +11,8 @@
 import { browser } from '$app/environment';
 import { authStore } from '$lib/stores/auth.svelte';
 
-// ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
-const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
-const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API_ROOT : '';
-const API_BASE = API_ROOT ? `${API_ROOT}/api` : '';
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
+const API_BASE = '/api';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES

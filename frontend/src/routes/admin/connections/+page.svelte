@@ -82,10 +82,10 @@
 	let viewMode = $state<'grid' | 'list'>('grid');
 
 	// Derived
-	let builtInServices = $derived(connections.filter(c => c.is_builtin));
-	let externalServices = $derived(connections.filter(c => !c.is_builtin));
-	let connectedExternal = $derived(externalServices.filter(c => c.is_connected));
-	let availableExternal = $derived(externalServices.filter(c => !c.is_connected));
+	let builtInServices = $derived(connections.filter((c) => c.is_builtin));
+	let externalServices = $derived(connections.filter((c) => !c.is_builtin));
+	let connectedExternal = $derived(externalServices.filter((c) => c.is_connected));
+	let availableExternal = $derived(externalServices.filter((c) => !c.is_connected));
 
 	let filteredConnections = $derived(() => {
 		let result = externalServices;
@@ -260,7 +260,7 @@
 			google_search_console: '📈',
 			ahrefs: '🔗',
 			// Forms
-			fluent_forms_pro: '📝',
+			fluent_forms_pro: '📝'
 		};
 		return iconMap[service.key] || service.name.charAt(0).toUpperCase();
 	}
@@ -271,7 +271,7 @@
 		const urlParams = page.url.searchParams;
 		const connectServiceKey = urlParams.get('connect');
 		if (connectServiceKey) {
-			const serviceToConnect = connections.find(s => s.key === connectServiceKey);
+			const serviceToConnect = connections.find((s) => s.key === connectServiceKey);
 			if (serviceToConnect) {
 				openConnectModal(serviceToConnect);
 			}
@@ -280,7 +280,7 @@
 		const categoryParam = urlParams.get('category');
 		if (categoryParam) {
 			const matchingCategory = Object.keys(categories).find(
-				cat => cat.toLowerCase() === categoryParam.toLowerCase()
+				(cat) => cat.toLowerCase() === categoryParam.toLowerCase()
 			);
 			if (matchingCategory) {
 				selectedCategory = matchingCategory;
@@ -300,9 +300,7 @@
 			<div class="header-content">
 				<div>
 					<h1 class="page-title">Connections</h1>
-					<p class="page-description">
-						Manage your platform integrations and third-party services
-					</p>
+					<p class="page-description">Manage your platform integrations and third-party services</p>
 				</div>
 
 				<!-- View Toggle & Search -->
@@ -310,21 +308,31 @@
 					<!-- View Mode Toggle -->
 					<div class="view-toggle">
 						<button
-							onclick={() => viewMode = 'grid'}
+							onclick={() => (viewMode = 'grid')}
 							class="view-btn {viewMode === 'grid' ? 'active' : ''}"
 							aria-label="Grid view"
 						>
 							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"
+								/>
 							</svg>
 						</button>
 						<button
-							onclick={() => viewMode = 'list'}
+							onclick={() => (viewMode = 'list')}
 							class="view-btn {viewMode === 'list' ? 'active' : ''}"
 							aria-label="List view"
 						>
 							<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M4 6h16M4 12h16M4 18h16"
+								/>
 							</svg>
 						</button>
 					</div>
@@ -338,7 +346,12 @@
 							class="search-input"
 						/>
 						<svg class="search-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+							/>
 						</svg>
 					</div>
 				</div>
@@ -359,11 +372,19 @@
 		{:else}
 			<!-- Built-in Features Section -->
 			{#if builtInServices.length > 0}
-				<section class="section-builtin" in:fly={{ y: 20, duration: 500, delay: 100, easing: cubicOut }}>
+				<section
+					class="section-builtin"
+					in:fly={{ y: 20, duration: 500, delay: 100, easing: cubicOut }}
+				>
 					<div class="section-header-row">
 						<div class="section-icon-wrapper builtin">
 							<svg class="section-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M5 13l4 4L19 7"
+								/>
 							</svg>
 						</div>
 						<div>
@@ -398,16 +419,28 @@
 
 			<!-- Connected Integrations -->
 			{#if connectedExternal.length > 0}
-				<section class="section-connected" in:fly={{ y: 20, duration: 500, delay: 200, easing: cubicOut }}>
+				<section
+					class="section-connected"
+					in:fly={{ y: 20, duration: 500, delay: 200, easing: cubicOut }}
+				>
 					<div class="section-header-row">
 						<div class="section-icon-wrapper connected">
 							<svg class="section-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
+								/>
 							</svg>
 						</div>
 						<div>
 							<h2 class="section-heading">Connected</h2>
-							<p class="section-subheading">{connectedExternal.length} active integration{connectedExternal.length !== 1 ? 's' : ''}</p>
+							<p class="section-subheading">
+								{connectedExternal.length} active integration{connectedExternal.length !== 1
+									? 's'
+									: ''}
+							</p>
 						</div>
 					</div>
 
@@ -440,13 +473,21 @@
 									<div class="connection-stats">
 										<div class="stat-row">
 											<span class="stat-label">Health</span>
-											<span class="stat-value {service.connection.health_score >= 90 ? 'health-high' : service.connection.health_score >= 70 ? 'health-medium' : 'health-low'}">
+											<span
+												class="stat-value {service.connection.health_score >= 90
+													? 'health-high'
+													: service.connection.health_score >= 70
+														? 'health-medium'
+														: 'health-low'}"
+											>
 												{service.connection.health_score}%
 											</span>
 										</div>
 										<div class="stat-row">
 											<span class="stat-label">Last verified</span>
-											<span class="stat-value">{formatDate(service.connection.last_verified_at)}</span>
+											<span class="stat-value"
+												>{formatDate(service.connection.last_verified_at)}</span
+											>
 										</div>
 									</div>
 								{/if}
@@ -470,13 +511,25 @@
 				<div class="flex items-center justify-between mb-6">
 					<div class="flex items-center gap-3">
 						<div class="flex items-center justify-center w-8 h-8 bg-gray-500/10 rounded-lg">
-							<svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
+							<svg
+								class="w-4 h-4 text-gray-400"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="2"
+									d="M12 6v6m0 0v6m0-6h6m-6 0H6"
+								/>
 							</svg>
 						</div>
 						<div>
 							<h2 class="text-lg font-medium text-white">Available Integrations</h2>
-							<p class="text-sm text-gray-500">{availableExternal.length} services available to connect</p>
+							<p class="text-sm text-gray-500">
+								{availableExternal.length} services available to connect
+							</p>
 						</div>
 					</div>
 
@@ -484,7 +537,8 @@
 					<div class="flex items-center gap-2 overflow-x-auto">
 						<button
 							onclick={() => (selectedCategory = null)}
-							class="px-3 py-1.5 text-sm rounded-lg whitespace-nowrap transition-all {selectedCategory === null
+							class="px-3 py-1.5 text-sm rounded-lg whitespace-nowrap transition-all {selectedCategory ===
+							null
 								? 'bg-white text-black font-medium'
 								: 'text-gray-400 hover:text-white hover:bg-white/5'}"
 						>
@@ -493,7 +547,8 @@
 						{#each categoryList as [key, category]}
 							<button
 								onclick={() => (selectedCategory = key)}
-								class="px-3 py-1.5 text-sm rounded-lg whitespace-nowrap transition-all {selectedCategory === key
+								class="px-3 py-1.5 text-sm rounded-lg whitespace-nowrap transition-all {selectedCategory ===
+								key
 									? 'bg-white text-black font-medium'
 									: 'text-gray-400 hover:text-white hover:bg-white/5'}"
 							>
@@ -524,7 +579,9 @@
 									</div>
 								</div>
 
-								<p class="text-sm text-gray-500 line-clamp-2 mb-4 flex-grow">{service.description}</p>
+								<p class="text-sm text-gray-500 line-clamp-2 mb-4 flex-grow">
+									{service.description}
+								</p>
 
 								<button
 									onclick={() => openConnectModal(service)}
@@ -553,7 +610,9 @@
 								<div class="flex-1 min-w-0">
 									<div class="flex items-center gap-2">
 										<h3 class="font-medium text-white">{service.name}</h3>
-										<span class="text-xs text-gray-500 px-2 py-0.5 bg-white/5 rounded">{service.category}</span>
+										<span class="text-xs text-gray-500 px-2 py-0.5 bg-white/5 rounded"
+											>{service.category}</span
+										>
 									</div>
 									<p class="text-sm text-gray-500 truncate">{service.description}</p>
 								</div>
@@ -572,9 +631,21 @@
 				<!-- Empty State -->
 				{#if filteredConnections().length === 0}
 					<div class="text-center py-16">
-						<div class="w-16 h-16 mx-auto mb-4 bg-white/5 rounded-2xl flex items-center justify-center">
-							<svg class="w-8 h-8 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-								<path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+						<div
+							class="w-16 h-16 mx-auto mb-4 bg-white/5 rounded-2xl flex items-center justify-center"
+						>
+							<svg
+								class="w-8 h-8 text-gray-600"
+								fill="none"
+								stroke="currentColor"
+								viewBox="0 0 24 24"
+							>
+								<path
+									stroke-linecap="round"
+									stroke-linejoin="round"
+									stroke-width="1.5"
+									d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+								/>
 							</svg>
 						</div>
 						<h3 class="text-lg font-medium text-gray-400 mb-1">No services found</h3>
@@ -629,7 +700,12 @@
 						aria-label="Close"
 					>
 						<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-							<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+							<path
+								stroke-linecap="round"
+								stroke-linejoin="round"
+								stroke-width="2"
+								d="M6 18L18 6M6 6l12 12"
+							/>
 						</svg>
 					</button>
 				</div>
@@ -645,7 +721,12 @@
 								class="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1"
 							>
 								<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+									/>
 								</svg>
 								Create account
 							</a>
@@ -658,7 +739,12 @@
 								class="text-xs text-gray-400 hover:text-white transition-colors flex items-center gap-1"
 							>
 								<svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+									/>
 								</svg>
 								Documentation
 							</a>
@@ -671,7 +757,9 @@
 			<div class="p-6 space-y-4">
 				{#if selectedService.environments && selectedService.environments.length > 1}
 					<fieldset>
-						<legend class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">Environment</legend>
+						<legend class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide"
+							>Environment</legend
+						>
 						<div class="grid grid-cols-2 gap-2" role="group">
 							{#each selectedService.environments as env}
 								<button
@@ -689,7 +777,10 @@
 
 				{#each selectedService.fields as field}
 					<div>
-						<label for="field-{field.key}" class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide">
+						<label
+							for="field-{field.key}"
+							class="block text-xs font-medium text-gray-400 mb-2 uppercase tracking-wide"
+						>
 							{field.label}
 							{#if field.required}<span class="text-red-400 ml-1">*</span>{/if}
 						</label>
@@ -708,18 +799,42 @@
 
 				{#if testResult}
 					<div
-						class="p-4 rounded-xl {testResult.success ? 'bg-emerald-500/10 border border-emerald-500/20' : 'bg-red-500/10 border border-red-500/20'}"
+						class="p-4 rounded-xl {testResult.success
+							? 'bg-emerald-500/10 border border-emerald-500/20'
+							: 'bg-red-500/10 border border-red-500/20'}"
 						transition:slide={{ duration: 200 }}
 					>
 						<div class="flex items-center gap-2">
 							{#if testResult.success}
-								<svg class="w-4 h-4 text-emerald-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+								<svg
+									class="w-4 h-4 text-emerald-400"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M5 13l4 4L19 7"
+									/>
 								</svg>
-								<span class="text-sm text-emerald-400">{testResult.message || 'Connection successful'}</span>
+								<span class="text-sm text-emerald-400"
+									>{testResult.message || 'Connection successful'}</span
+								>
 							{:else}
-								<svg class="w-4 h-4 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+								<svg
+									class="w-4 h-4 text-red-400"
+									fill="none"
+									stroke="currentColor"
+									viewBox="0 0 24 24"
+								>
+									<path
+										stroke-linecap="round"
+										stroke-linejoin="round"
+										stroke-width="2"
+										d="M6 18L18 6M6 6l12 12"
+									/>
 								</svg>
 								<span class="text-sm text-red-400">{testResult.error || 'Connection failed'}</span>
 							{/if}
@@ -737,7 +852,9 @@
 				>
 					{#if isTesting}
 						<span class="flex items-center justify-center gap-2">
-							<div class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"></div>
+							<div
+								class="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"
+							></div>
 							Testing...
 						</span>
 					{:else}
@@ -751,7 +868,9 @@
 				>
 					{#if isConnecting}
 						<span class="flex items-center justify-center gap-2">
-							<div class="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"></div>
+							<div
+								class="w-4 h-4 border-2 border-black/20 border-t-black rounded-full animate-spin"
+							></div>
 							Connecting...
 						</span>
 					{:else}
@@ -781,12 +900,21 @@
 			transition:scale={{ duration: 200, easing: backOut, start: 0.95 }}
 		>
 			<div class="text-center">
-				<div class="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-full flex items-center justify-center">
+				<div
+					class="w-14 h-14 mx-auto mb-4 bg-red-500/10 rounded-full flex items-center justify-center"
+				>
 					<svg class="w-7 h-7 text-red-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-						<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+						<path
+							stroke-linecap="round"
+							stroke-linejoin="round"
+							stroke-width="2"
+							d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+						/>
 					</svg>
 				</div>
-				<h3 class="text-lg font-semibold text-white mb-2">Disconnect {disconnectingService.name}?</h3>
+				<h3 class="text-lg font-semibold text-white mb-2">
+					Disconnect {disconnectingService.name}?
+				</h3>
 				<p class="text-sm text-gray-500 mb-6">
 					This will remove all stored credentials. You can reconnect anytime.
 				</p>
@@ -1189,7 +1317,8 @@
 	}
 
 	@keyframes pulse {
-		0%, 100% {
+		0%,
+		100% {
 			opacity: 1;
 		}
 		50% {

@@ -52,16 +52,20 @@
 
 	const filteredEnrollments = $derived(() => {
 		if (activeTab === 'in-progress') {
-			return enrollments.filter(e => e.status === 'active' && e.progress_percent < 100);
+			return enrollments.filter((e) => e.status === 'active' && e.progress_percent < 100);
 		} else if (activeTab === 'completed') {
-			return enrollments.filter(e => e.status === 'completed' || e.progress_percent >= 100);
+			return enrollments.filter((e) => e.status === 'completed' || e.progress_percent >= 100);
 		}
 		return enrollments;
 	});
 
 	const stats = $derived(() => {
-		const inProgress = enrollments.filter(e => e.status === 'active' && e.progress_percent < 100).length;
-		const completed = enrollments.filter(e => e.status === 'completed' || e.progress_percent >= 100).length;
+		const inProgress = enrollments.filter(
+			(e) => e.status === 'active' && e.progress_percent < 100
+		).length;
+		const completed = enrollments.filter(
+			(e) => e.status === 'completed' || e.progress_percent >= 100
+		).length;
 		return { total: enrollments.length, inProgress, completed };
 	});
 
@@ -94,13 +98,13 @@
 	</div>
 
 	<nav class="tabs">
-		<button class:active={activeTab === 'in-progress'} onclick={() => activeTab = 'in-progress'}>
+		<button class:active={activeTab === 'in-progress'} onclick={() => (activeTab = 'in-progress')}>
 			In Progress ({stats().inProgress})
 		</button>
-		<button class:active={activeTab === 'completed'} onclick={() => activeTab = 'completed'}>
+		<button class:active={activeTab === 'completed'} onclick={() => (activeTab = 'completed')}>
 			Completed ({stats().completed})
 		</button>
-		<button class:active={activeTab === 'all'} onclick={() => activeTab = 'all'}>
+		<button class:active={activeTab === 'all'} onclick={() => (activeTab = 'all')}>
 			All Courses ({stats().total})
 		</button>
 	</nav>
@@ -113,15 +117,44 @@
 	{:else if filteredEnrollments().length === 0}
 		<div class="empty-state">
 			{#if activeTab === 'in-progress'}
-				<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="64"
+					height="64"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></svg
+				>
 				<h3>No courses in progress</h3>
 				<p>Start a new course or continue one you've started</p>
 			{:else if activeTab === 'completed'}
-				<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="64"
+					height="64"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline
+						points="22 4 12 14.01 9 11.01"
+					/></svg
+				>
 				<h3>No completed courses yet</h3>
 				<p>Keep learning to complete your first course</p>
 			{:else}
-				<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+				<svg
+					xmlns="http://www.w3.org/2000/svg"
+					width="64"
+					height="64"
+					viewBox="0 0 24 24"
+					fill="none"
+					stroke="currentColor"
+					stroke-width="1.5"
+					><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" /></svg
+				>
 				<h3>No enrolled courses</h3>
 				<p>Browse our catalog and enroll in a course to get started</p>
 				<a href="/classes" class="btn-primary">Browse Courses</a>
@@ -131,9 +164,9 @@
 		<div class="courses-grid">
 			{#each filteredEnrollments() as enrollment}
 				<div class="enrollment-card">
-					<CourseCard 
-						course={enrollment.course} 
-						showProgress={true} 
+					<CourseCard
+						course={enrollment.course}
+						showProgress={true}
 						progress={enrollment.progress_percent}
 					/>
 					<div class="enrollment-meta">
@@ -144,7 +177,15 @@
 						{/if}
 						<a href="/classes/{enrollment.course.slug}" class="continue-btn">
 							{enrollment.progress_percent > 0 ? 'Continue Learning' : 'Start Course'}
-							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m9 18 6-6-6-6"/></svg>
+							<svg
+								xmlns="http://www.w3.org/2000/svg"
+								width="16"
+								height="16"
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"><path d="m9 18 6-6-6-6" /></svg
+							>
 						</a>
 					</div>
 				</div>
@@ -237,7 +278,8 @@
 		color: #fff;
 	}
 
-	.loading, .empty-state {
+	.loading,
+	.empty-state {
 		text-align: center;
 		padding: 80px 24px;
 	}
@@ -253,7 +295,9 @@
 	}
 
 	@keyframes spin {
-		to { transform: rotate(360deg); }
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.empty-state svg {

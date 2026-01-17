@@ -43,9 +43,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// User display name
-	const userName = $derived(
-		$user?.name ?? $user?.email?.split('@')[0] ?? 'Member'
-	);
+	const userName = $derived($user?.name ?? $user?.email?.split('@')[0] ?? 'Member');
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DYNAMIC MEMBERSHIP RENDERING
@@ -315,18 +313,18 @@
 				{#if isDropdownOpen}
 					<div class="dropdown-menu" role="menu">
 						{#each tradingRooms as room}
-						<a 
-							href={room.href} 
-							class="dropdown-item dropdown-item--{room.variant}" 
-							onclick={closeDropdown}
-							role="menuitem"
-						>
-							<span class="dropdown-item__icon">
-								<RtpIcon name={room.icon} size={20} />
-							</span>
-							<span class="dropdown-item__text">{room.name}</span>
-						</a>
-					{/each}
+							<a
+								href={room.href}
+								class="dropdown-item dropdown-item--{room.variant}"
+								onclick={closeDropdown}
+								role="menuitem"
+							>
+								<span class="dropdown-item__icon">
+									<RtpIcon name={room.icon} size={20} />
+								</span>
+								<span class="dropdown-item__text">{room.name}</span>
+							</a>
+						{/each}
 					</div>
 				{/if}
 			</div>
@@ -490,7 +488,8 @@
 			<div class="empty-state">
 				<h2 class="empty-state__title">Welcome, {userName}!</h2>
 				<p class="empty-state__text">
-					You don't have any active memberships yet. Explore our trading rooms and courses to get started.
+					You don't have any active memberships yet. Explore our trading rooms and courses to get
+					started.
 				</p>
 				<a href="/courses" class="btn btn-orange">Browse Courses</a>
 			</div>
@@ -513,7 +512,7 @@
 		border-right: 1px solid #dbdbdb;
 		padding: 20px;
 	}
-    
+
 	@media (min-width: 1024px) {
 		.dashboard__header {
 			padding: 30px;
@@ -697,7 +696,6 @@
 			padding-left: 15px;
 			padding-right: 15px;
 		}
-
 	}
 
 	.section-title-alt {
@@ -748,9 +746,9 @@
 	}
 
 	.btn-default {
-		background-color: #143E59;
+		background-color: #143e59;
 		color: #fff;
-		border: 1px solid #143E59;
+		border: 1px solid #143e59;
 	}
 
 	.btn-default:hover {
@@ -903,7 +901,7 @@
 		align-items: center;
 		justify-content: center;
 		flex-shrink: 0;
-		color: #143E59;
+		color: #143e59;
 		transition: color 0.15s ease-in-out;
 	}
 
@@ -925,7 +923,6 @@
 	.dropdown-item__text {
 		flex: 1;
 	}
-
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * DASHBOARD CONTENT SECTION

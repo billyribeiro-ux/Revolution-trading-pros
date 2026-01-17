@@ -15,12 +15,12 @@ export const load = async ({ locals, fetch, cookies }: RequestEvent) => {
 	try {
 		// Get auth token from cookies
 		const token = cookies.get('rtp_access_token');
-		
+
 		// Fetch user's available coupons from backend
 		const response = await fetch('/api/coupons/user/available', {
 			headers: {
 				'Content-Type': 'application/json',
-				...(token && { 'Authorization': `Bearer ${token}` })
+				...(token && { Authorization: `Bearer ${token}` })
 			},
 			credentials: 'include'
 		});

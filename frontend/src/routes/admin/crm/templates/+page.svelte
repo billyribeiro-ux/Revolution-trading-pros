@@ -63,7 +63,9 @@
 	let isLoadingPreview = $state(false);
 
 	// Toast notification state
-	let toasts = $state<Array<{ id: string; type: 'success' | 'error' | 'info'; message: string }>>([]);
+	let toasts = $state<Array<{ id: string; type: 'success' | 'error' | 'info'; message: string }>>(
+		[]
+	);
 
 	// Bulk operation state
 	let isBulkDeleting = $state(false);
@@ -234,9 +236,15 @@
 		selectedTemplates = new Set();
 
 		if (failCount === 0) {
-			showToast('success', `Successfully deleted ${successCount} template${successCount > 1 ? 's' : ''}`);
+			showToast(
+				'success',
+				`Successfully deleted ${successCount} template${successCount > 1 ? 's' : ''}`
+			);
 		} else {
-			showToast('error', `Deleted ${successCount}, failed to delete ${failCount} template${failCount > 1 ? 's' : ''}`);
+			showToast(
+				'error',
+				`Deleted ${successCount}, failed to delete ${failCount} template${failCount > 1 ? 's' : ''}`
+			);
 		}
 
 		await loadTemplates();
@@ -425,20 +433,12 @@
 				aria-label="Search templates"
 			/>
 			{#if searchQuery}
-				<button
-					class="search-clear"
-					onclick={() => (searchQuery = '')}
-					aria-label="Clear search"
-				>
+				<button class="search-clear" onclick={() => (searchQuery = '')} aria-label="Clear search">
 					<IconX size={16} />
 				</button>
 			{/if}
 		</div>
-		<select
-			bind:value={selectedCategory}
-			class="filter-select"
-			aria-label="Filter by category"
-		>
+		<select bind:value={selectedCategory} class="filter-select" aria-label="Filter by category">
 			<option value="">All Categories</option>
 			{#each categories as category}
 				<option value={category.slug}>{category.name} ({category.templates_count})</option>
@@ -632,7 +632,8 @@
 						</div>
 						<div class="template-footer">
 							<span class="template-date">
-								<time datetime={template.updated_at}>Updated {formatDate(template.updated_at)}</time>
+								<time datetime={template.updated_at}>Updated {formatDate(template.updated_at)}</time
+								>
 							</span>
 							<div class="template-actions">
 								<button
@@ -723,11 +724,7 @@
 		>
 			<header class="modal-header">
 				<h2 id="preview-title">{previewTemplate?.title || 'Template Preview'}</h2>
-				<button
-					class="modal-close"
-					onclick={closePreview}
-					aria-label="Close preview"
-				>
+				<button class="modal-close" onclick={closePreview} aria-label="Close preview">
 					<IconX size={20} />
 				</button>
 			</header>
@@ -748,7 +745,11 @@
 						{/if}
 						<div class="preview-field">
 							<label for="type">Type:</label>
-							<span id="type" class="template-type" class:visual={previewTemplate.design_template === 'visual'}>
+							<span
+								id="type"
+								class="template-type"
+								class:visual={previewTemplate.design_template === 'visual'}
+							>
 								{previewTemplate.design_template === 'visual' ? 'Visual Editor' : 'Raw HTML'}
 							</span>
 						</div>
@@ -785,11 +786,7 @@
 {#if toasts.length > 0}
 	<div class="toast-container" role="region" aria-label="Notifications">
 		{#each toasts as toast (toast.id)}
-			<div
-				class="toast toast-{toast.type}"
-				role="alert"
-				aria-live="polite"
-			>
+			<div class="toast toast-{toast.type}" role="alert" aria-live="polite">
 				<div class="toast-icon">
 					{#if toast.type === 'success'}
 						<IconCheck size={18} />
@@ -879,8 +876,12 @@
 	}
 
 	@keyframes spin {
-		from { transform: rotate(0deg); }
-		to { transform: rotate(360deg); }
+		from {
+			transform: rotate(0deg);
+		}
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.btn-primary {
@@ -888,8 +889,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -972,10 +973,22 @@
 		flex-shrink: 0;
 	}
 
-	.stat-icon.blue { background: rgba(59, 130, 246, 0.15); color: #60a5fa; }
-	.stat-icon.purple { background: rgba(139, 92, 246, 0.15); color: #a78bfa; }
-	.stat-icon.green { background: rgba(34, 197, 94, 0.15); color: #4ade80; }
-	.stat-icon.orange { background: rgba(249, 115, 22, 0.15); color: #fb923c; }
+	.stat-icon.blue {
+		background: rgba(59, 130, 246, 0.15);
+		color: #60a5fa;
+	}
+	.stat-icon.purple {
+		background: rgba(139, 92, 246, 0.15);
+		color: #a78bfa;
+	}
+	.stat-icon.green {
+		background: rgba(34, 197, 94, 0.15);
+		color: #4ade80;
+	}
+	.stat-icon.orange {
+		background: rgba(249, 115, 22, 0.15);
+		color: #fb923c;
+	}
 
 	.stat-content {
 		display: flex;
@@ -1352,12 +1365,13 @@
 		flex-wrap: wrap;
 	}
 
-	.template-type, .template-category {
+	.template-type,
+	.template-category {
 		padding: 0.25rem 0.5rem;
 		background: rgba(230, 184, 0, 0.1);
 		border-radius: 4px;
 		font-size: 0.7rem;
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.template-type.visual {
@@ -1399,7 +1413,7 @@
 
 	.btn-icon-sm:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #E6B800;
+		color: #e6b800;
 	}
 
 	.btn-icon-sm.danger:hover {
@@ -1485,7 +1499,9 @@
 	/* =====================================================
 	   States
 	   ===================================================== */
-	.loading-state, .error-state, .empty-state {
+	.loading-state,
+	.error-state,
+	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
@@ -1525,7 +1541,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #E6B800;
+		border-top-color: #e6b800;
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

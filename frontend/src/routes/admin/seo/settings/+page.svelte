@@ -129,13 +129,15 @@
 									id={field.key}
 									type={field.type}
 									value={getSetting(group.key, field.key)}
-									oninput={(e: Event) => setSetting(group.key, field.key, (e.currentTarget as HTMLInputElement).value)}
+									oninput={(e: Event) =>
+										setSetting(group.key, field.key, (e.currentTarget as HTMLInputElement).value)}
 								/>
 							{:else if field.type === 'textarea'}
 								<textarea
 									id={field.key}
 									value={getSetting(group.key, field.key)}
-									oninput={(e: Event) => setSetting(group.key, field.key, (e.currentTarget as HTMLInputElement).value)}
+									oninput={(e: Event) =>
+										setSetting(group.key, field.key, (e.currentTarget as HTMLInputElement).value)}
 									rows="3"
 								></textarea>
 							{:else if field.type === 'checkbox'}
@@ -143,7 +145,8 @@
 									id={field.key}
 									type="checkbox"
 									checked={getSetting(group.key, field.key, false)}
-									onchange={(e: Event) => setSetting(group.key, field.key, (e.currentTarget as HTMLInputElement).checked)}
+									onchange={(e: Event) =>
+										setSetting(group.key, field.key, (e.currentTarget as HTMLInputElement).checked)}
 								/>
 							{/if}
 						</div>

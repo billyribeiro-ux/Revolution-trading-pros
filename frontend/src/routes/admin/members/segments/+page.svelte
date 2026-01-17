@@ -62,7 +62,10 @@
 	let showSegmentDrawer = $state(false);
 	let selectedSegment = $state<Segment | null>(null);
 	let showDeleteModal = $state(false);
-	let deleteTarget = $state<{ type: 'segment' | 'tag' | 'filter'; item: Segment | Tag | SavedFilter } | null>(null);
+	let deleteTarget = $state<{
+		type: 'segment' | 'tag' | 'filter';
+		item: Segment | Tag | SavedFilter;
+	} | null>(null);
 	let isDeleting = $state(false);
 
 	// Form state
@@ -143,9 +146,7 @@
 			{ value: 'gt', label: 'Greater than' },
 			{ value: 'lt', label: 'Less than' }
 		],
-		email_engagement: [
-			{ value: 'eq', label: 'Is' }
-		],
+		email_engagement: [{ value: 'eq', label: 'Is' }],
 		product: [
 			{ value: 'has', label: 'Has' },
 			{ value: 'not_has', label: 'Does not have' }
@@ -157,8 +158,16 @@
 	};
 
 	const tagColors = [
-		'#E6B800', '#B38F00', '#ec4899', '#ef4444', '#f97316',
-		'#eab308', '#22c55e', '#14b8a6', '#06b6d4', '#3b82f6'
+		'#E6B800',
+		'#B38F00',
+		'#ec4899',
+		'#ef4444',
+		'#f97316',
+		'#eab308',
+		'#22c55e',
+		'#14b8a6',
+		'#06b6d4',
+		'#3b82f6'
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════════
@@ -631,8 +640,10 @@
 						<div class="segment-conditions">
 							{#each segment.conditions as condition}
 								<span class="condition-tag">
-									{conditionFields.find((f) => f.value === condition.field)?.label || condition.field}
-									{conditionOperators[condition.field]?.find((o) => o.value === condition.operator)?.label || condition.operator}
+									{conditionFields.find((f) => f.value === condition.field)?.label ||
+										condition.field}
+									{conditionOperators[condition.field]?.find((o) => o.value === condition.operator)
+										?.label || condition.operator}
 									{condition.value}
 								</span>
 							{/each}
@@ -651,14 +662,29 @@
 									</span>
 								{/if}
 							</div>
-							<div class="segment-actions" onclick={(e: MouseEvent) => e.stopPropagation()}>
-								<button class="btn-icon" type="button" onclick={() => viewSegmentMembers(segment)} title="View members">
+							<div class="segment-actions">
+								<button
+									class="btn-icon"
+									type="button"
+									onclick={() => viewSegmentMembers(segment)}
+									title="View members"
+								>
 									<IconUsers size={16} />
 								</button>
-								<button class="btn-icon" type="button" onclick={() => openSegmentDrawer(segment)} title="View analytics">
+								<button
+									class="btn-icon"
+									type="button"
+									onclick={() => openSegmentDrawer(segment)}
+									title="View analytics"
+								>
 									<IconChartBar size={16} />
 								</button>
-								<button class="btn-icon" type="button" onclick={() => exportSegmentData(segment)} title="Export data">
+								<button
+									class="btn-icon"
+									type="button"
+									onclick={() => exportSegmentData(segment)}
+									title="Export data"
+								>
 									<IconDownload size={16} />
 								</button>
 								<button class="btn-icon" type="button" title="Send campaign">
@@ -668,7 +694,12 @@
 									<button class="btn-icon" type="button" title="Edit">
 										<IconEdit size={16} />
 									</button>
-									<button class="btn-icon danger" type="button" onclick={() => confirmDeleteSegment(segment)} title="Delete">
+									<button
+										class="btn-icon danger"
+										type="button"
+										onclick={() => confirmDeleteSegment(segment)}
+										title="Delete"
+									>
 										<IconTrash size={16} />
 									</button>
 								{/if}
@@ -695,14 +726,23 @@
 						</div>
 
 						<div class="tag-actions">
-							<button class="btn-secondary small" type="button" onclick={() => goto(`/admin/members?tag=${tag.id}`)}>
+							<button
+								class="btn-secondary small"
+								type="button"
+								onclick={() => goto(`/admin/members?tag=${tag.id}`)}
+							>
 								<IconUsers size={14} />
 								View Members
 							</button>
 							<button class="btn-icon" type="button" title="Edit">
 								<IconEdit size={16} />
 							</button>
-							<button class="btn-icon danger" type="button" onclick={() => confirmDeleteTag(tag)} title="Delete">
+							<button
+								class="btn-icon danger"
+								type="button"
+								onclick={() => confirmDeleteTag(tag)}
+								title="Delete"
+							>
 								<IconTrash size={16} />
 							</button>
 						</div>
@@ -733,13 +773,22 @@
 						</div>
 
 						<div class="filter-actions">
-							<button class="btn-primary small" type="button" onclick={() => applySavedFilter(filter)}>
+							<button
+								class="btn-primary small"
+								type="button"
+								onclick={() => applySavedFilter(filter)}
+							>
 								Apply Filter
 							</button>
 							<button class="btn-icon" type="button" title="Duplicate">
 								<IconCopy size={16} />
 							</button>
-							<button class="btn-icon danger" type="button" onclick={() => confirmDeleteFilter(filter)} title="Delete">
+							<button
+								class="btn-icon danger"
+								type="button"
+								onclick={() => confirmDeleteFilter(filter)}
+								title="Delete"
+							>
 								<IconTrash size={16} />
 							</button>
 						</div>
@@ -815,7 +864,7 @@
 								{#each conditionFields as field}
 									<option value={field.value}>
 										{#if field.value === 'total_spent'}
-											<IconCurrencyDollar size={14} /> 
+											<IconCurrencyDollar size={14} />
 										{/if}
 										{field.label}
 									</option>
@@ -828,11 +877,7 @@
 								{/each}
 							</select>
 
-							<input
-								type="text"
-								bind:value={condition.value}
-								placeholder="Value"
-							/>
+							<input type="text" bind:value={condition.value} placeholder="Value" />
 
 							<button class="btn-icon danger" onclick={() => removeCondition(index)}>
 								<IconX size={16} />
@@ -887,12 +932,7 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label for="tag-name">Tag Name</label>
-					<input
-						id="tag-name"
-						type="text"
-						bind:value={newTag.name}
-						placeholder="e.g., VIP"
-					/>
+					<input id="tag-name" type="text" bind:value={newTag.name} placeholder="e.g., VIP" />
 				</div>
 
 				<div class="form-group">
@@ -912,16 +952,17 @@
 
 				<div class="tag-preview">
 					<span class="preview-label">Preview:</span>
-					<span class="tag-badge" style="background-color: {newTag.color}20; color: {newTag.color}; border-color: {newTag.color}40">
+					<span
+						class="tag-badge"
+						style="background-color: {newTag.color}20; color: {newTag.color}; border-color: {newTag.color}40"
+					>
 						{newTag.name || 'Tag Name'}
 					</span>
 				</div>
 			</div>
 
 			<div class="modal-footer">
-				<button class="btn-secondary" onclick={() => (showCreateTagModal = false)}>
-					Cancel
-				</button>
+				<button class="btn-secondary" onclick={() => (showCreateTagModal = false)}> Cancel </button>
 				<button class="btn-primary" onclick={handleCreateTag}>
 					<IconCheck size={18} />
 					Create Tag
@@ -1034,7 +1075,7 @@
 	}
 
 	.back-btn:hover {
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	/* Unused - keeping for future use
@@ -1114,12 +1155,12 @@
 
 	.tabs button:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.tabs button.active {
 		background: rgba(230, 184, 0, 0.15);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	/* Segments Grid */
@@ -1186,7 +1227,7 @@
 	.system-badge {
 		padding: 0.25rem 0.5rem;
 		background: rgba(230, 184, 0, 0.2);
-		color: #FFD11A;
+		color: #ffd11a;
 		font-size: 0.6875rem;
 		font-weight: 600;
 		border-radius: 6px;
@@ -1199,7 +1240,7 @@
 		gap: 0.375rem;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.segment-description {
@@ -1274,7 +1315,7 @@
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-size: 0.8125rem;
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	/* Tags Grid */
@@ -1372,7 +1413,7 @@
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-size: 0.75rem;
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.filter-actions {
@@ -1396,8 +1437,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #E6B800 0%, #B38F00 100%);
-		color: #0D1117;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
 	}
 
 	.btn-secondary {
@@ -1429,7 +1470,7 @@
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #FFD11A;
+		color: #ffd11a;
 	}
 
 	.btn-icon.danger:hover {
@@ -1465,7 +1506,12 @@
 	}
 
 	.skeleton {
-		background: linear-gradient(90deg, rgba(148, 163, 184, 0.1) 25%, rgba(148, 163, 184, 0.2) 50%, rgba(148, 163, 184, 0.1) 75%);
+		background: linear-gradient(
+			90deg,
+			rgba(148, 163, 184, 0.1) 25%,
+			rgba(148, 163, 184, 0.2) 50%,
+			rgba(148, 163, 184, 0.1) 75%
+		);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 16px;
@@ -1476,8 +1522,12 @@
 	}
 
 	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
 	}
 
 	/* Modal */
