@@ -15,10 +15,7 @@ import { authStore } from '$lib/stores/auth.svelte';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Production fallback - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE_URL = import.meta.env['VITE_API_BASE_URL'] || PROD_API;
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Type Definitions
@@ -289,9 +286,9 @@ class MediaApiClient {
 		params?: Record<string, any>,
 		isFormData: boolean = false
 	): Promise<T> {
-		// ICT 11+ Fix: Add /api prefix if endpoint doesn't already have it
+		// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 		const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
-		let url = `${API_BASE_URL}${apiEndpoint}`;
+		let url = apiEndpoint;
 
 		if (params) {
 			const searchParams = new URLSearchParams();
@@ -449,7 +446,7 @@ class MediaApiClient {
 				reject(new Error('Upload failed'));
 			});
 
-			xhr.open('POST', `${API_BASE_URL}/admin/media/upload`);
+			xhr.open('POST', `/api/admin/media/upload`);
 			if (token) {
 				xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 			}
@@ -945,7 +942,7 @@ class MediaApiClient {
 				reject(new Error('Upload failed'));
 			});
 
-			xhr.open('POST', `${API_BASE_URL}/admin/sharp/upload`);
+			xhr.open('POST', `/api/admin/sharp/upload`);
 			if (token) {
 				xhr.setRequestHeader('Authorization', `Bearer ${token}`);
 			}

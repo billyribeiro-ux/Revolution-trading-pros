@@ -45,10 +45,7 @@ import type { User } from '$lib/stores/auth.svelte';
 // Configuration
 // ═══════════════════════════════════════════════════════════════════════════
 
-// Production fallback - NEVER use localhost in production
-// NOTE: No /api suffix - endpoints already include /api prefix
-const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
-const API_BASE_URL = import.meta.env['VITE_API_BASE_URL'] || PROD_API;
+// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 const API_VERSION = 'v1';
 const API_TIMEOUT = 30000; // 30 seconds
 const MAX_RETRIES = 3;
@@ -540,9 +537,9 @@ async function makeRequest<T = any>(
 		throw new AdminApiError('Not authenticated', 401);
 	}
 
-	// ICT 11+ Fix: Add /api prefix if endpoint doesn't already have it
+	// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 	const apiEndpoint = endpoint.startsWith('/api/') ? endpoint : `/api${endpoint}`;
-	const url = `${API_BASE_URL}${apiEndpoint}`;
+	const url = apiEndpoint;
 	const {
 		skipCache = false,
 		cacheTTL = CACHE_TTL,
@@ -806,7 +803,7 @@ export const couponsApi = {
 	async import(formData: FormData): Promise<ApiResponse<{ coupons: any[]; count: number }>> {
 		// Use secure getter from auth store
 		const token = authStore.getToken();
-		const response = await fetch(`${API_BASE_URL}/admin/coupons/import`, {
+		const response = await fetch(`/api/admin/coupons/import`, {
 			method: 'POST',
 			headers: {
 				Authorization: `Bearer ${token}`,
@@ -1099,7 +1096,7 @@ export const formsApi = {
 		// Use secure getter from auth store
 		const token = authStore.getToken();
 		const response = await fetch(
-			`${API_BASE_URL}/admin/forms/${formId}/submissions/export?format=${format}`,
+			`/api/admin/forms/${formId}/submissions/export?format=${format}`,
 			{
 				headers: {
 					Authorization: `Bearer ${token}`

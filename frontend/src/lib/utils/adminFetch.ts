@@ -12,7 +12,7 @@
 import { getAuthToken } from '$lib/stores/auth.svelte';
 import { goto } from '$app/navigation';
 import { browser } from '$app/environment';
-import { API_BASE_URL } from '$lib/api/config';
+// ICT 11+ CORB Fix: Use same-origin endpoints
 
 /**
  * Response type for API calls
@@ -75,11 +75,12 @@ export async function adminFetch<T = any>(
 	}
 
 	// ICT 11+ FIX: Build absolute URL for Pages.dev compatibility (no proxy)
+	// ICT 11+ CORB Fix: Use same-origin endpoints to prevent CORB
 	const url = endpoint.startsWith('http')
 		? endpoint
 		: endpoint.startsWith('/api/')
-			? `${API_BASE_URL}${endpoint}`
-			: `${API_BASE_URL}/api${endpoint}`;
+			? endpoint
+			: `/api${endpoint}`;
 
 	try {
 		const response = await fetch(url, {
