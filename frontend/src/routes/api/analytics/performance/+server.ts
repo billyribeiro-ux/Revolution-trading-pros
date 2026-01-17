@@ -48,6 +48,6 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 		// Silently ignore any parsing errors
 	}
 
-	// Always return success immediately
-	return json({ ok: true }, { status: 204 });
+	// Always return success immediately - 204 No Content (no body allowed)
+	return new Response(null, { status: 204 });
 };
