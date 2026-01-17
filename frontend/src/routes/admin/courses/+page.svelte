@@ -5,12 +5,17 @@
 	 * 
 	 * Features streamlined QuickCreate modal for instant course creation
 	 * that redirects directly to the Page Builder for visual design.
+	 * Includes enterprise CourseDetailDrawer, CourseFormModal, and ModuleFormModal.
 	 */
 
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { CourseCard } from '$lib/components/courses';
 	import { adminFetch } from '$lib/utils/adminFetch';
+	import CourseDetailDrawer from '$lib/components/admin/CourseDetailDrawer.svelte';
+	import CourseFormModal from '$lib/components/admin/CourseFormModal.svelte';
+	import ModuleFormModal from '$lib/components/admin/ModuleFormModal.svelte';
+	import type { Course as APICourse, CourseModule } from '$lib/api/courses';
 
 	interface Course {
 		id: string;
@@ -48,6 +53,16 @@
 	let quickCreateDescription = $state('');
 	let quickCreateLoading = $state(false);
 	let quickCreateError = $state<string | null>(null);
+
+	// Enterprise Components State
+	let showDetailDrawer = $state(false);
+	let showFormModal = $state(false);
+	let showModuleModal = $state(false);
+	let selectedCourseId = $state<string | null>(null);
+	let selectedCourse = $state<APICourse | null>(null);
+	let selectedModule = $state<CourseModule | null>(null);
+	let formModalMode = $state<'create' | 'edit'>('create');
+	let moduleModalMode = $state<'create' | 'edit'>('create');
 
 	// Auto-generate slug from title
 	const generateSlug = (title: string) => {
@@ -187,6 +202,53 @@
 		}
 	};
 
+	// Enterprise component handlers
+	const openCourseDetail = (course: Course) => {
+		selectedCourseId = course.id;
+		selectedCourse = course as unknown as APICourse;
+		showDetailDrawer = true;
+	};
+
+	const openCreateCourseModal = () => {
+		selectedCourse = null;
+		formModalMode = 'create';
+		showFormModal = true;
+	};
+
+	const openEditCourseModal = (course: APICourse) => {
+		selectedCourse = course;
+		formModalMode = 'edit';
+		showFormModal = true;
+		showDetailDrawer = false;
+	};
+
+	const openAddModuleModal = (courseId: string) => {
+		selectedCourseId = courseId;
+		selectedModule = null;
+		moduleModalMode = 'create';
+		showModuleModal = true;
+	};
+
+	const openEditModuleModal = (module: CourseModule) => {
+		selectedModule = module;
+		moduleModalMode = 'edit';
+		showModuleModal = true;
+	};
+
+	const handleCourseSaved = () => {
+		fetchCourses();
+	};
+
+	const handleModuleSaved = () => {
+		// Refresh drawer data if open
+		if (showDetailDrawer && selectedCourseId) {
+			// Force drawer refresh by toggling
+			const id = selectedCourseId;
+			selectedCourseId = null;
+			setTimeout(() => { selectedCourseId = id; }, 10);
+		}
+	};
+
 	onMount(fetchCourses);
 </script>
 
@@ -253,6 +315,10 @@
 					</div>
 					<CourseCard {course} variant="default" />
 					<div class="card-actions">
+						<button class="action-btn view" onclick={() => openCourseDetail(course)}>
+							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg>
+							View
+						</button>
 						<a href="/admin/courses/{course.id}" class="action-btn edit">
 							<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 3a2.85 2.83 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5Z"/></svg>
 							Edit
@@ -374,6 +440,34 @@
 		</div>
 	</div>
 {/if}
+
+<!-- Enterprise Components -->
+<CourseDetailDrawer
+	isOpen={showDetailDrawer}
+	courseId={selectedCourseId}
+	onClose={() => { showDetailDrawer = false; selectedCourseId = null; }}
+	onEdit={openEditCourseModal}
+	onEditModule={openEditModuleModal}
+	onAddModule={openAddModuleModal}
+	onRefresh={fetchCourses}
+/>
+
+<CourseFormModal
+	isOpen={showFormModal}
+	mode={formModalMode}
+	course={selectedCourse}
+	onClose={() => { showFormModal = false; selectedCourse = null; }}
+	onSaved={handleCourseSaved}
+/>
+
+<ModuleFormModal
+	isOpen={showModuleModal}
+	mode={moduleModalMode}
+	courseId={selectedCourseId}
+	module={selectedModule}
+	onClose={() => { showModuleModal = false; selectedModule = null; }}
+	onSaved={handleModuleSaved}
+/>
 
 <style>
 	/* Page Layout - Email Templates Style */
@@ -596,6 +690,9 @@
 		border-color: rgba(99, 102, 241, 0.3);
 		color: #a5b4fc;
 	}
+
+	.action-btn.view { background: rgba(59, 130, 246, 0.1); color: #60a5fa; }
+	.action-btn.view:hover { background: rgba(59, 130, 246, 0.2); }
 
 	.action-btn.edit { background: rgba(148, 163, 184, 0.1); color: #94a3b8; }
 	.action-btn.edit:hover { background: rgba(99, 102, 241, 0.15); color: #a5b4fc; }
