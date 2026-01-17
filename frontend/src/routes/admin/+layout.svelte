@@ -397,28 +397,30 @@
 		display: inline-flex;
 	}
 
-	/* View Site Button - Accent styled with Roboto 500 */
+	/* View Site Button - RTP Gold accent with white text */
 	.view-site-btn {
 		padding: 0.5rem 1rem;
-		background: var(--admin-accent-primary-soft);
-		color: var(--admin-accent-primary);
+		background: rgba(230, 184, 0, 0.15); /* Gold soft background */
+		color: #f0f6fc; /* White text for readability */
 		text-decoration: none;
 		border-radius: var(--radius-md, 0.5rem);
 		font-family: var(--font-body), 'Roboto', sans-serif;
 		font-weight: 500;
 		font-size: 0.875rem;
 		letter-spacing: 0.01em;
-		border: 1px solid var(--admin-border-interactive);
+		border: 1px solid rgba(230, 184, 0, 0.4); /* Gold border */
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.view-site-btn:hover {
-		background: var(--admin-accent-primary-muted);
+		background: rgba(230, 184, 0, 0.25); /* Brighter gold on hover */
+		border-color: #e6b800;
+		color: #ffffff;
 		transform: translateY(-1px);
 	}
 
 	.view-site-btn:focus-visible {
-		box-shadow: var(--admin-focus-ring);
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.35); /* Gold focus ring */
 		outline: none;
 	}
 
