@@ -752,26 +752,35 @@ class MediaApiClient {
 	/**
 	 * List media files (alias for getFiles)
 	 */
-	async list(params: {
-		page?: number;
-		per_page?: number;
-		search?: string;
-		type?: string;
-		collection?: string;
-		optimized?: boolean;
-		needs_optimization?: boolean;
-		processing_status?: 'pending' | 'processing' | 'completed' | 'failed';
-		sort_by?: string;
-		sort_dir?: 'asc' | 'desc';
-	} = {}): Promise<{ data: MediaFile[]; meta: { current_page: number; last_page: number; total: number } }> {
+	async list(
+		params: {
+			page?: number;
+			per_page?: number;
+			search?: string;
+			type?: string;
+			collection?: string;
+			optimized?: boolean;
+			needs_optimization?: boolean;
+			processing_status?: 'pending' | 'processing' | 'completed' | 'failed';
+			sort_by?: string;
+			sort_dir?: 'asc' | 'desc';
+		} = {}
+	): Promise<{
+		data: MediaFile[];
+		meta: { current_page: number; last_page: number; total: number };
+	}> {
 		const result = await this.getFiles({
 			...(params.page !== undefined && { page: params.page }),
 			...(params.per_page !== undefined && { per_page: params.per_page }),
 			...(params.search !== undefined && { search: params.search }),
 			...(params.type !== undefined && { file_type: params.type }),
 			...(params.optimized !== undefined && { optimized: params.optimized }),
-			...(params.needs_optimization !== undefined && { needs_optimization: params.needs_optimization }),
-			...(params.processing_status !== undefined && { processing_status: params.processing_status }),
+			...(params.needs_optimization !== undefined && {
+				needs_optimization: params.needs_optimization
+			}),
+			...(params.processing_status !== undefined && {
+				processing_status: params.processing_status
+			}),
 			...(params.sort_by !== undefined && { sort: params.sort_by }),
 			...(params.sort_dir !== undefined && { order: params.sort_dir })
 		});
@@ -808,7 +817,9 @@ class MediaApiClient {
 	 */
 	async update(
 		id: string,
-		data: Partial<Pick<MediaFile, 'title' | 'alt_text' | 'description' | 'tags' | 'caption' | 'collection'>>
+		data: Partial<
+			Pick<MediaFile, 'title' | 'alt_text' | 'description' | 'tags' | 'caption' | 'collection'>
+		>
 	): Promise<{ success: boolean; data: MediaFile }> {
 		const result = await this.updateFile(id, data);
 		return { success: result.success, data: result.file };
@@ -881,12 +892,18 @@ class MediaApiClient {
 		if (options.preset) formData.append('preset', options.preset);
 		if (options.alt_text) formData.append('alt_text', options.alt_text);
 		if (options.title) formData.append('title', options.title);
-		if (options.generate_webp !== undefined) formData.append('generate_webp', String(options.generate_webp));
-		if (options.generate_avif !== undefined) formData.append('generate_avif', String(options.generate_avif));
-		if (options.generate_responsive !== undefined) formData.append('generate_responsive', String(options.generate_responsive));
-		if (options.generate_thumbnail !== undefined) formData.append('generate_thumbnail', String(options.generate_thumbnail));
-		if (options.generate_blurhash !== undefined) formData.append('generate_blurhash', String(options.generate_blurhash));
-		if (options.generate_retina !== undefined) formData.append('generate_retina', String(options.generate_retina));
+		if (options.generate_webp !== undefined)
+			formData.append('generate_webp', String(options.generate_webp));
+		if (options.generate_avif !== undefined)
+			formData.append('generate_avif', String(options.generate_avif));
+		if (options.generate_responsive !== undefined)
+			formData.append('generate_responsive', String(options.generate_responsive));
+		if (options.generate_thumbnail !== undefined)
+			formData.append('generate_thumbnail', String(options.generate_thumbnail));
+		if (options.generate_blurhash !== undefined)
+			formData.append('generate_blurhash', String(options.generate_blurhash));
+		if (options.generate_retina !== undefined)
+			formData.append('generate_retina', String(options.generate_retina));
 
 		if (onProgress) {
 			return this.sharpUploadWithProgress(formData, onProgress);

@@ -17,25 +17,32 @@ import { API_BASE_URL } from './config';
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════
 
-export type ResourceType = 'video' | 'pdf' | 'document' | 'image' | 'spreadsheet' | 'archive' | 'other';
+export type ResourceType =
+	| 'video'
+	| 'pdf'
+	| 'document'
+	| 'image'
+	| 'spreadsheet'
+	| 'archive'
+	| 'other';
 
-export type ContentType = 
+export type ContentType =
 	| 'introduction' // ICT 7: Main videos
-	| 'tutorial' 
-	| 'daily_video' 
-	| 'weekly_watchlist' 
+	| 'tutorial'
+	| 'daily_video'
+	| 'weekly_watchlist'
 	| 'weekly_alert' // ICT 7: Explosive Swings
-	| 'trade_plan' 
-	| 'guide' 
-	| 'chart' 
-	| 'screenshot' 
-	| 'template' 
-	| 'cheat_sheet' 
-	| 'archive' 
+	| 'trade_plan'
+	| 'guide'
+	| 'chart'
+	| 'screenshot'
+	| 'template'
+	| 'cheat_sheet'
+	| 'archive'
 	| 'other';
 
 // ICT 7: Section types for dashboard organization
-export type SectionType = 
+export type SectionType =
 	| 'introduction'
 	| 'latest_updates'
 	| 'premium_daily_videos'
@@ -308,13 +315,16 @@ export async function getRoomTutorialVideo(
 	roomId: number,
 	fetchFn: typeof fetch = fetch
 ): Promise<RoomResource | null> {
-	const response = await listResources({
-		room_id: roomId,
-		resource_type: 'video',
-		content_type: 'tutorial',
-		is_featured: true,
-		per_page: 1
-	}, fetchFn);
+	const response = await listResources(
+		{
+			room_id: roomId,
+			resource_type: 'video',
+			content_type: 'tutorial',
+			is_featured: true,
+			per_page: 1
+		},
+		fetchFn
+	);
 	return response.data?.[0] || null;
 }
 
@@ -326,12 +336,15 @@ export async function getRoomDailyVideos(
 	limit: number = 6,
 	fetchFn: typeof fetch = fetch
 ): Promise<RoomResource[]> {
-	const response = await listResources({
-		room_id: roomId,
-		resource_type: 'video',
-		content_type: 'daily_video',
-		per_page: limit
-	}, fetchFn);
+	const response = await listResources(
+		{
+			room_id: roomId,
+			resource_type: 'video',
+			content_type: 'daily_video',
+			per_page: limit
+		},
+		fetchFn
+	);
 	return response.data || [];
 }
 
@@ -343,12 +356,15 @@ export async function getRoomDocuments(
 	contentType?: ContentType,
 	fetchFn: typeof fetch = fetch
 ): Promise<RoomResource[]> {
-	const response = await listResources({
-		room_id: roomId,
-		resource_type: 'pdf',
-		content_type: contentType,
-		per_page: 50
-	}, fetchFn);
+	const response = await listResources(
+		{
+			room_id: roomId,
+			resource_type: 'pdf',
+			content_type: contentType,
+			per_page: 50
+		},
+		fetchFn
+	);
 	return response.data || [];
 }
 
@@ -359,11 +375,14 @@ export async function getRoomImages(
 	roomId: number,
 	fetchFn: typeof fetch = fetch
 ): Promise<RoomResource[]> {
-	const response = await listResources({
-		room_id: roomId,
-		resource_type: 'image',
-		per_page: 50
-	}, fetchFn);
+	const response = await listResources(
+		{
+			room_id: roomId,
+			resource_type: 'image',
+			per_page: 50
+		},
+		fetchFn
+	);
 	return response.data || [];
 }
 
@@ -389,21 +408,12 @@ export function detectResourceType(mimeType: string): ResourceType {
 	if (mimeType.startsWith('video/')) return 'video';
 	if (mimeType === 'application/pdf') return 'pdf';
 	if (mimeType.startsWith('image/')) return 'image';
-	if (
-		mimeType.includes('spreadsheet') ||
-		mimeType.includes('excel') ||
-		mimeType === 'text/csv'
-	) return 'spreadsheet';
-	if (
-		mimeType.includes('document') ||
-		mimeType.includes('word') ||
-		mimeType === 'text/plain'
-	) return 'document';
-	if (
-		mimeType.includes('zip') ||
-		mimeType.includes('compressed') ||
-		mimeType.includes('archive')
-	) return 'archive';
+	if (mimeType.includes('spreadsheet') || mimeType.includes('excel') || mimeType === 'text/csv')
+		return 'spreadsheet';
+	if (mimeType.includes('document') || mimeType.includes('word') || mimeType === 'text/plain')
+		return 'document';
+	if (mimeType.includes('zip') || mimeType.includes('compressed') || mimeType.includes('archive'))
+		return 'archive';
 	return 'other';
 }
 
@@ -420,13 +430,20 @@ export function getFileExtension(url: string): string {
  */
 export function getResourceIcon(resource: RoomResource): string {
 	switch (resource.resource_type) {
-		case 'video': return 'video';
-		case 'pdf': return 'file-text';
-		case 'document': return 'file-text';
-		case 'image': return 'photo';
-		case 'spreadsheet': return 'table';
-		case 'archive': return 'archive';
-		default: return 'file';
+		case 'video':
+			return 'video';
+		case 'pdf':
+			return 'file-text';
+		case 'document':
+			return 'file-text';
+		case 'image':
+			return 'photo';
+		case 'spreadsheet':
+			return 'table';
+		case 'archive':
+			return 'archive';
+		default:
+			return 'file';
 	}
 }
 
@@ -441,7 +458,7 @@ export function formatResourceForDisplay(resource: RoomResource): {
 	actionUrl: string;
 } {
 	const icon = getResourceIcon(resource);
-	
+
 	const typeLabels: Record<ResourceType, string> = {
 		video: 'Video',
 		pdf: 'PDF',
@@ -489,19 +506,19 @@ export const roomResourcesApi = {
 	list: listResources,
 	get: getResource,
 	trackDownload,
-	
+
 	// Admin
 	adminList: adminListResources,
 	create: createResource,
 	update: updateResource,
 	delete: deleteResource,
-	
+
 	// Convenience
 	getRoomTutorialVideo,
 	getRoomDailyVideos,
 	getRoomDocuments,
 	getRoomImages,
-	
+
 	// Utilities
 	detectVideoPlatform,
 	detectResourceType,

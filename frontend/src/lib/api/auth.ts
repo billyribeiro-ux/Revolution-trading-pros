@@ -335,7 +335,9 @@ class AuthenticationService {
 
 			// ICT 11+ CORB Fix: Use local proxy for auth endpoints in browser context
 			// This avoids CORS/CORB issues by keeping auth requests same-origin
-			const isAuthEndpoint = AUTH_PROXY_ENDPOINTS.includes(endpoint as typeof AUTH_PROXY_ENDPOINTS[number]);
+			const isAuthEndpoint = AUTH_PROXY_ENDPOINTS.includes(
+				endpoint as (typeof AUTH_PROXY_ENDPOINTS)[number]
+			);
 			const useLocalProxy = browser && isAuthEndpoint;
 			const requestUrl = useLocalProxy ? endpoint : `${API_BASE_URL}${endpoint}`;
 
@@ -404,7 +406,7 @@ class AuthenticationService {
 	/**
 	 * Get valid token (refresh if needed)
 	 * @security Uses secure memory-only token storage
-	 * 
+	 *
 	 * ICT 7 FIX: Do NOT clear auth on refresh failure - the token might still be valid
 	 * Clearing auth causes unexpected logouts when refresh fails but token is still usable
 	 */
@@ -615,13 +617,13 @@ class AuthenticationService {
 		if (!response.user) {
 			throw new Error('Login response missing user data');
 		}
-		
+
 		// ICT11+ Fix: Backend sends "access_token", frontend expects "token"
 		const accessToken = response.access_token || response.token;
 		if (!accessToken) {
 			throw new Error('Login response missing access token');
 		}
-		
+
 		authStore.setAuth(
 			response.user,
 			accessToken,
@@ -652,8 +654,13 @@ class AuthenticationService {
 		} catch (error) {
 			// CRITICAL: Log at ERROR level so this is visible in production
 			// Returning response.user as fallback, but callers should know user fetch failed
-			console.error('[AuthService] CRITICAL: Failed to fetch full user data after login. Using initial response data as fallback. Error:', error);
-			console.warn('[AuthService] Login succeeded but user profile fetch failed - user data may be incomplete');
+			console.error(
+				'[AuthService] CRITICAL: Failed to fetch full user data after login. Using initial response data as fallback. Error:',
+				error
+			);
+			console.warn(
+				'[AuthService] Login succeeded but user profile fetch failed - user data may be incomplete'
+			);
 			return response.user;
 		}
 	}
@@ -832,9 +839,12 @@ class AuthenticationService {
 	 * Send email verification (legacy - use resendVerificationEmail instead)
 	 */
 	async sendEmailVerification(): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>(API_ENDPOINTS.auth.emailVerificationNotification, {
-			method: 'POST'
-		});
+		const response = await this.apiRequest<MessageResponse>(
+			API_ENDPOINTS.auth.emailVerificationNotification,
+			{
+				method: 'POST'
+			}
+		);
 
 		return response.message;
 	}
@@ -844,13 +854,10 @@ class AuthenticationService {
 	 * ICT 11+ Principal Engineer: New token-based verification
 	 */
 	async verifyEmail(token: string): Promise<string> {
-		const response = await this.apiRequest<MessageResponse>(
-			API_ENDPOINTS.auth.verifyEmail(token),
-			{
-				method: 'GET',
-				skipAuth: true
-			}
-		);
+		const response = await this.apiRequest<MessageResponse>(API_ENDPOINTS.auth.verifyEmail(token), {
+			method: 'GET',
+			skipAuth: true
+		});
 
 		// Track email verification
 		this.trackEvent('email_verified');
@@ -1068,7 +1075,9 @@ class AuthenticationService {
 		return {
 			token: token || '',
 			refresh_token: '',
-			expires_in: authStore.tokenExpiry ? Math.floor((authStore.tokenExpiry - Date.now()) / 1000) : 3600
+			expires_in: authStore.tokenExpiry
+				? Math.floor((authStore.tokenExpiry - Date.now()) / 1000)
+				: 3600
 		};
 	}
 
@@ -1155,7 +1164,7 @@ class AuthenticationService {
 	/**
 	 * Check session validity
 	 * Apple ICT 11+ Pattern: Resilient session checking with retry and network error handling
-	 * 
+	 *
 	 * IMPORTANT: Network errors (ERR_NETWORK_CHANGED, timeouts) should NOT clear auth.
 	 * Only actual 401 responses indicate invalid sessions.
 	 */
@@ -1182,24 +1191,28 @@ class AuthenticationService {
 				}
 
 				// For network errors, retry with exponential backoff
-				const isNetworkError = 
-					error instanceof AuthError && 
+				const isNetworkError =
+					error instanceof AuthError &&
 					(error.code === 'NETWORK_ERROR' || error.code === 'TIMEOUT' || error.code === 'UNKNOWN');
-				
+
 				const isLastAttempt = attempt === MAX_CHECK_RETRIES;
 
 				if (isNetworkError && !isLastAttempt) {
 					// Network error - wait and retry
 					const delay = RETRY_DELAY_MS * Math.pow(2, attempt - 1);
-					console.debug(`[AuthService] Session check network error, retrying in ${delay}ms (attempt ${attempt}/${MAX_CHECK_RETRIES})`);
-					await new Promise(resolve => setTimeout(resolve, delay));
+					console.debug(
+						`[AuthService] Session check network error, retrying in ${delay}ms (attempt ${attempt}/${MAX_CHECK_RETRIES})`
+					);
+					await new Promise((resolve) => setTimeout(resolve, delay));
 					continue;
 				}
 
 				// Non-network error or final retry - log but don't clear auth
 				// The user might just have a temporary network issue
 				if (isNetworkError) {
-					console.debug('[AuthService] Session check failed due to network issues, will retry on next interval');
+					console.debug(
+						'[AuthService] Session check failed due to network issues, will retry on next interval'
+					);
 				} else {
 					console.warn('[AuthService] Session check failed with unexpected error:', error);
 				}
@@ -1395,7 +1408,8 @@ export const forgotPassword = (data: ForgotPasswordData) => authService.forgotPa
 export const resetPassword = (data: ResetPasswordData) => authService.resetPassword(data);
 export const sendEmailVerification = () => authService.sendEmailVerification();
 export const verifyEmail = (token: string) => authService.verifyEmail(token);
-export const resendVerificationEmail = (email: string) => authService.resendVerificationEmail(email);
+export const resendVerificationEmail = (email: string) =>
+	authService.resendVerificationEmail(email);
 export const enableMFA = () => authService.enableMFA();
 export const verifyMFA = (code: string) => authService.verifyMFA(code);
 export const disableMFA = (password: string) => authService.disableMFA(password);
@@ -1403,22 +1417,22 @@ export const getSecurityEvents = () => authService.getSecurityEvents();
 
 /**
  * Initialize authentication on app startup
- * 
+ *
  * ICT11+ Pattern: Restore session on page refresh with timeout
- * 
+ *
  * This function should be called once on app mount to:
  * 1. Check if there's a stored session ID
  * 2. Attempt to refresh the token using httpOnly cookies (with timeout)
  * 3. Fetch user data if refresh succeeds
  * 4. Mark initialization as complete
- * 
+ *
  * @returns Promise<boolean> - true if session was restored, false otherwise
  */
 export async function initializeAuth(): Promise<boolean> {
 	if (!browser) return false;
 
 	const sessionId = authStore.getSessionId();
-	
+
 	// No stored session - nothing to restore
 	if (!sessionId) {
 		authStore.completeInitialization(false);
@@ -1427,25 +1441,19 @@ export async function initializeAuth(): Promise<boolean> {
 
 	// ICT11+ Performance: Add timeout to prevent blocking UI
 	const AUTH_TIMEOUT = 5000; // 5 second timeout
-	
+
 	const timeoutPromise = new Promise<never>((_, reject) => {
 		setTimeout(() => reject(new Error('Auth initialization timeout')), AUTH_TIMEOUT);
 	});
 
 	try {
 		// Race between auth refresh and timeout
-		const refreshed = await Promise.race([
-			authStore.refreshToken(),
-			timeoutPromise
-		]);
-		
+		const refreshed = await Promise.race([authStore.refreshToken(), timeoutPromise]);
+
 		if (refreshed) {
 			// Token refreshed successfully, fetch user data (also with timeout)
 			try {
-				await Promise.race([
-					authService.getUser(),
-					timeoutPromise
-				]);
+				await Promise.race([authService.getUser(), timeoutPromise]);
 				console.debug('[Auth] Session restored successfully');
 				return true;
 			} catch (userError) {

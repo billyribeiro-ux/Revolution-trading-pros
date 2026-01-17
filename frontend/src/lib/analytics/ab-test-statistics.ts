@@ -91,24 +91,18 @@ function normalQuantile(p: number): number {
 
 	// Rational approximation for lower region
 	const a = [
-		-3.969683028665376e1, 2.209460984245205e2,
-		-2.759285104469687e2, 1.383577518672690e2,
-		-3.066479806614716e1, 2.506628277459239e0,
+		-3.969683028665376e1, 2.209460984245205e2, -2.759285104469687e2, 1.38357751867269e2,
+		-3.066479806614716e1, 2.506628277459239
 	];
 	const b = [
-		-5.447609879822406e1, 1.615858368580409e2,
-		-1.556989798598866e2, 6.680131188771972e1,
-		-1.328068155288572e1,
+		-5.447609879822406e1, 1.615858368580409e2, -1.556989798598866e2, 6.680131188771972e1,
+		-1.328068155288572e1
 	];
 	const c = [
-		-7.784894002430293e-3, -3.223964580411365e-1,
-		-2.400758277161838e0, -2.549732539343734e0,
-		4.374664141464968e0, 2.938163982698783e0,
+		-7.784894002430293e-3, -3.223964580411365e-1, -2.400758277161838, -2.549732539343734,
+		4.374664141464968, 2.938163982698783
 	];
-	const d = [
-		7.784695709041462e-3, 3.224671290700398e-1,
-		2.445134137142996e0, 3.754408661907416e0,
-	];
+	const d = [7.784695709041462e-3, 3.224671290700398e-1, 2.445134137142996, 3.754408661907416];
 
 	const pLow = 0.02425;
 	const pHigh = 1 - pLow;
@@ -117,23 +111,54 @@ function normalQuantile(p: number): number {
 
 	if (p < pLow) {
 		q = Math.sqrt(-2 * Math.log(p));
-		const c0 = c[0] ?? 0, c1 = c[1] ?? 0, c2 = c[2] ?? 0, c3 = c[3] ?? 0, c4 = c[4] ?? 0, c5 = c[5] ?? 0;
-	const d0 = d[0] ?? 0, d1 = d[1] ?? 0, d2 = d[2] ?? 0, d3 = d[3] ?? 0;
-	return (((((c0 * q + c1) * q + c2) * q + c3) * q + c4) * q + c5) /
-			((((d0 * q + d1) * q + d2) * q + d3) * q + 1);
+		const c0 = c[0] ?? 0,
+			c1 = c[1] ?? 0,
+			c2 = c[2] ?? 0,
+			c3 = c[3] ?? 0,
+			c4 = c[4] ?? 0,
+			c5 = c[5] ?? 0;
+		const d0 = d[0] ?? 0,
+			d1 = d[1] ?? 0,
+			d2 = d[2] ?? 0,
+			d3 = d[3] ?? 0;
+		return (
+			(((((c0 * q + c1) * q + c2) * q + c3) * q + c4) * q + c5) /
+			((((d0 * q + d1) * q + d2) * q + d3) * q + 1)
+		);
 	} else if (p <= pHigh) {
 		q = p - 0.5;
 		r = q * q;
-		const a0 = a[0] ?? 0, a1 = a[1] ?? 0, a2 = a[2] ?? 0, a3 = a[3] ?? 0, a4 = a[4] ?? 0, a5 = a[5] ?? 0;
-	const b0 = b[0] ?? 0, b1 = b[1] ?? 0, b2 = b[2] ?? 0, b3 = b[3] ?? 0, b4 = b[4] ?? 0;
-	return (((((a0 * r + a1) * r + a2) * r + a3) * r + a4) * r + a5) * q /
-			(((((b0 * r + b1) * r + b2) * r + b3) * r + b4) * r + 1);
+		const a0 = a[0] ?? 0,
+			a1 = a[1] ?? 0,
+			a2 = a[2] ?? 0,
+			a3 = a[3] ?? 0,
+			a4 = a[4] ?? 0,
+			a5 = a[5] ?? 0;
+		const b0 = b[0] ?? 0,
+			b1 = b[1] ?? 0,
+			b2 = b[2] ?? 0,
+			b3 = b[3] ?? 0,
+			b4 = b[4] ?? 0;
+		return (
+			((((((a0 * r + a1) * r + a2) * r + a3) * r + a4) * r + a5) * q) /
+			(((((b0 * r + b1) * r + b2) * r + b3) * r + b4) * r + 1)
+		);
 	} else {
 		q = Math.sqrt(-2 * Math.log(1 - p));
-		const c0 = c[0] ?? 0, c1 = c[1] ?? 0, c2 = c[2] ?? 0, c3 = c[3] ?? 0, c4 = c[4] ?? 0, c5 = c[5] ?? 0;
-		const d0 = d[0] ?? 0, d1 = d[1] ?? 0, d2 = d[2] ?? 0, d3 = d[3] ?? 0;
-		return -(((((c0 * q + c1) * q + c2) * q + c3) * q + c4) * q + c5) /
-			((((d0 * q + d1) * q + d2) * q + d3) * q + 1);
+		const c0 = c[0] ?? 0,
+			c1 = c[1] ?? 0,
+			c2 = c[2] ?? 0,
+			c3 = c[3] ?? 0,
+			c4 = c[4] ?? 0,
+			c5 = c[5] ?? 0;
+		const d0 = d[0] ?? 0,
+			d1 = d[1] ?? 0,
+			d2 = d[2] ?? 0,
+			d3 = d[3] ?? 0;
+		return (
+			-(((((c0 * q + c1) * q + c2) * q + c3) * q + c4) * q + c5) /
+			((((d0 * q + d1) * q + d2) * q + d3) * q + 1)
+		);
 	}
 }
 
@@ -188,7 +213,7 @@ export function calculateConfidenceInterval(
 
 	return {
 		lower: diff - zCritical * se,
-		upper: diff + zCritical * se,
+		upper: diff + zCritical * se
 	};
 }
 
@@ -200,7 +225,7 @@ export function calculateRequiredSampleSize(params: SampleSizeParams): number {
 		baselineConversionRate,
 		minimumDetectableEffect,
 		statisticalPower = 0.8,
-		significanceLevel = 0.05,
+		significanceLevel = 0.05
 	} = params;
 
 	const p1 = baselineConversionRate;
@@ -270,7 +295,7 @@ export function calculateBayesianProbability(
 
 	return {
 		controlWins: controlWins / simulations,
-		treatmentWins: treatmentWins / simulations,
+		treatmentWins: treatmentWins / simulations
 	};
 }
 
@@ -335,11 +360,7 @@ export function analyzeABTest(
 		targetPower?: number;
 	} = {}
 ): ABTestResult {
-	const {
-		significanceLevel = 0.05,
-		minimumDetectableEffect = 0.1,
-		targetPower = 0.8,
-	} = options;
+	const { significanceLevel = 0.05, minimumDetectableEffect = 0.1, targetPower = 0.8 } = options;
 
 	// Calculate conversion rates
 	const controlRate = control.visitors > 0 ? control.conversions / control.visitors : 0;
@@ -351,11 +372,7 @@ export function analyzeABTest(
 	const isSignificant = pValue < significanceLevel;
 
 	// Confidence interval
-	const confidenceInterval = calculateConfidenceInterval(
-		control,
-		treatment,
-		1 - significanceLevel
-	);
+	const confidenceInterval = calculateConfidenceInterval(control, treatment, 1 - significanceLevel);
 
 	// Uplift
 	const uplift = treatmentRate - controlRate;
@@ -369,7 +386,7 @@ export function analyzeABTest(
 		baselineConversionRate: controlRate || 0.05,
 		minimumDetectableEffect,
 		statisticalPower: targetPower,
-		significanceLevel,
+		significanceLevel
 	});
 
 	// Bayesian probability
@@ -410,7 +427,7 @@ export function analyzeABTest(
 		requiredSampleSize,
 		currentPower,
 		bayesianProbability,
-		recommendation,
+		recommendation
 	};
 }
 
@@ -446,7 +463,7 @@ export function estimateTimeRemaining(
 	const requiredSampleSize = calculateRequiredSampleSize({
 		baselineConversionRate: controlRate,
 		minimumDetectableEffect,
-		statisticalPower: targetPower,
+		statisticalPower: targetPower
 	});
 
 	const currentTotal = control.visitors + treatment.visitors;
@@ -454,7 +471,7 @@ export function estimateTimeRemaining(
 
 	return {
 		daysRemaining: dailyVisitors > 0 ? Math.ceil(remaining / dailyVisitors) : Infinity,
-		percentComplete: Math.min(100, (currentTotal / (requiredSampleSize * 2)) * 100),
+		percentComplete: Math.min(100, (currentTotal / (requiredSampleSize * 2)) * 100)
 	};
 }
 

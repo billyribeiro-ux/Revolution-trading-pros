@@ -83,7 +83,10 @@ export class BoardsAPI {
 		return apiClient.put(`/admin/boards/${id}/settings`, settings);
 	}
 
-	async getBoardActivity(id: string, filters?: ActivityFilters): Promise<{ data: Activity[]; meta: any }> {
+	async getBoardActivity(
+		id: string,
+		filters?: ActivityFilters
+	): Promise<{ data: Activity[]; meta: any }> {
 		return apiClient.get(`/admin/boards/${id}/activity`, { params: filters });
 	}
 
@@ -99,7 +102,11 @@ export class BoardsAPI {
 		return apiClient.post(`/admin/boards/${boardId}/members`, { user_id: userId, role });
 	}
 
-	async updateBoardMemberRole(boardId: string, memberId: string, role: BoardRole): Promise<BoardMember> {
+	async updateBoardMemberRole(
+		boardId: string,
+		memberId: string,
+		role: BoardRole
+	): Promise<BoardMember> {
 		return apiClient.put(`/admin/boards/${boardId}/members/${memberId}`, { role });
 	}
 
@@ -107,7 +114,11 @@ export class BoardsAPI {
 		return apiClient.delete(`/admin/boards/${boardId}/members/${memberId}`);
 	}
 
-	async inviteMemberByEmail(boardId: string, email: string, role: BoardRole): Promise<{ invitation_sent: boolean }> {
+	async inviteMemberByEmail(
+		boardId: string,
+		email: string,
+		role: BoardRole
+	): Promise<{ invitation_sent: boolean }> {
 		return apiClient.post(`/admin/boards/${boardId}/invite`, { email, role });
 	}
 
@@ -165,7 +176,12 @@ export class BoardsAPI {
 		return apiClient.delete(`/admin/boards/${boardId}/tasks/${taskId}`);
 	}
 
-	async moveTask(boardId: string, taskId: string, stageId: string, position: number): Promise<Task> {
+	async moveTask(
+		boardId: string,
+		taskId: string,
+		stageId: string,
+		position: number
+	): Promise<Task> {
 		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/move`, {
 			stage_id: stageId,
 			position
@@ -192,7 +208,11 @@ export class BoardsAPI {
 		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/reopen`);
 	}
 
-	async bulkUpdateTasks(boardId: string, taskIds: string[], data: Partial<Task>): Promise<{ updated_count: number }> {
+	async bulkUpdateTasks(
+		boardId: string,
+		taskIds: string[],
+		data: Partial<Task>
+	): Promise<{ updated_count: number }> {
 		return apiClient.post(`/admin/boards/${boardId}/tasks/bulk-update`, {
 			task_ids: taskIds,
 			...data
@@ -203,7 +223,11 @@ export class BoardsAPI {
 		return apiClient.post(`/admin/boards/${boardId}/tasks/bulk-delete`, { task_ids: taskIds });
 	}
 
-	async bulkMoveTasks(boardId: string, taskIds: string[], stageId: string): Promise<{ moved_count: number }> {
+	async bulkMoveTasks(
+		boardId: string,
+		taskIds: string[],
+		stageId: string
+	): Promise<{ moved_count: number }> {
 		return apiClient.post(`/admin/boards/${boardId}/tasks/bulk-move`, {
 			task_ids: taskIds,
 			stage_id: stageId
@@ -216,7 +240,9 @@ export class BoardsAPI {
 	}
 
 	async unassignTask(boardId: string, taskId: string, userIds: string[]): Promise<Task> {
-		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/unassign`, { user_ids: userIds });
+		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/unassign`, {
+			user_ids: userIds
+		});
 	}
 
 	// Task Labels
@@ -249,7 +275,12 @@ export class BoardsAPI {
 		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/subtasks`, data);
 	}
 
-	async updateSubtask(boardId: string, taskId: string, subtaskId: string, data: Partial<Subtask>): Promise<Subtask> {
+	async updateSubtask(
+		boardId: string,
+		taskId: string,
+		subtaskId: string,
+		data: Partial<Subtask>
+	): Promise<Subtask> {
 		return apiClient.put(`/admin/boards/${boardId}/tasks/${taskId}/subtasks/${subtaskId}`, data);
 	}
 
@@ -257,7 +288,11 @@ export class BoardsAPI {
 		return apiClient.delete(`/admin/boards/${boardId}/tasks/${taskId}/subtasks/${subtaskId}`);
 	}
 
-	async toggleSubtaskComplete(boardId: string, taskId: string, subtaskId: string): Promise<Subtask> {
+	async toggleSubtaskComplete(
+		boardId: string,
+		taskId: string,
+		subtaskId: string
+	): Promise<Subtask> {
 		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/subtasks/${subtaskId}/toggle`);
 	}
 
@@ -283,28 +318,66 @@ export class BoardsAPI {
 		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/checklists`, { title });
 	}
 
-	async updateChecklist(boardId: string, taskId: string, checklistId: string, title: string): Promise<Checklist> {
-		return apiClient.put(`/admin/boards/${boardId}/tasks/${taskId}/checklists/${checklistId}`, { title });
+	async updateChecklist(
+		boardId: string,
+		taskId: string,
+		checklistId: string,
+		title: string
+	): Promise<Checklist> {
+		return apiClient.put(`/admin/boards/${boardId}/tasks/${taskId}/checklists/${checklistId}`, {
+			title
+		});
 	}
 
 	async deleteChecklist(boardId: string, taskId: string, checklistId: string): Promise<void> {
 		return apiClient.delete(`/admin/boards/${boardId}/tasks/${taskId}/checklists/${checklistId}`);
 	}
 
-	async addChecklistItem(boardId: string, taskId: string, checklistId: string, title: string): Promise<ChecklistItem> {
-		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/checklists/${checklistId}/items`, { title });
+	async addChecklistItem(
+		boardId: string,
+		taskId: string,
+		checklistId: string,
+		title: string
+	): Promise<ChecklistItem> {
+		return apiClient.post(
+			`/admin/boards/${boardId}/tasks/${taskId}/checklists/${checklistId}/items`,
+			{ title }
+		);
 	}
 
-	async updateChecklistItem(boardId: string, taskId: string, checklistId: string, itemId: string, data: Partial<ChecklistItem>): Promise<ChecklistItem> {
-		return apiClient.put(`/admin/boards/${boardId}/tasks/${taskId}/checklists/${checklistId}/items/${itemId}`, data);
+	async updateChecklistItem(
+		boardId: string,
+		taskId: string,
+		checklistId: string,
+		itemId: string,
+		data: Partial<ChecklistItem>
+	): Promise<ChecklistItem> {
+		return apiClient.put(
+			`/admin/boards/${boardId}/tasks/${taskId}/checklists/${checklistId}/items/${itemId}`,
+			data
+		);
 	}
 
-	async deleteChecklistItem(boardId: string, taskId: string, checklistId: string, itemId: string): Promise<void> {
-		return apiClient.delete(`/admin/boards/${boardId}/tasks/${taskId}/checklists/${checklistId}/items/${itemId}`);
+	async deleteChecklistItem(
+		boardId: string,
+		taskId: string,
+		checklistId: string,
+		itemId: string
+	): Promise<void> {
+		return apiClient.delete(
+			`/admin/boards/${boardId}/tasks/${taskId}/checklists/${checklistId}/items/${itemId}`
+		);
 	}
 
-	async toggleChecklistItem(boardId: string, taskId: string, checklistId: string, itemId: string): Promise<ChecklistItem> {
-		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/checklists/${checklistId}/items/${itemId}/toggle`);
+	async toggleChecklistItem(
+		boardId: string,
+		taskId: string,
+		checklistId: string,
+		itemId: string
+	): Promise<ChecklistItem> {
+		return apiClient.post(
+			`/admin/boards/${boardId}/tasks/${taskId}/checklists/${checklistId}/items/${itemId}/toggle`
+		);
 	}
 
 	// =====================================================
@@ -335,11 +408,18 @@ export class BoardsAPI {
 		return apiClient.get(`/admin/boards/${boardId}/custom-fields`);
 	}
 
-	async createCustomField(boardId: string, data: Partial<CustomFieldDefinition>): Promise<CustomFieldDefinition> {
+	async createCustomField(
+		boardId: string,
+		data: Partial<CustomFieldDefinition>
+	): Promise<CustomFieldDefinition> {
 		return apiClient.post(`/admin/boards/${boardId}/custom-fields`, data);
 	}
 
-	async updateCustomField(boardId: string, fieldId: string, data: Partial<CustomFieldDefinition>): Promise<CustomFieldDefinition> {
+	async updateCustomField(
+		boardId: string,
+		fieldId: string,
+		data: Partial<CustomFieldDefinition>
+	): Promise<CustomFieldDefinition> {
 		return apiClient.put(`/admin/boards/${boardId}/custom-fields/${fieldId}`, data);
 	}
 
@@ -348,11 +428,20 @@ export class BoardsAPI {
 	}
 
 	async reorderCustomFields(boardId: string, fieldIds: string[]): Promise<CustomFieldDefinition[]> {
-		return apiClient.post(`/admin/boards/${boardId}/custom-fields/reorder`, { field_ids: fieldIds });
+		return apiClient.post(`/admin/boards/${boardId}/custom-fields/reorder`, {
+			field_ids: fieldIds
+		});
 	}
 
-	async setCustomFieldValue(boardId: string, taskId: string, fieldId: string, value: any): Promise<CustomFieldValue> {
-		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/custom-fields/${fieldId}`, { value });
+	async setCustomFieldValue(
+		boardId: string,
+		taskId: string,
+		fieldId: string,
+		value: any
+	): Promise<CustomFieldValue> {
+		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/custom-fields/${fieldId}`, {
+			value
+		});
 	}
 
 	// =====================================================
@@ -376,7 +465,9 @@ export class BoardsAPI {
 	}
 
 	async setCoverImage(boardId: string, taskId: string, attachmentId: string): Promise<Task> {
-		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/cover`, { attachment_id: attachmentId });
+		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/cover`, {
+			attachment_id: attachmentId
+		});
 	}
 
 	async removeCoverImage(boardId: string, taskId: string): Promise<Task> {
@@ -391,27 +482,54 @@ export class BoardsAPI {
 		return apiClient.get(`/admin/boards/${boardId}/tasks/${taskId}/comments`);
 	}
 
-	async createComment(boardId: string, taskId: string, content: string, parentId?: string): Promise<Comment> {
+	async createComment(
+		boardId: string,
+		taskId: string,
+		content: string,
+		parentId?: string
+	): Promise<Comment> {
 		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/comments`, {
 			content,
 			parent_id: parentId
 		});
 	}
 
-	async updateComment(boardId: string, taskId: string, commentId: string, content: string): Promise<Comment> {
-		return apiClient.put(`/admin/boards/${boardId}/tasks/${taskId}/comments/${commentId}`, { content });
+	async updateComment(
+		boardId: string,
+		taskId: string,
+		commentId: string,
+		content: string
+	): Promise<Comment> {
+		return apiClient.put(`/admin/boards/${boardId}/tasks/${taskId}/comments/${commentId}`, {
+			content
+		});
 	}
 
 	async deleteComment(boardId: string, taskId: string, commentId: string): Promise<void> {
 		return apiClient.delete(`/admin/boards/${boardId}/tasks/${taskId}/comments/${commentId}`);
 	}
 
-	async addReaction(boardId: string, taskId: string, commentId: string, emoji: string): Promise<Comment> {
-		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/comments/${commentId}/reactions`, { emoji });
+	async addReaction(
+		boardId: string,
+		taskId: string,
+		commentId: string,
+		emoji: string
+	): Promise<Comment> {
+		return apiClient.post(
+			`/admin/boards/${boardId}/tasks/${taskId}/comments/${commentId}/reactions`,
+			{ emoji }
+		);
 	}
 
-	async removeReaction(boardId: string, taskId: string, commentId: string, emoji: string): Promise<Comment> {
-		return apiClient.delete(`/admin/boards/${boardId}/tasks/${taskId}/comments/${commentId}/reactions/${emoji}`);
+	async removeReaction(
+		boardId: string,
+		taskId: string,
+		commentId: string,
+		emoji: string
+	): Promise<Comment> {
+		return apiClient.delete(
+			`/admin/boards/${boardId}/tasks/${taskId}/comments/${commentId}/reactions/${emoji}`
+		);
 	}
 
 	// =====================================================
@@ -426,11 +544,20 @@ export class BoardsAPI {
 		return apiClient.get(`/admin/boards/${boardId}/tasks/${taskId}/time-entries`);
 	}
 
-	async createTimeEntry(boardId: string, taskId: string, data: Partial<TimeEntry>): Promise<TimeEntry> {
+	async createTimeEntry(
+		boardId: string,
+		taskId: string,
+		data: Partial<TimeEntry>
+	): Promise<TimeEntry> {
 		return apiClient.post(`/admin/boards/${boardId}/tasks/${taskId}/time-entries`, data);
 	}
 
-	async updateTimeEntry(boardId: string, taskId: string, entryId: string, data: Partial<TimeEntry>): Promise<TimeEntry> {
+	async updateTimeEntry(
+		boardId: string,
+		taskId: string,
+		entryId: string,
+		data: Partial<TimeEntry>
+	): Promise<TimeEntry> {
 		return apiClient.put(`/admin/boards/${boardId}/tasks/${taskId}/time-entries/${entryId}`, data);
 	}
 
@@ -450,7 +577,11 @@ export class BoardsAPI {
 		return apiClient.get('/admin/boards/timer/active');
 	}
 
-	async getTimeTrackingStats(boardId: string, dateFrom?: string, dateTo?: string): Promise<TimeTrackingStats> {
+	async getTimeTrackingStats(
+		boardId: string,
+		dateFrom?: string,
+		dateTo?: string
+	): Promise<TimeTrackingStats> {
 		return apiClient.get(`/admin/boards/${boardId}/time-tracking/stats`, {
 			params: { date_from: dateFrom, date_to: dateTo }
 		});
@@ -526,7 +657,9 @@ export class BoardsAPI {
 		return apiClient.get(`/admin/boards/import/${id}`);
 	}
 
-	async getImportPreview(id: string): Promise<{ headers: string[]; rows: any[]; total_rows: number }> {
+	async getImportPreview(
+		id: string
+	): Promise<{ headers: string[]; rows: any[]; total_rows: number }> {
 		return apiClient.get(`/admin/boards/import/${id}/preview`);
 	}
 
@@ -557,7 +690,11 @@ export class BoardsAPI {
 		return apiClient.post(`/admin/boards/${boardId}/webhooks`, data);
 	}
 
-	async updateWebhook(boardId: string, webhookId: string, data: Partial<BoardWebhook>): Promise<BoardWebhook> {
+	async updateWebhook(
+		boardId: string,
+		webhookId: string,
+		data: Partial<BoardWebhook>
+	): Promise<BoardWebhook> {
 		return apiClient.put(`/admin/boards/${boardId}/webhooks/${webhookId}`, data);
 	}
 
@@ -565,7 +702,10 @@ export class BoardsAPI {
 		return apiClient.delete(`/admin/boards/${boardId}/webhooks/${webhookId}`);
 	}
 
-	async testWebhook(boardId: string, webhookId: string): Promise<{ success: boolean; response_code: number }> {
+	async testWebhook(
+		boardId: string,
+		webhookId: string
+	): Promise<{ success: boolean; response_code: number }> {
 		return apiClient.post(`/admin/boards/${boardId}/webhooks/${webhookId}/test`);
 	}
 
@@ -577,13 +717,22 @@ export class BoardsAPI {
 	// REPORTS
 	// =====================================================
 
-	async getBoardReport(boardId: string, period: ReportPeriod, dateFrom?: string, dateTo?: string): Promise<BoardReport> {
+	async getBoardReport(
+		boardId: string,
+		period: ReportPeriod,
+		dateFrom?: string,
+		dateTo?: string
+	): Promise<BoardReport> {
 		return apiClient.get(`/admin/boards/${boardId}/reports`, {
 			params: { period, date_from: dateFrom, date_to: dateTo }
 		});
 	}
 
-	async getOverallReport(period: ReportPeriod, dateFrom?: string, dateTo?: string): Promise<BoardReport> {
+	async getOverallReport(
+		period: ReportPeriod,
+		dateFrom?: string,
+		dateTo?: string
+	): Promise<BoardReport> {
 		return apiClient.get('/admin/boards/reports', {
 			params: { period, date_from: dateFrom, date_to: dateTo }
 		});
@@ -615,7 +764,12 @@ export class BoardsAPI {
 		});
 	}
 
-	async saveAsTemplate(boardId: string, title: string, description: string, category: string): Promise<BoardTemplate> {
+	async saveAsTemplate(
+		boardId: string,
+		title: string,
+		description: string,
+		category: string
+	): Promise<BoardTemplate> {
 		return apiClient.post(`/admin/boards/${boardId}/save-as-template`, {
 			title,
 			description,

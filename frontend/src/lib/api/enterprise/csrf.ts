@@ -86,7 +86,10 @@ export function getCsrfTokenFromCookie(): string | null {
  * Set CSRF token cookie (for SPA bootstrapping)
  * Note: In production, this should be set by the server
  */
-export function setCsrfCookie(token: string, options: { maxAge?: number; path?: string } = {}): void {
+export function setCsrfCookie(
+	token: string,
+	options: { maxAge?: number; path?: string } = {}
+): void {
 	if (!browser) return;
 
 	const { maxAge = 7200, path = '/' } = options; // 2 hours default
@@ -268,9 +271,9 @@ export function configureCsrf(config: Partial<CsrfInterceptorConfig>): void {
  * CSRF request interceptor
  * Add this to the request interceptor chain
  */
-export function csrfRequestInterceptor<T extends { method?: string; headers?: Record<string, string> }>(
-	config: T
-): T {
+export function csrfRequestInterceptor<
+	T extends { method?: string; headers?: Record<string, string> }
+>(config: T): T {
 	if (!interceptorConfig.enabled) {
 		return config;
 	}

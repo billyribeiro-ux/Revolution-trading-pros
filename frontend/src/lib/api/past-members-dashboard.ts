@@ -23,11 +23,11 @@ const API_BASE = '/api/admin/past-members-dashboard';
 
 // Cache TTLs (in milliseconds)
 const CACHE_TTL = {
-	overview: 5 * 60 * 1000,        // 5 minutes
-	period: 3 * 60 * 1000,          // 3 minutes
-	services: 10 * 60 * 1000,       // 10 minutes
-	churnReasons: 5 * 60 * 1000,    // 5 minutes
-	campaigns: 2 * 60 * 1000        // 2 minutes
+	overview: 5 * 60 * 1000, // 5 minutes
+	period: 3 * 60 * 1000, // 3 minutes
+	services: 10 * 60 * 1000, // 10 minutes
+	churnReasons: 5 * 60 * 1000, // 5 minutes
+	campaigns: 2 * 60 * 1000 // 2 minutes
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -42,7 +42,7 @@ export const TIME_PERIOD_LABELS: Record<TimePeriod, string> = {
 	'90d': 'Last 90 Days',
 	'6mo': 'Last 6 Months',
 	'1yr': 'Last Year',
-	'all': 'All Time'
+	all: 'All Time'
 } as const;
 
 export interface WinBackPotential {
@@ -175,7 +175,7 @@ async function getAuthHeaders(etag?: string): Promise<Record<string, string>> {
 	const token = authStore.getToken();
 	const headers: Record<string, string> = {
 		'Content-Type': 'application/json',
-		'Accept': 'application/json'
+		Accept: 'application/json'
 	};
 
 	if (token) {
@@ -205,7 +205,10 @@ async function handleResponse<T>(response: Response): Promise<T> {
 }
 
 class ApiError extends Error {
-	constructor(message: string, public status: number) {
+	constructor(
+		message: string,
+		public status: number
+	) {
 		super(message);
 		this.name = 'ApiError';
 	}
@@ -225,7 +228,9 @@ class NotModifiedError extends Error {
 /**
  * Fetch dashboard overview with all period stats (cached)
  */
-export async function getDashboardOverview(options?: { skipCache?: boolean }): Promise<DashboardOverview> {
+export async function getDashboardOverview(options?: {
+	skipCache?: boolean;
+}): Promise<DashboardOverview> {
 	const cacheKey = buildCacheKey(`${API_BASE}/overview`);
 
 	if (options?.skipCache) {
@@ -254,7 +259,13 @@ export async function getPastMembersByPeriod(
 	page: number = 1,
 	perPage: number = 25,
 	search?: string,
-	options?: { skipCache?: boolean; serviceId?: number; minSpent?: number; sortBy?: string; sortDir?: 'asc' | 'desc' }
+	options?: {
+		skipCache?: boolean;
+		serviceId?: number;
+		minSpent?: number;
+		sortBy?: string;
+		sortDir?: 'asc' | 'desc';
+	}
 ): Promise<PaginatedResponse<PastMember>> {
 	const params = new URLSearchParams({
 		page: page.toString(),
@@ -346,7 +357,9 @@ export async function getCampaignHistory(): Promise<CampaignHistory[]> {
 				headers: await getAuthHeaders(),
 				credentials: 'include'
 			});
-			const data = await handleResponse<{ campaigns: CampaignHistory[] } | CampaignHistory[]>(response);
+			const data = await handleResponse<{ campaigns: CampaignHistory[] } | CampaignHistory[]>(
+				response
+			);
 			return Array.isArray(data) ? data : data.campaigns;
 		},
 		{ ttl: CACHE_TTL.campaigns }

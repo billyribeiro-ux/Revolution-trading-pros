@@ -43,8 +43,17 @@ import {
 	getRecentTraces
 } from './tracing';
 import { getCsrfHeaders as _getCsrfHeaders, initializeCsrf } from './csrf';
-import { isApiError as _isApiError, createApiError as _createApiError, ErrorCodes as _ErrorCodes, serializeError } from './errors';
-import type { RequestContext as _RequestContext, RequestMetrics as _RequestMetrics, EnterpriseApiError as _EnterpriseApiError } from './types';
+import {
+	isApiError as _isApiError,
+	createApiError as _createApiError,
+	ErrorCodes as _ErrorCodes,
+	serializeError
+} from './errors';
+import type {
+	RequestContext as _RequestContext,
+	RequestMetrics as _RequestMetrics,
+	EnterpriseApiError as _EnterpriseApiError
+} from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Enterprise Enhancement Wrapper
@@ -112,8 +121,7 @@ export const enterpriseCouponsApi = {
 	list: (params?: Parameters<typeof couponsApi.list>[0]) =>
 		withEnterprise('coupons.list', 'GET', () => couponsApi.list(params)),
 
-	get: (id: number) =>
-		withEnterprise(`coupons.get.${id}`, 'GET', () => couponsApi.get(id)),
+	get: (id: number) => withEnterprise(`coupons.get.${id}`, 'GET', () => couponsApi.get(id)),
 
 	create: (data: Parameters<typeof couponsApi.create>[0]) =>
 		withEnterprise('coupons.create', 'POST', () => couponsApi.create(data)),
@@ -150,8 +158,7 @@ export const enterpriseUsersApi = {
 	list: (params?: Parameters<typeof usersApi.list>[0]) =>
 		withEnterprise('users.list', 'GET', () => usersApi.list(params)),
 
-	get: (id: number) =>
-		withEnterprise(`users.get.${id}`, 'GET', () => usersApi.get(id)),
+	get: (id: number) => withEnterprise(`users.get.${id}`, 'GET', () => usersApi.get(id)),
 
 	create: (data: Parameters<typeof usersApi.create>[0]) =>
 		withEnterprise('users.create', 'POST', () => usersApi.create(data)),
@@ -159,11 +166,9 @@ export const enterpriseUsersApi = {
 	update: (id: number, data: Parameters<typeof usersApi.update>[1]) =>
 		withEnterprise(`users.update.${id}`, 'PUT', () => usersApi.update(id, data)),
 
-	delete: (id: number) =>
-		withEnterprise(`users.delete.${id}`, 'DELETE', () => usersApi.delete(id)),
+	delete: (id: number) => withEnterprise(`users.delete.${id}`, 'DELETE', () => usersApi.delete(id)),
 
-	stats: () =>
-		withEnterprise('users.stats', 'GET', () => usersApi.stats()),
+	stats: () => withEnterprise('users.stats', 'GET', () => usersApi.stats()),
 
 	impersonate: (id: number) =>
 		withEnterprise(`users.impersonate.${id}`, 'POST', () => usersApi.impersonate(id))
@@ -176,8 +181,7 @@ export const enterpriseFormsApi = {
 	list: (params?: Parameters<typeof formsApi.list>[0]) =>
 		withEnterprise('forms.list', 'GET', () => formsApi.list(params)),
 
-	get: (id: number) =>
-		withEnterprise(`forms.get.${id}`, 'GET', () => formsApi.get(id)),
+	get: (id: number) => withEnterprise(`forms.get.${id}`, 'GET', () => formsApi.get(id)),
 
 	create: (data: Parameters<typeof formsApi.create>[0]) =>
 		withEnterprise('forms.create', 'POST', () => formsApi.create(data)),
@@ -185,8 +189,7 @@ export const enterpriseFormsApi = {
 	update: (id: number, data: Parameters<typeof formsApi.update>[1]) =>
 		withEnterprise(`forms.update.${id}`, 'PUT', () => formsApi.update(id, data)),
 
-	delete: (id: number) =>
-		withEnterprise(`forms.delete.${id}`, 'DELETE', () => formsApi.delete(id)),
+	delete: (id: number) => withEnterprise(`forms.delete.${id}`, 'DELETE', () => formsApi.delete(id)),
 
 	publish: (id: number) =>
 		withEnterprise(`forms.publish.${id}`, 'POST', () => formsApi.publish(id)),
@@ -197,11 +200,9 @@ export const enterpriseFormsApi = {
 	duplicate: (id: number) =>
 		withEnterprise(`forms.duplicate.${id}`, 'POST', () => formsApi.duplicate(id)),
 
-	stats: () =>
-		withEnterprise('forms.stats', 'GET', () => formsApi.stats()),
+	stats: () => withEnterprise('forms.stats', 'GET', () => formsApi.stats()),
 
-	fieldTypes: () =>
-		withEnterprise('forms.fieldTypes', 'GET', () => formsApi.fieldTypes()),
+	fieldTypes: () => withEnterprise('forms.fieldTypes', 'GET', () => formsApi.fieldTypes()),
 
 	getSubmissions: (formId: number, params?: Parameters<typeof formsApi.getSubmissions>[1]) =>
 		withEnterprise(`forms.submissions.${formId}`, 'GET', () =>
@@ -229,8 +230,7 @@ export const enterpriseProductsApi = {
 	list: (params?: Parameters<typeof productsApi.list>[0]) =>
 		withEnterprise('products.list', 'GET', () => productsApi.list(params)),
 
-	get: (id: number) =>
-		withEnterprise(`products.get.${id}`, 'GET', () => productsApi.get(id)),
+	get: (id: number) => withEnterprise(`products.get.${id}`, 'GET', () => productsApi.get(id)),
 
 	create: (data: Parameters<typeof productsApi.create>[0]) =>
 		withEnterprise('products.create', 'POST', () => productsApi.create(data)),
@@ -244,8 +244,7 @@ export const enterpriseProductsApi = {
 	byType: (type: string) =>
 		withEnterprise(`products.byType.${type}`, 'GET', () => productsApi.byType(type)),
 
-	stats: () =>
-		withEnterprise('products.stats', 'GET', () => productsApi.stats()),
+	stats: () => withEnterprise('products.stats', 'GET', () => productsApi.stats()),
 
 	assignToUser: (productId: number, userId: number, orderId?: string) =>
 		withEnterprise(`products.assignUser.${productId}`, 'POST', () =>

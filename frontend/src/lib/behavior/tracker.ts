@@ -489,7 +489,7 @@ export class BehaviorTracker {
 				body: JSON.stringify(batch),
 				keepalive: true
 			});
-			
+
 			// Silently handle non-OK responses (endpoint may not exist)
 			if (!response.ok && response.status !== 404) {
 				console.debug('[BehaviorTracker] Server returned:', response.status);

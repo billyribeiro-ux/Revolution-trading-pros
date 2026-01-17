@@ -33,50 +33,50 @@
  * ═══════════════════════════════════════════════════════════════════════════ */
 @theme {
 	/* Brand Colors */
-	--color-rtp-primary: oklch(0.60 0.20 250);
-	--color-rtp-primary-light: oklch(0.70 0.18 250);
-	--color-rtp-primary-dark: oklch(0.50 0.22 250);
-	--color-rtp-primary-soft: oklch(0.30 0.15 250);
-	
+	--color-rtp-primary: oklch(0.6 0.2 250);
+	--color-rtp-primary-light: oklch(0.7 0.18 250);
+	--color-rtp-primary-dark: oklch(0.5 0.22 250);
+	--color-rtp-primary-soft: oklch(0.3 0.15 250);
+
 	/* Secondary Colors */
-	--color-rtp-indigo: oklch(0.65 0.20 270);
-	--color-rtp-violet: oklch(0.60 0.22 285);
-	--color-rtp-blue: oklch(0.65 0.20 240);
-	
+	--color-rtp-indigo: oklch(0.65 0.2 270);
+	--color-rtp-violet: oklch(0.6 0.22 285);
+	--color-rtp-blue: oklch(0.65 0.2 240);
+
 	/* Surface Colors */
 	--color-rtp-bg: oklch(0.12 0.02 250);
-	--color-rtp-bg-alt: oklch(0.10 0.02 250);
+	--color-rtp-bg-alt: oklch(0.1 0.02 250);
 	--color-rtp-surface: oklch(0.18 0.02 250);
 	--color-rtp-surface-elevated: oklch(0.22 0.02 250);
 	--color-rtp-surface-overlay: oklch(0.25 0.02 250);
-	
+
 	/* Border Colors */
-	--color-rtp-border: oklch(0.30 0.02 250);
+	--color-rtp-border: oklch(0.3 0.02 250);
 	--color-rtp-border-light: oklch(0.25 0.02 250);
 	--color-rtp-border-focus: oklch(0.55 0.18 250);
-	
+
 	/* Text Colors */
 	--color-rtp-text: oklch(0.96 0.01 250);
-	--color-rtp-text-secondary: oklch(0.80 0.02 250);
-	--color-rtp-muted: oklch(0.60 0.02 250);
-	--color-rtp-placeholder: oklch(0.50 0.02 250);
-	
+	--color-rtp-text-secondary: oklch(0.8 0.02 250);
+	--color-rtp-muted: oklch(0.6 0.02 250);
+	--color-rtp-placeholder: oklch(0.5 0.02 250);
+
 	/* Semantic Colors */
-	--color-rtp-success: oklch(0.65 0.20 145);
-	--color-rtp-success-soft: oklch(0.30 0.12 145);
+	--color-rtp-success: oklch(0.65 0.2 145);
+	--color-rtp-success-soft: oklch(0.3 0.12 145);
 	--color-rtp-warning: oklch(0.75 0.18 85);
 	--color-rtp-warning-soft: oklch(0.35 0.12 85);
-	--color-rtp-error: oklch(0.60 0.22 25);
-	--color-rtp-error-soft: oklch(0.30 0.15 25);
+	--color-rtp-error: oklch(0.6 0.22 25);
+	--color-rtp-error-soft: oklch(0.3 0.15 25);
 	--color-rtp-info: oklch(0.65 0.18 240);
-	--color-rtp-info-soft: oklch(0.30 0.12 240);
-	
+	--color-rtp-info-soft: oklch(0.3 0.12 240);
+
 	/* Accent Colors */
-	--color-rtp-emerald: oklch(0.65 0.20 160);
+	--color-rtp-emerald: oklch(0.65 0.2 160);
 	--color-rtp-amber: oklch(0.75 0.18 85);
-	--color-rtp-rose: oklch(0.65 0.20 15);
-	--color-rtp-cyan: oklch(0.70 0.15 200);
-	--color-rtp-purple: oklch(0.60 0.22 300);
+	--color-rtp-rose: oklch(0.65 0.2 15);
+	--color-rtp-cyan: oklch(0.7 0.15 200);
+	--color-rtp-purple: oklch(0.6 0.22 300);
 }
 
 /* CSS Variables for runtime access (IDE compatibility) */
@@ -96,14 +96,14 @@
 	 * Large:   @media (min-width: 1440px) { }
 	 * XL:      @media (min-width: 1920px) { }
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	--bp-mobile: 375px;       /* iPhone SE baseline */
-	--bp-mobile-lg: 428px;    /* iPhone Pro Max */
-	--bp-sm: 640px;           /* Tailwind sm */
-	--bp-md: 768px;           /* Tailwind md - SIDEBAR VISIBLE */
-	--bp-lg: 1024px;          /* Tailwind lg - Full desktop */
-	--bp-xl: 1280px;          /* Tailwind xl */
-	--bp-2xl: 1536px;         /* Tailwind 2xl */
-	--bp-3xl: 1920px;         /* Ultra-wide */
+	--bp-mobile: 375px; /* iPhone SE baseline */
+	--bp-mobile-lg: 428px; /* iPhone Pro Max */
+	--bp-sm: 640px; /* Tailwind sm */
+	--bp-md: 768px; /* Tailwind md - SIDEBAR VISIBLE */
+	--bp-lg: 1024px; /* Tailwind lg - Full desktop */
+	--bp-xl: 1280px; /* Tailwind xl */
+	--bp-2xl: 1536px; /* Tailwind 2xl */
+	--bp-3xl: 1920px; /* Ultra-wide */
 
 	/* Layout dimensions */
 	--sidebar-width-expanded: 280px;
@@ -137,16 +137,16 @@ html.light,
 body.light,
 :root.light {
 	/* Surface Colors - Clean Apple-style whites */
-	--color-rtp-bg: #f5f5f7;                    /* Apple's signature off-white */
-	--color-rtp-bg-alt: #ffffff;                /* Pure white for cards */
-	--color-rtp-surface: #ffffff;               /* Clean white surfaces */
-	--color-rtp-surface-elevated: #ffffff;      /* Elevated cards with shadow */
+	--color-rtp-bg: #f5f5f7; /* Apple's signature off-white */
+	--color-rtp-bg-alt: #ffffff; /* Pure white for cards */
+	--color-rtp-surface: #ffffff; /* Clean white surfaces */
+	--color-rtp-surface-elevated: #ffffff; /* Elevated cards with shadow */
 	--color-rtp-surface-overlay: rgba(255, 255, 255, 0.95);
 
 	/* Primary Brand - Deeper indigo for light backgrounds */
-	--color-rtp-primary: #4f46e5;               /* Vibrant indigo */
-	--color-rtp-primary-light: #6366f1;         /* Lighter for hovers */
-	--color-rtp-primary-dark: #4338ca;          /* Darker for active states */
+	--color-rtp-primary: #4f46e5; /* Vibrant indigo */
+	--color-rtp-primary-light: #6366f1; /* Lighter for hovers */
+	--color-rtp-primary-dark: #4338ca; /* Darker for active states */
 	--color-rtp-primary-soft: rgba(79, 70, 229, 0.1);
 
 	/* Secondary Colors */
@@ -155,24 +155,24 @@ body.light,
 	--color-rtp-blue: #2563eb;
 
 	/* Text Colors - Netflix-style high contrast */
-	--color-rtp-text: #1d1d1f;                  /* Apple's near-black */
-	--color-rtp-text-secondary: #424245;        /* Dark gray */
-	--color-rtp-muted: #6e6e73;                 /* Medium gray */
-	--color-rtp-placeholder: #86868b;           /* Light gray */
+	--color-rtp-text: #1d1d1f; /* Apple's near-black */
+	--color-rtp-text-secondary: #424245; /* Dark gray */
+	--color-rtp-muted: #6e6e73; /* Medium gray */
+	--color-rtp-placeholder: #86868b; /* Light gray */
 
 	/* Border Colors - Subtle but visible */
-	--color-rtp-border: #d2d2d7;                /* Apple's border gray */
-	--color-rtp-border-light: #e8e8ed;          /* Lighter border */
-	--color-rtp-border-focus: #4f46e5;          /* Focus ring color */
+	--color-rtp-border: #d2d2d7; /* Apple's border gray */
+	--color-rtp-border-light: #e8e8ed; /* Lighter border */
+	--color-rtp-border-focus: #4f46e5; /* Focus ring color */
 
 	/* Semantic Colors - Vibrant for visibility */
-	--color-rtp-success: #059669;               /* Emerald */
+	--color-rtp-success: #059669; /* Emerald */
 	--color-rtp-success-soft: rgba(5, 150, 105, 0.1);
-	--color-rtp-warning: #d97706;               /* Amber */
+	--color-rtp-warning: #d97706; /* Amber */
 	--color-rtp-warning-soft: rgba(217, 119, 6, 0.1);
-	--color-rtp-error: #dc2626;                 /* Red */
+	--color-rtp-error: #dc2626; /* Red */
 	--color-rtp-error-soft: rgba(220, 38, 38, 0.1);
-	--color-rtp-info: #2563eb;                  /* Blue */
+	--color-rtp-info: #2563eb; /* Blue */
 	--color-rtp-info-soft: rgba(37, 99, 235, 0.1);
 
 	/* Accent Colors */
@@ -199,48 +199,46 @@ html.dark,
 body.dark,
 :root.dark,
 :root {
-
-
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Typography - Font Sizes (Financial Tone)
 	 * Montserrat for headings/UI, Open Sans for body
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+
 	/* Headings - Desktop (Montserrat) */
-	--font-size-h1: 2.5rem;        /* 40px - Hero/page titles */
-	--font-size-h2: 2rem;          /* 32px - Major sections */
-	--font-size-h3: 1.5rem;        /* 24px - Subsections */
-	--font-size-h4: 1.25rem;       /* 20px - Card/feature titles */
-	--font-size-h5: 1.125rem;      /* 18px - Small section labels */
-	--font-size-h6: 0.875rem;      /* 14px - Eyebrow/category labels */
-	
+	--font-size-h1: 2.5rem; /* 40px - Hero/page titles */
+	--font-size-h2: 2rem; /* 32px - Major sections */
+	--font-size-h3: 1.5rem; /* 24px - Subsections */
+	--font-size-h4: 1.25rem; /* 20px - Card/feature titles */
+	--font-size-h5: 1.125rem; /* 18px - Small section labels */
+	--font-size-h6: 0.875rem; /* 14px - Eyebrow/category labels */
+
 	/* Headings - Mobile */
-	--font-size-h1-mobile: 2rem;       /* 32px */
-	--font-size-h2-mobile: 1.75rem;    /* 28px */
-	--font-size-h3-mobile: 1.375rem;   /* 22px */
-	--font-size-h4-mobile: 1.125rem;   /* 18px */
-	--font-size-h5-mobile: 1rem;       /* 16px */
-	
+	--font-size-h1-mobile: 2rem; /* 32px */
+	--font-size-h2-mobile: 1.75rem; /* 28px */
+	--font-size-h3-mobile: 1.375rem; /* 22px */
+	--font-size-h4-mobile: 1.125rem; /* 18px */
+	--font-size-h5-mobile: 1rem; /* 16px */
+
 	/* Body Text (Open Sans) */
-	--font-size-body: 1rem;        /* 16px - Default body */
+	--font-size-body: 1rem; /* 16px - Default body */
 	--font-size-body-lg: 1.125rem; /* 18px - Hero subheading, important text */
-	--font-size-small: 0.875rem;   /* 14px - Meta, labels, captions */
-	--font-size-xs: 0.8125rem;     /* 13px - Legal, disclaimers */
-	
+	--font-size-small: 0.875rem; /* 14px - Meta, labels, captions */
+	--font-size-xs: 0.8125rem; /* 13px - Legal, disclaimers */
+
 	/* Navigation (Montserrat) */
-	--font-size-nav: 0.9375rem;    /* 15px - Top-level menu */
+	--font-size-nav: 0.9375rem; /* 15px - Top-level menu */
 	--font-size-nav-sub: 0.875rem; /* 14px - Dropdown items */
-	--font-size-utility: 0.8125rem;/* 13px - Account, language links */
-	
+	--font-size-utility: 0.8125rem; /* 13px - Account, language links */
+
 	/* Buttons (Montserrat) */
-	--font-size-btn: 0.9375rem;    /* 15px - Standard buttons */
-	--font-size-btn-lg: 1rem;      /* 16px - Primary CTAs */
-	
+	--font-size-btn: 0.9375rem; /* 15px - Standard buttons */
+	--font-size-btn-lg: 1rem; /* 16px - Primary CTAs */
+
 	/* Line Heights */
 	--line-height-heading: 1.2;
 	--line-height-body: 1.65;
 	--line-height-tight: 1.4;
-	
+
 	/* Letter Spacing */
 	--letter-spacing-nav: 0.02em;
 	--letter-spacing-eyebrow: 0.08em;
@@ -248,62 +246,62 @@ body.dark,
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Brand Colors - Core palette
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+
 	/* Primary Brand Colors */
-	--color-rtp-primary: oklch(0.60 0.20 250);
-	--color-rtp-primary-light: oklch(0.70 0.18 250);
-	--color-rtp-primary-dark: oklch(0.50 0.22 250);
-	--color-rtp-primary-soft: oklch(0.30 0.15 250);
-	
+	--color-rtp-primary: oklch(0.6 0.2 250);
+	--color-rtp-primary-light: oklch(0.7 0.18 250);
+	--color-rtp-primary-dark: oklch(0.5 0.22 250);
+	--color-rtp-primary-soft: oklch(0.3 0.15 250);
+
 	/* Secondary Colors */
-	--color-rtp-indigo: oklch(0.65 0.20 270);
-	--color-rtp-violet: oklch(0.60 0.22 285);
-	--color-rtp-blue: oklch(0.65 0.20 240);
-	
+	--color-rtp-indigo: oklch(0.65 0.2 270);
+	--color-rtp-violet: oklch(0.6 0.22 285);
+	--color-rtp-blue: oklch(0.65 0.2 240);
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Surface Colors - Backgrounds and containers
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	--color-rtp-bg: oklch(0.12 0.02 250);
-	--color-rtp-bg-alt: oklch(0.10 0.02 250);
+	--color-rtp-bg-alt: oklch(0.1 0.02 250);
 	--color-rtp-surface: oklch(0.18 0.02 250);
 	--color-rtp-surface-elevated: oklch(0.22 0.02 250);
 	--color-rtp-surface-overlay: oklch(0.25 0.02 250);
-	
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Border Colors
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	--color-rtp-border: oklch(0.30 0.02 250);
+	--color-rtp-border: oklch(0.3 0.02 250);
 	--color-rtp-border-light: oklch(0.25 0.02 250);
 	--color-rtp-border-focus: oklch(0.55 0.18 250);
-	
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Text Colors
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 	--color-rtp-text: oklch(0.96 0.01 250);
-	--color-rtp-text-secondary: oklch(0.80 0.02 250);
-	--color-rtp-muted: oklch(0.60 0.02 250);
-	--color-rtp-placeholder: oklch(0.50 0.02 250);
-	
+	--color-rtp-text-secondary: oklch(0.8 0.02 250);
+	--color-rtp-muted: oklch(0.6 0.02 250);
+	--color-rtp-placeholder: oklch(0.5 0.02 250);
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Semantic Colors - Feedback states
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	--color-rtp-success: oklch(0.65 0.20 145);
-	--color-rtp-success-soft: oklch(0.30 0.12 145);
+	--color-rtp-success: oklch(0.65 0.2 145);
+	--color-rtp-success-soft: oklch(0.3 0.12 145);
 	--color-rtp-warning: oklch(0.75 0.18 85);
 	--color-rtp-warning-soft: oklch(0.35 0.12 85);
-	--color-rtp-error: oklch(0.60 0.22 25);
-	--color-rtp-error-soft: oklch(0.30 0.15 25);
+	--color-rtp-error: oklch(0.6 0.22 25);
+	--color-rtp-error-soft: oklch(0.3 0.15 25);
 	--color-rtp-info: oklch(0.65 0.18 240);
-	--color-rtp-info-soft: oklch(0.30 0.12 240);
-	
+	--color-rtp-info-soft: oklch(0.3 0.12 240);
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * Accent Colors - For charts, badges, highlights
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	--color-rtp-emerald: oklch(0.65 0.20 160);
+	--color-rtp-emerald: oklch(0.65 0.2 160);
 	--color-rtp-amber: oklch(0.75 0.18 85);
-	--color-rtp-rose: oklch(0.65 0.20 15);
-	--color-rtp-cyan: oklch(0.70 0.15 200);
-	--color-rtp-purple: oklch(0.60 0.22 300);
+	--color-rtp-rose: oklch(0.65 0.2 15);
+	--color-rtp-cyan: oklch(0.7 0.15 200);
+	--color-rtp-purple: oklch(0.6 0.22 300);
 }
 
 /**
@@ -464,7 +462,7 @@ body.dark,
 	 * Typography - Body Text (Open Sans)
 	 * COMMENTED OUT - Conflicts with class pages
 	 * ═══════════════════════════════════════════════════════════════════════════ */
-	
+
 	/* 
 	p {
 		font-family: var(--font-body);
@@ -634,7 +632,7 @@ body.dark,
 	 * Navigation Typography (Montserrat)
 	 * Crisp, confident nav - not oversized
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	
+
 	/* Top-level menu items - 15px, weight 600, pro dashboard look */
 	.nav-item {
 		font-family: var(--font-heading);
@@ -661,7 +659,7 @@ body.dark,
 	 * Button Typography (Montserrat)
 	 * CTAs like "Join Live Room", "Start Free Trial"
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	
+
 	/* Standard buttons - 15px, weight 600 */
 	.btn-text {
 		font-family: var(--font-heading);
@@ -689,7 +687,7 @@ body.dark,
 	 * Body Text Variants (Open Sans)
 	 * Comfort and clarity for text + numbers
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	
+
 	/* Body large - 18px, hero subheading, important explanations */
 	.text-lead {
 		font-family: var(--font-body);
@@ -725,7 +723,7 @@ body.dark,
 	/* ─────────────────────────────────────────────────────────────────────────────
 	 * Heading Weight Variants
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	
+
 	/* For key H2 sections */
 	.heading-bold {
 		font-weight: 700;
@@ -744,7 +742,7 @@ body.dark,
 	/* ─────────────────────────────────────────────────────────────────────────────
 	 * Eyebrow / Category Labels
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	
+
 	/* Eyebrow above headings - 14-16px, uppercase, letter-spacing */
 	.text-eyebrow {
 		font-family: var(--font-heading);
@@ -1257,7 +1255,7 @@ body.dark,
 }
 
 .section-title-alt--underline {
-	border-bottom: 3px solid #143E59;
+	border-bottom: 3px solid #143e59;
 	padding-bottom: 12px;
 	display: inline-block;
 }
@@ -1293,7 +1291,7 @@ body.dark,
 }
 
 .link-list a {
-	color: #143E59;
+	color: #143e59;
 	text-decoration: none;
 	font-size: 14px;
 	font-weight: 600;
@@ -1375,7 +1373,7 @@ body.dark,
 		flex: 0 0 41.666667%;
 		max-width: 41.666667%;
 	}
-	
+
 	.col-lg-7 {
 		flex: 0 0 58.333333%;
 		max-width: 58.333333%;
@@ -1419,15 +1417,15 @@ body.dark,
 	.hidden-sm {
 		display: block !important;
 	}
-	
+
 	.hidden-md {
 		display: none !important;
 	}
-	
+
 	.d-lg-none {
 		display: none !important;
 	}
-	
+
 	.d-lg-block {
 		display: block !important;
 	}
@@ -1513,30 +1511,39 @@ body.dark,
 	}
 
 	/* Prevent page breaks inside important elements */
-	h1, h2, h3, h4, h5, h6,
-	p, li, tr {
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	li,
+	tr {
 		page-break-inside: avoid;
 	}
 
 	/* Add page breaks before major sections */
-	h1, h2 {
+	h1,
+	h2 {
 		page-break-before: always;
 	}
 
-	h1:first-child, h2:first-child {
+	h1:first-child,
+	h2:first-child {
 		page-break-before: avoid;
 	}
 
 	/* Show link URLs in print */
 	a[href]:after {
-		content: " (" attr(href) ")";
+		content: ' (' attr(href) ')';
 		font-size: 90%;
 		color: #666;
 	}
 
-	a[href^="#"]:after,
-	a[href^="javascript:"]:after {
-		content: "";
+	a[href^='#']:after,
+	a[href^='javascript:']:after {
+		content: '';
 	}
 }
 
@@ -1547,8 +1554,12 @@ body.dark,
 
 /* Animation Keyframes */
 @keyframes fadeIn {
-	from { opacity: 0; }
-	to { opacity: 1; }
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
 }
 
 @keyframes fadeInUp {
@@ -1605,7 +1616,8 @@ body.dark,
 }
 
 @keyframes pulse {
-	0%, 100% {
+	0%,
+	100% {
 		opacity: 1;
 	}
 	50% {
@@ -1614,7 +1626,8 @@ body.dark,
 }
 
 @keyframes bounce {
-	0%, 100% {
+	0%,
+	100% {
 		transform: translateY(0);
 	}
 	50% {
@@ -1676,12 +1689,24 @@ body.dark,
 }
 
 /* Stagger Animation Delays */
-.stagger-1 { animation-delay: 0.05s; }
-.stagger-2 { animation-delay: 0.1s; }
-.stagger-3 { animation-delay: 0.15s; }
-.stagger-4 { animation-delay: 0.2s; }
-.stagger-5 { animation-delay: 0.25s; }
-.stagger-6 { animation-delay: 0.3s; }
+.stagger-1 {
+	animation-delay: 0.05s;
+}
+.stagger-2 {
+	animation-delay: 0.1s;
+}
+.stagger-3 {
+	animation-delay: 0.15s;
+}
+.stagger-4 {
+	animation-delay: 0.2s;
+}
+.stagger-5 {
+	animation-delay: 0.25s;
+}
+.stagger-6 {
+	animation-delay: 0.3s;
+}
 
 /* Loading Shimmer Effect */
 .skeleton {
@@ -1724,7 +1749,9 @@ body.dark,
 	background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
 	transform: scale(0);
 	opacity: 0;
-	transition: transform 0.5s, opacity 0.3s;
+	transition:
+		transform 0.5s,
+		opacity 0.3s;
 	pointer-events: none;
 }
 
@@ -1852,12 +1879,7 @@ body.light .hover-glow:hover {
 	left: 0;
 	right: 0;
 	bottom: 0;
-	background: linear-gradient(
-		90deg,
-		transparent,
-		rgba(255, 255, 255, 0.2),
-		transparent
-	);
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
 	animation: shimmer 2s ease-in-out infinite;
 }
 
@@ -1998,8 +2020,11 @@ body.light .hover-glow:hover {
 }
 
 /* Smooth Theme Transition */
-html, body {
-	transition: background-color 0.3s ease, color 0.3s ease;
+html,
+body {
+	transition:
+		background-color 0.3s ease,
+		color 0.3s ease;
 }
 
 /* Admin-specific premium styles */
@@ -2008,11 +2033,17 @@ html, body {
 }
 
 .admin-sidebar {
-	transition: background 0.3s ease, border-color 0.3s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	transition:
+		background 0.3s ease,
+		border-color 0.3s ease,
+		transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 .admin-header {
-	transition: background-color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+	transition:
+		background-color 0.3s ease,
+		border-color 0.3s ease,
+		box-shadow 0.3s ease;
 }
 
 .nav-item {
@@ -2045,7 +2076,12 @@ html, body {
 	--hero-bg-accent-secondary: rgba(139, 92, 246, 0.06);
 
 	/* Hero Chart Scene */
-	--hero-chart-bg: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 41, 59, 0.9) 50%, rgba(15, 23, 42, 0.95) 100%);
+	--hero-chart-bg: linear-gradient(
+		135deg,
+		rgba(15, 23, 42, 0.95) 0%,
+		rgba(30, 41, 59, 0.9) 50%,
+		rgba(15, 23, 42, 0.95) 100%
+	);
 	--hero-chart-border: rgba(99, 102, 241, 0.15);
 	--hero-chart-glow: rgba(99, 102, 241, 0.15);
 	--hero-chart-glow-secondary: rgba(139, 92, 246, 0.08);
@@ -2117,7 +2153,12 @@ body.light {
 	--hero-bg-accent: rgba(79, 70, 229, 0.06);
 	--hero-bg-accent-secondary: rgba(124, 58, 237, 0.04);
 
-	--hero-chart-bg: linear-gradient(135deg, rgba(255, 255, 255, 0.98) 0%, rgba(245, 245, 247, 0.95) 50%, rgba(255, 255, 255, 0.98) 100%);
+	--hero-chart-bg: linear-gradient(
+		135deg,
+		rgba(255, 255, 255, 0.98) 0%,
+		rgba(245, 245, 247, 0.95) 50%,
+		rgba(255, 255, 255, 0.98) 100%
+	);
 	--hero-chart-border: rgba(79, 70, 229, 0.12);
 	--hero-chart-glow: rgba(79, 70, 229, 0.1);
 
@@ -2260,11 +2301,15 @@ body.dark {
 	--admin-btn-border: var(--border-default);
 	--admin-btn-border-hover: var(--border-emphasis);
 	--admin-btn-text: var(--text-primary);
-	--admin-btn-text-hover: #FFFFFF;
+	--admin-btn-text-hover: #ffffff;
 
 	/* Primary Button - Gold */
 	--admin-btn-primary-bg: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
-	--admin-btn-primary-bg-hover: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
+	--admin-btn-primary-bg-hover: linear-gradient(
+		135deg,
+		var(--primary-400) 0%,
+		var(--primary-500) 100%
+	);
 	--admin-btn-primary-text: var(--bg-base);
 
 	/* ═══ KEYBOARD SHORTCUTS ═══ */
@@ -2324,69 +2369,69 @@ body.dark {
 	/* ═══ WIDGET COLORS - Unified Palette ═══ */
 	/* Primary - Gold (main accent) */
 	--admin-widget-primary-bg: rgba(230, 184, 0, 0.15);
-	--admin-widget-primary-icon: #FFD11A;
+	--admin-widget-primary-icon: #ffd11a;
 	--admin-widget-primary-border: rgba(230, 184, 0, 0.25);
 
 	/* Secondary - Slate Blue */
 	--admin-widget-secondary-bg: rgba(61, 90, 153, 0.2);
-	--admin-widget-secondary-icon: #7995CA;
+	--admin-widget-secondary-icon: #7995ca;
 	--admin-widget-secondary-border: rgba(61, 90, 153, 0.3);
 
 	/* Revenue/Profit - Green */
 	--admin-widget-green-bg: rgba(46, 160, 67, 0.15);
-	--admin-widget-green-icon: #3FB950;
+	--admin-widget-green-icon: #3fb950;
 	--admin-widget-green-border: rgba(46, 160, 67, 0.25);
 
 	/* Users/Growth - Blue (Info) */
 	--admin-widget-blue-bg: rgba(56, 139, 253, 0.15);
-	--admin-widget-blue-icon: #58A6FF;
+	--admin-widget-blue-icon: #58a6ff;
 	--admin-widget-blue-border: rgba(56, 139, 253, 0.25);
 
 	/* Premium/Value - Gold */
 	--admin-widget-gold-bg: rgba(230, 184, 0, 0.15);
-	--admin-widget-gold-icon: #FFD11A;
+	--admin-widget-gold-icon: #ffd11a;
 	--admin-widget-gold-border: rgba(230, 184, 0, 0.25);
 
 	/* Alerts/Attention - Warning Amber */
 	--admin-widget-orange-bg: rgba(187, 128, 9, 0.15);
-	--admin-widget-orange-icon: #D29922;
+	--admin-widget-orange-icon: #d29922;
 	--admin-widget-orange-border: rgba(187, 128, 9, 0.25);
 
 	/* Critical/Loss - Red */
 	--admin-widget-red-bg: rgba(218, 54, 51, 0.15);
-	--admin-widget-red-icon: #F85149;
+	--admin-widget-red-icon: #f85149;
 	--admin-widget-red-border: rgba(218, 54, 51, 0.25);
 
 	/* Muted - Neutral */
-	--admin-widget-muted-bg: #252B33;
-	--admin-widget-muted-icon: #8B949E;
-	--admin-widget-muted-border: #30363D;
+	--admin-widget-muted-bg: #252b33;
+	--admin-widget-muted-icon: #8b949e;
+	--admin-widget-muted-border: #30363d;
 
 	/* Legacy compatibility */
 	--admin-widget-purple-bg: rgba(139, 92, 246, 0.15);
 	--admin-widget-purple-icon: #a78bfa;
 	--admin-widget-cyan-bg: rgba(56, 139, 253, 0.15);
-	--admin-widget-cyan-icon: #58A6FF;
+	--admin-widget-cyan-icon: #58a6ff;
 
 	/* ═══ TABLE STYLES ═══ */
-	--admin-table-header-bg: #1C2128;
-	--admin-table-row-hover: #252B33;
+	--admin-table-header-bg: #1c2128;
+	--admin-table-row-hover: #252b33;
 	--admin-table-row-stripe: rgba(48, 54, 61, 0.3);
-	--admin-table-border: #30363D;
+	--admin-table-border: #30363d;
 
 	/* ═══ INPUT STYLES ═══ */
-	--admin-input-bg: #0D1117;
-	--admin-input-border: #30363D;
-	--admin-input-border-focus: #E6B800;
-	--admin-input-placeholder: #6E7681;
+	--admin-input-bg: #0d1117;
+	--admin-input-border: #30363d;
+	--admin-input-border-focus: #e6b800;
+	--admin-input-placeholder: #6e7681;
 
 	/* ═══ CHARTS ═══ */
 	--admin-chart-grid: rgba(48, 54, 61, 0.5);
-	--admin-chart-text: #8B949E;
-	--admin-chart-axis: #30363D;
-	--admin-chart-positive: #3FB950;
-	--admin-chart-negative: #F85149;
-	--admin-chart-neutral: #58A6FF;
+	--admin-chart-text: #8b949e;
+	--admin-chart-axis: #30363d;
+	--admin-chart-positive: #3fb950;
+	--admin-chart-negative: #f85149;
+	--admin-chart-neutral: #58a6ff;
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
@@ -2424,46 +2469,57 @@ body.dark {
 .admin h4,
 .admin h5,
 .admin h6 {
-	font-family: var(--font-heading), 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+	font-family:
+		var(--font-heading),
+		'Montserrat',
+		-apple-system,
+		BlinkMacSystemFont,
+		sans-serif;
 	color: var(--admin-text-primary);
 	margin: 0;
 	line-height: 1.25;
 }
 
 /* H1 / Page title: 600 (SemiBold) - Strong anchor without landing page feel */
-.admin h1, .admin-heading-1 {
+.admin h1,
+.admin-heading-1 {
 	font-size: 1.75rem;
 	font-weight: 600;
 	letter-spacing: -0.01em;
 }
 
 /* H2 / Section title: 600 (SemiBold) - Consistent with H1, size does the work */
-.admin h2, .admin-heading-2 {
+.admin h2,
+.admin-heading-2 {
 	font-size: 1.375rem;
 	font-weight: 600;
 	letter-spacing: -0.005em;
 }
 
 /* H3 / Card title / Panel title: 600 or 500 - Dense UI needs clear separation */
-.admin h3, .admin-heading-3 {
+.admin h3,
+.admin-heading-3 {
 	font-size: 1.125rem;
 	font-weight: 600;
 }
 
 /* H4 / Field group label / Subsection: 500 (Medium) */
-.admin h4, .admin-heading-4 {
+.admin h4,
+.admin-heading-4 {
 	font-size: 1rem;
 	font-weight: 500;
 }
 
 /* H5 / Small headings: 500 (Medium) */
-.admin h5, .admin-heading-5 {
+.admin h5,
+.admin-heading-5 {
 	font-size: 0.9375rem;
 	font-weight: 500;
 }
 
 /* H6 / Overlines / Small headings: 600 (SemiBold) at small size for contrast */
-.admin h6, .admin-heading-6 {
+.admin h6,
+.admin-heading-6 {
 	font-size: 0.75rem;
 	font-weight: 600;
 	text-transform: uppercase;
@@ -2476,7 +2532,12 @@ body.dark {
 .admin p,
 .admin span:not(.admin-label),
 .admin li {
-	font-family: var(--font-body), 'Roboto', -apple-system, BlinkMacSystemFont, sans-serif;
+	font-family:
+		var(--font-body),
+		'Roboto',
+		-apple-system,
+		BlinkMacSystemFont,
+		sans-serif;
 	font-weight: 400;
 	color: var(--admin-text-secondary);
 	line-height: 1.6;
@@ -2530,7 +2591,7 @@ body.dark {
 /* Admin Button Text - Roboto 500 (Medium) */
 .admin button,
 .admin .btn,
-.admin [role="button"] {
+.admin [role='button'] {
 	font-family: var(--font-body), 'Roboto', sans-serif;
 	font-weight: 500;
 	letter-spacing: 0.02em;
@@ -2583,7 +2644,7 @@ body.dark {
 
 /* Admin Tabs - Roboto 500 */
 .admin-tab,
-.admin [role="tab"] {
+.admin [role='tab'] {
 	font-family: var(--font-body), 'Roboto', sans-serif;
 	font-weight: 500;
 }
@@ -2594,8 +2655,8 @@ body.dark {
 
 /* Premium Admin Button - Primary (Gold) */
 .admin-btn-primary {
-	background: var(--admin-btn-primary-bg, linear-gradient(135deg, #E6B800 0%, #B38F00 100%));
-	color: var(--admin-btn-primary-text, #0D1117);
+	background: var(--admin-btn-primary-bg, linear-gradient(135deg, #e6b800 0%, #b38f00 100%));
+	color: var(--admin-btn-primary-text, #0d1117);
 	border: none;
 	padding: 0.625rem 1.25rem;
 	border-radius: var(--radius-md, 0.5rem);
@@ -2609,7 +2670,7 @@ body.dark {
 }
 
 .admin-btn-primary:hover {
-	background: var(--admin-btn-primary-bg-hover, linear-gradient(135deg, #FFD11A 0%, #E6B800 100%));
+	background: var(--admin-btn-primary-bg-hover, linear-gradient(135deg, #ffd11a 0%, #e6b800 100%));
 	transform: translateY(-1px);
 	box-shadow: 0 4px 16px rgba(230, 184, 0, 0.35);
 }
@@ -2621,7 +2682,9 @@ body.dark {
 
 .admin-btn-primary:focus-visible {
 	outline: none;
-	box-shadow: var(--admin-focus-ring), 0 2px 8px rgba(230, 184, 0, 0.25);
+	box-shadow:
+		var(--admin-focus-ring),
+		0 2px 8px rgba(230, 184, 0, 0.25);
 }
 
 /* Admin Button - Secondary */
@@ -2652,8 +2715,8 @@ body.dark {
 
 /* Admin Button - Gold/Premium (same as primary for RTP) */
 .admin-btn-gold {
-	background: linear-gradient(135deg, #FFD11A 0%, #E6B800 100%);
-	color: #0D1117;
+	background: linear-gradient(135deg, #ffd11a 0%, #e6b800 100%);
+	color: #0d1117;
 	border: none;
 	padding: 0.625rem 1.25rem;
 	border-radius: var(--radius-md, 0.5rem);
@@ -2673,8 +2736,8 @@ body.dark {
 
 /* Admin Button - Slate Blue (Secondary accent) */
 .admin-btn-slate {
-	background: linear-gradient(135deg, #3D5A99 0%, #233557 100%);
-	color: #F0F6FC;
+	background: linear-gradient(135deg, #3d5a99 0%, #233557 100%);
+	color: #f0f6fc;
 	border: none;
 	padding: 0.625rem 1.25rem;
 	border-radius: var(--radius-md, 0.5rem);
@@ -2688,7 +2751,7 @@ body.dark {
 }
 
 .admin-btn-slate:hover {
-	background: linear-gradient(135deg, #7995CA 0%, #3D5A99 100%);
+	background: linear-gradient(135deg, #7995ca 0%, #3d5a99 100%);
 	transform: translateY(-1px);
 	box-shadow: 0 4px 16px rgba(61, 90, 153, 0.4);
 }

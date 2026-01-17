@@ -271,8 +271,7 @@ export const indicatorsApi = {
 	 */
 	getBySlug: async (slug: string): Promise<ApiResponse<Indicator>> => {
 		return apiClient.get(ENDPOINTS.single(slug));
-	},
-
+	}
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -294,21 +293,29 @@ export const userIndicatorsApi = {
 	/**
 	 * Get download URL for an indicator
 	 */
-	getDownload: async (indicatorId: number): Promise<ApiResponse<{
-		download_url: string;
-		documentation_url: string;
-		version: string;
-	}>> => {
+	getDownload: async (
+		indicatorId: number
+	): Promise<
+		ApiResponse<{
+			download_url: string;
+			documentation_url: string;
+			version: string;
+		}>
+	> => {
 		return apiClient.get(ENDPOINTS.download(indicatorId));
 	},
 
 	/**
 	 * Request download (generates secure download link)
 	 */
-	requestDownload: async (indicatorId: number): Promise<ApiResponse<{
-		download_url: string;
-		expires_in: number;
-	}>> => {
+	requestDownload: async (
+		indicatorId: number
+	): Promise<
+		ApiResponse<{
+			download_url: string;
+			expires_in: number;
+		}>
+	> => {
 		return apiClient.get(ENDPOINTS.download(indicatorId));
 	}
 };

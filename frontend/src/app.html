@@ -2,7 +2,10 @@
 <html lang="en" dir="ltr" prefix="og: https://ogp.me/ns#">
 	<head>
 		<meta charset="utf-8" />
-		<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover"
+		/>
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 		<!-- Critical Resource Hints - November 2025 Performance Optimization -->
@@ -64,10 +67,16 @@
 		<meta name="format-detection" content="telephone=no" />
 
 		<!-- Default robots directive (overridden by SEOHead component) -->
-		<meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+		<meta
+			name="robots"
+			content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+		/>
 
 		<!-- Google specific -->
-		<meta name="googlebot" content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1" />
+		<meta
+			name="googlebot"
+			content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
+		/>
 		<meta name="google" content="notranslate" />
 		<meta name="google-site-verification" content="" />
 
@@ -82,7 +91,10 @@
 		<!-- Structured data hints for AI understanding -->
 		<meta name="subject" content="Professional Trading Education and Tools" />
 		<meta name="topic" content="Stock Trading, Day Trading, Swing Trading, Options Trading" />
-		<meta name="summary" content="Revolution Trading Pros offers institutional-grade trading education, live trading rooms, and professional trading tools." />
+		<meta
+			name="summary"
+			content="Revolution Trading Pros offers institutional-grade trading education, live trading rooms, and professional trading tools."
+		/>
 		<meta name="classification" content="Finance, Education, Trading" />
 		<meta name="category" content="Financial Services" />
 		<meta name="coverage" content="Worldwide" />
@@ -129,7 +141,12 @@
 		<style>
 			/* Critical CSS - Prevents Flash of Unstyled Content */
 			html {
-				font-family: 'Inter', 'Open Sans', system-ui, -apple-system, sans-serif;
+				font-family:
+					'Inter',
+					'Open Sans',
+					system-ui,
+					-apple-system,
+					sans-serif;
 				-webkit-font-smoothing: antialiased;
 				-moz-osx-font-smoothing: grayscale;
 				text-rendering: optimizeLegibility;
@@ -154,8 +171,12 @@
 				animation: skeleton-loading 1.5s infinite;
 			}
 			@keyframes skeleton-loading {
-				0% { background-position: 200% 0; }
-				100% { background-position: -200% 0; }
+				0% {
+					background-position: 200% 0;
+				}
+				100% {
+					background-position: -200% 0;
+				}
 			}
 		</style>
 
@@ -164,7 +185,10 @@
 	</head>
 	<body data-sveltekit-preload-data="hover" data-sveltekit-preload-code="viewport">
 		<!-- Skip to main content for accessibility -->
-		<a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:rounded">
+		<a
+			href="#main-content"
+			class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:rounded"
+		>
 			Skip to main content
 		</a>
 
@@ -174,21 +198,26 @@
 		<!-- Service Worker Registration (Production Only) -->
 		<script>
 			// ICT9+ Pattern: Never register SW in development - it breaks Vite HMR WebSocket
-			if ('serviceWorker' in navigator && !window.location.hostname.includes('localhost') && !window.location.port) {
-				window.addEventListener('load', function() {
-					navigator.serviceWorker.register('/sw.js', { scope: '/' })
-						.then(function(registration) {
+			if (
+				'serviceWorker' in navigator &&
+				!window.location.hostname.includes('localhost') &&
+				!window.location.port
+			) {
+				window.addEventListener('load', function () {
+					navigator.serviceWorker
+						.register('/sw.js', { scope: '/' })
+						.then(function (registration) {
 							console.log('[SW] Registration successful:', registration.scope);
 						})
-						.catch(function(error) {
+						.catch(function (error) {
 							console.log('[SW] Registration failed:', error);
 						});
 				});
 			} else if (window.location.hostname === 'localhost' || window.location.port) {
 				// Unregister any existing SW in dev to prevent caching issues
 				if ('serviceWorker' in navigator) {
-					navigator.serviceWorker.getRegistrations().then(function(registrations) {
-						registrations.forEach(function(registration) {
+					navigator.serviceWorker.getRegistrations().then(function (registrations) {
+						registrations.forEach(function (registration) {
 							registration.unregister();
 							console.log('[SW] Unregistered for dev mode');
 						});
@@ -200,12 +229,19 @@
 		<!-- Noscript fallback for accessibility -->
 		<noscript>
 			<style>
-				.js-only { display: none !important; }
-				.no-js { display: block !important; }
+				.js-only {
+					display: none !important;
+				}
+				.no-js {
+					display: block !important;
+				}
 			</style>
-			<div style="padding: 20px; text-align: center; background: #1a1a1a; color: #f5f5f5;">
+			<div style="padding: 20px; text-align: center; background: #1a1a1a; color: #f5f5f5">
 				<h1>JavaScript Required</h1>
-				<p>Revolution Trading Pros requires JavaScript for the best experience. Please enable JavaScript in your browser settings.</p>
+				<p>
+					Revolution Trading Pros requires JavaScript for the best experience. Please enable
+					JavaScript in your browser settings.
+				</p>
 			</div>
 		</noscript>
 	</body>

@@ -1053,9 +1053,11 @@ class EnterpriseApiClient {
 		const maxDelay = 64000;
 		const jitter = Math.random() * 1000; // Add jitter to prevent thundering herd
 		const delay = Math.min(baseDelay * Math.pow(2, this.wsReconnectAttempts), maxDelay) + jitter;
-		
+
 		this.wsReconnectAttempts++;
-		console.debug(`[ApiClient] WebSocket reconnecting in ${Math.round(delay)}ms (attempt ${this.wsReconnectAttempts}/${this.MAX_WS_RECONNECT_ATTEMPTS})`);
+		console.debug(
+			`[ApiClient] WebSocket reconnecting in ${Math.round(delay)}ms (attempt ${this.wsReconnectAttempts}/${this.MAX_WS_RECONNECT_ATTEMPTS})`
+		);
 
 		this.wsReconnectTimeout = setTimeout(() => {
 			if (this.token) {
@@ -1184,7 +1186,7 @@ class EnterpriseApiClient {
 		// Only reconnect if explicitly configured
 		const configuredSseUrl = import.meta.env['VITE_SSE_URL'];
 		if (!configuredSseUrl) return;
-		
+
 		if (this.sseReconnectAttempts >= this.MAX_SSE_RECONNECT_ATTEMPTS) {
 			return;
 		}

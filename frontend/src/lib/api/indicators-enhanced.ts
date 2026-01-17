@@ -15,7 +15,9 @@
 
 import { browser } from '$app/environment';
 
-const API_BASE = browser ? (import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev') : 'https://revolution-trading-pros-api.fly.dev';
+const API_BASE = browser
+	? import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev'
+	: 'https://revolution-trading-pros-api.fly.dev';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -241,10 +243,7 @@ export interface ApiResult<T> {
 // API FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function apiRequest<T>(
-	endpoint: string,
-	options: RequestInit = {}
-): Promise<ApiResult<T>> {
+async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResult<T>> {
 	try {
 		const response = await fetch(`${API_BASE}/admin/indicators-enhanced${endpoint}`, {
 			...options,
@@ -308,14 +307,16 @@ export const indicatorsApi = {
 		return apiRequest<IndicatorStats>('/stats');
 	},
 
-	getDownloadLog: (query: {
-		page?: number;
-		per_page?: number;
-		user_id?: number;
-		platform_id?: number;
-		from_date?: string;
-		to_date?: string;
-	} = {}) => {
+	getDownloadLog: (
+		query: {
+			page?: number;
+			per_page?: number;
+			user_id?: number;
+			platform_id?: number;
+			from_date?: string;
+			to_date?: string;
+		} = {}
+	) => {
 		const params = new URLSearchParams();
 		Object.entries(query).forEach(([key, value]) => {
 			if (value !== undefined) params.append(key, String(value));
@@ -334,10 +335,10 @@ export const platformsApi = {
 	},
 
 	create: (data: CreatePlatformRequest) => {
-		return apiRequest<{ success: boolean; platform: { id: number; name: string } }>(
-			'/platforms',
-			{ method: 'POST', body: JSON.stringify(data) }
-		);
+		return apiRequest<{ success: boolean; platform: { id: number; name: string } }>('/platforms', {
+			method: 'POST',
+			body: JSON.stringify(data)
+		});
 	},
 
 	update: (platformId: number, data: Partial<CreatePlatformRequest>) => {
@@ -408,7 +409,13 @@ export const platformFilesApi = {
 
 	bulkUpload: (
 		indicatorId: number,
-		files: { platform_id: number; file_url: string; file_name: string; file_size_bytes?: number; version?: string }[]
+		files: {
+			platform_id: number;
+			file_url: string;
+			file_name: string;
+			file_size_bytes?: number;
+			version?: string;
+		}[]
 	) => {
 		return apiRequest<{ success: boolean; created: number }>(`/${indicatorId}/files/bulk`, {
 			method: 'POST',
@@ -457,7 +464,13 @@ export const documentationApi = {
 export const tradingViewAccessApi = {
 	list: (
 		indicatorId: number,
-		query: { page?: number; per_page?: number; is_active?: boolean; is_synced?: boolean; search?: string } = {}
+		query: {
+			page?: number;
+			per_page?: number;
+			is_active?: boolean;
+			is_synced?: boolean;
+			search?: string;
+		} = {}
 	) => {
 		const params = new URLSearchParams();
 		Object.entries(query).forEach(([key, value]) => {

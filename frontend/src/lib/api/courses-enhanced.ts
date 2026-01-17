@@ -14,7 +14,9 @@
 
 import { browser } from '$app/environment';
 
-const API_BASE = browser ? (import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev') : 'https://revolution-trading-pros-api.fly.dev';
+const API_BASE = browser
+	? import.meta.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev'
+	: 'https://revolution-trading-pros-api.fly.dev';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
@@ -256,10 +258,7 @@ export interface ApiResult<T> {
 // API FUNCTIONS
 // ═══════════════════════════════════════════════════════════════════════════
 
-async function apiRequest<T>(
-	endpoint: string,
-	options: RequestInit = {}
-): Promise<ApiResult<T>> {
+async function apiRequest<T>(endpoint: string, options: RequestInit = {}): Promise<ApiResult<T>> {
 	try {
 		const response = await fetch(`${API_BASE}/admin/courses-enhanced${endpoint}`, {
 			...options,
@@ -300,10 +299,13 @@ export const coursesApi = {
 	},
 
 	create: (data: CreateCourseRequest) => {
-		return apiRequest<{ success: boolean; course: { id: number; title: string; slug: string } }>('', {
-			method: 'POST',
-			body: JSON.stringify(data)
-		});
+		return apiRequest<{ success: boolean; course: { id: number; title: string; slug: string } }>(
+			'',
+			{
+				method: 'POST',
+				body: JSON.stringify(data)
+			}
+		);
 	},
 
 	update: (courseId: number, data: Partial<CreateCourseRequest>) => {
@@ -320,10 +322,10 @@ export const coursesApi = {
 	},
 
 	clone: (courseId: number) => {
-		return apiRequest<{ success: boolean; new_course: { id: number; title: string; slug: string } }>(
-			`/${courseId}/clone`,
-			{ method: 'POST' }
-		);
+		return apiRequest<{
+			success: boolean;
+			new_course: { id: number; title: string; slug: string };
+		}>(`/${courseId}/clone`, { method: 'POST' });
 	},
 
 	getStats: () => {
@@ -394,10 +396,10 @@ export const lessonsApi = {
 	},
 
 	reorder: (courseId: number, sectionId: number, items: { id: number; sort_order: number }[]) => {
-		return apiRequest<{ success: boolean }>(
-			`/${courseId}/sections/${sectionId}/lessons/reorder`,
-			{ method: 'PUT', body: JSON.stringify({ items }) }
-		);
+		return apiRequest<{ success: boolean }>(`/${courseId}/sections/${sectionId}/lessons/reorder`, {
+			method: 'PUT',
+			body: JSON.stringify({ items })
+		});
 	}
 };
 
@@ -435,7 +437,12 @@ export const liveSessionsApi = {
 	bulkCreate: (
 		courseId: number,
 		sectionId: number | null,
-		sessions: { title: string; session_date: string; video_url?: string; bunny_video_guid?: string }[]
+		sessions: {
+			title: string;
+			session_date: string;
+			video_url?: string;
+			bunny_video_guid?: string;
+		}[]
 	) => {
 		return apiRequest<{ success: boolean; created: number }>(`/${courseId}/live-sessions/bulk`, {
 			method: 'POST',

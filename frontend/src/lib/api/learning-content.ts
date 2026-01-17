@@ -13,7 +13,7 @@ import { authStore } from '$lib/stores/auth.svelte';
 
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
 const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
-const API_ROOT = browser ? (import.meta.env['VITE_API_URL'] || PROD_API_ROOT) : '';
+const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API_ROOT : '';
 const API_BASE = API_ROOT ? `${API_ROOT}/api` : '';
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -108,7 +108,7 @@ export async function getLearningVideos(membershipSlug: string): Promise<VideoCa
 
 		// Group videos by category
 		const categorized = videos.reduce((acc, video) => {
-			const existing = acc.find(cat => cat.title === video.category);
+			const existing = acc.find((cat) => cat.title === video.category);
 			if (existing) {
 				existing.videos.push(video);
 			} else {
@@ -121,7 +121,7 @@ export async function getLearningVideos(membershipSlug: string): Promise<VideoCa
 		}, [] as VideoCategory[]);
 
 		// Sort videos within each category by order
-		categorized.forEach(cat => {
+		categorized.forEach((cat) => {
 			cat.videos.sort((a, b) => a.order - b.order);
 		});
 
@@ -153,7 +153,7 @@ export async function getResources(membershipSlug: string): Promise<ResourceCate
 
 		// Group resources by category
 		const categorized = resources.reduce((acc, resource) => {
-			const existing = acc.find(cat => cat.category === resource.category);
+			const existing = acc.find((cat) => cat.category === resource.category);
 			if (existing) {
 				existing.items.push(resource);
 			} else {

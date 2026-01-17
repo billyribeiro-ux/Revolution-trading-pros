@@ -26,7 +26,14 @@ export interface LogoConfig {
 	/** Alt text for accessibility */
 	alt: string;
 	/** Position within popup */
-	position: 'top-left' | 'top-center' | 'top-right' | 'bottom-left' | 'bottom-center' | 'bottom-right' | 'inline-title';
+	position:
+		| 'top-left'
+		| 'top-center'
+		| 'top-right'
+		| 'bottom-left'
+		| 'bottom-center'
+		| 'bottom-right'
+		| 'inline-title';
 	/** Logo size */
 	size: 'xs' | 'sm' | 'md' | 'lg' | 'xl' | 'custom';
 	/** Custom width (when size is 'custom') */
@@ -171,7 +178,7 @@ export const DEFAULT_FONTS: FontConfig = {
 	secondary: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif',
 	monospace: 'JetBrains Mono, Menlo, Monaco, "Courier New", monospace',
 	weights: [400, 500, 600, 700],
-	source: 'google',
+	source: 'google'
 };
 
 export const DEFAULT_TYPOGRAPHY: TypographyConfig = {
@@ -183,7 +190,7 @@ export const DEFAULT_TYPOGRAPHY: TypographyConfig = {
 	titleLetterSpacing: '-0.02em',
 	subtitleSize: '1.25rem',
 	bodySize: '1rem',
-	smallSize: '0.875rem',
+	smallSize: '0.875rem'
 };
 
 export const THEME_PRESETS: Record<string, ThemePreset> = {
@@ -204,11 +211,11 @@ export const THEME_PRESETS: Record<string, ThemePreset> = {
 			text: '#1e293b',
 			textMuted: '#64748b',
 			border: '#e2e8f0',
-			overlay: 'rgba(0, 0, 0, 0.5)',
+			overlay: 'rgba(0, 0, 0, 0.5)'
 		},
 		borderRadius: '16px',
 		shadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
-		backdropBlur: '0',
+		backdropBlur: '0'
 	},
 	dark: {
 		name: 'Dark',
@@ -227,11 +234,11 @@ export const THEME_PRESETS: Record<string, ThemePreset> = {
 			text: '#f1f5f9',
 			textMuted: '#94a3b8',
 			border: '#334155',
-			overlay: 'rgba(0, 0, 0, 0.75)',
+			overlay: 'rgba(0, 0, 0, 0.75)'
 		},
 		borderRadius: '16px',
 		shadow: '0 25px 50px -12px rgba(0, 0, 0, 0.5)',
-		backdropBlur: '16px',
+		backdropBlur: '16px'
 	},
 	glass: {
 		name: 'Glass',
@@ -250,11 +257,11 @@ export const THEME_PRESETS: Record<string, ThemePreset> = {
 			text: '#f1f5f9',
 			textMuted: '#94a3b8',
 			border: 'rgba(99, 102, 241, 0.3)',
-			overlay: 'rgba(0, 0, 0, 0.6)',
+			overlay: 'rgba(0, 0, 0, 0.6)'
 		},
 		borderRadius: '24px',
 		shadow: '0 25px 50px -12px rgba(99, 102, 241, 0.25)',
-		backdropBlur: '24px',
+		backdropBlur: '24px'
 	},
 	minimal: {
 		name: 'Minimal',
@@ -273,12 +280,12 @@ export const THEME_PRESETS: Record<string, ThemePreset> = {
 			text: '#000000',
 			textMuted: '#6b7280',
 			border: '#e5e7eb',
-			overlay: 'rgba(0, 0, 0, 0.4)',
+			overlay: 'rgba(0, 0, 0, 0.4)'
 		},
 		borderRadius: '8px',
 		shadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
-		backdropBlur: '0',
-	},
+		backdropBlur: '0'
+	}
 };
 
 export const DEFAULT_BRANDING: BrandingConfig = {
@@ -291,19 +298,19 @@ export const DEFAULT_BRANDING: BrandingConfig = {
 		md: '8px',
 		lg: '16px',
 		xl: '24px',
-		full: '9999px',
+		full: '9999px'
 	},
 	shadows: {
 		sm: '0 1px 2px 0 rgba(0, 0, 0, 0.05)',
 		md: '0 4px 6px -1px rgba(0, 0, 0, 0.1)',
 		lg: '0 10px 15px -3px rgba(0, 0, 0, 0.1)',
-		xl: '0 25px 50px -12px rgba(0, 0, 0, 0.25)',
+		xl: '0 25px 50px -12px rgba(0, 0, 0, 0.25)'
 	},
 	animations: {
 		enabled: true,
 		duration: '300ms',
-		easing: 'cubic-bezier(0.4, 0, 0.2, 1)',
-	},
+		easing: 'cubic-bezier(0.4, 0, 0.2, 1)'
+	}
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -333,7 +340,7 @@ export class PopupBrandingService {
 			colors: { ...DEFAULT_BRANDING.colors, ...config.colors },
 			borderRadius: { ...DEFAULT_BRANDING.borderRadius, ...config.borderRadius },
 			shadows: { ...DEFAULT_BRANDING.shadows, ...config.shadows },
-			animations: { ...DEFAULT_BRANDING.animations, ...config.animations },
+			animations: { ...DEFAULT_BRANDING.animations, ...config.animations }
 		};
 	}
 
@@ -383,7 +390,7 @@ export class PopupBrandingService {
 			sm: '32px',
 			md: '48px',
 			lg: '64px',
-			xl: '96px',
+			xl: '96px'
 		};
 
 		const width = logo.size === 'custom' ? logo.width : sizeMap[logo.size] || '48px';
@@ -441,7 +448,7 @@ export class PopupBrandingService {
 			'--popup-shadow-xl': shadows.xl,
 			'--popup-animation-duration': animations.duration,
 			'--popup-animation-easing': animations.easing,
-			...this.config.cssVariables,
+			...this.config.cssVariables
 		};
 	}
 

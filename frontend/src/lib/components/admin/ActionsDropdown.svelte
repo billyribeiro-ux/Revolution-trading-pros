@@ -24,12 +24,7 @@
 		size?: 'sm' | 'md';
 	}
 
-	let {
-		actions,
-		onAction,
-		position = 'right',
-		size = 'md'
-	}: Props = $props();
+	let { actions, onAction, position = 'right', size = 'md' }: Props = $props();
 
 	let isOpen = $state(false);
 	let triggerRef = $state<HTMLButtonElement | null>(null);

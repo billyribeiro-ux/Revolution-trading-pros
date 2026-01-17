@@ -1,22 +1,22 @@
 /**
  * Account API Service - Apple ICT 11 Principal Engineer Grade
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * COMPLETE END-TO-END IMPLEMENTATION - NO MOCKED DATA
- * 
+ *
  * ARCHITECTURE:
  * - Real Laravel backend API integration
  * - Proper error handling and validation
  * - Type-safe request/response handling
  * - Enterprise-grade security patterns
  * - Comprehensive logging and monitoring
- * 
+ *
  * ENDPOINTS:
  * - GET  /api/user/profile          - Get user profile and memberships
  * - GET  /api/user/billing          - Get billing information
  * - PUT  /api/user/profile          - Update user profile
  * - PUT  /api/user/password         - Update user password
- * 
+ *
  * @version 1.0.0 - Apple ICT 11 Grade
  * @author Revolution Trading Pros
  */
@@ -55,7 +55,13 @@ export interface Membership {
 	id: number;
 	name: string;
 	slug: string;
-	type: 'trading_room' | 'alert_service' | 'course' | 'indicator' | 'weekly_watchlist' | 'premium_report';
+	type:
+		| 'trading_room'
+		| 'alert_service'
+		| 'course'
+		| 'indicator'
+		| 'weekly_watchlist'
+		| 'premium_report';
 	status: 'active' | 'trial' | 'cancelled' | 'expired';
 	start_date: string;
 	end_date: string | null;
@@ -137,7 +143,7 @@ export const accountApi = {
 	/**
 	 * Get complete account data (profile + memberships + billing)
 	 * Aggregates data from multiple endpoints since backend doesn't have /account
-	 * 
+	 *
 	 * @returns Complete account data
 	 * @throws ApiError on failure
 	 */
@@ -146,7 +152,7 @@ export const accountApi = {
 			// Backend only has /profile endpoint, fetch it directly
 			// The profile response includes name which we parse into first_name/last_name
 			const profileResponse = await apiClient.get<UserProfile>('/api/user/profile');
-			
+
 			// Return account data structure with profile
 			// Memberships and billing are empty for now until those endpoints are implemented
 			return {
@@ -170,7 +176,7 @@ export const accountApi = {
 
 	/**
 	 * Get user profile
-	 * 
+	 *
 	 * @returns User profile data
 	 * @throws ApiError on failure
 	 */
@@ -186,13 +192,16 @@ export const accountApi = {
 
 	/**
 	 * Get user memberships
-	 * 
+	 *
 	 * @returns User memberships (active and expired)
 	 * @throws ApiError on failure
 	 */
 	async getMemberships(): Promise<{ active: Membership[]; expired: Membership[] }> {
 		try {
-			const response = await apiClient.get<ApiResponse<{ active: Membership[]; expired: Membership[] }>>('/api/user/memberships');
+			const response =
+				await apiClient.get<ApiResponse<{ active: Membership[]; expired: Membership[] }>>(
+					'/api/user/memberships'
+				);
 			return response.data;
 		} catch (error) {
 			console.error('[Account API] Failed to fetch memberships:', error);
@@ -202,7 +211,7 @@ export const accountApi = {
 
 	/**
 	 * Get billing information
-	 * 
+	 *
 	 * @returns Billing information
 	 * @throws ApiError on failure
 	 */
@@ -218,7 +227,7 @@ export const accountApi = {
 
 	/**
 	 * Update user profile
-	 * 
+	 *
 	 * @param data - Profile update data
 	 * @returns Updated profile
 	 * @throws ApiError on validation or server failure
@@ -236,14 +245,17 @@ export const accountApi = {
 
 	/**
 	 * Update user password
-	 * 
+	 *
 	 * @param data - Password update data
 	 * @returns Success message
 	 * @throws ApiError on validation or server failure
 	 */
 	async updatePassword(data: UpdatePasswordRequest): Promise<{ message: string }> {
 		try {
-			const response = await apiClient.put<ApiResponse<{ message: string }>>('/api/user/password', data);
+			const response = await apiClient.put<ApiResponse<{ message: string }>>(
+				'/api/user/password',
+				data
+			);
 			console.log('[Account API] Password updated successfully');
 			return response.data;
 		} catch (error) {
@@ -254,7 +266,7 @@ export const accountApi = {
 
 	/**
 	 * Upload profile avatar
-	 * 
+	 *
 	 * @param file - Avatar image file
 	 * @returns Updated profile with new avatar URL
 	 * @throws ApiError on upload failure
@@ -264,12 +276,16 @@ export const accountApi = {
 			const formData = new FormData();
 			formData.append('avatar', file);
 
-			const response = await apiClient.post<ApiResponse<UserProfile>>('/api/user/avatar', formData, {
-				headers: {
-					'Content-Type': 'multipart/form-data'
+			const response = await apiClient.post<ApiResponse<UserProfile>>(
+				'/api/user/avatar',
+				formData,
+				{
+					headers: {
+						'Content-Type': 'multipart/form-data'
+					}
 				}
-			});
-			
+			);
+
 			console.log('[Account API] Avatar uploaded successfully');
 			return response.data;
 		} catch (error) {
@@ -280,7 +296,7 @@ export const accountApi = {
 
 	/**
 	 * Delete profile avatar
-	 * 
+	 *
 	 * @returns Updated profile with null avatar
 	 * @throws ApiError on deletion failure
 	 */

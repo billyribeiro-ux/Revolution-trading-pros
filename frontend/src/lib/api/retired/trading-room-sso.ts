@@ -112,7 +112,7 @@ export function getMembershipStatusLabel(status: AccessibleRoom['membership_stat
 		active: 'Active',
 		expiring: 'Expiring Soon',
 		paused: 'Paused',
-		complimentary: 'Complimentary',
+		complimentary: 'Complimentary'
 	};
 	return labels[status ?? ''] ?? 'Active';
 }
@@ -126,7 +126,7 @@ export function getMembershipStatusColor(status: AccessibleRoom['membership_stat
 		active: 'badge-active',
 		expiring: 'badge-expiring',
 		paused: 'badge-paused',
-		complimentary: 'badge-complimentary',
+		complimentary: 'badge-complimentary'
 	};
 	return colors[status ?? ''] ?? 'badge-active';
 }
@@ -137,5 +137,5 @@ export default {
 	enterTradingRoom,
 	getSSORedirectUrl,
 	getMembershipStatusLabel,
-	getMembershipStatusColor,
+	getMembershipStatusColor
 };

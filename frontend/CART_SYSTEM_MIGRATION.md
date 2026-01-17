@@ -1,55 +1,65 @@
 # WooCommerce to Custom Cart System Migration
 
 ## Overview
+
 This document outlines the complete migration from WooCommerce class names to a custom Revolution Trading cart system while maintaining **pixel-perfect identical appearance**.
 
 ## WooCommerce Classes Found
 
 ### Page-Level Classes
-| WooCommerce Class | Custom Cart Class | Purpose |
-|------------------|-------------------|---------|
-| `woocommerce-cart` | `rtp-cart` | Main cart page wrapper |
-| `woocommerce-page` | `rtp-page` | General page wrapper |
-| `woocommerce-checkout` | `rtp-checkout` | Main checkout page wrapper |
-| `woocommerce-cart-form` | `rtp-cart-form` | Cart form container |
-| `woocommerce-cart-form__contents` | `rtp-cart-form__contents` | Cart form contents |
-| `woocommerce-checkout-review-order` | `rtp-checkout-review-order` | Checkout order review section |
-| `woocommerce-checkout-review-order-table` | `rtp-checkout-review-order-table` | Checkout order table |
+
+| WooCommerce Class                         | Custom Cart Class                 | Purpose                       |
+| ----------------------------------------- | --------------------------------- | ----------------------------- |
+| `woocommerce-cart`                        | `rtp-cart`                        | Main cart page wrapper        |
+| `woocommerce-page`                        | `rtp-page`                        | General page wrapper          |
+| `woocommerce-checkout`                    | `rtp-checkout`                    | Main checkout page wrapper    |
+| `woocommerce-cart-form`                   | `rtp-cart-form`                   | Cart form container           |
+| `woocommerce-cart-form__contents`         | `rtp-cart-form__contents`         | Cart form contents            |
+| `woocommerce-checkout-review-order`       | `rtp-checkout-review-order`       | Checkout order review section |
+| `woocommerce-checkout-review-order-table` | `rtp-checkout-review-order-table` | Checkout order table          |
 
 ### Price Display Classes
-| WooCommerce Class | Custom Cart Class | Purpose |
-|------------------|-------------------|---------|
-| `woocommerce-Price-amount` | `rtp-price-amount` | Price amount wrapper |
-| `woocommerce-Price-amount-wrap` | `rtp-price-amount-wrap` | Price amount outer wrapper |
-| `woocommerce-Price-currencySymbol` | `rtp-price-currency` | Currency symbol ($) |
+
+| WooCommerce Class                  | Custom Cart Class       | Purpose                    |
+| ---------------------------------- | ----------------------- | -------------------------- |
+| `woocommerce-Price-amount`         | `rtp-price-amount`      | Price amount wrapper       |
+| `woocommerce-Price-amount-wrap`    | `rtp-price-amount-wrap` | Price amount outer wrapper |
+| `woocommerce-Price-currencySymbol` | `rtp-price-currency`    | Currency symbol ($)        |
 
 ### Form Classes
-| WooCommerce Class | Custom Cart Class | Purpose |
-|------------------|-------------------|---------|
+
+| WooCommerce Class                | Custom Cart Class        | Purpose                      |
+| -------------------------------- | ------------------------ | ---------------------------- |
 | `woocommerce-form-coupon-toggle` | `rtp-form-coupon-toggle` | Coupon toggle button wrapper |
-| `woocommerce-form-coupon` | `rtp-form-coupon` | Coupon form |
-| `woocommerce-info` | `rtp-info` | Info message box |
+| `woocommerce-form-coupon`        | `rtp-form-coupon`        | Coupon form                  |
+| `woocommerce-info`               | `rtp-info`               | Info message box             |
 
 ### Other Classes
-| WooCommerce Class | Custom Cart Class | Purpose |
-|------------------|-------------------|---------|
+
+| WooCommerce Class | Custom Cart Class     | Purpose              |
+| ----------------- | --------------------- | -------------------- |
 | `checkout_coupon` | `rtp-checkout-coupon` | Checkout coupon form |
 
 ## Migration Strategy
 
 ### Phase 1: CSS Class Replacement
+
 Replace all WooCommerce classes with custom RTP (Revolution Trading Pros) classes:
+
 - Maintain exact same CSS rules
 - Keep all styling identical
 - Ensure no visual changes
 
 ### Phase 2: Component Updates
+
 Update all Svelte components:
+
 1. Cart page (`/routes/cart/+page.svelte`)
 2. Checkout page (`/routes/checkout/+page.svelte`)
 3. NonMemberCheckout component (`/lib/components/cart/NonMemberCheckout.svelte`)
 
 ### Phase 3: Testing
+
 - Visual regression testing
 - Cart functionality testing
 - Checkout flow testing
@@ -62,6 +72,7 @@ Update all Svelte components:
 **Prefix:** `rtp-` (Revolution Trading Pros)
 
 **Structure:**
+
 - `rtp-cart` - Cart-related classes
 - `rtp-checkout` - Checkout-related classes
 - `rtp-price` - Price display classes
@@ -89,19 +100,23 @@ All CSS rules will be duplicated to support both old and new class names during 
 The WordPress nonce field will be replaced with custom CSRF protection:
 
 **Old:**
+
 ```html
-<input type="hidden" name="_wpnonce" value={cartNonce} />
+<input type="hidden" name="_wpnonce" value="{cartNonce}" />
 ```
 
 **New:**
+
 ```html
-<input type="hidden" name="_csrf_token" value={csrfToken} />
+<input type="hidden" name="_csrf_token" value="{csrfToken}" />
 ```
 
 ## Files to Update
 
 ### 1. Cart Page
+
 **File:** `/routes/cart/+page.svelte`
+
 - Replace `woocommerce-cart` → `rtp-cart`
 - Replace `woocommerce-page` → `rtp-page`
 - Replace `woocommerce-cart-form` → `rtp-cart-form`
@@ -112,14 +127,18 @@ The WordPress nonce field will be replaced with custom CSRF protection:
 - Remove WordPress nonce, add CSRF token
 
 ### 2. Checkout Page
+
 **File:** `/routes/checkout/+page.svelte`
+
 - Replace `woocommerce-checkout` → `rtp-checkout`
 - Replace `woocommerce-page` → `rtp-page`
 - Replace price-related classes
 - Update form classes
 
 ### 3. NonMemberCheckout Component
+
 **File:** `/lib/components/cart/NonMemberCheckout.svelte`
+
 - Replace `woocommerce-checkout` → `rtp-checkout`
 - Replace `woocommerce-page` → `rtp-page`
 - Replace `woocommerce-checkout-review-order` → `rtp-checkout-review-order`
@@ -136,26 +155,45 @@ All CSS will be updated to use the new class names while maintaining identical s
 
 ```css
 /* Cart Page */
-.rtp-cart { /* same as .woocommerce-cart */ }
-.rtp-cart-form { /* same as .woocommerce-cart-form */ }
-.rtp-cart-form__contents { /* same as .woocommerce-cart-form__contents */ }
+.rtp-cart {
+	/* same as .woocommerce-cart */
+}
+.rtp-cart-form {
+	/* same as .woocommerce-cart-form */
+}
+.rtp-cart-form__contents {
+	/* same as .woocommerce-cart-form__contents */
+}
 
 /* Checkout Page */
-.rtp-checkout { /* same as .woocommerce-checkout */ }
+.rtp-checkout {
+	/* same as .woocommerce-checkout */
+}
 
 /* Price Display */
-.rtp-price-amount { /* same as .woocommerce-Price-amount */ }
-.rtp-price-currency { /* same as .woocommerce-Price-currencySymbol */ }
+.rtp-price-amount {
+	/* same as .woocommerce-Price-amount */
+}
+.rtp-price-currency {
+	/* same as .woocommerce-Price-currencySymbol */
+}
 
 /* Forms */
-.rtp-form-coupon-toggle { /* same as .woocommerce-form-coupon-toggle */ }
-.rtp-form-coupon { /* same as .woocommerce-form-coupon */ }
-.rtp-info { /* same as .woocommerce-info */ }
+.rtp-form-coupon-toggle {
+	/* same as .woocommerce-form-coupon-toggle */
+}
+.rtp-form-coupon {
+	/* same as .woocommerce-form-coupon */
+}
+.rtp-info {
+	/* same as .woocommerce-info */
+}
 ```
 
 ## Security Enhancements
 
 ### CSRF Protection
+
 Replace WordPress nonce with custom CSRF token:
 
 ```typescript
@@ -166,7 +204,9 @@ let csrfToken = $state(generateCSRFToken());
 ```
 
 ### Session Management
+
 Implement custom session management:
+
 - JWT-based authentication
 - Secure cookie handling
 - Token refresh mechanism
@@ -191,6 +231,7 @@ Implement custom session management:
 ## Rollback Plan
 
 If issues arise:
+
 1. Revert to WooCommerce classes
 2. Keep custom cart logic
 3. Gradual migration approach

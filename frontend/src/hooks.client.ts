@@ -35,7 +35,8 @@ interface ErrorMetadata {
  * Determine error severity based on error type and message
  */
 function getErrorSeverity(error: unknown): ErrorSeverity {
-	const message = error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
+	const message =
+		error instanceof Error ? error.message.toLowerCase() : String(error).toLowerCase();
 
 	// Critical: Security or data integrity issues
 	if (
@@ -58,11 +59,7 @@ function getErrorSeverity(error: unknown): ErrorSeverity {
 	}
 
 	// Medium: User-facing issues
-	if (
-		message.includes('not found') ||
-		message.includes('invalid') ||
-		message.includes('failed')
-	) {
+	if (message.includes('not found') || message.includes('invalid') || message.includes('failed')) {
 		return 'medium';
 	}
 
@@ -199,13 +196,13 @@ function forceReloadForFreshChunks(): void {
 	const RELOAD_KEY = 'rtp_chunk_reload';
 	const lastReload = sessionStorage.getItem(RELOAD_KEY);
 	const now = Date.now();
-	
+
 	// Prevent reload loop - only reload once per 30 seconds
 	if (lastReload && now - parseInt(lastReload, 10) < 30000) {
 		console.warn('[ChunkError] Already reloaded recently, not reloading again');
 		return;
 	}
-	
+
 	sessionStorage.setItem(RELOAD_KEY, now.toString());
 	console.info('[ChunkError] Stale chunks detected, forcing page reload...');
 	window.location.reload();
@@ -219,7 +216,12 @@ function forceReloadForFreshChunks(): void {
  * - Navigation
  * - Client-side component lifecycle
  */
-export const handleError: HandleClientError = async ({ error, event, status: _status, message }) => {
+export const handleError: HandleClientError = async ({
+	error,
+	event,
+	status: _status,
+	message
+}) => {
 	const errorId = generateErrorId();
 
 	// ICT11+ Pattern: Handle stale chunk errors from Cloudflare Pages cache
@@ -346,7 +348,12 @@ if (typeof window !== 'undefined') {
 					(window as { gtag: (...args: unknown[]) => void }).gtag('event', 'web_vitals', {
 						metric_name: 'LCP',
 						metric_value: lastEntry.startTime,
-						metric_rating: lastEntry.startTime < 2500 ? 'good' : lastEntry.startTime < 4000 ? 'needs_improvement' : 'poor'
+						metric_rating:
+							lastEntry.startTime < 2500
+								? 'good'
+								: lastEntry.startTime < 4000
+									? 'needs_improvement'
+									: 'poor'
 					});
 				}
 			});
@@ -378,7 +385,10 @@ if (typeof window !== 'undefined') {
 			let clsValue = 0;
 			const clsObserver = new PerformanceObserver((list) => {
 				for (const entry of list.getEntries()) {
-					const layoutShiftEntry = entry as PerformanceEntry & { hadRecentInput: boolean; value: number };
+					const layoutShiftEntry = entry as PerformanceEntry & {
+						hadRecentInput: boolean;
+						value: number;
+					};
 					if (!layoutShiftEntry.hadRecentInput) {
 						clsValue += layoutShiftEntry.value;
 					}
@@ -397,7 +407,8 @@ if (typeof window !== 'undefined') {
 						(window as { gtag: (...args: unknown[]) => void }).gtag('event', 'web_vitals', {
 							metric_name: 'CLS',
 							metric_value: clsValue,
-							metric_rating: clsValue < 0.1 ? 'good' : clsValue < 0.25 ? 'needs_improvement' : 'poor'
+							metric_rating:
+								clsValue < 0.1 ? 'good' : clsValue < 0.25 ? 'needs_improvement' : 'poor'
 						});
 					}
 				}

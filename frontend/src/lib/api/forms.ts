@@ -65,11 +65,9 @@ const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 const PROD_AI = 'https://revolution-trading-pros-api.fly.dev/ai';
 
 const isDev = import.meta.env.DEV;
-const API_ROOT = browser 
-	? (isDev ? '' : (import.meta.env['VITE_API_URL'] || PROD_API)) 
-	: '';
+const API_ROOT = browser ? (isDev ? '' : import.meta.env['VITE_API_URL'] || PROD_API) : '';
 // In dev mode, empty string works with Vite proxy. In production, append /api
-const API_BASE = isDev ? '' : (API_ROOT ? `${API_ROOT}/api` : '');
+const API_BASE = isDev ? '' : API_ROOT ? `${API_ROOT}/api` : '';
 const WS_BASE = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 const AI_API = browser ? import.meta.env['VITE_AI_API_URL'] || PROD_AI : '';
 
@@ -882,7 +880,7 @@ class FormsService {
 				page: page.toString(),
 				per_page: perPage.toString()
 			});
-			
+
 			// Add status filter if provided
 			if (filters?.status) {
 				params.set('status', filters.status);

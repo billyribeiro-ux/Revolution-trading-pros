@@ -466,7 +466,11 @@ export const adminCoursesApi = {
 		return data.data!;
 	},
 
-	async updateModule(courseId: string, moduleId: number, input: UpdateModuleRequest): Promise<CourseModule> {
+	async updateModule(
+		courseId: string,
+		moduleId: number,
+		input: UpdateModuleRequest
+	): Promise<CourseModule> {
 		const res = await fetch(`/api/admin/courses/${courseId}/modules/${moduleId}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
@@ -478,7 +482,9 @@ export const adminCoursesApi = {
 	},
 
 	async deleteModule(courseId: string, moduleId: number): Promise<void> {
-		const res = await fetch(`/api/admin/courses/${courseId}/modules/${moduleId}`, { method: 'DELETE' });
+		const res = await fetch(`/api/admin/courses/${courseId}/modules/${moduleId}`, {
+			method: 'DELETE'
+		});
 		const data: ApiResponse<void> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to delete module');
 	},
@@ -501,7 +507,10 @@ export const adminCoursesApi = {
 		return data.data!;
 	},
 
-	async getLesson(courseId: string, lessonId: string): Promise<{ lesson: Lesson; downloads: CourseDownload[] }> {
+	async getLesson(
+		courseId: string,
+		lessonId: string
+	): Promise<{ lesson: Lesson; downloads: CourseDownload[] }> {
 		const res = await fetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`);
 		const data: ApiResponse<{ lesson: Lesson; downloads: CourseDownload[] }> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch lesson');
@@ -519,7 +528,11 @@ export const adminCoursesApi = {
 		return data.data!;
 	},
 
-	async updateLesson(courseId: string, lessonId: string, input: UpdateLessonRequest): Promise<Lesson> {
+	async updateLesson(
+		courseId: string,
+		lessonId: string,
+		input: UpdateLessonRequest
+	): Promise<Lesson> {
 		const res = await fetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
@@ -531,7 +544,9 @@ export const adminCoursesApi = {
 	},
 
 	async deleteLesson(courseId: string, lessonId: string): Promise<void> {
-		const res = await fetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, { method: 'DELETE' });
+		const res = await fetch(`/api/admin/courses/${courseId}/lessons/${lessonId}`, {
+			method: 'DELETE'
+		});
 		const data: ApiResponse<void> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to delete lesson');
 	},
@@ -565,7 +580,11 @@ export const adminCoursesApi = {
 		return data.data!;
 	},
 
-	async updateDownload(courseId: string, downloadId: number, input: UpdateDownloadRequest): Promise<CourseDownload> {
+	async updateDownload(
+		courseId: string,
+		downloadId: number,
+		input: UpdateDownloadRequest
+	): Promise<CourseDownload> {
 		const res = await fetch(`/api/admin/courses/${courseId}/downloads/${downloadId}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
@@ -577,12 +596,18 @@ export const adminCoursesApi = {
 	},
 
 	async deleteDownload(courseId: string, downloadId: number): Promise<void> {
-		const res = await fetch(`/api/admin/courses/${courseId}/downloads/${downloadId}`, { method: 'DELETE' });
+		const res = await fetch(`/api/admin/courses/${courseId}/downloads/${downloadId}`, {
+			method: 'DELETE'
+		});
 		const data: ApiResponse<void> = await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to delete download');
 	},
 
-	async getUploadUrl(courseId: string, fileName: string, fileType: string): Promise<{
+	async getUploadUrl(
+		courseId: string,
+		fileName: string,
+		fileType: string
+	): Promise<{
 		upload_url: string;
 		download_url: string;
 		file_path: string;
@@ -658,7 +683,8 @@ export const myCoursesApi = {
 
 	async getDownloads(slug: string): Promise<{ downloads: CourseDownload[]; is_enrolled: boolean }> {
 		const res = await fetch(`/api/my/courses/${slug}/downloads`);
-		const data: ApiResponse<{ downloads: CourseDownload[]; is_enrolled: boolean }> = await res.json();
+		const data: ApiResponse<{ downloads: CourseDownload[]; is_enrolled: boolean }> =
+			await res.json();
 		if (!data.success) throw new Error(data.error || 'Failed to fetch downloads');
 		return data.data!;
 	}

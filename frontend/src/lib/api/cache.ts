@@ -28,10 +28,10 @@ interface CacheEntry<T> {
 }
 
 interface CacheOptions {
-	ttl?: number;           // Time to live in milliseconds
-	staleTime?: number;     // Time before data is considered stale (for SWR)
-	persist?: boolean;      // Persist to localStorage
-	etag?: string;          // ETag for conditional requests
+	ttl?: number; // Time to live in milliseconds
+	staleTime?: number; // Time before data is considered stale (for SWR)
+	persist?: boolean; // Persist to localStorage
+	etag?: string; // ETag for conditional requests
 }
 
 interface PendingRequest<T> {
@@ -43,11 +43,11 @@ interface PendingRequest<T> {
 // CONSTANTS
 // ═══════════════════════════════════════════════════════════════════════════
 
-const DEFAULT_TTL = 5 * 60 * 1000;      // 5 minutes
-const DEFAULT_STALE_TIME = 60 * 1000;    // 1 minute
-const MAX_CACHE_SIZE = 100;              // Maximum entries
+const DEFAULT_TTL = 5 * 60 * 1000; // 5 minutes
+const DEFAULT_STALE_TIME = 60 * 1000; // 1 minute
+const MAX_CACHE_SIZE = 100; // Maximum entries
 const STORAGE_PREFIX = 'api_cache_';
-const REQUEST_TIMEOUT = 30 * 1000;       // 30 seconds
+const REQUEST_TIMEOUT = 30 * 1000; // 30 seconds
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CACHE IMPLEMENTATION
@@ -66,11 +66,7 @@ class ApiCache {
 		fetcher: () => Promise<T>,
 		options: CacheOptions = {}
 	): Promise<T> {
-		const {
-			ttl = DEFAULT_TTL,
-			staleTime = DEFAULT_STALE_TIME,
-			persist = false
-		} = options;
+		const { ttl = DEFAULT_TTL, staleTime = DEFAULT_STALE_TIME, persist = false } = options;
 
 		// Check in-memory cache first
 		const cached = this.get<T>(key);
@@ -162,12 +158,14 @@ class ApiCache {
 	 */
 	delete(key: string): void {
 		this.cache.delete(key);
-		this.accessOrder = this.accessOrder.filter(k => k !== key);
+		this.accessOrder = this.accessOrder.filter((k) => k !== key);
 
 		if (browser) {
 			try {
 				localStorage.removeItem(STORAGE_PREFIX + key);
-			} catch { /* ignore */ }
+			} catch {
+				/* ignore */
+			}
 		}
 	}
 
@@ -182,9 +180,11 @@ class ApiCache {
 		if (browser) {
 			try {
 				Object.keys(localStorage)
-					.filter(k => k.startsWith(STORAGE_PREFIX))
-					.forEach(k => localStorage.removeItem(k));
-			} catch { /* ignore */ }
+					.filter((k) => k.startsWith(STORAGE_PREFIX))
+					.forEach((k) => localStorage.removeItem(k));
+			} catch {
+				/* ignore */
+			}
 		}
 	}
 
@@ -236,12 +236,12 @@ class ApiCache {
 
 		// Create new request
 		const promise = fetcher()
-			.then(data => {
+			.then((data) => {
 				this.set(key, data, options);
 				this.pendingRequests.delete(key);
 				return data;
 			})
-			.catch(error => {
+			.catch((error) => {
 				this.pendingRequests.delete(key);
 				throw error;
 			});
@@ -263,7 +263,7 @@ class ApiCache {
 	}
 
 	private updateAccessOrder(key: string): void {
-		this.accessOrder = this.accessOrder.filter(k => k !== key);
+		this.accessOrder = this.accessOrder.filter((k) => k !== key);
 		this.accessOrder.push(key);
 	}
 
@@ -294,15 +294,17 @@ class ApiCache {
 			this.clearOldStorageEntries();
 			try {
 				localStorage.setItem(STORAGE_PREFIX + key, JSON.stringify(entry));
-			} catch { /* ignore */ }
+			} catch {
+				/* ignore */
+			}
 		}
 	}
 
 	private clearOldStorageEntries(): void {
 		try {
 			const keys = Object.keys(localStorage)
-				.filter(k => k.startsWith(STORAGE_PREFIX))
-				.map(k => {
+				.filter((k) => k.startsWith(STORAGE_PREFIX))
+				.map((k) => {
 					try {
 						const entry = JSON.parse(localStorage.getItem(k) || '{}');
 						return { key: k, timestamp: entry.timestamp || 0 };
@@ -315,7 +317,9 @@ class ApiCache {
 			// Remove oldest half
 			const toRemove = keys.slice(0, Math.floor(keys.length / 2));
 			toRemove.forEach(({ key }) => localStorage.removeItem(key));
-		} catch { /* ignore */ }
+		} catch {
+			/* ignore */
+		}
 	}
 }
 

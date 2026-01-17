@@ -252,14 +252,19 @@ export const tradersApi = {
 	/**
 	 * Create a new trader (admin)
 	 */
-	create: async (data: Partial<Trader> & { trading_room_ids?: number[] }): Promise<ApiResponse<Trader>> => {
+	create: async (
+		data: Partial<Trader> & { trading_room_ids?: number[] }
+	): Promise<ApiResponse<Trader>> => {
 		return apiClient.post(ENDPOINTS.admin.traders, data);
 	},
 
 	/**
 	 * Update a trader (admin)
 	 */
-	update: async (id: number, data: Partial<Trader> & { trading_room_ids?: number[] }): Promise<ApiResponse<Trader>> => {
+	update: async (
+		id: number,
+		data: Partial<Trader> & { trading_room_ids?: number[] }
+	): Promise<ApiResponse<Trader>> => {
 		return apiClient.put(ENDPOINTS.admin.traderById(id), data);
 	},
 
@@ -333,22 +338,25 @@ export const dailyVideosApi = {
 	/**
 	 * Update a video (admin)
 	 */
-	update: async (id: number, data: Partial<{
-		trading_room_id: number;
-		trader_id: number | null;
-		title: string;
-		description: string;
-		video_url: string;
-		video_platform: string;
-		video_id: string;
-		thumbnail_url: string;
-		duration: number;
-		video_date: string;
-		is_featured: boolean;
-		is_published: boolean;
-		tags: string[];
-		metadata: Record<string, any>;
-	}>): Promise<ApiResponse<DailyVideo>> => {
+	update: async (
+		id: number,
+		data: Partial<{
+			trading_room_id: number;
+			trader_id: number | null;
+			title: string;
+			description: string;
+			video_url: string;
+			video_platform: string;
+			video_id: string;
+			thumbnail_url: string;
+			duration: number;
+			video_date: string;
+			is_featured: boolean;
+			is_published: boolean;
+			tags: string[];
+			metadata: Record<string, any>;
+		}>
+	): Promise<ApiResponse<DailyVideo>> => {
 		return apiClient.put(ENDPOINTS.admin.videoById(id), data);
 	},
 
@@ -362,17 +370,19 @@ export const dailyVideosApi = {
 	/**
 	 * Bulk create videos (admin)
 	 */
-	bulkCreate: async (videos: Array<{
-		trading_room_id: number;
-		trader_id?: number | null;
-		title: string;
-		description?: string;
-		video_url: string;
-		video_platform: string;
-		video_date: string;
-		is_published?: boolean;
-		tags?: string[];
-	}>): Promise<ApiResponse<DailyVideo[]>> => {
+	bulkCreate: async (
+		videos: Array<{
+			trading_room_id: number;
+			trader_id?: number | null;
+			title: string;
+			description?: string;
+			video_url: string;
+			video_platform: string;
+			video_date: string;
+			is_published?: boolean;
+			tags?: string[];
+		}>
+	): Promise<ApiResponse<DailyVideo[]>> => {
 		return apiClient.post(ENDPOINTS.admin.videosBulk, { videos });
 	}
 };

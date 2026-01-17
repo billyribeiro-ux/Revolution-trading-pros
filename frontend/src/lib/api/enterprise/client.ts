@@ -292,11 +292,7 @@ export class EnterpriseClient {
 
 		try {
 			// Execute request interceptors
-			const processedConfig = await executeRequestInterceptors(
-				this.interceptors,
-				config,
-				context
-			);
+			const processedConfig = await executeRequestInterceptors(this.interceptors, config, context);
 
 			// Build URL
 			const url = this.buildUrl(endpoint, processedConfig.params);
@@ -305,7 +301,9 @@ export class EnterpriseClient {
 			const requestInit: RequestInit = {
 				...(processedConfig.method !== undefined && { method: processedConfig.method }),
 				...(processedConfig.headers !== undefined && { headers: processedConfig.headers }),
-				...(processedConfig.credentials !== undefined && { credentials: processedConfig.credentials }),
+				...(processedConfig.credentials !== undefined && {
+					credentials: processedConfig.credentials
+				}),
 				signal: this.createAbortSignal(processedConfig.timeout, processedConfig.signal)
 			};
 
@@ -389,7 +387,10 @@ export class EnterpriseClient {
 			const processedError = await executeErrorInterceptors(this.interceptors, apiError, context);
 
 			// Check if we should retry (token refreshed)
-			if (processedError.context?.metadata?.['shouldRetry'] && !context.metadata?.['retriedAfterRefresh']) {
+			if (
+				processedError.context?.metadata?.['shouldRetry'] &&
+				!context.metadata?.['retriedAfterRefresh']
+			) {
 				const retryContext = createRetryContext(context, 0);
 				retryContext.metadata['retriedAfterRefresh'] = true;
 				return this.executeRequest<T>(endpoint, config, retryContext);
@@ -400,7 +401,13 @@ export class EnterpriseClient {
 			this.recordCircuitFailure();
 
 			// Record trace
-			recordTrace(context, endpoint, config.method || 'GET', processedError.status, processedError.message);
+			recordTrace(
+				context,
+				endpoint,
+				config.method || 'GET',
+				processedError.status,
+				processedError.message
+			);
 
 			this.errorStore.set(processedError);
 			this.emit('request:error', { endpoint, context, error: processedError });
@@ -480,11 +487,7 @@ export class EnterpriseClient {
 		throw lastError || new Error('Request failed after max retries');
 	}
 
-	private shouldRetryResponse(
-		response: Response,
-		retry?: RetryConfig,
-		_attempt?: number
-	): boolean {
+	private shouldRetryResponse(response: Response, retry?: RetryConfig, _attempt?: number): boolean {
 		const retryableStatuses = retry?.retryableStatuses ?? this.config.retry.retryableStatuses ?? [];
 		return retryableStatuses.includes(response.status);
 	}
@@ -515,11 +518,7 @@ export class EnterpriseClient {
 		return false;
 	}
 
-	private calculateRetryDelay(
-		attempt: number,
-		retry?: RetryConfig,
-		response?: Response
-	): number {
+	private calculateRetryDelay(attempt: number, retry?: RetryConfig, response?: Response): number {
 		// Check Retry-After header
 		if (response) {
 			const retryAfter = response.headers.get('Retry-After');
@@ -564,7 +563,8 @@ export class EnterpriseClient {
 
 	private fibonacci(n: number): number {
 		if (n <= 1) return n;
-		let a = 0, b = 1;
+		let a = 0,
+			b = 1;
 		for (let i = 2; i <= n; i++) {
 			[a, b] = [b, a + b];
 		}

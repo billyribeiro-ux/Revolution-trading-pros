@@ -321,14 +321,19 @@ export const membersApi = {
 	/**
 	 * Create new member
 	 */
-	async createMember(data: CreateMemberRequest): Promise<{ message: string; member: Member; temporary_password?: string }> {
+	async createMember(
+		data: CreateMemberRequest
+	): Promise<{ message: string; member: Member; temporary_password?: string }> {
 		return apiClient.post('/admin/member-management', data);
 	},
 
 	/**
 	 * Update member
 	 */
-	async updateMember(id: number, data: UpdateMemberRequest): Promise<{ message: string; member: Member }> {
+	async updateMember(
+		id: number,
+		data: UpdateMemberRequest
+	): Promise<{ message: string; member: Member }> {
 		return apiClient.put(`/admin/member-management/${id}`, data);
 	},
 
@@ -342,14 +347,20 @@ export const membersApi = {
 	/**
 	 * Ban member
 	 */
-	async banMember(id: number, data?: { reason?: string; duration_days?: number }): Promise<{ message: string; banned_until?: string }> {
+	async banMember(
+		id: number,
+		data?: { reason?: string; duration_days?: number }
+	): Promise<{ message: string; banned_until?: string }> {
 		return apiClient.post(`/admin/member-management/${id}/ban`, data || {});
 	},
 
 	/**
 	 * Suspend member
 	 */
-	async suspendMember(id: number, data?: { reason?: string; duration_days?: number }): Promise<{ message: string; suspended_until?: string }> {
+	async suspendMember(
+		id: number,
+		data?: { reason?: string; duration_days?: number }
+	): Promise<{ message: string; suspended_until?: string }> {
 		return apiClient.post(`/admin/member-management/${id}/suspend`, data || {});
 	},
 
@@ -370,7 +381,10 @@ export const membersApi = {
 	/**
 	 * Create member note
 	 */
-	async createMemberNote(id: number, content: string): Promise<{ message: string; note: MemberNote }> {
+	async createMemberNote(
+		id: number,
+		content: string
+	): Promise<{ message: string; note: MemberNote }> {
 		return apiClient.post(`/admin/member-management/${id}/notes`, { content });
 	},
 
@@ -384,7 +398,10 @@ export const membersApi = {
 	/**
 	 * Get member activity log
 	 */
-	async getMemberActivity(id: number, params?: { page?: number; per_page?: number; action?: string }): Promise<{
+	async getMemberActivity(
+		id: number,
+		params?: { page?: number; per_page?: number; action?: string }
+	): Promise<{
 		activity: MemberActivity[];
 		pagination: PaginationInfo;
 	}> {
@@ -393,13 +410,20 @@ export const membersApi = {
 		if (params?.per_page) searchParams.append('per_page', String(params.per_page));
 		if (params?.action) searchParams.append('action', params.action);
 		const queryString = searchParams.toString();
-		return apiClient.get(`/admin/member-management/${id}/activity${queryString ? `?${queryString}` : ''}`);
+		return apiClient.get(
+			`/admin/member-management/${id}/activity${queryString ? `?${queryString}` : ''}`
+		);
 	},
 
 	/**
 	 * Export members to Excel/PDF
 	 */
-	async exportMembersAdvanced(filters?: { format?: 'csv' | 'xlsx' | 'pdf'; status?: string; date_from?: string; date_to?: string }): Promise<Blob> {
+	async exportMembersAdvanced(filters?: {
+		format?: 'csv' | 'xlsx' | 'pdf';
+		status?: string;
+		date_from?: string;
+		date_to?: string;
+	}): Promise<Blob> {
 		const params = new URLSearchParams();
 		if (filters?.format) params.append('format', filters.format);
 		if (filters?.status) params.append('status', filters.status);
@@ -430,7 +454,14 @@ export interface MemberFullDetailsMember {
 	last_name: string | null;
 	email: string;
 	avatar: string | null;
-	status: 'active' | 'trial' | 'churned' | 'never_subscribed' | 'banned' | 'suspended' | 'restricted';
+	status:
+		| 'active'
+		| 'trial'
+		| 'churned'
+		| 'never_subscribed'
+		| 'banned'
+		| 'suspended'
+		| 'restricted';
 	status_label: string;
 	joined_at: string;
 	total_spent: number;

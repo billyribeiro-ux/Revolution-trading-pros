@@ -11,12 +11,7 @@
  * - Error serialization for logging
  */
 
-import type {
-	EnterpriseApiError,
-	ErrorCategory,
-	ErrorSeverity,
-	RequestContext
-} from './types';
+import type { EnterpriseApiError, ErrorCategory, ErrorSeverity, RequestContext } from './types';
 
 // ═══════════════════════════════════════════════════════════════════════════════
 // Error Codes
@@ -98,19 +93,22 @@ const userFriendlyMessages: Record<ErrorCode, string> = {
 	[ErrorCodes.INVALID_INPUT]: 'The information you provided is invalid.',
 	[ErrorCodes.MISSING_REQUIRED_FIELD]: 'Please fill in all required fields.',
 	[ErrorCodes.INVALID_FORMAT]: 'The format of your input is incorrect.',
-	[ErrorCodes.NETWORK_ERROR]: 'Unable to connect to the server. Please check your internet connection.',
+	[ErrorCodes.NETWORK_ERROR]:
+		'Unable to connect to the server. Please check your internet connection.',
 	[ErrorCodes.NETWORK_TIMEOUT]: 'The request timed out. Please try again.',
-	[ErrorCodes.NETWORK_OFFLINE]: "You appear to be offline. Please check your internet connection.",
+	[ErrorCodes.NETWORK_OFFLINE]: 'You appear to be offline. Please check your internet connection.',
 	[ErrorCodes.DNS_RESOLUTION_FAILED]: 'Unable to reach the server. Please try again later.',
 	[ErrorCodes.CONNECTION_REFUSED]: 'Unable to connect to the server. Please try again later.',
 	[ErrorCodes.RATE_LIMITED]: 'Too many requests. Please wait a moment and try again.',
 	[ErrorCodes.QUOTA_EXCEEDED]: "You've reached your usage limit. Please upgrade your plan.",
 	[ErrorCodes.CONCURRENT_LIMIT]: 'Too many simultaneous requests. Please wait and try again.',
 	[ErrorCodes.SERVER_ERROR]: 'Something went wrong on our end. Please try again later.',
-	[ErrorCodes.SERVICE_UNAVAILABLE]: 'The service is temporarily unavailable. Please try again later.',
+	[ErrorCodes.SERVICE_UNAVAILABLE]:
+		'The service is temporarily unavailable. Please try again later.',
 	[ErrorCodes.GATEWAY_ERROR]: 'Unable to reach the service. Please try again later.',
 	[ErrorCodes.DATABASE_ERROR]: 'A database error occurred. Please try again later.',
-	[ErrorCodes.EXTERNAL_SERVICE_ERROR]: 'An external service error occurred. Please try again later.',
+	[ErrorCodes.EXTERNAL_SERVICE_ERROR]:
+		'An external service error occurred. Please try again later.',
 	[ErrorCodes.BAD_REQUEST]: 'The request could not be processed. Please try again.',
 	[ErrorCodes.NOT_FOUND]: 'The requested resource was not found.',
 	[ErrorCodes.CONFLICT]: 'A conflict occurred. The resource may have been modified.',
@@ -130,19 +128,17 @@ const userFriendlyMessages: Record<ErrorCode, string> = {
 /**
  * Create a standardized API error
  */
-export function createApiError(
-	options: {
-		message: string;
-		code: ErrorCode;
-		status: number;
-		category?: ErrorCategory;
-		severity?: ErrorSeverity;
-		validationErrors?: Record<string, string[]>;
-		context?: RequestContext;
-		retryAfter?: number;
-		cause?: Error;
-	}
-): EnterpriseApiError {
+export function createApiError(options: {
+	message: string;
+	code: ErrorCode;
+	status: number;
+	category?: ErrorCategory;
+	severity?: ErrorSeverity;
+	validationErrors?: Record<string, string[]>;
+	context?: RequestContext;
+	retryAfter?: number;
+	cause?: Error;
+}): EnterpriseApiError {
 	const error = new Error(options.message) as EnterpriseApiError;
 
 	error.name = 'EnterpriseApiError';
@@ -200,10 +196,7 @@ export async function createErrorFromResponse(
 /**
  * Create error from network failure
  */
-export function createNetworkError(
-	cause: Error,
-	context?: RequestContext
-): EnterpriseApiError {
+export function createNetworkError(cause: Error, context?: RequestContext): EnterpriseApiError {
 	const isTimeout = cause.name === 'AbortError' || cause.message.includes('timeout');
 	const isOffline = !navigator.onLine;
 
@@ -399,12 +392,7 @@ function parseRetryAfter(header: string | null): number | undefined {
  * Check if error is an EnterpriseApiError
  */
 export function isApiError(error: unknown): error is EnterpriseApiError {
-	return (
-		error instanceof Error &&
-		'code' in error &&
-		'status' in error &&
-		'category' in error
-	);
+	return error instanceof Error && 'code' in error && 'status' in error && 'category' in error;
 }
 
 /**

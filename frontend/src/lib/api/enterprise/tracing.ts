@@ -172,10 +172,7 @@ export function getActiveContext(): RequestContext | null {
 /**
  * Run a function with a specific context as active
  */
-export async function withContext<T>(
-	context: RequestContext,
-	fn: () => Promise<T>
-): Promise<T> {
+export async function withContext<T>(context: RequestContext, fn: () => Promise<T>): Promise<T> {
 	const previousContext = activeContext;
 	activeContext = context;
 	try {

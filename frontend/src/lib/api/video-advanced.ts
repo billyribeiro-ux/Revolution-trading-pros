@@ -25,7 +25,16 @@ const API_BASE = 'https://revolution-trading-pros-api.fly.dev';
 export interface AnalyticsEvent {
 	video_id: number;
 	session_id?: string;
-	event_type: 'view' | 'play' | 'pause' | 'complete' | 'progress' | 'seek' | 'quality_change' | 'speed_change' | 'buffer';
+	event_type:
+		| 'view'
+		| 'play'
+		| 'pause'
+		| 'complete'
+		| 'progress'
+		| 'seek'
+		| 'quality_change'
+		| 'speed_change'
+		| 'buffer';
 	event_data?: Record<string, any>;
 	watch_time_seconds?: number;
 	progress_percent?: number;
@@ -295,7 +304,9 @@ export const analyticsApi = {
 	/**
 	 * Track multiple events (batch)
 	 */
-	async trackEventsBatch(events: AnalyticsEvent[]): Promise<{ success: boolean; tracked?: number }> {
+	async trackEventsBatch(
+		events: AnalyticsEvent[]
+	): Promise<{ success: boolean; tracked?: number }> {
 		return apiRequest('/analytics/track-batch', {
 			method: 'POST',
 			body: JSON.stringify({ events })
@@ -335,7 +346,12 @@ export const analyticsApi = {
 	 */
 	async updateWatchProgress(
 		videoId: number,
-		data: { user_id?: number; position_seconds: number; watch_time_seconds: number; completion_percent: number }
+		data: {
+			user_id?: number;
+			position_seconds: number;
+			watch_time_seconds: number;
+			completion_percent: number;
+		}
 	): Promise<{ success: boolean }> {
 		return apiRequest(`/analytics/progress/${videoId}`, {
 			method: 'POST',
@@ -365,7 +381,8 @@ export const seriesApi = {
 		if (params?.per_page) searchParams.set('per_page', params.per_page.toString());
 		if (params?.content_type) searchParams.set('content_type', params.content_type);
 		if (params?.difficulty_level) searchParams.set('difficulty_level', params.difficulty_level);
-		if (params?.is_published !== undefined) searchParams.set('is_published', params.is_published.toString());
+		if (params?.is_published !== undefined)
+			searchParams.set('is_published', params.is_published.toString());
 		if (params?.search) searchParams.set('search', params.search);
 
 		const query = searchParams.toString();
@@ -382,7 +399,9 @@ export const seriesApi = {
 	/**
 	 * Create a new series
 	 */
-	async create(data: CreateSeriesRequest): Promise<{ success: boolean; data?: { id: number; slug: string } }> {
+	async create(
+		data: CreateSeriesRequest
+	): Promise<{ success: boolean; data?: { id: number; slug: string } }> {
 		return apiRequest('/series', {
 			method: 'POST',
 			body: JSON.stringify(data)
@@ -432,7 +451,12 @@ export const seriesApi = {
 	 */
 	async reorderVideos(
 		seriesId: number,
-		videoOrders: { video_id: number; sort_order: number; section_title?: string; section_order?: number }[]
+		videoOrders: {
+			video_id: number;
+			sort_order: number;
+			section_title?: string;
+			section_order?: number;
+		}[]
 	): Promise<{ success: boolean }> {
 		return apiRequest(`/series/${seriesId}/reorder`, {
 			method: 'POST',
@@ -449,14 +473,19 @@ export const chaptersApi = {
 	/**
 	 * Get chapters for a video
 	 */
-	async list(videoId: number): Promise<{ success: boolean; data?: VideoChapter[]; error?: string }> {
+	async list(
+		videoId: number
+	): Promise<{ success: boolean; data?: VideoChapter[]; error?: string }> {
 		return apiRequest(`/videos/${videoId}/chapters`);
 	},
 
 	/**
 	 * Create a chapter
 	 */
-	async create(videoId: number, data: CreateChapterRequest): Promise<{ success: boolean; data?: { id: number }; error?: string }> {
+	async create(
+		videoId: number,
+		data: CreateChapterRequest
+	): Promise<{ success: boolean; data?: { id: number }; error?: string }> {
 		return apiRequest(`/videos/${videoId}/chapters`, {
 			method: 'POST',
 			body: JSON.stringify(data)
@@ -468,7 +497,12 @@ export const chaptersApi = {
 	 */
 	async bulkCreate(
 		videoId: number,
-		chapters: { title: string; description?: string; start_time_seconds: number; end_time_seconds?: number }[]
+		chapters: {
+			title: string;
+			description?: string;
+			start_time_seconds: number;
+			end_time_seconds?: number;
+		}[]
 	): Promise<{ success: boolean; error?: string }> {
 		return apiRequest(`/videos/${videoId}/chapters/bulk`, {
 			method: 'POST',
@@ -479,7 +513,11 @@ export const chaptersApi = {
 	/**
 	 * Update a chapter
 	 */
-	async update(videoId: number, chapterId: number, data: Partial<CreateChapterRequest>): Promise<{ success: boolean; error?: string }> {
+	async update(
+		videoId: number,
+		chapterId: number,
+		data: Partial<CreateChapterRequest>
+	): Promise<{ success: boolean; error?: string }> {
 		return apiRequest(`/videos/${videoId}/chapters/${chapterId}`, {
 			method: 'PUT',
 			body: JSON.stringify(data)
@@ -521,7 +559,9 @@ export const scheduledApi = {
 	/**
 	 * Create a scheduled job
 	 */
-	async create(data: CreateScheduledJobRequest): Promise<{ success: boolean; data?: { id: number; scheduled_at: string }; error?: string }> {
+	async create(
+		data: CreateScheduledJobRequest
+	): Promise<{ success: boolean; data?: { id: number; scheduled_at: string }; error?: string }> {
 		return apiRequest('/scheduled-jobs', {
 			method: 'POST',
 			body: JSON.stringify(data)
@@ -544,7 +584,9 @@ export const bulkUploadApi = {
 	/**
 	 * Initialize bulk upload
 	 */
-	async init(data: BulkUploadRequest): Promise<{ success: boolean; data?: BulkUploadResponse; error?: string }> {
+	async init(
+		data: BulkUploadRequest
+	): Promise<{ success: boolean; data?: BulkUploadResponse; error?: string }> {
 		return apiRequest('/bulk-upload', {
 			method: 'POST',
 			body: JSON.stringify(data)
@@ -580,7 +622,10 @@ export const videoOpsApi = {
 	/**
 	 * Clone a video
 	 */
-	async clone(videoId: number, data: CloneVideoRequest): Promise<{ success: boolean; data?: { id: number; slug: string } }> {
+	async clone(
+		videoId: number,
+		data: CloneVideoRequest
+	): Promise<{ success: boolean; data?: { id: number; slug: string } }> {
 		return apiRequest(`/videos/${videoId}/clone`, {
 			method: 'POST',
 			body: JSON.stringify(data)
@@ -590,14 +635,22 @@ export const videoOpsApi = {
 	/**
 	 * Fetch video duration from Bunny.net
 	 */
-	async fetchDuration(videoId: number): Promise<{ success: boolean; data?: { duration: number; width?: number; height?: number; formatted_duration: string } }> {
+	async fetchDuration(
+		videoId: number
+	): Promise<{
+		success: boolean;
+		data?: { duration: number; width?: number; height?: number; formatted_duration: string };
+	}> {
 		return apiRequest(`/videos/${videoId}/duration`, { method: 'POST' });
 	},
 
 	/**
 	 * Fetch all video durations
 	 */
-	async fetchAllDurations(): Promise<{ success: boolean; data?: { updated: number; total_processed: number } }> {
+	async fetchAllDurations(): Promise<{
+		success: boolean;
+		data?: { updated: number; total_processed: number };
+	}> {
 		return apiRequest('/videos/fetch-durations', { method: 'POST' });
 	},
 
@@ -626,7 +679,8 @@ export const videoOpsApi = {
 		if (params?.content_type) searchParams.set('content_type', params.content_type);
 		if (params?.room_id) searchParams.set('room_id', params.room_id.toString());
 		if (params?.trader_id) searchParams.set('trader_id', params.trader_id.toString());
-		if (params?.is_published !== undefined) searchParams.set('is_published', params.is_published.toString());
+		if (params?.is_published !== undefined)
+			searchParams.set('is_published', params.is_published.toString());
 		if (params?.start_date) searchParams.set('start_date', params.start_date);
 		if (params?.end_date) searchParams.set('end_date', params.end_date);
 
@@ -687,7 +741,7 @@ export function formatDuration(seconds: number): string {
  * Parse time string (HH:MM:SS or MM:SS) to seconds
  */
 export function parseTimeToSeconds(timeStr: string): number | null {
-	const parts = timeStr.split(':').map(p => parseInt(p, 10));
+	const parts = timeStr.split(':').map((p) => parseInt(p, 10));
 
 	if (parts.some(isNaN)) return null;
 

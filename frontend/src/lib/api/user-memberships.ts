@@ -25,21 +25,28 @@ import { isSuperadminEmail, isDeveloperEmail } from '$lib/config/roles';
 const PROD_API_ROOT = 'https://revolution-trading-pros-api.fly.dev';
 // ICT 7 FIX: VITE_API_URL does NOT include /api suffix (per config.ts pattern)
 // We must append /api here since this file calls endpoints directly
-const API_ROOT = browser ? (import.meta.env['VITE_API_URL'] || PROD_API_ROOT) : '';
+const API_ROOT = browser ? import.meta.env['VITE_API_URL'] || PROD_API_ROOT : '';
 const API_BASE = API_ROOT ? `${API_ROOT}/api` : '';
 
 // Cache TTLs (in milliseconds)
 const CACHE_TTL = {
-	memberships: 3 * 60 * 1000,       // 3 minutes
+	memberships: 3 * 60 * 1000, // 3 minutes
 	membershipDetails: 5 * 60 * 1000, // 5 minutes
-	tradingRooms: 2 * 60 * 1000       // 2 minutes (frequently accessed)
+	tradingRooms: 2 * 60 * 1000 // 2 minutes (frequently accessed)
 } as const;
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
 // ═══════════════════════════════════════════════════════════════════════════
 
-export type MembershipType = 'trading-room' | 'alert-service' | 'course' | 'indicator' | 'scanner' | 'weekly-watchlist' | 'premium-report';
+export type MembershipType =
+	| 'trading-room'
+	| 'alert-service'
+	| 'course'
+	| 'indicator'
+	| 'scanner'
+	| 'weekly-watchlist'
+	| 'premium-report';
 export type MembershipStatus = 'active' | 'pending' | 'cancelled' | 'expired' | 'expiring';
 export type BillingInterval = 'monthly' | 'quarterly' | 'yearly' | 'lifetime';
 export type MembershipSubscriptionType = 'trial' | 'active' | 'paused' | 'complimentary' | null;
@@ -59,7 +66,7 @@ export interface UserMembership {
 	interval?: BillingInterval;
 	daysUntilExpiry?: number;
 	accessUrl?: string;
-	roomSlug?: string;          // Trading room slug (e.g., 'day-trading-room')
+	roomSlug?: string; // Trading room slug (e.g., 'day-trading-room')
 	roomLabel?: string;
 	features?: string[];
 }
@@ -252,11 +259,9 @@ export async function getUserMemberships(options?: {
 
 	// ICT 7: ENTERPRISE DEVELOPER ACCESS - Check via environment-based config
 	// Developers get all memberships to test the complete member experience
-	const isDeveloper = storeUser && (
-		isDeveloperEmail(storeUser.email) ||
-		isSuperadminEmail(storeUser.email)
-	);
-	
+	const isDeveloper =
+		storeUser && (isDeveloperEmail(storeUser.email) || isSuperadminEmail(storeUser.email));
+
 	if (isDeveloper) {
 		console.log('[UserMemberships] Developer/Superadmin detected - unlocking all memberships');
 		// Skip cache to always get latest products
@@ -391,23 +396,23 @@ export async function preloadMembershipData(): Promise<void> {
 /**
  * ICT 11+ ENTERPRISE PATTERN: Developer/Superadmin Auto-Unlock System
  * ═══════════════════════════════════════════════════════════════════════════
- * 
+ *
  * Developers get automatic access to ALL available memberships to test the complete
  * member experience. They appear as regular members with full access to all services.
- * 
+ *
  * ICT 7 FIX: Use SvelteKit proxy endpoints instead of direct backend calls
  * This prevents 404 console errors when backend endpoints don't exist yet.
- * 
+ *
  * FALLBACK STRATEGY:
  * 1. Try /api/admin/membership-plans proxy endpoint (primary)
  * 2. Try /api/products proxy endpoint (fallback)
  * 3. Return mock data if both fail (development safety)
- * 
+ *
  * @returns UserMembershipsResponse with all available memberships
  */
 async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 	console.log('[Developer] 🔓 Fetching all available memberships for developer access...');
-	
+
 	try {
 		// ICT 7 FIX: Use SvelteKit proxy endpoints (NOT direct backend URLs)
 		// STRATEGY 1: Try membership plans proxy endpoint
@@ -419,7 +424,9 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 
 		// STRATEGY 2: Fallback to products proxy endpoint
 		if (!response.ok || (await response.clone().json()).plans?.length === 0) {
-			console.warn('[Developer] Admin membership-plans endpoint returned empty, trying products endpoint...');
+			console.warn(
+				'[Developer] Admin membership-plans endpoint returned empty, trying products endpoint...'
+			);
 			response = await fetch('/api/products?product_type=membership&per_page=100', {
 				method: 'GET',
 				headers: await getAuthHeaders(),
@@ -429,7 +436,10 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 
 		// Check if we got valid data
 		const responseData = await response.clone().json();
-		if (!response.ok || (!responseData.data?.length && !responseData.products?.length && !responseData.plans?.length)) {
+		if (
+			!response.ok ||
+			(!responseData.data?.length && !responseData.products?.length && !responseData.plans?.length)
+		) {
 			console.log('[Developer] API returned no products, using mock data');
 			// STRATEGY 3: Return mock data for development
 			return getDeveloperMockMemberships();
@@ -437,7 +447,7 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 
 		const data = await response.json();
 		const products = data.data || data || [];
-		
+
 		console.log(`[Developer] ✅ Fetched ${products.length} products from API`);
 
 		if (products.length === 0) {
@@ -451,12 +461,16 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 			const name = item.name || item.title || 'Unnamed Membership';
 			const slug = item.slug || `membership-${item.id}`;
 			const price = item.price || item.price_monthly || 0;
-			
+
 			// Determine membership type from name, slug, or metadata
 			let membershipType: MembershipType = 'trading-room';
 			const searchText = `${name} ${slug} ${item.description || ''}`.toLowerCase();
-			
-			if (searchText.includes('course') || searchText.includes('class') || searchText.includes('mastery')) {
+
+			if (
+				searchText.includes('course') ||
+				searchText.includes('class') ||
+				searchText.includes('mastery')
+			) {
 				membershipType = 'course';
 			} else if (searchText.includes('indicator')) {
 				membershipType = 'indicator';
@@ -467,7 +481,7 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 			} else if (searchText.includes('report') || searchText.includes('premium')) {
 				membershipType = 'premium-report';
 			}
-			
+
 			// Extract icon from metadata if available
 			let icon = getDefaultIcon(membershipType);
 			if (item.metadata && typeof item.metadata === 'object') {
@@ -495,16 +509,16 @@ async function getDeveloperMemberships(): Promise<UserMembershipsResponse> {
 
 		console.log('[Developer] 📊 Membership breakdown:', {
 			total: memberships.length,
-			tradingRooms: memberships.filter(m => m.type === 'trading-room').length,
-			courses: memberships.filter(m => m.type === 'course').length,
-			indicators: memberships.filter(m => m.type === 'indicator').length,
-			weeklyWatchlist: memberships.filter(m => m.type === 'weekly-watchlist').length,
-			premiumReports: memberships.filter(m => m.type === 'premium-report').length
+			tradingRooms: memberships.filter((m) => m.type === 'trading-room').length,
+			courses: memberships.filter((m) => m.type === 'course').length,
+			indicators: memberships.filter((m) => m.type === 'indicator').length,
+			weeklyWatchlist: memberships.filter((m) => m.type === 'weekly-watchlist').length,
+			premiumReports: memberships.filter((m) => m.type === 'premium-report').length
 		});
 
 		const enhanced = enhanceMemberships(memberships);
 		const categorized = categorizeMemberships(enhanced);
-		
+
 		console.log('[Developer] ✅ Successfully loaded all memberships');
 		return categorized;
 	} catch (error) {
@@ -521,9 +535,9 @@ function getDefaultIcon(type: MembershipType): string {
 	const iconMap: Record<MembershipType, string> = {
 		'trading-room': 'chart-line',
 		'alert-service': 'bell',
-		'course': 'book',
-		'indicator': 'chart-candle',
-		'scanner': 'chart-candle',
+		course: 'book',
+		indicator: 'chart-candle',
+		scanner: 'chart-candle',
 		'weekly-watchlist': 'calendar',
 		'premium-report': 'file-text'
 	};

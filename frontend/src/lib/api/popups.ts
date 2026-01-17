@@ -819,8 +819,8 @@ class PopupEngagementService {
 				method: 'GET',
 				headers: {
 					'Content-Type': 'application/json',
-					'Accept': 'application/json',
-					...(token ? { 'Authorization': `Bearer ${token}` } : {})
+					Accept: 'application/json',
+					...(token ? { Authorization: `Bearer ${token}` } : {})
 				}
 			});
 
@@ -1657,7 +1657,9 @@ export async function submitPopupForm(
 	formData: PopupFormData,
 	metadata?: Record<string, unknown>
 ): Promise<PopupFormSubmitResult> {
-	const sessionId = browser ? sessionStorage.getItem('popup_session_id') || `session_${Date.now()}` : '';
+	const sessionId = browser
+		? sessionStorage.getItem('popup_session_id') || `session_${Date.now()}`
+		: '';
 
 	try {
 		const response = await fetch(`${API_BASE}/popups/${popupId}/form-submit`, {
@@ -1671,8 +1673,12 @@ export async function submitPopupForm(
 				metadata: {
 					...metadata,
 					page_url: browser ? window.location.href : '',
-					utm_source: browser ? new URLSearchParams(window.location.search).get('utm_source') : null,
-					utm_campaign: browser ? new URLSearchParams(window.location.search).get('utm_campaign') : null,
+					utm_source: browser
+						? new URLSearchParams(window.location.search).get('utm_source')
+						: null,
+					utm_campaign: browser
+						? new URLSearchParams(window.location.search).get('utm_campaign')
+						: null,
 					utm_medium: browser ? new URLSearchParams(window.location.search).get('utm_medium') : null
 				}
 			})

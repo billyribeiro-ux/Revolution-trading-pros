@@ -1,6 +1,7 @@
 # Classes Implementation - Pixel-Perfect Match
 
 ## Overview
+
 This document describes the complete implementation of the My Classes list page and class detail pages, achieving a pixel-perfect match with the WordPress reference implementation.
 
 ## Key Differences Between List and Detail Pages
@@ -8,11 +9,13 @@ This document describes the complete implementation of the My Classes list page 
 ### 1. Breadcrumb Navigation
 
 **My Classes List Page:**
+
 ```
 Home / Member Dashboard / My Classes
 ```
 
 **Class Detail Page:**
+
 ```
 Home / Classes / [Class Name]
 ```
@@ -20,15 +23,17 @@ Home / Classes / [Class Name]
 ### 2. Page Title Structure
 
 **My Classes List Page:**
+
 ```html
 <header class="dashboard__header">
-  <div class="dashboard__header-left">
-    <h1 class="dashboard__page-title">My Classes</h1>
-  </div>
+	<div class="dashboard__header-left">
+		<h1 class="dashboard__page-title">My Classes</h1>
+	</div>
 </header>
 ```
 
 **Class Detail Page:**
+
 ```html
 <!-- NO dashboard__header wrapper! -->
 <h1>Tax Loss Harvest</h1>
@@ -39,11 +44,13 @@ This is a **critical difference** - the detail page does NOT use the `dashboard_
 ### 3. Content Layout
 
 **My Classes List Page:**
+
 - Grid layout of class cards
 - Each card links to `/classes/[slug]`
 - Shows thumbnail, title, description, duration
 
 **Class Detail Page:**
+
 - Single class view
 - Video player section
 - Class description
@@ -89,23 +96,26 @@ The breadcrumbs component now intelligently handles three scenarios:
 ### Breadcrumb Link Fix
 
 Matches WordPress implementation exactly:
+
 ```javascript
 onMount(() => {
-  const classesLink = document.querySelector('a.breadcrumb-custom-post-type-classes');
-  if (classesLink) {
-    classesLink.setAttribute('href', '/dashboard/classes');
-  }
+	const classesLink = document.querySelector('a.breadcrumb-custom-post-type-classes');
+	if (classesLink) {
+		classesLink.setAttribute('href', '/dashboard/classes');
+	}
 });
 ```
 
 ### Tracking Implementation
 
 **My Classes List Page:**
+
 ```javascript
 richpanel.track("page_view", {"name":"My Classes"}, {...});
 ```
 
 **Class Detail Page:**
+
 ```javascript
 richpanel.track("view_article", {
   "id": 2173470,
@@ -117,6 +127,7 @@ richpanel.track("view_article", {
 ## CSS Classes Used
 
 ### My Classes List Page
+
 - `.dashboard__header` - Header wrapper
 - `.dashboard__header-left` - Left section of header
 - `.dashboard__page-title` - Page title styling
@@ -129,6 +140,7 @@ richpanel.track("view_article", {
 - `.class-card__duration` - Duration indicator
 
 ### Class Detail Page
+
 - `.class-detail` - Main container
 - `.class-player-section` - Video player area
 - `.class-player-header` - Section header
@@ -146,6 +158,7 @@ richpanel.track("view_article", {
 ## WordPress Class Names (Exact Match)
 
 ### Breadcrumbs
+
 - `item-home` - Home breadcrumb item
 - `item-parent` - Parent page item
 - `item-parent-401190` - Member Dashboard (specific ID)
@@ -164,6 +177,7 @@ richpanel.track("view_article", {
 ## Meta Tags
 
 ### My Classes List Page
+
 ```html
 <title>My Classes - Simpler Trading</title>
 <meta property="og:title" content="My Classes" />
@@ -171,6 +185,7 @@ richpanel.track("view_article", {
 ```
 
 ### Class Detail Page
+
 ```html
 <title>Tax Loss Harvest - Simpler Trading</title>
 <meta property="og:title" content="Tax Loss Harvest" />
@@ -181,11 +196,13 @@ richpanel.track("view_article", {
 ## Responsive Behavior
 
 Both pages are fully responsive with breakpoints at:
+
 - Mobile: < 768px
 - Tablet: 768px - 1279px
 - Desktop: ≥ 1280px
 
 ### Mobile Optimizations
+
 - Single column layout for class cards
 - Reduced font sizes
 - Adjusted padding and spacing

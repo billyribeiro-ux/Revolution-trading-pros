@@ -111,7 +111,7 @@ async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise
 	const headers: Record<string, string> = {
 		'Content-Type': 'application/json',
 		Accept: 'application/json',
-		...(options.headers as Record<string, string> || {})
+		...((options.headers as Record<string, string>) || {})
 	};
 
 	if (token) {
@@ -166,7 +166,10 @@ export const watchlistApi = {
 	/**
 	 * Get watchlist items for a specific room
 	 */
-	getByRoom: async (roomId: string, params?: Omit<WatchlistParams, 'room'>): Promise<WatchlistResponse> => {
+	getByRoom: async (
+		roomId: string,
+		params?: Omit<WatchlistParams, 'room'>
+	): Promise<WatchlistResponse> => {
 		return watchlistApi.getAll({ ...params, room: roomId, status: 'published' });
 	},
 

@@ -161,7 +161,7 @@ export class PopupHeatmapTracker {
 			mouseMovements: this.mouseMovements,
 			totalTimeSpent,
 			engagementScore,
-			attentionZones,
+			attentionZones
 		};
 
 		console.debug('[HeatmapTracker] Stopped tracking, data collected:', {
@@ -169,7 +169,7 @@ export class PopupHeatmapTracker {
 			scrolls: this.scrolls.length,
 			formInteractions: this.formInteractions.length,
 			mouseMovements: this.mouseMovements.length,
-			engagementScore,
+			engagementScore
 		});
 
 		return data;
@@ -192,7 +192,7 @@ export class PopupHeatmapTracker {
 			mouseMovements: [...this.mouseMovements],
 			totalTimeSpent,
 			engagementScore,
-			attentionZones,
+			attentionZones
 		};
 	}
 
@@ -211,7 +211,8 @@ export class PopupHeatmapTracker {
 		if (!this.popupElement) return;
 
 		// Find scrollable content within popup
-		const scrollContainer = this.popupElement.querySelector('[data-popup-content]') ||
+		const scrollContainer =
+			this.popupElement.querySelector('[data-popup-content]') ||
 			this.popupElement.querySelector('.popup-content') ||
 			this.popupElement;
 
@@ -281,7 +282,7 @@ export class PopupHeatmapTracker {
 			...(elementText && { elementText }),
 			isButton: target.tagName === 'BUTTON' || target.getAttribute('role') === 'button',
 			isLink: target.tagName === 'A',
-			isFormElement: ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName),
+			isFormElement: ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
 		};
 
 		this.clicks.push(clickData);
@@ -310,7 +311,7 @@ export class PopupHeatmapTracker {
 			...(elementText && { elementText }),
 			isButton: target.tagName === 'BUTTON' || target.getAttribute('role') === 'button',
 			isLink: target.tagName === 'A',
-			isFormElement: ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName),
+			isFormElement: ['INPUT', 'TEXTAREA', 'SELECT'].includes(target.tagName)
 		};
 
 		this.clicks.push(clickData);
@@ -336,7 +337,7 @@ export class PopupHeatmapTracker {
 			maxDepth: this.maxScrollDepth,
 			timestamp: now,
 			direction: scrollDiff > 0 ? 'down' : 'up',
-			velocity,
+			velocity
 		};
 
 		this.scrolls.push(scrollData);
@@ -357,7 +358,7 @@ export class PopupHeatmapTracker {
 			fieldType: target.type || target.tagName.toLowerCase(),
 			action: 'focus',
 			timestamp: Date.now(),
-			hasValue: Boolean(target.value),
+			hasValue: Boolean(target.value)
 		});
 	}
 
@@ -376,7 +377,7 @@ export class PopupHeatmapTracker {
 			action: 'blur',
 			timestamp: Date.now(),
 			...(timeSpent !== undefined && { timeSpent }),
-			hasValue: Boolean(target.value),
+			hasValue: Boolean(target.value)
 		});
 	}
 
@@ -391,7 +392,7 @@ export class PopupHeatmapTracker {
 			fieldType: target.type || target.tagName.toLowerCase(),
 			action: 'input',
 			timestamp: Date.now(),
-			hasValue: Boolean(target.value),
+			hasValue: Boolean(target.value)
 		});
 	}
 
@@ -406,7 +407,7 @@ export class PopupHeatmapTracker {
 			fieldType: target.type || target.tagName.toLowerCase(),
 			action: 'change',
 			timestamp: Date.now(),
-			hasValue: Boolean(target.value),
+			hasValue: Boolean(target.value)
 		});
 	}
 
@@ -427,7 +428,7 @@ export class PopupHeatmapTracker {
 			this.mouseMovements.push({
 				x: ((event.clientX - rect.left) / rect.width) * 100,
 				y: ((event.clientY - rect.top) / rect.height) * 100,
-				timestamp: Date.now(),
+				timestamp: Date.now()
 			});
 		}
 	}
@@ -472,13 +473,17 @@ export class PopupHeatmapTracker {
 
 				// Count interactions in this zone
 				const clicksInZone = this.clicks.filter(
-					(c) => c.relativeX >= xStart && c.relativeX < xEnd &&
-						c.relativeY >= yStart && c.relativeY < yEnd
+					(c) =>
+						c.relativeX >= xStart &&
+						c.relativeX < xEnd &&
+						c.relativeY >= yStart &&
+						c.relativeY < yEnd
 				).length;
 
-				const mouseTimeInZone = this.mouseMovements.filter(
-					(m) => m.x >= xStart && m.x < xEnd && m.y >= yStart && m.y < yEnd
-				).length * 100; // Approximate ms based on sample rate
+				const mouseTimeInZone =
+					this.mouseMovements.filter(
+						(m) => m.x >= xStart && m.x < xEnd && m.y >= yStart && m.y < yEnd
+					).length * 100; // Approximate ms based on sample rate
 
 				zones.push({
 					x: xStart,
@@ -486,7 +491,7 @@ export class PopupHeatmapTracker {
 					width: 100 / gridSize,
 					height: 100 / gridSize,
 					timeSpent: mouseTimeInZone,
-					interactions: clicksInZone,
+					interactions: clicksInZone
 				});
 			}
 		}
@@ -508,7 +513,7 @@ export class PopupHeatmapTracker {
 			mouseMovements: [],
 			totalTimeSpent: 0,
 			engagementScore: 0,
-			attentionZones: [],
+			attentionZones: []
 		};
 	}
 }
@@ -520,7 +525,10 @@ export class PopupHeatmapTracker {
 /**
  * Create a new heatmap tracker for a popup.
  */
-export function createPopupHeatmapTracker(popupId: string, sessionId?: string): PopupHeatmapTracker {
+export function createPopupHeatmapTracker(
+	popupId: string,
+	sessionId?: string
+): PopupHeatmapTracker {
 	return new PopupHeatmapTracker(popupId, sessionId);
 }
 
@@ -539,7 +547,7 @@ export function generateHeatmapVisualization(
 		points.push({
 			x: (click.relativeX / 100) * width,
 			y: (click.relativeY / 100) * height,
-			intensity: 1.0, // Clicks are high intensity
+			intensity: 1.0 // Clicks are high intensity
 		});
 	});
 
@@ -547,7 +555,7 @@ export function generateHeatmapVisualization(
 		points.push({
 			x: (move.x / 100) * width,
 			y: (move.y / 100) * height,
-			intensity: 0.3, // Mouse movements are lower intensity
+			intensity: 0.3 // Mouse movements are lower intensity
 		});
 	});
 

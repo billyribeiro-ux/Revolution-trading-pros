@@ -174,15 +174,19 @@ export function scrollReveal(
 			entries.forEach((entry) => {
 				if (entry.isIntersecting) {
 					node.style.opacity = '1';
-					node.style.transform = 'translate3d(0,0,0) translateY(0) translateX(0) scale(1) rotateX(0)';
+					node.style.transform =
+						'translate3d(0,0,0) translateY(0) translateX(0) scale(1) rotateX(0)';
 					node.style.filter = 'blur(0)';
 
 					if (once) {
 						localObserver.unobserve(node);
 						// ICT 11+ Performance: Clean up willChange after animation completes
-						setTimeout(() => {
-							node.style.willChange = 'auto';
-						}, duration + delay + 100);
+						setTimeout(
+							() => {
+								node.style.willChange = 'auto';
+							},
+							duration + delay + 100
+						);
 					}
 				} else if (!once) {
 					Object.assign(node.style, initialStyles);
@@ -404,8 +408,12 @@ export function tilt3d(
 		glareColor?: string;
 	} = {}
 ) {
-	const { intensity = 10, scale = 1.02, glare = true, glareColor = 'rgba(255,255,255,0.3)' } =
-		params;
+	const {
+		intensity = 10,
+		scale = 1.02,
+		glare = true,
+		glareColor = 'rgba(255,255,255,0.3)'
+	} = params;
 
 	node.style.transformStyle = 'preserve-3d';
 	node.style.transition = 'transform 0.3s ease-out';

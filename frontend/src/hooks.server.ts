@@ -59,7 +59,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 	};
 
 	// Check if this is a protected route
-	const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+	const isProtectedRoute = PROTECTED_ROUTES.some((route) => pathname.startsWith(route));
 
 	if (!isProtectedRoute) {
 		// Not a protected route - but still try to get user if token exists
@@ -69,9 +69,9 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
 					method: 'GET',
 					headers: {
-						'Authorization': `Bearer ${token}`,
+						Authorization: `Bearer ${token}`,
 						'Content-Type': 'application/json',
-						'Accept': 'application/json'
+						Accept: 'application/json'
 					}
 				});
 				if (response.ok) {
@@ -103,18 +103,18 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		// Add timeout to prevent hanging requests
 		const controller = new AbortController();
 		const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
-		
+
 		// ICT7 FIX: Backend /me endpoint is under /auth router
 		const response = await fetch(`${API_BASE_URL}/api/auth/me`, {
 			method: 'GET',
 			headers: {
-				'Authorization': `Bearer ${token || refreshToken}`,
+				Authorization: `Bearer ${token || refreshToken}`,
 				'Content-Type': 'application/json',
-				'Accept': 'application/json'
+				Accept: 'application/json'
 			},
 			signal: controller.signal
 		});
-		
+
 		clearTimeout(timeoutId);
 		validationAttempted = true;
 
@@ -130,7 +130,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				name: userData.name,
 				role: userData.role
 			};
-			
+
 			// ICT 7 FIX: Store token in locals for server-side API calls
 			// This allows +page.server.ts load functions to make authenticated API calls
 			event.locals.accessToken = token || refreshToken;
@@ -142,7 +142,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				const returnUrl = encodeURIComponent(pathname);
 				throw redirect(303, `/login?redirect=${returnUrl}`);
 			}
-			
+
 			// SERVER-SIDE TOKEN REFRESH
 			//
 			// This is one of THREE token refresh implementations:
@@ -156,7 +156,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				method: 'POST',
 				headers: {
 					'Content-Type': 'application/json',
-					'Accept': 'application/json'
+					Accept: 'application/json'
 				},
 				body: JSON.stringify({ refresh_token: refreshToken })
 			});
@@ -180,7 +180,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 				const userResponse = await fetch(`${API_BASE_URL}/api/auth/me`, {
 					method: 'GET',
 					headers: {
-						'Authorization': `Bearer ${newToken}`,
+						Authorization: `Bearer ${newToken}`,
 						'Content-Type': 'application/json'
 					}
 				});
@@ -195,7 +195,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 						name: userData.name,
 						role: userData.role
 					};
-					
+
 					// ICT 7 FIX: Store refreshed token in locals for server-side API calls
 					event.locals.accessToken = newToken;
 				}
@@ -222,7 +222,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 		}
 	} catch (error) {
 		// ICT 7: Sophisticated error handling with transient vs permanent failure detection
-		
+
 		// If it's a redirect, rethrow it (permanent auth failure)
 		if (error instanceof Response || (error as any)?.status === 303) {
 			throw error;
@@ -230,7 +230,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 
 		// Determine if this is a transient or permanent failure
 		const errorMessage = error instanceof Error ? error.message : String(error);
-		const isNetworkError = 
+		const isNetworkError =
 			errorMessage.includes('fetch') ||
 			errorMessage.includes('network') ||
 			errorMessage.includes('ECONNREFUSED') ||
@@ -238,11 +238,11 @@ const authHandler: Handle = async ({ event, resolve }) => {
 			errorMessage.includes('aborted') ||
 			errorMessage.includes('API_SERVER_ERROR') ||
 			errorMessage.includes('API_UNEXPECTED_RESPONSE');
-		
+
 		if (isNetworkError && (token || refreshToken)) {
 			// ICT 7: Transient failure - preserve session with graceful degradation
 			console.warn('[Auth Hook] Transient failure detected - preserving session:', errorMessage);
-			
+
 			// Try to decode token to get user info (JWT tokens contain user data)
 			// This allows us to preserve the actual user session during transient failures
 			try {
@@ -252,7 +252,7 @@ const authHandler: Handle = async ({ event, resolve }) => {
 					const parts = tokenToDecode.split('.');
 					if (parts.length === 3) {
 						const payload = JSON.parse(Buffer.from(parts[1], 'base64').toString());
-						
+
 						// ICT 7: Set user from token payload (offline validation)
 						event.locals.user = {
 							id: Number(payload.sub || payload.id || payload.user_id || 0),
@@ -260,18 +260,21 @@ const authHandler: Handle = async ({ event, resolve }) => {
 							name: payload.name || payload.username || 'User',
 							role: payload.role || 'user'
 						};
-						console.log('[Auth Hook] Session preserved from token payload:', event.locals.user.email);
+						console.log(
+							'[Auth Hook] Session preserved from token payload:',
+							event.locals.user.email
+						);
 						return resolve(event);
 					}
 				}
 			} catch (decodeError) {
 				console.warn('[Auth Hook] Could not decode token:', decodeError);
 			}
-			
+
 			// Fallback: If token decode fails, still preserve session with minimal data
 			// This prevents logout during transient failures
 			event.locals.user = {
-				id: 0,  // Fallback ID for transient failures
+				id: 0, // Fallback ID for transient failures
 				email: 'session@preserved.local',
 				name: 'Session Preserved',
 				role: 'user'
@@ -365,7 +368,10 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 			pathname === '/about' ||
 			pathname === '/our-mission'
 		) {
-			headers.set('X-Robots-Tag', 'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1');
+			headers.set(
+				'X-Robots-Tag',
+				'index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1'
+			);
 		}
 		// Prevent indexing for private areas
 		else if (
@@ -417,18 +423,18 @@ const securityHeaders: Handle = async ({ event, resolve }) => {
 /**
  * Performance & Caching Handler
  * Implements optimal caching strategies for different resource types
- * 
+ *
  * ICT 7 FIX (Svelte 5 / SvelteKit 2.x Best Practice):
  * Uses the official `preload` option in ResolveOptions to control what gets preloaded.
- * 
+ *
  * Root cause: SvelteKit eagerly preloads CSS for all anticipated routes, but due to
  * conditional rendering ({#if mounted} blocks) and complex layout branches, the CSS
  * may not be consumed within the browser's ~3 second timeout window.
- * 
+ *
  * Solution: Use SvelteKit's native preload callback to disable CSS preloading.
  * CSS still loads via <link rel="stylesheet"> - just without <link rel="preload">.
  * HTTP/2 multiplexing ensures efficient loading without preload hints.
- * 
+ *
  * @see https://svelte.dev/docs/kit/@sveltejs-kit#ResolveOptions
  */
 const performanceHandler: Handle = async ({ event, resolve }) => {
@@ -477,4 +483,9 @@ const timingHandler: Handle = async ({ event, resolve }) => {
 
 // Combine all handlers in sequence
 // Auth handler runs FIRST to protect routes before any data loading
-export const handle: Handle = sequence(authHandler, timingHandler, securityHeaders, performanceHandler);
+export const handle: Handle = sequence(
+	authHandler,
+	timingHandler,
+	securityHeaders,
+	performanceHandler
+);

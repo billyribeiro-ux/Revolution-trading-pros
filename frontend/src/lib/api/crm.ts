@@ -198,11 +198,18 @@ export class CrmAPI {
 		return apiClient.get(`/admin/crm/sequences/${sequenceId}/emails`);
 	}
 
-	async createSequenceEmail(sequenceId: string, data: Partial<SequenceMail>): Promise<SequenceMail> {
+	async createSequenceEmail(
+		sequenceId: string,
+		data: Partial<SequenceMail>
+	): Promise<SequenceMail> {
 		return apiClient.post(`/admin/crm/sequences/${sequenceId}/emails`, data);
 	}
 
-	async updateSequenceEmail(sequenceId: string, emailId: string, data: Partial<SequenceMail>): Promise<SequenceMail> {
+	async updateSequenceEmail(
+		sequenceId: string,
+		emailId: string,
+		data: Partial<SequenceMail>
+	): Promise<SequenceMail> {
 		return apiClient.put(`/admin/crm/sequences/${sequenceId}/emails/${emailId}`, data);
 	}
 
@@ -211,21 +218,36 @@ export class CrmAPI {
 	}
 
 	async reorderSequenceEmails(sequenceId: string, emailIds: string[]): Promise<SequenceMail[]> {
-		return apiClient.post(`/admin/crm/sequences/${sequenceId}/emails/reorder`, { email_ids: emailIds });
+		return apiClient.post(`/admin/crm/sequences/${sequenceId}/emails/reorder`, {
+			email_ids: emailIds
+		});
 	}
 
-	async getSequenceSubscribers(id: string, filters?: { status?: string; per_page?: number }): Promise<{ data: SequenceTracker[]; meta: any }> {
-		return apiClient.get(`/admin/crm/sequences/${id}/subscribers`, { params: filters ?? undefined });
+	async getSequenceSubscribers(
+		id: string,
+		filters?: { status?: string; per_page?: number }
+	): Promise<{ data: SequenceTracker[]; meta: any }> {
+		return apiClient.get(`/admin/crm/sequences/${id}/subscribers`, {
+			params: filters ?? undefined
+		});
 	}
 
-	async subscribeToSequence(id: string, contactIds: string[], startPosition?: number): Promise<{ subscribed_count: number }> {
+	async subscribeToSequence(
+		id: string,
+		contactIds: string[],
+		startPosition?: number
+	): Promise<{ subscribed_count: number }> {
 		return apiClient.post(`/admin/crm/sequences/${id}/subscribe`, {
 			contact_ids: contactIds,
 			start_position: startPosition
 		});
 	}
 
-	async unsubscribeFromSequence(id: string, contactIds: string[], reason?: string): Promise<{ unsubscribed_count: number }> {
+	async unsubscribeFromSequence(
+		id: string,
+		contactIds: string[],
+		reason?: string
+	): Promise<{ unsubscribed_count: number }> {
 		return apiClient.post(`/admin/crm/sequences/${id}/unsubscribe`, {
 			contact_ids: contactIds,
 			reason
@@ -236,11 +258,15 @@ export class CrmAPI {
 	// FLUENTCRM PRO - RECURRING CAMPAIGNS
 	// =====================================================
 
-	async getRecurringCampaigns(filters?: RecurringCampaignFilters): Promise<{ data: RecurringCampaign[]; meta: any }> {
+	async getRecurringCampaigns(
+		filters?: RecurringCampaignFilters
+	): Promise<{ data: RecurringCampaign[]; meta: any }> {
 		return apiClient.get('/admin/crm/recurring-campaigns', { params: filters });
 	}
 
-	async getRecurringCampaign(id: string): Promise<{ campaign: RecurringCampaign; stats: RecurringCampaignStats }> {
+	async getRecurringCampaign(
+		id: string
+	): Promise<{ campaign: RecurringCampaign; stats: RecurringCampaignStats }> {
 		return apiClient.get(`/admin/crm/recurring-campaigns/${id}`);
 	}
 
@@ -248,7 +274,10 @@ export class CrmAPI {
 		return apiClient.post('/admin/crm/recurring-campaigns', data);
 	}
 
-	async updateRecurringCampaign(id: string, data: Partial<RecurringCampaign>): Promise<RecurringCampaign> {
+	async updateRecurringCampaign(
+		id: string,
+		data: Partial<RecurringCampaign>
+	): Promise<RecurringCampaign> {
 		return apiClient.put(`/admin/crm/recurring-campaigns/${id}`, data);
 	}
 
@@ -260,8 +289,13 @@ export class CrmAPI {
 		return apiClient.post(`/admin/crm/recurring-campaigns/${id}/duplicate`);
 	}
 
-	async getRecurringCampaignEmails(campaignId: string, filters?: { status?: string; per_page?: number }): Promise<{ data: RecurringMail[]; meta: any }> {
-		return apiClient.get(`/admin/crm/recurring-campaigns/${campaignId}/emails`, { params: filters });
+	async getRecurringCampaignEmails(
+		campaignId: string,
+		filters?: { status?: string; per_page?: number }
+	): Promise<{ data: RecurringMail[]; meta: any }> {
+		return apiClient.get(`/admin/crm/recurring-campaigns/${campaignId}/emails`, {
+			params: filters
+		});
 	}
 
 	async triggerRecurringCampaign(id: string): Promise<RecurringMail> {
@@ -292,7 +326,10 @@ export class CrmAPI {
 		return apiClient.delete(`/admin/crm/smart-links/${id}`);
 	}
 
-	async getSmartLinkClicks(id: string, filters?: { per_page?: number }): Promise<{ data: SmartLinkClick[]; meta: any }> {
+	async getSmartLinkClicks(
+		id: string,
+		filters?: { per_page?: number }
+	): Promise<{ data: SmartLinkClick[]; meta: any }> {
 		return apiClient.get(`/admin/crm/smart-links/${id}/clicks`, { params: filters });
 	}
 
@@ -304,11 +341,20 @@ export class CrmAPI {
 	// FLUENTCRM PRO - AUTOMATION FUNNELS
 	// =====================================================
 
-	async getAutomationFunnels(filters?: FunnelFilters): Promise<{ data: AutomationFunnel[]; meta: any }> {
+	async getAutomationFunnels(
+		filters?: FunnelFilters
+	): Promise<{ data: AutomationFunnel[]; meta: any }> {
 		return apiClient.get('/admin/crm/automations', { params: filters });
 	}
 
-	async getAutomationFunnel(id: string): Promise<{ funnel: AutomationFunnel; stats: FunnelStats; trigger_types: Record<string, string>; action_types: Record<string, string> }> {
+	async getAutomationFunnel(
+		id: string
+	): Promise<{
+		funnel: AutomationFunnel;
+		stats: FunnelStats;
+		trigger_types: Record<string, string>;
+		action_types: Record<string, string>;
+	}> {
 		return apiClient.get(`/admin/crm/automations/${id}`);
 	}
 
@@ -316,7 +362,10 @@ export class CrmAPI {
 		return apiClient.post('/admin/crm/automations', data);
 	}
 
-	async updateAutomationFunnel(id: string, data: Partial<AutomationFunnel>): Promise<AutomationFunnel> {
+	async updateAutomationFunnel(
+		id: string,
+		data: Partial<AutomationFunnel>
+	): Promise<AutomationFunnel> {
 		return apiClient.put(`/admin/crm/automations/${id}`, data);
 	}
 
@@ -352,7 +401,11 @@ export class CrmAPI {
 		return apiClient.post(`/admin/crm/automations/${funnelId}/actions`, data);
 	}
 
-	async updateFunnelAction(funnelId: string, actionId: string, data: Partial<FunnelAction>): Promise<FunnelAction> {
+	async updateFunnelAction(
+		funnelId: string,
+		actionId: string,
+		data: Partial<FunnelAction>
+	): Promise<FunnelAction> {
 		return apiClient.put(`/admin/crm/automations/${funnelId}/actions/${actionId}`, data);
 	}
 
@@ -361,26 +414,42 @@ export class CrmAPI {
 	}
 
 	async reorderFunnelActions(funnelId: string, actionIds: string[]): Promise<FunnelAction[]> {
-		return apiClient.post(`/admin/crm/automations/${funnelId}/actions/reorder`, { action_ids: actionIds });
+		return apiClient.post(`/admin/crm/automations/${funnelId}/actions/reorder`, {
+			action_ids: actionIds
+		});
 	}
 
-	async getFunnelSubscribers(funnelId: string, filters?: { status?: string; per_page?: number }): Promise<{ data: FunnelSubscriber[]; meta: any }> {
+	async getFunnelSubscribers(
+		funnelId: string,
+		filters?: { status?: string; per_page?: number }
+	): Promise<{ data: FunnelSubscriber[]; meta: any }> {
 		return apiClient.get(`/admin/crm/automations/${funnelId}/subscribers`, { params: filters });
 	}
 
 	async addToFunnel(funnelId: string, contactIds: string[]): Promise<{ added_count: number }> {
-		return apiClient.post(`/admin/crm/automations/${funnelId}/add-contacts`, { contact_ids: contactIds });
+		return apiClient.post(`/admin/crm/automations/${funnelId}/add-contacts`, {
+			contact_ids: contactIds
+		});
 	}
 
-	async removeFromFunnel(funnelId: string, contactIds: string[]): Promise<{ removed_count: number }> {
-		return apiClient.post(`/admin/crm/automations/${funnelId}/remove-contacts`, { contact_ids: contactIds });
+	async removeFromFunnel(
+		funnelId: string,
+		contactIds: string[]
+	): Promise<{ removed_count: number }> {
+		return apiClient.post(`/admin/crm/automations/${funnelId}/remove-contacts`, {
+			contact_ids: contactIds
+		});
 	}
 
 	// =====================================================
 	// FLUENTCRM PRO - CONTACT LISTS
 	// =====================================================
 
-	async getContactLists(filters?: { search?: string; is_public?: boolean; per_page?: number }): Promise<{ data: ContactList[]; meta: any }> {
+	async getContactLists(filters?: {
+		search?: string;
+		is_public?: boolean;
+		per_page?: number;
+	}): Promise<{ data: ContactList[]; meta: any }> {
 		return apiClient.get('/admin/crm/lists', { params: filters });
 	}
 
@@ -400,7 +469,10 @@ export class CrmAPI {
 		return apiClient.delete(`/admin/crm/lists/${id}`);
 	}
 
-	async getListContacts(id: string, filters?: { per_page?: number }): Promise<{ data: Contact[]; meta: any }> {
+	async getListContacts(
+		id: string,
+		filters?: { per_page?: number }
+	): Promise<{ data: Contact[]; meta: any }> {
 		return apiClient.get(`/admin/crm/lists/${id}/contacts`, { params: filters });
 	}
 
@@ -408,15 +480,23 @@ export class CrmAPI {
 		return apiClient.post(`/admin/crm/lists/${id}/contacts`, { contact_ids: contactIds });
 	}
 
-	async removeContactsFromList(id: string, contactIds: string[]): Promise<{ removed_count: number }> {
-		return apiClient.delete(`/admin/crm/lists/${id}/contacts`, { body: { contact_ids: contactIds } });
+	async removeContactsFromList(
+		id: string,
+		contactIds: string[]
+	): Promise<{ removed_count: number }> {
+		return apiClient.delete(`/admin/crm/lists/${id}/contacts`, {
+			body: { contact_ids: contactIds }
+		});
 	}
 
 	// =====================================================
 	// FLUENTCRM PRO - CONTACT TAGS
 	// =====================================================
 
-	async getContactTags(filters?: { search?: string; per_page?: number }): Promise<{ data: ContactTag[]; meta: any }> {
+	async getContactTags(filters?: {
+		search?: string;
+		per_page?: number;
+	}): Promise<{ data: ContactTag[]; meta: any }> {
 		return apiClient.get('/admin/crm/contact-tags', { params: filters });
 	}
 
@@ -436,7 +516,10 @@ export class CrmAPI {
 		return apiClient.delete(`/admin/crm/contact-tags/${id}`);
 	}
 
-	async getTagContacts(id: string, filters?: { per_page?: number; page?: number }): Promise<{ data: Contact[]; meta: any }> {
+	async getTagContacts(
+		id: string,
+		filters?: { per_page?: number; page?: number }
+	): Promise<{ data: Contact[]; meta: any }> {
 		return apiClient.get(`/admin/crm/contact-tags/${id}/contacts`, { params: filters });
 	}
 
@@ -444,12 +527,18 @@ export class CrmAPI {
 		return apiClient.post(`/admin/crm/contact-tags/${id}/apply`, { contact_ids: contactIds });
 	}
 
-	async removeTagFromContacts(id: string, contactIds: string[]): Promise<{ removed_count: number }> {
+	async removeTagFromContacts(
+		id: string,
+		contactIds: string[]
+	): Promise<{ removed_count: number }> {
 		return apiClient.post(`/admin/crm/contact-tags/${id}/remove`, { contact_ids: contactIds });
 	}
 
 	async bulkApplyTags(tagIds: string[], contactIds: string[]): Promise<{ applied_count: number }> {
-		return apiClient.post('/admin/crm/contact-tags/bulk-apply', { tag_ids: tagIds, contact_ids: contactIds });
+		return apiClient.post('/admin/crm/contact-tags/bulk-apply', {
+			tag_ids: tagIds,
+			contact_ids: contactIds
+		});
 	}
 
 	// =====================================================
@@ -460,7 +549,14 @@ export class CrmAPI {
 		return apiClient.get('/admin/crm/companies', { params: filters });
 	}
 
-	async getCompany(id: string): Promise<{ company: CrmCompany; stats: CompanyStats; industries: Record<string, string>; sizes: Record<string, string> }> {
+	async getCompany(
+		id: string
+	): Promise<{
+		company: CrmCompany;
+		stats: CompanyStats;
+		industries: Record<string, string>;
+		sizes: Record<string, string>;
+	}> {
 		return apiClient.get(`/admin/crm/companies/${id}`);
 	}
 
@@ -480,11 +576,17 @@ export class CrmAPI {
 		return apiClient.post(`/admin/crm/companies/${id}/duplicate`);
 	}
 
-	async getCompanyContacts(id: string, filters?: { per_page?: number }): Promise<{ data: Contact[]; meta: any }> {
+	async getCompanyContacts(
+		id: string,
+		filters?: { per_page?: number }
+	): Promise<{ data: Contact[]; meta: any }> {
 		return apiClient.get(`/admin/crm/companies/${id}/contacts`, { params: filters });
 	}
 
-	async getCompanyDeals(id: string, filters?: { status?: string; per_page?: number }): Promise<{ data: Deal[]; meta: any }> {
+	async getCompanyDeals(
+		id: string,
+		filters?: { status?: string; per_page?: number }
+	): Promise<{ data: Deal[]; meta: any }> {
 		return apiClient.get(`/admin/crm/companies/${id}/deals`, { params: filters });
 	}
 
@@ -500,7 +602,9 @@ export class CrmAPI {
 	// FLUENTCRM PRO - ABANDONED CARTS
 	// =====================================================
 
-	async getAbandonedCarts(filters?: AbandonedCartFilters): Promise<{ data: AbandonedCart[]; meta: any; haveAutomation: boolean }> {
+	async getAbandonedCarts(
+		filters?: AbandonedCartFilters
+	): Promise<{ data: AbandonedCart[]; meta: any; haveAutomation: boolean }> {
 		return apiClient.get('/admin/crm/abandoned-carts', { params: filters });
 	}
 
@@ -524,7 +628,9 @@ export class CrmAPI {
 		return apiClient.get('/admin/crm/abandoned-carts/settings');
 	}
 
-	async saveAbandonedCartSettings(settings: Partial<AbandonedCartSettings>): Promise<{ message: string; reload: boolean }> {
+	async saveAbandonedCartSettings(
+		settings: Partial<AbandonedCartSettings>
+	): Promise<{ message: string; reload: boolean }> {
 		return apiClient.post('/admin/crm/abandoned-carts/settings', { settings });
 	}
 
@@ -532,7 +638,11 @@ export class CrmAPI {
 	// FLUENTCRM PRO - EMAIL TEMPLATES
 	// =====================================================
 
-	async getEmailTemplates(filters?: { search?: string; category?: string; per_page?: number }): Promise<{ data: EmailTemplate[]; meta: any }> {
+	async getEmailTemplates(filters?: {
+		search?: string;
+		category?: string;
+		per_page?: number;
+	}): Promise<{ data: EmailTemplate[]; meta: any }> {
 		return apiClient.get('/admin/crm/templates', { params: filters });
 	}
 
@@ -592,7 +702,10 @@ export class CrmAPI {
 		return apiClient.post(`/admin/crm/webhooks/${id}/test`);
 	}
 
-	async getWebhookLogs(id: string, filters?: { per_page?: number }): Promise<{ data: WebhookLog[]; meta: any }> {
+	async getWebhookLogs(
+		id: string,
+		filters?: { per_page?: number }
+	): Promise<{ data: WebhookLog[]; meta: any }> {
 		return apiClient.get(`/admin/crm/webhooks/${id}/logs`, { params: filters });
 	}
 
@@ -604,7 +717,11 @@ export class CrmAPI {
 	// FLUENTCRM PRO - IMPORT/EXPORT
 	// =====================================================
 
-	async getImportJobs(filters?: { type?: string; status?: string; per_page?: number }): Promise<{ data: ImportJob[]; meta: any }> {
+	async getImportJobs(filters?: {
+		type?: string;
+		status?: string;
+		per_page?: number;
+	}): Promise<{ data: ImportJob[]; meta: any }> {
 		return apiClient.get('/admin/crm/imports', { params: filters });
 	}
 
@@ -618,7 +735,11 @@ export class CrmAPI {
 		});
 	}
 
-	async startImportJob(id: string, mapping: Record<string, string>, settings: any): Promise<ImportJob> {
+	async startImportJob(
+		id: string,
+		mapping: Record<string, string>,
+		settings: any
+	): Promise<ImportJob> {
 		return apiClient.post(`/admin/crm/imports/${id}/start`, { mapping, settings });
 	}
 
@@ -626,15 +747,24 @@ export class CrmAPI {
 		return apiClient.post(`/admin/crm/imports/${id}/cancel`);
 	}
 
-	async getImportPreview(id: string): Promise<{ headers: string[]; rows: any[]; total_rows: number }> {
+	async getImportPreview(
+		id: string
+	): Promise<{ headers: string[]; rows: any[]; total_rows: number }> {
 		return apiClient.get(`/admin/crm/imports/${id}/preview`);
 	}
 
-	async getExportJobs(filters?: { type?: string; per_page?: number }): Promise<{ data: ExportJob[]; meta: any }> {
+	async getExportJobs(filters?: {
+		type?: string;
+		per_page?: number;
+	}): Promise<{ data: ExportJob[]; meta: any }> {
 		return apiClient.get('/admin/crm/exports', { params: filters });
 	}
 
-	async createExportJob(type: string, filters?: Record<string, any>, fields?: string[]): Promise<ExportJob> {
+	async createExportJob(
+		type: string,
+		filters?: Record<string, any>,
+		fields?: string[]
+	): Promise<ExportJob> {
 		return apiClient.post('/admin/crm/exports', { type, filters, fields });
 	}
 
@@ -670,7 +800,9 @@ export class CrmAPI {
 		return apiClient.delete(`/admin/crm/manager-roles/${id}`);
 	}
 
-	async getManagerUsers(filters?: { per_page?: number }): Promise<{ data: ManagerUser[]; meta: any }> {
+	async getManagerUsers(filters?: {
+		per_page?: number;
+	}): Promise<{ data: ManagerUser[]; meta: any }> {
 		return apiClient.get('/admin/crm/managers', { params: filters });
 	}
 
@@ -698,7 +830,9 @@ export class CrmAPI {
 		return apiClient.get('/admin/crm/settings/double-optin');
 	}
 
-	async saveDoubleOptInSettings(settings: Partial<DoubleOptInSettings>): Promise<{ message: string }> {
+	async saveDoubleOptInSettings(
+		settings: Partial<DoubleOptInSettings>
+	): Promise<{ message: string }> {
 		return apiClient.post('/admin/crm/settings/double-optin', settings);
 	}
 
@@ -706,7 +840,9 @@ export class CrmAPI {
 		return apiClient.get('/admin/crm/settings/email-preferences');
 	}
 
-	async saveEmailPreferenceSettings(settings: Partial<EmailPreferencePage>): Promise<{ message: string }> {
+	async saveEmailPreferenceSettings(
+		settings: Partial<EmailPreferencePage>
+	): Promise<{ message: string }> {
 		return apiClient.post('/admin/crm/settings/email-preferences', settings);
 	}
 
@@ -734,11 +870,19 @@ export class CrmAPI {
 		return apiClient.get(`/admin/crm/logs/${id}`);
 	}
 
-	async clearSystemLogs(filters?: { level?: string; category?: string; before_date?: string }): Promise<{ deleted_count: number }> {
+	async clearSystemLogs(filters?: {
+		level?: string;
+		category?: string;
+		before_date?: string;
+	}): Promise<{ deleted_count: number }> {
 		return apiClient.post('/admin/crm/logs/clear', filters);
 	}
 
-	async getLogStats(): Promise<{ total: number; by_level: Record<string, number>; by_category: Record<string, number> }> {
+	async getLogStats(): Promise<{
+		total: number;
+		by_level: Record<string, number>;
+		by_category: Record<string, number>;
+	}> {
 		return apiClient.get('/admin/crm/logs/stats');
 	}
 
@@ -746,7 +890,11 @@ export class CrmAPI {
 	// FLUENTCRM PRO - CAMPAIGNS (ONE-TIME)
 	// =====================================================
 
-	async getCampaigns(filters?: { status?: string; search?: string; per_page?: number }): Promise<{ data: Campaign[]; meta: any }> {
+	async getCampaigns(filters?: {
+		status?: string;
+		search?: string;
+		per_page?: number;
+	}): Promise<{ data: Campaign[]; meta: any }> {
 		return apiClient.get('/admin/crm/campaigns', { params: filters });
 	}
 
@@ -790,7 +938,10 @@ export class CrmAPI {
 		return apiClient.get('/admin/crm/campaigns/stats');
 	}
 
-	async getCampaignRecipients(id: string, filters?: { per_page?: number }): Promise<{ data: Contact[]; meta: any }> {
+	async getCampaignRecipients(
+		id: string,
+		filters?: { per_page?: number }
+	): Promise<{ data: Contact[]; meta: any }> {
 		return apiClient.get(`/admin/crm/campaigns/${id}/recipients`, { params: filters });
 	}
 
@@ -798,11 +949,16 @@ export class CrmAPI {
 	// FLUENTCRM PRO - CONTACT SEGMENTS
 	// =====================================================
 
-	async getContactSegments(filters?: { search?: string; per_page?: number }): Promise<{ data: ContactSegment[]; meta: any }> {
+	async getContactSegments(filters?: {
+		search?: string;
+		per_page?: number;
+	}): Promise<{ data: ContactSegment[]; meta: any }> {
 		return apiClient.get('/admin/crm/segments', { params: filters });
 	}
 
-	async getContactSegment(id: string): Promise<{ segment: ContactSegment; contacts_count: number }> {
+	async getContactSegment(
+		id: string
+	): Promise<{ segment: ContactSegment; contacts_count: number }> {
 		return apiClient.get(`/admin/crm/segments/${id}`);
 	}
 
@@ -826,7 +982,10 @@ export class CrmAPI {
 		return apiClient.post(`/admin/crm/segments/${id}/sync`);
 	}
 
-	async getSegmentContacts(id: string, filters?: { per_page?: number }): Promise<{ data: Contact[]; meta: any }> {
+	async getSegmentContacts(
+		id: string,
+		filters?: { per_page?: number }
+	): Promise<{ data: Contact[]; meta: any }> {
 		return apiClient.get(`/admin/crm/segments/${id}/contacts`, { params: filters });
 	}
 }

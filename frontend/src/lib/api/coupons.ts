@@ -77,7 +77,9 @@ const ANALYTICS_INTERVAL = 60000; // 1 minute
 // Backend: Laravel Reverb WebSocket server with coupon channels implemented
 // Channels: coupons.public, coupons.user.{userId}, coupons.admin, coupons.analytics
 const WS_ENABLED = browser ? import.meta.env['VITE_WS_ENABLED'] === 'true' : false;
-const WS_URL = browser ? import.meta.env['VITE_WS_URL'] || 'wss://revolution-trading-pros-api.fly.dev' : '';
+const WS_URL = browser
+	? import.meta.env['VITE_WS_URL'] || 'wss://revolution-trading-pros-api.fly.dev'
+	: '';
 const WS_RECONNECT_DELAY = 1000; // Start with 1 second
 const WS_MAX_RECONNECT_DELAY = 30000; // Max 30 seconds
 const WS_RECONNECT_BACKOFF = 1.5; // Exponential backoff multiplier
@@ -452,7 +454,7 @@ class CouponManagementService {
 	private analyticsInterval?: number;
 	private pendingValidations = new Map<string, Promise<any>>();
 	private fraudCheckCache = new Map<string, FraudCheckResult>();
-	
+
 	// WebSocket State Management - Apple ICT 11 Principal Engineer Standards
 	private wsReconnectAttempts = 0;
 	private wsReconnectDelay = WS_RECONNECT_DELAY;
@@ -460,7 +462,9 @@ class CouponManagementService {
 	private wsHeartbeatTimer?: number;
 	private wsHeartbeatTimeout?: number;
 	private wsMessageQueue: any[] = [];
-	private wsConnectionState = writable<'disconnected' | 'connecting' | 'connected' | 'reconnecting'>('disconnected');
+	private wsConnectionState = writable<
+		'disconnected' | 'connecting' | 'connected' | 'reconnecting'
+	>('disconnected');
 	private wsLastPingTime = 0;
 	private wsLastPongTime = 0;
 
@@ -520,7 +524,7 @@ class CouponManagementService {
 		this.setupFraudDetection();
 
 		console.debug('[CouponService] Initialized');
-		
+
 		// Note: Analytics and initial data loading disabled to prevent reactive loops
 		// Call loadInitialData() and startAnalyticsCollection() manually if needed
 	}
@@ -587,7 +591,7 @@ class CouponManagementService {
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 * WebSocket Setup - Apple ICT 11 Principal Engineer Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 * 
+	 *
 	 * ARCHITECTURE:
 	 * - Automatic reconnection with exponential backoff
 	 * - Heartbeat/ping-pong mechanism for connection health monitoring
@@ -612,8 +616,10 @@ class CouponManagementService {
 
 		try {
 			const token = this.getAuthToken();
-			const wsUrl = token ? `${configuredWsUrl}/ws/coupons?token=${encodeURIComponent(token)}` : `${configuredWsUrl}/ws/coupons`;
-			
+			const wsUrl = token
+				? `${configuredWsUrl}/ws/coupons?token=${encodeURIComponent(token)}`
+				: `${configuredWsUrl}/ws/coupons`;
+
 			this.wsConnection = new WebSocket(wsUrl);
 
 			this.wsConnection.onopen = () => {
@@ -670,7 +676,7 @@ class CouponManagementService {
 	private handleWebSocketMessage(event: MessageEvent): void {
 		try {
 			const message = JSON.parse(event.data);
-			
+
 			// Handle pong response for heartbeat
 			if (message.type === 'pong') {
 				this.wsLastPongTime = Date.now();
@@ -717,12 +723,12 @@ class CouponManagementService {
 	 */
 	private startHeartbeat(): void {
 		this.stopHeartbeat(); // Clear any existing timers
-		
+
 		this.wsHeartbeatTimer = window.setInterval(() => {
 			if (this.wsConnection?.readyState === WebSocket.OPEN) {
 				this.wsLastPingTime = Date.now();
 				this.wsConnection.send(JSON.stringify({ type: 'ping', timestamp: this.wsLastPingTime }));
-				
+
 				// Set timeout to check for pong response
 				this.wsHeartbeatTimeout = window.setTimeout(() => {
 					const timeSinceLastPong = Date.now() - this.wsLastPongTime;
@@ -759,8 +765,10 @@ class CouponManagementService {
 
 		this.wsReconnectAttempts++;
 		this.wsConnectionState.set('reconnecting');
-		
-		console.info(`[CouponService] Scheduling reconnect attempt ${this.wsReconnectAttempts}/${WS_MAX_RECONNECT_ATTEMPTS} in ${this.wsReconnectDelay}ms`);
+
+		console.info(
+			`[CouponService] Scheduling reconnect attempt ${this.wsReconnectAttempts}/${WS_MAX_RECONNECT_ATTEMPTS} in ${this.wsReconnectDelay}ms`
+		);
 
 		this.wsReconnectTimer = window.setTimeout(() => {
 			this.setupWebSocket();
@@ -887,13 +895,13 @@ class CouponManagementService {
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Load Initial Data - Apple ICT 11 Principal Engineer Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 * 
+	 *
 	 * Gracefully loads initial coupon data with fallbacks for missing endpoints.
 	 * Implements progressive loading to minimize initial page load impact.
 	 */
 	public async loadInitialData(): Promise<void> {
 		if (!browser) return;
-		
+
 		this.isLoading.set(true);
 		console.info('[CouponService] Loading initial data...');
 
@@ -937,18 +945,18 @@ class CouponManagementService {
 	 * ═══════════════════════════════════════════════════════════════════════════
 	 * Analytics Collection - Apple ICT 11 Principal Engineer Implementation
 	 * ═══════════════════════════════════════════════════════════════════════════
-	 * 
+	 *
 	 * Periodically collects coupon metrics for real-time analytics dashboard.
 	 * Uses ANALYTICS_INTERVAL for configurable collection frequency.
 	 */
 	public startAnalyticsCollection(): void {
 		if (!browser) return;
-		
+
 		// Clear existing interval if any
 		this.stopAnalyticsCollection();
 
 		console.info('[CouponService] Starting analytics collection...');
-		
+
 		this.analyticsInterval = window.setInterval(() => {
 			this.updateAnalytics();
 		}, ANALYTICS_INTERVAL);
@@ -970,7 +978,7 @@ class CouponManagementService {
 	 */
 	private async updateAnalytics(): Promise<void> {
 		const activeCoupons = get(this.activeCoupons);
-		
+
 		if (activeCoupons.length === 0) return;
 
 		for (const coupon of activeCoupons) {
@@ -1046,7 +1054,12 @@ class CouponManagementService {
 			// Notify server via WebSocket for real-time analytics
 			this.sendWebSocketMessage({
 				type: 'coupon_validation',
-				data: { code, valid: result.valid, discount: result.discount, timestamp: new Date().toISOString() }
+				data: {
+					code,
+					valid: result.valid,
+					discount: result.discount,
+					timestamp: new Date().toISOString()
+				}
 			});
 
 			return result;
@@ -1341,7 +1354,9 @@ class CouponManagementService {
 
 	async getCampaigns(): Promise<Campaign[]> {
 		try {
-			const response = await this.authFetch<{ campaigns: Campaign[] }>(`${API_URL}/admin/campaigns`);
+			const response = await this.authFetch<{ campaigns: Campaign[] }>(
+				`${API_URL}/admin/campaigns`
+			);
 			this.campaigns.set(response.campaigns || []);
 			return response.campaigns || [];
 		} catch (error) {

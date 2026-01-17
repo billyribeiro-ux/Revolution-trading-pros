@@ -63,7 +63,7 @@ async function apiFetch<T>(endpoint: string, options: RequestInit = {}): Promise
 	const headers: Record<string, string> = {
 		'Content-Type': 'application/json',
 		Accept: 'application/json',
-		...(options.headers as Record<string, string> || {})
+		...((options.headers as Record<string, string>) || {})
 	};
 
 	if (token) {
@@ -112,14 +112,20 @@ export const articlesApi = {
 	/**
 	 * Get only daily videos for a room
 	 */
-	getDailyVideos: async (slug: string, params?: Omit<ArticleParams, 'type'>): Promise<ArticlesResponse> => {
+	getDailyVideos: async (
+		slug: string,
+		params?: Omit<ArticleParams, 'type'>
+	): Promise<ArticlesResponse> => {
 		return articlesApi.getByRoom(slug, { ...params, type: 'daily-video' });
 	},
 
 	/**
 	 * Get only chatroom archives for a room
 	 */
-	getChatroomArchives: async (slug: string, params?: Omit<ArticleParams, 'type'>): Promise<ArticlesResponse> => {
+	getChatroomArchives: async (
+		slug: string,
+		params?: Omit<ArticleParams, 'type'>
+	): Promise<ArticlesResponse> => {
 		return articlesApi.getByRoom(slug, { ...params, type: 'chatroom-archive' });
 	},
 

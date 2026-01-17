@@ -98,7 +98,7 @@ export const DEFAULT_A11Y_CONFIG: A11yConfig = {
 	enhancedKeyboard: true,
 	liveRegion: 'polite',
 	minTouchTarget: 44, // WCAG 2.5.5 Target Size
-	focusIndicator: 'ring',
+	focusIndicator: 'ring'
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -129,8 +129,8 @@ function hexToRgb(hex: string): { r: number; g: number; b: number } | null {
 		? {
 				r: parseInt(result[1], 16),
 				g: parseInt(result[2], 16),
-				b: parseInt(result[3], 16),
-		  }
+				b: parseInt(result[3], 16)
+			}
 		: null;
 }
 
@@ -150,7 +150,7 @@ export function calculateContrastRatio(foreground: string, background: string): 
 		ratio: Math.round(ratio * 100) / 100,
 		passesAA: ratio >= 4.5,
 		passesAAA: ratio >= 7,
-		level: ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : 'fail',
+		level: ratio >= 7 ? 'AAA' : ratio >= 4.5 ? 'AA' : 'fail'
 	};
 }
 
@@ -321,7 +321,7 @@ export class PopupA11yManager {
 				rule: '1.3.1',
 				level: 'A',
 				message: 'Dialog role missing',
-				suggestion: 'Add role="dialog" to the popup container',
+				suggestion: 'Add role="dialog" to the popup container'
 			});
 		}
 
@@ -333,19 +333,22 @@ export class PopupA11yManager {
 				rule: '4.1.2',
 				level: 'A',
 				message: 'aria-modal attribute missing',
-				suggestion: 'Add aria-modal="true" for modal dialogs',
+				suggestion: 'Add aria-modal="true" for modal dialogs'
 			});
 		}
 
 		// Check aria-labelledby
-		if (this.popupElement.hasAttribute('aria-labelledby') || this.popupElement.hasAttribute('aria-label')) {
+		if (
+			this.popupElement.hasAttribute('aria-labelledby') ||
+			this.popupElement.hasAttribute('aria-label')
+		) {
 			passed.push('4.1.2 Dialog label present');
 		} else {
 			issues.push({
 				rule: '4.1.2',
 				level: 'A',
 				message: 'Dialog lacks accessible name',
-				suggestion: 'Add aria-labelledby pointing to the title, or aria-label',
+				suggestion: 'Add aria-labelledby pointing to the title, or aria-label'
 			});
 		}
 
@@ -357,12 +360,14 @@ export class PopupA11yManager {
 				rule: '2.1.1',
 				level: 'A',
 				message: 'No focusable elements in popup',
-				suggestion: 'Ensure interactive elements are keyboard accessible',
+				suggestion: 'Ensure interactive elements are keyboard accessible'
 			});
 		}
 
 		// Check close button
-		const closeButton = this.popupElement.querySelector('[aria-label*="close" i], [aria-label*="dismiss" i], .popup-close-button');
+		const closeButton = this.popupElement.querySelector(
+			'[aria-label*="close" i], [aria-label*="dismiss" i], .popup-close-button'
+		);
 		if (closeButton) {
 			passed.push('2.1.2 Close mechanism available');
 		} else {
@@ -370,7 +375,7 @@ export class PopupA11yManager {
 				rule: '2.1.2',
 				level: 'A',
 				message: 'No visible close button',
-				suggestion: 'Add a clearly labeled close button',
+				suggestion: 'Add a clearly labeled close button'
 			});
 		}
 
@@ -401,7 +406,7 @@ export class PopupA11yManager {
 				rule: '2.5.5',
 				level: 'AAA',
 				message: 'Some touch targets below minimum size',
-				suggestion: `Ensure all interactive elements are at least ${this.config.minTouchTarget}x${this.config.minTouchTarget}px`,
+				suggestion: `Ensure all interactive elements are at least ${this.config.minTouchTarget}x${this.config.minTouchTarget}px`
 			});
 		}
 
@@ -464,7 +469,9 @@ export class PopupA11yManager {
 		}
 
 		// Ensure describedby for content
-		const content = this.popupElement.querySelector('[data-popup-content], .popup-content, .popup-body');
+		const content = this.popupElement.querySelector(
+			'[data-popup-content], .popup-content, .popup-body'
+		);
 		if (content && !this.popupElement.hasAttribute('aria-describedby')) {
 			const contentId = content.id || `popup-content-${Date.now()}`;
 			(content as HTMLElement).id = contentId;
@@ -483,7 +490,7 @@ export class PopupA11yManager {
 			'select:not([disabled])',
 			'textarea:not([disabled])',
 			'[tabindex]:not([tabindex="-1"])',
-			'[contenteditable="true"]',
+			'[contenteditable="true"]'
 		].join(', ');
 
 		this.focusableElements = Array.from(

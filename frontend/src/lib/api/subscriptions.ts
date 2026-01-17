@@ -70,16 +70,13 @@ const PROD_API = 'https://revolution-trading-pros-api.fly.dev';
 const PROD_WS = 'wss://revolution-trading-pros-api.fly.dev';
 
 const isDev = import.meta.env.DEV;
-const API_ROOT = browser 
-	? (isDev ? '' : (import.meta.env['VITE_API_URL'] || PROD_API)) 
-	: '';
+const API_ROOT = browser ? (isDev ? '' : import.meta.env['VITE_API_URL'] || PROD_API) : '';
 // In dev mode, use /api for Vite proxy. In production, append /api to root URL
-const API_BASE = isDev ? '/api' : (API_ROOT ? `${API_ROOT}/api` : '');
+const API_BASE = isDev ? '/api' : API_ROOT ? `${API_ROOT}/api` : '';
 const WS_BASE = browser ? import.meta.env['VITE_WS_URL'] || PROD_WS : '';
 // Analytics API - only enable if explicitly configured (microservice is optional)
-const ANALYTICS_API = browser && import.meta.env['VITE_ANALYTICS_API']
-	? import.meta.env['VITE_ANALYTICS_API']
-	: null; // Disabled by default - microservice not required
+const ANALYTICS_API =
+	browser && import.meta.env['VITE_ANALYTICS_API'] ? import.meta.env['VITE_ANALYTICS_API'] : null; // Disabled by default - microservice not required
 
 const CACHE_TTL = 300000; // 5 minutes
 const RETRY_ATTEMPTS = 3;
@@ -860,16 +857,20 @@ class SubscriptionService {
 	/**
 	 * Subscription Management
 	 */
-	async getSubscriptions(filters?: SubscriptionFilters, isAdmin = false): Promise<EnhancedSubscription[]> {
+	async getSubscriptions(
+		filters?: SubscriptionFilters,
+		isAdmin = false
+	): Promise<EnhancedSubscription[]> {
 		this.isLoading.set(true);
 		this.error.set(null);
 
 		try {
 			const params = this.buildFilterParams(filters);
 			const endpoint = isAdmin ? `${API_BASE}/admin/subscriptions` : `${API_BASE}/subscriptions/my`;
-			const response = await this.authFetch<{ subscriptions: EnhancedSubscription[]; data?: EnhancedSubscription[] }>(
-				`${endpoint}?${params}`
-			);
+			const response = await this.authFetch<{
+				subscriptions: EnhancedSubscription[];
+				data?: EnhancedSubscription[];
+			}>(`${endpoint}?${params}`);
 
 			const subs = response.subscriptions || response.data || [];
 			this.subscriptions.set(subs);
@@ -906,14 +907,11 @@ class SubscriptionService {
 		this.error.set(null);
 
 		try {
-			const subscription = await this.authFetch<EnhancedSubscription>(
-				`${API_BASE}/subscriptions`,
-				{
-					method: 'POST',
-					body: JSON.stringify(data),
-					skipCache: true
-				}
-			);
+			const subscription = await this.authFetch<EnhancedSubscription>(`${API_BASE}/subscriptions`, {
+				method: 'POST',
+				body: JSON.stringify(data),
+				skipCache: true
+			});
 
 			this.subscriptions.update((subs) => [...subs, subscription]);
 			this.clearCache('/subscriptions');

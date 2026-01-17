@@ -920,12 +920,18 @@ class SeoManagementService {
 			technical_score: technicalAudit ? 100 - technicalAudit.issues.length * 5 : 100,
 			content_score: basicAnalysis.seo_score,
 			user_experience_score: performanceMetrics?.pageSpeed.score || 100,
-			...(competitorAnalysis !== null && competitorAnalysis !== undefined && { competitor_comparison: competitorAnalysis }),
-			...(keywordOpportunities !== null && keywordOpportunities !== undefined && { keyword_opportunities: keywordOpportunities }),
+			...(competitorAnalysis !== null &&
+				competitorAnalysis !== undefined && { competitor_comparison: competitorAnalysis }),
+			...(keywordOpportunities !== null &&
+				keywordOpportunities !== undefined && { keyword_opportunities: keywordOpportunities }),
 			...(contentGaps !== null && contentGaps !== undefined && { content_gaps: contentGaps }),
 			...(technicalAudit?.issues !== undefined && { technical_issues: technicalAudit.issues }),
-			...(performanceMetrics?.pageSpeed !== undefined && { page_speed: performanceMetrics.pageSpeed }),
-			...(performanceMetrics?.coreWebVitals !== undefined && { core_web_vitals: performanceMetrics.coreWebVitals }),
+			...(performanceMetrics?.pageSpeed !== undefined && {
+				page_speed: performanceMetrics.pageSpeed
+			}),
+			...(performanceMetrics?.coreWebVitals !== undefined && {
+				core_web_vitals: performanceMetrics.coreWebVitals
+			}),
 			suggestions: [...basicAnalysis.suggestions, ...aiSuggestions]
 		};
 	}
@@ -946,9 +952,12 @@ class SeoManagementService {
 	private async analyzeCompetitors(keyword?: string): Promise<CompetitorAnalysis | null> {
 		if (!keyword) return null;
 
-		const response = await api.post<{ analysis: CompetitorAnalysis }>('/admin/seo/competitors/analyze', {
-			keyword
-		});
+		const response = await api.post<{ analysis: CompetitorAnalysis }>(
+			'/admin/seo/competitors/analyze',
+			{
+				keyword
+			}
+		);
 		return response.analysis;
 	}
 
@@ -1219,7 +1228,9 @@ class SeoManagementService {
 	}
 
 	async findSimilarPages(url: string): Promise<string[]> {
-		const response = await api.post<{ suggestions: string[] }>('/admin/404-errors/find-similar', { url });
+		const response = await api.post<{ suggestions: string[] }>('/admin/404-errors/find-similar', {
+			url
+		});
 		return response.suggestions;
 	}
 
@@ -1363,7 +1374,6 @@ class SeoManagementService {
 			expiry: Date.now() + ttl
 		});
 	}
-
 
 	private async loadTechnicalIssues(): Promise<void> {
 		try {

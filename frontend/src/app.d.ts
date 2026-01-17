@@ -40,7 +40,7 @@ declare global {
 			hasConsentInteraction: boolean;
 			/** Current authenticated user (if any) */
 			user?: {
-				id: number;  // Matches Rust backend i64
+				id: number; // Matches Rust backend i64
 				email: string;
 				name?: string;
 				role?: string;
@@ -48,7 +48,9 @@ declare global {
 			/** Access token for server-side API calls (from httpOnly cookie) */
 			accessToken?: string | null;
 			/** Authentication method to get current session */
-			auth: () => Promise<{ user: { id: number; email: string; name?: string; role?: string } | null } | null>;
+			auth: () => Promise<{
+				user: { id: number; email: string; name?: string; role?: string } | null;
+			} | null>;
 		}
 		// interface PageData {}
 		// interface PageState {}

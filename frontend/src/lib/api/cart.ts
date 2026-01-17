@@ -581,7 +581,6 @@ class CheckoutCartService {
 		}
 	}
 
-
 	/**
 	 * Cart persistence
 	 */

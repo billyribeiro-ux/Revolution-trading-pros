@@ -10,7 +10,13 @@ import { authStore } from '$lib/stores/auth.svelte';
 
 const API_BASE = '/api/admin/abandoned-carts';
 
-export type CartStatus = 'pending' | 'email_sent' | 'clicked' | 'recovered' | 'expired' | 'unsubscribed';
+export type CartStatus =
+	| 'pending'
+	| 'email_sent'
+	| 'clicked'
+	| 'recovered'
+	| 'expired'
+	| 'unsubscribed';
 
 export interface AbandonedCart {
 	id: number;
@@ -245,7 +251,10 @@ export async function sendBulkRecovery(
 /**
  * Mark cart as recovered manually.
  */
-export async function markAsRecovered(cartId: number, notes?: string): Promise<{ message: string }> {
+export async function markAsRecovered(
+	cartId: number,
+	notes?: string
+): Promise<{ message: string }> {
 	const response = await fetch(`${API_BASE}/${cartId}/mark-recovered`, {
 		method: 'POST',
 		headers: await getAuthHeaders(),

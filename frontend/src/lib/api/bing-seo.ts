@@ -173,16 +173,22 @@ class BingSeoAPI {
 	 * URLs get indexed in MINUTES instead of days/weeks
 	 */
 	async submitUrl(url: string): Promise<IndexNowResponse> {
-		const response = await this.request<{ data: IndexNowResponse }>('POST', '/seo/bing/submit-url', {
-			url
-		});
+		const response = await this.request<{ data: IndexNowResponse }>(
+			'POST',
+			'/seo/bing/submit-url',
+			{
+				url
+			}
+		);
 		return response.data;
 	}
 
 	/**
 	 * Submit multiple URLs in a single batch (up to 10,000 URLs)
 	 */
-	async submitBatch(urls: string[]): Promise<{ success: boolean; submitted: number; failed: number }> {
+	async submitBatch(
+		urls: string[]
+	): Promise<{ success: boolean; submitted: number; failed: number }> {
 		const response = await this.request<{
 			data: { success: boolean; submitted: number; failed: number };
 		}>('POST', '/seo/bing/submit-batch', { urls });
@@ -311,10 +317,9 @@ class BingSeoAPI {
 	 * Warm caches for optimal performance
 	 */
 	async warmCaches(): Promise<{ views: number; routes: number; configs: number }> {
-		const response = await this.request<{ data: { views: number; routes: number; configs: number } }>(
-			'POST',
-			'/performance/warm-caches'
-		);
+		const response = await this.request<{
+			data: { views: number; routes: number; configs: number };
+		}>('POST', '/performance/warm-caches');
 		return response.data;
 	}
 

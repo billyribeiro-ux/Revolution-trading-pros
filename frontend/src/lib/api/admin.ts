@@ -1604,19 +1604,23 @@ function getAuthHeaders(): HeadersInit {
 	const token = typeof localStorage !== 'undefined' ? localStorage.getItem('access_token') : '';
 	return {
 		'Content-Type': 'application/json',
-		'Accept': 'application/json',
-		...(token ? { 'Authorization': `Bearer ${token}` } : {})
+		Accept: 'application/json',
+		...(token ? { Authorization: `Bearer ${token}` } : {})
 	};
 }
 
 export const teamsApi = {
 	list: async () => {
-		const response = await fetch(`${API_BASE}/admin/organization/teams`, { headers: getAuthHeaders() });
+		const response = await fetch(`${API_BASE}/admin/organization/teams`, {
+			headers: getAuthHeaders()
+		});
 		if (!response.ok) return { data: [] }; // Graceful fallback
 		return response.json();
 	},
 	get: async (id: number | string) => {
-		const response = await fetch(`${API_BASE}/admin/organization/teams/${id}`, { headers: getAuthHeaders() });
+		const response = await fetch(`${API_BASE}/admin/organization/teams/${id}`, {
+			headers: getAuthHeaders()
+		});
 		if (!response.ok) return { data: null };
 		return response.json();
 	},
@@ -1649,12 +1653,16 @@ export const teamsApi = {
 
 export const departmentsApi = {
 	list: async () => {
-		const response = await fetch(`${API_BASE}/admin/organization/departments`, { headers: getAuthHeaders() });
+		const response = await fetch(`${API_BASE}/admin/organization/departments`, {
+			headers: getAuthHeaders()
+		});
 		if (!response.ok) return { data: [] }; // Graceful fallback
 		return response.json();
 	},
 	get: async (id: number | string) => {
-		const response = await fetch(`${API_BASE}/admin/organization/departments/${id}`, { headers: getAuthHeaders() });
+		const response = await fetch(`${API_BASE}/admin/organization/departments/${id}`, {
+			headers: getAuthHeaders()
+		});
 		if (!response.ok) return { data: null };
 		return response.json();
 	},

@@ -18,7 +18,7 @@ const API_BASE = '/api';
 function getHeaders(): HeadersInit {
 	const headers: HeadersInit = {
 		'Content-Type': 'application/json',
-		Accept: 'application/json',
+		Accept: 'application/json'
 	};
 
 	if (browser) {
@@ -192,8 +192,8 @@ export async function getPublicConsentConfig(): Promise<PublicConsentConfig | nu
 	try {
 		const response = await fetch(`${API_BASE}/consent/config`, {
 			headers: {
-				Accept: 'application/json',
-			},
+				Accept: 'application/json'
+			}
 		});
 
 		if (!response.ok) {
@@ -202,7 +202,7 @@ export async function getPublicConsentConfig(): Promise<PublicConsentConfig | nu
 		}
 
 		const data: ApiResponse<PublicConsentConfig> = await response.json();
-		return data.success ? data.data ?? null : null;
+		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		console.error('Error fetching consent config:', error);
 		return null;
@@ -223,7 +223,7 @@ export async function getConsentSettings(group?: string): Promise<ConsentSetting
 			: `${API_BASE}/admin/consent/settings`;
 
 		const response = await fetch(url, {
-			headers: getHeaders(),
+			headers: getHeaders()
 		});
 
 		if (!response.ok) {
@@ -231,7 +231,7 @@ export async function getConsentSettings(group?: string): Promise<ConsentSetting
 		}
 
 		const data: ApiResponse<ConsentSettingsData> = await response.json();
-		return data.success ? data.data ?? null : null;
+		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		console.error('Error fetching consent settings:', error);
 		return null;
@@ -250,7 +250,7 @@ export async function updateConsentSetting(
 		const response = await fetch(`${API_BASE}/admin/consent/settings/${key}`, {
 			method: 'PUT',
 			headers: getHeaders(),
-			body: JSON.stringify({ value, ...options }),
+			body: JSON.stringify({ value, ...options })
 		});
 
 		return response.ok;
@@ -270,7 +270,7 @@ export async function bulkUpdateConsentSettings(
 		const response = await fetch(`${API_BASE}/admin/consent/settings/bulk`, {
 			method: 'POST',
 			headers: getHeaders(),
-			body: JSON.stringify({ settings }),
+			body: JSON.stringify({ settings })
 		});
 
 		return response.ok;
@@ -287,7 +287,7 @@ export async function resetConsentSettings(): Promise<ConsentSettingsData | null
 	try {
 		const response = await fetch(`${API_BASE}/admin/consent/settings/reset`, {
 			method: 'POST',
-			headers: getHeaders(),
+			headers: getHeaders()
 		});
 
 		if (!response.ok) {
@@ -295,7 +295,7 @@ export async function resetConsentSettings(): Promise<ConsentSettingsData | null
 		}
 
 		const data: ApiResponse<ConsentSettingsData> = await response.json();
-		return data.success ? data.data ?? null : null;
+		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		console.error('Error resetting consent settings:', error);
 		return null;
@@ -315,7 +315,7 @@ export async function getBannerTemplates(): Promise<{
 } | null> {
 	try {
 		const response = await fetch(`${API_BASE}/admin/consent/templates`, {
-			headers: getHeaders(),
+			headers: getHeaders()
 		});
 
 		if (!response.ok) {
@@ -324,7 +324,7 @@ export async function getBannerTemplates(): Promise<{
 
 		const data: ApiResponse<{ templates: BannerTemplate[]; activeId: number | null }> =
 			await response.json();
-		return data.success ? data.data ?? null : null;
+		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		console.error('Error fetching banner templates:', error);
 		return null;
@@ -337,7 +337,7 @@ export async function getBannerTemplates(): Promise<{
 export async function getActiveTemplate(): Promise<BannerTemplate | null> {
 	try {
 		const response = await fetch(`${API_BASE}/admin/consent/templates/active`, {
-			headers: getHeaders(),
+			headers: getHeaders()
 		});
 
 		if (!response.ok) {
@@ -345,7 +345,7 @@ export async function getActiveTemplate(): Promise<BannerTemplate | null> {
 		}
 
 		const data: ApiResponse<BannerTemplate> = await response.json();
-		return data.success ? data.data ?? null : null;
+		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		console.error('Error fetching active template:', error);
 		return null;
@@ -358,7 +358,7 @@ export async function getActiveTemplate(): Promise<BannerTemplate | null> {
 export async function getTemplate(id: number): Promise<BannerTemplate | null> {
 	try {
 		const response = await fetch(`${API_BASE}/admin/consent/templates/${id}`, {
-			headers: getHeaders(),
+			headers: getHeaders()
 		});
 
 		if (!response.ok) {
@@ -366,7 +366,7 @@ export async function getTemplate(id: number): Promise<BannerTemplate | null> {
 		}
 
 		const data: ApiResponse<BannerTemplate> = await response.json();
-		return data.success ? data.data ?? null : null;
+		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		console.error('Error fetching template:', error);
 		return null;
@@ -383,7 +383,7 @@ export async function createTemplate(
 		const response = await fetch(`${API_BASE}/admin/consent/templates`, {
 			method: 'POST',
 			headers: getHeaders(),
-			body: JSON.stringify(template),
+			body: JSON.stringify(template)
 		});
 
 		if (!response.ok) {
@@ -391,7 +391,7 @@ export async function createTemplate(
 		}
 
 		const data: ApiResponse<BannerTemplate> = await response.json();
-		return data.success ? data.data ?? null : null;
+		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		console.error('Error creating template:', error);
 		return null;
@@ -409,7 +409,7 @@ export async function updateTemplate(
 		const response = await fetch(`${API_BASE}/admin/consent/templates/${id}`, {
 			method: 'PUT',
 			headers: getHeaders(),
-			body: JSON.stringify(template),
+			body: JSON.stringify(template)
 		});
 
 		if (!response.ok) {
@@ -417,7 +417,7 @@ export async function updateTemplate(
 		}
 
 		const data: ApiResponse<BannerTemplate> = await response.json();
-		return data.success ? data.data ?? null : null;
+		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		console.error('Error updating template:', error);
 		return null;
@@ -431,7 +431,7 @@ export async function deleteTemplate(id: number): Promise<boolean> {
 	try {
 		const response = await fetch(`${API_BASE}/admin/consent/templates/${id}`, {
 			method: 'DELETE',
-			headers: getHeaders(),
+			headers: getHeaders()
 		});
 
 		return response.ok;
@@ -448,7 +448,7 @@ export async function activateTemplate(id: number): Promise<boolean> {
 	try {
 		const response = await fetch(`${API_BASE}/admin/consent/templates/${id}/activate`, {
 			method: 'POST',
-			headers: getHeaders(),
+			headers: getHeaders()
 		});
 
 		return response.ok;
@@ -465,7 +465,7 @@ export async function duplicateTemplate(id: number): Promise<BannerTemplate | nu
 	try {
 		const response = await fetch(`${API_BASE}/admin/consent/templates/${id}/duplicate`, {
 			method: 'POST',
-			headers: getHeaders(),
+			headers: getHeaders()
 		});
 
 		if (!response.ok) {
@@ -473,7 +473,7 @@ export async function duplicateTemplate(id: number): Promise<BannerTemplate | nu
 		}
 
 		const data: ApiResponse<BannerTemplate> = await response.json();
-		return data.success ? data.data ?? null : null;
+		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		console.error('Error duplicating template:', error);
 		return null;
@@ -486,7 +486,7 @@ export async function duplicateTemplate(id: number): Promise<BannerTemplate | nu
 export async function exportTemplate(id: number): Promise<Partial<BannerTemplate> | null> {
 	try {
 		const response = await fetch(`${API_BASE}/admin/consent/templates/${id}/export`, {
-			headers: getHeaders(),
+			headers: getHeaders()
 		});
 
 		if (!response.ok) {
@@ -494,7 +494,7 @@ export async function exportTemplate(id: number): Promise<Partial<BannerTemplate
 		}
 
 		const data: ApiResponse<Partial<BannerTemplate>> = await response.json();
-		return data.success ? data.data ?? null : null;
+		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		console.error('Error exporting template:', error);
 		return null;
@@ -511,7 +511,7 @@ export async function importTemplate(
 		const response = await fetch(`${API_BASE}/admin/consent/templates/import`, {
 			method: 'POST',
 			headers: getHeaders(),
-			body: JSON.stringify({ template }),
+			body: JSON.stringify({ template })
 		});
 
 		if (!response.ok) {
@@ -519,7 +519,7 @@ export async function importTemplate(
 		}
 
 		const data: ApiResponse<BannerTemplate> = await response.json();
-		return data.success ? data.data ?? null : null;
+		return data.success ? (data.data ?? null) : null;
 	} catch (error) {
 		console.error('Error importing template:', error);
 		return null;
@@ -533,7 +533,7 @@ export async function initializeConsentSystem(): Promise<boolean> {
 	try {
 		const response = await fetch(`${API_BASE}/admin/consent/initialize`, {
 			method: 'POST',
-			headers: getHeaders(),
+			headers: getHeaders()
 		});
 
 		return response.ok;

@@ -211,7 +211,10 @@ class CampaignsApiClient {
 
 	async getCampaigns(
 		filters?: CampaignFilters
-	): Promise<{ data: Campaign[]; meta: { total: number; current_page: number; last_page: number } }> {
+	): Promise<{
+		data: Campaign[];
+		meta: { total: number; current_page: number; last_page: number };
+	}> {
 		const response = await this.request<{
 			success: boolean;
 			data: Campaign[];
@@ -311,7 +314,9 @@ class CampaignsApiClient {
 		return response.data;
 	}
 
-	async getPreview(id: number): Promise<{ subject: string; from_name: string; from_email: string; html: string }> {
+	async getPreview(
+		id: number
+	): Promise<{ subject: string; from_name: string; from_email: string; html: string }> {
 		const response = await this.request<{
 			success: boolean;
 			data: { subject: string; from_name: string; from_email: string; html: string };
