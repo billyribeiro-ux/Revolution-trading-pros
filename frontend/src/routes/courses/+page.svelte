@@ -696,16 +696,4 @@
 	.animate-marquee {
 		animation: marquee 40s linear infinite;
 	}
-
-	/* Smooth Scroll Behavior Override */
-	:global(html) {
-		scroll-behavior: smooth;
-	}
-
-	/* Font rendering fix for dark mode */
-	:global(body) {
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-		background-color: black;
-	}
 </style>

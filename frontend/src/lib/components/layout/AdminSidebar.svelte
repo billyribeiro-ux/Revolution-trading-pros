@@ -275,7 +275,7 @@
 		height: 0;
 		background: #e6b800; /* RTP Gold - hardcoded for reliability */
 		border-radius: 0 2px 2px 0;
-		transition: height 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+		transition: height 0.3s ease-in-out;
 	}
 
 	.nav-item:hover {
@@ -288,11 +288,7 @@
 		background: #e6b800; /* RTP Gold */
 	}
 
-	/* Clear hover state immediately when mouse leaves */
-	.nav-item:not(:hover)::before {
-		height: 0;
-		transition: height 0.1s cubic-bezier(0.16, 1, 0.3, 1);
-	}
+	/* Smooth exit - uses same transition from ::before */
 
 	.nav-item:focus-visible {
 		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.35); /* Gold focus ring */
