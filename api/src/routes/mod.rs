@@ -106,6 +106,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/admin/indicators", admin_indicators::router())
         // Video Management System (Learning Center, Daily Videos, Weekly Watchlist, Room Archives)
         .nest("/admin/videos", admin_videos::router())
+        // Video Advanced Analytics - ICT 7 Grade (frontend compatibility)
+        .nest("/video-advanced", admin_videos::analytics_router())
         .nest("/admin/page-layouts", admin_page_layouts::router())
         // Media Admin - ICT 7 Grade
         .nest("/admin/media", media::admin_router())

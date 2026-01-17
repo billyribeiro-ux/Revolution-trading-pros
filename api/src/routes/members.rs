@@ -572,8 +572,10 @@ pub async fn churned_members(
     .unwrap_or(0);
 
     let lost_revenue: f64 = sqlx::query_scalar(
-        "SELECT COALESCE(SUM(price), 0) FROM user_memberships
-         WHERE status IN ('cancelled', 'expired')",
+        "SELECT COALESCE(SUM(mp.price), 0) 
+         FROM user_memberships um
+         JOIN membership_plans mp ON um.plan_id = mp.id
+         WHERE um.status IN ('cancelled', 'expired')",
     )
     .fetch_one(state.db.pool())
     .await
