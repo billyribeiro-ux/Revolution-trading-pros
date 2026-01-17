@@ -257,10 +257,17 @@ CREATE TABLE IF NOT EXISTS locales (
 CREATE INDEX IF NOT EXISTS idx_locales_code ON locales(code);
 CREATE INDEX IF NOT EXISTS idx_locales_is_active ON locales(is_active);
 
+-- Add missing columns to locales if table already exists from earlier migration
+ALTER TABLE locales ADD COLUMN IF NOT EXISTS flag_emoji VARCHAR(10);
+ALTER TABLE locales ADD COLUMN IF NOT EXISTS direction VARCHAR(3) DEFAULT 'ltr';
+ALTER TABLE locales ADD COLUMN IF NOT EXISTS date_format VARCHAR(50) DEFAULT 'YYYY-MM-DD';
+ALTER TABLE locales ADD COLUMN IF NOT EXISTS time_format VARCHAR(50) DEFAULT 'HH:mm:ss';
+ALTER TABLE locales ADD COLUMN IF NOT EXISTS currency_code VARCHAR(3) DEFAULT 'USD';
+
 -- Seed default locale
-INSERT INTO locales (code, name, native_name, is_default, is_active, flag_emoji)
-VALUES ('en', 'English', 'English', true, true, '🇺🇸')
-ON CONFLICT (code) DO NOTHING;
+INSERT INTO locales (code, name, native_name, is_default, is_active)
+VALUES ('en', 'English', 'English', true, true)
+ON CONFLICT (code) DO UPDATE SET flag_emoji = '🇺🇸';
 
 -- Content translations table
 CREATE TABLE IF NOT EXISTS content_translations (
