@@ -14,8 +14,8 @@ use axum::{
     Json, Router,
 };
 use chrono::{Duration, Utc};
-use sha2::{Digest, Sha256};
 use serde_json::json;
+use sha2::{Digest, Sha256};
 use uuid::Uuid;
 
 use crate::models::indicator::{
@@ -100,24 +100,23 @@ async fn get_public_indicator(
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let indicator: Indicator = sqlx::query_as(
-        "SELECT * FROM indicators WHERE slug = $1 AND is_published = true",
-    )
-    .bind(&slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("Database error: {}", e)})),
-        )
-    })?
-    .ok_or_else(|| {
-        (
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Indicator not found"})),
-        )
-    })?;
+    let indicator: Indicator =
+        sqlx::query_as("SELECT * FROM indicators WHERE slug = $1 AND is_published = true")
+            .bind(&slug)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("Database error: {}", e)})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": "Indicator not found"})),
+                )
+            })?;
 
     // Increment view count
     sqlx::query("UPDATE indicators SET view_count = view_count + 1 WHERE id = $1")
@@ -164,7 +163,18 @@ async fn get_my_indicators(
     // TODO: Get user_id from auth middleware
     let user_id: i32 = 1; // Placeholder
 
-    let indicators: Vec<serde_json::Value> = sqlx::query_as::<_, (Uuid, String, String, Option<String>, Option<String>, Option<String>, chrono::DateTime<chrono::Utc>)>(
+    let indicators: Vec<serde_json::Value> = sqlx::query_as::<
+        _,
+        (
+            Uuid,
+            String,
+            String,
+            Option<String>,
+            Option<String>,
+            Option<String>,
+            chrono::DateTime<chrono::Utc>,
+        ),
+    >(
         r#"
         SELECT i.id, i.name, i.slug, i.tagline, i.logo_url, i.card_image_url, uio.access_granted_at
         FROM user_indicator_ownership uio
@@ -185,17 +195,19 @@ async fn get_my_indicators(
         )
     })?
     .into_iter()
-    .map(|(id, name, slug, tagline, logo_url, card_image_url, access_granted_at)| {
-        json!({
-            "id": id,
-            "name": name,
-            "slug": slug,
-            "tagline": tagline,
-            "logo_url": logo_url,
-            "card_image_url": card_image_url,
-            "access_granted_at": access_granted_at
-        })
-    })
+    .map(
+        |(id, name, slug, tagline, logo_url, card_image_url, access_granted_at)| {
+            json!({
+                "id": id,
+                "name": name,
+                "slug": slug,
+                "tagline": tagline,
+                "logo_url": logo_url,
+                "card_image_url": card_image_url,
+                "access_granted_at": access_granted_at
+            })
+        },
+    )
     .collect();
 
     Ok(Json(json!({
@@ -212,24 +224,22 @@ async fn get_indicator_downloads(
     let user_id: i32 = 1; // Placeholder
 
     // Get indicator
-    let indicator: Indicator = sqlx::query_as(
-        "SELECT * FROM indicators WHERE slug = $1",
-    )
-    .bind(&slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("Database error: {}", e)})),
-        )
-    })?
-    .ok_or_else(|| {
-        (
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Indicator not found"})),
-        )
-    })?;
+    let indicator: Indicator = sqlx::query_as("SELECT * FROM indicators WHERE slug = $1")
+        .bind(&slug)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Indicator not found"})),
+            )
+        })?;
 
     // Check ownership
     let ownership: Option<UserIndicatorOwnership> = sqlx::query_as(
@@ -359,7 +369,8 @@ async fn generate_download_url(
     })?;
 
     // Generate secure download token (WordPress-compatible hash)
-    let secret = std::env::var("DOWNLOAD_SECRET_KEY").unwrap_or_else(|_| "revolution-secret-2026".to_string());
+    let secret = std::env::var("DOWNLOAD_SECRET_KEY")
+        .unwrap_or_else(|_| "revolution-secret-2026".to_string());
     let expires_at = Utc::now() + Duration::hours(24);
     let expiry_timestamp = expires_at.timestamp();
 
@@ -387,7 +398,8 @@ async fn generate_download_url(
     .ok();
 
     // Build secure download URL
-    let base_url = std::env::var("API_BASE_URL").unwrap_or_else(|_| "https://api.revolution-trading.com".to_string());
+    let base_url = std::env::var("API_BASE_URL")
+        .unwrap_or_else(|_| "https://api.revolution-trading.com".to_string());
     let download_url = format!(
         "{}/download/indicator/{}/{}?token={}&expires={}",
         base_url, slug, file_id, token, expiry_timestamp
@@ -459,24 +471,22 @@ async fn download_file(
     }
 
     // Get file info
-    let file: IndicatorFile = sqlx::query_as(
-        "SELECT * FROM indicator_files WHERE id = $1",
-    )
-    .bind(file_id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("Database error: {}", e)})),
-        )
-    })?
-    .ok_or_else(|| {
-        (
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "File not found"})),
-        )
-    })?;
+    let file: IndicatorFile = sqlx::query_as("SELECT * FROM indicator_files WHERE id = $1")
+        .bind(file_id)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "File not found"})),
+            )
+        })?;
 
     // Update download count
     sqlx::query(
@@ -504,7 +514,10 @@ async fn download_file(
     let response = Response::builder()
         .status(StatusCode::FOUND)
         .header(header::LOCATION, cdn_url)
-        .header(header::CONTENT_DISPOSITION, format!("attachment; filename=\"{}\"", file.file_name))
+        .header(
+            header::CONTENT_DISPOSITION,
+            format!("attachment; filename=\"{}\"", file.file_name),
+        )
         .body(axum::body::Body::empty())
         .unwrap();
 
@@ -535,6 +548,5 @@ pub fn member_router() -> Router<AppState> {
 }
 
 pub fn download_router() -> Router<AppState> {
-    Router::new()
-        .route("/indicator/:slug/:file_id", get(download_file))
+    Router::new().route("/indicator/:slug/:file_id", get(download_file))
 }

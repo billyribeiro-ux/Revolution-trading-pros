@@ -279,7 +279,7 @@ async fn list_trading_rooms(
         FROM trading_rooms
         WHERE ($1::bool IS NULL OR is_active = $1)
         ORDER BY sort_order ASC
-        "#
+        "#,
     )
     .bind(query.active_only)
     .fetch_all(&state.db.pool)
@@ -287,28 +287,31 @@ async fn list_trading_rooms(
 
     match rooms_result {
         Ok(rooms) if !rooms.is_empty() => {
-            let data: Vec<serde_json::Value> = rooms.iter().map(|r| {
-                json!({
-                    "id": r.id,
-                    "name": r.name,
-                    "slug": r.slug,
-                    "type": r.room_type,
-                    "description": r.description,
-                    "short_description": r.short_description,
-                    "icon": r.icon,
-                    "color": r.color,
-                    "logo_url": r.logo_url,
-                    "image_url": r.image_url,
-                    "sort_order": r.sort_order,
-                    "is_active": r.is_active,
-                    "is_featured": r.is_featured,
-                    "is_public": r.is_public,
-                    "available_sections": r.available_sections,
-                    "features": r.features,
-                    "created_at": r.created_at.to_string(),
-                    "updated_at": r.updated_at.to_string()
+            let data: Vec<serde_json::Value> = rooms
+                .iter()
+                .map(|r| {
+                    json!({
+                        "id": r.id,
+                        "name": r.name,
+                        "slug": r.slug,
+                        "type": r.room_type,
+                        "description": r.description,
+                        "short_description": r.short_description,
+                        "icon": r.icon,
+                        "color": r.color,
+                        "logo_url": r.logo_url,
+                        "image_url": r.image_url,
+                        "sort_order": r.sort_order,
+                        "is_active": r.is_active,
+                        "is_featured": r.is_featured,
+                        "is_public": r.is_public,
+                        "available_sections": r.available_sections,
+                        "features": r.features,
+                        "created_at": r.created_at.to_string(),
+                        "updated_at": r.updated_at.to_string()
+                    })
                 })
-            }).collect();
+                .collect();
 
             Ok(Json(json!({
                 "success": true,
@@ -325,7 +328,7 @@ async fn list_trading_rooms(
             // Fallback to hardcoded data
             let data = get_fallback_rooms();
             let len = data.as_array().map(|a| a.len()).unwrap_or(0);
-            
+
             Ok(Json(json!({
                 "success": true,
                 "data": data,
@@ -354,38 +357,36 @@ async fn get_trading_room(
                created_at, updated_at
         FROM trading_rooms
         WHERE slug = $1 AND is_active = true
-        "#
+        "#,
     )
     .bind(&slug)
     .fetch_optional(&state.db.pool)
     .await;
 
     match room_result {
-        Ok(Some(r)) => {
-            Ok(Json(json!({
-                "success": true,
-                "data": {
-                    "id": r.id,
-                    "name": r.name,
-                    "slug": r.slug,
-                    "type": r.room_type,
-                    "description": r.description,
-                    "short_description": r.short_description,
-                    "icon": r.icon,
-                    "color": r.color,
-                    "logo_url": r.logo_url,
-                    "image_url": r.image_url,
-                    "sort_order": r.sort_order,
-                    "is_active": r.is_active,
-                    "is_featured": r.is_featured,
-                    "is_public": r.is_public,
-                    "available_sections": r.available_sections,
-                    "features": r.features,
-                    "created_at": r.created_at.to_string(),
-                    "updated_at": r.updated_at.to_string()
-                }
-            })))
-        }
+        Ok(Some(r)) => Ok(Json(json!({
+            "success": true,
+            "data": {
+                "id": r.id,
+                "name": r.name,
+                "slug": r.slug,
+                "type": r.room_type,
+                "description": r.description,
+                "short_description": r.short_description,
+                "icon": r.icon,
+                "color": r.color,
+                "logo_url": r.logo_url,
+                "image_url": r.image_url,
+                "sort_order": r.sort_order,
+                "is_active": r.is_active,
+                "is_featured": r.is_featured,
+                "is_public": r.is_public,
+                "available_sections": r.available_sections,
+                "features": r.features,
+                "created_at": r.created_at.to_string(),
+                "updated_at": r.updated_at.to_string()
+            }
+        }))),
         Ok(None) => {
             // Try fallback
             let fallback = get_fallback_rooms();
@@ -397,13 +398,13 @@ async fn get_trading_room(
                     })));
                 }
             }
-            
+
             Err((
                 StatusCode::NOT_FOUND,
                 Json(json!({
                     "success": false,
                     "error": "Trading room not found"
-                }))
+                })),
             ))
         }
         Err(_) => {
@@ -417,13 +418,13 @@ async fn get_trading_room(
                     })));
                 }
             }
-            
+
             Err((
                 StatusCode::NOT_FOUND,
                 Json(json!({
                     "success": false,
                     "error": "Trading room not found"
-                }))
+                })),
             ))
         }
     }
@@ -440,39 +441,40 @@ async fn list_sections(
         FROM room_sections
         WHERE is_active = true
         ORDER BY sort_order ASC
-        "#
+        "#,
     )
     .fetch_all(&state.db.pool)
     .await;
 
     match sections_result {
         Ok(sections) if !sections.is_empty() => {
-            let data: Vec<serde_json::Value> = sections.iter().map(|s| {
-                json!({
-                    "id": s.id,
-                    "section_key": s.section_key,
-                    "name": s.name,
-                    "description": s.description,
-                    "icon": s.icon,
-                    "sort_order": s.sort_order,
-                    "is_active": s.is_active,
-                    "allowed_resource_types": s.allowed_resource_types,
-                    "max_items": s.max_items,
-                    "restricted_to_rooms": s.restricted_to_rooms
+            let data: Vec<serde_json::Value> = sections
+                .iter()
+                .map(|s| {
+                    json!({
+                        "id": s.id,
+                        "section_key": s.section_key,
+                        "name": s.name,
+                        "description": s.description,
+                        "icon": s.icon,
+                        "sort_order": s.sort_order,
+                        "is_active": s.is_active,
+                        "allowed_resource_types": s.allowed_resource_types,
+                        "max_items": s.max_items,
+                        "restricted_to_rooms": s.restricted_to_rooms
+                    })
                 })
-            }).collect();
+                .collect();
 
             Ok(Json(json!({
                 "success": true,
                 "data": data
             })))
         }
-        _ => {
-            Ok(Json(json!({
-                "success": true,
-                "data": get_fallback_sections()
-            })))
-        }
+        _ => Ok(Json(json!({
+            "success": true,
+            "data": get_fallback_sections()
+        }))),
     }
 }
 
@@ -516,7 +518,21 @@ async fn list_videos(
     let offset = (page - 1) * per_page;
 
     // Query videos with optional room filter
-    let videos: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, String, Option<String>, String, Option<String>, Option<i32>, String, bool, chrono::NaiveDateTime)>(
+    let videos: Vec<serde_json::Value> = sqlx::query_as::<
+        _,
+        (
+            i64,
+            String,
+            String,
+            Option<String>,
+            String,
+            Option<String>,
+            Option<i32>,
+            String,
+            bool,
+            chrono::NaiveDateTime,
+        ),
+    >(
         r#"
         SELECT v.id, v.title, v.slug, v.description, v.video_url, v.thumbnail_url, 
                v.duration, v.content_type, v.is_published, v.created_at
@@ -526,7 +542,7 @@ async fn list_videos(
           AND ($2::boolean IS NULL OR v.is_published = $2)
         ORDER BY v.created_at DESC
         LIMIT $3 OFFSET $4
-        "#
+        "#,
     )
     .bind(&query.content_type)
     .bind(query.is_published)
@@ -534,26 +550,31 @@ async fn list_videos(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map(|rows| rows.into_iter().map(|r| json!({
-        "id": r.0,
-        "title": r.1,
-        "slug": r.2,
-        "description": r.3,
-        "video_url": r.4,
-        "thumbnail_url": r.5,
-        "duration": r.6,
-        "content_type": r.7,
-        "is_published": r.8,
-        "created_at": r.9.to_string()
-    })).collect())
+    .map(|rows| {
+        rows.into_iter()
+            .map(|r| {
+                json!({
+                    "id": r.0,
+                    "title": r.1,
+                    "slug": r.2,
+                    "description": r.3,
+                    "video_url": r.4,
+                    "thumbnail_url": r.5,
+                    "duration": r.6,
+                    "content_type": r.7,
+                    "is_published": r.8,
+                    "created_at": r.9.to_string()
+                })
+            })
+            .collect()
+    })
     .unwrap_or_default();
 
-    let total: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or(0);
+    let total: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or(0);
 
     Ok(Json(json!({
         "success": true,
@@ -578,17 +599,29 @@ async fn list_videos_by_room(
     let offset = (page - 1) * per_page;
 
     // Get room ID from slug
-    let room_id: Option<i64> = sqlx::query_scalar(
-        "SELECT id FROM trading_rooms WHERE slug = $1"
-    )
-    .bind(&slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .ok()
-    .flatten();
+    let room_id: Option<i64> = sqlx::query_scalar("SELECT id FROM trading_rooms WHERE slug = $1")
+        .bind(&slug)
+        .fetch_optional(&state.db.pool)
+        .await
+        .ok()
+        .flatten();
 
     let videos: Vec<serde_json::Value> = if let Some(rid) = room_id {
-        sqlx::query_as::<_, (i64, String, String, Option<String>, String, Option<String>, Option<i32>, String, bool, chrono::NaiveDateTime)>(
+        sqlx::query_as::<
+            _,
+            (
+                i64,
+                String,
+                String,
+                Option<String>,
+                String,
+                Option<String>,
+                Option<i32>,
+                String,
+                bool,
+                chrono::NaiveDateTime,
+            ),
+        >(
             r#"
             SELECT v.id, v.title, v.slug, v.description, v.video_url, v.thumbnail_url, 
                    v.duration, v.content_type, v.is_published, v.created_at
@@ -600,7 +633,7 @@ async fn list_videos_by_room(
               AND ($3::boolean IS NULL OR v.is_published = $3)
             ORDER BY v.created_at DESC
             LIMIT $4 OFFSET $5
-            "#
+            "#,
         )
         .bind(rid)
         .bind(&query.content_type)
@@ -609,18 +642,24 @@ async fn list_videos_by_room(
         .bind(offset)
         .fetch_all(&state.db.pool)
         .await
-        .map(|rows| rows.into_iter().map(|r| json!({
-            "id": r.0,
-            "title": r.1,
-            "slug": r.2,
-            "description": r.3,
-            "video_url": r.4,
-            "thumbnail_url": r.5,
-            "duration": r.6,
-            "content_type": r.7,
-            "is_published": r.8,
-            "created_at": r.9.to_string()
-        })).collect())
+        .map(|rows| {
+            rows.into_iter()
+                .map(|r| {
+                    json!({
+                        "id": r.0,
+                        "title": r.1,
+                        "slug": r.2,
+                        "description": r.3,
+                        "video_url": r.4,
+                        "thumbnail_url": r.5,
+                        "duration": r.6,
+                        "content_type": r.7,
+                        "is_published": r.8,
+                        "created_at": r.9.to_string()
+                    })
+                })
+                .collect()
+        })
         .unwrap_or_default()
     } else {
         vec![]

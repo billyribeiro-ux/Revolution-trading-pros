@@ -8,14 +8,11 @@ use axum::{
     routing::get,
     Router,
 };
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use chrono::NaiveDateTime;
 
-use crate::{
-    utils::errors::ApiError,
-    AppState,
-};
+use crate::{utils::errors::ApiError, AppState};
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Member {
@@ -44,22 +41,26 @@ pub struct MemberQuery {
 /// ICT 7 SECURITY FIX: Proper escaping for dynamic SQL queries
 fn sanitize_sql_string(input: &str) -> String {
     input
-        .replace('\\', "\\\\")  // Escape backslashes first
-        .replace('\'', "''")     // Escape single quotes (SQL standard)
-        .replace('\0', "")       // Remove null bytes
-        .replace('\n', " ")      // Remove newlines
-        .replace('\r', " ")      // Remove carriage returns
+        .replace('\\', "\\\\") // Escape backslashes first
+        .replace('\'', "''") // Escape single quotes (SQL standard)
+        .replace('\0', "") // Remove null bytes
+        .replace('\n', " ") // Remove newlines
+        .replace('\r', " ") // Remove carriage returns
         .chars()
-        .filter(|c| !c.is_control())  // Remove other control characters
+        .filter(|c| !c.is_control()) // Remove other control characters
         .collect()
 }
 
 /// Validate date format (YYYY-MM-DD) to prevent injection via date fields
 fn is_valid_date_format(date: &str) -> bool {
     let parts: Vec<&str> = date.split('-').collect();
-    if parts.len() != 3 { return false; }
-    parts[0].len() == 4 && parts[1].len() == 2 && parts[2].len() == 2 &&
-    parts.iter().all(|p| p.chars().all(|c| c.is_ascii_digit()))
+    if parts.len() != 3 {
+        return false;
+    }
+    parts[0].len() == 4
+        && parts[1].len() == 2
+        && parts[2].len() == 2
+        && parts.iter().all(|p| p.chars().all(|c| c.is_ascii_digit()))
 }
 
 /// GET /admin/members - List all members with filtering
@@ -70,7 +71,7 @@ pub async fn index(
 ) -> Result<Json<serde_json::Value>, ApiError> {
     let mut query = String::from(
         "SELECT id, name, email, created_at, updated_at 
-         FROM users WHERE 1=1"
+         FROM users WHERE 1=1",
     );
     let mut conditions = Vec::new();
 
@@ -107,8 +108,16 @@ pub async fn index(
     let sort_by = params.sort_by.as_deref().unwrap_or("created_at");
     let sort_dir = params.sort_dir.as_deref().unwrap_or("desc");
 
-    let sort_column = if allowed_columns.contains(&sort_by) { sort_by } else { "created_at" };
-    let sort_direction = if sort_dir.eq_ignore_ascii_case("asc") { "ASC" } else { "DESC" };
+    let sort_column = if allowed_columns.contains(&sort_by) {
+        sort_by
+    } else {
+        "created_at"
+    };
+    let sort_direction = if sort_dir.eq_ignore_ascii_case("asc") {
+        "ASC"
+    } else {
+        "DESC"
+    };
 
     query.push_str(&format!(" ORDER BY {} {}", sort_column, sort_direction));
 
@@ -154,9 +163,7 @@ pub async fn index(
 
 /// GET /admin/members/stats - Comprehensive member statistics
 #[tracing::instrument(skip(state))]
-pub async fn stats(
-    State(state): State<AppState>,
-) -> Result<Json<serde_json::Value>, ApiError> {
+pub async fn stats(State(state): State<AppState>) -> Result<Json<serde_json::Value>, ApiError> {
     // Total members
     let total_members: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM users")
         .fetch_one(state.db.pool())
@@ -165,44 +172,45 @@ pub async fn stats(
 
     // New this month
     let new_this_month: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM users WHERE created_at >= date_trunc('month', CURRENT_DATE)"
+        "SELECT COUNT(*) FROM users WHERE created_at >= date_trunc('month', CURRENT_DATE)",
     )
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0);
 
     // New last month
     let new_last_month: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM users 
          WHERE created_at >= date_trunc('month', CURRENT_DATE - INTERVAL '1 month')
-         AND created_at < date_trunc('month', CURRENT_DATE)"
+         AND created_at < date_trunc('month', CURRENT_DATE)",
     )
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0);
 
     // Growth rate
     let growth_rate = if new_last_month > 0 {
-        ((new_this_month - new_last_month) as f64 / new_last_month as f64 * 100.0 * 10.0).round() / 10.0
+        ((new_this_month - new_last_month) as f64 / new_last_month as f64 * 100.0 * 10.0).round()
+            / 10.0
     } else {
         0.0
     };
 
     // Active subscribers (users with active subscriptions)
     let active_subscribers: i64 = sqlx::query_scalar(
-        "SELECT COUNT(DISTINCT user_id) FROM user_memberships WHERE status = 'active'"
+        "SELECT COUNT(DISTINCT user_id) FROM user_memberships WHERE status = 'active'",
     )
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0);
 
     // Trial members
     let trial_members: i64 = sqlx::query_scalar(
-        "SELECT COUNT(DISTINCT user_id) FROM user_memberships WHERE status = 'trial'"
+        "SELECT COUNT(DISTINCT user_id) FROM user_memberships WHERE status = 'trial'",
     )
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0);
 
     // Churned members
     let churned_members: i64 = sqlx::query_scalar(
@@ -222,19 +230,18 @@ pub async fn stats(
                 WHEN billing_period = 'quarterly' THEN price / 3
                 ELSE price
             END
-        ), 0) FROM user_memberships WHERE status = 'active'"
+        ), 0) FROM user_memberships WHERE status = 'active'",
     )
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0.0);
+    .fetch_one(state.db.pool())
+    .await
+    .unwrap_or(0.0);
 
     // Total revenue
-    let total_revenue: f64 = sqlx::query_scalar(
-        "SELECT COALESCE(SUM(price), 0) FROM user_memberships"
-    )
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0.0);
+    let total_revenue: f64 =
+        sqlx::query_scalar("SELECT COALESCE(SUM(price), 0) FROM user_memberships")
+            .fetch_one(state.db.pool())
+            .await
+            .unwrap_or(0.0);
 
     Ok(Json(serde_json::json!({
         "overview": {
@@ -259,9 +266,7 @@ pub async fn stats(
 
 /// GET /admin/members/services - Get all services/products for filtering
 #[tracing::instrument(skip(state))]
-pub async fn services(
-    State(state): State<AppState>,
-) -> Result<Json<serde_json::Value>, ApiError> {
+pub async fn services(State(state): State<AppState>) -> Result<Json<serde_json::Value>, ApiError> {
     // Get distinct products/services that members can subscribe to
     let services: Vec<(i64, Option<String>, Option<String>, Option<f64>, i64)> = sqlx::query_as(
         r#"
@@ -276,22 +281,25 @@ pub async fn services(
         GROUP BY COALESCE(us.product_id, us.id), us.product_name, us.price
         ORDER BY members_count DESC
         LIMIT 50
-        "#
+        "#,
     )
     .fetch_all(state.db.pool())
     .await
     .unwrap_or_default();
 
-    let services_json: Vec<serde_json::Value> = services.into_iter().map(|(id, name, svc_type, price, count)| {
-        serde_json::json!({
-            "id": id,
-            "name": name.unwrap_or_else(|| format!("Service {}", id)),
-            "type": svc_type.unwrap_or_else(|| "subscription".to_string()),
-            "price": price.unwrap_or(0.0),
-            "is_active": true,
-            "members_count": count
+    let services_json: Vec<serde_json::Value> = services
+        .into_iter()
+        .map(|(id, name, svc_type, price, count)| {
+            serde_json::json!({
+                "id": id,
+                "name": name.unwrap_or_else(|| format!("Service {}", id)),
+                "type": svc_type.unwrap_or_else(|| "subscription".to_string()),
+                "price": price.unwrap_or(0.0),
+                "is_active": true,
+                "members_count": count
+            })
         })
-    }).collect();
+        .collect();
 
     Ok(Json(serde_json::json!({
         "services": services_json
@@ -344,7 +352,7 @@ pub async fn email_templates(
             "category": "acquisition",
             "is_active": true,
             "is_preset": true
-        })
+        }),
     ];
 
     Ok(Json(serde_json::json!({
@@ -364,7 +372,7 @@ pub async fn members_by_service(
     // Get service info
     let service_info: Option<(i64, Option<String>, Option<String>)> = sqlx::query_as(
         "SELECT DISTINCT COALESCE(product_id, id) as id, product_name, 'subscription' as type
-         FROM user_memberships WHERE COALESCE(product_id, id) = $1 LIMIT 1"
+         FROM user_memberships WHERE COALESCE(product_id, id) = $1 LIMIT 1",
     )
     .bind(service_id)
     .fetch_optional(state.db.pool())
@@ -378,7 +386,10 @@ pub async fn members_by_service(
     let page = params.page.unwrap_or(1).max(1);
     let offset = (page - 1) * per_page;
 
-    let mut conditions = vec![format!("us.product_id = {} OR us.id = {}", service_id, service_id)];
+    let mut conditions = vec![format!(
+        "us.product_id = {} OR us.id = {}",
+        service_id, service_id
+    )];
 
     if let Some(status) = &params.status {
         conditions.push(format!("us.status = '{}'", status.replace('\'', "''")));
@@ -497,10 +508,16 @@ pub async fn churned_members(
     }
 
     if let Some(date_from) = &params.date_from {
-        conditions.push(format!("us.cancelled_at >= '{}'", date_from.replace('\'', "''")));
+        conditions.push(format!(
+            "us.cancelled_at >= '{}'",
+            date_from.replace('\'', "''")
+        ));
     }
     if let Some(date_to) = &params.date_to {
-        conditions.push(format!("us.cancelled_at <= '{}'", date_to.replace('\'', "''")));
+        conditions.push(format!(
+            "us.cancelled_at <= '{}'",
+            date_to.replace('\'', "''")
+        ));
     }
 
     let extra_conditions = if conditions.is_empty() {
@@ -545,7 +562,7 @@ pub async fn churned_members(
     let this_month: i64 = sqlx::query_scalar(
         "SELECT COUNT(DISTINCT user_id) FROM user_memberships
          WHERE status IN ('cancelled', 'expired')
-         AND cancelled_at >= date_trunc('month', CURRENT_DATE)"
+         AND cancelled_at >= date_trunc('month', CURRENT_DATE)",
     )
     .fetch_one(state.db.pool())
     .await
@@ -553,7 +570,7 @@ pub async fn churned_members(
 
     let lost_revenue: f64 = sqlx::query_scalar(
         "SELECT COALESCE(SUM(price), 0) FROM user_memberships
-         WHERE status IN ('cancelled', 'expired')"
+         WHERE status IN ('cancelled', 'expired')",
     )
     .fetch_one(state.db.pool())
     .await
@@ -585,8 +602,8 @@ pub async fn export_members(
     State(state): State<AppState>,
     Query(params): Query<MemberQuery>,
 ) -> Result<axum::response::Response, ApiError> {
-    use axum::response::IntoResponse;
     use axum::http::header;
+    use axum::response::IntoResponse;
 
     let mut conditions = Vec::new();
 
@@ -633,9 +650,12 @@ pub async fn export_members(
     let response = (
         [
             (header::CONTENT_TYPE, "text/csv"),
-            (header::CONTENT_DISPOSITION, "attachment; filename=\"members.csv\""),
+            (
+                header::CONTENT_DISPOSITION,
+                "attachment; filename=\"members.csv\"",
+            ),
         ],
-        csv
+        csv,
     );
 
     Ok(response.into_response())
@@ -649,7 +669,7 @@ pub async fn show(
 ) -> Result<Json<serde_json::Value>, ApiError> {
     let member: Option<Member> = sqlx::query_as(
         "SELECT id, name, email, created_at, updated_at 
-         FROM users WHERE id = $1"
+         FROM users WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(state.db.pool())
@@ -659,9 +679,18 @@ pub async fn show(
     match member {
         Some(m) => {
             // Get subscription info
-            let subscriptions: Vec<serde_json::Value> = sqlx::query_as::<_, (i64, String, Option<f64>, Option<String>, Option<NaiveDateTime>)>(
+            let subscriptions: Vec<serde_json::Value> = sqlx::query_as::<
+                _,
+                (
+                    i64,
+                    String,
+                    Option<f64>,
+                    Option<String>,
+                    Option<NaiveDateTime>,
+                ),
+            >(
                 "SELECT id, status, price, billing_period, created_at 
-                 FROM user_memberships WHERE user_id = $1 ORDER BY created_at DESC"
+                 FROM user_memberships WHERE user_id = $1 ORDER BY created_at DESC",
             )
             .bind(id)
             .fetch_all(state.db.pool())
@@ -687,7 +716,7 @@ pub async fn show(
                     "active_subscriptions": subscriptions.iter().filter(|s| s["status"] == "active").count()
                 }
             })))
-        },
+        }
         None => Err(ApiError::not_found("Member not found")),
     }
 }

@@ -3,12 +3,7 @@
 //!
 //! Returns status of external service integrations for admin dashboard.
 
-use axum::{
-    extract::State,
-    http::StatusCode,
-    routing::get,
-    Json, Router,
-};
+use axum::{extract::State, http::StatusCode, routing::get, Json, Router};
 use serde_json::json;
 
 use crate::{models::User, AppState};
@@ -19,10 +14,13 @@ fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>
     if role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer" {
         Ok(())
     } else {
-        Err((StatusCode::FORBIDDEN, Json(json!({
-            "error": "Access denied",
-            "message": "This action requires admin privileges"
-        }))))
+        Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({
+                "error": "Access denied",
+                "message": "This action requires admin privileges"
+            })),
+        ))
     }
 }
 
@@ -96,7 +94,7 @@ async fn get_connections_status(
             "status": "pending",
             "health_score": 0,
             "last_verified_at": null
-        })
+        }),
     ];
 
     Ok(Json(json!({
@@ -111,7 +109,7 @@ async fn get_connections_summary(
     user: User,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     Ok(Json(json!({
         "success": true,
         "connections": {
@@ -131,7 +129,7 @@ async fn connect_service(
     Json(_input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     Ok(Json(json!({
         "success": true,
         "message": format!("Service {} connected successfully", key),
@@ -151,7 +149,7 @@ async fn test_connection(
     Json(_input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     Ok(Json(json!({
         "success": true,
         "message": format!("Connection test for {} passed", key),
@@ -167,7 +165,7 @@ async fn disconnect_service(
     axum::extract::Path(key): axum::extract::Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     Ok(Json(json!({
         "success": true,
         "message": format!("Service {} disconnected", key)
@@ -180,7 +178,7 @@ async fn get_categories(
     user: User,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     Ok(Json(json!({
         "categories": {
             "Fluent": ["fluent_crm_pro", "fluent_forms_pro", "fluent_smtp"],
@@ -195,7 +193,7 @@ async fn get_categories(
 /// Build the connections admin router
 pub fn admin_router() -> Router<AppState> {
     use axum::routing::post;
-    
+
     Router::new()
         // Root route returns full connections list (frontend expects this)
         .route("/", get(get_connections_status))

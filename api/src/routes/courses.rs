@@ -10,8 +10,8 @@ use serde_json::json;
 use uuid::Uuid;
 
 use crate::{
-    models::{Course, CreateCourseRequest, Lesson},
     middleware::admin::AdminUser,
+    models::{Course, CreateCourseRequest, Lesson},
     AppState,
 };
 
@@ -19,17 +19,16 @@ use crate::{
 async fn list_courses(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<Course>>, (StatusCode, Json<serde_json::Value>)> {
-    let courses: Vec<Course> = sqlx::query_as(
-        "SELECT * FROM courses WHERE is_published = true ORDER BY created_at DESC"
-    )
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    let courses: Vec<Course> =
+        sqlx::query_as("SELECT * FROM courses WHERE is_published = true ORDER BY created_at DESC")
+            .fetch_all(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(courses))
 }
@@ -49,7 +48,12 @@ async fn get_course(
                 Json(json!({"error": e.to_string()})),
             )
         })?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"}))))?;
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Course not found"})),
+            )
+        })?;
 
     Ok(Json(course))
 }
@@ -59,18 +63,17 @@ async fn get_lessons(
     State(state): State<AppState>,
     Path(course_id): Path<Uuid>,
 ) -> Result<Json<Vec<Lesson>>, (StatusCode, Json<serde_json::Value>)> {
-    let lessons: Vec<Lesson> = sqlx::query_as(
-        "SELECT * FROM lessons WHERE course_id = $1 ORDER BY position ASC"
-    )
-        .bind(course_id)
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    let lessons: Vec<Lesson> =
+        sqlx::query_as("SELECT * FROM lessons WHERE course_id = $1 ORDER BY position ASC")
+            .bind(course_id)
+            .fetch_all(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(lessons))
 }

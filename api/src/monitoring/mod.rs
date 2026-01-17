@@ -1,13 +1,7 @@
 //! Monitoring and Observability Module
 //! ICT 11+ Principal Engineer Grade - Production Monitoring
 
-use axum::{
-    extract::State,
-    http::StatusCode,
-    response::Json,
-    routing::get,
-    Router,
-};
+use axum::{extract::State, http::StatusCode, response::Json, routing::get, Router};
 use serde::Serialize;
 use std::sync::atomic::{AtomicU64, Ordering};
 use std::sync::Arc;
@@ -95,7 +89,7 @@ pub struct MetricsSnapshot {
 /// GET /metrics
 async fn metrics_endpoint(State(metrics): State<Metrics>) -> String {
     let snapshot = metrics.snapshot();
-    
+
     format!(
         r#"# HELP requests_total Total number of requests
 # TYPE requests_total counter
@@ -167,11 +161,7 @@ pub fn router() -> Router<Metrics> {
 
 /// ICT 11+ Metrics Middleware Layer
 /// Tracks all requests and their success/failure status
-use axum::{
-    extract::Request,
-    middleware::Next,
-    response::Response,
-};
+use axum::{extract::Request, middleware::Next, response::Response};
 
 pub async fn metrics_middleware(
     State(metrics): State<Metrics>,
@@ -180,16 +170,16 @@ pub async fn metrics_middleware(
 ) -> Response {
     // Record request
     metrics.record_request();
-    
+
     // Process request
     let response = next.run(request).await;
-    
+
     // Record success/error based on status
     if response.status().is_success() {
         metrics.record_success();
     } else if response.status().is_client_error() || response.status().is_server_error() {
         metrics.record_error();
     }
-    
+
     response
 }

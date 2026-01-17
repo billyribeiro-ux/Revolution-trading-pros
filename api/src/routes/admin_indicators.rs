@@ -371,7 +371,11 @@ async fn toggle_indicator(
         )
     })?;
 
-    let status = if indicator.is_active.unwrap_or(false) { "activated" } else { "deactivated" };
+    let status = if indicator.is_active.unwrap_or(false) {
+        "activated"
+    } else {
+        "deactivated"
+    };
 
     Ok(Json(json!({
         "success": true,
@@ -387,6 +391,11 @@ async fn toggle_indicator(
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_indicators).post(create_indicator))
-        .route("/:id", get(get_indicator).put(update_indicator).delete(delete_indicator))
+        .route(
+            "/:id",
+            get(get_indicator)
+                .put(update_indicator)
+                .delete(delete_indicator),
+        )
         .route("/:id/toggle", post(toggle_indicator))
 }

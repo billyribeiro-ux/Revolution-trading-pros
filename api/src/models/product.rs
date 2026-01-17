@@ -67,7 +67,11 @@ pub struct ProductResponse {
 pub struct CreateProduct {
     #[validate(length(min = 1, max = 255, message = "Name must be 1-255 characters"))]
     pub name: String,
-    #[validate(length(min = 1, max = 20, message = "Type must be course, indicator, or bundle"))]
+    #[validate(length(
+        min = 1,
+        max = 20,
+        message = "Type must be course, indicator, or bundle"
+    ))]
     pub product_type: String,
     pub description: Option<String>,
     pub long_description: Option<String>,

@@ -497,9 +497,16 @@ pub fn format_file_size(bytes: i64) -> String {
     }
 }
 
-pub fn get_embed_url(video_url: &Option<String>, bunny_guid: &Option<String>, bunny_library: Option<i64>) -> Option<String> {
+pub fn get_embed_url(
+    video_url: &Option<String>,
+    bunny_guid: &Option<String>,
+    bunny_library: Option<i64>,
+) -> Option<String> {
     if let (Some(guid), Some(lib_id)) = (bunny_guid, bunny_library) {
-        return Some(format!("https://iframe.mediadelivery.net/embed/{}/{}", lib_id, guid));
+        return Some(format!(
+            "https://iframe.mediadelivery.net/embed/{}/{}",
+            lib_id, guid
+        ));
     }
     video_url.clone()
 }

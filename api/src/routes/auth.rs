@@ -27,8 +27,8 @@ use crate::{
     },
     utils::{
         create_jwt, create_refresh_token, generate_session_id, generate_verification_token,
-        hash_password, hash_token, verify_jwt, verify_password, validate_password,
-        hash_dummy_password,
+        hash_dummy_password, hash_password, hash_token, validate_password, verify_jwt,
+        verify_password,
     },
     AppState,
 };
@@ -213,7 +213,8 @@ async fn register(
 
     // Return success without tokens - user must verify email first
     Ok(Json(RegisterResponse {
-        message: "Registration successful! Please check your email to verify your account.".to_string(),
+        message: "Registration successful! Please check your email to verify your account."
+            .to_string(),
         email: user.email,
         requires_verification: true,
     }))
@@ -305,7 +306,10 @@ async fn verify_email(
 
     // ICT 11+ UX: Send welcome email with comprehensive logging
     if let Some(ref email_service) = state.services.email {
-        match email_service.send_welcome_email(&user.email, &user.name).await {
+        match email_service
+            .send_welcome_email(&user.email, &user.name)
+            .await
+        {
             Ok(_) => {
                 tracing::info!(
                     target: "security_audit",
@@ -478,7 +482,7 @@ async fn login(
             locked: false,
         })
     };
-    
+
     match rate_limit_result {
         Ok(rate_limit) => {
             if !rate_limit.allowed {
@@ -487,7 +491,7 @@ async fn login(
                 } else {
                     "Too many login attempts. Please wait before trying again"
                 };
-                
+
                 return Err((
                     StatusCode::TOO_MANY_REQUESTS,
                     Json(json!({
@@ -559,7 +563,7 @@ async fn login(
         if let Some(redis) = &state.services.redis {
             let _ = redis.record_failed_login(&input.email).await;
         }
-        
+
         tracing::info!(
             target: "security",
             event = "login_failed",
@@ -582,20 +586,24 @@ async fn login(
     // ICT 11+ ENTERPRISE SECURITY: Email Verification Enforcement
     // Apple Principal Engineer Grade - Zero Trust Security Model
     // Only developers and superadmins bypass verification for operational access
-    let is_developer = state.config.is_developer_email(&user.email)
-        || user.role.as_deref() == Some("developer");
-    
+    let is_developer =
+        state.config.is_developer_email(&user.email) || user.role.as_deref() == Some("developer");
+
     let is_superadmin = state.config.is_superadmin_email(&user.email)
         || user.role.as_deref() == Some("super_admin")
         || user.role.as_deref() == Some("super-admin");
-    
+
     // ICT 11+ SECURITY: Strict verification enforcement
     // Only privileged roles bypass - all other users MUST verify email
     let bypass_verification = is_developer || is_superadmin;
-    
+
     // ICT 11+ AUDIT: Log all verification bypass attempts
     if bypass_verification && user.email_verified_at.is_none() {
-        let role_type = if is_developer { "developer" } else { "superadmin" };
+        let role_type = if is_developer {
+            "developer"
+        } else {
+            "superadmin"
+        };
         tracing::warn!(
             target: "security_audit",
             event = "email_verification_bypassed",
@@ -606,7 +614,7 @@ async fn login(
             "ICT 11+ AUDIT: Email verification bypassed for privileged user"
         );
     }
-    
+
     // ICT 11+ SECURITY GATE: Block unverified users
     if user.email_verified_at.is_none() && !bypass_verification {
         tracing::warn!(
@@ -628,10 +636,14 @@ async fn login(
             })),
         ));
     }
-    
+
     // ICT 11+ AUDIT: Log successful verification bypass
     if bypass_verification && user.email_verified_at.is_none() {
-        let role_type = if is_developer { "developer" } else { "superadmin" };
+        let role_type = if is_developer {
+            "developer"
+        } else {
+            "superadmin"
+        };
         tracing::info!(
             target: "security_audit",
             event = "privileged_verification_bypass",
@@ -643,15 +655,18 @@ async fn login(
     }
 
     // Create access token
-    let token = create_jwt(user.id, &state.config.jwt_secret, state.config.jwt_expires_in).map_err(
-        |e| {
-            tracing::error!("JWT creation error: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "Token creation failed"})),
-            )
-        },
-    )?;
+    let token = create_jwt(
+        user.id,
+        &state.config.jwt_secret,
+        state.config.jwt_expires_in,
+    )
+    .map_err(|e| {
+        tracing::error!("JWT creation error: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Token creation failed"})),
+        )
+    })?;
 
     // Create refresh token
     let refresh_token = create_refresh_token(user.id, &state.config.jwt_secret).map_err(|e| {
@@ -664,7 +679,7 @@ async fn login(
 
     // Generate session ID and store in Redis
     let session_id = generate_session_id();
-    
+
     // ICT L11+ Security: Create server-side session in Redis
     if let Some(redis) = &state.services.redis {
         if let Err(e) = redis
@@ -682,12 +697,12 @@ async fn login(
         user_id = %user.id,
         email = %user.email,
         session_id = %session_id,
-        "Login successful"    
+        "Login successful"
     );
 
     Ok(Json(AuthResponse {
         token: token.clone(),
-        access_token: token,  // Frontend prefers access_token
+        access_token: token, // Frontend prefers access_token
         refresh_token,
         session_id,
         user: user.into(),
@@ -731,27 +746,28 @@ async fn refresh(
     }
 
     // Create new access token
-    let token =
-        create_jwt(claims.sub, &state.config.jwt_secret, state.config.jwt_expires_in).map_err(
-            |e| {
-                tracing::error!("JWT creation error: {}", e);
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": "Token creation failed"})),
-                )
-            },
-        )?;
+    let token = create_jwt(
+        claims.sub,
+        &state.config.jwt_secret,
+        state.config.jwt_expires_in,
+    )
+    .map_err(|e| {
+        tracing::error!("JWT creation error: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Token creation failed"})),
+        )
+    })?;
 
     // Create new refresh token (token rotation for security)
-    let new_refresh_token = create_refresh_token(claims.sub, &state.config.jwt_secret).map_err(
-        |e| {
+    let new_refresh_token =
+        create_refresh_token(claims.sub, &state.config.jwt_secret).map_err(|e| {
             tracing::error!("Refresh token creation error: {}", e);
             (
                 StatusCode::INTERNAL_SERVER_ERROR,
                 Json(json!({"error": "Refresh token creation failed"})),
             )
-        },
-    )?;
+        })?;
 
     tracing::debug!("Token refreshed for user: {}", claims.sub);
 
@@ -983,18 +999,19 @@ async fn reset_password(
     })?;
 
     // Update user's password
-    let result = sqlx::query("UPDATE users SET password_hash = $1, updated_at = NOW() WHERE email = $2")
-        .bind(&password_hash)
-        .bind(&input.email)
-        .execute(&state.db.pool)
-        .await
-        .map_err(|e| {
-            tracing::error!("Database error: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": "Database error"})),
-            )
-        })?;
+    let result =
+        sqlx::query("UPDATE users SET password_hash = $1, updated_at = NOW() WHERE email = $2")
+            .bind(&password_hash)
+            .bind(&input.email)
+            .execute(&state.db.pool)
+            .await
+            .map_err(|e| {
+                tracing::error!("Database error: {}", e);
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": "Database error"})),
+                )
+            })?;
 
     if result.rows_affected() == 0 {
         return Err((
@@ -1032,7 +1049,7 @@ pub fn router() -> Router<AppState> {
         .route("/refresh", post(refresh))
         .route("/me", get(me))
         .route("/logout", post(logout))
-        .route("/logout-all", post(logout_all))  // ICT L11+ Security: Force logout everywhere
+        .route("/logout-all", post(logout_all)) // ICT L11+ Security: Force logout everywhere
         .route("/forgot-password", post(forgot_password))
         .route("/reset-password", post(reset_password))
         .route("/verify-email", get(verify_email))
@@ -1041,6 +1058,5 @@ pub fn router() -> Router<AppState> {
 
 /// Router for /logout at top level (frontend compatibility)
 pub fn logout_router() -> Router<AppState> {
-    Router::new()
-        .route("/", post(logout))
+    Router::new().route("/", post(logout))
 }

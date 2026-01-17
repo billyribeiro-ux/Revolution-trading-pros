@@ -10,10 +10,7 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{
-    models::User,
-    AppState,
-};
+use crate::{models::User, AppState};
 
 /// Post list query
 #[derive(Debug, Deserialize)]
@@ -97,9 +94,12 @@ async fn list_posts(
     let offset = (page - 1) * per_page;
 
     let status = query.status.unwrap_or_else(|| "published".to_string());
-    
+
     // Build query with parameterized bindings for security (ICT 11+ SQL injection prevention)
-    let search_pattern = query.search.as_ref().map(|s| format!("%{}%", s.replace('%', "\\%").replace('_', "\\_")));
+    let search_pattern = query
+        .search
+        .as_ref()
+        .map(|s| format!("%{}%", s.replace('%', "\\%").replace('_', "\\_")));
 
     // Fetch posts with proper parameterized query
     let posts: Vec<PostRow> = if let Some(ref pattern) = search_pattern {
@@ -197,14 +197,23 @@ async fn get_post(
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> Result<Json<PostRow>, (StatusCode, Json<serde_json::Value>)> {
-    let post: PostRow = sqlx::query_as(
-        "SELECT * FROM posts WHERE slug = $1 AND status = 'published'"
-    )
-    .bind(&slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Post not found"}))))?;
+    let post: PostRow =
+        sqlx::query_as("SELECT * FROM posts WHERE slug = $1 AND status = 'published'")
+            .bind(&slug)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": "Post not found"})),
+                )
+            })?;
 
     Ok(Json(post))
 }
@@ -259,8 +268,18 @@ async fn update_post(
         .bind(id)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Post not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Post not found"})),
+            )
+        })?;
 
     // Build update with parameterized query (ICT 11+ secure)
     let title = input.title.unwrap_or(current.title);
@@ -281,7 +300,7 @@ async fn update_post(
             content_blocks = $6, featured_image = $7, meta_title = $8, 
             meta_description = $9, canonical_url = $10, schema_markup = $11,
             updated_at = NOW()
-        WHERE id = $12 RETURNING *"#
+        WHERE id = $12 RETURNING *"#,
     )
     .bind(&title)
     .bind(&new_slug)
@@ -297,7 +316,12 @@ async fn update_post(
     .bind(id)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(post))
 }
@@ -314,7 +338,12 @@ async fn delete_post(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Post deleted successfully"})))
 }

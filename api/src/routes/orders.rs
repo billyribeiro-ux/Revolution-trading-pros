@@ -6,17 +6,12 @@
 use axum::{
     extract::{Path, State},
     routing::get,
-    Json,
-    Router,
+    Json, Router,
 };
 use serde::Serialize;
 use uuid::Uuid;
 
-use crate::{
-    models::User,
-    services::order_service::OrderService,
-    AppState,
-};
+use crate::{models::User, services::order_service::OrderService, AppState};
 
 #[derive(Debug, Serialize)]
 pub struct OrderResponse {
@@ -63,7 +58,7 @@ pub async fn index(
     // Return empty orders for now - OrderService expects UUID but user.id is i64
     // TODO: Fix OrderService to use i64 or update users table to use UUID
     let orders: Vec<serde_json::Value> = vec![];
-    
+
     /*
     let order_service = OrderService::new(&state.db.pool);
     let user_uuid = uuid::Uuid::from_u128(user.id as u128);
@@ -90,8 +85,16 @@ pub async fn show(
     let order = order_service
         .get_user_order(user_uuid, id)
         .await
-        .map_err(|e| (axum::http::StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.message}))))?
-        .ok_or((axum::http::StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "Order not found"}))))?;
+        .map_err(|e| {
+            (
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": e.message})),
+            )
+        })?
+        .ok_or((
+            axum::http::StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "Order not found"})),
+        ))?;
 
     let items: Vec<OrderItemResponse> = order
         .items

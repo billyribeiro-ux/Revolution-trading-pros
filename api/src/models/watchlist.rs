@@ -166,12 +166,14 @@ pub struct PaginationMeta {
 
 impl WatchlistEntry {
     pub fn to_response(&self) -> WatchlistResponse {
-        let rooms: Vec<String> = self.rooms
+        let rooms: Vec<String> = self
+            .rooms
             .as_ref()
             .and_then(|v| serde_json::from_value(v.clone()).ok())
             .unwrap_or_default();
 
-        let watchlist_dates: Option<Vec<WatchlistDate>> = self.watchlist_dates
+        let watchlist_dates: Option<Vec<WatchlistDate>> = self
+            .watchlist_dates
             .as_ref()
             .and_then(|v| serde_json::from_value(v.clone()).ok());
 

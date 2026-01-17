@@ -51,14 +51,17 @@ async fn list_layouts(
         .fetch_all(&state.db.pool)
         .await
         .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Database error: {}", e)})),
-            )
-        })?;
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Database error: {}", e)})),
+        )
+    })?;
 
     let count_query = if params.course_id.is_some() {
-        format!("SELECT COUNT(*) FROM page_layouts WHERE course_id = '{}'", params.course_id.unwrap())
+        format!(
+            "SELECT COUNT(*) FROM page_layouts WHERE course_id = '{}'",
+            params.course_id.unwrap()
+        )
     } else {
         "SELECT COUNT(*) FROM page_layouts".to_string()
     };
@@ -91,24 +94,22 @@ async fn get_layout(
     State(state): State<AppState>,
     Path(id): Path<Uuid>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let layout: PageLayout = sqlx::query_as(
-        r#"SELECT * FROM page_layouts WHERE id = $1"#,
-    )
-    .bind(id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("Database error: {}", e)})),
-        )
-    })?
-    .ok_or_else(|| {
-        (
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Layout not found"})),
-        )
-    })?;
+    let layout: PageLayout = sqlx::query_as(r#"SELECT * FROM page_layouts WHERE id = $1"#)
+        .bind(id)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Layout not found"})),
+            )
+        })?;
 
     Ok(Json(json!({
         "success": true,
@@ -181,14 +182,13 @@ async fn update_layout(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // First, save current version to history if blocks are being updated
     if input.blocks.is_some() {
-        let current: Option<PageLayout> = sqlx::query_as(
-            "SELECT * FROM page_layouts WHERE id = $1"
-        )
-        .bind(id)
-        .fetch_optional(&state.db.pool)
-        .await
-        .ok()
-        .flatten();
+        let current: Option<PageLayout> =
+            sqlx::query_as("SELECT * FROM page_layouts WHERE id = $1")
+                .bind(id)
+                .fetch_optional(&state.db.pool)
+                .await
+                .ok()
+                .flatten();
 
         if let Some(layout) = current {
             let _ = sqlx::query(
@@ -325,25 +325,24 @@ async fn restore_layout_version(
     State(state): State<AppState>,
     Path((id, version)): Path<(Uuid, i32)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let version_data: PageLayoutVersion = sqlx::query_as(
-        "SELECT * FROM page_layout_versions WHERE layout_id = $1 AND version = $2",
-    )
-    .bind(id)
-    .bind(version)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("Database error: {}", e)})),
-        )
-    })?
-    .ok_or_else(|| {
-        (
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Version not found"})),
-        )
-    })?;
+    let version_data: PageLayoutVersion =
+        sqlx::query_as("SELECT * FROM page_layout_versions WHERE layout_id = $1 AND version = $2")
+            .bind(id)
+            .bind(version)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("Database error: {}", e)})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": "Version not found"})),
+                )
+            })?;
 
     let layout: PageLayout = sqlx::query_as(
         r#"
@@ -395,9 +394,15 @@ fn slugify(text: &str) -> String {
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_layouts).post(create_layout))
-        .route("/{id}", get(get_layout).put(update_layout).delete(delete_layout))
+        .route(
+            "/{id}",
+            get(get_layout).put(update_layout).delete(delete_layout),
+        )
         .route("/{id}/publish", post(publish_layout))
         .route("/{id}/versions", get(get_layout_versions))
-        .route("/{id}/versions/{version}/restore", post(restore_layout_version))
+        .route(
+            "/{id}/versions/{version}/restore",
+            post(restore_layout_version),
+        )
         .route("/course/{course_id}", get(get_layout_by_course))
 }

@@ -154,7 +154,7 @@ pub struct TopVideoStats {
 
 #[derive(Debug, Deserialize)]
 pub struct AnalyticsDashboardQuery {
-    pub period: Option<String>,      // 7d, 30d, 90d, custom
+    pub period: Option<String>, // 7d, 30d, 90d, custom
     pub start_date: Option<String>,
     pub end_date: Option<String>,
     pub content_type: Option<String>,
@@ -407,7 +407,7 @@ pub struct VideoTranscription {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateTranscriptionRequest {
     pub language_code: Option<String>,
-    pub provider: Option<String>,   // openai, assemblyai, deepgram
+    pub provider: Option<String>, // openai, assemblyai, deepgram
     pub auto_generate_captions: Option<bool>,
 }
 
@@ -465,11 +465,11 @@ pub struct ScheduledPublishJob {
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct CreateScheduledJobRequest {
-    pub resource_type: String,      // video, series
+    pub resource_type: String, // video, series
     pub resource_id: i64,
-    pub scheduled_at: String,       // ISO 8601 datetime
+    pub scheduled_at: String, // ISO 8601 datetime
     pub timezone: Option<String>,
-    pub action: String,             // publish, unpublish, feature, unfeature
+    pub action: String, // publish, unpublish, feature, unfeature
     pub notify_on_publish: Option<bool>,
     pub notification_recipients: Option<Vec<String>>,
 }
@@ -659,7 +659,7 @@ pub struct ExportVideosQuery {
     pub is_published: Option<bool>,
     pub start_date: Option<String>,
     pub end_date: Option<String>,
-    pub format: Option<String>,  // csv, xlsx
+    pub format: Option<String>, // csv, xlsx
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -741,7 +741,13 @@ pub fn generate_vtt(segments: &[TranscriptionSegment]) -> String {
     for (i, segment) in segments.iter().enumerate() {
         let start = format_vtt_time(segment.start);
         let end = format_vtt_time(segment.end);
-        vtt.push_str(&format!("{}\n{} --> {}\n{}\n\n", i + 1, start, end, segment.text));
+        vtt.push_str(&format!(
+            "{}\n{} --> {}\n{}\n\n",
+            i + 1,
+            start,
+            end,
+            segment.text
+        ));
     }
     vtt
 }
@@ -752,7 +758,13 @@ pub fn generate_srt(segments: &[TranscriptionSegment]) -> String {
     for (i, segment) in segments.iter().enumerate() {
         let start = format_srt_time(segment.start);
         let end = format_srt_time(segment.end);
-        srt.push_str(&format!("{}\n{} --> {}\n{}\n\n", i + 1, start, end, segment.text));
+        srt.push_str(&format!(
+            "{}\n{} --> {}\n{}\n\n",
+            i + 1,
+            start,
+            end,
+            segment.text
+        ));
     }
     srt
 }

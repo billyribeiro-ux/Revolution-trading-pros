@@ -9,14 +9,11 @@ use axum::{
     routing::{delete, get, post, put},
     Router,
 };
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use chrono::{DateTime, Utc};
 
-use crate::{
-    utils::errors::ApiError,
-    AppState,
-};
+use crate::{utils::errors::ApiError, AppState};
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Category {
@@ -139,13 +136,11 @@ pub async fn show(
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let category: Category = sqlx::query_as(
-        "SELECT * FROM categories WHERE id = $1"
-    )
-    .bind(id)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|_| ApiError::not_found("Category not found"))?;
+    let category: Category = sqlx::query_as("SELECT * FROM categories WHERE id = $1")
+        .bind(id)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|_| ApiError::not_found("Category not found"))?;
 
     Ok(Json(serde_json::json!({ "data": category })))
 }
@@ -157,18 +152,23 @@ pub async fn store(
     Json(payload): Json<CreateCategory>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     // Validate slug format
-    if !payload.slug.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-') {
-        return Err(ApiError::validation_error("Slug must contain only lowercase letters, numbers, and hyphens"));
+    if !payload
+        .slug
+        .chars()
+        .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-')
+    {
+        return Err(ApiError::validation_error(
+            "Slug must contain only lowercase letters, numbers, and hyphens",
+        ));
     }
 
     // Check if slug already exists
-    let exists: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM categories WHERE slug = $1)"
-    )
-    .bind(&payload.slug)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let exists: bool =
+        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM categories WHERE slug = $1)")
+            .bind(&payload.slug)
+            .fetch_one(state.db.pool())
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     if exists {
         return Err(ApiError::validation_error("Slug already exists"));
@@ -177,7 +177,7 @@ pub async fn store(
     let category: Category = sqlx::query_as(
         "INSERT INTO categories (name, slug, description, parent_id, created_at, updated_at)
          VALUES ($1, $2, $3, $4, NOW(), NOW())
-         RETURNING *"
+         RETURNING *",
     )
     .bind(&payload.name)
     .bind(&payload.slug)
@@ -198,13 +198,11 @@ pub async fn update(
     Json(payload): Json<UpdateCategory>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     // Check if category exists
-    let exists: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM categories WHERE id = $1)"
-    )
-    .bind(id)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM categories WHERE id = $1)")
+        .bind(id)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     if !exists {
         return Err(ApiError::not_found("Category not found"));
@@ -212,13 +210,18 @@ pub async fn update(
 
     // Validate slug if provided
     if let Some(slug) = &payload.slug {
-        if !slug.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-') {
-            return Err(ApiError::validation_error("Slug must contain only lowercase letters, numbers, and hyphens"));
+        if !slug
+            .chars()
+            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-')
+        {
+            return Err(ApiError::validation_error(
+                "Slug must contain only lowercase letters, numbers, and hyphens",
+            ));
         }
 
         // Check if slug already exists for another category
         let slug_exists: bool = sqlx::query_scalar(
-            "SELECT EXISTS(SELECT 1 FROM categories WHERE slug = $1 AND id != $2)"
+            "SELECT EXISTS(SELECT 1 FROM categories WHERE slug = $1 AND id != $2)",
         )
         .bind(slug)
         .bind(id)
@@ -235,10 +238,22 @@ pub async fn update(
     let mut updates = Vec::new();
     let mut param_count = 1;
 
-    if payload.name.is_some() { updates.push(format!("name = ${}", param_count)); param_count += 1; }
-    if payload.slug.is_some() { updates.push(format!("slug = ${}", param_count)); param_count += 1; }
-    if payload.description.is_some() { updates.push(format!("description = ${}", param_count)); param_count += 1; }
-    if payload.parent_id.is_some() { updates.push(format!("parent_id = ${}", param_count)); param_count += 1; }
+    if payload.name.is_some() {
+        updates.push(format!("name = ${}", param_count));
+        param_count += 1;
+    }
+    if payload.slug.is_some() {
+        updates.push(format!("slug = ${}", param_count));
+        param_count += 1;
+    }
+    if payload.description.is_some() {
+        updates.push(format!("description = ${}", param_count));
+        param_count += 1;
+    }
+    if payload.parent_id.is_some() {
+        updates.push(format!("parent_id = ${}", param_count));
+        param_count += 1;
+    }
 
     updates.push(format!("updated_at = ${}", param_count));
 
@@ -250,10 +265,18 @@ pub async fn update(
 
     let mut query = sqlx::query_as::<_, Category>(&query_str);
 
-    if let Some(name) = payload.name { query = query.bind(name); }
-    if let Some(slug) = payload.slug { query = query.bind(slug); }
-    if let Some(description) = payload.description { query = query.bind(description); }
-    if let Some(parent_id) = payload.parent_id { query = query.bind(parent_id); }
+    if let Some(name) = payload.name {
+        query = query.bind(name);
+    }
+    if let Some(slug) = payload.slug {
+        query = query.bind(slug);
+    }
+    if let Some(description) = payload.description {
+        query = query.bind(description);
+    }
+    if let Some(parent_id) = payload.parent_id {
+        query = query.bind(parent_id);
+    }
 
     query = query.bind(chrono::Utc::now().naive_utc());
     query = query.bind(id);
@@ -273,16 +296,16 @@ pub async fn destroy(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     // Check if category has posts
-    let post_count: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM posts WHERE category_id = $1"
-    )
-    .bind(id)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let post_count: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM posts WHERE category_id = $1")
+        .bind(id)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     if post_count > 0 {
-        return Err(ApiError::validation_error("Cannot delete category with posts"));
+        return Err(ApiError::validation_error(
+            "Cannot delete category with posts",
+        ));
     }
 
     let result = sqlx::query("DELETE FROM categories WHERE id = $1")
@@ -295,12 +318,17 @@ pub async fn destroy(
         return Err(ApiError::not_found("Category not found"));
     }
 
-    Ok(Json(serde_json::json!({ "message": "Category deleted successfully" })))
+    Ok(Json(
+        serde_json::json!({ "message": "Category deleted successfully" }),
+    ))
 }
 
 /// Build the categories router
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/admin/categories", get(index).post(store))
-        .route("/admin/categories/:id", get(show).put(update).delete(destroy))
+        .route(
+            "/admin/categories/:id",
+            get(show).put(update).delete(destroy),
+        )
 }

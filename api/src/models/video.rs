@@ -302,7 +302,10 @@ impl UnifiedVideo {
             "bunny" => {
                 if let Some(guid) = &self.bunny_video_guid {
                     if let Some(lib_id) = self.bunny_library_id {
-                        return format!("https://iframe.mediadelivery.net/embed/{}/{}", lib_id, guid);
+                        return format!(
+                            "https://iframe.mediadelivery.net/embed/{}/{}",
+                            lib_id, guid
+                        );
                     }
                 }
                 self.video_url.clone()
@@ -352,11 +355,14 @@ impl UnifiedVideo {
         self.get_tags_vec()
             .iter()
             .filter_map(|slug| {
-                AVAILABLE_TAGS.iter().find(|(s, _, _)| s == slug).map(|(s, n, c)| TagDetail {
-                    slug: s.to_string(),
-                    name: n.to_string(),
-                    color: c.to_string(),
-                })
+                AVAILABLE_TAGS
+                    .iter()
+                    .find(|(s, _, _)| s == slug)
+                    .map(|(s, n, c)| TagDetail {
+                        slug: s.to_string(),
+                        name: n.to_string(),
+                        color: c.to_string(),
+                    })
             })
             .collect()
     }
@@ -364,35 +370,74 @@ impl UnifiedVideo {
 
 pub fn get_content_types() -> Vec<ContentTypeOption> {
     vec![
-        ContentTypeOption { value: "daily_video".to_string(), label: "Daily Video".to_string() },
-        ContentTypeOption { value: "weekly_watchlist".to_string(), label: "Weekly Watchlist".to_string() },
-        ContentTypeOption { value: "learning_center".to_string(), label: "Learning Center".to_string() },
-        ContentTypeOption { value: "room_archive".to_string(), label: "Room Archive".to_string() },
+        ContentTypeOption {
+            value: "daily_video".to_string(),
+            label: "Daily Video".to_string(),
+        },
+        ContentTypeOption {
+            value: "weekly_watchlist".to_string(),
+            label: "Weekly Watchlist".to_string(),
+        },
+        ContentTypeOption {
+            value: "learning_center".to_string(),
+            label: "Learning Center".to_string(),
+        },
+        ContentTypeOption {
+            value: "room_archive".to_string(),
+            label: "Room Archive".to_string(),
+        },
     ]
 }
 
 pub fn get_platforms() -> Vec<PlatformOption> {
     vec![
-        PlatformOption { value: "bunny".to_string(), label: "Bunny.net".to_string() },
-        PlatformOption { value: "vimeo".to_string(), label: "Vimeo".to_string() },
-        PlatformOption { value: "youtube".to_string(), label: "YouTube".to_string() },
-        PlatformOption { value: "wistia".to_string(), label: "Wistia".to_string() },
-        PlatformOption { value: "direct".to_string(), label: "Direct URL".to_string() },
+        PlatformOption {
+            value: "bunny".to_string(),
+            label: "Bunny.net".to_string(),
+        },
+        PlatformOption {
+            value: "vimeo".to_string(),
+            label: "Vimeo".to_string(),
+        },
+        PlatformOption {
+            value: "youtube".to_string(),
+            label: "YouTube".to_string(),
+        },
+        PlatformOption {
+            value: "wistia".to_string(),
+            label: "Wistia".to_string(),
+        },
+        PlatformOption {
+            value: "direct".to_string(),
+            label: "Direct URL".to_string(),
+        },
     ]
 }
 
 pub fn get_difficulty_levels() -> Vec<DifficultyOption> {
     vec![
-        DifficultyOption { value: "beginner".to_string(), label: "Beginner".to_string() },
-        DifficultyOption { value: "intermediate".to_string(), label: "Intermediate".to_string() },
-        DifficultyOption { value: "advanced".to_string(), label: "Advanced".to_string() },
+        DifficultyOption {
+            value: "beginner".to_string(),
+            label: "Beginner".to_string(),
+        },
+        DifficultyOption {
+            value: "intermediate".to_string(),
+            label: "Intermediate".to_string(),
+        },
+        DifficultyOption {
+            value: "advanced".to_string(),
+            label: "Advanced".to_string(),
+        },
     ]
 }
 
 pub fn get_all_tags() -> Vec<TagDetail> {
-    AVAILABLE_TAGS.iter().map(|(s, n, c)| TagDetail {
-        slug: s.to_string(),
-        name: n.to_string(),
-        color: c.to_string(),
-    }).collect()
+    AVAILABLE_TAGS
+        .iter()
+        .map(|(s, n, c)| TagDetail {
+            slug: s.to_string(),
+            name: n.to_string(),
+            color: c.to_string(),
+        })
+        .collect()
 }

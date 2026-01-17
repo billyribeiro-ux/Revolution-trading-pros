@@ -303,7 +303,10 @@ async fn list_contacts(
     .await
     .map_err(|e| {
         tracing::error!("CRM contacts list error: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?;
 
     let search_pattern2 = filters.search.as_ref().map(|s| format!("%{}%", s));
@@ -345,8 +348,18 @@ async fn get_contact(
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Contact not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Contact not found"})),
+        )
+    })?;
 
     Ok(Json(contact))
 }
@@ -443,7 +456,12 @@ async fn delete_contact(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Contact deleted successfully"})))
 }
@@ -585,7 +603,12 @@ async fn delete_contact_list(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "List deleted successfully"})))
 }
@@ -665,7 +688,12 @@ async fn delete_contact_tag(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Tag deleted successfully"})))
 }
@@ -766,7 +794,12 @@ async fn delete_segment(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Segment deleted successfully"})))
 }
@@ -882,7 +915,12 @@ async fn delete_sequence(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Sequence deleted successfully"})))
 }
@@ -977,7 +1015,12 @@ async fn delete_campaign(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Campaign deleted successfully"})))
 }
@@ -1101,7 +1144,12 @@ async fn delete_automation(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Automation deleted successfully"})))
 }
@@ -1181,7 +1229,12 @@ async fn delete_smart_link(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Smart link deleted successfully"})))
 }
@@ -1276,7 +1329,12 @@ async fn delete_template(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Template deleted successfully"})))
 }
@@ -1353,7 +1411,12 @@ async fn delete_webhook(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Webhook deleted successfully"})))
 }
@@ -1364,7 +1427,9 @@ async fn test_webhook(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Mock test - actual implementation would send test payload
-    Ok(Json(json!({"success": true, "message": "Test webhook sent", "webhook_id": id})))
+    Ok(Json(
+        json!({"success": true, "message": "Test webhook sent", "webhook_id": id}),
+    ))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -1458,7 +1523,12 @@ async fn delete_company(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Company deleted successfully"})))
 }
@@ -1622,14 +1692,26 @@ pub fn router() -> Router<AppState> {
         .route("/deals", get(list_deals))
         // Contacts
         .route("/contacts", get(list_contacts).post(create_contact))
-        .route("/contacts/:id", get(get_contact).put(update_contact).delete(delete_contact))
+        .route(
+            "/contacts/:id",
+            get(get_contact).put(update_contact).delete(delete_contact),
+        )
         .route("/contacts/:id/timeline", get(get_contact_timeline))
-        .route("/contacts/:id/recalculate-score", post(recalculate_contact_score))
+        .route(
+            "/contacts/:id/recalculate-score",
+            post(recalculate_contact_score),
+        )
         // Lists
         .route("/lists", get(list_contact_lists).post(create_contact_list))
-        .route("/lists/:id", get(get_contact_list).delete(delete_contact_list))
+        .route(
+            "/lists/:id",
+            get(get_contact_list).delete(delete_contact_list),
+        )
         // Tags
-        .route("/contact-tags", get(list_contact_tags).post(create_contact_tag))
+        .route(
+            "/contact-tags",
+            get(list_contact_tags).post(create_contact_tag),
+        )
         .route("/contact-tags/:id", delete(delete_contact_tag))
         // Segments
         .route("/segments", get(list_segments).post(create_segment))
@@ -1643,10 +1725,19 @@ pub fn router() -> Router<AppState> {
         .route("/campaigns/:id", get(get_campaign).delete(delete_campaign))
         .route("/recurring-campaigns", get(list_recurring_campaigns))
         // Automations
-        .route("/automations", get(list_automations).post(create_automation))
-        .route("/automations/:id", get(get_automation).delete(delete_automation))
+        .route(
+            "/automations",
+            get(list_automations).post(create_automation),
+        )
+        .route(
+            "/automations/:id",
+            get(get_automation).delete(delete_automation),
+        )
         // Smart Links
-        .route("/smart-links", get(list_smart_links).post(create_smart_link))
+        .route(
+            "/smart-links",
+            get(list_smart_links).post(create_smart_link),
+        )
         .route("/smart-links/:id", delete(delete_smart_link))
         // Templates
         .route("/templates", get(list_templates).post(create_template))

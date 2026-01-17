@@ -24,7 +24,7 @@ impl FromRequestParts<AppState> for AdminUser {
 
         // Check if user has admin role (includes developer)
         let user_role = user.role.as_deref().unwrap_or("none");
-        let is_admin = user_role == "admin" 
+        let is_admin = user_role == "admin"
             || user_role == "super_admin"
             || user_role == "super-admin"
             || user_role == "developer";

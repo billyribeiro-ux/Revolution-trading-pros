@@ -46,12 +46,7 @@ impl StorageService {
     }
 
     /// Upload a file to R2
-    pub async fn upload(
-        &self,
-        data: Vec<u8>,
-        content_type: &str,
-        folder: &str,
-    ) -> Result<String> {
+    pub async fn upload(&self, data: Vec<u8>, content_type: &str, folder: &str) -> Result<String> {
         let extension = match content_type {
             "image/jpeg" => "jpg",
             "image/png" => "png",
@@ -102,7 +97,8 @@ impl StorageService {
             .expires_in(Duration::from_secs(expires_in_seconds))
             .build()?;
 
-        let presigned_request = self.client
+        let presigned_request = self
+            .client
             .put_object()
             .bucket(&self.bucket)
             .key(key)
@@ -127,7 +123,8 @@ impl StorageService {
             .expires_in(Duration::from_secs(expires_in_seconds))
             .build()?;
 
-        let presigned_request = self.client
+        let presigned_request = self
+            .client
             .get_object()
             .bucket(&self.bucket)
             .key(key)
@@ -140,7 +137,8 @@ impl StorageService {
     /// List files in a folder
     /// ICT 11+ ENHANCEMENT: Browse uploaded files
     pub async fn list_files(&self, prefix: &str) -> Result<Vec<String>> {
-        let response = self.client
+        let response = self
+            .client
             .list_objects_v2()
             .bucket(&self.bucket)
             .prefix(prefix)

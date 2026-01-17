@@ -218,10 +218,7 @@ pub struct AuditLog {
     pub created_at: DateTime<Utc>,
 }
 
-pub async fn get_audit_logs(
-    pool: &PgPool,
-    query: &AuditLogQuery,
-) -> Result<Vec<AuditLog>> {
+pub async fn get_audit_logs(pool: &PgPool, query: &AuditLogQuery) -> Result<Vec<AuditLog>> {
     let limit = query.limit.unwrap_or(50).min(100);
     let offset = query.offset.unwrap_or(0);
 
@@ -592,10 +589,7 @@ pub async fn generate_preview_token(
 }
 
 /// Validate and consume a preview token
-pub async fn validate_preview_token(
-    pool: &PgPool,
-    token: Uuid,
-) -> Result<Option<PreviewToken>> {
+pub async fn validate_preview_token(pool: &PgPool, token: Uuid) -> Result<Option<PreviewToken>> {
     // Get and update the token atomically
     let preview_token: Option<PreviewToken> = sqlx::query_as(
         r#"

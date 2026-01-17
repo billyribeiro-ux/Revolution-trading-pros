@@ -105,9 +105,7 @@ pub enum CmsEvent {
         notification_type: String,
     },
     /// Heartbeat/keep-alive
-    Heartbeat {
-        timestamp: DateTime<Utc>,
-    },
+    Heartbeat { timestamp: DateTime<Utc> },
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -298,10 +296,12 @@ async fn sse_events(
     let user_id = user.id;
 
     // Parse filter options
-    let content_type_filter: Option<Vec<String>> = query.content_types
+    let content_type_filter: Option<Vec<String>> = query
+        .content_types
         .map(|s| s.split(',').map(|s| s.trim().to_string()).collect());
 
-    let event_type_filter: Option<Vec<String>> = query.event_types
+    let event_type_filter: Option<Vec<String>> = query
+        .event_types
         .map(|s| s.split(',').map(|s| s.trim().to_string()).collect());
 
     // Subscribe to broadcast channel
@@ -394,9 +394,12 @@ async fn sse_stats(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let role = user.role.as_deref().unwrap_or("user");
     if role != "admin" && role != "super-admin" && role != "super_admin" {
-        return Err((StatusCode::FORBIDDEN, Json(json!({
-            "error": "Admin access required"
-        }))));
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({
+                "error": "Admin access required"
+            })),
+        ));
     }
 
     let receiver_count = state.event_broadcaster.sender.receiver_count();
@@ -421,9 +424,12 @@ async fn broadcast_test_event(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let role = user.role.as_deref().unwrap_or("user");
     if role != "admin" && role != "super-admin" && role != "super_admin" {
-        return Err((StatusCode::FORBIDDEN, Json(json!({
-            "error": "Admin access required"
-        }))));
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({
+                "error": "Admin access required"
+            })),
+        ));
     }
 
     emit_notification(

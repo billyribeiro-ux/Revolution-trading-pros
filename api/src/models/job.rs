@@ -25,11 +25,26 @@ pub struct Job {
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[allow(dead_code)]
 pub enum JobType {
-    SendEmail { to: String, subject: String, body: String },
-    ProcessPayment { user_id: Uuid, amount_cents: i32 },
-    GenerateReport { report_type: String, user_id: Uuid },
-    SyncData { source: String },
-    SendNotification { user_id: Uuid, message: String },
+    SendEmail {
+        to: String,
+        subject: String,
+        body: String,
+    },
+    ProcessPayment {
+        user_id: Uuid,
+        amount_cents: i32,
+    },
+    GenerateReport {
+        report_type: String,
+        user_id: Uuid,
+    },
+    SyncData {
+        source: String,
+    },
+    SendNotification {
+        user_id: Uuid,
+        message: String,
+    },
 }
 
 impl Job {

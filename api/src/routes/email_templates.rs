@@ -6,16 +6,13 @@
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    routing::{get, post, put, delete},
+    routing::{delete, get, post, put},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::{
-    middleware::admin::AdminUser,
-    AppState,
-};
+use crate::{middleware::admin::AdminUser, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DATA TYPES
@@ -92,7 +89,7 @@ async fn list_templates(
         WHERE ($1::text IS NULL OR name ILIKE $1 OR subject ILIKE $1)
         ORDER BY created_at DESC
         LIMIT $2 OFFSET $3
-        "#
+        "#,
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -101,14 +98,17 @@ async fn list_templates(
     .await
     .map_err(|e| {
         tracing::error!("Database error in list_templates: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?;
 
     let total: (i64,) = sqlx::query_as(
         r#"
         SELECT COUNT(*) FROM email_templates
         WHERE ($1::text IS NULL OR name ILIKE $1 OR subject ILIKE $1)
-        "#
+        "#,
     )
     .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
@@ -181,7 +181,9 @@ async fn create_template(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;
 
-    Ok(Json(json!({"data": template, "message": "Template created successfully"})))
+    Ok(Json(
+        json!({"data": template, "message": "Template created successfully"}),
+    ))
 }
 
 /// Update email template (admin)
@@ -211,7 +213,7 @@ async fn update_template(
             updated_at = NOW()
         WHERE id = $1
         RETURNING id, name, slug, subject, body, variables, is_active, created_at, updated_at
-        "#
+        "#,
     )
     .bind(id)
     .bind(&input.name)
@@ -221,10 +223,22 @@ async fn update_template(
     .bind(input.is_active)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Template not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Template not found"})),
+        )
+    })?;
 
-    Ok(Json(json!({"data": template, "message": "Template updated successfully"})))
+    Ok(Json(
+        json!({"data": template, "message": "Template updated successfully"}),
+    ))
 }
 
 /// Delete email template (admin)
@@ -245,10 +259,18 @@ async fn delete_template(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Template not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Template not found"})),
+        ));
     }
 
     Ok(Json(json!({"message": "Template deleted successfully"})))
@@ -273,7 +295,7 @@ async fn preview_template(
     // Simple variable replacement
     let mut html = template.body.clone();
     let mut subject = template.subject.clone();
-    
+
     if let Some(data_obj) = input.data.as_object() {
         for (key, value) in data_obj {
             let placeholder = format!("{{{{{}}}}}", key);
@@ -310,7 +332,7 @@ async fn send_test_email(
 
     // TODO: Integrate with actual email service (Postmark, SendGrid, etc.)
     // For now, return success as placeholder
-    
+
     Ok(Json(json!({
         "message": format!("Test email would be sent to {}", input.email),
         "note": "Email service integration pending"
@@ -341,7 +363,12 @@ async fn get_email_settings(
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_templates).post(create_template))
-        .route("/:id", get(get_template).put(update_template).delete(delete_template))
+        .route(
+            "/:id",
+            get(get_template)
+                .put(update_template)
+                .delete(delete_template),
+        )
         .route("/:id/preview", post(preview_template))
         .route("/:id/test", post(send_test_email))
         .route("/settings", get(get_email_settings))

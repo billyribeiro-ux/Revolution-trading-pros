@@ -87,7 +87,27 @@ pub fn is_safe_string(input: &str) -> bool {
     input.chars().all(|c| {
         c.is_alphanumeric()
             || c.is_whitespace()
-            || matches!(c, '-' | '_' | '.' | ',' | '!' | '?' | '@' | '#' | '$' | '&' | '*' | '(' | ')' | '+' | '=' | ':' | ';' | '\'' | '"')
+            || matches!(
+                c,
+                '-' | '_'
+                    | '.'
+                    | ','
+                    | '!'
+                    | '?'
+                    | '@'
+                    | '#'
+                    | '$'
+                    | '&'
+                    | '*'
+                    | '('
+                    | ')'
+                    | '+'
+                    | '='
+                    | ':'
+                    | ';'
+                    | '\''
+                    | '"'
+            )
     })
 }
 
@@ -136,7 +156,10 @@ mod tests {
     #[test]
     fn test_sanitize_string() {
         assert_eq!(sanitize_string("<script>"), "&lt;script&gt;");
-        assert_eq!(sanitize_string("Hello \"World\""), "Hello &quot;World&quot;");
+        assert_eq!(
+            sanitize_string("Hello \"World\""),
+            "Hello &quot;World&quot;"
+        );
     }
 
     #[test]

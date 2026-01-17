@@ -13,11 +13,7 @@ use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 // Minimal schema - production tags only has id, name, slug
 
-use crate::{
-    middleware::admin::AdminUser,
-    utils::errors::ApiError,
-    AppState,
-};
+use crate::{middleware::admin::AdminUser, utils::errors::ApiError, AppState};
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Tag {
@@ -121,13 +117,11 @@ pub async fn show(
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let tag: Tag = sqlx::query_as(
-        "SELECT * FROM tags WHERE id = $1"
-    )
-    .bind(id)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|_| ApiError::not_found("Tag not found"))?;
+    let tag: Tag = sqlx::query_as("SELECT * FROM tags WHERE id = $1")
+        .bind(id)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|_| ApiError::not_found("Tag not found"))?;
 
     Ok(Json(serde_json::json!({ "data": tag })))
 }
@@ -140,18 +134,22 @@ pub async fn store(
     Json(payload): Json<CreateTag>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     // Validate slug format
-    if !payload.slug.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-') {
-        return Err(ApiError::validation_error("Slug must contain only lowercase letters, numbers, and hyphens"));
+    if !payload
+        .slug
+        .chars()
+        .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-')
+    {
+        return Err(ApiError::validation_error(
+            "Slug must contain only lowercase letters, numbers, and hyphens",
+        ));
     }
 
     // Check if slug already exists
-    let exists: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM tags WHERE slug = $1)"
-    )
-    .bind(&payload.slug)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM tags WHERE slug = $1)")
+        .bind(&payload.slug)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     if exists {
         return Err(ApiError::validation_error("Slug already exists"));
@@ -160,7 +158,7 @@ pub async fn store(
     let tag: Tag = sqlx::query_as(
         "INSERT INTO tags (name, slug)
          VALUES ($1, $2)
-         RETURNING id, name, slug"
+         RETURNING id, name, slug",
     )
     .bind(&payload.name)
     .bind(&payload.slug)
@@ -180,13 +178,11 @@ pub async fn update(
     Json(payload): Json<UpdateTag>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     // Check if tag exists
-    let exists: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM tags WHERE id = $1)"
-    )
-    .bind(id)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM tags WHERE id = $1)")
+        .bind(id)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     if !exists {
         return Err(ApiError::not_found("Tag not found"));
@@ -194,18 +190,22 @@ pub async fn update(
 
     // Validate slug if provided
     if let Some(slug) = &payload.slug {
-        if !slug.chars().all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-') {
-            return Err(ApiError::validation_error("Slug must contain only lowercase letters, numbers, and hyphens"));
+        if !slug
+            .chars()
+            .all(|c| c.is_ascii_lowercase() || c.is_ascii_digit() || c == '-')
+        {
+            return Err(ApiError::validation_error(
+                "Slug must contain only lowercase letters, numbers, and hyphens",
+            ));
         }
 
-        let slug_exists: bool = sqlx::query_scalar(
-            "SELECT EXISTS(SELECT 1 FROM tags WHERE slug = $1 AND id != $2)"
-        )
-        .bind(slug)
-        .bind(id)
-        .fetch_one(state.db.pool())
-        .await
-        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+        let slug_exists: bool =
+            sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM tags WHERE slug = $1 AND id != $2)")
+                .bind(slug)
+                .bind(id)
+                .fetch_one(state.db.pool())
+                .await
+                .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
         if slug_exists {
             return Err(ApiError::validation_error("Slug already exists"));
@@ -216,8 +216,14 @@ pub async fn update(
     let mut updates = Vec::new();
     let mut param_count = 1;
 
-    if payload.name.is_some() { updates.push(format!("name = ${}", param_count)); param_count += 1; }
-    if payload.slug.is_some() { updates.push(format!("slug = ${}", param_count)); param_count += 1; }
+    if payload.name.is_some() {
+        updates.push(format!("name = ${}", param_count));
+        param_count += 1;
+    }
+    if payload.slug.is_some() {
+        updates.push(format!("slug = ${}", param_count));
+        param_count += 1;
+    }
 
     if updates.is_empty() {
         return Err(ApiError::validation_error("No fields to update"));
@@ -231,8 +237,12 @@ pub async fn update(
 
     let mut query = sqlx::query_as::<_, Tag>(&query_str);
 
-    if let Some(name) = payload.name { query = query.bind(name); }
-    if let Some(slug) = payload.slug { query = query.bind(slug); }
+    if let Some(name) = payload.name {
+        query = query.bind(name);
+    }
+    if let Some(slug) = payload.slug {
+        query = query.bind(slug);
+    }
 
     query = query.bind(id);
 
@@ -261,7 +271,9 @@ pub async fn destroy(
         return Err(ApiError::not_found("Tag not found"));
     }
 
-    Ok(Json(serde_json::json!({ "message": "Tag deleted successfully" })))
+    Ok(Json(
+        serde_json::json!({ "message": "Tag deleted successfully" }),
+    ))
 }
 
 /// Build the tags router

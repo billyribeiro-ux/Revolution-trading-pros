@@ -1,68 +1,68 @@
 //! API routes - Revolution Trading Pros
 //! Apple ICT 11+ Principal Engineer Grade - January 2026
 
-pub mod health;
 pub mod auth;
-pub mod users;
-pub mod user;  // Singular /user routes for frontend compatibility
-pub mod robots;
-pub mod sitemap;
 pub mod categories;
-pub mod tags;
-pub mod redirects;
+pub mod health;
 pub mod media;
 pub mod members;
+pub mod redirects;
+pub mod robots;
+pub mod sitemap;
+pub mod tags;
+pub mod user; // Singular /user routes for frontend compatibility
+pub mod users;
 // pub mod settings; // Already handled by admin.rs
 pub mod courses;
 pub mod payments;
-pub mod search;
 pub mod products;
+pub mod search;
 // pub mod indicators; // Legacy - replaced by member_indicators
-pub mod posts;
-pub mod subscriptions;
-pub mod newsletter;
 pub mod admin;
-pub mod checkout;
-pub mod videos;
 pub mod analytics;
+pub mod checkout;
+pub mod cms;
 pub mod contacts;
 pub mod coupons;
-pub mod security;
-pub mod orders;
-pub mod schedules;
-pub mod cms;
-pub mod realtime;
 pub mod courses_admin;
+pub mod newsletter;
+pub mod orders;
+pub mod posts;
+pub mod realtime;
+pub mod schedules;
+pub mod security;
+pub mod subscriptions;
+pub mod videos;
 // pub mod indicators_admin; // TODO: Fix SQLx tuple decoding issues
-pub mod member_courses;
-pub mod member_indicators;
 pub mod admin_courses;
 pub mod admin_indicators;
-pub mod admin_videos;
+pub mod admin_members; // ICT 7: Member segments, tags, and filters
 pub mod admin_page_layouts;
+pub mod admin_videos;
+pub mod bunny_upload; // ICT 7: Bunny.net video upload API
+pub mod connections;
+pub mod crm; // ICT 7: CRM Admin Routes - FluentCRM Pro equivalent
+pub mod email_templates;
+pub mod forms;
+pub mod member_courses;
+pub mod member_indicators;
 pub mod migrate;
 pub mod popups;
-pub mod trading_rooms;
-pub mod forms;
-pub mod email_templates;
-pub mod subscriptions_admin;
 pub mod room_content;
-pub mod watchlist;
 pub mod room_resources;
-pub mod bunny_upload; // ICT 7: Bunny.net video upload API
-pub mod admin_members; // ICT 7: Member segments, tags, and filters
-pub mod crm; // ICT 7: CRM Admin Routes - FluentCRM Pro equivalent
-pub mod connections; // ICT 7: Service connection status
+pub mod subscriptions_admin;
+pub mod trading_rooms;
+pub mod watchlist; // ICT 7: Service connection status
 
-use axum::Router;
 use crate::AppState;
+use axum::Router;
 
 /// Build the API router with all routes
 pub fn api_router() -> Router<AppState> {
     Router::new()
         .nest("/auth", auth::router())
         .nest("/users", users::router())
-        .nest("/user", user::router())  // Singular /user routes for frontend
+        .nest("/user", user::router()) // Singular /user routes for frontend
         // Legacy courses route - replaced by member_courses
         // .nest("/courses", courses::router())
         .nest("/payments", payments::router())
@@ -74,7 +74,7 @@ pub fn api_router() -> Router<AppState> {
         .nest("/subscriptions", subscriptions::router())
         .nest("/newsletter", newsletter::router())
         .nest("/admin", admin::router())
-        .nest("/admin/products", products::admin_router())  // Admin product CRUD
+        .nest("/admin/products", products::admin_router()) // Admin product CRUD
         .nest("/checkout", checkout::router())
         .nest("/videos", videos::router())
         .nest("/analytics", analytics::router())
@@ -116,8 +116,14 @@ pub fn api_router() -> Router<AppState> {
         // Email Settings - frontend compatibility
         .nest("/admin/email", email_templates::admin_router())
         // Subscriptions Admin - ICT 7 Grade
-        .nest("/admin/subscriptions", subscriptions_admin::subscriptions_router())
-        .nest("/admin/subscriptions/plans", subscriptions_admin::plans_router())
+        .nest(
+            "/admin/subscriptions",
+            subscriptions_admin::subscriptions_router(),
+        )
+        .nest(
+            "/admin/subscriptions/plans",
+            subscriptions_admin::plans_router(),
+        )
         .nest("/indicators", member_indicators::public_router())
         .nest("/my/indicators", member_indicators::member_router())
         .nest("/download", member_indicators::download_router())

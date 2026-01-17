@@ -18,11 +18,11 @@ use axum::{
 };
 
 /// Middleware to ensure all responses have Content-Type header
-/// 
+///
 /// This is critical for CORB compliance when using:
 /// - CORS with credentials (allow_credentials: true)
 /// - X-Content-Type-Options: nosniff security header
-/// 
+///
 /// IMPORTANT: 204 NO_CONTENT and 304 NOT_MODIFIED should NOT have Content-Type
 /// per HTTP spec (RFC 7231), as they have no body.
 pub async fn ensure_content_type(
@@ -31,15 +31,15 @@ pub async fn ensure_content_type(
 ) -> Result<Response<Body>, StatusCode> {
     // Process the request
     let mut response = next.run(request).await;
-    
+
     let status = response.status();
-    
+
     // RFC 7231: 204 NO_CONTENT and 304 NOT_MODIFIED MUST NOT contain a message body
     // Therefore they should NOT have a Content-Type header
     if status == StatusCode::NO_CONTENT || status == StatusCode::NOT_MODIFIED {
         return Ok(response);
     }
-    
+
     // Check if Content-Type is already set
     if response.headers().get(header::CONTENT_TYPE).is_none() {
         // Default to application/json for API responses with bodies
@@ -48,13 +48,13 @@ pub async fn ensure_content_type(
             header::CONTENT_TYPE,
             header::HeaderValue::from_static("application/json; charset=utf-8"),
         );
-        
+
         tracing::debug!(
             status = %status,
             "Added missing Content-Type header to response (CORB fix)"
         );
     }
-    
+
     Ok(response)
 }
 
@@ -66,9 +66,9 @@ pub async fn log_response_headers(
 ) -> Result<Response<Body>, StatusCode> {
     let uri = request.uri().clone();
     let method = request.method().clone();
-    
+
     let response = next.run(request).await;
-    
+
     // Log headers for debugging
     if tracing::enabled!(tracing::Level::DEBUG) {
         let content_type = response
@@ -76,13 +76,13 @@ pub async fn log_response_headers(
             .get(header::CONTENT_TYPE)
             .and_then(|v| v.to_str().ok())
             .unwrap_or("MISSING");
-        
+
         let cors_origin = response
             .headers()
             .get(header::ACCESS_CONTROL_ALLOW_ORIGIN)
             .and_then(|v| v.to_str().ok())
             .unwrap_or("MISSING");
-        
+
         tracing::debug!(
             method = %method,
             uri = %uri,
@@ -91,6 +91,6 @@ pub async fn log_response_headers(
             "Response headers"
         );
     }
-    
+
     Ok(response)
 }

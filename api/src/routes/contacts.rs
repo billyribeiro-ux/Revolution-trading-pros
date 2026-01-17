@@ -10,10 +10,7 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{
-    models::User,
-    AppState,
-};
+use crate::{models::User, AppState};
 
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct ContactRow {
@@ -101,12 +98,22 @@ async fn list_contacts(
     let contacts: Vec<ContactRow> = sqlx::query_as(&sql)
         .fetch_all(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     let total: (i64,) = sqlx::query_as(&count_sql)
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({
         "data": contacts,
@@ -129,8 +136,18 @@ async fn get_contact(
         .bind(id)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Contact not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Contact not found"})),
+            )
+        })?;
 
     Ok(Json(contact))
 }
@@ -213,7 +230,12 @@ async fn update_contact(
         .bind(id)
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(contact))
 }
@@ -228,7 +250,12 @@ async fn delete_contact(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Contact deleted successfully"})))
 }
@@ -248,15 +275,17 @@ async fn contact_stats(
         .await
         .unwrap_or((0,));
 
-    let prospects: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'prospect'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let prospects: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'prospect'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
-    let customers: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'customer'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let customers: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM contacts WHERE status = 'customer'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     Ok(Json(json!({
         "total": total.0,
@@ -270,5 +299,8 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_contacts).post(create_contact))
         .route("/stats", get(contact_stats))
-        .route("/:id", get(get_contact).put(update_contact).delete(delete_contact))
+        .route(
+            "/:id",
+            get(get_contact).put(update_contact).delete(delete_contact),
+        )
 }

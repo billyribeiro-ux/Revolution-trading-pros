@@ -5,7 +5,7 @@
 
 use axum::{
     body::Body,
-    http::{Request, StatusCode, header},
+    http::{header, Request, StatusCode},
 };
 use serde_json::{json, Value};
 use tower::ServiceExt;
@@ -32,7 +32,7 @@ async fn test_health_check() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::OK);
-    
+
     let body = body_to_json(response).await;
     assert_eq!(body["status"], "healthy");
 }
@@ -66,7 +66,7 @@ async fn test_register_new_user() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::OK);
-    
+
     let body = body_to_json(response).await;
     assert_eq!(body["email"], email);
     assert_eq!(body["requires_verification"], true);
@@ -96,7 +96,7 @@ async fn test_register_weak_password() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::UNPROCESSABLE_ENTITY);
-    
+
     let body = body_to_json(response).await;
     assert!(body["errors"]["password"].is_array());
 }
@@ -124,7 +124,7 @@ async fn test_login_success() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::OK);
-    
+
     let body = body_to_json(response).await;
     assert!(body["token"].is_string());
     assert!(body["refresh_token"].is_string());
@@ -177,7 +177,7 @@ async fn test_admin_list_users_no_filters() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::OK);
-    
+
     let body = body_to_json(response).await;
     assert!(body["data"].is_array());
     assert!(body["meta"]["total"].is_number());
@@ -199,7 +199,7 @@ async fn test_admin_list_users_with_role_filter() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::OK);
-    
+
     let body = body_to_json(response).await;
     assert!(body["data"].is_array());
 }
@@ -220,7 +220,7 @@ async fn test_admin_list_users_with_search() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::OK);
-    
+
     let body = body_to_json(response).await;
     assert!(body["data"].is_array());
 }
@@ -243,7 +243,7 @@ async fn test_admin_list_users_sql_injection_attempt() {
 
     // Should return OK with no results (SQL injection blocked)
     assert_eq!(response.status(), StatusCode::OK);
-    
+
     let body = body_to_json(response).await;
     assert!(body["data"].is_array());
     // Should not return all users - injection blocked
@@ -286,7 +286,7 @@ async fn test_list_products() {
         .unwrap();
 
     assert_eq!(response.status(), StatusCode::OK);
-    
+
     let body = body_to_json(response).await;
     assert!(body["data"].is_array());
 }

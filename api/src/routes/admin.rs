@@ -7,16 +7,13 @@
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    routing::{get, post, delete},
+    routing::{delete, get, post},
     Json, Router,
 };
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{
-    models::User,
-    AppState,
-};
+use crate::{models::User, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // AUTHORIZATION HELPERS
@@ -25,8 +22,9 @@ use crate::{
 /// Check if user has admin privileges (admin, super-admin, or developer role)
 fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let role = user.role.as_deref().unwrap_or("user");
-    let is_admin = role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer";
-    
+    let is_admin =
+        role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer";
+
     // ICT 11+ DEBUG: Log role check for troubleshooting 403 issues
     tracing::info!(
         target: "auth_debug",
@@ -36,15 +34,18 @@ fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>
         is_admin = is_admin,
         "require_admin check"
     );
-    
+
     if is_admin {
         Ok(())
     } else {
-        Err((StatusCode::FORBIDDEN, Json(json!({
-            "error": "Access denied",
-            "message": "This action requires admin privileges",
-            "your_role": role
-        }))))
+        Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({
+                "error": "Access denied",
+                "message": "This action requires admin privileges",
+                "your_role": role
+            })),
+        ))
     }
 }
 
@@ -55,10 +56,13 @@ fn require_super_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::
     if role == "super-admin" || role == "super_admin" {
         Ok(())
     } else {
-        Err((StatusCode::FORBIDDEN, Json(json!({
-            "error": "Access denied",
-            "message": "This action requires super-admin privileges"
-        }))))
+        Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({
+                "error": "Access denied",
+                "message": "This action requires super-admin privileges"
+            })),
+        ))
     }
 }
 
@@ -118,7 +122,7 @@ async fn list_users(
     // ICT 11+ SECURITY: Use NULL-safe parameterized queries
     // This approach is SQL injection proof and compile-time verified
     let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
-    
+
     let users: Vec<AdminUserRow> = sqlx::query_as(
         r#"
         SELECT id, name, email, role, is_active, email_verified_at, last_login_at, created_at, updated_at 
@@ -149,7 +153,7 @@ async fn list_users(
         WHERE ($1::text IS NULL OR role = $1)
           AND ($2::boolean IS NULL OR is_active = $2)
           AND ($3::text IS NULL OR name ILIKE $3 OR email ILIKE $3)
-        "#
+        "#,
     )
     .bind(query.role.as_deref())
     .bind(query.is_active)
@@ -158,7 +162,10 @@ async fn list_users(
     .await
     .map_err(|e| {
         tracing::error!("Database error in list_users count: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?;
 
     Ok(Json(json!({
@@ -196,8 +203,12 @@ async fn create_user(
     _user: User,
     Json(input): Json<CreateUserRequest>,
 ) -> Result<Json<AdminUserRow>, (StatusCode, Json<serde_json::Value>)> {
-    let password_hash = crate::utils::hash_password(&input.password)
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let password_hash = crate::utils::hash_password(&input.password).map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let role = input.role.unwrap_or_else(|| "user".to_string());
 
@@ -236,7 +247,7 @@ async fn update_user(
     // Build UPDATE query with parameterized values
     let mut set_clauses = Vec::new();
     let mut param_count = 1;
-    
+
     if input.name.is_some() {
         param_count += 1;
         set_clauses.push(format!("name = ${}", param_count));
@@ -257,7 +268,10 @@ async fn update_user(
     set_clauses.push("updated_at = NOW()".to_string());
 
     if set_clauses.len() == 1 {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No fields to update"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No fields to update"})),
+        ));
     }
 
     let sql = format!(
@@ -266,7 +280,7 @@ async fn update_user(
     );
 
     let mut query_builder = sqlx::query_as::<_, AdminUserRow>(&sql).bind(id);
-    
+
     if let Some(ref name) = input.name {
         query_builder = query_builder.bind(name);
     }
@@ -283,7 +297,12 @@ async fn update_user(
     let user = query_builder
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|_e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"}))))?;
+        .map_err(|_e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": "Database error"})),
+            )
+        })?;
 
     Ok(Json(user))
 }
@@ -298,7 +317,12 @@ async fn delete_user(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "User deleted successfully"})))
 }
@@ -313,7 +337,12 @@ async fn ban_user(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "User banned successfully"})))
 }
@@ -328,7 +357,12 @@ async fn unban_user(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "User unbanned successfully"})))
 }
@@ -341,22 +375,44 @@ async fn user_stats(
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     let active: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users WHERE is_active = true")
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
-    let verified: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users WHERE email_verified_at IS NOT NULL")
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let verified: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM users WHERE email_verified_at IS NOT NULL")
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
-    let admins: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users WHERE role IN ('admin', 'super-admin')")
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let admins: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM users WHERE role IN ('admin', 'super-admin')")
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(json!({
         "total": total.0,
@@ -413,12 +469,15 @@ async fn list_coupons(
 ) -> Result<Json<Vec<CouponRow>>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
-    let coupons: Vec<CouponRow> = sqlx::query_as(
-        "SELECT * FROM coupons ORDER BY created_at DESC"
-    )
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let coupons: Vec<CouponRow> = sqlx::query_as("SELECT * FROM coupons ORDER BY created_at DESC")
+        .fetch_all(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(coupons))
 }
@@ -475,7 +534,12 @@ async fn delete_coupon(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Coupon deleted successfully"})))
 }
@@ -485,13 +549,17 @@ async fn validate_coupon(
     State(state): State<AppState>,
     Path(code): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let coupon: Option<CouponRow> = sqlx::query_as(
-        "SELECT * FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true"
-    )
-    .bind(&code)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let coupon: Option<CouponRow> =
+        sqlx::query_as("SELECT * FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true")
+            .bind(&code)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     match coupon {
         Some(c) => {
@@ -504,7 +572,9 @@ async fn validate_coupon(
             // Check usage limit
             if let Some(limit) = c.usage_limit {
                 if c.usage_count >= limit {
-                    return Ok(Json(json!({"valid": false, "error": "Coupon usage limit reached"})));
+                    return Ok(Json(
+                        json!({"valid": false, "error": "Coupon usage limit reached"}),
+                    ));
                 }
             }
             Ok(Json(json!({
@@ -512,7 +582,9 @@ async fn validate_coupon(
                 "coupon": c
             })))
         }
-        None => Ok(Json(json!({"valid": false, "error": "Invalid coupon code"}))),
+        None => Ok(Json(
+            json!({"valid": false, "error": "Invalid coupon code"}),
+        )),
     }
 }
 
@@ -536,12 +608,16 @@ async fn get_settings(
     State(state): State<AppState>,
     _user: User,
 ) -> Result<Json<Vec<SettingRow>>, (StatusCode, Json<serde_json::Value>)> {
-    let settings: Vec<SettingRow> = sqlx::query_as(
-        "SELECT * FROM application_settings ORDER BY group_name, key"
-    )
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let settings: Vec<SettingRow> =
+        sqlx::query_as("SELECT * FROM application_settings ORDER BY group_name, key")
+            .fetch_all(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(settings))
 }
@@ -552,14 +628,22 @@ async fn get_setting(
     _user: User,
     Path(key): Path<String>,
 ) -> Result<Json<SettingRow>, (StatusCode, Json<serde_json::Value>)> {
-    let setting: SettingRow = sqlx::query_as(
-        "SELECT * FROM application_settings WHERE key = $1"
-    )
-    .bind(&key)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Setting not found"}))))?;
+    let setting: SettingRow = sqlx::query_as("SELECT * FROM application_settings WHERE key = $1")
+        .bind(&key)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Setting not found"})),
+            )
+        })?;
 
     Ok(Json(setting))
 }
@@ -577,13 +661,18 @@ async fn update_setting(
     Json(input): Json<UpdateSettingRequest>,
 ) -> Result<Json<SettingRow>, (StatusCode, Json<serde_json::Value>)> {
     let setting: SettingRow = sqlx::query_as(
-        "UPDATE application_settings SET value = $1, updated_at = NOW() WHERE key = $2 RETURNING *"
+        "UPDATE application_settings SET value = $1, updated_at = NOW() WHERE key = $2 RETURNING *",
     )
     .bind(&input.value)
     .bind(&key)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(setting))
 }
@@ -663,12 +752,16 @@ async fn list_all_plans(
 ) -> Result<Json<Vec<MembershipPlanRow>>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
-    let plans: Vec<MembershipPlanRow> = sqlx::query_as(
-        "SELECT * FROM membership_plans ORDER BY price ASC"
-    )
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let plans: Vec<MembershipPlanRow> =
+        sqlx::query_as("SELECT * FROM membership_plans ORDER BY price ASC")
+            .fetch_all(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(plans))
 }
@@ -701,7 +794,7 @@ async fn list_user_memberships(
           AND ($3::text IS NULL OR um.status = $3)
         ORDER BY um.created_at DESC
         LIMIT $4 OFFSET $5
-        "#
+        "#,
     )
     .bind(query.user_id)
     .bind(query.plan_id)
@@ -710,7 +803,12 @@ async fn list_user_memberships(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let total: (i64,) = sqlx::query_as(
         r#"
@@ -718,14 +816,19 @@ async fn list_user_memberships(
         WHERE ($1::bigint IS NULL OR um.user_id = $1)
           AND ($2::bigint IS NULL OR um.plan_id = $2)
           AND ($3::text IS NULL OR um.status = $3)
-        "#
+        "#,
     )
     .bind(query.user_id)
     .bind(query.plan_id)
     .bind(&query.status)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": memberships,
@@ -758,13 +861,23 @@ async fn get_user_membership(
         FROM user_memberships um
         LEFT JOIN membership_plans mp ON mp.id = um.plan_id
         WHERE um.id = $1
-        "#
+        "#,
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Membership not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Membership not found"})),
+        )
+    })?;
 
     Ok(Json(membership))
 }
@@ -782,25 +895,44 @@ async fn grant_membership(
         .bind(input.user_id)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if user_exists.is_none() {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "User not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "User not found"})),
+        ));
     }
 
     // Verify plan exists
-    let plan: Option<MembershipPlanRow> = sqlx::query_as("SELECT * FROM membership_plans WHERE id = $1")
-        .bind(input.plan_id)
-        .fetch_optional(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let plan: Option<MembershipPlanRow> =
+        sqlx::query_as("SELECT * FROM membership_plans WHERE id = $1")
+            .bind(input.plan_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     if plan.is_none() {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Plan not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Plan not found"})),
+        ));
     }
 
     let status = input.status.unwrap_or_else(|| "active".to_string());
-    let starts_at = input.starts_at.unwrap_or_else(|| chrono::Utc::now().naive_utc());
+    let starts_at = input
+        .starts_at
+        .unwrap_or_else(|| chrono::Utc::now().naive_utc());
 
     let membership: AdminUserMembershipRow = sqlx::query_as(
         r#"
@@ -858,7 +990,10 @@ async fn update_user_membership(
     set_clauses.push("updated_at = NOW()".to_string());
 
     if set_clauses.len() == 1 {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No fields to update"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No fields to update"})),
+        ));
     }
 
     let sql = format!(
@@ -885,10 +1020,12 @@ async fn update_user_membership(
         query_builder = query_builder.bind(cancel_at_period_end);
     }
 
-    let membership = query_builder
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let membership = query_builder.fetch_one(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "membership": membership,
@@ -908,10 +1045,18 @@ async fn revoke_membership(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Membership not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Membership not found"})),
+        ));
     }
 
     Ok(Json(json!({"message": "Membership revoked successfully"})))
@@ -938,12 +1083,17 @@ async fn get_user_memberships_by_user(
         LEFT JOIN membership_plans mp ON mp.id = um.plan_id
         WHERE um.user_id = $1
         ORDER BY um.created_at DESC
-        "#
+        "#,
     )
     .bind(user_id)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(memberships))
 }
@@ -985,12 +1135,11 @@ async fn list_campaigns(
 ) -> Result<Json<Vec<CampaignRow>>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
-    let campaigns: Vec<CampaignRow> = sqlx::query_as(
-        "SELECT * FROM campaigns ORDER BY created_at DESC"
-    )
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    let campaigns: Vec<CampaignRow> =
+        sqlx::query_as("SELECT * FROM campaigns ORDER BY created_at DESC")
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default();
 
     Ok(Json(campaigns))
 }
@@ -1036,7 +1185,12 @@ async fn delete_campaign(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Campaign deleted successfully"})))
 }
@@ -1089,27 +1243,36 @@ async fn dashboard_overview(
     let total_users: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM users")
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
-    let active_subscriptions: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE status = 'active'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let active_subscriptions: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE status = 'active'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
-    let total_products: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM products WHERE is_active = true")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total_products: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM products WHERE is_active = true")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
-    let total_posts: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = 'published'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total_posts: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = 'published'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
-    let newsletter_subscribers: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'confirmed'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let newsletter_subscribers: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'confirmed'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     Ok(Json(json!({
         "total_users": total_users.0,
@@ -1139,7 +1302,7 @@ async fn analytics_dashboard(
     let _period = query.period.unwrap_or_else(|| "30d".to_string());
 
     let total_events: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM analytics_events WHERE created_at >= NOW() - INTERVAL '30 days'"
+        "SELECT COUNT(*) FROM analytics_events WHERE created_at >= NOW() - INTERVAL '30 days'",
     )
     .fetch_one(&state.db.pool)
     .await
@@ -1152,12 +1315,11 @@ async fn analytics_dashboard(
     .await
     .unwrap_or((0,));
 
-    let new_users: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM users WHERE created_at >= NOW() - INTERVAL '30 days'"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let new_users: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM users WHERE created_at >= NOW() - INTERVAL '30 days'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     Ok(Json(json!({
         "success": true,
@@ -1182,11 +1344,17 @@ async fn posts_stats(
     require_admin(&user)?;
 
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts")
-        .fetch_one(&state.db.pool).await.unwrap_or((0,));
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
     let published: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = 'published'")
-        .fetch_one(&state.db.pool).await.unwrap_or((0,));
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
     let drafts: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM posts WHERE status = 'draft'")
-        .fetch_one(&state.db.pool).await.unwrap_or((0,));
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
 
     Ok(Json(json!({
         "success": true,
@@ -1261,7 +1429,11 @@ async fn impersonate_user(
         Some(target_user) => {
             // In a real implementation, you would generate a JWT token for the target user
             // For now, return a placeholder token
-            let token = format!("impersonate_{}_{}", target_user.id, chrono::Utc::now().timestamp());
+            let token = format!(
+                "impersonate_{}_{}",
+                target_user.id,
+                chrono::Utc::now().timestamp()
+            );
 
             tracing::info!(
                 target: "security",
@@ -1283,8 +1455,11 @@ async fn impersonate_user(
                 },
                 "expires_in": 3600
             })))
-        },
-        None => Err((StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "User not found"}))))
+        }
+        None => Err((
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "User not found"})),
+        )),
     }
 }
 
@@ -1302,14 +1477,31 @@ async fn get_user_subscriptions(
         .bind(id)
         .fetch_optional(state.db.pool())
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(serde_json::json!({"error": e.to_string()})),
+            )
+        })?;
 
     if user_exists.is_none() {
-        return Err((StatusCode::NOT_FOUND, Json(serde_json::json!({"error": "User not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(serde_json::json!({"error": "User not found"})),
+        ));
     }
 
     // Get subscriptions
-    let subscriptions: Vec<(i64, String, Option<f64>, Option<String>, Option<String>, Option<chrono::NaiveDateTime>, Option<chrono::NaiveDateTime>, chrono::NaiveDateTime)> = sqlx::query_as(
+    let subscriptions: Vec<(
+        i64,
+        String,
+        Option<f64>,
+        Option<String>,
+        Option<String>,
+        Option<chrono::NaiveDateTime>,
+        Option<chrono::NaiveDateTime>,
+        chrono::NaiveDateTime,
+    )> = sqlx::query_as(
         r#"
         SELECT
             id, status, price, product_name, billing_period,
@@ -1317,30 +1509,38 @@ async fn get_user_subscriptions(
         FROM user_memberships
         WHERE user_id = $1
         ORDER BY created_at DESC
-        "#
+        "#,
     )
     .bind(id)
     .fetch_all(state.db.pool())
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(serde_json::json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(serde_json::json!({"error": e.to_string()})),
+        )
+    })?;
 
-    let subs_json: Vec<serde_json::Value> = subscriptions.into_iter().map(|(sub_id, status, price, name, period, starts, expires, created)| {
-        serde_json::json!({
-            "id": sub_id,
-            "status": status,
-            "price": price,
-            "product_name": name,
-            "billing_period": period,
-            "starts_at": starts,
-            "expires_at": expires,
-            "created_at": created
-        })
-    }).collect();
+    let subs_json: Vec<serde_json::Value> = subscriptions
+        .into_iter()
+        .map(
+            |(sub_id, status, price, name, period, starts, expires, created)| {
+                serde_json::json!({
+                    "id": sub_id,
+                    "status": status,
+                    "price": price,
+                    "product_name": name,
+                    "billing_period": period,
+                    "starts_at": starts,
+                    "expires_at": expires,
+                    "created_at": created
+                })
+            },
+        )
+        .collect();
 
     let active_count = subs_json.iter().filter(|s| s["status"] == "active").count();
-    let total_revenue: f64 = subs_json.iter()
-        .filter_map(|s| s["price"].as_f64())
-        .sum();
+    let total_revenue: f64 = subs_json.iter().filter_map(|s| s["price"].as_f64()).sum();
 
     Ok(Json(serde_json::json!({
         "subscriptions": subs_json,
@@ -1367,7 +1567,10 @@ pub fn router() -> Router<AppState> {
         // Users
         .route("/users", get(list_users).post(create_user))
         .route("/users/stats", get(user_stats))
-        .route("/users/:id", get(get_user).put(update_user).delete(delete_user))
+        .route(
+            "/users/:id",
+            get(get_user).put(update_user).delete(delete_user),
+        )
         .route("/users/:id/ban", post(ban_user))
         .route("/users/:id/unban", post(unban_user))
         .route("/users/:id/memberships", get(get_user_memberships_by_user))
@@ -1375,8 +1578,16 @@ pub fn router() -> Router<AppState> {
         .route("/users/:id/impersonate", post(impersonate_user))
         // Memberships (admin management)
         .route("/membership-plans", get(list_all_plans))
-        .route("/user-memberships", get(list_user_memberships).post(grant_membership))
-        .route("/user-memberships/:id", get(get_user_membership).put(update_user_membership).delete(revoke_membership))
+        .route(
+            "/user-memberships",
+            get(list_user_memberships).post(grant_membership),
+        )
+        .route(
+            "/user-memberships/:id",
+            get(get_user_membership)
+                .put(update_user_membership)
+                .delete(revoke_membership),
+        )
         // Campaigns
         .route("/campaigns", get(list_campaigns).post(create_campaign))
         .route("/campaigns/:id", delete(delete_campaign))

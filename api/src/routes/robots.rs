@@ -12,8 +12,8 @@ use axum::{
     Router,
 };
 use std::sync::Arc;
-use tokio::sync::RwLock;
 use std::time::{Duration, Instant};
+use tokio::sync::RwLock;
 
 use crate::AppState;
 
@@ -52,7 +52,7 @@ pub async fn robots_txt(State(state): State<AppState>) -> Response {
 
     // Generate new content
     let content = generate_robots_txt(&state).await;
-    
+
     // Update cache
     {
         let mut cache = ROBOTS_CACHE.write().await;
@@ -75,9 +75,8 @@ pub async fn robots_txt(State(state): State<AppState>) -> Response {
 
 /// Generate robots.txt content based on environment
 async fn generate_robots_txt(state: &AppState) -> String {
-    let is_production = std::env::var("ENVIRONMENT")
-        .unwrap_or_else(|_| "development".to_string())
-        == "production";
+    let is_production =
+        std::env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string()) == "production";
 
     if !is_production {
         return get_disallow_all();

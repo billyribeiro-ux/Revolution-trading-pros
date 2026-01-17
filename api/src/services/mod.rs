@@ -1,18 +1,18 @@
 //! External services
 //! Apple ICT 11+ Principal Engineer - January 2026
 
-pub mod redis;
-pub mod storage;
-pub mod email;
-pub mod stripe;
-pub mod search;
-pub mod order_service;
-pub mod subscription_service;
-pub mod cms;
 pub mod bunny;
+pub mod cms;
+pub mod email;
+pub mod order_service;
+pub mod redis;
+pub mod search;
+pub mod storage;
+pub mod stripe;
+pub mod subscription_service;
 
-use anyhow::Result;
 use crate::config::Config;
+use anyhow::Result;
 
 /// Container for all external services
 #[derive(Clone)]
@@ -26,7 +26,8 @@ pub struct Services {
 
 impl Services {
     pub async fn new(config: &Config) -> Result<Self> {
-        let search = search::SearchService::new(&config.meilisearch_host, &config.meilisearch_api_key)?;
+        let search =
+            search::SearchService::new(&config.meilisearch_host, &config.meilisearch_api_key)?;
 
         // Initialize search indexes (non-blocking, runs in background)
         let search_clone = search.clone();
@@ -49,8 +50,9 @@ impl Services {
         // Initialize Redis (optional - timeout after 2 seconds)
         let redis = tokio::time::timeout(
             std::time::Duration::from_secs(2),
-            redis::RedisService::new(&config.redis_url)
-        ).await;
+            redis::RedisService::new(&config.redis_url),
+        )
+        .await;
 
         let redis = match redis {
             Ok(Ok(r)) => {

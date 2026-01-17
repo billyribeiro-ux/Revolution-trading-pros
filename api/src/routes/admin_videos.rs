@@ -19,13 +19,13 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::models::video::{
-    BulkAssignRequest, BulkDeleteRequest, BulkPublishRequest, CreateVideoRequest,
-    PaginationMeta, TagDetail, TraderInfo, RoomInfo, UpdateVideoRequest, VideoListQuery,
-    VideoResponse, VideoStats, VideoStatsResponse, VideoTypeStats, get_all_tags,
-    get_content_types, get_difficulty_levels, get_platforms,
-};
 use crate::middleware::admin::AdminUser;
+use crate::models::video::{
+    get_all_tags, get_content_types, get_difficulty_levels, get_platforms, BulkAssignRequest,
+    BulkDeleteRequest, BulkPublishRequest, CreateVideoRequest, PaginationMeta, RoomInfo, TagDetail,
+    TraderInfo, UpdateVideoRequest, VideoListQuery, VideoResponse, VideoStats, VideoStatsResponse,
+    VideoTypeStats,
+};
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -139,13 +139,15 @@ fn get_tags_vec(tags: &Option<serde_json::Value>) -> Vec<String> {
 fn get_tag_details(tags: &Option<serde_json::Value>) -> Vec<TagDetail> {
     get_tags_vec(tags)
         .iter()
-        .filter_map(|slug| {
-            get_all_tags().iter().find(|t| &t.slug == slug).cloned()
-        })
+        .filter_map(|slug| get_all_tags().iter().find(|t| &t.slug == slug).cloned())
         .collect()
 }
 
-fn video_to_response(video: UnifiedVideoRow, trader: Option<TraderInfo>, rooms: Vec<RoomInfo>) -> VideoResponse {
+fn video_to_response(
+    video: UnifiedVideoRow,
+    trader: Option<TraderInfo>,
+    rooms: Vec<RoomInfo>,
+) -> VideoResponse {
     VideoResponse {
         id: video.id,
         title: video.title.clone(),
@@ -186,7 +188,8 @@ async fn list_videos(
     let offset = (page - 1) * per_page;
 
     let mut sql = String::from("SELECT * FROM unified_videos WHERE deleted_at IS NULL");
-    let mut count_sql = String::from("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL");
+    let mut count_sql =
+        String::from("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL");
 
     // Apply filters
     if let Some(ref content_type) = query.content_type {
@@ -215,7 +218,10 @@ async fn list_videos(
 
     if let Some(ref search) = query.search {
         let search_term = search.replace('\'', "''");
-        let filter = format!(" AND (title ILIKE '%{}%' OR description ILIKE '%{}%')", search_term, search_term);
+        let filter = format!(
+            " AND (title ILIKE '%{}%' OR description ILIKE '%{}%')",
+            search_term, search_term
+        );
         sql.push_str(&filter);
         count_sql.push_str(&filter);
     }
@@ -278,24 +284,23 @@ async fn get_video(
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let video: UnifiedVideoRow = sqlx::query_as(
-        "SELECT * FROM unified_videos WHERE id = $1 AND deleted_at IS NULL"
-    )
-    .bind(id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("Database error: {}", e)})),
-        )
-    })?
-    .ok_or_else(|| {
-        (
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Video not found"})),
-        )
-    })?;
+    let video: UnifiedVideoRow =
+        sqlx::query_as("SELECT * FROM unified_videos WHERE id = $1 AND deleted_at IS NULL")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": format!("Database error: {}", e)})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": "Video not found"})),
+                )
+            })?;
 
     let trader = None; // TODO: Fetch trader
     let rooms: Vec<RoomInfo> = vec![]; // TODO: Fetch rooms
@@ -333,15 +338,16 @@ async fn create_video(
         ));
     }
 
-    let video_date = NaiveDate::parse_from_str(&input.video_date, "%Y-%m-%d")
-        .map_err(|_| {
-            (
-                StatusCode::BAD_REQUEST,
-                Json(json!({"error": "Invalid video_date format. Use YYYY-MM-DD"})),
-            )
-        })?;
+    let video_date = NaiveDate::parse_from_str(&input.video_date, "%Y-%m-%d").map_err(|_| {
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid video_date format. Use YYYY-MM-DD"})),
+        )
+    })?;
 
-    let tags_json = input.tags.as_ref()
+    let tags_json = input
+        .tags
+        .as_ref()
         .map(|t| serde_json::to_value(t).unwrap_or(json!([])))
         .unwrap_or(json!([]));
 
@@ -383,7 +389,7 @@ async fn create_video(
     if let Some(room_ids) = input.room_ids {
         for room_id in room_ids {
             let _ = sqlx::query(
-                "INSERT INTO video_room_assignments (video_id, trading_room_id) VALUES ($1, $2)"
+                "INSERT INTO video_room_assignments (video_id, trading_room_id) VALUES ($1, $2)",
             )
             .bind(video.id)
             .bind(room_id)
@@ -480,15 +486,12 @@ async fn update_video(
 
     query = query.bind(id);
 
-    let video = query
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Failed to update video: {}", e)})),
-            )
-        })?;
+    let video = query.fetch_one(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Failed to update video: {}", e)})),
+        )
+    })?;
 
     Ok(Json(json!({
         "success": true,
@@ -525,15 +528,18 @@ async fn get_stats(
     _admin: AdminUser,
     State(state): State<AppState>,
 ) -> Result<Json<VideoStatsResponse>, (StatusCode, Json<serde_json::Value>)> {
-    let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE deleted_at IS NULL")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
-    let published: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE is_published = true AND deleted_at IS NULL")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let published: (i64,) = sqlx::query_as(
+        "SELECT COUNT(*) FROM unified_videos WHERE is_published = true AND deleted_at IS NULL",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     let daily_video: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM unified_videos WHERE content_type = 'daily_video' AND deleted_at IS NULL")
         .fetch_one(&state.db.pool)
@@ -555,10 +561,12 @@ async fn get_stats(
         .await
         .unwrap_or((0,));
 
-    let total_views: (i64,) = sqlx::query_as("SELECT COALESCE(SUM(views_count), 0) FROM unified_videos WHERE deleted_at IS NULL")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total_views: (i64,) = sqlx::query_as(
+        "SELECT COALESCE(SUM(views_count), 0) FROM unified_videos WHERE deleted_at IS NULL",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     Ok(Json(VideoStatsResponse {
         success: true,
@@ -572,7 +580,7 @@ async fn get_stats(
                 room_archive: room_archive.0,
             },
             total_views: total_views.0,
-            this_week: 0, // TODO: Calculate
+            this_week: 0,  // TODO: Calculate
             this_month: 0, // TODO: Calculate
         },
     }))
@@ -639,7 +647,10 @@ async fn bulk_delete(
     let sql = if input.force.unwrap_or(false) {
         format!("DELETE FROM unified_videos WHERE id IN ({})", ids_str)
     } else {
-        format!("UPDATE unified_videos SET deleted_at = NOW() WHERE id IN ({})", ids_str)
+        format!(
+            "UPDATE unified_videos SET deleted_at = NOW() WHERE id IN ({})",
+            ids_str
+        )
     };
 
     sqlx::query(&sql)
@@ -667,7 +678,10 @@ async fn bulk_assign(
     if input.clear_existing.unwrap_or(false) {
         let ids: Vec<String> = input.video_ids.iter().map(|id| id.to_string()).collect();
         let ids_str = ids.join(",");
-        let sql = format!("DELETE FROM video_room_assignments WHERE video_id IN ({})", ids_str);
+        let sql = format!(
+            "DELETE FROM video_room_assignments WHERE video_id IN ({})",
+            ids_str
+        );
         let _ = sqlx::query(&sql).execute(&state.db.pool).await;
     }
 
@@ -675,7 +689,7 @@ async fn bulk_assign(
         for room_id in &input.room_ids {
             let _ = sqlx::query(
                 "INSERT INTO video_room_assignments (video_id, trading_room_id) 
-                 VALUES ($1, $2) ON CONFLICT (video_id, trading_room_id) DO NOTHING"
+                 VALUES ($1, $2) ON CONFLICT (video_id, trading_room_id) DO NOTHING",
             )
             .bind(video_id)
             .bind(room_id)
@@ -697,7 +711,10 @@ async fn bulk_assign(
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_videos).post(create_video))
-        .route("/:id", get(get_video).put(update_video).delete(delete_video))
+        .route(
+            "/:id",
+            get(get_video).put(update_video).delete(delete_video),
+        )
         .route("/stats", get(get_stats))
         .route("/options", get(get_options))
         .route("/bulk/publish", post(bulk_publish))

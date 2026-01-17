@@ -10,15 +10,12 @@ use axum::{
     routing::{delete, get, post, put},
     Json, Router,
 };
+use chrono::NaiveDateTime;
 use serde::{Deserialize, Serialize};
 use serde_json::json;
-use chrono::NaiveDateTime;
 use sqlx::FromRow;
 
-use crate::{
-    models::User,
-    AppState,
-};
+use crate::{models::User, AppState};
 
 // ===============================================================================
 // AUTHORIZATION
@@ -30,10 +27,13 @@ fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>
     if role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer" {
         Ok(())
     } else {
-        Err((StatusCode::FORBIDDEN, Json(json!({
-            "error": "Access denied",
-            "message": "This action requires admin privileges"
-        }))))
+        Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({
+                "error": "Access denied",
+                "message": "This action requires admin privileges"
+            })),
+        ))
     }
 }
 
@@ -103,7 +103,7 @@ async fn list_segments(
           AND ($2::boolean IS NULL OR is_active = $2)
         ORDER BY created_at DESC
         LIMIT $3 OFFSET $4
-        "#
+        "#,
     )
     .bind(search_pattern.as_deref())
     .bind(query.is_active)
@@ -112,7 +112,10 @@ async fn list_segments(
     .fetch_all(&state.db.pool)
     .await
     .unwrap_or_else(|e| {
-        tracing::warn!("Database query failed in list_segments (table may not exist): {}", e);
+        tracing::warn!(
+            "Database query failed in list_segments (table may not exist): {}",
+            e
+        );
         Vec::new()
     });
 
@@ -122,7 +125,7 @@ async fn list_segments(
         FROM member_segments
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
           AND ($2::boolean IS NULL OR is_active = $2)
-        "#
+        "#,
     )
     .bind(search_pattern.as_deref())
     .bind(query.is_active)
@@ -172,7 +175,9 @@ async fn create_segment(
 
     // Generate slug if not provided
     let slug = input.slug.unwrap_or_else(|| {
-        input.name.to_lowercase()
+        input
+            .name
+            .to_lowercase()
             .replace(' ', "-")
             .chars()
             .filter(|c| c.is_ascii_alphanumeric() || *c == '-')
@@ -241,7 +246,10 @@ async fn update_segment(
     set_clauses.push("updated_at = NOW()".to_string());
 
     if set_clauses.len() == 1 {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No fields to update"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No fields to update"})),
+        ));
     }
 
     let sql = format!(
@@ -267,16 +275,19 @@ async fn update_segment(
         query_builder = query_builder.bind(is_active);
     }
 
-    let segment = query_builder
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| {
-            if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
-                (StatusCode::CONFLICT, Json(json!({"error": "Segment with this slug already exists"})))
-            } else {
-                (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-            }
-        })?;
+    let segment = query_builder.fetch_one(&state.db.pool).await.map_err(|e| {
+        if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
+            (
+                StatusCode::CONFLICT,
+                Json(json!({"error": "Segment with this slug already exists"})),
+            )
+        } else {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        }
+    })?;
 
     Ok(Json(segment))
 }
@@ -293,10 +304,18 @@ async fn delete_segment(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Segment not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Segment not found"})),
+        ));
     }
 
     Ok(Json(json!({"message": "Segment deleted successfully"})))
@@ -363,7 +382,7 @@ async fn list_member_tags(
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
         ORDER BY name ASC
         LIMIT $2 OFFSET $3
-        "#
+        "#,
     )
     .bind(search_pattern.as_deref())
     .bind(per_page)
@@ -371,7 +390,10 @@ async fn list_member_tags(
     .fetch_all(&state.db.pool)
     .await
     .unwrap_or_else(|e| {
-        tracing::warn!("Database query failed in list_member_tags (table may not exist): {}", e);
+        tracing::warn!(
+            "Database query failed in list_member_tags (table may not exist): {}",
+            e
+        );
         Vec::new()
     });
 
@@ -380,7 +402,7 @@ async fn list_member_tags(
         SELECT COUNT(*)
         FROM member_tags
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
-        "#
+        "#,
     )
     .bind(search_pattern.as_deref())
     .fetch_one(&state.db.pool)
@@ -429,7 +451,9 @@ async fn create_member_tag(
 
     // Generate slug if not provided
     let slug = input.slug.unwrap_or_else(|| {
-        input.name.to_lowercase()
+        input
+            .name
+            .to_lowercase()
             .replace(' ', "-")
             .chars()
             .filter(|c| c.is_ascii_alphanumeric() || *c == '-')
@@ -492,7 +516,10 @@ async fn update_member_tag(
     set_clauses.push("updated_at = NOW()".to_string());
 
     if set_clauses.len() == 1 {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No fields to update"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No fields to update"})),
+        ));
     }
 
     let sql = format!(
@@ -515,16 +542,19 @@ async fn update_member_tag(
         query_builder = query_builder.bind(description);
     }
 
-    let tag = query_builder
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| {
-            if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
-                (StatusCode::CONFLICT, Json(json!({"error": "Tag with this slug already exists"})))
-            } else {
-                (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-            }
-        })?;
+    let tag = query_builder.fetch_one(&state.db.pool).await.map_err(|e| {
+        if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
+            (
+                StatusCode::CONFLICT,
+                Json(json!({"error": "Tag with this slug already exists"})),
+            )
+        } else {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        }
+    })?;
 
     Ok(Json(tag))
 }
@@ -541,10 +571,18 @@ async fn delete_member_tag(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Tag not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Tag not found"})),
+        ));
     }
 
     Ok(Json(json!({"message": "Tag deleted successfully"})))
@@ -635,7 +673,7 @@ async fn list_member_filters(
         FROM member_filters
         WHERE ($1::text IS NULL OR name ILIKE $1 OR description ILIKE $1)
           AND ($2::boolean IS NULL OR is_public = $2)
-        "#
+        "#,
     )
     .bind(search_pattern.as_deref())
     .bind(query.is_public)
@@ -745,7 +783,10 @@ async fn update_member_filter(
     set_clauses.push("updated_at = NOW()".to_string());
 
     if set_clauses.len() == 1 {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No fields to update"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No fields to update"})),
+        ));
     }
 
     let sql = format!(
@@ -771,16 +812,19 @@ async fn update_member_filter(
         query_builder = query_builder.bind(is_public);
     }
 
-    let filter = query_builder
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| {
-            if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
-                (StatusCode::CONFLICT, Json(json!({"error": "Filter with this name already exists"})))
-            } else {
-                (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-            }
-        })?;
+    let filter = query_builder.fetch_one(&state.db.pool).await.map_err(|e| {
+        if e.to_string().contains("duplicate") || e.to_string().contains("unique") {
+            (
+                StatusCode::CONFLICT,
+                Json(json!({"error": "Filter with this name already exists"})),
+            )
+        } else {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        }
+    })?;
 
     Ok(Json(filter))
 }
@@ -797,10 +841,18 @@ async fn delete_member_filter(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Filter not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Filter not found"})),
+        ));
     }
 
     Ok(Json(json!({"message": "Filter deleted successfully"})))
@@ -835,13 +887,18 @@ async fn assign_tag_to_user(
         INSERT INTO user_member_tags (user_id, tag_id, created_at)
         VALUES ($1, $2, NOW())
         ON CONFLICT (user_id, tag_id) DO NOTHING
-        "#
+        "#,
     )
     .bind(input.user_id)
     .bind(input.tag_id)
     .execute(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // Update member count
     sqlx::query(
@@ -868,7 +925,12 @@ async fn unassign_tag_from_user(
         .bind(input.tag_id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     // Update member count
     sqlx::query(
@@ -899,7 +961,7 @@ async fn bulk_assign_tags(
                 INSERT INTO user_member_tags (user_id, tag_id, created_at)
                 VALUES ($1, $2, NOW())
                 ON CONFLICT (user_id, tag_id) DO NOTHING
-                "#
+                "#,
             )
             .bind(user_id)
             .bind(tag_id)
@@ -945,21 +1007,29 @@ async fn analytics_metrics(
     Query(query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     let _range = query.range.unwrap_or_else(|| "30d".to_string());
-    
+
     // Get basic metrics with graceful fallbacks
     let total_members: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM users")
-        .fetch_one(&state.db.pool).await.unwrap_or(0);
-    
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or(0);
+
     let active_members: i64 = sqlx::query_scalar(
-        "SELECT COUNT(DISTINCT user_id) FROM user_memberships WHERE status = 'active'"
-    ).fetch_one(&state.db.pool).await.unwrap_or(0);
-    
+        "SELECT COUNT(DISTINCT user_id) FROM user_memberships WHERE status = 'active'",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or(0);
+
     let new_this_month: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM users WHERE created_at >= date_trunc('month', CURRENT_DATE)"
-    ).fetch_one(&state.db.pool).await.unwrap_or(0);
-    
+        "SELECT COUNT(*) FROM users WHERE created_at >= date_trunc('month', CURRENT_DATE)",
+    )
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or(0);
+
     let mrr: f64 = sqlx::query_scalar::<_, Option<f64>>(
         "SELECT SUM(CASE WHEN billing_period = 'yearly' THEN price/12 ELSE price END) FROM user_memberships WHERE status = 'active'"
     ).fetch_one(&state.db.pool).await.ok().flatten().unwrap_or(0.0);
@@ -981,7 +1051,7 @@ async fn analytics_growth(
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     // Get monthly growth data
     let growth_data: Vec<(String, i64)> = sqlx::query_as(
         r#"
@@ -990,10 +1060,14 @@ async fn analytics_growth(
         WHERE created_at >= CURRENT_DATE - INTERVAL '12 months'
         GROUP BY TO_CHAR(created_at, 'YYYY-MM')
         ORDER BY month
-        "#
-    ).fetch_all(&state.db.pool).await.unwrap_or_default();
-    
-    let data: Vec<serde_json::Value> = growth_data.into_iter()
+        "#,
+    )
+    .fetch_all(&state.db.pool)
+    .await
+    .unwrap_or_default();
+
+    let data: Vec<serde_json::Value> = growth_data
+        .into_iter()
         .map(|(month, count)| json!({"month": month, "members": count}))
         .collect();
 
@@ -1011,7 +1085,7 @@ async fn analytics_cohorts(
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     // Return cohort structure (would need complex query for real data)
     Ok(Json(json!({
         "cohorts": [
@@ -1030,11 +1104,15 @@ async fn analytics_revenue(
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
-    let total_revenue: f64 = sqlx::query_scalar::<_, Option<f64>>(
-        "SELECT SUM(price) FROM user_memberships"
-    ).fetch_one(&state.db.pool).await.ok().flatten().unwrap_or(0.0);
-    
+
+    let total_revenue: f64 =
+        sqlx::query_scalar::<_, Option<f64>>("SELECT SUM(price) FROM user_memberships")
+            .fetch_one(&state.db.pool)
+            .await
+            .ok()
+            .flatten()
+            .unwrap_or(0.0);
+
     let mrr: f64 = sqlx::query_scalar::<_, Option<f64>>(
         "SELECT SUM(CASE WHEN billing_period = 'yearly' THEN price/12 ELSE price END) FROM user_memberships WHERE status = 'active'"
     ).fetch_one(&state.db.pool).await.ok().flatten().unwrap_or(0.0);
@@ -1055,7 +1133,7 @@ async fn analytics_churn_reasons(
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     Ok(Json(json!({
         "reasons": [
             {"reason": "Too expensive", "count": 45, "percentage": 32},
@@ -1074,7 +1152,7 @@ async fn analytics_segments(
     Query(_query): Query<AnalyticsRangeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     let segments: Vec<MemberSegment> = sqlx::query_as(
         "SELECT id, name, slug, description, rules, member_count, is_active, created_at, updated_at FROM member_segments WHERE is_active = true ORDER BY member_count DESC LIMIT 10"
     ).fetch_all(&state.db.pool).await.unwrap_or_default();
@@ -1109,7 +1187,7 @@ async fn get_member_notes(
     Path(member_id): Path<i64>,
 ) -> Result<Json<Vec<MemberNote>>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     let notes: Vec<MemberNote> = sqlx::query_as(
         "SELECT id, user_id, content, created_by, created_at FROM member_notes WHERE user_id = $1 ORDER BY created_at DESC"
     )
@@ -1129,7 +1207,7 @@ async fn create_member_note(
     Json(input): Json<CreateNoteRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     // Try to create note, gracefully handle if table doesn't exist
     let result = sqlx::query(
         "INSERT INTO member_notes (user_id, content, created_by, created_at) VALUES ($1, $2, $3, NOW())"
@@ -1139,7 +1217,7 @@ async fn create_member_note(
     .bind(user.id)
     .execute(&state.db.pool)
     .await;
-    
+
     match result {
         Ok(_) => Ok(Json(json!({"message": "Note created successfully"}))),
         Err(e) => {
@@ -1170,7 +1248,7 @@ async fn get_member_emails(
     Path(member_id): Path<i64>,
 ) -> Result<Json<Vec<MemberEmail>>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
-    
+
     let emails: Vec<MemberEmail> = sqlx::query_as(
         "SELECT id, user_id, subject, status, sent_at, created_at FROM member_emails WHERE user_id = $1 ORDER BY created_at DESC LIMIT 50"
     )
@@ -1191,16 +1269,32 @@ pub fn router() -> Router<AppState> {
     Router::new()
         // Segments
         .route("/segments", get(list_segments).post(create_segment))
-        .route("/segments/:id", get(get_segment).put(update_segment).delete(delete_segment))
+        .route(
+            "/segments/:id",
+            get(get_segment).put(update_segment).delete(delete_segment),
+        )
         // Tags
         .route("/tags", get(list_member_tags).post(create_member_tag))
-        .route("/tags/:id", get(get_member_tag).put(update_member_tag).delete(delete_member_tag))
+        .route(
+            "/tags/:id",
+            get(get_member_tag)
+                .put(update_member_tag)
+                .delete(delete_member_tag),
+        )
         .route("/tags/assign", post(assign_tag_to_user))
         .route("/tags/unassign", delete(unassign_tag_from_user))
         .route("/tags/bulk-assign", post(bulk_assign_tags))
         // Filters
-        .route("/filters", get(list_member_filters).post(create_member_filter))
-        .route("/filters/:id", get(get_member_filter).put(update_member_filter).delete(delete_member_filter))
+        .route(
+            "/filters",
+            get(list_member_filters).post(create_member_filter),
+        )
+        .route(
+            "/filters/:id",
+            get(get_member_filter)
+                .put(update_member_filter)
+                .delete(delete_member_filter),
+        )
         // Analytics (ICT 7 FIX: Missing endpoints)
         .route("/analytics/metrics", get(analytics_metrics))
         .route("/analytics/growth", get(analytics_growth))

@@ -15,7 +15,9 @@ use serde::Deserialize;
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::models::video::{PaginationMeta, TagDetail, TraderInfo, RoomInfo, VideoResponse, get_all_tags};
+use crate::models::video::{
+    get_all_tags, PaginationMeta, RoomInfo, TagDetail, TraderInfo, VideoResponse,
+};
 use crate::AppState;
 
 #[derive(Debug, serde::Serialize, FromRow)]
@@ -112,9 +114,7 @@ fn get_tags_vec(tags: &Option<serde_json::Value>) -> Vec<String> {
 fn get_tag_details(tags: &Option<serde_json::Value>) -> Vec<TagDetail> {
     get_tags_vec(tags)
         .iter()
-        .filter_map(|slug| {
-            get_all_tags().iter().find(|t| &t.slug == slug).cloned()
-        })
+        .filter_map(|slug| get_all_tags().iter().find(|t| &t.slug == slug).cloned())
         .collect()
 }
 
@@ -154,7 +154,7 @@ async fn list_videos(
     let offset = (page - 1) * per_page;
 
     let mut sql = String::from(
-        "SELECT v.* FROM unified_videos v WHERE v.is_published = true AND v.deleted_at IS NULL"
+        "SELECT v.* FROM unified_videos v WHERE v.is_published = true AND v.deleted_at IS NULL",
     );
     let mut count_sql = String::from(
         "SELECT COUNT(*) FROM unified_videos v WHERE v.is_published = true AND v.deleted_at IS NULL"
@@ -162,7 +162,10 @@ async fn list_videos(
 
     // Filter by content_type (e.g., learning_center)
     if let Some(ref content_type) = query.content_type {
-        let filter = format!(" AND v.content_type = '{}'", content_type.replace('\'', "''"));
+        let filter = format!(
+            " AND v.content_type = '{}'",
+            content_type.replace('\'', "''")
+        );
         sql.push_str(&filter);
         count_sql.push_str(&filter);
     }
@@ -189,7 +192,10 @@ async fn list_videos(
 
     // Filter by difficulty
     if let Some(ref difficulty) = query.difficulty_level {
-        let filter = format!(" AND v.difficulty_level = '{}'", difficulty.replace('\'', "''"));
+        let filter = format!(
+            " AND v.difficulty_level = '{}'",
+            difficulty.replace('\'', "''")
+        );
         sql.push_str(&filter);
         count_sql.push_str(&filter);
     }
@@ -197,7 +203,10 @@ async fn list_videos(
     // Search
     if let Some(ref search) = query.search {
         let search_term = search.replace('\'', "''");
-        let filter = format!(" AND (v.title ILIKE '%{}%' OR v.description ILIKE '%{}%')", search_term, search_term);
+        let filter = format!(
+            " AND (v.title ILIKE '%{}%' OR v.description ILIKE '%{}%')",
+            search_term, search_term
+        );
         sql.push_str(&filter);
         count_sql.push_str(&filter);
     }
@@ -208,7 +217,12 @@ async fn list_videos(
     let videos: Vec<UnifiedVideoRow> = sqlx::query_as(&sql)
         .fetch_all(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     let total: (i64,) = sqlx::query_as(&count_sql)
         .fetch_one(&state.db.pool)

@@ -1,12 +1,15 @@
 //! Health check routes
 //! ICT 11+ FIX: setup-db and run-migrations now require admin authentication
 
-use axum::{routing::{get, post}, Json, Router};
 use axum::http::StatusCode;
+use axum::{
+    routing::{get, post},
+    Json, Router,
+};
 use serde::Serialize;
 
-use crate::AppState;
 use crate::middleware::admin::AdminUser;
+use crate::AppState;
 
 #[derive(Serialize)]
 struct HealthResponse {
@@ -161,7 +164,9 @@ async fn setup_db(
             tracing::info!("Updated existing bootstrap user from environment config");
         }
     } else {
-        tracing::info!("No DEVELOPER_BOOTSTRAP_EMAIL configured - skipping bootstrap user creation");
+        tracing::info!(
+            "No DEVELOPER_BOOTSTRAP_EMAIL configured - skipping bootstrap user creation"
+        );
     }
 
     tracing::info!("Database setup completed successfully");
@@ -232,13 +237,13 @@ async fn init_db(
 ) -> Result<Json<SetupResponse>, (StatusCode, Json<SetupResponse>)> {
     // Run migrations
     let _ = state.db.migrate().await;
-    
+
     // Bootstrap developer from environment variables ONLY
     let _ = state.db.bootstrap_developer(&state.config).await;
 
-    Ok(Json(SetupResponse { 
-        success: true, 
-        message: "Migrations and bootstrap completed from environment variables".to_string()
+    Ok(Json(SetupResponse {
+        success: true,
+        message: "Migrations and bootstrap completed from environment variables".to_string(),
     }))
 }
 

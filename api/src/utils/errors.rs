@@ -21,22 +21,22 @@ use std::collections::HashMap;
 pub struct ApiError {
     /// Human-readable error message
     pub message: String,
-    
+
     /// HTTP status code as string (e.g., "404", "500")
     pub status: String,
-    
+
     /// Error code for client-side handling (e.g., "USER_NOT_FOUND", "VALIDATION_ERROR")
     #[serde(skip_serializing_if = "Option::is_none")]
     pub code: Option<String>,
-    
+
     /// Field-level validation errors
     #[serde(skip_serializing_if = "Option::is_none")]
     pub errors: Option<HashMap<String, Vec<String>>>,
-    
+
     /// Request ID for debugging/support
     #[serde(skip_serializing_if = "Option::is_none")]
     pub request_id: Option<String>,
-    
+
     /// Timestamp of the error
     pub timestamp: String,
 }
@@ -128,38 +128,36 @@ pub type ApiResult<T> = Result<T, ApiError>;
 
 /// 400 Bad Request
 pub fn bad_request(message: impl Into<String>) -> ApiError {
-    ApiError::new(StatusCode::BAD_REQUEST, message)
-        .with_code("BAD_REQUEST")
+    ApiError::new(StatusCode::BAD_REQUEST, message).with_code("BAD_REQUEST")
 }
 
 /// 401 Unauthorized
 pub fn unauthorized(message: impl Into<String>) -> ApiError {
-    ApiError::new(StatusCode::UNAUTHORIZED, message)
-        .with_code("UNAUTHORIZED")
+    ApiError::new(StatusCode::UNAUTHORIZED, message).with_code("UNAUTHORIZED")
 }
 
 /// 403 Forbidden
 pub fn forbidden(message: impl Into<String>) -> ApiError {
-    ApiError::new(StatusCode::FORBIDDEN, message)
-        .with_code("FORBIDDEN")
+    ApiError::new(StatusCode::FORBIDDEN, message).with_code("FORBIDDEN")
 }
 
 /// 404 Not Found
 pub fn not_found(resource: impl Into<String>) -> ApiError {
-    ApiError::new(StatusCode::NOT_FOUND, format!("{} not found", resource.into()))
-        .with_code("NOT_FOUND")
+    ApiError::new(
+        StatusCode::NOT_FOUND,
+        format!("{} not found", resource.into()),
+    )
+    .with_code("NOT_FOUND")
 }
 
 /// 409 Conflict
 pub fn conflict(message: impl Into<String>) -> ApiError {
-    ApiError::new(StatusCode::CONFLICT, message)
-        .with_code("CONFLICT")
+    ApiError::new(StatusCode::CONFLICT, message).with_code("CONFLICT")
 }
 
 /// 422 Validation Error
 pub fn validation_error(message: impl Into<String>) -> ApiError {
-    ApiError::new(StatusCode::UNPROCESSABLE_ENTITY, message)
-        .with_code("VALIDATION_ERROR")
+    ApiError::new(StatusCode::UNPROCESSABLE_ENTITY, message).with_code("VALIDATION_ERROR")
 }
 
 /// 429 Too Many Requests
@@ -169,11 +167,14 @@ pub fn rate_limited(retry_after: Option<i64>) -> ApiError {
         "Too many requests. Please try again later.",
     )
     .with_code("RATE_LIMITED");
-    
+
     if let Some(seconds) = retry_after {
-        error.message = format!("Too many requests. Please try again in {} seconds.", seconds);
+        error.message = format!(
+            "Too many requests. Please try again in {} seconds.",
+            seconds
+        );
     }
-    
+
     error
 }
 
@@ -186,18 +187,16 @@ pub fn internal_error(message: impl Into<String>) -> ApiError {
     } else {
         msg.clone()
     };
-    
+
     // Always log the full error
     tracing::error!("Internal error: {}", msg);
-    
-    ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, safe_message)
-        .with_code("INTERNAL_ERROR")
+
+    ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, safe_message).with_code("INTERNAL_ERROR")
 }
 
 /// 503 Service Unavailable
 pub fn service_unavailable(message: impl Into<String>) -> ApiError {
-    ApiError::new(StatusCode::SERVICE_UNAVAILABLE, message)
-        .with_code("SERVICE_UNAVAILABLE")
+    ApiError::new(StatusCode::SERVICE_UNAVAILABLE, message).with_code("SERVICE_UNAVAILABLE")
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -207,7 +206,7 @@ pub fn service_unavailable(message: impl Into<String>) -> ApiError {
 impl From<sqlx::Error> for ApiError {
     fn from(err: sqlx::Error) -> Self {
         tracing::error!("Database error: {:?}", err);
-        
+
         match &err {
             sqlx::Error::RowNotFound => not_found("Resource"),
             sqlx::Error::Database(db_err) => {
@@ -280,10 +279,7 @@ pub fn validate_max_length(field: &str, value: &str, max: usize) -> Result<(), (
 pub fn collect_validation_errors(
     validations: Vec<Result<(), (String, String)>>,
 ) -> Result<(), ApiError> {
-    let errors: Vec<(String, String)> = validations
-        .into_iter()
-        .filter_map(|r| r.err())
-        .collect();
+    let errors: Vec<(String, String)> = validations.into_iter().filter_map(|r| r.err()).collect();
 
     if errors.is_empty() {
         Ok(())

@@ -17,7 +17,7 @@ pub mod errors;
 use anyhow::Result;
 use argon2::{
     password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
-    Argon2, Algorithm, Params, Version,
+    Algorithm, Argon2, Params, Version,
 };
 use chrono::{Duration, Utc};
 use jsonwebtoken::{decode, encode, DecodingKey, EncodingKey, Header, Validation};
@@ -26,11 +26,11 @@ use serde::{Deserialize, Serialize};
 /// JWT claims for access tokens
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Claims {
-    pub sub: i64,       // Subject (user ID)
-    pub exp: i64,       // Expiration time
-    pub iat: i64,       // Issued at
+    pub sub: i64, // Subject (user ID)
+    pub exp: i64, // Expiration time
+    pub iat: i64, // Issued at
     #[serde(default)]
-    pub token_type: String,  // "access" or "refresh"
+    pub token_type: String, // "access" or "refresh"
 }
 
 /// ICT L11+ Security Hardening: Password validation rules
@@ -52,29 +52,29 @@ impl Default for PasswordValidation {
 /// Returns Ok(()) if valid, Err with specific message if invalid
 pub fn validate_password(password: &str) -> Result<(), &'static str> {
     let rules = PasswordValidation::default();
-    
+
     if password.len() < rules.min_length {
         return Err("Password must be at least 12 characters");
     }
     if password.len() > rules.max_length {
         return Err("Password must be no more than 128 characters");
     }
-    
+
     // Check for at least one uppercase, lowercase, digit
     let has_upper = password.chars().any(|c| c.is_ascii_uppercase());
     let has_lower = password.chars().any(|c| c.is_ascii_lowercase());
     let has_digit = password.chars().any(|c| c.is_ascii_digit());
-    
+
     if !has_upper || !has_lower || !has_digit {
         return Err("Password must contain uppercase, lowercase, and a number");
     }
-    
+
     Ok(())
 }
 
 /// Hash a password using Argon2id with OWASP-recommended parameters
 /// ICT L11+ Security: Hardened configuration for financial applications
-/// 
+///
 /// Parameters (OWASP 2024 recommendations):
 /// - Algorithm: Argon2id (resistant to side-channel and GPU attacks)
 /// - Memory: 64 MiB (65536 KiB)
@@ -83,17 +83,18 @@ pub fn validate_password(password: &str) -> Result<(), &'static str> {
 /// - Output length: 32 bytes
 pub fn hash_password(password: &str) -> Result<String> {
     let salt = SaltString::generate(&mut OsRng);
-    
+
     // OWASP-recommended Argon2id parameters for financial applications
     let params = Params::new(
-        65536,  // 64 MiB memory
-        3,      // 3 iterations
-        4,      // 4 parallel lanes
-        Some(32) // 32-byte output
-    ).map_err(|e| anyhow::anyhow!("Invalid Argon2 params: {}", e))?;
-    
+        65536,    // 64 MiB memory
+        3,        // 3 iterations
+        4,        // 4 parallel lanes
+        Some(32), // 32-byte output
+    )
+    .map_err(|e| anyhow::anyhow!("Invalid Argon2 params: {}", e))?;
+
     let argon2 = Argon2::new(Algorithm::Argon2id, Version::V0x13, params);
-    
+
     let hash = argon2
         .hash_password(password.as_bytes(), &salt)
         .map_err(|e| anyhow::anyhow!("Password hashing failed: {}", e))?;
@@ -118,7 +119,7 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool> {
         } else {
             hash.to_string()
         };
-        
+
         // Verify using bcrypt
         match bcrypt::verify(password, &normalized_hash) {
             Ok(valid) => Ok(valid),
@@ -129,14 +130,17 @@ pub fn verify_password(password: &str, hash: &str) -> Result<bool> {
         }
     } else if hash.starts_with("$argon2") {
         // Argon2 hash (new Rust API users)
-        let parsed_hash = PasswordHash::new(hash)
-            .map_err(|e| anyhow::anyhow!("Invalid Argon2 hash: {}", e))?;
+        let parsed_hash =
+            PasswordHash::new(hash).map_err(|e| anyhow::anyhow!("Invalid Argon2 hash: {}", e))?;
         Ok(Argon2::default()
             .verify_password(password.as_bytes(), &parsed_hash)
             .is_ok())
     } else {
         // Unknown hash format
-        tracing::error!("Unknown password hash format: {}", &hash[..hash.len().min(10)]);
+        tracing::error!(
+            "Unknown password hash format: {}",
+            &hash[..hash.len().min(10)]
+        );
         Err(anyhow::anyhow!("Unknown password hash format"))
     }
 }
@@ -240,8 +244,7 @@ pub fn generate_password_reset_token() -> String {
 /// The raw token is sent to the user, the hashed token is stored in the database
 pub fn generate_verification_token() -> (String, String) {
     use rand::Rng;
-    
-    
+
     let mut rng = rand::thread_rng();
     let raw_token: String = (0..64)
         .map(|_| {
@@ -254,7 +257,7 @@ pub fn generate_verification_token() -> (String, String) {
             }
         })
         .collect();
-    
+
     let hashed_token = hash_token(&raw_token);
     (raw_token, hashed_token)
 }

@@ -6,7 +6,11 @@ mod stripe {
     use hmac::{Hmac, Mac};
     use sha2::Sha256;
 
-    pub fn verify_webhook(payload: &[u8], signature_header: &str, webhook_secret: &str) -> Result<bool> {
+    pub fn verify_webhook(
+        payload: &[u8],
+        signature_header: &str,
+        webhook_secret: &str,
+    ) -> Result<bool> {
         let mut timestamp: Option<&str> = None;
         let mut signatures: Vec<&str> = Vec::new();
 
@@ -21,8 +25,8 @@ mod stripe {
             }
         }
 
-        let timestamp = timestamp
-            .ok_or_else(|| anyhow::anyhow!("Missing timestamp in signature header"))?;
+        let timestamp =
+            timestamp.ok_or_else(|| anyhow::anyhow!("Missing timestamp in signature header"))?;
 
         if signatures.is_empty() {
             return Err(anyhow::anyhow!("No v1 signature found in header"));
@@ -87,11 +91,7 @@ mod tests {
         let timestamp = Utc::now().timestamp();
         let signature_header = generate_test_signature(payload, timestamp, TEST_SECRET);
 
-        let result = verify_webhook(
-            payload.as_bytes(),
-            &signature_header,
-            TEST_SECRET,
-        );
+        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
 
         assert!(result.is_ok(), "Verification should succeed");
         assert!(result.unwrap(), "Valid signature should return true");
@@ -113,11 +113,7 @@ mod tests {
         // Header with multiple v1 signatures (old + new)
         let signature_header = format!("t={},v1=oldsignature,v1={}", timestamp, correct_sig);
 
-        let result = verify_webhook(
-            payload.as_bytes(),
-            &signature_header,
-            TEST_SECRET,
-        );
+        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
 
         assert!(result.is_ok());
         assert!(result.unwrap(), "Should match second v1 signature");
@@ -135,11 +131,7 @@ mod tests {
         // Create signature with different secret
         let signature_header = generate_test_signature(payload, timestamp, "wrong_secret");
 
-        let result = verify_webhook(
-            payload.as_bytes(),
-            &signature_header,
-            TEST_SECRET,
-        );
+        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
 
         assert!(result.is_ok());
         assert!(!result.unwrap(), "Wrong signature should return false");
@@ -153,14 +145,13 @@ mod tests {
 
         // Verify with tampered payload
         let tampered_payload = r#"{"amount":9999}"#;
-        let result = verify_webhook(
-            tampered_payload.as_bytes(),
-            &signature_header,
-            TEST_SECRET,
-        );
+        let result = verify_webhook(tampered_payload.as_bytes(), &signature_header, TEST_SECRET);
 
         assert!(result.is_ok());
-        assert!(!result.unwrap(), "Tampered payload should fail verification");
+        assert!(
+            !result.unwrap(),
+            "Tampered payload should fail verification"
+        );
     }
 
     #[test]
@@ -169,11 +160,7 @@ mod tests {
         let timestamp = Utc::now().timestamp();
         let signature_header = format!("t={},v1=abc123def456", timestamp);
 
-        let result = verify_webhook(
-            payload.as_bytes(),
-            &signature_header,
-            TEST_SECRET,
-        );
+        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
 
         assert!(result.is_ok());
         assert!(!result.unwrap(), "Random signature should fail");
@@ -222,14 +209,13 @@ mod tests {
         let timestamp = Utc::now().timestamp();
         let signature_header = generate_test_signature(payload, timestamp, TEST_SECRET);
 
-        let result = verify_webhook(
-            payload.as_bytes(),
-            &signature_header,
-            TEST_SECRET,
-        );
+        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
 
         assert!(result.is_ok());
-        assert!(result.unwrap(), "Empty payload with valid signature should verify");
+        assert!(
+            result.unwrap(),
+            "Empty payload with valid signature should verify"
+        );
     }
 
     #[test]
@@ -238,11 +224,7 @@ mod tests {
         let timestamp = Utc::now().timestamp();
         let signature_header = generate_test_signature(&payload, timestamp, TEST_SECRET);
 
-        let result = verify_webhook(
-            payload.as_bytes(),
-            &signature_header,
-            TEST_SECRET,
-        );
+        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
 
         assert!(result.is_ok());
         assert!(result.unwrap(), "Large payload should verify");
@@ -254,11 +236,7 @@ mod tests {
         let timestamp = Utc::now().timestamp();
         let signature_header = generate_test_signature(payload, timestamp, TEST_SECRET);
 
-        let result = verify_webhook(
-            payload.as_bytes(),
-            &signature_header,
-            TEST_SECRET,
-        );
+        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
 
         assert!(result.is_ok());
         assert!(result.unwrap(), "Unicode payload should verify");
@@ -303,14 +281,13 @@ mod tests {
         // Header with extra unknown fields
         let signature_header = format!("t={},v0=oldsig,v1={},v2=newsig", timestamp, signature);
 
-        let result = verify_webhook(
-            payload.as_bytes(),
-            &signature_header,
-            TEST_SECRET,
-        );
+        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
 
         assert!(result.is_ok());
-        assert!(result.unwrap(), "Should ignore unknown fields and verify v1");
+        assert!(
+            result.unwrap(),
+            "Should ignore unknown fields and verify v1"
+        );
     }
 
     #[test]
@@ -328,11 +305,7 @@ mod tests {
         // Test with uppercase signature (should fail)
         let signature_header = format!("t={},v1={}", timestamp, signature.to_uppercase());
 
-        let result = verify_webhook(
-            payload.as_bytes(),
-            &signature_header,
-            TEST_SECRET,
-        );
+        let result = verify_webhook(payload.as_bytes(), &signature_header, TEST_SECRET);
 
         // Hex should be lowercase
         assert!(result.is_ok());

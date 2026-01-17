@@ -11,7 +11,6 @@
  *
  * @version 1.0.0
  */
-
 use axum::{
     extract::{Path, State},
     http::StatusCode,
@@ -81,20 +80,20 @@ async fn create_video(
     if api_key.is_empty() {
         return Err((
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"success": false, "error": "Bunny API key not configured"}))
+            Json(json!({"success": false, "error": "Bunny API key not configured"})),
         ));
     }
 
     let library_id = input.library_id.unwrap_or(DEFAULT_LIBRARY_ID);
-    
+
     // Create video in Bunny.net
     let client = reqwest::Client::new();
     let create_url = format!("{}/library/{}/videos", BUNNY_API_BASE, library_id);
-    
+
     let mut body = json!({
         "title": input.title
     });
-    
+
     if let Some(ref collection_id) = input.collection_id {
         body["collectionId"] = json!(collection_id);
     }
@@ -107,30 +106,39 @@ async fn create_video(
         .send()
         .await
         .map_err(|e| {
-            (StatusCode::BAD_GATEWAY, Json(json!({"success": false, "error": format!("Bunny API error: {}", e)})))
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"success": false, "error": format!("Bunny API error: {}", e)})),
+            )
         })?;
 
     if !response.status().is_success() {
         let error_text = response.text().await.unwrap_or_default();
         return Err((
             StatusCode::BAD_GATEWAY,
-            Json(json!({"success": false, "error": format!("Bunny API error: {}", error_text)}))
+            Json(json!({"success": false, "error": format!("Bunny API error: {}", error_text)})),
         ));
     }
 
     let bunny_response: serde_json::Value = response.json().await.map_err(|e| {
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"success": false, "error": format!("Parse error: {}", e)})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"success": false, "error": format!("Parse error: {}", e)})),
+        )
     })?;
 
     let video_guid = bunny_response["guid"].as_str().unwrap_or("");
-    
+
     // Generate URLs
     let upload_url = format!(
-        "{}/library/{}/videos/{}", 
+        "{}/library/{}/videos/{}",
         BUNNY_API_BASE, library_id, video_guid
     );
     let video_url = format!("{}/{}/play_720p.mp4", BUNNY_STREAM_CDN, video_guid);
-    let embed_url = format!("https://iframe.mediadelivery.net/embed/{}/{}", library_id, video_guid);
+    let embed_url = format!(
+        "https://iframe.mediadelivery.net/embed/{}/{}",
+        library_id, video_guid
+    );
 
     // Track upload in database
     let _ = sqlx::query(
@@ -140,7 +148,7 @@ async fn create_video(
         ON CONFLICT (video_guid) DO UPDATE SET
             status = 'uploading',
             upload_started_at = NOW()
-        "#
+        "#,
     )
     .bind(video_guid)
     .bind(library_id)
@@ -167,43 +175,51 @@ async fn get_video_status(
     if api_key.is_empty() {
         return Err((
             StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"success": false, "error": "Bunny API key not configured"}))
+            Json(json!({"success": false, "error": "Bunny API key not configured"})),
         ));
     }
 
     // Get library ID from database or use default
-    let library_id: i64 = sqlx::query_scalar::<_, i64>(
-        "SELECT library_id FROM bunny_uploads WHERE video_guid = $1"
-    )
-    .bind(&video_guid)
-    .fetch_optional(&state.db.pool)
-    .await
-    .ok()
-    .flatten()
-    .unwrap_or(DEFAULT_LIBRARY_ID);
+    let library_id: i64 =
+        sqlx::query_scalar::<_, i64>("SELECT library_id FROM bunny_uploads WHERE video_guid = $1")
+            .bind(&video_guid)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten()
+            .unwrap_or(DEFAULT_LIBRARY_ID);
 
     // Get video status from Bunny.net
     let client = reqwest::Client::new();
-    let status_url = format!("{}/library/{}/videos/{}", BUNNY_API_BASE, library_id, video_guid);
-    
+    let status_url = format!(
+        "{}/library/{}/videos/{}",
+        BUNNY_API_BASE, library_id, video_guid
+    );
+
     let response = client
         .get(&status_url)
         .header("AccessKey", &api_key)
         .send()
         .await
         .map_err(|e| {
-            (StatusCode::BAD_GATEWAY, Json(json!({"success": false, "error": format!("Bunny API error: {}", e)})))
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"success": false, "error": format!("Bunny API error: {}", e)})),
+            )
         })?;
 
     if !response.status().is_success() {
         return Err((
             StatusCode::NOT_FOUND,
-            Json(json!({"success": false, "error": "Video not found"}))
+            Json(json!({"success": false, "error": "Video not found"})),
         ));
     }
 
     let bunny_video: serde_json::Value = response.json().await.map_err(|e| {
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"success": false, "error": format!("Parse error: {}", e)})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"success": false, "error": format!("Parse error: {}", e)})),
+        )
     })?;
 
     // Status codes: 0=created, 1=uploaded, 2=processing, 3=transcoding, 4=finished, 5=error
@@ -215,11 +231,12 @@ async fn get_video_status(
         3 => "transcoding",
         4 => "ready",
         5 => "failed",
-        _ => "unknown"
+        _ => "unknown",
     };
 
     let duration = bunny_video["length"].as_i64().map(|l| l as i32);
-    let thumbnail_url = bunny_video["thumbnailFileName"].as_str()
+    let thumbnail_url = bunny_video["thumbnailFileName"]
+        .as_str()
         .map(|t| format!("{}/{}/{}", BUNNY_STREAM_CDN, video_guid, t));
 
     // Update database status
@@ -232,7 +249,7 @@ async fn get_video_status(
                 thumbnail_url = $3,
                 upload_completed_at = CASE WHEN $1 = 'ready' THEN NOW() ELSE upload_completed_at END
             WHERE video_guid = $4
-            "#
+            "#,
         )
         .bind(status)
         .bind(duration)
@@ -243,7 +260,10 @@ async fn get_video_status(
     }
 
     let video_url = format!("{}/{}/play_720p.mp4", BUNNY_STREAM_CDN, video_guid);
-    let embed_url = format!("https://iframe.mediadelivery.net/embed/{}/{}", library_id, video_guid);
+    let embed_url = format!(
+        "https://iframe.mediadelivery.net/embed/{}/{}",
+        library_id, video_guid
+    );
 
     Ok(Json(json!({
         "success": true,
@@ -273,17 +293,20 @@ async fn list_uploads(
         .await
         .unwrap_or_default();
 
-    let uploads_json: Vec<serde_json::Value> = uploads.into_iter().map(|u| {
-        json!({
-            "video_guid": u.0,
-            "library_id": u.1,
-            "title": u.2,
-            "status": u.3,
-            "duration": u.4,
-            "thumbnail_url": u.5,
-            "started_at": u.6.to_string()
+    let uploads_json: Vec<serde_json::Value> = uploads
+        .into_iter()
+        .map(|u| {
+            json!({
+                "video_guid": u.0,
+                "library_id": u.1,
+                "title": u.2,
+                "status": u.3,
+                "duration": u.4,
+                "thumbnail_url": u.5,
+                "started_at": u.6.to_string()
+            })
         })
-    }).collect();
+        .collect();
 
     Ok(Json(json!({
         "success": true,

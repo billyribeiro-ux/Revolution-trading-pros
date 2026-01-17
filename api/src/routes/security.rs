@@ -12,10 +12,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::{
-    models::User,
-    AppState,
-};
+use crate::{models::User, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Types
@@ -59,7 +56,7 @@ async fn get_security_events(
     if role != "admin" && role != "super-admin" && role != "super_admin" {
         return Err((
             StatusCode::FORBIDDEN,
-            Json(json!({"error": "Admin access required"}))
+            Json(json!({"error": "Admin access required"})),
         ));
     }
 
@@ -79,7 +76,11 @@ async fn get_security_events(
         count_sql.push_str(" AND event_type = $1");
     }
     if query.severity.is_some() {
-        let param_num = if query.event_type.is_some() { "$2" } else { "$1" };
+        let param_num = if query.event_type.is_some() {
+            "$2"
+        } else {
+            "$1"
+        };
         sql.push_str(&format!(" AND severity = {}", param_num));
         count_sql.push_str(&format!(" AND severity = {}", param_num));
     }
@@ -94,9 +95,29 @@ async fn get_security_events(
     }
 
     sql.push_str(" ORDER BY created_at DESC LIMIT $");
-    sql.push_str(&(1 + [query.event_type.is_some(), query.severity.is_some(), query.user_id.is_some()].iter().filter(|&&x| x).count()).to_string());
+    sql.push_str(
+        &(1 + [
+            query.event_type.is_some(),
+            query.severity.is_some(),
+            query.user_id.is_some(),
+        ]
+        .iter()
+        .filter(|&&x| x)
+        .count())
+        .to_string(),
+    );
     sql.push_str(" OFFSET $");
-    sql.push_str(&(2 + [query.event_type.is_some(), query.severity.is_some(), query.user_id.is_some()].iter().filter(|&&x| x).count()).to_string());
+    sql.push_str(
+        &(2 + [
+            query.event_type.is_some(),
+            query.severity.is_some(),
+            query.user_id.is_some(),
+        ]
+        .iter()
+        .filter(|&&x| x)
+        .count())
+        .to_string(),
+    );
 
     // Build query with parameters
     let mut query_builder = sqlx::query_as::<_, SecurityEvent>(&sql);
@@ -149,7 +170,7 @@ async fn get_security_stats(
     if role != "admin" && role != "super-admin" && role != "super_admin" {
         return Err((
             StatusCode::FORBIDDEN,
-            Json(json!({"error": "Admin access required"}))
+            Json(json!({"error": "Admin access required"})),
         ));
     }
 
@@ -158,10 +179,11 @@ async fn get_security_stats(
         .await
         .unwrap_or((0,));
 
-    let critical_events: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM security_events WHERE severity = 'critical'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let critical_events: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM security_events WHERE severity = 'critical'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     let recent_logins: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM security_events WHERE event_type = 'login_success' AND created_at > NOW() - INTERVAL '24 hours'")
         .fetch_one(&state.db.pool)
@@ -183,6 +205,9 @@ async fn get_security_stats(
 
 pub fn router() -> Router<AppState> {
     Router::new()
-        .route("/events", get(get_security_events).post(get_security_events))
+        .route(
+            "/events",
+            get(get_security_events).post(get_security_events),
+        )
         .route("/stats", get(get_security_stats))
 }

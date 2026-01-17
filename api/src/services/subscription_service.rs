@@ -1,10 +1,10 @@
 //! Subscription Service
 //! ICT 11+ Principal Engineer Implementation
+use chrono::NaiveDateTime;
 use sqlx::PgPool;
 use uuid::Uuid;
-use chrono::NaiveDateTime;
 
-use crate::{utils::errors::ApiError, models::UserSubscriptionWithPlan};
+use crate::{models::UserSubscriptionWithPlan, utils::errors::ApiError};
 
 #[derive(sqlx::FromRow)]
 struct SubscriptionQueryRow {
@@ -35,8 +35,13 @@ impl<'a> SubscriptionService<'a> {
         Self { db }
     }
 
-    pub async fn get_user_subscriptions(&self, user_id: Uuid) -> Result<Vec<UserSubscriptionWithPlan>, ApiError> {
-        let user_id_i64 = user_id.to_string().parse::<i64>()
+    pub async fn get_user_subscriptions(
+        &self,
+        user_id: Uuid,
+    ) -> Result<Vec<UserSubscriptionWithPlan>, ApiError> {
+        let user_id_i64 = user_id
+            .to_string()
+            .parse::<i64>()
             .map_err(|_| ApiError::new(axum::http::StatusCode::BAD_REQUEST, "Invalid user ID"))?;
 
         let subscriptions = sqlx::query_as::<_, SubscriptionQueryRow>(
@@ -62,38 +67,56 @@ impl<'a> SubscriptionService<'a> {
             JOIN membership_plans mp ON um.plan_id = mp.id
             WHERE um.user_id = $1
             ORDER BY um.created_at DESC
-            "#
+            "#,
         )
         .bind(user_id_i64)
         .fetch_all(self.db)
         .await
-        .map_err(|e| ApiError::new(axum::http::StatusCode::INTERNAL_SERVER_ERROR, format!("Database error: {}", e)))?;
+        .map_err(|e| {
+            ApiError::new(
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Database error: {}", e),
+            )
+        })?;
 
-        Ok(subscriptions.into_iter().map(|s| UserSubscriptionWithPlan {
-            id: s.id,
-            user_id: s.user_id,
-            plan_id: s.plan_id,
-            plan_name: s.plan_name,
-            plan_price: s.plan_price,
-            billing_cycle: s.billing_cycle,
-            starts_at: s.starts_at,
-            expires_at: s.expires_at,
-            cancelled_at: s.cancelled_at,
-            status: s.status,
-            payment_provider: s.payment_provider,
-            stripe_subscription_id: s.stripe_subscription_id,
-            current_period_start: s.current_period_start,
-            current_period_end: s.current_period_end,
-            cancel_at_period_end: s.cancel_at_period_end,
-            created_at: s.created_at,
-        }).collect())
+        Ok(subscriptions
+            .into_iter()
+            .map(|s| UserSubscriptionWithPlan {
+                id: s.id,
+                user_id: s.user_id,
+                plan_id: s.plan_id,
+                plan_name: s.plan_name,
+                plan_price: s.plan_price,
+                billing_cycle: s.billing_cycle,
+                starts_at: s.starts_at,
+                expires_at: s.expires_at,
+                cancelled_at: s.cancelled_at,
+                status: s.status,
+                payment_provider: s.payment_provider,
+                stripe_subscription_id: s.stripe_subscription_id,
+                current_period_start: s.current_period_start,
+                current_period_end: s.current_period_end,
+                cancel_at_period_end: s.cancel_at_period_end,
+                created_at: s.created_at,
+            })
+            .collect())
     }
 
-    pub async fn get_user_subscription(&self, user_id: Uuid, subscription_id: Uuid) -> Result<Option<UserSubscriptionWithPlan>, ApiError> {
-        let user_id_i64 = user_id.to_string().parse::<i64>()
+    pub async fn get_user_subscription(
+        &self,
+        user_id: Uuid,
+        subscription_id: Uuid,
+    ) -> Result<Option<UserSubscriptionWithPlan>, ApiError> {
+        let user_id_i64 = user_id
+            .to_string()
+            .parse::<i64>()
             .map_err(|_| ApiError::new(axum::http::StatusCode::BAD_REQUEST, "Invalid user ID"))?;
-        let subscription_id_i64 = subscription_id.to_string().parse::<i64>()
-            .map_err(|_| ApiError::new(axum::http::StatusCode::BAD_REQUEST, "Invalid subscription ID"))?;
+        let subscription_id_i64 = subscription_id.to_string().parse::<i64>().map_err(|_| {
+            ApiError::new(
+                axum::http::StatusCode::BAD_REQUEST,
+                "Invalid subscription ID",
+            )
+        })?;
 
         let subscription = sqlx::query_as::<_, SubscriptionQueryRow>(
             r#"
@@ -117,13 +140,18 @@ impl<'a> SubscriptionService<'a> {
             FROM user_memberships um
             JOIN membership_plans mp ON um.plan_id = mp.id
             WHERE um.id = $1 AND um.user_id = $2
-            "#
+            "#,
         )
         .bind(subscription_id_i64)
         .bind(user_id_i64)
         .fetch_optional(self.db)
         .await
-        .map_err(|e| ApiError::new(axum::http::StatusCode::INTERNAL_SERVER_ERROR, format!("Database error: {}", e)))?;
+        .map_err(|e| {
+            ApiError::new(
+                axum::http::StatusCode::INTERNAL_SERVER_ERROR,
+                format!("Database error: {}", e),
+            )
+        })?;
 
         Ok(subscription.map(|s| UserSubscriptionWithPlan {
             id: s.id,

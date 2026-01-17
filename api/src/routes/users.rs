@@ -38,17 +38,16 @@ async fn get_user(
 async fn list_users(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<UserResponse>>, (StatusCode, Json<serde_json::Value>)> {
-    let users: Vec<crate::models::User> = sqlx::query_as(
-        "SELECT * FROM users ORDER BY created_at DESC LIMIT 100"
-    )
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    let users: Vec<crate::models::User> =
+        sqlx::query_as("SELECT * FROM users ORDER BY created_at DESC LIMIT 100")
+            .fetch_all(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(users.into_iter().map(|u| u.into()).collect()))
 }

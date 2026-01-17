@@ -44,12 +44,9 @@ async fn list_watchlist(
     let offset = (page - 1) * per_page;
 
     // Build query
-    let mut sql = String::from(
-        "SELECT * FROM watchlist_entries WHERE deleted_at IS NULL"
-    );
-    let mut count_sql = String::from(
-        "SELECT COUNT(*) FROM watchlist_entries WHERE deleted_at IS NULL"
-    );
+    let mut sql = String::from("SELECT * FROM watchlist_entries WHERE deleted_at IS NULL");
+    let mut count_sql =
+        String::from("SELECT COUNT(*) FROM watchlist_entries WHERE deleted_at IS NULL");
 
     // Filter by status
     if let Some(status) = &query.status {
@@ -85,17 +82,14 @@ async fn list_watchlist(
         .fetch_all(&state.db.pool)
         .await;
 
-    let total_result: Result<(i64,), _> = sqlx::query_as(&count_sql)
-        .fetch_one(&state.db.pool)
-        .await;
+    let total_result: Result<(i64,), _> =
+        sqlx::query_as(&count_sql).fetch_one(&state.db.pool).await;
 
     match (entries_result, total_result) {
         (Ok(entries), Ok((total,))) => {
             // Convert to response format and add navigation
-            let mut responses: Vec<WatchlistResponse> = entries
-                .iter()
-                .map(|e| e.to_response())
-                .collect();
+            let mut responses: Vec<WatchlistResponse> =
+                entries.iter().map(|e| e.to_response()).collect();
 
             // Add previous/next navigation
             for (i, response) in responses.iter_mut().enumerate() {
@@ -118,7 +112,12 @@ async fn list_watchlist(
 
             let last_page = (total as f64 / per_page as f64).ceil() as i64;
 
-            info!("Listed {} watchlist entries (page {}/{})", responses.len(), page, last_page);
+            info!(
+                "Listed {} watchlist entries (page {}/{})",
+                responses.len(),
+                page,
+                last_page
+            );
 
             Ok(Json(json!({
                 "success": true,
@@ -135,7 +134,7 @@ async fn list_watchlist(
             error!("Failed to fetch watchlist entries: {}", e);
             Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"success": false, "message": "Failed to fetch watchlist entries"}))
+                Json(json!({"success": false, "message": "Failed to fetch watchlist entries"})),
             ))
         }
     }
@@ -150,7 +149,7 @@ async fn get_watchlist(
     Path(slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let result = sqlx::query_as::<_, WatchlistEntry>(
-        "SELECT * FROM watchlist_entries WHERE slug = $1 AND deleted_at IS NULL"
+        "SELECT * FROM watchlist_entries WHERE slug = $1 AND deleted_at IS NULL",
     )
     .bind(&slug)
     .fetch_optional(&state.db.pool)
@@ -168,14 +167,14 @@ async fn get_watchlist(
             error!("Watchlist entry not found: {}", slug);
             Err((
                 StatusCode::NOT_FOUND,
-                Json(json!({"success": false, "message": "Watchlist entry not found"}))
+                Json(json!({"success": false, "message": "Watchlist entry not found"})),
             ))
         }
         Err(e) => {
             error!("Database error fetching watchlist {}: {}", slug, e);
             Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"success": false, "message": "Failed to fetch watchlist entry"}))
+                Json(json!({"success": false, "message": "Failed to fetch watchlist entry"})),
             ))
         }
     }
@@ -195,7 +194,9 @@ async fn create_watchlist(
         Err(_) => {
             return Err((
                 StatusCode::BAD_REQUEST,
-                Json(json!({"success": false, "message": "Invalid date format for weekOf. Expected YYYY-MM-DD"}))
+                Json(
+                    json!({"success": false, "message": "Invalid date format for weekOf. Expected YYYY-MM-DD"}),
+                ),
             ));
         }
     };
@@ -214,18 +215,21 @@ async fn create_watchlist(
     let subtitle = format!("Week of {}", date_posted);
 
     // Default rooms to all if not specified
-    let rooms = body.rooms.clone().unwrap_or_else(|| vec![
-        "day-trading-room".to_string(),
-        "swing-trading-room".to_string(),
-        "small-account-mentorship".to_string(),
-        "explosive-swings".to_string(),
-        "spx-profit-pulse".to_string(),
-        "high-octane-scanner".to_string(),
-    ]);
+    let rooms = body.rooms.clone().unwrap_or_else(|| {
+        vec![
+            "day-trading-room".to_string(),
+            "swing-trading-room".to_string(),
+            "small-account-mentorship".to_string(),
+            "explosive-swings".to_string(),
+            "spx-profit-pulse".to_string(),
+            "high-octane-scanner".to_string(),
+        ]
+    });
     let rooms_json = serde_json::to_value(&rooms).unwrap();
 
     // Convert watchlist_dates to JSON
-    let watchlist_dates_json = body.watchlist_dates
+    let watchlist_dates_json = body
+        .watchlist_dates
         .as_ref()
         .map(|dates| serde_json::to_value(dates).unwrap());
 
@@ -240,7 +244,7 @@ async fn create_watchlist(
             description, status, rooms
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
         RETURNING *
-        "#
+        "#,
     )
     .bind(&slug)
     .bind(&body.title)
@@ -254,7 +258,11 @@ async fn create_watchlist(
     .bind(&body.title)
     .bind(body.spreadsheet_src.as_ref().unwrap_or(&String::new()))
     .bind(&watchlist_dates_json)
-    .bind(body.description.as_ref().unwrap_or(&format!("Week starting on {}.", date_posted)))
+    .bind(
+        body.description
+            .as_ref()
+            .unwrap_or(&format!("Week starting on {}.", date_posted)),
+    )
     .bind(body.status.as_ref().unwrap_or(&"draft".to_string()))
     .bind(&rooms_json)
     .fetch_one(&state.db.pool)
@@ -273,13 +281,17 @@ async fn create_watchlist(
                 error!("Duplicate slug: {}", slug);
                 Err((
                     StatusCode::CONFLICT,
-                    Json(json!({"success": false, "message": "A watchlist entry with this slug already exists"}))
+                    Json(
+                        json!({"success": false, "message": "A watchlist entry with this slug already exists"}),
+                    ),
                 ))
             } else {
                 error!("Failed to create watchlist entry: {}", e);
                 Err((
                     StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"success": false, "message": format!("Failed to create watchlist entry: {}", e)}))
+                    Json(
+                        json!({"success": false, "message": format!("Failed to create watchlist entry: {}", e)}),
+                    ),
                 ))
             }
         }
@@ -319,7 +331,7 @@ async fn update_watchlist(
     if updates.is_empty() {
         return Err((
             StatusCode::BAD_REQUEST,
-            Json(json!({"success": false, "message": "No fields to update"}))
+            Json(json!({"success": false, "message": "No fields to update"})),
         ));
     }
 
@@ -333,7 +345,7 @@ async fn update_watchlist(
 
     // Build query with bindings
     let mut query = sqlx::query_as::<_, WatchlistEntry>(&query_str);
-    
+
     if let Some(title) = &body.title {
         query = query.bind(title);
     }
@@ -362,14 +374,14 @@ async fn update_watchlist(
             error!("Watchlist entry not found for update: {}", slug);
             Err((
                 StatusCode::NOT_FOUND,
-                Json(json!({"success": false, "message": "Watchlist entry not found"}))
+                Json(json!({"success": false, "message": "Watchlist entry not found"})),
             ))
         }
         Err(e) => {
             error!("Failed to update watchlist entry {}: {}", slug, e);
             Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"success": false, "message": "Failed to update watchlist entry"}))
+                Json(json!({"success": false, "message": "Failed to update watchlist entry"})),
             ))
         }
     }
@@ -384,7 +396,7 @@ async fn delete_watchlist(
     Path(slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let result = sqlx::query(
-        "UPDATE watchlist_entries SET deleted_at = NOW() WHERE slug = $1 AND deleted_at IS NULL"
+        "UPDATE watchlist_entries SET deleted_at = NOW() WHERE slug = $1 AND deleted_at IS NULL",
     )
     .bind(&slug)
     .execute(&state.db.pool)
@@ -402,14 +414,14 @@ async fn delete_watchlist(
             error!("Watchlist entry not found for deletion: {}", slug);
             Err((
                 StatusCode::NOT_FOUND,
-                Json(json!({"success": false, "message": "Watchlist entry not found"}))
+                Json(json!({"success": false, "message": "Watchlist entry not found"})),
             ))
         }
         Err(e) => {
             error!("Failed to delete watchlist entry {}: {}", slug, e);
             Err((
                 StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"success": false, "message": "Failed to delete watchlist entry"}))
+                Json(json!({"success": false, "message": "Failed to delete watchlist entry"})),
             ))
         }
     }

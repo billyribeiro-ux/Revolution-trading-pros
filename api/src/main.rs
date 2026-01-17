@@ -16,15 +16,12 @@ mod utils;
 
 use axum::{
     http::{header, HeaderName, HeaderValue, Method},
-    middleware as axum_middleware,
-    Router,
+    middleware as axum_middleware, Router,
 };
 use std::net::SocketAddr;
 use tower_http::{
-    compression::CompressionLayer,
-    cors::CorsLayer,
+    compression::CompressionLayer, cors::CorsLayer, set_header::SetResponseHeaderLayer,
     trace::TraceLayer,
-    set_header::SetResponseHeaderLayer,
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
@@ -72,7 +69,10 @@ async fn main() -> anyhow::Result<()> {
         match db.migrate().await {
             Ok(_) => tracing::info!("✅ Migrations completed successfully"),
             Err(e) => {
-                tracing::warn!("Migration error (may be expected with existing schema): {}", e);
+                tracing::warn!(
+                    "Migration error (may be expected with existing schema): {}",
+                    e
+                );
                 tracing::info!("Continuing without migrations - using existing schema");
             }
         }
@@ -116,16 +116,14 @@ async fn main() -> anyhow::Result<()> {
     let parsed_origins: Vec<HeaderValue> = config
         .cors_origins
         .iter()
-        .filter_map(|o| {
-            match o.parse::<HeaderValue>() {
-                Ok(hv) => {
-                    tracing::debug!("CORS origin parsed successfully: {}", o);
-                    Some(hv)
-                }
-                Err(e) => {
-                    tracing::error!("Failed to parse CORS origin '{}': {}", o, e);
-                    None
-                }
+        .filter_map(|o| match o.parse::<HeaderValue>() {
+            Ok(hv) => {
+                tracing::debug!("CORS origin parsed successfully: {}", o);
+                Some(hv)
+            }
+            Err(e) => {
+                tracing::error!("Failed to parse CORS origin '{}': {}", o, e);
+                None
             }
         })
         .collect();
@@ -134,7 +132,14 @@ async fn main() -> anyhow::Result<()> {
 
     let cors = CorsLayer::new()
         .allow_origin(parsed_origins)
-        .allow_methods([Method::GET, Method::POST, Method::PUT, Method::DELETE, Method::PATCH, Method::OPTIONS])
+        .allow_methods([
+            Method::GET,
+            Method::POST,
+            Method::PUT,
+            Method::DELETE,
+            Method::PATCH,
+            Method::OPTIONS,
+        ])
         .allow_headers([
             header::CONTENT_TYPE,
             header::AUTHORIZATION,
@@ -203,9 +208,9 @@ async fn main() -> anyhow::Result<()> {
     // ICT 11+ ENHANCEMENT: Swagger UI for API documentation
     use utoipa::OpenApi;
     use utoipa_swagger_ui::SwaggerUi;
-    
-    let swagger_router = SwaggerUi::new("/swagger-ui")
-        .url("/api-docs/openapi.json", docs::ApiDoc::openapi());
+
+    let swagger_router =
+        SwaggerUi::new("/swagger-ui").url("/api-docs/openapi.json", docs::ApiDoc::openapi());
 
     // Build router with security layers
     // ICT 11+ Enhancement: Add metrics middleware to track all requests
@@ -216,7 +221,10 @@ async fn main() -> anyhow::Result<()> {
         .merge(routes::health::router())
         .nest("/api", routes::api_router())
         .merge(swagger_router)
-        .nest("/monitoring", monitoring::router().with_state(metrics.clone()))
+        .nest(
+            "/monitoring",
+            monitoring::router().with_state(metrics.clone()),
+        )
         .layer(axum_middleware::from_fn_with_state(
             metrics.clone(),
             monitoring::metrics_middleware,
@@ -231,8 +239,16 @@ async fn main() -> anyhow::Result<()> {
     // Start server
     let addr = SocketAddr::from(([0, 0, 0, 0], config.port));
     tracing::info!("Listening on {}", addr);
-    tracing::info!("📚 API Documentation: http://{}:{}/swagger-ui", addr.ip(), addr.port());
-    tracing::info!("📊 Metrics: http://{}:{}/monitoring/metrics", addr.ip(), addr.port());
+    tracing::info!(
+        "📚 API Documentation: http://{}:{}/swagger-ui",
+        addr.ip(),
+        addr.port()
+    );
+    tracing::info!(
+        "📊 Metrics: http://{}:{}/monitoring/metrics",
+        addr.ip(),
+        addr.port()
+    );
 
     let listener = tokio::net::TcpListener::bind(addr).await?;
     axum::serve(listener, app).await?;

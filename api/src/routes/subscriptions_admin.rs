@@ -6,16 +6,13 @@
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    routing::{get, post, put, delete},
+    routing::{delete, get, post, put},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::{
-    middleware::admin::AdminUser,
-    AppState,
-};
+use crate::{middleware::admin::AdminUser, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DATA TYPES - SUBSCRIPTIONS
@@ -134,7 +131,7 @@ async fn list_subscriptions(
           AND ($3::bigint IS NULL OR plan_id = $3)
         ORDER BY created_at DESC
         LIMIT $4 OFFSET $5
-        "#
+        "#,
     )
     .bind(query.status.as_deref())
     .bind(query.user_id)
@@ -145,7 +142,10 @@ async fn list_subscriptions(
     .await
     .map_err(|e| {
         tracing::error!("Database error in list_subscriptions: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?;
 
     let total: (i64,) = sqlx::query_as(
@@ -154,7 +154,7 @@ async fn list_subscriptions(
         WHERE ($1::text IS NULL OR status = $1)
           AND ($2::bigint IS NULL OR user_id = $2)
           AND ($3::bigint IS NULL OR plan_id = $3)
-        "#
+        "#,
     )
     .bind(query.status.as_deref())
     .bind(query.user_id)
@@ -185,13 +185,23 @@ async fn get_subscription(
         SELECT id, user_id, plan_id, status, starts_at, expires_at, cancelled_at,
                payment_provider, stripe_subscription_id, stripe_customer_id, created_at, updated_at
         FROM user_memberships WHERE id = $1
-        "#
+        "#,
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Subscription not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Subscription not found"})),
+        )
+    })?;
 
     Ok(Json(json!({"data": subscription})))
 }
@@ -233,7 +243,9 @@ async fn create_subscription(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;
 
-    Ok(Json(json!({"data": subscription, "message": "Subscription created successfully"})))
+    Ok(Json(
+        json!({"data": subscription, "message": "Subscription created successfully"}),
+    ))
 }
 
 /// Update subscription (admin)
@@ -274,7 +286,9 @@ async fn update_subscription(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Subscription not found"}))))?;
 
-    Ok(Json(json!({"data": subscription, "message": "Subscription updated successfully"})))
+    Ok(Json(
+        json!({"data": subscription, "message": "Subscription updated successfully"}),
+    ))
 }
 
 /// Delete subscription (admin)
@@ -295,13 +309,23 @@ async fn delete_subscription(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Subscription not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Subscription not found"})),
+        ));
     }
 
-    Ok(Json(json!({"message": "Subscription deleted successfully"})))
+    Ok(Json(
+        json!({"message": "Subscription deleted successfully"}),
+    ))
 }
 
 /// Cancel subscription (admin)
@@ -326,7 +350,9 @@ async fn cancel_subscription(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Subscription not found"}))))?;
 
-    Ok(Json(json!({"data": subscription, "message": "Subscription cancelled"})))
+    Ok(Json(
+        json!({"data": subscription, "message": "Subscription cancelled"}),
+    ))
 }
 
 /// Pause subscription (admin)
@@ -351,7 +377,9 @@ async fn pause_subscription(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Subscription not found"}))))?;
 
-    Ok(Json(json!({"data": subscription, "message": "Subscription paused"})))
+    Ok(Json(
+        json!({"data": subscription, "message": "Subscription paused"}),
+    ))
 }
 
 /// Resume subscription (admin)
@@ -376,7 +404,9 @@ async fn resume_subscription(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Subscription not found"}))))?;
 
-    Ok(Json(json!({"data": subscription, "message": "Subscription resumed"})))
+    Ok(Json(
+        json!({"data": subscription, "message": "Subscription resumed"}),
+    ))
 }
 
 /// Renew subscription (admin)
@@ -405,7 +435,9 @@ async fn renew_subscription(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Subscription not found"}))))?;
 
-    Ok(Json(json!({"data": subscription, "message": "Subscription renewed"})))
+    Ok(Json(
+        json!({"data": subscription, "message": "Subscription renewed"}),
+    ))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
@@ -430,7 +462,7 @@ async fn list_plans(
         WHERE ($1::boolean IS NULL OR is_active = $1)
         ORDER BY price ASC
         LIMIT $2 OFFSET $3
-        "#
+        "#,
     )
     .bind(query.is_active)
     .bind(per_page)
@@ -439,11 +471,14 @@ async fn list_plans(
     .await
     .map_err(|e| {
         tracing::error!("Database error in list_plans: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?;
 
     let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM membership_plans WHERE ($1::boolean IS NULL OR is_active = $1)"
+        "SELECT COUNT(*) FROM membership_plans WHERE ($1::boolean IS NULL OR is_active = $1)",
     )
     .bind(query.is_active)
     .fetch_one(&state.db.pool)
@@ -472,13 +507,23 @@ async fn get_plan(
         SELECT id, name, slug, description, price, billing_cycle, is_active,
                stripe_price_id, features, trial_days, created_at, updated_at
         FROM membership_plans WHERE id = $1
-        "#
+        "#,
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Plan not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Plan not found"})),
+        )
+    })?;
 
     Ok(Json(json!({"data": plan})))
 }
@@ -523,7 +568,9 @@ async fn create_plan(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;
 
-    Ok(Json(json!({"data": plan, "message": "Plan created successfully"})))
+    Ok(Json(
+        json!({"data": plan, "message": "Plan created successfully"}),
+    ))
 }
 
 /// Update subscription plan (admin)
@@ -572,7 +619,9 @@ async fn update_plan(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Plan not found"}))))?;
 
-    Ok(Json(json!({"data": plan, "message": "Plan updated successfully"})))
+    Ok(Json(
+        json!({"data": plan, "message": "Plan updated successfully"}),
+    ))
 }
 
 /// Delete subscription plan (admin)
@@ -593,10 +642,18 @@ async fn delete_plan(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Plan not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Plan not found"})),
+        ));
     }
 
     Ok(Json(json!({"message": "Plan deleted successfully"})))
@@ -612,15 +669,17 @@ async fn plan_stats(
         .await
         .unwrap_or((0,));
 
-    let active_plans: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM membership_plans WHERE is_active = true")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let active_plans: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM membership_plans WHERE is_active = true")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
-    let total_subscriptions: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE status = 'active'")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total_subscriptions: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM user_memberships WHERE status = 'active'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     Ok(Json(json!({
         "data": {
@@ -639,7 +698,12 @@ async fn plan_stats(
 pub fn subscriptions_router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_subscriptions).post(create_subscription))
-        .route("/:id", get(get_subscription).put(update_subscription).delete(delete_subscription))
+        .route(
+            "/:id",
+            get(get_subscription)
+                .put(update_subscription)
+                .delete(delete_subscription),
+        )
         .route("/:id/cancel", post(cancel_subscription))
         .route("/:id/pause", post(pause_subscription))
         .route("/:id/resume", post(resume_subscription))

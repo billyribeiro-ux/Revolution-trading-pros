@@ -10,10 +10,7 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{
-    models::User,
-    AppState,
-};
+use crate::{models::User, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // CART
@@ -68,7 +65,10 @@ async fn create_checkout(
     Json(input): Json<CheckoutRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     if input.items.is_empty() {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Cart is empty"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Cart is empty"})),
+        ));
     }
 
     let mut line_items = Vec::new();
@@ -78,13 +78,23 @@ async fn create_checkout(
     for item in &input.items {
         if let Some(product_id) = item.product_id {
             let product: ProductPrice = sqlx::query_as(
-                "SELECT id, name, price FROM products WHERE id = $1 AND is_active = true"
+                "SELECT id, name, price FROM products WHERE id = $1 AND is_active = true",
             )
             .bind(product_id)
             .fetch_optional(&state.db.pool)
             .await
-            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-            .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": format!("Product {} not found", product_id)}))))?;
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": format!("Product {} not found", product_id)})),
+                )
+            })?;
 
             let qty = item.quantity.unwrap_or(1);
             let item_total = product.price * qty as f64;
@@ -102,13 +112,23 @@ async fn create_checkout(
 
         if let Some(plan_id) = item.plan_id {
             let plan: PlanPrice = sqlx::query_as(
-                "SELECT id, name, price FROM membership_plans WHERE id = $1 AND is_active = true"
+                "SELECT id, name, price FROM membership_plans WHERE id = $1 AND is_active = true",
             )
             .bind(plan_id)
             .fetch_optional(&state.db.pool)
             .await
-            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-            .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": format!("Plan {} not found", plan_id)}))))?;
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": format!("Plan {} not found", plan_id)})),
+                )
+            })?;
 
             subtotal += plan.price;
 
@@ -172,7 +192,11 @@ async fn create_checkout(
     let total = subtotal - discount + tax;
 
     // Generate order number
-    let order_number = format!("ORD-{}-{}", chrono::Utc::now().format("%Y%m%d"), uuid::Uuid::new_v4().to_string()[..8].to_uppercase());
+    let order_number = format!(
+        "ORD-{}-{}",
+        chrono::Utc::now().format("%Y%m%d"),
+        uuid::Uuid::new_v4().to_string()[..8].to_uppercase()
+    );
 
     // Create order in database
     #[derive(sqlx::FromRow)]
@@ -222,8 +246,12 @@ async fn create_checkout(
 
     // TODO: Create Stripe checkout session for payment
     // For now, return order details
-    let success_url = input.success_url.unwrap_or_else(|| "/checkout/success".to_string());
-    let cancel_url = input.cancel_url.unwrap_or_else(|| "/checkout/cancel".to_string());
+    let success_url = input
+        .success_url
+        .unwrap_or_else(|| "/checkout/success".to_string());
+    let cancel_url = input
+        .cancel_url
+        .unwrap_or_else(|| "/checkout/cancel".to_string());
 
     Ok(Json(json!({
         "order_id": order.id,

@@ -1,13 +1,12 @@
 //! Search routes
 
+use crate::AppState;
 use axum::{
-    Router,
-    routing::get,
     extract::{Query, State},
-    Json,
+    routing::get,
+    Json, Router,
 };
 use serde::{Deserialize, Serialize};
-use crate::AppState;
 
 /// Search query parameters
 #[derive(Debug, Deserialize)]
@@ -60,7 +59,11 @@ async fn search_courses(
     State(state): State<AppState>,
     Query(params): Query<SearchQuery>,
 ) -> Json<serde_json::Value> {
-    let result = state.services.search.search_courses(&params.q, params.limit).await;
+    let result = state
+        .services
+        .search
+        .search_courses(&params.q, params.limit)
+        .await;
 
     match result {
         Ok(courses) => Json(serde_json::json!({
@@ -80,7 +83,11 @@ async fn search_posts(
     State(state): State<AppState>,
     Query(params): Query<SearchQuery>,
 ) -> Json<serde_json::Value> {
-    let result = state.services.search.search_posts(&params.q, params.limit).await;
+    let result = state
+        .services
+        .search
+        .search_posts(&params.q, params.limit)
+        .await;
 
     match result {
         Ok(posts) => Json(serde_json::json!({

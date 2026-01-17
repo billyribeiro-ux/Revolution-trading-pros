@@ -99,7 +99,12 @@ impl RedisService {
     }
 
     /// Check rate limit
-    pub async fn check_rate_limit(&self, key: &str, max_requests: i64, window_seconds: u64) -> Result<bool> {
+    pub async fn check_rate_limit(
+        &self,
+        key: &str,
+        max_requests: i64,
+        window_seconds: u64,
+    ) -> Result<bool> {
         let count = self.incr(key, window_seconds).await?;
         Ok(count <= max_requests)
     }
@@ -136,7 +141,9 @@ impl RedisService {
         let user_sessions_key = format!("user_sessions:{}", user_id);
         let mut conn = self.conn.clone();
         let _: () = conn.sadd(&user_sessions_key, session_id).await?;
-        let _: () = conn.expire(&user_sessions_key, SESSION_TTL_SECONDS as i64).await?;
+        let _: () = conn
+            .expire(&user_sessions_key, SESSION_TTL_SECONDS as i64)
+            .await?;
 
         tracing::info!(
             target: "security",
@@ -155,7 +162,7 @@ impl RedisService {
         match self.get(&key).await? {
             Some(value) => {
                 let session: SessionData = serde_json::from_str(&value)?;
-                
+
                 // Check if session is still valid
                 if !session.is_valid {
                     return Ok(None);
@@ -193,11 +200,11 @@ impl RedisService {
     /// Invalidate a specific session (logout)
     pub async fn invalidate_session(&self, session_id: &str) -> Result<()> {
         let key = format!("{}{}", SESSION_PREFIX, session_id);
-        
+
         // Get session to find user_id
         if let Some(value) = self.get(&key).await? {
             let session: SessionData = serde_json::from_str(&value)?;
-            
+
             // Remove from user's session set
             let user_sessions_key = format!("user_sessions:{}", session.user_id);
             let mut conn = self.conn.clone();
@@ -220,7 +227,7 @@ impl RedisService {
     pub async fn invalidate_all_user_sessions(&self, user_id: i64) -> Result<u32> {
         let user_sessions_key = format!("user_sessions:{}", user_id);
         let mut conn = self.conn.clone();
-        
+
         let session_ids: Vec<String> = conn.smembers(&user_sessions_key).await?;
         let count = session_ids.len() as u32;
 
@@ -284,7 +291,12 @@ impl RedisService {
             let mut new_attempts = attempts.clone();
             new_attempts.locked_until = Some(now + LOCKOUT_DURATION_SECONDS);
             let value = serde_json::to_string(&new_attempts)?;
-            self.set(&key, &value, Some(LOGIN_WINDOW_SECONDS + LOCKOUT_DURATION_SECONDS as u64)).await?;
+            self.set(
+                &key,
+                &value,
+                Some(LOGIN_WINDOW_SECONDS + LOCKOUT_DURATION_SECONDS as u64),
+            )
+            .await?;
 
             tracing::warn!(
                 target: "security",
@@ -304,10 +316,10 @@ impl RedisService {
 
         // Calculate delay based on attempt count (progressive delay)
         let delay = match attempts.count {
-            0..=3 => 0,      // No delay for first 3 attempts
-            4..=6 => 5,      // 5 second delay
-            7..=9 => 30,     // 30 second delay
-            _ => 60,         // 60 second delay
+            0..=3 => 0,  // No delay for first 3 attempts
+            4..=6 => 5,  // 5 second delay
+            7..=9 => 30, // 30 second delay
+            _ => 60,     // 60 second delay
         };
 
         if delay > 0 && attempts.last_attempt > 0 {
@@ -390,10 +402,15 @@ impl RedisService {
     // ═══════════════════════════════════════════════════════════════════════════
 
     /// Check global rate limit for an IP address
-    pub async fn check_ip_rate_limit(&self, ip: &str, max_requests: i64, window_seconds: u64) -> Result<RateLimitResult> {
+    pub async fn check_ip_rate_limit(
+        &self,
+        ip: &str,
+        max_requests: i64,
+        window_seconds: u64,
+    ) -> Result<RateLimitResult> {
         let key = format!("{}ip:{}", RATE_LIMIT_PREFIX, ip);
         let count = self.incr(&key, window_seconds).await?;
-        
+
         let remaining = (max_requests - count).max(0) as i32;
         let allowed = count <= max_requests;
 
@@ -411,7 +428,11 @@ impl RedisService {
         Ok(RateLimitResult {
             allowed,
             remaining,
-            retry_after: if allowed { None } else { Some(window_seconds as i64) },
+            retry_after: if allowed {
+                None
+            } else {
+                Some(window_seconds as i64)
+            },
             locked: false,
         })
     }

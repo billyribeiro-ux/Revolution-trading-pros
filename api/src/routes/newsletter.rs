@@ -10,10 +10,7 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{
-    models::User,
-    AppState,
-};
+use crate::{models::User, AppState};
 
 /// Newsletter subscriber row
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
@@ -70,25 +67,33 @@ async fn subscribe(
     Json(input): Json<SubscribeRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Check if already subscribed
-    let existing: Option<SubscriberRow> = sqlx::query_as(
-        "SELECT * FROM newsletter_subscribers WHERE email = $1"
-    )
-    .bind(&input.email)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let existing: Option<SubscriberRow> =
+        sqlx::query_as("SELECT * FROM newsletter_subscribers WHERE email = $1")
+            .bind(&input.email)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     if let Some(subscriber) = existing {
         if subscriber.status == "confirmed" {
-            return Ok(Json(json!({"message": "Already subscribed", "status": "confirmed"})));
+            return Ok(Json(
+                json!({"message": "Already subscribed", "status": "confirmed"}),
+            ));
         }
         // Resend confirmation for pending
-        return Ok(Json(json!({"message": "Confirmation email resent", "status": "pending"})));
+        return Ok(Json(
+            json!({"message": "Confirmation email resent", "status": "pending"}),
+        ));
     }
 
     // Create new subscriber
     let tags = input.tags.map(|t| serde_json::to_value(t).ok()).flatten();
-    
+
     let subscriber: SubscriberRow = sqlx::query_as(
         r#"
         INSERT INTO newsletter_subscribers (email, name, status, source, tags, created_at, updated_at)
@@ -127,7 +132,10 @@ async fn confirm(
     // In production, token would be a signed JWT or hash
     // For now, treat token as subscriber ID
     let subscriber_id: i64 = query.token.parse().map_err(|_| {
-        (StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid token"})))
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid token"})),
+        )
     })?;
 
     let result = sqlx::query(
@@ -139,10 +147,15 @@ async fn confirm(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Invalid or expired token"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Invalid or expired token"})),
+        ));
     }
 
-    Ok(Json(json!({"message": "Subscription confirmed successfully"})))
+    Ok(Json(
+        json!({"message": "Subscription confirmed successfully"}),
+    ))
 }
 
 /// Unsubscribe
@@ -151,7 +164,10 @@ async fn unsubscribe(
     Query(query): Query<UnsubscribeQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let subscriber_id: i64 = query.token.parse().map_err(|_| {
-        (StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid token"})))
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid token"})),
+        )
     })?;
 
     let result = sqlx::query(
@@ -163,7 +179,10 @@ async fn unsubscribe(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Subscriber not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Subscriber not found"})),
+        ));
     }
 
     Ok(Json(json!({"message": "Successfully unsubscribed"})))
@@ -188,7 +207,10 @@ async fn list_subscribers(
     }
 
     if let Some(ref search) = query.search {
-        conditions.push(format!("(email ILIKE '%{}%' OR name ILIKE '%{}%')", search, search));
+        conditions.push(format!(
+            "(email ILIKE '%{}%' OR name ILIKE '%{}%')",
+            search, search
+        ));
     }
 
     let where_clause = conditions.join(" AND ");
@@ -197,17 +219,30 @@ async fn list_subscribers(
         "SELECT * FROM newsletter_subscribers WHERE {} ORDER BY created_at DESC LIMIT {} OFFSET {}",
         where_clause, per_page, offset
     );
-    let count_sql = format!("SELECT COUNT(*) FROM newsletter_subscribers WHERE {}", where_clause);
+    let count_sql = format!(
+        "SELECT COUNT(*) FROM newsletter_subscribers WHERE {}",
+        where_clause
+    );
 
     let subscribers: Vec<SubscriberRow> = sqlx::query_as(&sql)
         .fetch_all(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     let total: (i64,) = sqlx::query_as(&count_sql)
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({
         "data": subscribers,
@@ -230,22 +265,45 @@ async fn get_stats(
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers")
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
-    let confirmed: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'confirmed'")
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let confirmed: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'confirmed'")
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
-    let pending: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'pending'")
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let pending: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'pending'")
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
-    let unsubscribed: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'unsubscribed'")
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let unsubscribed: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM newsletter_subscribers WHERE status = 'unsubscribed'")
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(json!({
         "total": total.0,

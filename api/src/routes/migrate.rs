@@ -3,12 +3,7 @@
 // ICT 11+ Pattern: Admin-only endpoint to run migrations remotely
 // ═══════════════════════════════════════════════════════════════════════════
 
-use axum::{
-    extract::State,
-    http::StatusCode,
-    routing::post,
-    Json, Router,
-};
+use axum::{extract::State, http::StatusCode, routing::post, Json, Router};
 use serde_json::json;
 
 use crate::{middleware::admin::AdminUser, AppState};
@@ -31,10 +26,7 @@ async fn run_schedule_migration(
     let migration_sql = include_str!("../../migrations/013_trading_room_schedules.sql");
 
     // Execute the migration
-    match sqlx::raw_sql(migration_sql)
-        .execute(&state.db.pool)
-        .await
-    {
+    match sqlx::raw_sql(migration_sql).execute(&state.db.pool).await {
         Ok(_) => {
             tracing::info!("Schedule migration completed successfully");
             Ok(Json(json!({

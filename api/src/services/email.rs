@@ -69,7 +69,7 @@ impl EmailService {
         text_body: Option<&str>,
     ) -> Result<()> {
         let from = format!("{} <{}>", self.from_name, self.from_email);
-        
+
         let email = PostmarkEmail {
             from,
             to: to.to_string(),
@@ -79,7 +79,8 @@ impl EmailService {
             message_stream: "outbound".to_string(),
         };
 
-        let response = self.client
+        let response = self
+            .client
             .post("https://api.postmarkapp.com/email")
             .header("Accept", "application/json")
             .header("Content-Type", "application/json")
@@ -89,7 +90,10 @@ impl EmailService {
             .await?;
 
         if !response.status().is_success() {
-            let error_text = response.text().await.unwrap_or_else(|_| "Unknown error".to_string());
+            let error_text = response
+                .text()
+                .await
+                .unwrap_or_else(|_| "Unknown error".to_string());
             tracing::error!("Postmark API error: {}", error_text);
             return Err(anyhow::anyhow!("Failed to send email: {}", error_text));
         }
@@ -101,9 +105,9 @@ impl EmailService {
     /// Send email verification email
     pub async fn send_verification_email(&self, to: &str, name: &str, token: &str) -> Result<()> {
         let verification_url = format!("{}/verify-email?token={}", self.app_url, token);
-        
+
         let subject = "Verify Your Email - Revolution Trading Pros";
-        
+
         let html = Self::email_template(
             "Verify Your Email",
             &format!(
@@ -160,7 +164,7 @@ impl EmailService {
     pub async fn send_welcome_email(&self, to: &str, name: &str) -> Result<()> {
         let subject = "Welcome to Revolution Trading Pros! 🎉";
         let dashboard_url = format!("{}/dashboard", self.app_url);
-        
+
         let html = Self::email_template(
             "Welcome to the Revolution!",
             &format!(
@@ -221,14 +225,15 @@ impl EmailService {
 
     /// Send password reset email
     pub async fn send_password_reset(&self, to: &str, name: &str, token: &str) -> Result<()> {
-        let reset_url = format!("{}/reset-password?token={}&email={}", 
-            self.app_url, 
+        let reset_url = format!(
+            "{}/reset-password?token={}&email={}",
+            self.app_url,
             token,
             urlencoding::encode(to)
         );
-        
+
         let subject = "Reset Your Password - Revolution Trading Pros";
-        
+
         let html = Self::email_template(
             "Reset Your Password",
             &format!(
@@ -319,8 +324,7 @@ impl EmailService {
                     If you have any questions about your order, please contact our support team.
                 </p>
                 "#,
-                order_number,
-                orders_url
+                order_number, orders_url
             ),
         );
 

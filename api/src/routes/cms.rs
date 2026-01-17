@@ -13,7 +13,7 @@
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    routing::{get, post, put, delete},
+    routing::{delete, get, post, put},
     Json, Router,
 };
 use chrono::{DateTime, Utc};
@@ -24,8 +24,8 @@ use uuid::Uuid;
 use crate::{
     models::User,
     services::cms::{
-        self, AuditContext, AuditLog, AuditLogQuery, ContentTranslation, ContentVersion,
-        Locale, PreviewToken, ScheduledContent, Webhook, WorkflowStatus,
+        self, AuditContext, AuditLog, AuditLogQuery, ContentTranslation, ContentVersion, Locale,
+        PreviewToken, ScheduledContent, Webhook, WorkflowStatus,
     },
     AppState,
 };
@@ -39,10 +39,13 @@ fn require_admin(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value>
     if role == "admin" || role == "super-admin" || role == "super_admin" || role == "developer" {
         Ok(())
     } else {
-        Err((StatusCode::FORBIDDEN, Json(json!({
-            "error": "Access denied",
-            "message": "This action requires admin privileges"
-        }))))
+        Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({
+                "error": "Access denied",
+                "message": "This action requires admin privileges"
+            })),
+        ))
     }
 }
 
@@ -51,10 +54,13 @@ fn require_editor(user: &User) -> Result<(), (StatusCode, Json<serde_json::Value
     if role == "admin" || role == "super-admin" || role == "super_admin" || role == "editor" {
         Ok(())
     } else {
-        Err((StatusCode::FORBIDDEN, Json(json!({
-            "error": "Access denied",
-            "message": "This action requires editor privileges"
-        }))))
+        Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({
+                "error": "Access denied",
+                "message": "This action requires editor privileges"
+            })),
+        ))
     }
 }
 
@@ -88,7 +94,12 @@ async fn get_version_history(
 
     let versions = cms::get_version_history(&state.db.pool, &content_type, content_id, limit)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(versions))
 }
@@ -113,7 +124,12 @@ async fn create_version(
         input.changed_fields,
     )
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "version_id": version_id,
@@ -132,8 +148,18 @@ async fn get_version(
 
     let version = cms::get_version(&state.db.pool, &content_type, content_id, version_number)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Version not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Version not found"})),
+            )
+        })?;
 
     Ok(Json(version))
 }
@@ -155,7 +181,12 @@ async fn restore_version(
         user.id,
     )
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // Log the restore action
     let _ = cms::log_audit(
@@ -197,7 +228,12 @@ async fn get_audit_logs(
 
     let logs = cms::get_audit_logs(&state.db.pool, &query)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(logs))
 }
@@ -231,7 +267,12 @@ async fn get_workflow_status(
 
     let status = cms::get_or_create_workflow_status(&state.db.pool, &content_type, content_id)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(status))
 }
@@ -255,7 +296,12 @@ async fn transition_workflow(
         input.comment.as_deref(),
     )
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // Log the workflow transition
     let _ = cms::log_audit(
@@ -299,7 +345,12 @@ async fn assign_for_review(
         input.notes.as_deref(),
     )
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(status))
 }
@@ -332,7 +383,12 @@ async fn get_my_assignments(
     .bind(user.id)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(assignments))
 }
@@ -387,7 +443,12 @@ async fn list_webhooks(
     )
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(webhooks))
 }
@@ -424,7 +485,12 @@ async fn create_webhook(
     .bind(user.id)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(webhook))
 }
@@ -472,7 +538,12 @@ async fn update_webhook(
     .bind(id)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(webhook))
 }
@@ -490,7 +561,12 @@ async fn delete_webhook(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Webhook deleted successfully"})))
 }
@@ -538,15 +614,24 @@ async fn get_webhook_deliveries(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
-    let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM webhook_deliveries WHERE webhook_id = $1"
-    )
-    .bind(id)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let total: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM webhook_deliveries WHERE webhook_id = $1")
+            .bind(id)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(json!({
         "data": deliveries,
@@ -596,7 +681,12 @@ async fn get_scheduled_content(
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(scheduled))
 }
@@ -619,7 +709,12 @@ async fn schedule_publish(
         user.id,
     )
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(scheduled))
 }
@@ -635,7 +730,12 @@ async fn cancel_scheduled(
 
     cms::cancel_scheduled(&state.db.pool, &content_type, content_id, "publish")
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Scheduled publication cancelled"})))
 }
@@ -669,7 +769,12 @@ async fn create_preview_token(
         input.max_views,
     )
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(token))
 }
@@ -682,10 +787,20 @@ async fn validate_preview_token(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let preview = cms::validate_preview_token(&state.db.pool, token)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({
-            "error": "Invalid or expired preview token"
-        }))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({
+                    "error": "Invalid or expired preview token"
+                })),
+            )
+        })?;
 
     Ok(Json(json!({
         "valid": true,
@@ -726,9 +841,12 @@ pub struct ReviewTranslationRequest {
 async fn get_locales(
     State(state): State<AppState>,
 ) -> Result<Json<Vec<Locale>>, (StatusCode, Json<serde_json::Value>)> {
-    let locales = cms::get_active_locales(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let locales = cms::get_active_locales(&state.db.pool).await.map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(locales))
 }
@@ -812,7 +930,12 @@ async fn delete_locale(
         .bind(&code)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Locale deactivated"})))
 }
@@ -828,7 +951,12 @@ async fn get_translations(
 
     let translations = cms::get_translations(&state.db.pool, &content_type, content_id)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(translations))
 }
@@ -844,8 +972,18 @@ async fn get_translation(
 
     let translation = cms::get_translation(&state.db.pool, &content_type, content_id, &locale)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Translation not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Translation not found"})),
+            )
+        })?;
 
     Ok(Json(translation))
 }
@@ -870,7 +1008,12 @@ async fn save_translation(
         input.machine_translated.unwrap_or(false),
     )
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(translation))
 }
@@ -905,7 +1048,12 @@ async fn review_translation(
     .bind(&locale)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(translation))
 }
@@ -956,12 +1104,11 @@ async fn get_cms_stats(
     .await
     .unwrap_or((0,));
 
-    let active_webhooks: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM webhooks WHERE is_active = true"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let active_webhooks: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM webhooks WHERE is_active = true")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     let scheduled_content: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM scheduled_content WHERE status = 'scheduled' AND scheduled_at > NOW()"
@@ -977,24 +1124,22 @@ async fn get_cms_stats(
     .await
     .unwrap_or((0,));
 
-    let active_locales: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM locales WHERE is_active = true"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let active_locales: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM locales WHERE is_active = true")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     let total_translations: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM content_translations")
         .fetch_one(&state.db.pool)
         .await
         .unwrap_or((0,));
 
-    let pending_webhook_deliveries: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM webhook_deliveries WHERE status = 'pending'"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let pending_webhook_deliveries: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM webhook_deliveries WHERE status = 'pending'")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     Ok(Json(json!({
         "versions": {
@@ -1030,35 +1175,69 @@ pub fn admin_router() -> Router<AppState> {
         // Stats
         .route("/stats", get(get_cms_stats))
         // Content Versioning
-        .route("/versions/:content_type/:content_id", get(get_version_history).post(create_version))
-        .route("/versions/:content_type/:content_id/:version_number", get(get_version))
-        .route("/versions/:content_type/:content_id/:version_number/restore", post(restore_version))
+        .route(
+            "/versions/:content_type/:content_id",
+            get(get_version_history).post(create_version),
+        )
+        .route(
+            "/versions/:content_type/:content_id/:version_number",
+            get(get_version),
+        )
+        .route(
+            "/versions/:content_type/:content_id/:version_number/restore",
+            post(restore_version),
+        )
         // Audit Logs
         .route("/audit-logs", get(get_audit_logs))
         // Workflow Management
         .route("/workflow/my-assignments", get(get_my_assignments))
-        .route("/workflow/:content_type/:content_id", get(get_workflow_status))
-        .route("/workflow/:content_type/:content_id/transition", post(transition_workflow))
-        .route("/workflow/:content_type/:content_id/assign", post(assign_for_review))
+        .route(
+            "/workflow/:content_type/:content_id",
+            get(get_workflow_status),
+        )
+        .route(
+            "/workflow/:content_type/:content_id/transition",
+            post(transition_workflow),
+        )
+        .route(
+            "/workflow/:content_type/:content_id/assign",
+            post(assign_for_review),
+        )
         // Webhooks
         .route("/webhooks", get(list_webhooks).post(create_webhook))
         .route("/webhooks/:id", put(update_webhook).delete(delete_webhook))
         .route("/webhooks/:id/deliveries", get(get_webhook_deliveries))
         // Publish Scheduling
         .route("/scheduled", get(get_scheduled_content))
-        .route("/scheduled/:content_type/:content_id", post(schedule_publish).delete(cancel_scheduled))
+        .route(
+            "/scheduled/:content_type/:content_id",
+            post(schedule_publish).delete(cancel_scheduled),
+        )
         // Preview Tokens
-        .route("/preview/:content_type/:content_id", post(create_preview_token))
+        .route(
+            "/preview/:content_type/:content_id",
+            post(create_preview_token),
+        )
         // Localization
         .route("/locales", get(get_locales).post(create_locale))
         .route("/locales/:code", put(update_locale).delete(delete_locale))
-        .route("/translations/:content_type/:content_id", get(get_translations))
-        .route("/translations/:content_type/:content_id/:locale", get(get_translation).put(save_translation).delete(delete_translation))
-        .route("/translations/:content_type/:content_id/:locale/review", post(review_translation))
+        .route(
+            "/translations/:content_type/:content_id",
+            get(get_translations),
+        )
+        .route(
+            "/translations/:content_type/:content_id/:locale",
+            get(get_translation)
+                .put(save_translation)
+                .delete(delete_translation),
+        )
+        .route(
+            "/translations/:content_type/:content_id/:locale/review",
+            post(review_translation),
+        )
 }
 
 /// Public preview route (no auth required)
 pub fn preview_router() -> Router<AppState> {
-    Router::new()
-        .route("/:token", get(validate_preview_token))
+    Router::new().route("/:token", get(validate_preview_token))
 }

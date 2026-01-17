@@ -75,11 +75,11 @@ pub struct ResetPasswordRequest {
 #[derive(Debug, Serialize)]
 pub struct AuthResponse {
     pub token: String,
-    pub access_token: String,  // Alias for token - frontend prefers this
+    pub access_token: String, // Alias for token - frontend prefers this
     pub refresh_token: String,
     pub session_id: String,
     pub user: UserResponse,
-    pub expires_in: i64,  // Token expiration in seconds
+    pub expires_in: i64, // Token expiration in seconds
 }
 
 /// Token refresh response
@@ -125,7 +125,7 @@ impl From<User> for UserResponse {
     fn from(user: User) -> Self {
         let role = user.role.clone().unwrap_or_else(|| "user".to_string());
         let is_admin = role == "admin" || role == "super_admin" || role == "developer";
-        
+
         // Parse name into first/last name
         let name_parts: Vec<&str> = user.name.split_whitespace().collect();
         let first_name = name_parts.first().map(|s| s.to_string());
@@ -134,7 +134,7 @@ impl From<User> for UserResponse {
         } else {
             None
         };
-        
+
         Self {
             id: user.id,
             email: user.email,

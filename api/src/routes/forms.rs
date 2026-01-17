@@ -6,16 +6,13 @@
 use axum::{
     extract::{Path, Query, State},
     http::StatusCode,
-    routing::{get, post, put, delete},
+    routing::{delete, get, post, put},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::{
-    middleware::admin::AdminUser,
-    AppState,
-};
+use crate::{middleware::admin::AdminUser, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // DATA TYPES
@@ -96,7 +93,7 @@ async fn list_forms(
           AND ($2::text IS NULL OR name ILIKE $2 OR description ILIKE $2)
         ORDER BY created_at DESC
         LIMIT $3 OFFSET $4
-        "#
+        "#,
     )
     .bind(query.is_published)
     .bind(search_pattern.as_deref())
@@ -106,7 +103,10 @@ async fn list_forms(
     .await
     .map_err(|e| {
         tracing::error!("Database error in list_forms: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?;
 
     let total: (i64,) = sqlx::query_as(
@@ -114,7 +114,7 @@ async fn list_forms(
         SELECT COUNT(*) FROM forms
         WHERE ($1::boolean IS NULL OR is_published = $1)
           AND ($2::text IS NULL OR name ILIKE $2 OR description ILIKE $2)
-        "#
+        "#,
     )
     .bind(query.is_published)
     .bind(search_pattern.as_deref())
@@ -144,13 +144,23 @@ async fn get_form(
         SELECT id, name, slug, description, fields, settings, is_published,
                COALESCE(submission_count, 0) as submission_count, created_at, updated_at
         FROM forms WHERE id = $1
-        "#
+        "#,
     )
     .bind(id)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Form not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Form not found"})),
+        )
+    })?;
 
     Ok(Json(json!({"data": form})))
 }
@@ -192,7 +202,9 @@ async fn create_form(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;
 
-    Ok(Json(json!({"data": form, "message": "Form created successfully"})))
+    Ok(Json(
+        json!({"data": form, "message": "Form created successfully"}),
+    ))
 }
 
 /// Update form (admin)
@@ -236,7 +248,9 @@ async fn update_form(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
     .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Form not found"}))))?;
 
-    Ok(Json(json!({"data": form, "message": "Form updated successfully"})))
+    Ok(Json(
+        json!({"data": form, "message": "Form updated successfully"}),
+    ))
 }
 
 /// Delete form (admin)
@@ -264,10 +278,18 @@ async fn delete_form(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Form not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Form not found"})),
+        ));
     }
 
     Ok(Json(json!({"message": "Form deleted successfully"})))
@@ -428,14 +450,19 @@ async fn list_submissions(
         WHERE form_id = $1
         ORDER BY created_at DESC
         LIMIT $2 OFFSET $3
-        "#
+        "#,
     )
     .bind(form_id)
     .bind(per_page)
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM form_submissions WHERE form_id = $1")
         .bind(form_id)
@@ -493,10 +520,18 @@ async fn delete_submission(
         .bind(form_id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Submission not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Submission not found"})),
+        ));
     }
 
     // Update submission count
@@ -584,7 +619,10 @@ async fn get_public_form(
     };
 
     form.map(Json).ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(json!({"error": "Form not found"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Form not found"})),
+        )
     })
 }
 
@@ -595,28 +633,33 @@ async fn submit_form(
     Json(data): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Find form by slug
-    let form: Option<FormRow> = sqlx::query_as(
-        "SELECT * FROM forms WHERE slug = $1 AND is_published = true"
-    )
-    .bind(&slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .ok()
-    .flatten();
+    let form: Option<FormRow> =
+        sqlx::query_as("SELECT * FROM forms WHERE slug = $1 AND is_published = true")
+            .bind(&slug)
+            .fetch_optional(&state.db.pool)
+            .await
+            .ok()
+            .flatten();
 
     let form = form.ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(json!({"error": "Form not found"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Form not found"})),
+        )
     })?;
 
     // Insert submission
-    sqlx::query(
-        "INSERT INTO form_submissions (form_id, data, created_at) VALUES ($1, $2, NOW())"
-    )
-    .bind(form.id)
-    .bind(&data)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    sqlx::query("INSERT INTO form_submissions (form_id, data, created_at) VALUES ($1, $2, NOW())")
+        .bind(form.id)
+        .bind(&data)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     // Update submission count
     sqlx::query("UPDATE forms SET submission_count = submission_count + 1 WHERE id = $1")
@@ -655,5 +698,8 @@ pub fn admin_router() -> Router<AppState> {
         .route("/:id/duplicate", post(duplicate_form))
         // Submissions
         .route("/:form_id/submissions", get(list_submissions))
-        .route("/:form_id/submissions/:submission_id", get(get_submission).delete(delete_submission))
+        .route(
+            "/:form_id/submissions/:submission_id",
+            get(get_submission).delete(delete_submission),
+        )
 }

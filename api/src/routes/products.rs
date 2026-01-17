@@ -11,8 +11,8 @@ use serde::Deserialize;
 use serde_json::json;
 
 use crate::{
-    models::{CreateProduct, UpdateProduct, User},
     middleware::admin::AdminUser,
+    models::{CreateProduct, UpdateProduct, User},
     AppState,
 };
 
@@ -60,7 +60,7 @@ async fn list_products(
 
     // Build query with parameterized conditions to prevent SQL injection
     let is_active = query.is_active.unwrap_or(true);
-    
+
     let (products, total) = if let Some(ref product_type) = query.product_type {
         if let Some(ref search) = query.search {
             // Both type and search filters
@@ -101,14 +101,18 @@ async fn list_products(
             .await
             .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-            let total: (i64,) = sqlx::query_as(
-                "SELECT COUNT(*) FROM products WHERE is_active = $1 AND type = $2"
-            )
-            .bind(is_active)
-            .bind(product_type)
-            .fetch_one(&state.db.pool)
-            .await
-            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+            let total: (i64,) =
+                sqlx::query_as("SELECT COUNT(*) FROM products WHERE is_active = $1 AND type = $2")
+                    .bind(is_active)
+                    .bind(product_type)
+                    .fetch_one(&state.db.pool)
+                    .await
+                    .map_err(|e| {
+                        (
+                            StatusCode::INTERNAL_SERVER_ERROR,
+                            Json(json!({"error": e.to_string()})),
+                        )
+                    })?;
 
             (products, total)
         }
@@ -148,13 +152,16 @@ async fn list_products(
         .await
         .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
-        let total: (i64,) = sqlx::query_as(
-            "SELECT COUNT(*) FROM products WHERE is_active = $1"
-        )
-        .bind(is_active)
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM products WHERE is_active = $1")
+            .bind(is_active)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
         (products, total)
     };
@@ -179,8 +186,18 @@ async fn get_product(
         .bind(&slug)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Product not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Product not found"})),
+            )
+        })?;
 
     Ok(Json(product))
 }
@@ -249,28 +266,72 @@ async fn update_product(
     let mut updates = Vec::new();
     let mut param_idx = 1;
 
-    if input.name.is_some() { updates.push(format!("name = ${}", { param_idx += 1; param_idx - 1 })); }
-    if input.name.is_some() { updates.push(format!("slug = ${}", { param_idx += 1; param_idx - 1 })); }
-    if input.product_type.is_some() { updates.push(format!("type = ${}", { param_idx += 1; param_idx - 1 })); }
-    if input.description.is_some() { updates.push(format!("description = ${}", { param_idx += 1; param_idx - 1 })); }
-    if input.long_description.is_some() { updates.push(format!("long_description = ${}", { param_idx += 1; param_idx - 1 })); }
-    if input.price.is_some() { updates.push(format!("price = ${}", { param_idx += 1; param_idx - 1 })); }
-    if input.is_active.is_some() { updates.push(format!("is_active = ${}", { param_idx += 1; param_idx - 1 })); }
+    if input.name.is_some() {
+        updates.push(format!("name = ${}", {
+            param_idx += 1;
+            param_idx - 1
+        }));
+    }
+    if input.name.is_some() {
+        updates.push(format!("slug = ${}", {
+            param_idx += 1;
+            param_idx - 1
+        }));
+    }
+    if input.product_type.is_some() {
+        updates.push(format!("type = ${}", {
+            param_idx += 1;
+            param_idx - 1
+        }));
+    }
+    if input.description.is_some() {
+        updates.push(format!("description = ${}", {
+            param_idx += 1;
+            param_idx - 1
+        }));
+    }
+    if input.long_description.is_some() {
+        updates.push(format!("long_description = ${}", {
+            param_idx += 1;
+            param_idx - 1
+        }));
+    }
+    if input.price.is_some() {
+        updates.push(format!("price = ${}", {
+            param_idx += 1;
+            param_idx - 1
+        }));
+    }
+    if input.is_active.is_some() {
+        updates.push(format!("is_active = ${}", {
+            param_idx += 1;
+            param_idx - 1
+        }));
+    }
 
     updates.push("updated_at = NOW()".to_string());
 
     if updates.len() <= 1 {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No fields to update"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No fields to update"})),
+        ));
     }
 
     // For simplicity, fetch and update the whole record
-    let product: ProductRow = sqlx::query_as(
-        &format!("UPDATE products SET {} WHERE id = $1 RETURNING *", updates.join(", "))
-    )
+    let product: ProductRow = sqlx::query_as(&format!(
+        "UPDATE products SET {} WHERE id = $1 RETURNING *",
+        updates.join(", ")
+    ))
     .bind(id)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(product))
 }
@@ -294,7 +355,12 @@ async fn delete_product(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"message": "Product deleted successfully"})))
 }
@@ -310,12 +376,17 @@ async fn get_user_products(
         INNER JOIN user_products up ON p.id = up.product_id
         WHERE up.user_id = $1
         ORDER BY up.purchased_at DESC
-        "#
+        "#,
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(products))
 }
@@ -324,17 +395,25 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/", get(list_products).post(create_product))
         .route("/my", get(get_user_products))
-        .route("/:slug", get(get_product).put(update_product).delete(delete_product))
+        .route(
+            "/:slug",
+            get(get_product).put(update_product).delete(delete_product),
+        )
 }
 
 /// Admin router for /admin/products - ICT 7 Principal Engineer Grade
 /// Provides CRUD operations for admin product management
 pub fn admin_router() -> Router<AppState> {
-    use axum::routing::{get, post, put, delete};
-    
+    use axum::routing::{delete, get, post, put};
+
     Router::new()
         .route("/", get(list_products_admin).post(create_product))
-        .route("/:id", get(get_product_by_id).put(update_product).delete(delete_product))
+        .route(
+            "/:id",
+            get(get_product_by_id)
+                .put(update_product)
+                .delete(delete_product),
+        )
 }
 
 /// List products for admin (includes inactive products)
@@ -349,7 +428,7 @@ async fn list_products_admin(
 
     // Admin sees ALL products (active and inactive)
     let search_pattern: Option<String> = query.search.as_ref().map(|s| format!("%{}%", s));
-    
+
     let products: Vec<ProductRow> = sqlx::query_as(
         r#"
         SELECT * FROM products
@@ -358,7 +437,7 @@ async fn list_products_admin(
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
         ORDER BY created_at DESC
         LIMIT $4 OFFSET $5
-        "#
+        "#,
     )
     .bind(query.product_type.as_deref())
     .bind(query.is_active)
@@ -369,7 +448,10 @@ async fn list_products_admin(
     .await
     .map_err(|e| {
         tracing::error!("Database error in list_products_admin: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?;
 
     let total: (i64,) = sqlx::query_as(
@@ -378,7 +460,7 @@ async fn list_products_admin(
         WHERE ($1::text IS NULL OR type = $1)
           AND ($2::boolean IS NULL OR is_active = $2)
           AND ($3::text IS NULL OR name ILIKE $3 OR description ILIKE $3)
-        "#
+        "#,
     )
     .bind(query.product_type.as_deref())
     .bind(query.is_active)
@@ -387,7 +469,10 @@ async fn list_products_admin(
     .await
     .map_err(|e| {
         tracing::error!("Database error in list_products_admin count: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": "Database error"})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Database error"})),
+        )
     })?;
 
     Ok(Json(json!({
@@ -411,8 +496,18 @@ async fn get_product_by_id(
         .bind(id)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Product not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Product not found"})),
+            )
+        })?;
 
     Ok(Json(product))
 }

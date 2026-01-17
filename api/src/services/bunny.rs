@@ -31,9 +31,12 @@ impl BunnyClient {
             stream_api_key: env::var("BUNNY_STREAM_API_KEY").unwrap_or_default(),
             stream_library_id: env::var("BUNNY_STREAM_LIBRARY_ID").unwrap_or_default(),
             storage_api_key: env::var("BUNNY_STORAGE_API_KEY").unwrap_or_default(),
-            storage_zone: env::var("BUNNY_STORAGE_ZONE").unwrap_or_else(|_| "revolution-trading-thumbnails".to_string()),
-            storage_hostname: env::var("BUNNY_STORAGE_HOSTNAME").unwrap_or_else(|_| "ny.storage.bunnycdn.com".to_string()),
-            cdn_url: env::var("BUNNY_CDN_URL").unwrap_or_else(|_| "https://revolution-thumbnails-cdn.b-cdn.net".to_string()),
+            storage_zone: env::var("BUNNY_STORAGE_ZONE")
+                .unwrap_or_else(|_| "revolution-trading-thumbnails".to_string()),
+            storage_hostname: env::var("BUNNY_STORAGE_HOSTNAME")
+                .unwrap_or_else(|_| "ny.storage.bunnycdn.com".to_string()),
+            cdn_url: env::var("BUNNY_CDN_URL")
+                .unwrap_or_else(|_| "https://revolution-thumbnails-cdn.b-cdn.net".to_string()),
         }
     }
 
@@ -52,7 +55,8 @@ impl BunnyClient {
             self.stream_library_id
         );
 
-        let response = self.http
+        let response = self
+            .http
             .post(&url)
             .header("AccessKey", &self.stream_api_key)
             .header("Content-Type", "application/json")
@@ -68,7 +72,10 @@ impl BunnyClient {
             return Err(BunnyError::Api(format!("Status {}: {}", status, text)));
         }
 
-        response.json().await.map_err(|e| BunnyError::Parse(e.to_string()))
+        response
+            .json()
+            .await
+            .map_err(|e| BunnyError::Parse(e.to_string()))
     }
 
     /// Get direct upload URL for a video (TUS resumable upload)
@@ -89,7 +96,8 @@ impl BunnyClient {
             self.stream_library_id, video_guid
         );
 
-        let response = self.http
+        let response = self
+            .http
             .get(&url)
             .header("AccessKey", &self.stream_api_key)
             .send()
@@ -100,17 +108,25 @@ impl BunnyClient {
             return Err(BunnyError::NotFound);
         }
 
-        response.json().await.map_err(|e| BunnyError::Parse(e.to_string()))
+        response
+            .json()
+            .await
+            .map_err(|e| BunnyError::Parse(e.to_string()))
     }
 
     /// List all videos in library
-    pub async fn list_videos(&self, page: i32, per_page: i32) -> Result<BunnyVideoList, BunnyError> {
+    pub async fn list_videos(
+        &self,
+        page: i32,
+        per_page: i32,
+    ) -> Result<BunnyVideoList, BunnyError> {
         let url = format!(
             "https://video.bunnycdn.com/library/{}/videos?page={}&itemsPerPage={}",
             self.stream_library_id, page, per_page
         );
 
-        let response = self.http
+        let response = self
+            .http
             .get(&url)
             .header("AccessKey", &self.stream_api_key)
             .send()
@@ -123,7 +139,10 @@ impl BunnyClient {
             return Err(BunnyError::Api(format!("Status {}: {}", status, text)));
         }
 
-        response.json().await.map_err(|e| BunnyError::Parse(e.to_string()))
+        response
+            .json()
+            .await
+            .map_err(|e| BunnyError::Parse(e.to_string()))
     }
 
     /// Delete a video
@@ -133,7 +152,8 @@ impl BunnyClient {
             self.stream_library_id, video_guid
         );
 
-        let response = self.http
+        let response = self
+            .http
             .delete(&url)
             .header("AccessKey", &self.stream_api_key)
             .send()
@@ -183,7 +203,8 @@ impl BunnyClient {
             self.storage_hostname, self.storage_zone, path
         );
 
-        let response = self.http
+        let response = self
+            .http
             .put(&url)
             .header("AccessKey", &self.storage_api_key)
             .header("Content-Type", "image/jpeg")
@@ -195,7 +216,10 @@ impl BunnyClient {
         if !response.status().is_success() {
             let status = response.status();
             let text = response.text().await.unwrap_or_default();
-            return Err(BunnyError::Api(format!("Upload failed: {} - {}", status, text)));
+            return Err(BunnyError::Api(format!(
+                "Upload failed: {} - {}",
+                status, text
+            )));
         }
 
         // Return CDN URL
@@ -211,7 +235,8 @@ impl BunnyClient {
             self.storage_hostname, self.storage_zone, path
         );
 
-        let response = self.http
+        let response = self
+            .http
             .delete(&url)
             .header("AccessKey", &self.storage_api_key)
             .send()
@@ -226,19 +251,28 @@ impl BunnyClient {
     }
 
     /// Download image from URL and upload to Bunny Storage
-    pub async fn upload_thumbnail_from_url(&self, source_url: &str, path: &str) -> Result<String, BunnyError> {
+    pub async fn upload_thumbnail_from_url(
+        &self,
+        source_url: &str,
+        path: &str,
+    ) -> Result<String, BunnyError> {
         // Download image
-        let response = self.http
+        let response = self
+            .http
             .get(source_url)
             .send()
             .await
             .map_err(|e| BunnyError::Request(e.to_string()))?;
 
         if !response.status().is_success() {
-            return Err(BunnyError::Api("Failed to download source image".to_string()));
+            return Err(BunnyError::Api(
+                "Failed to download source image".to_string(),
+            ));
         }
 
-        let data = response.bytes().await
+        let data = response
+            .bytes()
+            .await
             .map_err(|e| BunnyError::Request(e.to_string()))?
             .to_vec();
 

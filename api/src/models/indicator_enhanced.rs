@@ -596,9 +596,15 @@ pub fn generate_download_url(file_url: &str, file_name: &str) -> String {
     // In production, this would generate a presigned URL from R2/S3
     // For now, return the direct URL with download disposition hint
     if file_url.contains('?') {
-        format!("{}&response-content-disposition=attachment%3B%20filename%3D{}", file_url, file_name)
+        format!(
+            "{}&response-content-disposition=attachment%3B%20filename%3D{}",
+            file_url, file_name
+        )
     } else {
-        format!("{}?response-content-disposition=attachment%3B%20filename%3D{}", file_url, file_name)
+        format!(
+            "{}?response-content-disposition=attachment%3B%20filename%3D{}",
+            file_url, file_name
+        )
     }
 }
 
@@ -621,11 +627,7 @@ pub fn validate_tradingview_username(username: &str) -> bool {
 /// Parse supported platforms from JSON array
 pub fn parse_supported_platforms(json: &Option<serde_json::Value>) -> Vec<i64> {
     match json {
-        Some(serde_json::Value::Array(arr)) => {
-            arr.iter()
-                .filter_map(|v| v.as_i64())
-                .collect()
-        }
+        Some(serde_json::Value::Array(arr)) => arr.iter().filter_map(|v| v.as_i64()).collect(),
         _ => vec![],
     }
 }
@@ -633,11 +635,10 @@ pub fn parse_supported_platforms(json: &Option<serde_json::Value>) -> Vec<i64> {
 /// Parse tags from JSON array
 pub fn parse_tags(json: &Option<serde_json::Value>) -> Vec<String> {
     match json {
-        Some(serde_json::Value::Array(arr)) => {
-            arr.iter()
-                .filter_map(|v| v.as_str().map(String::from))
-                .collect()
-        }
+        Some(serde_json::Value::Array(arr)) => arr
+            .iter()
+            .filter_map(|v| v.as_str().map(String::from))
+            .collect(),
         _ => vec![],
     }
 }

@@ -216,7 +216,8 @@ async fn list_trade_plans(
     let offset = (page - 1) * per_page;
 
     // Parse week_of or use current date
-    let week_filter = query.week_of
+    let week_filter = query
+        .week_of
         .and_then(|w| NaiveDate::parse_from_str(&w, "%Y-%m-%d").ok());
 
     let entries: Vec<TradePlanEntry> = if let Some(week) = week_filter {
@@ -276,11 +277,13 @@ async fn create_trade_plan(
     _admin: AdminUser,
     Json(input): Json<CreateTradePlanRequest>,
 ) -> Result<Json<TradePlanEntry>, (StatusCode, Json<serde_json::Value>)> {
-    let week_of = input.week_of
+    let week_of = input
+        .week_of
         .and_then(|w| NaiveDate::parse_from_str(&w, "%Y-%m-%d").ok())
         .unwrap_or_else(|| Utc::now().date_naive());
 
-    let options_exp = input.options_exp
+    let options_exp = input
+        .options_exp
         .and_then(|e| NaiveDate::parse_from_str(&e, "%Y-%m-%d").ok());
 
     let entry: TradePlanEntry = sqlx::query_as(
@@ -313,7 +316,10 @@ async fn create_trade_plan(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;
 
-    info!("Created trade plan entry: {} for {}", entry.ticker, input.room_slug);
+    info!(
+        "Created trade plan entry: {} for {}",
+        entry.ticker, input.room_slug
+    );
     Ok(Json(entry))
 }
 
@@ -324,7 +330,8 @@ async fn update_trade_plan(
     Path(id): Path<i64>,
     Json(input): Json<UpdateTradePlanRequest>,
 ) -> Result<Json<TradePlanEntry>, (StatusCode, Json<serde_json::Value>)> {
-    let options_exp = input.options_exp
+    let options_exp = input
+        .options_exp
         .and_then(|e| NaiveDate::parse_from_str(&e, "%Y-%m-%d").ok());
 
     let entry: TradePlanEntry = sqlx::query_as(
@@ -343,7 +350,7 @@ async fn update_trade_plan(
            sort_order = COALESCE($13, sort_order),
            is_active = COALESCE($14, is_active)
            WHERE id = $1 AND deleted_at IS NULL
-           RETURNING *"#
+           RETURNING *"#,
     )
     .bind(id)
     .bind(input.ticker.map(|t| t.to_uppercase()))
@@ -363,7 +370,10 @@ async fn update_trade_plan(
     .await
     .map_err(|e| {
         error!("Failed to update trade plan: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
     Ok(Json(entry))
@@ -379,9 +389,16 @@ async fn delete_trade_plan(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
-    Ok(Json(json!({"success": true, "message": "Trade plan entry deleted"})))
+    Ok(Json(
+        json!({"success": true, "message": "Trade plan entry deleted"}),
+    ))
 }
 
 /// Reorder trade plan entries
@@ -398,10 +415,17 @@ async fn reorder_trade_plans(
             .bind(&room_slug)
             .execute(&state.db.pool)
             .await
-            .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
     }
 
-    Ok(Json(json!({"success": true, "message": "Trade plans reordered"})))
+    Ok(Json(
+        json!({"success": true, "message": "Trade plans reordered"}),
+    ))
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -422,7 +446,7 @@ async fn list_alerts(
         r#"SELECT * FROM room_alerts 
            WHERE room_slug = $1 AND deleted_at IS NULL AND is_published = true
            ORDER BY is_pinned DESC, published_at DESC
-           LIMIT $2 OFFSET $3"#
+           LIMIT $2 OFFSET $3"#,
     )
     .bind(&room_slug)
     .bind(per_page)
@@ -431,16 +455,24 @@ async fn list_alerts(
     .await
     .map_err(|e| {
         error!("Failed to fetch alerts: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
     let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM room_alerts WHERE room_slug = $1 AND deleted_at IS NULL"
+        "SELECT COUNT(*) FROM room_alerts WHERE room_slug = $1 AND deleted_at IS NULL",
     )
     .bind(&room_slug)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": alerts,
@@ -466,7 +498,7 @@ async fn create_alert(
                (SELECT id FROM membership_plans WHERE slug = $1 LIMIT 1),
                $1, $2, $3, $4, $5, $6, $7, $8
            )
-           RETURNING *"#
+           RETURNING *"#,
     )
     .bind(&input.room_slug)
     .bind(&input.alert_type.to_uppercase())
@@ -480,10 +512,16 @@ async fn create_alert(
     .await
     .map_err(|e| {
         error!("Failed to create alert: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
-    info!("Created alert: {} {} for {}", alert.alert_type, alert.ticker, input.room_slug);
+    info!(
+        "Created alert: {} {} for {}",
+        alert.alert_type, alert.ticker, input.room_slug
+    );
     Ok(Json(alert))
 }
 
@@ -505,7 +543,7 @@ async fn update_alert(
            is_published = COALESCE($8, is_published),
            is_pinned = COALESCE($9, is_pinned)
            WHERE id = $1 AND deleted_at IS NULL
-           RETURNING *"#
+           RETURNING *"#,
     )
     .bind(id)
     .bind(input.alert_type.map(|t| t.to_uppercase()))
@@ -520,7 +558,10 @@ async fn update_alert(
     .await
     .map_err(|e| {
         error!("Failed to update alert: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
     Ok(Json(alert))
@@ -536,7 +577,12 @@ async fn delete_alert(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"success": true, "message": "Alert deleted"})))
 }
@@ -550,7 +596,12 @@ async fn mark_alert_read(
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({"success": true})))
 }
@@ -567,12 +618,17 @@ async fn get_weekly_video(
     let video: Option<WeeklyVideo> = sqlx::query_as(
         r#"SELECT * FROM room_weekly_videos 
            WHERE room_slug = $1 AND is_current = true AND is_published = true
-           LIMIT 1"#
+           LIMIT 1"#,
     )
     .bind(&room_slug)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "data": video
@@ -593,22 +649,31 @@ async fn list_weekly_videos(
         r#"SELECT * FROM room_weekly_videos 
            WHERE room_slug = $1
            ORDER BY week_of DESC
-           LIMIT $2 OFFSET $3"#
+           LIMIT $2 OFFSET $3"#,
     )
     .bind(&room_slug)
     .bind(per_page)
     .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
-    let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM room_weekly_videos WHERE room_slug = $1"
-    )
-    .bind(&room_slug)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let total: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM room_weekly_videos WHERE room_slug = $1")
+            .bind(&room_slug)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(json!({
         "data": videos,
@@ -626,8 +691,12 @@ async fn create_weekly_video(
     _admin: AdminUser,
     Json(input): Json<CreateWeeklyVideoRequest>,
 ) -> Result<Json<WeeklyVideo>, (StatusCode, Json<serde_json::Value>)> {
-    let week_of = NaiveDate::parse_from_str(&input.week_of, "%Y-%m-%d")
-        .map_err(|_| (StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid week_of date format"}))))?;
+    let week_of = NaiveDate::parse_from_str(&input.week_of, "%Y-%m-%d").map_err(|_| {
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid week_of date format"})),
+        )
+    })?;
 
     // Archive existing current video for this room
     sqlx::query(
@@ -664,7 +733,10 @@ async fn create_weekly_video(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;
 
-    info!("Created weekly video: {} for {}", video.video_title, input.room_slug);
+    info!(
+        "Created weekly video: {} for {}",
+        video.video_title, input.room_slug
+    );
     Ok(Json(video))
 }
 
@@ -677,13 +749,17 @@ async fn get_room_stats(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let stats: Option<RoomStats> = sqlx::query_as(
-        "SELECT * FROM room_stats_cache WHERE room_slug = $1"
-    )
-    .bind(&room_slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    let stats: Option<RoomStats> =
+        sqlx::query_as("SELECT * FROM room_stats_cache WHERE room_slug = $1")
+            .bind(&room_slug)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
 
     Ok(Json(json!({
         "data": stats
@@ -719,7 +795,10 @@ pub fn admin_router() -> Router<AppState> {
         .route("/trade-plan", post(create_trade_plan))
         .route("/trade-plan/:id", put(update_trade_plan))
         .route("/trade-plan/:id", delete(delete_trade_plan))
-        .route("/rooms/:room_slug/trade-plan/reorder", put(reorder_trade_plans))
+        .route(
+            "/rooms/:room_slug/trade-plan/reorder",
+            put(reorder_trade_plans),
+        )
         // Alerts CRUD
         .route("/rooms/:room_slug/alerts", get(list_alerts))
         .route("/alerts", post(create_alert))

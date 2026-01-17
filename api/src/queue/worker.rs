@@ -38,8 +38,7 @@ struct PostmarkEmail {
 
 /// Send an email via Postmark API
 async fn send_email_via_postmark(to: &str, subject: &str, body: &str) -> Result<()> {
-    let postmark_token = std::env::var("POSTMARK_API_KEY")
-        .unwrap_or_else(|_| "".to_string());
+    let postmark_token = std::env::var("POSTMARK_API_KEY").unwrap_or_else(|_| "".to_string());
     let from_email = std::env::var("FROM_EMAIL")
         .unwrap_or_else(|_| "noreply@revolution-trading-pros.pages.dev".to_string());
 
@@ -73,8 +72,8 @@ async fn send_email_via_postmark(to: &str, subject: &str, body: &str) -> Result<
 
 /// Generate HMAC-SHA256 signature for webhook payload
 fn generate_webhook_signature(payload: &str, secret: &str) -> String {
-    let mut mac = HmacSha256::new_from_slice(secret.as_bytes())
-        .expect("HMAC can take key of any size");
+    let mut mac =
+        HmacSha256::new_from_slice(secret.as_bytes()).expect("HMAC can take key of any size");
     mac.update(payload.as_bytes());
     let result = mac.finalize();
     hex::encode(result.into_bytes())
@@ -121,7 +120,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
     for delivery in deliveries {
         // Get webhook config
         let webhook: Option<WebhookRow> = sqlx::query_as(
-            "SELECT url, secret, timeout_seconds, retry_count, headers FROM webhooks WHERE id = $1"
+            "SELECT url, secret, timeout_seconds, retry_count, headers FROM webhooks WHERE id = $1",
         )
         .bind(delivery.webhook_id)
         .fetch_optional(pool)
@@ -182,7 +181,11 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
             Ok(resp) => {
                 let status = resp.status().as_u16() as i32;
                 let body = resp.text().await.unwrap_or_default();
-                let body_truncated = if body.len() > 1000 { &body[..1000] } else { &body };
+                let body_truncated = if body.len() > 1000 {
+                    &body[..1000]
+                } else {
+                    &body
+                };
 
                 if status >= 200 && status < 300 {
                     // Success
@@ -203,7 +206,11 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
                     .execute(pool)
                     .await?;
 
-                    tracing::info!("Webhook delivered: {} -> {}", delivery.event_type, webhook.url);
+                    tracing::info!(
+                        "Webhook delivered: {} -> {}",
+                        delivery.event_type,
+                        webhook.url
+                    );
                 } else {
                     // HTTP error, schedule retry if attempts remaining
                     let new_attempts = delivery.attempts + 1;
@@ -253,7 +260,10 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
 
                         tracing::warn!(
                             "Webhook delivery failed (attempt {}), retry in {}s: {} -> {}",
-                            new_attempts, backoff_seconds, delivery.event_type, webhook.url
+                            new_attempts,
+                            backoff_seconds,
+                            delivery.event_type,
+                            webhook.url
                         );
                     }
                 }
@@ -303,7 +313,9 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
 
                     tracing::warn!(
                         "Webhook network error (attempt {}): {} - {}",
-                        new_attempts, webhook.url, error_msg
+                        new_attempts,
+                        webhook.url,
+                        error_msg
                     );
                 }
             }
@@ -344,7 +356,9 @@ async fn process_scheduled_content(pool: &PgPool) -> Result<u32> {
     for item in scheduled {
         tracing::info!(
             "Processing scheduled {}: {} ({})",
-            item.scheduled_action, item.content_type, item.content_id
+            item.scheduled_action,
+            item.content_type,
+            item.content_id
         );
 
         let result = match item.content_type.as_str() {
@@ -360,7 +374,7 @@ async fn process_scheduled_content(pool: &PgPool) -> Result<u32> {
             "product" | "products" => {
                 // Activate the product
                 sqlx::query(
-                    "UPDATE products SET is_active = true, updated_at = NOW() WHERE id = $1"
+                    "UPDATE products SET is_active = true, updated_at = NOW() WHERE id = $1",
                 )
                 .bind(item.content_id)
                 .execute(pool)
@@ -385,7 +399,10 @@ async fn process_scheduled_content(pool: &PgPool) -> Result<u32> {
                 .await
             }
             _ => {
-                tracing::warn!("Unknown content type for scheduled publish: {}", item.content_type);
+                tracing::warn!(
+                    "Unknown content type for scheduled publish: {}",
+                    item.content_type
+                );
                 Ok(sqlx::postgres::PgQueryResult::default())
             }
         };
@@ -422,7 +439,9 @@ async fn process_scheduled_content(pool: &PgPool) -> Result<u32> {
 
                 tracing::info!(
                     "Scheduled {} executed successfully: {} ({})",
-                    item.scheduled_action, item.content_type, item.content_id
+                    item.scheduled_action,
+                    item.content_type,
+                    item.content_id
                 );
             }
             Err(e) => {
@@ -443,7 +462,10 @@ async fn process_scheduled_content(pool: &PgPool) -> Result<u32> {
 
                 tracing::error!(
                     "Scheduled {} failed: {} ({}) - {}",
-                    item.scheduled_action, item.content_type, item.content_id, e
+                    item.scheduled_action,
+                    item.content_type,
+                    item.content_id,
+                    e
                 );
             }
         }
@@ -575,12 +597,10 @@ async fn process_next_job(db: &Database) -> anyhow::Result<Option<i64>> {
     match result {
         Ok(_) => {
             // Mark as completed
-            sqlx::query(
-                "UPDATE jobs SET status = 'completed', completed_at = NOW() WHERE id = $1",
-            )
-            .bind(job.id)
-            .execute(&db.pool)
-            .await?;
+            sqlx::query("UPDATE jobs SET status = 'completed', completed_at = NOW() WHERE id = $1")
+                .bind(job.id)
+                .execute(&db.pool)
+                .await?;
         }
         Err(e) => {
             let error_msg = e.to_string();
@@ -590,14 +610,12 @@ async fn process_next_job(db: &Database) -> anyhow::Result<Option<i64>> {
                 "pending" // Will be retried
             };
 
-            sqlx::query(
-                "UPDATE jobs SET status = $1, error = $2 WHERE id = $3",
-            )
-            .bind(new_status)
-            .bind(&error_msg)
-            .bind(job.id)
-            .execute(&db.pool)
-            .await?;
+            sqlx::query("UPDATE jobs SET status = $1, error = $2 WHERE id = $3")
+                .bind(new_status)
+                .bind(&error_msg)
+                .bind(job.id)
+                .execute(&db.pool)
+                .await?;
         }
     }
 
@@ -624,7 +642,11 @@ async fn process_job(job: &Job) -> anyhow::Result<()> {
         "process_payment" => {
             let user_id = job.payload["user_id"].as_str().unwrap_or("");
             let amount = job.payload["amount_cents"].as_i64().unwrap_or(0);
-            tracing::info!("Processing payment for user: {} - {} cents", user_id, amount);
+            tracing::info!(
+                "Processing payment for user: {} - {} cents",
+                user_id,
+                amount
+            );
             // Process payment here
             Ok(())
         }

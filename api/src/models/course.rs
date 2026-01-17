@@ -26,47 +26,47 @@ pub struct Course {
     pub metadata: Option<serde_json::Value>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
-    
+
     // Card Display
     pub card_image_url: Option<String>,
     pub card_description: Option<String>,
     pub card_badge: Option<String>,
     pub card_badge_color: Option<String>,
-    
+
     // Course Details
     pub what_you_learn: Option<serde_json::Value>,
     pub requirements: Option<serde_json::Value>,
     pub target_audience: Option<serde_json::Value>,
-    
+
     // Instructor
     pub instructor_name: Option<String>,
     pub instructor_title: Option<String>,
     pub instructor_avatar_url: Option<String>,
     pub instructor_bio: Option<String>,
-    
+
     // Pricing & Access
     pub is_free: Option<bool>,
     pub is_premium: Option<bool>,
     pub required_membership_ids: Option<serde_json::Value>,
-    
+
     // Video Integration
     pub bunny_library_id: Option<i64>,
-    
+
     // SEO
     pub meta_title: Option<String>,
     pub meta_description: Option<String>,
     pub og_image_url: Option<String>,
-    
+
     // Status
     pub status: Option<String>,
     pub published_at: Option<NaiveDateTime>,
-    
+
     // Analytics
     pub enrollment_count: Option<i32>,
     pub completion_rate: Option<f64>,
     pub avg_rating: Option<f64>,
     pub review_count: Option<i32>,
-    
+
     // Counts
     pub module_count: Option<i32>,
     pub lesson_count: Option<i32>,
@@ -139,24 +139,24 @@ pub struct Lesson {
     pub content: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
-    
+
     // Video Integration
     pub video_id: Option<i64>,
     pub bunny_video_guid: Option<String>,
     pub thumbnail_url: Option<String>,
-    
+
     // Content
     pub content_html: Option<String>,
     pub resources: Option<serde_json::Value>,
-    
+
     // Access Control
     pub is_preview: Option<bool>,
     pub is_published: Option<bool>,
     pub drip_days: Option<i32>,
-    
+
     // Prerequisites
     pub prerequisite_lesson_ids: Option<serde_json::Value>,
-    
+
     // Sort
     pub sort_order: Option<i32>,
 }

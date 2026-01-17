@@ -6,7 +6,9 @@
 mod utils {
     use anyhow::Result;
     use argon2::{
-        password_hash::{rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString},
+        password_hash::{
+            rand_core::OsRng, PasswordHash, PasswordHasher, PasswordVerifier, SaltString,
+        },
         Argon2,
     };
     use chrono::{Duration, Utc};
@@ -31,8 +33,8 @@ mod utils {
     }
 
     pub fn verify_password(password: &str, hash: &str) -> Result<bool> {
-        let parsed_hash = PasswordHash::new(hash)
-            .map_err(|e| anyhow::anyhow!("Invalid password hash: {}", e))?;
+        let parsed_hash =
+            PasswordHash::new(hash).map_err(|e| anyhow::anyhow!("Invalid password hash: {}", e))?;
         Ok(Argon2::default()
             .verify_password(password.as_bytes(), &parsed_hash)
             .is_ok())
@@ -89,7 +91,10 @@ mod tests {
         let hash = hash_password(password).expect("Hashing should succeed");
 
         // Argon2 hashes start with $argon2
-        assert!(hash.starts_with("$argon2"), "Hash should be in Argon2 format");
+        assert!(
+            hash.starts_with("$argon2"),
+            "Hash should be in Argon2 format"
+        );
     }
 
     #[test]
@@ -172,7 +177,8 @@ mod tests {
     #[test]
     fn test_verify_jwt_wrong_secret() {
         let user_id = Uuid::new_v4();
-        let token = create_jwt(&user_id, "correct_secret", 24).expect("JWT creation should succeed");
+        let token =
+            create_jwt(&user_id, "correct_secret", 24).expect("JWT creation should succeed");
 
         let result = verify_jwt(&token, "wrong_secret");
         assert!(result.is_err(), "Wrong secret should fail verification");
@@ -236,7 +242,10 @@ mod tests {
     #[test]
     fn test_generate_token_multiple_uniqueness() {
         let tokens: Vec<String> = (0..100).map(|_| generate_token()).collect();
-        let unique_count = tokens.iter().collect::<std::collections::HashSet<_>>().len();
+        let unique_count = tokens
+            .iter()
+            .collect::<std::collections::HashSet<_>>()
+            .len();
         assert_eq!(unique_count, 100, "All 100 tokens should be unique");
     }
 }

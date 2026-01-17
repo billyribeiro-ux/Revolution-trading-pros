@@ -21,10 +21,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
 
-use crate::{
-    middleware::admin::AdminUser,
-    AppState,
-};
+use crate::{middleware::admin::AdminUser, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS
@@ -611,19 +608,11 @@ async fn admin_create_schedule(
     }
 
     // Parse times
-    let start_time = parse_time(&input.start_time).map_err(|e| {
-        (
-            StatusCode::BAD_REQUEST,
-            Json(json!({"error": e})),
-        )
-    })?;
+    let start_time = parse_time(&input.start_time)
+        .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
 
-    let end_time = parse_time(&input.end_time).map_err(|e| {
-        (
-            StatusCode::BAD_REQUEST,
-            Json(json!({"error": e})),
-        )
-    })?;
+    let end_time = parse_time(&input.end_time)
+        .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
 
     if end_time <= start_time {
         return Err((
@@ -793,15 +782,13 @@ async fn admin_update_schedule(
         query_builder = query_builder.bind(day_of_week);
     }
     if let Some(ref start_time) = input.start_time {
-        let time = parse_time(start_time).map_err(|e| {
-            (StatusCode::BAD_REQUEST, Json(json!({"error": e})))
-        })?;
+        let time = parse_time(start_time)
+            .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
         query_builder = query_builder.bind(time);
     }
     if let Some(ref end_time) = input.end_time {
-        let time = parse_time(end_time).map_err(|e| {
-            (StatusCode::BAD_REQUEST, Json(json!({"error": e})))
-        })?;
+        let time = parse_time(end_time)
+            .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
         query_builder = query_builder.bind(time);
     }
     if let Some(ref timezone) = input.timezone {
@@ -820,16 +807,13 @@ async fn admin_update_schedule(
     query_builder = query_builder.bind(admin.0.id);
     query_builder = query_builder.bind(id);
 
-    let schedule = query_builder
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| {
-            tracing::error!("Failed to update schedule: {}", e);
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": format!("Failed to update schedule: {}", e)})),
-            )
-        })?;
+    let schedule = query_builder.fetch_one(&state.db.pool).await.map_err(|e| {
+        tracing::error!("Failed to update schedule: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": format!("Failed to update schedule: {}", e)})),
+        )
+    })?;
 
     tracing::info!(
         target: "security_audit",
@@ -936,12 +920,10 @@ async fn admin_bulk_schedules(
     // Insert new schedules
     let mut created_count = 0;
     for schedule in &input.schedules {
-        let start_time = parse_time(&schedule.start_time).map_err(|e| {
-            (StatusCode::BAD_REQUEST, Json(json!({"error": e})))
-        })?;
-        let end_time = parse_time(&schedule.end_time).map_err(|e| {
-            (StatusCode::BAD_REQUEST, Json(json!({"error": e})))
-        })?;
+        let start_time = parse_time(&schedule.start_time)
+            .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
+        let end_time = parse_time(&schedule.end_time)
+            .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
 
         sqlx::query(
             r#"
@@ -1019,9 +1001,8 @@ async fn admin_create_exception(
         "ICT 11+ AUDIT: Admin creating schedule exception"
     );
 
-    let exception_date = parse_date(&input.exception_date).map_err(|e| {
-        (StatusCode::BAD_REQUEST, Json(json!({"error": e})))
-    })?;
+    let exception_date = parse_date(&input.exception_date)
+        .map_err(|e| (StatusCode::BAD_REQUEST, Json(json!({"error": e}))))?;
 
     let new_start_time = input
         .new_start_time
@@ -1141,7 +1122,10 @@ pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(admin_list_schedules).post(admin_create_schedule))
         .route("/plan/:plan_id", get(admin_get_plan_schedules))
-        .route("/:id", put(admin_update_schedule).delete(admin_delete_schedule))
+        .route(
+            "/:id",
+            put(admin_update_schedule).delete(admin_delete_schedule),
+        )
         .route("/bulk", post(admin_bulk_schedules))
         .route("/exceptions", post(admin_create_exception))
         .route("/exceptions/:id", delete(admin_delete_exception))

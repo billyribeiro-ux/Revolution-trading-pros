@@ -24,7 +24,7 @@ async fn get_active_popups(
     Query(query): Query<ActivePopupsQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let _page = query.page.unwrap_or_else(|| "/".to_string());
-    
+
     // Return empty popups - no popups configured yet
     // This prevents 404 errors in the frontend
     Ok(Json(json!({
@@ -33,6 +33,5 @@ async fn get_active_popups(
 }
 
 pub fn router() -> Router<AppState> {
-    Router::new()
-        .route("/active", get(get_active_popups))
+    Router::new().route("/active", get(get_active_popups))
 }

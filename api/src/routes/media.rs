@@ -12,20 +12,17 @@
 //! @version 2.0.0 - January 2026
 
 use axum::{
-    extract::{Path, Query, State, Multipart},
+    extract::{Multipart, Path, Query, State},
     response::Json,
     routing::{delete, get, post, put},
     Router,
 };
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use chrono::{DateTime, Utc};
 use uuid::Uuid;
 
-use crate::{
-    utils::errors::ApiError,
-    AppState,
-};
+use crate::{utils::errors::ApiError, AppState};
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Media {
@@ -80,7 +77,7 @@ pub async fn index(
         "SELECT id, filename, original_filename, mime_type, size, path, url, 
                 title, alt_text, caption, description, collection, is_optimized,
                 width, height, created_at, updated_at 
-         FROM media WHERE 1=1"
+         FROM media WHERE 1=1",
     );
     let mut conditions = Vec::new();
 
@@ -96,7 +93,10 @@ pub async fn index(
 
     // Type filter (mime_type prefix)
     if let Some(media_type) = &params.r#type {
-        conditions.push(format!("mime_type LIKE '{}%'", media_type.replace('\'', "''")));
+        conditions.push(format!(
+            "mime_type LIKE '{}%'",
+            media_type.replace('\'', "''")
+        ));
     }
 
     // Collection filter
@@ -119,12 +119,27 @@ pub async fn index(
     }
 
     // Sorting
-    let allowed_columns = ["filename", "title", "size", "created_at", "updated_at", "id"];
+    let allowed_columns = [
+        "filename",
+        "title",
+        "size",
+        "created_at",
+        "updated_at",
+        "id",
+    ];
     let sort_by = params.sort_by.as_deref().unwrap_or("created_at");
     let sort_dir = params.sort_dir.as_deref().unwrap_or("desc");
 
-    let sort_column = if allowed_columns.contains(&sort_by) { sort_by } else { "created_at" };
-    let sort_direction = if sort_dir.eq_ignore_ascii_case("asc") { "ASC" } else { "DESC" };
+    let sort_column = if allowed_columns.contains(&sort_by) {
+        sort_by
+    } else {
+        "created_at"
+    };
+    let sort_direction = if sort_dir.eq_ignore_ascii_case("asc") {
+        "ASC"
+    } else {
+        "DESC"
+    };
 
     query.push_str(&format!(" ORDER BY {} {}", sort_column, sort_direction));
 
@@ -179,7 +194,7 @@ pub async fn show(
         "SELECT id, filename, original_filename, mime_type, size, path, url, 
                 title, alt_text, caption, description, collection, is_optimized,
                 width, height, created_at, updated_at 
-         FROM media WHERE id = $1"
+         FROM media WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(state.db.pool())
@@ -214,11 +229,26 @@ pub async fn update(
     let mut updates = Vec::new();
     let mut param_count = 1;
 
-    if payload.title.is_some() { updates.push(format!("title = ${}", param_count)); param_count += 1; }
-    if payload.alt_text.is_some() { updates.push(format!("alt_text = ${}", param_count)); param_count += 1; }
-    if payload.caption.is_some() { updates.push(format!("caption = ${}", param_count)); param_count += 1; }
-    if payload.description.is_some() { updates.push(format!("description = ${}", param_count)); param_count += 1; }
-    if payload.collection.is_some() { updates.push(format!("collection = ${}", param_count)); param_count += 1; }
+    if payload.title.is_some() {
+        updates.push(format!("title = ${}", param_count));
+        param_count += 1;
+    }
+    if payload.alt_text.is_some() {
+        updates.push(format!("alt_text = ${}", param_count));
+        param_count += 1;
+    }
+    if payload.caption.is_some() {
+        updates.push(format!("caption = ${}", param_count));
+        param_count += 1;
+    }
+    if payload.description.is_some() {
+        updates.push(format!("description = ${}", param_count));
+        param_count += 1;
+    }
+    if payload.collection.is_some() {
+        updates.push(format!("collection = ${}", param_count));
+        param_count += 1;
+    }
 
     if updates.is_empty() {
         return Err(ApiError::validation_error("No fields to update"));
@@ -237,11 +267,21 @@ pub async fn update(
 
     let mut query = sqlx::query_as::<_, Media>(&query_str);
 
-    if let Some(title) = payload.title { query = query.bind(title); }
-    if let Some(alt_text) = payload.alt_text { query = query.bind(alt_text); }
-    if let Some(caption) = payload.caption { query = query.bind(caption); }
-    if let Some(description) = payload.description { query = query.bind(description); }
-    if let Some(collection) = payload.collection { query = query.bind(collection); }
+    if let Some(title) = payload.title {
+        query = query.bind(title);
+    }
+    if let Some(alt_text) = payload.alt_text {
+        query = query.bind(alt_text);
+    }
+    if let Some(caption) = payload.caption {
+        query = query.bind(caption);
+    }
+    if let Some(description) = payload.description {
+        query = query.bind(description);
+    }
+    if let Some(collection) = payload.collection {
+        query = query.bind(collection);
+    }
 
     query = query.bind(id);
 
@@ -268,7 +308,7 @@ pub async fn destroy(
         "SELECT id, filename, original_filename, mime_type, size, path, url,
                 title, alt_text, caption, description, collection, is_optimized,
                 width, height, created_at, updated_at 
-         FROM media WHERE id = $1"
+         FROM media WHERE id = $1",
     )
     .bind(id)
     .fetch_optional(state.db.pool())
@@ -313,15 +353,17 @@ pub async fn statistics(
         .unwrap_or(0);
 
     // By type
-    let images: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM media WHERE mime_type LIKE 'image/%'")
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
+    let images: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM media WHERE mime_type LIKE 'image/%'")
+            .fetch_one(state.db.pool())
+            .await
+            .unwrap_or(0);
 
-    let videos: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM media WHERE mime_type LIKE 'video/%'")
-        .fetch_one(state.db.pool())
-        .await
-        .unwrap_or(0);
+    let videos: i64 =
+        sqlx::query_scalar("SELECT COUNT(*) FROM media WHERE mime_type LIKE 'video/%'")
+            .fetch_one(state.db.pool())
+            .await
+            .unwrap_or(0);
 
     let documents: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM media WHERE mime_type LIKE 'application/%' OR mime_type LIKE 'text/%'"
@@ -404,13 +446,21 @@ pub async fn presigned_upload(
 ) -> Result<Json<serde_json::Value>, ApiError> {
     // Validate content type
     let allowed_types = [
-        "image/jpeg", "image/png", "image/webp", "image/gif", "image/svg+xml",
-        "video/mp4", "video/webm", "video/quicktime",
-        "application/pdf", "application/msword",
+        "image/jpeg",
+        "image/png",
+        "image/webp",
+        "image/gif",
+        "image/svg+xml",
+        "video/mp4",
+        "video/webm",
+        "video/quicktime",
+        "application/pdf",
+        "application/msword",
         "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "application/vnd.ms-excel",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
-        "text/plain", "text/csv",
+        "text/plain",
+        "text/csv",
     ];
 
     if !allowed_types.contains(&payload.content_type.as_str()) {
@@ -441,7 +491,8 @@ pub async fn presigned_upload(
     let storage = &state.services.storage;
 
     let expires_in = 3600u64; // 1 hour
-    let upload_url = storage.presigned_upload_url(&file_key, &payload.content_type, expires_in)
+    let upload_url = storage
+        .presigned_upload_url(&file_key, &payload.content_type, expires_in)
         .await
         .map_err(|e| ApiError::internal_error(&format!("Failed to generate upload URL: {}", e)))?;
 
@@ -485,7 +536,10 @@ pub async fn confirm_upload(
     let public_url = format!("{}/{}", state.config.r2_public_url, payload.file_key);
 
     // Extract filename from key
-    let filename = payload.file_key.split('/').last()
+    let filename = payload
+        .file_key
+        .split('/')
+        .last()
         .unwrap_or(&payload.file_key)
         .to_string();
 
@@ -541,7 +595,9 @@ pub async fn direct_upload(
 
     let mut uploaded_files: Vec<Media> = Vec::new();
 
-    while let Some(field) = multipart.next_field().await
+    while let Some(field) = multipart
+        .next_field()
+        .await
         .map_err(|e| ApiError::validation_error(&format!("Failed to read multipart: {}", e)))?
     {
         let name = field.name().unwrap_or("file").to_string();
@@ -551,33 +607,43 @@ pub async fn direct_upload(
             continue;
         }
 
-        let filename = field.file_name()
+        let filename = field
+            .file_name()
             .map(|s| s.to_string())
             .unwrap_or_else(|| format!("{}.bin", Uuid::new_v4()));
 
-        let content_type = field.content_type()
+        let content_type = field
+            .content_type()
             .map(|s| s.to_string())
             .unwrap_or_else(|| "application/octet-stream".to_string());
 
         // Read file data
-        let data = field.bytes().await
+        let data = field
+            .bytes()
+            .await
             .map_err(|e| ApiError::validation_error(&format!("Failed to read file: {}", e)))?;
 
         let size = data.len() as i64;
 
         // Max file size: 50MB
         if size > 50 * 1024 * 1024 {
-            return Err(ApiError::validation_error("File too large. Maximum size is 50MB"));
+            return Err(ApiError::validation_error(
+                "File too large. Maximum size is 50MB",
+            ));
         }
 
         // Upload to R2
         let folder = "uploads";
-        let public_url = storage.upload(data.to_vec(), &content_type, folder)
+        let public_url = storage
+            .upload(data.to_vec(), &content_type, folder)
             .await
             .map_err(|e| ApiError::internal_error(&format!("Upload failed: {}", e)))?;
 
         // Extract key from URL
-        let file_key = public_url.replace(&state.config.r2_public_url, "").trim_start_matches('/').to_string();
+        let file_key = public_url
+            .replace(&state.config.r2_public_url, "")
+            .trim_start_matches('/')
+            .to_string();
         let stored_filename = file_key.split('/').last().unwrap_or(&file_key).to_string();
 
         // Insert into database
@@ -623,7 +689,7 @@ pub async fn direct_upload(
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(index))
-        .route("/files", get(index))  // Frontend uses /admin/media/files
+        .route("/files", get(index)) // Frontend uses /admin/media/files
         .route("/upload", post(direct_upload))
         .route("/presigned-upload", post(presigned_upload))
         .route("/confirm-upload", post(confirm_upload))

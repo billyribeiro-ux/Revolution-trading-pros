@@ -11,10 +11,7 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use crate::{
-    models::User,
-    AppState,
-};
+use crate::{models::User, AppState};
 
 /// User membership response - matches frontend UserMembership interface
 #[derive(Debug, Serialize, Deserialize)]
@@ -87,7 +84,7 @@ async fn get_memberships(
         FROM user_memberships s
         WHERE s.user_id = $1 AND s.status IN ('active', 'trialing', 'pending')
         ORDER BY s.created_at DESC
-        "#
+        "#,
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)
@@ -117,7 +114,8 @@ async fn get_memberships(
             let is_trial = sub.status == "trialing";
 
             // Extract type from metadata (default to "trading-room")
-            let membership_type = plan.metadata
+            let membership_type = plan
+                .metadata
                 .as_ref()
                 .and_then(|m| m.get("type"))
                 .and_then(|t| t.as_str())
@@ -125,26 +123,34 @@ async fn get_memberships(
                 .to_string();
 
             // Extract icon from metadata
-            let icon = plan.metadata
+            let icon = plan
+                .metadata
                 .as_ref()
                 .and_then(|m| m.get("icon"))
                 .and_then(|i| i.as_str())
                 .map(|s| s.to_string());
 
             // Extract features array
-            let features = plan.features
+            let features = plan
+                .features
                 .as_ref()
                 .and_then(|f| f.as_array())
-                .map(|arr| arr.iter()
-                    .filter_map(|v| v.as_str().map(|s| s.to_string()))
-                    .collect::<Vec<String>>());
+                .map(|arr| {
+                    arr.iter()
+                        .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                        .collect::<Vec<String>>()
+                });
 
             let membership = UserMembershipResponse {
                 id: sub.id.to_string(),
                 name: plan.name,
                 membership_type,
                 slug: plan.slug,
-                status: if is_trial { "active".to_string() } else { sub.status },
+                status: if is_trial {
+                    "active".to_string()
+                } else {
+                    sub.status
+                },
                 subscription_type: Some(if is_trial { "trial" } else { "active" }.to_string()),
                 icon,
                 start_date: sub.starts_at.format("%Y-%m-%d").to_string(),
@@ -194,14 +200,20 @@ async fn cancel_membership(
     .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
 
     let membership = membership.ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(json!({"error": "Membership not found"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Membership not found"})),
+        )
     })?;
 
     if membership.status != "active" && membership.status != "trialing" {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({
-            "error": "Cannot cancel membership",
-            "message": "This membership is not active"
-        }))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({
+                "error": "Cannot cancel membership",
+                "message": "This membership is not active"
+            })),
+        ));
     }
 
     if input.cancel_immediately {
@@ -266,37 +278,50 @@ async fn get_membership_details(
 
     let is_trial = subscription.status == "trialing";
 
-    let membership_type = plan.metadata
+    let membership_type = plan
+        .metadata
         .as_ref()
         .and_then(|m| m.get("type"))
         .and_then(|t| t.as_str())
         .unwrap_or("trading-room")
         .to_string();
 
-    let icon = plan.metadata
+    let icon = plan
+        .metadata
         .as_ref()
         .and_then(|m| m.get("icon"))
         .and_then(|i| i.as_str())
         .map(|s| s.to_string());
 
-    let features = plan.features
+    let features = plan
+        .features
         .as_ref()
         .and_then(|f| f.as_array())
-        .map(|arr| arr.iter()
-            .filter_map(|v| v.as_str().map(|s| s.to_string()))
-            .collect::<Vec<String>>());
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|v| v.as_str().map(|s| s.to_string()))
+                .collect::<Vec<String>>()
+        });
 
     Ok(Json(UserMembershipResponse {
         id: subscription.id.to_string(),
         name: plan.name,
         membership_type,
         slug: plan.slug,
-        status: if is_trial { "active".to_string() } else { subscription.status },
+        status: if is_trial {
+            "active".to_string()
+        } else {
+            subscription.status
+        },
         subscription_type: Some(if is_trial { "trial" } else { "active" }.to_string()),
         icon,
         start_date: subscription.starts_at.format("%Y-%m-%d").to_string(),
-        next_billing_date: subscription.expires_at.map(|d| d.format("%Y-%m-%d").to_string()),
-        expires_at: subscription.expires_at.map(|d| d.format("%Y-%m-%d").to_string()),
+        next_billing_date: subscription
+            .expires_at
+            .map(|d| d.format("%Y-%m-%d").to_string()),
+        expires_at: subscription
+            .expires_at
+            .map(|d| d.format("%Y-%m-%d").to_string()),
         price: Some(plan.price),
         interval: Some(plan.billing_cycle),
         features,
@@ -312,7 +337,10 @@ pub fn router() -> Router<AppState> {
         .route("/profile", axum::routing::put(update_profile))
         .route("/payment-methods", get(get_payment_methods))
         .route("/payment-methods", post(add_payment_method))
-        .route("/payment-methods/:id", axum::routing::delete(delete_payment_method))
+        .route(
+            "/payment-methods/:id",
+            axum::routing::delete(delete_payment_method),
+        )
 }
 
 /// Update user profile
@@ -323,10 +351,16 @@ async fn update_profile(
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Extract fields from input
-    let first_name = input.get("firstName").or_else(|| input.get("first_name")).and_then(|v| v.as_str());
-    let last_name = input.get("lastName").or_else(|| input.get("last_name")).and_then(|v| v.as_str());
+    let first_name = input
+        .get("firstName")
+        .or_else(|| input.get("first_name"))
+        .and_then(|v| v.as_str());
+    let last_name = input
+        .get("lastName")
+        .or_else(|| input.get("last_name"))
+        .and_then(|v| v.as_str());
     let email = input.get("email").and_then(|v| v.as_str());
-    
+
     // Update user in database
     sqlx::query(
         r#"UPDATE users SET 
@@ -334,7 +368,7 @@ async fn update_profile(
             last_name = COALESCE($2, last_name),
             email = COALESCE($3, email),
             updated_at = NOW()
-        WHERE id = $4"#
+        WHERE id = $4"#,
     )
     .bind(first_name)
     .bind(last_name)
@@ -342,8 +376,13 @@ async fn update_profile(
     .bind(user.id)
     .execute(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
-    
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
+
     Ok(Json(json!({
         "success": true,
         "message": "Profile updated successfully"
@@ -389,4 +428,3 @@ async fn delete_payment_method(
         "message": "Payment method deleted"
     })))
 }
-

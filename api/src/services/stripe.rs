@@ -78,7 +78,7 @@ pub struct LineItem {
     pub price_id: Option<String>,
     pub name: String,
     pub description: Option<String>,
-    pub amount: i64,        // In cents
+    pub amount: i64, // In cents
     pub currency: String,
     pub quantity: i64,
     pub is_subscription: bool,
@@ -117,7 +117,10 @@ impl StripeService {
                 .timeout(std::time::Duration::from_secs(30))
                 .build()
                 .unwrap_or_else(|e| {
-                    tracing::error!("Failed to create HTTP client with timeout: {}, using default", e);
+                    tracing::error!(
+                        "Failed to create HTTP client with timeout: {}, using default",
+                        e
+                    );
                     reqwest::Client::new()
                 }),
         }
@@ -139,7 +142,8 @@ impl StripeService {
         // First, try to find existing customer
         let search_params = [("email", email), ("limit", "1")];
 
-        let response: serde_json::Value = self.client
+        let response: serde_json::Value = self
+            .client
             .get(&format!("{}/customers", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
@@ -168,11 +172,17 @@ impl StripeService {
             }
         }
 
-        let response: StripeCustomer = self.client
+        let response: StripeCustomer = self
+            .client
             .post(&format!("{}/customers", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
-            .form(&params.iter().map(|(k, v)| (*k, v.as_str())).collect::<Vec<_>>())
+            .form(
+                &params
+                    .iter()
+                    .map(|(k, v)| (*k, v.as_str()))
+                    .collect::<Vec<_>>(),
+            )
             .send()
             .await?
             .json()
@@ -182,7 +192,10 @@ impl StripeService {
     }
 
     /// Create a checkout session for one-time or subscription payments
-    pub async fn create_checkout_session(&self, config: CheckoutConfig) -> Result<StripeCheckoutSession> {
+    pub async fn create_checkout_session(
+        &self,
+        config: CheckoutConfig,
+    ) -> Result<StripeCheckoutSession> {
         let mut form_params: Vec<(String, String)> = vec![];
 
         // Customer email
@@ -190,7 +203,11 @@ impl StripeService {
 
         // Determine mode based on items
         let has_subscription = config.line_items.iter().any(|item| item.is_subscription);
-        let mode = if has_subscription { "subscription" } else { "payment" };
+        let mode = if has_subscription {
+            "subscription"
+        } else {
+            "payment"
+        };
         form_params.push(("mode".to_string(), mode.to_string()));
 
         // URLs
@@ -202,26 +219,50 @@ impl StripeService {
             if let Some(ref price_id) = item.price_id {
                 // Use existing Stripe price
                 form_params.push((format!("line_items[{}][price]", i), price_id.clone()));
-                form_params.push((format!("line_items[{}][quantity]", i), item.quantity.to_string()));
+                form_params.push((
+                    format!("line_items[{}][quantity]", i),
+                    item.quantity.to_string(),
+                ));
             } else {
                 // Create ad-hoc price
-                form_params.push((format!("line_items[{}][price_data][currency]", i), item.currency.clone()));
-                form_params.push((format!("line_items[{}][price_data][unit_amount]", i), item.amount.to_string()));
-                form_params.push((format!("line_items[{}][price_data][product_data][name]", i), item.name.clone()));
+                form_params.push((
+                    format!("line_items[{}][price_data][currency]", i),
+                    item.currency.clone(),
+                ));
+                form_params.push((
+                    format!("line_items[{}][price_data][unit_amount]", i),
+                    item.amount.to_string(),
+                ));
+                form_params.push((
+                    format!("line_items[{}][price_data][product_data][name]", i),
+                    item.name.clone(),
+                ));
 
                 if let Some(ref desc) = item.description {
-                    form_params.push((format!("line_items[{}][price_data][product_data][description]", i), desc.clone()));
+                    form_params.push((
+                        format!("line_items[{}][price_data][product_data][description]", i),
+                        desc.clone(),
+                    ));
                 }
 
                 // Subscription pricing
                 if item.is_subscription {
                     let interval = item.interval.as_deref().unwrap_or("month");
                     let count = item.interval_count.unwrap_or(1);
-                    form_params.push((format!("line_items[{}][price_data][recurring][interval]", i), interval.to_string()));
-                    form_params.push((format!("line_items[{}][price_data][recurring][interval_count]", i), count.to_string()));
+                    form_params.push((
+                        format!("line_items[{}][price_data][recurring][interval]", i),
+                        interval.to_string(),
+                    ));
+                    form_params.push((
+                        format!("line_items[{}][price_data][recurring][interval_count]", i),
+                        count.to_string(),
+                    ));
                 }
 
-                form_params.push((format!("line_items[{}][quantity]", i), item.quantity.to_string()));
+                form_params.push((
+                    format!("line_items[{}][quantity]", i),
+                    item.quantity.to_string(),
+                ));
             }
         }
 
@@ -236,23 +277,37 @@ impl StripeService {
         }
 
         if config.billing_address_collection {
-            form_params.push(("billing_address_collection".to_string(), "required".to_string()));
+            form_params.push((
+                "billing_address_collection".to_string(),
+                "required".to_string(),
+            ));
         }
 
         // Payment method types
         form_params.push(("payment_method_types[0]".to_string(), "card".to_string()));
 
-        let response = self.client
+        let response = self
+            .client
             .post(&format!("{}/checkout/sessions", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
-            .form(&form_params.iter().map(|(k, v)| (k.as_str(), v.as_str())).collect::<Vec<_>>())
+            .form(
+                &form_params
+                    .iter()
+                    .map(|(k, v)| (k.as_str(), v.as_str()))
+                    .collect::<Vec<_>>(),
+            )
             .send()
             .await?;
 
         if !response.status().is_success() {
             let error: serde_json::Value = response.json().await?;
-            return Err(anyhow!("Stripe error: {}", error["error"]["message"].as_str().unwrap_or("Unknown error")));
+            return Err(anyhow!(
+                "Stripe error: {}",
+                error["error"]["message"]
+                    .as_str()
+                    .unwrap_or("Unknown error")
+            ));
         }
 
         Ok(response.json().await?)
@@ -288,13 +343,19 @@ impl StripeService {
         };
 
         let session = self.create_checkout_session(config).await?;
-        session.url.ok_or_else(|| anyhow!("No checkout URL returned"))
+        session
+            .url
+            .ok_or_else(|| anyhow!("No checkout URL returned"))
     }
 
     /// Retrieve checkout session details
     pub async fn get_checkout_session(&self, session_id: &str) -> Result<StripeCheckoutSession> {
-        let response: StripeCheckoutSession = self.client
-            .get(&format!("{}/checkout/sessions/{}", STRIPE_API_BASE, session_id))
+        let response: StripeCheckoutSession = self
+            .client
+            .get(&format!(
+                "{}/checkout/sessions/{}",
+                STRIPE_API_BASE, session_id
+            ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .query(&[("expand[]", "subscription"), ("expand[]", "payment_intent")])
@@ -312,12 +373,10 @@ impl StripeService {
         customer_id: &str,
         return_url: &str,
     ) -> Result<String> {
-        let params = [
-            ("customer", customer_id),
-            ("return_url", return_url),
-        ];
+        let params = [("customer", customer_id), ("return_url", return_url)];
 
-        let response: StripeBillingPortal = self.client
+        let response: StripeBillingPortal = self
+            .client
             .post(&format!("{}/billing_portal/sessions", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
@@ -332,8 +391,12 @@ impl StripeService {
 
     /// Get subscription details
     pub async fn get_subscription(&self, subscription_id: &str) -> Result<StripeSubscription> {
-        let response: StripeSubscription = self.client
-            .get(&format!("{}/subscriptions/{}", STRIPE_API_BASE, subscription_id))
+        let response: StripeSubscription = self
+            .client
+            .get(&format!(
+                "{}/subscriptions/{}",
+                STRIPE_API_BASE, subscription_id
+            ))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
             .send()
@@ -345,10 +408,18 @@ impl StripeService {
     }
 
     /// Cancel subscription
-    pub async fn cancel_subscription(&self, subscription_id: &str, immediately: bool) -> Result<StripeSubscription> {
+    pub async fn cancel_subscription(
+        &self,
+        subscription_id: &str,
+        immediately: bool,
+    ) -> Result<StripeSubscription> {
         if immediately {
-            let response: StripeSubscription = self.client
-                .delete(&format!("{}/subscriptions/{}", STRIPE_API_BASE, subscription_id))
+            let response: StripeSubscription = self
+                .client
+                .delete(&format!(
+                    "{}/subscriptions/{}",
+                    STRIPE_API_BASE, subscription_id
+                ))
                 .basic_auth(&self.secret_key, None::<&str>)
                 .header("Stripe-Version", STRIPE_API_VERSION)
                 .send()
@@ -358,8 +429,12 @@ impl StripeService {
 
             Ok(response)
         } else {
-            let response: StripeSubscription = self.client
-                .post(&format!("{}/subscriptions/{}", STRIPE_API_BASE, subscription_id))
+            let response: StripeSubscription = self
+                .client
+                .post(&format!(
+                    "{}/subscriptions/{}",
+                    STRIPE_API_BASE, subscription_id
+                ))
                 .basic_auth(&self.secret_key, None::<&str>)
                 .header("Stripe-Version", STRIPE_API_VERSION)
                 .form(&[("cancel_at_period_end", "true")])
@@ -379,9 +454,8 @@ impl StripeService {
         amount: Option<i64>,
         reason: Option<&str>,
     ) -> Result<StripeRefund> {
-        let mut params: Vec<(&str, String)> = vec![
-            ("payment_intent", payment_intent_id.to_string()),
-        ];
+        let mut params: Vec<(&str, String)> =
+            vec![("payment_intent", payment_intent_id.to_string())];
 
         if let Some(amt) = amount {
             params.push(("amount", amt.to_string()));
@@ -391,11 +465,17 @@ impl StripeService {
             params.push(("reason", r.to_string()));
         }
 
-        let response: StripeRefund = self.client
+        let response: StripeRefund = self
+            .client
             .post(&format!("{}/refunds", STRIPE_API_BASE))
             .basic_auth(&self.secret_key, None::<&str>)
             .header("Stripe-Version", STRIPE_API_VERSION)
-            .form(&params.iter().map(|(k, v)| (*k, v.as_str())).collect::<Vec<_>>())
+            .form(
+                &params
+                    .iter()
+                    .map(|(k, v)| (*k, v.as_str()))
+                    .collect::<Vec<_>>(),
+            )
             .send()
             .await?
             .json()
@@ -409,7 +489,9 @@ impl StripeService {
     /// Stripe signature header format: t=timestamp,v1=signature
     /// The signed payload is: {timestamp}.{payload}
     pub fn verify_webhook(&self, payload: &[u8], signature_header: &str) -> Result<bool> {
-        let webhook_secret = self.webhook_secret.as_ref()
+        let webhook_secret = self
+            .webhook_secret
+            .as_ref()
             .ok_or_else(|| anyhow!("Webhook secret not configured"))?;
 
         // Parse the signature header
@@ -427,15 +509,16 @@ impl StripeService {
             }
         }
 
-        let timestamp = timestamp
-            .ok_or_else(|| anyhow!("Missing timestamp in signature header"))?;
+        let timestamp =
+            timestamp.ok_or_else(|| anyhow!("Missing timestamp in signature header"))?;
 
         if signatures.is_empty() {
             return Err(anyhow!("No v1 signature found in header"));
         }
 
         // Verify timestamp is within tolerance (5 minutes)
-        let timestamp_i64: i64 = timestamp.parse()
+        let timestamp_i64: i64 = timestamp
+            .parse()
             .map_err(|_| anyhow!("Invalid timestamp format"))?;
         let now = chrono::Utc::now().timestamp();
         let tolerance = 300; // 5 minutes

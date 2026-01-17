@@ -30,12 +30,9 @@ async fn list_courses(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let mut sql = String::from(
-        r#"SELECT * FROM courses_enhanced WHERE deleted_at IS NULL"#
-    );
-    let mut count_sql = String::from(
-        r#"SELECT COUNT(*) FROM courses_enhanced WHERE deleted_at IS NULL"#
-    );
+    let mut sql = String::from(r#"SELECT * FROM courses_enhanced WHERE deleted_at IS NULL"#);
+    let mut count_sql =
+        String::from(r#"SELECT COUNT(*) FROM courses_enhanced WHERE deleted_at IS NULL"#);
 
     // Build dynamic WHERE clauses
     let mut conditions: Vec<String> = vec![];
@@ -79,7 +76,10 @@ async fn list_courses(
         .await
         .map_err(|e| {
             error!("Failed to list courses: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
         })?;
 
     let total: (i64,) = sqlx::query_as(&count_sql)
@@ -127,46 +127,48 @@ async fn get_course(
     State(state): State<AppState>,
     Path(course_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let course: CourseEnhanced = sqlx::query_as(
-        "SELECT * FROM courses_enhanced WHERE id = $1 AND deleted_at IS NULL"
-    )
-    .bind(course_id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| {
-        error!("Failed to get course: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-    })?
-    .ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"})))
-    })?;
+    let course: CourseEnhanced =
+        sqlx::query_as("SELECT * FROM courses_enhanced WHERE id = $1 AND deleted_at IS NULL")
+            .bind(course_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                error!("Failed to get course: {}", e);
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": "Course not found"})),
+                )
+            })?;
 
     // Get sections
-    let sections: Vec<CourseSection> = sqlx::query_as(
-        "SELECT * FROM course_sections WHERE course_id = $1 ORDER BY sort_order"
-    )
-    .bind(course_id)
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    let sections: Vec<CourseSection> =
+        sqlx::query_as("SELECT * FROM course_sections WHERE course_id = $1 ORDER BY sort_order")
+            .bind(course_id)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default();
 
     // Get lessons grouped by section
-    let lessons: Vec<CourseLesson> = sqlx::query_as(
-        "SELECT * FROM course_lessons WHERE course_id = $1 ORDER BY sort_order"
-    )
-    .bind(course_id)
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    let lessons: Vec<CourseLesson> =
+        sqlx::query_as("SELECT * FROM course_lessons WHERE course_id = $1 ORDER BY sort_order")
+            .bind(course_id)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default();
 
     // Get resources grouped by section/lesson
-    let resources: Vec<CourseResource> = sqlx::query_as(
-        "SELECT * FROM course_resources WHERE course_id = $1 ORDER BY sort_order"
-    )
-    .bind(course_id)
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    let resources: Vec<CourseResource> =
+        sqlx::query_as("SELECT * FROM course_resources WHERE course_id = $1 ORDER BY sort_order")
+            .bind(course_id)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default();
 
     // Get live sessions
     let live_sessions: Vec<CourseLiveSession> = sqlx::query_as(
@@ -261,18 +263,20 @@ async fn get_course(
     let course_resources: Vec<serde_json::Value> = resources
         .iter()
         .filter(|r| r.section_id.is_none() && r.lesson_id.is_none())
-        .map(|r| json!({
-            "id": r.id,
-            "title": r.title,
-            "description": r.description,
-            "file_url": r.file_url,
-            "file_name": r.file_name,
-            "file_type": r.file_type,
-            "file_size_bytes": r.file_size_bytes,
-            "formatted_size": format_file_size(r.file_size_bytes.unwrap_or(0)),
-            "version": r.version,
-            "download_count": r.download_count
-        }))
+        .map(|r| {
+            json!({
+                "id": r.id,
+                "title": r.title,
+                "description": r.description,
+                "file_url": r.file_url,
+                "file_name": r.file_name,
+                "file_type": r.file_type,
+                "file_size_bytes": r.file_size_bytes,
+                "formatted_size": format_file_size(r.file_size_bytes.unwrap_or(0)),
+                "version": r.version,
+                "download_count": r.download_count
+            })
+        })
         .collect();
 
     // Live sessions response
@@ -296,10 +300,15 @@ async fn get_course(
         .collect();
 
     // Parse tags
-    let tags: Vec<String> = course.tags
+    let tags: Vec<String> = course
+        .tags
         .as_ref()
         .and_then(|t| t.as_array())
-        .map(|arr| arr.iter().filter_map(|v| v.as_str().map(String::from)).collect())
+        .map(|arr| {
+            arr.iter()
+                .filter_map(|v| v.as_str().map(String::from))
+                .collect()
+        })
         .unwrap_or_default();
 
     Ok(Json(json!({
@@ -342,8 +351,14 @@ async fn create_course(
     Json(input): Json<CreateCourseRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let slug = slugify(&input.title);
-    let tags_json = input.tags.as_ref().map(|t| serde_json::to_value(t).unwrap_or_default());
-    let prereq_json = input.prerequisite_course_ids.as_ref().map(|p| serde_json::to_value(p).unwrap_or_default());
+    let tags_json = input
+        .tags
+        .as_ref()
+        .map(|t| serde_json::to_value(t).unwrap_or_default());
+    let prereq_json = input
+        .prerequisite_course_ids
+        .as_ref()
+        .map(|p| serde_json::to_value(p).unwrap_or_default());
 
     let course: CourseEnhanced = sqlx::query_as(
         r#"INSERT INTO courses_enhanced
@@ -409,16 +424,28 @@ async fn update_course(
         updates.push(format!("subtitle = '{}'", subtitle.replace('\'', "''")));
     }
     if let Some(ref description) = input.description {
-        updates.push(format!("description = '{}'", description.replace('\'', "''")));
+        updates.push(format!(
+            "description = '{}'",
+            description.replace('\'', "''")
+        ));
     }
     if let Some(ref description_html) = input.description_html {
-        updates.push(format!("description_html = '{}'", description_html.replace('\'', "''")));
+        updates.push(format!(
+            "description_html = '{}'",
+            description_html.replace('\'', "''")
+        ));
     }
     if let Some(ref thumbnail_url) = input.thumbnail_url {
-        updates.push(format!("thumbnail_url = '{}'", thumbnail_url.replace('\'', "''")));
+        updates.push(format!(
+            "thumbnail_url = '{}'",
+            thumbnail_url.replace('\'', "''")
+        ));
     }
     if let Some(ref trailer_video_url) = input.trailer_video_url {
-        updates.push(format!("trailer_video_url = '{}'", trailer_video_url.replace('\'', "''")));
+        updates.push(format!(
+            "trailer_video_url = '{}'",
+            trailer_video_url.replace('\'', "''")
+        ));
     }
     if let Some(ref difficulty_level) = input.difficulty_level {
         updates.push(format!("difficulty_level = '{}'", difficulty_level));
@@ -453,7 +480,10 @@ async fn update_course(
     }
     if let Some(ref prereq) = input.prerequisite_course_ids {
         let prereq_json = serde_json::to_string(prereq).unwrap_or_else(|_| "[]".to_string());
-        updates.push(format!("prerequisite_course_ids = '{}'::jsonb", prereq_json));
+        updates.push(format!(
+            "prerequisite_course_ids = '{}'::jsonb",
+            prereq_json
+        ));
     }
     if let Some(certificate_enabled) = input.certificate_enabled {
         updates.push(format!("certificate_enabled = {}", certificate_enabled));
@@ -479,7 +509,10 @@ async fn update_course(
         .await
         .map_err(|e| {
             error!("Failed to update course: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
         })?;
 
     match result {
@@ -487,7 +520,10 @@ async fn update_course(
             info!("Updated course: {} ({})", title, id);
             Ok(Json(json!({"success": true, "course_id": id})))
         }
-        None => Err((StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"}))))
+        None => Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Course not found"})),
+        )),
     }
 }
 
@@ -497,18 +533,24 @@ async fn delete_course(
     Path(course_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let result = sqlx::query(
-        "UPDATE courses_enhanced SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL"
+        "UPDATE courses_enhanced SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL",
     )
     .bind(course_id)
     .execute(&state.db.pool)
     .await
     .map_err(|e| {
         error!("Failed to delete course: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Course not found"})),
+        ));
     }
 
     info!("Soft deleted course: {}", course_id);
@@ -526,18 +568,19 @@ async fn create_section(
     Json(input): Json<CreateSectionRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get max sort order
-    let max_order: (Option<i32>,) = sqlx::query_as(
-        "SELECT MAX(sort_order) FROM course_sections WHERE course_id = $1"
-    )
-    .bind(course_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((None,));
+    let max_order: (Option<i32>,) =
+        sqlx::query_as("SELECT MAX(sort_order) FROM course_sections WHERE course_id = $1")
+            .bind(course_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((None,));
 
     let sort_order = max_order.0.unwrap_or(0) + 1;
 
     let unlock_date: Option<DateTime<Utc>> = input.unlock_date.as_ref().and_then(|d| {
-        DateTime::parse_from_rfc3339(d).ok().map(|dt| dt.with_timezone(&Utc))
+        DateTime::parse_from_rfc3339(d)
+            .ok()
+            .map(|dt| dt.with_timezone(&Utc))
     });
 
     let section: CourseSection = sqlx::query_as(
@@ -545,7 +588,7 @@ async fn create_section(
            (course_id, title, description, sort_order, section_type, unlock_type,
             unlock_after_section_id, unlock_date, is_published)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9)
-           RETURNING *"#
+           RETURNING *"#,
     )
     .bind(course_id)
     .bind(&input.title)
@@ -560,7 +603,10 @@ async fn create_section(
     .await
     .map_err(|e| {
         error!("Failed to create section: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
     info!("Created section: {} in course {}", section.title, course_id);
@@ -587,7 +633,10 @@ async fn update_section(
         updates.push(format!("title = '{}'", title.replace('\'', "''")));
     }
     if let Some(ref description) = input.description {
-        updates.push(format!("description = '{}'", description.replace('\'', "''")));
+        updates.push(format!(
+            "description = '{}'",
+            description.replace('\'', "''")
+        ));
     }
     if let Some(ref section_type) = input.section_type {
         updates.push(format!("section_type = '{}'", section_type));
@@ -623,7 +672,10 @@ async fn update_section(
         .await
         .map_err(|e| {
             error!("Failed to update section: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
         })?;
 
     Ok(Json(json!({"success": true})))
@@ -647,20 +699,24 @@ async fn delete_section(
         .await
         .ok();
 
-    let result = sqlx::query(
-        "DELETE FROM course_sections WHERE id = $1 AND course_id = $2"
-    )
-    .bind(section_id)
-    .bind(course_id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| {
-        error!("Failed to delete section: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-    })?;
+    let result = sqlx::query("DELETE FROM course_sections WHERE id = $1 AND course_id = $2")
+        .bind(section_id)
+        .bind(course_id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            error!("Failed to delete section: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Section not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Section not found"})),
+        ));
     }
 
     Ok(Json(json!({"success": true})))
@@ -698,13 +754,12 @@ async fn create_lesson(
     Json(input): Json<CreateLessonRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get max sort order for section
-    let max_order: (Option<i32>,) = sqlx::query_as(
-        "SELECT MAX(sort_order) FROM course_lessons WHERE section_id = $1"
-    )
-    .bind(input.section_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((None,));
+    let max_order: (Option<i32>,) =
+        sqlx::query_as("SELECT MAX(sort_order) FROM course_lessons WHERE section_id = $1")
+            .bind(input.section_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((None,));
 
     let sort_order = max_order.0.unwrap_or(0) + 1;
 
@@ -714,7 +769,7 @@ async fn create_lesson(
             bunny_video_guid, thumbnail_url, sort_order, lesson_type, is_preview,
             is_published, completion_type, required_watch_percent)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14)
-           RETURNING *"#
+           RETURNING *"#,
     )
     .bind(course_id)
     .bind(input.section_id)
@@ -734,7 +789,10 @@ async fn create_lesson(
     .await
     .map_err(|e| {
         error!("Failed to create lesson: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
     info!("Created lesson: {} in course {}", lesson.title, course_id);
@@ -765,10 +823,16 @@ async fn update_lesson(
         updates.push(format!("title = '{}'", title.replace('\'', "''")));
     }
     if let Some(ref description) = input.description {
-        updates.push(format!("description = '{}'", description.replace('\'', "''")));
+        updates.push(format!(
+            "description = '{}'",
+            description.replace('\'', "''")
+        ));
     }
     if let Some(ref content_html) = input.content_html {
-        updates.push(format!("content_html = '{}'", content_html.replace('\'', "''")));
+        updates.push(format!(
+            "content_html = '{}'",
+            content_html.replace('\'', "''")
+        ));
     }
     if let Some(ref video_url) = input.video_url {
         updates.push(format!("video_url = '{}'", video_url.replace('\'', "''")));
@@ -777,7 +841,10 @@ async fn update_lesson(
         updates.push(format!("bunny_video_guid = '{}'", bunny_guid));
     }
     if let Some(ref thumbnail_url) = input.thumbnail_url {
-        updates.push(format!("thumbnail_url = '{}'", thumbnail_url.replace('\'', "''")));
+        updates.push(format!(
+            "thumbnail_url = '{}'",
+            thumbnail_url.replace('\'', "''")
+        ));
     }
     if let Some(duration) = input.duration_seconds {
         updates.push(format!("duration_seconds = {}", duration));
@@ -816,7 +883,10 @@ async fn update_lesson(
         .await
         .map_err(|e| {
             error!("Failed to update lesson: {}", e);
-            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
         })?;
 
     Ok(Json(json!({"success": true})))
@@ -834,20 +904,24 @@ async fn delete_lesson(
         .await
         .ok();
 
-    let result = sqlx::query(
-        "DELETE FROM course_lessons WHERE id = $1 AND course_id = $2"
-    )
-    .bind(lesson_id)
-    .bind(course_id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| {
-        error!("Failed to delete lesson: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-    })?;
+    let result = sqlx::query("DELETE FROM course_lessons WHERE id = $1 AND course_id = $2")
+        .bind(lesson_id)
+        .bind(course_id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            error!("Failed to delete lesson: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Lesson not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Lesson not found"})),
+        ));
     }
 
     Ok(Json(json!({"success": true})))
@@ -903,7 +977,7 @@ async fn create_resource(
            (course_id, section_id, lesson_id, title, description, file_url, file_name,
             file_type, file_size_bytes, sort_order, version)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-           RETURNING *"#
+           RETURNING *"#,
     )
     .bind(course_id)
     .bind(input.section_id)
@@ -920,10 +994,16 @@ async fn create_resource(
     .await
     .map_err(|e| {
         error!("Failed to create resource: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
-    info!("Created resource: {} for course {}", resource.title, course_id);
+    info!(
+        "Created resource: {} for course {}",
+        resource.title, course_id
+    );
 
     Ok(Json(json!({
         "success": true,
@@ -941,20 +1021,24 @@ async fn delete_resource(
     State(state): State<AppState>,
     Path((course_id, resource_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let result = sqlx::query(
-        "DELETE FROM course_resources WHERE id = $1 AND course_id = $2"
-    )
-    .bind(resource_id)
-    .bind(course_id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| {
-        error!("Failed to delete resource: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-    })?;
+    let result = sqlx::query("DELETE FROM course_resources WHERE id = $1 AND course_id = $2")
+        .bind(resource_id)
+        .bind(course_id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            error!("Failed to delete resource: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Resource not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Resource not found"})),
+        ));
     }
 
     Ok(Json(json!({"success": true})))
@@ -970,26 +1054,33 @@ async fn create_live_session(
     Path(course_id): Path<i64>,
     Json(input): Json<CreateLiveSessionRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let session_date = NaiveDate::parse_from_str(&input.session_date, "%Y-%m-%d")
-        .map_err(|_| (StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid date format. Use YYYY-MM-DD"}))))?;
+    let session_date =
+        NaiveDate::parse_from_str(&input.session_date, "%Y-%m-%d").map_err(|_| {
+            (
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "Invalid date format. Use YYYY-MM-DD"})),
+            )
+        })?;
 
     let session_time: Option<NaiveTime> = input.session_time.as_ref().and_then(|t| {
-        NaiveTime::parse_from_str(t, "%H:%M:%S").ok()
+        NaiveTime::parse_from_str(t, "%H:%M:%S")
+            .ok()
             .or_else(|| NaiveTime::parse_from_str(t, "%H:%M").ok())
     });
 
     let replay_until: Option<DateTime<Utc>> = input.replay_available_until.as_ref().and_then(|d| {
-        DateTime::parse_from_rfc3339(d).ok().map(|dt| dt.with_timezone(&Utc))
+        DateTime::parse_from_rfc3339(d)
+            .ok()
+            .map(|dt| dt.with_timezone(&Utc))
     });
 
     // Get max sort order
-    let max_order: (Option<i32>,) = sqlx::query_as(
-        "SELECT MAX(sort_order) FROM course_live_sessions WHERE course_id = $1"
-    )
-    .bind(course_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((None,));
+    let max_order: (Option<i32>,) =
+        sqlx::query_as("SELECT MAX(sort_order) FROM course_live_sessions WHERE course_id = $1")
+            .bind(course_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((None,));
 
     let sort_order = max_order.0.unwrap_or(0) + 1;
 
@@ -999,7 +1090,7 @@ async fn create_live_session(
             video_url, bunny_video_guid, thumbnail_url, replay_available_until,
             is_published, sort_order)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
-           RETURNING *"#
+           RETURNING *"#,
     )
     .bind(course_id)
     .bind(input.section_id)
@@ -1017,10 +1108,16 @@ async fn create_live_session(
     .await
     .map_err(|e| {
         error!("Failed to create live session: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
-    info!("Created live session: {} for course {}", session.title, course_id);
+    info!(
+        "Created live session: {} for course {}",
+        session.title, course_id
+    );
 
     Ok(Json(json!({
         "success": true,
@@ -1049,7 +1146,7 @@ async fn bulk_create_live_sessions(
         let result = sqlx::query(
             r#"INSERT INTO course_live_sessions
                (course_id, section_id, title, session_date, video_url, bunny_video_guid, sort_order)
-               VALUES ($1, $2, $3, $4, $5, $6, $7)"#
+               VALUES ($1, $2, $3, $4, $5, $6, $7)"#,
         )
         .bind(course_id)
         .bind(input.section_id)
@@ -1078,20 +1175,24 @@ async fn delete_live_session(
     State(state): State<AppState>,
     Path((course_id, session_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let result = sqlx::query(
-        "DELETE FROM course_live_sessions WHERE id = $1 AND course_id = $2"
-    )
-    .bind(session_id)
-    .bind(course_id)
-    .execute(&state.db.pool)
-    .await
-    .map_err(|e| {
-        error!("Failed to delete live session: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-    })?;
+    let result = sqlx::query("DELETE FROM course_live_sessions WHERE id = $1 AND course_id = $2")
+        .bind(session_id)
+        .bind(course_id)
+        .execute(&state.db.pool)
+        .await
+        .map_err(|e| {
+            error!("Failed to delete live session: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Live session not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Live session not found"})),
+        ));
     }
 
     Ok(Json(json!({"success": true})))
@@ -1107,14 +1208,24 @@ async fn enroll_user(
     Path(course_id): Path<i64>,
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let user_id = input.get("user_id").and_then(|v| v.as_i64())
-        .ok_or_else(|| (StatusCode::BAD_REQUEST, Json(json!({"error": "user_id required"}))))?;
+    let user_id = input
+        .get("user_id")
+        .and_then(|v| v.as_i64())
+        .ok_or_else(|| {
+            (
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "user_id required"})),
+            )
+        })?;
 
-    let enrollment_source = input.get("enrollment_source").and_then(|v| v.as_str()).unwrap_or("admin");
+    let enrollment_source = input
+        .get("enrollment_source")
+        .and_then(|v| v.as_str())
+        .unwrap_or("admin");
 
     // Get total lessons count
     let total_lessons: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM course_lessons WHERE course_id = $1 AND is_published = true"
+        "SELECT COUNT(*) FROM course_lessons WHERE course_id = $1 AND is_published = true",
     )
     .bind(course_id)
     .fetch_one(&state.db.pool)
@@ -1126,7 +1237,7 @@ async fn enroll_user(
            (user_id, course_id, enrollment_source, total_lessons)
            VALUES ($1, $2, $3, $4)
            ON CONFLICT (user_id, course_id) DO UPDATE SET is_active = true
-           RETURNING *"#
+           RETURNING *"#,
     )
     .bind(user_id)
     .bind(course_id)
@@ -1136,7 +1247,10 @@ async fn enroll_user(
     .await
     .map_err(|e| {
         error!("Failed to enroll user: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
     Ok(Json(json!({
@@ -1156,15 +1270,23 @@ async fn get_enrollments(
     Path(course_id): Path<i64>,
     Query(query): Query<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let page = query.get("page").and_then(|v| v.as_i64()).unwrap_or(1).max(1);
-    let per_page = query.get("per_page").and_then(|v| v.as_i64()).unwrap_or(50).min(100);
+    let page = query
+        .get("page")
+        .and_then(|v| v.as_i64())
+        .unwrap_or(1)
+        .max(1);
+    let per_page = query
+        .get("per_page")
+        .and_then(|v| v.as_i64())
+        .unwrap_or(50)
+        .min(100);
     let offset = (page - 1) * per_page;
 
     let enrollments: Vec<UserCourseEnrollment> = sqlx::query_as(
         r#"SELECT * FROM user_course_enrollments
            WHERE course_id = $1 AND is_active = true
            ORDER BY enrolled_at DESC
-           LIMIT $2 OFFSET $3"#
+           LIMIT $2 OFFSET $3"#,
     )
     .bind(course_id)
     .bind(per_page)
@@ -1174,7 +1296,7 @@ async fn get_enrollments(
     .unwrap_or_default();
 
     let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND is_active = true"
+        "SELECT COUNT(*) FROM user_course_enrollments WHERE course_id = $1 AND is_active = true",
     )
     .bind(course_id)
     .fetch_one(&state.db.pool)
@@ -1183,18 +1305,20 @@ async fn get_enrollments(
 
     let enrollment_responses: Vec<serde_json::Value> = enrollments
         .iter()
-        .map(|e| json!({
-            "id": e.id,
-            "user_id": e.user_id,
-            "enrolled_at": e.enrolled_at.to_rfc3339(),
-            "completed_lessons": e.completed_lessons,
-            "total_lessons": e.total_lessons,
-            "progress_percent": e.progress_percent,
-            "is_completed": e.is_completed,
-            "completed_at": e.completed_at.map(|d| d.to_rfc3339()),
-            "certificate_issued": e.certificate_issued,
-            "last_activity_at": e.last_activity_at.to_rfc3339()
-        }))
+        .map(|e| {
+            json!({
+                "id": e.id,
+                "user_id": e.user_id,
+                "enrolled_at": e.enrolled_at.to_rfc3339(),
+                "completed_lessons": e.completed_lessons,
+                "total_lessons": e.total_lessons,
+                "progress_percent": e.progress_percent,
+                "is_completed": e.is_completed,
+                "completed_at": e.completed_at.map(|d| d.to_rfc3339()),
+                "certificate_issued": e.certificate_issued,
+                "last_activity_at": e.last_activity_at.to_rfc3339()
+            })
+        })
         .collect();
 
     Ok(Json(json!({
@@ -1213,20 +1337,32 @@ async fn update_lesson_progress(
     Path((course_id, lesson_id)): Path<(i64, i64)>,
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let user_id = input.get("user_id").and_then(|v| v.as_i64())
-        .ok_or_else(|| (StatusCode::BAD_REQUEST, Json(json!({"error": "user_id required"}))))?;
+    let user_id = input
+        .get("user_id")
+        .and_then(|v| v.as_i64())
+        .ok_or_else(|| {
+            (
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "user_id required"})),
+            )
+        })?;
 
-    let watch_position = input.get("watch_position_seconds").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
-    let watch_percent = input.get("watch_percent").and_then(|v| v.as_i64()).unwrap_or(0) as i32;
+    let watch_position = input
+        .get("watch_position_seconds")
+        .and_then(|v| v.as_i64())
+        .unwrap_or(0) as i32;
+    let watch_percent = input
+        .get("watch_percent")
+        .and_then(|v| v.as_i64())
+        .unwrap_or(0) as i32;
 
     // Get lesson's required watch percent
-    let lesson: Option<(i32,)> = sqlx::query_as(
-        "SELECT required_watch_percent FROM course_lessons WHERE id = $1"
-    )
-    .bind(lesson_id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .unwrap_or(None);
+    let lesson: Option<(i32,)> =
+        sqlx::query_as("SELECT required_watch_percent FROM course_lessons WHERE id = $1")
+            .bind(lesson_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .unwrap_or(None);
 
     let required_percent = lesson.map(|l| l.0).unwrap_or(80);
     let is_completed = watch_percent >= required_percent;
@@ -1281,7 +1417,7 @@ async fn get_user_progress(
     Path((course_id, user_id)): Path<(i64, i64)>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let enrollment: Option<UserCourseEnrollment> = sqlx::query_as(
-        "SELECT * FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2"
+        "SELECT * FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2",
     )
     .bind(user_id)
     .bind(course_id)
@@ -1290,27 +1426,31 @@ async fn get_user_progress(
     .unwrap_or(None);
 
     let enrollment = enrollment.ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(json!({"error": "Enrollment not found"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Enrollment not found"})),
+        )
     })?;
 
-    let lesson_progress: Vec<UserLessonProgress> = sqlx::query_as(
-        "SELECT * FROM user_lesson_progress WHERE user_id = $1 AND course_id = $2"
-    )
-    .bind(user_id)
-    .bind(course_id)
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    let lesson_progress: Vec<UserLessonProgress> =
+        sqlx::query_as("SELECT * FROM user_lesson_progress WHERE user_id = $1 AND course_id = $2")
+            .bind(user_id)
+            .bind(course_id)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default();
 
     let progress_map: Vec<serde_json::Value> = lesson_progress
         .iter()
-        .map(|p| json!({
-            "lesson_id": p.lesson_id,
-            "watch_position_seconds": p.watch_position_seconds,
-            "watch_percent": p.watch_percent,
-            "is_completed": p.is_completed,
-            "completed_at": p.completed_at.map(|d| d.to_rfc3339())
-        }))
+        .map(|p| {
+            json!({
+                "lesson_id": p.lesson_id,
+                "watch_position_seconds": p.watch_position_seconds,
+                "watch_percent": p.watch_percent,
+                "is_completed": p.is_completed,
+                "completed_at": p.completed_at.map(|d| d.to_rfc3339())
+            })
+        })
         .collect();
 
     Ok(Json(json!({
@@ -1356,40 +1496,35 @@ async fn get_categories(
 async fn get_course_stats(
     State(state): State<AppState>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let total_courses: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM courses_enhanced WHERE deleted_at IS NULL"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let total_courses: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM courses_enhanced WHERE deleted_at IS NULL")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     let published_courses: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM courses_enhanced WHERE is_published = true AND deleted_at IS NULL"
+        "SELECT COUNT(*) FROM courses_enhanced WHERE is_published = true AND deleted_at IS NULL",
     )
     .fetch_one(&state.db.pool)
     .await
     .unwrap_or((0,));
 
-    let total_lessons: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM course_lessons"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let total_lessons: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM course_lessons")
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
 
-    let total_enrollments: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM user_course_enrollments WHERE is_active = true"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let total_enrollments: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM user_course_enrollments WHERE is_active = true")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
-    let completed_enrollments: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM user_course_enrollments WHERE is_completed = true"
-    )
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let completed_enrollments: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM user_course_enrollments WHERE is_completed = true")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     Ok(Json(json!({
         "total_courses": total_courses.0,
@@ -1411,14 +1546,23 @@ async fn clone_course(
     Path(course_id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Get original course
-    let original: CourseEnhanced = sqlx::query_as(
-        "SELECT * FROM courses_enhanced WHERE id = $1 AND deleted_at IS NULL"
-    )
-    .bind(course_id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Course not found"}))))?;
+    let original: CourseEnhanced =
+        sqlx::query_as("SELECT * FROM courses_enhanced WHERE id = $1 AND deleted_at IS NULL")
+            .bind(course_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": "Course not found"})),
+                )
+            })?;
 
     let new_title = format!("{} (Copy)", original.title);
     let new_slug = format!("{}-copy-{}", original.slug, chrono::Utc::now().timestamp());
@@ -1431,7 +1575,7 @@ async fn clone_course(
             is_published, is_free, required_plan_id, price_cents, certificate_enabled,
             completion_threshold_percent)
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, false, $12, $13, $14, $15, $16)
-           RETURNING *"#
+           RETURNING *"#,
     )
     .bind(&new_title)
     .bind(&new_slug)
@@ -1453,17 +1597,19 @@ async fn clone_course(
     .await
     .map_err(|e| {
         error!("Failed to clone course: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
     })?;
 
     // Clone sections
-    let sections: Vec<CourseSection> = sqlx::query_as(
-        "SELECT * FROM course_sections WHERE course_id = $1 ORDER BY sort_order"
-    )
-    .bind(course_id)
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    let sections: Vec<CourseSection> =
+        sqlx::query_as("SELECT * FROM course_sections WHERE course_id = $1 ORDER BY sort_order")
+            .bind(course_id)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default();
 
     let mut section_map: std::collections::HashMap<i64, i64> = std::collections::HashMap::new();
 
@@ -1472,7 +1618,7 @@ async fn clone_course(
             r#"INSERT INTO course_sections
                (course_id, title, description, sort_order, section_type, unlock_type, is_published)
                VALUES ($1, $2, $3, $4, $5, $6, $7)
-               RETURNING id"#
+               RETURNING id"#,
         )
         .bind(new_course.id)
         .bind(&section.title)
@@ -1483,19 +1629,23 @@ async fn clone_course(
         .bind(section.is_published)
         .fetch_one(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
         section_map.insert(section.id, new_section.0);
     }
 
     // Clone lessons
-    let lessons: Vec<CourseLesson> = sqlx::query_as(
-        "SELECT * FROM course_lessons WHERE course_id = $1"
-    )
-    .bind(course_id)
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    let lessons: Vec<CourseLesson> =
+        sqlx::query_as("SELECT * FROM course_lessons WHERE course_id = $1")
+            .bind(course_id)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default();
 
     for lesson in &lessons {
         if let Some(&new_section_id) = section_map.get(&lesson.section_id) {
@@ -1550,26 +1700,50 @@ pub fn router() -> Router<AppState> {
         .route("/", get(list_courses).post(create_course))
         .route("/stats", get(get_course_stats))
         .route("/categories", get(get_categories))
-        .route("/:course_id", get(get_course).put(update_course).delete(delete_course))
+        .route(
+            "/:course_id",
+            get(get_course).put(update_course).delete(delete_course),
+        )
         .route("/:course_id/clone", post(clone_course))
         // Sections
         .route("/:course_id/sections", post(create_section))
         .route("/:course_id/sections/reorder", put(reorder_sections))
-        .route("/:course_id/sections/:section_id", put(update_section).delete(delete_section))
+        .route(
+            "/:course_id/sections/:section_id",
+            put(update_section).delete(delete_section),
+        )
         // Lessons
         .route("/:course_id/lessons", post(create_lesson))
-        .route("/:course_id/lessons/:lesson_id", put(update_lesson).delete(delete_lesson))
-        .route("/:course_id/sections/:section_id/lessons/reorder", put(reorder_lessons))
+        .route(
+            "/:course_id/lessons/:lesson_id",
+            put(update_lesson).delete(delete_lesson),
+        )
+        .route(
+            "/:course_id/sections/:section_id/lessons/reorder",
+            put(reorder_lessons),
+        )
         // Resources
         .route("/:course_id/resources", post(create_resource))
-        .route("/:course_id/resources/:resource_id", delete(delete_resource))
+        .route(
+            "/:course_id/resources/:resource_id",
+            delete(delete_resource),
+        )
         // Live Sessions
         .route("/:course_id/live-sessions", post(create_live_session))
-        .route("/:course_id/live-sessions/bulk", post(bulk_create_live_sessions))
-        .route("/:course_id/live-sessions/:session_id", delete(delete_live_session))
+        .route(
+            "/:course_id/live-sessions/bulk",
+            post(bulk_create_live_sessions),
+        )
+        .route(
+            "/:course_id/live-sessions/:session_id",
+            delete(delete_live_session),
+        )
         // Enrollments & Progress
         .route("/:course_id/enroll", post(enroll_user))
         .route("/:course_id/enrollments", get(get_enrollments))
-        .route("/:course_id/lessons/:lesson_id/progress", post(update_lesson_progress))
+        .route(
+            "/:course_id/lessons/:lesson_id/progress",
+            post(update_lesson_progress),
+        )
         .route("/:course_id/progress/:user_id", get(get_user_progress))
 }

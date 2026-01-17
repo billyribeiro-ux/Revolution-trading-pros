@@ -10,7 +10,7 @@ use uuid::Uuid;
 pub struct Membership {
     pub id: Uuid,
     pub user_id: Uuid,
-    pub plan: String, // "free", "basic", "pro", "enterprise"
+    pub plan: String,   // "free", "basic", "pro", "enterprise"
     pub status: String, // "active", "cancelled", "past_due"
     pub stripe_subscription_id: Option<String>,
     pub current_period_start: Option<DateTime<Utc>>,

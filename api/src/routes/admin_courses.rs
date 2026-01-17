@@ -11,14 +11,13 @@ use chrono::NaiveDateTime;
 use serde_json::json;
 use uuid::Uuid;
 
-use crate::models::course::{
-    Course, CourseDownload, CourseListItem, CourseModule, CourseQueryParams,
-    CreateCourseRequest, CreateDownloadRequest, CreateLessonRequest,
-    CreateModuleRequest, Lesson, LessonListItem, ModuleWithLessons, PaginatedCourses,
-    ReorderRequest, UpdateCourseRequest, UpdateDownloadRequest, UpdateLessonRequest,
-    UpdateModuleRequest,
-};
 use crate::middleware::admin::AdminUser;
+use crate::models::course::{
+    Course, CourseDownload, CourseListItem, CourseModule, CourseQueryParams, CreateCourseRequest,
+    CreateDownloadRequest, CreateLessonRequest, CreateModuleRequest, Lesson, LessonListItem,
+    ModuleWithLessons, PaginatedCourses, ReorderRequest, UpdateCourseRequest,
+    UpdateDownloadRequest, UpdateLessonRequest, UpdateModuleRequest,
+};
 use crate::AppState;
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -62,50 +61,66 @@ async fn list_courses(
         _ => "created_at".to_string(),
     };
     let sort_order = params.sort_order.unwrap_or_else(|| "DESC".to_string());
-    let safe_sort_order = if sort_order.to_uppercase() == "ASC" { "ASC" } else { "DESC" };
+    let safe_sort_order = if sort_order.to_uppercase() == "ASC" {
+        "ASC"
+    } else {
+        "DESC"
+    };
     query.push_str(&format!(" ORDER BY {} {}", safe_sort_by, safe_sort_order));
     query.push_str(&format!(" LIMIT {} OFFSET {}", per_page, offset));
 
     // Query base course data
-    let rows: Vec<(Uuid, String, String, Option<String>, i32, bool, Option<String>, Option<String>, NaiveDateTime)> = 
-        sqlx::query_as(&query)
-            .fetch_all(&state.db.pool)
-            .await
-            .map_err(|e| {
-                tracing::error!("Admin courses list query failed: {}", e);
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": format!("Database error: {}", e)})),
-                )
-            })?;
+    let rows: Vec<(
+        Uuid,
+        String,
+        String,
+        Option<String>,
+        i32,
+        bool,
+        Option<String>,
+        Option<String>,
+        NaiveDateTime,
+    )> = sqlx::query_as(&query)
+        .fetch_all(&state.db.pool)
+        .await
+        .map_err(|e| {
+            tracing::error!("Admin courses list query failed: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?;
 
     // Build response with defaults for enhanced fields
-    let courses: Vec<serde_json::Value> = rows.iter().map(|row| {
-        json!({
-            "id": row.0,
-            "title": row.1,
-            "slug": row.2,
-            "description": row.3,
-            "card_image_url": row.6,  // thumbnail
-            "card_description": row.3, // use description as fallback
-            "card_badge": null,
-            "card_badge_color": "#10b981",
-            "instructor_name": null,
-            "instructor_avatar_url": null,
-            "level": row.7.as_deref().unwrap_or("beginner"),
-            "price_cents": row.4,
-            "is_free": row.4 == 0,
-            "is_published": row.5,
-            "status": if row.5 { "published" } else { "draft" },
-            "module_count": 0,
-            "lesson_count": 0,
-            "total_duration_minutes": 0,
-            "enrollment_count": 0,
-            "avg_rating": null,
-            "review_count": 0,
-            "created_at": row.8.format("%Y-%m-%dT%H:%M:%S").to_string()
+    let courses: Vec<serde_json::Value> = rows
+        .iter()
+        .map(|row| {
+            json!({
+                "id": row.0,
+                "title": row.1,
+                "slug": row.2,
+                "description": row.3,
+                "card_image_url": row.6,  // thumbnail
+                "card_description": row.3, // use description as fallback
+                "card_badge": null,
+                "card_badge_color": "#10b981",
+                "instructor_name": null,
+                "instructor_avatar_url": null,
+                "level": row.7.as_deref().unwrap_or("beginner"),
+                "price_cents": row.4,
+                "is_free": row.4 == 0,
+                "is_published": row.5,
+                "status": if row.5 { "published" } else { "draft" },
+                "module_count": 0,
+                "lesson_count": 0,
+                "total_duration_minutes": 0,
+                "enrollment_count": 0,
+                "avg_rating": null,
+                "review_count": 0,
+                "created_at": row.8.format("%Y-%m-%dT%H:%M:%S").to_string()
+            })
         })
-    }).collect();
+        .collect();
 
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM courses")
         .fetch_one(&state.db.pool)
@@ -404,28 +419,72 @@ async fn update_course(
 
     let mut q = sqlx::query_as::<_, Course>(&query);
 
-    if let Some(ref v) = input.title { q = q.bind(v); }
-    if let Some(ref v) = input.slug { q = q.bind(v); }
-    if let Some(ref v) = input.description { q = q.bind(v); }
-    if let Some(ref v) = input.card_description { q = q.bind(v); }
-    if let Some(ref v) = input.card_image_url { q = q.bind(v); }
-    if let Some(ref v) = input.card_badge { q = q.bind(v); }
-    if let Some(ref v) = input.card_badge_color { q = q.bind(v); }
-    if let Some(ref v) = input.level { q = q.bind(v); }
-    if let Some(ref v) = input.instructor_name { q = q.bind(v); }
-    if let Some(ref v) = input.instructor_title { q = q.bind(v); }
-    if let Some(ref v) = input.instructor_avatar_url { q = q.bind(v); }
-    if let Some(ref v) = input.instructor_bio { q = q.bind(v); }
-    if let Some(ref v) = input.meta_title { q = q.bind(v); }
-    if let Some(ref v) = input.meta_description { q = q.bind(v); }
-    if let Some(ref v) = input.status { q = q.bind(v); }
-    if let Some(v) = input.price_cents { q = q.bind(v); }
-    if let Some(v) = input.is_free { q = q.bind(v); }
-    if let Some(v) = input.is_published { q = q.bind(v); }
-    if let Some(v) = input.bunny_library_id { q = q.bind(v); }
-    if let Some(ref v) = input.what_you_learn { q = q.bind(json!(v)); }
-    if let Some(ref v) = input.requirements { q = q.bind(json!(v)); }
-    if let Some(ref v) = input.target_audience { q = q.bind(json!(v)); }
+    if let Some(ref v) = input.title {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.slug {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.description {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.card_description {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.card_image_url {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.card_badge {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.card_badge_color {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.level {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.instructor_name {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.instructor_title {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.instructor_avatar_url {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.instructor_bio {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.meta_title {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.meta_description {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.status {
+        q = q.bind(v);
+    }
+    if let Some(v) = input.price_cents {
+        q = q.bind(v);
+    }
+    if let Some(v) = input.is_free {
+        q = q.bind(v);
+    }
+    if let Some(v) = input.is_published {
+        q = q.bind(v);
+    }
+    if let Some(v) = input.bunny_library_id {
+        q = q.bind(v);
+    }
+    if let Some(ref v) = input.what_you_learn {
+        q = q.bind(json!(v));
+    }
+    if let Some(ref v) = input.requirements {
+        q = q.bind(json!(v));
+    }
+    if let Some(ref v) = input.target_audience {
+        q = q.bind(json!(v));
+    }
 
     q = q.bind(id);
 
@@ -563,13 +622,12 @@ async fn create_module(
     Path(course_id): Path<Uuid>,
     Json(input): Json<CreateModuleRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let max_order: (Option<i32>,) = sqlx::query_as(
-        "SELECT MAX(sort_order) FROM course_modules WHERE course_id = $1",
-    )
-    .bind(course_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((None,));
+    let max_order: (Option<i32>,) =
+        sqlx::query_as("SELECT MAX(sort_order) FROM course_modules WHERE course_id = $1")
+            .bind(course_id)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((None,));
 
     let sort_order = input.sort_order.unwrap_or(max_order.0.unwrap_or(0) + 1);
 
@@ -1108,10 +1166,10 @@ async fn create_video_upload(
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let title = input["title"].as_str().unwrap_or("Untitled Video");
-    
+
     let library_id = std::env::var("BUNNY_STREAM_LIBRARY_ID").unwrap_or_default();
     let api_key = std::env::var("BUNNY_STREAM_API_KEY").unwrap_or_default();
-    
+
     if library_id.is_empty() || api_key.is_empty() {
         return Err((
             StatusCode::SERVICE_UNAVAILABLE,
@@ -1122,7 +1180,10 @@ async fn create_video_upload(
     // Create video in Bunny Stream
     let client = reqwest::Client::new();
     let response = client
-        .post(format!("https://video.bunnycdn.com/library/{}/videos", library_id))
+        .post(format!(
+            "https://video.bunnycdn.com/library/{}/videos",
+            library_id
+        ))
         .header("AccessKey", &api_key)
         .header("Content-Type", "application/json")
         .json(&json!({ "title": title }))
@@ -1189,11 +1250,15 @@ async fn get_upload_url(
     Json(input): Json<serde_json::Value>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let file_name = input["file_name"].as_str().unwrap_or("file");
-    let file_type = input["file_type"].as_str().unwrap_or("application/octet-stream");
+    let file_type = input["file_type"]
+        .as_str()
+        .unwrap_or("application/octet-stream");
 
-    let storage_zone = std::env::var("BUNNY_STORAGE_ZONE").unwrap_or_else(|_| "revolution-downloads".to_string());
+    let storage_zone =
+        std::env::var("BUNNY_STORAGE_ZONE").unwrap_or_else(|_| "revolution-downloads".to_string());
     let storage_key = std::env::var("BUNNY_STORAGE_API_KEY").unwrap_or_default();
-    let cdn_url = std::env::var("BUNNY_CDN_URL").unwrap_or_else(|_| "https://revolution-downloads.b-cdn.net".to_string());
+    let cdn_url = std::env::var("BUNNY_CDN_URL")
+        .unwrap_or_else(|_| "https://revolution-downloads.b-cdn.net".to_string());
 
     let file_path = format!("courses/{}/{}", course_id, file_name);
     let upload_url = format!(
@@ -1224,7 +1289,13 @@ async fn get_upload_url(
 fn slugify(text: &str) -> String {
     text.to_lowercase()
         .chars()
-        .map(|c| if c.is_alphanumeric() || c == ' ' { c } else { ' ' })
+        .map(|c| {
+            if c.is_alphanumeric() || c == ' ' {
+                c
+            } else {
+                ' '
+            }
+        })
         .collect::<String>()
         .split_whitespace()
         .collect::<Vec<&str>>()
@@ -1239,20 +1310,35 @@ pub fn router() -> Router<AppState> {
     Router::new()
         // Courses
         .route("/", get(list_courses).post(create_course))
-        .route("/:id", get(get_course).put(update_course).delete(delete_course))
+        .route(
+            "/:id",
+            get(get_course).put(update_course).delete(delete_course),
+        )
         .route("/:id/publish", post(publish_course))
         .route("/:id/unpublish", post(unpublish_course))
         // Modules
         .route("/:course_id/modules", get(list_modules).post(create_module))
-        .route("/:course_id/modules/:module_id", put(update_module).delete(delete_module))
+        .route(
+            "/:course_id/modules/:module_id",
+            put(update_module).delete(delete_module),
+        )
         .route("/:course_id/modules/reorder", put(reorder_modules))
         // Lessons
         .route("/:course_id/lessons", get(list_lessons).post(create_lesson))
-        .route("/:course_id/lessons/:lesson_id", get(get_lesson).put(update_lesson).delete(delete_lesson))
+        .route(
+            "/:course_id/lessons/:lesson_id",
+            get(get_lesson).put(update_lesson).delete(delete_lesson),
+        )
         .route("/:course_id/lessons/reorder", put(reorder_lessons))
         // Downloads
-        .route("/:course_id/downloads", get(list_downloads).post(create_download))
-        .route("/:course_id/downloads/:download_id", put(update_download).delete(delete_download))
+        .route(
+            "/:course_id/downloads",
+            get(list_downloads).post(create_download),
+        )
+        .route(
+            "/:course_id/downloads/:download_id",
+            put(update_download).delete(delete_download),
+        )
         .route("/:course_id/upload-url", post(get_upload_url))
         // Video Upload (TUS)
         .route("/:course_id/video-upload", post(create_video_upload))

@@ -208,10 +208,12 @@ fn get_embed_url(resource: &RoomResource) -> String {
     if resource.resource_type != "video" {
         return resource.file_url.clone();
     }
-    
+
     match resource.video_platform.as_deref() {
         Some("bunny") => {
-            if let (Some(guid), Some(lib_id)) = (&resource.bunny_video_guid, resource.bunny_library_id) {
+            if let (Some(guid), Some(lib_id)) =
+                (&resource.bunny_video_guid, resource.bunny_library_id)
+            {
                 format!("https://iframe.mediadelivery.net/embed/{}/{}", lib_id, guid)
             } else {
                 resource.file_url.clone()
@@ -324,10 +326,10 @@ async fn list_resources(
     let offset = (page - 1) * per_page;
 
     let mut sql = String::from(
-        "SELECT * FROM room_resources WHERE is_published = true AND deleted_at IS NULL"
+        "SELECT * FROM room_resources WHERE is_published = true AND deleted_at IS NULL",
     );
     let mut count_sql = String::from(
-        "SELECT COUNT(*) FROM room_resources WHERE is_published = true AND deleted_at IS NULL"
+        "SELECT COUNT(*) FROM room_resources WHERE is_published = true AND deleted_at IS NULL",
     );
 
     // Room ID filter (required for most queries)
@@ -339,7 +341,10 @@ async fn list_resources(
 
     // Resource type filter (video, pdf, document, image)
     if let Some(ref resource_type) = query.resource_type {
-        let filter = format!(" AND resource_type = '{}'", resource_type.replace('\'', "''"));
+        let filter = format!(
+            " AND resource_type = '{}'",
+            resource_type.replace('\'', "''")
+        );
         sql.push_str(&filter);
         count_sql.push_str(&filter);
     }
@@ -360,7 +365,10 @@ async fn list_resources(
 
     // Difficulty filter
     if let Some(ref difficulty) = query.difficulty_level {
-        let filter = format!(" AND difficulty_level = '{}'", difficulty.replace('\'', "''"));
+        let filter = format!(
+            " AND difficulty_level = '{}'",
+            difficulty.replace('\'', "''")
+        );
         sql.push_str(&filter);
         count_sql.push_str(&filter);
     }
@@ -399,14 +407,20 @@ async fn list_resources(
     let resources: Vec<RoomResource> = sqlx::query_as(&sql)
         .fetch_all(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     let total: (i64,) = sqlx::query_as(&count_sql)
         .fetch_one(&state.db.pool)
         .await
         .unwrap_or((0,));
 
-    let responses: Vec<ResourceResponse> = resources.into_iter().map(resource_to_response).collect();
+    let responses: Vec<ResourceResponse> =
+        resources.into_iter().map(resource_to_response).collect();
     let last_page = ((total.0 as f64) / (per_page as f64)).ceil() as i64;
 
     Ok(Json(json!({
@@ -461,10 +475,12 @@ async fn track_download(
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let _ = sqlx::query("UPDATE room_resources SET downloads_count = downloads_count + 1 WHERE id = $1")
-        .bind(id)
-        .execute(&state.db.pool)
-        .await;
+    let _ = sqlx::query(
+        "UPDATE room_resources SET downloads_count = downloads_count + 1 WHERE id = $1",
+    )
+    .bind(id)
+    .execute(&state.db.pool)
+    .await;
 
     Ok(Json(json!({"success": true, "status": "ok"})))
 }
@@ -483,7 +499,8 @@ async fn admin_list_resources(
     let offset = (page - 1) * per_page;
 
     let mut sql = String::from("SELECT * FROM room_resources WHERE deleted_at IS NULL");
-    let mut count_sql = String::from("SELECT COUNT(*) FROM room_resources WHERE deleted_at IS NULL");
+    let mut count_sql =
+        String::from("SELECT COUNT(*) FROM room_resources WHERE deleted_at IS NULL");
 
     // Room ID filter
     if let Some(room_id) = query.room_id {
@@ -494,7 +511,10 @@ async fn admin_list_resources(
 
     // Resource type filter
     if let Some(ref resource_type) = query.resource_type {
-        let filter = format!(" AND resource_type = '{}'", resource_type.replace('\'', "''"));
+        let filter = format!(
+            " AND resource_type = '{}'",
+            resource_type.replace('\'', "''")
+        );
         sql.push_str(&filter);
         count_sql.push_str(&filter);
     }
@@ -537,14 +557,20 @@ async fn admin_list_resources(
     let resources: Vec<RoomResource> = sqlx::query_as(&sql)
         .fetch_all(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     let total: (i64,) = sqlx::query_as(&count_sql)
         .fetch_one(&state.db.pool)
         .await
         .unwrap_or((0,));
 
-    let responses: Vec<ResourceResponse> = resources.into_iter().map(resource_to_response).collect();
+    let responses: Vec<ResourceResponse> =
+        resources.into_iter().map(resource_to_response).collect();
     let last_page = ((total.0 as f64) / (per_page as f64)).ceil() as i64;
 
     Ok(Json(json!({
@@ -565,12 +591,14 @@ async fn create_resource(
     Json(input): Json<CreateResourceRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let slug = slugify(&input.title);
-    let resource_date = input.resource_date
+    let resource_date = input
+        .resource_date
         .as_ref()
         .and_then(|d| NaiveDate::parse_from_str(d, "%Y-%m-%d").ok())
         .unwrap_or_else(|| chrono::Utc::now().date_naive());
-    
-    let tags_json = input.tags
+
+    let tags_json = input
+        .tags
         .as_ref()
         .map(|t| serde_json::to_value(t).unwrap_or(json!([])))
         .unwrap_or(json!([]));
@@ -589,7 +617,7 @@ async fn create_resource(
             $21, $22, $23, $24
         )
         RETURNING *
-        "#
+        "#,
     )
     .bind(&input.title)
     .bind(&slug)
@@ -617,7 +645,12 @@ async fn create_resource(
     .bind(&input.difficulty_level)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({
         "success": true,
@@ -636,31 +669,100 @@ async fn update_resource(
     let mut updates = Vec::new();
     let mut param_idx = 1;
 
-    if input.title.is_some() { updates.push(format!("title = ${}", param_idx)); param_idx += 1; }
-    if input.description.is_some() { updates.push(format!("description = ${}", param_idx)); param_idx += 1; }
-    if input.resource_type.is_some() { updates.push(format!("resource_type = ${}", param_idx)); param_idx += 1; }
-    if input.content_type.is_some() { updates.push(format!("content_type = ${}", param_idx)); param_idx += 1; }
-    if input.file_url.is_some() { updates.push(format!("file_url = ${}", param_idx)); param_idx += 1; }
-    if input.mime_type.is_some() { updates.push(format!("mime_type = ${}", param_idx)); param_idx += 1; }
-    if input.file_size.is_some() { updates.push(format!("file_size = ${}", param_idx)); param_idx += 1; }
-    if input.video_platform.is_some() { updates.push(format!("video_platform = ${}", param_idx)); param_idx += 1; }
-    if input.bunny_video_guid.is_some() { updates.push(format!("bunny_video_guid = ${}", param_idx)); param_idx += 1; }
-    if input.bunny_library_id.is_some() { updates.push(format!("bunny_library_id = ${}", param_idx)); param_idx += 1; }
-    if input.duration.is_some() { updates.push(format!("duration = ${}", param_idx)); param_idx += 1; }
-    if input.thumbnail_url.is_some() { updates.push(format!("thumbnail_url = ${}", param_idx)); param_idx += 1; }
-    if input.width.is_some() { updates.push(format!("width = ${}", param_idx)); param_idx += 1; }
-    if input.height.is_some() { updates.push(format!("height = ${}", param_idx)); param_idx += 1; }
-    if input.trader_id.is_some() { updates.push(format!("trader_id = ${}", param_idx)); param_idx += 1; }
-    if input.resource_date.is_some() { updates.push(format!("resource_date = ${}", param_idx)); param_idx += 1; }
-    if input.is_published.is_some() { updates.push(format!("is_published = ${}", param_idx)); param_idx += 1; }
-    if input.is_featured.is_some() { updates.push(format!("is_featured = ${}", param_idx)); param_idx += 1; }
-    if input.is_pinned.is_some() { updates.push(format!("is_pinned = ${}", param_idx)); param_idx += 1; }
-    if input.category.is_some() { updates.push(format!("category = ${}", param_idx)); param_idx += 1; }
-    if input.tags.is_some() { updates.push(format!("tags = ${}", param_idx)); param_idx += 1; }
-    if input.difficulty_level.is_some() { updates.push(format!("difficulty_level = ${}", param_idx)); param_idx += 1; }
+    if input.title.is_some() {
+        updates.push(format!("title = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.description.is_some() {
+        updates.push(format!("description = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.resource_type.is_some() {
+        updates.push(format!("resource_type = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.content_type.is_some() {
+        updates.push(format!("content_type = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.file_url.is_some() {
+        updates.push(format!("file_url = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.mime_type.is_some() {
+        updates.push(format!("mime_type = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.file_size.is_some() {
+        updates.push(format!("file_size = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.video_platform.is_some() {
+        updates.push(format!("video_platform = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.bunny_video_guid.is_some() {
+        updates.push(format!("bunny_video_guid = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.bunny_library_id.is_some() {
+        updates.push(format!("bunny_library_id = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.duration.is_some() {
+        updates.push(format!("duration = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.thumbnail_url.is_some() {
+        updates.push(format!("thumbnail_url = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.width.is_some() {
+        updates.push(format!("width = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.height.is_some() {
+        updates.push(format!("height = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.trader_id.is_some() {
+        updates.push(format!("trader_id = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.resource_date.is_some() {
+        updates.push(format!("resource_date = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.is_published.is_some() {
+        updates.push(format!("is_published = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.is_featured.is_some() {
+        updates.push(format!("is_featured = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.is_pinned.is_some() {
+        updates.push(format!("is_pinned = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.category.is_some() {
+        updates.push(format!("category = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.tags.is_some() {
+        updates.push(format!("tags = ${}", param_idx));
+        param_idx += 1;
+    }
+    if input.difficulty_level.is_some() {
+        updates.push(format!("difficulty_level = ${}", param_idx));
+        param_idx += 1;
+    }
 
     if updates.is_empty() {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No fields to update"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No fields to update"})),
+        ));
     }
 
     let query_str = format!(
@@ -672,43 +774,93 @@ async fn update_resource(
     let mut query = sqlx::query_as::<_, RoomResource>(&query_str);
 
     // Bind parameters in order
-    if let Some(ref v) = input.title { query = query.bind(v); }
-    if let Some(ref v) = input.description { query = query.bind(v); }
-    if let Some(ref v) = input.resource_type { query = query.bind(v); }
-    if let Some(ref v) = input.content_type { query = query.bind(v); }
-    if let Some(ref v) = input.file_url { query = query.bind(v); }
-    if let Some(ref v) = input.mime_type { query = query.bind(v); }
-    if let Some(v) = input.file_size { query = query.bind(v); }
-    if let Some(ref v) = input.video_platform { query = query.bind(v); }
-    if let Some(ref v) = input.bunny_video_guid { query = query.bind(v); }
-    if let Some(v) = input.bunny_library_id { query = query.bind(v); }
-    if let Some(v) = input.duration { query = query.bind(v); }
-    if let Some(ref v) = input.thumbnail_url { query = query.bind(v); }
-    if let Some(v) = input.width { query = query.bind(v); }
-    if let Some(v) = input.height { query = query.bind(v); }
-    if let Some(v) = input.trader_id { query = query.bind(v); }
+    if let Some(ref v) = input.title {
+        query = query.bind(v);
+    }
+    if let Some(ref v) = input.description {
+        query = query.bind(v);
+    }
+    if let Some(ref v) = input.resource_type {
+        query = query.bind(v);
+    }
+    if let Some(ref v) = input.content_type {
+        query = query.bind(v);
+    }
+    if let Some(ref v) = input.file_url {
+        query = query.bind(v);
+    }
+    if let Some(ref v) = input.mime_type {
+        query = query.bind(v);
+    }
+    if let Some(v) = input.file_size {
+        query = query.bind(v);
+    }
+    if let Some(ref v) = input.video_platform {
+        query = query.bind(v);
+    }
+    if let Some(ref v) = input.bunny_video_guid {
+        query = query.bind(v);
+    }
+    if let Some(v) = input.bunny_library_id {
+        query = query.bind(v);
+    }
+    if let Some(v) = input.duration {
+        query = query.bind(v);
+    }
+    if let Some(ref v) = input.thumbnail_url {
+        query = query.bind(v);
+    }
+    if let Some(v) = input.width {
+        query = query.bind(v);
+    }
+    if let Some(v) = input.height {
+        query = query.bind(v);
+    }
+    if let Some(v) = input.trader_id {
+        query = query.bind(v);
+    }
     if let Some(ref v) = input.resource_date {
         let date = NaiveDate::parse_from_str(v, "%Y-%m-%d")
             .unwrap_or_else(|_| chrono::Utc::now().date_naive());
         query = query.bind(date);
     }
-    if let Some(v) = input.is_published { query = query.bind(v); }
-    if let Some(v) = input.is_featured { query = query.bind(v); }
-    if let Some(v) = input.is_pinned { query = query.bind(v); }
-    if let Some(ref v) = input.category { query = query.bind(v); }
+    if let Some(v) = input.is_published {
+        query = query.bind(v);
+    }
+    if let Some(v) = input.is_featured {
+        query = query.bind(v);
+    }
+    if let Some(v) = input.is_pinned {
+        query = query.bind(v);
+    }
+    if let Some(ref v) = input.category {
+        query = query.bind(v);
+    }
     if let Some(ref v) = input.tags {
         let tags_json = serde_json::to_value(v).unwrap_or(json!([]));
         query = query.bind(tags_json);
     }
-    if let Some(ref v) = input.difficulty_level { query = query.bind(v); }
+    if let Some(ref v) = input.difficulty_level {
+        query = query.bind(v);
+    }
 
     query = query.bind(id);
 
     let resource = query
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-        .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Resource not found"}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Resource not found"})),
+            )
+        })?;
 
     Ok(Json(json!({
         "success": true,
@@ -723,15 +875,23 @@ async fn delete_resource(
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let result = sqlx::query(
-        "UPDATE room_resources SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL"
+        "UPDATE room_resources SET deleted_at = NOW() WHERE id = $1 AND deleted_at IS NULL",
     )
     .bind(id)
     .execute(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Resource not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Resource not found"})),
+        ));
     }
 
     Ok(Json(json!({

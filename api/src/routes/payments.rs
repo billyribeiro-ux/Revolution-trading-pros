@@ -9,8 +9,8 @@
 
 use axum::{
     extract::State,
-    http::{StatusCode, HeaderMap},
-    routing::{post, get},
+    http::{HeaderMap, StatusCode},
+    routing::{get, post},
     Json, Router,
 };
 use serde::{Deserialize, Serialize};
@@ -93,7 +93,10 @@ async fn create_checkout(
     Json(input): Json<CreateCheckoutRequest>,
 ) -> Result<Json<CheckoutResponse>, (StatusCode, Json<serde_json::Value>)> {
     if input.items.is_empty() {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "No items in checkout"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No items in checkout"})),
+        ));
     }
 
     // Calculate totals
@@ -144,12 +147,17 @@ async fn create_checkout(
                WHERE UPPER(code) = UPPER($1)
                AND is_active = true
                AND (expires_at IS NULL OR expires_at > NOW())
-               AND (usage_limit IS NULL OR usage_count < usage_limit)"#
+               AND (usage_limit IS NULL OR usage_count < usage_limit)"#,
         )
         .bind(code)
         .fetch_optional(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
         if let Some(c) = coupon {
             discount = if c.discount_type == "percent" {
@@ -182,7 +190,7 @@ async fn create_checkout(
             currency, coupon_id, coupon_code, billing_name, billing_email,
             billing_address, created_at, updated_at
         ) VALUES ($1, $2, 'pending', $3, $4, 0, $5, 'USD', $6, $7, $8, $9, $10, NOW(), NOW())
-        RETURNING id"#
+        RETURNING id"#,
     )
     .bind(user.id)
     .bind(&order_number)
@@ -196,14 +204,19 @@ async fn create_checkout(
     .bind(&input.billing_address)
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     // Insert order items
     for item in &input.items {
         sqlx::query(
             r#"INSERT INTO order_items (
                 order_id, product_id, plan_id, name, quantity, unit_price, total, created_at
-            ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())"#
+            ) VALUES ($1, $2, $3, $4, $5, $6, $7, NOW())"#,
         )
         .bind(order_id)
         .bind(item.product_id)
@@ -214,7 +227,12 @@ async fn create_checkout(
         .bind(item.price * item.quantity as f64)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
     }
 
     // Create Stripe checkout session
@@ -234,12 +252,17 @@ async fn create_checkout(
         billing_address_collection: true,
     };
 
-    let session = state.services.stripe
+    let session = state
+        .services
+        .stripe
         .create_checkout_session(config)
         .await
         .map_err(|e| {
             tracing::error!("Stripe checkout error: {}", e);
-            (StatusCode::BAD_GATEWAY, Json(json!({"error": format!("Payment service error: {}", e)})))
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": format!("Payment service error: {}", e)})),
+            )
         })?;
 
     // Update order with Stripe session ID
@@ -286,15 +309,23 @@ async fn create_portal(
     .flatten();
 
     let customer_id = customer_id.ok_or_else(|| {
-        (StatusCode::NOT_FOUND, Json(json!({"error": "No payment method on file"})))
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "No payment method on file"})),
+        )
     })?;
 
-    let url = state.services.stripe
+    let url = state
+        .services
+        .stripe
         .create_portal_session(&customer_id, &input.return_url)
         .await
         .map_err(|e| {
             tracing::error!("Stripe portal error: {}", e);
-            (StatusCode::BAD_GATEWAY, Json(json!({"error": "Failed to create portal session"})))
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": "Failed to create portal session"})),
+            )
         })?;
 
     Ok(Json(PortalResponse { url }))
@@ -312,16 +343,24 @@ async fn webhook(
         .get("stripe-signature")
         .and_then(|v| v.to_str().ok())
         .ok_or_else(|| {
-            (StatusCode::BAD_REQUEST, Json(json!({"error": "Missing signature"})))
+            (
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "Missing signature"})),
+            )
         })?;
 
     // Verify webhook signature (if webhook secret is configured)
     // In production, always verify signatures
-    let event = state.services.stripe
+    let event = state
+        .services
+        .stripe
         .parse_webhook_event(&body)
         .map_err(|e| {
             tracing::error!("Webhook parse error: {}", e);
-            (StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid webhook payload"})))
+            (
+                StatusCode::BAD_REQUEST,
+                Json(json!({"error": "Invalid webhook payload"})),
+            )
         })?;
 
     tracing::info!(
@@ -378,37 +417,61 @@ async fn create_refund(
         status: String,
     }
 
-    let order: OrderInfo = sqlx::query_as(
-        "SELECT user_id, payment_intent_id, status FROM orders WHERE id = $1"
-    )
-    .bind(input.order_id)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Order not found"}))))?;
+    let order: OrderInfo =
+        sqlx::query_as("SELECT user_id, payment_intent_id, status FROM orders WHERE id = $1")
+            .bind(input.order_id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?
+            .ok_or_else(|| {
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": "Order not found"})),
+                )
+            })?;
 
     // Check authorization (must be owner or admin)
-    let is_admin = user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
+    let is_admin =
+        user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
     if order.user_id != user.id && !is_admin {
-        return Err((StatusCode::FORBIDDEN, Json(json!({"error": "Not authorized"}))));
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Not authorized"})),
+        ));
     }
 
     // Check order status
     if order.status != "completed" {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Order cannot be refunded"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Order cannot be refunded"})),
+        ));
     }
 
     let payment_intent_id = order.payment_intent_id.ok_or_else(|| {
-        (StatusCode::BAD_REQUEST, Json(json!({"error": "No payment found for this order"})))
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "No payment found for this order"})),
+        )
     })?;
 
     // Create refund via Stripe
-    let refund = state.services.stripe
+    let refund = state
+        .services
+        .stripe
         .create_refund(&payment_intent_id, input.amount, input.reason.as_deref())
         .await
         .map_err(|e| {
             tracing::error!("Stripe refund error: {}", e);
-            (StatusCode::BAD_GATEWAY, Json(json!({"error": format!("Refund failed: {}", e)})))
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"error": format!("Refund failed: {}", e)})),
+            )
         })?;
 
     // Update order status
@@ -436,9 +499,7 @@ async fn create_refund(
 
 /// Get payment configuration (publishable key)
 /// GET /api/payments/config
-async fn get_config(
-    State(state): State<AppState>,
-) -> Json<serde_json::Value> {
+async fn get_config(State(state): State<AppState>) -> Json<serde_json::Value> {
     Json(json!({
         "publishable_key": state.config.stripe_publishable_key,
         "currency": "usd",
@@ -455,7 +516,10 @@ async fn handle_checkout_completed(
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let session = event.as_checkout_session().ok_or_else(|| {
-        (StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid checkout session data"})))
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid checkout session data"})),
+        )
     })?;
 
     let order_id = event.get_order_id();
@@ -470,19 +534,26 @@ async fn handle_checkout_completed(
                 payment_intent_id = $1,
                 completed_at = NOW(),
                 updated_at = NOW()
-            WHERE id = $2"#
+            WHERE id = $2"#,
         )
         .bind(&session.payment_intent)
         .bind(order_id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
         // If subscription, create user membership
         if let Some(ref subscription_id) = session.subscription {
             if let Some(user_id) = user_id {
                 // Get subscription details
-                let stripe_sub = state.services.stripe
+                let stripe_sub = state
+                    .services
+                    .stripe
                     .get_subscription(subscription_id)
                     .await
                     .ok();
@@ -550,7 +621,7 @@ async fn handle_checkout_completed(
             }
 
             let course_items: Vec<CourseOrderItem> = sqlx::query_as(
-                "SELECT product_id FROM order_items WHERE order_id = $1 AND product_id IS NOT NULL"
+                "SELECT product_id FROM order_items WHERE order_id = $1 AND product_id IS NOT NULL",
             )
             .bind(order_id)
             .fetch_all(&state.db.pool)
@@ -561,7 +632,7 @@ async fn handle_checkout_completed(
                 if let Some(product_id) = item.product_id {
                     // Check if this product is a course (has a course_id in products table)
                     let course_id: Option<uuid::Uuid> = sqlx::query_scalar(
-                        "SELECT course_id FROM products WHERE id = $1 AND course_id IS NOT NULL"
+                        "SELECT course_id FROM products WHERE id = $1 AND course_id IS NOT NULL",
                     )
                     .bind(product_id)
                     .fetch_optional(&state.db.pool)
@@ -602,27 +673,27 @@ async fn handle_checkout_completed(
         // Send order confirmation email
         if let Some(user_id) = user_id {
             if let Some(ref email_service) = state.services.email {
-                let user_email: Option<String> = sqlx::query_scalar(
-                    "SELECT email FROM users WHERE id = $1"
-                )
-                .bind(user_id)
-                .fetch_optional(&state.db.pool)
-                .await
-                .ok()
-                .flatten();
+                let user_email: Option<String> =
+                    sqlx::query_scalar("SELECT email FROM users WHERE id = $1")
+                        .bind(user_id)
+                        .fetch_optional(&state.db.pool)
+                        .await
+                        .ok()
+                        .flatten();
 
                 if let Some(email) = user_email {
-                    let order_number: Option<String> = sqlx::query_scalar(
-                        "SELECT order_number FROM orders WHERE id = $1"
-                    )
-                    .bind(order_id)
-                    .fetch_optional(&state.db.pool)
-                    .await
-                    .ok()
-                    .flatten();
+                    let order_number: Option<String> =
+                        sqlx::query_scalar("SELECT order_number FROM orders WHERE id = $1")
+                            .bind(order_id)
+                            .fetch_optional(&state.db.pool)
+                            .await
+                            .ok()
+                            .flatten();
 
                     if let Some(order_num) = order_number {
-                        let _ = email_service.send_order_confirmation(&email, &order_num).await;
+                        let _ = email_service
+                            .send_order_confirmation(&email, &order_num)
+                            .await;
                     }
                 }
             }
@@ -645,7 +716,10 @@ async fn handle_subscription_created(
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let subscription = event.as_subscription().ok_or_else(|| {
-        (StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid subscription data"})))
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid subscription data"})),
+        )
     })?;
 
     tracing::info!(
@@ -664,7 +738,10 @@ async fn handle_subscription_updated(
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let subscription = event.as_subscription().ok_or_else(|| {
-        (StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid subscription data"})))
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid subscription data"})),
+        )
     })?;
 
     // Update user membership
@@ -684,13 +761,22 @@ async fn handle_subscription_updated(
             cancel_at_period_end = $4,
             cancelled_at = $5,
             updated_at = NOW()
-        WHERE stripe_subscription_id = $6"#
+        WHERE stripe_subscription_id = $6"#,
     )
     .bind(status)
-    .bind(chrono::DateTime::from_timestamp(subscription.current_period_start, 0).map(|d| d.naive_utc()))
-    .bind(chrono::DateTime::from_timestamp(subscription.current_period_end, 0).map(|d| d.naive_utc()))
+    .bind(
+        chrono::DateTime::from_timestamp(subscription.current_period_start, 0)
+            .map(|d| d.naive_utc()),
+    )
+    .bind(
+        chrono::DateTime::from_timestamp(subscription.current_period_end, 0).map(|d| d.naive_utc()),
+    )
     .bind(subscription.cancel_at_period_end)
-    .bind(subscription.canceled_at.and_then(|ts| chrono::DateTime::from_timestamp(ts, 0).map(|d| d.naive_utc())))
+    .bind(
+        subscription
+            .canceled_at
+            .and_then(|ts| chrono::DateTime::from_timestamp(ts, 0).map(|d| d.naive_utc())),
+    )
     .bind(&subscription.id)
     .execute(&state.db.pool)
     .await
@@ -712,7 +798,10 @@ async fn handle_subscription_deleted(
     event: &crate::services::stripe::WebhookEvent,
 ) -> Result<(), (StatusCode, Json<serde_json::Value>)> {
     let subscription = event.as_subscription().ok_or_else(|| {
-        (StatusCode::BAD_REQUEST, Json(json!({"error": "Invalid subscription data"})))
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Invalid subscription data"})),
+        )
     })?;
 
     sqlx::query(

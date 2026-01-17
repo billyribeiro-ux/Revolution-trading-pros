@@ -37,7 +37,7 @@ pub struct Config {
     // Email (Postmark)
     pub postmark_token: Option<String>,
     pub from_email: String,
-    pub app_url: String,  // Frontend URL for email links
+    pub app_url: String, // Frontend URL for email links
 
     // Meilisearch
     pub meilisearch_host: String,
@@ -45,11 +45,11 @@ pub struct Config {
 
     // Superadmin Configuration
     pub superadmin_emails: Vec<String>,
-    
+
     // Developer Configuration (Enterprise Pattern)
     pub developer_emails: Vec<String>,
     pub developer_mode: bool,
-    
+
     // Developer Bootstrap (ICT 7 - No Hardcoded Credentials)
     // These are read from environment variables and used to bootstrap developer account on startup
     pub developer_bootstrap_email: Option<String>,
@@ -67,14 +67,17 @@ impl Config {
             environment: std::env::var("ENVIRONMENT").unwrap_or_else(|_| "development".to_string()),
 
             database_url: std::env::var("DATABASE_URL").context("DATABASE_URL required")?,
-            redis_url: std::env::var("REDIS_URL").unwrap_or_else(|_| "redis://localhost:6379".to_string()),
+            redis_url: std::env::var("REDIS_URL")
+                .unwrap_or_else(|_| "redis://localhost:6379".to_string()),
 
             r2_endpoint: std::env::var("R2_ENDPOINT").unwrap_or_default(),
             r2_access_key_id: std::env::var("R2_ACCESS_KEY_ID").unwrap_or_default(),
             r2_secret_access_key: std::env::var("R2_SECRET_ACCESS_KEY").unwrap_or_default(),
-            r2_bucket: std::env::var("R2_BUCKET").unwrap_or_else(|_| "revolution-trading-media".to_string()),
-            r2_public_url: std::env::var("R2_PUBLIC_URL")
-                .unwrap_or_else(|_| "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev".to_string()),
+            r2_bucket: std::env::var("R2_BUCKET")
+                .unwrap_or_else(|_| "revolution-trading-media".to_string()),
+            r2_public_url: std::env::var("R2_PUBLIC_URL").unwrap_or_else(|_| {
+                "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev".to_string()
+            }),
 
             jwt_secret: std::env::var("JWT_SECRET").context("JWT_SECRET required")?,
             jwt_expires_in: std::env::var("JWT_EXPIRES_IN")
@@ -106,7 +109,8 @@ impl Config {
                 .collect(),
 
             postmark_token: std::env::var("POSTMARK_TOKEN").ok(),
-            from_email: std::env::var("FROM_EMAIL").unwrap_or_else(|_| "noreply@example.com".to_string()),
+            from_email: std::env::var("FROM_EMAIL")
+                .unwrap_or_else(|_| "noreply@example.com".to_string()),
             app_url: std::env::var("APP_URL")
                 .unwrap_or_else(|_| "https://revolution-trading-pros.pages.dev".to_string()),
 
@@ -134,10 +138,11 @@ impl Config {
                 .unwrap_or_else(|_| "false".to_string())
                 .parse()
                 .unwrap_or(false),
-            
+
             // ICT 7 Developer Bootstrap - Read from secure environment variables
             developer_bootstrap_email: std::env::var("DEVELOPER_BOOTSTRAP_EMAIL").ok(),
-            developer_bootstrap_password_hash: std::env::var("DEVELOPER_BOOTSTRAP_PASSWORD_HASH").ok(),
+            developer_bootstrap_password_hash: std::env::var("DEVELOPER_BOOTSTRAP_PASSWORD_HASH")
+                .ok(),
             developer_bootstrap_name: std::env::var("DEVELOPER_BOOTSTRAP_NAME").ok(),
         })
     }

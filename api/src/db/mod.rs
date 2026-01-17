@@ -38,17 +38,17 @@ impl Database {
     pub fn pool(&self) -> &PgPool {
         &self.pool
     }
-    
+
     /// ICT 7 Principal Engineer Grade: Bootstrap Developer Account
-    /// 
+    ///
     /// Creates or updates developer account from secure environment variables.
     /// This eliminates hardcoded credentials while ensuring platform owner access.
-    /// 
+    ///
     /// Environment Variables Required:
     /// - DEVELOPER_BOOTSTRAP_EMAIL: Developer email address
     /// - DEVELOPER_BOOTSTRAP_PASSWORD_HASH: Argon2id password hash
     /// - DEVELOPER_BOOTSTRAP_NAME: Display name (optional, defaults to "Developer")
-    /// 
+    ///
     /// Security Features:
     /// - No credentials in source code
     /// - Idempotent (safe to run multiple times)
@@ -63,7 +63,7 @@ impl Database {
                 return Ok(());
             }
         };
-        
+
         let password_hash = match &config.developer_bootstrap_password_hash {
             Some(h) if !h.is_empty() => h.clone(),
             _ => {
@@ -71,7 +71,7 @@ impl Database {
                 return Ok(());
             }
         };
-        
+
         // ICT 7+: Config-time validation - catch malformed hashes at startup, not runtime
         if !password_hash.starts_with("$argon2id$") {
             tracing::error!(
@@ -84,7 +84,7 @@ impl Database {
                  Use 'cargo run --bin bootstrap_dev' to generate a proper hash."
             ));
         }
-        
+
         // Validate hash can be parsed
         if argon2::PasswordHash::new(&password_hash).is_err() {
             tracing::error!(
@@ -97,11 +97,12 @@ impl Database {
                  Use 'cargo run --bin bootstrap_dev' to generate a valid hash."
             ));
         }
-        
-        let name = config.developer_bootstrap_name
+
+        let name = config
+            .developer_bootstrap_name
             .clone()
             .unwrap_or_else(|| "Developer".to_string());
-        
+
         // Upsert developer account
         let result = sqlx::query(r#"
             INSERT INTO users (email, password_hash, name, role, email_verified_at, created_at, updated_at)
@@ -118,7 +119,7 @@ impl Database {
             .bind(&name)
             .fetch_one(&self.pool)
             .await;
-        
+
         match result {
             Ok(row) => {
                 let user_id: i64 = sqlx::Row::get(&row, "id");
@@ -141,7 +142,7 @@ impl Database {
                 return Err(e.into());
             }
         }
-        
+
         Ok(())
     }
 }

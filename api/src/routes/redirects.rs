@@ -9,14 +9,11 @@ use axum::{
     routing::{delete, get, post, put},
     Router,
 };
+use chrono::{DateTime, Utc};
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
-use chrono::{DateTime, Utc};
 
-use crate::{
-    utils::errors::ApiError,
-    AppState,
-};
+use crate::{utils::errors::ApiError, AppState};
 
 #[derive(Debug, Serialize, FromRow)]
 pub struct Redirect {
@@ -105,13 +102,11 @@ pub async fn show(
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    let redirect: Redirect = sqlx::query_as(
-        "SELECT * FROM redirects WHERE id = $1"
-    )
-    .bind(id)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|_| ApiError::not_found("Redirect not found"))?;
+    let redirect: Redirect = sqlx::query_as("SELECT * FROM redirects WHERE id = $1")
+        .bind(id)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|_| ApiError::not_found("Redirect not found"))?;
 
     Ok(Json(serde_json::json!({ "data": redirect })))
 }
@@ -125,23 +120,28 @@ pub async fn store(
     // Validate status code
     let status_code = payload.status_code.unwrap_or(301);
     if ![301, 302, 307, 308].contains(&status_code) {
-        return Err(ApiError::validation_error("Status code must be 301, 302, 307, or 308"));
+        return Err(ApiError::validation_error(
+            "Status code must be 301, 302, 307, or 308",
+        ));
     }
 
     // Check if from_path already exists
-    let exists: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM redirects WHERE from_path = $1)"
-    )
-    .bind(&payload.from_path)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let exists: bool =
+        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM redirects WHERE from_path = $1)")
+            .bind(&payload.from_path)
+            .fetch_one(state.db.pool())
+            .await
+            .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     if exists {
-        return Err(ApiError::validation_error("Redirect from this path already exists"));
+        return Err(ApiError::validation_error(
+            "Redirect from this path already exists",
+        ));
     }
 
-    let redirect_type = payload.redirect_type.unwrap_or_else(|| "manual".to_string());
+    let redirect_type = payload
+        .redirect_type
+        .unwrap_or_else(|| "manual".to_string());
 
     let redirect: Redirect = sqlx::query_as(
         "INSERT INTO redirects (from_path, to_path, status_code, redirect_type, is_active, hit_count, created_at, updated_at)
@@ -167,13 +167,11 @@ pub async fn update(
     Json(payload): Json<UpdateRedirect>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
     // Check if redirect exists
-    let exists: bool = sqlx::query_scalar(
-        "SELECT EXISTS(SELECT 1 FROM redirects WHERE id = $1)"
-    )
-    .bind(id)
-    .fetch_one(state.db.pool())
-    .await
-    .map_err(|e| ApiError::database_error(&e.to_string()))?;
+    let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM redirects WHERE id = $1)")
+        .bind(id)
+        .fetch_one(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
     if !exists {
         return Err(ApiError::not_found("Redirect not found"));
@@ -182,14 +180,16 @@ pub async fn update(
     // Validate status code if provided
     if let Some(status_code) = payload.status_code {
         if ![301, 302, 307, 308].contains(&status_code) {
-            return Err(ApiError::validation_error("Status code must be 301, 302, 307, or 308"));
+            return Err(ApiError::validation_error(
+                "Status code must be 301, 302, 307, or 308",
+            ));
         }
     }
 
     // Check if from_path already exists for another redirect
     if let Some(from_path) = &payload.from_path {
         let path_exists: bool = sqlx::query_scalar(
-            "SELECT EXISTS(SELECT 1 FROM redirects WHERE from_path = $1 AND id != $2)"
+            "SELECT EXISTS(SELECT 1 FROM redirects WHERE from_path = $1 AND id != $2)",
         )
         .bind(from_path)
         .bind(id)
@@ -198,7 +198,9 @@ pub async fn update(
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
         if path_exists {
-            return Err(ApiError::validation_error("Redirect from this path already exists"));
+            return Err(ApiError::validation_error(
+                "Redirect from this path already exists",
+            ));
         }
     }
 
@@ -206,10 +208,22 @@ pub async fn update(
     let mut updates = Vec::new();
     let mut param_count = 1;
 
-    if payload.from_path.is_some() { updates.push(format!("from_path = ${}", param_count)); param_count += 1; }
-    if payload.to_path.is_some() { updates.push(format!("to_path = ${}", param_count)); param_count += 1; }
-    if payload.status_code.is_some() { updates.push(format!("status_code = ${}", param_count)); param_count += 1; }
-    if payload.is_active.is_some() { updates.push(format!("is_active = ${}", param_count)); param_count += 1; }
+    if payload.from_path.is_some() {
+        updates.push(format!("from_path = ${}", param_count));
+        param_count += 1;
+    }
+    if payload.to_path.is_some() {
+        updates.push(format!("to_path = ${}", param_count));
+        param_count += 1;
+    }
+    if payload.status_code.is_some() {
+        updates.push(format!("status_code = ${}", param_count));
+        param_count += 1;
+    }
+    if payload.is_active.is_some() {
+        updates.push(format!("is_active = ${}", param_count));
+        param_count += 1;
+    }
 
     updates.push(format!("updated_at = ${}", param_count));
 
@@ -221,10 +235,18 @@ pub async fn update(
 
     let mut query = sqlx::query_as::<_, Redirect>(&query_str);
 
-    if let Some(from_path) = payload.from_path { query = query.bind(from_path); }
-    if let Some(to_path) = payload.to_path { query = query.bind(to_path); }
-    if let Some(status_code) = payload.status_code { query = query.bind(status_code); }
-    if let Some(is_active) = payload.is_active { query = query.bind(is_active); }
+    if let Some(from_path) = payload.from_path {
+        query = query.bind(from_path);
+    }
+    if let Some(to_path) = payload.to_path {
+        query = query.bind(to_path);
+    }
+    if let Some(status_code) = payload.status_code {
+        query = query.bind(status_code);
+    }
+    if let Some(is_active) = payload.is_active {
+        query = query.bind(is_active);
+    }
 
     query = query.bind(Utc::now());
     query = query.bind(id);
@@ -253,7 +275,9 @@ pub async fn destroy(
         return Err(ApiError::not_found("Redirect not found"));
     }
 
-    Ok(Json(serde_json::json!({ "message": "Redirect deleted successfully" })))
+    Ok(Json(
+        serde_json::json!({ "message": "Redirect deleted successfully" }),
+    ))
 }
 
 /// Build the redirects router

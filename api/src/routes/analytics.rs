@@ -10,10 +10,7 @@ use axum::{
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{
-    models::User,
-    AppState,
-};
+use crate::{models::User, AppState};
 
 #[derive(Debug, Deserialize)]
 pub struct TrackRequest {
@@ -70,7 +67,7 @@ async fn track_reading(
         r#"
         INSERT INTO analytics_events (event_type, event_name, properties, created_at)
         VALUES ('reading', 'page_read', $1, NOW())
-        "#
+        "#,
     )
     .bind(json!({
         "post_id": input.post_id,
@@ -79,7 +76,12 @@ async fn track_reading(
     }))
     .execute(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(json!({"status": "ok"})))
 }
@@ -91,16 +93,17 @@ async fn get_overview(
     Query(query): Query<AnalyticsQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let start_date = query.start_date.unwrap_or_else(|| {
-        (chrono::Utc::now() - chrono::Duration::days(30)).format("%Y-%m-%d").to_string()
+        (chrono::Utc::now() - chrono::Duration::days(30))
+            .format("%Y-%m-%d")
+            .to_string()
     });
 
-    let total_events: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM analytics_events WHERE created_at >= $1::date"
-    )
-    .bind(&start_date)
-    .fetch_one(&state.db.pool)
-    .await
-    .unwrap_or((0,));
+    let total_events: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM analytics_events WHERE created_at >= $1::date")
+            .bind(&start_date)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     let page_views: (i64,) = sqlx::query_as(
         "SELECT COUNT(*) FROM analytics_events WHERE event_type = 'pageview' AND created_at >= $1::date"
@@ -111,7 +114,7 @@ async fn get_overview(
     .unwrap_or((0,));
 
     let unique_visitors: (i64,) = sqlx::query_as(
-        "SELECT COUNT(DISTINCT session_id) FROM analytics_events WHERE created_at >= $1::date"
+        "SELECT COUNT(DISTINCT session_id) FROM analytics_events WHERE created_at >= $1::date",
     )
     .bind(&start_date)
     .fetch_one(&state.db.pool)
@@ -128,9 +131,7 @@ async fn get_overview(
 
 /// Performance tracking (public - for frontend)
 /// Accepts any content type to avoid 415 errors from beacon API
-async fn track_performance(
-    body: Option<axum::body::Bytes>,
-) -> Json<serde_json::Value> {
+async fn track_performance(body: Option<axum::body::Bytes>) -> Json<serde_json::Value> {
     // Placeholder for performance tracking - accepts any content type
     // The frontend uses navigator.sendBeacon which may send different content types
     let _ = body; // Ignore body for now

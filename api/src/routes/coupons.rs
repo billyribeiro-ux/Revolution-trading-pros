@@ -8,7 +8,7 @@
 //! - Usage tracking and limits
 
 use axum::{
-    extract::{State, Path, Query},
+    extract::{Path, Query, State},
     http::StatusCode,
     routing::{get, post},
     Json, Router,
@@ -17,7 +17,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use crate::{
-    models::{User, order::Coupon},
+    models::{order::Coupon, User},
     AppState,
 };
 
@@ -115,12 +115,17 @@ async fn validate_coupon(
                   expiry_date, applicable_products, min_purchase_amount,
                   is_active, created_at, updated_at
            FROM coupons
-           WHERE UPPER(code) = $1"#
+           WHERE UPPER(code) = $1"#,
     )
     .bind(&code)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     let coupon = match coupon {
         Some(c) => c,
@@ -176,7 +181,10 @@ async fn validate_coupon(
                     valid: false,
                     coupon: None,
                     discount_amount: None,
-                    error: Some(format!("Minimum purchase of ${:.2} required", coupon.min_purchase_amount)),
+                    error: Some(format!(
+                        "Minimum purchase of ${:.2} required",
+                        coupon.min_purchase_amount
+                    )),
                 }));
             }
         }
@@ -185,7 +193,8 @@ async fn validate_coupon(
     // Check product restrictions
     if let Some(ref applicable) = coupon.applicable_products {
         if let Some(ref product_ids) = input.product_ids {
-            let applicable_ids: Vec<i64> = serde_json::from_value(applicable.clone()).unwrap_or_default();
+            let applicable_ids: Vec<i64> =
+                serde_json::from_value(applicable.clone()).unwrap_or_default();
             if !applicable_ids.is_empty() {
                 let has_valid_product = product_ids.iter().any(|id| applicable_ids.contains(id));
                 if !has_valid_product {
@@ -193,7 +202,9 @@ async fn validate_coupon(
                         valid: false,
                         coupon: None,
                         discount_amount: None,
-                        error: Some("This coupon is not valid for the selected products".to_string()),
+                        error: Some(
+                            "This coupon is not valid for the selected products".to_string(),
+                        ),
                     }));
                 }
             }
@@ -258,7 +269,7 @@ async fn get_user_coupons(
             -- User-specific coupons
             uc.user_id = $1
         )
-        ORDER BY c.expires_at ASC NULLS LAST, c.created_at DESC"#
+        ORDER BY c.expires_at ASC NULLS LAST, c.created_at DESC"#,
     )
     .bind(user.id)
     .fetch_all(&state.db.pool)
@@ -279,9 +290,13 @@ async fn list_coupons(
     Query(query): Query<CouponQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Admin only
-    let is_admin = user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
+    let is_admin =
+        user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
     if !is_admin {
-        return Err((StatusCode::FORBIDDEN, Json(json!({"error": "Admin access required"}))));
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Admin access required"})),
+        ));
     }
 
     let limit = query.limit.unwrap_or(50).min(100);
@@ -292,7 +307,7 @@ async fn list_coupons(
                   min_purchase, max_discount, usage_limit, usage_count,
                   is_active, starts_at, expires_at, applicable_products,
                   applicable_plans, created_at, updated_at"#;
-    
+
     let coupons: Vec<Coupon> = if query.active_only.unwrap_or(false) {
         sqlx::query_as(&format!(
             "SELECT {} FROM coupons WHERE is_active = true ORDER BY created_at DESC LIMIT $1 OFFSET $2",
@@ -312,7 +327,12 @@ async fn list_coupons(
         .bind(offset)
         .fetch_all(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?
     };
 
     let total: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM coupons")
@@ -336,27 +356,38 @@ async fn create_coupon(
     Json(input): Json<CreateCouponRequest>,
 ) -> Result<Json<Coupon>, (StatusCode, Json<serde_json::Value>)> {
     // Admin only
-    let is_admin = user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
+    let is_admin =
+        user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
     if !is_admin {
-        return Err((StatusCode::FORBIDDEN, Json(json!({"error": "Admin access required"}))));
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Admin access required"})),
+        ));
     }
 
     // Validate code
     if input.code.trim().is_empty() {
-        return Err((StatusCode::BAD_REQUEST, Json(json!({"error": "Coupon code is required"}))));
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"error": "Coupon code is required"})),
+        ));
     }
 
     let code = input.code.trim().to_uppercase();
 
     // Check for duplicate
-    let exists: bool = sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM coupons WHERE UPPER(code) = $1)")
-        .bind(&code)
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or(false);
+    let exists: bool =
+        sqlx::query_scalar("SELECT EXISTS(SELECT 1 FROM coupons WHERE UPPER(code) = $1)")
+            .bind(&code)
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or(false);
 
     if exists {
-        return Err((StatusCode::CONFLICT, Json(json!({"error": "Coupon code already exists"}))));
+        return Err((
+            StatusCode::CONFLICT,
+            Json(json!({"error": "Coupon code already exists"})),
+        ));
     }
 
     // Create coupon
@@ -367,7 +398,7 @@ async fn create_coupon(
             is_active, starts_at, expires_at, applicable_products,
             applicable_plans, created_at, updated_at
         ) VALUES ($1, $2, $3, $4, $5, $6, $7, 0, $8, $9, $10, $11, $12, NOW(), NOW())
-        RETURNING *"#
+        RETURNING *"#,
     )
     .bind(&code)
     .bind(&input.description)
@@ -377,13 +408,40 @@ async fn create_coupon(
     .bind(input.max_discount)
     .bind(input.usage_limit)
     .bind(input.is_active.unwrap_or(true))
-    .bind(input.starts_at.as_ref().and_then(|s| chrono::NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S").ok()))
-    .bind(input.expires_at.as_ref().and_then(|s| chrono::NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S").ok()))
-    .bind(input.applicable_products.as_ref().map(|v| serde_json::to_value(v).ok()).flatten())
-    .bind(input.applicable_plans.as_ref().map(|v| serde_json::to_value(v).ok()).flatten())
+    .bind(
+        input
+            .starts_at
+            .as_ref()
+            .and_then(|s| chrono::NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S").ok()),
+    )
+    .bind(
+        input
+            .expires_at
+            .as_ref()
+            .and_then(|s| chrono::NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S").ok()),
+    )
+    .bind(
+        input
+            .applicable_products
+            .as_ref()
+            .map(|v| serde_json::to_value(v).ok())
+            .flatten(),
+    )
+    .bind(
+        input
+            .applicable_plans
+            .as_ref()
+            .map(|v| serde_json::to_value(v).ok())
+            .flatten(),
+    )
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     tracing::info!(
         target: "coupons",
@@ -406,9 +464,13 @@ async fn update_coupon(
     Json(input): Json<CreateCouponRequest>,
 ) -> Result<Json<Coupon>, (StatusCode, Json<serde_json::Value>)> {
     // Admin only
-    let is_admin = user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
+    let is_admin =
+        user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
     if !is_admin {
-        return Err((StatusCode::FORBIDDEN, Json(json!({"error": "Admin access required"}))));
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Admin access required"})),
+        ));
     }
 
     let coupon: Coupon = sqlx::query_as(
@@ -425,7 +487,7 @@ async fn update_coupon(
             applicable_plans = COALESCE($11, applicable_plans),
             updated_at = NOW()
         WHERE id = $1
-        RETURNING *"#
+        RETURNING *"#,
     )
     .bind(id)
     .bind(&input.description)
@@ -435,13 +497,40 @@ async fn update_coupon(
     .bind(input.max_discount)
     .bind(input.usage_limit)
     .bind(input.is_active)
-    .bind(input.expires_at.as_ref().and_then(|s| chrono::NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S").ok()))
-    .bind(input.applicable_products.as_ref().map(|v| serde_json::to_value(v).ok()).flatten())
-    .bind(input.applicable_plans.as_ref().map(|v| serde_json::to_value(v).ok()).flatten())
+    .bind(
+        input
+            .expires_at
+            .as_ref()
+            .and_then(|s| chrono::NaiveDateTime::parse_from_str(s, "%Y-%m-%dT%H:%M:%S").ok()),
+    )
+    .bind(
+        input
+            .applicable_products
+            .as_ref()
+            .map(|v| serde_json::to_value(v).ok())
+            .flatten(),
+    )
+    .bind(
+        input
+            .applicable_plans
+            .as_ref()
+            .map(|v| serde_json::to_value(v).ok())
+            .flatten(),
+    )
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?
-    .ok_or_else(|| (StatusCode::NOT_FOUND, Json(json!({"error": "Coupon not found"}))))?;
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?
+    .ok_or_else(|| {
+        (
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Coupon not found"})),
+        )
+    })?;
 
     Ok(Json(coupon))
 }
@@ -454,19 +543,31 @@ async fn delete_coupon(
     Path(id): Path<i64>,
 ) -> Result<StatusCode, (StatusCode, Json<serde_json::Value>)> {
     // Admin only
-    let is_admin = user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
+    let is_admin =
+        user.role.as_deref() == Some("admin") || user.role.as_deref() == Some("super_admin");
     if !is_admin {
-        return Err((StatusCode::FORBIDDEN, Json(json!({"error": "Admin access required"}))));
+        return Err((
+            StatusCode::FORBIDDEN,
+            Json(json!({"error": "Admin access required"})),
+        ));
     }
 
     let result = sqlx::query("DELETE FROM coupons WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     if result.rows_affected() == 0 {
-        return Err((StatusCode::NOT_FOUND, Json(json!({"error": "Coupon not found"}))));
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "Coupon not found"})),
+        ));
     }
 
     Ok(StatusCode::NO_CONTENT)
@@ -480,7 +581,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/validate", post(validate_coupon))
         .route("/my", get(get_user_coupons))
-        .route("/user/available", get(get_user_coupons))  // Frontend compatibility
+        .route("/user/available", get(get_user_coupons)) // Frontend compatibility
         .route("/", get(list_coupons))
         .route("/", post(create_coupon))
         .route("/:id", axum::routing::put(update_coupon))

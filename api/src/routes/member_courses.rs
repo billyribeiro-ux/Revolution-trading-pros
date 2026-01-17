@@ -12,9 +12,8 @@ use serde_json::json;
 use uuid::Uuid;
 
 use crate::models::course::{
-    Course, CourseDownload, CourseListItem, CourseModule, CourseQueryParams,
-    LessonListItem, ModuleWithLessons, UpdateProgressRequest, UserCourseEnrollment,
-    UserLessonProgress,
+    Course, CourseDownload, CourseListItem, CourseModule, CourseQueryParams, LessonListItem,
+    ModuleWithLessons, UpdateProgressRequest, UserCourseEnrollment, UserLessonProgress,
 };
 use crate::AppState;
 
@@ -216,24 +215,22 @@ async fn get_course_player(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let user_id: i64 = 1; // Placeholder - get from auth
 
-    let course: Course = sqlx::query_as(
-        "SELECT * FROM courses WHERE slug = $1",
-    )
-    .bind(&slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": format!("Database error: {}", e)})),
-        )
-    })?
-    .ok_or_else(|| {
-        (
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Course not found"})),
-        )
-    })?;
+    let course: Course = sqlx::query_as("SELECT * FROM courses WHERE slug = $1")
+        .bind(&slug)
+        .fetch_optional(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": format!("Database error: {}", e)})),
+            )
+        })?
+        .ok_or_else(|| {
+            (
+                StatusCode::NOT_FOUND,
+                Json(json!({"error": "Course not found"})),
+            )
+        })?;
 
     let enrollment: Option<UserCourseEnrollment> = sqlx::query_as(
         "SELECT * FROM user_course_enrollments WHERE user_id = $1 AND course_id = $2",
@@ -245,13 +242,12 @@ async fn get_course_player(
     .ok()
     .flatten();
 
-    let modules: Vec<CourseModule> = sqlx::query_as(
-        "SELECT * FROM course_modules WHERE course_id = $1 ORDER BY sort_order",
-    )
-    .bind(course.id)
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    let modules: Vec<CourseModule> =
+        sqlx::query_as("SELECT * FROM course_modules WHERE course_id = $1 ORDER BY sort_order")
+            .bind(course.id)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default();
 
     let lessons: Vec<LessonListItem> = sqlx::query_as(
         r#"
@@ -267,22 +263,19 @@ async fn get_course_player(
     .await
     .unwrap_or_default();
 
-    let downloads: Vec<CourseDownload> = sqlx::query_as(
-        "SELECT * FROM course_downloads WHERE course_id = $1 ORDER BY sort_order",
-    )
-    .bind(course.id)
-    .fetch_all(&state.db.pool)
-    .await
-    .unwrap_or_default();
+    let downloads: Vec<CourseDownload> =
+        sqlx::query_as("SELECT * FROM course_downloads WHERE course_id = $1 ORDER BY sort_order")
+            .bind(course.id)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default();
 
     let progress: Vec<UserLessonProgress> = if let Some(ref e) = enrollment {
-        sqlx::query_as(
-            "SELECT * FROM user_lesson_progress WHERE enrollment_id = $1",
-        )
-        .bind(e.id)
-        .fetch_all(&state.db.pool)
-        .await
-        .unwrap_or_default()
+        sqlx::query_as("SELECT * FROM user_lesson_progress WHERE enrollment_id = $1")
+            .bind(e.id)
+            .fetch_all(&state.db.pool)
+            .await
+            .unwrap_or_default()
     } else {
         Vec::new()
     };
