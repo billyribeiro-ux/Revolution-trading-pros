@@ -27,15 +27,17 @@ impl FromRequestParts<AppState> for User {
             .await
             .map_err(|e| {
                 tracing::warn!("Missing or invalid Authorization header: {:?}", e);
-                (StatusCode::UNAUTHORIZED, "Missing or invalid authorization header")
+                (
+                    StatusCode::UNAUTHORIZED,
+                    "Missing or invalid authorization header",
+                )
             })?;
 
         // Verify JWT
-        let claims = verify_jwt(bearer.token(), &state.config.jwt_secret)
-            .map_err(|e| {
-                tracing::warn!("JWT verification failed: {:?}", e);
-                (StatusCode::UNAUTHORIZED, "Invalid or expired token")
-            })?;
+        let claims = verify_jwt(bearer.token(), &state.config.jwt_secret).map_err(|e| {
+            tracing::warn!("JWT verification failed: {:?}", e);
+            (StatusCode::UNAUTHORIZED, "Invalid or expired token")
+        })?;
 
         // Get user from database
         let user: User = sqlx::query_as("SELECT * FROM users WHERE id = $1")

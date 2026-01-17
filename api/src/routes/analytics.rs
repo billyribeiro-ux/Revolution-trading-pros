@@ -130,12 +130,30 @@ async fn get_overview(
 }
 
 /// Performance tracking (public - for frontend)
-/// Accepts any content type to avoid 415 errors from beacon API
-async fn track_performance(body: Option<axum::body::Bytes>) -> Json<serde_json::Value> {
-    // Placeholder for performance tracking - accepts any content type
-    // The frontend uses navigator.sendBeacon which may send different content types
-    let _ = body; // Ignore body for now
-    Json(json!({"status": "ok"}))
+/// Accepts performance metrics from frontend monitoring
+async fn track_performance(
+    State(state): State<AppState>,
+    Json(input): Json<serde_json::Value>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Store performance metrics in analytics_events table
+    sqlx::query(
+        r#"
+        INSERT INTO analytics_events (event_type, event_name, properties, created_at)
+        VALUES ('performance', 'web_vitals', $1, NOW())
+        "#,
+    )
+    .bind(&input)
+    .execute(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!("Failed to store performance metrics: {:?}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": "Failed to store metrics", "details": e.to_string()})),
+        )
+    })?;
+
+    Ok(Json(json!({"status": "ok"})))
 }
 
 pub fn router() -> Router<AppState> {
