@@ -305,7 +305,230 @@ export const membersApi = {
 			}
 		);
 		return response.blob();
+	},
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// MEMBER MANAGEMENT API - ICT 11+ Enterprise Grade
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Get member full details (including subscriptions, orders, activity, notes)
+	 */
+	async getMemberFull(id: number): Promise<MemberFullDetails> {
+		return apiClient.get(`/admin/member-management/${id}`);
+	},
+
+	/**
+	 * Create new member
+	 */
+	async createMember(data: CreateMemberRequest): Promise<{ message: string; member: Member; temporary_password?: string }> {
+		return apiClient.post('/admin/member-management', data);
+	},
+
+	/**
+	 * Update member
+	 */
+	async updateMember(id: number, data: UpdateMemberRequest): Promise<{ message: string; member: Member }> {
+		return apiClient.put(`/admin/member-management/${id}`, data);
+	},
+
+	/**
+	 * Delete member (soft delete)
+	 */
+	async deleteMember(id: number): Promise<{ message: string }> {
+		return apiClient.delete(`/admin/member-management/${id}`);
+	},
+
+	/**
+	 * Ban member
+	 */
+	async banMember(id: number, data?: { reason?: string; duration_days?: number }): Promise<{ message: string; banned_until?: string }> {
+		return apiClient.post(`/admin/member-management/${id}/ban`, data || {});
+	},
+
+	/**
+	 * Suspend member
+	 */
+	async suspendMember(id: number, data?: { reason?: string; duration_days?: number }): Promise<{ message: string; suspended_until?: string }> {
+		return apiClient.post(`/admin/member-management/${id}/suspend`, data || {});
+	},
+
+	/**
+	 * Unban/unsuspend member
+	 */
+	async unbanMember(id: number): Promise<{ message: string }> {
+		return apiClient.post(`/admin/member-management/${id}/unban`, {});
+	},
+
+	/**
+	 * Get member notes
+	 */
+	async getMemberNotes(id: number): Promise<MemberNote[]> {
+		return apiClient.get(`/admin/member-management/${id}/notes`);
+	},
+
+	/**
+	 * Create member note
+	 */
+	async createMemberNote(id: number, content: string): Promise<{ message: string; note: MemberNote }> {
+		return apiClient.post(`/admin/member-management/${id}/notes`, { content });
+	},
+
+	/**
+	 * Delete member note
+	 */
+	async deleteMemberNote(memberId: number, noteId: number): Promise<{ message: string }> {
+		return apiClient.delete(`/admin/member-management/${memberId}/notes/${noteId}`);
+	},
+
+	/**
+	 * Get member activity log
+	 */
+	async getMemberActivity(id: number, params?: { page?: number; per_page?: number; action?: string }): Promise<{
+		activity: MemberActivity[];
+		pagination: PaginationInfo;
+	}> {
+		const searchParams = new URLSearchParams();
+		if (params?.page) searchParams.append('page', String(params.page));
+		if (params?.per_page) searchParams.append('per_page', String(params.per_page));
+		if (params?.action) searchParams.append('action', params.action);
+		const queryString = searchParams.toString();
+		return apiClient.get(`/admin/member-management/${id}/activity${queryString ? `?${queryString}` : ''}`);
+	},
+
+	/**
+	 * Export members to Excel/PDF
+	 */
+	async exportMembersAdvanced(filters?: { format?: 'csv' | 'xlsx' | 'pdf'; status?: string; date_from?: string; date_to?: string }): Promise<Blob> {
+		const params = new URLSearchParams();
+		if (filters?.format) params.append('format', filters.format);
+		if (filters?.status) params.append('status', filters.status);
+		if (filters?.date_from) params.append('date_from', filters.date_from);
+		if (filters?.date_to) params.append('date_to', filters.date_to);
+		const queryString = params.toString();
+		const token = getAuthToken();
+		const response = await fetch(
+			`/api/admin/member-management/export${queryString ? `?${queryString}` : ''}`,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`
+				}
+			}
+		);
+		return response.blob();
 	}
 };
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ADDITIONAL TYPES
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface MemberFullDetailsMember {
+	id: number;
+	name: string;
+	first_name: string | null;
+	last_name: string | null;
+	email: string;
+	avatar: string | null;
+	status: 'active' | 'trial' | 'churned' | 'never_subscribed' | 'banned' | 'suspended' | 'restricted';
+	status_label: string;
+	joined_at: string;
+	total_spent: number;
+	active_subscriptions_count: number;
+	current_plan: string | null;
+	current_product: string | null;
+	subscriptions?: Subscription[];
+	orders?: Order[];
+	email_verified?: boolean;
+	last_login?: string | null;
+	churned_at?: string;
+	last_product?: string;
+	last_plan?: string;
+	churn_reason?: string | null;
+	days_since_churn?: number | null;
+	tags: string[];
+	banned_until?: string | null;
+	ban_reason?: string | null;
+}
+
+export interface MemberFullDetails {
+	member: MemberFullDetailsMember;
+	subscriptions: MemberSubscriptionDetail[];
+	orders: MemberOrderDetail[];
+	activity: MemberActivity[];
+	notes: MemberNote[];
+	stats: {
+		total_spent: number;
+		active_subscriptions: number;
+		total_orders: number;
+		member_since_days: number;
+	};
+	engagement_score: number;
+	timeline: TimelineEvent[];
+}
+
+export interface MemberSubscriptionDetail {
+	id: number;
+	product_name: string | null;
+	status: string;
+	price: number | null;
+	billing_period: string | null;
+	started_at: string | null;
+	expires_at: string | null;
+	cancelled_at: string | null;
+	created_at: string;
+}
+
+export interface MemberOrderDetail {
+	id: number;
+	order_number: string | null;
+	total: number | null;
+	status: string | null;
+	created_at: string;
+}
+
+export interface MemberActivity {
+	id: number;
+	user_id: number;
+	action: string;
+	description: string | null;
+	metadata: Record<string, unknown> | null;
+	ip_address: string | null;
+	user_agent: string | null;
+	created_at: string;
+}
+
+export interface MemberNote {
+	id: number;
+	user_id: number;
+	content: string;
+	created_by: number | null;
+	created_by_name: string | null;
+	created_at: string;
+}
+
+export interface TimelineEvent {
+	type: string;
+	title: string;
+	date: string;
+	icon: string;
+	meta?: Record<string, unknown>;
+}
+
+export interface CreateMemberRequest {
+	name: string;
+	email: string;
+	password?: string;
+	role?: string;
+	send_welcome_email?: boolean;
+}
+
+export interface UpdateMemberRequest {
+	name?: string;
+	email?: string;
+	role?: string;
+	avatar_url?: string;
+	password?: string;
+}
 
 export default membersApi;

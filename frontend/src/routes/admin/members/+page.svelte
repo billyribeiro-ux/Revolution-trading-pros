@@ -2,7 +2,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { membersStore, emailStore } from '$lib/stores/members.svelte';
-	import type { Member, MemberFilters } from '$lib/api/members';
+	import type { Member, MemberFilters, MemberFullDetails } from '$lib/api/members';
 	import {
 		IconUsers,
 		IconTrendingUp,
@@ -23,10 +23,23 @@
 		IconChartBar,
 		IconX,
 		IconSend,
-		IconUpload
+		IconUpload,
+		IconUserPlus,
+		IconEdit,
+		IconTrash,
+		IconBan,
+		IconPlayerPlay,
+		IconFileSpreadsheet,
+		IconPdf
 	} from '$lib/icons';
 	import { membersApi } from '$lib/api/members';
 	import { toastStore } from '$lib/stores/toast.svelte';
+
+	// New enterprise components
+	import ConfirmationModal from '$lib/components/admin/ConfirmationModal.svelte';
+	import MemberFormModal from '$lib/components/admin/MemberFormModal.svelte';
+	import MemberDetailDrawer from '$lib/components/admin/MemberDetailDrawer.svelte';
+	import ActionsDropdown from '$lib/components/admin/ActionsDropdown.svelte';
 
 	// Reactive state from stores
 	let members = $derived($membersStore.members);
@@ -52,6 +65,17 @@
 
 	// Error state
 	let initError = $state('');
+
+	// Enterprise member management state
+	let showCreateModal = $state(false);
+	let showEditModal = $state(false);
+	let showDetailDrawer = $state(false);
+	let showDeleteModal = $state(false);
+	let selectedMemberId = $state<number | null>(null);
+	let selectedMemberForEdit = $state<Member | null>(null);
+	let selectedMemberForDelete = $state<Member | null>(null);
+	let isDeleting = $state(false);
+	let exportFormat = $state<'csv' | 'xlsx' | 'pdf'>('csv');
 
 	// Debounce timer for search
 	let searchDebounceTimer: ReturnType<typeof setTimeout> | null = null;
@@ -197,6 +221,108 @@
 		}
 	}
 
+	// ═══════════════════════════════════════════════════════════════════════════
+	// ENTERPRISE MEMBER MANAGEMENT HANDLERS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	function openMemberDetail(member: Member) {
+		selectedMemberId = member.id;
+		showDetailDrawer = true;
+	}
+
+	function openEditMember(member: Member | MemberFullDetails['member']) {
+		selectedMemberForEdit = member as Member;
+		showEditModal = true;
+		showDetailDrawer = false;
+	}
+
+	function openDeleteMember(member: Member) {
+		selectedMemberForDelete = member;
+		showDeleteModal = true;
+	}
+
+	async function handleDeleteMember() {
+		if (!selectedMemberForDelete) return;
+
+		isDeleting = true;
+		try {
+			await membersApi.deleteMember(selectedMemberForDelete.id);
+			toastStore.success('Member deleted successfully');
+			showDeleteModal = false;
+			selectedMemberForDelete = null;
+			await membersStore.loadMembers();
+		} catch (err) {
+			toastStore.error(err instanceof Error ? err.message : 'Failed to delete member');
+		} finally {
+			isDeleting = false;
+		}
+	}
+
+	function handleMemberSaved(member: Member, temporaryPassword?: string) {
+		if (temporaryPassword) {
+			toastStore.success(`Member created! Temporary password: ${temporaryPassword}`);
+		} else {
+			toastStore.success('Member saved successfully');
+		}
+		showCreateModal = false;
+		showEditModal = false;
+		membersStore.loadMembers();
+		membersStore.loadStats();
+	}
+
+	async function handleExportAdvanced(format: 'csv' | 'xlsx' | 'pdf') {
+		exporting = true;
+		try {
+			const blob = await membersApi.exportMembersAdvanced({
+				format,
+				status: statusFilter || undefined
+			});
+			const url = URL.createObjectURL(blob);
+			const a = document.createElement('a');
+			a.href = url;
+			const ext = format === 'xlsx' ? 'xlsx' : format === 'pdf' ? 'pdf' : 'csv';
+			a.download = `members-export-${new Date().toISOString().split('T')[0]}.${ext}`;
+			document.body.appendChild(a);
+			a.click();
+			document.body.removeChild(a);
+			URL.revokeObjectURL(url);
+			toastStore.success(`Members exported as ${format.toUpperCase()}`);
+		} catch {
+			toastStore.error('Failed to export members');
+		} finally {
+			exporting = false;
+		}
+	}
+
+	function getMemberActions(member: Member) {
+		return [
+			{ id: 'view', label: 'View Details', icon: IconExternalLink },
+			{ id: 'edit', label: 'Edit Member', icon: IconEdit },
+			{ id: 'email', label: 'Send Email', icon: IconMail },
+			{ id: 'delete', label: 'Delete Member', icon: IconTrash, variant: 'danger' as const, dividerBefore: true }
+		];
+	}
+
+	function handleMemberAction(actionId: string, member: Member) {
+		switch (actionId) {
+			case 'view':
+				openMemberDetail(member);
+				break;
+			case 'edit':
+				openEditMember(member);
+				break;
+			case 'email':
+				selectedMembers.clear();
+				selectedMembers.add(member.id);
+				selectedMembers = selectedMembers;
+				showEmailModal = true;
+				break;
+			case 'delete':
+				openDeleteMember(member);
+				break;
+		}
+	}
+
 	function getStatusColor(status: string): string {
 		switch (status) {
 			case 'active':
@@ -259,17 +385,33 @@
 				<IconUpload size={18} />
 				Import
 			</button>
-			<button class="btn-secondary" onclick={handleExport} disabled={exporting}>
-				<IconDownload size={18} />
-				{exporting ? 'Exporting...' : 'Export'}
-			</button>
+			<div class="export-dropdown">
+				<button class="btn-secondary" onclick={handleExport} disabled={exporting}>
+					<IconDownload size={18} />
+					{exporting ? 'Exporting...' : 'Export'}
+				</button>
+				<div class="export-options">
+					<button onclick={() => handleExportAdvanced('csv')} disabled={exporting}>
+						<IconDownload size={14} />
+						CSV
+					</button>
+					<button onclick={() => handleExportAdvanced('xlsx')} disabled={exporting}>
+						<IconFileSpreadsheet size={14} />
+						Excel
+					</button>
+					<button onclick={() => handleExportAdvanced('pdf')} disabled={exporting}>
+						<IconPdf size={14} />
+						PDF
+					</button>
+				</div>
+			</div>
 			<button class="btn-secondary" onclick={() => goto('/admin/members/churned')}>
 				<IconAlertTriangle size={18} />
 				Win-Back
 			</button>
-			<button class="btn-primary" onclick={handleRefresh}>
-				<IconRefresh size={18} />
-				Refresh
+			<button class="btn-primary" onclick={() => showCreateModal = true}>
+				<IconUserPlus size={18} />
+				Create Member
 			</button>
 		</div>
 	</div>
@@ -537,7 +679,7 @@
 								/>
 							</td>
 							<td>
-								<div class="member-info">
+								<button class="member-info-btn" onclick={() => openMemberDetail(member)}>
 									<div class="member-avatar">
 										{getMemberInitials(member)}
 									</div>
@@ -545,7 +687,7 @@
 										<div class="member-name">{member.name || ''}</div>
 										<div class="member-email">{member.email || ''}</div>
 									</div>
-								</div>
+								</button>
 							</td>
 							<td>
 								<span class="status-badge {getStatusColor(member.status)}">
@@ -564,14 +706,10 @@
 								<span class="date">{formatDate(member.joined_at)}</span>
 							</td>
 							<td>
-								<div class="actions">
-									<button class="action-btn" title="View Details" onclick={() => membersStore.loadMember(member.id)}>
-										<IconExternalLink size={16} />
-									</button>
-									<button class="action-btn" title="Send Email" onclick={() => { selectedMembers.clear(); selectedMembers.add(member.id); selectedMembers = selectedMembers; showEmailModal = true; }}>
-										<IconMail size={16} />
-									</button>
-								</div>
+								<ActionsDropdown
+									actions={getMemberActions(member)}
+									onAction={(actionId) => handleMemberAction(actionId, member)}
+								/>
 							</td>
 						</tr>
 					{/each}
@@ -715,6 +853,70 @@
 			</div>
 		</div>
 	</div>
+{/if}
+
+<!-- ═══════════════════════════════════════════════════════════════════════════════════
+     ENTERPRISE MEMBER MANAGEMENT COMPONENTS
+     Apple ICT 11+ Principal Engineer Grade
+═══════════════════════════════════════════════════════════════════════════════════ -->
+
+<!-- Member Detail Drawer -->
+{#if showDetailDrawer && selectedMemberId}
+	<MemberDetailDrawer
+		memberId={selectedMemberId}
+		isOpen={showDetailDrawer}
+		onClose={() => {
+			showDetailDrawer = false;
+			selectedMemberId = null;
+		}}
+		onEdit={openEditMember}
+		onEmail={(member) => {
+			selectedMembers.clear();
+			selectedMembers.add(member.id);
+			selectedMembers = selectedMembers;
+			showDetailDrawer = false;
+			showEmailModal = true;
+		}}
+	/>
+{/if}
+
+<!-- Create Member Modal -->
+{#if showCreateModal}
+	<MemberFormModal
+		isOpen={showCreateModal}
+		onClose={() => (showCreateModal = false)}
+		onSave={handleMemberSaved}
+	/>
+{/if}
+
+<!-- Edit Member Modal -->
+{#if showEditModal && selectedMemberForEdit}
+	<MemberFormModal
+		isOpen={showEditModal}
+		member={selectedMemberForEdit}
+		onClose={() => {
+			showEditModal = false;
+			selectedMemberForEdit = null;
+		}}
+		onSave={handleMemberSaved}
+	/>
+{/if}
+
+<!-- Delete Confirmation Modal -->
+{#if showDeleteModal && selectedMemberForDelete}
+	<ConfirmationModal
+		isOpen={showDeleteModal}
+		title="Delete Member"
+		message="Are you sure you want to delete {selectedMemberForDelete.name || selectedMemberForDelete.email}? This action cannot be undone and will remove all associated data including subscriptions, orders, and activity history."
+		confirmLabel="Delete Member"
+		variant="danger"
+		isLoading={isDeleting}
+		onConfirm={handleDeleteMember}
+		onCancel={() => {
+			showDeleteModal = false;
+			selectedMemberForDelete = null;
+		}}
+	/>
 {/if}
 
 <style>
@@ -1832,6 +2034,105 @@
 		font-size: 0.75rem;
 		color: #64748b;
 		margin-top: 0.25rem;
+	}
+
+	/* Export Dropdown */
+	.export-dropdown {
+		position: relative;
+		display: inline-block;
+	}
+
+	.export-dropdown:hover .export-options {
+		display: flex;
+	}
+
+	.export-options {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		z-index: 20;
+		flex-direction: column;
+		min-width: 140px;
+		background: var(--admin-surface-primary, rgba(30, 41, 59, 0.98));
+		border: 1px solid var(--admin-border-subtle, rgba(148, 163, 184, 0.15));
+		border-radius: var(--radius-md, 0.5rem);
+		padding: 0.375rem;
+		margin-top: 0.25rem;
+		box-shadow: 0 10px 30px -5px rgba(0, 0, 0, 0.4);
+		animation: exportDropIn 0.15s ease;
+	}
+
+	@keyframes exportDropIn {
+		from {
+			opacity: 0;
+			transform: translateY(-6px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.export-options button {
+		display: flex;
+		align-items: center;
+		gap: 0.625rem;
+		width: 100%;
+		padding: 0.5rem 0.75rem;
+		background: transparent;
+		border: none;
+		color: var(--admin-text-secondary, #cbd5e1);
+		font-family: var(--font-body), 'Roboto', sans-serif;
+		font-size: 0.8125rem;
+		font-weight: 500;
+		text-align: left;
+		border-radius: var(--radius-sm, 0.25rem);
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.export-options button:hover:not(:disabled) {
+		background: var(--admin-surface-hover, rgba(230, 184, 0, 0.1));
+		color: var(--admin-accent-primary, #E6B800);
+	}
+
+	.export-options button:disabled {
+		opacity: 0.5;
+		cursor: not-allowed;
+	}
+
+	/* Member Info Button - Clickable table cell */
+	.member-info-btn {
+		display: flex;
+		align-items: center;
+		gap: 0.75rem;
+		background: transparent;
+		border: none;
+		padding: 0.25rem 0;
+		text-align: left;
+		cursor: pointer;
+		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		border-radius: var(--radius-sm, 0.25rem);
+	}
+
+	.member-info-btn:hover {
+		transform: translateX(4px);
+	}
+
+	.member-info-btn:hover .member-name {
+		color: var(--admin-accent-primary, #E6B800);
+	}
+
+	.member-info-btn:focus-visible {
+		outline: 2px solid var(--admin-accent-primary, #E6B800);
+		outline-offset: 2px;
+	}
+
+	.member-info-btn .member-details {
+		display: flex;
+		flex-direction: column;
+		gap: 0.125rem;
 	}
 
 	/* Error Banner */
