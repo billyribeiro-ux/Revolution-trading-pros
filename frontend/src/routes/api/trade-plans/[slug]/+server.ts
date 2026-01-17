@@ -34,7 +34,8 @@ const mockTradePlans: Record<string, TradePlanEntry[]> = {
 			stop: '$136.00',
 			options_strike: '$145 Call',
 			options_exp: '2026-01-24',
-			notes: 'Breakout above consolidation. Wait for pullback to entry zone. Strong momentum with volume confirmation.',
+			notes:
+				'Breakout above consolidation. Wait for pullback to entry zone. Strong momentum with volume confirmation.',
 			sort_order: 1,
 			is_active: true,
 			created_at: '2026-01-13T09:00:00Z',
@@ -76,7 +77,8 @@ const mockTradePlans: Record<string, TradePlanEntry[]> = {
 			stop: '$178.00',
 			options_strike: '$185 Call',
 			options_exp: '2026-01-24',
-			notes: 'Breaking above key resistance. Strong volume confirmation. Cloud growth story intact.',
+			notes:
+				'Breaking above key resistance. Strong volume confirmation. Cloud growth story intact.',
 			sort_order: 3,
 			is_active: true,
 			created_at: '2026-01-13T09:00:00Z',

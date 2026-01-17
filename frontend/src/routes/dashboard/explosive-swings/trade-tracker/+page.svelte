@@ -42,7 +42,15 @@
 	// REACTIVE STATE
 	let filterStatus = $state<FilterStatus>('all');
 	let apiTrades = $state<ApiTrade[]>([]);
-	let apiStats = $state<{ total_pnl: number; win_rate: number; wins: number; losses: number; avg_win: number; avg_loss: number; profit_factor: number } | null>(null);
+	let apiStats = $state<{
+		total_pnl: number;
+		win_rate: number;
+		wins: number;
+		losses: number;
+		avg_win: number;
+		avg_loss: number;
+		profit_factor: number;
+	} | null>(null);
 	let isLoading = $state(false);
 
 	const ROOM_SLUG = 'explosive-swings';
@@ -212,7 +220,7 @@
 					profitPercent: t.pnl_percent || 0,
 					duration: t.holding_days || 0,
 					setup: (t.setup || 'Breakout') as Trade['setup'],
-					result: t.status === 'open' ? 'ACTIVE' : ((t.pnl || 0) >= 0 ? 'WIN' : 'LOSS'),
+					result: t.status === 'open' ? 'ACTIVE' : (t.pnl || 0) >= 0 ? 'WIN' : 'LOSS',
 					notes: t.notes || '',
 					tradeType: t.trade_type
 				}))
@@ -247,12 +255,18 @@
 		const wins = closedTrades.filter((t) => t.result === 'WIN').length;
 		const losses = closedTrades.filter((t) => t.result === 'LOSS').length;
 		const totalProfit = closedTrades.reduce((sum, t) => sum + t.profit, 0);
-		const avgWin = wins > 0
-			? closedTrades.filter((t) => t.result === 'WIN').reduce((sum, t) => sum + t.profit, 0) / wins
-			: 0;
-		const avgLoss = losses > 0
-			? Math.abs(closedTrades.filter((t) => t.result === 'LOSS').reduce((sum, t) => sum + t.profit, 0) / losses)
-			: 0;
+		const avgWin =
+			wins > 0
+				? closedTrades.filter((t) => t.result === 'WIN').reduce((sum, t) => sum + t.profit, 0) /
+					wins
+				: 0;
+		const avgLoss =
+			losses > 0
+				? Math.abs(
+						closedTrades.filter((t) => t.result === 'LOSS').reduce((sum, t) => sum + t.profit, 0) /
+							losses
+					)
+				: 0;
 
 		return {
 			totalTrades: closedTrades.length,

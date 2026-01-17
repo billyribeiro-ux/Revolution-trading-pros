@@ -31,10 +31,10 @@ const mockTrades: Record<string, Trade[]> = {
 			strike: null,
 			expiration: null,
 			entry_alert_id: null,
-			entry_price: 425.00,
+			entry_price: 425.0,
 			entry_date: '2026-01-05',
 			exit_alert_id: null,
-			exit_price: 460.00,
+			exit_price: 460.0,
 			exit_date: '2026-01-10',
 			setup: 'Breakout',
 			status: 'closed',
@@ -57,7 +57,7 @@ const mockTrades: Record<string, Trade[]> = {
 			strike: 590,
 			expiration: '2026-01-24',
 			entry_alert_id: 4,
-			entry_price: 12.50,
+			entry_price: 12.5,
 			entry_date: '2026-01-08',
 			exit_alert_id: null,
 			exit_price: 18.75,
@@ -65,7 +65,7 @@ const mockTrades: Record<string, Trade[]> = {
 			setup: 'Momentum',
 			status: 'closed',
 			pnl: 1250,
-			pnl_percent: 50.00,
+			pnl_percent: 50.0,
 			holding_days: 4,
 			notes: 'Strong momentum play. Quick move to target.',
 			created_at: '2026-01-08T11:20:00Z',
@@ -83,15 +83,15 @@ const mockTrades: Record<string, Trade[]> = {
 			strike: null,
 			expiration: null,
 			entry_alert_id: 5,
-			entry_price: 125.00,
+			entry_price: 125.0,
 			entry_date: '2026-01-09',
 			exit_alert_id: null,
-			exit_price: 127.00,
+			exit_price: 127.0,
 			exit_date: '2026-01-11',
 			setup: 'Reversal',
 			status: 'closed',
 			pnl: -400,
-			pnl_percent: -1.60,
+			pnl_percent: -1.6,
 			holding_days: 2,
 			notes: "Stopped out. Reversal didn't materialize.",
 			created_at: '2026-01-09T14:30:00Z',
@@ -109,10 +109,10 @@ const mockTrades: Record<string, Trade[]> = {
 			strike: null,
 			expiration: null,
 			entry_alert_id: null,
-			entry_price: 520.00,
+			entry_price: 520.0,
 			entry_date: '2026-01-02',
 			exit_alert_id: null,
-			exit_price: 570.00,
+			exit_price: 570.0,
 			exit_date: '2026-01-09',
 			setup: 'Earnings',
 			status: 'closed',
@@ -135,7 +135,7 @@ const mockTrades: Record<string, Trade[]> = {
 			strike: null,
 			expiration: null,
 			entry_alert_id: 1,
-			entry_price: 142.50,
+			entry_price: 142.5,
 			entry_date: '2026-01-13',
 			exit_alert_id: null,
 			exit_price: null,
@@ -161,10 +161,10 @@ const mockTrades: Record<string, Trade[]> = {
 			strike: null,
 			expiration: null,
 			entry_alert_id: null,
-			entry_price: 235.00,
+			entry_price: 235.0,
 			entry_date: '2025-12-28',
 			exit_alert_id: null,
-			exit_price: 265.00,
+			exit_price: 265.0,
 			exit_date: '2026-01-05',
 			setup: 'Momentum',
 			status: 'closed',
@@ -187,7 +187,7 @@ const mockTrades: Record<string, Trade[]> = {
 			strike: null,
 			expiration: null,
 			entry_alert_id: null,
-			entry_price: 185.00,
+			entry_price: 185.0,
 			entry_date: '2026-01-11',
 			exit_alert_id: null,
 			exit_price: null,
@@ -213,10 +213,10 @@ const mockTrades: Record<string, Trade[]> = {
 			strike: null,
 			expiration: null,
 			entry_alert_id: null,
-			entry_price: 168.00,
+			entry_price: 168.0,
 			entry_date: '2025-12-20',
 			exit_alert_id: null,
-			exit_price: 175.00,
+			exit_price: 175.0,
 			exit_date: '2025-12-30',
 			setup: 'Momentum',
 			status: 'closed',
@@ -276,10 +276,9 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 	const headers: Record<string, string> = {};
 	if (authHeader) headers['Authorization'] = authHeader;
 
-	const backendData = await fetchFromBackend(
-		`/api/trades/${slug}?${url.searchParams.toString()}`,
-		{ headers }
-	);
+	const backendData = await fetchFromBackend(`/api/trades/${slug}?${url.searchParams.toString()}`, {
+		headers
+	});
 
 	if (backendData?.success) {
 		return json(backendData);
@@ -308,15 +307,12 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 	const losses = closedTrades.filter((t) => (t.pnl || 0) < 0);
 
 	const totalPnl = closedTrades.reduce((sum, t) => sum + (t.pnl || 0), 0);
-	const avgWin = wins.length > 0
-		? wins.reduce((sum, t) => sum + (t.pnl || 0), 0) / wins.length
-		: 0;
-	const avgLoss = losses.length > 0
-		? Math.abs(losses.reduce((sum, t) => sum + (t.pnl || 0), 0) / losses.length)
-		: 0;
-	const winRate = closedTrades.length > 0
-		? (wins.length / closedTrades.length) * 100
-		: 0;
+	const avgWin = wins.length > 0 ? wins.reduce((sum, t) => sum + (t.pnl || 0), 0) / wins.length : 0;
+	const avgLoss =
+		losses.length > 0
+			? Math.abs(losses.reduce((sum, t) => sum + (t.pnl || 0), 0) / losses.length)
+			: 0;
+	const winRate = closedTrades.length > 0 ? (wins.length / closedTrades.length) * 100 : 0;
 	const profitFactor = avgLoss > 0 ? avgWin / avgLoss : avgWin > 0 ? Infinity : 0;
 
 	const stats = {

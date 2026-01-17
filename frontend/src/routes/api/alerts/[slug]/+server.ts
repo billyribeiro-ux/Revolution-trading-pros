@@ -27,8 +27,10 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			alert_type: 'ENTRY',
 			ticker: 'NVDA',
 			title: 'Opening NVDA Swing Position',
-			message: 'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.',
-			notes: 'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.',
+			message:
+				'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.',
+			notes:
+				'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.',
 			trade_type: 'shares',
 			action: 'BUY',
 			quantity: 150,
@@ -37,8 +39,8 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			expiration: null,
 			contract_type: null,
 			order_type: 'LMT',
-			limit_price: 142.50,
-			fill_price: 142.50,
+			limit_price: 142.5,
+			fill_price: 142.5,
 			tos_string: 'BUY +150 NVDA @142.50 LMT',
 			entry_alert_id: null,
 			trade_plan_id: 1,
@@ -57,7 +59,8 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			ticker: 'TSLA',
 			title: 'TSLA Approaching Entry Zone',
 			message: 'TSLA pulling back to our entry zone. Be ready. Will alert when triggered.',
-			notes: 'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.',
+			notes:
+				'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.',
 			trade_type: null,
 			action: null,
 			quantity: null,
@@ -86,7 +89,8 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			ticker: 'MSFT',
 			title: 'Closing MSFT for +8.2%',
 			message: 'Taking profits on MSFT. Hit second target. +$2,450 on this trade.',
-			notes: 'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.',
+			notes:
+				'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.',
 			trade_type: 'shares',
 			action: 'SELL',
 			quantity: 100,
@@ -95,8 +99,8 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			expiration: null,
 			contract_type: null,
 			order_type: 'LMT',
-			limit_price: 460.00,
-			fill_price: 460.00,
+			limit_price: 460.0,
+			fill_price: 460.0,
 			tos_string: 'SELL -100 MSFT @460.00 LMT',
 			entry_alert_id: null,
 			trade_plan_id: null,
@@ -115,7 +119,8 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			ticker: 'META',
 			title: 'META Entry Triggered',
 			message: 'META hit our entry at $585. Position active. Targets in trade plan.',
-			notes: 'Entry confirmed at $585 with volume spike. Stop placed at $565 (3.4% risk). Currently up 1.3% and holding well. Momentum strong with AI revenue narrative. Will trail stop after T1 hit.',
+			notes:
+				'Entry confirmed at $585 with volume spike. Stop placed at $565 (3.4% risk). Currently up 1.3% and holding well. Momentum strong with AI revenue narrative. Will trail stop after T1 hit.',
 			trade_type: 'options',
 			action: 'BUY',
 			quantity: 2,
@@ -124,8 +129,8 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			expiration: '2026-01-24',
 			contract_type: 'Weeklys',
 			order_type: 'LMT',
-			limit_price: 12.50,
-			fill_price: 12.50,
+			limit_price: 12.5,
+			fill_price: 12.5,
 			tos_string: 'BUY +2 META 100 (Weeklys) 24 JAN 26 590 CALL @12.50 LMT',
 			entry_alert_id: null,
 			trade_plan_id: 5,
@@ -144,7 +149,8 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			ticker: 'AMD',
 			title: 'AMD Short Setup Active',
 			message: 'Bearish setup triggered on AMD. Short at $125 with stop at $132.',
-			notes: 'Bearish breakdown confirmed. Entered short at $125, currently at $123.50 (-1.2%). Stop at $132 gives us 5.6% risk. First target $120, second target $115. Watch for bounce at $120 psychological level.',
+			notes:
+				'Bearish breakdown confirmed. Entered short at $125, currently at $123.50 (-1.2%). Stop at $132 gives us 5.6% risk. First target $120, second target $115. Watch for bounce at $120 psychological level.',
 			trade_type: 'shares',
 			action: 'SELL',
 			quantity: 200,
@@ -153,8 +159,8 @@ const mockAlerts: Record<string, RoomAlert[]> = {
 			expiration: null,
 			contract_type: null,
 			order_type: 'LMT',
-			limit_price: 125.00,
-			fill_price: 125.00,
+			limit_price: 125.0,
+			fill_price: 125.0,
 			tos_string: 'SELL -200 AMD @125.00 LMT',
 			entry_alert_id: null,
 			trade_plan_id: 6,
@@ -214,10 +220,9 @@ export const GET: RequestHandler = async ({ params, url, request }) => {
 	const headers: Record<string, string> = {};
 	if (authHeader) headers['Authorization'] = authHeader;
 
-	const backendData = await fetchFromBackend(
-		`/api/alerts/${slug}?${url.searchParams.toString()}`,
-		{ headers }
-	);
+	const backendData = await fetchFromBackend(`/api/alerts/${slug}?${url.searchParams.toString()}`, {
+		headers
+	});
 
 	if (backendData?.success) {
 		return json(backendData);

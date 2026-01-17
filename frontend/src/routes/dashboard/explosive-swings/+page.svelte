@@ -430,9 +430,10 @@
 	}
 
 	async function handleSaveAlert(alertData: AlertCreateInput | AlertUpdateInput, isEdit: boolean) {
-		const url = isEdit && editingAlert
-			? `/api/alerts/${ROOM_SLUG}/${editingAlert.id}`
-			: `/api/alerts/${ROOM_SLUG}`;
+		const url =
+			isEdit && editingAlert
+				? `/api/alerts/${ROOM_SLUG}/${editingAlert.id}`
+				: `/api/alerts/${ROOM_SLUG}`;
 
 		const response = await fetch(url, {
 			method: isEdit ? 'PUT' : 'POST',
@@ -486,9 +487,14 @@
 
 		if (diffMins < 60) return `${diffMins} min ago`;
 		if (diffHours < 24) return `${diffHours}h ago`;
-		if (diffDays === 0) return `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-		if (diffDays === 1) return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-		return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) + ` at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+		if (diffDays === 0)
+			return `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+		if (diffDays === 1)
+			return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
+		return (
+			date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
+			` at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`
+		);
 	}
 
 	// Derive alerts from API or fallback
@@ -848,7 +854,14 @@
 					<h2>Live Alerts</h2>
 					{#if isAdmin}
 						<button class="admin-btn" onclick={openNewAlertModal}>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+							<svg
+								viewBox="0 0 24 24"
+								fill="none"
+								stroke="currentColor"
+								stroke-width="2"
+								width="18"
+								height="18"
+							>
 								<path d="M12 5v14M5 12h14" />
 							</svg>
 							New Alert
@@ -953,10 +966,7 @@
 								>
 									Edit
 								</button>
-								<button
-									class="admin-action-btn delete"
-									onclick={() => handleDeleteAlert(alert.id)}
-								>
+								<button class="admin-action-btn delete" onclick={() => handleDeleteAlert(alert.id)}>
 									Delete
 								</button>
 							</div>

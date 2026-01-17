@@ -148,15 +148,19 @@
 	// Transform API alerts to display format
 	function formatAlertDate(dateString: string): string {
 		const date = new Date(dateString);
-		return date.toLocaleDateString('en-US', {
-			month: 'long',
-			day: 'numeric',
-			year: 'numeric'
-		}) + ' at ' + date.toLocaleTimeString('en-US', {
-			hour: 'numeric',
-			minute: '2-digit',
-			timeZoneName: 'short'
-		});
+		return (
+			date.toLocaleDateString('en-US', {
+				month: 'long',
+				day: 'numeric',
+				year: 'numeric'
+			}) +
+			' at ' +
+			date.toLocaleTimeString('en-US', {
+				hour: 'numeric',
+				minute: '2-digit',
+				timeZoneName: 'short'
+			})
+		);
 	}
 
 	// Derive display alerts from API or fallback
@@ -169,7 +173,7 @@
 					title: a.title,
 					date: formatAlertDate(a.published_at),
 					excerpt: a.message,
-					status: a.alert_type === 'UPDATE' ? 'Info' : (a.alert_type === 'EXIT' ? 'Closed' : 'Open'),
+					status: a.alert_type === 'UPDATE' ? 'Info' : a.alert_type === 'EXIT' ? 'Closed' : 'Open',
 					profitLoss: null as string | null, // Would come from linked trade
 					href: `/dashboard/explosive-swings/alerts/${a.id}`,
 					tosString: a.tos_string,

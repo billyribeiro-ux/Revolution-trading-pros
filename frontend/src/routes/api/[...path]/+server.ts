@@ -1,7 +1,7 @@
 /**
  * Generic Catch-All API Proxy
  * ICT 11+ CORB Fix: Routes all /api/* requests through SvelteKit server to prevent CORB
- * 
+ *
  * This handles any API endpoint that doesn't have a dedicated proxy route.
  * All requests are forwarded to the backend API with proper auth headers.
  */
@@ -22,7 +22,7 @@ async function proxyRequest(
 	try {
 		// Build target URL
 		const targetUrl = new URL(`${API_ROOT}/api/${path}`);
-		
+
 		// Forward query params
 		url.searchParams.forEach((value, key) => {
 			targetUrl.searchParams.set(key, value);
@@ -33,13 +33,13 @@ async function proxyRequest(
 		const headers: Record<string, string> = {
 			Accept: 'application/json'
 		};
-		
+
 		// Forward content-type for POST/PUT/PATCH
 		const contentType = request.headers.get('content-type');
 		if (contentType) {
 			headers['Content-Type'] = contentType;
 		}
-		
+
 		if (token) {
 			headers.Authorization = `Bearer ${token}`;
 		}
@@ -65,7 +65,7 @@ async function proxyRequest(
 		const responseText = await response.text();
 		try {
 			const data = JSON.parse(responseText);
-			return json(data, { 
+			return json(data, {
 				status: response.status,
 				headers: {
 					'Cache-Control': response.headers.get('Cache-Control') || 'no-cache'

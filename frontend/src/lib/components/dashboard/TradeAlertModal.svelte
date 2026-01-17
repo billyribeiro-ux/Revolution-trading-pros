@@ -114,7 +114,9 @@
 
 	// Get available entry alerts for EXIT linking
 	const availableEntryAlerts = $derived(
-		entryAlerts.filter((a) => a.alert_type === 'ENTRY' && a.ticker.toUpperCase() === ticker.toUpperCase())
+		entryAlerts.filter(
+			(a) => a.alert_type === 'ENTRY' && a.ticker.toUpperCase() === ticker.toUpperCase()
+		)
 	);
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -149,7 +151,8 @@
 	// Auto-generate title based on alert type and ticker
 	$effect(() => {
 		if (!isEdit && ticker && alertType && !title) {
-			const actionWord = alertType === 'ENTRY' ? 'Opening' : alertType === 'EXIT' ? 'Closing' : 'Update:';
+			const actionWord =
+				alertType === 'ENTRY' ? 'Opening' : alertType === 'EXIT' ? 'Closing' : 'Update:';
 			const direction = action === 'BUY' ? 'Long' : 'Short';
 			title = `${ticker.toUpperCase()} ${alertType === 'UPDATE' ? 'Update' : `${actionWord} ${direction} Position`}`;
 		}
@@ -222,13 +225,13 @@
 				action,
 				quantity,
 				option_type: tradeType === 'options' ? optionType : undefined,
-				strike: tradeType === 'options' ? strike ?? undefined : undefined,
+				strike: tradeType === 'options' ? (strike ?? undefined) : undefined,
 				expiration: tradeType === 'options' ? expiration || undefined : undefined,
 				contract_type: tradeType === 'options' ? contractType : undefined,
 				order_type: orderType,
-				limit_price: orderType === 'LMT' ? limitPrice ?? undefined : undefined,
+				limit_price: orderType === 'LMT' ? (limitPrice ?? undefined) : undefined,
 				fill_price: fillPrice ?? undefined,
-				entry_alert_id: alertType === 'EXIT' ? entryAlertId ?? undefined : undefined,
+				entry_alert_id: alertType === 'EXIT' ? (entryAlertId ?? undefined) : undefined,
 				is_pinned: isPinned
 			};
 
@@ -267,13 +270,26 @@
 			<div class="modal-header">
 				<h2>{isEdit ? 'Edit Alert' : 'Create New Alert'}</h2>
 				<button class="close-btn" onclick={handleClose} aria-label="Close">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="24" height="24">
+					<svg
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						width="24"
+						height="24"
+					>
 						<path d="M6 18L18 6M6 6l12 12" />
 					</svg>
 				</button>
 			</div>
 
-			<form class="modal-body" onsubmit={(e) => { e.preventDefault(); handleSubmit(); }}>
+			<form
+				class="modal-body"
+				onsubmit={(e) => {
+					e.preventDefault();
+					handleSubmit();
+				}}
+			>
 				{#if errors.length > 0}
 					<div class="error-banner">
 						{#each errors as error}
@@ -489,7 +505,12 @@
 			</form>
 
 			<div class="modal-footer">
-				<button type="button" class="btn btn-secondary" onclick={handleClose} disabled={isSubmitting}>
+				<button
+					type="button"
+					class="btn btn-secondary"
+					onclick={handleClose}
+					disabled={isSubmitting}
+				>
 					Cancel
 				</button>
 				<button

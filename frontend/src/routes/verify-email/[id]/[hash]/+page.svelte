@@ -17,16 +17,13 @@
 
 		try {
 			// ICT 11+ CORB Fix: Use same-origin SvelteKit proxy endpoint
-			const response = await fetch(
-				`/api/auth/verify-email?token=${encodeURIComponent(token)}`,
-				{
-					method: 'GET',
-					headers: {
-						Accept: 'application/json'
-					},
-					credentials: 'include'
-				}
-			);
+			const response = await fetch(`/api/auth/verify-email?token=${encodeURIComponent(token)}`, {
+				method: 'GET',
+				headers: {
+					Accept: 'application/json'
+				},
+				credentials: 'include'
+			});
 
 			const data = await response.json();
 
