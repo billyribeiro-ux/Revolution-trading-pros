@@ -20,6 +20,8 @@
 		"isolatedModules": true,
 		"esModuleInterop": true,
 		"resolveJsonModule": true,
+		// ICT 11+: Explicit type roots for SvelteKit module resolution
+		"types": ["@sveltejs/kit", "svelte"],
 
 		// ═══════════════════════════════════════════════════════════════════════════
 		// CORE STRICT MODE - ALL ENABLED (ICT11+ Standard)
@@ -79,7 +81,6 @@
 		"node_modules",
 		"build",
 		"dist",
-		".svelte-kit",
 		"**/*.spec.ts",
 		"**/*.test.ts",
 		"Do's/**/*"
