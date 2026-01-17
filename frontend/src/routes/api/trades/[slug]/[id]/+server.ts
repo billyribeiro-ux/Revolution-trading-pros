@@ -149,7 +149,8 @@ function calculatePnL(
 		pnl *= 100;
 	}
 
-	const pnl_percent = ((exitPrice - entryPrice) / entryPrice) * 100 * (direction === 'short' ? -1 : 1);
+	const pnl_percent =
+		((exitPrice - entryPrice) / entryPrice) * 100 * (direction === 'short' ? -1 : 1);
 
 	return {
 		pnl: Math.round(pnl * 100) / 100,
@@ -281,7 +282,9 @@ export const PUT: RequestHandler = async ({ params, request }) => {
 		...existingTrade,
 		exit_alert_id: body.exit_alert_id ?? existingTrade.exit_alert_id,
 		exit_price: body.exit_price ?? existingTrade.exit_price,
-		exit_date: body.exit_date ?? (isClosing ? new Date().toISOString().split('T')[0] : existingTrade.exit_date),
+		exit_date:
+			body.exit_date ??
+			(isClosing ? new Date().toISOString().split('T')[0] : existingTrade.exit_date),
 		status: isClosing ? 'closed' : (body.status ?? existingTrade.status),
 		pnl,
 		pnl_percent,

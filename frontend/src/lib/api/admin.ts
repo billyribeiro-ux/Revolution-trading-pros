@@ -1095,14 +1095,11 @@ export const formsApi = {
 	async exportSubmissions(formId: number, format: 'csv' | 'excel' = 'csv'): Promise<Blob> {
 		// Use secure getter from auth store
 		const token = authStore.getToken();
-		const response = await fetch(
-			`/api/admin/forms/${formId}/submissions/export?format=${format}`,
-			{
-				headers: {
-					Authorization: `Bearer ${token}`
-				}
+		const response = await fetch(`/api/admin/forms/${formId}/submissions/export?format=${format}`, {
+			headers: {
+				Authorization: `Bearer ${token}`
 			}
-		);
+		});
 
 		if (!response.ok) {
 			throw new AdminApiError('Export failed', response.status);
