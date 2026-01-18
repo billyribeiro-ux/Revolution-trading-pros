@@ -639,7 +639,14 @@
 	<title>Blog Posts | Enterprise Admin</title>
 </svelte:head>
 
-<div class="blog-page">
+<div class="admin-blog">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
 	<div class="admin-page-container">
 		<!-- Notifications -->
 		<div class="notifications">
@@ -1408,12 +1415,11 @@
 </div>
 
 <style>
-	.blog-page {
-		padding: 2rem;
-		max-width: 1400px;
-		margin: 0 auto;
-		background: var(--admin-bg);
+	.admin-blog {
 		min-height: 100vh;
+		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		position: relative;
+		overflow: hidden;
 		color: var(--admin-text-primary);
 	}
 

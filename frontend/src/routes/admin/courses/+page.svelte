@@ -261,14 +261,21 @@
 	<title>Manage Courses | Admin</title>
 </svelte:head>
 
-<div class="page">
+<div class="admin-courses">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
 	<div class="admin-page-container">
 		<header class="page-header">
 			<h1>Courses</h1>
 			<p class="subtitle">Manage your courses and learning content</p>
 		</header>
 
-		<div class="header-actions">
+		<div class="actions-row">
 			<div class="search-box">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -726,11 +733,12 @@
 />
 
 <style>
-	/* Page Layout - Email Templates Style */
-	.page {
-		max-width: 1400px;
-		margin: 0 auto;
-		padding: 2rem;
+	/* Page Layout - Consistent Admin Style */
+	.admin-courses {
+		min-height: 100vh;
+		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		position: relative;
+		overflow: hidden;
 	}
 
 	/* Centered Header */
@@ -753,7 +761,7 @@
 	}
 
 	/* Actions Row - Centered */
-	.header-actions {
+	.actions-row {
 		display: flex;
 		justify-content: center;
 		align-items: center;
@@ -1044,7 +1052,7 @@
 	}
 
 	@media (max-width: 768px) {
-		.header-actions {
+		.actions-row {
 			flex-direction: column;
 			gap: 0.75rem;
 		}

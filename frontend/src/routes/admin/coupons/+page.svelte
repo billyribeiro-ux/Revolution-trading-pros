@@ -140,13 +140,20 @@
 	}
 </script>
 
-<div class="page">
+<div class="admin-coupons">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
 	<div class="admin-page-container">
 		<!-- Page Header -->
-		<div class="page-header">
+		<header class="page-header">
 			<h1>Coupons Management</h1>
 			<p class="subtitle">Manage discount codes and promotional offers</p>
-		</div>
+		</header>
 
 		<!-- Actions Row -->
 		<div class="actions-row">
@@ -321,9 +328,11 @@
 	 * RTP Admin Color System
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.page {
+	.admin-coupons {
 		min-height: 100vh;
-		background: var(--bg-base);
+		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		position: relative;
+		overflow: hidden;
 	}
 
 	.admin-page-container {

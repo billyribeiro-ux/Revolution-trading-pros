@@ -1,0 +1,481 @@
+/**
+ * RTP Admin Page Layout - Standard Layout Classes
+ * ═══════════════════════════════════════════════════════════════════════════
+ * Provides consistent layout structure for all admin pages
+ * Reference: /admin (Overview) page layout
+ * 
+ * Usage:
+ * <div class="admin-page">
+ *   <div class="bg-effects">
+ *     <div class="bg-blob bg-blob-1"></div>
+ *     <div class="bg-blob bg-blob-2"></div>
+ *     <div class="bg-blob bg-blob-3"></div>
+ *   </div>
+ *   <div class="admin-page-container">
+ *     <header class="page-header">
+ *       <h1>Page Title</h1>
+ *       <p class="subtitle">Page description</p>
+ *       <div class="header-actions">...</div>
+ *     </header>
+ *     <!-- Content -->
+ *   </div>
+ * </div>
+ * 
+ * @version 1.0.0
+ * @author Revolution Trading Pros
+ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * ADMIN PAGE WRAPPER
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.admin-page,
+.admin-dashboard,
+.admin-members,
+.admin-subscriptions,
+.admin-products,
+.admin-coupons,
+.admin-blog,
+.admin-courses,
+.admin-indicators,
+.admin-trading-rooms,
+.admin-resources,
+.admin-categories,
+.admin-media,
+.admin-videos,
+.admin-popups,
+.admin-forms,
+.admin-campaigns,
+.admin-email-templates,
+.admin-email-settings,
+.admin-seo,
+.admin-analytics,
+.admin-behavior,
+.admin-crm,
+.admin-site-health,
+.admin-connections,
+.admin-users,
+.admin-settings,
+.page {
+	min-height: 100vh;
+	background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+	color: var(--text-primary);
+	position: relative;
+	overflow: hidden;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * PAGE CONTAINER
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.admin-page-container {
+	position: relative;
+	z-index: 10;
+	max-width: 1400px;
+	margin: 0 auto;
+	padding: 2rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * ANIMATED BACKGROUND EFFECTS
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.bg-effects {
+	position: fixed;
+	inset: 0;
+	pointer-events: none;
+	overflow: hidden;
+	z-index: 1;
+}
+
+.bg-blob {
+	position: absolute;
+	border-radius: 50%;
+	filter: blur(80px);
+	opacity: 0.15;
+}
+
+.bg-blob-1 {
+	width: 600px;
+	height: 600px;
+	top: -200px;
+	right: -200px;
+	background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+	animation: float 20s ease-in-out infinite;
+}
+
+.bg-blob-2 {
+	width: 500px;
+	height: 500px;
+	bottom: -150px;
+	left: -150px;
+	background: linear-gradient(135deg, var(--secondary-500), var(--primary-600));
+	animation: float 25s ease-in-out infinite reverse;
+}
+
+.bg-blob-3 {
+	width: 400px;
+	height: 400px;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	background: linear-gradient(135deg, var(--success-base), var(--success-emphasis));
+	animation: float 30s ease-in-out infinite;
+}
+
+@keyframes float {
+	0%,
+	100% {
+		transform: translate(0, 0) scale(1);
+	}
+	33% {
+		transform: translate(30px, -30px) scale(1.05);
+	}
+	66% {
+		transform: translate(-20px, 20px) scale(0.95);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * PAGE HEADER - CENTERED
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.page-header {
+	text-align: center;
+	margin-bottom: 2rem;
+}
+
+.page-header h1 {
+	font-size: 1.75rem;
+	font-weight: 700;
+	color: var(--text-primary);
+	margin: 0 0 0.5rem 0;
+}
+
+.page-header .subtitle {
+	color: var(--text-tertiary);
+	font-size: 0.875rem;
+	margin: 0 0 1rem 0;
+}
+
+.last-updated {
+	color: var(--success-emphasis);
+	font-size: 0.8rem;
+	margin-left: 0.5rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * HEADER ACTIONS - CENTERED
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.header-actions {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+}
+
+/* Actions Row - Alternative centered layout below header */
+.actions-row {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.75rem;
+	flex-wrap: wrap;
+	margin-bottom: 1.5rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * BUTTON STYLES
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.btn-primary {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+	color: var(--bg-base);
+	border: none;
+	padding: 0.625rem 1rem;
+	border-radius: 8px;
+	font-size: 0.875rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: all 0.2s;
+	text-decoration: none;
+}
+
+.btn-primary:hover {
+	opacity: 0.9;
+	transform: translateY(-1px);
+}
+
+.btn-secondary {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	background: var(--bg-surface);
+	color: var(--text-primary);
+	border: 1px solid var(--border-default);
+	padding: 0.5rem 1rem;
+	border-radius: 8px;
+	font-size: 0.875rem;
+	font-weight: 500;
+	cursor: pointer;
+	transition: all 0.2s;
+	text-decoration: none;
+}
+
+.btn-secondary:hover {
+	background: var(--bg-hover);
+	color: var(--text-primary);
+}
+
+.btn-secondary:disabled {
+	opacity: 0.6;
+	cursor: not-allowed;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * SEARCH BOX
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.search-box {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 1rem;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-default);
+	border-radius: 8px;
+	min-width: 200px;
+	max-width: 320px;
+}
+
+.search-box input {
+	flex: 1;
+	border: none;
+	background: transparent;
+	color: var(--text-primary);
+	font-size: 0.875rem;
+	outline: none;
+}
+
+.search-box input::placeholder {
+	color: var(--text-tertiary);
+}
+
+.search-box:focus-within {
+	border-color: var(--primary-500);
+	box-shadow: 0 0 0 2px rgba(230, 184, 0, 0.15);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * GLASS PANEL
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.glass-panel {
+	background: rgba(22, 27, 34, 0.6);
+	border: 1px solid var(--border-muted);
+	border-radius: 16px;
+	padding: 1.5rem;
+	margin-bottom: 1.5rem;
+	position: relative;
+	overflow: hidden;
+	backdrop-filter: blur(10px);
+}
+
+.panel-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 1.5rem;
+}
+
+.panel-title {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+}
+
+.panel-title h2 {
+	font-size: 1.125rem;
+	font-weight: 600;
+	color: var(--text-primary);
+	margin: 0;
+}
+
+.panel-subtitle {
+	font-size: 0.75rem;
+	color: var(--text-tertiary);
+}
+
+.panel-icon {
+	width: 44px;
+	height: 44px;
+	border-radius: 10px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * ERROR BANNER
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.error-banner {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 1rem 1.25rem;
+	background: var(--error-soft);
+	border: 1px solid var(--error-base);
+	border-radius: 8px;
+	color: var(--error-emphasis);
+	margin-bottom: 1.5rem;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * LOADING & EMPTY STATES
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.loading {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 4rem 2rem;
+	color: var(--text-tertiary);
+}
+
+.spinner {
+	width: 40px;
+	height: 40px;
+	border: 3px solid var(--border-muted);
+	border-top-color: var(--primary-500);
+	border-radius: 50%;
+	animation: spin 0.8s linear infinite;
+	margin-bottom: 1rem;
+}
+
+@keyframes spin {
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+.empty-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 4rem 2rem;
+	text-align: center;
+	color: var(--text-tertiary);
+}
+
+.empty-state p {
+	margin: 1rem 0;
+	max-width: 400px;
+}
+
+.error-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 4rem 2rem;
+	text-align: center;
+	color: var(--error-emphasis);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * FILTER BAR
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+.filter-bar {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	gap: 0.5rem;
+	margin-bottom: 1.5rem;
+	flex-wrap: wrap;
+}
+
+.filter-select {
+	padding: 0.5rem 1rem;
+	background: var(--bg-surface);
+	border: 1px solid var(--border-default);
+	border-radius: 8px;
+	color: var(--text-primary);
+	font-size: 0.875rem;
+	cursor: pointer;
+}
+
+.filter-select:focus {
+	border-color: var(--primary-500);
+	outline: none;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * RESPONSIVE
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+@media (max-width: 1024px) {
+	.admin-page-container {
+		padding: 1.5rem;
+	}
+}
+
+@media (max-width: 768px) {
+	.admin-page-container {
+		padding: 1rem;
+	}
+
+	.page-header h1 {
+		font-size: 1.5rem;
+	}
+
+	.header-actions,
+	.actions-row {
+		gap: 0.5rem;
+	}
+
+	.btn-primary,
+	.btn-secondary {
+		padding: 0.5rem 0.875rem;
+		font-size: 0.8125rem;
+	}
+
+	.search-box {
+		min-width: 150px;
+		max-width: 100%;
+	}
+}
+
+@media (max-width: 480px) {
+	.page-header h1 {
+		font-size: 1.25rem;
+	}
+
+	.page-header .subtitle {
+		font-size: 0.8125rem;
+	}
+
+	.header-actions,
+	.actions-row {
+		flex-direction: column;
+		width: 100%;
+	}
+
+	.header-actions > *,
+	.actions-row > * {
+		width: 100%;
+		justify-content: center;
+	}
+
+	.search-box {
+		max-width: 100%;
+	}
+}
