@@ -1085,6 +1085,11 @@
 		top: 0;
 	}
 
+	/* ICT Level 7 Fix: Adjust navbar position when admin toolbar is present */
+	:global(.has-admin-toolbar) .navbar.sticky {
+		top: var(--admin-toolbar-height, 46px);
+	}
+
 	.navbar.scrolled {
 		background-color: var(--nav-bg-scrolled);
 		box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
