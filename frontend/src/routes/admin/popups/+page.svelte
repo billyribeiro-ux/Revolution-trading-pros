@@ -87,10 +87,17 @@
 	);
 </script>
 
-<div class="page">
+<div class="admin-popups">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
 	<div class="admin-page-container">
 		<!-- Header -->
-		<div class="page-header">
+		<header class="page-header">
 			<h1>Popup Manager</h1>
 			<p class="subtitle">Create and manage custom popups for your site</p>
 			<div class="header-actions">
@@ -99,7 +106,7 @@
 					<span>Create Popup</span>
 				</a>
 			</div>
-		</div>
+		</header>
 
 		<!-- Tabs -->
 		<div class="tabs">

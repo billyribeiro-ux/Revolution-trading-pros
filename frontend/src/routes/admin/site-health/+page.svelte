@@ -332,7 +332,14 @@
 	<title>Site Health | Admin</title>
 </svelte:head>
 
-<div class="page">
+<div class="admin-site-health">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
 	<div class="admin-page-container">
 		<!-- Header Section - Centered -->
 		<header class="page-header" in:fly={{ y: -20, duration: 500, delay: 100 }}>

@@ -396,8 +396,8 @@
 			</div>
 		{/if}
 
-		<!-- Header -->
-		<div class="page-header">
+		<!-- Header - Centered Style -->
+		<header class="page-header">
 			<h1>Members Command Center</h1>
 			<p class="subtitle">Comprehensive member management and analytics</p>
 			<div class="header-actions">
@@ -434,7 +434,7 @@
 					Create Member
 				</button>
 			</div>
-		</div>
+		</header>
 
 		<!-- Stats Grid -->
 		{#if stats}

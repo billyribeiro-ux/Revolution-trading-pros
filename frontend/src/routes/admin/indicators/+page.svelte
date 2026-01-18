@@ -98,7 +98,14 @@
 	<title>Indicators | Admin</title>
 </svelte:head>
 
-<div class="page">
+<div class="admin-indicators">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
 	<div class="admin-page-container">
 		<header class="page-header">
 			<h1>Indicators</h1>

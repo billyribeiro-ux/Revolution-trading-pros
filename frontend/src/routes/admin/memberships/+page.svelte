@@ -440,10 +440,17 @@
 	<title>Membership Plans | Admin Dashboard</title>
 </svelte:head>
 
-<div class="page">
+<div class="admin-memberships">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
 	<div class="admin-page-container">
 		<!-- Page Header - Centered -->
-		<div class="page-header">
+		<header class="page-header">
 			<h1>Membership Plans</h1>
 			<p class="subtitle">Manage subscription tiers, pricing, and plan features</p>
 			<div class="header-actions">
@@ -456,7 +463,7 @@
 					Add Plan
 				</button>
 			</div>
-		</div>
+		</header>
 
 		<!-- Stats Overview -->
 		<section class="stats-grid">
