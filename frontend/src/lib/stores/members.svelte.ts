@@ -445,17 +445,17 @@ export const emailStore = createEmailStore();
 
 // Derived stores
 export const activeMembersCount = derived(membersStore, ($store) =>
-	$store.stats ? $store.stats.subscriptions.active : 0
+	$store.stats?.subscriptions?.active ?? 0
 );
 
 export const totalMembersCount = derived(membersStore, ($store) =>
-	$store.stats ? $store.stats.overview.total_members : 0
+	$store.stats?.overview?.total_members ?? 0
 );
 
 export const monthlyRecurringRevenue = derived(membersStore, ($store) =>
-	$store.stats ? $store.stats.revenue.mrr : 0
+	$store.stats?.revenue?.mrr ?? 0
 );
 
 export const churnRate = derived(membersStore, ($store) =>
-	$store.stats ? $store.stats.subscriptions.churn_rate : 0
+	$store.stats?.subscriptions?.churn_rate ?? 0
 );

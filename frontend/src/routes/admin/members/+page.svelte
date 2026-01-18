@@ -509,10 +509,10 @@
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Monthly Revenue</div>
-						<div class="stat-value">{formatCurrency(stats.revenue.mrr)}</div>
+						<div class="stat-value">{formatCurrency(stats?.revenue?.mrr ?? 0)}</div>
 						<div class="stat-change neutral">
 							<IconCurrencyDollar size={14} />
-							{formatCurrency(stats.revenue.avg_ltv)} avg LTV
+							{formatCurrency(stats?.revenue?.avg_ltv ?? 0)} avg LTV
 						</div>
 					</div>
 					<div class="stat-glow"></div>
@@ -525,10 +525,10 @@
 					</div>
 					<div class="stat-content">
 						<div class="stat-label">Churn Rate</div>
-						<div class="stat-value">{stats.subscriptions.churn_rate}%</div>
+						<div class="stat-value">{stats?.subscriptions?.churn_rate ?? 0}%</div>
 						<div class="stat-change negative">
 							<IconAlertTriangle size={14} />
-							{stats.subscriptions.churned} churned
+							{stats?.subscriptions?.churned ?? 0} churned
 						</div>
 					</div>
 					<button class="stat-action" onclick={() => goto('/admin/members/churned')}>
