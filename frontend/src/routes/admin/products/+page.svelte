@@ -326,186 +326,13 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RTP ADMIN PRODUCTS - Apple ICT7+ Principal Engineer Grade
-	 * Consistent with Analytics Dashboard styling
+	 * RTP ADMIN PRODUCTS - Product-Specific Styles Only
+	 * Layout styles inherited from admin-page-layout.css
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Outer Container with Gradient Background */
-	.admin-products {
-		min-height: 100vh;
-		background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
-		color: white;
-		position: relative;
-		overflow: hidden;
-	}
-
-	/* Inner Container */
-	.admin-page-container {
-		position: relative;
-		z-index: 10;
-		max-width: 1400px;
-		margin: 0 auto;
-		padding: 2rem;
-	}
-
-	/* Background Effects - Animated Blobs */
-	.bg-effects {
-		position: fixed;
-		inset: 0;
-		pointer-events: none;
-		overflow: hidden;
-	}
-
-	.bg-blob {
-		position: absolute;
-		border-radius: 50%;
-		filter: blur(80px);
-		opacity: 0.15;
-	}
-
-	.bg-blob-1 {
-		width: 600px;
-		height: 600px;
-		top: -200px;
-		right: -200px;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
-		animation: float 20s ease-in-out infinite;
-	}
-
-	.bg-blob-2 {
-		width: 500px;
-		height: 500px;
-		bottom: -150px;
-		left: -150px;
-		background: linear-gradient(135deg, #3b82f6, #b38f00);
-		animation: float 25s ease-in-out infinite reverse;
-	}
-
-	.bg-blob-3 {
-		width: 400px;
-		height: 400px;
-		top: 50%;
-		left: 50%;
-		transform: translate(-50%, -50%);
-		background: linear-gradient(135deg, #10b981, #14b8a6);
-		animation: float 30s ease-in-out infinite;
-	}
-
-	@keyframes float {
-		0%,
-		100% {
-			transform: translate(0, 0) scale(1);
-		}
-		33% {
-			transform: translate(30px, -30px) scale(1.05);
-		}
-		66% {
-			transform: translate(-20px, 20px) scale(0.95);
-		}
-	}
-
-	.page-header {
-		text-align: center;
-		margin-bottom: 2rem;
-	}
-
-	.page-header h1 {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: #f1f5f9;
-		margin-bottom: 0.5rem;
-	}
-
-	.subtitle {
-		color: #64748b;
-		font-size: 0.875rem;
-		margin-bottom: 1.5rem;
-	}
-
-	.header-actions {
-		display: flex;
-		justify-content: center;
-		gap: 0.75rem;
-		flex-wrap: wrap;
-	}
-
-	.btn-primary,
-	.btn-secondary {
-		display: inline-flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.625rem 1.25rem;
-		font-weight: 600;
-		border: none;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.btn-primary {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
-		color: white;
-		border-radius: 6px;
-	}
-
-	.btn-primary:hover:not(:disabled) {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 16px rgba(230, 184, 0, 0.35);
-	}
-
-	.btn-secondary {
-		background: rgba(100, 116, 139, 0.2);
-		color: #cbd5e1;
-		border: 1px solid rgba(100, 116, 139, 0.3);
-		border-radius: 6px;
-	}
-
-	.btn-secondary:hover:not(:disabled) {
-		background: rgba(100, 116, 139, 0.3);
-		border-color: rgba(100, 116, 139, 0.5);
-	}
-
-	.btn-secondary:disabled,
-	.btn-primary:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
-	}
-
-	/* Search Box */
-	.search-box {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-		padding: 0.625rem 1rem;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
-		min-width: 250px;
-	}
-
-	.search-box :global(svg) {
-		color: #64748b;
-		flex-shrink: 0;
-	}
-
-	.search-box input {
-		flex: 1;
-		background: transparent;
-		border: none;
-		color: #f1f5f9;
-		font-size: 0.875rem;
-		outline: none;
-	}
-
-	.search-box input::placeholder {
-		color: #64748b;
-	}
-
-	/* Filter Bar */
-	.filter-bar {
-		display: flex;
-		justify-content: center;
-		margin-bottom: 1.5rem;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * TYPE FILTER
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.type-filter {
 		display: flex;
@@ -559,44 +386,9 @@
 		color: #a5b4fc;
 	}
 
-	.loading,
-	.empty-state {
-		text-align: center;
-		padding: 4rem 2rem;
-		color: #64748b;
-	}
-
-	.loading .spinner {
-		width: 48px;
-		height: 48px;
-		border: 4px solid rgba(148, 163, 184, 0.1);
-		border-top-color: var(--admin-accent-primary, #e6b800);
-		border-radius: 50%;
-		animation: spin 1s linear infinite;
-		margin: 0 auto 1rem;
-	}
-
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
-	}
-
-	.empty-state :global(svg) {
-		color: #475569;
-		margin-bottom: 1rem;
-	}
-
-	.empty-state h3 {
-		color: #f1f5f9;
-		margin-bottom: 0.5rem;
-		font-size: 1.25rem;
-		font-weight: 600;
-	}
-
-	.empty-state p {
-		margin-bottom: 1.5rem;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * ALERT STYLES
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.alert {
 		display: flex;
@@ -629,9 +421,22 @@
 		background: rgba(239, 68, 68, 0.2);
 	}
 
-	/* Spinning animation for refresh */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * PRODUCTS GRID & CARDS
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * UTILITY ANIMATIONS
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	:global(.spinning) {
 		animation: spin 1s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
 	}
 
 	.products-grid {
@@ -839,23 +644,41 @@
 		animation: spin 0.8s linear infinite;
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * RESPONSIVE
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (max-width: 768px) {
-		.admin-page-container {
-			padding: 1rem;
-		}
-
-		.header-actions {
-			flex-direction: column;
-			align-items: center;
-		}
-
-		.search-box {
-			width: 100%;
-			min-width: unset;
+		.type-filter {
+			gap: 0.5rem;
 		}
 
 		.products-grid {
 			grid-template-columns: 1fr;
+		}
+
+		.product-card {
+			margin: 0;
+		}
+	}
+
+	@media (max-width: 480px) {
+		.type-filter {
+			flex-direction: column;
+			width: 100%;
+		}
+
+		.type-btn {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.product-actions {
+			flex-direction: column;
+		}
+
+		.action-btn {
+			width: 100%;
 		}
 	}
 </style>
