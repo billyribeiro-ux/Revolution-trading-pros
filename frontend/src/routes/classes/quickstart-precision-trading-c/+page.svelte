@@ -247,7 +247,7 @@
 		color: #000000;
 	}
 
-	#page a:focus-visible {
+	:global(#page a:focus-visible) {
 		outline: 2px solid #1e73be;
 		outline-offset: 2px;
 		border-radius: 4px;

@@ -265,7 +265,8 @@
 <svelte:window onkeydown={handleKeydown} />
 
 {#if isOpen}
-	<div class="modal-backdrop" onclick={handleBackdropClick} role="dialog" aria-modal="true">
+	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+	<div class="modal-backdrop" onclick={handleBackdropClick} onkeydown={handleKeydown} role="dialog" aria-modal="true" tabindex="-1">
 		<div class="modal-content">
 			<div class="modal-header">
 				<h2>{isEdit ? 'Edit Alert' : 'Create New Alert'}</h2>
@@ -443,7 +444,7 @@
 
 				<!-- TOS String Preview -->
 				<div class="tos-preview" class:valid={tosString && tosValidationErrors.length === 0}>
-					<label>TOS String Preview</label>
+					<span class="preview-label">TOS String Preview</span>
 					<div class="tos-string">
 						{#if tosString}
 							<code>{tosString}</code>
@@ -738,7 +739,7 @@
 		border: 2px solid #22c55e;
 	}
 
-	.tos-preview label {
+	.tos-preview .preview-label {
 		display: block;
 		font-size: 11px;
 		font-weight: 600;
