@@ -549,9 +549,8 @@
 </svelte:head>
 
 <div class="admin-segments">
-	<div class="page">
-		<!-- Animated Background -->
-		<div class="bg-effects">
+	<!-- Animated Background -->
+	<div class="bg-effects">
 			<div class="bg-blob bg-blob-1"></div>
 			<div class="bg-blob bg-blob-2"></div>
 			<div class="bg-blob bg-blob-3"></div>
@@ -1054,7 +1053,6 @@
 	onConfirm={handleConfirmDelete}
 	onCancel={cancelDelete}
 />
-</div>
 
 <style>
 	/* Root Container */

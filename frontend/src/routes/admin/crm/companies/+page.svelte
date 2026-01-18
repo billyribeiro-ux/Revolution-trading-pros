@@ -156,10 +156,18 @@
 	<title>CRM Companies - FluentCRM Pro</title>
 </svelte:head>
 
-<div class="page">
-	<!-- Page Header - CENTERED -->
-	<header class="page-header">
-		<h1>CRM Companies</h1>
+<div class="admin-crm-companies">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<!-- Page Header - CENTERED -->
+		<header class="page-header">
+			<h1>CRM Companies</h1>
 		<p class="subtitle">Manage B2B company accounts and their contacts</p>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={() => loadCompanies()} disabled={isLoading}>
@@ -328,6 +336,8 @@
 			</table>
 		</div>
 	{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>

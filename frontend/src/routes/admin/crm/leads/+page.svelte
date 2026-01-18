@@ -578,9 +578,17 @@
 	<title>Leads | CRM - Admin Dashboard</title>
 </svelte:head>
 
-<div class="page">
-	<!-- Header - CENTERED -->
-	<header class="page-header">
+<div class="admin-crm-leads">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<!-- Header - CENTERED -->
+		<header class="page-header">
 		<h1>
 			<IconUsers size={28} />
 			Lead Management
@@ -939,6 +947,8 @@
 			{/if}
 		</div>
 	{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <!-- Add Lead Modal -->
