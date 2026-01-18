@@ -694,6 +694,8 @@
 						<tr>
 							<th class="checkbox-col">
 								<input
+									id="select-all-members"
+									name="select-all-members"
 									type="checkbox"
 									checked={selectedMembers.size === members.length && members.length > 0}
 									onchange={selectAllMembers}
@@ -713,6 +715,8 @@
 							<tr class:selected={selectedMembers.has(member.id)}>
 								<td class="checkbox-col">
 									<input
+										id="select-member-{member.id}"
+										name="select-member-{member.id}"
 										type="checkbox"
 										checked={selectedMembers.has(member.id)}
 										onchange={() => toggleMemberSelection(member.id)}

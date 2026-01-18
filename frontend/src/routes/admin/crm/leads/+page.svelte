@@ -669,7 +669,7 @@
 			<div class="search-section">
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input type="text" placeholder="Search leads..." bind:value={searchQuery} />
+					<input id="search-leads" name="search-leads" type="text" placeholder="Search leads..." bind:value={searchQuery} />
 				</div>
 				<button class="btn-filter" onclick={() => (showFilters = !showFilters)}>
 					<IconFilter size={18} />
@@ -787,7 +787,7 @@
 					<thead>
 						<tr>
 							<th class="checkbox-col">
-								<input type="checkbox" checked={isAllSelected} onchange={toggleSelectAll} />
+								<input id="select-all-leads" name="select-all-leads" type="checkbox" checked={isAllSelected} onchange={toggleSelectAll} />
 							</th>
 							<th></th>
 							<th>Lead</th>
@@ -805,6 +805,8 @@
 							<tr class:selected={selectedLeads.has(lead.id)}>
 								<td class="checkbox-col">
 									<input
+										id="select-lead-{lead.id}"
+										name="select-lead-{lead.id}"
 										type="checkbox"
 										checked={selectedLeads.has(lead.id)}
 										onchange={() => toggleSelectLead(lead.id)}

@@ -1088,11 +1088,11 @@
 
 				<div class="form-row checkboxes">
 					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={alertForm.is_new} />
+						<input id="alert-is-new" name="alert-is-new" type="checkbox" bind:checked={alertForm.is_new} />
 						<span>Mark as NEW</span>
 					</label>
 					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={alertForm.is_published} />
+						<input id="alert-is-published" name="alert-is-published" type="checkbox" bind:checked={alertForm.is_published} />
 						<span>Published</span>
 					</label>
 				</div>

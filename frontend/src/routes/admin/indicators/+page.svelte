@@ -135,6 +135,8 @@
 					<circle cx="11" cy="11" r="8" /><path d="m21 21-4.3-4.3" />
 				</svg>
 				<input
+					id="search-indicators"
+					name="search-indicators"
 					type="text"
 					placeholder="Search indicators..."
 					bind:value={search}
@@ -142,7 +144,7 @@
 				/>
 			</div>
 			<!-- ICT 7 FIX: Backend uses is_active boolean, not status string -->
-			<select bind:value={statusFilter} onchange={fetchIndicators}>
+			<select id="status-filter" name="status-filter" bind:value={statusFilter} onchange={fetchIndicators}>
 				<option value="">All Status</option>
 				<option value="true">Active</option>
 				<option value="false">Inactive</option>

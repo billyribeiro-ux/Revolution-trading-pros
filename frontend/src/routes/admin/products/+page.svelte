@@ -178,7 +178,7 @@
 		<div class="actions-row">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input type="text" placeholder="Search products..." bind:value={searchQuery} />
+				<input id="search-products" name="search-products" type="text" placeholder="Search products..." bind:value={searchQuery} />
 			</div>
 			<button class="btn-secondary" onclick={() => loadProducts()} disabled={loading}>
 				<IconRefresh size={18} class={loading ? 'spinning' : ''} />

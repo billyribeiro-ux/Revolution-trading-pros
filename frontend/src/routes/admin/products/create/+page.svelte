@@ -335,6 +335,8 @@
 					{#each formData.features as feature, index}
 						<div class="feature-row">
 							<input
+								id="feature-{index}"
+								name="feature-{index}"
 								type="text"
 								value={feature}
 								oninput={(e) => updateFeature(index, e.currentTarget.value)}
@@ -356,7 +358,7 @@
 				<!-- Active Status -->
 				<div class="form-group">
 					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={formData.is_active} />
+						<input id="is-active" name="is-active" type="checkbox" bind:checked={formData.is_active} />
 						<span>Active (visible to customers)</span>
 					</label>
 				</div>
@@ -394,7 +396,7 @@
 
 						<div class="form-group">
 							<label class="checkbox-label">
-								<input type="checkbox" bind:checked={formData.indexable} />
+								<input id="indexable" name="indexable" type="checkbox" bind:checked={formData.indexable} />
 								<span>Allow search engine indexing</span>
 							</label>
 						</div>

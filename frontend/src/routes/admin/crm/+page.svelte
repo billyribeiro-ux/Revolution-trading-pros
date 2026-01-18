@@ -346,14 +346,14 @@
 			<div class="filters-bar">
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input type="text" placeholder="Search contacts..." bind:value={searchQuery} />
+					<input id="search-contacts" name="search-contacts" type="text" placeholder="Search contacts..." bind:value={searchQuery} />
 				</div>
-				<select class="filter-select" bind:value={selectedStatus}>
+				<select id="status-filter" name="status-filter" class="filter-select" bind:value={selectedStatus}>
 					{#each statusOptions as option}
 						<option value={option.value}>{option.label}</option>
 					{/each}
 				</select>
-				<select class="filter-select" bind:value={selectedLifecycle}>
+				<select id="lifecycle-filter" name="lifecycle-filter" class="filter-select" bind:value={selectedLifecycle}>
 					{#each lifecycleStages as stage}
 						<option value={stage.value}>{stage.label}</option>
 					{/each}
@@ -387,7 +387,7 @@
 						<thead>
 							<tr>
 								<th>
-									<input type="checkbox" class="checkbox" />
+									<input id="select-all-contacts" name="select-all-contacts" type="checkbox" class="checkbox" />
 								</th>
 								<th>Contact</th>
 								<th>Status</th>
@@ -401,7 +401,7 @@
 							{#each filteredContacts as contact (contact.id || contact.email)}
 								<tr>
 									<td>
-										<input type="checkbox" class="checkbox" />
+										<input id="select-contact-{contact.id}" name="select-contact-{contact.id}" type="checkbox" class="checkbox" />
 									</td>
 									<td>
 										<a href="/admin/crm/contacts/{contact.id}" class="contact-cell">
