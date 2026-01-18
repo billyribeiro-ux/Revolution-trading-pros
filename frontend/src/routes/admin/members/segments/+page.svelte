@@ -1046,9 +1046,9 @@
 <!-- Delete Confirmation Modal -->
 <ConfirmationModal
 	isOpen={showDeleteModal}
-	title={deleteModalConfig().title}
-	message={deleteModalConfig().message}
-	confirmText={deleteModalConfig().confirmText}
+	title={deleteModalConfig.title}
+	message={deleteModalConfig.message}
+	confirmText={deleteModalConfig.confirmText}
 	variant="danger"
 	isLoading={isDeleting}
 	onConfirm={handleConfirmDelete}
