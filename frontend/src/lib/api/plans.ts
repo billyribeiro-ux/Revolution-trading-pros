@@ -300,18 +300,45 @@ export function getRecommendedPlan(plans: SubscriptionPlan[]): SubscriptionPlan 
 }
 
 /**
- * Convert plan to cart item format
+ * Map billing cycle to CartItem interval format
  */
-export function planToCartItem(plan: SubscriptionPlan) {
+function mapBillingCycleToInterval(
+	cycle: string
+): 'monthly' | 'quarterly' | 'yearly' | 'lifetime' | undefined {
+	switch (cycle) {
+		case 'monthly':
+			return 'monthly';
+		case 'quarterly':
+			return 'quarterly';
+		case 'annual':
+		case 'yearly':
+			return 'yearly';
+		default:
+			return undefined;
+	}
+}
+
+/**
+ * Convert plan to cart item format
+ * Returns Omit<CartItem, 'quantity'> for use with cartStore.addItem()
+ */
+export function planToCartItem(plan: SubscriptionPlan): {
+	id: string;
+	name: string;
+	description: string;
+	price: number;
+	type: 'membership' | 'alert-service';
+	interval?: 'monthly' | 'quarterly' | 'yearly' | 'lifetime';
+	productSlug?: string;
+} {
 	return {
 		id: `plan-${plan.id}`,
-		planId: plan.id,
 		name: plan.display_name || plan.name,
 		description: plan.description || '',
 		price: plan.price,
-		type: 'subscription' as const,
-		interval: plan.billing_cycle,
-		stripePriceId: plan.stripe_price_id
+		type: 'membership',
+		interval: mapBillingCycleToInterval(plan.billing_cycle),
+		productSlug: plan.slug
 	};
 }
 

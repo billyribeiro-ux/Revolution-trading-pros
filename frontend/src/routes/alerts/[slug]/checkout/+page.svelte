@@ -19,8 +19,8 @@
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import PricingSelector from '$lib/components/checkout/PricingSelector.svelte';
 
-	// Get room slug from URL
-	const roomSlug = page.params.slug;
+	// Get room slug from URL - validated to ensure it exists
+	const roomSlug = page.params.slug ?? '';
 
 	// State
 	let loading = $state(true);
@@ -37,6 +37,12 @@
 	async function loadPlans() {
 		loading = true;
 		error = '';
+
+		if (!roomSlug) {
+			error = 'Invalid room. Please check the URL.';
+			loading = false;
+			return;
+		}
 
 		try {
 			const response = await getPlansByRoom(roomSlug);
@@ -70,11 +76,7 @@
 
 		// Clear cart and add selected plan
 		cartStore.clearCart();
-		const cartItem = planToCartItem(selectedPlan);
-		cartStore.addItem({
-			...cartItem,
-			quantity: 1
-		});
+		cartStore.addItem(planToCartItem(selectedPlan));
 
 		// Check authentication
 		if (!$isAuthenticated) {
