@@ -55,6 +55,7 @@ pub mod room_resources;
 pub mod subscriptions_admin;
 pub mod trading_rooms;
 pub mod watchlist; // ICT 7: Service connection status // ICT 7: Teams & Departments
+pub mod favorites; // ICT 7: User favorites persistence
 
 use crate::AppState;
 use axum::Router;
@@ -158,6 +159,8 @@ pub fn api_router() -> Router<AppState> {
             "/admin/organization/departments",
             organization::departments_router(),
         )
+        // User Favorites - ICT 7 Grade
+        .nest("/favorites", favorites::router())
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())

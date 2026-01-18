@@ -15,13 +15,21 @@
 	import RtpIcon from '$lib/components/icons/RtpIcon.svelte';
 
 	// Props
+	interface TradingRoom {
+		name: string;
+		slug?: string;
+		href: string;
+		icon: string;
+	}
+
 	interface Props {
 		roomName: string;
 		startHereUrl: string;
-		pageTitle?: string; // Optional custom page title (defaults to "{roomName} Dashboard")
+		pageTitle?: string;
+		tradingRooms?: TradingRoom[];
 	}
 
-	let { roomName, startHereUrl, pageTitle }: Props = $props();
+	let { roomName, startHereUrl, pageTitle, tradingRooms = [] }: Props = $props();
 
 	// Use custom pageTitle if provided, otherwise default to "{roomName} Dashboard"
 	let displayTitle = $derived(pageTitle || `${roomName} Dashboard`);
@@ -29,24 +37,28 @@
 	// Dropdown state
 	let isDropdownOpen = $state(false);
 
-	// Trading rooms for dropdown
-	const tradingRooms = [
-		{
-			name: 'Day Trading Room',
-			href: '#', // TODO: Provide URL
-			icon: 'chart-line'
-		},
-		{
-			name: 'Swing Trading Room',
-			href: '#', // TODO: Provide URL
-			icon: 'trending-up'
-		},
-		{
-			name: 'Small Accounts Mentorship',
-			href: '#', // TODO: Provide URL
-			icon: 'dollar-sign'
-		}
-	];
+	// Use provided trading rooms or fallback to defaults
+	const displayRooms = $derived(
+		tradingRooms.length > 0
+			? tradingRooms
+			: [
+					{
+						name: 'Day Trading Room',
+						href: '/dashboard/day-trading-room',
+						icon: 'chart-line'
+					},
+					{
+						name: 'Swing Trading Room',
+						href: '/dashboard/swing-trading-room',
+						icon: 'trending-up'
+					},
+					{
+						name: 'Small Account Mentorship',
+						href: '/dashboard/small-account-mentorship',
+						icon: 'dollar-sign'
+					}
+				]
+	);
 
 	function toggleDropdown(event: Event): void {
 		event.stopPropagation();
@@ -105,7 +117,7 @@
 
 			{#if isDropdownOpen}
 				<div class="dropdown-menu" role="menu">
-					{#each tradingRooms as room}
+					{#each displayRooms as room}
 						<a href={room.href} class="dropdown-item" onclick={closeDropdown} role="menuitem">
 							<span class="dropdown-item__icon">
 								<RtpIcon name={room.icon} size={20} />
