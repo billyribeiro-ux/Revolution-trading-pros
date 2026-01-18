@@ -171,8 +171,9 @@
 		<!-- Header -->
 		<header class="page-header">
 			<a href="/admin/popups" class="back-btn">Back to Popups</a>
-		<h1>Create New Popup</h1>
-		<p class="subtitle">Design and configure your popup</p>
+			<h1>Create New Popup</h1>
+			<p class="subtitle">Design and configure your popup</p>
+		</header>
 	</div>
 
 	<form onsubmit={handleSubmit}>
@@ -624,7 +625,7 @@
 </div>
 
 <style>
-	.page {
+	.admin-popups-new {
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
@@ -790,12 +791,12 @@
 		color: #f87171 !important;
 	}
 
-	:global(.page .border-red-500) {
+	:global(.admin-popups-new .border-red-500) {
 		border-color: rgba(239, 68, 68, 0.5) !important;
 	}
 
 	@media (max-width: 768px) {
-		.page {
+		.admin-popups-new {
 			padding: 1rem;
 		}
 

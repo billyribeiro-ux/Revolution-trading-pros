@@ -509,8 +509,8 @@
 		<!-- Header -->
 		<header class="page-header">
 			<h1>Automation Funnels</h1>
-		<p class="subtitle">Create powerful marketing automations triggered by events</p>
-		<div class="header-actions">
+			<p class="subtitle">Create powerful marketing automations triggered by events</p>
+			<div class="header-actions">
 			<button class="btn-secondary" onclick={openImportModal} title="Import Automation">
 				<IconUpload size={18} />
 				Import
@@ -523,6 +523,7 @@
 				New Automation
 			</a>
 		</div>
+		</header>
 	</div>
 
 	<!-- Success Alert -->

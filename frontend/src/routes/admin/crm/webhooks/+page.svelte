@@ -209,16 +209,17 @@
 		<!-- Header -->
 		<header class="page-header">
 			<h1>Webhooks</h1>
-		<p class="subtitle">Send real-time notifications to external services</p>
-		<div class="header-actions">
-			<button class="btn-refresh" onclick={() => loadWebhooks()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			<a href="/admin/crm/webhooks/new" class="btn-primary">
-				<IconPlus size={18} />
-				New Webhook
-			</a>
-		</div>
+			<p class="subtitle">Send real-time notifications to external services</p>
+			<div class="header-actions">
+				<button class="btn-refresh" onclick={() => loadWebhooks()} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				</button>
+				<a href="/admin/crm/webhooks/new" class="btn-primary">
+					<IconPlus size={18} />
+					New Webhook
+				</a>
+			</div>
+		</header>
 	</div>
 
 	<!-- Stats Cards -->

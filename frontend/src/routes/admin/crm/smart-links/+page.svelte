@@ -211,16 +211,17 @@
 		<!-- Header -->
 		<header class="page-header">
 			<h1>Smart Links</h1>
-		<p class="subtitle">Create action links that trigger automations when clicked</p>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={() => loadSmartLinks()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			<a href="/admin/crm/smart-links/new" class="btn-primary">
-				<IconPlus size={18} />
-				New Smart Link
-			</a>
-		</div>
+			<p class="subtitle">Create action links that trigger automations when clicked</p>
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={() => loadSmartLinks()} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				</button>
+				<a href="/admin/crm/smart-links/new" class="btn-primary">
+					<IconPlus size={18} />
+					New Smart Link
+				</a>
+			</div>
+		</header>
 	</div>
 
 	<!-- Stats Cards -->
@@ -405,7 +406,7 @@
 </div>
 
 <style>
-	.page {
+	.admin-crm-smart-links {
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;

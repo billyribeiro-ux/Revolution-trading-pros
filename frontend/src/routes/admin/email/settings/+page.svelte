@@ -158,14 +158,15 @@
 		<header class="page-header">
 			<h1>Email Settings</h1>
 			<p class="subtitle">Configure your SMTP server settings for sending emails</p>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={testConnection} disabled={testing}>
-				{testing ? 'Testing...' : 'Test Connection'}
-			</button>
-			<button class="btn-primary" onclick={saveSettings} disabled={loading}>
-				{loading ? 'Saving...' : 'Save Settings'}
-			</button>
-		</div>
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={testConnection} disabled={testing}>
+					{testing ? 'Testing...' : 'Test Connection'}
+				</button>
+				<button class="btn-primary" onclick={saveSettings} disabled={loading}>
+					{loading ? 'Saving...' : 'Save Settings'}
+				</button>
+			</div>
+		</header>
 	</div>
 
 	<!-- Connection Status Banner -->

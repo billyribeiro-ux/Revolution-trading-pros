@@ -133,7 +133,7 @@
 </div>
 
 <style>
-	.page {
+	.admin-forms-create {
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
@@ -207,7 +207,7 @@
 	}
 
 	@media (max-width: 768px) {
-		.page {
+		.admin-forms-create {
 			padding: 1rem;
 		}
 

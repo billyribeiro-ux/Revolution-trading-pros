@@ -1123,7 +1123,7 @@
 		}
 	}
 
-	.page {
+	.admin-segments {
 		position: relative;
 		z-index: 1;
 		max-width: 1400px;

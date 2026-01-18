@@ -87,21 +87,22 @@
 		<!-- Header -->
 		<header class="page-header">
 			<a href="/admin/popups" class="back-btn">
-			<IconArrowLeft size={18} />
-			<span>Back</span>
-		</a>
-		<h1>Create Popup</h1>
-		<p class="subtitle">Design a custom popup for your site</p>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={() => (showPreview = !showPreview)}>
-				<IconEye size={18} />
-				<span>{showPreview ? 'Hide' : 'Show'} Preview</span>
-			</button>
-			<button class="btn-primary" onclick={handleSave} disabled={saving}>
-				<IconDeviceFloppy size={18} />
-				<span>{saving ? 'Saving...' : 'Save Popup'}</span>
-			</button>
-		</div>
+				<IconArrowLeft size={18} />
+				<span>Back</span>
+			</a>
+			<h1>Create Popup</h1>
+			<p class="subtitle">Design a custom popup for your site</p>
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={() => (showPreview = !showPreview)}>
+					<IconEye size={18} />
+					<span>{showPreview ? 'Hide' : 'Show'} Preview</span>
+				</button>
+				<button class="btn-primary" onclick={handleSave} disabled={saving}>
+					<IconDeviceFloppy size={18} />
+					<span>{saving ? 'Saving...' : 'Save Popup'}</span>
+				</button>
+			</div>
+		</header>
 	</div>
 
 	<div class="creator-layout">
@@ -645,7 +646,7 @@
 </div>
 
 <style>
-	.page {
+	.admin-popups-create {
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
@@ -994,7 +995,7 @@
 	}
 
 	@media (max-width: 768px) {
-		.page {
+		.admin-popups-create {
 			padding: 1rem;
 		}
 

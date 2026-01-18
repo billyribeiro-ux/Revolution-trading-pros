@@ -344,7 +344,7 @@
 	/* =====================================================
 	   Page Layout - Email Templates Style
 	   ===================================================== */
-	.page {
+	.admin-crm-companies {
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
@@ -763,7 +763,7 @@
 	}
 
 	@media (max-width: 768px) {
-		.page {
+		.admin-crm-companies {
 			padding: 1rem;
 		}
 

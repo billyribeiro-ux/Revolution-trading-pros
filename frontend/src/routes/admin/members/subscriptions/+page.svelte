@@ -270,7 +270,8 @@
 		<!-- Header - CENTERED -->
 		<header class="page-header">
 			<h1>Member Subscriptions</h1>
-		<p class="subtitle">Manage and monitor all member subscription plans</p>
+			<p class="subtitle">Manage and monitor all member subscription plans</p>
+		</header>
 	</div>
 
 	<!-- Actions Row - CENTERED -->

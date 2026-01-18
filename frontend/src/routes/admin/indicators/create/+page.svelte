@@ -221,6 +221,7 @@
 		<header class="page-header">
 			<h1><IconSparkles size={28} /> Add New Indicator</h1>
 			<p class="subtitle">Create a new trading indicator for your platform</p>
+		</header>
 	</div>
 
 	<div class="content-container">
@@ -408,7 +409,7 @@
 
 <style>
 	/* Page wrapper - Email Templates Style */
-	.page {
+	.admin-indicators-create {
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;

@@ -196,16 +196,17 @@
 		<!-- Header -->
 		<header class="page-header">
 			<h1>Contact Tags</h1>
-		<p class="subtitle">Label and categorize your contacts with tags</p>
-		<div class="header-actions">
-			<button class="btn-secondary" onclick={() => loadTags()} disabled={isLoading}>
-				<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
-			</button>
-			<button class="btn-primary" onclick={openCreateModal}>
-				<IconPlus size={18} />
-				New Tag
-			</button>
-		</div>
+			<p class="subtitle">Label and categorize your contacts with tags</p>
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={() => loadTags()} disabled={isLoading}>
+					<IconRefresh size={18} class={isLoading ? 'spinning' : ''} />
+				</button>
+				<button class="btn-primary" onclick={openCreateModal}>
+					<IconPlus size={18} />
+					New Tag
+				</button>
+			</div>
+		</header>
 	</div>
 
 	<!-- Stats Cards -->
@@ -391,7 +392,7 @@
 {/if}
 
 <style>
-	.page {
+	.admin-crm-tags {
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;

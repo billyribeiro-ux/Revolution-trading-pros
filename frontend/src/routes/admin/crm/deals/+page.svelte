@@ -888,7 +888,7 @@
 {/if}
 
 <style>
-	.page {
+	.admin-crm-deals {
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
@@ -1777,7 +1777,7 @@
 
 	/* Responsive */
 	@media (max-width: 768px) {
-		.page {
+		.admin-crm-deals {
 			padding: 1rem;
 		}
 
