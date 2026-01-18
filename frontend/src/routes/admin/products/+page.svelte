@@ -843,7 +843,7 @@
 	}
 
 	@media (max-width: 768px) {
-		.page {
+		.admin-page-container {
 			padding: 1rem;
 		}
 
