@@ -69,14 +69,9 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const PLATFORMS: Platform[] = [
-		{ id: 'thinkorswim', name: 'thinkorswim', displayName: 'thinkorswim', icon: 'tos', extension: '.ts' },
-		{ id: 'tradingview', name: 'tradingview', displayName: 'TradingView', icon: 'tv', extension: '.pine' },
-		{ id: 'metatrader4', name: 'metatrader4', displayName: 'MetaTrader 4', icon: 'mt4', extension: '.mq4' },
-		{ id: 'metatrader5', name: 'metatrader5', displayName: 'MetaTrader 5', icon: 'mt5', extension: '.mq5' },
-		{ id: 'ninjatrader', name: 'ninjatrader', displayName: 'NinjaTrader', icon: 'nt', extension: '.cs' },
-		{ id: 'tradestation', name: 'tradestation', displayName: 'TradeStation', icon: 'ts', extension: '.eld' },
-		{ id: 'multicharts', name: 'multicharts', displayName: 'MultiCharts', icon: 'mc', extension: '.pla' },
-		{ id: 'esignal', name: 'esignal', displayName: 'eSignal', icon: 'es', extension: '.efs' }
+		{ id: 'thinkorswim', name: 'thinkorswim', displayName: 'Thinkorswim', icon: '', extension: '.ts' },
+		{ id: 'tradingview', name: 'tradingview', displayName: 'TradingView', icon: '', extension: '.pine' },
+		{ id: 'trendspider', name: 'trendspider', displayName: 'TrendSpider', icon: '', extension: '.tsp' }
 	];
 
 	const CATEGORIES = [
@@ -689,34 +684,25 @@
 				<!-- Platforms Card -->
 				<section class="form-card">
 					<h2 class="card-title">
-						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></span>
+						<span class="title-icon">🖥️</span>
 						Supported Platforms
 						<span class="required">*</span>
 					</h2>
-					<p class="card-description">Select all platforms this indicator supports. You can upload platform-specific files below.</p>
+					<p class="card-description">Select all platforms this indicator supports.</p>
 
-					<div class="platforms-grid">
+					<div class="platforms-toggle-list">
 						{#each PLATFORMS as platform}
-							<button
-								type="button"
-								class="platform-chip"
-								class:selected={indicator.platforms.includes(platform.id)}
-								onclick={() => togglePlatform(platform.id)}
-							>
-								<span class="platform-icon" data-platform={platform.id}></span>
+							<label class="platform-toggle">
+								<input
+									type="checkbox"
+									checked={indicator.platforms.includes(platform.id)}
+									onchange={() => togglePlatform(platform.id)}
+								/>
+								<span class="toggle-slider"></span>
 								<span class="platform-name">{platform.displayName}</span>
-								{#if indicator.platforms.includes(platform.id)}
-									<svg class="check-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
-								{/if}
-							</button>
+							</label>
 						{/each}
 					</div>
-
-					{#if indicator.platforms.length > 0}
-						<div class="selected-count">
-							{indicator.platforms.length} platform{indicator.platforms.length !== 1 ? 's' : ''} selected
-						</div>
-					{/if}
 				</section>
 
 				<!-- Platform Files Card -->
@@ -1450,87 +1436,70 @@
 		box-shadow: none !important;
 	}
 
-	/* Platform Chips */
-	.platforms-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+	/* Platform Toggle List */
+	.platforms-toggle-list {
+		display: flex;
+		flex-direction: column;
 		gap: 0.75rem;
 	}
 
-	.platform-chip {
+	.platform-toggle {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.75rem 1rem;
+		gap: 1rem;
+		padding: 1rem 1.25rem;
 		background: rgba(15, 23, 42, 0.6);
-		border: 2px solid rgba(100, 116, 139, 0.3);
+		border: 1px solid rgba(100, 116, 139, 0.3);
 		border-radius: 12px;
-		color: #94a3b8;
 		cursor: pointer;
 		transition: all 0.2s ease;
-		font-size: 0.875rem;
 	}
 
-	.platform-chip:hover {
-		border-color: rgba(230, 184, 0, 0.5);
+	.platform-toggle:hover {
+		border-color: rgba(230, 184, 0, 0.4);
 		background: rgba(230, 184, 0, 0.05);
 	}
 
-	.platform-chip.selected {
-		border-color: #e6b800;
-		background: rgba(230, 184, 0, 0.15);
-		color: #ffd11a;
+	.platform-toggle input[type="checkbox"] {
+		display: none;
 	}
 
-	.platform-icon {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 24px;
-		height: 24px;
-		background: rgba(100, 116, 139, 0.3);
-		border-radius: 6px;
-		font-size: 0.625rem;
-		font-weight: 700;
-		text-transform: uppercase;
-		color: #94a3b8;
-	}
-
-	.platform-icon::after {
-		content: attr(data-platform);
-	}
-
-	.platform-chip.selected .platform-icon {
-		background: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
-	}
-
-	/* Platform-specific colors */
-	.platform-icon[data-platform="thinkorswim"] { background: rgba(0, 150, 136, 0.2); color: #26a69a; }
-	.platform-icon[data-platform="tradingview"] { background: rgba(33, 150, 243, 0.2); color: #42a5f5; }
-	.platform-icon[data-platform="metatrader4"],
-	.platform-icon[data-platform="metatrader5"] { background: rgba(103, 58, 183, 0.2); color: #9575cd; }
-	.platform-icon[data-platform="ninjatrader"] { background: rgba(255, 152, 0, 0.2); color: #ffb74d; }
-	.platform-icon[data-platform="tradestation"] { background: rgba(244, 67, 54, 0.2); color: #ef5350; }
-	.platform-icon[data-platform="multicharts"] { background: rgba(76, 175, 80, 0.2); color: #66bb6a; }
-	.platform-icon[data-platform="esignal"] { background: rgba(156, 39, 176, 0.2); color: #ba68c8; }
-
-	.platform-name {
-		flex: 1;
-		text-align: left;
-	}
-
-	.check-icon {
-		color: #22c55e;
+	.toggle-slider {
+		position: relative;
+		width: 48px;
+		height: 26px;
+		background: rgba(100, 116, 139, 0.4);
+		border-radius: 13px;
+		transition: all 0.3s ease;
 		flex-shrink: 0;
 	}
 
-	.selected-count {
-		margin-top: 1rem;
-		text-align: center;
-		color: #e6b800;
-		font-size: 0.875rem;
+	.toggle-slider::after {
+		content: '';
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		width: 20px;
+		height: 20px;
+		background: #94a3b8;
+		border-radius: 50%;
+		transition: all 0.3s ease;
+	}
+
+	.platform-toggle input:checked + .toggle-slider {
+		background: linear-gradient(135deg, #e6b800, #b38f00);
+	}
+
+	.platform-toggle input:checked + .toggle-slider::after {
+		left: 25px;
+		background: #fff;
+	}
+
+	.platform-name {
+		flex: 1;
+		font-size: 1rem;
 		font-weight: 500;
+		color: #f1f5f9;
 	}
 
 	/* Platform Files */
@@ -2144,10 +2113,6 @@
 
 		.form-row {
 			grid-template-columns: 1fr;
-		}
-
-		.platforms-grid {
-			grid-template-columns: 1fr 1fr;
 		}
 
 		.form-actions {
