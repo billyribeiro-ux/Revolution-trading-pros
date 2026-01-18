@@ -346,6 +346,196 @@
 		<!-- SECTION: Basic Info -->
 		<div class="form-section">
 			<h2><IconTag size={20} /> Coupon Details</h2>
+
+			<!-- Coupon Code -->
+			<div class="form-group">
+				<label for="coupon-code">Coupon Code</label>
+				<div class="input-with-button">
+					<input
+						id="coupon-code"
+						name="code"
+						type="text"
+						class="input input-code"
+						bind:value={formData.code}
+						placeholder="SUMMER2024"
+						autocomplete="off"
+						required
+					/>
+					<button type="button" class="btn-generate" onclick={generateCode} disabled={generating}>
+						<IconSparkles size={18} />
+						{generating ? 'Generating...' : 'Generate'}
+					</button>
+				</div>
+				<span class="help-text">Letters, numbers, dashes, and underscores only</span>
+			</div>
+
+			<!-- Description -->
+			<div class="form-group">
+				<label for="coupon-description">Description (Optional)</label>
+				<input
+					id="coupon-description"
+					name="description"
+					type="text"
+					class="input"
+					bind:value={formData.description}
+					placeholder="e.g., Summer sale discount for all courses"
+				/>
+			</div>
+
+			<!-- Discount Type Toggle -->
+			<div class="form-group">
+				<label>Discount Type</label>
+				<div class="discount-type-toggle">
+					<button
+						type="button"
+						class="type-btn"
+						class:active={formData.discount_type === 'percentage'}
+						onclick={() => (formData.discount_type = 'percentage')}
+					>
+						<IconPercentage size={20} />
+						Percentage
+					</button>
+					<button
+						type="button"
+						class="type-btn"
+						class:active={formData.discount_type === 'fixed'}
+						onclick={() => (formData.discount_type = 'fixed')}
+					>
+						<IconCurrencyDollar size={20} />
+						Fixed Amount
+					</button>
+				</div>
+			</div>
+
+			<!-- Discount Value -->
+			<div class="form-group">
+				<label for="discount-value">Discount Value</label>
+				<div class="value-input-wrapper">
+					{#if formData.discount_type === 'fixed'}
+						<span class="value-prefix">$</span>
+					{/if}
+					<input
+						id="discount-value"
+						name="discount_value"
+						type="number"
+						class="input input-value"
+						bind:value={formData.discount_value}
+						min="0"
+						max={formData.discount_type === 'percentage' ? 100 : undefined}
+						step="0.01"
+						required
+					/>
+					{#if formData.discount_type === 'percentage'}
+						<span class="value-suffix">%</span>
+					{/if}
+				</div>
+				{#if discountPreview}
+					<div class="discount-preview">
+						Customers will receive <strong>{discountPreview}</strong>
+					</div>
+				{/if}
+			</div>
+
+			<!-- Min Purchase & Max Discount -->
+			<div class="form-row">
+				<div class="form-group">
+					<label for="min-purchase">Minimum Purchase (Optional)</label>
+					<input
+						id="min-purchase"
+						name="min_purchase"
+						type="number"
+						class="input"
+						bind:value={formData.min_purchase}
+						min="0"
+						step="0.01"
+						placeholder="No minimum"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="max-discount">Maximum Discount (Optional)</label>
+					<input
+						id="max-discount"
+						name="max_discount"
+						type="number"
+						class="input"
+						bind:value={formData.max_discount}
+						min="0"
+						step="0.01"
+						placeholder="Unlimited"
+					/>
+					<span class="help-text">Caps total discount for percentage coupons</span>
+				</div>
+			</div>
+
+			<!-- Usage Limits -->
+			<div class="form-row">
+				<div class="form-group">
+					<label for="usage-limit">Total Usage Limit (Optional)</label>
+					<input
+						id="usage-limit"
+						name="usage_limit"
+						type="number"
+						class="input"
+						bind:value={formData.usage_limit}
+						min="1"
+						placeholder="Unlimited"
+					/>
+				</div>
+				<div class="form-group">
+					<label for="usage-limit-per-user">Per User Limit</label>
+					<input
+						id="usage-limit-per-user"
+						name="usage_limit_per_user"
+						type="number"
+						class="input"
+						bind:value={formData.usage_limit_per_user}
+						min="1"
+						placeholder="1"
+					/>
+				</div>
+			</div>
+
+			<!-- Dates -->
+			<div class="form-row">
+				<div class="form-group">
+					<label for="starts-at">Start Date</label>
+					<input
+						id="starts-at"
+						name="starts_at"
+						type="datetime-local"
+						class="input"
+						bind:value={formData.starts_at}
+					/>
+				</div>
+				<div class="form-group">
+					<label for="expires-at">Expiration Date</label>
+					<input
+						id="expires-at"
+						name="expires_at"
+						type="datetime-local"
+						class="input"
+						bind:value={formData.expires_at}
+					/>
+				</div>
+			</div>
+
+			<!-- Active Toggle -->
+			<div class="form-group">
+				<label class="checkbox-label">
+					<input
+						id="is-active"
+						name="is_active"
+						type="checkbox"
+						bind:checked={formData.is_active}
+					/>
+					Coupon is active and can be used
+				</label>
+			</div>
+		</div>
+
+		<!-- SECTION: Product/Plan Restrictions -->
+		<div class="form-section">
+			<h2>Product & Membership Restrictions</h2>
 			<p class="section-description">
 				Choose which products and memberships this coupon applies to. Leave empty to apply to all.
 			</p>
