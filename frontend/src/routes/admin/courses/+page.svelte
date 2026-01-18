@@ -536,7 +536,7 @@
 		aria-labelledby="modal-title"
 		tabindex="-1"
 	>
-		<div class="modal" role="document">
+		<div class="modal" role="document" onclick={(e) => e.stopPropagation()}>
 			<button class="modal-close" onclick={closeQuickCreate} aria-label="Close">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
