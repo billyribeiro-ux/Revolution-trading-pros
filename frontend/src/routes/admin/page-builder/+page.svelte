@@ -422,7 +422,7 @@
 		color: #1d4ed8;
 	}
 
-	.page-builder {
+	.admin-page-builder {
 		display: flex;
 		flex-direction: column;
 		height: 100vh;

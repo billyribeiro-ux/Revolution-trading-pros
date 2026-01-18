@@ -663,7 +663,7 @@
 
 					<!-- Tags -->
 					<div class="form-group">
-						<label>Tags</label>
+						<label for="tags-input">Tags</label>
 						<div class="tags-container">
 							{#each indicator.tags as tag}
 								<span class="tag">
@@ -672,6 +672,7 @@
 								</span>
 							{/each}
 							<input
+								id="tags-input"
 								type="text"
 								class="tag-input"
 								bind:value={tagInput}
@@ -1292,7 +1293,6 @@
 	/* Inputs */
 	input[type='text'],
 	input[type='number'],
-	input[type='url'],
 	select,
 	textarea {
 		width: 100%;

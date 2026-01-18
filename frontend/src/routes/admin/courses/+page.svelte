@@ -536,7 +536,8 @@
 		aria-labelledby="modal-title"
 		tabindex="-1"
 	>
-		<div class="modal" role="document" onclick={(e) => e.stopPropagation()}>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<div class="modal" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
 			<button class="modal-close" onclick={closeQuickCreate} aria-label="Close">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"

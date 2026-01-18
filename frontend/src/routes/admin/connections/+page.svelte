@@ -935,17 +935,6 @@
 	 * Uses RTP Admin color tokens from tokens/colors.css
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	.connections-page {
-		/* Remove min-height - admin layout handles this */
-		background: transparent;
-	}
-
-	.connections-container {
-		max-width: 1400px;
-		margin: 0 auto;
-		padding: 0; /* Admin layout provides padding */
-	}
-
 	/* Header */
 	.connections-header {
 		margin-bottom: 2.5rem;

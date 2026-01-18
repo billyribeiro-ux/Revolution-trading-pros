@@ -2167,7 +2167,7 @@
 		min-width: 0;
 	}
 
-	.media-page.details-open .media-content {
+	.admin-media.details-open .media-content {
 		margin-right: 340px;
 	}
 
@@ -2847,7 +2847,7 @@
      Responsive
      ═══════════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 1024px) {
-		.media-page.details-open .media-content {
+		.admin-media.details-open .media-content {
 			margin-right: 0;
 		}
 
