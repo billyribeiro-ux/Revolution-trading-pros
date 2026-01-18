@@ -1,35 +1,54 @@
 /**
  * Posts Stats API Endpoint
  *
- * Returns statistics for blog posts.
+ * Returns statistics for blog posts from the backend.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - January 2026
  */
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 
-export const GET: RequestHandler = async () => {
+const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
+
+export const GET: RequestHandler = async ({ request }) => {
+	const backendUrl = env.BACKEND_URL || PROD_BACKEND;
+	const authHeader = request.headers.get('Authorization') || '';
+
+	try {
+		const response = await fetch(`${backendUrl}/api/admin/posts/stats`, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				Authorization: authHeader
+			}
+		});
+
+		if (response.ok) {
+			const data = await response.json();
+			return json(data);
+		}
+
+		// If backend fails, return empty stats (not mock data)
+		console.warn(`Backend stats returned ${response.status}`);
+	} catch (err) {
+		console.warn('Backend stats not available:', err);
+	}
+
+	// Return real empty stats, not mock data
 	return json({
 		success: true,
-		total_posts: 5,
-		published: 3,
-		drafts: 1,
-		scheduled: 1,
+		total_posts: 0,
+		published: 0,
+		drafts: 0,
+		scheduled: 0,
 		archived: 0,
-		total_views: 4290,
-		total_likes: 164,
-		total_comments: 44,
-		avg_views_per_post: 858,
-		top_categories: [
-			{ name: 'Psychology', count: 1, views: 2150 },
-			{ name: 'Options Trading', count: 1, views: 1250 },
-			{ name: 'Risk Management', count: 1, views: 890 }
-		],
-		recent_activity: [
-			{ type: 'published', title: 'Getting Started with Options Trading', date: '2025-12-01' },
-			{ type: 'scheduled', title: 'Weekly Market Analysis: December 2025', date: '2025-12-10' },
-			{ type: 'draft', title: 'Technical Analysis 101: Chart Patterns', date: '2025-12-05' }
-		]
+		total_views: 0,
+		total_likes: 0,
+		total_comments: 0,
+		avg_views_per_post: 0,
+		top_categories: [],
+		recent_activity: []
 	});
 };
