@@ -181,7 +181,7 @@
 		<T.BufferAttribute
 			args={[positions, 3]}
 			attach={({ ref, parent }) => {
-				(parent as any).setAttribute('position', ref);
+				(parent as THREE.BufferGeometry).setAttribute('position', ref);
 			}}
 		/>
 	</T.BufferGeometry>
