@@ -40,7 +40,7 @@ async function fetchFromBackend(
 export const GET: RequestHandler = async ({ url, request }) => {
 	const authHeader = request.headers.get('Authorization') || '';
 	const queryParams = url.searchParams.toString();
-	const endpoint = `/categories${queryParams ? `?${queryParams}` : ''}`;
+	const endpoint = `/admin/categories${queryParams ? `?${queryParams}` : ''}`;
 
 	const { data, status } = await fetchFromBackend(endpoint, {
 		headers: { Authorization: authHeader }
@@ -65,7 +65,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	try {
 		const body = await request.json();
 
-		const { data, status } = await fetchFromBackend('/categories', {
+		const { data, status } = await fetchFromBackend('/admin/categories', {
 			method: 'POST',
 			headers: { Authorization: authHeader },
 			body: JSON.stringify(body)

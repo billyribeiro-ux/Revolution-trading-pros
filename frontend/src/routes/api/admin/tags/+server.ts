@@ -18,7 +18,7 @@ export const GET: RequestHandler = async ({ request }) => {
 	const authHeader = request.headers.get('Authorization') || '';
 
 	try {
-		const response = await fetch(`${backendUrl}/api/tags`, {
+		const response = await fetch(`${backendUrl}/api/admin/tags`, {
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
