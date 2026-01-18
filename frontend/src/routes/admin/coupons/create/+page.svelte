@@ -16,8 +16,10 @@
 -->
 
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
+	import { productsApi, subscriptionPlansApi, type Product, type SubscriptionPlan } from '$lib/api/admin';
 	import {
 		IconCheck,
 		IconX,
@@ -49,17 +51,7 @@
 		applicable_plans: number[];
 	}
 
-	interface Product {
-		id: number;
-		name: string;
-		price: number;
-	}
-
-	interface MembershipPlan {
-		id: number;
-		name: string;
-		price: number;
-	}
+	// Using Product and SubscriptionPlan types from admin API
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State
@@ -67,24 +59,14 @@
 
 	let saving = $state(false);
 	let generating = $state(false);
+	let loadingData = $state(true);
 	let errors = $state<string[]>([]);
 	let successMessage = $state<string | null>(null);
 	let restrictionTab = $state<'include' | 'exclude'>('include');
 
-	// Products and plans (will load from API)
-	let availableProducts = $state<Product[]>([
-		{ id: 1, name: 'Trading Course - Beginner', price: 197 },
-		{ id: 2, name: 'Trading Course - Advanced', price: 497 },
-		{ id: 3, name: 'Swing Trading Mastery', price: 997 },
-		{ id: 4, name: 'Options Bootcamp', price: 1497 }
-	]);
-
-	let availablePlans = $state<MembershipPlan[]>([
-		{ id: 1, name: 'Basic Membership', price: 47 },
-		{ id: 2, name: 'Pro Membership', price: 97 },
-		{ id: 3, name: 'Elite Membership', price: 197 },
-		{ id: 4, name: 'Explosive Swings Room', price: 147 }
-	]);
+	// Products and plans - loaded from API
+	let availableProducts = $state<Product[]>([]);
+	let availablePlans = $state<SubscriptionPlan[]>([]);
 
 	// Form data with defaults
 	let formData = $state<CouponFormData>({
@@ -147,6 +129,35 @@
 		formData.code = code;
 		setTimeout(() => (generating = false), 300);
 	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// Data Loading
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function loadProductsAndPlans(): Promise<void> {
+		loadingData = true;
+		errors = [];
+		try {
+			// Load products and plans in parallel
+			const [productsResponse, plansResponse] = await Promise.all([
+				productsApi.list({ per_page: 100 }),
+				subscriptionPlansApi.list()
+			]);
+
+			availableProducts = productsResponse.data || [];
+			availablePlans = plansResponse.data || [];
+		} catch (err) {
+			console.error('Failed to load products and plans:', err);
+			errors = ['Failed to load products and membership plans. Please refresh the page.'];
+		} finally {
+			loadingData = false;
+		}
+	}
+
+	// Load data on mount
+	onMount(() => {
+		loadProductsAndPlans();
+	});
 
 	function toggleProduct(productId: number): void {
 		const newSet = new Set(selectedProducts);
@@ -582,17 +593,26 @@
 						</div>
 					</div>
 					<div class="checkbox-grid">
-						{#each availableProducts as product}
-							<label class="item-checkbox">
-								<input
-									type="checkbox"
-									checked={selectedProducts.has(product.id)}
-									onchange={() => toggleProduct(product.id)}
-								/>
-								<span class="item-name">{product.name}</span>
-								<span class="item-price">${product.price}</span>
-							</label>
-						{/each}
+						{#if loadingData}
+							<div class="loading-items">
+								<div class="spinner-small"></div>
+								<p>Loading products...</p>
+							</div>
+						{:else if availableProducts.length === 0}
+							<p class="no-items">No products available</p>
+						{:else}
+							{#each availableProducts as product}
+								<label class="item-checkbox">
+									<input
+										type="checkbox"
+										checked={selectedProducts.has(product.id)}
+										onchange={() => toggleProduct(product.id)}
+									/>
+									<span class="item-name">{product.name}</span>
+									<span class="item-price">${product.sale_price || product.price}</span>
+								</label>
+							{/each}
+						{/if}
 					</div>
 				</div>
 
@@ -606,17 +626,26 @@
 						</div>
 					</div>
 					<div class="checkbox-grid">
-						{#each availablePlans as plan}
-							<label class="item-checkbox">
-								<input
-									type="checkbox"
-									checked={selectedPlans.has(plan.id)}
-									onchange={() => togglePlan(plan.id)}
-								/>
-								<span class="item-name">{plan.name}</span>
-								<span class="item-price">${plan.price}/mo</span>
-							</label>
-						{/each}
+						{#if loadingData}
+							<div class="loading-items">
+								<div class="spinner-small"></div>
+								<p>Loading membership plans...</p>
+							</div>
+						{:else if availablePlans.length === 0}
+							<p class="no-items">No membership plans available</p>
+						{:else}
+							{#each availablePlans as plan}
+								<label class="item-checkbox">
+									<input
+										type="checkbox"
+										checked={selectedPlans.has(plan.id)}
+										onchange={() => togglePlan(plan.id)}
+									/>
+									<span class="item-name">{plan.name}</span>
+									<span class="item-price">${plan.price}/{plan.interval === 'monthly' ? 'mo' : plan.interval === 'yearly' ? 'yr' : 'lifetime'}</span>
+								</label>
+							{/each}
+						{/if}
 					</div>
 				</div>
 
@@ -1091,6 +1120,33 @@
 		color: #60a5fa;
 		text-align: center;
 		font-size: 0.9rem;
+	}
+
+	/* Loading & Empty States */
+	.loading-items {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 2rem;
+		gap: 0.75rem;
+		color: #64748b;
+	}
+
+	.spinner-small {
+		width: 32px;
+		height: 32px;
+		border: 3px solid rgba(148, 163, 184, 0.2);
+		border-top-color: #e6b800;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	.no-items {
+		padding: 2rem;
+		text-align: center;
+		color: #64748b;
+		font-style: italic;
 	}
 
 	/* Form Actions - Always Visible Save Button */
