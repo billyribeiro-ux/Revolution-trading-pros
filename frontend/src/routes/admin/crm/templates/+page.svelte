@@ -356,10 +356,18 @@
 
 <svelte:window on:keydown={handleKeydown} />
 
-<div class="page" role="main" aria-label="Email Templates">
-	<!-- Header -->
-	<header class="page-header">
-		<h1>Email Templates</h1>
+<div class="admin-crm-templates" role="main" aria-label="Email Templates">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<!-- Header -->
+		<header class="page-header">
+			<h1>Email Templates</h1>
 		<p class="subtitle">Create and manage reusable email templates for campaigns and automations</p>
 		<div class="header-actions">
 			<button
@@ -702,6 +710,8 @@
 			</nav>
 		{/if}
 	{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <!-- Preview Modal -->
