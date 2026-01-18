@@ -980,35 +980,39 @@
 
 		<!-- SIDEBAR -->
 		<aside class="sidebar">
-			<!-- Performance -->
+			<!-- Performance - Now uses real stats from API -->
 			<div class="sidebar-card">
 				<h3>30-Day Performance</h3>
-				<div class="perf-chart">
-					<svg viewBox="0 0 200 100" class="mini-chart">
-						<defs>
-							<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-								<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.3" />
-								<stop offset="100%" style="stop-color:#22c55e;stop-opacity:0" />
-							</linearGradient>
-						</defs>
-						<path
-							d="M0,80 L30,70 L60,55 L90,45 L120,50 L150,30 L180,20 L200,15 L200,100 L0,100 Z"
-							fill="url(#chartGrad)"
-						/>
-						<polyline
-							points="0,80 30,70 60,55 90,45 120,50 150,30 180,20 200,15"
-							fill="none"
-							stroke="#22c55e"
-							stroke-width="2.5"
-						/>
-					</svg>
-					<div class="perf-total">+$18,750</div>
-				</div>
-				<div class="perf-stats">
-					<div><span>23</span> Wins</div>
-					<div><span>5</span> Losses</div>
-					<div><span>82%</span> Win Rate</div>
-				</div>
+				{#if isLoadingStats}
+					<div class="loading-shimmer" style="height: 150px;"></div>
+				{:else}
+					<div class="perf-chart">
+						<svg viewBox="0 0 200 100" class="mini-chart">
+							<defs>
+								<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+									<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.3" />
+									<stop offset="100%" style="stop-color:#22c55e;stop-opacity:0" />
+								</linearGradient>
+							</defs>
+							<path
+								d="M0,80 L30,70 L60,55 L90,45 L120,50 L150,30 L180,20 L200,15 L200,100 L0,100 Z"
+								fill="url(#chartGrad)"
+							/>
+							<polyline
+								points="0,80 30,70 60,55 90,45 120,50 150,30 180,20 200,15"
+								fill="none"
+								stroke="#22c55e"
+								stroke-width="2.5"
+							/>
+						</svg>
+						<div class="perf-total">{stats.weeklyProfit}</div>
+					</div>
+					<div class="perf-stats">
+						<div><span>{stats.winRate}%</span> Win Rate</div>
+						<div><span>{stats.activeTrades}</span> Active</div>
+						<div><span>{stats.closedThisWeek}</span> Closed</div>
+					</div>
+				{/if}
 			</div>
 
 			<!-- Quick Links -->
@@ -1017,7 +1021,8 @@
 				<div class="quick-links">
 					<a href="/dashboard/explosive-swings/video-library">🎬 Video Library</a>
 					<a href="/dashboard/explosive-swings/trade-tracker">📊 Trade Tracker</a>
-					<a href="/guides/swing-trading">📖 Swing Guide</a>
+					<a href="/dashboard/explosive-swings/favorites">⭐ My Favorites</a>
+					<a href="/api/export/watchlist?room_slug=explosive-swings&format=csv" download>📥 Export CSV</a>
 					<a href="/dashboard/account">⚙️ Alert Settings</a>
 				</div>
 			</div>
@@ -1914,6 +1919,18 @@
 	.perf-stats span {
 		font-weight: 700;
 		color: #143e59;
+	}
+
+	.loading-shimmer {
+		background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 8px;
+	}
+
+	@keyframes shimmer {
+		0% { background-position: 200% 0; }
+		100% { background-position: -200% 0; }
 	}
 
 	.quick-links {
