@@ -286,6 +286,49 @@
 	backdrop-filter: blur(10px);
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+ * UNIVERSAL CARD/PANEL BORDER RADIUS
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* All cards, panels, and containers get rounded corners */
+.card,
+.panel,
+.segment-card,
+.stat-card,
+.metric-card,
+.info-card,
+.content-card,
+.data-card,
+.table-container,
+.form-card,
+.modal-content,
+.drawer-content,
+.popup-container,
+table,
+.table-wrapper {
+	border-radius: 12px !important;
+	overflow: hidden;
+}
+
+/* Smaller elements get smaller radius */
+.badge,
+.tag,
+.chip,
+.pill,
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="search"],
+textarea,
+select,
+.input-field,
+.select-field {
+	border-radius: 8px !important;
+}
+
+/* Buttons already have border-radius in their definitions above */
+
 .panel-header {
 	display: flex;
 	justify-content: space-between;
