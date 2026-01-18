@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "lightweight-charts": "^5.0.9"
+  },
+  "devDependencies": {
+    "vite-plugin-devtools-json": "^1.0.0"
   }
 }
