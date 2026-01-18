@@ -562,7 +562,7 @@
 </script>
 
 <svelte:head>
-	<title>Add New Indicator | Admin</title>
+	<title>Create Indicator | Admin | Revolution Trading Pros</title>
 </svelte:head>
 
 <div class="admin-indicators-create">
@@ -574,191 +574,531 @@
 	</div>
 
 	<div class="admin-page-container">
+		<!-- Header -->
 		<header class="page-header">
-			<h1><IconSparkles size={28} /> Add New Indicator</h1>
-			<p class="subtitle">Create a new trading indicator for your platform</p>
+			<div class="header-icon">✨</div>
+			<h1>Create New Indicator</h1>
+			<p class="subtitle">Build a downloadable indicator product for your members</p>
 		</header>
-	</div>
 
-	<div class="content-container">
-		<!-- Preview Card -->
-		<div class="preview-section">
-			<h3>Preview</h3>
-			<div class="product-card">
-				<div class="card-image">
-					{#if indicator.thumbnail}
-						<img src={indicator.thumbnail} alt={indicator.name || 'Indicator'} />
-					{:else}
-						<div class="placeholder-image">
-							<IconPhoto size={48} />
-							<span>No image</span>
+		<!-- Main Content Grid -->
+		<div class="content-grid">
+			<!-- Left Column: Form -->
+			<div class="form-column">
+				<!-- Basic Information Card -->
+				<section class="form-card">
+					<h2 class="card-title">
+						<span class="title-icon">📝</span>
+						Basic Information
+					</h2>
+
+					<div class="form-group">
+						<label for="name">Indicator Name <span class="required">*</span></label>
+						<input
+							id="name"
+							type="text"
+							bind:value={indicator.name}
+							placeholder="e.g., Volume Max Indicator"
+							class="input-lg"
+						/>
+						{#if indicator.slug}
+							<div class="slug-preview">
+								<span class="slug-label">URL:</span>
+								<span class="slug-value">/indicators/{indicator.slug}</span>
+							</div>
+						{/if}
+					</div>
+
+					<div class="form-group">
+						<label for="subtitle">Subtitle / Tagline</label>
+						<input
+							id="subtitle"
+							type="text"
+							bind:value={indicator.subtitle}
+							placeholder="e.g., Advanced volume analysis for professional traders"
+						/>
+					</div>
+
+					<div class="form-row">
+						<div class="form-group">
+							<label for="category">Category</label>
+							<select id="category" bind:value={indicator.category}>
+								<option value="">Select Category</option>
+								{#each CATEGORIES as cat}
+									<option value={cat}>{cat}</option>
+								{/each}
+							</select>
+						</div>
+
+						<div class="form-group">
+							<label for="version">Version</label>
+							<input
+								id="version"
+								type="text"
+								bind:value={indicator.version}
+								placeholder="1.0.0"
+							/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="short_description">Short Description</label>
+						<textarea
+							id="short_description"
+							bind:value={indicator.short_description}
+							placeholder="Brief summary for listings and cards..."
+							rows="2"
+						></textarea>
+					</div>
+
+					<div class="form-group">
+						<label for="description">Full Description</label>
+						<textarea
+							id="description"
+							bind:value={indicator.description}
+							placeholder="Detailed description with features, benefits, and usage..."
+							rows="6"
+						></textarea>
+					</div>
+
+					<!-- Tags -->
+					<div class="form-group">
+						<label>Tags</label>
+						<div class="tags-container">
+							{#each indicator.tags as tag}
+								<span class="tag">
+									{tag}
+									<button type="button" class="tag-remove" onclick={() => removeTag(tag)}>×</button>
+								</span>
+							{/each}
+							<input
+								type="text"
+								class="tag-input"
+								bind:value={tagInput}
+								onkeydown={handleTagKeydown}
+								placeholder="Add tag..."
+							/>
+						</div>
+						<div class="form-hint">Press Enter or comma to add</div>
+					</div>
+				</section>
+
+				<!-- Platforms Card -->
+				<section class="form-card">
+					<h2 class="card-title">
+						<span class="title-icon">🖥️</span>
+						Supported Platforms
+						<span class="required">*</span>
+					</h2>
+					<p class="card-description">Select all platforms this indicator supports. You can upload platform-specific files below.</p>
+
+					<div class="platforms-grid">
+						{#each PLATFORMS as platform}
+							<button
+								type="button"
+								class="platform-chip"
+								class:selected={indicator.platforms.includes(platform.id)}
+								onclick={() => togglePlatform(platform.id)}
+							>
+								<span class="platform-icon">{platform.icon}</span>
+								<span class="platform-name">{platform.displayName}</span>
+								{#if indicator.platforms.includes(platform.id)}
+									<span class="check-icon">✓</span>
+								{/if}
+							</button>
+						{/each}
+					</div>
+
+					{#if indicator.platforms.length > 0}
+						<div class="selected-count">
+							{indicator.platforms.length} platform{indicator.platforms.length !== 1 ? 's' : ''} selected
 						</div>
 					{/if}
-				</div>
-				<div class="card-content">
-					<h4>{indicator.name || 'Indicator Name'}</h4>
-					<p>{indicator.description || 'Add a description...'}</p>
-					<div class="card-footer">
-						<div class="price">${indicator.price || '0.00'}</div>
-						<button class="buy-btn" disabled>
-							<IconCheck size={16} />
-							Purchase
-						</button>
+				</section>
+
+				<!-- Platform Files Card -->
+				{#if platformFiles.length > 0}
+					<section class="form-card">
+						<h2 class="card-title">
+							<span class="title-icon">📦</span>
+							Platform Files
+						</h2>
+						<p class="card-description">Upload indicator files for each selected platform. Drag and drop or click to upload.</p>
+
+						<div class="platform-files-list">
+							{#each platformFiles as pf, index}
+								{@const platform = getPlatformById(pf.platform_id)}
+								{#if platform}
+									<div class="platform-file-item">
+										<div class="platform-file-header">
+											<span class="platform-icon">{platform.icon}</span>
+											<span class="platform-name">{platform.displayName}</span>
+											<span class="file-ext">{platform.extension}</span>
+										</div>
+
+										<!-- Drop Zone -->
+										<div
+											class="drop-zone"
+											class:drag-over={platformFileDragOver[pf.platform_id]}
+											class:has-file={pf.file}
+											class:uploading={platformFileUploading[pf.platform_id]}
+											ondragover={(e) => handlePlatformFileDragOver(e, pf.platform_id)}
+											ondragleave={(e) => handlePlatformFileDragLeave(e, pf.platform_id)}
+											ondrop={(e) => handlePlatformFileDrop(e, pf.platform_id)}
+											role="button"
+											tabindex="0"
+										>
+											{#if platformFileUploading[pf.platform_id]}
+												<div class="upload-spinner"></div>
+												<span>Uploading...</span>
+											{:else if pf.file}
+												<div class="file-info">
+													<span class="file-icon">📄</span>
+													<div class="file-details">
+														<span class="file-name">{pf.file.name}</span>
+														<span class="file-size">{formatFileSize(pf.file.size)}</span>
+													</div>
+													<button
+														type="button"
+														class="file-remove"
+														onclick={() => {
+															platformFiles = platformFiles.map((f, i) => 
+																i === index ? { ...f, file: null } : f
+															);
+														}}
+													>×</button>
+												</div>
+											{:else}
+												<div class="drop-content">
+													<span class="drop-icon">📤</span>
+													<span class="drop-text">Drop file here or click to browse</span>
+												</div>
+											{/if}
+											<input
+												type="file"
+												class="file-input"
+												onchange={(e) => handlePlatformFileSelect(e, pf.platform_id)}
+											/>
+										</div>
+
+										{#if platformFileErrors[pf.platform_id]}
+											<div class="file-error">{platformFileErrors[pf.platform_id]}</div>
+										{/if}
+
+										<!-- Installation Notes -->
+										<div class="form-group compact">
+											<input
+												type="text"
+												bind:value={pf.installation_notes}
+												placeholder="Installation notes (optional)..."
+											/>
+										</div>
+									</div>
+								{/if}
+							{/each}
+						</div>
+					</section>
+				{/if}
+
+				<!-- Documentation Card -->
+				<section class="form-card">
+					<h2 class="card-title">
+						<span class="title-icon">📚</span>
+						Documentation
+					</h2>
+					<p class="card-description">Upload PDF guides, quick start docs, or link to video tutorials.</p>
+
+					{#if documentationFiles.length > 0}
+						<div class="documentation-list">
+							{#each documentationFiles as doc, index}
+								<div class="doc-item">
+									<div class="doc-header">
+										<select bind:value={doc.doc_type} class="doc-type-select">
+											{#each DOC_TYPES as dt}
+												<option value={dt.id}>{dt.icon} {dt.name}</option>
+											{/each}
+										</select>
+										<button
+											type="button"
+											class="doc-remove"
+											onclick={() => removeDocumentation(index)}
+										>×</button>
+									</div>
+
+									<input
+										type="text"
+										bind:value={doc.title}
+										placeholder="Document title..."
+										class="doc-title"
+									/>
+
+									<!-- Drop Zone -->
+									<div
+										class="drop-zone compact"
+										class:drag-over={docDragOver[index]}
+										class:has-file={doc.file}
+										class:uploading={docUploading[index]}
+										ondragover={(e) => handleDocDragOver(e, index)}
+										ondragleave={(e) => handleDocDragLeave(e, index)}
+										ondrop={(e) => handleDocDrop(e, index)}
+										role="button"
+										tabindex="0"
+									>
+										{#if docUploading[index]}
+											<div class="upload-spinner small"></div>
+											<span>Uploading...</span>
+										{:else if doc.file}
+											<div class="file-info compact">
+												<span class="file-name">{doc.file.name}</span>
+												<span class="file-size">{formatFileSize(doc.file.size)}</span>
+											</div>
+										{:else}
+											<span class="drop-text">Drop file or click</span>
+										{/if}
+										<input
+											type="file"
+											class="file-input"
+											accept=".pdf,.doc,.docx,.txt,.md"
+											onchange={(e) => handleDocSelect(e, index)}
+										/>
+									</div>
+
+									{#if docErrors[index]}
+										<div class="file-error">{docErrors[index]}</div>
+									{/if}
+								</div>
+							{/each}
+						</div>
+					{/if}
+
+					<button type="button" class="btn-add-doc" onclick={addDocumentation}>
+						<span>+</span> Add Documentation
+					</button>
+				</section>
+
+				<!-- Pricing Card -->
+				<section class="form-card">
+					<h2 class="card-title">
+						<span class="title-icon">💰</span>
+						Pricing
+					</h2>
+
+					<label class="toggle-row">
+						<input type="checkbox" bind:checked={indicator.is_free} />
+						<span class="toggle-label">Free Indicator</span>
+					</label>
+
+					{#if !indicator.is_free}
+						<div class="form-group">
+							<label for="price">Price (USD)</label>
+							<div class="price-input">
+								<span class="currency">$</span>
+								<input
+									id="price"
+									type="number"
+									bind:value={indicator.price_cents}
+									placeholder="9900"
+									step="100"
+									min="0"
+								/>
+								<span class="price-hint">in cents (9900 = $99.00)</span>
+							</div>
+						</div>
+					{/if}
+				</section>
+
+				<!-- TradingView Access -->
+				{#if indicator.platforms.includes('tradingview')}
+					<section class="form-card">
+						<h2 class="card-title">
+							<span class="title-icon">📈</span>
+							TradingView Access
+						</h2>
+
+						<label class="toggle-row">
+							<input type="checkbox" bind:checked={indicator.has_tradingview_access} />
+							<span class="toggle-label">Enable TradingView Access Management</span>
+						</label>
+
+						{#if indicator.has_tradingview_access}
+							<label class="toggle-row">
+								<input type="checkbox" bind:checked={indicator.tradingview_invite_only} />
+								<span class="toggle-label">Invite-only (manual approval required)</span>
+							</label>
+						{/if}
+					</section>
+				{/if}
+
+				<!-- Publishing Options -->
+				<section class="form-card">
+					<h2 class="card-title">
+						<span class="title-icon">🚀</span>
+						Publishing
+					</h2>
+
+					<div class="toggle-group">
+						<label class="toggle-row">
+							<input type="checkbox" bind:checked={indicator.is_published} />
+							<span class="toggle-label">Publish immediately</span>
+						</label>
+
+						<label class="toggle-row">
+							<input type="checkbox" bind:checked={indicator.is_featured} />
+							<span class="toggle-label">Featured indicator</span>
+						</label>
 					</div>
-				</div>
+
+					<div class="form-group">
+						<label for="version_notes">Version Notes</label>
+						<textarea
+							id="version_notes"
+							bind:value={indicator.version_notes}
+							placeholder="What's new in this version..."
+							rows="3"
+						></textarea>
+					</div>
+				</section>
+			</div>
+
+			<!-- Right Column: Preview & Thumbnail -->
+			<div class="preview-column">
+				<!-- Thumbnail Upload -->
+				<section class="form-card sticky">
+					<h2 class="card-title">
+						<span class="title-icon">🖼️</span>
+						Thumbnail
+					</h2>
+
+					<div
+						class="thumbnail-drop-zone"
+						class:drag-over={thumbnailDragOver}
+						class:has-image={indicator.thumbnail_url}
+						class:uploading={thumbnailUploading}
+						ondragover={handleThumbnailDragOver}
+						ondragleave={handleThumbnailDragLeave}
+						ondrop={handleThumbnailDrop}
+						role="button"
+						tabindex="0"
+					>
+						{#if thumbnailUploading}
+							<div class="upload-spinner large"></div>
+							<span class="upload-text">Uploading & Optimizing...</span>
+						{:else if indicator.thumbnail_url}
+							<img src={indicator.thumbnail_url} alt="Thumbnail preview" class="thumbnail-preview" />
+							<button
+								type="button"
+								class="thumbnail-remove"
+								onclick={() => indicator.thumbnail_url = ''}
+							>×</button>
+						{:else}
+							<div class="drop-placeholder">
+								<span class="drop-icon-large">📷</span>
+								<span class="drop-title">Drop image here</span>
+								<span class="drop-subtitle">or click to browse</span>
+							</div>
+						{/if}
+						<input
+							type="file"
+							class="file-input"
+							accept="image/*"
+							onchange={handleThumbnailSelect}
+						/>
+					</div>
+
+					{#if thumbnailError}
+						<div class="file-error">{thumbnailError}</div>
+					{/if}
+
+					<div class="form-hint center">Auto-resized to 1200px max, JPEG optimized</div>
+				</section>
+
+				<!-- Live Preview Card -->
+				<section class="form-card sticky-preview">
+					<h2 class="card-title">
+						<span class="title-icon">👁️</span>
+						Live Preview
+					</h2>
+
+					<div class="preview-card">
+						<div class="preview-image">
+							{#if indicator.thumbnail_url}
+								<img src={indicator.thumbnail_url} alt="Preview" />
+							{:else}
+								<div class="preview-placeholder">
+									<span>📊</span>
+								</div>
+							{/if}
+							{#if indicator.is_featured}
+								<span class="featured-badge">⭐ Featured</span>
+							{/if}
+						</div>
+						<div class="preview-content">
+							<h3 class="preview-title">{indicator.name || 'Indicator Name'}</h3>
+							{#if indicator.subtitle}
+								<p class="preview-subtitle">{indicator.subtitle}</p>
+							{/if}
+							<p class="preview-description">
+								{indicator.short_description || 'Add a short description...'}
+							</p>
+							<div class="preview-meta">
+								{#if indicator.category}
+									<span class="meta-tag">{indicator.category}</span>
+								{/if}
+								{#each indicator.platforms.slice(0, 3) as pid}
+									{@const p = getPlatformById(pid)}
+									{#if p}
+										<span class="meta-platform">{p.icon}</span>
+									{/if}
+								{/each}
+								{#if indicator.platforms.length > 3}
+									<span class="meta-more">+{indicator.platforms.length - 3}</span>
+								{/if}
+							</div>
+							<div class="preview-footer">
+								<span class="preview-price">
+									{indicator.is_free ? 'FREE' : `$${(indicator.price_cents / 100).toFixed(2)}`}
+								</span>
+								<span class="preview-version">v{indicator.version}</span>
+							</div>
+						</div>
+					</div>
+				</section>
 			</div>
 		</div>
 
-		<!-- Form Section -->
-		<div class="form-section">
-			<div class="form-card">
-				<h3>Indicator Details</h3>
-
-				<div class="form-group">
-					<label for="name">Indicator Name *</label>
-					<input
-						id="name"
-						type="text"
-						bind:value={indicator.name}
-						onblur={generateSlug}
-						placeholder="e.g., Advanced RSI Indicator"
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="slug">URL Slug</label>
-					<input
-						id="slug"
-						type="text"
-						bind:value={indicator.slug}
-						placeholder="advanced-rsi-indicator"
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="description">Short Description</label>
-					<textarea
-						id="description"
-						bind:value={indicator.description}
-						placeholder="Brief description for listings..."
-						rows="2"
-					></textarea>
-				</div>
-
-				<div class="form-group">
-					<label for="long_description">Full Description</label>
-					<textarea
-						id="long_description"
-						bind:value={indicator.long_description}
-						placeholder="Detailed description of the indicator, features, usage..."
-						rows="6"
-					></textarea>
-				</div>
-
-				<div class="form-row">
-					<div class="form-group">
-						<label for="platform">Platform</label>
-						<select id="platform" bind:value={indicator.platform}>
-							<option value="">Select Platform</option>
-							<option value="thinkorswim">thinkorswim</option>
-							<option value="tradingview">TradingView</option>
-							<option value="metatrader4">MetaTrader 4</option>
-							<option value="metatrader5">MetaTrader 5</option>
-							<option value="ninjatrader">NinjaTrader</option>
-							<option value="tradestation">TradeStation</option>
-						</select>
-					</div>
-
-					<div class="form-group">
-						<label for="version">Version</label>
-						<input id="version" type="text" bind:value={indicator.version} placeholder="1.0" />
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label for="download_url">Download URL</label>
-					<input
-						id="download_url"
-						type="url"
-						bind:value={indicator.download_url}
-						placeholder="https://..."
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="documentation_url">Documentation URL</label>
-					<input
-						id="documentation_url"
-						type="url"
-						bind:value={indicator.documentation_url}
-						placeholder="https://docs.example.com/..."
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="price">Price (USD)</label>
-					<div class="price-input">
-						<span class="currency">$</span>
-						<input
-							id="price"
-							type="number"
-							bind:value={indicator.price}
-							placeholder="99.00"
-							step="0.01"
-							min="0"
-						/>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label for="thumbnail-upload">Thumbnail Image</label>
-					{#if indicator.thumbnail}
-						<div class="image-preview">
-							<img src={indicator.thumbnail} alt="Thumbnail" />
-							<button type="button" class="remove-btn" onclick={() => (indicator.thumbnail = '')}>
-								<IconX size={16} />
-							</button>
-						</div>
-					{/if}
-					<label for="thumbnail-upload" class="upload-btn" class:uploading>
-						<IconPhoto size={20} />
-						{uploading ? 'Uploading & Resizing...' : 'Upload Image'}
-						<input
-							id="thumbnail-upload"
-							type="file"
-							accept="image/*"
-							onchange={handleImageUpload}
-							disabled={uploading}
-						/>
-					</label>
-					{#if uploadError}
-						<div class="upload-error">{uploadError}</div>
-					{/if}
-					<div class="upload-hint">Images will be automatically resized to max 1200px</div>
-				</div>
-
-				<div class="form-group">
-					<label class="checkbox-label">
-						<input type="checkbox" bind:checked={indicator.is_active} />
-						<span>Active (visible to customers)</span>
-					</label>
-				</div>
-
-				{#if formError}
-					<div class="form-error">{formError}</div>
-				{/if}
-
-				{#if successMessage}
-					<div class="form-success">{successMessage}</div>
-				{/if}
-
-				<div class="form-actions">
-					<button class="btn-secondary" onclick={() => goto('/admin/indicators')}> Cancel </button>
-					<button class="btn-primary" onclick={saveIndicator} disabled={saving}>
-						{saving ? 'Creating...' : 'Create Indicator'}
-					</button>
-				</div>
+		<!-- Error / Success Messages -->
+		{#if formError}
+			<div class="form-message error">
+				<span class="message-icon">⚠️</span>
+				{formError}
 			</div>
+		{/if}
+
+		{#if successMessage}
+			<div class="form-message success">
+				<span class="message-icon">✅</span>
+				{successMessage}
+			</div>
+		{/if}
+
+		<!-- Form Actions -->
+		<div class="form-actions">
+			<button type="button" class="btn-secondary" onclick={() => goto('/admin/indicators')}>
+				Cancel
+			</button>
+			<button
+				type="button"
+				class="btn-primary"
+				onclick={saveIndicator}
+				disabled={saving}
+			>
+				{#if saving}
+					<span class="btn-spinner"></span>
+					Creating...
+				{:else}
+					Create Indicator
+				{/if}
+			</button>
 		</div>
 	</div>
 </div>
