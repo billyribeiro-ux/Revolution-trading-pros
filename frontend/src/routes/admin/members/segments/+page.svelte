@@ -473,7 +473,7 @@
 	}
 
 	// Get delete modal config based on target
-	let deleteModalConfig = $derived(() => {
+	let deleteModalConfig = $derived.by(() => {
 		if (!deleteTarget) return { title: '', message: '', confirmText: 'Delete' };
 		switch (deleteTarget.type) {
 			case 'segment':

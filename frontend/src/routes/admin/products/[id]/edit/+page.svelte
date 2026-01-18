@@ -80,7 +80,7 @@
 	);
 
 	// Derived state - has changes
-	let hasChanges = $derived(() => {
+	let hasChanges = $derived.by(() => {
 		if (!originalProduct) return false;
 		return (
 			formData.name !== originalProduct.name ||
@@ -99,7 +99,7 @@
 	});
 
 	// Derived state - formatted price preview
-	let pricePreview = $derived(() => {
+	let pricePreview = $derived.by(() => {
 		const price = parseFloat(formData.price) || 0;
 		const salePrice = parseFloat(formData.sale_price) || null;
 		if (salePrice && salePrice < price) {
@@ -324,7 +324,7 @@
 				<div class="form-card">
 					<div class="form-card-header">
 						<h3>Product Details</h3>
-						{#if hasChanges()}
+						{#if hasChanges}
 							<span class="unsaved-badge">Unsaved changes</span>
 						{/if}
 					</div>
@@ -598,11 +598,11 @@
 						{/if}
 
 						<div class="preview-price">
-							{#if pricePreview().sale}
-								<span class="preview-original">{pricePreview().original}</span>
-								<span class="preview-sale">{pricePreview().sale}</span>
+							{#if pricePreview.sale}
+								<span class="preview-original">{pricePreview.original}</span>
+								<span class="preview-sale">{pricePreview.sale}</span>
 							{:else}
-								<span class="preview-current">{pricePreview().original}</span>
+								<span class="preview-current">{pricePreview.original}</span>
 							{/if}
 						</div>
 

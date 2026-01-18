@@ -111,7 +111,7 @@
 	// Computed Values
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	let discountPreview = $derived(() => {
+	let discountPreview = $derived.by(() => {
 		if (!formData.discount_value) return '';
 		if (formData.discount_type === 'percentage') {
 			return `${formData.discount_value}% off`;
@@ -119,7 +119,7 @@
 		return `$${formData.discount_value} off`;
 	});
 
-	let hasRestrictions = $derived(() => {
+	let hasRestrictions = $derived.by(() => {
 		return selectedProducts.size > 0 || selectedPlans.size > 0;
 	});
 
@@ -375,8 +375,8 @@
 
 			<!-- Discount Type Toggle -->
 			<div class="form-group">
-				<label>Discount Type *</label>
-				<div class="discount-type-toggle">
+				<span id="discount-type-label" class="form-label">Discount Type *</span>
+				<div class="discount-type-toggle" role="group" aria-labelledby="discount-type-label">
 					<button
 						type="button"
 						class="type-btn"
@@ -423,7 +423,7 @@
 				</div>
 				{#if formData.discount_value > 0}
 					<div class="discount-preview">
-						Preview: <strong>{discountPreview()}</strong>
+						Preview: <strong>{discountPreview}</strong>
 					</div>
 				{/if}
 			</div>
@@ -612,7 +612,7 @@
 					</div>
 				</div>
 
-				{#if !hasRestrictions()}
+				{#if !hasRestrictions}
 					<div class="no-restrictions-notice">
 						No items selected - coupon will apply to <strong>all products and plans</strong>
 					</div>

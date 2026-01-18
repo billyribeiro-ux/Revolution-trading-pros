@@ -63,7 +63,7 @@
 	);
 
 	// Derived state - formatted price preview
-	let pricePreview = $derived(() => {
+	let pricePreview = $derived.by(() => {
 		const price = parseFloat(formData.price) || 0;
 		const salePrice = parseFloat(formData.sale_price) || null;
 		if (salePrice && salePrice < price) {
@@ -464,11 +464,11 @@
 					{/if}
 
 					<div class="preview-price">
-						{#if pricePreview().sale}
-							<span class="preview-original">{pricePreview().original}</span>
-							<span class="preview-sale">{pricePreview().sale}</span>
+						{#if pricePreview.sale}
+							<span class="preview-original">{pricePreview.original}</span>
+							<span class="preview-sale">{pricePreview.sale}</span>
 						{:else}
-							<span class="preview-current">{pricePreview().original}</span>
+							<span class="preview-current">{pricePreview.original}</span>
 						{/if}
 					</div>
 

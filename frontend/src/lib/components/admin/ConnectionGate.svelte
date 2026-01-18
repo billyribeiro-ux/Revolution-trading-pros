@@ -60,7 +60,7 @@
 	}: Props = $props();
 
 	// Check connection status
-	let isConnected = $derived(() => {
+	let isConnected = $derived.by(() => {
 		if (serviceKey) {
 			return connections.isConnected(serviceKey);
 		}
@@ -90,7 +90,7 @@
 	});
 </script>
 
-{#if isConnected()}
+{#if isConnected}
 	<!-- Connected: Show content -->
 	{#if connected}
 		{@render connected()}
