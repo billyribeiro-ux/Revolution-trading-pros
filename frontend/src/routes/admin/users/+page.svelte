@@ -61,18 +61,26 @@
 	<title>Users Management | Admin</title>
 </svelte:head>
 
-<div class="admin-page">
+<div class="admin-users">
 	<div class="admin-page-container">
-		<div class="page-header">
-			<div>
-				<h1>Users Management</h1>
-				<p>Manage admin users and permissions</p>
-			</div>
-			<button class="btn-primary" onclick={() => goto('/admin/users/create')}>
-				<IconPlus size={18} />
-				Add Admin User
-			</button>
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
 		</div>
+
+		<!-- Header - Centered Style -->
+		<header class="page-header">
+			<h1>Users Management</h1>
+			<p class="subtitle">Manage admin users and permissions</p>
+			<div class="header-actions">
+				<button class="btn-primary" onclick={() => goto('/admin/users/create')}>
+					<IconPlus size={18} />
+					Add Admin User
+				</button>
+			</div>
+		</header>
 
 		{#if loading}
 			<div class="loading">
@@ -170,32 +178,100 @@
 </div>
 
 <style>
-	.admin-page {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * ADMIN USERS - Analytics Dashboard Layout Pattern
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.admin-users {
+		min-height: 100vh;
+		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		color: var(--text-primary);
+		position: relative;
+		overflow: hidden;
+	}
+
+	.admin-page-container {
+		position: relative;
+		z-index: 10;
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
-		background: #0f172a;
-		min-height: 100vh;
 	}
 
+	/* Background Effects */
+	.bg-effects {
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	.bg-blob {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(80px);
+		opacity: 0.15;
+	}
+
+	.bg-blob-1 {
+		width: 600px;
+		height: 600px;
+		top: -200px;
+		right: -200px;
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		animation: float 20s ease-in-out infinite;
+	}
+
+	.bg-blob-2 {
+		width: 500px;
+		height: 500px;
+		bottom: -150px;
+		left: -150px;
+		background: linear-gradient(135deg, var(--secondary-500), var(--primary-600));
+		animation: float 25s ease-in-out infinite reverse;
+	}
+
+	.bg-blob-3 {
+		width: 400px;
+		height: 400px;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: linear-gradient(135deg, var(--success-base), var(--success-emphasis));
+		animation: float 30s ease-in-out infinite;
+	}
+
+	@keyframes float {
+		0%, 100% { transform: translate(0, 0) scale(1); }
+		33% { transform: translate(30px, -30px) scale(1.05); }
+		66% { transform: translate(-20px, 20px) scale(0.95); }
+	}
+
+	/* Page Header - CENTERED */
 	.page-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
+		text-align: center;
 		margin-bottom: 2rem;
 	}
 
 	.page-header h1 {
-		font-size: 2rem;
+		font-size: 1.75rem;
 		font-weight: 700;
-		color: #f1f5f9;
-		margin-bottom: 0.5rem;
+		color: var(--text-primary);
+		margin: 0 0 0.5rem 0;
 	}
 
-	.page-header p {
-		color: #94a3b8;
-		font-size: 0.95rem;
-		font-family: 'Open Sans Pro', 'Open Sans', sans-serif;
+	.subtitle {
+		color: var(--text-tertiary);
+		font-size: 0.875rem;
+		margin: 0 0 1rem 0;
+	}
+
+	.header-actions {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 0.75rem;
+		flex-wrap: wrap;
 	}
 
 	.btn-primary,

@@ -741,8 +741,15 @@
 	<title>Video Management - Trading Rooms | Admin</title>
 </svelte:head>
 
-<div class="videos-page">
+<div class="admin-videos">
 	<div class="admin-page-container">
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
+		</div>
+
 		<!-- Success/Error Messages -->
 		{#if successMessage}
 			<div class="alert alert-success">

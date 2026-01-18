@@ -661,8 +661,15 @@
 	<title>Media Library | Admin | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="media-page" class:details-open={showDetailsPanel}>
+<div class="admin-media" class:details-open={showDetailsPanel}>
 	<div class="admin-page-container">
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
+		</div>
+
 		<!-- ═══════════════════════════════════════════════════════════════════════ -->
 		<!-- Header - Centered Layout -->
 		<!-- ═══════════════════════════════════════════════════════════════════════ -->
