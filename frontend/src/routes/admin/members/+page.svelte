@@ -1024,11 +1024,13 @@
 
 	/* Outer Container with Gradient Background */
 	.admin-members {
-		min-height: 100vh;
-		background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
+		min-height: calc(100vh - 70px - 4rem); /* Account for header (70px) and admin-content padding (2rem top + 2rem bottom) */
+		background: var(--admin-bg, linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%));
 		color: white;
 		position: relative;
 		overflow: hidden;
+		margin: -2rem; /* Negate admin-content padding to fill edge-to-edge */
+		padding: 2rem; /* Restore internal padding */
 	}
 
 	/* Inner Container */
