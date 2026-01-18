@@ -1054,7 +1054,6 @@
 	onConfirm={handleConfirmDelete}
 	onCancel={cancelDelete}
 />
-	</div>
 </div>
 
 <style>
