@@ -917,10 +917,11 @@
 	   MEMBERSHIPS PAGE - Email Templates Styling
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.page {
-		max-width: 1400px;
-		margin: 0 auto;
-		padding: 2rem;
+	.admin-memberships {
+		min-height: 100vh;
+		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		position: relative;
+		overflow: hidden;
 	}
 
 	/* Page Header - Centered */
@@ -1848,7 +1849,7 @@
 	}
 
 	@media (max-width: 768px) {
-		.page {
+		.admin-memberships {
 			padding: 1rem;
 		}
 

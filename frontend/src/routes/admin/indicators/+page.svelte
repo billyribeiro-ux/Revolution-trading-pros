@@ -360,11 +360,12 @@
 </div>
 
 <style>
-	/* Page wrapper - Email Templates Style */
-	.page {
-		max-width: 1400px;
-		margin: 0 auto;
-		padding: 2rem;
+	/* Page wrapper */
+	.admin-indicators {
+		min-height: 100vh;
+		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		position: relative;
+		overflow: hidden;
 	}
 
 	/* Header CENTERED */

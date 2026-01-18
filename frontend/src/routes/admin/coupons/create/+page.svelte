@@ -309,15 +309,15 @@
 		<!-- Header -->
 		<header class="page-header">
 			<div class="header-content">
-			<button class="btn-back" onclick={() => goto('/admin/coupons')}>
-				<IconX size={20} />
-			</button>
-			<div>
-				<h1>Create New Coupon</h1>
-				<p class="subtitle">Set up a discount code for your products and memberships</p>
+				<button class="btn-back" onclick={() => goto('/admin/coupons')}>
+					<IconX size={20} />
+				</button>
+				<div>
+					<h1>Create New Coupon</h1>
+					<p class="subtitle">Set up a discount code for your products and memberships</p>
+				</div>
 			</div>
-		</div>
-	</div>
+		</header>
 
 	<!-- Success Message -->
 	{#if successMessage}
@@ -644,13 +644,16 @@
 			</button>
 		</div>
 	</form>
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>
-	.page {
-		max-width: 800px;
-		margin: 0 auto;
-		padding: 2rem;
+	.admin-coupon-create {
+		min-height: 100vh;
+		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		position: relative;
+		overflow: hidden;
 	}
 
 	/* Header */
@@ -1161,7 +1164,7 @@
 
 	/* Responsive */
 	@media (max-width: 640px) {
-		.page {
+		.admin-coupon-create {
 			padding: 1rem;
 		}
 

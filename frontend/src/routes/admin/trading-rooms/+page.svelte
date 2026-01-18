@@ -144,11 +144,12 @@
 </div>
 
 <style>
-	/* Page wrapper - email templates style */
-	.page {
-		max-width: 1400px;
-		margin: 0 auto;
-		padding: 2rem;
+	/* Page wrapper */
+	.admin-trading-rooms {
+		min-height: 100vh;
+		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		position: relative;
+		overflow: hidden;
 	}
 
 	/* Header CENTERED - email templates style */
@@ -324,7 +325,7 @@
 	}
 
 	@media (max-width: 768px) {
-		.page {
+		.admin-trading-rooms {
 			padding: 1rem;
 		}
 
