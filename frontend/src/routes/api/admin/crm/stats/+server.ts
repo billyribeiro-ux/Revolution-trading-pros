@@ -1,80 +1,69 @@
 /**
  * CRM Stats API - RevolutionCRM Pro
  *
- * Provides aggregated statistics for the CRM dashboard.
+ * Fetches CRM statistics from backend.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - January 2026
  */
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 
-export const GET: RequestHandler = async () => {
-	// In production, these would be calculated from database
-	const stats = {
-		// Contact Statistics
-		total_contacts: 6,
-		new_this_month: 3,
-		contacts_by_status: {
-			lead: 1,
-			prospect: 2,
-			customer: 3,
-			churned: 0
-		},
-		contacts_by_source: {
-			website: 2,
-			referral: 1,
-			form: 1,
-			webinar: 1,
-			event: 1
-		},
+const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
-		// Deal Statistics
-		active_deals: 3,
-		deal_value: 31497, // Total pipeline value
-		won_deals_this_month: 1,
-		won_value_this_month: 12999,
-		average_deal_size: 11166,
-		win_rate: 0.68,
-		average_sales_cycle: 21, // days
+export const GET: RequestHandler = async ({ request }) => {
+	const backendUrl = env.BACKEND_URL || PROD_BACKEND;
+	const authHeader = request.headers.get('Authorization') || '';
 
-		// Pipeline Summary
-		pipeline_stages: [
-			{ id: 'lead', name: 'Lead', deals: 0, value: 0 },
-			{ id: 'qualified', name: 'Qualified', deals: 1, value: 4999 },
-			{ id: 'proposal', name: 'Proposal', deals: 1, value: 1499 },
-			{ id: 'negotiation', name: 'Negotiation', deals: 1, value: 24999 },
-			{ id: 'closed', name: 'Closed Won', deals: 1, value: 12999 }
-		],
+	try {
+		const response = await fetch(`${backendUrl}/api/admin/crm/stats`, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				Authorization: authHeader
+			}
+		});
 
-		// Activity Statistics
-		activities_this_week: 24,
-		emails_sent: 45,
-		meetings_scheduled: 8,
-		tasks_completed: 12,
-
-		// Revenue Metrics
-		total_revenue: 20497,
-		mrr: 4166,
-		arr: 49992,
-		lifetime_value_avg: 6832,
-
-		// Engagement Metrics
-		avg_lead_score: 72,
-		avg_health_score: 85,
-		contacts_at_risk: 1,
-		contacts_engaged: 5,
-
-		// Trends (last 7 days)
-		trends: {
-			contacts_growth: 8.5, // percentage
-			deals_growth: 12.3,
-			revenue_growth: 15.7
+		if (response.ok) {
+			const data = await response.json();
+			return json({ success: true, data });
 		}
-	};
 
+		console.warn(`Backend CRM stats returned ${response.status}`);
+	} catch (err) {
+		console.warn('Backend CRM stats not available:', err);
+	}
+
+	// Return empty stats on error
 	return json({
 		success: true,
-		data: stats
+		data: {
+			total_contacts: 0,
+			new_this_month: 0,
+			contacts_by_status: {},
+			contacts_by_source: {},
+			active_deals: 0,
+			deal_value: 0,
+			won_deals_this_month: 0,
+			won_value_this_month: 0,
+			average_deal_size: 0,
+			win_rate: 0,
+			average_sales_cycle: 0,
+			pipeline_stages: [],
+			activities_this_week: 0,
+			emails_sent: 0,
+			meetings_scheduled: 0,
+			tasks_completed: 0,
+			total_revenue: 0,
+			mrr: 0,
+			arr: 0,
+			lifetime_value_avg: 0,
+			avg_lead_score: 0,
+			avg_health_score: 0,
+			contacts_at_risk: 0,
+			contacts_engaged: 0,
+			trends: { contacts_growth: 0, deals_growth: 0, revenue_growth: 0 }
+		}
 	});
 };

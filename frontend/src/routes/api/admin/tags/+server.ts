@@ -1,39 +1,44 @@
 /**
  * Tags API Endpoint
+ * ICT 7 Principal Engineer Grade
  *
- * Returns available blog post tags.
+ * Proxies to backend for blog post tags.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - January 2026
  */
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
+import { env } from '$env/dynamic/private';
 
-// Predefined tags matching the blog categories
-const mockTags = [
-	{ id: 'options', name: 'Options', slug: 'options', count: 15 },
-	{ id: 'day-trading', name: 'Day Trading', slug: 'day-trading', count: 23 },
-	{ id: 'swing-trading', name: 'Swing Trading', slug: 'swing-trading', count: 18 },
-	{ id: 'technical-analysis', name: 'Technical Analysis', slug: 'technical-analysis', count: 31 },
-	{ id: 'risk-management', name: 'Risk Management', slug: 'risk-management', count: 12 },
-	{ id: 'psychology', name: 'Psychology', slug: 'psychology', count: 9 },
-	{ id: 'beginner', name: 'Beginner', slug: 'beginner', count: 27 },
-	{ id: 'advanced', name: 'Advanced', slug: 'advanced', count: 14 },
-	{ id: 'spx', name: 'SPX', slug: 'spx', count: 8 },
-	{ id: 'futures', name: 'Futures', slug: 'futures', count: 11 },
-	{ id: 'forex', name: 'Forex', slug: 'forex', count: 7 },
-	{ id: 'crypto', name: 'Crypto', slug: 'crypto', count: 5 },
-	{ id: 'stocks', name: 'Stocks', slug: 'stocks', count: 21 },
-	{ id: 'earnings', name: 'Earnings', slug: 'earnings', count: 6 },
-	{ id: 'market-analysis', name: 'Market Analysis', slug: 'market-analysis', count: 19 },
-	{ id: 'education', name: 'Education', slug: 'education', count: 16 },
-	{ id: 'strategy', name: 'Strategy', slug: 'strategy', count: 25 },
-	{ id: 'small-accounts', name: 'Small Accounts', slug: 'small-accounts', count: 10 }
-];
+const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
-export const GET: RequestHandler = async () => {
+export const GET: RequestHandler = async ({ request }) => {
+	const backendUrl = env.BACKEND_URL || PROD_BACKEND;
+	const authHeader = request.headers.get('Authorization') || '';
+
+	try {
+		const response = await fetch(`${backendUrl}/api/tags`, {
+			headers: {
+				'Content-Type': 'application/json',
+				Accept: 'application/json',
+				Authorization: authHeader
+			}
+		});
+
+		if (response.ok) {
+			const data = await response.json();
+			return json({ success: true, data: data.data || data });
+		}
+
+		console.warn(`Backend tags returned ${response.status}`);
+	} catch (err) {
+		console.warn('Backend tags not available:', err);
+	}
+
 	return json({
-		success: true,
-		data: mockTags
+		success: false,
+		data: [],
+		error: 'Failed to fetch tags from backend'
 	});
 };

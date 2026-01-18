@@ -1,130 +1,83 @@
 /**
  * Users API Endpoint
+ * ICT 7 Principal Engineer Grade
  *
- * Handles user listing with backend fallback to mock data.
+ * Proxies to backend for user management.
  *
- * @version 1.0.0 - December 2025
+ * @version 2.0.0 - January 2026
  */
 
-import { json } from '@sveltejs/kit';
+import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 import { env } from '$env/dynamic/private';
 
-// Mock users data
-const mockUsers = [
-	{
-		id: 1,
-		name: 'Admin User',
-		first_name: 'Admin',
-		last_name: 'User',
-		email: 'admin@revolutiontrading.com',
-		email_verified_at: '2025-01-01T00:00:00Z',
-		roles: [{ name: 'super-admin' }, { name: 'admin' }],
-		is_active: true,
-		created_at: '2025-01-01T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 2,
-		name: 'John Doe',
-		first_name: 'John',
-		last_name: 'Doe',
-		email: 'john@example.com',
-		email_verified_at: '2025-06-15T00:00:00Z',
-		roles: [{ name: 'member' }],
-		is_active: true,
-		created_at: '2025-06-15T00:00:00Z',
-		updated_at: '2025-12-01T00:00:00Z'
-	},
-	{
-		id: 3,
-		name: 'Jane Smith',
-		first_name: 'Jane',
-		last_name: 'Smith',
-		email: 'jane@example.com',
-		email_verified_at: '2025-07-20T00:00:00Z',
-		roles: [{ name: 'member' }],
-		is_active: true,
-		created_at: '2025-07-20T00:00:00Z',
-		updated_at: '2025-11-15T00:00:00Z'
-	}
-];
+const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
-// Try to fetch from backend
-async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL;
-	if (!BACKEND_URL) return null;
+async function fetchFromBackend(
+	endpoint: string,
+	options?: RequestInit
+): Promise<{ data: unknown; status: number }> {
+	const backendUrl = env.BACKEND_URL || PROD_BACKEND;
 
 	try {
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+		const response = await fetch(`${backendUrl}/api${endpoint}`, {
 			...options,
 			headers: {
 				'Content-Type': 'application/json',
 				Accept: 'application/json',
-				...options?.headers
+				...(options?.headers || {})
 			}
 		});
 
-		if (!response.ok) return null;
-		return await response.json();
-	} catch (error) {
-		return null;
+		const data = await response.json();
+		return { data, status: response.status };
+	} catch (err) {
+		console.error(`Backend error for ${endpoint}:`, err);
+		return { data: null, status: 500 };
 	}
 }
 
 // GET - List users
 export const GET: RequestHandler = async ({ url, request }) => {
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/users?${url.searchParams.toString()}`, {
-		headers: { Authorization: request.headers.get('Authorization') || '' }
+	const authHeader = request.headers.get('Authorization') || '';
+	const queryParams = url.searchParams.toString();
+	const endpoint = `/admin/users${queryParams ? `?${queryParams}` : ''}`;
+
+	const { data, status } = await fetchFromBackend(endpoint, {
+		headers: { Authorization: authHeader }
 	});
 
-	if (backendData?.data) {
-		return json(backendData);
+	if (status >= 400 || !data) {
+		return json({
+			data: [],
+			meta: { total: 0, page: 1, per_page: 20, last_page: 0 },
+			error: 'Failed to fetch users from backend'
+		});
 	}
 
-	// Fallback to mock data
-	return json({
-		data: mockUsers,
-		meta: {
-			total: mockUsers.length,
-			page: 1,
-			per_page: 20,
-			last_page: 1
-		},
-		_mock: true
-	});
+	return json(data);
 };
 
 // POST - Create user
 export const POST: RequestHandler = async ({ request }) => {
-	const body = await request.json();
+	const authHeader = request.headers.get('Authorization') || '';
 
-	// Try backend first
-	const backendData = await fetchFromBackend('/api/admin/users', {
-		method: 'POST',
-		headers: { Authorization: request.headers.get('Authorization') || '' },
-		body: JSON.stringify(body)
-	});
+	try {
+		const body = await request.json();
 
-	if (backendData?.data) {
-		return json(backendData);
+		const { data, status } = await fetchFromBackend('/admin/users', {
+			method: 'POST',
+			headers: { Authorization: authHeader },
+			body: JSON.stringify(body)
+		});
+
+		if (status >= 400) {
+			throw error(status, 'Failed to create user');
+		}
+
+		return json(data);
+	} catch (err) {
+		console.error('POST /api/admin/users error:', err);
+		throw error(400, 'Invalid request body');
 	}
-
-	// Mock response
-	const newUser = {
-		id: mockUsers.length + 1,
-		...body,
-		email_verified_at: null,
-		roles: body.roles?.map((r: string) => ({ name: r })) || [],
-		is_active: true,
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
-	};
-
-	return json({
-		data: newUser,
-		message: 'User created successfully',
-		_mock: true
-	});
 };
