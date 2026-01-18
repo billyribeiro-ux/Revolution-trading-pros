@@ -109,8 +109,26 @@
 	let circuitBreakerFailures = 0;
 	let circuitBreakerLastFailure = 0;
 
-	// Quick Links data
-	const quickLinks = [
+	// Quick Links data - now room-specific
+	interface QuickLink {
+		text: string;
+		href: string;
+		external: boolean;
+		download?: boolean;
+	}
+
+	const quickLinks = $derived<QuickLink[]>([
+		{
+			text: '⭐ My Favorites',
+			href: `/dashboard/${planSlug}/favorites`,
+			external: false
+		},
+		{
+			text: '📥 Export Watchlist',
+			href: `/api/export/watchlist?room_slug=${planSlug}&format=csv`,
+			external: false,
+			download: true
+		},
 		{
 			text: 'Support',
 			href: 'https://intercom.help/simpler-trading/en/',
@@ -119,14 +137,9 @@
 		{
 			text: 'Platform Tutorials',
 			href: '/tutorials',
-			external: true
-		},
-		{
-			text: 'Simpler Blog',
-			href: '/blog',
-			external: true
+			external: false
 		}
-	];
+	]);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// ICT 11+ LOGGING - Structured Logging for Monitoring
@@ -422,6 +435,7 @@
 						href={link.href}
 						target={link.external ? '_blank' : undefined}
 						rel={link.external ? 'noopener noreferrer' : undefined}
+						download={link.download ? '' : undefined}
 					>
 						{link.text}
 					</a>

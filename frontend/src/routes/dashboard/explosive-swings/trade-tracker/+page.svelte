@@ -164,6 +164,7 @@
 			const timeout = setTimeout(() => (successMessage = ''), 3000);
 			return () => clearTimeout(timeout);
 		}
+		return undefined;
 	});
 
 	// Format date for display
@@ -536,8 +537,22 @@
 
 <!-- Close Trade Modal -->
 {#if showCloseTradeModal && closingTrade}
-	<div class="modal-overlay" onclick={() => (showCloseTradeModal = false)}>
-		<div class="modal" onclick={(e) => e.stopPropagation()}>
+	<div 
+		class="modal-overlay" 
+		onclick={() => (showCloseTradeModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showCloseTradeModal = false)}
+		role="dialog"
+		aria-modal="true"
+		aria-labelledby="close-trade-title"
+		tabindex="-1"
+	>
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+		<div 
+			class="modal" 
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
+			role="document"
+		>
 			<div class="modal-header">
 				<h2>Close Trade: {closingTrade.ticker}</h2>
 				<button class="modal-close" onclick={() => (showCloseTradeModal = false)}>&times;</button>
