@@ -466,26 +466,39 @@ pub struct CreateCouponRequest {
 }
 
 /// List coupons (admin)
+/// ICT 7 FIX: Use explicit column list with FLOAT8 casting for DECIMAL columns
 async fn list_coupons(
     State(state): State<AppState>,
     user: User,
 ) -> Result<Json<Vec<CouponRow>>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
-    let coupons: Vec<CouponRow> = sqlx::query_as("SELECT * FROM coupons ORDER BY created_at DESC")
-        .fetch_all(&state.db.pool)
-        .await
-        .map_err(|e| {
-            (
-                StatusCode::INTERNAL_SERVER_ERROR,
-                Json(json!({"error": e.to_string()})),
-            )
-        })?;
+    // ICT 7 FIX: DECIMAL columns must be cast to FLOAT8 for SQLx f64 compatibility
+    let coupons: Vec<CouponRow> = sqlx::query_as(
+        r#"SELECT 
+            id, code, description, discount_type,
+            discount_value::FLOAT8 as discount_value,
+            min_purchase::FLOAT8 as min_purchase,
+            max_discount::FLOAT8 as max_discount,
+            usage_limit, usage_count, is_active, starts_at, expires_at,
+            applicable_products, applicable_plans, created_at, updated_at
+        FROM coupons ORDER BY created_at DESC"#
+    )
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "admin", "list_coupons error: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     Ok(Json(coupons))
 }
 
 /// Create coupon (admin)
+/// ICT 7 FIX: Use explicit RETURNING clause with FLOAT8 casting for DECIMAL columns
 async fn create_coupon(
     State(state): State<AppState>,
     user: User,
@@ -493,11 +506,17 @@ async fn create_coupon(
 ) -> Result<Json<CouponRow>, (StatusCode, Json<serde_json::Value>)> {
     require_admin(&user)?;
 
+    // ICT 7 FIX: DECIMAL columns must be cast to FLOAT8 for SQLx f64 compatibility
     let coupon: CouponRow = sqlx::query_as(
         r#"
         INSERT INTO coupons (code, description, discount_type, discount_value, min_purchase, max_discount, usage_limit, usage_count, is_active, starts_at, expires_at, applicable_products, applicable_plans, created_at, updated_at)
         VALUES (UPPER($1), $2, $3, $4, $5, $6, $7, 0, $8, $9, $10, $11, $12, NOW(), NOW())
-        RETURNING *
+        RETURNING id, code, description, discount_type,
+            discount_value::FLOAT8 as discount_value,
+            min_purchase::FLOAT8 as min_purchase,
+            max_discount::FLOAT8 as max_discount,
+            usage_limit, usage_count, is_active, starts_at, expires_at,
+            applicable_products, applicable_plans, created_at, updated_at
         "#
     )
     .bind(&input.code)
@@ -515,6 +534,7 @@ async fn create_coupon(
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e| {
+        tracing::error!(target: "admin", "create_coupon error: {}", e);
         if e.to_string().contains("duplicate") {
             (StatusCode::CONFLICT, Json(json!({"error": "Coupon code already exists"})))
         } else {
@@ -548,21 +568,32 @@ async fn delete_coupon(
 }
 
 /// Validate coupon (public)
+/// ICT 7 FIX: Use explicit column list with FLOAT8 casting for DECIMAL columns
 async fn validate_coupon(
     State(state): State<AppState>,
     Path(code): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let coupon: Option<CouponRow> =
-        sqlx::query_as("SELECT * FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true")
-            .bind(&code)
-            .fetch_optional(&state.db.pool)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": e.to_string()})),
-                )
-            })?;
+    // ICT 7 FIX: DECIMAL columns must be cast to FLOAT8 for SQLx f64 compatibility
+    let coupon: Option<CouponRow> = sqlx::query_as(
+        r#"SELECT 
+            id, code, description, discount_type,
+            discount_value::FLOAT8 as discount_value,
+            min_purchase::FLOAT8 as min_purchase,
+            max_discount::FLOAT8 as max_discount,
+            usage_limit, usage_count, is_active, starts_at, expires_at,
+            applicable_products, applicable_plans, created_at, updated_at
+        FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true"#
+    )
+    .bind(&code)
+    .fetch_optional(&state.db.pool)
+    .await
+    .map_err(|e| {
+        tracing::error!(target: "admin", "validate_coupon error: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
 
     match coupon {
         Some(c) => {
