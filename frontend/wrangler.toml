@@ -1,41 +1,28 @@
 # Cloudflare Pages configuration for SvelteKit
-# Revolution Trading Pros - December 2025
-#
-# Backend: Fly.io (Rust + Axum)
-# Frontend: Cloudflare Pages
-# Storage: Cloudflare R2
+# Revolution Trading Pros
 
 name = "revolution-trading-pros"
 compatibility_date = "2024-12-01"
 compatibility_flags = ["nodejs_compat"]
-pages_build_output_dir = "frontend/.svelte-kit/cloudflare"
+pages_build_output_dir = ".svelte-kit/cloudflare"
 
-# Global environment variables
 [vars]
 VITE_SITE_NAME = "Revolution Trading Pros"
-# ICT 7 FIX: Do NOT include /api suffix - API_ENDPOINTS in config.ts already include /api prefix
 VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
 VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "production"
 
-# Preview environment
-[env.preview]
 [env.preview.vars]
 VITE_SITE_NAME = "Revolution Trading Pros (Preview)"
-# ICT 7 FIX: Do NOT include /api suffix - API_ENDPOINTS already include /api prefix
 VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
 VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "preview"
 
-# Production environment
-[env.production]
 [env.production.vars]
 VITE_SITE_NAME = "Revolution Trading Pros"
-# ICT 7 FIX: Do NOT include /api suffix - API_ENDPOINTS already include /api prefix
 VITE_API_URL = "https://revolution-trading-pros-api.fly.dev"
 VITE_CDN_URL = "https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev"
-# Configure custom domain in Cloudflare Dashboard when ready for production
 VITE_SITE_URL = "https://revolution-trading-pros.pages.dev"
 ENVIRONMENT = "production"
