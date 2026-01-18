@@ -258,10 +258,18 @@
 	<title>Member Subscriptions | Admin | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="page">
-	<!-- Header - CENTERED -->
-	<div class="page-header">
-		<h1>Member Subscriptions</h1>
+<div class="admin-member-subscriptions">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<!-- Header - CENTERED -->
+		<header class="page-header">
+			<h1>Member Subscriptions</h1>
 		<p class="subtitle">Manage and monitor all member subscription plans</p>
 	</div>
 

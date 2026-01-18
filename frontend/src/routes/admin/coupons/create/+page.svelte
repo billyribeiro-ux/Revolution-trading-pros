@@ -297,10 +297,18 @@
 	<title>Create Coupon | Admin</title>
 </svelte:head>
 
-<div class="page">
-	<!-- Header -->
-	<div class="page-header">
-		<div class="header-content">
+<div class="admin-coupon-create">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<!-- Header -->
+		<header class="page-header">
+			<div class="header-content">
 			<button class="btn-back" onclick={() => goto('/admin/coupons')}>
 				<IconX size={20} />
 			</button>
