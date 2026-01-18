@@ -656,8 +656,8 @@
 
 								<div class="form-grid">
 									<div class="form-group full-width">
-										<label class="form-label">Subscription Tier</label>
-										<div class="tier-selector">
+										<span id="tier-label" class="form-label">Subscription Tier</span>
+										<div class="tier-selector" role="group" aria-labelledby="tier-label">
 											{#each subscriptionTiers as tier (tier.value)}
 												<button
 													type="button"
@@ -689,8 +689,8 @@
 									</div>
 
 									<div class="form-group">
-										<label class="form-label">Quick Expiration</label>
-										<div class="quick-actions">
+										<span id="quick-exp-label" class="form-label">Quick Expiration</span>
+										<div class="quick-actions" role="group" aria-labelledby="quick-exp-label">
 											<button
 												type="button"
 												class="quick-btn"

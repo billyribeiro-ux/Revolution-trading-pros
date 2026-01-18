@@ -1256,11 +1256,6 @@
 		color: var(--success-emphasis, #3fb950);
 	}
 
-	.status-badge.connected {
-		background: var(--info-soft, rgba(56, 139, 253, 0.15));
-		color: var(--info-emphasis, #58a6ff);
-	}
-
 	.service-description {
 		font-size: 0.8125rem;
 		color: var(--text-secondary, #8b949e);
