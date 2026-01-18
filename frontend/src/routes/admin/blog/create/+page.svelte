@@ -343,21 +343,22 @@
 		<!-- Main Content Area -->
 		<div class="editor-main">
 			<div class="form-group">
-				<input type="text" bind:value={post.title} placeholder="Post Title" class="title-input" />
+				<input id="post-title" name="title" type="text" bind:value={post.title} placeholder="Post Title" class="title-input" autocomplete="off" />
 			</div>
 
 			<div class="form-group">
 				<label for="slug">URL Slug</label>
 				<div class="slug-input">
 					<span class="slug-prefix">your-site.com/blog/</span>
-					<input id="slug" type="text" bind:value={post.slug} placeholder="post-url-slug" />
+					<input id="slug" name="slug" type="text" bind:value={post.slug} placeholder="post-url-slug" autocomplete="off" />
 				</div>
 			</div>
 
 			<div class="form-group">
-				<label for="blog-excerpt">Excerpt</label>
+				<label for="excerpt">Excerpt</label>
 				<textarea
 					id="excerpt"
+					name="excerpt"
 					bind:value={post.excerpt}
 					placeholder="Brief description of the post..."
 					rows="3"
@@ -431,12 +432,12 @@
 						<IconCalendar size={16} />
 						Publish Date
 					</label>
-					<input id="publish-date" type="datetime-local" bind:value={post.published_at} />
+					<input id="publish-date" name="published_at" type="datetime-local" bind:value={post.published_at} />
 				</div>
 
 				<div class="form-group">
 					<label>
-						<input type="checkbox" bind:checked={post.allow_comments} />
+						<input id="allow-comments" name="allow_comments" type="checkbox" bind:checked={post.allow_comments} />
 						Allow Comments
 					</label>
 				</div>
@@ -463,6 +464,7 @@
 						<label for="img-title">Image Title</label>
 						<input
 							id="img-title"
+							name="featured_image_title"
 							type="text"
 							bind:value={post.featured_image_title}
 							placeholder="Image title for SEO"
@@ -473,6 +475,7 @@
 						<label for="img-alt">Alt Text</label>
 						<input
 							id="img-alt"
+							name="featured_image_alt"
 							type="text"
 							bind:value={post.featured_image_alt}
 							placeholder="Describe the image for accessibility"
@@ -483,6 +486,7 @@
 						<label for="img-caption">Caption</label>
 						<input
 							id="img-caption"
+							name="featured_image_caption"
 							type="text"
 							bind:value={post.featured_image_caption}
 							placeholder="Image caption displayed below image"
@@ -493,6 +497,7 @@
 						<label for="img-description">Description</label>
 						<textarea
 							id="img-description"
+							name="featured_image_description"
 							bind:value={post.featured_image_description}
 							placeholder="Detailed description of the image"
 							rows="3"
@@ -501,6 +506,8 @@
 				{:else}
 					<label class="upload-box" class:disabled={uploadingImage}>
 						<input
+							id="featured-image-upload"
+							name="featured_image"
 							type="file"
 							accept="image/*"
 							onchange={handleFeaturedImageUpload}
@@ -584,10 +591,13 @@
 
 				<div class="tag-input-group">
 					<input
+						id="new-tag-input"
+						name="new_tag"
 						type="text"
 						bind:value={newTag}
 						placeholder="Add new tag..."
 						onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && (e.preventDefault(), createTag())}
+						autocomplete="off"
 					/>
 					<button type="button" class="btn-add-tag" onclick={createTag}>
 						<IconPlus size={16} />
@@ -599,6 +609,8 @@
 						{#if !post.tags.includes(tag.id)}
 							<label class="checkbox-item">
 								<input
+									id="tag-{tag.id}"
+									name="tags[]"
 									type="checkbox"
 									value={tag.id}
 									onchange={(e: Event) => {
