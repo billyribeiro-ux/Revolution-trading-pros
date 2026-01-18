@@ -23,13 +23,6 @@
 		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	}
 
-	// Breadcrumb items
-	const breadcrumbs = $derived([
-		{ label: 'Dashboard', href: '/dashboard' },
-		{ label: 'SPX Profit Pulse', href: '/dashboard/spx-profit-pulse' },
-		{ label: 'Alerts', href: '/dashboard/spx-profit-pulse' },
-		{ label: alert?.title || 'Alert' }
-	]);
 </script>
 
 <svelte:head>
@@ -38,8 +31,8 @@
 </svelte:head>
 
 <div class="alert-detail">
-	<!-- Breadcrumbs -->
-	<DashboardBreadcrumbs items={breadcrumbs} />
+	<!-- Breadcrumbs - auto-generated from URL path -->
+	<DashboardBreadcrumbs />
 
 	<!-- Main Content -->
 	<div class="alert-detail__content">
