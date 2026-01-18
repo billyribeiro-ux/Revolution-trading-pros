@@ -4,10 +4,14 @@
 	"description": "A SvelteKit project for Revolution.",
 	"private": true,
 	"type": "module",
+	"packageManager": "npm@10.8.2",
+	"engines": {
+		"node": ">=20.0.0"
+	},
 	"scripts": {
 		"dev": "svelte-kit sync && vite dev",
 		"dev:fast": "vite dev",
-		"build": "vite build",
+		"build": "svelte-kit sync && vite build",
 		"build:cloudflare": "DEPLOY_TARGET=cloudflare vite build",
 		"build:static": "DEPLOY_TARGET=static vite build",
 		"preview": "vite preview",
@@ -103,6 +107,7 @@
 		"vite": "^6.4.1",
 		"vite-plugin-compression": "^0.5.1",
 		"vite-plugin-devtools-json": "^1.0.0",
-		"vitest": "^4.0.15"
+		"vitest": "^4.0.15",
+		"wrangler": "4.59.2"
 	}
 }
