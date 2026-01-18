@@ -1164,10 +1164,10 @@
 	.desktop-nav {
 		display: none;
 		align-items: center;
-		gap: 0.25rem;
+		gap: 0.375rem;
 		flex: 1;
 		justify-content: center;
-		padding-inline: 0.5rem;
+		padding-inline: 0.75rem;
 		min-width: 0; /* Allow flex item to shrink below content size */
 	}
 
@@ -1180,14 +1180,14 @@
 	/* ICT11+ Fix: Intermediate breakpoint for 11-13" laptops */
 	@media (min-width: 1152px) {
 		.desktop-nav {
-			gap: 0.375rem;
+			gap: 0.5rem;
 			padding-inline: 1rem;
 		}
 	}
 
 	@media (min-width: 1280px) {
 		.desktop-nav {
-			gap: 0.5rem;
+			gap: 0.625rem;
 			padding-inline: 1.5rem;
 		}
 	}
@@ -1204,10 +1204,10 @@
 		display: flex;
 		align-items: center;
 		gap: 0.125rem;
-		height: 32px;
-		padding: 0 0.5rem;
+		height: 34px;
+		padding: 0 0.625rem;
 		color: var(--nav-text);
-		font-size: 0.6875rem;
+		font-size: 0.75rem;
 		font-weight: 600;
 		font-family: var(--nav-font);
 		letter-spacing: 0.01em;
@@ -1228,17 +1228,17 @@
 	/* ICT11+ Fix: Progressive enhancement for larger screens */
 	@media (min-width: 1152px) {
 		.nav-link {
-			height: 34px;
-			padding: 0 0.625rem;
-			font-size: 0.7rem;
+			height: 36px;
+			padding: 0 0.75rem;
+			font-size: 0.8125rem;
 		}
 	}
 
 	@media (min-width: 1280px) {
 		.nav-link {
-			height: 36px;
-			padding: 0 0.75rem;
-			font-size: 0.75rem;
+			height: 38px;
+			padding: 0 0.875rem;
+			font-size: 0.875rem;
 			gap: 0.25rem;
 			letter-spacing: 0.02em;
 		}
@@ -1246,9 +1246,9 @@
 
 	@media (min-width: 1440px) {
 		.nav-link {
-			height: 38px;
-			padding: 0 0.875rem;
-			font-size: 0.8125rem;
+			height: 40px;
+			padding: 0 1rem;
+			font-size: 0.9375rem;
 		}
 	}
 
@@ -1290,10 +1290,10 @@
 		display: flex;
 		align-items: center;
 		gap: 0.125rem;
-		height: 32px;
-		padding: 0 0.5rem;
+		height: 34px;
+		padding: 0 0.625rem;
 		color: var(--nav-text);
-		font-size: 0.6875rem;
+		font-size: 0.75rem;
 		font-weight: 600;
 		font-family: var(--nav-font);
 		letter-spacing: 0.01em;
@@ -1313,27 +1313,27 @@
 	/* ICT11+ Fix: Progressive enhancement for larger screens */
 	@media (min-width: 1152px) {
 		.dropdown-trigger {
-			height: 34px;
-			padding: 0 0.625rem;
-			font-size: 0.7rem;
+			height: 36px;
+			padding: 0 0.75rem;
+			font-size: 0.8125rem;
 		}
 	}
 
 	@media (min-width: 1280px) {
 		.dropdown-trigger {
 			gap: 0.25rem;
-			height: 36px;
-			padding: 0 0.75rem;
-			font-size: 0.75rem;
+			height: 38px;
+			padding: 0 0.875rem;
+			font-size: 0.875rem;
 			letter-spacing: 0.02em;
 		}
 	}
 
 	@media (min-width: 1440px) {
 		.dropdown-trigger {
-			height: 38px;
-			padding: 0 0.875rem;
-			font-size: 0.8125rem;
+			height: 40px;
+			padding: 0 1rem;
+			font-size: 0.9375rem;
 		}
 	}
 
@@ -1536,10 +1536,10 @@
 	.login-btn {
 		display: none;
 		align-items: center;
-		height: 32px;
-		padding-inline: 0.75rem;
+		height: 34px;
+		padding-inline: 0.875rem;
 		color: #ffffff;
-		font-size: 0.6875rem;
+		font-size: 0.75rem;
 		font-weight: 700;
 		font-family: var(--nav-font);
 		letter-spacing: 0.01em;
@@ -1564,26 +1564,26 @@
 	/* ICT11+ Fix: Progressive enhancement for action buttons */
 	@media (min-width: 1152px) {
 		.login-btn {
-			height: 34px;
-			padding-inline: 0.875rem;
-			font-size: 0.7rem;
+			height: 36px;
+			padding-inline: 1rem;
+			font-size: 0.8125rem;
 		}
 	}
 
 	@media (min-width: 1280px) {
 		.login-btn {
-			height: 36px;
-			padding-inline: 1rem;
-			font-size: 0.75rem;
+			height: 38px;
+			padding-inline: 1.125rem;
+			font-size: 0.875rem;
 			letter-spacing: 0.02em;
 		}
 	}
 
 	@media (min-width: 1440px) {
 		.login-btn {
-			height: 38px;
-			padding-inline: 1.125rem;
-			font-size: 0.8125rem;
+			height: 40px;
+			padding-inline: 1.25rem;
+			font-size: 0.9375rem;
 		}
 	}
 
