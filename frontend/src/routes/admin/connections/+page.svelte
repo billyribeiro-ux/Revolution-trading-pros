@@ -87,7 +87,7 @@
 	let connectedExternal = $derived(externalServices.filter((c) => c.is_connected));
 	let availableExternal = $derived(externalServices.filter((c) => !c.is_connected));
 
-	let filteredConnections = $derived(() => {
+	let filteredConnections = $derived.by(() => {
 		let result = externalServices;
 
 		if (selectedCategory) {
@@ -550,7 +550,7 @@
 				<!-- Services Grid/List -->
 				{#if viewMode === 'grid'}
 					<div class="services-grid available">
-						{#each filteredConnections() as service, index}
+						{#each filteredConnections as service, index}
 							<div
 								class="service-card available-card"
 								in:fly={{ y: 20, duration: 400, delay: 300 + index * 30, easing: cubicOut }}
@@ -584,7 +584,7 @@
 				{:else}
 					<!-- List View -->
 					<div class="services-list">
-						{#each filteredConnections() as service, index}
+						{#each filteredConnections as service, index}
 							<div
 								class="service-list-item"
 								in:fly={{ x: -20, duration: 400, delay: 300 + index * 30, easing: cubicOut }}
@@ -616,7 +616,7 @@
 				{/if}
 
 				<!-- Empty State -->
-				{#if filteredConnections().length === 0}
+				{#if filteredConnections.length === 0}
 					<div class="empty-state">
 						<div class="empty-state-icon">
 							<svg

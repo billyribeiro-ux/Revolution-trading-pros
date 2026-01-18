@@ -192,7 +192,7 @@
 	}: Props = $props();
 
 	// Derive configuration from feature or custom props
-	let config = $derived(() => {
+	let config = $derived.by(() => {
 		if (feature && FEATURE_CONFIG[feature]) {
 			return FEATURE_CONFIG[feature];
 		}
@@ -207,7 +207,7 @@
 	});
 
 	// Check connection status
-	let isConnected = $derived(() => {
+	let isConnected = $derived.by(() => {
 		if (serviceKey) {
 			return connections.isConnected(serviceKey);
 		}
@@ -236,7 +236,7 @@
 
 	// Navigate to connections page with pre-selected service
 	function handleConnect() {
-		const targetService = serviceKey || config().primaryService;
+		const targetService = serviceKey || config.primaryService;
 		if (targetService) {
 			goto(`/admin/connections?connect=${targetService}`);
 		} else if (feature) {
@@ -248,14 +248,14 @@
 
 	// Notify parent when connected
 	$effect(() => {
-		if (isConnected() && onConnected) {
+		if (isConnected && onConnected) {
 			onConnected();
 		}
 	});
 </script>
 
 <!-- Only render if NOT connected -->
-{#if !isConnected()}
+{#if !isConnected}
 	{#if variant === 'card'}
 		<!-- Full Card Variant - Premium Design -->
 		<div
@@ -265,18 +265,18 @@
 			aria-live="polite"
 		>
 			<!-- Gradient Background Glow -->
-			<div class="card-glow" style="--glow-color: {config().color}"></div>
+			<div class="card-glow" style="--glow-color: {config.color}"></div>
 
 			<!-- Decorative Elements -->
-			<div class="decorative-orb orb-1" style="--orb-color: {config().color}"></div>
-			<div class="decorative-orb orb-2" style="--orb-color: {config().color}"></div>
+			<div class="decorative-orb orb-1" style="--orb-color: {config.color}"></div>
+			<div class="decorative-orb orb-2" style="--orb-color: {config.color}"></div>
 
 			<!-- Content -->
 			<div class="card-content">
 				<!-- Icon & Status -->
 				<div class="icon-section">
-					<div class="icon-container" style="--icon-color: {config().color}">
-						<span class="service-icon">{config().icon}</span>
+					<div class="icon-container" style="--icon-color: {config.color}">
+						<span class="service-icon">{config.icon}</span>
 						<div class="status-indicator">
 							<svg
 								class="disconnect-icon"
@@ -298,18 +298,18 @@
 
 				<!-- Text Content -->
 				<div class="text-section">
-					<h3 class="title">Connect {config().name}</h3>
-					<p class="description">{config().description}</p>
+					<h3 class="title">Connect {config.name}</h3>
+					<p class="description">{config.description}</p>
 				</div>
 
 				<!-- Features List -->
-				{#if showFeatures && config().features.length > 0}
+				{#if showFeatures && config.features.length > 0}
 					<div class="features-section" in:slide={{ duration: 300, delay: 100 }}>
 						<p class="features-label">This connection enables:</p>
 						<ul class="features-list">
-							{#each config().features as featureItem, i}
+							{#each config.features as featureItem, i}
 								<li in:fly={{ x: -10, duration: 200, delay: 150 + i * 50 }}>
-									<span class="check-icon" style="color: {config().color}">✓</span>
+									<span class="check-icon" style="color: {config.color}">✓</span>
 									{featureItem}
 								</li>
 							{/each}
@@ -321,7 +321,7 @@
 				<button
 					class="connect-button"
 					onclick={handleConnect}
-					style="--btn-color: {config().color}"
+					style="--btn-color: {config.color}"
 				>
 					<svg
 						class="btn-icon"
@@ -333,7 +333,7 @@
 						<path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z" />
 						<path d="M12 6v6l4 2" />
 					</svg>
-					<span>Connect {config().name}</span>
+					<span>Connect {config.name}</span>
 					<svg
 						class="arrow-icon"
 						viewBox="0 0 24 24"
@@ -368,16 +368,16 @@
 			in:fly={{ y: -20, duration: 400, easing: cubicOut }}
 			role="alert"
 		>
-			<div class="banner-glow" style="--glow-color: {config().color}"></div>
+			<div class="banner-glow" style="--glow-color: {config.color}"></div>
 			<div class="banner-content">
-				<div class="banner-icon" style="--icon-color: {config().color}">
-					<span>{config().icon}</span>
+				<div class="banner-icon" style="--icon-color: {config.color}">
+					<span>{config.icon}</span>
 				</div>
 				<div class="banner-text">
-					<h4>{config().name} Not Connected</h4>
-					<p>{config().description}</p>
+					<h4>{config.name} Not Connected</h4>
+					<p>{config.description}</p>
 				</div>
-				<button class="banner-button" onclick={handleConnect} style="--btn-color: {config().color}">
+				<button class="banner-button" onclick={handleConnect} style="--btn-color: {config.color}">
 					<span>Connect Now</span>
 					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 						<path d="M5 12h14M12 5l7 7-7 7" />
@@ -388,14 +388,14 @@
 	{:else if variant === 'inline'}
 		<!-- Inline Variant - For within content -->
 		<div class="service-status-inline" in:fade={{ duration: 300 }} role="alert">
-			<div class="inline-icon" style="color: {config().color}">
+			<div class="inline-icon" style="color: {config.color}">
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 					<circle cx="12" cy="12" r="10" />
 					<line x1="12" y1="8" x2="12" y2="12" />
 					<line x1="12" y1="16" x2="12.01" y2="16" />
 				</svg>
 			</div>
-			<span class="inline-message">{config().name} not connected</span>
+			<span class="inline-message">{config.name} not connected</span>
 			<button class="inline-button" onclick={handleConnect}>
 				Connect
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -409,7 +409,7 @@
 			class="service-status-badge"
 			onclick={handleConnect}
 			in:scale={{ duration: 200, start: 0.9 }}
-			title="Click to connect {config().name}"
+			title="Click to connect {config.name}"
 		>
 			<span class="badge-dot"></span>
 			<span class="badge-text">Disconnected</span>
@@ -420,13 +420,13 @@
 			class="service-status-minimal"
 			onclick={handleConnect}
 			in:fade={{ duration: 200 }}
-			style="--btn-color: {config().color}"
+			style="--btn-color: {config.color}"
 		>
 			<svg class="plug-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
 				<path d="M18.36 6.64a9 9 0 1 1-12.73 0" />
 				<line x1="12" y1="2" x2="12" y2="12" />
 			</svg>
-			<span>Connect {config().name}</span>
+			<span>Connect {config.name}</span>
 		</button>
 	{/if}
 {/if}
