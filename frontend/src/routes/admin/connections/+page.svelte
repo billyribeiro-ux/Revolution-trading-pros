@@ -507,16 +507,11 @@
 			{/if}
 
 			<!-- Available Integrations -->
-			<section in:fly={{ y: 20, duration: 500, delay: 300, easing: cubicOut }}>
-				<div class="flex items-center justify-between mb-6">
-					<div class="flex items-center gap-3">
-						<div class="flex items-center justify-center w-8 h-8 bg-gray-500/10 rounded-lg">
-							<svg
-								class="w-4 h-4 text-gray-400"
-								fill="none"
-								stroke="currentColor"
-								viewBox="0 0 24 24"
-							>
+			<section class="section-available" in:fly={{ y: 20, duration: 500, delay: 300, easing: cubicOut }}>
+				<div class="available-header">
+					<div class="section-header-row">
+						<div class="section-icon-wrapper available">
+							<svg class="section-icon-svg" fill="none" stroke="currentColor" viewBox="0 0 24 24">
 								<path
 									stroke-linecap="round"
 									stroke-linejoin="round"
@@ -526,31 +521,25 @@
 							</svg>
 						</div>
 						<div>
-							<h2 class="text-lg font-medium text-white">Available Integrations</h2>
-							<p class="text-sm text-gray-500">
+							<h2 class="section-heading">Available Integrations</h2>
+							<p class="section-subheading">
 								{availableExternal.length} services available to connect
 							</p>
 						</div>
 					</div>
 
 					<!-- Category Filter Pills -->
-					<div class="flex items-center gap-2 overflow-x-auto">
+					<div class="category-pills">
 						<button
 							onclick={() => (selectedCategory = null)}
-							class="px-3 py-1.5 text-sm rounded-lg whitespace-nowrap transition-all {selectedCategory ===
-							null
-								? 'bg-white text-black font-medium'
-								: 'text-gray-400 hover:text-white hover:bg-white/5'}"
+							class="category-pill {selectedCategory === null ? 'active' : ''}"
 						>
 							All
 						</button>
 						{#each categoryList as [key, category]}
 							<button
 								onclick={() => (selectedCategory = key)}
-								class="px-3 py-1.5 text-sm rounded-lg whitespace-nowrap transition-all {selectedCategory ===
-								key
-									? 'bg-white text-black font-medium'
-									: 'text-gray-400 hover:text-white hover:bg-white/5'}"
+								class="category-pill {selectedCategory === key ? 'active' : ''}"
 							>
 								{category.name}
 							</button>
@@ -560,32 +549,32 @@
 
 				<!-- Services Grid/List -->
 				{#if viewMode === 'grid'}
-					<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+					<div class="services-grid available">
 						{#each filteredConnections() as service, index}
 							<div
-								class="group relative bg-white/[0.02] border border-white/10 rounded-2xl p-5 hover:bg-white/[0.04] hover:border-white/15 transition-all duration-300 flex flex-col"
+								class="service-card available-card"
 								in:fly={{ y: 20, duration: 400, delay: 300 + index * 30, easing: cubicOut }}
 							>
-								<div class="flex items-start gap-3 mb-3">
+								<div class="service-card-content">
 									<div
-										class="flex-shrink-0 w-11 h-11 rounded-xl flex items-center justify-center text-lg font-semibold"
-										style="background: {service.color}12; color: {service.color};"
+										class="service-icon"
+										style="background: {service.color}15; color: {service.color};"
 									>
 										{getServiceIcon(service)}
 									</div>
-									<div class="flex-1 min-w-0">
-										<h3 class="font-medium text-white truncate">{service.name}</h3>
-										<p class="text-xs text-gray-500">{service.category}</p>
+									<div class="service-info">
+										<h3 class="service-name">{service.name}</h3>
+										<p class="service-category">{service.category}</p>
 									</div>
 								</div>
 
-								<p class="text-sm text-gray-500 line-clamp-2 mb-4 flex-grow">
+								<p class="service-description line-clamp-2">
 									{service.description}
 								</p>
 
 								<button
 									onclick={() => openConnectModal(service)}
-									class="w-full px-4 py-2.5 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 text-white text-sm font-medium rounded-xl transition-all duration-200 group-hover:bg-white/10"
+									class="btn-connect"
 								>
 									Connect
 								</button>
@@ -594,32 +583,30 @@
 					</div>
 				{:else}
 					<!-- List View -->
-					<div class="space-y-2">
+					<div class="services-list">
 						{#each filteredConnections() as service, index}
 							<div
-								class="group flex items-center gap-4 p-4 bg-white/[0.02] border border-white/10 rounded-xl hover:bg-white/[0.04] hover:border-white/15 transition-all duration-300"
+								class="service-list-item"
 								in:fly={{ x: -20, duration: 400, delay: 300 + index * 30, easing: cubicOut }}
 							>
 								<div
-									class="flex-shrink-0 w-10 h-10 rounded-lg flex items-center justify-center text-base"
-									style="background: {service.color}12; color: {service.color};"
+									class="service-icon-small"
+									style="background: {service.color}15; color: {service.color};"
 								>
 									{getServiceIcon(service)}
 								</div>
 
-								<div class="flex-1 min-w-0">
-									<div class="flex items-center gap-2">
-										<h3 class="font-medium text-white">{service.name}</h3>
-										<span class="text-xs text-gray-500 px-2 py-0.5 bg-white/5 rounded"
-											>{service.category}</span
-										>
+								<div class="service-list-info">
+									<div class="service-list-header">
+										<h3 class="service-name">{service.name}</h3>
+										<span class="category-badge">{service.category}</span>
 									</div>
-									<p class="text-sm text-gray-500 truncate">{service.description}</p>
+									<p class="service-description-truncate">{service.description}</p>
 								</div>
 
 								<button
 									onclick={() => openConnectModal(service)}
-									class="flex-shrink-0 px-4 py-2 bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm rounded-lg transition-colors"
+									class="btn-connect-small"
 								>
 									Connect
 								</button>
@@ -630,12 +617,10 @@
 
 				<!-- Empty State -->
 				{#if filteredConnections().length === 0}
-					<div class="text-center py-16">
-						<div
-							class="w-16 h-16 mx-auto mb-4 bg-white/5 rounded-2xl flex items-center justify-center"
-						>
+					<div class="empty-state">
+						<div class="empty-state-icon">
 							<svg
-								class="w-8 h-8 text-gray-600"
+								class="empty-icon-svg"
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
@@ -648,8 +633,8 @@
 								/>
 							</svg>
 						</div>
-						<h3 class="text-lg font-medium text-gray-400 mb-1">No services found</h3>
-						<p class="text-sm text-gray-600">
+						<h3 class="empty-state-title">No services found</h3>
+						<p class="empty-state-text">
 							{#if searchQuery}
 								No results for "{searchQuery}"
 							{:else}
@@ -944,14 +929,14 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.connections-page {
-		min-height: 100vh;
-		background: var(--bg-base, #0d1117);
+		/* Remove min-height - admin layout handles this */
+		background: transparent;
 	}
 
 	.connections-container {
 		max-width: 1400px;
 		margin: 0 auto;
-		padding: 2rem 1.5rem;
+		padding: 0; /* Admin layout provides padding */
 	}
 
 	/* Header */
@@ -1664,6 +1649,197 @@
 		color: var(--text-tertiary, #6e7681);
 	}
 
+	/* Available Header Layout */
+	.available-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		flex-wrap: wrap;
+		gap: 1rem;
+		margin-bottom: 1.5rem;
+	}
+
+	/* Category Pills Container */
+	.category-pills {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		overflow-x: auto;
+		padding: 0.25rem 0;
+	}
+
+	.category-pill {
+		padding: 0.375rem 0.75rem;
+		font-size: 0.8125rem;
+		border-radius: 0.5rem;
+		border: none;
+		cursor: pointer;
+		white-space: nowrap;
+		transition: all 0.2s ease;
+		background: transparent;
+		color: var(--text-tertiary, #6e7681);
+	}
+
+	.category-pill:hover {
+		color: var(--text-primary, #f0f6fc);
+		background: var(--bg-hover, #252b33);
+	}
+
+	.category-pill.active {
+		background: var(--primary-500, #e6b800);
+		color: var(--bg-base, #0d1117);
+		font-weight: 600;
+	}
+
+	/* Available Card Specific */
+	.available-card {
+		display: flex;
+		flex-direction: column;
+	}
+
+	.available-card .service-card-content {
+		margin-bottom: 0.75rem;
+	}
+
+	.available-card .service-description {
+		flex-grow: 1;
+		margin-bottom: 1rem;
+	}
+
+	/* Connect Button */
+	.btn-connect {
+		width: 100%;
+		padding: 0.625rem 1rem;
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 0.75rem;
+		color: var(--text-primary, #f0f6fc);
+		font-size: 0.875rem;
+		font-weight: 500;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.btn-connect:hover {
+		background: var(--bg-hover, #252b33);
+		border-color: var(--border-emphasis, #8b949e);
+	}
+
+	/* List View Styles */
+	.services-list {
+		display: flex;
+		flex-direction: column;
+		gap: 0.5rem;
+	}
+
+	.service-list-item {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		padding: 1rem;
+		background: var(--bg-elevated, #161b22);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 0.75rem;
+		transition: all 0.2s ease;
+	}
+
+	.service-list-item:hover {
+		background: var(--bg-surface, #1c2128);
+		border-color: var(--border-emphasis, #8b949e);
+	}
+
+	.service-icon-small {
+		flex-shrink: 0;
+		width: 2.5rem;
+		height: 2.5rem;
+		border-radius: 0.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		font-size: 1rem;
+	}
+
+	.service-list-info {
+		flex: 1;
+		min-width: 0;
+	}
+
+	.service-list-header {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+		margin-bottom: 0.25rem;
+	}
+
+	.category-badge {
+		font-size: 0.6875rem;
+		color: var(--text-tertiary, #6e7681);
+		padding: 0.125rem 0.5rem;
+		background: var(--bg-surface, #1c2128);
+		border-radius: 0.25rem;
+	}
+
+	.service-description-truncate {
+		font-size: 0.8125rem;
+		color: var(--text-secondary, #8b949e);
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		margin: 0;
+	}
+
+	.btn-connect-small {
+		flex-shrink: 0;
+		padding: 0.5rem 1rem;
+		background: var(--bg-surface, #1c2128);
+		border: 1px solid var(--border-default, #30363d);
+		border-radius: 0.5rem;
+		color: var(--text-primary, #f0f6fc);
+		font-size: 0.8125rem;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.btn-connect-small:hover {
+		background: var(--bg-hover, #252b33);
+		border-color: var(--border-emphasis, #8b949e);
+	}
+
+	/* Empty State */
+	.empty-state {
+		text-align: center;
+		padding: 4rem 1rem;
+	}
+
+	.empty-state-icon {
+		width: 4rem;
+		height: 4rem;
+		margin: 0 auto 1rem;
+		background: var(--bg-surface, #1c2128);
+		border-radius: 1rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.empty-icon-svg {
+		width: 2rem;
+		height: 2rem;
+		color: var(--text-tertiary, #6e7681);
+	}
+
+	.empty-state-title {
+		font-size: 1.125rem;
+		font-weight: 500;
+		color: var(--text-secondary, #8b949e);
+		margin-bottom: 0.25rem;
+	}
+
+	.empty-state-text {
+		font-size: 0.875rem;
+		color: var(--text-tertiary, #6e7681);
+	}
+
 	/* Responsive */
 	@media (max-width: 768px) {
 		.header-content {
@@ -1679,6 +1855,15 @@
 		.search-input {
 			width: 100%;
 			flex: 1;
+		}
+
+		.available-header {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.category-pills {
+			width: 100%;
 		}
 	}
 </style>
