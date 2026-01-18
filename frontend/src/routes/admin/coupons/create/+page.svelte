@@ -19,7 +19,7 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { slide } from 'svelte/transition';
-	import { productsApi, subscriptionPlansApi, type Product, type SubscriptionPlan } from '$lib/api/admin';
+	import { productsApi, subscriptionPlansApi, couponsApi, type Product, type SubscriptionPlan } from '$lib/api/admin';
 	import {
 		IconCheck,
 		IconX,
@@ -252,42 +252,26 @@
 		saving = true;
 
 		try {
-			// Build the payload for the API
+			// Build the payload for the API - match CouponCreateData interface
 			const payload = {
 				code: formData.code.toUpperCase(),
-				description: formData.description || null,
-				discount_type: formData.discount_type,
-				discount_value: formData.discount_value,
-				min_purchase: formData.min_purchase || null,
-				max_discount: formData.max_discount || null,
-				usage_limit: formData.usage_limit || null,
-				starts_at: formData.starts_at ? new Date(formData.starts_at).toISOString() : null,
-				expires_at: formData.expires_at ? new Date(formData.expires_at).toISOString() : null,
+				type: formData.discount_type, // 'fixed' or 'percentage'
+				value: formData.discount_value,
+				description: formData.description || undefined,
+				minimum_amount: formData.min_purchase || undefined,
+				max_discount_amount: formData.max_discount || undefined,
+				usage_limit: formData.usage_limit || undefined,
+				valid_from: formData.starts_at ? new Date(formData.starts_at).toISOString() : undefined,
+				valid_until: formData.expires_at ? new Date(formData.expires_at).toISOString() : undefined,
 				applicable_products:
 					restrictionTab === 'include' && selectedProducts.size > 0
-						? Array.from(selectedProducts)
-						: null,
-				applicable_plans:
-					restrictionTab === 'include' && selectedPlans.size > 0
-						? Array.from(selectedPlans)
-						: null,
+						? Array.from(selectedProducts).map(String)
+						: undefined,
 				is_active: formData.is_active
 			};
 
-			// Call the API
-			const response = await fetch('/api/admin/coupons', {
-				method: 'POST',
-				headers: {
-					'Content-Type': 'application/json'
-				},
-				body: JSON.stringify(payload)
-			});
-
-			const data = await response.json();
-
-			if (!response.ok) {
-				throw new Error(data.message || 'Failed to create coupon');
-			}
+			// Call the API using couponsApi
+			const response = await couponsApi.create(payload);
 
 			successMessage = `Coupon "${formData.code}" created successfully!`;
 
@@ -295,9 +279,17 @@
 			setTimeout(() => {
 				goto('/admin/coupons');
 			}, 1500);
-		} catch (err) {
+		} catch (err: any) {
 			console.error('Failed to create coupon:', err);
-			errors = [err instanceof Error ? err.message : 'Failed to create coupon'];
+			if (err.response?.errors) {
+				// Validation errors from backend
+				const validationErrors = Object.entries(err.response.errors)
+					.map(([field, messages]) => `${field}: ${(messages as string[]).join(', ')}`)
+					.join('; ');
+				errors = [validationErrors];
+			} else {
+				errors = [err.message || 'Failed to create coupon. Please check your input and try again.'];
+			}
 		} finally {
 			saving = false;
 		}
@@ -354,203 +346,6 @@
 		<!-- SECTION: Basic Info -->
 		<div class="form-section">
 			<h2><IconTag size={20} /> Coupon Details</h2>
-
-			<!-- Code -->
-			<div class="form-group">
-				<label for="code">Coupon Code *</label>
-				<div class="input-with-button">
-					<input
-						type="text"
-						id="code"
-						bind:value={formData.code}
-						placeholder="e.g., SUMMER20"
-						class="input input-code"
-						oninput={() => (formData.code = formData.code.toUpperCase())}
-						required
-					/>
-					<button type="button" class="btn-generate" onclick={generateCode} disabled={generating}>
-						<IconSparkles size={16} />
-						{generating ? 'Generating...' : 'Generate'}
-					</button>
-				</div>
-			</div>
-
-			<!-- Description -->
-			<div class="form-group">
-				<label for="description">Description (optional)</label>
-				<input
-					type="text"
-					id="description"
-					bind:value={formData.description}
-					placeholder="e.g., Summer sale discount"
-					class="input"
-				/>
-			</div>
-		</div>
-
-		<!-- SECTION: Discount Configuration -->
-		<div class="form-section">
-			<h2>Discount Amount</h2>
-
-			<!-- Discount Type Toggle -->
-			<div class="form-group">
-				<span id="discount-type-label" class="form-label">Discount Type *</span>
-				<div class="discount-type-toggle" role="group" aria-labelledby="discount-type-label">
-					<button
-						type="button"
-						class="type-btn"
-						class:active={formData.discount_type === 'percentage'}
-						onclick={() => (formData.discount_type = 'percentage')}
-					>
-						<IconPercentage size={20} />
-						Percentage (%)
-					</button>
-					<button
-						type="button"
-						class="type-btn"
-						class:active={formData.discount_type === 'fixed'}
-						onclick={() => (formData.discount_type = 'fixed')}
-					>
-						<IconCurrencyDollar size={20} />
-						Fixed Amount ($)
-					</button>
-				</div>
-			</div>
-
-			<!-- Discount Value -->
-			<div class="form-group">
-				<label for="discount_value">
-					{formData.discount_type === 'percentage' ? 'Percentage Off *' : 'Dollar Amount Off *'}
-				</label>
-				<div class="value-input-wrapper">
-					<span class="value-prefix">
-						{formData.discount_type === 'percentage' ? '' : '$'}
-					</span>
-					<input
-						type="number"
-						id="discount_value"
-						bind:value={formData.discount_value}
-						min="0"
-						max={formData.discount_type === 'percentage' ? 100 : undefined}
-						step="0.01"
-						class="input input-value"
-						required
-					/>
-					<span class="value-suffix">
-						{formData.discount_type === 'percentage' ? '%' : ''}
-					</span>
-				</div>
-				{#if formData.discount_value > 0}
-					<div class="discount-preview">
-						Preview: <strong>{discountPreview}</strong>
-					</div>
-				{/if}
-			</div>
-
-			<!-- Min Purchase & Max Discount -->
-			<div class="form-row">
-				<div class="form-group">
-					<label for="min_purchase">Minimum Purchase ($)</label>
-					<input
-						type="number"
-						id="min_purchase"
-						bind:value={formData.min_purchase}
-						min="0"
-						step="0.01"
-						placeholder="No minimum"
-						class="input"
-					/>
-					<span class="help-text">Customer must spend at least this amount</span>
-				</div>
-
-				{#if formData.discount_type === 'percentage'}
-					<div class="form-group">
-						<label for="max_discount">Maximum Discount ($)</label>
-						<input
-							type="number"
-							id="max_discount"
-							bind:value={formData.max_discount}
-							min="0"
-							step="0.01"
-							placeholder="No cap"
-							class="input"
-						/>
-						<span class="help-text">Cap the discount at this dollar amount</span>
-					</div>
-				{/if}
-			</div>
-		</div>
-
-		<!-- SECTION: Usage Limits -->
-		<div class="form-section">
-			<h2>Usage Limits</h2>
-
-			<div class="form-row">
-				<div class="form-group">
-					<label for="usage_limit">Total Uses</label>
-					<input
-						type="number"
-						id="usage_limit"
-						bind:value={formData.usage_limit}
-						min="1"
-						placeholder="Unlimited"
-						class="input"
-					/>
-					<span class="help-text">How many times this coupon can be used in total</span>
-				</div>
-
-				<div class="form-group">
-					<label for="usage_limit_per_user">Uses Per Customer</label>
-					<input
-						type="number"
-						id="usage_limit_per_user"
-						bind:value={formData.usage_limit_per_user}
-						min="1"
-						placeholder="Unlimited"
-						class="input"
-					/>
-					<span class="help-text">How many times each customer can use this</span>
-				</div>
-			</div>
-		</div>
-
-		<!-- SECTION: Schedule -->
-		<div class="form-section">
-			<h2>Schedule</h2>
-
-			<div class="form-row">
-				<div class="form-group">
-					<label for="starts_at">Start Date & Time</label>
-					<input
-						type="datetime-local"
-						id="starts_at"
-						bind:value={formData.starts_at}
-						class="input"
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="expires_at">Expiration Date & Time</label>
-					<input
-						type="datetime-local"
-						id="expires_at"
-						bind:value={formData.expires_at}
-						class="input"
-					/>
-				</div>
-			</div>
-
-			<div class="form-group">
-				<label class="checkbox-label">
-					<input type="checkbox" bind:checked={formData.is_active} />
-					<span>Coupon is active immediately</span>
-				</label>
-			</div>
-		</div>
-
-		<!-- SECTION: Product/Plan Restrictions -->
-		<div class="form-section">
-			<h2>Product & Membership Restrictions</h2>
 			<p class="section-description">
 				Choose which products and memberships this coupon applies to. Leave empty to apply to all.
 			</p>
