@@ -301,14 +301,13 @@
 </svelte:head>
 
 <div class="admin-subscriptions">
-	<!-- Animated Background -->
-	<div class="bg-effects">
-		<div class="bg-blob bg-blob-1"></div>
-		<div class="bg-blob bg-blob-2"></div>
-		<div class="bg-blob bg-blob-3"></div>
-	</div>
-
 	<div class="admin-page-container">
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
+		</div>
 		<!-- Header - Centered Style -->
 		<header class="page-header">
 			<h1>Subscription Management</h1>
@@ -919,6 +918,50 @@
 		66% {
 			transform: translate(-20px, 20px) scale(0.95);
 		}
+	}
+
+	/* Header - Centered Style */
+	.page-header {
+		text-align: center;
+		margin-bottom: 2rem;
+	}
+
+	.page-header h1 {
+		font-size: 2rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin: 0 0 0.5rem 0;
+	}
+
+	.subtitle {
+		color: #64748b;
+		font-size: 1rem;
+		margin: 0 0 1.5rem 0;
+	}
+
+	.header-actions {
+		display: flex;
+		justify-content: center;
+		gap: 1rem;
+	}
+
+	.btn-primary {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.75rem 1.5rem;
+		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		color: #0d1117;
+		border: none;
+		border-radius: 10px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.3s;
+	}
+
+	.btn-primary:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 20px rgba(230, 184, 0, 0.3);
 	}
 
 	/* Custom scrollbar for table */

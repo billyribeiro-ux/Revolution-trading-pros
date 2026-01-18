@@ -549,15 +549,16 @@
 </svelte:head>
 
 <div class="admin-segments">
-	<!-- Animated Background -->
-	<div class="bg-effects">
+	<div class="admin-page-container">
+		<!-- Animated Background -->
+		<div class="bg-effects">
 			<div class="bg-blob bg-blob-1"></div>
 			<div class="bg-blob bg-blob-2"></div>
 			<div class="bg-blob bg-blob-3"></div>
 		</div>
 
 		<!-- Header -->
-		<div class="page-header">
+		<header class="page-header">
 		<button class="back-btn" onclick={() => goto('/admin/members')}>
 			<IconArrowLeft size={20} />
 			Back to Members
@@ -576,7 +577,7 @@
 				Save Filter
 			</button>
 		</div>
-	</div>
+	</header>
 
 	<!-- Tabs -->
 	<div class="tabs-container">
@@ -812,6 +813,7 @@
 			</div>
 		{/if}
 	{/if}
+	</div>
 </div>
 
 <!-- Create Segment Modal -->
@@ -1123,7 +1125,7 @@
 		}
 	}
 
-	.admin-segments {
+	.admin-page-container {
 		position: relative;
 		z-index: 1;
 		max-width: 1400px;
@@ -1131,7 +1133,7 @@
 		padding: 2rem;
 	}
 
-	/* Header */
+	/* Header - Centered Style */
 	.page-header {
 		text-align: center;
 		margin-bottom: 2rem;
