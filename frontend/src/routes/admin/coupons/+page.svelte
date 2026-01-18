@@ -756,7 +756,7 @@
 			font-size: 1.25rem;
 		}
 
-		.actions-row {
+		.header-actions {
 			gap: 0.5rem;
 		}
 

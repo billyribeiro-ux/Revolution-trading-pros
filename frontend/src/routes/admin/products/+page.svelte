@@ -844,7 +844,7 @@
 			padding: 1rem;
 		}
 
-		.actions-row {
+		.header-actions {
 			flex-direction: column;
 			align-items: center;
 		}

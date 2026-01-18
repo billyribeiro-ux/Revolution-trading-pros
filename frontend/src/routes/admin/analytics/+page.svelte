@@ -1107,18 +1107,11 @@
 
 	/* Mobile Landscape (< 768px) */
 	@media (max-width: 768px) {
-		.header-content {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 1rem;
-		}
-
 		.header-actions {
 			width: 100%;
 			flex-wrap: wrap;
 		}
 
-		.dashboard-header,
 		.dashboard-content {
 			padding: 1rem;
 		}
@@ -1130,12 +1123,11 @@
 
 	/* Mobile Portrait (< 640px) */
 	@media (max-width: 640px) {
-		.dashboard-header,
 		.dashboard-content {
 			padding: 0.75rem;
 		}
 
-		.dashboard-header h1 {
+		.page-header h1 {
 			font-size: 1.5rem;
 		}
 
@@ -1158,17 +1150,12 @@
 
 	/* Extra Small Mobile (< 380px) - iPhone SE, Galaxy Fold */
 	@media (max-width: 380px) {
-		.dashboard-header,
 		.dashboard-content {
 			padding: 0.5rem;
 		}
 
-		.dashboard-header h1 {
+		.page-header h1 {
 			font-size: 1.25rem;
-		}
-
-		.header-content {
-			gap: 0.75rem;
 		}
 
 		.widget-large,
@@ -1231,19 +1218,19 @@
 	@media (prefers-contrast: high) {
 		.data-table,
 		.widget-large,
-		.dashboard-header,
+		.page-header,
 		.attribution-table {
 			border-width: 2px;
 		}
 
-		.dashboard-header h1 {
+		.page-header h1 {
 			font-weight: 800;
 		}
 	}
 
 	/* Print Styles */
 	@media print {
-		.dashboard-header,
+		.page-header,
 		.dashboard-content {
 			background: white;
 			color: black;
@@ -1269,7 +1256,7 @@
 
 	/* Landscape Mode - Short viewport */
 	@media (max-height: 500px) and (orientation: landscape) {
-		.dashboard-header,
+		.page-header,
 		.dashboard-content {
 			padding: 0.5rem 1rem;
 		}

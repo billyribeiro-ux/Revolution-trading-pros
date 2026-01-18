@@ -850,21 +850,21 @@
 
 			<!-- Search and Category Filter -->
 			<div
-				class="flex flex-col lg:flex-row gap-4 mb-6"
+				class="filter-section"
 				in:fly={{ y: 20, duration: 600, delay: 200, easing: quintOut }}
 			>
 				<!-- Search -->
-				<div class="relative flex-1 max-w-md">
+				<div class="search-wrapper">
 					<input
 						id="search-integrations"
 						name="search"
 						type="text"
 						placeholder="Search integrations..."
 						bind:value={searchQuery}
-						class="w-full px-5 py-3 pl-12 bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl text-white placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-amber-500/50 focus:border-amber-500/50 transition-all"
+						class="search-input"
 					/>
 					<svg
-						class="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-500"
+						class="search-icon"
 						fill="none"
 						stroke="currentColor"
 						viewBox="0 0 24 24"
@@ -879,23 +879,19 @@
 				</div>
 
 				<!-- Category Filter -->
-				<div class="flex gap-2 overflow-x-auto pb-2">
+				<div class="category-filter">
 					<button
 						onclick={() => (selectedCategory = null)}
-						class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap {selectedCategory ===
-						null
-							? 'bg-white text-slate-900 shadow-lg'
-							: 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10'}"
+						class="filter-btn"
+						class:active={selectedCategory === null}
 					>
 						All
 					</button>
 					{#each categoryList as [key, category]}
 						<button
 							onclick={() => (selectedCategory = key)}
-							class="flex items-center gap-2 px-4 py-2.5 rounded-xl font-medium transition-all whitespace-nowrap {selectedCategory ===
-							key
-								? 'bg-white text-slate-900 shadow-lg'
-								: 'bg-white/5 text-slate-400 hover:bg-white/10 hover:text-white border border-white/10'}"
+							class="filter-btn"
+							class:active={selectedCategory === key}
 						>
 							<span>{category.icon}</span>
 							{category.name}
@@ -906,205 +902,140 @@
 
 			<!-- Loading State -->
 			{#if isLoading}
-				<div class="flex items-center justify-center h-64">
-					<div class="relative">
-						<div class="w-16 h-16 border-4 border-amber-500/20 rounded-full"></div>
-						<div
-							class="absolute top-0 left-0 w-16 h-16 border-4 border-amber-500 rounded-full animate-spin border-t-transparent"
-						></div>
-					</div>
+				<div class="loading">
+					<div class="spinner"></div>
+					<p>Loading integrations...</p>
 				</div>
 			{:else}
 				<!-- Services Grid -->
-				<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
+				<div class="services-grid">
 					{#each filteredServices as service, i}
 						<div
-							class="group relative"
+							class="service-card"
 							in:fly={{ y: 30, duration: 400, delay: 250 + i * 30, easing: quintOut }}
 						>
-							<!-- Glow Effect -->
-							<div
-								class="absolute inset-0 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500"
-								style="background: linear-gradient(135deg, {service.color}25, {service.color}10);"
-							></div>
-
-							<!-- Card -->
-							<div
-								class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-white/20 transition-all hover:-translate-y-1"
-							>
-								<!-- Header -->
-								<div class="flex items-start justify-between mb-3">
-									<div class="flex items-center gap-3">
-										<div
-											class="w-11 h-11 rounded-xl flex items-center justify-center text-xl font-bold shadow-lg"
-											style="background: {service.color}20; color: {service.color};"
-										>
-											{service.name.charAt(0)}
-										</div>
-										<div>
-											<h3 class="font-semibold text-white">{service.name}</h3>
-											<p class="text-xs text-slate-500 capitalize">{service.category}</p>
-										</div>
-									</div>
-								</div>
-
-								<!-- Status Badge -->
-
-								<div class="flex items-center gap-2 mb-3">
-									<span
-										class="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium {getStatusConfig(
-											service.status
-										).bg} {getStatusConfig(service.status).text}"
+							<div class="service-card-header">
+								<div class="service-info">
+									<div
+										class="service-icon"
+										style="background: {service.color}20; color: {service.color};"
 									>
-										<span
-											class="w-1.5 h-1.5 rounded-full {getStatusConfig(service.status)
-												.dot} {service.status === 'connected' ? 'animate-pulse' : ''}"
-										></span>
-										{getStatusConfig(service.status).label}
-									</span>
-									{#if service.connection?.health_score}
-										<span class="text-xs {getHealthColor(service.connection.health_score)}">
-											{service.connection.health_score}% health
-										</span>
-									{/if}
-								</div>
-
-								<!-- Description -->
-								<p class="text-sm text-slate-400 mb-4 line-clamp-2">{service.description}</p>
-
-								<!-- Connection Info -->
-								{#if service.is_connected && service.connection}
-									<div class="space-y-2 mb-4 p-3 bg-black/20 rounded-xl text-xs">
-										<div class="flex justify-between">
-											<span class="text-slate-500">API Calls Today</span>
-											<span class="text-white font-medium"
-												>{service.connection.api_calls_today?.toLocaleString() || 0}</span
-											>
-										</div>
-										<div class="flex justify-between">
-											<span class="text-slate-500">Last Verified</span>
-											<span class="text-white"
-												>{formatDate(service.connection.last_verified_at)}</span
-											>
-										</div>
+										{service.name.charAt(0)}
 									</div>
+									<div>
+										<h3 class="service-name">{service.name}</h3>
+										<p class="service-category">{service.category}</p>
+									</div>
+								</div>
+							</div>
+
+							<!-- Status Badge -->
+							<div class="service-status-row">
+								<span class="status-badge status-{service.status}">
+									<span class="status-dot" class:pulse={service.status === 'connected'}></span>
+									{getStatusConfig(service.status).label}
+								</span>
+								{#if service.connection?.health_score}
+									<span class="health-score {getHealthColor(service.connection.health_score)}">
+										{service.connection.health_score}% health
+									</span>
+								{/if}
+							</div>
+
+							<p class="service-description">{service.description}</p>
+
+							<!-- Connection Info -->
+							{#if service.is_connected && service.connection}
+								<div class="connection-info">
+									<div class="info-row">
+										<span>API Calls Today</span>
+										<span class="info-value">{service.connection.api_calls_today?.toLocaleString() || 0}</span>
+									</div>
+									<div class="info-row">
+										<span>Last Verified</span>
+										<span class="info-value">{formatDate(service.connection.last_verified_at)}</span>
+									</div>
+								</div>
+							{/if}
+
+							<!-- Actions -->
+							<div class="card-actions">
+								{#if service.is_connected}
+									<button onclick={() => openDisconnectConfirm(service)} class="btn-disconnect">
+										Disconnect
+									</button>
+									<button onclick={() => openConnectModal(service)} class="btn-secondary">
+										Configure
+									</button>
+								{:else}
+									<button onclick={() => openConnectModal(service)} class="btn-connect">
+										Connect
+									</button>
 								{/if}
 
-								<!-- Actions -->
-								<div class="flex gap-2">
-									{#if service.is_connected}
-										<button
-											onclick={() => openDisconnectConfirm(service)}
-											class="flex-1 px-4 py-2.5 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-medium transition-all"
-										>
-											Disconnect
-										</button>
-										<button
-											onclick={() => openConnectModal(service)}
-											class="px-4 py-2.5 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-xl text-sm font-medium transition-all"
-										>
-											Configure
-										</button>
-									{:else}
-										<button
-											onclick={() => openConnectModal(service)}
-											class="flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-amber-500/20 hover:shadow-amber-500/30"
-										>
-											Connect
-										</button>
-									{/if}
-
-									{#if service.docs_url}
-										<a
-											href={service.docs_url}
-											target="_blank"
-											rel="noopener noreferrer"
-											class="px-3 py-2.5 bg-white/5 hover:bg-white/10 text-slate-400 hover:text-white rounded-xl transition-all"
-											title="View documentation"
-										>
-											<svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-												<path
-													stroke-linecap="round"
-													stroke-linejoin="round"
-													stroke-width="2"
-													d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-												/>
-											</svg>
-										</a>
-									{/if}
-								</div>
+								{#if service.docs_url}
+									<a href={service.docs_url} target="_blank" rel="noopener noreferrer" class="btn-docs" title="View documentation">
+										<svg class="docs-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+											<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+										</svg>
+									</a>
+								{/if}
 							</div>
 						</div>
 					{/each}
 				</div>
 
 				{#if filteredServices.length === 0}
-					<div class="text-center py-16">
-						<div class="text-6xl mb-4">🔌</div>
-						<h3 class="text-xl font-semibold text-white mb-2">No integrations found</h3>
-						<p class="text-slate-400">Try adjusting your search or filter criteria</p>
+					<div class="empty-state">
+						<div class="empty-icon">🔌</div>
+						<h3>No integrations found</h3>
+						<p>Try adjusting your search or filter criteria</p>
 					</div>
 				{/if}
 			{/if}
 		{:else}
 			<!-- General Settings Tab -->
-			<div class="max-w-3xl" in:fly={{ y: 20, duration: 600, easing: quintOut }}>
-				<div class="bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-6">
-					<h2 class="text-xl font-semibold text-white mb-6">General Settings</h2>
+			<div class="settings-container" in:fly={{ y: 20, duration: 600, easing: quintOut }}>
+				<div class="settings-panel">
+					<h2 class="panel-title">General Settings</h2>
 
-					<div class="space-y-6">
-						<div class="flex items-center justify-between p-4 bg-black/20 rounded-xl">
-							<div>
-								<h3 class="font-medium text-white">Site Name</h3>
-								<p class="text-sm text-slate-400">Your website display name</p>
+					<div class="settings-list">
+						<div class="setting-row">
+							<div class="setting-info">
+								<h3>Site Name</h3>
+								<p>Your website display name</p>
 							</div>
 							<input
 								id="site-name"
 								name="site_name"
 								type="text"
 								value="Revolution Trading Pros"
-								class="px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-white focus:outline-none focus:ring-2 focus:ring-amber-500/50"
+								class="setting-input"
 							/>
 						</div>
 
-						<div class="flex items-center justify-between p-4 bg-black/20 rounded-xl">
-							<div>
-								<h3 class="font-medium text-white">Maintenance Mode</h3>
-								<p class="text-sm text-slate-400">Temporarily disable public access</p>
+						<div class="setting-row">
+							<div class="setting-info">
+								<h3>Maintenance Mode</h3>
+								<p>Temporarily disable public access</p>
 							</div>
-							<button
-								type="button"
-								aria-label="Toggle maintenance mode"
-								title="Toggle maintenance mode"
-								class="relative w-14 h-8 bg-slate-700 rounded-full transition-colors"
-							>
-								<span
-									class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform"
-								></span>
+							<button type="button" aria-label="Toggle maintenance mode" title="Toggle maintenance mode" class="toggle-switch">
+								<span class="toggle-slider"></span>
 							</button>
 						</div>
 
-						<div class="flex items-center justify-between p-4 bg-black/20 rounded-xl">
-							<div>
-								<h3 class="font-medium text-white">Debug Mode</h3>
-								<p class="text-sm text-slate-400">Enable detailed error logging</p>
+						<div class="setting-row">
+							<div class="setting-info">
+								<h3>Debug Mode</h3>
+								<p>Enable detailed error logging</p>
 							</div>
-							<button
-								type="button"
-								aria-label="Toggle debug mode"
-								title="Toggle debug mode"
-								class="relative w-14 h-8 bg-slate-700 rounded-full transition-colors"
-							>
-								<span
-									class="absolute left-1 top-1 w-6 h-6 bg-white rounded-full transition-transform"
-								></span>
+							<button type="button" aria-label="Toggle debug mode" title="Toggle debug mode" class="toggle-switch">
+								<span class="toggle-slider"></span>
 							</button>
 						</div>
 
-						<div class="pt-4">
-							<button
-								class="px-6 py-3 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl font-medium transition-all shadow-lg shadow-amber-500/20"
-							>
+						<div class="settings-actions">
+							<button class="btn-connect">
 								Save Settings
 							</button>
 						</div>
@@ -1583,6 +1514,43 @@
 		.bg-blob-3 {
 			animation: none !important;
 		}
+	}
+
+	/* Loading State */
+	.loading {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 4rem 2rem;
+		gap: 1rem;
+	}
+
+	.spinner {
+		width: 48px;
+		height: 48px;
+		border: 4px solid rgba(230, 184, 0, 0.2);
+		border-top-color: #e6b800;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
+	}
+
+	@keyframes spin {
+		to {
+			transform: rotate(360deg);
+		}
+	}
+
+	.loading p {
+		color: #94a3b8;
+		font-size: 0.875rem;
+	}
+
+	/* Services Grid */
+	.services-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 1.25rem;
 	}
 
 	/* High Contrast Mode */
