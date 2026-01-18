@@ -40,7 +40,7 @@
 		<header class="page-header">
 			<h1>Forms</h1>
 			<p class="subtitle">Create and manage your forms</p>
-			<div class="actions">
+			<div class="header-actions">
 				<button class="btn-primary" onclick={handleCreate}> + Create New Form </button>
 			</div>
 		</header>
@@ -82,7 +82,7 @@
 		margin: 0 0 1rem 0;
 	}
 
-	.actions {
+	.header-actions {
 		display: flex;
 		justify-content: center;
 		gap: 0.75rem;
@@ -98,7 +98,7 @@
 			padding: 1rem;
 		}
 
-		.actions {
+		.header-actions {
 			flex-direction: column;
 		}
 

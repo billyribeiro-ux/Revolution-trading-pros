@@ -169,26 +169,24 @@
 	</div>
 
 	<div class="admin-page-container">
-		<div class="page-header">
+		<header class="page-header">
 			<h1>Products Management</h1>
 			<p class="subtitle">Manage courses, indicators, and memberships</p>
-		</div>
-
-		<!-- Actions row below header centered -->
-		<div class="actions-row">
-			<div class="search-box">
-				<IconSearch size={18} />
-				<input id="search-products" name="search-products" type="text" placeholder="Search products..." bind:value={searchQuery} />
+			<div class="header-actions">
+				<div class="search-box">
+					<IconSearch size={18} />
+					<input id="search-products" name="search-products" type="text" placeholder="Search products..." bind:value={searchQuery} />
+				</div>
+				<button class="btn-secondary" onclick={() => loadProducts()} disabled={loading}>
+					<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+					Refresh
+				</button>
+				<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
+					<IconPlus size={18} />
+					Add Product
+				</button>
 			</div>
-			<button class="btn-secondary" onclick={() => loadProducts()} disabled={loading}>
-				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
-				Refresh
-			</button>
-			<button class="btn-primary" onclick={() => goto('/admin/products/create')}>
-				<IconPlus size={18} />
-				Add Product
-			</button>
-		</div>
+		</header>
 
 		<!-- Type Filter Bar -->
 		<div class="filter-bar">
@@ -421,14 +419,13 @@
 	.subtitle {
 		color: #64748b;
 		font-size: 0.875rem;
+		margin-bottom: 1.5rem;
 	}
 
-	/* Actions row below header centered */
-	.actions-row {
+	.header-actions {
 		display: flex;
 		justify-content: center;
 		gap: 0.75rem;
-		margin-bottom: 1.5rem;
 		flex-wrap: wrap;
 	}
 

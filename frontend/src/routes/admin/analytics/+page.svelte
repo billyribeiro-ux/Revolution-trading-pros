@@ -187,35 +187,25 @@
 		</div>
 
 		<!-- Header -->
-		<header class="dashboard-header" in:fly={{ y: -20, duration: 500, easing: quintOut }}>
-			<div class="header-content">
-				<div class="header-title">
-					<div class="title-icon">
-						<IconChartBar size={28} />
-					</div>
-					<div>
-						<h1>Analytics Dashboard</h1>
-						<p>Enterprise insights and performance metrics</p>
-					</div>
+		<header class="page-header" in:fly={{ y: -20, duration: 500, easing: quintOut }}>
+			<h1>Analytics Dashboard</h1>
+			<p class="subtitle">Enterprise insights and performance metrics</p>
+			{#if isConnected}
+				<div class="header-actions">
+					<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
+					<ExportButton
+						data={exportData}
+						filename="analytics-report-{selectedPeriod}"
+						formats={['csv', 'json']}
+						label="Export"
+						disabled={loading || !dashboardData}
+					/>
+					<a href="/admin/analytics/events" class="btn-primary">
+						Event Explorer
+						<IconArrowRight size={18} />
+					</a>
 				</div>
-
-				{#if isConnected}
-					<div class="header-actions">
-						<PeriodSelector value={selectedPeriod} onchange={handlePeriodChange} />
-						<ExportButton
-							data={exportData}
-							filename="analytics-report-{selectedPeriod}"
-							formats={['csv', 'json']}
-							label="Export"
-							disabled={loading || !dashboardData}
-						/>
-						<a href="/admin/analytics/events" class="btn-primary">
-							Event Explorer
-							<IconArrowRight size={18} />
-						</a>
-					</div>
-				{/if}
-			</div>
+			{/if}
 
 			<!-- Connection Status Badge -->
 			<div class="connection-status" class:connected={isConnected}>
@@ -595,60 +585,32 @@
 	}
 
 	/* Header */
-	.dashboard-header {
+	.page-header {
+		text-align: center;
+		margin-bottom: 2rem;
 		position: relative;
 		z-index: 10;
-		background: rgba(15, 23, 42, 0.8);
-		backdrop-filter: blur(20px);
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
-		padding: 1.5rem 2rem;
 	}
 
-	.header-content {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		max-width: 1400px;
-		margin: 0 auto;
-	}
-
-	.header-title {
-		display: flex;
-		align-items: center;
-		gap: 1rem;
-	}
-
-	.title-icon {
-		width: 48px;
-		height: 48px;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
-		border-radius: 12px;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: white;
-	}
-
-	.header-title h1 {
+	.page-header h1 {
 		font-size: 1.75rem;
 		font-weight: 700;
-		margin: 0;
-		background: linear-gradient(135deg, #ffffff, #94a3b8);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-clip: text;
+		color: #f1f5f9;
+		margin-bottom: 0.5rem;
 	}
 
-	.header-title p {
-		font-size: 0.875rem;
+	.subtitle {
 		color: #64748b;
-		margin: 0;
+		font-size: 0.875rem;
+		margin-bottom: 1.5rem;
 	}
 
 	.header-actions {
 		display: flex;
+		justify-content: center;
 		align-items: center;
 		gap: 1rem;
+		flex-wrap: wrap;
 	}
 
 	.btn-primary {

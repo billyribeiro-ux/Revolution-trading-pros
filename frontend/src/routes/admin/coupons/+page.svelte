@@ -153,19 +153,17 @@
 		<header class="page-header">
 			<h1>Coupons Management</h1>
 			<p class="subtitle">Manage discount codes and promotional offers</p>
+			<div class="header-actions">
+				<button class="btn-secondary" onclick={loadCoupons} disabled={loading}>
+					<IconRefresh size={18} class={loading ? 'spinning' : ''} />
+					Refresh
+				</button>
+				<button class="btn-primary" onclick={() => goto('/admin/coupons/create')}>
+					<IconPlus size={18} />
+					Create Coupon
+				</button>
+			</div>
 		</header>
-
-		<!-- Actions Row -->
-		<div class="actions-row">
-			<button class="btn-secondary" onclick={loadCoupons} disabled={loading}>
-				<IconRefresh size={18} class={loading ? 'spinning' : ''} />
-				Refresh
-			</button>
-			<button class="btn-primary" onclick={() => goto('/admin/coupons/create')}>
-				<IconPlus size={18} />
-				Create Coupon
-			</button>
-		</div>
 
 		<!-- Stats Bar -->
 		{#if !loading && !error}
@@ -360,19 +358,14 @@
 	.subtitle {
 		color: var(--text-tertiary);
 		font-size: 0.875rem;
-		margin: 0;
+		margin: 0 0 1.5rem 0;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * ACTIONS ROW - Compact centered buttons
-	 * ═══════════════════════════════════════════════════════════════════════════ */
-
-	.actions-row {
+	.header-actions {
 		display: flex;
 		justify-content: center;
 		align-items: center;
 		gap: 0.75rem;
-		margin-bottom: 1.5rem;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

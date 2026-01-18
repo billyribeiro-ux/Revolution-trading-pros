@@ -728,19 +728,10 @@
 
 	<div class="admin-page-container">
 		<!-- Header -->
-		<header class="mb-8" in:fly={{ y: -20, duration: 600, easing: quintOut }}>
-			<div class="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
-				<div>
-					<h1
-						class="text-3xl lg:text-4xl font-bold bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent"
-					>
-						Settings & Integrations
-					</h1>
-					<p class="mt-2 text-slate-400 text-lg">
-						Manage your API connections and configure platform settings
-					</p>
-				</div>
-
+		<header class="page-header" in:fly={{ y: -20, duration: 600, easing: quintOut }}>
+			<h1>Settings & Integrations</h1>
+			<p class="subtitle">Manage your API connections and configure platform settings</p>
+			<div class="header-actions">
 				<!-- Tab Switcher -->
 				<div class="flex bg-white/5 backdrop-blur-xl rounded-2xl p-1 border border-white/10">
 					<button
@@ -769,139 +760,89 @@
 			<!-- Connection Status Overview -->
 			{#if !isLoading}
 				<div
-					class="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8"
+					class="stats-grid"
 					in:fly={{ y: 20, duration: 600, delay: 100, easing: quintOut }}
 				>
 					<!-- Total Available -->
-					<div class="group relative">
-						<div
-							class="absolute inset-0 bg-gradient-to-br from-slate-500/20 to-slate-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
-						></div>
-						<div
-							class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-slate-400/30 transition-all"
-						>
-							<div class="text-3xl font-bold text-white">{summary.total_available}</div>
-							<div class="text-sm text-slate-400 mt-1">Available</div>
-						</div>
+					<div class="stat-card">
+						<div class="stat-value">{summary.total_available}</div>
+						<div class="stat-label">Available</div>
 					</div>
 
 					<!-- Connected -->
-					<div class="group relative">
-						<div
-							class="absolute inset-0 bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
-						></div>
-						<div
-							class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-emerald-400/30 transition-all"
-						>
-							<div class="text-3xl font-bold text-emerald-400">{summary.total_connected}</div>
-							<div class="text-sm text-slate-400 mt-1">Connected</div>
-						</div>
+					<div class="stat-card stat-success">
+						<div class="stat-value">{summary.total_connected}</div>
+						<div class="stat-label">Connected</div>
 					</div>
 
 					<!-- Disconnected -->
-					<div class="group relative">
-						<div
-							class="absolute inset-0 bg-gradient-to-br from-slate-500/20 to-slate-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
-						></div>
-						<div
-							class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-slate-400/30 transition-all"
-						>
-							<div class="text-3xl font-bold text-slate-400">{summary.total_disconnected}</div>
-							<div class="text-sm text-slate-400 mt-1">Not Connected</div>
-						</div>
+					<div class="stat-card">
+						<div class="stat-value muted">{summary.total_disconnected}</div>
+						<div class="stat-label">Not Connected</div>
 					</div>
 
 					<!-- Errors -->
-					<div class="group relative">
-						<div
-							class="absolute inset-0 bg-gradient-to-br from-red-500/20 to-red-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
-						></div>
-						<div
-							class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-red-400/30 transition-all"
-						>
-							<div class="text-3xl font-bold text-red-400">{summary.total_errors}</div>
-							<div class="text-sm text-slate-400 mt-1">Errors</div>
-						</div>
+					<div class="stat-card stat-error">
+						<div class="stat-value">{summary.total_errors}</div>
+						<div class="stat-label">Errors</div>
 					</div>
 
 					<!-- Needs Attention -->
-					<div class="group relative col-span-2 lg:col-span-1">
-						<div
-							class="absolute inset-0 bg-gradient-to-br from-amber-500/20 to-amber-600/20 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-opacity"
-						></div>
-						<div
-							class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-amber-400/30 transition-all"
-						>
-							<div class="text-3xl font-bold text-amber-400">{summary.needs_attention}</div>
-							<div class="text-sm text-slate-400 mt-1">Needs Attention</div>
-						</div>
+					<div class="stat-card stat-warning">
+						<div class="stat-value">{summary.needs_attention}</div>
+						<div class="stat-label">Needs Attention</div>
 					</div>
 				</div>
 			{/if}
 
 			<!-- Google Services Quick Access -->
-			<div class="mb-8" in:fly={{ y: 20, duration: 600, delay: 150, easing: quintOut }}>
-				<h2 class="text-xl font-semibold text-white mb-4 flex items-center gap-2">
-					<span class="text-2xl">🔍</span>
+			<div class="section-block" in:fly={{ y: 20, duration: 600, delay: 150, easing: quintOut }}>
+				<h2 class="section-title">
+					<span class="section-icon">🔍</span>
 					Google Services
 				</h2>
-				<div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+				<div class="services-grid services-grid-4">
 					{#each googleServices as service, i}
 						<div
-							class="group relative"
+							class="service-card"
 							in:fly={{ y: 20, duration: 400, delay: 200 + i * 50, easing: quintOut }}
 						>
-							<div
-								class="absolute inset-0 rounded-2xl blur-xl opacity-0 group-hover:opacity-100 transition-all duration-500"
-								style="background: linear-gradient(135deg, {service.color}30, {service.color}10);"
-							></div>
-
-							<div
-								class="relative bg-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 hover:border-white/20 transition-all hover:-translate-y-1"
-							>
-								<div class="flex items-start justify-between mb-3">
-									<div class="flex items-center gap-3">
-										<div
-											class="w-10 h-10 rounded-xl flex items-center justify-center text-lg font-bold"
-											style="background: {service.color}20; color: {service.color};"
-										>
-											G
-										</div>
-										<div>
-											<h3 class="font-semibold text-white text-sm">{service.name}</h3>
-											<p class="text-xs text-slate-500">{service.category}</p>
-										</div>
+							<div class="service-card-header">
+								<div class="service-info">
+									<div
+										class="service-icon"
+										style="background: {service.color}20; color: {service.color};"
+									>
+										G
 									</div>
-
-									<span
-										class="flex items-center gap-1.5 px-2 py-1 rounded-full text-xs font-medium {getStatusConfig(
-											service.status
-										).bg} {getStatusConfig(service.status).text}"
-									>
-										<span class="w-1.5 h-1.5 rounded-full {getStatusConfig(service.status).dot}"
-										></span>
-										{getStatusConfig(service.status).label}
-									</span>
+									<div>
+										<h3 class="service-name">{service.name}</h3>
+										<p class="service-category">{service.category}</p>
+									</div>
 								</div>
-
-								<p class="text-xs text-slate-400 mb-4 line-clamp-2">{service.description}</p>
-
-								{#if service.is_connected}
-									<button
-										onclick={() => openDisconnectConfirm(service)}
-										class="w-full px-4 py-2 bg-red-500/10 hover:bg-red-500/20 text-red-400 rounded-xl text-sm font-medium transition-all"
-									>
-										Disconnect
-									</button>
-								{:else}
-									<button
-										onclick={() => openConnectModal(service)}
-										class="w-full px-4 py-2 bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-white rounded-xl text-sm font-medium transition-all shadow-lg shadow-amber-500/20"
-									>
-										Connect
-									</button>
-								{/if}
+								<span class="status-badge status-{service.status}">
+									<span class="status-dot"></span>
+									{getStatusConfig(service.status).label}
+								</span>
 							</div>
+
+							<p class="service-description">{service.description}</p>
+
+							{#if service.is_connected}
+								<button
+									onclick={() => openDisconnectConfirm(service)}
+									class="btn-disconnect"
+								>
+									Disconnect
+								</button>
+							{:else}
+								<button
+									onclick={() => openConnectModal(service)}
+									class="btn-connect"
+								>
+									Connect
+								</button>
+							{/if}
 						</div>
 					{/each}
 				</div>
@@ -1507,6 +1448,31 @@
 		max-width: 1800px;
 		margin: 0 auto;
 		padding: 2rem;
+	}
+
+	.page-header {
+		text-align: center;
+		margin-bottom: 2rem;
+	}
+
+	.page-header h1 {
+		font-size: 1.75rem;
+		font-weight: 700;
+		color: #f1f5f9;
+		margin-bottom: 0.5rem;
+	}
+
+	.subtitle {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin-bottom: 1.5rem;
+	}
+
+	.header-actions {
+		display: flex;
+		justify-content: center;
+		gap: 0.75rem;
+		flex-wrap: wrap;
 	}
 
 	.line-clamp-2 {
