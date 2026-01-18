@@ -164,14 +164,16 @@
 		seoConnected = true; // Platform has built-in SEO
 
 		try {
-			// ICT 7: Use existing backend endpoints only
-			const [membersRes, subscriptionsRes, couponsRes, analyticsRes] = await Promise.allSettled([
-				localFetch('/api/admin/members'),
-				localFetch('/api/admin/subscriptions'),
+			// ICT 7: Use correct backend endpoints
+			const [membersRes, couponsRes, postsRes, productsRes, analyticsRes] = await Promise.allSettled([
+				localFetch('/api/admin/members/stats'),
 				localFetch('/api/admin/coupons'),
+				localFetch('/api/admin/posts/stats'),
+				localFetch('/api/admin/products/stats'),
 				localFetch(`/api/admin/analytics/dashboard?period=${selectedPeriod}`)
 			]);
 
+			// Members stats
 			if (membersRes.status === 'fulfilled') {
 				const memberData = membersRes.value;
 				const newMembers = memberData?.overview?.total_members || memberData?.total || 0;
@@ -179,16 +181,10 @@
 					animateValue(stats.totalMembers, newMembers, 800, (v) => (stats.totalMembers = v));
 				else stats.totalMembers = newMembers;
 				stats.activeSubscriptions = memberData?.subscriptions?.active || 0;
+				stats.monthlyRevenue = memberData?.revenue?.mrr || 0;
 			}
 
-			if (subscriptionsRes.status === 'fulfilled') {
-				const subData = subscriptionsRes.value?.data || subscriptionsRes.value;
-				if (!stats.activeSubscriptions) {
-					stats.activeSubscriptions = subData?.active_subscriptions || subData?.total_active || 0;
-				}
-				stats.monthlyRevenue = subData?.monthly_revenue || subData?.mrr || 0;
-			}
-
+			// Coupons
 			if (couponsRes.status === 'fulfilled') {
 				const couponsData = couponsRes.value;
 				const coupons = couponsData?.coupons || couponsData?.data || couponsData || [];
@@ -197,8 +193,17 @@
 					: couponsData?.total || 0;
 			}
 
-			// Posts and products stats removed - endpoints don't exist in backend yet
-			// TODO: Implement /api/admin/posts/stats and /api/admin/products/stats in backend
+			// Posts stats
+			if (postsRes.status === 'fulfilled') {
+				const postsData = postsRes.value;
+				stats.totalPosts = postsData?.total_posts || postsData?.published || 0;
+			}
+
+			// Products stats
+			if (productsRes.status === 'fulfilled') {
+				const productsData = productsRes.value;
+				stats.totalProducts = productsData?.total || productsData?.active || 0;
+			}
 
 			// Process analytics data from built-in analytics system
 			if (analyticsRes.status === 'fulfilled') {

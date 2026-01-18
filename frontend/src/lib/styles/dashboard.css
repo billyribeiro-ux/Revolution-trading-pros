@@ -22,8 +22,8 @@
 .dashboard__content-sidebar {
 	flex: 0 0 300px;
 	width: 300px;
-	background: #fff;
-	border-left: 1px solid #e5e5e5;
+	background: var(--color-rtp-surface, #fff);
+	border-left: 1px solid var(--color-rtp-border, #e5e5e5);
 	padding: 0;
 }
 
@@ -34,8 +34,8 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 30px;
-	background: #fff;
-	border-bottom: 1px solid #e5e5e5;
+	background: var(--color-rtp-surface, #fff);
+	border-bottom: 1px solid var(--color-rtp-border, #e5e5e5);
 }
 
 .dashboard__header-left {
