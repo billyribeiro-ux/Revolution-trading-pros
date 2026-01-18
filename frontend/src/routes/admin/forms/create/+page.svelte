@@ -87,8 +87,16 @@
 	<title>Create Form - Admin Dashboard</title>
 </svelte:head>
 
-<div class="page">
-	{#if showTemplateSelector}
+<div class="admin-forms-create">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		{#if showTemplateSelector}
 		<FormTemplateSelector onSelect={handleTemplateSelect} onCancel={handleStartFromScratch} />
 	{:else}
 		<div class="page-header">
@@ -120,6 +128,8 @@
 
 		<FormBuilder form={formData} onsave={handleSave} oncancel={handleCancel} />
 	{/if}
+	</div>
+	<!-- End admin-page-container -->
 </div>
 
 <style>

@@ -75,10 +75,18 @@
 	}
 </script>
 
-<div class="page">
-	<!-- Header -->
-	<div class="page-header">
-		<a href="/admin/popups" class="back-btn">
+<div class="admin-popups-create">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<!-- Header -->
+		<header class="page-header">
+			<a href="/admin/popups" class="back-btn">
 			<IconArrowLeft size={18} />
 			<span>Back</span>
 		</a>

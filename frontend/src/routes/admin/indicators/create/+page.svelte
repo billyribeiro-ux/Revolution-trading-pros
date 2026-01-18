@@ -209,10 +209,18 @@
 	<title>Add New Indicator | Admin</title>
 </svelte:head>
 
-<div class="page">
-	<div class="page-header">
-		<h1><IconSparkles size={28} /> Add New Indicator</h1>
-		<p class="subtitle">Create a new trading indicator for your platform</p>
+<div class="admin-indicators-create">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<header class="page-header">
+			<h1><IconSparkles size={28} /> Add New Indicator</h1>
+			<p class="subtitle">Create a new trading indicator for your platform</p>
 	</div>
 
 	<div class="content-container">

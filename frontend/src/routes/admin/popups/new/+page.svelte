@@ -159,10 +159,18 @@
 	<title>Create Popup | Revolution Admin</title>
 </svelte:head>
 
-<div class="page">
-	<!-- Header -->
-	<div class="page-header">
-		<a href="/admin/popups" class="back-btn">Back to Popups</a>
+<div class="admin-popups-new">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<!-- Header -->
+		<header class="page-header">
+			<a href="/admin/popups" class="back-btn">Back to Popups</a>
 		<h1>Create New Popup</h1>
 		<p class="subtitle">Design and configure your popup</p>
 	</div>
