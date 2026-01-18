@@ -234,14 +234,14 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #0f172a;
+		background: var(--bg-base);
 		padding: 2rem;
 	}
 
 	.error-card {
 		max-width: 500px;
 		width: 100%;
-		background: #1e293b;
+		background: var(--bg-elevated);
 		border-radius: 1rem;
 		overflow: hidden;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -285,36 +285,36 @@
 	.error-title {
 		font-size: 1.5rem;
 		font-weight: 700;
-		color: #fff;
+		color: var(--text-primary);
 		margin-bottom: 0.75rem;
 		text-align: center;
 	}
 
 	.error-description {
 		font-size: 1rem;
-		color: #94a3b8;
+		color: var(--text-secondary);
 		text-align: center;
 		line-height: 1.6;
 		margin-bottom: 1.5rem;
 	}
 
 	.debug-panel {
-		background: #0f172a;
+		background: var(--bg-base);
 		border-radius: 0.5rem;
 		overflow: hidden;
 		margin-top: 1rem;
 	}
 
 	.debug-header {
-		background: #1e293b;
+		background: var(--bg-elevated);
 		padding: 0.75rem 1rem;
-		border-bottom: 1px solid #334155;
+		border-bottom: 1px solid var(--border-default);
 	}
 
 	.debug-label {
 		font-size: 0.75rem;
 		font-weight: 600;
-		color: #64748b;
+		color: var(--text-tertiary);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
@@ -327,7 +327,7 @@
 		display: flex;
 		gap: 0.75rem;
 		padding: 0.5rem 0;
-		border-bottom: 1px solid #1e293b;
+		border-bottom: 1px solid var(--bg-elevated);
 	}
 
 	.debug-row:last-child {
@@ -337,19 +337,19 @@
 	.debug-key {
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #64748b;
+		color: var(--text-tertiary);
 		min-width: 70px;
 	}
 
 	.debug-value {
 		font-size: 0.8125rem;
-		color: #cbd5e1;
+		color: var(--text-primary);
 		font-family: 'SF Mono', Monaco, monospace;
 		word-break: break-all;
 	}
 
 	.error-message {
-		color: #f87171;
+		color: var(--error-emphasis);
 	}
 
 	.error-actions {
@@ -374,8 +374,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		color: var(--bg-base);
 	}
 
 	.btn-primary:hover {
@@ -384,28 +384,28 @@
 	}
 
 	.btn-secondary {
-		background: #334155;
-		color: #fff;
+		background: var(--bg-surface);
+		color: var(--text-primary);
 	}
 
 	.btn-secondary:hover {
-		background: #475569;
+		background: var(--bg-hover);
 	}
 
 	.error-footer {
 		padding: 1rem 2rem;
-		background: #0f172a;
+		background: var(--bg-base);
 		text-align: center;
 	}
 
 	.error-footer p {
 		font-size: 0.8125rem;
-		color: #64748b;
+		color: var(--text-tertiary);
 		margin: 0;
 	}
 
 	.error-footer a {
-		color: #e6b800;
+		color: var(--primary-500);
 		text-decoration: none;
 	}
 
