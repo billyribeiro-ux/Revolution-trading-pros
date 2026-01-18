@@ -724,17 +724,20 @@
 		position: fixed;
 		top: 0;
 		right: 0;
+		bottom: 0;
 		width: 520px;
 		max-width: 100%;
-		height: 100vh;
-		background: var(--bg-elevated, #161b22);
-		border-left: 1px solid var(--border-default, #30363d);
+		height: 100%;
+		min-height: 100vh;
+		background: linear-gradient(180deg, #161b22 0%, #0f172a 100%);
+		border-left: 1px solid rgba(230, 184, 0, 0.15);
 		display: flex;
 		flex-direction: column;
 		transform: translateX(100%);
 		transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 		z-index: 1001;
-		box-shadow: -8px 0 32px rgba(0, 0, 0, 0.5);
+		box-shadow: -8px 0 40px rgba(0, 0, 0, 0.6);
+		overflow: hidden;
 	}
 
 	.drawer.open {
@@ -1009,7 +1012,9 @@
 		flex: 1;
 		overflow-y: auto;
 		padding: 1.5rem;
-		background: var(--bg-elevated, #161b22);
+		padding-bottom: 3rem;
+		background: transparent;
+		min-height: 0;
 	}
 
 	.tab-content {

@@ -548,9 +548,17 @@
 	<title>Member Segments | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="page">
-	<!-- Header -->
-	<div class="page-header">
+<div class="admin-segments">
+	<div class="page">
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
+		</div>
+
+		<!-- Header -->
+		<div class="page-header">
 		<button class="back-btn" onclick={() => goto('/admin/members')}>
 			<IconArrowLeft size={20} />
 			Back to Members
@@ -1046,9 +1054,81 @@
 	onConfirm={handleConfirmDelete}
 	onCancel={cancelDelete}
 />
+	</div>
+</div>
 
 <style>
+	/* Root Container */
+	.admin-segments {
+		min-height: 100vh;
+		position: relative;
+		overflow-x: hidden;
+		background: linear-gradient(180deg, #0a0d14 0%, #0f1419 50%, #161c24 100%);
+	}
+
+	/* Animated Background Blobs */
+	.bg-effects {
+		position: absolute;
+		inset: 0;
+		overflow: hidden;
+		pointer-events: none;
+		z-index: 0;
+	}
+
+	.bg-blob {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(100px);
+		opacity: 0.15;
+	}
+
+	.bg-blob-1 {
+		width: 600px;
+		height: 600px;
+		top: -200px;
+		right: -200px;
+		background: linear-gradient(135deg, #e6b800, #b38f00);
+		animation: float 20s ease-in-out infinite;
+	}
+
+	.bg-blob-2 {
+		width: 500px;
+		height: 500px;
+		bottom: -150px;
+		left: -150px;
+		background: linear-gradient(135deg, #b38f00, #1e293b);
+		animation: float 25s ease-in-out infinite reverse;
+	}
+
+	.bg-blob-3 {
+		width: 400px;
+		height: 400px;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: linear-gradient(135deg, #e6b800, #0f172a);
+		animation: float 30s ease-in-out infinite;
+	}
+
+	@keyframes float {
+		0%,
+		100% {
+			transform: translate(0, 0) scale(1);
+		}
+		25% {
+			transform: translate(30px, -30px) scale(1.05);
+		}
+		50% {
+			transform: translate(0, 20px) scale(0.95);
+		}
+		75% {
+			transform: translate(-30px, -20px) scale(1.02);
+		}
+	}
+
 	.page {
+		position: relative;
+		z-index: 1;
 		max-width: 1400px;
 		margin: 0 auto;
 		padding: 2rem;
@@ -1439,12 +1519,24 @@
 	.btn-primary {
 		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
 		color: #0d1117;
+		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
+	}
+
+	.btn-primary:hover {
+		background: linear-gradient(135deg, #f5c800 0%, #c9a000 100%);
+		transform: translateY(-2px);
+		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.4);
 	}
 
 	.btn-secondary {
 		background: rgba(100, 116, 139, 0.2);
 		color: #cbd5e1;
 		border: 1px solid rgba(148, 163, 184, 0.2);
+	}
+
+	.btn-secondary:hover {
+		background: rgba(100, 116, 139, 0.3);
+		border-color: rgba(148, 163, 184, 0.3);
 	}
 
 	.btn-primary.small,
@@ -1534,8 +1626,8 @@
 	.modal-overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.8);
-		backdrop-filter: blur(4px);
+		background: rgba(0, 0, 0, 0.85);
+		backdrop-filter: blur(8px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1544,13 +1636,14 @@
 	}
 
 	.modal-content {
-		background: #1e293b;
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 20px;
+		background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+		border: 1px solid rgba(230, 184, 0, 0.2);
+		border-radius: 16px;
 		width: 100%;
 		max-width: 500px;
 		max-height: 90vh;
 		overflow-y: auto;
+		box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px -10px rgba(230, 184, 0, 0.1);
 	}
 
 	.modal-content.large {
@@ -1562,7 +1655,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+		background: rgba(15, 23, 42, 0.5);
 	}
 
 	.modal-header h2 {
@@ -1578,11 +1672,17 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
-		border: none;
-		border-radius: 8px;
+		background: rgba(100, 116, 139, 0.2);
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 10px;
 		color: #94a3b8;
 		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.close-btn:hover {
+		background: rgba(100, 116, 139, 0.3);
+		color: #f1f5f9;
 	}
 
 	.modal-body {
@@ -1594,19 +1694,20 @@
 		justify-content: flex-end;
 		gap: 0.75rem;
 		padding: 1.5rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		border-top: 1px solid rgba(148, 163, 184, 0.15);
+		background: rgba(15, 23, 42, 0.3);
 	}
 
 	/* Form */
 	.form-group {
-		margin-bottom: 1rem;
+		margin-bottom: 1.25rem;
 	}
 
 	.form-group label {
 		display: block;
-		font-size: 0.8125rem;
-		font-weight: 500;
-		color: #94a3b8;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: #e2e8f0;
 		margin-bottom: 0.5rem;
 	}
 
@@ -1618,11 +1719,17 @@
 		border-radius: 10px;
 		color: #f1f5f9;
 		font-size: 0.9375rem;
+		transition: all 0.2s;
 	}
 
 	.form-group input:focus {
 		outline: none;
-		border-color: rgba(230, 184, 0, 0.5);
+		border-color: #e6b800;
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.15);
+	}
+
+	.form-group input::placeholder {
+		color: #64748b;
 	}
 
 	/* Conditions */
