@@ -92,21 +92,26 @@
 	<title>Contacts | Revolution Admin</title>
 </svelte:head>
 
-<div class="contacts-page">
+<div class="admin-contacts">
 	<div class="admin-page-container">
-		<!-- Header -->
-		<div class="page-header">
-			<div>
-				<h1 class="page-title">Contacts</h1>
-				<p class="page-subtitle">Manage your contact list and leads</p>
-			</div>
-			<Button>
-				<a href="/admin/contacts/new" class="flex items-center gap-2">
-					<IconPlus size={20} />
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
+		</div>
+
+		<!-- Header - Centered Style -->
+		<header class="page-header">
+			<h1>Contacts</h1>
+			<p class="subtitle">Manage your contact list and leads</p>
+			<div class="header-actions">
+				<a href="/admin/contacts/new" class="btn-primary">
+					<IconPlus size={18} />
 					Add Contact
 				</a>
-			</Button>
-		</div>
+			</div>
+		</header>
 
 		<!-- Filters -->
 		<div class="filters-grid">
@@ -222,27 +227,121 @@
 </div>
 
 <style>
-	.contacts-page {
-		color: var(--admin-text-primary);
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * ADMIN CONTACTS - Analytics Dashboard Layout Pattern
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.admin-contacts {
+		min-height: 100vh;
+		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
+		color: var(--text-primary);
+		position: relative;
+		overflow: hidden;
 	}
 
-	/* Header */
+	.admin-page-container {
+		position: relative;
+		z-index: 10;
+		max-width: 1400px;
+		margin: 0 auto;
+		padding: 2rem;
+	}
+
+	/* Background Effects */
+	.bg-effects {
+		position: fixed;
+		inset: 0;
+		pointer-events: none;
+		overflow: hidden;
+	}
+
+	.bg-blob {
+		position: absolute;
+		border-radius: 50%;
+		filter: blur(80px);
+		opacity: 0.15;
+	}
+
+	.bg-blob-1 {
+		width: 600px;
+		height: 600px;
+		top: -200px;
+		right: -200px;
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		animation: float 20s ease-in-out infinite;
+	}
+
+	.bg-blob-2 {
+		width: 500px;
+		height: 500px;
+		bottom: -150px;
+		left: -150px;
+		background: linear-gradient(135deg, var(--secondary-500), var(--primary-600));
+		animation: float 25s ease-in-out infinite reverse;
+	}
+
+	.bg-blob-3 {
+		width: 400px;
+		height: 400px;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		background: linear-gradient(135deg, var(--success-base), var(--success-emphasis));
+		animation: float 30s ease-in-out infinite;
+	}
+
+	@keyframes float {
+		0%, 100% { transform: translate(0, 0) scale(1); }
+		33% { transform: translate(30px, -30px) scale(1.05); }
+		66% { transform: translate(-20px, 20px) scale(0.95); }
+	}
+
+	/* Page Header - CENTERED */
 	.page-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 1.5rem;
+		text-align: center;
+		margin-bottom: 2rem;
 	}
 
-	.page-title {
-		font-size: 1.875rem;
+	.page-header h1 {
+		font-size: 1.75rem;
 		font-weight: 700;
-		color: var(--admin-text-primary);
+		color: var(--text-primary);
+		margin: 0 0 0.5rem 0;
 	}
 
-	.page-subtitle {
-		color: var(--admin-text-muted);
-		margin-top: 0.25rem;
+	.subtitle {
+		color: var(--text-tertiary);
+		font-size: 0.875rem;
+		margin: 0 0 1rem 0;
+	}
+
+	.header-actions {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 0.75rem;
+		flex-wrap: wrap;
+	}
+
+	.btn-primary {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.625rem 1.25rem;
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		color: white;
+		border: none;
+		border-radius: 8px;
+		font-weight: 600;
+		font-size: 0.875rem;
+		cursor: pointer;
+		transition: all 0.2s;
+		text-decoration: none;
+	}
+
+	.btn-primary:hover {
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
 	}
 
 	/* Filters */
