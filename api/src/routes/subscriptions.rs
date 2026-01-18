@@ -30,6 +30,31 @@ pub struct MembershipPlanRow {
     pub updated_at: chrono::NaiveDateTime,
 }
 
+/// Extended membership plan with room info (for room-based queries)
+#[derive(Debug, serde::Serialize, sqlx::FromRow)]
+pub struct MembershipPlanExtended {
+    pub id: i64,
+    pub name: String,
+    pub slug: String,
+    pub display_name: Option<String>,
+    pub description: Option<String>,
+    pub price: f64,
+    pub billing_cycle: String,
+    pub interval_count: Option<i32>,
+    pub savings_percent: Option<i32>,
+    pub is_popular: Option<bool>,
+    pub is_active: bool,
+    pub metadata: Option<serde_json::Value>,
+    pub stripe_price_id: Option<String>,
+    pub stripe_product_id: Option<String>,
+    pub features: Option<serde_json::Value>,
+    pub trial_days: Option<i32>,
+    pub sort_order: Option<i32>,
+    pub room_id: Option<i64>,
+    pub room_name: Option<String>,
+    pub room_slug: Option<String>,
+}
+
 /// User subscription row - flexible schema for production compatibility
 #[derive(Debug, serde::Serialize, sqlx::FromRow)]
 pub struct UserSubscriptionRow {
@@ -115,6 +140,53 @@ async fn get_plan(
     })?;
 
     Ok(Json(plan))
+}
+
+/// Get all subscription plan variants for a specific trading room
+/// GET /subscriptions/room/:room_slug/plans
+async fn get_room_plans(
+    State(state): State<AppState>,
+    Path(room_slug): Path<String>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let plans: Vec<MembershipPlanExtended> = sqlx::query_as(
+        r#"SELECT 
+            mp.id, mp.name, mp.slug, mp.display_name, mp.description,
+            mp.price::FLOAT8 as price, mp.billing_cycle,
+            mp.interval_count, mp.savings_percent, mp.is_popular,
+            mp.is_active, mp.metadata, mp.stripe_price_id, mp.stripe_product_id,
+            mp.features, mp.trial_days, mp.sort_order, mp.room_id,
+            tr.name as room_name, tr.slug as room_slug
+        FROM membership_plans mp
+        JOIN trading_rooms tr ON tr.id = mp.room_id
+        WHERE tr.slug = $1 AND mp.is_active = true
+        ORDER BY mp.sort_order ASC"#,
+    )
+    .bind(&room_slug)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
+
+    if plans.is_empty() {
+        return Err((
+            StatusCode::NOT_FOUND,
+            Json(json!({"error": "No plans found for this room"})),
+        ));
+    }
+
+    // Get room info from first plan
+    let room_name = plans.first().and_then(|p| p.room_name.clone()).unwrap_or_default();
+
+    Ok(Json(json!({
+        "room_slug": room_slug,
+        "room_name": room_name,
+        "plans": plans,
+        "total": plans.len()
+    })))
 }
 
 /// Get user's subscriptions
@@ -470,6 +542,7 @@ pub fn router() -> Router<AppState> {
     Router::new()
         .route("/plans", get(list_plans))
         .route("/plans/:slug", get(get_plan))
+        .route("/room/:room_slug/plans", get(get_room_plans))
         .route("/my", get(get_my_subscriptions))
         .route("/my/active", get(get_active_subscription))
         .route("/export", get(export_subscriptions))
