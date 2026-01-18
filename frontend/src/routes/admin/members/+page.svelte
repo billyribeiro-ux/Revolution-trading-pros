@@ -342,7 +342,10 @@
 		}
 	}
 
-	function formatCurrency(amount: number): string {
+	function formatCurrency(amount: number | null | undefined): string {
+		if (amount === null || amount === undefined || isNaN(amount)) {
+			return '$0';
+		}
 		return new Intl.NumberFormat('en-US', {
 			style: 'currency',
 			currency: 'USD',
@@ -351,8 +354,11 @@
 		}).format(amount);
 	}
 
-	function formatDate(dateString: string): string {
-		return new Date(dateString).toLocaleDateString('en-US', {
+	function formatDate(dateString: string | null | undefined): string {
+		if (!dateString) return 'N/A';
+		const date = new Date(dateString);
+		if (isNaN(date.getTime())) return 'N/A';
+		return date.toLocaleDateString('en-US', {
 			year: 'numeric',
 			month: 'short',
 			day: 'numeric'
@@ -1063,7 +1069,7 @@
 		height: 500px;
 		bottom: -150px;
 		left: -150px;
-		background: linear-gradient(135deg, #3b82f6, #b38f00);
+		background: linear-gradient(135deg, #b38f00, #1e293b);
 		animation: float 25s ease-in-out infinite reverse;
 	}
 
@@ -1751,8 +1757,8 @@
 	.modal-overlay {
 		position: fixed;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.8);
-		backdrop-filter: blur(4px);
+		background: rgba(0, 0, 0, 0.85);
+		backdrop-filter: blur(8px);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1761,14 +1767,14 @@
 	}
 
 	.modal-content {
-		background: rgba(30, 41, 59, 0.98);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 12px;
+		background: linear-gradient(145deg, #1e293b 0%, #0f172a 100%);
+		border: 1px solid rgba(230, 184, 0, 0.2);
+		border-radius: 16px;
 		width: 100%;
 		max-width: 600px;
 		max-height: 90vh;
 		overflow-y: auto;
-		backdrop-filter: blur(20px);
+		box-shadow: 0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 40px -10px rgba(230, 184, 0, 0.1);
 	}
 
 	.modal-header {
@@ -1776,7 +1782,8 @@
 		justify-content: space-between;
 		align-items: center;
 		padding: 1.5rem;
-		border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+		border-bottom: 1px solid rgba(148, 163, 184, 0.15);
+		background: rgba(15, 23, 42, 0.5);
 	}
 
 	.modal-header h2 {
@@ -1792,11 +1799,17 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: rgba(148, 163, 184, 0.1);
-		border: none;
-		border-radius: 12px;
+		background: rgba(100, 116, 139, 0.2);
+		border: 1px solid rgba(100, 116, 139, 0.3);
+		border-radius: 10px;
 		color: #94a3b8;
 		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.close-btn:hover {
+		background: rgba(100, 116, 139, 0.3);
+		color: #f1f5f9;
 	}
 
 	.modal-body {
@@ -1824,30 +1837,32 @@
 	}
 
 	.template-btn {
-		padding: 0.5rem 1rem;
+		padding: 0.625rem 1rem;
 		background: rgba(230, 184, 0, 0.1);
-		border: 1px solid rgba(230, 184, 0, 0.2);
-		border-radius: 12px;
+		border: 1px solid rgba(230, 184, 0, 0.25);
+		border-radius: 10px;
 		color: #e6b800;
 		font-size: 0.8125rem;
-		font-weight: 500;
+		font-weight: 600;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
 	.template-btn:hover {
 		background: rgba(230, 184, 0, 0.2);
+		border-color: rgba(230, 184, 0, 0.4);
+		transform: translateY(-1px);
 	}
 
 	.form-group {
-		margin-bottom: 1rem;
+		margin-bottom: 1.25rem;
 	}
 
 	.form-group label {
 		display: block;
-		font-size: 0.8125rem;
-		font-weight: 500;
-		color: #94a3b8;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: #e2e8f0;
 		margin-bottom: 0.5rem;
 	}
 
@@ -1855,19 +1870,26 @@
 	.form-group textarea {
 		width: 100%;
 		padding: 0.75rem 1rem;
-		background: rgba(30, 41, 59, 0.6);
+		background: rgba(15, 23, 42, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 12px;
+		border-radius: 10px;
 		color: #f1f5f9;
 		font-size: 0.9375rem;
 		font-family: inherit;
 		resize: vertical;
+		transition: all 0.2s;
 	}
 
 	.form-group input:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: rgba(230, 184, 0, 0.5);
+		border-color: #e6b800;
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.15);
+	}
+
+	.form-group input::placeholder,
+	.form-group textarea::placeholder {
+		color: #64748b;
 	}
 
 	.modal-footer {
@@ -1875,7 +1897,8 @@
 		justify-content: flex-end;
 		gap: 0.75rem;
 		padding: 1.5rem;
-		border-top: 1px solid rgba(148, 163, 184, 0.1);
+		border-top: 1px solid rgba(148, 163, 184, 0.15);
+		background: rgba(15, 23, 42, 0.3);
 	}
 
 	/* Buttons - Email Templates Style */

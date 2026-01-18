@@ -156,13 +156,14 @@
 		position: absolute;
 		top: 100%;
 		z-index: 50;
-		min-width: 160px;
-		background: var(--admin-surface-primary);
-		border: 1px solid var(--admin-border-subtle);
-		border-radius: var(--radius-md, 0.5rem);
-		padding: 0.375rem;
-		box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+		min-width: 180px;
+		background: #1e293b;
+		border: 1px solid rgba(148, 163, 184, 0.2);
+		border-radius: 0.75rem;
+		padding: 0.5rem;
+		box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
 		animation: dropdownIn 0.15s ease;
+		backdrop-filter: blur(20px);
 	}
 
 	@keyframes dropdownIn {
@@ -186,59 +187,63 @@
 
 	.menu-divider {
 		height: 1px;
-		background: var(--admin-border-subtle);
-		margin: 0.375rem 0;
+		background: rgba(148, 163, 184, 0.15);
+		margin: 0.5rem 0;
 	}
 
 	.menu-item {
 		display: flex;
 		align-items: center;
-		gap: 0.625rem;
+		gap: 0.75rem;
 		width: 100%;
-		padding: 0.5rem 0.75rem;
+		padding: 0.625rem 0.875rem;
 		background: transparent;
 		border: none;
-		color: var(--admin-text-secondary);
-		font-family: var(--font-body), 'Roboto', sans-serif;
-		font-size: 0.8125rem;
+		color: #e2e8f0;
+		font-family: inherit;
+		font-size: 0.875rem;
+		font-weight: 500;
 		text-align: left;
-		border-radius: var(--radius-sm, 0.25rem);
+		border-radius: 0.5rem;
 		cursor: pointer;
 		transition: all 0.15s ease;
 	}
 
 	.menu-item:hover:not(:disabled) {
-		background: var(--admin-surface-hover);
-		color: var(--admin-text-primary);
+		background: rgba(230, 184, 0, 0.15);
+		color: #f1f5f9;
 	}
 
 	.menu-item:focus-visible {
-		box-shadow: var(--admin-focus-ring);
-		outline: none;
+		outline: 2px solid #e6b800;
+		outline-offset: -2px;
 	}
 
 	.menu-item.danger {
-		color: var(--admin-error);
+		color: #f87171;
 	}
 
 	.menu-item.danger:hover:not(:disabled) {
-		background: var(--admin-error-bg);
+		background: rgba(239, 68, 68, 0.15);
+		color: #fca5a5;
 	}
 
 	.menu-item.warning {
-		color: var(--admin-warning);
+		color: #fbbf24;
 	}
 
 	.menu-item.warning:hover:not(:disabled) {
-		background: var(--admin-warning-bg);
+		background: rgba(251, 191, 36, 0.15);
+		color: #fcd34d;
 	}
 
 	.menu-item.success {
-		color: var(--admin-success);
+		color: #34d399;
 	}
 
 	.menu-item.success:hover:not(:disabled) {
-		background: var(--admin-success-bg);
+		background: rgba(16, 185, 129, 0.15);
+		color: #6ee7b7;
 	}
 
 	.menu-item.disabled,
