@@ -815,7 +815,7 @@
 		text-decoration: none;
 		color: hsla(0, 0%, 100%, 0.5);
 		font-size: 14px;
-		font-weight: 300;
+		font-weight: 600;
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
 		transition: all 0.15s ease-in-out;
 		position: relative;
@@ -889,10 +889,7 @@
 		transition: color 0.15s ease-in-out;
 	}
 
-	.dashboard__nav-item-text.font-bold {
-		font-weight: bold;
-		color: hsla(0, 0%, 100%, 0.5);
-	}
+	/* font-bold class no longer needed - all items use font-weight: 600 */
 
 	.dash_main_links a:hover .dashboard__nav-item-text {
 		color: #fff;
