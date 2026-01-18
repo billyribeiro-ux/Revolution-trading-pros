@@ -1149,7 +1149,7 @@
 	}
 
 	/* Animations */
-	.spinning {
+	:global(.spinning) {
 		animation: spin 1s linear infinite;
 	}
 
