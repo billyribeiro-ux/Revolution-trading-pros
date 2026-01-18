@@ -90,8 +90,15 @@
 	<title>Consent Analytics | Admin</title>
 </svelte:head>
 
-<div class="dashboard">
+<div class="admin-consent">
 	<div class="admin-page-container">
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
+		</div>
+
 		<header class="header">
 			<div class="header-content">
 				<h1>Consent Analytics Dashboard</h1>

@@ -218,8 +218,15 @@
 	});
 </script>
 
-<div class="cms-dashboard" class:mounted>
+<div class="admin-cms" class:mounted>
 	<div class="admin-page-container">
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
+		</div>
+
 		<!-- Premium Hero Header -->
 		<header class="hero-header" in:fly={{ y: -30, duration: 600, easing: cubicOut }}>
 			<div class="hero-content">

@@ -112,8 +112,15 @@
 	<title>Performance Dashboard | Admin</title>
 </svelte:head>
 
-<div class="performance-page">
+<div class="admin-performance">
 	<div class="admin-page-container">
+		<!-- Animated Background -->
+		<div class="bg-effects">
+			<div class="bg-blob bg-blob-1"></div>
+			<div class="bg-blob bg-blob-2"></div>
+			<div class="bg-blob bg-blob-3"></div>
+		</div>
+
 		<!-- Header -->
 		<div class="page-header">
 			<div class="header-content">
