@@ -146,10 +146,18 @@
 	<title>Email Settings | Admin | Revolution Trading Pros</title>
 </svelte:head>
 
-<div class="page">
-	<div class="page-header">
-		<h1>Email Settings</h1>
-		<p class="subtitle">Configure your SMTP server settings for sending emails</p>
+<div class="admin-email-settings">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<header class="page-header">
+			<h1>Email Settings</h1>
+			<p class="subtitle">Configure your SMTP server settings for sending emails</p>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={testConnection} disabled={testing}>
 				{testing ? 'Testing...' : 'Test Connection'}

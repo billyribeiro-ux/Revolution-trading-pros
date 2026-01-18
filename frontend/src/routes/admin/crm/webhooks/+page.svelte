@@ -197,10 +197,18 @@
 	<title>Webhooks - FluentCRM Pro</title>
 </svelte:head>
 
-<div class="page">
-	<!-- Header -->
-	<div class="page-header">
-		<h1>Webhooks</h1>
+<div class="admin-crm-webhooks">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<!-- Header -->
+		<header class="page-header">
+			<h1>Webhooks</h1>
 		<p class="subtitle">Send real-time notifications to external services</p>
 		<div class="header-actions">
 			<button class="btn-refresh" onclick={() => loadWebhooks()} disabled={isLoading}>

@@ -199,10 +199,18 @@
 	<title>Smart Links - FluentCRM Pro</title>
 </svelte:head>
 
-<div class="page">
-	<!-- Header -->
-	<div class="page-header">
-		<h1>Smart Links</h1>
+<div class="admin-crm-smart-links">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<!-- Header -->
+		<header class="page-header">
+			<h1>Smart Links</h1>
 		<p class="subtitle">Create action links that trigger automations when clicked</p>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={() => loadSmartLinks()} disabled={isLoading}>
