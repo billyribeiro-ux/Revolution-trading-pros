@@ -384,8 +384,8 @@
 
 			<!-- Discount Type Toggle -->
 			<div class="form-group">
-				<label>Discount Type</label>
-				<div class="discount-type-toggle">
+				<span class="form-label">Discount Type</span>
+				<div class="discount-type-toggle" role="group" aria-label="Discount Type">
 					<button
 						type="button"
 						class="type-btn"
@@ -785,7 +785,8 @@
 		gap: 1.25rem;
 	}
 
-	label {
+	label,
+	.form-label {
 		display: block;
 		font-weight: 600;
 		color: #e2e8f0;
