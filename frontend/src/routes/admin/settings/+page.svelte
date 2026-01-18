@@ -733,22 +733,18 @@
 			<p class="subtitle">Manage your API connections and configure platform settings</p>
 			<div class="header-actions">
 				<!-- Tab Switcher -->
-				<div class="flex bg-white/5 backdrop-blur-xl rounded-2xl p-1 border border-white/10">
+				<div class="tab-switcher">
 					<button
-						onclick={() => (activeTab = 'integrations')}
-						class="px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 {activeTab ===
-						'integrations'
-							? 'bg-white text-slate-900 shadow-lg'
-							: 'text-slate-400 hover:text-white'}"
+						type="button"
+						onclick={(e) => { e.preventDefault(); e.stopPropagation(); activeTab = 'integrations'; }}
+						class="tab-btn {activeTab === 'integrations' ? 'active' : ''}"
 					>
 						API Integrations
 					</button>
 					<button
-						onclick={() => (activeTab = 'general')}
-						class="px-6 py-2.5 rounded-xl text-sm font-medium transition-all duration-300 {activeTab ===
-						'general'
-							? 'bg-white text-slate-900 shadow-lg'
-							: 'text-slate-400 hover:text-white'}"
+						type="button"
+						onclick={(e) => { e.preventDefault(); e.stopPropagation(); activeTab = 'general'; }}
+						class="tab-btn {activeTab === 'general' ? 'active' : ''}"
 					>
 						General Settings
 					</button>
@@ -1407,6 +1403,46 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
+	 * TAB SWITCHER
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	.tab-switcher {
+		display: flex;
+		background: rgba(255, 255, 255, 0.05);
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+		border-radius: 16px;
+		padding: 4px;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		gap: 4px;
+	}
+
+	.tab-btn {
+		padding: 0.625rem 1.5rem;
+		border-radius: 12px;
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: #94a3b8;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		white-space: nowrap;
+	}
+
+	.tab-btn:hover {
+		color: #f1f5f9;
+		background: rgba(255, 255, 255, 0.05);
+	}
+
+	.tab-btn.active {
+		background: linear-gradient(135deg, #e6b800, #b38f00);
+		color: #0d1117;
+		font-weight: 600;
+		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
 	 * STATS GRID - Connection Status Overview
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -1972,6 +2008,9 @@
 	}
 
 	@media (max-width: 768px) {
+		.page-header h1 {
+			font-size: 1.5rem;
+		}
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -1992,11 +2031,20 @@
 		.setting-input {
 			width: 100%;
 		}
+		.section-title {
+			font-size: 1.125rem;
+		}
 	}
 
 	@media (max-width: 640px) {
 		.admin-page-container {
 			padding: 1rem;
+		}
+		.page-header h1 {
+			font-size: 1.25rem;
+		}
+		.subtitle {
+			font-size: 0.8125rem;
 		}
 		.stats-grid {
 			grid-template-columns: 1fr 1fr;
@@ -2004,9 +2052,29 @@
 		.stat-value {
 			font-size: 1.5rem;
 		}
+		.tab-switcher {
+			flex-direction: column;
+			width: 100%;
+		}
+		.tab-btn {
+			width: 100%;
+			text-align: center;
+			padding: 0.75rem 1rem;
+		}
+		.service-card {
+			padding: 1rem;
+		}
+		.service-icon {
+			width: 2.25rem;
+			height: 2.25rem;
+			font-size: 1rem;
+		}
 	}
 
 	@media (max-width: 480px) {
+		.admin-page-container {
+			padding: 0.75rem;
+		}
 		.stats-grid {
 			grid-template-columns: 1fr;
 		}
@@ -2016,16 +2084,34 @@
 		.btn-connect, .btn-disconnect {
 			width: 100%;
 		}
+		.services-grid {
+			grid-template-columns: 1fr;
+		}
+		.category-filter {
+			flex-wrap: nowrap;
+			-webkit-overflow-scrolling: touch;
+		}
+		.connection-info {
+			padding: 0.5rem;
+		}
+		.info-row {
+			flex-direction: column;
+			gap: 0.25rem;
+		}
 	}
 
 	/* Touch Device Optimizations - 44pt minimum */
 	@media (hover: none) and (pointer: coarse) {
-		.btn-connect, .btn-disconnect, .btn-secondary, .btn-docs, .filter-btn {
+		.btn-connect, .btn-disconnect, .btn-secondary, .btn-docs, .filter-btn, .tab-btn {
 			min-height: 44px;
 		}
 		.search-input, .setting-input {
 			min-height: 48px;
 			font-size: 16px;
+		}
+		.toggle-switch {
+			min-width: 56px;
+			min-height: 32px;
 		}
 	}
 
