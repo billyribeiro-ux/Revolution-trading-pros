@@ -504,34 +504,28 @@
 										</div>
 									</div>
 
-									<!-- PayPal -->
+									<!-- PayPal - Coming Soon -->
 									<div
-										class="payment-method"
-										class:selected={paymentMethod === 'paypal'}
-										onclick={() => (paymentMethod = 'paypal')}
-										onkeydown={(e: KeyboardEvent) => {
-											if (e.key === 'Enter' || e.key === ' ') {
-												e.preventDefault();
-												paymentMethod = 'paypal';
-											}
-										}}
+										class="payment-method payment-method--disabled"
+										title="PayPal integration coming soon"
 										role="button"
-										tabindex="0"
+										tabindex="-1"
 									>
 										<input
 											type="radio"
 											id="payment_paypal"
 											name="payment_method"
 											value="paypal"
-											checked={paymentMethod === 'paypal'}
-											onchange={() => (paymentMethod = 'paypal')}
+											disabled
 										/>
 										<label for="payment_paypal">
-											<IconCreditCard size={24} />
+											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="24" height="24">
+												<path d="M20.067 8.478c.492.88.556 2.014.3 3.327-.74 3.806-3.276 5.12-6.514 5.12h-.5a.805.805 0 00-.794.68l-.04.22-.63 3.993-.032.17a.804.804 0 01-.794.679H7.72a.483.483 0 01-.477-.558L7.418 21h1.518l.95-6.02h1.385c4.678 0 7.75-2.203 8.796-6.502zm-2.96-5.09c.762.868.983 1.81.752 3.285-.019.123-.04.24-.062.36-.735 3.773-3.089 5.446-6.956 5.446H8.957a1.01 1.01 0 00-.996.852l-.68 4.312-.472 2.987H4.907a.573.573 0 01-.567-.663l2.01-12.748a1.208 1.208 0 011.194-1.02h5.862c1.5 0 2.637.182 3.701.19z" />
+											</svg>
 											<span class="method-title">PayPal</span>
-											<span class="method-description"
-												>You will be redirected to PayPal to complete payment</span
-											>
+											<span class="method-description method-description--coming-soon">
+												Coming Soon
+											</span>
 										</label>
 									</div>
 								</div>
@@ -1052,6 +1046,32 @@
 	.payment-method.selected {
 		border-color: var(--checkout-primary);
 		background: rgba(9, 132, 174, 0.05);
+	}
+
+	.payment-method--disabled {
+		opacity: 0.6;
+		cursor: not-allowed;
+		background: var(--checkout-bg);
+	}
+
+	.payment-method--disabled:hover {
+		border-color: var(--checkout-border);
+	}
+
+	.payment-method--disabled label {
+		cursor: not-allowed;
+	}
+
+	.method-description--coming-soon {
+		display: inline-block;
+		background: linear-gradient(135deg, #6366f1, #8b5cf6);
+		color: white;
+		padding: 2px 8px;
+		border-radius: 4px;
+		font-size: 11px;
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
 	}
 
 	.payment-method input[type='radio'] {

@@ -611,28 +611,36 @@ async fn handle_checkout_completed(
         .ok();
 
         // ═══════════════════════════════════════════════════════════════════════════
-        // COURSE ENROLLMENT CREATION - Apple ICT 11+ Grade
+        // ACCESS GRANTING - Apple ICT 11+ Principal Engineer Grade
         // ═══════════════════════════════════════════════════════════════════════════
-        // Check if any order items are courses and create enrollments
+        // Grant access for all purchased items: courses, indicators, and products
         if let Some(user_id) = user_id {
             #[derive(sqlx::FromRow)]
-            struct CourseOrderItem {
+            struct ProductOrderItem {
                 product_id: Option<i64>,
+                name: String,
             }
 
-            let course_items: Vec<CourseOrderItem> = sqlx::query_as(
-                "SELECT product_id FROM order_items WHERE order_id = $1 AND product_id IS NOT NULL",
+            let product_items: Vec<ProductOrderItem> = sqlx::query_as(
+                "SELECT product_id, name FROM order_items WHERE order_id = $1 AND product_id IS NOT NULL",
             )
             .bind(order_id)
             .fetch_all(&state.db.pool)
             .await
             .unwrap_or_default();
 
-            for item in course_items {
+            for item in product_items {
                 if let Some(product_id) = item.product_id {
-                    // Check if this product is a course (has a course_id in products table)
-                    let course_id: Option<uuid::Uuid> = sqlx::query_scalar(
-                        "SELECT course_id FROM products WHERE id = $1 AND course_id IS NOT NULL",
+                    // Get product details to determine type
+                    #[derive(sqlx::FromRow)]
+                    struct ProductInfo {
+                        product_type: Option<String>,
+                        course_id: Option<uuid::Uuid>,
+                        indicator_id: Option<i64>,
+                    }
+
+                    let product_info: Option<ProductInfo> = sqlx::query_as(
+                        "SELECT type as product_type, course_id, indicator_id FROM products WHERE id = $1",
                     )
                     .bind(product_id)
                     .fetch_optional(&state.db.pool)
@@ -640,31 +648,129 @@ async fn handle_checkout_completed(
                     .ok()
                     .flatten();
 
-                    if let Some(course_id) = course_id {
-                        // Create enrollment for this course
+                    if let Some(info) = product_info {
+                        // ─────────────────────────────────────────────────────────
+                        // 1. Create user_products record for ownership tracking
+                        // ─────────────────────────────────────────────────────────
                         sqlx::query(
-                            r#"INSERT INTO user_course_enrollments (user_id, course_id, status, enrolled_at)
-                               VALUES ($1, $2, 'active', NOW())
-                               ON CONFLICT (user_id, course_id) DO UPDATE SET
-                                   status = 'active',
-                                   updated_at = NOW()"#
+                            r#"INSERT INTO user_products (user_id, product_id, purchased_at, order_id)
+                               VALUES ($1, $2, NOW(), $3)
+                               ON CONFLICT (user_id, product_id) DO UPDATE SET
+                                   purchased_at = COALESCE(user_products.purchased_at, NOW()),
+                                   order_id = COALESCE(user_products.order_id, $3)"#
                         )
                         .bind(user_id)
-                        .bind(course_id)
+                        .bind(product_id)
+                        .bind(order_id)
                         .execute(&state.db.pool)
                         .await
                         .ok();
 
-                        // Auto-create Bunny Storage folder for course downloads
-                        // (folder path: courses/{course_id})
                         tracing::info!(
                             target: "payments",
-                            event = "course_enrollment_created",
+                            event = "user_product_created",
                             user_id = %user_id,
-                            course_id = %course_id,
+                            product_id = %product_id,
                             order_id = %order_id,
-                            "User enrolled in course after purchase"
+                            "Product ownership recorded"
                         );
+
+                        // ─────────────────────────────────────────────────────────
+                        // 2. Course enrollment
+                        // ─────────────────────────────────────────────────────────
+                        if let Some(course_id) = info.course_id {
+                            sqlx::query(
+                                r#"INSERT INTO user_course_enrollments (user_id, course_id, status, enrolled_at)
+                                   VALUES ($1, $2, 'active', NOW())
+                                   ON CONFLICT (user_id, course_id) DO UPDATE SET
+                                       status = 'active',
+                                       updated_at = NOW()"#
+                            )
+                            .bind(user_id)
+                            .bind(course_id)
+                            .execute(&state.db.pool)
+                            .await
+                            .ok();
+
+                            tracing::info!(
+                                target: "payments",
+                                event = "course_enrollment_created",
+                                user_id = %user_id,
+                                course_id = %course_id,
+                                order_id = %order_id,
+                                "User enrolled in course after purchase"
+                            );
+                        }
+
+                        // ─────────────────────────────────────────────────────────
+                        // 3. Indicator access
+                        // ─────────────────────────────────────────────────────────
+                        if let Some(indicator_id) = info.indicator_id {
+                            sqlx::query(
+                                r#"INSERT INTO user_indicator_access (user_id, indicator_id, is_active, granted_at)
+                                   VALUES ($1, $2, true, NOW())
+                                   ON CONFLICT (user_id, indicator_id) DO UPDATE SET
+                                       is_active = true,
+                                       granted_at = COALESCE(user_indicator_access.granted_at, NOW())"#
+                            )
+                            .bind(user_id)
+                            .bind(indicator_id)
+                            .execute(&state.db.pool)
+                            .await
+                            .ok();
+
+                            tracing::info!(
+                                target: "payments",
+                                event = "indicator_access_granted",
+                                user_id = %user_id,
+                                indicator_id = %indicator_id,
+                                order_id = %order_id,
+                                "Indicator access granted after purchase"
+                            );
+                        }
+
+                        // ─────────────────────────────────────────────────────────
+                        // 4. Handle indicator type products without indicator_id FK
+                        // ─────────────────────────────────────────────────────────
+                        if info.product_type.as_deref() == Some("indicator") && info.indicator_id.is_none() {
+                            // Try to find indicator by matching product name/slug
+                            let indicator_id: Option<i64> = sqlx::query_scalar(
+                                r#"SELECT i.id FROM indicators i
+                                   JOIN products p ON LOWER(p.name) LIKE CONCAT('%', LOWER(i.name), '%')
+                                   WHERE p.id = $1
+                                   LIMIT 1"#
+                            )
+                            .bind(product_id)
+                            .fetch_optional(&state.db.pool)
+                            .await
+                            .ok()
+                            .flatten();
+
+                            if let Some(ind_id) = indicator_id {
+                                sqlx::query(
+                                    r#"INSERT INTO user_indicator_access (user_id, indicator_id, is_active, granted_at)
+                                       VALUES ($1, $2, true, NOW())
+                                       ON CONFLICT (user_id, indicator_id) DO UPDATE SET
+                                           is_active = true,
+                                           granted_at = COALESCE(user_indicator_access.granted_at, NOW())"#
+                                )
+                                .bind(user_id)
+                                .bind(ind_id)
+                                .execute(&state.db.pool)
+                                .await
+                                .ok();
+
+                                tracing::info!(
+                                    target: "payments",
+                                    event = "indicator_access_granted_by_type",
+                                    user_id = %user_id,
+                                    indicator_id = %ind_id,
+                                    product_id = %product_id,
+                                    order_id = %order_id,
+                                    "Indicator access granted via product type matching"
+                                );
+                            }
+                        }
                     }
                 }
             }

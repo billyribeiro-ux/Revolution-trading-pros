@@ -1,15 +1,19 @@
 <script lang="ts">
 	/**
 	 * Thank You / Order Confirmation Page
-	 * Enterprise L8 Pattern - Svelte 5 Runes
+	 * Apple ICT 11+ Principal Engineer Grade - January 2026
 	 *
-	 * Uses $props() to receive data from +page.ts load function
-	 * for proper SSR support and type safety.
+	 * Complete order confirmation with:
+	 * - Full order details from API
+	 * - Itemized purchase breakdown
+	 * - Next steps guidance
+	 * - Relevant upsell offers
 	 *
-	 * @version 2.0.0 - Svelte 5 Migration
+	 * @version 3.0.0 - Complete Order Details Display
 	 */
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import type { PageData } from './$types';
+	import type { OrderDetail, OrderItem } from './+page';
 
 	// Receive data from load function using Svelte 5 $props()
 	interface Props {
@@ -18,16 +22,68 @@
 	let { data }: Props = $props();
 
 	// Derive order details with fallbacks
-	let orderNumber = $derived(data.orderNumber || 'RTP-' + Date.now().toString(36).toUpperCase());
-	let productName = $derived(data.productName || 'Revolution Trading Pro Membership');
+	let orderNumber = $derived(data.orderDetail?.order_number || data.orderNumber || 'RTP-' + Date.now().toString(36).toUpperCase());
+	let orderDetail = $derived(data.orderDetail as OrderDetail | null);
+	let fetchError = $derived(data.fetchError);
 
-	// Sample purchased item (derived from order data)
-	let purchasedItem = $derived({
-		name: productName,
-		image: '/images/membership-card.jpg',
-		type: 'Membership',
-		nextStep: 'Access your dashboard to start learning'
-	});
+	// Format currency
+	function formatCurrency(amount: number, currency: string = 'USD'): string {
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: currency
+		}).format(amount);
+	}
+
+	// Format date
+	function formatDate(dateString: string): string {
+		return new Date(dateString).toLocaleDateString('en-US', {
+			year: 'numeric',
+			month: 'long',
+			day: 'numeric',
+			hour: '2-digit',
+			minute: '2-digit'
+		});
+	}
+
+	// Get product type label
+	function getProductTypeLabel(type: string | null): string {
+		const labels: Record<string, string> = {
+			'membership': 'Membership',
+			'trading-room': 'Trading Room',
+			'alert-service': 'Alert Service',
+			'course': 'Course',
+			'indicator': 'Indicator',
+			'premium-report': 'Premium Report',
+			'weekly-watchlist': 'Weekly Watchlist'
+		};
+		return type ? labels[type] || type : 'Product';
+	}
+
+	// Get access URL based on product type
+	function getAccessUrl(item: OrderItem): string {
+		const urls: Record<string, string> = {
+			'membership': '/account/memberships',
+			'trading-room': '/live-trading-rooms',
+			'alert-service': '/alerts',
+			'course': item.product_slug ? `/courses/${item.product_slug}` : '/courses',
+			'indicator': item.product_slug ? `/indicators/${item.product_slug}` : '/my-indicators',
+			'premium-report': '/premium-reports',
+			'weekly-watchlist': '/weekly-watchlist'
+		};
+		return item.product_type ? urls[item.product_type] || '/account' : '/account';
+	}
+
+	// Status badge styling
+	function getStatusClass(status: string): string {
+		const classes: Record<string, string> = {
+			'completed': 'badge-success',
+			'pending': 'badge-warning',
+			'processing': 'badge-info',
+			'refunded': 'badge-error',
+			'cancelled': 'badge-error'
+		};
+		return classes[status] || 'badge-default';
+	}
 
 	// Related upsell products
 	const upsellProducts = [
@@ -61,13 +117,13 @@
 />
 
 <!-- Breadcrumbs -->
-<nav id="breadcrumbs" class="breadcrumbs">
+<nav id="breadcrumbs" class="breadcrumbs" aria-label="Breadcrumb">
 	<div class="container-fluid">
 		<ul>
 			<li class="item-home">
 				<a class="breadcrumb-link breadcrumb-home" href="/" title="Home">Home</a>
 			</li>
-			<li class="separator separator-home">/</li>
+			<li class="separator separator-home" aria-hidden="true">/</li>
 			<li class="item-current">
 				<strong class="breadcrumb-current">Order Confirmation</strong>
 			</li>
@@ -81,11 +137,122 @@
 		<!-- Success Header -->
 		<section class="typ-header">
 			<div class="typ-header__icon">
-				<span class="st-icon st-icon-check-circle"></span>
+				<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="64" height="64">
+					<path fill-rule="evenodd" d="M2.25 12c0-5.385 4.365-9.75 9.75-9.75s9.75 4.365 9.75 9.75-4.365 9.75-9.75 9.75S2.25 17.385 2.25 12zm13.36-1.814a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clip-rule="evenodd" />
+				</svg>
 			</div>
 			<h1 class="typ-header__title">Thank You for Your Order!</h1>
 			<p class="typ-header__subtitle">Order #{orderNumber} has been confirmed</p>
+			{#if orderDetail?.status}
+				<span class="typ-header__badge {getStatusClass(orderDetail.status)}">
+					{orderDetail.status.charAt(0).toUpperCase() + orderDetail.status.slice(1)}
+				</span>
+			{/if}
 		</section>
+
+		<!-- Order Details Section -->
+		{#if orderDetail}
+			<section class="typ-order-details">
+				<h2 class="typ-order-details__title">Order Details</h2>
+
+				<div class="typ-order-details__grid">
+					<!-- Order Info -->
+					<div class="typ-order-info">
+						<div class="typ-order-info__row">
+							<span class="typ-order-info__label">Order Number</span>
+							<span class="typ-order-info__value">{orderDetail.order_number}</span>
+						</div>
+						<div class="typ-order-info__row">
+							<span class="typ-order-info__label">Date</span>
+							<span class="typ-order-info__value">{formatDate(orderDetail.created_at)}</span>
+						</div>
+						{#if orderDetail.billing_email}
+							<div class="typ-order-info__row">
+								<span class="typ-order-info__label">Email</span>
+								<span class="typ-order-info__value">{orderDetail.billing_email}</span>
+							</div>
+						{/if}
+						{#if orderDetail.payment_provider}
+							<div class="typ-order-info__row">
+								<span class="typ-order-info__label">Payment Method</span>
+								<span class="typ-order-info__value typ-order-info__value--capitalize">
+									{orderDetail.payment_provider}
+								</span>
+							</div>
+						{/if}
+					</div>
+
+					<!-- Order Summary -->
+					<div class="typ-order-summary">
+						<h3 class="typ-order-summary__title">Summary</h3>
+						<div class="typ-order-summary__row">
+							<span>Subtotal</span>
+							<span>{formatCurrency(orderDetail.subtotal, orderDetail.currency)}</span>
+						</div>
+						{#if orderDetail.discount > 0}
+							<div class="typ-order-summary__row typ-order-summary__row--discount">
+								<span>Discount {orderDetail.coupon_code ? `(${orderDetail.coupon_code})` : ''}</span>
+								<span>-{formatCurrency(orderDetail.discount, orderDetail.currency)}</span>
+							</div>
+						{/if}
+						{#if orderDetail.tax > 0}
+							<div class="typ-order-summary__row">
+								<span>Tax</span>
+								<span>{formatCurrency(orderDetail.tax, orderDetail.currency)}</span>
+							</div>
+						{/if}
+						<div class="typ-order-summary__row typ-order-summary__row--total">
+							<span>Total</span>
+							<span>{formatCurrency(orderDetail.total, orderDetail.currency)}</span>
+						</div>
+					</div>
+				</div>
+
+				<!-- Order Items -->
+				<div class="typ-order-items">
+					<h3 class="typ-order-items__title">Items Purchased</h3>
+					<div class="typ-order-items__list">
+						{#each orderDetail.items as item}
+							<div class="typ-order-item">
+								<div class="typ-order-item__image">
+									{#if item.thumbnail}
+										<img src={item.thumbnail} alt={item.name} />
+									{:else}
+										<div class="typ-order-item__placeholder">
+											<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+												<path d="M5.566 4.657A4.505 4.505 0 016.75 4.5h10.5c.41 0 .806.055 1.183.157A3 3 0 0015.75 3h-7.5a3 3 0 00-2.684 1.657zM2.25 12a3 3 0 013-3h13.5a3 3 0 013 3v6a3 3 0 01-3 3H5.25a3 3 0 01-3-3v-6zM5.25 7.5c-.41 0-.806.055-1.184.157A3 3 0 016.75 6h10.5a3 3 0 012.683 1.657A4.505 4.505 0 0018.75 7.5H5.25z" />
+											</svg>
+										</div>
+									{/if}
+								</div>
+								<div class="typ-order-item__details">
+									<h4 class="typ-order-item__name">{item.name}</h4>
+									{#if item.product_type}
+										<span class="typ-order-item__type">{getProductTypeLabel(item.product_type)}</span>
+									{/if}
+									<div class="typ-order-item__meta">
+										<span>Qty: {item.quantity}</span>
+										<span>{formatCurrency(item.unit_price, orderDetail.currency)} each</span>
+									</div>
+								</div>
+								<div class="typ-order-item__actions">
+									<span class="typ-order-item__price">
+										{formatCurrency(item.total, orderDetail.currency)}
+									</span>
+									<a href={getAccessUrl(item)} class="typ-order-item__access">
+										Access Now
+									</a>
+								</div>
+							</div>
+						{/each}
+					</div>
+				</div>
+			</section>
+		{:else if fetchError}
+			<section class="typ-error-notice">
+				<p>{fetchError}</p>
+			</section>
+		{/if}
 
 		<!-- Welcome Section -->
 		<section class="typ-welcome">
@@ -111,28 +278,47 @@
 			<div class="row">
 				<div class="col-sm-6 col-lg-3">
 					<div class="typ-benefit-card">
-						<span class="typ-benefit-card__icon st-icon st-icon-learning-center"></span>
+						<span class="typ-benefit-card__icon">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="40" height="40">
+								<path d="M11.7 2.805a.75.75 0 01.6 0A60.65 60.65 0 0122.83 8.72a.75.75 0 01-.231 1.337 49.949 49.949 0 00-9.902 3.912l-.003.002-.34.18a.75.75 0 01-.707 0A50.009 50.009 0 007.5 12.174v-.224c0-.131.067-.248.172-.311a54.614 54.614 0 014.653-2.52.75.75 0 00-.65-1.352 56.129 56.129 0 00-4.78 2.589 1.858 1.858 0 00-.859 1.228 49.803 49.803 0 00-4.634-1.527.75.75 0 01-.231-1.337A60.653 60.653 0 0111.7 2.805z" />
+								<path d="M13.06 15.473a48.45 48.45 0 017.666-3.282c.134 1.414.22 2.843.255 4.285a.75.75 0 01-.46.71 47.878 47.878 0 00-8.105 4.342.75.75 0 01-.832 0 47.877 47.877 0 00-8.104-4.342.75.75 0 01-.461-.71c.035-1.442.121-2.87.255-4.286A48.4 48.4 0 016 13.18v1.27a1.5 1.5 0 00-.14 2.508c-.09.38-.222.753-.397 1.11.452.213.901.434 1.346.661a6.729 6.729 0 00.551-1.608 1.5 1.5 0 00.14-2.67v-.645a48.549 48.549 0 013.44 1.668 2.25 2.25 0 002.12 0z" />
+								<path d="M4.462 19.462c.42-.419.753-.89 1-1.394.453.213.902.434 1.347.661a6.743 6.743 0 01-1.286 1.794.75.75 0 11-1.06-1.06z" />
+							</svg>
+						</span>
 						<h3 class="typ-benefit-card__title">Learning Center</h3>
 						<p class="typ-benefit-card__text">Complete video courses and tutorials</p>
 					</div>
 				</div>
 				<div class="col-sm-6 col-lg-3">
 					<div class="typ-benefit-card">
-						<span class="typ-benefit-card__icon st-icon st-icon-dashboard"></span>
+						<span class="typ-benefit-card__icon">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="40" height="40">
+								<path fill-rule="evenodd" d="M2.25 6a3 3 0 013-3h13.5a3 3 0 013 3v12a3 3 0 01-3 3H5.25a3 3 0 01-3-3V6zm3.97.97a.75.75 0 011.06 0l2.25 2.25a.75.75 0 010 1.06l-2.25 2.25a.75.75 0 01-1.06-1.06l1.72-1.72-1.72-1.72a.75.75 0 010-1.06zm4.28 4.28a.75.75 0 000 1.5h3a.75.75 0 000-1.5h-3z" clip-rule="evenodd" />
+							</svg>
+						</span>
 						<h3 class="typ-benefit-card__title">Live Trading Room</h3>
 						<p class="typ-benefit-card__text">Trade alongside our experts daily</p>
 					</div>
 				</div>
 				<div class="col-sm-6 col-lg-3">
 					<div class="typ-benefit-card">
-						<span class="typ-benefit-card__icon st-icon st-icon-chatroom-archive"></span>
+						<span class="typ-benefit-card__icon">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="40" height="40">
+								<path fill-rule="evenodd" d="M1.5 5.625c0-1.036.84-1.875 1.875-1.875h17.25c1.035 0 1.875.84 1.875 1.875v12.75c0 1.035-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 18.375V5.625zm1.5 0v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5a.375.375 0 00-.375-.375h-1.5A.375.375 0 003 5.625zm16.125-.375a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5A.375.375 0 0021 7.125v-1.5a.375.375 0 00-.375-.375h-1.5zM21 9.375A.375.375 0 0020.625 9h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5zm0 3.75a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5zm0 3.75a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5a.375.375 0 00.375-.375v-1.5zM4.875 18.75a.375.375 0 00.375-.375v-1.5a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375h1.5zM3.375 15h1.5a.375.375 0 00.375-.375v-1.5a.375.375 0 00-.375-.375h-1.5a.375.375 0 00-.375.375v1.5c0 .207.168.375.375.375zm0-3.75h1.5a.375.375 0 00.375-.375v-1.5A.375.375 0 004.875 9h-1.5A.375.375 0 003 9.375v1.5c0 .207.168.375.375.375zm4.125 0a.75.75 0 000 1.5h9a.75.75 0 000-1.5h-9z" clip-rule="evenodd" />
+							</svg>
+						</span>
 						<h3 class="typ-benefit-card__title">Video Archives</h3>
 						<p class="typ-benefit-card__text">Access to all past trading sessions</p>
 					</div>
 				</div>
 				<div class="col-sm-6 col-lg-3">
 					<div class="typ-benefit-card">
-						<span class="typ-benefit-card__icon st-icon st-icon-support"></span>
+						<span class="typ-benefit-card__icon">
+							<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="40" height="40">
+								<path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clip-rule="evenodd" />
+								<path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
+							</svg>
+						</span>
 						<h3 class="typ-benefit-card__title">Community Support</h3>
 						<p class="typ-benefit-card__text">Connect with fellow traders</p>
 					</div>
@@ -292,13 +478,8 @@
 	}
 
 	.typ-header__icon {
-		font-size: 4rem;
 		color: var(--st-color-green, #22c55e);
 		margin-bottom: 1.5rem;
-	}
-
-	.typ-header__icon .st-icon::before {
-		content: '\2713';
 	}
 
 	.typ-header__title {
@@ -311,6 +492,241 @@
 	.typ-header__subtitle {
 		font-size: 1.125rem;
 		color: var(--st-color-gray-400, #9ca3af);
+		margin-bottom: 1rem;
+	}
+
+	.typ-header__badge {
+		display: inline-block;
+		padding: 0.375rem 1rem;
+		border-radius: 9999px;
+		font-size: 0.875rem;
+		font-weight: 600;
+		text-transform: uppercase;
+	}
+
+	.badge-success {
+		background: rgba(34, 197, 94, 0.2);
+		color: #22c55e;
+	}
+
+	.badge-warning {
+		background: rgba(245, 158, 11, 0.2);
+		color: #f59e0b;
+	}
+
+	.badge-info {
+		background: rgba(59, 130, 246, 0.2);
+		color: #3b82f6;
+	}
+
+	.badge-error {
+		background: rgba(239, 68, 68, 0.2);
+		color: #ef4444;
+	}
+
+	/* Order Details Section */
+	.typ-order-details {
+		background: var(--st-color-gray-800, #1f2937);
+		border-radius: 1rem;
+		padding: 2rem;
+		margin-bottom: 3rem;
+	}
+
+	.typ-order-details__title {
+		font-size: 1.5rem;
+		font-weight: 700;
+		color: var(--st-color-white, #fff);
+		margin-bottom: 1.5rem;
+	}
+
+	.typ-order-details__grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 2rem;
+		margin-bottom: 2rem;
+	}
+
+	/* Order Info */
+	.typ-order-info {
+		display: flex;
+		flex-direction: column;
+		gap: 0.75rem;
+	}
+
+	.typ-order-info__row {
+		display: flex;
+		justify-content: space-between;
+		padding: 0.5rem 0;
+		border-bottom: 1px solid var(--st-color-gray-700, #374151);
+	}
+
+	.typ-order-info__label {
+		color: var(--st-color-gray-400, #9ca3af);
+		font-size: 0.875rem;
+	}
+
+	.typ-order-info__value {
+		color: var(--st-color-white, #fff);
+		font-weight: 500;
+	}
+
+	.typ-order-info__value--capitalize {
+		text-transform: capitalize;
+	}
+
+	/* Order Summary */
+	.typ-order-summary {
+		background: var(--st-color-gray-700, #374151);
+		border-radius: 0.75rem;
+		padding: 1.5rem;
+	}
+
+	.typ-order-summary__title {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: var(--st-color-white, #fff);
+		margin-bottom: 1rem;
+	}
+
+	.typ-order-summary__row {
+		display: flex;
+		justify-content: space-between;
+		padding: 0.5rem 0;
+		color: var(--st-color-gray-300, #d1d5db);
+		font-size: 0.9375rem;
+	}
+
+	.typ-order-summary__row--discount {
+		color: var(--st-color-green, #22c55e);
+	}
+
+	.typ-order-summary__row--total {
+		border-top: 1px solid var(--st-color-gray-600, #4b5563);
+		margin-top: 0.5rem;
+		padding-top: 1rem;
+		font-size: 1.125rem;
+		font-weight: 700;
+		color: var(--st-color-white, #fff);
+	}
+
+	/* Order Items */
+	.typ-order-items {
+		border-top: 1px solid var(--st-color-gray-700, #374151);
+		padding-top: 2rem;
+	}
+
+	.typ-order-items__title {
+		font-size: 1.125rem;
+		font-weight: 600;
+		color: var(--st-color-white, #fff);
+		margin-bottom: 1rem;
+	}
+
+	.typ-order-items__list {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	.typ-order-item {
+		display: flex;
+		gap: 1rem;
+		padding: 1rem;
+		background: var(--st-color-gray-700, #374151);
+		border-radius: 0.75rem;
+		align-items: center;
+	}
+
+	.typ-order-item__image {
+		width: 80px;
+		height: 80px;
+		flex-shrink: 0;
+		border-radius: 0.5rem;
+		overflow: hidden;
+		background: var(--st-color-gray-600, #4b5563);
+	}
+
+	.typ-order-item__image img {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.typ-order-item__placeholder {
+		width: 100%;
+		height: 100%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: var(--st-color-gray-400, #9ca3af);
+	}
+
+	.typ-order-item__details {
+		flex: 1;
+	}
+
+	.typ-order-item__name {
+		font-size: 1rem;
+		font-weight: 600;
+		color: var(--st-color-white, #fff);
+		margin: 0 0 0.25rem;
+	}
+
+	.typ-order-item__type {
+		display: inline-block;
+		padding: 0.125rem 0.5rem;
+		background: var(--st-color-orange, #f97316);
+		color: var(--st-color-white, #fff);
+		font-size: 0.75rem;
+		font-weight: 600;
+		border-radius: 9999px;
+		margin-bottom: 0.5rem;
+	}
+
+	.typ-order-item__meta {
+		display: flex;
+		gap: 1rem;
+		font-size: 0.875rem;
+		color: var(--st-color-gray-400, #9ca3af);
+	}
+
+	.typ-order-item__actions {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 0.5rem;
+	}
+
+	.typ-order-item__price {
+		font-size: 1.125rem;
+		font-weight: 700;
+		color: var(--st-color-white, #fff);
+	}
+
+	.typ-order-item__access {
+		font-size: 0.875rem;
+		color: var(--st-color-orange, #f97316);
+		text-decoration: none;
+		font-weight: 500;
+	}
+
+	.typ-order-item__access:hover {
+		text-decoration: underline;
+	}
+
+	/* Error Notice */
+	.typ-error-notice {
+		background: rgba(245, 158, 11, 0.1);
+		border: 1px solid rgba(245, 158, 11, 0.3);
+		border-radius: 0.75rem;
+		padding: 1rem 1.5rem;
+		margin-bottom: 2rem;
+		text-align: center;
+	}
+
+	.typ-error-notice p {
+		color: #f59e0b;
+		margin: 0;
 	}
 
 	/* Welcome Section */
@@ -410,7 +826,6 @@
 	}
 
 	.typ-benefit-card__icon {
-		font-size: 2.5rem;
 		color: var(--st-color-orange, #f97316);
 		margin-bottom: 1rem;
 		display: block;
@@ -693,6 +1108,10 @@
 			flex: 0 0 50%;
 			max-width: 50%;
 		}
+
+		.typ-order-details__grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
 	@media (max-width: 767px) {
@@ -722,6 +1141,16 @@
 
 		.typ-step__number {
 			margin: 0 auto;
+		}
+
+		.typ-order-item {
+			flex-direction: column;
+			text-align: center;
+		}
+
+		.typ-order-item__actions {
+			align-items: center;
+			width: 100%;
 		}
 	}
 </style>
