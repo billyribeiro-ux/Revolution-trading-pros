@@ -874,26 +874,6 @@
 		--hero-ease-back: cubic-bezier(0.68, -0.6, 0.32, 1.6);
 	}
 
-	/* Hero Utility Classes */
-	.hero-gradient-text {
-		background: linear-gradient(135deg, #facc15 0%, #f59e0b 50%, #facc15 100%);
-		background-clip: text;
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-		background-size: 200% 100%;
-	}
-
-	.hero-glass {
-		background: var(--hero-stats-bg);
-		border: 1px solid var(--hero-stats-border);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-	}
-
-	.hero-glow {
-		box-shadow: var(--hero-shadow-glow);
-	}
-
 	/* ICT11+ Fix: Match responsive navbar heights */
 	@media (min-width: 1152px) {
 		:root {
