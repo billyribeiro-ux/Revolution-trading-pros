@@ -69,14 +69,14 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	const PLATFORMS: Platform[] = [
-		{ id: 'thinkorswim', name: 'thinkorswim', displayName: 'thinkorswim', icon: '📊', extension: '.ts' },
-		{ id: 'tradingview', name: 'tradingview', displayName: 'TradingView', icon: '📈', extension: '.pine' },
-		{ id: 'metatrader4', name: 'metatrader4', displayName: 'MetaTrader 4', icon: '💹', extension: '.mq4' },
-		{ id: 'metatrader5', name: 'metatrader5', displayName: 'MetaTrader 5', icon: '💹', extension: '.mq5' },
-		{ id: 'ninjatrader', name: 'ninjatrader', displayName: 'NinjaTrader', icon: '🥷', extension: '.cs' },
-		{ id: 'tradestation', name: 'tradestation', displayName: 'TradeStation', icon: '🚂', extension: '.eld' },
-		{ id: 'multicharts', name: 'multicharts', displayName: 'MultiCharts', icon: '📉', extension: '.pla' },
-		{ id: 'esignal', name: 'esignal', displayName: 'eSignal', icon: '📡', extension: '.efs' }
+		{ id: 'thinkorswim', name: 'thinkorswim', displayName: 'thinkorswim', icon: 'tos', extension: '.ts' },
+		{ id: 'tradingview', name: 'tradingview', displayName: 'TradingView', icon: 'tv', extension: '.pine' },
+		{ id: 'metatrader4', name: 'metatrader4', displayName: 'MetaTrader 4', icon: 'mt4', extension: '.mq4' },
+		{ id: 'metatrader5', name: 'metatrader5', displayName: 'MetaTrader 5', icon: 'mt5', extension: '.mq5' },
+		{ id: 'ninjatrader', name: 'ninjatrader', displayName: 'NinjaTrader', icon: 'nt', extension: '.cs' },
+		{ id: 'tradestation', name: 'tradestation', displayName: 'TradeStation', icon: 'ts', extension: '.eld' },
+		{ id: 'multicharts', name: 'multicharts', displayName: 'MultiCharts', icon: 'mc', extension: '.pla' },
+		{ id: 'esignal', name: 'esignal', displayName: 'eSignal', icon: 'es', extension: '.efs' }
 	];
 
 	const CATEGORIES = [
@@ -93,10 +93,10 @@
 	];
 
 	const DOC_TYPES = [
-		{ id: 'pdf', name: 'PDF Guide', icon: '📄' },
-		{ id: 'video', name: 'Video Tutorial', icon: '🎬' },
-		{ id: 'quickstart', name: 'Quick Start', icon: '🚀' },
-		{ id: 'faq', name: 'FAQ', icon: '❓' }
+		{ id: 'pdf', name: 'PDF Guide', icon: 'pdf' },
+		{ id: 'video', name: 'Video Tutorial', icon: 'video' },
+		{ id: 'quickstart', name: 'Quick Start', icon: 'quickstart' },
+		{ id: 'faq', name: 'FAQ', icon: 'faq' }
 	];
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -576,7 +576,9 @@
 	<div class="admin-page-container">
 		<!-- Header -->
 		<header class="page-header">
-			<div class="header-icon">✨</div>
+			<div class="header-icon">
+				<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+			</div>
 			<h1>Create New Indicator</h1>
 			<p class="subtitle">Build a downloadable indicator product for your members</p>
 		</header>
@@ -588,7 +590,7 @@
 				<!-- Basic Information Card -->
 				<section class="form-card">
 					<h2 class="card-title">
-						<span class="title-icon">📝</span>
+						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/><line x1="16" x2="8" y1="13" y2="13"/><line x1="16" x2="8" y1="17" y2="17"/><line x1="10" x2="8" y1="9" y2="9"/></svg></span>
 						Basic Information
 					</h2>
 
@@ -687,7 +689,7 @@
 				<!-- Platforms Card -->
 				<section class="form-card">
 					<h2 class="card-title">
-						<span class="title-icon">🖥️</span>
+						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="20" height="14" x="2" y="3" rx="2"/><line x1="8" x2="16" y1="21" y2="21"/><line x1="12" x2="12" y1="17" y2="21"/></svg></span>
 						Supported Platforms
 						<span class="required">*</span>
 					</h2>
@@ -701,10 +703,10 @@
 								class:selected={indicator.platforms.includes(platform.id)}
 								onclick={() => togglePlatform(platform.id)}
 							>
-								<span class="platform-icon">{platform.icon}</span>
+								<span class="platform-icon" data-platform={platform.id}></span>
 								<span class="platform-name">{platform.displayName}</span>
 								{#if indicator.platforms.includes(platform.id)}
-									<span class="check-icon">✓</span>
+									<svg class="check-icon" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>
 								{/if}
 							</button>
 						{/each}
@@ -721,7 +723,7 @@
 				{#if platformFiles.length > 0}
 					<section class="form-card">
 						<h2 class="card-title">
-							<span class="title-icon">📦</span>
+							<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
 							Platform Files
 						</h2>
 						<p class="card-description">Upload indicator files for each selected platform. Drag and drop or click to upload.</p>
@@ -754,7 +756,7 @@
 												<span>Uploading...</span>
 											{:else if pf.file}
 												<div class="file-info">
-													<span class="file-icon">📄</span>
+													<span class="file-icon"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg></span>
 													<div class="file-details">
 														<span class="file-name">{pf.file.name}</span>
 														<span class="file-size">{formatFileSize(pf.file.size)}</span>
@@ -771,7 +773,7 @@
 												</div>
 											{:else}
 												<div class="drop-content">
-													<span class="drop-icon">📤</span>
+													<span class="drop-icon"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg></span>
 													<span class="drop-text">Drop file here or click to browse</span>
 												</div>
 											{/if}
@@ -804,7 +806,7 @@
 				<!-- Documentation Card -->
 				<section class="form-card">
 					<h2 class="card-title">
-						<span class="title-icon">📚</span>
+						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg></span>
 						Documentation
 					</h2>
 					<p class="card-description">Upload PDF guides, quick start docs, or link to video tutorials.</p>
@@ -816,7 +818,7 @@
 									<div class="doc-header">
 										<select bind:value={doc.doc_type} class="doc-type-select">
 											{#each DOC_TYPES as dt}
-												<option value={dt.id}>{dt.icon} {dt.name}</option>
+												<option value={dt.id}>{dt.name}</option>
 											{/each}
 										</select>
 										<button
@@ -880,7 +882,7 @@
 				<!-- Pricing Card -->
 				<section class="form-card">
 					<h2 class="card-title">
-						<span class="title-icon">💰</span>
+						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" x2="12" y1="2" y2="22"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></span>
 						Pricing
 					</h2>
 
@@ -912,7 +914,7 @@
 				{#if indicator.platforms.includes('tradingview')}
 					<section class="form-card">
 						<h2 class="card-title">
-							<span class="title-icon">📈</span>
+							<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg></span>
 							TradingView Access
 						</h2>
 
@@ -933,7 +935,7 @@
 				<!-- Publishing Options -->
 				<section class="form-card">
 					<h2 class="card-title">
-						<span class="title-icon">🚀</span>
+						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
 						Publishing
 					</h2>
 
@@ -966,7 +968,7 @@
 				<!-- Thumbnail Upload -->
 				<section class="form-card sticky">
 					<h2 class="card-title">
-						<span class="title-icon">🖼️</span>
+						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg></span>
 						Thumbnail
 					</h2>
 
@@ -993,7 +995,7 @@
 							>×</button>
 						{:else}
 							<div class="drop-placeholder">
-								<span class="drop-icon-large">📷</span>
+								<span class="drop-icon-large"><svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg></span>
 								<span class="drop-title">Drop image here</span>
 								<span class="drop-subtitle">or click to browse</span>
 							</div>
@@ -1016,7 +1018,7 @@
 				<!-- Live Preview Card -->
 				<section class="form-card sticky-preview">
 					<h2 class="card-title">
-						<span class="title-icon">👁️</span>
+						<span class="title-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/></svg></span>
 						Live Preview
 					</h2>
 
@@ -1026,11 +1028,11 @@
 								<img src={indicator.thumbnail_url} alt="Preview" />
 							{:else}
 								<div class="preview-placeholder">
-									<span>📊</span>
+									<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
 								</div>
 							{/if}
 							{#if indicator.is_featured}
-								<span class="featured-badge">⭐ Featured</span>
+								<span class="featured-badge"><svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg> Featured</span>
 							{/if}
 						</div>
 						<div class="preview-content">
@@ -1070,14 +1072,14 @@
 		<!-- Error / Success Messages -->
 		{#if formError}
 			<div class="form-message error">
-				<span class="message-icon">⚠️</span>
+				<span class="message-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg></span>
 				{formError}
 			</div>
 		{/if}
 
 		{#if successMessage}
 			<div class="form-message success">
-				<span class="message-icon">✅</span>
+				<span class="message-icon"><svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg></span>
 				{successMessage}
 			</div>
 		{/if}
@@ -1177,8 +1179,21 @@
 	}
 
 	.header-icon {
-		font-size: 3rem;
-		margin-bottom: 0.5rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 80px;
+		height: 80px;
+		margin: 0 auto 1rem;
+		background: linear-gradient(135deg, #e6b800, #b38f00);
+		border-radius: 20px;
+		color: #fff;
+		box-shadow: 0 8px 32px rgba(230, 184, 0, 0.3);
+	}
+
+	.header-icon svg {
+		width: 48px;
+		height: 48px;
 	}
 
 	.page-header h1 {
@@ -1245,7 +1260,19 @@
 	}
 
 	.title-icon {
-		font-size: 1.25rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		background: rgba(230, 184, 0, 0.15);
+		border-radius: 8px;
+		color: #e6b800;
+	}
+
+	.title-icon svg {
+		width: 18px;
+		height: 18px;
 	}
 
 	.card-description {
@@ -1456,8 +1483,37 @@
 	}
 
 	.platform-icon {
-		font-size: 1.25rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		background: rgba(100, 116, 139, 0.3);
+		border-radius: 6px;
+		font-size: 0.625rem;
+		font-weight: 700;
+		text-transform: uppercase;
+		color: #94a3b8;
 	}
+
+	.platform-icon::after {
+		content: attr(data-platform);
+	}
+
+	.platform-chip.selected .platform-icon {
+		background: rgba(230, 184, 0, 0.3);
+		color: #e6b800;
+	}
+
+	/* Platform-specific colors */
+	.platform-icon[data-platform="thinkorswim"] { background: rgba(0, 150, 136, 0.2); color: #26a69a; }
+	.platform-icon[data-platform="tradingview"] { background: rgba(33, 150, 243, 0.2); color: #42a5f5; }
+	.platform-icon[data-platform="metatrader4"],
+	.platform-icon[data-platform="metatrader5"] { background: rgba(103, 58, 183, 0.2); color: #9575cd; }
+	.platform-icon[data-platform="ninjatrader"] { background: rgba(255, 152, 0, 0.2); color: #ffb74d; }
+	.platform-icon[data-platform="tradestation"] { background: rgba(244, 67, 54, 0.2); color: #ef5350; }
+	.platform-icon[data-platform="multicharts"] { background: rgba(76, 175, 80, 0.2); color: #66bb6a; }
+	.platform-icon[data-platform="esignal"] { background: rgba(156, 39, 176, 0.2); color: #ba68c8; }
 
 	.platform-name {
 		flex: 1;
@@ -1466,7 +1522,7 @@
 
 	.check-icon {
 		color: #22c55e;
-		font-weight: bold;
+		flex-shrink: 0;
 	}
 
 	.selected-count {
