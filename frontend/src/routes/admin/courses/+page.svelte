@@ -529,15 +529,14 @@
 {#if showQuickCreate}
 	<div
 		class="modal-overlay"
-		onclick={closeQuickCreate}
+		onclick={(e) => { if (e.target === e.currentTarget) closeQuickCreate(); }}
 		onkeydown={handleModalKeydown}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="modal-title"
 		tabindex="-1"
 	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div class="modal" role="document" onclick={(e) => e.stopPropagation()} onkeydown={(e) => e.stopPropagation()}>
+		<div class="modal" role="document">
 			<button class="modal-close" onclick={closeQuickCreate} aria-label="Close">
 				<svg
 					xmlns="http://www.w3.org/2000/svg"
@@ -777,41 +776,23 @@
 		margin-bottom: 1rem;
 	}
 
-	/* Search Box */
+	/* Search Box - Uses global .search-box styles from admin-page-layout.css */
 	.search-box {
-		position: relative;
+		min-width: 280px;
 	}
 
 	.search-box svg {
-		position: absolute;
-		left: 12px;
-		top: 50%;
-		transform: translateY(-50%);
+		flex-shrink: 0;
 		color: #64748b;
 	}
 
 	.search-box input {
-		width: 240px;
-		padding: 0.625rem 1rem 0.625rem 40px;
-		background: rgba(30, 41, 59, 0.6);
-		border: 1px solid rgba(148, 163, 184, 0.2);
-		border-radius: 8px;
-		color: #f1f5f9;
-		font-size: 0.875rem;
-	}
-
-	.search-box input:focus {
-		outline: none;
-		border-color: rgba(99, 102, 241, 0.5);
-	}
-
-	.search-box input::placeholder {
-		color: #64748b;
+		width: 100%;
 	}
 
 	/* Filter Select */
 	.filter-select {
-		padding: 0.625rem 1rem;
+		padding: 0.5rem 1rem;
 		background: rgba(30, 41, 59, 0.6);
 		border: 1px solid rgba(148, 163, 184, 0.2);
 		border-radius: 8px;
@@ -834,7 +815,7 @@
 		color: white;
 		border: none;
 		padding: 0.5rem 1rem;
-		border-radius: 6px;
+		border-radius: 8px;
 		font-size: 0.875rem;
 		font-weight: 500;
 		cursor: pointer;
