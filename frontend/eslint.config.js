@@ -1,3 +1,6 @@
+// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import storybook from "eslint-plugin-storybook";
+
 import js from '@eslint/js';
 import svelte from 'eslint-plugin-svelte';
 import globals from 'globals';
@@ -6,12 +9,12 @@ import ts from 'typescript-eslint';
 import prettier from 'eslint-config-prettier';
 
 export default ts.config(
-	js.configs.recommended,
-	...ts.configs.recommended,
-	...svelte.configs['flat/recommended'],
-	prettier,
-	...svelte.configs['flat/prettier'],
-	{
+    js.configs.recommended,
+    ...ts.configs.recommended,
+    ...svelte.configs['flat/recommended'],
+    prettier,
+    ...svelte.configs['flat/prettier'],
+    {
 		languageOptions: {
 			globals: {
 				...globals.browser,
@@ -19,7 +22,7 @@ export default ts.config(
 			}
 		}
 	},
-	{
+    {
 		files: ['**/*.svelte'],
 		languageOptions: {
 			parserOptions: {
@@ -27,13 +30,13 @@ export default ts.config(
 			}
 		}
 	},
-	{
+    {
 		files: ['**/*.cjs'],
 		rules: {
 			'@typescript-eslint/no-require-imports': 'off'
 		}
 	},
-	{
+    {
 		rules: {
 			// Enabled as warnings - use underscore prefix (_varName) for intentionally unused vars
 			'@typescript-eslint/no-unused-vars': [
@@ -55,7 +58,8 @@ export default ts.config(
 			'@typescript-eslint/no-unused-expressions': 'off'
 		}
 	},
-	{
+    {
 		ignores: ['build/', '.svelte-kit/', 'dist/']
-	}
+	},
+    storybook.configs["flat/recommended"]
 );
