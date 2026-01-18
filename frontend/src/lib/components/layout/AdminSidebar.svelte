@@ -311,22 +311,21 @@
 		height: 60%;
 	}
 
-	/* Sidebar Footer */
+	/* Sidebar Footer - Seamless with sidebar background */
 	.sidebar-footer {
 		padding: 1rem;
 		border-top: 1px solid var(--admin-border-light);
+		background: transparent;
 	}
 
-	/* User Info Card */
+	/* User Info - No card styling, blends with sidebar */
 	.user-info {
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		padding: 0.75rem;
-		background: var(--admin-surface-sunken);
-		border-radius: var(--radius-lg, 0.75rem);
+		padding: 0.5rem;
+		background: transparent;
 		margin-bottom: 0.75rem;
-		transition: background-color 0.3s ease;
 	}
 
 	.user-avatar {
