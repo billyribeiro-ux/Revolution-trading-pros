@@ -184,10 +184,18 @@
 	<title>Contact Tags - FluentCRM Pro</title>
 </svelte:head>
 
-<div class="page">
-	<!-- Header -->
-	<div class="page-header">
-		<h1>Contact Tags</h1>
+<div class="admin-crm-tags">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<!-- Header -->
+		<header class="page-header">
+			<h1>Contact Tags</h1>
 		<p class="subtitle">Label and categorize your contacts with tags</p>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={() => loadTags()} disabled={isLoading}>

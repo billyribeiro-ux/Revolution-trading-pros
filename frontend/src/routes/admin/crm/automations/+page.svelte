@@ -497,10 +497,18 @@
 <!-- Handle escape key for modal -->
 <svelte:window onkeydown={hasActiveModal ? handleModalKeydown : undefined} />
 
-<div class="page">
-	<!-- Header -->
-	<div class="page-header">
-		<h1>Automation Funnels</h1>
+<div class="admin-crm-automations">
+	<!-- Animated Background -->
+	<div class="bg-effects">
+		<div class="bg-blob bg-blob-1"></div>
+		<div class="bg-blob bg-blob-2"></div>
+		<div class="bg-blob bg-blob-3"></div>
+	</div>
+
+	<div class="admin-page-container">
+		<!-- Header -->
+		<header class="page-header">
+			<h1>Automation Funnels</h1>
 		<p class="subtitle">Create powerful marketing automations triggered by events</p>
 		<div class="header-actions">
 			<button class="btn-secondary" onclick={openImportModal} title="Import Automation">
