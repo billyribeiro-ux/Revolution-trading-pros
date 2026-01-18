@@ -793,12 +793,105 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════════
-	 * CSS Custom Properties - ICT11+ Responsive Nav Height
+	 * HERO SECTION DESIGN TOKENS - Netflix L11+ Cinematic Trading Hero
+	 * All hero-specific tokens scoped to this component
 	 * ═══════════════════════════════════════════════════════════════════════════════ */
 	:root {
+		/* Base */
 		--hero-bg: #050a12;
 		--hero-nav-height: 80px;
 		--hero-chart-opacity: 0.4;
+
+		/* Hero Background Gradients */
+		--hero-bg-primary: #0a0f1a;
+		--hero-bg-secondary: #0f172a;
+		--hero-bg-accent: rgba(99, 102, 241, 0.08);
+		--hero-bg-accent-secondary: rgba(139, 92, 246, 0.06);
+
+		/* Hero Chart Scene */
+		--hero-chart-bg: linear-gradient(
+			135deg,
+			rgba(15, 23, 42, 0.95) 0%,
+			rgba(30, 41, 59, 0.9) 50%,
+			rgba(15, 23, 42, 0.95) 100%
+		);
+		--hero-chart-border: rgba(99, 102, 241, 0.15);
+		--hero-chart-glow: rgba(99, 102, 241, 0.15);
+		--hero-chart-glow-secondary: rgba(139, 92, 246, 0.08);
+
+		/* Hero Grid */
+		--hero-grid-line: rgba(99, 102, 241, 0.03);
+		--hero-grid-line-accent: rgba(99, 102, 241, 0.2);
+
+		/* Hero Trading Colors */
+		--hero-candle-up: rgba(52, 211, 153, 0.7);
+		--hero-candle-down: rgba(239, 68, 68, 0.7);
+		--hero-candle-up-wick: rgba(52, 211, 153, 0.5);
+		--hero-candle-down-wick: rgba(239, 68, 68, 0.5);
+
+		/* Hero Support/Resistance */
+		--hero-resistance: rgba(239, 68, 68, 0.4);
+		--hero-support: rgba(52, 211, 153, 0.4);
+		--hero-target: rgba(250, 204, 21, 0.4);
+
+		/* Hero Price Tags */
+		--hero-price-tag-bg: rgba(15, 23, 42, 0.9);
+		--hero-price-tag-border: rgba(99, 102, 241, 0.2);
+
+		/* Hero Text */
+		--hero-text-primary: #ffffff;
+		--hero-text-secondary: rgba(255, 255, 255, 0.85);
+		--hero-text-muted: rgba(255, 255, 255, 0.6);
+		--hero-text-subtle: rgba(255, 255, 255, 0.5);
+
+		/* Hero CTA */
+		--hero-cta-primary-bg: linear-gradient(135deg, #facc15 0%, #f59e0b 100%);
+		--hero-cta-primary-text: #1f2937;
+		--hero-cta-primary-glow: rgba(250, 204, 21, 0.3);
+		--hero-cta-secondary-bg: rgba(255, 255, 255, 0.05);
+		--hero-cta-secondary-border: rgba(255, 255, 255, 0.15);
+
+		/* Hero Stats Strip */
+		--hero-stats-bg: rgba(15, 23, 42, 0.8);
+		--hero-stats-border: rgba(99, 102, 241, 0.1);
+
+		/* Hero Market Status */
+		--hero-market-open: rgb(52, 211, 153);
+		--hero-market-pre: rgb(250, 204, 21);
+		--hero-market-closed: rgb(156, 163, 175);
+
+		/* Hero Shadows */
+		--hero-shadow-sm: 0 4px 15px rgba(0, 0, 0, 0.2);
+		--hero-shadow-md: 0 8px 25px rgba(0, 0, 0, 0.3);
+		--hero-shadow-lg: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+		--hero-shadow-glow: 0 0 60px rgba(99, 102, 241, 0.15);
+
+		/* Hero Animation Timing */
+		--hero-transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+		--hero-transition-base: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+		--hero-transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+		--hero-ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+		--hero-ease-back: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+	}
+
+	/* Hero Utility Classes */
+	.hero-gradient-text {
+		background: linear-gradient(135deg, #facc15 0%, #f59e0b 50%, #facc15 100%);
+		background-clip: text;
+		-webkit-background-clip: text;
+		-webkit-text-fill-color: transparent;
+		background-size: 200% 100%;
+	}
+
+	.hero-glass {
+		background: var(--hero-stats-bg);
+		border: 1px solid var(--hero-stats-border);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+	}
+
+	.hero-glow {
+		box-shadow: var(--hero-shadow-glow);
 	}
 
 	/* ICT11+ Fix: Match responsive navbar heights */
