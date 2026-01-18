@@ -232,7 +232,7 @@
 	/* Section Title - Montserrat 600 for overlines/small headings */
 	.nav-section-title {
 		font-family: var(--font-heading), 'Montserrat', sans-serif;
-		font-size: 0.6875rem;
+		font-size: 0.8125rem;
 		font-weight: 600;
 		color: var(--admin-nav-section-title);
 		text-transform: uppercase;
