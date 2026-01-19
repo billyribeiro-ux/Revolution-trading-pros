@@ -115,29 +115,8 @@
 		{@render children()}
 
 		<MarketingFooter />
-<<<<<<< /Users/user/Documents/revolution-svelte/frontend/src/routes/+layout.svelte
 
 		<!-- Hydration-safe: Consent components only after client mount -->
-=======
-		{#if mounted}
-			<ConsentBanner />
-			<ConsentPreferencesModal />
-			<ConsentSettingsButton position="bottom-left" />
-		{/if}
-	</div>
-{:else}
-	<!-- Marketing pages: No wrapper bg/text - pages define their own themes -->
-	<!-- REMOVED nested <main> - pages have their own semantic <main> tags -->
-	<div class="min-h-screen" class:has-admin-toolbar={isAdmin}>
-		<!-- ICT9+ Hydration-Safe: Only render AdminToolbar after client mount -->
-		{#if mounted}
-			<AdminToolbar />
-		{/if}
-		<NavBar />
-		{@render children()}
-		<MarketingFooter />
-		<!-- ICT9+ Hydration-Safe: Only render consent components after client mount -->
->>>>>>> /Users/user/.windsurf/worktrees/revolution-svelte/revolution-svelte-36d236e3/frontend/src/routes/+layout.svelte
 		{#if mounted}
 			<ConsentBanner />
 			<ConsentPreferencesModal />
