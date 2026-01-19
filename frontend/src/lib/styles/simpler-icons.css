@@ -5,6 +5,23 @@
  * Source: Navigation_Complete_With_CSS_JS.html
  * 
  * Usage: <span class="st-icon-home"></span>
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════
+ * USED BY (when app.css is active):
+ * ───────────────────────────────────────────────────────────────────────────
+ * ADMIN PAGES:
+ * - /admin/* (Dashboard navigation icons)
+ * 
+ * DASHBOARD PAGES:
+ * - /dashboard/* (Member dashboard navigation)
+ * 
+ * TRADING ROOM PAGES:
+ * - /live-trading-rooms/* (Room navigation and features)
+ * 
+ * ICONS INCLUDED:
+ * - st-icon-home, st-icon-courses, st-icon-indicators, st-icon-alerts
+ * - st-icon-rooms, st-icon-settings, st-icon-profile, st-icon-logout
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 /* Base icon class */
@@ -67,9 +84,13 @@
 .st-icon-forum::before {
 	content: '\e90e';
 }
-.st-icon-training-room::before {
+.st-icon-logout::before {
 	content: '\e90f';
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: Simpler Trading Icon Font
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* Additional icon sizes */
 .st-icon-sm {

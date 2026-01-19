@@ -295,3 +295,23 @@ img {
 		url('/fonts/inter-bold.woff2') format('woff2'),
 		url('/fonts/inter-bold.woff') format('woff');
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * USED BY:
+ * ───────────────────────────────────────────────────────────────────────────
+ * TRADING ROOM PAGES:
+ * - /live-trading-rooms/day-trading
+ * - /live-trading-rooms/swing-trading
+ * - /live-trading-rooms/small-account-mentorship
+ * - /live-trading-rooms/spx-profit-pulse
+ * - /live-trading-rooms/explosive-swing
+ * 
+ * COMPONENTS:
+ * - Performance charts and metrics
+ * - Win rate visualizations
+ * - Trade history tables
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: Trading Rooms Performance Styles
+ * ═══════════════════════════════════════════════════════════════════════════ */

@@ -6,6 +6,23 @@
  * 
  * @version 1.0.0
  * @author Revolution Trading Pros
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════
+ * USED BY (when app.css is active):
+ * ───────────────────────────────────────────────────────────────────────────
+ * ADMIN PAGES:
+ * - /admin/* (Dashboard, Coupons, Members, Analytics, Email Settings, CRM)
+ * 
+ * DASHBOARD PAGES:
+ * - /dashboard/* (Member Dashboard, My Classes, My Indicators, Watchlist)
+ * 
+ * MEMBER PAGES:
+ * - /account/* (Settings, Billing, Subscriptions)
+ * 
+ * IMPORTS:
+ * - Design Tokens (colors, shadows, spacing, transitions, typography)
+ * - Base Styles (reset, global, admin-page-layout)
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 /* Design Tokens */
@@ -13,3 +30,7 @@
 
 /* Base Styles */
 @import './base/index.css';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: RTP Admin Design System
+ * ═══════════════════════════════════════════════════════════════════════════ */
