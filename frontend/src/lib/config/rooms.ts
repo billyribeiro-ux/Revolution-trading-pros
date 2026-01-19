@@ -58,24 +58,14 @@ export const ROOMS: Room[] = [
 		color: '#8b5cf6',
 		icon: '🎯'
 	},
-	// Alerts Only Services
-	{
-		id: 'alerts-only',
-		slug: 'alerts-only',
-		name: 'Alerts Only',
-		shortName: 'AO',
-		type: 'alerts-only',
-		membershipId: 4,
-		color: '#f59e0b',
-		icon: '🔔'
-	},
+	// Alert Services
 	{
 		id: 'explosive-swings',
 		slug: 'explosive-swings',
 		name: 'Explosive Swings',
 		shortName: 'ES',
 		type: 'alerts-only',
-		membershipId: 5,
+		membershipId: 4,
 		color: '#ef4444',
 		icon: '💥'
 	},
@@ -85,7 +75,7 @@ export const ROOMS: Room[] = [
 		name: 'SPX Profit Pulse',
 		shortName: 'SPX',
 		type: 'alerts-only',
-		membershipId: 6,
+		membershipId: 5,
 		color: '#ec4899',
 		icon: '💰'
 	}

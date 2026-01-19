@@ -58,8 +58,6 @@
 				return IconFlame;
 			case 'spx-profit-pulse':
 				return IconTrendingUp;
-			case 'alerts-only':
-				return IconBell;
 			default:
 				return IconTargetArrow;
 		}
