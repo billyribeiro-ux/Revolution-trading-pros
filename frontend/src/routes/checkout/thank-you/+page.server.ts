@@ -7,7 +7,7 @@
  *
  * @version 2.0.0 - Complete Order Details Integration
  */
-import type { Load } from '@sveltejs/kit';
+import type { ServerLoad } from '@sveltejs/kit';
 import { API_BASE_URL } from '$lib/api/config';
 
 // Disable prerendering - this page requires dynamic URL parameters
@@ -49,7 +49,7 @@ export interface OrderDetail {
 	completed_at: string | null;
 }
 
-export const load: Load = async ({ url, fetch, cookies }) => {
+export const load: ServerLoad = async ({ url, fetch, cookies }) => {
 	// Extract order details from URL parameters
 	const orderNumber = url.searchParams.get('order');
 	const productName = url.searchParams.get('product');
