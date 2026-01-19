@@ -4,7 +4,7 @@
  * COMPLETELY INDEPENDENT from global app.css
  * All variables prefixed with explosive- for easy identification
  * 
- * @version 1.0.0
+ * @version 2.0.0 - Fixed Tailwind import
  * 
  * ═══════════════════════════════════════════════════════════════════════════
  * USED BY:
@@ -19,6 +19,9 @@
  * - Trader testimonials and success stories
  * ═══════════════════════════════════════════════════════════════════════════
  */
+
+/* Import Tailwind CSS - Required since app.css is disabled */
+@import 'tailwindcss';
 
 /* Register Explosive Swings-specific colors as Tailwind utilities */
 @theme {
