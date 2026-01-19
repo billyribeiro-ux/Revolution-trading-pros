@@ -150,9 +150,12 @@
 		border-top: 1px solid rgba(99, 102, 241, 0.1);
 		padding: 4rem 0 2rem;
 		width: 100%;
+		max-width: 100%;
 		min-width: 0;
 		flex-shrink: 0;
-		/* margin-top: auto removed - flex-1 min-h-0 on main handles layout */
+		margin-top: auto; /* Ensures footer sticks to bottom when content is short */
+		overflow-x: clip; /* Prevents any horizontal overflow from breaking layout */
+		contain: layout style paint; /* CSS containment for rendering optimization */
 	}
 
 	.footer-container {
