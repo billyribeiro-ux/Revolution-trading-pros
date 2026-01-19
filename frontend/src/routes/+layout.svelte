@@ -102,15 +102,15 @@
 		{/if}
 	</div>
 {:else}
-	<div class="min-h-screen bg-white text-[#666666]" class:has-admin-toolbar={isAdmin}>
+	<!-- Marketing pages: No wrapper bg/text - pages define their own themes -->
+	<!-- REMOVED nested <main> - pages have their own semantic <main> tags -->
+	<div class="min-h-screen" class:has-admin-toolbar={isAdmin}>
 		<!-- ICT9+ Hydration-Safe: Only render AdminToolbar after client mount -->
 		{#if mounted}
 			<AdminToolbar />
 		{/if}
 		<NavBar />
-		<main>
-			{@render children()}
-		</main>
+		{@render children()}
 		<MarketingFooter />
 		<!-- ICT9+ Hydration-Safe: Only render consent components after client mount -->
 		{#if mounted}
