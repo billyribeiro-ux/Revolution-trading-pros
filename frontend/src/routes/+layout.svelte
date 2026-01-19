@@ -10,7 +10,7 @@
 	 * - Uses SvelteKit's afterNavigate for page view tracking
 	 * - Prevents GA4 from using history.pushState (conflicts with SvelteKit router)
 	 */
-	// import '../app.css'; // Temporarily commented out - sections work independently
+	// import '../app.css'; // COMMENTED OUT - Frontpage sections are independent
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
 	import { NavBar } from '$lib/components/nav';
 	import { MarketingFooter } from '$lib/components/layout';
