@@ -1022,7 +1022,7 @@
 							<span class="text-emerald-500 font-bold">✓</span> Full Trade Management
 						</li>
 					</ul>
-					
+					<a
 						href={pricing.quarterly.link}
 						class="block w-full py-4 bg-emerald-500 text-slate-900 font-bold rounded-xl text-center hover:bg-emerald-400 transition-colors shadow-lg"
 					>
@@ -1060,7 +1060,7 @@
 							<span class="text-emerald-500">✓</span> Private Discord Community
 						</li>
 					</ul>
-					
+					<a
 						href={pricing.annual.link}
 						class="block w-full py-3 bg-slate-950 border border-emerald-500 text-emerald-500 font-bold rounded-lg text-center hover:bg-emerald-500 hover:text-slate-900 transition-colors"
 					>
@@ -1149,7 +1149,7 @@
 
 			<div class="animate-fade-in delay-500 text-center mt-12">
 				<p class="text-slate-500">Still have questions?</p>
-				
+				<a
 					href="/contact"
 					class="text-emerald-500 hover:text-emerald-400 font-bold mt-2 inline-block border-b border-emerald-500/30 pb-0.5"
 				>
@@ -1175,7 +1175,7 @@
 				Join the trading room that values your time as much as your capital. Instant alerts,
 				verified results, and a community of winners.
 			</p>
-			
+			<a
 				href="#pricing"
 				class="animate-fade-in-up delay-200 inline-block bg-white text-emerald-800 px-10 py-5 rounded-xl font-bold text-lg hover:bg-emerald-50 transition-all shadow-2xl hover:-translate-y-1"
 			>
