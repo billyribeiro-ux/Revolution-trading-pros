@@ -6,7 +6,7 @@
 	@version 2.0.0
 -->
 <script lang="ts">
-	import { page } from '$app/state';
+	import { page } from '$app/stores';
 	import { getTraderBySlug } from '$lib/data/traders';
 
 	interface Strategy {
@@ -19,7 +19,7 @@
 		keyPoints: string[];
 	}
 
-	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
+	let trader = $derived(getTraderBySlug($page.params.slug ?? ''));
 
 	// Trader-specific strategies - in production, fetch from API
 	const strategies: Strategy[] = [

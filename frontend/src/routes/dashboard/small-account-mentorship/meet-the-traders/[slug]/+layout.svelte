@@ -7,7 +7,7 @@
 	@version 1.0.0
 -->
 <script lang="ts">
-	import { page } from '$app/state';
+	import { page } from '$app/stores';
 	import { getTraderBySlug, type Trader } from '$lib/data/traders';
 	import TraderHeader from '$lib/components/traders/TraderHeader.svelte';
 	import TraderNav from '$lib/components/traders/TraderNav.svelte';
@@ -15,10 +15,10 @@
 
 	let { children }: { children: Snippet } = $props();
 
-	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
+	let trader = $derived(getTraderBySlug($page.params.slug ?? ''));
 	let currentPath = $derived.by(() => {
-		const slug = page.params.slug;
-		const fullPath = page.url.pathname;
+		const slug = $page.params.slug;
+		const fullPath = $page.url.pathname;
 		const basePath = `/dashboard/small-account-mentorship/meet-the-traders/${slug}`;
 		return fullPath.replace(basePath, '') || '';
 	});

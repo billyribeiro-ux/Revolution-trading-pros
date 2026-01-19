@@ -6,7 +6,7 @@
 	@version 2.0.0
 -->
 <script lang="ts">
-	import { page } from '$app/state';
+	import { page } from '$app/stores';
 	import { getTraderBySlug } from '$lib/data/traders';
 
 	interface Product {
@@ -20,7 +20,7 @@
 		featured?: boolean;
 	}
 
-	let trader = $derived(getTraderBySlug(page.params.slug ?? ''));
+	let trader = $derived(getTraderBySlug($page.params.slug ?? ''));
 
 	// Trader-specific products - in production, fetch from API
 	const products: Product[] = [

@@ -15,7 +15,7 @@
 -->
 <script lang="ts">
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
-	import { page } from '$app/state';
+	import { page } from '$app/stores';
 
 	interface DownloadFile {
 		name: string;
@@ -54,7 +54,7 @@
 
 	// Get indicator ID from URL - access directly in derived context
 	let indicator = $derived.by(() => {
-		const id = page.params.id;
+		const id = $page.params.id;
 		return {
 			id: id,
 			name: 'Volume Max Tool Kit (formerly VWAP)',
