@@ -152,7 +152,7 @@
 		width: 100%;
 		min-width: 0;
 		flex-shrink: 0;
-		margin-top: auto;
+		/* margin-top: auto removed - flex-1 min-h-0 on main handles layout */
 	}
 
 	.footer-container {
