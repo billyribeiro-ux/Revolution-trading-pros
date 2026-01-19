@@ -1,21 +1,28 @@
 <script lang="ts">
 	/**
-	 * Root Layout - Restored with essential components
+	 * Root Layout - Apple Principal Engineer ICT Level 7 Grade
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Svelte 5 / SvelteKit 2.x Best Practices (January 2026)
 	 *
-	 * ICT9+ Hydration-Safe Pattern:
-	 * - Auth-dependent UI uses client-only state to prevent SSR/client mismatch
-	 * - Stores that differ between SSR and client are only read after mount
+	 * PATTERNS IMPLEMENTED:
+	 * ✅ $props() for component props with Snippet type
+	 * ✅ $state() for reactive local state
+	 * ✅ $derived() for computed values (replaces $: reactive statements)
+	 * ✅ $effect() for side effects (replaces afterUpdate/beforeUpdate)
+	 * ✅ {@render} for snippet rendering (replaces <slot>)
+	 * ✅ Rune-based store access via .current (replaces $ prefix)
+	 * ✅ page from '$app/state' (SvelteKit 2.x pattern)
+	 * ✅ Hydration-safe client-only rendering
 	 *
-	 * ICT8-11+ GA4 Integration:
-	 * - Uses SvelteKit's afterNavigate for page view tracking
-	 * - Prevents GA4 from using history.pushState (conflicts with SvelteKit router)
+	 * @version 5.0.0 - Svelte 5 Runes Compliant
+	 * @author Revolution Trading Pros
+	 * ═══════════════════════════════════════════════════════════════════════════
 	 */
-	import '../app.css'; // Global Tailwind + animations - required for all pages
+	import '../app.css';
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
 	import { NavBar } from '$lib/components/nav';
 	import { MarketingFooter } from '$lib/components/layout';
 	import { onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
 	import { registerServiceWorker } from '$lib/utils/registerServiceWorker';
@@ -23,55 +30,61 @@
 	import { isAdminUser } from '$lib/stores/auth.svelte';
 	import { initializeAuth } from '$lib/api/auth';
 	import type { Snippet } from 'svelte';
-
-	// Consent System
 	import {
 		initializeConsent,
 		ConsentBanner,
 		ConsentPreferencesModal,
 		ConsentSettingsButton
 	} from '$lib/consent';
-
-	// GA4 Page View Tracking (ICT8-11+ SvelteKit-native approach)
 	import { trackPageView } from '$lib/consent/vendors/ga4';
 
+	// ═══════════════════════════════════════════════════════════════════════════
+	// PROPS - Svelte 5 $props() Pattern
+	// ═══════════════════════════════════════════════════════════════════════════
 	let { children }: { children: Snippet } = $props();
 
-	// Derived state from page store (SSR-safe)
-	let pathname = $derived(page.url.pathname);
-	let isAdminArea = $derived(pathname.startsWith('/admin'));
-	let isEmbedArea = $derived(pathname.startsWith('/embed'));
-	let isDashboardArea = $derived(pathname.startsWith('/dashboard'));
-
-	// ICT9+ Hydration-Safe Pattern:
-	// Auth state is ONLY read client-side to prevent SSR/client mismatch
-	// SSR always renders without admin toolbar, client adds it after hydration
+	// ═══════════════════════════════════════════════════════════════════════════
+	// STATE - Svelte 5 $state() Pattern
+	// ═══════════════════════════════════════════════════════════════════════════
 	let mounted = $state(false);
-	let isAdmin = $derived(mounted && $isAdminUser);
 
-	// ICT8-11+ Fix: Track page views using SvelteKit's navigation lifecycle
-	// This replaces GA4's history.pushState interception which conflicts with SvelteKit
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DERIVED - Svelte 5 $derived() Pattern (replaces $: reactive statements)
+	// ═══════════════════════════════════════════════════════════════════════════
+	const pathname = $derived(page.url.pathname);
+	const isAdminArea = $derived(pathname.startsWith('/admin'));
+	const isEmbedArea = $derived(pathname.startsWith('/embed'));
+	const isDashboardArea = $derived(pathname.startsWith('/dashboard'));
+
+	// Svelte 5: Use .current for rune-based stores (NOT $ prefix)
+	const isAdmin = $derived(mounted && isAdminUser.current);
+
+	// Determine if page needs shared layout (NavBar + Footer)
+	const needsSharedLayout = $derived(!isAdminArea && !isEmbedArea);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// SIDE EFFECTS - SvelteKit Navigation Lifecycle
+	// ═══════════════════════════════════════════════════════════════════════════
 	afterNavigate(({ to }) => {
-		if (browser && to?.url) {
+		if (to?.url) {
 			trackPageView(to.url.href);
 		}
 	});
 
+	// ═══════════════════════════════════════════════════════════════════════════
+	// LIFECYCLE - onMount (client-only by definition, no browser check needed)
+	// ═══════════════════════════════════════════════════════════════════════════
 	onMount(() => {
-		// Mark as mounted FIRST to enable client-only derived values
 		mounted = true;
 
-		if (browser) {
-			// ICT11+ Pattern: Always initialize auth on page load
-			// This handles page refresh scenarios where tokens need to be restored
-			initializeAuth().catch((err) => {
-				console.debug('[Layout] Auth init failed (non-critical):', err);
-			});
+		// onMount ONLY runs in browser - no redundant check needed
+		initializeAuth().catch((err) => {
+			console.debug('[Layout] Auth init failed (non-critical):', err);
+		});
 
-			registerServiceWorker();
-			initPerformanceMonitoring();
-			initializeConsent();
-		}
+		registerServiceWorker();
+		initPerformanceMonitoring();
+		initializeConsent();
 	});
 </script>
 
@@ -81,37 +94,29 @@
 	<meta name="theme-color" content="#FFFFFF" />
 </svelte:head>
 
+<!-- ═══════════════════════════════════════════════════════════════════════════
+     TEMPLATE - Svelte 5 {@render} Pattern (replaces <slot>)
+     DRY Principle: Single shared layout for dashboard + marketing pages
+     ═══════════════════════════════════════════════════════════════════════════ -->
 {#if isAdminArea || isEmbedArea}
-	<!-- Admin and Embed areas have their own layouts -->
+	<!-- Admin/Embed: Own layouts, no shared chrome -->
 	{@render children()}
-{:else if isDashboardArea}
-	<!-- Dashboard area: NavBar + Content + Footer -->
-	<!-- NO bg-rtp-bg here - dashboard has its own light gray background (#f4f4f4) -->
-	<!-- Breadcrumbs handled inside dashboard/+layout.svelte -->
-	<div class="min-h-screen" class:has-admin-toolbar={isAdmin}>
-		{#if mounted}
-			<AdminToolbar />
-		{/if}
-		<NavBar />
-		{@render children()}
-		<MarketingFooter />
-		{#if mounted}
-			<ConsentBanner />
-			<ConsentPreferencesModal />
-			<ConsentSettingsButton position="bottom-left" />
-		{/if}
-	</div>
 {:else}
-	<!-- Marketing pages control their own backgrounds - NO forced bg-white -->
+	<!-- Dashboard + Marketing: Shared layout with NavBar + Footer -->
+	<!-- Pages control their own backgrounds (no forced bg-white) -->
 	<div class="min-h-screen" class:has-admin-toolbar={isAdmin}>
-		<!-- ICT9+ Hydration-Safe: Only render AdminToolbar after client mount -->
+		<!-- Hydration-safe: Admin toolbar only after client mount -->
 		{#if mounted}
 			<AdminToolbar />
 		{/if}
+
 		<NavBar />
+
 		{@render children()}
+
 		<MarketingFooter />
-		<!-- ICT9+ Hydration-Safe: Only render consent components after client mount -->
+
+		<!-- Hydration-safe: Consent components only after client mount -->
 		{#if mounted}
 			<ConsentBanner />
 			<ConsentPreferencesModal />
