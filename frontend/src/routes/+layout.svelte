@@ -116,7 +116,7 @@
 			{@render children()}
 		</main>
 
-		<MarketingFooter />
+		<!-- <MarketingFooter /> -->
 
 		<!-- Hydration-safe: Consent components only after client mount -->
 		<!-- {#if mounted}
