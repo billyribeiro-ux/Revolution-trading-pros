@@ -1,10 +1,16 @@
 /**
- * SPX Profit Pulse - Isolated Marketing Page Styles
+ * SPX Profit Pulse - Page-Specific Styles
  * ═══════════════════════════════════════════════════════════════════════════
- * COMPLETELY INDEPENDENT from global app.css
+ * Page: /alerts/spx-profit-pulse
+ * 
+ * This file contains ONLY:
+ * - CSS custom properties (theme variables)
+ * - SPX-specific color palette
+ * 
+ * TAILWIND: Loaded globally via app.css in root +layout.svelte
  * All variables prefixed with spx- for easy identification
  * 
- * @version 2.0.0 - Fixed Tailwind import
+ * @version 3.0.0 - Removed duplicate Tailwind import
  * 
  * ═══════════════════════════════════════════════════════════════════════════
  * USED BY:
@@ -19,9 +25,6 @@
  * - Real-time signal metrics and performance stats
  * ═══════════════════════════════════════════════════════════════════════════
  */
-
-/* Import Tailwind CSS - Required since app.css is disabled */
-@import 'tailwindcss';
 
 /* Register SPX-specific colors as Tailwind utilities */
 @theme {
