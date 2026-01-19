@@ -22,8 +22,8 @@
 .dashboard__content-sidebar {
 	flex: 0 0 300px;
 	width: 300px;
-	background: var(--bg-elevated, #161b22);
-	border-left: 1px solid var(--border-default, #30363d);
+	background: var(--color-rtp-surface, #fff);
+	border-left: 1px solid var(--color-rtp-border, #e5e5e5);
 	padding: 0;
 }
 
@@ -34,8 +34,8 @@
 	align-items: center;
 	justify-content: space-between;
 	padding: 30px;
-	background: var(--bg-elevated, #161b22);
-	border-bottom: 1px solid var(--border-default, #30363d);
+	background: var(--color-rtp-surface, #fff);
+	border-bottom: 1px solid var(--color-rtp-border, #e5e5e5);
 }
 
 .dashboard__header-left {
@@ -54,7 +54,7 @@
 
 .dashboard__page-title {
 	margin: 0;
-	color: var(--text-primary, #f0f6fc);
+	color: #333;
 	font-size: 28px;
 	font-weight: 700;
 	font-family: var(--font-heading), 'Montserrat', sans-serif;
@@ -73,7 +73,7 @@
 .section-title {
 	font-size: 28px;
 	font-weight: 800;
-	color: var(--text-primary, #f0f6fc);
+	color: #191717;
 	margin: 0 0 20px;
 	font-family: var(--font-heading), 'Montserrat', sans-serif;
 }
@@ -81,7 +81,7 @@
 .section-title-alt {
 	font-size: 28px;
 	font-weight: 800;
-	color: var(--text-primary, #f0f6fc);
+	color: #191717;
 	margin: 0 0 16px;
 	font-family: var(--font-heading), 'Montserrat', sans-serif;
 }
@@ -95,7 +95,7 @@
 /* Content Sidebar Sections */
 .content-sidebar__section {
 	padding: 30px;
-	border-bottom: 1px solid var(--border-default, #30363d);
+	border-bottom: 1px solid #e5e5e5;
 }
 
 .content-sidebar__section:last-child {
@@ -106,7 +106,7 @@
 	font-size: 16px;
 	font-weight: 700;
 	text-transform: uppercase;
-	color: var(--text-primary, #f0f6fc);
+	color: #191717;
 	margin: 0 0 15px;
 	font-family: var(--font-heading), 'Montserrat', sans-serif;
 }
@@ -137,7 +137,7 @@
 
 /* Utility Classes */
 .u--background-color-white {
-	background-color: var(--bg-elevated, #161b22);
+	background-color: #fff;
 }
 
 .u--border-radius {
@@ -278,7 +278,7 @@
 		flex: 1 1 auto;
 		width: 100%;
 		border-left: none;
-		border-top: 1px solid var(--border-default, #30363d);
+		border-top: 1px solid #e5e5e5;
 	}
 }
 
