@@ -42,10 +42,6 @@
 
 	// --- Icon SVG ---
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// TEMPORARILY DISABLED - Testing layout collapse culprit
-	// ═══════════════════════════════════════════════════════════════════════════
-	/*
 	// --- Apple ICT9+ Scroll Animations ---
 	// Smooth, performant reveal animations using IntersectionObserver
 
@@ -94,15 +90,6 @@
 			destroy() {
 				observer.disconnect();
 			}
-		};
-	}
-	*/
-
-	// NO-OP replacement - elements render immediately without animation
-	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
-		// Do nothing - elements are visible by default
-		return {
-			destroy() {}
 		};
 	}
 
@@ -229,9 +216,9 @@
 />
 
 <main
-	class="w-full overflow-x-hidden overflow-y-visible bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
+	class="w-full bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
 >
-	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-20 lg:py-0">
+	<section class="relative min-h-[90vh] flex items-center py-20 lg:py-0">
 		<div class="absolute inset-0 z-0 pointer-events-none">
 			<div
 				class="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:48px_48px] opacity-40"
@@ -245,7 +232,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center overflow-hidden"
+			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
 		>
 			<div class="text-center lg:text-left">
 				<div
@@ -367,7 +354,7 @@
 				</div>
 			</div>
 
-			<div class="hidden lg:block relative perspective-1000 overflow-hidden">
+			<div class="hidden lg:block relative perspective-1000">
 				<div
 					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-500/20 to-transparent rounded-full blur-3xl"
 				></div>
