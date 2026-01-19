@@ -9,7 +9,48 @@
 	 * @version 1.0.0 (December 2025)
 	 */
 
+	import { onMount } from 'svelte';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+
+	// Register GSAP plugin
+	if (typeof window !== 'undefined') {
+		gsap.registerPlugin(ScrollTrigger);
+	}
+
+	// --- GSAP ScrollTrigger Animations ---
+	onMount(() => {
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		
+		if (prefersReducedMotion) {
+			gsap.set('[data-gsap]', { opacity: 1, y: 0 });
+			return;
+		}
+
+		gsap.set('[data-gsap]', { opacity: 0, y: 30 });
+
+		ScrollTrigger.batch('[data-gsap]', {
+			onEnter: (batch) => {
+				gsap.to(batch, {
+					opacity: 1,
+					y: 0,
+					duration: 0.8,
+					ease: 'power3.out',
+					stagger: 0.1,
+					overwrite: true
+				});
+			},
+			start: 'top 85%',
+			once: true
+		});
+
+		ScrollTrigger.refresh();
+
+		return () => {
+			ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+		};
+	});
 
 	// Alert Services Data
 	const alertServices = [
@@ -53,49 +94,6 @@
 		}
 	];
 
-	// --- Apple ICT9+ Scroll Animations ---
-
-	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
-		const delay = params.delay ?? 0;
-		const translateY = params.y ?? 30;
-
-		if (
-			typeof window !== 'undefined' &&
-			window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		) {
-			return;
-		}
-
-		node.style.opacity = '0';
-		node.style.transform = `translateY(${translateY}px)`;
-		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
-		node.style.transitionDelay = `${delay}ms`;
-		node.style.willChange = 'opacity, transform';
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						node.style.opacity = '1';
-						node.style.transform = 'translateY(0)';
-						setTimeout(() => {
-							node.style.willChange = 'auto';
-						}, 800 + delay);
-						observer.unobserve(node);
-					}
-				});
-			},
-			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
-		);
-
-		observer.observe(node);
-
-		return {
-			destroy() {
-				observer.disconnect();
-			}
-		};
-	}
 </script>
 
 <SEOHead
@@ -118,15 +116,15 @@
 	<section class="hero">
 		<div class="hero-bg"></div>
 		<div class="hero-content">
-			<span class="hero-badge" use:reveal={{ delay: 0 }}>
+			<span class="hero-badge" data-gsap>
 				<span class="badge-dot"></span>
 				Alert Services
 			</span>
-			<h1 use:reveal={{ delay: 100 }}>
+			<h1 data-gsap>
 				Trade Alerts<br />
 				<span class="gradient-text">Delivered.</span>
 			</h1>
-			<p use:reveal={{ delay: 200 }}>
+			<p data-gsap>
 				Stop guessing. Get high-probability trade alerts sent directly to your phone. Choose the
 				service that matches your style.
 			</p>
@@ -135,14 +133,14 @@
 
 	<!-- Comparison Section -->
 	<section class="comparison-section">
-		<div class="comparison-header" use:reveal>
+		<div class="comparison-header" data-gsap>
 			<h2>Choose Your Alert Service</h2>
 			<p>Both services include real-time alerts, risk management, and community access.</p>
 		</div>
 
 		<div class="services-grid">
 			{#each alertServices as service, i}
-				<article class="service-card service-card--{service.color}" use:reveal={{ delay: i * 150 }}>
+				<article class="service-card service-card--{service.color}" data-gsap={{ delay: i * 150 }}>
 					<div class="service-header">
 						<span class="service-icon">{service.icon}</span>
 						<div>
@@ -220,24 +218,24 @@
 	<!-- How It Works -->
 	<section class="how-section">
 		<div class="how-content">
-			<h2 use:reveal>How It Works</h2>
+			<h2 data-gsap>How It Works</h2>
 			<div class="steps-grid">
-				<div class="step" use:reveal={{ delay: 0 }}>
+				<div class="step" data-gsap>
 					<div class="step-number">1</div>
 					<h3>Subscribe</h3>
 					<p>Choose your alert service and complete checkout. Instant access upon payment.</p>
 				</div>
-				<div class="step" use:reveal={{ delay: 100 }}>
+				<div class="step" data-gsap>
 					<div class="step-number">2</div>
 					<h3>Connect</h3>
 					<p>Join our Discord, set up SMS alerts, and configure your notification preferences.</p>
 				</div>
-				<div class="step" use:reveal={{ delay: 200 }}>
+				<div class="step" data-gsap>
 					<div class="step-number">3</div>
 					<h3>Trade</h3>
 					<p>Receive alerts with entry, target, and stop levels. Execute and manage your trades.</p>
 				</div>
-				<div class="step" use:reveal={{ delay: 300 }}>
+				<div class="step" data-gsap>
 					<div class="step-number">4</div>
 					<h3>Learn</h3>
 					<p>Review trade breakdowns, attend live sessions, and improve your skills over time.</p>

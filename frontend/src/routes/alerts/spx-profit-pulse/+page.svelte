@@ -1,8 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { fade, slide, fly } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+
+	// Register GSAP plugin
+	if (typeof window !== 'undefined') {
+		gsap.registerPlugin(ScrollTrigger);
+	}
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -11,60 +18,37 @@
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
-	// --- Apple ICT9+ Scroll Animations ---
-	// Smooth, performant reveal animations using IntersectionObserver
-	let mounted = $state(false);
-
-	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
-		const delay = params.delay ?? 0;
-		const translateY = params.y ?? 30;
-
-		// Check for reduced motion preference
-		if (
-			typeof window !== 'undefined' &&
-			window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		) {
+	// --- GSAP ScrollTrigger Animations ---
+	onMount(() => {
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		
+		if (prefersReducedMotion) {
+			gsap.set('[data-gsap]', { opacity: 1, y: 0 });
 			return;
 		}
 
-		// Set initial hidden state with transition already applied
-		node.style.opacity = '0';
-		node.style.transform = `translateY(${translateY}px)`;
-		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
-		node.style.transitionDelay = `${delay}ms`;
-		node.style.willChange = 'opacity, transform';
+		gsap.set('[data-gsap]', { opacity: 0, y: 30 });
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						// Trigger animation
-						node.style.opacity = '1';
-						node.style.transform = 'translateY(0)';
-
-						// Cleanup will-change after animation
-						setTimeout(() => {
-							node.style.willChange = 'auto';
-						}, 800 + delay);
-
-						observer.unobserve(node);
-					}
+		ScrollTrigger.batch('[data-gsap]', {
+			onEnter: (batch) => {
+				gsap.to(batch, {
+					opacity: 1,
+					y: 0,
+					duration: 0.8,
+					ease: 'power3.out',
+					stagger: 0.1,
+					overwrite: true
 				});
 			},
-			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
-		);
+			start: 'top 85%',
+			once: true
+		});
 
-		observer.observe(node);
+		ScrollTrigger.refresh();
 
-		return {
-			destroy() {
-				observer.disconnect();
-			}
+		return () => {
+			ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 		};
-	}
-
-	onMount(() => {
-		mounted = true;
 	});
 
 	// --- EXPANDED FAQ DATA ---
@@ -234,7 +218,7 @@
 		>
 			<div class="text-center lg:text-left space-y-8">
 				<div
-					use:reveal={{ delay: 0 }}
+					data-gsap
 					class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 border border-slate-800/50 shadow-sm backdrop-blur-sm"
 				>
 					<span class="relative flex h-2.5 w-2.5">
@@ -249,7 +233,7 @@
 				</div>
 
 				<h1
-					use:reveal={{ delay: 100 }}
+					data-gsap
 					class="text-5xl md:text-7xl font-heading font-extrabold tracking-tight leading-[1.1]"
 				>
 					Conquer Volatility with
@@ -260,7 +244,7 @@
 				</h1>
 
 				<p
-					use:reveal={{ delay: 200 }}
+					data-gsap
 					class="text-xl text-slate-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
 				>
 					Institutional-grade S&P 500 options alerts delivered instantly via SMS & Discord. Capture
@@ -268,7 +252,7 @@
 				</p>
 
 				<div
-					use:reveal={{ delay: 300 }}
+					data-gsap
 					class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start pt-4"
 				>
 					<a
@@ -298,7 +282,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 400 }}
+					data-gsap
 					class="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-4 text-sm text-slate-400/60 font-medium"
 				>
 					<div class="flex items-center gap-2">
@@ -471,10 +455,10 @@
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center max-w-3xl mx-auto mb-16">
 				<span class="text-indigo-500 font-bold uppercase tracking-wider text-sm">Why SPX?</span>
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mt-2 mb-6">
+				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mt-2 mb-6">
 					The Unfair Advantage
 				</h2>
-				<p use:reveal={{ delay: 100 }} class="text-xl text-slate-400">
+				<p data-gsap class="text-xl text-slate-400">
 					Trading SPX isn't just about volatility; it's about structural advantages that put money
 					back in your pocket.
 				</p>
@@ -482,7 +466,7 @@
 
 			<div class="grid md:grid-cols-3 gap-8">
 				<div
-					use:reveal={{ delay: 0 }}
+					data-gsap
 					class="bg-slate-900 p-8 rounded-2xl border border-slate-800"
 				>
 					<h3 class="text-xl font-bold text-white mb-4 flex items-center gap-3">
@@ -495,7 +479,7 @@
 					</p>
 				</div>
 				<div
-					use:reveal={{ delay: 150 }}
+					data-gsap
 					class="bg-slate-900 p-8 rounded-2xl border border-slate-800"
 				>
 					<h3 class="text-xl font-bold text-white mb-4 flex items-center gap-3">
@@ -508,7 +492,7 @@
 					</p>
 				</div>
 				<div
-					use:reveal={{ delay: 300 }}
+					data-gsap
 					class="bg-slate-900 p-8 rounded-2xl border border-slate-800"
 				>
 					<h3 class="text-xl font-bold text-white mb-4 flex items-center gap-3">
@@ -532,7 +516,7 @@
 						>The Strategy</span
 					>
 					<h2
-						use:reveal
+						data-gsap
 						class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mt-2 mb-6"
 					>
 						Gamma Scalping Explained
@@ -583,10 +567,10 @@
 
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 			<div class="text-center max-w-3xl mx-auto mb-20">
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-6">
+				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-6">
 					Institutional Edge, Retail Accessible.
 				</h2>
-				<p use:reveal={{ delay: 100 }} class="text-xl text-slate-400">
+				<p data-gsap class="text-xl text-slate-400">
 					Most retail traders gamble. We operate like a fund. Data-driven entries, strict sizing,
 					and emotionless execution.
 				</p>
@@ -594,7 +578,7 @@
 
 			<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 				<div
-					use:reveal={{ delay: 0 }}
+					data-gsap
 					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10"
 				>
 					<div
@@ -621,7 +605,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 100 }}
+					data-gsap
 					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10"
 				>
 					<div
@@ -648,7 +632,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 200 }}
+					data-gsap
 					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/10"
 				>
 					<div
@@ -675,7 +659,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 0 }}
+					data-gsap
 					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-blue-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10"
 				>
 					<div
@@ -698,7 +682,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 100 }}
+					data-gsap
 					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-red-400/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-red-400/10"
 				>
 					<div
@@ -721,7 +705,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 200 }}
+					data-gsap
 					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-purple-400/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-400/10"
 				>
 					<div
@@ -753,10 +737,10 @@
 	<section class="py-24 bg-slate-900 border-y border-slate-800">
 		<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-4">
+				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-4">
 					Crystal Clear Execution
 				</h2>
-				<p use:reveal class="text-xl text-slate-400">Follow the lifecycle of a typical trade.</p>
+				<p data-gsap class="text-xl text-slate-400">Follow the lifecycle of a typical trade.</p>
 			</div>
 
 			<div class="relative">
@@ -765,7 +749,7 @@
 				></div>
 
 				<div
-					use:reveal
+					data-gsap
 					class="relative flex flex-col md:flex-row items-center md:justify-between mb-16 group"
 				>
 					<div class="md:w-[45%] mb-4 md:mb-0 md:text-right pr-8 order-2 md:order-1">
@@ -805,7 +789,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 150 }}
+					data-gsap
 					class="relative flex flex-col md:flex-row items-center md:justify-between mb-16 group"
 				>
 					<div class="md:w-[45%] pl-16 md:pl-0 md:pr-8 order-1 w-full">
@@ -840,7 +824,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 300 }}
+					data-gsap
 					class="relative flex flex-col md:flex-row items-center md:justify-between group"
 				>
 					<div class="md:w-[45%] mb-4 md:mb-0 md:text-right pr-8 order-2 md:order-1">

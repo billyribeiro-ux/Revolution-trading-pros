@@ -1,7 +1,15 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+
+	// Register GSAP plugin
+	if (typeof window !== 'undefined') {
+		gsap.registerPlugin(ScrollTrigger);
+	}
 
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -10,56 +18,38 @@
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
-	// --- Apple ICT9+ Scroll Animations ---
-	// Smooth, performant reveal animations using IntersectionObserver
-
-	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
-		const delay = params.delay ?? 0;
-		const translateY = params.y ?? 30;
-
-		// Check for reduced motion preference
-		if (
-			typeof window !== 'undefined' &&
-			window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		) {
+	// --- GSAP ScrollTrigger Animations ---
+	onMount(() => {
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		
+		if (prefersReducedMotion) {
+			gsap.set('[data-gsap]', { opacity: 1, y: 0 });
 			return;
 		}
 
-		// Set initial hidden state with transition already applied
-		node.style.opacity = '0';
-		node.style.transform = `translateY(${translateY}px)`;
-		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
-		node.style.transitionDelay = `${delay}ms`;
-		node.style.willChange = 'opacity, transform';
+		gsap.set('[data-gsap]', { opacity: 0, y: 30 });
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						// Trigger animation
-						node.style.opacity = '1';
-						node.style.transform = 'translateY(0)';
-
-						// Cleanup will-change after animation
-						setTimeout(() => {
-							node.style.willChange = 'auto';
-						}, 800 + delay);
-
-						observer.unobserve(node);
-					}
+		ScrollTrigger.batch('[data-gsap]', {
+			onEnter: (batch) => {
+				gsap.to(batch, {
+					opacity: 1,
+					y: 0,
+					duration: 0.8,
+					ease: 'power3.out',
+					stagger: 0.1,
+					overwrite: true
 				});
 			},
-			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
-		);
+			start: 'top 85%',
+			once: true
+		});
 
-		observer.observe(node);
+		ScrollTrigger.refresh();
 
-		return {
-			destroy() {
-				observer.disconnect();
-			}
+		return () => {
+			ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 		};
-	}
+	});
 
 	// --- DATA SOURCE: FAQs (Single Source of Truth) ---
 	const faqList = [
@@ -228,7 +218,7 @@
 		>
 			<div class="text-center lg:text-left">
 				<div
-					use:reveal={{ delay: 0 }}
+					data-gsap
 					class="inline-flex items-center gap-2 bg-rtp-surface border border-rtp-emerald/30 px-4 py-1.5 rounded-full mb-8 shadow-lg shadow-emerald-500/10 backdrop-blur-md hover:border-rtp-emerald/50 transition-colors cursor-default"
 				>
 					<span class="relative flex h-2.5 w-2.5">
@@ -243,7 +233,7 @@
 				</div>
 
 				<h1
-					use:reveal={{ delay: 100 }}
+					data-gsap
 					class="text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight"
 				>
 					Catch the <br />
@@ -254,7 +244,7 @@
 				</h1>
 
 				<p
-					use:reveal={{ delay: 200 }}
+					data-gsap
 					class="text-xl text-rtp-muted mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
 				>
 					Stop staring at the 1-minute chart. Get high-precision <strong
@@ -263,7 +253,7 @@
 				</p>
 
 				<div
-					use:reveal={{ delay: 300 }}
+					data-gsap
 					class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center"
 				>
 					<a
@@ -293,7 +283,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 400 }}
+					data-gsap
 					class="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm font-medium text-rtp-muted/60"
 				>
 					<div class="flex items-center gap-2">
@@ -454,10 +444,10 @@
 				<span class="text-rtp-emerald font-bold uppercase tracking-wider text-sm mb-2 block"
 					>Lifestyle First</span
 				>
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-6">
+				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-6">
 					Choose Your Battle
 				</h2>
-				<p use:reveal={{ delay: 100 }} class="text-xl text-rtp-muted max-w-2xl mx-auto">
+				<p data-gsap class="text-xl text-rtp-muted max-w-2xl mx-auto">
 					Most traders burn out trying to scalp 1-minute candles. We play the bigger timeframe for
 					bigger peace of mind.
 				</p>
@@ -465,7 +455,7 @@
 
 			<div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
 				<div
-					use:reveal={{ delay: 0 }}
+					data-gsap
 					class="bg-rtp-surface/50 border border-rtp-border rounded-3xl p-10 opacity-70 hover:opacity-100 transition-all duration-300"
 				>
 					<div class="flex items-center gap-4 mb-6">
@@ -493,7 +483,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 150 }}
+					data-gsap
 					class="bg-rtp-surface border-2 border-rtp-emerald rounded-3xl p-10 shadow-2xl shadow-emerald-500/10 relative overflow-hidden transform md:scale-105"
 				>
 					<div
@@ -588,7 +578,7 @@
 			</div>
 
 			<div class="grid md:grid-cols-3 gap-10">
-				<article use:reveal={{ delay: 0 }} class="group">
+				<article data-gsap class="group">
 					<div
 						class="w-14 h-14 bg-rtp-emerald/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-rtp-emerald/20"
 					>
@@ -613,7 +603,7 @@
 					</p>
 				</article>
 
-				<article use:reveal={{ delay: 100 }} class="group">
+				<article data-gsap class="group">
 					<div
 						class="w-14 h-14 bg-rtp-primary/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-rtp-primary/20"
 					>
@@ -638,7 +628,7 @@
 					</p>
 				</article>
 
-				<article use:reveal={{ delay: 200 }} class="group">
+				<article data-gsap class="group">
 					<div
 						class="w-14 h-14 bg-rtp-indigo/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-rtp-indigo/20"
 					>

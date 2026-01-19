@@ -2,69 +2,53 @@
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+
+	// Register GSAP plugin
+	if (typeof window !== 'undefined') {
+		gsap.registerPlugin(ScrollTrigger);
+	}
 
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
 	// --- FAQ Logic (Svelte 5 Runes) ---
 	let openFaq: number | null = $state(null);
-	let mounted = $state(false);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
-	// --- Apple ICT9+ Scroll Animations ---
-	// Smooth, performant reveal animations using IntersectionObserver
-
-	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
-		const delay = params.delay ?? 0;
-		const translateY = params.y ?? 30;
-
-		// Check for reduced motion preference
-		if (
-			typeof window !== 'undefined' &&
-			window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		) {
+	// --- GSAP ScrollTrigger Animations ---
+	onMount(() => {
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		
+		if (prefersReducedMotion) {
+			gsap.set('[data-gsap]', { opacity: 1, y: 0 });
 			return;
 		}
 
-		// Set initial hidden state with transition already applied
-		node.style.opacity = '0';
-		node.style.transform = `translateY(${translateY}px)`;
-		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
-		node.style.transitionDelay = `${delay}ms`;
-		node.style.willChange = 'opacity, transform';
+		gsap.set('[data-gsap]', { opacity: 0, y: 30 });
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						// Trigger animation
-						node.style.opacity = '1';
-						node.style.transform = 'translateY(0)';
-
-						// Cleanup will-change after animation
-						setTimeout(() => {
-							node.style.willChange = 'auto';
-						}, 800 + delay);
-
-						observer.unobserve(node);
-					}
+		ScrollTrigger.batch('[data-gsap]', {
+			onEnter: (batch) => {
+				gsap.to(batch, {
+					opacity: 1,
+					y: 0,
+					duration: 0.8,
+					ease: 'power3.out',
+					stagger: 0.1,
+					overwrite: true
 				});
 			},
-			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
-		);
+			start: 'top 85%',
+			once: true
+		});
 
-		observer.observe(node);
+		ScrollTrigger.refresh();
 
-		return {
-			destroy() {
-				observer.disconnect();
-			}
+		return () => {
+			ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 		};
-	}
-
-	onMount(() => {
-		mounted = true;
 	});
 
 	// --- DATA SOURCE: FAQs (Single Source of Truth) ---
@@ -235,7 +219,7 @@
 		>
 			<div class="text-center lg:text-left">
 				<div
-					use:reveal={{ delay: 0 }}
+					data-gsap
 					class="inline-flex items-center gap-2 bg-rtp-surface border border-rtp-border px-4 py-1.5 rounded-full mb-8 shadow-lg shadow-emerald-500/10 backdrop-blur-md cursor-default hover:border-emerald-500/50 transition-colors"
 				>
 					<span class="relative flex h-2.5 w-2.5">
@@ -250,7 +234,7 @@
 				</div>
 
 				<h1
-					use:reveal={{ delay: 100 }}
+					data-gsap
 					class="text-4xl md:text-6xl font-heading font-extrabold mb-6 leading-tight tracking-tight"
 				>
 					Master <span
@@ -260,7 +244,7 @@
 				</h1>
 
 				<p
-					use:reveal={{ delay: 200 }}
+					data-gsap
 					class="text-xl text-rtp-muted mb-8 max-w-xl mx-auto lg:mx-0 leading-relaxed"
 				>
 					Don't just get alerts—learn the execution. Join our live voice & screen-share room where
@@ -270,7 +254,7 @@
 				</p>
 
 				<div
-					use:reveal={{ delay: 300 }}
+					data-gsap
 					class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
 				>
 					<a
@@ -296,7 +280,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 400 }}
+					data-gsap
 					class="mt-8 flex items-center justify-center lg:justify-start gap-4 text-sm text-rtp-muted font-medium"
 				>
 					<div class="flex -space-x-2">
@@ -417,7 +401,7 @@
 					<span class="text-emerald-500 font-bold uppercase tracking-wider text-sm mb-2 block"
 						>The Methodology</span
 					>
-					<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-6">
+					<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-6">
 						How We Trade Under $25k
 					</h2>
 					<p class="text-lg text-rtp-muted mb-6 leading-relaxed">
@@ -496,17 +480,17 @@
 	<section id="inside-the-room" class="py-24 bg-rtp-surface border-y border-rtp-border">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-6">
+				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-6">
 					Inside The Room
 				</h2>
-				<p use:reveal={{ delay: 100 }} class="text-xl text-rtp-muted max-w-3xl mx-auto">
+				<p data-gsap class="text-xl text-rtp-muted max-w-3xl mx-auto">
 					We don't just give signals. We teach you how to fish with institutional-grade tools.
 				</p>
 			</div>
 
 			<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 				<div
-					use:reveal={{ delay: 0 }}
+					data-gsap
 					class="bg-rtp-bg p-8 rounded-2xl shadow-sm border border-rtp-border hover:border-rtp-primary transition-all duration-300 group hover:-translate-y-1"
 				>
 					<div
@@ -533,7 +517,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 100 }}
+					data-gsap
 					class="bg-rtp-bg p-8 rounded-2xl shadow-sm border border-rtp-border hover:border-rtp-emerald transition-all duration-300 group hover:-translate-y-1"
 				>
 					<div
@@ -560,7 +544,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 200 }}
+					data-gsap
 					class="bg-rtp-bg p-8 rounded-2xl shadow-sm border border-rtp-border hover:border-rtp-indigo transition-all duration-300 group hover:-translate-y-1"
 				>
 					<div
@@ -595,7 +579,7 @@
 				<span class="text-rtp-primary font-bold uppercase tracking-wider text-sm mb-2 block"
 					>Structure</span
 				>
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-4">
+				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-4">
 					Your Daily Routine
 				</h2>
 				<p class="text-xl text-rtp-muted">Consistency is the key to longevity. Here is the plan.</p>
@@ -605,7 +589,7 @@
 				class="space-y-8 relative before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rtp-border before:to-transparent"
 			>
 				<div
-					use:reveal
+					data-gsap
 					class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
 				>
 					<div
@@ -638,7 +622,7 @@
 				</div>
 
 				<div
-					use:reveal
+					data-gsap
 					class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
 				>
 					<div
@@ -671,7 +655,7 @@
 				</div>
 
 				<div
-					use:reveal
+					data-gsap
 					class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
 				>
 					<div
@@ -704,7 +688,7 @@
 				</div>
 
 				<div
-					use:reveal
+					data-gsap
 					class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group"
 				>
 					<div

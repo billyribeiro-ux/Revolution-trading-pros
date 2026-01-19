@@ -1,6 +1,47 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+
+	// Register GSAP plugin
+	if (typeof window !== 'undefined') {
+		gsap.registerPlugin(ScrollTrigger);
+	}
+
+	// --- GSAP ScrollTrigger Animations ---
+	onMount(() => {
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		
+		if (prefersReducedMotion) {
+			gsap.set('[data-gsap]', { opacity: 1, y: 0 });
+			return;
+		}
+
+		gsap.set('[data-gsap]', { opacity: 0, y: 30 });
+
+		ScrollTrigger.batch('[data-gsap]', {
+			onEnter: (batch) => {
+				gsap.to(batch, {
+					opacity: 1,
+					y: 0,
+					duration: 0.8,
+					ease: 'power3.out',
+					stagger: 0.1,
+					overwrite: true
+				});
+			},
+			start: 'top 85%',
+			once: true
+		});
+
+		ScrollTrigger.refresh();
+
+		return () => {
+			ScrollTrigger.getAll().forEach(trigger => trigger.kill());
+		};
+	});
 
 	// --- ICONS (Inline SVG for Zero-Dependency & Performance) ---
 	const Icons = {
@@ -24,45 +65,6 @@
 		Search: `<svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>`
 	};
 
-	// --- Apple ICT9+ Scroll Animations ---
-	function reveal(node: HTMLElement, { delay = 0, y = 30 } = {}) {
-		// Check for reduced motion preference
-		if (
-			typeof window !== 'undefined' &&
-			window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		) {
-			return;
-		}
-
-		node.style.opacity = '0';
-		node.style.transform = `translateY(${y}px)`;
-		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
-		node.style.transitionDelay = `${delay}ms`;
-		node.style.willChange = 'opacity, transform';
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						node.style.opacity = '1';
-						node.style.transform = 'translateY(0)';
-						setTimeout(() => {
-							node.style.willChange = 'auto';
-						}, 800 + delay);
-						observer.unobserve(node);
-					}
-				});
-			},
-			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
-		);
-
-		observer.observe(node);
-		return {
-			destroy() {
-				observer.disconnect();
-			}
-		};
-	}
 
 	// --- INTERACTIVE RISK CALCULATOR LOGIC ---
 	// A comprehensive simulator showing the power of compounding vs ruin
@@ -343,7 +345,7 @@
 
 		<section class="relative pt-32 pb-32 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto text-center">
 			<div
-				use:reveal
+				data-gsap
 				class="inline-flex items-center gap-3 px-4 py-2 rounded-full bg-white/5 border border-white/10 backdrop-blur-md mb-12 shadow-lg shadow-rtp-primary/5 group hover:border-rtp-primary/30 transition-all duration-300 cursor-default"
 			>
 				<div class="w-2 h-2 rounded-full bg-rtp-primary animate-pulse"></div>
@@ -354,7 +356,7 @@
 			</div>
 
 			<h1
-				use:reveal={{ delay: 100 }}
+				data-gsap
 				class="text-6xl md:text-8xl lg:text-9xl font-heading font-extrabold text-white tracking-tight mb-10 leading-[0.95]"
 			>
 				We Don't Sell Dreams.<br />
@@ -365,7 +367,7 @@
 				>
 			</h1>
 
-			<div use:reveal={{ delay: 200 }} class="max-w-3xl mx-auto">
+			<div data-gsap class="max-w-3xl mx-auto">
 				<p class="text-xl md:text-2xl text-slate-400 leading-relaxed font-light">
 					Our mission is to dismantle the "Retail Trader" stereotype and rebuild it with <span
 						class="text-white font-medium border-b border-rtp-primary/50">Institutional DNA</span
@@ -375,7 +377,7 @@
 			</div>
 
 			<div
-				use:reveal={{ delay: 300 }}
+				data-gsap
 				class="mt-16 grid grid-cols-2 md:grid-cols-4 gap-4 max-w-4xl mx-auto"
 			>
 				<div class="bg-white/[0.02] border border-white/10 p-6 rounded-xl backdrop-blur-sm">
@@ -406,7 +408,7 @@
 		<section class="py-32 border-y border-white/5 bg-white/[0.01]">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div class="grid lg:grid-cols-12 gap-16 items-center">
-					<div class="lg:col-span-5" use:reveal>
+					<div class="lg:col-span-5" data-gsap>
 						<div class="flex items-center gap-3 mb-8">
 							<span class="p-2 bg-red-500/10 rounded-lg text-red-500 border border-red-500/20"
 								>{@html Icons.TrendingUp}</span
@@ -446,7 +448,7 @@
 						</div>
 					</div>
 
-					<div class="lg:col-span-7" use:reveal={{ delay: 200 }}>
+					<div class="lg:col-span-7" data-gsap>
 						<div
 							class="relative bg-[#0a0a0a] border border-white/10 rounded-2xl overflow-hidden shadow-2xl"
 						>
@@ -671,18 +673,18 @@
 
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 				<div class="text-center mb-20">
-					<div use:reveal class="inline-block mb-4">
+					<div data-gsap class="inline-block mb-4">
 						<span class="text-rtp-primary font-bold tracking-widest uppercase text-sm"
 							>The Ecosystem</span
 						>
 					</div>
 					<h2
-						use:reveal={{ delay: 100 }}
+						data-gsap
 						class="text-4xl md:text-5xl font-heading font-bold text-white mb-6"
 					>
 						Institutional Grade.<br />Retail Accessible.
 					</h2>
-					<p use:reveal={{ delay: 200 }} class="text-slate-400 max-w-2xl mx-auto text-lg">
+					<p data-gsap class="text-slate-400 max-w-2xl mx-auto text-lg">
 						We built the environment we wished existed when we started. A sanctuary of data,
 						discipline, and truth.
 					</p>
@@ -690,7 +692,7 @@
 
 				<div class="grid md:grid-cols-3 gap-8">
 					{#each pillars as pillar, i}
-						<div use:reveal={{ delay: i * 150 }} class="group relative h-full">
+						<div data-gsap={{ delay: i * 150 }} class="group relative h-full">
 							<div
 								class="absolute inset-0 bg-[#0f172a] rounded-2xl transform transition-transform duration-300 group-hover:scale-[1.02]"
 							></div>
@@ -774,7 +776,7 @@
 		<section class="py-32 bg-[#020202] border-t border-white/5">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div class="grid lg:grid-cols-12 gap-20">
-					<div use:reveal class="lg:col-span-5 sticky top-32 h-fit">
+					<div data-gsap class="lg:col-span-5 sticky top-32 h-fit">
 						<div class="flex items-center gap-3 mb-6">
 							<span class="p-2 bg-blue-500/10 rounded-lg text-blue-500 border border-blue-500/20"
 								>{@html Icons.Book}</span
@@ -921,7 +923,7 @@
 		<section class="py-32 px-4 sm:px-6 lg:px-8">
 			<div class="max-w-6xl mx-auto">
 				<div
-					use:reveal
+					data-gsap
 					class="relative bg-gradient-to-br from-[#0f172a] to-[#020617] border border-white/10 rounded-3xl p-8 md:p-16 overflow-hidden shadow-2xl"
 				>
 					<div class="absolute top-0 right-0 text-white/5 -mr-8 -mt-8 transform rotate-12">
@@ -1046,7 +1048,7 @@
 				class="absolute top-0 left-1/2 -translate-x-1/2 w-full h-full bg-gradient-to-b from-rtp-primary/5 to-transparent pointer-events-none"
 			></div>
 
-			<div use:reveal class="max-w-4xl mx-auto px-4 relative z-10">
+			<div data-gsap class="max-w-4xl mx-auto px-4 relative z-10">
 				<div
 					class="inline-block p-4 rounded-full bg-white/5 border border-white/10 mb-8 animate-bounce"
 				>

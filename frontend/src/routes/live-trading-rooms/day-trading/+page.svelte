@@ -1,7 +1,15 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+
+	// Register GSAP plugin
+	if (typeof window !== 'undefined') {
+		gsap.registerPlugin(ScrollTrigger);
+	}
 
 	// --- Pricing State (Svelte 5 Runes) ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -10,56 +18,38 @@
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
-	// --- Apple ICT9+ Scroll Animations ---
-	// Smooth, performant reveal animations using IntersectionObserver
-
-	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
-		const delay = params.delay ?? 0;
-		const translateY = params.y ?? 30;
-
-		// Check for reduced motion preference
-		if (
-			typeof window !== 'undefined' &&
-			window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		) {
+	// --- GSAP ScrollTrigger Animations ---
+	onMount(() => {
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		
+		if (prefersReducedMotion) {
+			gsap.set('[data-gsap]', { opacity: 1, y: 0 });
 			return;
 		}
 
-		// Set initial hidden state with transition already applied
-		node.style.opacity = '0';
-		node.style.transform = `translateY(${translateY}px)`;
-		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
-		node.style.transitionDelay = `${delay}ms`;
-		node.style.willChange = 'opacity, transform';
+		gsap.set('[data-gsap]', { opacity: 0, y: 30 });
 
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						// Trigger animation
-						node.style.opacity = '1';
-						node.style.transform = 'translateY(0)';
-
-						// Cleanup will-change after animation
-						setTimeout(() => {
-							node.style.willChange = 'auto';
-						}, 800 + delay);
-
-						observer.unobserve(node);
-					}
+		ScrollTrigger.batch('[data-gsap]', {
+			onEnter: (batch) => {
+				gsap.to(batch, {
+					opacity: 1,
+					y: 0,
+					duration: 0.8,
+					ease: 'power3.out',
+					stagger: 0.1,
+					overwrite: true
 				});
 			},
-			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
-		);
+			start: 'top 85%',
+			once: true
+		});
 
-		observer.observe(node);
+		ScrollTrigger.refresh();
 
-		return {
-			destroy() {
-				observer.disconnect();
-			}
+		return () => {
+			ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 		};
-	}
+	});
 
 	// --- EXPANDED SEO DATA ---
 	// Note: Full expanded FAQ JSON-LD is generated in the dedicated section below
@@ -235,7 +225,7 @@
 		>
 			<div class="text-center lg:text-left space-y-8">
 				<div
-					use:reveal={{ delay: 0 }}
+					data-gsap
 					class="inline-flex items-center gap-3 bg-red-500/10 border border-red-500/20 px-4 py-1.5 rounded-full backdrop-blur-md"
 				>
 					<span class="relative flex h-2.5 w-2.5">
@@ -250,7 +240,7 @@
 				</div>
 
 				<h1
-					use:reveal={{ delay: 100 }}
+					data-gsap
 					class="text-5xl md:text-7xl font-heading font-extrabold leading-tight tracking-tight"
 				>
 					Never Trade <br />
@@ -261,7 +251,7 @@
 				</h1>
 
 				<p
-					use:reveal={{ delay: 200 }}
+					data-gsap
 					class="text-xl text-rtp-muted max-w-2xl mx-auto lg:mx-0 leading-relaxed"
 				>
 					Join the digital trading floor. Watch our screens, hear our professional voice commentary,
@@ -270,7 +260,7 @@
 				</p>
 
 				<div
-					use:reveal={{ delay: 300 }}
+					data-gsap
 					class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start"
 				>
 					<a
@@ -300,7 +290,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 400 }}
+					data-gsap
 					class="flex items-center justify-center lg:justify-start gap-4 text-sm text-rtp-muted pt-4"
 				>
 					<div class="flex -space-x-3">
@@ -498,10 +488,10 @@
 				<span class="text-rtp-primary font-bold uppercase tracking-wider text-sm mb-2 block"
 					>The Experience</span
 				>
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-6">
+				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-6">
 					A Professional Trading Floor <br /> On Your Screen
 				</h2>
-				<p use:reveal={{ delay: 100 }} class="text-xl text-rtp-muted">
+				<p data-gsap class="text-xl text-rtp-muted">
 					Trading is lonely. It doesn't have to be. Surround yourself with winners and professional
 					guidance every single day.
 				</p>
@@ -509,7 +499,7 @@
 
 			<div class="grid md:grid-cols-3 gap-8">
 				<div
-					use:reveal={{ delay: 0 }}
+					data-gsap
 					class="bg-rtp-surface p-8 rounded-2xl border border-rtp-border hover:border-rtp-primary/50 transition-all hover:-translate-y-2 group"
 				>
 					<div
@@ -536,7 +526,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 100 }}
+					data-gsap
 					class="bg-rtp-surface p-8 rounded-2xl border border-rtp-border hover:border-rtp-emerald/50 transition-all hover:-translate-y-2 group"
 				>
 					<div
@@ -563,7 +553,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 200 }}
+					data-gsap
 					class="bg-rtp-surface p-8 rounded-2xl border border-rtp-border hover:border-rtp-indigo/50 transition-all hover:-translate-y-2 group"
 				>
 					<div
@@ -596,16 +586,16 @@
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="grid lg:grid-cols-2 gap-12 items-center">
 				<div>
-					<h2 use:reveal class="text-3xl md:text-4xl font-heading font-bold text-white mb-6">
+					<h2 data-gsap class="text-3xl md:text-4xl font-heading font-bold text-white mb-6">
 						Why We Trade SPX 0DTE
 					</h2>
-					<p use:reveal={{ delay: 100 }} class="text-lg text-rtp-muted mb-6">
+					<p data-gsap class="text-lg text-rtp-muted mb-6">
 						The S&P 500 Index (SPX) is the premier instrument for professional day traders. Unlike
 						individual stocks like TSLA or NVDA, the SPX offers unique advantages that align with
 						our institutional trading approach.
 					</p>
 					<ul class="space-y-4">
-						<li class="flex gap-4 items-start" use:reveal={{ delay: 150 }}>
+						<li class="flex gap-4 items-start" data-gsap>
 							<div
 								class="w-6 h-6 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500 mt-1"
 							>
@@ -619,7 +609,7 @@
 								</p>
 							</div>
 						</li>
-						<li class="flex gap-4 items-start" use:reveal={{ delay: 200 }}>
+						<li class="flex gap-4 items-start" data-gsap>
 							<div
 								class="w-6 h-6 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500 mt-1"
 							>
@@ -633,7 +623,7 @@
 								</p>
 							</div>
 						</li>
-						<li class="flex gap-4 items-start" use:reveal={{ delay: 250 }}>
+						<li class="flex gap-4 items-start" data-gsap>
 							<div
 								class="w-6 h-6 rounded bg-emerald-500/10 flex items-center justify-center text-emerald-500 mt-1"
 							>
@@ -694,7 +684,7 @@
 				<span class="text-rtp-primary font-bold uppercase tracking-wider text-sm mb-2 block"
 					>Routine</span
 				>
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-4">
+				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-4">
 					The Daily Trading Routine
 				</h2>
 				<p class="text-xl text-rtp-muted">
@@ -707,7 +697,7 @@
 				class="relative space-y-12 before:absolute before:inset-0 before:ml-5 before:-translate-x-px md:before:mx-auto md:before:translate-x-0 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-transparent before:via-rtp-border before:to-transparent"
 			>
 				<div
-					use:reveal
+					data-gsap
 					class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
 				>
 					<div
@@ -733,7 +723,7 @@
 				</div>
 
 				<div
-					use:reveal
+					data-gsap
 					class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
 				>
 					<div
@@ -760,7 +750,7 @@
 				</div>
 
 				<div
-					use:reveal
+					data-gsap
 					class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
 				>
 					<div
@@ -786,7 +776,7 @@
 				</div>
 
 				<div
-					use:reveal
+					data-gsap
 					class="relative flex items-center justify-between md:justify-normal md:odd:flex-row-reverse group is-active"
 				>
 					<div
