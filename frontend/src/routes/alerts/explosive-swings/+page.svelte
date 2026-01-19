@@ -1,17 +1,10 @@
 <script lang="ts">
-	import './explosive-swings.css';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- Pricing State ---
-	type PlanType = 'monthly' | 'quarterly' | 'annual';
-	let selectedPlan = $state<PlanType>('quarterly');
-
-	// Toggle indicator position (0 = monthly, 1 = quarterly, 2 = annual)
-	let togglePosition = $derived(
-		selectedPlan === 'monthly' ? 0 : selectedPlan === 'quarterly' ? 1 : 2
-	);
+	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
 	// Pricing Data Configuration
 	const pricing = {
@@ -41,9 +34,64 @@
 		}
 	};
 
+	// ICT9+ Svelte 5: Use $derived instead of $:
+
 	// --- FAQ State ---
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
+
+	// --- Icon SVG ---
+
+	// --- Apple ICT9+ Scroll Animations ---
+	// Smooth, performant reveal animations using IntersectionObserver
+
+	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
+		const delay = params.delay ?? 0;
+		const translateY = params.y ?? 30;
+
+		// Check for reduced motion preference
+		if (
+			typeof window !== 'undefined' &&
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches
+		) {
+			return;
+		}
+
+		// Set initial hidden state with transition already applied
+		node.style.opacity = '0';
+		node.style.transform = `translateY(${translateY}px)`;
+		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
+		node.style.transitionDelay = `${delay}ms`;
+		node.style.willChange = 'opacity, transform';
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						// Trigger animation
+						node.style.opacity = '1';
+						node.style.transform = 'translateY(0)';
+
+						// Cleanup will-change after animation
+						setTimeout(() => {
+							node.style.willChange = 'auto';
+						}, 800 + delay);
+
+						observer.unobserve(node);
+					}
+				});
+			},
+			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
+		);
+
+		observer.observe(node);
+
+		return {
+			destroy() {
+				observer.disconnect();
+			}
+		};
+	}
 
 	// --- EXPANDED FAQ DATA FOR SEO & USER CLARITY ---
 	const faqData = [
@@ -168,13 +216,9 @@
 />
 
 <main
-	class="explosive-swings-page w-full overflow-x-hidden bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
+	class="w-full overflow-x-hidden bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
 >
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     HERO SECTION
-	     ═══════════════════════════════════════════════════════════════════════ -->
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-20 lg:py-0">
-		<!-- Background Effects -->
 		<div class="absolute inset-0 z-0 pointer-events-none">
 			<div
 				class="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:48px_48px] opacity-40"
@@ -191,9 +235,9 @@
 			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
 		>
 			<div class="text-center lg:text-left">
-				<!-- Live Badge -->
 				<div
-					class="animate-fade-in-up delay-0 inline-flex items-center gap-2 bg-slate-900 border border-emerald-500/30 px-4 py-1.5 rounded-full mb-8 shadow-lg shadow-emerald-500/10 backdrop-blur-md"
+					use:reveal={{ delay: 0 }}
+					class="inline-flex items-center gap-2 bg-slate-900 border border-emerald-500/30 px-4 py-1.5 rounded-full mb-8 shadow-lg shadow-emerald-500/10 backdrop-blur-md"
 				>
 					<span class="relative flex h-2.5 w-2.5">
 						<span
@@ -206,17 +250,20 @@
 					>
 				</div>
 
-				<!-- Hero Title -->
 				<h1
-					class="animate-fade-in-up delay-100 text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight text-white"
+					use:reveal={{ delay: 100 }}
+					class="text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight text-white"
 				>
 					Catch the <br />
-					<span class="gradient-text">Institutional Moves.</span>
+					<span
+						class="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-emerald-300 to-teal-200"
+						>Institutional Moves.</span
+					>
 				</h1>
 
-				<!-- Hero Description -->
 				<p
-					class="animate-fade-in-up delay-200 text-xl text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+					use:reveal={{ delay: 200 }}
+					class="text-xl text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
 				>
 					Stop staring at the 1-minute chart. Get high-precision <strong
 						>multi-day swing alerts</strong
@@ -224,9 +271,9 @@
 					job.
 				</p>
 
-				<!-- CTA Buttons -->
 				<div
-					class="animate-fade-in-up delay-300 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center"
+					use:reveal={{ delay: 300 }}
+					class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center"
 				>
 					<a
 						href="#pricing"
@@ -238,14 +285,13 @@
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
-						>
-							<path
+							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
 								d="M13 7l5 5m0 0l-5 5m5-5H6"
-							/>
-						</svg>
+							/></svg
+						>
 					</a>
 					<a
 						href="#methodology"
@@ -255,9 +301,9 @@
 					</a>
 				</div>
 
-				<!-- Trust Badges -->
 				<div
-					class="animate-fade-in-up delay-400 mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm font-medium text-slate-500"
+					use:reveal={{ delay: 400 }}
+					class="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm font-medium text-slate-500"
 				>
 					<div class="flex items-center gap-2">
 						<svg
@@ -265,14 +311,13 @@
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
-						>
-							<path
+							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
 								d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
+							/></svg
+						>
 						<span>Precise Entries & Exits</span>
 					</div>
 					<div class="flex items-center gap-2">
@@ -281,14 +326,13 @@
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
-						>
-							<path
+							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
 								d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-							/>
-						</svg>
+							/></svg
+						>
 						<span>3-7 Day Hold Time</span>
 					</div>
 					<div class="flex items-center gap-2">
@@ -310,8 +354,7 @@
 				</div>
 			</div>
 
-			<!-- Hero Card (Desktop) -->
-			<div class="hidden lg:block relative perspective-1000 animate-fade-in-right delay-300">
+			<div class="hidden lg:block relative perspective-1000">
 				<div
 					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-500/20 to-transparent rounded-full blur-3xl"
 				></div>
@@ -375,19 +418,16 @@
 		</div>
 	</section>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     STATS BAR
-	     ═══════════════════════════════════════════════════════════════════════ -->
 	<section class="bg-slate-900 border-y border-slate-800 relative z-20">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 			<dl class="grid grid-cols-2 md:grid-cols-4 gap-8">
-				<div class="text-center animate-fade-in-up delay-0">
+				<div class="text-center">
 					<dt class="text-slate-500 font-medium text-xs uppercase tracking-wider mb-2">
 						Historical Win Rate
 					</dt>
 					<dd class="text-4xl md:text-5xl font-extrabold text-emerald-500">82%</dd>
 				</div>
-				<div class="text-center animate-fade-in-up delay-100">
+				<div class="text-center">
 					<dt class="text-slate-500 font-medium text-xs uppercase tracking-wider mb-2">
 						Avg Hold Time
 					</dt>
@@ -395,13 +435,13 @@
 						3-7<span class="text-lg text-slate-500 font-normal ml-1">days</span>
 					</dd>
 				</div>
-				<div class="text-center animate-fade-in-up delay-200">
+				<div class="text-center">
 					<dt class="text-slate-500 font-medium text-xs uppercase tracking-wider mb-2">
 						Risk/Reward
 					</dt>
 					<dd class="text-4xl md:text-5xl font-extrabold text-indigo-400">4:1</dd>
 				</div>
-				<div class="text-center animate-fade-in-up delay-300">
+				<div class="text-center">
 					<dt class="text-slate-500 font-medium text-xs uppercase tracking-wider mb-2">
 						Alerts Per Week
 					</dt>
@@ -411,27 +451,22 @@
 		</div>
 	</section>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     LIFESTYLE COMPARISON
-	     ═══════════════════════════════════════════════════════════════════════ -->
 	<section class="py-24 bg-slate-950 relative overflow-hidden">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
-				<h2
-					class="animate-fade-in-up delay-0 text-3xl md:text-5xl font-heading font-bold text-white mb-6"
-				>
+				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
 					Choose Your Trading Lifestyle
 				</h2>
-				<p class="animate-fade-in-up delay-100 text-xl text-slate-400 max-w-2xl mx-auto">
+				<p use:reveal={{ delay: 100 }} class="text-xl text-slate-400 max-w-2xl mx-auto">
 					Most traders burn out trying to scalp 1-minute candles against high-frequency algorithms.
 					We play the bigger timeframe where institutions move money.
 				</p>
 			</div>
 
 			<div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
-				<!-- Day Scalper Card -->
 				<div
-					class="animate-fade-in-up delay-200 bg-slate-900/50 border border-slate-800 rounded-3xl p-10 opacity-70 hover:opacity-100 transition-opacity"
+					use:reveal={{ delay: 0 }}
+					class="bg-slate-900/50 border border-slate-800 rounded-3xl p-10 opacity-70 hover:opacity-100 transition-opacity"
 				>
 					<div class="flex items-center gap-4 mb-6">
 						<div
@@ -460,9 +495,9 @@
 					</ul>
 				</div>
 
-				<!-- Swing Trader Card -->
 				<div
-					class="animate-fade-in-up delay-300 bg-slate-900 border-2 border-emerald-500 rounded-3xl p-10 shadow-2xl shadow-emerald-500/10 relative overflow-hidden"
+					use:reveal={{ delay: 150 }}
+					class="bg-slate-900 border-2 border-emerald-500 rounded-3xl p-10 shadow-2xl shadow-emerald-500/10 relative overflow-hidden"
 				>
 					<div
 						class="absolute top-0 right-0 bg-emerald-500 text-slate-900 text-xs font-bold px-3 py-1 rounded-bl-xl"
@@ -484,14 +519,13 @@
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
-							>
-								<path
+								><path
 									stroke-linecap="round"
 									stroke-linejoin="round"
 									stroke-width="2"
 									d="M5 13l4 4L19 7"
-								/>
-							</svg>
+								/></svg
+							>
 							Check charts once or twice a day
 						</li>
 						<li class="flex items-center gap-3">
@@ -500,14 +534,13 @@
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
-							>
-								<path
+								><path
 									stroke-linecap="round"
 									stroke-linejoin="round"
 									stroke-width="2"
 									d="M5 13l4 4L19 7"
-								/>
-							</svg>
+								/></svg
+							>
 							Calm, calculated decisions based on data
 						</li>
 						<li class="flex items-center gap-3">
@@ -516,14 +549,13 @@
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
-							>
-								<path
+								><path
 									stroke-linecap="round"
 									stroke-linejoin="round"
 									stroke-width="2"
 									d="M5 13l4 4L19 7"
-								/>
-							</svg>
+								/></svg
+							>
 							Catch the meat of the move (20% to 100%+)
 						</li>
 						<li class="flex items-center gap-3">
@@ -532,14 +564,13 @@
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
-							>
-								<path
+								><path
 									stroke-linecap="round"
 									stroke-linejoin="round"
 									stroke-width="2"
 									d="M5 13l4 4L19 7"
-								/>
-							</svg>
+								/></svg
+							>
 							Keep your day job and compounding wealth
 						</li>
 						<li class="flex items-center gap-3">
@@ -548,14 +579,13 @@
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
-							>
-								<path
+								><path
 									stroke-linecap="round"
 									stroke-linejoin="round"
 									stroke-width="2"
 									d="M5 13l4 4L19 7"
-								/>
-							</svg>
+								/></svg
+							>
 							Generous entry windows (no rush)
 						</li>
 					</ul>
@@ -564,31 +594,24 @@
 		</div>
 	</section>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     METHODOLOGY SECTION
-	     ═══════════════════════════════════════════════════════════════════════ -->
 	<section id="methodology" class="py-24 bg-slate-900 border-t border-slate-800">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="mb-16 md:text-center max-w-3xl mx-auto">
-				<span
-					class="animate-fade-in-up delay-0 text-emerald-500 font-bold uppercase tracking-wider text-sm"
-					>The Strategy</span
+				<span class="text-emerald-500 font-bold uppercase tracking-wider text-sm">The Strategy</span
 				>
-				<h2
-					class="animate-fade-in-up delay-100 text-3xl md:text-5xl font-heading font-bold text-white mt-2 mb-6"
-				>
+				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-white mt-2 mb-6">
 					How We Find the "Whale's Wake"
 				</h2>
-				<p class="animate-fade-in-up delay-200 text-slate-400 text-lg">
+				<p class="text-slate-400 text-lg">
 					We don't guess. We track the flow of money. Institutional investors leave footprints
 					called "Dark Pool Prints" and "Unusual Options Activity." We follow them.
 				</p>
 			</div>
 
 			<div class="grid md:grid-cols-3 gap-10">
-				<!-- Card 1 -->
 				<article
-					class="animate-fade-in-up delay-200 group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-emerald-500/30 transition-colors"
+					use:reveal={{ delay: 0 }}
+					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-emerald-500/30 transition-colors"
 				>
 					<div
 						class="w-14 h-14 bg-emerald-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-emerald-500/20"
@@ -598,14 +621,13 @@
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
-						>
-							<path
+							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
 								d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
-							/>
-						</svg>
+							/></svg
+						>
 					</div>
 					<h3 class="text-xl font-bold text-white mb-3">1. Dark Pool Analysis</h3>
 					<p class="text-slate-400 leading-relaxed">
@@ -615,32 +637,26 @@
 					</p>
 				</article>
 
-				<!-- Card 2 -->
 				<article
-					class="animate-fade-in-up delay-300 group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-blue-500/30 transition-colors"
+					use:reveal={{ delay: 100 }}
+					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-blue-500/30 transition-colors"
 				>
 					<div
 						class="w-14 h-14 bg-blue-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-blue-500/20"
 					>
-						<svg
-							class="w-7 h-7 text-blue-500"
-							fill="none"
-							stroke="currentColor"
-							viewBox="0 0 24 24"
-						>
-							<path
+						<svg class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
 								d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-							/>
-							<path
+							/><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
 								d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-							/>
-						</svg>
+							/></svg
+						>
 					</div>
 					<h3 class="text-xl font-bold text-white mb-3">2. Technical Confirmation</h3>
 					<p class="text-slate-400 leading-relaxed">
@@ -650,9 +666,9 @@
 					</p>
 				</article>
 
-				<!-- Card 3 -->
 				<article
-					class="animate-fade-in-up delay-400 group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-indigo-500/30 transition-colors"
+					use:reveal={{ delay: 200 }}
+					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-indigo-500/30 transition-colors"
 				>
 					<div
 						class="w-14 h-14 bg-indigo-500/10 rounded-2xl flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300 border border-indigo-500/20"
@@ -662,14 +678,13 @@
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
-						>
-							<path
+							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
 								stroke-width="2"
 								d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-							/>
-						</svg>
+							/></svg
+						>
 					</div>
 					<h3 class="text-xl font-bold text-white mb-3">3. Risk-First Execution</h3>
 					<p class="text-slate-400 leading-relaxed">
@@ -680,9 +695,9 @@
 				</article>
 			</div>
 
-			<!-- Alert Delivery Methods -->
 			<div
-				class="animate-fade-in-up delay-500 mt-16 bg-slate-950 p-6 md:p-8 rounded-2xl border border-slate-700/50 flex flex-col md:flex-row items-center gap-6 justify-between"
+				use:reveal={{ delay: 300 }}
+				class="mt-16 bg-slate-950 p-6 md:p-8 rounded-2xl border border-slate-700/50 flex flex-col md:flex-row items-center gap-6 justify-between"
 			>
 				<div>
 					<h4 class="text-lg font-bold text-white mb-2">How You Receive Alerts</h4>
@@ -714,23 +729,14 @@
 		</div>
 	</section>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     PERFORMANCE TABLE
-	     ═══════════════════════════════════════════════════════════════════════ -->
 	<section class="py-24 bg-slate-950">
 		<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="mb-10 flex flex-col md:flex-row justify-between items-end gap-4">
 				<div>
-					<h2
-						class="animate-fade-in-up delay-0 text-3xl font-heading font-bold text-white mb-2"
-					>
-						Recent Swing Performance
-					</h2>
-					<p class="animate-fade-in-up delay-100 text-slate-500">
-						Real trades. Real timestamps. Transparent results.
-					</p>
+					<h2 class="text-3xl font-heading font-bold text-white mb-2">Recent Swing Performance</h2>
+					<p class="text-slate-500">Real trades. Real timestamps. Transparent results.</p>
 				</div>
-				<div class="text-right hidden md:block animate-fade-in delay-200">
+				<div class="text-right hidden md:block">
 					<span
 						class="text-xs font-mono text-emerald-500 bg-emerald-500/10 px-3 py-1 rounded border border-emerald-500/20"
 						>Live Database Updated: Today</span
@@ -738,9 +744,7 @@
 				</div>
 			</div>
 
-			<div
-				class="animate-fade-in-up delay-200 bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl"
-			>
+			<div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
 				<table class="w-full text-left border-collapse">
 					<thead>
 						<tr
@@ -774,8 +778,7 @@
 							<td class="p-4 md:p-5 font-bold text-white">AMD</td>
 							<td class="p-4 md:p-5 text-emerald-400 font-bold">CALLS (Long)</td>
 							<td class="p-4 md:p-5 text-slate-400">3 Days</td>
-							<td class="p-4 md:p-5 text-right text-emerald-400 font-bold bg-emerald-500/5"
-								>+45%</td
+							<td class="p-4 md:p-5 text-right text-emerald-400 font-bold bg-emerald-500/5">+45%</td
 							>
 							<td class="p-4 md:p-5 hidden md:table-cell text-right text-slate-500 text-xs"
 								>Sector rotation & AI strength.</td
@@ -794,8 +797,7 @@
 							<td class="p-4 md:p-5 font-bold text-white">META</td>
 							<td class="p-4 md:p-5 text-emerald-400 font-bold">CALLS (Long)</td>
 							<td class="p-4 md:p-5 text-slate-400">7 Days</td>
-							<td class="p-4 md:p-5 text-right text-emerald-400 font-bold bg-emerald-500/5"
-								>+82%</td
+							<td class="p-4 md:p-5 text-right text-emerald-400 font-bold bg-emerald-500/5">+82%</td
 							>
 							<td class="p-4 md:p-5 hidden md:table-cell text-right text-slate-500 text-xs"
 								>Earnings run-up swing strategy.</td
@@ -804,25 +806,20 @@
 					</tbody>
 				</table>
 			</div>
-			<p class="animate-fade-in delay-300 text-center text-xs text-slate-600 mt-4 italic">
+			<p class="text-center text-xs text-slate-600 mt-4 italic">
 				*Results are illustrative of alert performance. Past performance does not guarantee future
 				results.
 			</p>
 		</div>
 	</section>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     WHO NEEDS THIS
-	     ═══════════════════════════════════════════════════════════════════════ -->
 	<section class="py-20 bg-slate-900 border-t border-slate-800">
 		<div class="max-w-4xl mx-auto px-4 text-center">
-			<h2
-				class="animate-fade-in-up delay-0 text-2xl md:text-3xl font-heading font-bold text-white mb-8"
-			>
+			<h2 class="text-2xl md:text-3xl font-heading font-bold text-white mb-8">
 				Who Needs This Service?
 			</h2>
 			<div class="grid md:grid-cols-2 gap-8 text-left">
-				<div class="animate-fade-in-up delay-100 flex gap-4">
+				<div class="flex gap-4">
 					<div
 						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
@@ -836,7 +833,7 @@
 						</p>
 					</div>
 				</div>
-				<div class="animate-fade-in-up delay-200 flex gap-4">
+				<div class="flex gap-4">
 					<div
 						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
@@ -850,7 +847,7 @@
 						</p>
 					</div>
 				</div>
-				<div class="animate-fade-in-up delay-300 flex gap-4">
+				<div class="flex gap-4">
 					<div
 						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
@@ -864,7 +861,7 @@
 						</p>
 					</div>
 				</div>
-				<div class="animate-fade-in-up delay-400 flex gap-4">
+				<div class="flex gap-4">
 					<div
 						class="w-10 h-10 rounded-full bg-emerald-500/10 flex-shrink-0 flex items-center justify-center text-emerald-500 font-bold"
 					>
@@ -882,26 +879,18 @@
 		</div>
 	</section>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     PRICING SECTION
-	     ═══════════════════════════════════════════════════════════════════════ -->
 	<section id="pricing" class="py-24 bg-slate-900 border-t border-slate-800">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
-				<h2
-					class="animate-fade-in-up delay-0 text-3xl md:text-5xl font-heading font-bold text-white mb-6"
-				>
-					Simple Pricing
-				</h2>
-				<p class="animate-fade-in-up delay-100 text-xl text-slate-400 max-w-3xl mx-auto">
+				<h2 class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">Simple Pricing</h2>
+				<p class="text-xl text-slate-400 max-w-3xl mx-auto">
 					Pay for the subscription with your first successful swing trade.
 				</p>
 			</div>
 
-			<!-- Plan Toggle -->
-			<div class="animate-fade-in-up delay-200 flex justify-center mb-16">
+			<div class="flex justify-center mb-16">
 				<div
-					class="bg-slate-950 p-1.5 rounded-xl border border-slate-700/50 inline-flex relative"
+					class="bg-rtp-surface bg-slate-950 p-1.5 rounded-xl border border-slate-700/50 inline-flex relative"
 				>
 					<button
 						type="button"
@@ -909,46 +898,39 @@
 						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'monthly'
 							? 'text-white'
-							: 'text-slate-400 hover:text-white'}"
+							: 'text-slate-400 hover:text-white'}">Monthly</button
 					>
-						Monthly
-					</button>
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'quarterly')}
 						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'quarterly'
 							? 'text-white'
-							: 'text-slate-400 hover:text-white'}"
+							: 'text-slate-400 hover:text-white'}">Quarterly</button
 					>
-						Quarterly
-					</button>
 					<button
 						type="button"
 						onclick={() => (selectedPlan = 'annual')}
 						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'annual'
 							? 'text-white'
-							: 'text-slate-400 hover:text-white'}"
+							: 'text-slate-400 hover:text-white'}">Annual</button
 					>
-						Annual
-					</button>
 
-					<!-- Sliding Indicator -->
 					<div
 						class="absolute top-1.5 bottom-1.5 bg-emerald-600 rounded-lg shadow-md transition-all duration-300 ease-out"
-						style:left="calc({togglePosition} * 33.33% + 0.375rem)"
-						style:width="calc(33.33% - 0.5rem)"
+						style="left: {selectedPlan === 'monthly'
+							? '0.375rem'
+							: selectedPlan === 'quarterly'
+								? 'calc(33.33% + 0.2rem)'
+								: 'calc(66.66% + 0.1rem)'}; width: calc(33.33% - 0.4rem);"
 					></div>
 				</div>
 			</div>
 
-			<!-- Pricing Cards -->
 			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
-				<!-- Monthly -->
 				<div
-					class="animate-fade-in-up delay-300 bg-slate-900 p-8 rounded-2xl border transition-all {selectedPlan ===
-					'monthly'
+					class="bg-slate-900 p-8 rounded-2xl border transition-all {selectedPlan === 'monthly'
 						? 'border-emerald-500 opacity-100 scale-105 shadow-xl shadow-emerald-500/10'
 						: 'border-slate-800 opacity-70 hover:opacity-90'}"
 				>
@@ -970,21 +952,17 @@
 						<li class="flex gap-3">
 							<span class="text-emerald-500">✓</span> Private Discord Community
 						</li>
-						<li class="flex gap-3">
-							<span class="text-emerald-500">✓</span> Entry & Exit Zones
-						</li>
+						<li class="flex gap-3"><span class="text-emerald-500">✓</span> Entry & Exit Zones</li>
 					</ul>
 					<a
 						href={pricing.monthly.link}
 						class="block w-full py-3 bg-slate-950 border border-slate-800 text-white font-bold rounded-lg text-center hover:bg-white hover:text-black transition-colors"
+						>{pricing.monthly.btnText}</a
 					>
-						{pricing.monthly.btnText}
-					</a>
 				</div>
 
-				<!-- Quarterly (Featured) -->
 				<div
-					class="animate-fade-in-up delay-400 bg-slate-950 p-10 rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all {selectedPlan ===
+					class="bg-slate-950 p-10 rounded-3xl border-2 shadow-2xl transform relative z-10 transition-all {selectedPlan ===
 					'quarterly'
 						? 'border-emerald-500 shadow-emerald-500/20 md:scale-110 opacity-100'
 						: 'border-slate-800 shadow-slate-800/10 md:scale-100 opacity-70 hover:opacity-90'}"
@@ -1025,15 +1003,12 @@
 					<a
 						href={pricing.quarterly.link}
 						class="block w-full py-4 bg-emerald-500 text-slate-900 font-bold rounded-xl text-center hover:bg-emerald-400 transition-colors shadow-lg"
+						>{pricing.quarterly.btnText}</a
 					>
-						{pricing.quarterly.btnText}
-					</a>
 				</div>
 
-				<!-- Annual -->
 				<div
-					class="animate-fade-in-up delay-500 bg-slate-900 p-8 rounded-2xl border transition-all {selectedPlan ===
-					'annual'
+					class="bg-slate-900 p-8 rounded-2xl border transition-all {selectedPlan === 'annual'
 						? 'border-emerald-500 opacity-100 scale-105'
 						: 'border-slate-800 opacity-70 hover:opacity-90'}"
 				>
@@ -1063,54 +1038,40 @@
 					<a
 						href={pricing.annual.link}
 						class="block w-full py-3 bg-slate-950 border border-emerald-500 text-emerald-500 font-bold rounded-lg text-center hover:bg-emerald-500 hover:text-slate-900 transition-colors"
+						>{pricing.annual.btnText}</a
 					>
-						{pricing.annual.btnText}
-					</a>
 				</div>
 			</div>
-
-			<div class="animate-fade-in delay-600 mt-12 text-center">
+			<div class="mt-12 text-center">
 				<p class="text-slate-500 text-sm">Secure checkout powered by Stripe. Cancel anytime.</p>
 			</div>
 
-			<p
-				class="animate-fade-in delay-700 text-center text-slate-500 text-sm mt-6 flex items-center justify-center gap-2"
-			>
-				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-					<path
+			<p class="text-center text-slate-500 text-sm mt-6 flex items-center justify-center gap-2">
+				<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+					><path
 						stroke-linecap="round"
 						stroke-linejoin="round"
 						stroke-width="2"
 						d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
-					/>
-				</svg>
+					/></svg
+				>
 				30-Day Money Back Guarantee.
 			</p>
 		</div>
 	</section>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     FAQ SECTION
-	     ═══════════════════════════════════════════════════════════════════════ -->
 	<section class="py-20 bg-slate-950">
 		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
-			<h2
-				class="animate-fade-in-up delay-0 text-3xl font-heading font-bold text-center text-white mb-4"
-			>
+			<h2 class="text-3xl font-heading font-bold text-center text-white mb-4">
 				Frequently Asked Questions
 			</h2>
-			<p class="animate-fade-in-up delay-100 text-slate-500 text-center mb-12">
+			<p class="text-slate-500 text-center mb-12">
 				Everything you need to know about the service, capital requirements, and strategy.
 			</p>
 
 			<div class="space-y-4">
 				{#each faqData as item, i}
-					<div
-						class="animate-fade-in-up delay-{Math.min(
-							(i + 2) * 100,
-							800
-						)} border border-slate-800 rounded-xl bg-slate-900 overflow-hidden"
-					>
+					<div class="border border-slate-800 rounded-xl bg-slate-900 overflow-hidden">
 						<button
 							type="button"
 							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors text-slate-200"
@@ -1126,14 +1087,13 @@
 								fill="none"
 								stroke="currentColor"
 								viewBox="0 0 24 24"
-							>
-								<path
+								><path
 									stroke-linecap="round"
 									stroke-linejoin="round"
 									stroke-width="2"
 									d="M19 9l-7 7-7-7"
-								/>
-							</svg>
+								/></svg
+							>
 						</button>
 						{#if openFaq === i}
 							<div
@@ -1147,43 +1107,35 @@
 				{/each}
 			</div>
 
-			<div class="animate-fade-in delay-500 text-center mt-12">
+			<div class="text-center mt-12">
 				<p class="text-slate-500">Still have questions?</p>
 				<a
 					href="/contact"
 					class="text-emerald-500 hover:text-emerald-400 font-bold mt-2 inline-block border-b border-emerald-500/30 pb-0.5"
+					>Contact Our Support Team</a
 				>
-					Contact Our Support Team
-				</a>
 			</div>
 		</div>
 	</section>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     FINAL CTA
-	     ═══════════════════════════════════════════════════════════════════════ -->
 	<section
 		class="py-24 bg-gradient-to-br from-emerald-600 to-teal-800 text-white relative overflow-hidden"
 	>
 		<div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10">
-			<h2
-				class="animate-fade-in-up delay-0 text-4xl md:text-6xl font-heading font-extrabold mb-6 tracking-tight"
-			>
+			<h2 class="text-4xl md:text-6xl font-heading font-extrabold mb-6 tracking-tight">
 				Stop Overtrading. Start Swinging.
 			</h2>
-			<p class="animate-fade-in-up delay-100 text-xl text-emerald-100 mb-10 max-w-2xl mx-auto">
+			<p class="text-xl text-emerald-100 mb-10 max-w-2xl mx-auto">
 				Join the trading room that values your time as much as your capital. Instant alerts,
 				verified results, and a community of winners.
 			</p>
 			<a
 				href="#pricing"
-				class="animate-fade-in-up delay-200 inline-block bg-white text-emerald-800 px-10 py-5 rounded-xl font-bold text-lg hover:bg-emerald-50 transition-all shadow-2xl hover:-translate-y-1"
+				class="inline-block bg-white text-emerald-800 px-10 py-5 rounded-xl font-bold text-lg hover:bg-emerald-50 transition-all shadow-2xl hover:-translate-y-1"
 			>
 				Get Instant Access
 			</a>
-			<p
-				class="animate-fade-in delay-300 mt-6 text-sm text-emerald-100/70 flex justify-center items-center gap-4"
-			>
+			<p class="mt-6 text-sm text-emerald-100/70 flex justify-center items-center gap-4">
 				<span>Secure Checkout</span>
 				<span class="w-1 h-1 bg-emerald-300 rounded-full"></span>
 				<span>Cancel Anytime</span>
@@ -1192,29 +1144,6 @@
 			</p>
 		</div>
 	</section>
-
-	<!-- ═══════════════════════════════════════════════════════════════════════
-	     FOOTER
-	     ═══════════════════════════════════════════════════════════════════════ -->
-	<footer class="bg-slate-950 py-12 border-t border-slate-900">
-		<div
-			class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-600 leading-relaxed"
-		>
-			<p class="mb-4 font-bold uppercase text-slate-500">Risk Disclosure</p>
-			<p class="max-w-4xl mx-auto mb-6">
-				Trading in financial markets involves a high degree of risk and may not be suitable for all
-				investors. You could lose some or all of your initial investment; do not invest money that
-				you cannot afford to lose. Past performance is not indicative of future results. Revolution
-				Trading Pros is an educational platform and does not provide personalized financial advice.
-			</p>
-			<nav class="flex justify-center gap-6 mb-8 text-slate-500">
-				<a href="/terms" class="hover:text-slate-300">Terms of Service</a>
-				<a href="/privacy" class="hover:text-slate-300">Privacy Policy</a>
-				<a href="/disclaimer" class="hover:text-slate-300">Full Disclaimer</a>
-			</nav>
-			<p class="opacity-50">
-				&copy; {new Date().getFullYear()} Revolution Trading Pros. All rights reserved.
-			</p>
-		</div>
-	</footer>
 </main>
+
+<!-- Footer is handled by MarketingFooter component in +layout.svelte -->
