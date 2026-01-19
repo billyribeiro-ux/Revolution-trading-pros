@@ -798,7 +798,6 @@
 		max-width: 1400px;
 		margin: 0 auto;
 		background: var(--admin-bg, #0f172a);
-		min-height: 100vh;
 		color: #f1f5f9;
 	}
 

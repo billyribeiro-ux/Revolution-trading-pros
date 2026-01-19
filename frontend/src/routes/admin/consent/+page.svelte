@@ -463,7 +463,6 @@
 
 <style>
 	.dashboard {
-		min-height: 100vh;
 		background: #0a101c;
 		color: #e2e8f0;
 		padding: 2rem;

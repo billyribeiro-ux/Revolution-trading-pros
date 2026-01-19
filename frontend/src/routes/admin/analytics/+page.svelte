@@ -231,7 +231,7 @@
 		</header>
 
 		<!-- Main Content -->
-		<main class="dashboard-content">
+		<section class="dashboard-content">
 			{#if connectionsLoading}
 				<!-- Loading Connections -->
 				<div class="loading-state" in:fade={{ duration: 300 }}>
@@ -521,7 +521,6 @@
 
 <style>
 	.analytics-dashboard {
-		min-height: 100vh;
 		background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
 		color: white;
 		position: relative;

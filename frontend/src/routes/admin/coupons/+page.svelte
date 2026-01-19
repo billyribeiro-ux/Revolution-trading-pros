@@ -327,7 +327,6 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.admin-coupons {
-		min-height: 100vh;
 		background: linear-gradient(135deg, var(--bg-base) 0%, var(--bg-elevated) 50%, var(--bg-base) 100%);
 		position: relative;
 		overflow: hidden;

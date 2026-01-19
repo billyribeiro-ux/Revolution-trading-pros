@@ -79,7 +79,6 @@
 
 <style>
 	.embed-container {
-		min-height: 100vh;
 		padding: 1rem;
 		background: transparent;
 	}

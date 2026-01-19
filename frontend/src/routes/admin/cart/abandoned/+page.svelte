@@ -789,7 +789,6 @@
 		padding: 2rem;
 		max-width: 1600px;
 		margin: 0 auto;
-		min-height: 100vh;
 	}
 
 	/* Header */

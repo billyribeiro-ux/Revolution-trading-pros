@@ -401,7 +401,7 @@
 	<title>{board?.title || 'Board'} | Project Boards</title>
 </svelte:head>
 
-<div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex flex-col">
+<div class="bg-gray-100 dark:bg-gray-900 flex flex-col">
 	<!-- Header -->
 	<div
 		class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0"

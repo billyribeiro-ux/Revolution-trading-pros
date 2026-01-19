@@ -219,7 +219,6 @@
 
 	.admin-layout {
 		display: flex;
-		min-height: 100vh;
 		background: var(--admin-bg);
 		color: var(--admin-text-primary);
 		transition:
@@ -232,7 +231,6 @@
 		margin-left: 240px;
 		display: flex;
 		flex-direction: column;
-		min-height: 100vh;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

@@ -626,7 +626,6 @@
 		margin: 0 auto;
 		padding: 2rem;
 		background: #0f172a;
-		min-height: 100vh;
 	}
 
 	/* Header */

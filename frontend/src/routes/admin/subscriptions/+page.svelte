@@ -848,7 +848,6 @@
 
 	/* Outer Container with Gradient Background */
 	.admin-subscriptions {
-		min-height: 100vh;
 		background: linear-gradient(135deg, #0f172a 0%, #1e293b 50%, #0f172a 100%);
 		color: white;
 		position: relative;

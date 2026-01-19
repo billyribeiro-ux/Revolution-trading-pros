@@ -698,7 +698,6 @@
 
 <style>
 	.post-editor {
-		min-height: 100vh;
 		background: #f8f9fa;
 	}
 
@@ -707,7 +706,6 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		min-height: 100vh;
 		color: #666;
 		gap: 1rem;
 	}
@@ -1310,7 +1308,6 @@
 		bottom: 0;
 		z-index: 1000;
 		border-radius: 0;
-		min-height: 100vh;
 	}
 
 	.editor-toolbar {

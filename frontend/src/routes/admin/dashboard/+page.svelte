@@ -725,7 +725,6 @@
 
 	/* Dashboard Container */
 	.dashboard-container {
-		min-height: 100vh;
 		position: relative;
 	}
 
