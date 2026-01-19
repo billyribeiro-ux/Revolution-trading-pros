@@ -29,6 +29,36 @@
  * RESTORED: 2026-01-19 - CSS audit remediation
  * USED BY: /live-trading-rooms/*, /account, /resources, /signup
  * ═══════════════════════════════════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * REVEAL ANIMATION SYSTEM - CSS Class Toggle Pattern
+ * Best practice: No inline styles, no will-change, transform: none on reveal
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Reveal animation base state - hidden */
+.reveal {
+  opacity: 0;
+  transform: translateY(30px);
+  transition: 
+    opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+    transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition-delay: var(--reveal-delay, 0ms);
+}
+
+/* Revealed state - remove transform entirely to avoid stacking context */
+.reveal.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Accessibility - respect reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .reveal {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+}
+
 @theme {
   /* Background colors */
   --color-rtp-bg: #050505;

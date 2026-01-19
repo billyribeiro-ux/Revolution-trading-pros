@@ -42,42 +42,38 @@
 
 	// --- Icon SVG ---
 
-	// --- Apple ICT9+ Scroll Animations ---
-	// Smooth, performant reveal animations using IntersectionObserver
+	// --- Svelte 5 Scroll Reveal Action ---
+	// Best practice: CSS class toggle pattern (no inline styles, no will-change)
+	// CSS defined in app.css: .reveal and .reveal.is-visible
 
-	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
-		const delay = params.delay ?? 0;
-		const translateY = params.y ?? 30;
+	function reveal(node: HTMLElement, params: { delay?: number; once?: boolean } = {}) {
+		const { delay = 0, once = true } = params;
 
-		// Check for reduced motion preference
+		// Check reduced motion preference
 		if (
 			typeof window !== 'undefined' &&
 			window.matchMedia('(prefers-reduced-motion: reduce)').matches
 		) {
-			return;
+			node.classList.add('is-visible');
+			return { destroy() {} };
 		}
 
-		// Set initial hidden state with transition already applied
-		node.style.opacity = '0';
-		node.style.transform = `translateY(${translateY}px)`;
-		node.style.transition = `opacity 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94), transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94)`;
-		node.style.transitionDelay = `${delay}ms`;
-		node.style.willChange = 'opacity, transform';
+		// Add reveal class for initial hidden state
+		node.classList.add('reveal');
+
+		// Apply delay as CSS custom property
+		if (delay > 0) {
+			node.style.setProperty('--reveal-delay', `${delay}ms`);
+		}
 
 		const observer = new IntersectionObserver(
 			(entries) => {
 				entries.forEach((entry) => {
 					if (entry.isIntersecting) {
-						// Trigger animation
-						node.style.opacity = '1';
-						node.style.transform = 'translateY(0)';
-
-						// Cleanup will-change after animation
-						setTimeout(() => {
-							node.style.willChange = 'auto';
-						}, 800 + delay);
-
-						observer.unobserve(node);
+						requestAnimationFrame(() => {
+							node.classList.add('is-visible');
+						});
+						if (once) observer.unobserve(node);
 					}
 				});
 			},
