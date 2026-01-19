@@ -119,11 +119,11 @@
 		<MarketingFooter />
 
 		<!-- Hydration-safe: Consent components only after client mount -->
-		{#if mounted}
+		<!-- {#if mounted}
 			<ConsentBanner />
 			<ConsentPreferencesModal />
 			<ConsentSettingsButton position="bottom-left" />
-		{/if}
+		{/if} -->
 	</div>
 {/if}
 
