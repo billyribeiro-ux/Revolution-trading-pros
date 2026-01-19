@@ -226,7 +226,7 @@
 				class="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-indigo-600/10 rounded-full blur-[120px] animate-pulse"
 			></div>
 			<div
-				class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-rtp-indigo/10 rounded-full blur-[100px]"
+				class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[100px]"
 			></div>
 		</div>
 
@@ -255,7 +255,7 @@
 				>
 					Conquer Volatility with
 					<span
-						class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-primary via-rtp-blue to-rtp-emerald"
+						class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-blue-500 to-emerald-500"
 						>SPX 0DTE</span
 					>
 				</h1>
@@ -274,7 +274,7 @@
 				>
 					<a
 						href="#pricing"
-						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-indigo-600 rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rtp-primary offset-rtp-bg shadow-lg hover:shadow-rtp-primary/25 hover:-translate-y-1"
+						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-indigo-600 rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 offset-slate-950 shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-1"
 					>
 						Start Your Trial
 						<svg
@@ -292,7 +292,7 @@
 					</a>
 					<a
 						href="#performance"
-						class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-200 transition-all duration-200 bg-slate-900 border border-slate-800 rounded-xl hover:bg-slate-900/80 hover:border-rtp-primary/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rtp-border offset-rtp-bg"
+						class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-200 transition-all duration-200 bg-slate-900 border border-slate-800 rounded-xl hover:bg-slate-900/80 hover:border-indigo-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-800 offset-slate-950"
 					>
 						View Results
 					</a>
@@ -352,7 +352,7 @@
 
 			<div class="relative hidden lg:block perspective-1000">
 				<div
-					class="absolute inset-0 bg-gradient-to-tr from-rtp-primary/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
+					class="absolute inset-0 bg-gradient-to-tr from-indigo-600/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
 				></div>
 
 				<div
@@ -361,7 +361,7 @@
 					<div class="flex items-center justify-between mb-6 border-b border-slate-800/30 pb-4">
 						<div class="flex items-center gap-3">
 							<div
-								class="w-10 h-10 rounded-full bg-gradient-to-br from-rtp-primary to-rtp-blue flex items-center justify-center text-white font-bold shadow-inner"
+								class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold shadow-inner"
 							>
 								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 									><path
@@ -374,7 +374,7 @@
 							</div>
 							<div>
 								<div class="font-bold text-slate-200">SPX Profit Pulse</div>
-								<div class="text-xs text-rtp-emerald">● Live Trading Room</div>
+								<div class="text-xs text-emerald-500">● Live Trading Room</div>
 							</div>
 						</div>
 						<div class="text-xs font-mono text-slate-400 bg-slate-950 px-2 py-1 rounded">
@@ -396,9 +396,9 @@
 								<span>🎯 Target: $5.00+</span>
 							</div>
 						</div>
-						<div class="bg-slate-950/50 p-4 rounded-xl border-l-4 border-rtp-blue opacity-60">
+						<div class="bg-slate-950/50 p-4 rounded-xl border-l-4 border-blue-500 opacity-60">
 							<div class="flex justify-between text-xs mb-2">
-								<span class="text-rtp-blue font-bold uppercase">Update</span>
+								<span class="text-blue-500 font-bold uppercase">Update</span>
 								<span class="text-slate-400">15m ago</span>
 							</div>
 							<div class="text-sm text-slate-200">
@@ -408,7 +408,7 @@
 					</div>
 
 					<div
-						class="absolute -bottom-6 -right-6 bg-white text-rtp-bg px-6 py-3 rounded-xl shadow-xl font-bold border-2 border-rtp-bg flex items-center gap-2 animate-bounce"
+						class="absolute -bottom-6 -right-6 bg-emerald-500 text-slate-950 px-6 py-3 rounded-xl shadow-xl font-bold border-2 border-slate-950 flex items-center gap-2 animate-bounce"
 					>
 						<span class="text-2xl">🚀</span>
 						<div>
@@ -596,7 +596,7 @@
 			<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 				<div
 					use:reveal={{ delay: 0 }}
-					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-rtp-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-rtp-primary/10"
+					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10"
 				>
 					<div
 						class="w-14 h-14 rounded-xl bg-indigo-600/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
@@ -623,13 +623,13 @@
 
 				<div
 					use:reveal={{ delay: 100 }}
-					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-rtp-indigo/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-rtp-indigo/10"
+					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10"
 				>
 					<div
-						class="w-14 h-14 rounded-xl bg-rtp-indigo/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+						class="w-14 h-14 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
 					>
 						<svg
-							class="w-7 h-7 text-rtp-indigo"
+							class="w-7 h-7 text-indigo-500"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -650,13 +650,13 @@
 
 				<div
 					use:reveal={{ delay: 200 }}
-					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-rtp-emerald/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-rtp-emerald/10"
+					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/10"
 				>
 					<div
-						class="w-14 h-14 rounded-xl bg-rtp-emerald/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+						class="w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
 					>
 						<svg
-							class="w-7 h-7 text-rtp-emerald"
+							class="w-7 h-7 text-emerald-500"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -677,12 +677,12 @@
 
 				<div
 					use:reveal={{ delay: 0 }}
-					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-rtp-blue/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-rtp-blue/10"
+					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-blue-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10"
 				>
 					<div
-						class="w-14 h-14 rounded-xl bg-rtp-blue/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+						class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
 					>
-						<svg class="w-7 h-7 text-rtp-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -762,7 +762,7 @@
 
 			<div class="relative">
 				<div
-					class="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-500 via-blue-500 to-rtp-border"
+					class="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-500 via-blue-500 to-slate-800"
 				></div>
 
 				<div
@@ -913,7 +913,7 @@
 					<div class="col-span-4 md:col-span-2 text-right">Result</div>
 					<div class="hidden md:block md:col-span-4 text-right">Notes</div>
 				</div>
-				<div class="divide-y divide-rtp-border/50 font-mono text-sm">
+				<div class="divide-y divide-slate-800/50 font-mono text-sm">
 					<div class="grid grid-cols-12 p-4 items-center hover:bg-white/5 transition-colors">
 						<div class="col-span-3 md:col-span-2 text-slate-400">Nov 15</div>
 						<div class="col-span-5 md:col-span-4 font-bold text-white">SPX 4560 CALL</div>
@@ -1001,7 +1001,7 @@
 				<div
 					class="order-2 lg:order-1 bg-slate-950 p-8 rounded-2xl border transition-all {selectedPlan ===
 					'monthly'
-						? 'border-rtp-primary opacity-100 scale-105'
+						? 'border-indigo-600 opacity-100 scale-105'
 						: 'border-slate-800 opacity-70 hover:opacity-90'}"
 				>
 					<h3 class="text-xl font-bold text-slate-200 mb-2">Monthly</h3>
@@ -1053,8 +1053,8 @@
 				<div
 					class="order-1 lg:order-2 bg-slate-950 p-10 rounded-3xl border-2 shadow-2xl relative transform z-10 transition-all {selectedPlan ===
 					'quarterly'
-						? 'border-rtp-primary shadow-rtp-primary/20 lg:scale-110 opacity-100'
-						: 'border-slate-800 shadow-rtp-border/10 lg:scale-100 opacity-70 hover:opacity-90'}"
+						? 'border-indigo-600 shadow-indigo-600/20 lg:scale-110 opacity-100'
+						: 'border-slate-800 shadow-slate-800/10 lg:scale-100 opacity-70 hover:opacity-90'}"
 				>
 					<div
 						class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
@@ -1138,7 +1138,7 @@
 
 					<a
 						href="/checkout/annual"
-						class="block w-full py-3 px-4 bg-slate-900 border border-rtp-emerald text-emerald-500 font-bold rounded-lg text-center hover:bg-emerald-500 hover:text-white transition-colors"
+						class="block w-full py-3 px-4 bg-slate-900 border border-emerald-500 text-emerald-500 font-bold rounded-lg text-center hover:bg-emerald-500 hover:text-white transition-colors"
 					>
 						Select Annual
 					</a>
@@ -1238,7 +1238,7 @@
 	</section>
 
 	<section class="py-24 relative overflow-hidden">
-		<div class="absolute inset-0 bg-gradient-to-br from-rtp-primary to-rtp-indigo z-0"></div>
+		<div class="absolute inset-0 bg-gradient-to-br from-indigo-600 to-indigo-500 z-0"></div>
 		<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 z-0"></div>
 
 		<div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
