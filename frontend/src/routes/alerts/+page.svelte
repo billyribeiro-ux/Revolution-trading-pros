@@ -302,7 +302,6 @@
 	.alerts-page {
 		background: #0f172a;
 		color: #e2e8f0;
-		min-height: 100vh;
 	}
 
 	/* Hero */

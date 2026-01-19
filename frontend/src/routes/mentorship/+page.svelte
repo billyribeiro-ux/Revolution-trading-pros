@@ -18,7 +18,7 @@
 	};
 
 	// --- STATE ---
-	let openAccordion: number | null = 0;
+	let openAccordion = $state<number | null>(0);
 	const toggleAccordion = (idx: number) => (openAccordion = openAccordion === idx ? null : idx);
 
 	// --- DOM REFS FOR GSAP ---
@@ -141,7 +141,7 @@
 />
 
 <div
-	class="min-h-screen bg-[#020202] text-slate-400 font-sans selection:bg-white selection:text-black"
+	class="bg-[#020202] text-slate-400 font-sans selection:bg-white selection:text-black"
 >
 	<div
 		class="fixed inset-0 z-0 pointer-events-none"

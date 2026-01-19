@@ -315,7 +315,7 @@
 />
 
 <div
-	class="min-h-screen bg-[#050505] text-slate-300 font-sans selection:bg-rtp-primary/30 selection:text-white"
+	class="bg-[#050505] text-slate-300 font-sans selection:bg-rtp-primary/30 selection:text-white"
 >
 	<div class="fixed inset-0 z-0 pointer-events-none">
 		<div
@@ -329,7 +329,7 @@
 		></div>
 	</div>
 
-	<main class="relative z-10">
+	<div class="relative z-10">
 		<div class="w-full bg-rtp-primary/10 border-b border-rtp-primary/20 overflow-hidden py-2">
 			<div class="flex whitespace-nowrap animate-ticker">
 				{#each [...axioms, ...axioms, ...axioms] as axiom}
@@ -1088,7 +1088,7 @@
 				</p>
 			</div>
 		</section>
-	</main>
+	</div>
 
 </div>
 

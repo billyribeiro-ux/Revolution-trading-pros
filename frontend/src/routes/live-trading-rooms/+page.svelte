@@ -390,7 +390,7 @@
 </svelte:head>
 
 <div
-	class="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30 font-sans relative"
+	class="bg-[#050505] text-white selection:bg-blue-500/30 font-sans relative"
 >
 	<div class="fixed inset-0 pointer-events-none z-0">
 		<div
@@ -412,7 +412,7 @@
 		</div>
 	</div>
 
-	<main class="relative z-10 pt-0 pb-0 container mx-auto px-4 sm:px-6 lg:px-8">
+	<div class="relative z-10 pt-0 pb-0 container mx-auto px-4 sm:px-6 lg:px-8">
 		<section
 			bind:this={_heroContainer}
 			class="relative min-h-[85vh] flex flex-col items-center justify-center text-center perspective-hero mb-24"
@@ -849,7 +849,7 @@
 				<div class="h-6 w-20 bg-white/20 rounded-sm"></div>
 			</div>
 		</div>
-	</main>
+	</div>
 </div>
 
 <style>

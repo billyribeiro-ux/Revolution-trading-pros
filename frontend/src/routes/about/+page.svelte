@@ -65,7 +65,7 @@
 				yPercent: -20,
 				ease: 'none',
 				scrollTrigger: {
-					trigger: '#main-content',
+					trigger: '#about-content',
 					start: 'top top',
 					end: 'bottom top',
 					scrub: true
@@ -312,7 +312,7 @@
 	bind:this={containerRef}
 	onmousemove={handleMouseMove}
 	role="main"
-	class="relative bg-[#010203] min-h-screen text-slate-400 font-sans selection:bg-amber-700/50 selection:text-white"
+	class="relative bg-[#010203] text-slate-400 font-sans selection:bg-amber-700/50 selection:text-white"
 	style="--x: {mouse.x}px; --y: {mouse.y}px;"
 >
 	<div class="fixed inset-0 pointer-events-none z-0">
@@ -348,7 +348,7 @@
 		</div>
 	</div>
 
-	<main id="main-content" class="relative z-10 pt-32 pb-24 px-6 lg:px-8">
+	<section id="about-content" class="relative z-10 pt-32 pb-24 px-6 lg:px-8">
 		<section class="max-w-[1600px] mx-auto mb-32 lg:mb-48 relative">
 			<div
 				class="absolute top-20 -left-[20%] -right-[20%] h-[500px] grid-floor pointer-events-none parallax-layer z-0"
@@ -872,5 +872,5 @@
 				</div>
 			</div>
 		</section>
-	</main>
+	</section>
 </div>

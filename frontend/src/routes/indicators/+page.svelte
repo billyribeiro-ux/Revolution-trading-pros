@@ -870,7 +870,6 @@
      */
 
 	.indicators-page {
-		min-height: 100vh;
 		background: #050812;
 		color: white;
 		font-family: 'Inter', system-ui, sans-serif;
