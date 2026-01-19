@@ -52,7 +52,13 @@
 		<div class="footer-grid">
 			<div class="footer-brand">
 				<a href="/" class="footer-logo">
-					<img src="/revolution-trading-pros.png" alt="Revolution Trading Pros" />
+					<img 
+						src="/revolution-trading-pros.png" 
+						alt="Revolution Trading Pros"
+						width="160"
+						height="40"
+						loading="lazy"
+					/>
 				</a>
 				<p class="footer-tagline">
 					Professional trading education and tools for disciplined traders.
@@ -116,19 +122,31 @@
 </footer>
 
 <style>
+	/* Scoped box-sizing reset for footer */
+	.marketing-footer,
+	.marketing-footer *,
+	.marketing-footer *::before,
+	.marketing-footer *::after {
+		box-sizing: border-box;
+	}
+
 	.marketing-footer {
 		background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
 		border-top: 1px solid rgba(99, 102, 241, 0.1);
 		padding: 4rem 0 2rem;
 		width: 100%;
-		box-sizing: border-box;
+		min-width: 0;
+		overflow-x: hidden;
+		flex-shrink: 0;
+		margin-top: auto;
 	}
 
 	.footer-container {
 		max-width: 1400px;
+		width: 100%;
 		margin: 0 auto;
 		padding: 0 1.5rem;
-		box-sizing: border-box;
+		min-width: 0;
 	}
 
 	.footer-grid {
@@ -136,42 +154,58 @@
 		grid-template-columns: 2fr 1fr 1fr 1fr;
 		gap: 3rem;
 		margin-bottom: 3rem;
+		min-width: 0;
 	}
 
 	.footer-brand {
 		max-width: 320px;
+		min-width: 0;
+	}
+
+	.footer-logo {
+		display: inline-block;
+		line-height: 0;
 	}
 
 	.footer-logo img {
 		height: 40px;
 		width: auto;
+		max-width: 100%;
 		margin-bottom: 1rem;
+		display: block;
+		object-fit: contain;
 	}
 
 	.footer-tagline {
 		color: #64748b;
 		font-size: 0.9375rem;
 		line-height: 1.6;
-		margin-bottom: 1.5rem;
+		margin: 0 0 1.5rem 0;
+		overflow-wrap: break-word;
+		word-wrap: break-word;
 	}
 
 	.social-links {
 		display: flex;
 		flex-direction: row;
+		flex-wrap: wrap;
 		gap: 0.75rem;
 	}
 
 	.social-link {
 		width: 40px;
 		height: 40px;
-		display: flex;
+		min-width: 40px;
+		display: inline-flex;
 		align-items: center;
 		justify-content: center;
 		background: rgba(99, 102, 241, 0.1);
 		border: 1px solid rgba(99, 102, 241, 0.2);
 		border-radius: 0.5rem;
 		color: #94a3b8;
-		transition: all 0.2s;
+		transition: all 0.2s ease;
+		text-decoration: none;
+		flex-shrink: 0;
 	}
 
 	.social-link:hover {
@@ -180,8 +214,16 @@
 		transform: translateY(-2px);
 	}
 
+	/* Ensure icons don't overflow */
+	.social-link :global(svg) {
+		width: 20px;
+		height: 20px;
+		flex-shrink: 0;
+	}
+
 	.footer-column {
 		display: block;
+		min-width: 0;
 	}
 
 	.footer-heading {
@@ -190,7 +232,7 @@
 		font-weight: 600;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		margin-bottom: 1.25rem;
+		margin: 0 0 1.25rem 0;
 	}
 
 	.footer-list {
@@ -204,11 +246,16 @@
 		display: block;
 	}
 
+	.footer-list li:last-child {
+		margin-bottom: 0;
+	}
+
 	.footer-list a {
 		color: #94a3b8;
 		text-decoration: none;
 		font-size: 0.9375rem;
-		transition: color 0.2s;
+		transition: color 0.2s ease;
+		display: inline-block;
 	}
 
 	.footer-list a:hover {
@@ -246,25 +293,52 @@
 		margin: 0;
 	}
 
+	/* Tablet breakpoint */
 	@media (max-width: 1024px) {
+		.marketing-footer {
+			padding: 3rem 0 1.5rem;
+		}
+
 		.footer-grid {
 			grid-template-columns: 1fr 1fr;
 			gap: 2rem;
 		}
 
 		.footer-brand {
-			grid-column: span 2;
+			grid-column: 1 / -1;
 			max-width: 100%;
+		}
+
+		.social-links {
+			justify-content: flex-start;
 		}
 	}
 
+	/* Mobile breakpoint */
 	@media (max-width: 640px) {
+		.marketing-footer {
+			padding: 2.5rem 0 1.5rem;
+		}
+
+		.footer-container {
+			padding: 0 1rem;
+		}
+
 		.footer-grid {
 			grid-template-columns: 1fr;
+			gap: 2rem;
 		}
 
 		.footer-brand {
-			grid-column: span 1;
+			grid-column: 1;
+		}
+
+		.risk-disclaimer {
+			padding: 1rem;
+		}
+
+		.risk-disclaimer p {
+			font-size: 0.75rem;
 		}
 	}
 </style>
