@@ -1305,7 +1305,7 @@
 	</footer>
 </main>
 
-<style>
-	/* Svelte 5 Best Practice: Import page-specific CSS in <style> tag */
+<style lang="postcss">
+	/* Import page-specific CSS with Tailwind base styles */
 	@import './spx-profit-pulse.css';
 </style>
