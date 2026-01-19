@@ -42,6 +42,51 @@
 
 	// --- Icon SVG ---
 
+	/**
+	 * Scroll-triggered reveal animation using CSS class toggle pattern
+	 * Svelte 5 compatible - avoids inline styles that cause compositor issues
+	 */
+	function reveal(node: HTMLElement, params: { delay?: number; threshold?: number } = {}) {
+		const { delay = 0, threshold = 0.1 } = params;
+
+		// Respect reduced motion preference
+		if (typeof window !== 'undefined' && 
+			window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+			node.classList.add('revealed');
+			return { destroy() {} };
+		}
+
+		// Set delay as CSS custom property
+		if (delay > 0) {
+			node.style.setProperty('--reveal-delay', `${delay}ms`);
+		}
+
+		// Add base class for hidden state
+		node.classList.add('reveal-on-scroll');
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				entries.forEach((entry) => {
+					if (entry.isIntersecting) {
+						requestAnimationFrame(() => {
+							node.classList.add('revealed');
+						});
+						observer.unobserve(node);
+					}
+				});
+			},
+			{ threshold, rootMargin: '0px 0px -50px 0px' }
+		);
+
+		observer.observe(node);
+
+		return {
+			destroy() {
+				observer.disconnect();
+			}
+		};
+	}
+
 	// --- EXPANDED FAQ DATA FOR SEO & USER CLARITY ---
 	const faqData = [
 		{
@@ -173,10 +218,10 @@
 				class="absolute inset-0 bg-[linear-gradient(rgba(16,185,129,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(16,185,129,0.03)_1px,transparent_1px)] bg-[size:48px_48px] opacity-40"
 			></div>
 			<div
-				class="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-[100px] animate-pulse"
+				class="absolute top-0 right-0 w-[600px] h-[600px] bg-emerald-500/10 rounded-full blur-3xl"
 			></div>
 			<div
-				class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-[120px]"
+				class="absolute bottom-0 left-0 w-[500px] h-[500px] bg-blue-600/10 rounded-full blur-3xl"
 			></div>
 		</div>
 
@@ -185,7 +230,7 @@
 		>
 			<div class="text-center lg:text-left">
 				<div
-					in:fly={{ y: 30, duration: 600, easing: cubicOut }}
+					use:reveal
 					class="inline-flex items-center gap-2 bg-slate-900 border border-emerald-500/30 px-4 py-1.5 rounded-full mb-8 shadow-lg shadow-emerald-500/10 backdrop-blur-md"
 				>
 					<span class="relative flex h-2.5 w-2.5">
@@ -200,7 +245,7 @@
 				</div>
 
 				<h1
-					in:fly={{ y: 30, delay: 100, duration: 600, easing: cubicOut }}
+					use:reveal={{ delay: 100 }}
 					class="text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight text-white"
 				>
 					Catch the <br />
@@ -211,7 +256,7 @@
 				</h1>
 
 				<p
-					in:fly={{ y: 30, delay: 200, duration: 600, easing: cubicOut }}
+					use:reveal={{ delay: 200 }}
 					class="text-xl text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
 				>
 					Stop staring at the 1-minute chart. Get high-precision <strong
@@ -221,7 +266,7 @@
 				</p>
 
 				<div
-					in:fly={{ y: 30, delay: 300, duration: 600, easing: cubicOut }}
+					use:reveal={{ delay: 300 }}
 					class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center"
 				>
 					<a
@@ -251,7 +296,7 @@
 				</div>
 
 				<div
-					in:fly={{ y: 30, delay: 400, duration: 600, easing: cubicOut }}
+					use:reveal={{ delay: 400 }}
 					class="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm font-medium text-slate-500"
 				>
 					<div class="flex items-center gap-2">
@@ -303,13 +348,13 @@
 				</div>
 			</div>
 
-			<div class="hidden lg:block relative perspective-1000">
+			<div class="hidden lg:block relative [perspective:1000px]" style="contain: layout style paint;">
 				<div
 					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-500/20 to-transparent rounded-full blur-3xl"
 				></div>
 
 				<div
-					class="relative bg-slate-900/90 backdrop-blur-xl border border-slate-700 p-8 rounded-3xl shadow-2xl transform rotate-y-[-12deg] rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-out"
+					class="relative bg-slate-900/90 backdrop-blur-md border border-slate-700 p-8 rounded-3xl shadow-2xl transform rotate-y-[-12deg] rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-out will-change-transform"
 				>
 					<div class="flex justify-between items-center mb-8">
 						<div>
@@ -357,7 +402,8 @@
 					</div>
 
 					<div
-						class="absolute -right-6 -bottom-6 bg-emerald-500 text-slate-950 p-4 rounded-2xl shadow-xl shadow-emerald-500/20 animate-bounce"
+						class="absolute -right-6 -bottom-6 bg-emerald-500 text-slate-950 p-4 rounded-2xl shadow-xl shadow-emerald-500/20 animate-bounce will-change-transform"
+						style="contain: layout;"
 					>
 						<div class="text-xs font-bold opacity-80 uppercase">Potential Return</div>
 						<div class="text-2xl font-extrabold">+45%</div>
@@ -403,10 +449,10 @@
 	<section class="py-24 bg-slate-950 relative overflow-hidden">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
-				<h2 in:fly={{ y: 30, duration: 600, easing: cubicOut }} class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
+				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
 					Choose Your Trading Lifestyle
 				</h2>
-				<p in:fly={{ y: 30, delay: 100, duration: 600, easing: cubicOut }} class="text-xl text-slate-400 max-w-2xl mx-auto">
+				<p use:reveal={{ delay: 100 }} class="text-xl text-slate-400 max-w-2xl mx-auto">
 					Most traders burn out trying to scalp 1-minute candles against high-frequency algorithms.
 					We play the bigger timeframe where institutions move money.
 				</p>
@@ -414,7 +460,7 @@
 
 			<div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
 				<div
-					in:fly={{ y: 30, duration: 600, easing: cubicOut }}
+					use:reveal
 					class="bg-slate-900/50 border border-slate-800 rounded-3xl p-10 opacity-70 hover:opacity-100 transition-opacity"
 				>
 					<div class="flex items-center gap-4 mb-6">
@@ -445,7 +491,7 @@
 				</div>
 
 				<div
-					in:fly={{ y: 30, delay: 150, duration: 600, easing: cubicOut }}
+					use:reveal={{ delay: 150 }}
 					class="bg-slate-900 border-2 border-emerald-500 rounded-3xl p-10 shadow-2xl shadow-emerald-500/10 relative overflow-hidden"
 				>
 					<div
@@ -548,7 +594,7 @@
 			<div class="mb-16 md:text-center max-w-3xl mx-auto">
 				<span class="text-emerald-500 font-bold uppercase tracking-wider text-sm">The Strategy</span
 				>
-				<h2 in:fly={{ y: 30, duration: 600, easing: cubicOut }} class="text-3xl md:text-5xl font-heading font-bold text-white mt-2 mb-6">
+				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-white mt-2 mb-6">
 					How We Find the "Whale's Wake"
 				</h2>
 				<p class="text-slate-400 text-lg">
@@ -559,7 +605,7 @@
 
 			<div class="grid md:grid-cols-3 gap-10">
 				<article
-					in:fly={{ y: 30, duration: 600, easing: cubicOut }}
+					use:reveal
 					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-emerald-500/30 transition-colors"
 				>
 					<div
@@ -587,7 +633,7 @@
 				</article>
 
 				<article
-					in:fly={{ y: 30, delay: 100, duration: 600, easing: cubicOut }}
+					use:reveal={{ delay: 100 }}
 					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-blue-500/30 transition-colors"
 				>
 					<div
@@ -616,7 +662,7 @@
 				</article>
 
 				<article
-					in:fly={{ y: 30, delay: 200, duration: 600, easing: cubicOut }}
+					use:reveal={{ delay: 200 }}
 					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-indigo-500/30 transition-colors"
 				>
 					<div
@@ -645,7 +691,7 @@
 			</div>
 
 			<div
-				in:fly={{ y: 30, delay: 300, duration: 600, easing: cubicOut }}
+				use:reveal={{ delay: 300 }}
 				class="mt-16 bg-slate-950 p-6 md:p-8 rounded-2xl border border-slate-700/50 flex flex-col md:flex-row items-center gap-6 justify-between"
 			>
 				<div>
@@ -1096,3 +1142,28 @@
 </div>
 
 <!-- Footer is handled by MarketingFooter component in +layout.svelte -->
+
+<style>
+	/* Scroll-triggered reveal animation */
+	:global(.reveal-on-scroll) {
+		opacity: 0;
+		transform: translateY(30px);
+		transition: 
+			opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
+			transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+		transition-delay: var(--reveal-delay, 0ms);
+	}
+
+	:global(.reveal-on-scroll.revealed) {
+		opacity: 1;
+		transform: none; /* CRITICAL: use 'none', not translateY(0) */
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		:global(.reveal-on-scroll) {
+			opacity: 1;
+			transform: none;
+			transition: none;
+		}
+	}
+</style>
