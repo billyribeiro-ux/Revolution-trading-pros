@@ -2,9 +2,6 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	
-	// Import isolated Explosive Swings styles - completely independent from global app.css
-	import './explosive-swings.css';
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -1170,3 +1167,8 @@
 		</div>
 	</footer>
 </main>
+
+<style>
+	/* Svelte 5 Best Practice: Import page-specific CSS in <style> tag */
+	@import './explosive-swings.css';
+</style>

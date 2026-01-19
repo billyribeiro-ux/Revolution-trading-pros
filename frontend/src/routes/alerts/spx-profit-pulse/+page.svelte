@@ -1,11 +1,7 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import { fade, slide, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	
-	// Import isolated SPX styles - completely independent from global app.css
-	import './spx-profit-pulse.css';
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -17,6 +13,11 @@
 	// --- Apple ICT9+ Scroll Animations ---
 	// Smooth, performant reveal animations using IntersectionObserver
 	let mounted = $state(false);
+	
+	// Svelte 5: Use $effect instead of onMount
+	$effect(() => {
+		mounted = true;
+	});
 
 	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
 		const delay = params.delay ?? 0;
@@ -65,10 +66,6 @@
 			}
 		};
 	}
-
-	onMount(() => {
-		mounted = true;
-	});
 
 	// --- EXPANDED FAQ DATA ---
 	const faqList = [
@@ -1307,3 +1304,8 @@
 		</div>
 	</footer>
 </main>
+
+<style>
+	/* Svelte 5 Best Practice: Import page-specific CSS in <style> tag */
+	@import './spx-profit-pulse.css';
+</style>
