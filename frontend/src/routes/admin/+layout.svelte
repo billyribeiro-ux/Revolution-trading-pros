@@ -9,8 +9,7 @@
 	 * @version 4.0.0
 	 * @author Revolution Trading Pros
 	 */
-	// Admin Design System - Only loaded in admin area, not globally
-	import '$lib/styles/main.css';
+	// Admin Design System - main.css already imported via app.css
 
 	import { page } from '$app/state';
 	import { goto } from '$app/navigation';
