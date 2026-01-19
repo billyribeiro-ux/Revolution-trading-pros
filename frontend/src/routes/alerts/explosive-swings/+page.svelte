@@ -1169,6 +1169,6 @@
 </main>
 
 <style>
-	/* Svelte 5 Best Practice: +page.css is automatically imported by SvelteKit */
-	/* No manual import needed - SvelteKit handles this automatically */
+	/* Import page-specific CSS */
+	@import './+page.css';
 </style>
