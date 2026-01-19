@@ -1307,8 +1307,20 @@
 </main>
 
 <style>
-	/* Wrap imported CSS in :global to prevent scoping warnings */
-	:global {
-		@import './spx-profit-pulse.css';
+	/* Force dark backgrounds - override any conflicting styles */
+	.spx-profit-pulse-page {
+		background-color: #020617 !important;
+	}
+	
+	.spx-profit-pulse-page :global(.bg-slate-900) {
+		background-color: #0f172a !important;
+	}
+	
+	.spx-profit-pulse-page :global(.bg-slate-950) {
+		background-color: #020617 !important;
+	}
+	
+	.spx-profit-pulse-page :global(section) {
+		background-color: inherit;
 	}
 </style>
