@@ -16,3 +16,35 @@
  * If explosive-swings page works with just Tailwind, we know the issue is in
  * the commented code below. We can then incrementally uncomment to find culprit.
  * ═══════════════════════════════════════════════════════════════════════════ */
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.animate-bounce-slow { 
+  animation: bounce-slow 3s ease-in-out infinite; 
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * RTP DESIGN TOKENS - Tailwind v4 @theme syntax
+ * RESTORED: 2026-01-19 - CSS audit remediation
+ * USED BY: /live-trading-rooms/*, /account, /resources, /signup
+ * ═══════════════════════════════════════════════════════════════════════════ */
+@theme {
+  /* Background colors */
+  --color-rtp-bg: #050505;
+  --color-rtp-surface: #0a0a0a;
+  --color-rtp-border: rgba(255, 255, 255, 0.08);
+  
+  /* Text colors */
+  --color-rtp-text: #f4f4f5;
+  --color-rtp-muted: #71717a;
+  
+  /* Brand colors */
+  --color-rtp-primary: #3b82f6;
+  --color-rtp-emerald: #10b981;
+  --color-rtp-indigo: #6366f1;
+  --color-rtp-blue: #3b82f6;
+  
+  /* Typography */
+  --font-heading: 'Inter', system-ui, -apple-system, sans-serif;
+}
