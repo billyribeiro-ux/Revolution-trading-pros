@@ -1,28 +1,25 @@
 <script lang="ts">
 	/**
 	 * Admin Layout - Dashboard shell for admin area
-	 * Uses extracted AdminSidebar component for cleaner architecture
-	 *
-	 * Updated to Svelte 5 runes syntax (November 2025)
-	 * Enhanced with Apple ICT9+ Enterprise Components
-	 *
-	 * @version 4.0.0
+	 * 
+	 * @version 4.1.0 - Svelte 5 Runes
 	 * @author Revolution Trading Pros
 	 */
-	// Admin Design System - Only loaded in admin area, not globally
 	import '$lib/styles/main.css';
 
-	import { page } from '$app/state';
+	import { page } from '$app/stores';
 	import { goto } from '$app/navigation';
+	import { browser } from '$app/environment';
 	import { isAuthenticated } from '$lib/stores/auth.svelte';
 	import { unreadCount } from '$lib/stores/notifications.svelte';
 	import { keyboard } from '$lib/stores/keyboard.svelte';
+
 	import IconMenu2 from '@tabler/icons-svelte/icons/menu-2';
 	import IconBell from '@tabler/icons-svelte/icons/bell';
 	import IconSearch from '@tabler/icons-svelte/icons/search';
 	import IconPlugConnected from '@tabler/icons-svelte/icons/plug-connected';
 	import IconCommand from '@tabler/icons-svelte/icons/command';
-	import { browser } from '$app/environment';
+
 	import { AdminSidebar } from '$lib/components/layout';
 	import Toast from '$lib/components/Toast.svelte';
 	import CommandPalette from '$lib/components/CommandPalette.svelte';
@@ -31,52 +28,38 @@
 	import RateLimitIndicator from '$lib/components/RateLimitIndicator.svelte';
 	import ConnectionHealthPanel from '$lib/components/ConnectionHealthPanel.svelte';
 	import OfflineIndicator from '$lib/components/OfflineIndicator.svelte';
+
 	import type { Snippet } from 'svelte';
 
-	// Svelte 5: Props with children snippet
+	// Props
 	let { children }: { children: Snippet } = $props();
 
-	// Svelte 5 state runes
+	// State
 	let isSidebarOpen = $state(false);
 	let isCommandPaletteOpen = $state(false);
 	let isNotificationCenterOpen = $state(false);
 	let isKeyboardHelpOpen = $state(false);
 	let isConnectionHealthOpen = $state(false);
 
-	// Check if user is admin - Svelte 5 effect
+	// Auth guard
 	$effect(() => {
 		if (browser && !$isAuthenticated) {
 			goto('/login?redirect=/admin');
 		}
 	});
 
-	// Initialize keyboard shortcuts
+	// Keyboard shortcuts
 	$effect(() => {
 		if (!browser) return;
 
-		// Initialize keyboard shortcuts with custom actions
 		keyboard.init({
-			search: () => {
-				isCommandPaletteOpen = true;
-			},
-			'search-alt': () => {
-				isCommandPaletteOpen = true;
-			},
-			help: () => {
-				isKeyboardHelpOpen = true;
-			},
-			'goto-dashboard': () => {
-				goto('/admin');
-			},
-			'goto-analytics': () => {
-				goto('/admin/analytics');
-			},
-			'goto-blog': () => {
-				goto('/admin/blog');
-			},
-			'goto-settings': () => {
-				goto('/admin/settings');
-			},
+			search: () => (isCommandPaletteOpen = true),
+			'search-alt': () => (isCommandPaletteOpen = true),
+			help: () => (isKeyboardHelpOpen = true),
+			'goto-dashboard': () => goto('/admin'),
+			'goto-analytics': () => goto('/admin/analytics'),
+			'goto-blog': () => goto('/admin/blog'),
+			'goto-settings': () => goto('/admin/settings'),
 			escape: () => {
 				isCommandPaletteOpen = false;
 				isNotificationCenterOpen = false;
@@ -85,11 +68,10 @@
 			}
 		});
 
-		return () => {
-			keyboard.destroy();
-		};
+		return () => keyboard.destroy();
 	});
 
+	// Functions
 	function toggleSidebar() {
 		isSidebarOpen = !isSidebarOpen;
 	}
@@ -98,13 +80,12 @@
 		isSidebarOpen = false;
 	}
 
-	// Format page title from pathname
 	function formatPageTitle(pathname: string): string {
 		const segments = pathname.split('/').filter(Boolean);
 		if (segments.length <= 1) return 'Dashboard';
 
 		const lastSegment = segments[segments.length - 1];
-		// Handle special cases
+		
 		const titleMap: Record<string, string> = {
 			blog: 'Blog Posts',
 			categories: 'Categories',
@@ -144,22 +125,25 @@
 </svelte:head>
 
 <div class="admin-layout admin">
-	<!-- Sidebar Component -->
+	<!-- Sidebar -->
 	<AdminSidebar isOpen={isSidebarOpen} onclose={closeSidebar} />
 
 	<!-- Main Content -->
 	<div class="admin-main">
-		<!-- Top Bar -->
+		<!-- Header -->
 		<header class="admin-header">
-			<button class="mobile-menu-btn" onclick={toggleSidebar}>
+			<button type="button" class="mobile-menu-btn" onclick={toggleSidebar} aria-label="Toggle sidebar">
 				<IconMenu2 size={24} />
 			</button>
+
 			<div class="header-title">
-				<h1>{formatPageTitle(page.url.pathname)}</h1>
+				<h1>{formatPageTitle($page.url.pathname)}</h1>
 			</div>
+
 			<div class="header-actions">
-				<!-- Search Button -->
+				<!-- Search -->
 				<button
+					type="button"
 					class="header-btn"
 					onclick={() => (isCommandPaletteOpen = true)}
 					title="Search (⌘K)"
@@ -170,8 +154,9 @@
 					<kbd class="kbd desktop-only">⌘K</kbd>
 				</button>
 
-				<!-- Notifications Button -->
+				<!-- Notifications -->
 				<button
+					type="button"
 					class="header-btn notification-btn"
 					onclick={() => (isNotificationCenterOpen = true)}
 					title="Notifications"
@@ -183,8 +168,9 @@
 					{/if}
 				</button>
 
-				<!-- Connection Health Button -->
+				<!-- Connection Health -->
 				<button
+					type="button"
 					class="header-btn"
 					onclick={() => (isConnectionHealthOpen = true)}
 					title="API Connection Status"
@@ -193,11 +179,12 @@
 					<IconPlugConnected size={18} />
 				</button>
 
-				<!-- Rate Limit Indicator -->
+				<!-- Rate Limit -->
 				<RateLimitIndicator />
 
 				<!-- Keyboard Shortcuts -->
 				<button
+					type="button"
 					class="header-btn desktop-only"
 					onclick={() => (isKeyboardHelpOpen = true)}
 					title="Keyboard Shortcuts (?)"
@@ -210,17 +197,15 @@
 			</div>
 		</header>
 
-		<!-- Page Content -->
+		<!-- Content -->
 		<main id="main-content" class="admin-content">
-			{@render children?.()}
+			{@render children()}
 		</main>
 	</div>
 </div>
 
-<!-- Toast Notifications -->
+<!-- Global Components -->
 <Toast />
-
-<!-- Global Modals & Overlays -->
 <CommandPalette bind:isOpen={isCommandPaletteOpen} />
 <NotificationCenter bind:isOpen={isNotificationCenterOpen} />
 <KeyboardShortcutsHelp bind:isOpen={isKeyboardHelpOpen} />
@@ -229,9 +214,8 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * ADMIN LAYOUT - Netflix L11+ Principal Engineer Grade
-	 * Uses CSS custom properties for bulletproof light/dark theme support
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+	   ADMIN LAYOUT
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.admin-layout {
 		display: flex;
@@ -243,7 +227,6 @@
 			color 0.3s ease;
 	}
 
-	/* Main Content Area */
 	.admin-main {
 		flex: 1;
 		margin-left: 240px;
@@ -252,7 +235,10 @@
 		min-height: 100vh;
 	}
 
-	/* Header - Theme-aware styling */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   HEADER
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.admin-header {
 		height: 70px;
 		background: var(--admin-header-bg);
@@ -271,7 +257,6 @@
 			box-shadow 0.3s ease;
 	}
 
-	/* Mobile Menu Button */
 	.mobile-menu-btn {
 		display: none;
 		background: transparent;
@@ -293,14 +278,8 @@
 		outline: none;
 	}
 
-	/* Header Title - Montserrat 600 */
 	.header-title h1 {
-		font-family:
-			var(--font-heading),
-			'Montserrat',
-			-apple-system,
-			BlinkMacSystemFont,
-			sans-serif;
+		font-family: var(--font-heading), 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
 		font-size: 1.375rem;
 		font-weight: 600;
 		color: var(--admin-text-primary);
@@ -309,7 +288,10 @@
 		letter-spacing: -0.005em;
 	}
 
-	/* Header Actions Container */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   HEADER ACTIONS
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.header-actions {
 		margin-left: auto;
 		display: flex;
@@ -317,7 +299,6 @@
 		gap: 0.75rem;
 	}
 
-	/* Header Button - Theme-aware */
 	.header-btn {
 		display: flex;
 		align-items: center;
@@ -348,7 +329,6 @@
 		transform: scale(0.98);
 	}
 
-	/* Button Label - Roboto 500 */
 	.btn-label {
 		font-family: var(--font-body), 'Roboto', sans-serif;
 		font-size: 0.8125rem;
@@ -356,7 +336,6 @@
 		letter-spacing: 0.01em;
 	}
 
-	/* Keyboard Shortcut Indicator - Uses CSS variables from app.css */
 	.kbd {
 		padding: 0.125rem 0.375rem;
 		background: var(--admin-kbd-bg);
@@ -368,12 +347,14 @@
 		font-family: inherit;
 	}
 
-	/* Notification Button */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   NOTIFICATION BADGE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.notification-btn {
 		position: relative;
 	}
 
-	/* Notification Badge - Always visible (red) */
 	.notification-badge {
 		position: absolute;
 		top: -4px;
@@ -392,39 +373,40 @@
 		box-shadow: 0 2px 4px rgba(220, 38, 38, 0.3);
 	}
 
-	/* Desktop-only elements */
-	.desktop-only {
-		display: inline-flex;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   VIEW SITE BUTTON
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* View Site Button - RTP Gold accent with white text */
 	.view-site-btn {
 		padding: 0.5rem 1rem;
-		background: rgba(230, 184, 0, 0.15); /* Gold soft background */
-		color: #f0f6fc; /* White text for readability */
+		background: rgba(230, 184, 0, 0.15);
+		color: #f0f6fc;
 		text-decoration: none;
 		border-radius: var(--radius-md, 0.5rem);
 		font-family: var(--font-body), 'Roboto', sans-serif;
 		font-weight: 500;
 		font-size: 0.875rem;
 		letter-spacing: 0.01em;
-		border: 1px solid rgba(230, 184, 0, 0.4); /* Gold border */
+		border: 1px solid rgba(230, 184, 0, 0.4);
 		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.view-site-btn:hover {
-		background: rgba(230, 184, 0, 0.25); /* Brighter gold on hover */
+		background: rgba(230, 184, 0, 0.25);
 		border-color: #e6b800;
 		color: #ffffff;
 		transform: translateY(-1px);
 	}
 
 	.view-site-btn:focus-visible {
-		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.35); /* Gold focus ring */
+		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.35);
 		outline: none;
 	}
 
-	/* Main Content Area */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CONTENT AREA
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.admin-content {
 		flex: 1;
 		padding: 2rem;
@@ -432,11 +414,14 @@
 		background: var(--admin-bg);
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	 * RESPONSIVE BREAKPOINTS
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+	.desktop-only {
+		display: inline-flex;
+	}
 
-	/* Tablet and below */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Tablet
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (max-width: 1024px) {
 		.admin-main {
 			margin-left: 0;
@@ -451,7 +436,10 @@
 		}
 	}
 
-	/* Mobile landscape and below */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Mobile Landscape
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (max-width: 768px) {
 		.desktop-only {
 			display: none !important;
@@ -472,7 +460,10 @@
 		}
 	}
 
-	/* Mobile portrait */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Mobile Portrait
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (max-width: 640px) {
 		.admin-header {
 			padding: 0 1rem;
@@ -493,10 +484,9 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * APPLE ENTERPRISE ENHANCEMENTS - Mobile First
-	 * ═══════════════════════════════════════════════════════════════════════════ */
+	   RESPONSIVE - Extra Small Mobile
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Extra Small Mobile (< 380px) - iPhone SE, Galaxy Fold */
 	@media (max-width: 380px) {
 		.admin-header {
 			padding: 0 0.75rem;
@@ -525,7 +515,10 @@
 		}
 	}
 
-	/* Touch Device Optimizations - Apple HIG 44pt minimum touch target */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   TOUCH DEVICES - 44pt minimum touch targets
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (hover: none) and (pointer: coarse) {
 		.header-btn,
 		.mobile-menu-btn,
@@ -542,13 +535,15 @@
 			padding: 0.625rem 1rem;
 		}
 
-		/* Ensure adequate spacing for touch targets */
 		.header-actions {
 			gap: 0.5rem;
 		}
 	}
 
-	/* Reduced Motion - Accessibility */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCESSIBILITY
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (prefers-reduced-motion: reduce) {
 		.admin-layout,
 		.admin-header,
@@ -558,16 +553,12 @@
 			transition: none;
 		}
 
-		.view-site-btn:hover {
-			transform: none;
-		}
-
+		.view-site-btn:hover,
 		.mobile-menu-btn:hover {
 			transform: none;
 		}
 	}
 
-	/* High Contrast Mode - Accessibility */
 	@media (prefers-contrast: high) {
 		.admin-header {
 			border-bottom-width: 2px;
@@ -583,21 +574,10 @@
 		}
 	}
 
-	/* Dark Mode Preference (system) */
-	@media (prefers-color-scheme: dark) {
-		.admin-layout {
-			color-scheme: dark;
-		}
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PRINT
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Light Mode Preference (system) */
-	@media (prefers-color-scheme: light) {
-		.admin-layout {
-			color-scheme: light;
-		}
-	}
-
-	/* Print Styles */
 	@media print {
 		.admin-header,
 		.mobile-menu-btn {
@@ -613,7 +593,10 @@
 		}
 	}
 
-	/* Landscape Mode - Short viewport */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   LANDSCAPE - Short Viewport
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	@media (max-height: 500px) and (orientation: landscape) {
 		.admin-header {
 			height: 50px;

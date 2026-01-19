@@ -17,7 +17,7 @@
 	- $effect() for side effects
 	- Snippet for children rendering
 
-	@version 4.0.0 - ICT 11+ Server-Side Auth
+	@version 4.1.0 - ICT 11+ Server-Side Auth (Aligned to Admin Layout)
 	@author Revolution Trading Pros
 -->
 <script lang="ts">
@@ -26,9 +26,8 @@
 	import '$lib/styles/dashboard.css'; // Dashboard-specific styles - ISOLATED from front pages
 
 	import { goto } from '$app/navigation';
-	import { page } from '$app/state';
+	import { page } from '$app/stores'; // FIXED: Use $app/stores for consistency with Admin Layout
 	import { browser } from '$app/environment';
-	import { onMount, type Snippet } from 'svelte';
 	import { authStore, isAuthenticated, user } from '$lib/stores/auth.svelte';
 	import {
 		getUserMemberships,
@@ -37,6 +36,8 @@
 	} from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
+
+	import type { Snippet } from 'svelte'; // FIXED: Separate type import for clarity
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// PROPS - Svelte 5 Pattern
@@ -68,6 +69,9 @@
 
 	// Memberships data
 	let membershipsData = $state<UserMembershipsResponse | null>(null);
+
+	// Track if initial data load is complete
+	let isInitialized = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 Pattern
@@ -102,81 +106,10 @@
 	const isUserAuthenticated = $derived(!!data.user || $isAuthenticated);
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// DATA LOADING
-	// Server-side auth is complete, just load memberships client-side
-	// ICT 11+ FIX: Must sync auth state before loading memberships
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	onMount(async () => {
-		// ICT 11+ FIX: On page refresh, server has validated auth but client store is empty
-		// We need to restore auth state before making API calls that require token
-		if (data.user && !$isAuthenticated) {
-			console.debug('[Dashboard] Server auth valid, syncing to client store...');
-
-			// ALWAYS set user first from server data - this is the source of truth
-			const serverUser = {
-				id: parseInt(data.user.id) || 0,
-				name: data.user.name || data.user.email?.split('@')[0] || 'Member',
-				email: data.user.email || '',
-				role: data.user.role,
-				created_at: new Date().toISOString()
-			};
-			authStore.setUser(serverUser);
-			console.debug('[Dashboard] User synced to client store:', serverUser.email);
-
-			// Try to refresh the token to get a valid access token in memory
-			// The refresh token is persisted in localStorage
-			try {
-				const refreshed = await authStore.refreshToken();
-				if (refreshed) {
-					console.debug('[Dashboard] Token refreshed successfully');
-				} else {
-					console.debug('[Dashboard] Token refresh failed, will use cookies for API calls');
-				}
-			} catch (error) {
-				console.warn('[Dashboard] Token refresh error (will use cookies):', error);
-			}
-		}
-
-		// Load memberships data
-		await loadMembershipsData();
-	});
-
-	async function loadMembershipsData(): Promise<void> {
-		if (!isUserAuthenticated) return;
-
-		isLoadingData = true;
-
-		try {
-			membershipsData = await getUserMemberships();
-		} catch (error) {
-			console.error('[Dashboard] Failed to load memberships:', error);
-			membershipsData = null;
-		} finally {
-			isLoadingData = false;
-		}
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// WATCH AUTH CHANGES - Client-side logout detection
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	$effect(() => {
-		// If user logs out while on dashboard (client-side action), redirect to login
-		// Server auth is already validated, this is for client-side logout
-		if (!$isAuthenticated && !data.user && browser) {
-			const currentPath = page?.url?.pathname ?? '/dashboard';
-			goto(`/login?redirect=${encodeURIComponent(currentPath)}`, { replaceState: true });
-		}
-	});
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// AUTO-COLLAPSE SIDEBAR ON MEMBERSHIP DASHBOARD PAGES
-	// When user navigates to a membership dashboard, collapse main sidebar
-	// so the secondary sidebar can extend
-	// ═══════════════════════════════════════════════════════════════════════════
-
+	// MEMBERSHIP ROUTES CONFIGURATION
 	// Routes that should auto-collapse the main sidebar and show secondary nav
+	// ═══════════════════════════════════════════════════════════════════════════
+
 	const membershipRoutes: Record<
 		string,
 		{
@@ -460,23 +393,27 @@
 		}
 	};
 
-	// Derived: Get current membership route data (if on a membership page)
+	// ═══════════════════════════════════════════════════════════════════════════
+	// DERIVED: Route-based computations
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Get current membership route data (if on a membership page)
 	let currentMembershipData = $derived.by(() => {
-		const currentPath = page?.url?.pathname ?? '';
-		for (const [route, data] of Object.entries(membershipRoutes)) {
+		const currentPath = $page.url.pathname; // FIXED: Use $page from stores
+		for (const [route, routeData] of Object.entries(membershipRoutes)) {
 			if (currentPath.startsWith(route)) {
-				return data;
+				return routeData;
 			}
 		}
 		return null;
 	});
 
-	// Derived: Check if on membership route (secondary sidebar visible)
+	// Check if on membership route (secondary sidebar visible)
 	let isOnMembershipRoute = $derived(currentMembershipData !== null);
 
 	// Dashboard home should never start in collapsed state
 	let isDashboardHome = $derived.by(() => {
-		const path = page?.url?.pathname ?? '';
+		const path = $page.url.pathname; // FIXED: Use $page from stores
 		return path === '/dashboard' || path === '/dashboard/';
 	});
 
@@ -485,6 +422,85 @@
 	let sidebarCollapsed = $derived(
 		isDashboardHome ? false : userToggledSidebar !== null ? userToggledSidebar : isOnMembershipRoute
 	);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// EFFECTS - Svelte 5 Pattern (Aligned with Admin Layout)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	// Auth sync and data loading - runs once on mount
+	$effect(() => {
+		if (!browser) return;
+		if (isInitialized) return;
+
+		isInitialized = true;
+
+		// Async IIFE for data loading
+		(async () => {
+			// ICT 11+ FIX: On page refresh, server has validated auth but client store is empty
+			// We need to restore auth state before making API calls that require token
+			if (data.user && !$isAuthenticated) {
+				console.debug('[Dashboard] Server auth valid, syncing to client store...');
+
+				// ALWAYS set user first from server data - this is the source of truth
+				const serverUser = {
+					id: parseInt(data.user.id) || 0,
+					name: data.user.name || data.user.email?.split('@')[0] || 'Member',
+					email: data.user.email || '',
+					role: data.user.role,
+					created_at: new Date().toISOString()
+				};
+				authStore.setUser(serverUser);
+				console.debug('[Dashboard] User synced to client store:', serverUser.email);
+
+				// Try to refresh the token to get a valid access token in memory
+				// The refresh token is persisted in localStorage
+				try {
+					const refreshed = await authStore.refreshToken();
+					if (refreshed) {
+						console.debug('[Dashboard] Token refreshed successfully');
+					} else {
+						console.debug('[Dashboard] Token refresh failed, will use cookies for API calls');
+					}
+				} catch (error) {
+					console.warn('[Dashboard] Token refresh error (will use cookies):', error);
+				}
+			}
+
+			// Load memberships data
+			await loadMembershipsData();
+		})();
+	});
+
+	// Auth guard - redirect on logout (client-side logout detection)
+	$effect(() => {
+		if (!browser) return;
+
+		// If user logs out while on dashboard (client-side action), redirect to login
+		// Server auth is already validated, this is for client-side logout
+		if (!$isAuthenticated && !data.user) {
+			const currentPath = $page.url.pathname;
+			goto(`/login?redirect=${encodeURIComponent(currentPath)}`, { replaceState: true });
+		}
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	async function loadMembershipsData(): Promise<void> {
+		if (!isUserAuthenticated) return;
+
+		isLoadingData = true;
+
+		try {
+			membershipsData = await getUserMemberships();
+		} catch (error) {
+			console.error('[Dashboard] Failed to load memberships:', error);
+			membershipsData = null;
+		} finally {
+			isLoadingData = false;
+		}
+	}
 
 	// Handler for user manually toggling sidebar
 	function handleSidebarToggle(collapsed: boolean) {
