@@ -230,7 +230,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center"
+			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-12 items-center overflow-hidden"
 		>
 			<div class="text-center lg:text-left space-y-8">
 				<div
@@ -349,7 +349,7 @@
 				</div>
 			</div>
 
-			<div class="relative hidden lg:block perspective-1000">
+			<div class="relative hidden lg:block perspective-1000 overflow-hidden">
 				<div
 					class="absolute inset-0 bg-gradient-to-tr from-indigo-600/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
 				></div>

@@ -232,7 +232,7 @@
 		</div>
 
 		<div
-			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center"
+			class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid lg:grid-cols-2 gap-16 items-center overflow-hidden"
 		>
 			<div class="text-center lg:text-left">
 				<div
@@ -354,7 +354,7 @@
 				</div>
 			</div>
 
-			<div class="hidden lg:block relative perspective-1000">
+			<div class="hidden lg:block relative perspective-1000 overflow-hidden">
 				<div
 					class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-gradient-to-tr from-emerald-500/20 to-transparent rounded-full blur-3xl"
 				></div>
