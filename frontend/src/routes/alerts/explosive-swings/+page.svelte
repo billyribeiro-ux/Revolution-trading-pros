@@ -1,7 +1,15 @@
 <script lang="ts">
-	import { slide, fly, fade } from 'svelte/transition';
+	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
+	import { onMount } from 'svelte';
+	import { gsap } from 'gsap';
+	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+
+	// Register GSAP plugin
+	if (typeof window !== 'undefined') {
+		gsap.registerPlugin(ScrollTrigger);
+	}
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -43,49 +51,46 @@
 	// --- Icon SVG ---
 
 	/**
-	 * Scroll-triggered reveal animation using CSS class toggle pattern
-	 * Svelte 5 compatible - avoids inline styles that cause compositor issues
+	 * GSAP ScrollTrigger initialization
+	 * Apple-grade scroll animations with GPU acceleration
 	 */
-	function reveal(node: HTMLElement, params: { delay?: number; threshold?: number } = {}) {
-		const { delay = 0, threshold = 0.1 } = params;
-
+	onMount(() => {
 		// Respect reduced motion preference
-		if (typeof window !== 'undefined' && 
-			window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-			node.classList.add('revealed');
-			return { destroy() {} };
+		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		
+		if (prefersReducedMotion) {
+			// Instantly show all elements without animation
+			gsap.set('[data-gsap]', { opacity: 1, y: 0 });
+			return;
 		}
 
-		// Set delay as CSS custom property
-		if (delay > 0) {
-			node.style.setProperty('--reveal-delay', `${delay}ms`);
-		}
+		// Set initial state for all animated elements
+		gsap.set('[data-gsap]', { opacity: 0, y: 30 });
 
-		// Add base class for hidden state
-		node.classList.add('reveal-on-scroll');
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						requestAnimationFrame(() => {
-							node.classList.add('revealed');
-						});
-						observer.unobserve(node);
-					}
+		// Create ScrollTrigger batch for optimal performance
+		ScrollTrigger.batch('[data-gsap]', {
+			onEnter: (batch) => {
+				gsap.to(batch, {
+					opacity: 1,
+					y: 0,
+					duration: 0.8,
+					ease: 'power3.out',
+					stagger: 0.1,
+					overwrite: true
 				});
 			},
-			{ threshold, rootMargin: '0px 0px -50px 0px' }
-		);
+			start: 'top 85%',
+			once: true
+		});
 
-		observer.observe(node);
+		// Refresh ScrollTrigger after layout settles
+		ScrollTrigger.refresh();
 
-		return {
-			destroy() {
-				observer.disconnect();
-			}
+		return () => {
+			// Cleanup on unmount
+			ScrollTrigger.getAll().forEach(trigger => trigger.kill());
 		};
-	}
+	});
 
 	// --- EXPANDED FAQ DATA FOR SEO & USER CLARITY ---
 	const faqData = [
@@ -230,7 +235,7 @@
 		>
 			<div class="text-center lg:text-left">
 				<div
-					use:reveal
+					data-gsap
 					class="inline-flex items-center gap-2 bg-slate-900 border border-emerald-500/30 px-4 py-1.5 rounded-full mb-8 shadow-lg shadow-emerald-500/10 backdrop-blur-md"
 				>
 					<span class="relative flex h-2.5 w-2.5">
@@ -245,7 +250,7 @@
 				</div>
 
 				<h1
-					use:reveal={{ delay: 100 }}
+					data-gsap
 					class="text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight text-white"
 				>
 					Catch the <br />
@@ -256,7 +261,7 @@
 				</h1>
 
 				<p
-					use:reveal={{ delay: 200 }}
+					data-gsap
 					class="text-xl text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
 				>
 					Stop staring at the 1-minute chart. Get high-precision <strong
@@ -266,7 +271,7 @@
 				</p>
 
 				<div
-					use:reveal={{ delay: 300 }}
+					data-gsap
 					class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center"
 				>
 					<a
@@ -296,7 +301,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 400 }}
+					data-gsap
 					class="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm font-medium text-slate-500"
 				>
 					<div class="flex items-center gap-2">
@@ -449,10 +454,10 @@
 	<section class="py-24 bg-slate-950 relative overflow-hidden">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
+				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
 					Choose Your Trading Lifestyle
 				</h2>
-				<p use:reveal={{ delay: 100 }} class="text-xl text-slate-400 max-w-2xl mx-auto">
+				<p data-gsap class="text-xl text-slate-400 max-w-2xl mx-auto">
 					Most traders burn out trying to scalp 1-minute candles against high-frequency algorithms.
 					We play the bigger timeframe where institutions move money.
 				</p>
@@ -460,8 +465,8 @@
 
 			<div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
 				<div
-					use:reveal
-					class="bg-slate-900/50 border border-slate-800 rounded-3xl p-10 opacity-70 hover:opacity-100 transition-opacity"
+					data-gsap
+					class="bg-slate-900/50 border border-slate-800 rounded-3xl p-10 hover:opacity-100 transition-opacity"
 				>
 					<div class="flex items-center gap-4 mb-6">
 						<div
@@ -491,7 +496,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 150 }}
+					data-gsap
 					class="bg-slate-900 border-2 border-emerald-500 rounded-3xl p-10 shadow-2xl shadow-emerald-500/10 relative overflow-hidden"
 				>
 					<div
@@ -594,7 +599,7 @@
 			<div class="mb-16 md:text-center max-w-3xl mx-auto">
 				<span class="text-emerald-500 font-bold uppercase tracking-wider text-sm">The Strategy</span
 				>
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-white mt-2 mb-6">
+				<h2 data-gsap class="text-3xl md:text-5xl font-heading font-bold text-white mt-2 mb-6">
 					How We Find the "Whale's Wake"
 				</h2>
 				<p class="text-slate-400 text-lg">
@@ -605,7 +610,7 @@
 
 			<div class="grid md:grid-cols-3 gap-10">
 				<article
-					use:reveal
+					data-gsap
 					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-emerald-500/30 transition-colors"
 				>
 					<div
@@ -633,7 +638,7 @@
 				</article>
 
 				<article
-					use:reveal={{ delay: 100 }}
+					data-gsap
 					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-blue-500/30 transition-colors"
 				>
 					<div
@@ -662,7 +667,7 @@
 				</article>
 
 				<article
-					use:reveal={{ delay: 200 }}
+					data-gsap
 					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-indigo-500/30 transition-colors"
 				>
 					<div
@@ -691,7 +696,7 @@
 			</div>
 
 			<div
-				use:reveal={{ delay: 300 }}
+				data-gsap
 				class="mt-16 bg-slate-950 p-6 md:p-8 rounded-2xl border border-slate-700/50 flex flex-col md:flex-row items-center gap-6 justify-between"
 			>
 				<div>
@@ -1143,27 +1148,3 @@
 
 <!-- Footer is handled by MarketingFooter component in +layout.svelte -->
 
-<style>
-	/* Scroll-triggered reveal animation */
-	:global(.reveal-on-scroll) {
-		opacity: 0;
-		transform: translateY(30px);
-		transition: 
-			opacity 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94),
-			transform 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-		transition-delay: var(--reveal-delay, 0ms);
-	}
-
-	:global(.reveal-on-scroll.revealed) {
-		opacity: 1;
-		transform: none; /* CRITICAL: use 'none', not translateY(0) */
-	}
-
-	@media (prefers-reduced-motion: reduce) {
-		:global(.reveal-on-scroll) {
-			opacity: 1;
-			transform: none;
-			transition: none;
-		}
-	}
-</style>
