@@ -123,6 +123,12 @@
 	animation: float 30s ease-in-out infinite;
 }
 
+/* ⚠️ DUPLICATE WARNING: Also defined in performance.css (different animation)
+ * USED BY: Admin Dashboard - Decorative particles
+ * PAGES: /admin/* (all admin pages)
+ * PURPOSE: Complex 3D floating animation with rotation and scale for background particles
+ * CONFLICT: Will overwrite performance.css version when app.css is active
+ */
 @keyframes float {
 	0%,
 	100% {
@@ -402,6 +408,12 @@ select,
 	margin-bottom: 1rem;
 }
 
+/* ⚠️ DUPLICATE WARNING: Exact duplicate in app.css (can delete this one)
+ * USED BY: Admin Dashboard - Loading spinners
+ * PAGES: /admin/* (all admin pages)
+ * PURPOSE: 360° rotation for loading indicators
+ * NOTE: This is redundant - app.css has the same animation
+ */
 @keyframes spin {
 	to {
 		transform: rotate(360deg);

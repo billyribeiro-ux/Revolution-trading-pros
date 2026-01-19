@@ -1395,6 +1395,12 @@ body.dark,
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* Animation Keyframes */
+
+/* ⚠️ DUPLICATE WARNING: Also defined in performance.css (different implementation)
+ * USED BY: Admin Dashboard, Member Dashboard, General UI elements
+ * PAGES: /admin/*, /dashboard/*, /account/*
+ * PURPOSE: General fade-in animation for cards, modals, tooltips
+ */
 @keyframes fadeIn {
 	from {
 		opacity: 0;
@@ -1404,6 +1410,11 @@ body.dark,
 	}
 }
 
+/* ⚠️ DUPLICATE WARNING: Also defined in performance.css (30px movement vs 12px)
+ * USED BY: Admin Dashboard, Member Dashboard, Content sections
+ * PAGES: /admin/*, /dashboard/*, /blog/*, /courses/*
+ * PURPOSE: Subtle upward fade-in for list items, cards (12px movement)
+ */
 @keyframes fadeInUp {
 	from {
 		opacity: 0;
@@ -1448,6 +1459,11 @@ body.dark,
 	}
 }
 
+/* ⚠️ DUPLICATE WARNING: Also defined in performance.css (opposite direction)
+ * USED BY: Admin Dashboard, Member Dashboard, Loading states
+ * PAGES: /admin/*, /dashboard/*, All pages with .skeleton class
+ * PURPOSE: Loading shimmer effect (left to right, -200% to 200%)
+ */
 @keyframes shimmer {
 	0% {
 		background-position: -200% 0;
@@ -1477,6 +1493,11 @@ body.dark,
 	}
 }
 
+/* ⚠️ DUPLICATE WARNING: Exact duplicate in admin-page-layout.css (can delete one)
+ * USED BY: Loading spinners across entire site
+ * PAGES: All pages with loading indicators
+ * PURPOSE: 360° rotation for loading spinners
+ */
 @keyframes spin {
 	from {
 		transform: rotate(0deg);
@@ -1551,6 +1572,13 @@ body.dark,
 }
 
 /* Loading Shimmer Effect */
+
+/* ⚠️ DUPLICATE WARNING: Also defined in performance.css (different colors/timing)
+ * USED BY: Admin Dashboard, Member Dashboard, All pages with loading states
+ * PAGES: /admin/*, /dashboard/*, /account/*, /blog/*, /courses/*
+ * PURPOSE: Theme-aware loading skeleton (uses CSS variables, 400% size, 2s timing)
+ * CONFLICT: Will overwrite performance.css version when app.css is active
+ */
 .skeleton {
 	background: linear-gradient(
 		90deg,

@@ -83,6 +83,15 @@
 }
 
 /* Optimized animations for better INP */
+
+/* ⚠️ DUPLICATE WARNING: Also defined in app.css (12px movement vs 30px)
+ * USED BY: Trading Room Pages ONLY
+ * PAGES: /live-trading-rooms/day-trading, /live-trading-rooms/swing-trading,
+ *        /live-trading-rooms/small-account-mentorship, /live-trading-rooms/spx-profit-pulse,
+ *        /live-trading-rooms/explosive-swing
+ * PURPOSE: Dramatic upward fade-in for hero sections (30px movement for impact)
+ * CONFLICT: Will be overwritten by app.css version when app.css is active
+ */
 @keyframes fadeInUp {
 	from {
 		opacity: 0;
@@ -104,6 +113,12 @@
 	transform: translateZ(0);
 }
 
+/* ⚠️ DUPLICATE WARNING: Also defined in admin-page-layout.css (different animation)
+ * USED BY: Trading Room Pages - Particle effects
+ * PAGES: /live-trading-rooms/* (all 5 trading room pages)
+ * PURPOSE: Simple vertical float for decorative elements (GPU accelerated)
+ * CONFLICT: Will be overwritten by admin-page-layout.css version when app.css is active
+ */
 @keyframes float {
 	0%,
 	100% {
@@ -154,12 +169,24 @@ img {
 /* ============================================================================
    LOADING STATES - Better perceived performance
    ============================================================================ */
+/* ⚠️ DUPLICATE WARNING: Also defined in app.css (different colors/timing)
+ * USED BY: Trading Room Pages - Loading states
+ * PAGES: /live-trading-rooms/* (all 5 trading room pages)
+ * PURPOSE: Loading skeleton with hardcoded dark colors (200% size, 1.5s timing)
+ * CONFLICT: Will be overwritten by app.css version when app.css is active
+ */
 .skeleton {
 	background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
 	background-size: 200% 100%;
 	animation: shimmer 1.5s infinite;
 }
 
+/* ⚠️ DUPLICATE WARNING: Also defined in app.css (opposite direction)
+ * USED BY: Trading Room Pages - Loading shimmer
+ * PAGES: /live-trading-rooms/* (all 5 trading room pages)
+ * PURPOSE: Shimmer effect (right to left, 200% to -200%)
+ * CONFLICT: Will be overwritten by app.css version when app.css is active
+ */
 @keyframes shimmer {
 	0% {
 		background-position: 200% 0;
@@ -174,6 +201,12 @@ img {
 	animation: fadeIn 0.5s ease-out forwards;
 }
 
+/* ⚠️ DUPLICATE WARNING: Also defined in app.css (full implementation)
+ * USED BY: Trading Room Pages - Content loading
+ * PAGES: /live-trading-rooms/* (all 5 trading room pages)
+ * PURPOSE: Simplified fade-in (optimized for Core Web Vitals)
+ * CONFLICT: Will be overwritten by app.css version when app.css is active
+ */
 @keyframes fadeIn {
 	to {
 		opacity: 1;
