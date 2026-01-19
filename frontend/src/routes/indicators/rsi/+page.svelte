@@ -277,7 +277,6 @@
 
 <style>
 	.indicator-page {
-		min-height: 100vh;
 		background: linear-gradient(to bottom, #0a0f1e 0%, #050812 100%);
 		color: white;
 	}

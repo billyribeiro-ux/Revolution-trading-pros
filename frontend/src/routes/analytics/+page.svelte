@@ -418,7 +418,6 @@
 <style lang="postcss">
 	@reference "../../app.css";
 	.analytics-dashboard {
-		min-height: 100vh;
 		background: linear-gradient(to bottom right, #0f172a, #1e293b, #0f172a);
 		padding: 1.5rem;
 	}

@@ -366,7 +366,6 @@
 	/* Page Layout */
 	.site {
 		background: #efefef;
-		min-height: 100vh;
 	}
 
 	.site-content {

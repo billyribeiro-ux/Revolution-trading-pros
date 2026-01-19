@@ -306,7 +306,7 @@
 </svelte:head>
 
 <div
-	class="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 p-4"
+	class="flex items-center justify-center bg-gradient-to-br from-slate-900 via-emerald-950 to-slate-900 p-4"
 >
 	<div class="w-full max-w-md">
 		<!-- Logo -->

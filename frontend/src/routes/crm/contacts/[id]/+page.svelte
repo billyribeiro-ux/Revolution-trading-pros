@@ -44,7 +44,7 @@
 	<title>{contact ? `${contact.full_name} | CRM Contact` : 'Contact | CRM'}</title>
 </svelte:head>
 
-<div class="min-h-screen bg-slate-950/95 text-slate-50">
+<div class="bg-slate-950/95 text-slate-50">
 	<div class="mx-auto max-w-6xl px-6 py-6">
 		<button
 			class="mb-4 inline-flex items-center gap-2 text-xs text-slate-400 hover:text-slate-200"

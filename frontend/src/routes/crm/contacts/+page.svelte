@@ -79,7 +79,7 @@
 	<meta name="description" content="Enterprise CRM contact management" />
 </svelte:head>
 
-<div class="min-h-screen bg-slate-950/95 text-slate-50">
+<div class="bg-slate-950/95 text-slate-50">
 	<div class="mx-auto max-w-7xl px-6 py-8">
 		<!-- Header -->
 		<div class="mb-6 flex flex-wrap items-center justify-between gap-4">

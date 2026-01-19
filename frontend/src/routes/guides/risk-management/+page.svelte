@@ -111,7 +111,6 @@
 <style>
 	.guide-page {
 		background: #f5f7fa;
-		min-height: 100vh;
 		padding: 40px 30px;
 	}
 

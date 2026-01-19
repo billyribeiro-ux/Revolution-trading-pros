@@ -136,7 +136,6 @@
 
 <style>
 	.courses-page {
-		min-height: 100vh;
 		background: #f9fafb;
 	}
 

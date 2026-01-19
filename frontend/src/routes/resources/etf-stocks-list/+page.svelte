@@ -540,7 +540,6 @@
 
 <style>
 	.etf-page {
-		min-height: 100vh;
 		background: var(--rtp-bg, #0a0f1a);
 		color: var(--rtp-text, #e5e7eb);
 	}

@@ -394,7 +394,6 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.rtp-cart {
-		min-height: 100vh;
 		background: var(--st-bg);
 		padding: 40px 0;
 		font-family:

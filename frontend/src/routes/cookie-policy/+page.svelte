@@ -394,7 +394,6 @@
 
 <style>
 	.cookie-policy {
-		min-height: 100vh;
 		background: linear-gradient(to bottom, #0a101c, #0f172a);
 		color: #e2e8f0;
 		padding: 2rem 1rem 4rem;
