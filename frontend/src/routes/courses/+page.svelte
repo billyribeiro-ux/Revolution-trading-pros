@@ -368,7 +368,7 @@
 />
 
 <div
-	class="bg-black text-slate-200 min-h-screen font-sans selection:bg-blue-500/30 selection:text-white overflow-x-hidden"
+	class="bg-black text-slate-200 min-h-screen font-sans selection:bg-blue-500/30 selection:text-white"
 	onmousemove={handleMouseMove}
 	role="main"
 >

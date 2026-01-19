@@ -312,7 +312,7 @@
 	bind:this={containerRef}
 	onmousemove={handleMouseMove}
 	role="main"
-	class="relative bg-[#010203] min-h-screen text-slate-400 font-sans selection:bg-amber-700/50 selection:text-white overflow-x-hidden"
+	class="relative bg-[#010203] min-h-screen text-slate-400 font-sans selection:bg-amber-700/50 selection:text-white"
 	style="--x: {mouse.x}px; --y: {mouse.y}px;"
 >
 	<div class="fixed inset-0 pointer-events-none z-0">

@@ -313,7 +313,7 @@
 />
 
 <div
-	class="min-h-screen bg-[#050505] text-slate-300 font-sans selection:bg-rtp-primary/30 selection:text-white overflow-x-hidden"
+	class="min-h-screen bg-[#050505] text-slate-300 font-sans selection:bg-rtp-primary/30 selection:text-white"
 >
 	<div class="fixed inset-0 z-0 pointer-events-none">
 		<div

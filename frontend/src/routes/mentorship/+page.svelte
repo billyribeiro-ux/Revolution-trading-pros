@@ -141,7 +141,7 @@
 />
 
 <div
-	class="min-h-screen bg-[#020202] text-slate-400 font-sans selection:bg-white selection:text-black overflow-x-hidden"
+	class="min-h-screen bg-[#020202] text-slate-400 font-sans selection:bg-white selection:text-black"
 >
 	<div
 		class="fixed inset-0 z-0 pointer-events-none"

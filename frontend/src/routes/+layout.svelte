@@ -104,7 +104,7 @@
 {:else}
 	<!-- Dashboard + Marketing: Shared layout with NavBar + Footer -->
 	<!-- Pages control their own backgrounds (no forced bg-white) -->
-	<div class="min-h-screen" class:has-admin-toolbar={isAdmin}>
+	<div class="min-h-screen flex flex-col" class:has-admin-toolbar={isAdmin}>
 		<!-- Hydration-safe: Admin toolbar only after client mount -->
 		{#if mounted}
 			<AdminToolbar />
@@ -112,7 +112,7 @@
 
 		<NavBar />
 
-		<main id="main-content">
+		<main id="main-content" class="flex-grow">
 			{@render children()}
 		</main>
 
