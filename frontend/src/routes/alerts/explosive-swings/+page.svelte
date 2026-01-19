@@ -42,6 +42,10 @@
 
 	// --- Icon SVG ---
 
+	// ═══════════════════════════════════════════════════════════════════════════
+	// TEMPORARILY DISABLED - Testing layout collapse culprit
+	// ═══════════════════════════════════════════════════════════════════════════
+	/*
 	// --- Apple ICT9+ Scroll Animations ---
 	// Smooth, performant reveal animations using IntersectionObserver
 
@@ -90,6 +94,15 @@
 			destroy() {
 				observer.disconnect();
 			}
+		};
+	}
+	*/
+
+	// NO-OP replacement - elements render immediately without animation
+	function reveal(node: HTMLElement, params: { delay?: number; y?: number } = {}) {
+		// Do nothing - elements are visible by default
+		return {
+			destroy() {}
 		};
 	}
 
