@@ -989,25 +989,4 @@
 		</div>
 	</section>
 
-	<footer class="bg-rtp-bg py-12 border-t border-rtp-border">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<div class="text-xs text-rtp-muted leading-relaxed space-y-4 text-center md:text-left">
-				<p class="font-bold text-rtp-text">RISK DISCLOSURE:</p>
-				<p>
-					Day trading options, specifically 0DTE (Zero Days to Expiration), involves a high degree
-					of risk and is not suitable for all investors. You can lose more than your initial
-					investment. Revolution Trading Pros is an educational platform, not a registered
-					investment advisor. Results shown are not typical.
-				</p>
-				<div class="flex justify-center md:justify-start gap-6 mt-8 mb-4">
-					<a href="/terms" class="hover:text-white transition-colors">Terms of Service</a>
-					<a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a>
-					<a href="/contact" class="hover:text-white transition-colors">Contact Support</a>
-				</div>
-				<p class="pt-4 border-t border-rtp-border/50">
-					&copy; {new Date().getFullYear()} Revolution Trading Pros. All rights reserved.
-				</p>
-			</div>
-		</div>
-	</footer>
 </main>

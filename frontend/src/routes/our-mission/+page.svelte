@@ -1088,32 +1088,6 @@
 		</section>
 	</main>
 
-	<footer class="py-12 border-t border-white/5 bg-[#020202] text-center">
-		<div class="max-w-7xl mx-auto px-4">
-			<div class="flex justify-center mb-8">
-				<a href="/" class="text-xl font-heading font-bold text-white tracking-tight"
-					>Revolution Trading Pros</a
-				>
-			</div>
-			<p class="text-xs text-slate-600 leading-relaxed max-w-4xl mx-auto">
-				&copy; {new Date().getFullYear()} Revolution Trading Pros. All rights reserved. <br /><br />
-				<strong>RISK DISCLOSURE:</strong> Trading involves substantial risk of loss and is not
-				suitable for every investor. The valuation of futures and options may fluctuate, and, as a
-				result, clients may lose more than their original investment. The impact of seasonal and
-				geopolitical events is already factored into market prices. The highly leveraged nature of
-				futures trading means that small market movements will have a great impact on your trading
-				account and this can work against you, leading to large losses or can work for you, leading
-				to large gains.
-				<br /><br />
-				Hypothetical or simulated performance results have certain limitations. Unlike an actual performance
-				record, simulated results do not represent actual trading. Also, since the trades have not been
-				executed, the results may have under-or-over compensated for the impact, if any, of certain market
-				factors, such as lack of liquidity. Simulated trading programs in general are also subject to
-				the fact that they are designed with the benefit of hindsight. No representation is being made
-				that any account will or is likely to achieve profit or losses similar to those shown.
-			</p>
-		</div>
-	</footer>
 </div>
 
 <style>

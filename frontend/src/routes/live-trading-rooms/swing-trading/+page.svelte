@@ -1020,26 +1020,4 @@
 		</div>
 	</section>
 
-	<footer class="bg-rtp-bg py-12 border-t border-rtp-border">
-		<div
-			class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-rtp-muted leading-relaxed"
-		>
-			<p class="mb-4 font-bold uppercase text-rtp-text">Risk Disclosure</p>
-			<p class="max-w-4xl mx-auto">
-				Trading in financial markets involves a high degree of risk and may not be suitable for all
-				investors. Options trading involves significant risk and is not suitable for every investor.
-				You could lose some or all of your initial investment; do not invest money that you cannot
-				afford to lose. Past performance is not indicative of future results. Revolution Trading
-				Pros is an educational platform and does not provide personalized financial advice.
-			</p>
-			<div class="flex justify-center gap-6 mt-8 mb-4">
-				<a href="/terms" class="hover:text-emerald-400 transition-colors">Terms of Service</a>
-				<a href="/privacy" class="hover:text-emerald-400 transition-colors">Privacy Policy</a>
-				<a href="/contact" class="hover:text-emerald-400 transition-colors">Contact Support</a>
-			</div>
-			<p class="opacity-50">
-				&copy; {new Date().getFullYear()} Revolution Trading Pros. All rights reserved.
-			</p>
-		</div>
-	</footer>
 </main>

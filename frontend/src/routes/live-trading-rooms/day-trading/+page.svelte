@@ -1062,18 +1062,4 @@
 		</div>
 	</section>
 
-	<footer class="bg-rtp-bg py-12 border-t border-rtp-border">
-		<div
-			class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-rtp-muted leading-relaxed"
-		>
-			<div class="flex justify-center gap-6 mb-4">
-				<a href="/terms" class="hover:text-white transition-colors">Terms of Service</a>
-				<a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a>
-				<a href="/contact" class="hover:text-white transition-colors">Contact Support</a>
-			</div>
-			<p class="opacity-50">
-				&copy; {new Date().getFullYear()} Revolution Trading Pros. All rights reserved.
-			</p>
-		</div>
-	</footer>
 </main>
