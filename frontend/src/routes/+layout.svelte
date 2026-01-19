@@ -104,7 +104,7 @@
 {:else}
 	<!-- Dashboard + Marketing: Shared layout with NavBar + Footer -->
 	<!-- Pages control their own backgrounds (no forced bg-white) -->
-	<div class="min-h-screen overflow-x-hidden" class:has-admin-toolbar={isAdmin}>
+	<div class="min-h-screen" class:has-admin-toolbar={isAdmin}>
 		<!-- Hydration-safe: Admin toolbar only after client mount -->
 		{#if mounted}
 			<AdminToolbar />
