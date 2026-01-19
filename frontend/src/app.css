@@ -1558,6 +1558,89 @@ body.dark,
 	}
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+ * MARKETING ANIMATIONS (30px movement - dramatic for landing pages)
+ * ═══════════════════════════════════════════════════════════════════════════
+ * USED BY: All marketing/landing pages
+ * PAGES: /alerts/*, /live-trading-rooms/*, frontpage sections
+ * PURPOSE: Dramatic animations for hero sections and marketing content
+ * MOVEMENT: 30px (vs 12px for global-* animations)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ✅ NAMESPACED: marketing-fadeIn */
+@keyframes marketing-fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+/* ✅ NAMESPACED: marketing-fadeInUp */
+@keyframes marketing-fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(30px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* ✅ NAMESPACED: marketing-fadeInDown */
+@keyframes marketing-fadeInDown {
+	from {
+		opacity: 0;
+		transform: translateY(-30px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+/* ✅ NAMESPACED: marketing-fadeInLeft */
+@keyframes marketing-fadeInLeft {
+	from {
+		opacity: 0;
+		transform: translateX(-30px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+/* ✅ NAMESPACED: marketing-fadeInRight */
+@keyframes marketing-fadeInRight {
+	from {
+		opacity: 0;
+		transform: translateX(30px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+/* ✅ NAMESPACED: marketing-scaleIn */
+@keyframes marketing-scaleIn {
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: Marketing Animations
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 /* Animation Utilities - Using namespaced keyframes */
 .animate-fadeIn {
 	animation: global-fadeIn 0.3s ease-out forwards;
