@@ -91,7 +91,54 @@ export interface RoomStats {
 	total_trades: number | null;
 	wins: number | null;
 	losses: number | null;
+	avg_win: number | null;
+	avg_loss: number | null;
+	profit_factor: number | null;
+	avg_holding_days: number | null;
+	largest_win: number | null;
+	largest_loss: number | null;
+	current_streak: number | null;
 	calculated_at: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// TRADE TRACKER TYPES
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+export type TradeStatus = 'open' | 'closed';
+export type TradeResult = 'WIN' | 'LOSS' | null;
+export type TradeDirection = 'long' | 'short';
+export type TradeType = 'options' | 'shares';
+
+export interface RoomTrade {
+	id: number;
+	room_id: number;
+	room_slug: string;
+	ticker: string;
+	trade_type: TradeType;
+	direction: TradeDirection;
+	quantity: number;
+	option_type: string | null;
+	strike: number | null;
+	expiration: string | null;
+	contract_type: string | null;
+	entry_alert_id: number | null;
+	entry_price: number;
+	entry_date: string;
+	entry_tos_string: string | null;
+	exit_alert_id: number | null;
+	exit_price: number | null;
+	exit_date: string | null;
+	exit_tos_string: string | null;
+	setup: string | null;
+	status: TradeStatus;
+	result: TradeResult;
+	pnl: number | null;
+	pnl_percent: number | null;
+	holding_days: number | null;
+	notes: string | null;
+	created_at: string;
+	updated_at: string;
 }
 
 export interface PaginatedResponse<T> {
@@ -183,6 +230,43 @@ export interface ListParams {
 	page?: number;
 	per_page?: number;
 	week_of?: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════════
+// TRADE TRACKER REQUEST TYPES
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+export interface TradeListParams {
+	page?: number;
+	per_page?: number;
+	status?: TradeStatus;
+	ticker?: string;
+}
+
+export interface CreateTradeRequest {
+	room_slug: string;
+	ticker: string;
+	trade_type: TradeType;
+	direction: TradeDirection;
+	quantity: number;
+	option_type?: string;
+	strike?: number;
+	expiration?: string;
+	contract_type?: string;
+	entry_alert_id?: number;
+	entry_price: number;
+	entry_date: string;
+	entry_tos_string?: string;
+	setup?: string;
+	notes?: string;
+}
+
+export interface CloseTradeRequest {
+	exit_alert_id?: number;
+	exit_price: number;
+	exit_date?: string;
+	exit_tos_string?: string;
+	notes?: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -294,6 +378,36 @@ export const roomStatsApi = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════
+// TRADE TRACKER API
+// ═══════════════════════════════════════════════════════════════════════════════════
+
+export const tradesApi = {
+	/**
+	 * List trades for a room
+	 */
+	list: (roomSlug: string, params?: TradeListParams): Promise<PaginatedResponse<RoomTrade>> =>
+		apiClient.get(`/room-content/rooms/${roomSlug}/trades`, { params }),
+
+	/**
+	 * Create a new trade
+	 */
+	create: (data: CreateTradeRequest): Promise<RoomTrade> =>
+		apiClient.post('/admin/room-content/trades', data),
+
+	/**
+	 * Close a trade
+	 */
+	close: (id: number, data: CloseTradeRequest): Promise<RoomTrade> =>
+		apiClient.put(`/admin/room-content/trades/${id}/close`, data),
+
+	/**
+	 * Delete a trade
+	 */
+	delete: (id: number): Promise<{ success: boolean; message: string }> =>
+		apiClient.delete(`/admin/room-content/trades/${id}`)
+};
+
+// ═══════════════════════════════════════════════════════════════════════════════════
 // COMBINED EXPORT
 // ═══════════════════════════════════════════════════════════════════════════════════
 
@@ -301,7 +415,8 @@ export const roomContentApi = {
 	tradePlan: tradePlanApi,
 	alerts: alertsApi,
 	weeklyVideo: weeklyVideoApi,
-	stats: roomStatsApi
+	stats: roomStatsApi,
+	trades: tradesApi
 };
 
 export default roomContentApi;

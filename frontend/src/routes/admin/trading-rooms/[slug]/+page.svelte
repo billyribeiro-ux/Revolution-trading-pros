@@ -20,13 +20,21 @@
 		alertsApi,
 		weeklyVideoApi,
 		roomStatsApi,
+		tradesApi,
 		type TradePlanEntry,
 		type RoomAlert,
 		type WeeklyVideo,
 		type RoomStats,
+		type RoomTrade,
 		type Bias,
-		type AlertType
+		type AlertType,
+		type TradeStatus
 	} from '$lib/api/room-content';
+	import {
+		roomResourcesApi,
+		type RoomResource,
+		type ResourceListQuery
+	} from '$lib/api/room-resources';
 
 	// Icons
 	import IconTable from '@tabler/icons-svelte/icons/table';
@@ -41,12 +49,15 @@
 	import IconPin from '@tabler/icons-svelte/icons/pin';
 	import IconPinFilled from '@tabler/icons-svelte/icons/pin-filled';
 	import IconChartBar from '@tabler/icons-svelte/icons/chart-bar';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconPlayerPlay from '@tabler/icons-svelte/icons/player-play';
+	import IconCurrencyDollar from '@tabler/icons-svelte/icons/currency-dollar';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// TYPES
 	// ═══════════════════════════════════════════════════════════════════════════════
 
-	type Tab = 'trade-plan' | 'alerts' | 'weekly-video';
+	type Tab = 'trade-plan' | 'alerts' | 'weekly-video' | 'trades' | 'video-library';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// ROUTE DERIVED STATE
@@ -103,9 +114,24 @@
 		title: '',
 		message: '',
 		notes: '',
+		// TOS Format Fields
+		trade_type: '' as 'options' | 'shares' | '',
+		action: '' as 'BUY' | 'SELL' | '',
+		quantity: '',
+		option_type: '' as 'CALL' | 'PUT' | '',
+		strike: '',
+		expiration: '',
+		contract_type: '' as 'Weeklys' | 'Monthly' | 'LEAPS' | '',
+		order_type: '' as 'MKT' | 'LMT' | '',
+		limit_price: '',
+		fill_price: '',
+		tos_string: '',
 		is_new: true,
 		is_published: true
 	});
+
+	// Alert type filter for Market Updates
+	let alertTypeFilter = $state<'all' | 'ENTRY' | 'EXIT' | 'UPDATE' | 'MARKET_UPDATE'>('all');
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// WEEKLY VIDEO STATE
@@ -134,6 +160,46 @@
 
 	let roomStats = $state<RoomStats | null>(null);
 	let isLoadingStats = $state(true);
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// TRADE TRACKER STATE
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	let trades = $state<RoomTrade[]>([]);
+	let isLoadingTrades = $state(true);
+	let tradeFilter = $state<TradeStatus | 'all'>('all');
+	let showCloseTradeModal = $state(false);
+	let closingTrade = $state<RoomTrade | null>(null);
+	let isClosingTrade = $state(false);
+
+	let closeTradeForm = $state({
+		exit_price: '',
+		exit_date: new Date().toISOString().split('T')[0],
+		notes: ''
+	});
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// VIDEO LIBRARY STATE
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	let videoResources = $state<RoomResource[]>([]);
+	let isLoadingVideos = $state(true);
+	let videoFilter = $state<string>('all');
+	let showVideoResourceModal = $state(false);
+	let editingVideoResource = $state<RoomResource | null>(null);
+	let isSavingVideoResource = $state(false);
+
+	let videoResourceForm = $state({
+		title: '',
+		description: '',
+		video_url: '',
+		video_platform: 'bunny',
+		thumbnail_url: '',
+		duration: 0,
+		category: 'weekly',
+		is_published: true,
+		is_featured: false
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DERIVED COMPUTED VALUES
@@ -188,8 +254,44 @@
 	/** Whether there are alerts */
 	const hasAlerts = $derived(alerts.length > 0);
 
+	/** Filtered alerts based on type filter */
+	const filteredAlerts = $derived(
+		alertTypeFilter === 'all'
+			? sortedAlerts
+			: sortedAlerts.filter((a) => a.alert_type === alertTypeFilter)
+	);
+
 	/** Whether there are archived videos */
 	const hasArchivedVideos = $derived(archivedVideos.length > 0);
+
+	/** Filtered trades based on status filter */
+	const filteredTrades = $derived(
+		tradeFilter === 'all'
+			? trades
+			: trades.filter((t) => t.status === tradeFilter)
+	);
+
+	/** Trades count for tab badge */
+	const tradesCount = $derived(trades.length);
+
+	/** Active trades count */
+	const activeTradesCount = $derived(trades.filter((t) => t.status === 'open').length);
+
+	/** Video resources count for tab badge */
+	const videosCount = $derived(videoResources.length);
+
+	/** Filtered videos based on category */
+	const filteredVideos = $derived(
+		videoFilter === 'all'
+			? videoResources
+			: videoResources.filter((v) => v.category === videoFilter)
+	);
+
+	/** Close trade form validation */
+	const isCloseTradeFormValid = $derived(
+		closeTradeForm.exit_price.trim() !== '' && 
+		!isNaN(parseFloat(closeTradeForm.exit_price))
+	);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DATA FETCHING
@@ -203,6 +305,8 @@
 			loadAlerts();
 			loadWeeklyVideo();
 			loadRoomStats();
+			loadTrades();
+			loadVideoResources();
 		});
 	});
 
@@ -257,6 +361,35 @@
 			console.error('Failed to load room stats:', err);
 		} finally {
 			isLoadingStats = false;
+		}
+	}
+
+	async function loadTrades() {
+		isLoadingTrades = true;
+		try {
+			const response = await tradesApi.list(slug, { per_page: 100 });
+			trades = response.data || [];
+		} catch (err) {
+			console.error('Failed to load trades:', err);
+			errorMessage = 'Failed to load trades';
+		} finally {
+			isLoadingTrades = false;
+		}
+	}
+
+	async function loadVideoResources() {
+		isLoadingVideos = true;
+		try {
+			const response = await roomResourcesApi.adminList({
+				room_slug: slug,
+				resource_type: 'video',
+				per_page: 100
+			} as ResourceListQuery & { room_slug: string });
+			videoResources = response.data || [];
+		} catch (err) {
+			console.error('Failed to load video resources:', err);
+		} finally {
+			isLoadingVideos = false;
 		}
 	}
 
@@ -353,6 +486,17 @@
 			title: '',
 			message: '',
 			notes: '',
+			trade_type: '',
+			action: '',
+			quantity: '',
+			option_type: '',
+			strike: '',
+			expiration: '',
+			contract_type: '',
+			order_type: '',
+			limit_price: '',
+			fill_price: '',
+			tos_string: '',
 			is_new: true,
 			is_published: true
 		};
@@ -364,9 +508,20 @@
 		alertForm = {
 			alert_type: alert.alert_type as AlertType,
 			ticker: alert.ticker,
-			title: alert.title,
+			title: alert.title || '',
 			message: alert.message,
 			notes: alert.notes || '',
+			trade_type: (alert as any).trade_type || '',
+			action: (alert as any).action || '',
+			quantity: (alert as any).quantity?.toString() || '',
+			option_type: (alert as any).option_type || '',
+			strike: (alert as any).strike?.toString() || '',
+			expiration: (alert as any).expiration || '',
+			contract_type: (alert as any).contract_type || '',
+			order_type: (alert as any).order_type || '',
+			limit_price: (alert as any).limit_price?.toString() || '',
+			fill_price: (alert as any).fill_price?.toString() || '',
+			tos_string: (alert as any).tos_string || '',
 			is_new: alert.is_new,
 			is_published: alert.is_published
 		};
@@ -477,6 +632,88 @@
 		} finally {
 			isSavingVideo = false;
 		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// TRADE TRACKER HANDLERS
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	function openCloseTrade(trade: RoomTrade) {
+		closingTrade = trade;
+		closeTradeForm = {
+			exit_price: '',
+			exit_date: new Date().toISOString().split('T')[0],
+			notes: ''
+		};
+		showCloseTradeModal = true;
+	}
+
+	async function closeTrade() {
+		if (!closingTrade || !isCloseTradeFormValid) {
+			errorMessage = 'Exit price is required';
+			return;
+		}
+
+		isClosingTrade = true;
+		errorMessage = '';
+
+		try {
+			await tradesApi.close(closingTrade.id, {
+				exit_price: parseFloat(closeTradeForm.exit_price),
+				exit_date: closeTradeForm.exit_date,
+				notes: closeTradeForm.notes || undefined
+			});
+			successMessage = `Trade ${closingTrade.ticker} closed successfully`;
+			showCloseTradeModal = false;
+			closingTrade = null;
+			await loadTrades();
+			await loadRoomStats();
+		} catch (err: any) {
+			errorMessage = err.message || 'Failed to close trade';
+		} finally {
+			isClosingTrade = false;
+		}
+	}
+
+	async function deleteTrade(trade: RoomTrade) {
+		if (!confirm(`Delete trade ${trade.ticker}? This cannot be undone.`)) return;
+
+		try {
+			await tradesApi.delete(trade.id);
+			successMessage = 'Trade deleted';
+			await loadTrades();
+		} catch (err: any) {
+			errorMessage = err.message || 'Failed to delete trade';
+		}
+	}
+
+	// Trade result color helper
+	function getTradeResultColor(result: string | null): string {
+		switch (result) {
+			case 'WIN':
+				return '#22c55e';
+			case 'LOSS':
+				return '#ef4444';
+			default:
+				return '#64748b';
+		}
+	}
+
+	// Format currency
+	function formatCurrency(value: number | null): string {
+		if (value === null) return '-';
+		return new Intl.NumberFormat('en-US', {
+			style: 'currency',
+			currency: 'USD',
+			minimumFractionDigits: 2
+		}).format(value);
+	}
+
+	// Format percent
+	function formatPercent(value: number | null): string {
+		if (value === null) return '-';
+		const sign = value >= 0 ? '+' : '';
+		return `${sign}${value.toFixed(2)}%`;
 	}
 
 	// Clear messages after delay
@@ -615,6 +852,28 @@
 				<span class="badge active">1</span>
 			{/if}
 		</button>
+		<button
+			class="tab"
+			class:active={activeTab === 'trades'}
+			onclick={() => (activeTab = 'trades')}
+		>
+			<IconChartLine size={20} />
+			<span>Trade Tracker</span>
+			{#if activeTradesCount > 0}
+				<span class="badge active">{activeTradesCount}</span>
+			{:else}
+				<span class="badge">{tradesCount}</span>
+			{/if}
+		</button>
+		<button
+			class="tab"
+			class:active={activeTab === 'video-library'}
+			onclick={() => (activeTab = 'video-library')}
+		>
+			<IconPlayerPlay size={20} />
+			<span>Video Library</span>
+			<span class="badge">{videosCount}</span>
+		</button>
 	</nav>
 
 	<!-- Tab Content -->
@@ -712,10 +971,42 @@
 		{#if activeTab === 'alerts'}
 			<div class="section-header">
 				<h2>Trading Alerts</h2>
-				<button class="btn-primary" onclick={openAddAlert}>
-					<IconPlus size={18} />
-					New Alert
-				</button>
+				<div class="header-actions">
+					<div class="filter-pills">
+						<button
+							class="pill"
+							class:active={alertTypeFilter === 'all'}
+							onclick={() => (alertTypeFilter = 'all')}
+						>
+							All
+						</button>
+						<button
+							class="pill"
+							class:active={alertTypeFilter === 'ENTRY'}
+							onclick={() => (alertTypeFilter = 'ENTRY')}
+						>
+							Entry
+						</button>
+						<button
+							class="pill"
+							class:active={alertTypeFilter === 'EXIT'}
+							onclick={() => (alertTypeFilter = 'EXIT')}
+						>
+							Exit
+						</button>
+						<button
+							class="pill"
+							class:active={alertTypeFilter === 'UPDATE'}
+							onclick={() => (alertTypeFilter = 'UPDATE')}
+						>
+							Update
+						</button>
+					</div>
+					<button class="btn-primary" onclick={openAddAlert}>
+						<IconPlus size={18} />
+						New Alert
+					</button>
+				</div>
 			</div>
 
 			{#if isLoadingAlerts}
@@ -730,9 +1021,15 @@
 						Create Alert
 					</button>
 				</div>
+			{:else if filteredAlerts.length === 0}
+				<div class="empty-state">
+					<IconBell size={48} />
+					<h3>No {alertTypeFilter} Alerts</h3>
+					<p>No alerts match the selected filter</p>
+				</div>
 			{:else}
 				<div class="alerts-list">
-					{#each sortedAlerts as alert}
+					{#each filteredAlerts as alert}
 						<div class="alert-card" class:is-new={alert.is_new} class:is-pinned={alert.is_pinned}>
 							<div class="alert-header">
 								<div class="alert-meta">
@@ -862,6 +1159,252 @@
 						</div>
 					</div>
 				{/if}
+			{/if}
+		{/if}
+
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     TRADE TRACKER TAB
+		     ═══════════════════════════════════════════════════════════════════════════ -->
+		{#if activeTab === 'trades'}
+			<div class="section-header">
+				<h2>Trade Tracker</h2>
+				<div class="filter-pills">
+					<button
+						class="pill"
+						class:active={tradeFilter === 'all'}
+						onclick={() => (tradeFilter = 'all')}
+					>
+						All ({tradesCount})
+					</button>
+					<button
+						class="pill"
+						class:active={tradeFilter === 'open'}
+						onclick={() => (tradeFilter = 'open')}
+					>
+						Active ({activeTradesCount})
+					</button>
+					<button
+						class="pill"
+						class:active={tradeFilter === 'closed'}
+						onclick={() => (tradeFilter = 'closed')}
+					>
+						Closed ({tradesCount - activeTradesCount})
+					</button>
+				</div>
+			</div>
+
+			{#if isLoadingTrades}
+				<div class="loading">Loading trades...</div>
+			{:else if filteredTrades.length === 0}
+				<div class="empty-state">
+					<IconChartLine size={48} />
+					<h3>No Trades Found</h3>
+					<p>Trades are created automatically from entry alerts</p>
+				</div>
+			{:else}
+				<div class="table-wrapper">
+					<table class="data-table trades-table">
+						<thead>
+							<tr>
+								<th>Ticker</th>
+								<th>Type</th>
+								<th>Direction</th>
+								<th>Entry</th>
+								<th>Entry Date</th>
+								<th>Exit</th>
+								<th>P&L</th>
+								<th>Status</th>
+								<th>Actions</th>
+							</tr>
+						</thead>
+						<tbody>
+							{#each filteredTrades as trade}
+								<tr class:is-open={trade.status === 'open'}>
+									<td class="ticker-cell"><strong>{trade.ticker}</strong></td>
+									<td>
+										<span class="type-badge">{trade.trade_type}</span>
+									</td>
+									<td>
+										<span
+											class="direction-badge"
+											class:long={trade.direction === 'long'}
+											class:short={trade.direction === 'short'}
+										>
+											{trade.direction.toUpperCase()}
+										</span>
+									</td>
+									<td class="entry-cell">{formatCurrency(trade.entry_price)}</td>
+									<td>{new Date(trade.entry_date).toLocaleDateString()}</td>
+									<td>
+										{#if trade.exit_price}
+											{formatCurrency(trade.exit_price)}
+										{:else}
+											<span class="pending">-</span>
+										{/if}
+									</td>
+									<td>
+										{#if trade.pnl !== null}
+											<span
+												class="pnl-value"
+												style="color: {getTradeResultColor(trade.result)}"
+											>
+												{formatCurrency(trade.pnl)}
+												<small>({formatPercent(trade.pnl_percent)})</small>
+											</span>
+										{:else}
+											<span class="pending">-</span>
+										{/if}
+									</td>
+									<td>
+										<span
+											class="status-badge"
+											class:open={trade.status === 'open'}
+											class:closed={trade.status === 'closed'}
+											class:win={trade.result === 'WIN'}
+											class:loss={trade.result === 'LOSS'}
+										>
+											{#if trade.status === 'closed'}
+												{trade.result || 'CLOSED'}
+											{:else}
+												OPEN
+											{/if}
+										</span>
+									</td>
+									<td class="actions-cell">
+										{#if trade.status === 'open'}
+											<button
+												class="btn-close-trade"
+												onclick={() => openCloseTrade(trade)}
+												title="Close Trade"
+											>
+												<IconCurrencyDollar size={16} />
+												Close
+											</button>
+										{/if}
+										<button
+											class="icon-btn danger"
+											onclick={() => deleteTrade(trade)}
+											title="Delete"
+										>
+											<IconTrash size={16} />
+										</button>
+									</td>
+								</tr>
+								{#if trade.notes}
+									<tr class="notes-row">
+										<td colspan="9">
+											<span class="notes-label">Notes:</span>
+											{trade.notes}
+										</td>
+									</tr>
+								{/if}
+							{/each}
+						</tbody>
+					</table>
+				</div>
+			{/if}
+		{/if}
+
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     VIDEO LIBRARY TAB
+		     ═══════════════════════════════════════════════════════════════════════════ -->
+		{#if activeTab === 'video-library'}
+			<div class="section-header">
+				<h2>Video Library</h2>
+				<div class="filter-pills">
+					<button
+						class="pill"
+						class:active={videoFilter === 'all'}
+						onclick={() => (videoFilter = 'all')}
+					>
+						All
+					</button>
+					<button
+						class="pill"
+						class:active={videoFilter === 'weekly'}
+						onclick={() => (videoFilter = 'weekly')}
+					>
+						Weekly
+					</button>
+					<button
+						class="pill"
+						class:active={videoFilter === 'entry'}
+						onclick={() => (videoFilter = 'entry')}
+					>
+						Entry
+					</button>
+					<button
+						class="pill"
+						class:active={videoFilter === 'exit'}
+						onclick={() => (videoFilter = 'exit')}
+					>
+						Exit
+					</button>
+					<button
+						class="pill"
+						class:active={videoFilter === 'education'}
+						onclick={() => (videoFilter = 'education')}
+					>
+						Education
+					</button>
+				</div>
+			</div>
+
+			{#if isLoadingVideos}
+				<div class="loading">Loading videos...</div>
+			{:else if filteredVideos.length === 0}
+				<div class="empty-state">
+					<IconPlayerPlay size={48} />
+					<h3>No Videos Found</h3>
+					<p>Videos will appear here when uploaded through the Resources page</p>
+					<a href="/admin/resources" class="btn-primary">
+						Go to Resources
+					</a>
+				</div>
+			{:else}
+				<div class="video-grid">
+					{#each filteredVideos as video}
+						<div class="video-card">
+							<div
+								class="video-card-thumbnail"
+								style="background-image: url('{video.thumbnail_url || '/placeholder-video.jpg'}')"
+							>
+								{#if video.formatted_duration}
+									<span class="duration">{video.formatted_duration}</span>
+								{/if}
+								{#if video.is_featured}
+									<span class="featured-badge">Featured</span>
+								{/if}
+							</div>
+							<div class="video-card-content">
+								<h4>{video.title}</h4>
+								<p class="video-card-date">{video.formatted_date}</p>
+								{#if video.category}
+									<span class="category-badge">{video.category}</span>
+								{/if}
+								<div class="video-card-stats">
+									<span>{video.views_count} views</span>
+								</div>
+							</div>
+							<div class="video-card-actions">
+								<a href="/admin/resources/{video.id}" class="icon-btn" title="Edit">
+									<IconEdit size={16} />
+								</a>
+								<button
+									class="icon-btn danger"
+									onclick={() => {
+										if (confirm('Delete this video?')) {
+											roomResourcesApi.delete(video.id).then(() => loadVideoResources());
+										}
+									}}
+									title="Delete"
+								>
+									<IconTrash size={16} />
+								</button>
+							</div>
+						</div>
+					{/each}
+				</div>
 			{/if}
 		{/if}
 	</div>
@@ -1086,6 +1629,119 @@
 					></textarea>
 				</div>
 
+				<!-- TOS Format Section -->
+				{#if alertForm.alert_type === 'ENTRY' || alertForm.alert_type === 'EXIT'}
+					<div class="tos-section">
+						<h4 class="section-title">TOS Format (Optional)</h4>
+						<div class="form-row">
+							<div class="form-group">
+								<label for="trade_type">Trade Type</label>
+								<select id="trade_type" bind:value={alertForm.trade_type}>
+									<option value="">Select...</option>
+									<option value="options">Options</option>
+									<option value="shares">Shares</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="action">Action</label>
+								<select id="action" bind:value={alertForm.action}>
+									<option value="">Select...</option>
+									<option value="BUY">BUY</option>
+									<option value="SELL">SELL</option>
+								</select>
+							</div>
+							<div class="form-group">
+								<label for="quantity">Quantity</label>
+								<input
+									id="quantity"
+									type="number"
+									bind:value={alertForm.quantity}
+									placeholder="10"
+								/>
+							</div>
+						</div>
+
+						{#if alertForm.trade_type === 'options'}
+							<div class="form-row">
+								<div class="form-group">
+									<label for="option_type">Option Type</label>
+									<select id="option_type" bind:value={alertForm.option_type}>
+										<option value="">Select...</option>
+										<option value="CALL">CALL</option>
+										<option value="PUT">PUT</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="strike">Strike</label>
+									<input
+										id="strike"
+										type="number"
+										step="0.5"
+										bind:value={alertForm.strike}
+										placeholder="145"
+									/>
+								</div>
+								<div class="form-group">
+									<label for="expiration">Expiration</label>
+									<input id="expiration" type="date" bind:value={alertForm.expiration} />
+								</div>
+							</div>
+							<div class="form-row">
+								<div class="form-group">
+									<label for="contract_type">Contract Type</label>
+									<select id="contract_type" bind:value={alertForm.contract_type}>
+										<option value="">Select...</option>
+										<option value="Weeklys">Weeklys</option>
+										<option value="Monthly">Monthly</option>
+										<option value="LEAPS">LEAPS</option>
+									</select>
+								</div>
+								<div class="form-group">
+									<label for="order_type">Order Type</label>
+									<select id="order_type" bind:value={alertForm.order_type}>
+										<option value="">Select...</option>
+										<option value="MKT">Market (MKT)</option>
+										<option value="LMT">Limit (LMT)</option>
+									</select>
+								</div>
+							</div>
+						{/if}
+
+						<div class="form-row">
+							<div class="form-group">
+								<label for="limit_price">Limit Price</label>
+								<input
+									id="limit_price"
+									type="number"
+									step="0.01"
+									bind:value={alertForm.limit_price}
+									placeholder="2.50"
+								/>
+							</div>
+							<div class="form-group">
+								<label for="fill_price">Fill Price</label>
+								<input
+									id="fill_price"
+									type="number"
+									step="0.01"
+									bind:value={alertForm.fill_price}
+									placeholder="2.48"
+								/>
+							</div>
+						</div>
+
+						<div class="form-group full-width">
+							<label for="tos_string">TOS String (auto-generated or manual)</label>
+							<input
+								id="tos_string"
+								type="text"
+								bind:value={alertForm.tos_string}
+								placeholder="BUY +10 NVDA 100 (Weeklys) 17 JAN 25 145 CALL @2.50 LMT"
+							/>
+						</div>
+					</div>
+				{/if}
+
 				<div class="form-row checkboxes">
 					<label class="checkbox-label">
 						<input id="alert-is-new" name="alert-is-new" type="checkbox" bind:checked={alertForm.is_new} />
@@ -1209,6 +1865,99 @@
 					>
 					<button type="submit" class="btn-primary" disabled={isSavingVideo || !isVideoFormValid}>
 						{isSavingVideo ? 'Publishing...' : 'Publish Video'}
+					</button>
+				</div>
+			</form>
+		</div>
+	</div>
+{/if}
+
+<!-- ═══════════════════════════════════════════════════════════════════════════════════
+     CLOSE TRADE MODAL
+     ═══════════════════════════════════════════════════════════════════════════════════ -->
+{#if showCloseTradeModal && closingTrade}
+	<!-- svelte-ignore a11y_click_events_have_key_events a11y_no_static_element_interactions -->
+	<div class="modal-overlay" onclick={() => (showCloseTradeModal = false)} role="presentation">
+		<div
+			class="modal"
+			onclick={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="close-trade-modal-title"
+			tabindex="-1"
+		>
+			<div class="modal-header">
+				<h2 id="close-trade-modal-title">Close Trade: {closingTrade.ticker}</h2>
+				<button class="close-btn" onclick={() => (showCloseTradeModal = false)}>
+					<IconX size={24} />
+				</button>
+			</div>
+			<form
+				class="modal-body"
+				onsubmit={(e) => {
+					e.preventDefault();
+					closeTrade();
+				}}
+			>
+				<div class="trade-summary">
+					<div class="trade-summary-row">
+						<span class="label">Ticker:</span>
+						<span class="value"><strong>{closingTrade.ticker}</strong></span>
+					</div>
+					<div class="trade-summary-row">
+						<span class="label">Direction:</span>
+						<span class="value direction-badge" class:long={closingTrade.direction === 'long'} class:short={closingTrade.direction === 'short'}>
+							{closingTrade.direction.toUpperCase()}
+						</span>
+					</div>
+					<div class="trade-summary-row">
+						<span class="label">Entry Price:</span>
+						<span class="value">{formatCurrency(closingTrade.entry_price)}</span>
+					</div>
+					<div class="trade-summary-row">
+						<span class="label">Entry Date:</span>
+						<span class="value">{new Date(closingTrade.entry_date).toLocaleDateString()}</span>
+					</div>
+				</div>
+
+				<div class="form-row">
+					<div class="form-group">
+						<label for="exit_price">Exit Price *</label>
+						<input
+							id="exit_price"
+							type="number"
+							step="0.01"
+							bind:value={closeTradeForm.exit_price}
+							placeholder="145.50"
+							required
+						/>
+					</div>
+					<div class="form-group">
+						<label for="exit_date">Exit Date</label>
+						<input id="exit_date" type="date" bind:value={closeTradeForm.exit_date} />
+					</div>
+				</div>
+
+				<div class="form-group full-width">
+					<label for="close_notes">Notes</label>
+					<textarea
+						id="close_notes"
+						bind:value={closeTradeForm.notes}
+						placeholder="Optional notes about the exit..."
+						rows="2"
+					></textarea>
+				</div>
+
+				<div class="modal-actions">
+					<button type="button" class="btn-secondary" onclick={() => (showCloseTradeModal = false)}
+						>Cancel</button
+					>
+					<button
+						type="submit"
+						class="btn-primary"
+						disabled={isClosingTrade || !isCloseTradeFormValid}
+					>
+						{isClosingTrade ? 'Closing...' : 'Close Trade'}
 					</button>
 				</div>
 			</form>
@@ -1997,6 +2746,280 @@
 		border-top: 1px solid #e2e8f0;
 	}
 
+	/* Filter Pills */
+	.filter-pills {
+		display: flex;
+		gap: 8px;
+	}
+
+	.pill {
+		padding: 8px 16px;
+		background: #f1f5f9;
+		border: none;
+		border-radius: 20px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #64748b;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.pill:hover {
+		background: #e2e8f0;
+	}
+
+	.pill.active {
+		background: #143e59;
+		color: #fff;
+	}
+
+	/* Trade Tracker Styles */
+	.trades-table tr.is-open {
+		background: #fafbff;
+	}
+
+	.type-badge {
+		display: inline-block;
+		padding: 3px 8px;
+		background: #f1f5f9;
+		border-radius: 4px;
+		font-size: 11px;
+		font-weight: 600;
+		color: #64748b;
+		text-transform: uppercase;
+	}
+
+	.direction-badge {
+		display: inline-block;
+		padding: 3px 8px;
+		border-radius: 4px;
+		font-size: 11px;
+		font-weight: 700;
+	}
+
+	.direction-badge.long {
+		background: #dcfce7;
+		color: #166534;
+	}
+
+	.direction-badge.short {
+		background: #fef2f2;
+		color: #991b1b;
+	}
+
+	.entry-cell {
+		font-weight: 600;
+		color: #1e293b;
+	}
+
+	.pending {
+		color: #94a3b8;
+	}
+
+	.pnl-value {
+		font-weight: 600;
+	}
+
+	.pnl-value small {
+		font-weight: 500;
+		opacity: 0.8;
+	}
+
+	.status-badge {
+		display: inline-block;
+		padding: 4px 10px;
+		border-radius: 6px;
+		font-size: 11px;
+		font-weight: 700;
+	}
+
+	.status-badge.open {
+		background: #fef3c7;
+		color: #92400e;
+	}
+
+	.status-badge.win {
+		background: #dcfce7;
+		color: #166534;
+	}
+
+	.status-badge.loss {
+		background: #fef2f2;
+		color: #991b1b;
+	}
+
+	.btn-close-trade {
+		display: inline-flex;
+		align-items: center;
+		gap: 4px;
+		padding: 6px 12px;
+		background: #22c55e;
+		color: #fff;
+		border: none;
+		border-radius: 6px;
+		font-size: 12px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.btn-close-trade:hover {
+		background: #16a34a;
+	}
+
+	/* Trade Summary in Modal */
+	.trade-summary {
+		background: #f8fafc;
+		border-radius: 10px;
+		padding: 16px;
+		margin-bottom: 20px;
+	}
+
+	.trade-summary-row {
+		display: flex;
+		justify-content: space-between;
+		padding: 8px 0;
+		border-bottom: 1px solid #e2e8f0;
+	}
+
+	.trade-summary-row:last-child {
+		border-bottom: none;
+	}
+
+	.trade-summary-row .label {
+		color: #64748b;
+		font-size: 14px;
+	}
+
+	.trade-summary-row .value {
+		color: #1e293b;
+		font-size: 14px;
+	}
+
+	/* Video Library Grid */
+	.video-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: 20px;
+	}
+
+	.video-card {
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		overflow: hidden;
+		transition: all 0.2s;
+	}
+
+	.video-card:hover {
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+	}
+
+	.video-card-thumbnail {
+		height: 160px;
+		background-size: cover;
+		background-position: center;
+		background-color: #f1f5f9;
+		position: relative;
+	}
+
+	.video-card-thumbnail .duration {
+		position: absolute;
+		bottom: 8px;
+		right: 8px;
+		background: rgba(0, 0, 0, 0.8);
+		color: #fff;
+		padding: 3px 8px;
+		border-radius: 4px;
+		font-size: 12px;
+		font-weight: 600;
+	}
+
+	.video-card-thumbnail .featured-badge {
+		position: absolute;
+		top: 8px;
+		left: 8px;
+		background: #f59e0b;
+		color: #fff;
+		padding: 3px 10px;
+		border-radius: 4px;
+		font-size: 11px;
+		font-weight: 700;
+	}
+
+	.video-card-content {
+		padding: 16px;
+	}
+
+	.video-card-content h4 {
+		font-size: 15px;
+		font-weight: 600;
+		color: #1e293b;
+		margin: 0 0 8px 0;
+		line-height: 1.4;
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+
+	.video-card-date {
+		font-size: 13px;
+		color: #64748b;
+		margin: 0 0 8px 0;
+	}
+
+	.category-badge {
+		display: inline-block;
+		padding: 3px 10px;
+		background: #e2e8f0;
+		border-radius: 4px;
+		font-size: 11px;
+		font-weight: 600;
+		color: #475569;
+		text-transform: capitalize;
+	}
+
+	.video-card-stats {
+		margin-top: 8px;
+		font-size: 12px;
+		color: #94a3b8;
+	}
+
+	.video-card-actions {
+		display: flex;
+		gap: 8px;
+		padding: 12px 16px;
+		border-top: 1px solid #e2e8f0;
+		background: #fafafa;
+	}
+
+	/* Header Actions */
+	.header-actions {
+		display: flex;
+		align-items: center;
+		gap: 16px;
+	}
+
+	/* TOS Section */
+	.tos-section {
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		padding: 20px;
+		margin-bottom: 20px;
+	}
+
+	.section-title {
+		font-size: 14px;
+		font-weight: 600;
+		color: #475569;
+		margin: 0 0 16px 0;
+		padding-bottom: 12px;
+		border-bottom: 1px solid #e2e8f0;
+	}
+
 	@media (max-width: 768px) {
 		.admin-page {
 			padding: 20px;
@@ -2027,6 +3050,20 @@
 		.video-thumbnail {
 			width: 100%;
 			height: 200px;
+		}
+
+		.filter-pills {
+			flex-wrap: wrap;
+		}
+
+		.video-grid {
+			grid-template-columns: 1fr;
+		}
+
+		.section-header {
+			flex-direction: column;
+			gap: 16px;
+			align-items: flex-start;
 		}
 	}
 </style>
