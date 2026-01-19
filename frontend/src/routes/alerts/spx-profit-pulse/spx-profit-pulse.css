@@ -1,0 +1,104 @@
+/**
+ * SPX Profit Pulse - Isolated Marketing Page Styles
+ * ═══════════════════════════════════════════════════════════════════════════
+ * COMPLETELY INDEPENDENT from global app.css
+ * All variables prefixed with spx- for easy identification
+ * 
+ * @version 1.0.0
+ */
+
+/* Register SPX-specific colors as Tailwind utilities */
+@theme {
+	/* SPX Brand Colors - Indigo/Purple */
+	--color-spx-primary: #6366f1;
+	--color-spx-primary-light: #818cf8;
+	--color-spx-primary-dark: #4f46e5;
+	--color-spx-primary-soft: rgba(99, 102, 241, 0.15);
+
+	/* SPX Secondary Colors */
+	--color-spx-indigo: #6366f1;
+	--color-spx-violet: #7c3aed;
+	--color-spx-blue: #2563eb;
+
+	/* SPX Surface Colors - Dark Theme */
+	--color-spx-bg: #0f172a;
+	--color-spx-bg-alt: #0a0e13;
+	--color-spx-surface: #1e293b;
+	--color-spx-surface-elevated: #334155;
+	--color-spx-surface-overlay: #475569;
+
+	/* SPX Border Colors */
+	--color-spx-border: #334155;
+	--color-spx-border-light: #1e293b;
+	--color-spx-border-focus: #6366f1;
+
+	/* SPX Text Colors */
+	--color-spx-text: #f1f5f9;
+	--color-spx-text-secondary: #cbd5e1;
+	--color-spx-muted: #94a3b8;
+	--color-spx-placeholder: #64748b;
+
+	/* SPX Semantic Colors */
+	--color-spx-success: #10b981;
+	--color-spx-success-soft: rgba(16, 185, 129, 0.15);
+	--color-spx-warning: #f59e0b;
+	--color-spx-warning-soft: rgba(245, 158, 11, 0.15);
+	--color-spx-error: #ef4444;
+	--color-spx-error-soft: rgba(239, 68, 68, 0.15);
+	--color-spx-info: #3b82f6;
+	--color-spx-info-soft: rgba(59, 130, 246, 0.15);
+
+	/* SPX Accent Colors */
+	--color-spx-emerald: #10b981;
+	--color-spx-amber: #f59e0b;
+	--color-spx-rose: #f43f5e;
+	--color-spx-cyan: #06b6d4;
+	--color-spx-purple: #7c3aed;
+}
+
+/* SPX-specific base styles */
+.spx-page {
+	background: var(--color-spx-bg);
+	color: var(--color-spx-text);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Compatibility aliases - map old rtp- classes to new spx- variables */
+:root {
+	--color-rtp-primary: var(--color-spx-primary);
+	--color-rtp-primary-light: var(--color-spx-primary-light);
+	--color-rtp-primary-dark: var(--color-spx-primary-dark);
+	--color-rtp-indigo: var(--color-spx-indigo);
+	--color-rtp-violet: var(--color-spx-violet);
+	--color-rtp-blue: var(--color-spx-blue);
+	--color-rtp-bg: var(--color-spx-bg);
+	--color-rtp-bg-alt: var(--color-spx-bg-alt);
+	--color-rtp-surface: var(--color-spx-surface);
+	--color-rtp-surface-elevated: var(--color-spx-surface-elevated);
+	--color-rtp-surface-overlay: var(--color-spx-surface-overlay);
+	--color-rtp-border: var(--color-spx-border);
+	--color-rtp-border-light: var(--color-spx-border-light);
+	--color-rtp-border-focus: var(--color-spx-border-focus);
+	--color-rtp-text: var(--color-spx-text);
+	--color-rtp-text-secondary: var(--color-spx-text-secondary);
+	--color-rtp-muted: var(--color-spx-muted);
+	--color-rtp-placeholder: var(--color-spx-placeholder);
+	--color-rtp-success: var(--color-spx-success);
+	--color-rtp-warning: var(--color-spx-warning);
+	--color-rtp-error: var(--color-spx-error);
+	--color-rtp-info: var(--color-spx-info);
+	--color-rtp-emerald: var(--color-spx-emerald);
+	--color-rtp-amber: var(--color-spx-amber);
+	--color-rtp-rose: var(--color-spx-rose);
+	--color-rtp-cyan: var(--color-spx-cyan);
+	--color-rtp-purple: var(--color-spx-purple);
+}
+
+/* Font families */
+.font-heading {
+	font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.font-sans {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}

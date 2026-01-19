@@ -1,0 +1,104 @@
+/**
+ * Explosive Swings - Isolated Marketing Page Styles
+ * ═══════════════════════════════════════════════════════════════════════════
+ * COMPLETELY INDEPENDENT from global app.css
+ * All variables prefixed with explosive- for easy identification
+ * 
+ * @version 1.0.0
+ */
+
+/* Register Explosive Swings-specific colors as Tailwind utilities */
+@theme {
+	/* Explosive Brand Colors - Vibrant Orange/Red */
+	--color-explosive-primary: #f97316;
+	--color-explosive-primary-light: #fb923c;
+	--color-explosive-primary-dark: #ea580c;
+	--color-explosive-primary-soft: rgba(249, 115, 22, 0.15);
+
+	/* Explosive Secondary Colors */
+	--color-explosive-indigo: #6366f1;
+	--color-explosive-violet: #7c3aed;
+	--color-explosive-blue: #2563eb;
+
+	/* Explosive Surface Colors - Dark Theme */
+	--color-explosive-bg: #0f172a;
+	--color-explosive-bg-alt: #0a0e13;
+	--color-explosive-surface: #1e293b;
+	--color-explosive-surface-elevated: #334155;
+	--color-explosive-surface-overlay: #475569;
+
+	/* Explosive Border Colors */
+	--color-explosive-border: #334155;
+	--color-explosive-border-light: #1e293b;
+	--color-explosive-border-focus: #f97316;
+
+	/* Explosive Text Colors */
+	--color-explosive-text: #f1f5f9;
+	--color-explosive-text-secondary: #cbd5e1;
+	--color-explosive-muted: #94a3b8;
+	--color-explosive-placeholder: #64748b;
+
+	/* Explosive Semantic Colors */
+	--color-explosive-success: #10b981;
+	--color-explosive-success-soft: rgba(16, 185, 129, 0.15);
+	--color-explosive-warning: #f59e0b;
+	--color-explosive-warning-soft: rgba(245, 158, 11, 0.15);
+	--color-explosive-error: #ef4444;
+	--color-explosive-error-soft: rgba(239, 68, 68, 0.15);
+	--color-explosive-info: #3b82f6;
+	--color-explosive-info-soft: rgba(59, 130, 246, 0.15);
+
+	/* Explosive Accent Colors */
+	--color-explosive-emerald: #10b981;
+	--color-explosive-amber: #f59e0b;
+	--color-explosive-rose: #f43f5e;
+	--color-explosive-cyan: #06b6d4;
+	--color-explosive-purple: #7c3aed;
+}
+
+/* Explosive-specific base styles */
+.explosive-page {
+	background: var(--color-explosive-bg);
+	color: var(--color-explosive-text);
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+/* Compatibility aliases - map old rtp- classes to new explosive- variables */
+:root {
+	--color-rtp-primary: var(--color-explosive-primary);
+	--color-rtp-primary-light: var(--color-explosive-primary-light);
+	--color-rtp-primary-dark: var(--color-explosive-primary-dark);
+	--color-rtp-indigo: var(--color-explosive-indigo);
+	--color-rtp-violet: var(--color-explosive-violet);
+	--color-rtp-blue: var(--color-explosive-blue);
+	--color-rtp-bg: var(--color-explosive-bg);
+	--color-rtp-bg-alt: var(--color-explosive-bg-alt);
+	--color-rtp-surface: var(--color-explosive-surface);
+	--color-rtp-surface-elevated: var(--color-explosive-surface-elevated);
+	--color-rtp-surface-overlay: var(--color-explosive-surface-overlay);
+	--color-rtp-border: var(--color-explosive-border);
+	--color-rtp-border-light: var(--color-explosive-border-light);
+	--color-rtp-border-focus: var(--color-explosive-border-focus);
+	--color-rtp-text: var(--color-explosive-text);
+	--color-rtp-text-secondary: var(--color-explosive-text-secondary);
+	--color-rtp-muted: var(--color-explosive-muted);
+	--color-rtp-placeholder: var(--color-explosive-placeholder);
+	--color-rtp-success: var(--color-explosive-success);
+	--color-rtp-warning: var(--color-explosive-warning);
+	--color-rtp-error: var(--color-explosive-error);
+	--color-rtp-info: var(--color-explosive-info);
+	--color-rtp-emerald: var(--color-explosive-emerald);
+	--color-rtp-amber: var(--color-explosive-amber);
+	--color-rtp-rose: var(--color-explosive-rose);
+	--color-rtp-cyan: var(--color-explosive-cyan);
+	--color-rtp-purple: var(--color-explosive-purple);
+}
+
+/* Font families */
+.font-heading {
+	font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+}
+
+.font-sans {
+	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}

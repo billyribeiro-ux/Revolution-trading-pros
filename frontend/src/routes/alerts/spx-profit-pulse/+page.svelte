@@ -3,6 +3,9 @@
 	import { fade, slide, fly } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+	
+	// Import isolated SPX styles - completely independent from global app.css
+	import './spx-profit-pulse.css';
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
