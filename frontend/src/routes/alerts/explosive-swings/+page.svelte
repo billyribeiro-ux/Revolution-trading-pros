@@ -974,7 +974,7 @@
 							<span class="text-emerald-500">✓</span> Entry & Exit Zones
 						</li>
 					</ul>
-					
+					<a
 						href={pricing.monthly.link}
 						class="block w-full py-3 bg-slate-950 border border-slate-800 text-white font-bold rounded-lg text-center hover:bg-white hover:text-black transition-colors"
 					>
