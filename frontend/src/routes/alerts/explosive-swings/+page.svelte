@@ -1,4 +1,5 @@
 <script lang="ts">
+	import './explosive-swings.css';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import SEOHead from '$lib/components/SEOHead.svelte';
@@ -1167,10 +1168,3 @@
 		</div>
 	</footer>
 </main>
-
-<style>
-	/* Wrap imported CSS in :global to prevent scoping warnings */
-	:global {
-		@import './+page.css';
-	}
-</style>
