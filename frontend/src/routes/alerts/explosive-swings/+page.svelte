@@ -1144,26 +1144,6 @@
 			</p>
 		</div>
 	</section>
-
-	<footer class="bg-slate-950 py-12 border-t border-slate-900">
-		<div
-			class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-slate-600 leading-relaxed"
-		>
-			<p class="mb-4 font-bold uppercase text-slate-500">Risk Disclosure</p>
-			<p class="max-w-4xl mx-auto mb-6">
-				Trading in financial markets involves a high degree of risk and may not be suitable for all
-				investors. You could lose some or all of your initial investment; do not invest money that
-				you cannot afford to lose. Past performance is not indicative of future results. Revolution
-				Trading Pros is an educational platform and does not provide personalized financial advice.
-			</p>
-			<nav class="flex justify-center gap-6 mb-8 text-slate-500">
-				<a href="/terms" class="hover:text-slate-300">Terms of Service</a>
-				<a href="/privacy" class="hover:text-slate-300">Privacy Policy</a>
-				<a href="/disclaimer" class="hover:text-slate-300">Full Disclaimer</a>
-			</nav>
-			<p class="opacity-50">
-				&copy; {new Date().getFullYear()} Revolution Trading Pros. All rights reserved.
-			</p>
-		</div>
-	</footer>
 </main>
+
+<!-- Footer is handled by MarketingFooter component in +layout.svelte -->

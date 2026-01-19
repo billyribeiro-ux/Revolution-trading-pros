@@ -1258,49 +1258,6 @@
 			<p class="mt-8 text-sm text-white/60">30-Day Money Back Guarantee on Annual Plans</p>
 		</div>
 	</section>
-
-	<footer class="bg-rtp-bg py-16 border-t border-rtp-border">
-		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-			<div class="grid md:grid-cols-4 gap-8 mb-12">
-				<div class="col-span-2">
-					<div class="font-heading font-bold text-xl text-white mb-4">Revolution Trading Pros</div>
-					<p class="text-rtp-muted text-sm max-w-xs">
-						Empowering traders with institutional tools and community-driven education.
-					</p>
-				</div>
-				<div>
-					<h4 class="font-bold text-white mb-4">Service</h4>
-					<ul class="space-y-2 text-sm text-rtp-muted">
-						<li><a href="/login" class="hover:text-rtp-primary">Member Login</a></li>
-						<li><a href="#pricing" class="hover:text-rtp-primary">Pricing</a></li>
-						<li><a href="/performance" class="hover:text-rtp-primary">Track Record</a></li>
-					</ul>
-				</div>
-				<div>
-					<h4 class="font-bold text-white mb-4">Legal</h4>
-					<ul class="space-y-2 text-sm text-rtp-muted">
-						<li><a href="/terms" class="hover:text-rtp-primary">Terms of Service</a></li>
-						<li><a href="/privacy" class="hover:text-rtp-primary">Privacy Policy</a></li>
-					</ul>
-				</div>
-			</div>
-			<div
-				class="border-t border-rtp-border pt-8 text-xs text-rtp-muted/60 leading-relaxed text-justify"
-			>
-				<p class="font-bold mb-2 uppercase">Risk Disclosure</p>
-				<p>
-					Trading futures and options involves substantial risk of loss and is not suitable for
-					every investor. The valuation of futures and options may fluctuate, and as a result,
-					clients may lose more than their original investment. The highly leveraged nature of
-					futures trading means that small market movements will have a great impact on your trading
-					account and this can work against you, leading to large losses or can work for you,
-					leading to large gains. Revolution Trading Pros is an educational platform and not a
-					financial advisory service. Past performance is not indicative of future results.
-				</p>
-				<p class="mt-6 text-center">
-					&copy; {new Date().getFullYear()} Revolution Trading Pros. All rights reserved.
-				</p>
-			</div>
-		</div>
-	</footer>
 </main>
+
+<!-- Footer is handled by MarketingFooter component in +layout.svelte -->
