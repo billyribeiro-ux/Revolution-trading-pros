@@ -1,3 +1,8 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+ * NUCLEAR RESET - ALL CSS COMMENTED OUT FOR DEBUGGING
+ * Testing explosive-swings page with ZERO global CSS interference
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
 @import 'tailwindcss';
 
 /* Explicitly define source paths for Tailwind to scan */
@@ -5,7 +10,20 @@
 /* @source is a Tailwind CSS v4 directive - ignore unknown at-rule warning */
 @source "../src/**/*.{html,js,ts,svelte}";
 
+<<<<<<< /Users/user/Documents/revolution-svelte/frontend/src/app.css
 /**
+=======
+/* ALL IMPORTS COMMENTED OUT FOR DEBUGGING */
+/*
+ * Revolution Trading Pros - Design System Tokens
+ * Netflix E6 Level Architecture
+ * 
+ * @version 2.0.0
+ * @author Revolution Trading Pros
+ */
+
+/*
+>>>>>>> /Users/user/.windsurf/worktrees/revolution-svelte/revolution-svelte-36d236e3/frontend/src/app.css
  * Revolution Trading Pros - Global Styles
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Implementation
@@ -181,18 +199,26 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
+<<<<<<< /Users/user/Documents/revolution-svelte/frontend/src/app.css
 /* Import Simpler Trading Icon Font - USED BY: Admin, Dashboard, Trading Rooms */
 @import './lib/styles/simpler-icons.css';
 
 /* RTP Admin Design System - USED BY: Admin area, Dashboard, Member pages */
 @import './lib/styles/main.css';
+=======
+/* Import Simpler Trading Icon Font */
+/* @import './lib/styles/simpler-icons.css'; */
+
+/* RTP Admin Design System - Color Tokens, Typography, Spacing, etc. */
+/* @import './lib/styles/main.css'; */
+>>>>>>> /Users/user/.windsurf/worktrees/revolution-svelte/revolution-svelte-36d236e3/frontend/src/app.css
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * Tailwind v4 Theme Configuration
+ * Tailwind v4 Theme Configuration - COMMENTED OUT FOR DEBUGGING
  * This @theme block registers custom colors as utility classes
  * @theme is a Tailwind CSS v4 directive - ignore unknown at-rule warning
  * ═══════════════════════════════════════════════════════════════════════════ */
-@theme {
+/* @theme {
 	/* Container Max-Width Variables - CRITICAL FIX */
 	--container-xs: 20rem;
 	--container-sm: 24rem;
@@ -251,12 +277,19 @@
 	--color-rtp-rose: oklch(0.65 0.2 15);
 	--color-rtp-cyan: oklch(0.7 0.15 200);
 	--color-rtp-purple: oklch(0.6 0.22 300);
+<<<<<<< /Users/user/Documents/revolution-svelte/frontend/src/app.css
 }
 /* ═══════════════════════════════════════════════════════════════════════════
  * END: Tailwind v4 Theme Configuration
  * ═══════════════════════════════════════════════════════════════════════════ */
+=======
+} */
+>>>>>>> /Users/user/.windsurf/worktrees/revolution-svelte/revolution-svelte-36d236e3/frontend/src/app.css
 
+/* ALL REMAINING CSS COMMENTED OUT FOR DEBUGGING */
+/*
 /* CSS Variables for runtime access (IDE compatibility) */
+/*
 :root {
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * BREAKPOINTS - SINGLE SOURCE OF TRUTH (SSOT)
@@ -2807,6 +2840,7 @@ body.dark {
 	color: var(--admin-info-text);
 	border: 1px solid var(--admin-info-border);
 }
+<<<<<<< /Users/user/Documents/revolution-svelte/frontend/src/app.css
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * END: Admin Dashboard Theme System
@@ -2830,3 +2864,6 @@ body.dark {
  * CURRENTLY COMMENTED OUT IN +layout.svelte - Frontpage sections independent
  * ═══════════════════════════════════════════════════════════════════════════ */
 
+=======
+*/
+>>>>>>> /Users/user/.windsurf/worktrees/revolution-svelte/revolution-svelte-36d236e3/frontend/src/app.css
