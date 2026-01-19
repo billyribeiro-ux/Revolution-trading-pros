@@ -300,11 +300,20 @@ img {
  * USED BY:
  * ───────────────────────────────────────────────────────────────────────────
  * TRADING ROOM PAGES:
- * - /live-trading-rooms/day-trading
- * - /live-trading-rooms/swing-trading
- * - /live-trading-rooms/small-account-mentorship
- * - /live-trading-rooms/spx-profit-pulse
- * - /live-trading-rooms/explosive-swing
+ * - https://revolution-trading-pros.pages.dev/live-trading-rooms/day-trading
+ * - https://revolution-trading-pros.pages.dev/live-trading-rooms/swing-trading
+ * - https://revolution-trading-pros.pages.dev/live-trading-rooms/small-account-mentorship
+ * - https://revolution-trading-pros.pages.dev/live-trading-rooms/spx-profit-pulse
+ * - https://revolution-trading-pros.pages.dev/live-trading-rooms/explosive-swing
  * 
  * COMPONENTS:
- * - Performance charts and metrics
+ * - Performance charts and equity curves
+ * - Win rate visualizations and statistics
+ * - Trade history tables with P&L breakdown
+ * - Monthly/yearly performance metrics
+ * - Risk-adjusted return calculations
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: Trading Rooms Performance Styles
+ * ═══════════════════════════════════════════════════════════════════════════ */
