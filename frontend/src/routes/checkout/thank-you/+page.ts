@@ -8,7 +8,7 @@
  * @version 2.0.0 - Complete Order Details Integration
  */
 import type { Load } from '@sveltejs/kit';
-import { getApiUrl } from '$lib/config';
+import { API_BASE_URL } from '$lib/api/config';
 
 // Disable prerendering - this page requires dynamic URL parameters
 export const prerender = false;
@@ -62,7 +62,7 @@ export const load: Load = async ({ url, fetch, cookies }) => {
 	// Fetch order details if order number is provided
 	if (orderNumber) {
 		try {
-			const apiUrl = getApiUrl();
+			const apiUrl = API_BASE_URL;
 			const token = cookies.get('auth_token');
 
 			const response = await fetch(`${apiUrl}/api/my/orders/by-number/${encodeURIComponent(orderNumber)}`, {
