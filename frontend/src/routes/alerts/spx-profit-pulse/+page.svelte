@@ -1305,7 +1305,9 @@
 	</footer>
 </main>
 
-<style lang="postcss">
-	/* Import page-specific CSS with Tailwind base styles */
-	@import './spx-profit-pulse.css';
+<style>
+	/* Wrap imported CSS in :global to prevent scoping warnings */
+	:global {
+		@import './spx-profit-pulse.css';
+	}
 </style>
