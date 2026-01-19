@@ -56,13 +56,6 @@
 	--color-explosive-purple: #7c3aed;
 }
 
-/* Explosive-specific base styles */
-.explosive-page {
-	background: var(--color-explosive-bg);
-	color: var(--color-explosive-text);
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-}
-
 /* Compatibility aliases - map old rtp- classes to new explosive- variables */
 :root {
 	--color-rtp-primary: var(--color-explosive-primary);

@@ -56,13 +56,6 @@
 	--color-spx-purple: #7c3aed;
 }
 
-/* SPX-specific base styles */
-.spx-page {
-	background: var(--color-spx-bg);
-	color: var(--color-spx-text);
-	font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
-}
-
 /* Compatibility aliases - map old rtp- classes to new spx- variables */
 :root {
 	--color-rtp-primary: var(--color-spx-primary);
