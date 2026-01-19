@@ -6,24 +6,90 @@
 @source "../src/**/*.{html,js,ts,svelte}";
 
 /**
- * Revolution Trading Pros - Design System Tokens
- * Netflix E6 Level Architecture
- * 
- * @version 2.0.0
- * @author Revolution Trading Pros
- */
-
-/**
  * Revolution Trading Pros - Global Styles
  * ═══════════════════════════════════════════════════════════════════════════
  * Apple ICT 11+ Principal Engineer Implementation
  * Modern CSS Architecture (December 2025)
+ * 
+ * @version 2.0.0
+ * @author Revolution Trading Pros
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════
+ * CURRENTLY COMMENTED OUT IN +layout.svelte
+ * Frontpage sections are independent and use their own scoped CSS
+ * ═══════════════════════════════════════════════════════════════════════════
+ * 
+ * PAGES THAT USE THIS FILE (when uncommented):
+ * ───────────────────────────────────────────────────────────────────────────
+ * ADMIN AREA:
+ * - /admin/* (all admin pages)
+ * - Admin Dashboard
+ * - Admin Coupons
+ * - Admin Members
+ * - Admin Analytics
+ * - Admin Email Settings
+ * - Admin CRM
+ * 
+ * DASHBOARD AREA:
+ * - /dashboard/* (member dashboard)
+ * - My Classes
+ * - My Indicators
+ * - Weekly Watchlist
+ * - Mastering the Trade
+ * 
+ * TRADING ROOMS:
+ * - /live-trading-rooms/day-trading
+ * - /live-trading-rooms/swing-trading
+ * - /live-trading-rooms/small-account-mentorship
+ * - /live-trading-rooms/spx-profit-pulse
+ * - /live-trading-rooms/explosive-swing
+ * 
+ * ALERT SERVICES:
+ * - /alerts/spx-profit-pulse
+ * - /alerts/explosive-swings
+ * 
+ * INDICATORS:
+ * - /indicators/volume-max-i
+ * - /indicators/* (all indicator pages)
+ * 
+ * COURSES:
+ * - /courses/* (all course pages)
+ * 
+ * AUTH PAGES:
+ * - /login
+ * - /register
+ * - /signup
+ * - /forgot-password
+ * - /reset-password
+ * - /verify-email
+ * 
+ * ACCOUNT PAGES:
+ * - /account/*
+ * - Account Settings
+ * - Billing
+ * - Subscriptions
+ * 
+ * OTHER PAGES:
+ * - /blog/*
+ * - /checkout/*
+ * - /cart
+ * - /store/*
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════
+ * PAGES THAT DO NOT USE THIS FILE (independent):
+ * ───────────────────────────────────────────────────────────────────────────
+ * FRONTPAGE SECTIONS (use scoped CSS only):
+ * - / (homepage with Hero, TradingRooms, AlertServices, etc.)
+ * - All homepage sections are 100% independent
+ * - Each section has its own scoped <style> block
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* Import Simpler Trading Icon Font */
+/* Import Simpler Trading Icon Font - USED BY: Admin, Dashboard, Trading Rooms */
 @import './lib/styles/simpler-icons.css';
 
-/* RTP Admin Design System - Color Tokens, Typography, Spacing, etc. */
+/* RTP Admin Design System - USED BY: Admin area, Dashboard, Member pages */
 @import './lib/styles/main.css';
 
 /* ═══════════════════════════════════════════════════════════════════════════
