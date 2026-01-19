@@ -214,18 +214,18 @@
 />
 
 <main
-	class="w-full overflow-x-hidden bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white"
+	class="w-full overflow-x-hidden bg-slate-950 text-slate-200 font-sans selection:bg-indigo-600 selection:text-white"
 >
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
-		<div class="absolute inset-0 bg-rtp-bg z-0">
+		<div class="absolute inset-0 bg-slate-950 z-0">
 			<div
 				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
 			></div>
 			<div
-				class="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-rtp-primary/10 rounded-full blur-[120px] animate-pulse"
+				class="absolute top-[-20%] right-[-10%] w-[800px] h-[800px] bg-indigo-600/10 rounded-full blur-[120px] animate-pulse"
 			></div>
 			<div
-				class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-rtp-indigo/10 rounded-full blur-[100px]"
+				class="absolute bottom-[-10%] left-[-10%] w-[600px] h-[600px] bg-indigo-500/10 rounded-full blur-[100px]"
 			></div>
 		</div>
 
@@ -235,7 +235,7 @@
 			<div class="text-center lg:text-left space-y-8">
 				<div
 					use:reveal={{ delay: 0 }}
-					class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-rtp-surface border border-rtp-border/50 shadow-sm backdrop-blur-sm"
+					class="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-slate-900 border border-slate-800/50 shadow-sm backdrop-blur-sm"
 				>
 					<span class="relative flex h-2.5 w-2.5">
 						<span
@@ -243,7 +243,7 @@
 						></span>
 						<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-500"></span>
 					</span>
-					<span class="text-xs font-bold uppercase tracking-widest text-rtp-muted"
+					<span class="text-xs font-bold uppercase tracking-widest text-slate-400"
 						>Market Active Now</span
 					>
 				</div>
@@ -254,14 +254,14 @@
 				>
 					Conquer Volatility with
 					<span
-						class="text-transparent bg-clip-text bg-gradient-to-r from-rtp-primary via-rtp-blue to-rtp-emerald"
+						class="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-blue-500 to-emerald-500"
 						>SPX 0DTE</span
 					>
 				</h1>
 
 				<p
 					use:reveal={{ delay: 200 }}
-					class="text-xl text-rtp-muted max-w-2xl mx-auto lg:mx-0 leading-relaxed"
+					class="text-xl text-slate-400 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
 				>
 					Institutional-grade S&P 500 options alerts delivered instantly via SMS & Discord. Capture
 					rapid moves, enjoy Section 1256 tax benefits, and sleep well with zero overnight risk.
@@ -273,7 +273,7 @@
 				>
 					<a
 						href="#pricing"
-						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-rtp-primary rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rtp-primary offset-rtp-bg shadow-lg hover:shadow-rtp-primary/25 hover:-translate-y-1"
+						class="group relative inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-white transition-all duration-200 bg-indigo-600 rounded-xl hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 offset-slate-950 shadow-lg hover:shadow-indigo-500/25 hover:-translate-y-1"
 					>
 						Start Your Trial
 						<svg
@@ -291,7 +291,7 @@
 					</a>
 					<a
 						href="#performance"
-						class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-rtp-text transition-all duration-200 bg-rtp-surface border border-rtp-border rounded-xl hover:bg-rtp-surface/80 hover:border-rtp-primary/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-rtp-border offset-rtp-bg"
+						class="inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-200 transition-all duration-200 bg-slate-900 border border-slate-800 rounded-xl hover:bg-slate-900/80 hover:border-indigo-500/30 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-slate-800 offset-slate-950"
 					>
 						View Results
 					</a>
@@ -299,7 +299,7 @@
 
 				<div
 					use:reveal={{ delay: 400 }}
-					class="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-4 text-sm text-rtp-muted/60 font-medium"
+					class="flex flex-wrap items-center justify-center lg:justify-start gap-6 pt-4 text-sm text-slate-400/60 font-medium"
 				>
 					<div class="flex items-center gap-2">
 						<svg
@@ -351,16 +351,16 @@
 
 			<div class="relative hidden lg:block perspective-1000">
 				<div
-					class="absolute inset-0 bg-gradient-to-tr from-rtp-primary/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
+					class="absolute inset-0 bg-gradient-to-tr from-indigo-600/20 to-transparent rounded-full blur-3xl transform translate-x-10 translate-y-10"
 				></div>
 
 				<div
-					class="relative bg-rtp-surface/80 backdrop-blur-xl border border-rtp-border/50 rounded-3xl p-6 shadow-2xl transform rotate-y-[-10deg] rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-out"
+					class="relative bg-slate-900/80 backdrop-blur-xl border border-slate-800/50 rounded-3xl p-6 shadow-2xl transform rotate-y-[-10deg] rotate-x-[5deg] hover:rotate-0 transition-transform duration-700 ease-out"
 				>
-					<div class="flex items-center justify-between mb-6 border-b border-rtp-border/30 pb-4">
+					<div class="flex items-center justify-between mb-6 border-b border-slate-800/30 pb-4">
 						<div class="flex items-center gap-3">
 							<div
-								class="w-10 h-10 rounded-full bg-gradient-to-br from-rtp-primary to-rtp-blue flex items-center justify-center text-white font-bold shadow-inner"
+								class="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-600 to-blue-500 flex items-center justify-center text-white font-bold shadow-inner"
 							>
 								<svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 									><path
@@ -372,42 +372,42 @@
 								>
 							</div>
 							<div>
-								<div class="font-bold text-rtp-text">SPX Profit Pulse</div>
-								<div class="text-xs text-rtp-emerald">● Live Trading Room</div>
+								<div class="font-bold text-slate-200">SPX Profit Pulse</div>
+								<div class="text-xs text-emerald-500">● Live Trading Room</div>
 							</div>
 						</div>
-						<div class="text-xs font-mono text-rtp-muted bg-rtp-bg px-2 py-1 rounded">
+						<div class="text-xs font-mono text-slate-400 bg-slate-950 px-2 py-1 rounded">
 							10:32:45 EST
 						</div>
 					</div>
 
 					<div class="space-y-4">
-						<div class="bg-rtp-bg/50 p-4 rounded-xl border-l-4 border-emerald-500">
+						<div class="bg-slate-950/50 p-4 rounded-xl border-l-4 border-emerald-500">
 							<div class="flex justify-between text-xs mb-2">
 								<span class="text-emerald-500 font-bold uppercase">New Signal</span>
-								<span class="text-rtp-muted">Just now</span>
+								<span class="text-slate-400">Just now</span>
 							</div>
-							<div class="text-sm font-mono text-rtp-text mb-1">
+							<div class="text-sm font-mono text-slate-200 mb-1">
 								BTO <span class="font-bold text-white">SPX 4580 CALL</span> @ $3.50
 							</div>
-							<div class="flex gap-4 text-xs text-rtp-muted">
+							<div class="flex gap-4 text-xs text-slate-400">
 								<span>🛑 Stop: $2.10</span>
 								<span>🎯 Target: $5.00+</span>
 							</div>
 						</div>
-						<div class="bg-rtp-bg/50 p-4 rounded-xl border-l-4 border-rtp-blue opacity-60">
+						<div class="bg-slate-950/50 p-4 rounded-xl border-l-4 border-blue-500 opacity-60">
 							<div class="flex justify-between text-xs mb-2">
-								<span class="text-rtp-blue font-bold uppercase">Update</span>
-								<span class="text-rtp-muted">15m ago</span>
+								<span class="text-blue-500 font-bold uppercase">Update</span>
+								<span class="text-slate-400">15m ago</span>
 							</div>
-							<div class="text-sm text-rtp-text">
+							<div class="text-sm text-slate-200">
 								Approaching VWAP support. Watching for bounce to add to runners.
 							</div>
 						</div>
 					</div>
 
 					<div
-						class="absolute -bottom-6 -right-6 bg-white text-rtp-bg px-6 py-3 rounded-xl shadow-xl font-bold border-2 border-rtp-bg flex items-center gap-2 animate-bounce"
+						class="absolute -bottom-6 -right-6 bg-white text-slate-950 px-6 py-3 rounded-xl shadow-xl font-bold border-2 border-slate-950 flex items-center gap-2 animate-bounce"
 					>
 						<span class="text-2xl">🚀</span>
 						<div>
@@ -420,7 +420,7 @@
 		</div>
 	</section>
 
-	<section class="bg-rtp-surface border-y border-rtp-border relative z-20">
+	<section class="bg-slate-900 border-y border-slate-800 relative z-20">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
 			<div class="grid grid-cols-2 md:grid-cols-4 gap-8">
 				<div class="text-center group">
@@ -429,37 +429,37 @@
 					>
 						78%
 					</div>
-					<div class="text-xs font-bold uppercase tracking-widest text-rtp-muted">
+					<div class="text-xs font-bold uppercase tracking-widest text-slate-400">
 						Historical Win Rate
 					</div>
 				</div>
 				<div class="text-center group">
 					<div
-						class="text-3xl md:text-5xl font-extrabold text-rtp-text mb-2 group-hover:scale-110 transition-transform"
+						class="text-3xl md:text-5xl font-extrabold text-slate-200 mb-2 group-hover:scale-110 transition-transform"
 					>
 						&lt;5s
 					</div>
-					<div class="text-xs font-bold uppercase tracking-widest text-rtp-muted">
+					<div class="text-xs font-bold uppercase tracking-widest text-slate-400">
 						Alert Latency
 					</div>
 				</div>
 				<div class="text-center group">
 					<div
-						class="text-3xl md:text-5xl font-extrabold text-rtp-text mb-2 group-hover:scale-110 transition-transform"
+						class="text-3xl md:text-5xl font-extrabold text-slate-200 mb-2 group-hover:scale-110 transition-transform"
 					>
 						1k+
 					</div>
-					<div class="text-xs font-bold uppercase tracking-widest text-rtp-muted">
+					<div class="text-xs font-bold uppercase tracking-widest text-slate-400">
 						Active Traders
 					</div>
 				</div>
 				<div class="text-center group">
 					<div
-						class="text-3xl md:text-5xl font-extrabold text-rtp-text mb-2 group-hover:scale-110 transition-transform"
+						class="text-3xl md:text-5xl font-extrabold text-slate-200 mb-2 group-hover:scale-110 transition-transform"
 					>
 						$35M+
 					</div>
-					<div class="text-xs font-bold uppercase tracking-widest text-rtp-muted">
+					<div class="text-xs font-bold uppercase tracking-widest text-slate-400">
 						Volume Traded
 					</div>
 				</div>
@@ -467,14 +467,14 @@
 		</div>
 	</section>
 
-	<section class="py-24 bg-rtp-bg relative overflow-hidden">
+	<section class="py-24 bg-slate-950 relative overflow-hidden">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center max-w-3xl mx-auto mb-16">
-				<span class="text-rtp-primary font-bold uppercase tracking-wider text-sm">Why SPX?</span>
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mt-2 mb-6">
+				<span class="text-indigo-500 font-bold uppercase tracking-wider text-sm">Why SPX?</span>
+				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mt-2 mb-6">
 					The Unfair Advantage
 				</h2>
-				<p use:reveal={{ delay: 100 }} class="text-xl text-rtp-muted">
+				<p use:reveal={{ delay: 100 }} class="text-xl text-slate-400">
 					Trading SPX isn't just about volatility; it's about structural advantages that put money
 					back in your pocket.
 				</p>
@@ -483,12 +483,12 @@
 			<div class="grid md:grid-cols-3 gap-8">
 				<div
 					use:reveal={{ delay: 0 }}
-					class="bg-rtp-surface p-8 rounded-2xl border border-rtp-border"
+					class="bg-slate-900 p-8 rounded-2xl border border-slate-800"
 				>
 					<h3 class="text-xl font-bold text-white mb-4 flex items-center gap-3">
 						<span class="text-emerald-500">💰</span> Tax Efficient (60/40)
 					</h3>
-					<p class="text-rtp-muted leading-relaxed">
+					<p class="text-slate-400 leading-relaxed">
 						Unlike AAPL or TSLA options, SPX options fall under <strong>Section 1256</strong> of the IRS
 						code. This means 60% of your gains are taxed at the lower Long Term Capital Gains rate, even
 						if you day trade them.
@@ -496,12 +496,12 @@
 				</div>
 				<div
 					use:reveal={{ delay: 150 }}
-					class="bg-rtp-surface p-8 rounded-2xl border border-rtp-border"
+					class="bg-slate-900 p-8 rounded-2xl border border-slate-800"
 				>
 					<h3 class="text-xl font-bold text-white mb-4 flex items-center gap-3">
 						<span class="text-blue-500">🛡️</span> No Assignment Risk
 					</h3>
-					<p class="text-rtp-muted leading-relaxed">
+					<p class="text-slate-400 leading-relaxed">
 						SPX is <strong>Cash Settled</strong>. You never have to worry about buying 100 shares of
 						a $4,500 index. At expiration, the difference is simply paid in cash. No margin calls
 						for shares you can't afford.
@@ -509,12 +509,12 @@
 				</div>
 				<div
 					use:reveal={{ delay: 300 }}
-					class="bg-rtp-surface p-8 rounded-2xl border border-rtp-border"
+					class="bg-slate-900 p-8 rounded-2xl border border-slate-800"
 				>
 					<h3 class="text-xl font-bold text-white mb-4 flex items-center gap-3">
 						<span class="text-indigo-500">💧</span> Massive Liquidity
 					</h3>
-					<p class="text-rtp-muted leading-relaxed">
+					<p class="text-slate-400 leading-relaxed">
 						SPX is one of the most liquid markets in the world. This means tight spreads (difference
 						between bid/ask), allowing us to enter and exit large positions instantly without
 						slippage.
@@ -524,7 +524,7 @@
 		</div>
 	</section>
 
-	<section class="py-24 bg-rtp-surface border-y border-rtp-border">
+	<section class="py-24 bg-slate-900 border-y border-slate-800">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="grid lg:grid-cols-2 gap-16 items-center">
 				<div>
@@ -533,15 +533,15 @@
 					>
 					<h2
 						use:reveal
-						class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mt-2 mb-6"
+						class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mt-2 mb-6"
 					>
 						Gamma Scalping Explained
 					</h2>
-					<p class="text-rtp-muted mb-6 text-lg">
+					<p class="text-slate-400 mb-6 text-lg">
 						0DTE options have the highest "Gamma" in the market. This means the option price
 						accelerates rapidly as the stock moves in your favor.
 					</p>
-					<p class="text-rtp-muted mb-8 leading-relaxed">
+					<p class="text-slate-400 mb-8 leading-relaxed">
 						We identify "Gamma Levels" where Market Makers are forced to hedge. When price hits
 						these triggers, it causes a chain reaction of buying or selling. We ride that wave.
 					</p>
@@ -569,8 +569,8 @@
 						</li>
 					</ul>
 				</div>
-				<div class="relative bg-rtp-bg p-8 rounded-3xl border border-rtp-border shadow-2xl">
-					<div class="text-center mt-4 text-xs text-rtp-muted">
+				<div class="relative bg-slate-950 p-8 rounded-3xl border border-slate-800 shadow-2xl">
+					<div class="text-center mt-4 text-xs text-slate-400">
 						We buy when momentum overcomes Theta decay.
 					</div>
 				</div>
@@ -578,15 +578,15 @@
 		</div>
 	</section>
 
-	<section class="py-32 bg-rtp-bg relative overflow-hidden">
+	<section class="py-32 bg-slate-950 relative overflow-hidden">
 		<div class="absolute inset-0 opacity-[0.02] bg-[url('/grid-pattern.svg')]"></div>
 
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
 			<div class="text-center max-w-3xl mx-auto mb-20">
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-6">
+				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-6">
 					Institutional Edge, Retail Accessible.
 				</h2>
-				<p use:reveal={{ delay: 100 }} class="text-xl text-rtp-muted">
+				<p use:reveal={{ delay: 100 }} class="text-xl text-slate-400">
 					Most retail traders gamble. We operate like a fund. Data-driven entries, strict sizing,
 					and emotionless execution.
 				</p>
@@ -595,13 +595,13 @@
 			<div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
 				<div
 					use:reveal={{ delay: 0 }}
-					class="group bg-rtp-surface p-8 rounded-2xl border border-rtp-border hover:border-rtp-primary/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-rtp-primary/10"
+					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10"
 				>
 					<div
-						class="w-14 h-14 rounded-xl bg-rtp-primary/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+						class="w-14 h-14 rounded-xl bg-indigo-600/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
 					>
 						<svg
-							class="w-7 h-7 text-rtp-primary"
+							class="w-7 h-7 text-indigo-500"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -613,8 +613,8 @@
 							/></svg
 						>
 					</div>
-					<h3 class="text-xl font-bold text-rtp-text mb-3">Instant SMS & Push</h3>
-					<p class="text-rtp-muted leading-relaxed text-sm">
+					<h3 class="text-xl font-bold text-slate-200 mb-3">Instant SMS & Push</h3>
+					<p class="text-slate-400 leading-relaxed text-sm">
 						Don't miss a move because you stepped away. Alerts hit your phone via SMS and App
 						notification instantly.
 					</p>
@@ -622,13 +622,13 @@
 
 				<div
 					use:reveal={{ delay: 100 }}
-					class="group bg-rtp-surface p-8 rounded-2xl border border-rtp-border hover:border-rtp-indigo/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-rtp-indigo/10"
+					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-indigo-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-indigo-500/10"
 				>
 					<div
-						class="w-14 h-14 rounded-xl bg-rtp-indigo/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+						class="w-14 h-14 rounded-xl bg-indigo-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
 					>
 						<svg
-							class="w-7 h-7 text-rtp-indigo"
+							class="w-7 h-7 text-indigo-500"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -640,8 +640,8 @@
 							/></svg
 						>
 					</div>
-					<h3 class="text-xl font-bold text-rtp-text mb-3">Detailed Strategy Logic</h3>
-					<p class="text-rtp-muted leading-relaxed text-sm">
+					<h3 class="text-xl font-bold text-slate-200 mb-3">Detailed Strategy Logic</h3>
+					<p class="text-slate-400 leading-relaxed text-sm">
 						We don't just say "Buy". We tell you *why*. Flow, technicals, and gamma levels explained
 						in every alert.
 					</p>
@@ -649,13 +649,13 @@
 
 				<div
 					use:reveal={{ delay: 200 }}
-					class="group bg-rtp-surface p-8 rounded-2xl border border-rtp-border hover:border-rtp-emerald/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-rtp-emerald/10"
+					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-emerald-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-emerald-500/10"
 				>
 					<div
-						class="w-14 h-14 rounded-xl bg-rtp-emerald/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+						class="w-14 h-14 rounded-xl bg-emerald-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
 					>
 						<svg
-							class="w-7 h-7 text-rtp-emerald"
+							class="w-7 h-7 text-emerald-500"
 							fill="none"
 							stroke="currentColor"
 							viewBox="0 0 24 24"
@@ -667,8 +667,8 @@
 							/></svg
 						>
 					</div>
-					<h3 class="text-xl font-bold text-rtp-text mb-3">Exact Entry & Exits</h3>
-					<p class="text-rtp-muted leading-relaxed text-sm">
+					<h3 class="text-xl font-bold text-slate-200 mb-3">Exact Entry & Exits</h3>
+					<p class="text-slate-400 leading-relaxed text-sm">
 						No guessing games. You get the specific strike, expiration, and limit price. "Buy SPX
 						4600 Call @ $4.20".
 					</p>
@@ -676,12 +676,12 @@
 
 				<div
 					use:reveal={{ delay: 0 }}
-					class="group bg-rtp-surface p-8 rounded-2xl border border-rtp-border hover:border-rtp-blue/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-rtp-blue/10"
+					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-blue-500/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-blue-500/10"
 				>
 					<div
-						class="w-14 h-14 rounded-xl bg-rtp-blue/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
+						class="w-14 h-14 rounded-xl bg-blue-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
 					>
-						<svg class="w-7 h-7 text-rtp-blue" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+						<svg class="w-7 h-7 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 							><path
 								stroke-linecap="round"
 								stroke-linejoin="round"
@@ -690,8 +690,8 @@
 							/></svg
 						>
 					</div>
-					<h3 class="text-xl font-bold text-rtp-text mb-3">Runner Management</h3>
-					<p class="text-rtp-muted leading-relaxed text-sm">
+					<h3 class="text-xl font-bold text-slate-200 mb-3">Runner Management</h3>
+					<p class="text-slate-400 leading-relaxed text-sm">
 						We scale out to lock in profits and leave "runners" for the big moves. Maximize upside,
 						minimize stress.
 					</p>
@@ -699,7 +699,7 @@
 
 				<div
 					use:reveal={{ delay: 100 }}
-					class="group bg-rtp-surface p-8 rounded-2xl border border-rtp-border hover:border-red-400/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-red-400/10"
+					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-red-400/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-red-400/10"
 				>
 					<div
 						class="w-14 h-14 rounded-xl bg-red-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
@@ -713,8 +713,8 @@
 							/></svg
 						>
 					</div>
-					<h3 class="text-xl font-bold text-rtp-text mb-3">Hard Stops (No Bagley)</h3>
-					<p class="text-rtp-muted leading-relaxed text-sm">
+					<h3 class="text-xl font-bold text-slate-200 mb-3">Hard Stops (No Bagley)</h3>
+					<p class="text-slate-400 leading-relaxed text-sm">
 						We never hope. Every trade has a predefined invalidation level. We cut losers fast to
 						protect your capital.
 					</p>
@@ -722,7 +722,7 @@
 
 				<div
 					use:reveal={{ delay: 200 }}
-					class="group bg-rtp-surface p-8 rounded-2xl border border-rtp-border hover:border-purple-400/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-400/10"
+					class="group bg-slate-900 p-8 rounded-2xl border border-slate-800 hover:border-purple-400/50 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl hover:shadow-purple-400/10"
 				>
 					<div
 						class="w-14 h-14 rounded-xl bg-purple-500/10 flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300"
@@ -740,8 +740,8 @@
 							/></svg
 						>
 					</div>
-					<h3 class="text-xl font-bold text-rtp-text mb-3">Market Context</h3>
-					<p class="text-rtp-muted leading-relaxed text-sm">
+					<h3 class="text-xl font-bold text-slate-200 mb-3">Market Context</h3>
+					<p class="text-slate-400 leading-relaxed text-sm">
 						Receive pre-market plans and mid-day updates. Know when to be aggressive and when to sit
 						on your hands.
 					</p>
@@ -750,18 +750,18 @@
 		</div>
 	</section>
 
-	<section class="py-24 bg-rtp-surface border-y border-rtp-border">
+	<section class="py-24 bg-slate-900 border-y border-slate-800">
 		<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-4">
+				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-4">
 					Crystal Clear Execution
 				</h2>
-				<p use:reveal class="text-xl text-rtp-muted">Follow the lifecycle of a typical trade.</p>
+				<p use:reveal class="text-xl text-slate-400">Follow the lifecycle of a typical trade.</p>
 			</div>
 
 			<div class="relative">
 				<div
-					class="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-500 via-blue-500 to-rtp-border"
+					class="absolute left-8 md:left-1/2 top-0 bottom-0 w-0.5 bg-gradient-to-b from-emerald-500 via-blue-500 to-slate-800"
 				></div>
 
 				<div
@@ -770,32 +770,32 @@
 				>
 					<div class="md:w-[45%] mb-4 md:mb-0 md:text-right pr-8 order-2 md:order-1">
 						<h3 class="text-2xl font-bold text-white mb-2">1. The Setup & Entry</h3>
-						<p class="text-rtp-muted">
+						<p class="text-slate-400">
 							We identify a key gamma level holding. You get the alert instantly with strike, price,
 							and risk parameters.
 						</p>
 					</div>
 					<div
-						class="absolute left-8 md:left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-rtp-bg border-4 border-emerald-500 z-10 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.5)]"
+						class="absolute left-8 md:left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-slate-950 border-4 border-emerald-500 z-10 flex items-center justify-center shadow-[0_0_20px_rgba(16,185,129,0.5)]"
 					>
 						<span class="text-emerald-500 font-bold">1</span>
 					</div>
 					<div class="md:w-[45%] pl-16 md:pl-8 order-1 md:order-2 w-full">
-						<div class="bg-rtp-bg p-6 rounded-xl border-l-4 border-emerald-500 shadow-lg">
+						<div class="bg-slate-950 p-6 rounded-xl border-l-4 border-emerald-500 shadow-lg">
 							<div class="flex items-center justify-between mb-3">
 								<span
 									class="bg-emerald-500/20 text-emerald-400 text-[10px] font-bold px-2 py-1 rounded uppercase"
 									>Signal</span
 								>
-								<span class="font-mono text-xs text-rtp-muted">09:42 AM</span>
+								<span class="font-mono text-xs text-slate-400">09:42 AM</span>
 							</div>
 							<div class="font-mono text-sm">
 								<div class="font-bold text-lg text-white">BTO SPX 4580 CALL</div>
 								<div class="grid grid-cols-2 gap-y-2 mt-2 text-xs">
-									<div class="text-rtp-muted">
+									<div class="text-slate-400">
 										Entry: <span class="text-white font-bold">$3.50</span>
 									</div>
-									<div class="text-rtp-muted">
+									<div class="text-slate-400">
 										Stop: <span class="text-red-400 font-bold">$2.10</span>
 									</div>
 								</div>
@@ -809,30 +809,30 @@
 					class="relative flex flex-col md:flex-row items-center md:justify-between mb-16 group"
 				>
 					<div class="md:w-[45%] pl-16 md:pl-0 md:pr-8 order-1 w-full">
-						<div class="bg-rtp-bg p-6 rounded-xl border-l-4 border-blue-500 shadow-lg">
+						<div class="bg-slate-950 p-6 rounded-xl border-l-4 border-blue-500 shadow-lg">
 							<div class="flex items-center justify-between mb-3">
 								<span
 									class="bg-blue-500/20 text-blue-400 text-[10px] font-bold px-2 py-1 rounded uppercase"
 									>Update</span
 								>
-								<span class="font-mono text-xs text-rtp-muted">10:05 AM</span>
+								<span class="font-mono text-xs text-slate-400">10:05 AM</span>
 							</div>
 							<div class="font-mono text-sm">
 								<div class="font-bold text-lg text-white">TARGET 1 HIT 🎯</div>
-								<p class="text-xs text-rtp-muted mt-1">
+								<p class="text-xs text-slate-400 mt-1">
 									Price at $4.50 (+28%). Trim half size. Move stop on runners to Breakeven.
 								</p>
 							</div>
 						</div>
 					</div>
 					<div
-						class="absolute left-8 md:left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-rtp-bg border-4 border-blue-500 z-10 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.5)]"
+						class="absolute left-8 md:left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-slate-950 border-4 border-blue-500 z-10 flex items-center justify-center shadow-[0_0_20px_rgba(59,130,246,0.5)]"
 					>
 						<span class="text-blue-500 font-bold">2</span>
 					</div>
 					<div class="md:w-[45%] mb-4 md:mb-0 pl-16 md:pl-8 order-2">
 						<h3 class="text-2xl font-bold text-white mb-2">2. Trade Management</h3>
-						<p class="text-rtp-muted">
+						<p class="text-slate-400">
 							We don't leave you hanging. We send real-time updates to trim profits and protect your
 							downside as the trade moves.
 						</p>
@@ -845,27 +845,27 @@
 				>
 					<div class="md:w-[45%] mb-4 md:mb-0 md:text-right pr-8 order-2 md:order-1">
 						<h3 class="text-2xl font-bold text-white mb-2">3. Final Exit</h3>
-						<p class="text-rtp-muted">
+						<p class="text-slate-400">
 							We squeeze the move for maximum gain, exiting runners into strength before reversal.
 						</p>
 					</div>
 					<div
-						class="absolute left-8 md:left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-rtp-bg border-4 border-indigo-500 z-10 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)]"
+						class="absolute left-8 md:left-1/2 -translate-x-1/2 w-10 h-10 rounded-full bg-slate-950 border-4 border-indigo-500 z-10 flex items-center justify-center shadow-[0_0_20px_rgba(99,102,241,0.5)]"
 					>
 						<span class="text-indigo-500 font-bold">3</span>
 					</div>
 					<div class="md:w-[45%] pl-16 md:pl-8 order-1 md:order-2 w-full">
-						<div class="bg-rtp-bg p-6 rounded-xl border-l-4 border-indigo-500 shadow-lg">
+						<div class="bg-slate-950 p-6 rounded-xl border-l-4 border-indigo-500 shadow-lg">
 							<div class="flex items-center justify-between mb-3">
 								<span
 									class="bg-indigo-500/20 text-indigo-400 text-[10px] font-bold px-2 py-1 rounded uppercase"
 									>Exit</span
 								>
-								<span class="font-mono text-xs text-rtp-muted">10:45 AM</span>
+								<span class="font-mono text-xs text-slate-400">10:45 AM</span>
 							</div>
 							<div class="font-mono text-sm">
 								<div class="font-bold text-lg text-white">ALL OUT</div>
-								<p class="text-xs text-rtp-muted mt-1">Sold runners at $7.00.</p>
+								<p class="text-xs text-slate-400 mt-1">Sold runners at $7.00.</p>
 								<p class="text-emerald-400 font-bold mt-2">Total Profit: +100% ✅</p>
 							</div>
 						</div>
@@ -875,18 +875,18 @@
 		</div>
 	</section>
 
-	<section id="performance" class="py-24 bg-rtp-bg relative">
+	<section id="performance" class="py-24 bg-slate-950 relative">
 		<div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="flex flex-col md:flex-row justify-between items-end mb-12 gap-6">
 				<div>
-					<h2 class="text-3xl md:text-4xl font-heading font-bold text-rtp-text mb-2">
+					<h2 class="text-3xl md:text-4xl font-heading font-bold text-slate-200 mb-2">
 						Recent Performance
 					</h2>
-					<p class="text-rtp-muted">Transparency is our currency. Live log of recent calls.</p>
+					<p class="text-slate-400">Transparency is our currency. Live log of recent calls.</p>
 				</div>
 				<a
 					href="/performance"
-					class="text-rtp-primary font-bold hover:text-white transition-colors flex items-center gap-2"
+					class="text-indigo-500 font-bold hover:text-white transition-colors flex items-center gap-2"
 				>
 					View Full Ledger <svg
 						class="w-4 h-4"
@@ -903,47 +903,47 @@
 				</a>
 			</div>
 
-			<div class="bg-rtp-surface rounded-2xl border border-rtp-border overflow-hidden shadow-xl">
+			<div class="bg-slate-900 rounded-2xl border border-slate-800 overflow-hidden shadow-xl">
 				<div
-					class="grid grid-cols-12 bg-rtp-bg/50 border-b border-rtp-border p-4 text-xs font-bold uppercase text-rtp-muted tracking-wider"
+					class="grid grid-cols-12 bg-slate-950/50 border-b border-slate-800 p-4 text-xs font-bold uppercase text-slate-400 tracking-wider"
 				>
 					<div class="col-span-3 md:col-span-2">Date</div>
 					<div class="col-span-5 md:col-span-4">Ticker / Strike</div>
 					<div class="col-span-4 md:col-span-2 text-right">Result</div>
 					<div class="hidden md:block md:col-span-4 text-right">Notes</div>
 				</div>
-				<div class="divide-y divide-rtp-border/50 font-mono text-sm">
+				<div class="divide-y divide-slate-800/50 font-mono text-sm">
 					<div class="grid grid-cols-12 p-4 items-center hover:bg-white/5 transition-colors">
-						<div class="col-span-3 md:col-span-2 text-rtp-muted">Nov 15</div>
+						<div class="col-span-3 md:col-span-2 text-slate-400">Nov 15</div>
 						<div class="col-span-5 md:col-span-4 font-bold text-white">SPX 4560 CALL</div>
 						<div class="col-span-4 md:col-span-2 text-right text-emerald-400 font-bold">+50%</div>
-						<div class="hidden md:block md:col-span-4 text-right text-rtp-muted text-xs">
+						<div class="hidden md:block md:col-span-4 text-right text-slate-400 text-xs">
 							Held VWAP perfectly.
 						</div>
 					</div>
 					<div class="grid grid-cols-12 p-4 items-center hover:bg-white/5 transition-colors">
-						<div class="col-span-3 md:col-span-2 text-rtp-muted">Nov 14</div>
+						<div class="col-span-3 md:col-span-2 text-slate-400">Nov 14</div>
 						<div class="col-span-5 md:col-span-4 font-bold text-white">SPX 4575 PUT</div>
 						<div class="col-span-4 md:col-span-2 text-right text-emerald-400 font-bold">+50%</div>
-						<div class="hidden md:block md:col-span-4 text-right text-rtp-muted text-xs">
+						<div class="hidden md:block md:col-span-4 text-right text-slate-400 text-xs">
 							Clean breakdown of 4580.
 						</div>
 					</div>
 					<div
 						class="grid grid-cols-12 p-4 items-center hover:bg-white/5 transition-colors bg-red-500/5"
 					>
-						<div class="col-span-3 md:col-span-2 text-rtp-muted">Nov 13</div>
+						<div class="col-span-3 md:col-span-2 text-slate-400">Nov 13</div>
 						<div class="col-span-5 md:col-span-4 font-bold text-white">SPX 4590 CALL</div>
 						<div class="col-span-4 md:col-span-2 text-right text-red-400 font-bold">-31%</div>
-						<div class="hidden md:block md:col-span-4 text-right text-rtp-muted text-xs">
+						<div class="hidden md:block md:col-span-4 text-right text-slate-400 text-xs">
 							Stopped out. Choppy open.
 						</div>
 					</div>
 					<div class="grid grid-cols-12 p-4 items-center hover:bg-white/5 transition-colors">
-						<div class="col-span-3 md:col-span-2 text-rtp-muted">Nov 12</div>
+						<div class="col-span-3 md:col-span-2 text-slate-400">Nov 12</div>
 						<div class="col-span-5 md:col-span-4 font-bold text-white">SPX 4555 PUT</div>
 						<div class="col-span-4 md:col-span-2 text-right text-emerald-400 font-bold">+60%</div>
-						<div class="hidden md:block md:col-span-4 text-right text-rtp-muted text-xs">
+						<div class="hidden md:block md:col-span-4 text-right text-slate-400 text-xs">
 							Trend day runner.
 						</div>
 					</div>
@@ -952,41 +952,41 @@
 		</div>
 	</section>
 
-	<section id="pricing" class="py-24 bg-rtp-surface border-t border-rtp-border">
+	<section id="pricing" class="py-24 bg-slate-900 border-t border-slate-800">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
-				<h2 class="text-3xl md:text-5xl font-heading font-bold text-rtp-text mb-4">
+				<h2 class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-4">
 					Simple, Flat Pricing
 				</h2>
-				<p class="text-xl text-rtp-muted">Pay for the alerts with one good trade.</p>
+				<p class="text-xl text-slate-400">Pay for the alerts with one good trade.</p>
 			</div>
 
 			<div class="flex justify-center mb-16">
-				<div class="bg-rtp-bg p-1.5 rounded-xl border border-rtp-border inline-flex relative">
+				<div class="bg-slate-950 p-1.5 rounded-xl border border-slate-800 inline-flex relative">
 					<button
 						onclick={() => (selectedPlan = 'monthly')}
 						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'monthly'
 							? 'text-white'
-							: 'text-rtp-muted hover:text-white'}">Monthly</button
+							: 'text-slate-400 hover:text-white'}">Monthly</button
 					>
 					<button
 						onclick={() => (selectedPlan = 'quarterly')}
 						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'quarterly'
 							? 'text-white'
-							: 'text-rtp-muted hover:text-white'}">Quarterly</button
+							: 'text-slate-400 hover:text-white'}">Quarterly</button
 					>
 					<button
 						onclick={() => (selectedPlan = 'annual')}
 						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
 						'annual'
 							? 'text-white'
-							: 'text-rtp-muted hover:text-white'}">Annual</button
+							: 'text-slate-400 hover:text-white'}">Annual</button
 					>
 
 					<div
-						class="absolute top-1.5 bottom-1.5 bg-rtp-primary rounded-lg shadow-md transition-all duration-300 ease-out"
+						class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-lg shadow-md transition-all duration-300 ease-out"
 						style="left: {selectedPlan === 'monthly'
 							? '0.375rem'
 							: selectedPlan === 'quarterly'
@@ -998,24 +998,24 @@
 
 			<div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
 				<div
-					class="order-2 lg:order-1 bg-rtp-bg p-8 rounded-2xl border transition-all {selectedPlan ===
+					class="order-2 lg:order-1 bg-slate-950 p-8 rounded-2xl border transition-all {selectedPlan ===
 					'monthly'
-						? 'border-rtp-primary opacity-100 scale-105'
-						: 'border-rtp-border opacity-70 hover:opacity-90'}"
+						? 'border-indigo-600 opacity-100 scale-105'
+						: 'border-slate-800 opacity-70 hover:opacity-90'}"
 				>
-					<h3 class="text-xl font-bold text-rtp-text mb-2">Monthly</h3>
+					<h3 class="text-xl font-bold text-slate-200 mb-2">Monthly</h3>
 					<div class="flex items-baseline gap-1 mb-6">
 						<span class="text-4xl font-bold text-white">$97</span>
-						<span class="text-rtp-muted">/mo</span>
+						<span class="text-slate-400">/mo</span>
 					</div>
-					<p class="text-sm text-rtp-muted mb-8 h-10">Perfect for testing the waters.</p>
+					<p class="text-sm text-slate-400 mb-8 h-10">Perfect for testing the waters.</p>
 					<a
 						href="/checkout/monthly"
-						class="block w-full py-3 px-4 bg-rtp-surface border border-rtp-border text-rtp-text font-bold rounded-lg text-center hover:bg-white hover:text-black transition-colors"
+						class="block w-full py-3 px-4 bg-slate-900 border border-slate-800 text-slate-200 font-bold rounded-lg text-center hover:bg-white hover:text-black transition-colors"
 					>
 						Select Monthly
 					</a>
-					<div class="mt-8 space-y-4 text-sm text-rtp-muted">
+					<div class="mt-8 space-y-4 text-sm text-slate-400">
 						<div class="flex gap-3">
 							<svg
 								class="w-5 h-5 text-emerald-500 flex-shrink-0"
@@ -1050,26 +1050,26 @@
 				</div>
 
 				<div
-					class="order-1 lg:order-2 bg-rtp-bg p-10 rounded-3xl border-2 shadow-2xl relative transform z-10 transition-all {selectedPlan ===
+					class="order-1 lg:order-2 bg-slate-950 p-10 rounded-3xl border-2 shadow-2xl relative transform z-10 transition-all {selectedPlan ===
 					'quarterly'
-						? 'border-rtp-primary shadow-rtp-primary/20 lg:scale-110 opacity-100'
-						: 'border-rtp-border shadow-rtp-border/10 lg:scale-100 opacity-70 hover:opacity-90'}"
+						? 'border-indigo-600 shadow-indigo-600/20 lg:scale-110 opacity-100'
+						: 'border-slate-800 shadow-slate-800/10 lg:scale-100 opacity-70 hover:opacity-90'}"
 				>
 					<div
-						class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-rtp-primary text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
+						class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 bg-indigo-600 text-white px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wide"
 					>
 						Most Popular
 					</div>
 					<h3 class="text-2xl font-bold text-white mb-2">Quarterly</h3>
 					<div class="flex items-baseline gap-1 mb-1">
 						<span class="text-5xl font-extrabold text-white">$247</span>
-						<span class="text-rtp-muted">/qtr</span>
+						<span class="text-slate-400">/qtr</span>
 					</div>
 					<p class="text-emerald-400 text-sm font-bold mb-8">Save $45 vs Monthly</p>
 
 					<a
 						href="/checkout/quarterly"
-						class="block w-full py-4 px-6 bg-rtp-primary text-white font-bold rounded-xl text-center hover:bg-blue-600 transition-colors shadow-lg mb-8"
+						class="block w-full py-4 px-6 bg-indigo-600 text-white font-bold rounded-xl text-center hover:bg-blue-600 transition-colors shadow-lg mb-8"
 					>
 						Start Quarterly Plan
 					</a>
@@ -1124,24 +1124,24 @@
 				</div>
 
 				<div
-					class="order-3 bg-rtp-bg p-8 rounded-2xl border transition-all {selectedPlan === 'annual'
+					class="order-3 bg-slate-950 p-8 rounded-2xl border transition-all {selectedPlan === 'annual'
 						? 'border-emerald-500 opacity-100 scale-105'
-						: 'border-rtp-border opacity-70 hover:opacity-90'}"
+						: 'border-slate-800 opacity-70 hover:opacity-90'}"
 				>
-					<h3 class="text-xl font-bold text-rtp-text mb-2">Annual</h3>
+					<h3 class="text-xl font-bold text-slate-200 mb-2">Annual</h3>
 					<div class="flex items-baseline gap-1 mb-1">
 						<span class="text-4xl font-bold text-white">$777</span>
-						<span class="text-rtp-muted">/yr</span>
+						<span class="text-slate-400">/yr</span>
 					</div>
 					<p class="text-emerald-500 text-sm font-bold mb-8 h-10">Best Value (Save 33%)</p>
 
 					<a
 						href="/checkout/annual"
-						class="block w-full py-3 px-4 bg-rtp-surface border border-rtp-emerald text-emerald-500 font-bold rounded-lg text-center hover:bg-emerald-500 hover:text-white transition-colors"
+						class="block w-full py-3 px-4 bg-slate-900 border border-emerald-500 text-emerald-500 font-bold rounded-lg text-center hover:bg-emerald-500 hover:text-white transition-colors"
 					>
 						Select Annual
 					</a>
-					<div class="mt-8 space-y-4 text-sm text-rtp-muted">
+					<div class="mt-8 space-y-4 text-sm text-slate-400">
 						<div class="flex gap-3">
 							<svg
 								class="w-5 h-5 text-emerald-500 flex-shrink-0"
@@ -1177,8 +1177,8 @@
 			</div>
 
 			<div class="mt-12 text-center">
-				<div class="inline-flex items-center gap-2 text-sm text-rtp-muted">
-					<svg class="w-4 h-4 text-rtp-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+				<div class="inline-flex items-center gap-2 text-sm text-slate-400">
+					<svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"
 						><path
 							stroke-linecap="round"
 							stroke-linejoin="round"
@@ -1192,22 +1192,22 @@
 		</div>
 	</section>
 
-	<section class="py-24 bg-rtp-bg">
+	<section class="py-24 bg-slate-950">
 		<div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 			<h2 class="text-3xl font-heading font-bold text-center mb-4">Frequently Asked Questions</h2>
-			<p class="text-center text-rtp-muted mb-12">
+			<p class="text-center text-slate-400 mb-12">
 				Common questions about brokers, capital, and risk management.
 			</p>
 			<div class="space-y-4">
 				{#each faqList as faq, i}
-					<div class="border border-rtp-border rounded-xl bg-rtp-surface overflow-hidden">
+					<div class="border border-slate-800 rounded-xl bg-slate-900 overflow-hidden">
 						<button
 							class="w-full text-left px-6 py-5 font-bold flex justify-between items-center focus:outline-none hover:bg-white/5 transition-colors"
 							onclick={() => toggleFaq(i)}
 						>
 							<span class="pr-8">{faq.q}</span>
 							<svg
-								class="w-5 h-5 text-rtp-muted transform transition-transform duration-300 flex-shrink-0 {openFaq ===
+								class="w-5 h-5 text-slate-400 transform transition-transform duration-300 flex-shrink-0 {openFaq ===
 								i
 									? 'rotate-180'
 									: ''}"
@@ -1225,7 +1225,7 @@
 						{#if openFaq === i}
 							<div
 								transition:slide={{ duration: 300, easing: cubicOut }}
-								class="px-6 pb-6 text-rtp-muted text-sm leading-relaxed border-t border-rtp-border/50 pt-4"
+								class="px-6 pb-6 text-slate-400 text-sm leading-relaxed border-t border-slate-800/50 pt-4"
 							>
 								{faq.a}
 							</div>
@@ -1237,7 +1237,7 @@
 	</section>
 
 	<section class="py-24 relative overflow-hidden">
-		<div class="absolute inset-0 bg-gradient-to-br from-rtp-primary to-rtp-indigo z-0"></div>
+		<div class="absolute inset-0 bg-gradient-to-br from-indigo-600 to-indigo-500 z-0"></div>
 		<div class="absolute inset-0 bg-[url('/grid-pattern.svg')] opacity-10 z-0"></div>
 
 		<div class="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -1250,7 +1250,7 @@
 			<div class="flex flex-col sm:flex-row gap-4 justify-center">
 				<a
 					href="#pricing"
-					class="bg-white text-rtp-primary px-10 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-2xl hover:-translate-y-1"
+					class="bg-white text-indigo-500 px-10 py-4 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-2xl hover:-translate-y-1"
 				>
 					Get Access Now
 				</a>
@@ -1259,5 +1259,21 @@
 		</div>
 	</section>
 </main>
+
+<style>
+	/* Force dark backgrounds - nuclear option */
+	:global(.spx-profit-pulse-page) {
+		background-color: #020617 !important;
+	}
+	:global(.spx-profit-pulse-page .bg-slate-900) {
+		background-color: #0f172a !important;
+	}
+	:global(.spx-profit-pulse-page .bg-slate-950) {
+		background-color: #020617 !important;
+	}
+	:global(.spx-profit-pulse-page section) {
+		background-color: inherit;
+	}
+</style>
 
 <!-- Footer is handled by MarketingFooter component in +layout.svelte -->
