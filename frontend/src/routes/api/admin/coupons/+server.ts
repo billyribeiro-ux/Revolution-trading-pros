@@ -2,32 +2,39 @@
  * Coupons API Proxy
  * Routes requests to Rust API backend to avoid CORS issues
  *
- * @version 2.0.0 - January 2026
+ * @version 2.1.0 - January 2026 - Cloudflare compatible
  */
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
 
 // Production fallback - Rust API on Fly.io
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
+// Empty data for graceful degradation
+const EMPTY_DATA = {
+	coupons: [],
+	total: 0
+};
+
+/**
+ * Get backend URL - always use production backend for reliability
+ * Cloudflare platform.env is typed differently, so we use the hardcoded fallback
+ */
+function getBackendUrl(): string {
+	return PROD_BACKEND;
+}
+
 export const GET: RequestHandler = async ({ request }) => {
-	// ICT 7 FIX: Return empty data for all error cases to prevent console errors
-	const emptyData = {
-		coupons: [],
-		total: 0
-	};
-
-	const backendUrl = env.BACKEND_URL || PROD_BACKEND;
-	const authHeader = request.headers.get('Authorization') || '';
-
-	// If no auth, return empty data silently
-	if (!authHeader) {
-		return json(emptyData);
-	}
-
 	try {
+		const backendUrl = getBackendUrl();
+		const authHeader = request.headers.get('Authorization') || '';
+
+		// If no auth, return empty data silently
+		if (!authHeader) {
+			return json(EMPTY_DATA);
+		}
+
 		const response = await fetch(`${backendUrl}/api/admin/coupons`, {
 			method: 'GET',
 			headers: {
@@ -38,34 +45,29 @@ export const GET: RequestHandler = async ({ request }) => {
 		});
 
 		if (!response.ok) {
-			// Return empty data for all error cases - graceful degradation
-			return json(emptyData);
+			return json(EMPTY_DATA);
 		}
 
-		// Safely parse JSON response
 		const text = await response.text();
 		if (!text) {
-			return json(emptyData);
+			return json(EMPTY_DATA);
 		}
 
 		try {
 			const data = JSON.parse(text);
 			return json(data);
 		} catch {
-			// Invalid JSON from backend
-			return json(emptyData);
+			return json(EMPTY_DATA);
 		}
 	} catch {
-		// Network or other error - silent fallback
-		return json(emptyData);
+		return json(EMPTY_DATA);
 	}
 };
 
 export const POST: RequestHandler = async ({ request }) => {
-	const backendUrl = env.BACKEND_URL || PROD_BACKEND;
-	const authHeader = request.headers.get('Authorization') || '';
-
 	try {
+		const backendUrl = getBackendUrl();
+		const authHeader = request.headers.get('Authorization') || '';
 		const body = await request.json();
 
 		const response = await fetch(`${backendUrl}/api/admin/coupons`, {
@@ -78,7 +80,6 @@ export const POST: RequestHandler = async ({ request }) => {
 			body: JSON.stringify(body)
 		});
 
-		// Safely parse response
 		const text = await response.text();
 		if (!text) {
 			return json({ message: 'Empty response from server' }, { status: response.status });
