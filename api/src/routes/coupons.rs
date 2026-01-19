@@ -19,6 +19,8 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
+use rust_decimal::Decimal;
+
 use crate::{
     models::{order::Coupon, User},
     AppState,
@@ -62,7 +64,7 @@ pub struct UserCoupon {
     pub code: String,
     pub description: Option<String>,
     pub discount_type: String,
-    pub discount_value: f64,
+    pub discount_value: Decimal,
     pub expires_at: Option<String>,
     pub is_used: bool,
     pub used_at: Option<String>,
@@ -73,9 +75,9 @@ pub struct CreateCouponRequest {
     pub code: String,
     pub description: Option<String>,
     pub discount_type: String,
-    pub discount_value: f64,
-    pub min_purchase: Option<f64>,
-    pub max_discount: Option<f64>,
+    pub discount_value: Decimal,
+    pub min_purchase: Option<Decimal>,
+    pub max_discount: Option<Decimal>,
     pub usage_limit: Option<i32>,
     pub starts_at: Option<String>,
     pub expires_at: Option<String>,

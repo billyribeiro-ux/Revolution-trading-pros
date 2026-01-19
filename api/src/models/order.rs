@@ -2,6 +2,7 @@
 //! Apple ICT 11+ Principal Engineer Grade - December 2025
 
 use chrono::NaiveDateTime;
+use rust_decimal::Decimal;
 use serde::{Deserialize, Serialize};
 use sqlx::FromRow;
 use validator::Validate;
@@ -106,12 +107,12 @@ pub struct Coupon {
     #[sqlx(rename = "type")]
     #[serde(rename = "type")]
     pub coupon_type: String, // percentage, fixed
-    pub value: f64,
+    pub value: Decimal,
     pub max_uses: i32,
     pub current_uses: i32,
     pub expiry_date: Option<NaiveDateTime>,
     pub applicable_products: Option<serde_json::Value>,
-    pub min_purchase_amount: f64,
+    pub min_purchase_amount: Decimal,
     pub is_active: bool,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,

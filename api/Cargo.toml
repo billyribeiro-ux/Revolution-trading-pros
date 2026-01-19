@@ -18,7 +18,8 @@ html-escape = "0.2"
 tokio = { version = "1.35", features = ["full"] }
 
 # Database (Fly.io PostgreSQL) - use native-tls to avoid rustls crypto provider issues
-sqlx = { version = "0.8", features = ["runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "json"] }
+sqlx = { version = "0.8", features = ["runtime-tokio", "tls-native-tls", "postgres", "uuid", "chrono", "json", "rust_decimal"] }
+rust_decimal = { version = "1.33", features = ["serde", "serde-with-str"] }
 
 # Redis (Upstash) - use native-tls for simpler TLS handling
 redis = { version = "0.27", features = ["tokio-comp", "connection-manager", "tls-native-tls", "tokio-native-tls-comp"] }
