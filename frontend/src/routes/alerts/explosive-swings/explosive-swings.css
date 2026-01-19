@@ -1,12 +1,16 @@
 /**
- * Explosive Swings - Page-Specific Styles
+ * Explosive Swings - Minimal Page-Specific Styles
  * ═══════════════════════════════════════════════════════════════════════════
  * Page: /alerts/explosive-swings
  * 
- * IMPORTANT: Tailwind is already loaded globally via app.css in root layout
- * This file only contains page-specific visual styles scoped to .explosive-swings-page
+ * This file contains ONLY:
+ * - CSS custom properties (theme variables)
+ * - Animations that Tailwind can't handle
+ * - Gradient text effect (requires background-clip)
  * 
- * @version 4.0.0 - Proper Svelte 5 Best Practices
+ * All layout/spacing handled by Tailwind classes in +page.svelte
+ * 
+ * @version 5.0.0 - Minimal CSS + Tailwind
  * @author Revolution Trading Pros
  * ═══════════════════════════════════════════════════════════════════════════
  */
@@ -15,126 +19,27 @@
  * PAGE THEME VARIABLES
  * ═══════════════════════════════════════════════════════════════════════════ */
 .explosive-swings-page {
-	/* Brand Colors - Emerald Green (matches page Tailwind classes) */
+	/* Brand Colors - Emerald Green */
 	--accent-primary: #10b981;
 	--accent-primary-light: #34d399;
 	--accent-primary-dark: #059669;
 	--accent-glow: rgba(16, 185, 129, 0.4);
 
-	/* Background Colors */
-	--bg-dark: #0f172a;
-	--bg-alt: #0a0e13;
-	--surface: #1e293b;
-	--surface-elevated: #334155;
-	--surface-overlay: #475569;
-
-	/* Border Colors */
-	--border: #334155;
-	--border-light: #1e293b;
-	--border-focus: #10b981;
-
-	/* Text Colors */
-	--text-primary: #f1f5f9;
-	--text-secondary: #cbd5e1;
-	--text-muted: #94a3b8;
-	--text-placeholder: #64748b;
-
 	/* Semantic Colors */
 	--success: #10b981;
-	--success-soft: rgba(16, 185, 129, 0.15);
 	--warning: #f59e0b;
-	--warning-soft: rgba(245, 158, 11, 0.15);
 	--error: #ef4444;
-	--error-soft: rgba(239, 68, 68, 0.15);
 	--info: #3b82f6;
-	--info-soft: rgba(59, 130, 246, 0.15);
-
-	/* Page Base Styles */
-	background: var(--bg-dark);
-	color: var(--text-primary);
-	min-height: 100vh;
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * HERO SECTION
+ * CUSTOM EFFECTS (Tailwind can't do these)
  * ═══════════════════════════════════════════════════════════════════════════ */
-.explosive-swings-page .hero {
-	position: relative;
-	padding: 6rem 0;
-	overflow: hidden;
-}
-
-.explosive-swings-page .hero-title {
-	font-family: 'Montserrat', system-ui, sans-serif;
-	font-size: clamp(2.5rem, 6vw, 4rem);
-	font-weight: 800;
-	line-height: 1.1;
-}
-
 .explosive-swings-page .gradient-text {
 	background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-light));
 	-webkit-background-clip: text;
 	-webkit-text-fill-color: transparent;
 	background-clip: text;
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * PRICING CARDS
- * ═══════════════════════════════════════════════════════════════════════════ */
-.explosive-swings-page .pricing-card {
-	background: var(--surface);
-	border: 1px solid var(--border);
-	border-radius: 1rem;
-	padding: 2rem;
-	transition: all 0.3s ease;
-}
-
-.explosive-swings-page .pricing-card:hover {
-	border-color: var(--accent-primary);
-	transform: translateY(-4px);
-	box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
-}
-
-.explosive-swings-page .pricing-card.featured {
-	border-color: var(--accent-primary);
-	box-shadow: 0 0 0 1px var(--accent-primary), 0 20px 50px -10px var(--accent-glow);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * STATS / METRICS
- * ═══════════════════════════════════════════════════════════════════════════ */
-.explosive-swings-page .stat-value {
-	font-size: 3rem;
-	font-weight: 700;
-	color: var(--accent-primary);
-}
-
-.explosive-swings-page .stat-label {
-	font-size: 0.875rem;
-	text-transform: uppercase;
-	letter-spacing: 0.05em;
-	color: var(--text-muted);
-}
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * CTA BUTTONS
- * ═══════════════════════════════════════════════════════════════════════════ */
-.explosive-swings-page .cta-primary {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	padding: 1rem 2rem;
-	font-weight: 600;
-	border-radius: 0.75rem;
-	background: linear-gradient(135deg, var(--accent-primary), var(--accent-primary-dark));
-	color: white;
-	box-shadow: 0 4px 20px var(--accent-glow);
-	transition: all 0.3s ease;
-}
-
-.explosive-swings-page .cta-primary:hover {
-	transform: translateY(-2px);
-	box-shadow: 0 8px 30px var(--accent-glow);
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -149,19 +54,4 @@
 		opacity: 1;
 		transform: translateY(0);
 	}
-}
-
-.explosive-swings-page .animate-in {
-	opacity: 0;
-	animation: fadeInUp 0.6s ease forwards;
-}
-
-.explosive-swings-page .delay-1 {
-	animation-delay: 0.1s;
-}
-.explosive-swings-page .delay-2 {
-	animation-delay: 0.2s;
-}
-.explosive-swings-page .delay-3 {
-	animation-delay: 0.3s;
 }

@@ -924,7 +924,8 @@
 
 					<div
 						class="absolute top-1.5 bottom-1.5 bg-emerald-600 rounded-lg shadow-md transition-all duration-300 ease-out"
-						style="left: calc({togglePosition} * 33.33% + 0.375rem); width: calc(33.33% - 0.5rem);"
+						style:left="calc({togglePosition} * 33.33% + 0.375rem)"
+						style:width="calc(33.33% - 0.5rem)"
 					></div>
 				</div>
 			</div>
