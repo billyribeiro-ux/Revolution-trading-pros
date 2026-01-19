@@ -1066,16 +1066,7 @@
 		<div
 			class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center text-xs text-rtp-muted leading-relaxed"
 		>
-			<p class="mb-4 font-bold uppercase text-white">Risk Disclosure</p>
-			<p class="max-w-4xl mx-auto">
-				Trading futures and options involves substantial risk of loss and is not suitable for every
-				investor. The highly leveraged nature of futures trading means that small market movements
-				will have a great impact on your trading account and this can work against you as well as
-				for you. Revolution Trading Pros is an educational platform and not a financial advisory
-				service. Results shown are not typical. Past performance is not indicative of future
-				results.
-			</p>
-			<div class="flex justify-center gap-6 mt-8 mb-4">
+			<div class="flex justify-center gap-6 mb-4">
 				<a href="/terms" class="hover:text-white transition-colors">Terms of Service</a>
 				<a href="/privacy" class="hover:text-white transition-colors">Privacy Policy</a>
 				<a href="/contact" class="hover:text-white transition-colors">Contact Support</a>
