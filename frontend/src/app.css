@@ -209,6 +209,9 @@
 	--color-rtp-cyan: oklch(0.7 0.15 200);
 	--color-rtp-purple: oklch(0.6 0.22 300);
 }
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: Tailwind v4 Theme Configuration
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* CSS Variables for runtime access (IDE compatibility) */
 :root {
@@ -259,6 +262,9 @@
 	--font-weight-bold: 700;
 	--font-weight-extrabold: 800;
 }
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: CSS Variables (Breakpoints, Layout, Typography)
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * LIGHT THEME - Apple/Netflix Premium Aesthetic
@@ -322,6 +328,9 @@ body.light,
 	/* Focus ring for light mode */
 	--focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.3);
 }
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: Light Theme Configuration
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * DARK THEME (Default) - Ensure consistent dark variables
@@ -434,6 +443,9 @@ body.dark,
 	--color-rtp-cyan: oklch(0.7 0.15 200);
 	--color-rtp-purple: oklch(0.6 0.22 300);
 }
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: Dark Theme Configuration
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
 /**
  * Revolution Trading Pros - Global Styles
@@ -736,6 +748,10 @@ body.dark,
 		scrollbar-color: rgb(156 163 175) rgb(243 244 246);
 	}
 }
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: @layer base (Global Resets, Typography, Forms, Scrollbars)
+ * USED BY: All pages when app.css is active
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * Utility Classes
@@ -1299,6 +1315,10 @@ body.dark,
 		-webkit-overflow-scrolling: touch;
 	}
 }
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: @layer utilities (Typography, Navigation, Buttons, Performance)
+ * USED BY: Admin Dashboard, Member Dashboard, Trading Room Pages
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * Print Styles - Optimized for documentation and reports
@@ -2610,3 +2630,26 @@ body.dark {
 	color: var(--admin-info-text);
 	border: 1px solid var(--admin-info-border);
 }
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END: Admin Dashboard Theme System
+ * USED BY: /admin/* pages (Admin Dashboard, Coupons, Members, Analytics, CRM)
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * END OF app.css
+ * ═══════════════════════════════════════════════════════════════════════════
+ * SUMMARY OF SECTIONS:
+ * 1. Tailwind v4 Theme Configuration (Brand Colors, Surfaces, Borders, Text)
+ * 2. CSS Variables (Breakpoints, Layout, Typography)
+ * 3. Light Theme Configuration (Apple/Netflix Aesthetic)
+ * 4. Dark Theme Configuration (Default)
+ * 5. @layer base (Global Resets, Typography, Forms, Scrollbars)
+ * 6. @layer utilities (Typography, Navigation, Buttons, Performance)
+ * 7. Print Styles
+ * 8. Premium Animations (Fade, Slide, Scale, Shimmer, Pulse, Bounce, Spin)
+ * 9. Admin Dashboard Theme System (Cards, Tables, Inputs, Badges)
+ * 
+ * CURRENTLY COMMENTED OUT IN +layout.svelte - Frontpage sections independent
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
