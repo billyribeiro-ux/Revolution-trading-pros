@@ -214,7 +214,7 @@
 />
 
 <div
-	class="w-full overflow-x-hidden overflow-y-visible bg-slate-950 text-slate-200 font-sans selection:bg-indigo-600 selection:text-white"
+	class="w-full bg-slate-950 text-slate-200 font-sans selection:bg-indigo-600 selection:text-white"
 >
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
 		<div class="absolute inset-0 bg-slate-950 z-0">

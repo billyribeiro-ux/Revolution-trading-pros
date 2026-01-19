@@ -390,7 +390,7 @@
 </svelte:head>
 
 <div
-	class="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30 overflow-x-hidden font-sans relative"
+	class="min-h-screen bg-[#050505] text-white selection:bg-blue-500/30 font-sans relative"
 >
 	<div class="fixed inset-0 pointer-events-none z-0">
 		<div
