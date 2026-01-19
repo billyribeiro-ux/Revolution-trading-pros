@@ -49,7 +49,7 @@
 />
 
 <div
-	class="forgot-password-page min-h-screen flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 overflow-hidden relative"
+	class="forgot-password-page flex items-center justify-center px-4 sm:px-6 py-8 sm:py-12 overflow-hidden relative"
 >
 	<!-- Animated gradient background -->
 	<div

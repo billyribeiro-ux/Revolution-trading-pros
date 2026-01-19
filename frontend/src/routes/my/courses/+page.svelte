@@ -196,7 +196,6 @@
 
 <style>
 	.my-courses {
-		min-height: 100vh;
 		background: #f9fafb;
 		padding-bottom: 48px;
 	}

@@ -743,7 +743,6 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.woocommerce-checkout {
-		min-height: 100vh;
 		background: var(--checkout-bg);
 		padding: 40px 0;
 		font-family:

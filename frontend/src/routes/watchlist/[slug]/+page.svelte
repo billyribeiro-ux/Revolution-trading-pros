@@ -336,7 +336,6 @@
 <style>
 	.watchlist-page {
 		background-color: #f5f5f5;
-		min-height: 100vh;
 		padding-bottom: 40px;
 	}
 

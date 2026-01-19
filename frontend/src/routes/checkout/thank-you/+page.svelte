@@ -459,7 +459,6 @@
 	/* Main Page */
 	.typ-page {
 		background: var(--st-color-gray-900, #111827);
-		min-height: 100vh;
 		padding: 3rem 0;
 	}
 
