@@ -1,15 +1,22 @@
 /**
- * Explosive Swings - Isolated Marketing Page Styles
+ * Explosive Swings - Page-Specific Styles
  * ═══════════════════════════════════════════════════════════════════════════
- * COMPLETELY INDEPENDENT from global app.css
- * All variables prefixed with explosive- for easy identification
+ * SvelteKit Best Practice: +page.css is automatically imported
  * 
- * @version 2.0.0 - Fixed Tailwind import
+ * This file follows Svelte 5/SvelteKit conventions:
+ * - Named +page.css (auto-imported by SvelteKit)
+ * - Located in same directory as +page.svelte
+ * - Completely isolated from global app.css
+ * - Imports Tailwind CSS independently
+ * 
+ * @version 3.0.0 - SvelteKit Best Practices
+ * @author Revolution Trading Pros
  * 
  * ═══════════════════════════════════════════════════════════════════════════
  * USED BY:
  * ───────────────────────────────────────────────────────────────────────────
  * PAGE: https://revolution-trading-pros.pages.dev/alerts/explosive-swings
+ * FILE: /routes/alerts/explosive-swings/+page.svelte
  * 
  * COMPONENTS:
  * - Explosive Swings alert service landing page
@@ -20,7 +27,7 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* Import Tailwind CSS - Required since app.css is disabled */
+/* Import Tailwind CSS - Required since app.css is disabled in root layout */
 @import 'tailwindcss';
 
 /* Register Explosive Swings-specific colors as Tailwind utilities */

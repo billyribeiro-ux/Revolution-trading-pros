@@ -1169,6 +1169,6 @@
 </main>
 
 <style>
-	/* Svelte 5 Best Practice: Import page-specific CSS in <style> tag */
-	@import './explosive-swings.css';
+	/* Svelte 5 Best Practice: +page.css is automatically imported by SvelteKit */
+	/* No manual import needed - SvelteKit handles this automatically */
 </style>
