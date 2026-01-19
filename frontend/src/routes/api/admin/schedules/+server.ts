@@ -12,6 +12,8 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
+// Production fallback - Rust API on Fly.io
+const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS

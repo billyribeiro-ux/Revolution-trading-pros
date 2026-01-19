@@ -9,6 +9,8 @@
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
 
+// Production fallback - Rust API on Fly.io
+const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
 // Room slug to ID mapping
 const roomSlugToId: Record<string, number> = {
