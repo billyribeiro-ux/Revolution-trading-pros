@@ -1168,7 +1168,7 @@
 	</footer>
 </main>
 
-<style>
-	/* Import page-specific CSS */
+<style lang="postcss">
+	/* Import page-specific CSS with Tailwind base styles */
 	@import './+page.css';
 </style>
