@@ -364,6 +364,8 @@
 				<input
 					bind:this={inputRef}
 					type="text"
+					id="command-palette-search"
+					name="command-palette-search"
 					bind:value={searchQuery}
 					placeholder="Search pages, actions, or type a command..."
 					class="search-input"
