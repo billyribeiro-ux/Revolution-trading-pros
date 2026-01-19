@@ -15,11 +15,11 @@
  * PAGE THEME VARIABLES
  * ═══════════════════════════════════════════════════════════════════════════ */
 .explosive-swings-page {
-	/* Brand Colors - Vibrant Orange/Red */
-	--accent-primary: #f97316;
-	--accent-primary-light: #fb923c;
-	--accent-primary-dark: #ea580c;
-	--accent-glow: rgba(249, 115, 22, 0.4);
+	/* Brand Colors - Emerald Green (matches page Tailwind classes) */
+	--accent-primary: #10b981;
+	--accent-primary-light: #34d399;
+	--accent-primary-dark: #059669;
+	--accent-glow: rgba(16, 185, 129, 0.4);
 
 	/* Background Colors */
 	--bg-dark: #0f172a;
@@ -31,7 +31,7 @@
 	/* Border Colors */
 	--border: #334155;
 	--border-light: #1e293b;
-	--border-focus: #f97316;
+	--border-focus: #10b981;
 
 	/* Text Colors */
 	--text-primary: #f1f5f9;

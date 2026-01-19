@@ -5,7 +5,13 @@
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
 	// --- Pricing State ---
-	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
+	type PlanType = 'monthly' | 'quarterly' | 'annual';
+	let selectedPlan = $state<PlanType>('quarterly');
+
+	// Toggle indicator position (0 = monthly, 1 = quarterly, 2 = annual)
+	let togglePosition = $derived(
+		selectedPlan === 'monthly' ? 0 : selectedPlan === 'quarterly' ? 1 : 2
+	);
 
 	// Pricing Data Configuration
 	const pricing = {
@@ -35,8 +41,6 @@
 		}
 	};
 
-	// ICT9+ Svelte 5: Use $derived instead of $:
-
 	// --- FAQ State ---
 	let openFaq: number | null = $state(null);
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
@@ -55,7 +59,7 @@
 			typeof window !== 'undefined' &&
 			window.matchMedia('(prefers-reduced-motion: reduce)').matches
 		) {
-			return;
+			return { destroy() {} };
 		}
 
 		// Set initial hidden state with transition already applied
@@ -217,7 +221,7 @@
 />
 
 <main
-	class="w-full overflow-x-hidden bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
+	class="explosive-swings-page w-full overflow-x-hidden bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
 >
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-20 lg:py-0">
 		<div class="absolute inset-0 z-0 pointer-events-none">
@@ -920,11 +924,7 @@
 
 					<div
 						class="absolute top-1.5 bottom-1.5 bg-emerald-600 rounded-lg shadow-md transition-all duration-300 ease-out"
-						style="left: {selectedPlan === 'monthly'
-							? '0.375rem'
-							: selectedPlan === 'quarterly'
-								? 'calc(33.33% + 0.2rem)'
-								: 'calc(66.66% + 0.1rem)'}; width: calc(33.33% - 0.4rem);"
+						style="left: calc({togglePosition} * 33.33% + 0.375rem); width: calc(33.33% - 0.5rem);"
 					></div>
 				</div>
 			</div>
