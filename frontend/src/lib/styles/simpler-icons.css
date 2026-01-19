@@ -10,13 +10,22 @@
  * USED BY (when app.css is active):
  * ───────────────────────────────────────────────────────────────────────────
  * ADMIN PAGES:
- * - /admin/* (Dashboard navigation icons)
+ * - https://revolution-trading-pros.pages.dev/admin (Dashboard navigation icons)
+ * - https://revolution-trading-pros.pages.dev/admin/coupons
+ * - https://revolution-trading-pros.pages.dev/admin/members
+ * - https://revolution-trading-pros.pages.dev/admin/analytics
  * 
  * DASHBOARD PAGES:
- * - /dashboard/* (Member dashboard navigation)
+ * - https://revolution-trading-pros.pages.dev/dashboard (Member dashboard navigation)
+ * - https://revolution-trading-pros.pages.dev/dashboard/my-classes
+ * - https://revolution-trading-pros.pages.dev/dashboard/my-indicators
  * 
  * TRADING ROOM PAGES:
- * - /live-trading-rooms/* (Room navigation and features)
+ * - https://revolution-trading-pros.pages.dev/live-trading-rooms/day-trading
+ * - https://revolution-trading-pros.pages.dev/live-trading-rooms/swing-trading
+ * - https://revolution-trading-pros.pages.dev/live-trading-rooms/small-account-mentorship
+ * - https://revolution-trading-pros.pages.dev/live-trading-rooms/spx-profit-pulse
+ * - https://revolution-trading-pros.pages.dev/live-trading-rooms/explosive-swing
  * 
  * ICONS INCLUDED:
  * - st-icon-home, st-icon-courses, st-icon-indicators, st-icon-alerts

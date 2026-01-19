@@ -11,13 +11,23 @@
  * USED BY (when app.css is active):
  * ───────────────────────────────────────────────────────────────────────────
  * ADMIN PAGES:
- * - /admin/* (Dashboard, Coupons, Members, Analytics, Email Settings, CRM)
+ * - https://revolution-trading-pros.pages.dev/admin
+ * - https://revolution-trading-pros.pages.dev/admin/coupons
+ * - https://revolution-trading-pros.pages.dev/admin/members
+ * - https://revolution-trading-pros.pages.dev/admin/analytics
+ * - https://revolution-trading-pros.pages.dev/admin/email/settings
+ * - https://revolution-trading-pros.pages.dev/admin/crm
  * 
  * DASHBOARD PAGES:
- * - /dashboard/* (Member Dashboard, My Classes, My Indicators, Watchlist)
+ * - https://revolution-trading-pros.pages.dev/dashboard
+ * - https://revolution-trading-pros.pages.dev/dashboard/my-classes
+ * - https://revolution-trading-pros.pages.dev/dashboard/my-indicators
+ * - https://revolution-trading-pros.pages.dev/dashboard/weekly-watchlist
  * 
  * MEMBER PAGES:
- * - /account/* (Settings, Billing, Subscriptions)
+ * - https://revolution-trading-pros.pages.dev/account/settings
+ * - https://revolution-trading-pros.pages.dev/account/billing
+ * - https://revolution-trading-pros.pages.dev/account/subscriptions
  * 
  * IMPORTS:
  * - Design Tokens (colors, shadows, spacing, transitions, typography)

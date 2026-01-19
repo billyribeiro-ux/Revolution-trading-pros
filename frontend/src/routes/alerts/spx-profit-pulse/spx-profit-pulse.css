@@ -5,6 +5,19 @@
  * All variables prefixed with spx- for easy identification
  * 
  * @version 1.0.0
+ * 
+ * ═══════════════════════════════════════════════════════════════════════════
+ * USED BY:
+ * ───────────────────────────────────────────────────────────────────────────
+ * PAGE: https://revolution-trading-pros.pages.dev/alerts/spx-profit-pulse
+ * 
+ * COMPONENTS:
+ * - SPX Profit Pulse alert service landing page
+ * - Pricing cards and feature comparison tables
+ * - Testimonials section with trader reviews
+ * - Chart visualizations for SPX options alerts
+ * - Real-time signal metrics and performance stats
+ * ═══════════════════════════════════════════════════════════════════════════
  */
 
 /* Register SPX-specific colors as Tailwind utilities */
