@@ -1,14 +1,18 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import {
 		IconBrandTwitter,
 		IconBrandInstagram,
 		IconBrandYoutube,
-		IconBrandLinkedin,
-		IconBrandDiscord,
 		IconBrandFacebook
 	} from '$lib/icons';
 
-	const currentYear = new Date().getFullYear();
+	let currentYear = new Date().getFullYear();
+
+	onMount(() => {
+		// Ensures correct year even if the page is prerendered at build time.
+		currentYear = new Date().getFullYear();
+	});
 
 	const footerLinks = {
 		products: [
@@ -37,13 +41,21 @@
 			icon: IconBrandFacebook,
 			label: 'Facebook'
 		},
-		{ href: 'https://twitter.com/revtradingpros', icon: IconBrandTwitter, label: 'Twitter' },
+		{
+			href: 'https://twitter.com/revtradingpros',
+			icon: IconBrandTwitter,
+			label: 'X (Twitter)'
+		},
 		{
 			href: 'https://instagram.com/revolutiontradingpros',
 			icon: IconBrandInstagram,
 			label: 'Instagram'
 		},
-		{ href: 'https://youtube.com/@RevolutionTradingPros', icon: IconBrandYoutube, label: 'YouTube' }
+		{
+			href: 'https://youtube.com/@RevolutionTradingPros',
+			icon: IconBrandYoutube,
+			label: 'YouTube'
+		}
 	];
 </script>
 
@@ -51,60 +63,63 @@
 	<div class="footer-container">
 		<div class="footer-grid">
 			<div class="footer-brand">
-				<a href="/" class="footer-logo">
-					<img 
-						src="/revolution-trading-pros.png" 
+				<a href="/" class="footer-logo" aria-label="Revolution Trading Pros home">
+					<img
+						src="/revolution-trading-pros.png"
 						alt="Revolution Trading Pros"
 						width="160"
 						height="40"
 						loading="lazy"
+						decoding="async"
 					/>
 				</a>
+
 				<p class="footer-tagline">
 					Professional trading education and tools for disciplined traders.
 				</p>
-				<div class="social-links">
+
+				<div class="social-links" aria-label="Social links">
 					{#each socialLinks as social}
-						{@const IconComponent = social.icon}
 						<a
 							href={social.href}
 							target="_blank"
 							rel="noopener noreferrer"
 							class="social-link"
 							aria-label={social.label}
+							title={social.label}
 						>
-							<IconComponent size={20} />
+							<svelte:component this={social.icon} size={20} />
 						</a>
 					{/each}
 				</div>
 			</div>
 
-			<div class="footer-column">
-				<h2 class="footer-heading">Products</h2>
+			<nav class="footer-column" aria-labelledby="footer-products">
+				<h2 class="footer-heading" id="footer-products">Products</h2>
 				<ul class="footer-list">
 					{#each footerLinks.products as link}
 						<li><a href={link.href}>{link.label}</a></li>
 					{/each}
 				</ul>
-			</div>
+			</nav>
 
-			<div class="footer-column">
-				<h2 class="footer-heading">Company</h2>
+			<nav class="footer-column" aria-labelledby="footer-company">
+				<h2 class="footer-heading" id="footer-company">Company</h2>
 				<ul class="footer-list">
 					{#each footerLinks.company as link}
 						<li><a href={link.href}>{link.label}</a></li>
 					{/each}
 				</ul>
-			</div>
+			</nav>
 
-			<div class="footer-column">
-				<h2 class="footer-heading">Legal</h2>
+			<nav class="footer-column" aria-labelledby="footer-legal">
+				<h2 class="footer-heading" id="footer-legal">Legal</h2>
 				<ul class="footer-list">
 					{#each footerLinks.legal as link}
 						<li><a href={link.href}>{link.label}</a></li>
 					{/each}
 				</ul>
-			</div>
+			</nav>
 		</div>
 
 		<div class="risk-disclaimer">
@@ -136,7 +151,6 @@
 		padding: 4rem 0 2rem;
 		width: 100%;
 		min-width: 0;
-		overflow-x: hidden;
 		flex-shrink: 0;
 		margin-top: auto;
 	}
@@ -214,6 +228,11 @@
 		transform: translateY(-2px);
 	}
 
+	.social-link:focus-visible {
+		outline: 2px solid rgba(129, 140, 248, 0.9);
+		outline-offset: 2px;
+	}
+
 	/* Ensure icons don't overflow */
 	.social-link :global(svg) {
 		width: 20px;
@@ -262,6 +281,12 @@
 		color: #f1f5f9;
 	}
 
+	.footer-list a:focus-visible {
+		outline: 2px solid rgba(129, 140, 248, 0.9);
+		outline-offset: 3px;
+		border-radius: 0.25rem;
+	}
+
 	.risk-disclaimer {
 		padding: 1.5rem;
 		background: rgba(245, 158, 11, 0.05);
@@ -291,6 +316,17 @@
 		color: #64748b;
 		font-size: 0.875rem;
 		margin: 0;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.social-link,
+		.footer-list a {
+			transition: none;
+		}
+
+		.social-link:hover {
+			transform: none;
+		}
 	}
 
 	/* Tablet breakpoint */
