@@ -112,7 +112,9 @@
 
 		<NavBar />
 
-		{@render children()}
+		<main id="main-content">
+			{@render children()}
+		</main>
 
 		<MarketingFooter />
 

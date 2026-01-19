@@ -211,7 +211,7 @@
 		</header>
 
 		<!-- Page Content -->
-		<main class="admin-content">
+		<main id="main-content" class="admin-content">
 			{@render children?.()}
 		</main>
 	</div>

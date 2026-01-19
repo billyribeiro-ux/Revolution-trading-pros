@@ -512,7 +512,7 @@
 	/>
 
 	<!-- Main Content Area - flex: 1 1 auto fills remaining space -->
-	<main class="dashboard__main" class:has-secondary-sidebar={isOnMembershipRoute}>
+	<main id="main-content" class="dashboard__main" class:has-secondary-sidebar={isOnMembershipRoute}>
 		{#if isLoadingData}
 			<div class="dashboard__loading-overlay">
 				<div class="dashboard__loading-spinner"></div>

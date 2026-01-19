@@ -7,88 +7,66 @@
 			content="width=device-width, initial-scale=1, maximum-scale=5, viewport-fit=cover"
 		/>
 
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-		<!-- Critical Resource Hints - November 2025 Performance Optimization -->
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-
-		<!-- DNS Prefetch for faster resource loading -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     Resource Hints - DNS Prefetch & Preconnect
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<link rel="dns-prefetch" href="https://fonts.googleapis.com" />
 		<link rel="dns-prefetch" href="https://fonts.gstatic.com" />
 		<link rel="dns-prefetch" href="https://www.googletagmanager.com" />
 		<link rel="dns-prefetch" href="https://www.google-analytics.com" />
-
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-		<!-- Zero-Latency Video: Bunny.net CDN - DNS Prefetch Only (ICT 11 Fix) -->
-		<!-- Preconnect moved to video pages only to avoid "preloaded but not used" -->
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
 		<link rel="dns-prefetch" href="https://iframe.mediadelivery.net" />
 		<link rel="dns-prefetch" href="https://video.bunnycdn.com" />
-		<!-- Box.com for class downloads -->
 		<link rel="dns-prefetch" href="https://simplertrading.app.box.com" />
 		<link rel="dns-prefetch" href="https://app.box.com" />
 
-		<!-- Preconnect for critical resources -->
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-		<!-- PWA & Mobile Configuration -->
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-
-		<!-- Favicon and App Icons -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     PWA & Mobile Configuration
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<link rel="icon" type="image/png" href="%sveltekit.assets%/favicon.png" />
 		<link rel="apple-touch-icon" href="%sveltekit.assets%/favicon.png" />
-
-		<!-- Web App Manifest for PWA - ICT 7 FIX: Use server route for reliability -->
 		<link rel="manifest" href="/manifest.json" />
 
-		<!-- Theme and Display -->
 		<meta name="theme-color" content="#1a1a1a" media="(prefers-color-scheme: dark)" />
 		<meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)" />
 		<meta name="color-scheme" content="dark light" />
 
-		<!-- iOS Safari specific -->
 		<meta name="apple-mobile-web-app-capable" content="yes" />
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 		<meta name="apple-mobile-web-app-title" content="RevTradingPros" />
-
-		<!-- Android Chrome specific -->
 		<meta name="mobile-web-app-capable" content="yes" />
 
-		<!-- Windows Tiles -->
 		<meta name="msapplication-TileColor" content="#1a1a1a" />
 		<meta name="msapplication-config" content="/browserconfig.xml" />
 
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-		<!-- SEO Base Meta Tags - November 2025 Standards -->
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-
-		<!-- Prevent telephone number detection -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     SEO Base Meta Tags
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<meta name="format-detection" content="telephone=no" />
-
-		<!-- Default robots directive (overridden by SEOHead component) -->
 		<meta
 			name="robots"
 			content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
 		/>
 
-		<!-- Google specific -->
+		<!-- Google -->
 		<meta
 			name="googlebot"
 			content="index, follow, max-snippet:-1, max-image-preview:large, max-video-preview:-1"
 		/>
 		<meta name="google" content="notranslate" />
-		<meta name="google-site-verification" content="" />
+		<!-- Add your Google Search Console verification code below -->
+		<!-- <meta name="google-site-verification" content="YOUR_CODE_HERE" /> -->
 
-		<!-- Bing specific -->
+		<!-- Bing -->
 		<meta name="bingbot" content="index, follow" />
-		<meta name="msvalidate.01" content="" />
+		<!-- Add your Bing Webmaster Tools verification code below -->
+		<!-- <meta name="msvalidate.01" content="YOUR_CODE_HERE" /> -->
 
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-		<!-- GEO Optimization for AI Search (November 2025) -->
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-
-		<!-- Structured data hints for AI understanding -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     GEO Optimization for AI Search
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<meta name="subject" content="Professional Trading Education and Tools" />
 		<meta name="topic" content="Stock Trading, Day Trading, Swing Trading, Options Trading" />
 		<meta
@@ -101,59 +79,41 @@
 		<meta name="distribution" content="Global" />
 		<meta name="rating" content="General" />
 
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-		<!-- Social & Sharing Defaults -->
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-
-		<!-- Default Open Graph (overridden by SEOHead component) -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     Social & Sharing Defaults (overridden by SEOHead component per page)
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<meta property="og:site_name" content="Revolution Trading Pros" />
 		<meta property="og:locale" content="en_US" />
 
-		<!-- Twitter defaults -->
 		<meta name="twitter:site" content="@RevTradingPros" />
 		<meta name="twitter:card" content="summary_large_image" />
 
-		<!-- Pinterest -->
-		<meta name="pinterest" content="nopin" description="Sorry, pinning is not allowed." />
+		<meta name="pinterest" content="nopin" />
 
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-		<!-- Performance & Critical CSS -->
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-		<!-- Font Loading - Apple Principal Engineer ICT 11+ Standard -->
-		<!-- Includes all weights required for pixel-perfect Simpler Trading match -->
-		<!-- ═══════════════════════════════════════════════════════════════════════════ -->
-
-		<!-- 
-			ICT 7 FIX: Google Fonts loading optimized for Nov 2025 best practices
-			- Using rel="preload" with as="style" causes "unsupported type" warning
-			- Instead, use fetchpriority="high" on stylesheet for priority hint
-			- Browsers auto-prioritize render-blocking stylesheets anyway
-		-->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     Fonts
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<link
-			href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;600;700;800&family=Open+Sans+Condensed:wght@700&family=Montserrat:wght@500;600;700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Open+Sans:wght@300;400;600;700;800&family=Open+Sans+Condensed:wght@700&family=Montserrat:wght@500;600;700;800&display=swap"
 			rel="stylesheet"
 			fetchpriority="high"
 		/>
 
-		<!-- Critical CSS for above-the-fold content (prevents FOUC) -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     Critical CSS
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<style>
-			/* Critical CSS - Prevents Flash of Unstyled Content */
+			/* Base HTML */
 			html {
-				font-family:
-					'Inter',
-					'Open Sans',
-					system-ui,
-					-apple-system,
-					sans-serif;
+				font-family: 'Inter', 'Open Sans', system-ui, -apple-system, sans-serif;
 				-webkit-font-smoothing: antialiased;
 				-moz-osx-font-smoothing: grayscale;
 				text-rendering: optimizeLegibility;
 				scroll-behavior: smooth;
-				/* FORENSIC FIX: Prevent horizontal overflow at root level */
 				overflow-x: hidden;
+				scrollbar-gutter: stable;
 			}
+
 			body {
 				margin: 0;
 				padding: 0;
@@ -161,19 +121,34 @@
 				color: #f5f5f5;
 				min-height: 100vh;
 				min-height: 100dvh;
-				/* FORENSIC FIX: Prevent horizontal overflow at body level */
 				overflow-x: hidden;
 			}
-			/* Prevent layout shift from scrollbar */
-			html {
-				scrollbar-gutter: stable;
+
+			/* Accessibility - Skip Link */
+			.skip-link {
+				position: absolute;
+				left: -9999px;
+				z-index: 9999;
+				padding: 0.5rem 1rem;
+				background: #2563eb;
+				color: white;
+				text-decoration: none;
+				border-radius: 0.25rem;
+				font-weight: 600;
 			}
-			/* Loading state for hydration */
+
+			.skip-link:focus {
+				left: 1rem;
+				top: 1rem;
+			}
+
+			/* Loading Skeleton */
 			.loading-skeleton {
 				background: linear-gradient(90deg, #1a1a1a 25%, #2a2a2a 50%, #1a1a1a 75%);
 				background-size: 200% 100%;
 				animation: skeleton-loading 1.5s infinite;
 			}
+
 			@keyframes skeleton-loading {
 				0% {
 					background-position: 200% 0;
@@ -184,53 +159,49 @@
 			}
 		</style>
 
-		<!-- SvelteKit head injection point -->
+		<!-- SvelteKit Head Injection -->
 		%sveltekit.head%
 	</head>
-	<body data-sveltekit-preload-data="hover" data-sveltekit-preload-code="viewport">
-		<!-- Skip to main content for accessibility -->
-		<a
-			href="#main-content"
-			class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:bg-blue-600 focus:text-white focus:px-4 focus:py-2 focus:rounded"
-		>
-			Skip to main content
-		</a>
 
-		<!-- Main app container -->
+	<body data-sveltekit-preload-data="hover" data-sveltekit-preload-code="viewport">
+		<!-- Accessibility - Skip to Main Content -->
+		<a href="#main-content" class="skip-link">Skip to main content</a>
+
+		<!-- App Container -->
 		<div id="app" style="display: contents">%sveltekit.body%</div>
 
-		<!-- Service Worker Registration (Production Only) -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     Service Worker Registration (Production Only)
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<script>
-			// ICT9+ Pattern: Never register SW in development - it breaks Vite HMR WebSocket
-			if (
-				'serviceWorker' in navigator &&
-				!window.location.hostname.includes('localhost') &&
-				!window.location.port
-			) {
-				window.addEventListener('load', function () {
-					navigator.serviceWorker
-						.register('/sw.js', { scope: '/' })
-						.then(function (registration) {
-							console.log('[SW] Registration successful:', registration.scope);
-						})
-						.catch(function (error) {
-							console.log('[SW] Registration failed:', error);
-						});
-				});
-			} else if (window.location.hostname === 'localhost' || window.location.port) {
-				// Unregister any existing SW in dev to prevent caching issues
-				if ('serviceWorker' in navigator) {
-					navigator.serviceWorker.getRegistrations().then(function (registrations) {
-						registrations.forEach(function (registration) {
-							registration.unregister();
-							console.log('[SW] Unregistered for dev mode');
+			(function () {
+				var isLocalhost =
+					window.location.hostname === 'localhost' || window.location.port;
+
+				if ('serviceWorker' in navigator && !isLocalhost) {
+					window.addEventListener('load', function () {
+						navigator.serviceWorker
+							.register('/sw.js', { scope: '/' })
+							.then(function (reg) {
+								console.log('[SW] Registered:', reg.scope);
+							})
+							.catch(function (err) {
+								console.log('[SW] Registration failed:', err);
+							});
+					});
+				} else if ('serviceWorker' in navigator && isLocalhost) {
+					navigator.serviceWorker.getRegistrations().then(function (regs) {
+						regs.forEach(function (reg) {
+							reg.unregister();
 						});
 					});
 				}
-			}
+			})();
 		</script>
 
-		<!-- Noscript fallback for accessibility -->
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     Noscript Fallback
+		     ═══════════════════════════════════════════════════════════════════════════ -->
 		<noscript>
 			<style>
 				.js-only {
