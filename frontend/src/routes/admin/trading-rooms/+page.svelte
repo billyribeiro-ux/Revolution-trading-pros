@@ -22,18 +22,18 @@
 	import IconFlame from '@tabler/icons-svelte/icons/flame';
 	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
 	import IconTargetArrow from '@tabler/icons-svelte/icons/target-arrow';
+	import IconChartLine from '@tabler/icons-svelte/icons/chart-line';
+	import IconSchool from '@tabler/icons-svelte/icons/school';
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// DERIVED STATE - Svelte 5 Runes
 	// ═══════════════════════════════════════════════════════════════════════════════
 
 	/**
-	 * Filter to rooms that have content management capabilities
-	 * Includes alerts-only services and day trading room
+	 * All trading rooms and alert services
+	 * Shows all 6 rooms: 3 live trading rooms + 3 alert services
 	 */
-	const managedRooms = $derived(
-		ROOMS.filter((r) => r.type === 'alerts-only' || r.slug === 'day-trading-room')
-	);
+	const managedRooms = $derived(ROOMS);
 
 	// ═══════════════════════════════════════════════════════════════════════════════
 	// HANDLERS
@@ -48,12 +48,18 @@
 	 */
 	function getIconForRoom(slug: string): typeof IconChartBar {
 		switch (slug) {
+			case 'day-trading-room':
+				return IconChartBar;
+			case 'swing-trading-room':
+				return IconChartLine;
+			case 'small-account-mentorship':
+				return IconSchool;
 			case 'explosive-swings':
 				return IconFlame;
 			case 'spx-profit-pulse':
 				return IconTrendingUp;
-			case 'day-trading-room':
-				return IconChartBar;
+			case 'alerts-only':
+				return IconBell;
 			default:
 				return IconTargetArrow;
 		}
