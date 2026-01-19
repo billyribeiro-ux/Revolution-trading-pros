@@ -101,7 +101,7 @@
 	top: -200px;
 	right: -200px;
 	background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-	animation: float 20s ease-in-out infinite;
+	animation: admin-float 20s ease-in-out infinite;
 }
 
 .bg-blob-2 {
@@ -110,7 +110,7 @@
 	bottom: -150px;
 	left: -150px;
 	background: linear-gradient(135deg, var(--secondary-500), var(--primary-600));
-	animation: float 25s ease-in-out infinite reverse;
+	animation: admin-float 25s ease-in-out infinite reverse;
 }
 
 .bg-blob-3 {
@@ -120,16 +120,16 @@
 	left: 50%;
 	transform: translate(-50%, -50%);
 	background: linear-gradient(135deg, var(--success-base), var(--success-emphasis));
-	animation: float 30s ease-in-out infinite;
+	animation: admin-float 30s ease-in-out infinite;
 }
 
-/* ⚠️ DUPLICATE WARNING: Also defined in performance.css (different animation)
+/* ✅ NAMESPACED: admin-float (was float)
  * USED BY: Admin Dashboard - Decorative particles
  * PAGES: /admin/* (all admin pages)
  * PURPOSE: Complex 3D floating animation with rotation and scale for background particles
- * CONFLICT: Will overwrite performance.css version when app.css is active
+ * NO CONFLICT: Namespaced to avoid collision with trading-float in performance.css
  */
-@keyframes float {
+@keyframes admin-float {
 	0%,
 	100% {
 		transform: translate(0, 0) scale(1);
@@ -404,21 +404,16 @@ select,
 	border: 3px solid var(--border-muted);
 	border-top-color: var(--primary-500);
 	border-radius: 50%;
-	animation: spin 0.8s linear infinite;
+	animation: global-spin 0.8s linear infinite;
 	margin-bottom: 1rem;
 }
 
-/* ⚠️ DUPLICATE WARNING: Exact duplicate in app.css (can delete this one)
+/* ✅ REMOVED DUPLICATE: Now uses global-spin from app.css (Single Source of Truth)
  * USED BY: Admin Dashboard - Loading spinners
  * PAGES: /admin/* (all admin pages)
  * PURPOSE: 360° rotation for loading indicators
- * NOTE: This is redundant - app.css has the same animation
+ * REFERENCE: @keyframes global-spin defined in app.css
  */
-@keyframes spin {
-	to {
-		transform: rotate(360deg);
-	}
-}
 
 .empty-state {
 	display: flex;

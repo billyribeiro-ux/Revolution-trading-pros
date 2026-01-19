@@ -1396,12 +1396,13 @@ body.dark,
 
 /* Animation Keyframes */
 
-/* ⚠️ DUPLICATE WARNING: Also defined in performance.css (different implementation)
+/* ✅ NAMESPACED: global-fadeIn (was fadeIn)
  * USED BY: Admin Dashboard, Member Dashboard, General UI elements
  * PAGES: /admin/*, /dashboard/*, /account/*
  * PURPOSE: General fade-in animation for cards, modals, tooltips
+ * NO CONFLICT: Namespaced to avoid collision with trading-fadeIn in performance.css
  */
-@keyframes fadeIn {
+@keyframes global-fadeIn {
 	from {
 		opacity: 0;
 	}
@@ -1410,12 +1411,13 @@ body.dark,
 	}
 }
 
-/* ⚠️ DUPLICATE WARNING: Also defined in performance.css (30px movement vs 12px)
+/* ✅ NAMESPACED: global-fadeInUp (was fadeInUp)
  * USED BY: Admin Dashboard, Member Dashboard, Content sections
  * PAGES: /admin/*, /dashboard/*, /blog/*, /courses/*
  * PURPOSE: Subtle upward fade-in for list items, cards (12px movement)
+ * NO CONFLICT: Namespaced to avoid collision with trading-fadeInUp in performance.css
  */
-@keyframes fadeInUp {
+@keyframes global-fadeInUp {
 	from {
 		opacity: 0;
 		transform: translateY(12px);
@@ -1426,7 +1428,8 @@ body.dark,
 	}
 }
 
-@keyframes fadeInDown {
+/* ✅ NAMESPACED: global-fadeInDown */
+@keyframes global-fadeInDown {
 	from {
 		opacity: 0;
 		transform: translateY(-12px);
@@ -1437,7 +1440,8 @@ body.dark,
 	}
 }
 
-@keyframes scaleIn {
+/* ✅ NAMESPACED: global-scaleIn */
+@keyframes global-scaleIn {
 	from {
 		opacity: 0;
 		transform: scale(0.95);
@@ -1448,7 +1452,8 @@ body.dark,
 	}
 }
 
-@keyframes slideInRight {
+/* ✅ NAMESPACED: global-slideInRight */
+@keyframes global-slideInRight {
 	from {
 		opacity: 0;
 		transform: translateX(20px);
@@ -1459,12 +1464,13 @@ body.dark,
 	}
 }
 
-/* ⚠️ DUPLICATE WARNING: Also defined in performance.css (opposite direction)
+/* ✅ NAMESPACED: global-shimmer (was shimmer)
  * USED BY: Admin Dashboard, Member Dashboard, Loading states
  * PAGES: /admin/*, /dashboard/*, All pages with .skeleton class
  * PURPOSE: Loading shimmer effect (left to right, -200% to 200%)
+ * NO CONFLICT: Namespaced to avoid collision with trading-shimmer in performance.css
  */
-@keyframes shimmer {
+@keyframes global-shimmer {
 	0% {
 		background-position: -200% 0;
 	}
@@ -1473,7 +1479,8 @@ body.dark,
 	}
 }
 
-@keyframes pulse {
+/* ✅ NAMESPACED: global-pulse */
+@keyframes global-pulse {
 	0%,
 	100% {
 		opacity: 1;
@@ -1483,7 +1490,8 @@ body.dark,
 	}
 }
 
-@keyframes bounce {
+/* ✅ NAMESPACED: global-bounce */
+@keyframes global-bounce {
 	0%,
 	100% {
 		transform: translateY(0);
@@ -1493,12 +1501,13 @@ body.dark,
 	}
 }
 
-/* ⚠️ DUPLICATE WARNING: Exact duplicate in admin-page-layout.css (can delete one)
+/* ✅ NAMESPACED: global-spin (SINGLE SOURCE OF TRUTH)
  * USED BY: Loading spinners across entire site
  * PAGES: All pages with loading indicators
  * PURPOSE: 360° rotation for loading spinners
+ * NOTE: Duplicate removed from admin-page-layout.css
  */
-@keyframes spin {
+@keyframes global-spin {
 	from {
 		transform: rotate(0deg);
 	}
@@ -1507,7 +1516,8 @@ body.dark,
 	}
 }
 
-@keyframes ripple {
+/* ✅ NAMESPACED: global-ripple */
+@keyframes global-ripple {
 	0% {
 		transform: scale(0);
 		opacity: 0.5;
@@ -1518,37 +1528,37 @@ body.dark,
 	}
 }
 
-/* Animation Utilities */
+/* Animation Utilities - Using namespaced keyframes */
 .animate-fadeIn {
-	animation: fadeIn 0.3s ease-out forwards;
+	animation: global-fadeIn 0.3s ease-out forwards;
 }
 
 .animate-fadeInUp {
-	animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation: global-fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-fadeInDown {
-	animation: fadeInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation: global-fadeInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-scaleIn {
-	animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation: global-scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-slideInRight {
-	animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+	animation: global-slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
 
 .animate-pulse {
-	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+	animation: global-pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
 .animate-bounce {
-	animation: bounce 1s ease-in-out infinite;
+	animation: global-bounce 1s ease-in-out infinite;
 }
 
 .animate-spin {
-	animation: spin 1s linear infinite;
+	animation: global-spin 1s linear infinite;
 }
 
 /* Stagger Animation Delays */
@@ -1573,12 +1583,25 @@ body.dark,
 
 /* Loading Shimmer Effect */
 
-/* ⚠️ DUPLICATE WARNING: Also defined in performance.css (different colors/timing)
+/* ✅ NAMESPACED: global-skeleton using global-shimmer animation
  * USED BY: Admin Dashboard, Member Dashboard, All pages with loading states
  * PAGES: /admin/*, /dashboard/*, /account/*, /blog/*, /courses/*
- * PURPOSE: Theme-aware loading skeleton (uses CSS variables, 400% size, 2s timing)
- * CONFLICT: Will overwrite performance.css version when app.css is active
+ * PURPOSE: Theme-aware loading skeleton (uses CSS variables)
+ * NO CONFLICT: Uses global-shimmer, trading rooms use trading-shimmer
  */
+.global-skeleton {
+	background: linear-gradient(
+		90deg,
+		var(--color-rtp-surface) 0%,
+		var(--color-rtp-surface-elevated) 50%,
+		var(--color-rtp-surface) 100%
+	);
+	background-size: 200% 100%;
+	animation: global-shimmer 1.5s ease-in-out infinite;
+	border-radius: var(--radius-md);
+}
+
+/* Backward compatibility alias */
 .skeleton {
 	background: linear-gradient(
 		90deg,
@@ -1587,7 +1610,7 @@ body.dark,
 		var(--color-rtp-surface) 100%
 	);
 	background-size: 200% 100%;
-	animation: shimmer 1.5s ease-in-out infinite;
+	animation: global-shimmer 1.5s ease-in-out infinite;
 	border-radius: var(--radius-md);
 }
 
