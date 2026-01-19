@@ -193,6 +193,19 @@
  * @theme is a Tailwind CSS v4 directive - ignore unknown at-rule warning
  * ═══════════════════════════════════════════════════════════════════════════ */
 @theme {
+	/* Container Max-Width Variables - CRITICAL FIX */
+	--container-xs: 20rem;
+	--container-sm: 24rem;
+	--container-md: 28rem;
+	--container-lg: 32rem;
+	--container-xl: 36rem;
+	--container-2xl: 42rem;
+	--container-3xl: 48rem;
+	--container-4xl: 56rem;
+	--container-5xl: 64rem;
+	--container-6xl: 72rem;
+	--container-7xl: 80rem;
+
 	/* Brand Colors */
 	--color-rtp-primary: oklch(0.6 0.2 250);
 	--color-rtp-primary-light: oklch(0.7 0.18 250);
