@@ -1,190 +1,2481 @@
+@import 'tailwindcss';
+
+/* Explicitly define source paths for Tailwind to scan */
+/* This prevents scanning node_modules which causes "Invalid declaration: Snippet" error from @threlte/core */
+/* @source is a Tailwind CSS v4 directive - ignore unknown at-rule warning */
+@source "../src/**/*.{html,js,ts,svelte}";
+
+/**
+ * Revolution Trading Pros - Design System Tokens
+ * Netflix E6 Level Architecture
+ * 
+ * @version 2.0.0
+ * @author Revolution Trading Pros
+ */
+
 /**
  * Revolution Trading Pros - Global Styles
  * ═══════════════════════════════════════════════════════════════════════════
- * Entry point for all styles. Imports the RTP Admin Design System.
- * DARK THEME ONLY.
- * 
- * @version 3.0.0
+ * Apple ICT 11+ Principal Engineer Implementation
+ * Modern CSS Architecture (December 2025)
+ */
+
+/* Import Simpler Trading Icon Font */
+@import './lib/styles/simpler-icons.css';
+
+/* RTP Admin Design System - Color Tokens, Typography, Spacing, etc. */
+@import './lib/styles/main.css';
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Tailwind v4 Theme Configuration
+ * This @theme block registers custom colors as utility classes
+ * @theme is a Tailwind CSS v4 directive - ignore unknown at-rule warning
+ * ═══════════════════════════════════════════════════════════════════════════ */
+@theme {
+	/* Brand Colors */
+	--color-rtp-primary: oklch(0.6 0.2 250);
+	--color-rtp-primary-light: oklch(0.7 0.18 250);
+	--color-rtp-primary-dark: oklch(0.5 0.22 250);
+	--color-rtp-primary-soft: oklch(0.3 0.15 250);
+
+	/* Secondary Colors */
+	--color-rtp-indigo: oklch(0.65 0.2 270);
+	--color-rtp-violet: oklch(0.6 0.22 285);
+	--color-rtp-blue: oklch(0.65 0.2 240);
+
+	/* Surface Colors */
+	--color-rtp-bg: oklch(0.12 0.02 250);
+	--color-rtp-bg-alt: oklch(0.1 0.02 250);
+	--color-rtp-surface: oklch(0.18 0.02 250);
+	--color-rtp-surface-elevated: oklch(0.22 0.02 250);
+	--color-rtp-surface-overlay: oklch(0.25 0.02 250);
+
+	/* Border Colors */
+	--color-rtp-border: oklch(0.3 0.02 250);
+	--color-rtp-border-light: oklch(0.25 0.02 250);
+	--color-rtp-border-focus: oklch(0.55 0.18 250);
+
+	/* Text Colors */
+	--color-rtp-text: oklch(0.96 0.01 250);
+	--color-rtp-text-secondary: oklch(0.8 0.02 250);
+	--color-rtp-muted: oklch(0.6 0.02 250);
+	--color-rtp-placeholder: oklch(0.5 0.02 250);
+
+	/* Semantic Colors */
+	--color-rtp-success: oklch(0.65 0.2 145);
+	--color-rtp-success-soft: oklch(0.3 0.12 145);
+	--color-rtp-warning: oklch(0.75 0.18 85);
+	--color-rtp-warning-soft: oklch(0.35 0.12 85);
+	--color-rtp-error: oklch(0.6 0.22 25);
+	--color-rtp-error-soft: oklch(0.3 0.15 25);
+	--color-rtp-info: oklch(0.65 0.18 240);
+	--color-rtp-info-soft: oklch(0.3 0.12 240);
+
+	/* Accent Colors */
+	--color-rtp-emerald: oklch(0.65 0.2 160);
+	--color-rtp-amber: oklch(0.75 0.18 85);
+	--color-rtp-rose: oklch(0.65 0.2 15);
+	--color-rtp-cyan: oklch(0.7 0.15 200);
+	--color-rtp-purple: oklch(0.6 0.22 300);
+}
+
+/* CSS Variables for runtime access (IDE compatibility) */
+:root {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * BREAKPOINTS - SINGLE SOURCE OF TRUTH (SSOT)
+	 * Svelte 5 / SvelteKit Best Practice: Define once in app.css
+	 * Aligned with Tailwind CSS defaults
+	 * 
+	 * NOTE: CSS media queries cannot use variables, so components must use
+	 * hardcoded values matching these. This serves as documentation + runtime.
+	 * 
+	 * MEDIA QUERY REFERENCE (copy-paste ready):
+	 * Mobile:  @media (max-width: 767px)  { }
+	 * Tablet+: @media (min-width: 768px)  { }
+	 * Desktop: @media (min-width: 1024px) { }
+	 * Large:   @media (min-width: 1440px) { }
+	 * XL:      @media (min-width: 1920px) { }
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--bp-mobile: 375px; /* iPhone SE baseline */
+	--bp-mobile-lg: 428px; /* iPhone Pro Max */
+	--bp-sm: 640px; /* Tailwind sm */
+	--bp-md: 768px; /* Tailwind md - SIDEBAR VISIBLE */
+	--bp-lg: 1024px; /* Tailwind lg - Full desktop */
+	--bp-xl: 1280px; /* Tailwind xl */
+	--bp-2xl: 1536px; /* Tailwind 2xl */
+	--bp-3xl: 1920px; /* Ultra-wide */
+
+	/* Layout dimensions */
+	--sidebar-width-expanded: 280px;
+	--sidebar-width-collapsed: 80px;
+	--mobile-footer-height: 50px;
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Typography - Font Families
+	 * Fintech Professional Typography System
+	 * Montserrat: Headings, Navigation, Buttons (modern, authoritative)
+	 * Roboto: Body text, Paragraphs (clean, readable)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--font-heading: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--font-body: 'Roboto', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+	--font-mono: 'JetBrains Mono', 'SF Mono', 'Fira Code', monospace;
+
+	/* Font Weights */
+	--font-weight-light: 300;
+	--font-weight-normal: 400;
+	--font-weight-medium: 500;
+	--font-weight-semibold: 600;
+	--font-weight-bold: 700;
+	--font-weight-extrabold: 800;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * LIGHT THEME - Apple/Netflix Premium Aesthetic
+ * Clean, crisp, professional with excellent contrast ratios
+ * ═══════════════════════════════════════════════════════════════════════════ */
+html.light,
+body.light,
+:root.light {
+	/* Surface Colors - Clean Apple-style whites */
+	--color-rtp-bg: #f5f5f7; /* Apple's signature off-white */
+	--color-rtp-bg-alt: #ffffff; /* Pure white for cards */
+	--color-rtp-surface: #ffffff; /* Clean white surfaces */
+	--color-rtp-surface-elevated: #ffffff; /* Elevated cards with shadow */
+	--color-rtp-surface-overlay: rgba(255, 255, 255, 0.95);
+
+	/* Primary Brand - Deeper indigo for light backgrounds */
+	--color-rtp-primary: #4f46e5; /* Vibrant indigo */
+	--color-rtp-primary-light: #6366f1; /* Lighter for hovers */
+	--color-rtp-primary-dark: #4338ca; /* Darker for active states */
+	--color-rtp-primary-soft: rgba(79, 70, 229, 0.1);
+
+	/* Secondary Colors */
+	--color-rtp-indigo: #4f46e5;
+	--color-rtp-violet: #7c3aed;
+	--color-rtp-blue: #2563eb;
+
+	/* Text Colors - Netflix-style high contrast */
+	--color-rtp-text: #1d1d1f; /* Apple's near-black */
+	--color-rtp-text-secondary: #424245; /* Dark gray */
+	--color-rtp-muted: #6e6e73; /* Medium gray */
+	--color-rtp-placeholder: #86868b; /* Light gray */
+
+	/* Border Colors - Subtle but visible */
+	--color-rtp-border: #d2d2d7; /* Apple's border gray */
+	--color-rtp-border-light: #e8e8ed; /* Lighter border */
+	--color-rtp-border-focus: #4f46e5; /* Focus ring color */
+
+	/* Semantic Colors - Vibrant for visibility */
+	--color-rtp-success: #059669; /* Emerald */
+	--color-rtp-success-soft: rgba(5, 150, 105, 0.1);
+	--color-rtp-warning: #d97706; /* Amber */
+	--color-rtp-warning-soft: rgba(217, 119, 6, 0.1);
+	--color-rtp-error: #dc2626; /* Red */
+	--color-rtp-error-soft: rgba(220, 38, 38, 0.1);
+	--color-rtp-info: #2563eb; /* Blue */
+	--color-rtp-info-soft: rgba(37, 99, 235, 0.1);
+
+	/* Accent Colors */
+	--color-rtp-emerald: #059669;
+	--color-rtp-amber: #d97706;
+	--color-rtp-rose: #e11d48;
+	--color-rtp-cyan: #0891b2;
+	--color-rtp-purple: #7c3aed;
+
+	/* Shadows for light theme - More prominent */
+	--shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.08);
+	--shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
+	--shadow-lg: 0 8px 30px rgba(0, 0, 0, 0.12);
+	--shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.15);
+
+	/* Focus ring for light mode */
+	--focus-ring: 0 0 0 3px rgba(79, 70, 229, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * DARK THEME (Default) - Ensure consistent dark variables
+ * ═══════════════════════════════════════════════════════════════════════════ */
+html.dark,
+body.dark,
+:root.dark,
+:root {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Typography - Font Sizes (Financial Tone)
+	 * Montserrat for headings/UI, Open Sans for body
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Headings - Desktop (Montserrat) */
+	--font-size-h1: 2.5rem; /* 40px - Hero/page titles */
+	--font-size-h2: 2rem; /* 32px - Major sections */
+	--font-size-h3: 1.5rem; /* 24px - Subsections */
+	--font-size-h4: 1.25rem; /* 20px - Card/feature titles */
+	--font-size-h5: 1.125rem; /* 18px - Small section labels */
+	--font-size-h6: 0.875rem; /* 14px - Eyebrow/category labels */
+
+	/* Headings - Mobile */
+	--font-size-h1-mobile: 2rem; /* 32px */
+	--font-size-h2-mobile: 1.75rem; /* 28px */
+	--font-size-h3-mobile: 1.375rem; /* 22px */
+	--font-size-h4-mobile: 1.125rem; /* 18px */
+	--font-size-h5-mobile: 1rem; /* 16px */
+
+	/* Body Text (Open Sans) */
+	--font-size-body: 1rem; /* 16px - Default body */
+	--font-size-body-lg: 1.125rem; /* 18px - Hero subheading, important text */
+	--font-size-small: 0.875rem; /* 14px - Meta, labels, captions */
+	--font-size-xs: 0.8125rem; /* 13px - Legal, disclaimers */
+
+	/* Navigation (Montserrat) */
+	--font-size-nav: 0.9375rem; /* 15px - Top-level menu */
+	--font-size-nav-sub: 0.875rem; /* 14px - Dropdown items */
+	--font-size-utility: 0.8125rem; /* 13px - Account, language links */
+
+	/* Buttons (Montserrat) */
+	--font-size-btn: 0.9375rem; /* 15px - Standard buttons */
+	--font-size-btn-lg: 1rem; /* 16px - Primary CTAs */
+
+	/* Line Heights */
+	--line-height-heading: 1.2;
+	--line-height-body: 1.65;
+	--line-height-tight: 1.4;
+
+	/* Letter Spacing */
+	--letter-spacing-nav: 0.02em;
+	--letter-spacing-eyebrow: 0.08em;
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Brand Colors - Core palette
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Primary Brand Colors */
+	--color-rtp-primary: oklch(0.6 0.2 250);
+	--color-rtp-primary-light: oklch(0.7 0.18 250);
+	--color-rtp-primary-dark: oklch(0.5 0.22 250);
+	--color-rtp-primary-soft: oklch(0.3 0.15 250);
+
+	/* Secondary Colors */
+	--color-rtp-indigo: oklch(0.65 0.2 270);
+	--color-rtp-violet: oklch(0.6 0.22 285);
+	--color-rtp-blue: oklch(0.65 0.2 240);
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Surface Colors - Backgrounds and containers
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--color-rtp-bg: oklch(0.12 0.02 250);
+	--color-rtp-bg-alt: oklch(0.1 0.02 250);
+	--color-rtp-surface: oklch(0.18 0.02 250);
+	--color-rtp-surface-elevated: oklch(0.22 0.02 250);
+	--color-rtp-surface-overlay: oklch(0.25 0.02 250);
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Border Colors
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--color-rtp-border: oklch(0.3 0.02 250);
+	--color-rtp-border-light: oklch(0.25 0.02 250);
+	--color-rtp-border-focus: oklch(0.55 0.18 250);
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Text Colors
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--color-rtp-text: oklch(0.96 0.01 250);
+	--color-rtp-text-secondary: oklch(0.8 0.02 250);
+	--color-rtp-muted: oklch(0.6 0.02 250);
+	--color-rtp-placeholder: oklch(0.5 0.02 250);
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Semantic Colors - Feedback states
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--color-rtp-success: oklch(0.65 0.2 145);
+	--color-rtp-success-soft: oklch(0.3 0.12 145);
+	--color-rtp-warning: oklch(0.75 0.18 85);
+	--color-rtp-warning-soft: oklch(0.35 0.12 85);
+	--color-rtp-error: oklch(0.6 0.22 25);
+	--color-rtp-error-soft: oklch(0.3 0.15 25);
+	--color-rtp-info: oklch(0.65 0.18 240);
+	--color-rtp-info-soft: oklch(0.3 0.12 240);
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Accent Colors - For charts, badges, highlights
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	--color-rtp-emerald: oklch(0.65 0.2 160);
+	--color-rtp-amber: oklch(0.75 0.18 85);
+	--color-rtp-rose: oklch(0.65 0.2 15);
+	--color-rtp-cyan: oklch(0.7 0.15 200);
+	--color-rtp-purple: oklch(0.6 0.22 300);
+}
+
+/**
+ * Revolution Trading Pros - Global Styles
+ * ONLY design tokens, resets, and utilities
+ * Component-specific styles MUST be in component <style> tags
+ *
+ * @version 2.0.0
+ * @author Revolution Trading Pros
  */
 
 /* ═══════════════════════════════════════════════════════════════════════════
- * TAILWIND CSS v4
- * ═══════════════════════════════════════════════════════════════════════════ */
-@import 'tailwindcss';
-@source "../src/**/*.{html,js,ts,svelte}";
-
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * EXTERNAL DEPENDENCIES
- * ═══════════════════════════════════════════════════════════════════════════ */
-@import './lib/styles/simpler-icons.css';
-
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * RTP ADMIN DESIGN SYSTEM
- * Source of truth for all tokens and base styles
- * ═══════════════════════════════════════════════════════════════════════════ */
-@import './lib/styles/main.css';
-
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * TAILWIND v4 @theme - Map tokens to Tailwind utilities
- * 
- * This allows using Tailwind classes like:
- *   bg-rtp-base, text-rtp-primary, border-rtp-default
- * 
- * Values MUST match tokens/colors.css exactly (Gold brand, not Indigo).
- * ═══════════════════════════════════════════════════════════════════════════ */
-@theme {
-  /* Backgrounds */
-  --color-rtp-base: #0d1117;
-  --color-rtp-elevated: #161b22;
-  --color-rtp-surface: #1c2128;
-  --color-rtp-hover: #252b33;
-  --color-rtp-active: #2d333b;
-
-  /* Primary - Gold (Brand) */
-  --color-rtp-primary: #e6b800;
-  --color-rtp-primary-light: #ffd11a;
-  --color-rtp-primary-dark: #b38f00;
-
-  /* Secondary - Slate Blue */
-  --color-rtp-secondary: #3d5a99;
-  --color-rtp-secondary-light: #7995ca;
-  --color-rtp-secondary-dark: #2f4778;
-
-  /* Text */
-  --color-rtp-text: #f0f6fc;
-  --color-rtp-text-secondary: #8b949e;
-  --color-rtp-text-muted: #6e7681;
-
-  /* Borders */
-  --color-rtp-border: #30363d;
-  --color-rtp-border-muted: #21262d;
-
-  /* Semantic */
-  --color-rtp-success: #3fb950;
-  --color-rtp-warning: #d29922;
-  --color-rtp-error: #f85149;
-  --color-rtp-info: #58a6ff;
-}
-
-
-/* ═══════════════════════════════════════════════════════════════════════════
- * GLOBAL BASE STYLES
+ * CSS Custom Properties - Design System Tokens
+ * Enterprise-grade design tokens for consistency and maintainability
  * ═══════════════════════════════════════════════════════════════════════════ */
 @layer base {
-  :root {
-    color-scheme: dark;
+	:root {
+		/* Color Scheme */
+		color-scheme: light dark;
 
-    /* Layout dimensions */
-    --sidebar-width-expanded: 280px;
-    --sidebar-width-collapsed: 80px;
-    --mobile-footer-height: 50px;
+		/* Transition Tokens - Consistent animation timing */
+		--transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+		--transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+		--transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
 
-    /* Transitions */
-    --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-slow: 350ms cubic-bezier(0.4, 0, 0.2, 1);
+		/* Shadow Tokens */
+		--shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+		--shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+		--shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+		--shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 
-    /* Shadows */
-    --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-    --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-    --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+		/* Border Radius Tokens */
+		--radius-sm: 0.375rem;
+		--radius-md: 0.5rem;
+		--radius-lg: 0.75rem;
+		--radius-xl: 1rem;
+		--radius-2xl: 1.5rem;
+		--radius-full: 9999px;
 
-    /* Border Radius */
-    --radius-sm: 0.375rem;
-    --radius-md: 0.5rem;
-    --radius-lg: 0.75rem;
-    --radius-xl: 1rem;
-    --radius-full: 9999px;
+		/* Spacing Tokens */
+		--spacing-safe: max(1rem, env(safe-area-inset-bottom));
 
-    /* Z-Index Scale */
-    --z-dropdown: 100;
-    --z-sticky: 200;
-    --z-modal: 500;
-    --z-popover: 600;
-    --z-tooltip: 700;
-    --z-toast: 800;
-    --z-overlay: 900;
-    --z-max: 1000;
+		/* Z-Index Scale */
+		--z-dropdown: 100;
+		--z-sticky: 200;
+		--z-modal: 500;
+		--z-popover: 600;
+		--z-tooltip: 700;
+		--z-toast: 800;
+		--z-overlay: 900;
+		--z-max: 1000;
 
-    /* Focus Ring */
-    --focus-ring: 0 0 0 3px rgba(230, 184, 0, 0.4);
-    --focus-ring-offset: 2px;
-  }
+		/* Focus Ring */
+		--focus-ring: 0 0 0 3px rgb(99 102 241 / 0.4);
+		--focus-ring-offset: 2px;
+	}
 
-  html {
-    scroll-behavior: smooth;
-    scrollbar-gutter: stable;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-    text-rendering: optimizeLegibility;
-    box-sizing: border-box;
-  }
+	/* Dark mode color scheme preference - DISABLED */
+	/* @media (prefers-color-scheme: dark) {
+		:root {
+			color-scheme: dark;
+		}
+	} */
 
-  *,
-  *::before,
-  *::after {
-    box-sizing: inherit;
-    margin: 0;
-    padding: 0;
-  }
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Performance Optimizations
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-  /* Respect reduced motion preference */
-  @media (prefers-reduced-motion: reduce) {
-    html {
-      scroll-behavior: auto;
-    }
-    *,
-    *::before,
-    *::after {
-      animation-duration: 0.01ms !important;
-      animation-iteration-count: 1 !important;
-      transition-duration: 0.01ms !important;
-    }
-  }
+	/* Smooth scrolling with reduced motion support */
+	html {
+		scroll-behavior: smooth;
+		/* ICT11+ Fix: Prevent layout shift when scrollbar appears/disappears */
+		scrollbar-gutter: stable;
+		/* Optimize font rendering */
+		-webkit-font-smoothing: antialiased;
+		-moz-osx-font-smoothing: grayscale;
+		text-rendering: optimizeLegibility;
+	}
 
-  /* Focus styles */
-  :focus-visible {
-    outline: 2px solid var(--primary-500, #e6b800);
-    outline-offset: var(--focus-ring-offset);
-  }
+	/* Respect user's motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		html {
+			scroll-behavior: auto;
+		}
 
-  :focus:not(:focus-visible) {
-    outline: none;
-  }
+		*,
+		*::before,
+		*::after {
+			animation-duration: 0.01ms !important;
+			animation-iteration-count: 1 !important;
+			transition-duration: 0.01ms !important;
+			scroll-behavior: auto !important;
+		}
+	}
 
-  /* Selection */
-  ::selection {
-    background-color: rgba(230, 184, 0, 0.3);
-    color: inherit;
-  }
+	/* Base body styles (Open Sans) */
+	/* COMMENTED OUT - Conflicts with class pages
+	body {
+		font-family: var(--font-body);
+		font-size: var(--font-size-body);
+		font-weight: 400;
+		line-height: var(--line-height-body);
+		overflow-x: hidden;
+		contain: layout style;
+	}
+	*/
 
-  /* Images */
-  img,
-  video {
-    max-width: 100%;
-    height: auto;
-    vertical-align: middle;
-  }
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Typography - Headings (Montserrat - Financial Tone)
+	 * COMMENTED OUT - Conflicts with class pages
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/* 
+	h1, h2, h3, h4, h5, h6 {
+		font-family: var(--font-heading);
+		margin: 0;
+	}
 
-  /* Form elements */
-  button,
-  input,
-  select,
-  textarea {
-    font-family: inherit;
-    font-size: 100%;
-    line-height: 1.15;
-  }
+	h1 {
+		font-size: var(--font-size-h1);
+		font-weight: 700;
+		line-height: var(--line-height-heading);
+	}
 
-  button {
-    cursor: pointer;
-  }
+	h2 {
+		font-size: var(--font-size-h2);
+		font-weight: 700;
+		line-height: 1.25;
+	}
 
-  button:disabled {
-    cursor: not-allowed;
-    opacity: 0.6;
-  }
+	h3 {
+		font-size: var(--font-size-h3);
+		font-weight: 600;
+		line-height: 1.3;
+	}
+
+	h4 {
+		font-size: var(--font-size-h4);
+		font-weight: 600;
+		line-height: 1.35;
+	}
+
+	h5 {
+		font-size: var(--font-size-h5);
+		font-weight: 500;
+		line-height: var(--line-height-tight);
+	}
+
+	h6 {
+		font-size: var(--font-size-h6);
+		font-weight: 500;
+		letter-spacing: var(--letter-spacing-eyebrow);
+		text-transform: uppercase;
+		line-height: var(--line-height-tight);
+	}
+	*/
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Typography - Body Text (Open Sans)
+	 * COMMENTED OUT - Conflicts with class pages
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* 
+	p {
+		font-family: var(--font-body);
+		font-size: var(--font-size-body);
+		font-weight: 400;
+		line-height: var(--line-height-body);
+	}
+
+	strong, b {
+		font-weight: 600;
+	}
+	*/
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Typography - Mobile Responsive Headings
+	 * COMMENTED OUT - Conflicts with class pages
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+	/*
+	@media (max-width: 639px) {
+		h1 {
+			font-size: var(--font-size-h1-mobile);
+		}
+		h2 {
+			font-size: var(--font-size-h2-mobile);
+		}
+		h3 {
+			font-size: var(--font-size-h3-mobile);
+		}
+		h4 {
+			font-size: var(--font-size-h4-mobile);
+		}
+		h5 {
+			font-size: var(--font-size-h5-mobile);
+		}
+	}
+	*/
+
+	/* Box sizing reset - More specific than universal selector */
+	html {
+		box-sizing: border-box;
+	}
+
+	*,
+	*::before,
+	*::after {
+		box-sizing: inherit;
+		margin: 0;
+		padding: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Focus Styles - Enterprise Accessibility
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Focus visible for interactive elements */
+	:focus-visible {
+		outline: 2px solid rgb(99 102 241);
+		outline-offset: var(--focus-ring-offset);
+	}
+
+	/* Remove default focus styles */
+	:focus:not(:focus-visible) {
+		outline: none;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Selection Styles
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	::selection {
+		background-color: rgb(99 102 241 / 0.3);
+		color: inherit;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Image Optimization Defaults
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	img,
+	video {
+		max-width: 100%;
+		height: auto;
+		/* Prevent layout shift */
+		vertical-align: middle;
+	}
+
+	/* Lazy loading placeholder */
+	img[loading='lazy'] {
+		background-color: rgb(243 244 246);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Form Element Defaults
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	button,
+	input,
+	select,
+	textarea {
+		font-family: inherit;
+		font-size: 100%;
+		line-height: 1.15;
+	}
+
+	button {
+		cursor: pointer;
+	}
+
+	button:disabled {
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Scrollbar Styling (Webkit)
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	::-webkit-scrollbar {
+		width: 8px;
+		height: 8px;
+	}
+
+	::-webkit-scrollbar-track {
+		background: rgb(243 244 246);
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb {
+		background: rgb(156 163 175);
+		border-radius: 4px;
+	}
+
+	::-webkit-scrollbar-thumb:hover {
+		background: rgb(107 114 128);
+	}
+
+	/* Firefox scrollbar */
+	* {
+		scrollbar-width: thin;
+		scrollbar-color: rgb(156 163 175) rgb(243 244 246);
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Utility Classes
+ * ═══════════════════════════════════════════════════════════════════════════ */
+@layer utilities {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Typography Utilities - Financial UI
+	 * Montserrat for headings/nav/buttons, Open Sans for body
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Font Family Utilities */
+	.font-heading {
+		font-family: var(--font-heading);
+	}
+
+	.font-body {
+		font-family: var(--font-body);
+	}
+
+	.font-mono {
+		font-family: var(--font-mono);
+	}
+
+	/* ─────────────────────────────────────────────────────────────────────────────
+	 * Navigation Typography (Montserrat)
+	 * Crisp, confident nav - not oversized
+	 * ───────────────────────────────────────────────────────────────────────────── */
+
+	/* Top-level menu items - 15px, weight 600, pro dashboard look */
+	.nav-item {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-nav);
+		font-weight: 600;
+		letter-spacing: var(--letter-spacing-nav);
+	}
+
+	/* Submenus / dropdown items - 14px, weight 500 */
+	.nav-subitem {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-nav-sub);
+		font-weight: 500;
+	}
+
+	/* Utility bar (account, language, small links) - 13-14px, weight 500 */
+	.nav-utility {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-utility);
+		font-weight: 500;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────────────────
+	 * Button Typography (Montserrat)
+	 * CTAs like "Join Live Room", "Start Free Trial"
+	 * ───────────────────────────────────────────────────────────────────────────── */
+
+	/* Standard buttons - 15px, weight 600 */
+	.btn-text {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-btn);
+		font-weight: 600;
+	}
+
+	/* Primary CTAs - 16px, weight 600 */
+	.btn-text-lg {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-btn-lg);
+		font-weight: 600;
+	}
+
+	/* Primary CTA uppercase variant - use sparingly */
+	.btn-text-cta {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-btn-lg);
+		font-weight: 600;
+		text-transform: uppercase;
+		letter-spacing: 0.02em;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────────────────
+	 * Body Text Variants (Open Sans)
+	 * Comfort and clarity for text + numbers
+	 * ───────────────────────────────────────────────────────────────────────────── */
+
+	/* Body large - 18px, hero subheading, important explanations */
+	.text-lead {
+		font-family: var(--font-body);
+		font-size: var(--font-size-body-lg);
+		font-weight: 400;
+		line-height: 1.7;
+	}
+
+	/* Meta / small text - 14px, labels, table captions, disclaimers */
+	.text-small {
+		font-family: var(--font-body);
+		font-size: var(--font-size-small);
+		font-weight: 400;
+		line-height: 1.5;
+	}
+
+	/* Legal / risk disclosures - 13px, high contrast, generous line-height */
+	.text-disclaimer {
+		font-family: var(--font-body);
+		font-size: var(--font-size-xs);
+		font-weight: 400;
+		line-height: 1.6;
+	}
+
+	/* Legal text variant - never go smaller than 13px */
+	.text-legal {
+		font-family: var(--font-body);
+		font-size: var(--font-size-xs);
+		font-weight: 400;
+		line-height: 1.7;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────────────────
+	 * Heading Weight Variants
+	 * ───────────────────────────────────────────────────────────────────────────── */
+
+	/* For key H2 sections */
+	.heading-bold {
+		font-weight: 700;
+	}
+
+	/* For secondary H2 sections, H3, H4 */
+	.heading-semibold {
+		font-weight: 600;
+	}
+
+	/* For H5, H6, subtle labels */
+	.heading-medium {
+		font-weight: 500;
+	}
+
+	/* ─────────────────────────────────────────────────────────────────────────────
+	 * Eyebrow / Category Labels
+	 * ───────────────────────────────────────────────────────────────────────────── */
+
+	/* Eyebrow above headings - 14-16px, uppercase, letter-spacing */
+	.text-eyebrow {
+		font-family: var(--font-heading);
+		font-size: var(--font-size-h6);
+		font-weight: 500;
+		letter-spacing: var(--letter-spacing-eyebrow);
+		text-transform: uppercase;
+	}
+
+	/* Larger eyebrow variant - 16px */
+	.text-eyebrow-lg {
+		font-family: var(--font-heading);
+		font-size: 1rem;
+		font-weight: 500;
+		letter-spacing: var(--letter-spacing-eyebrow);
+		text-transform: uppercase;
+	}
+
+	/* Performance hints for animated elements */
+	.will-change-transform {
+		will-change: transform;
+	}
+
+	.will-change-opacity {
+		will-change: opacity;
+	}
+
+	.will-change-auto {
+		will-change: auto;
+	}
+
+	/* GPU acceleration for animations */
+	.gpu-accelerate {
+		transform: translateZ(0);
+		-webkit-backface-visibility: hidden;
+		backface-visibility: hidden;
+	}
+
+	/* Content visibility for performance */
+	.content-visibility-auto {
+		content-visibility: auto;
+		contain-intrinsic-size: auto 500px;
+	}
+
+	/* Line clamp utilities with vendor prefixes */
+	.line-clamp-1 {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 1;
+		line-clamp: 1;
+		overflow: hidden;
+	}
+
+	.line-clamp-2 {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 2;
+		line-clamp: 2;
+		overflow: hidden;
+	}
+
+	.line-clamp-3 {
+		display: -webkit-box;
+		-webkit-box-orient: vertical;
+		-webkit-line-clamp: 3;
+		line-clamp: 3;
+		overflow: hidden;
+	}
+
+	/* Backdrop filter with vendor prefix */
+	.backdrop-blur-sm {
+		-webkit-backdrop-filter: blur(4px);
+		backdrop-filter: blur(4px);
+	}
+
+	.backdrop-blur {
+		-webkit-backdrop-filter: blur(8px);
+		backdrop-filter: blur(8px);
+	}
+
+	.backdrop-blur-md {
+		-webkit-backdrop-filter: blur(12px);
+		backdrop-filter: blur(12px);
+	}
+
+	.backdrop-blur-lg {
+		-webkit-backdrop-filter: blur(16px);
+		backdrop-filter: blur(16px);
+	}
+
+	.backdrop-blur-xl {
+		-webkit-backdrop-filter: blur(24px);
+		backdrop-filter: blur(24px);
+	}
+
+	/* Safe area insets for mobile */
+	.pb-safe {
+		padding-bottom: var(--spacing-safe);
+	}
+
+	.pt-safe {
+		padding-top: env(safe-area-inset-top);
+	}
+
+	/* Screen reader only */
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
+	}
+
+	/* Focus visible only */
+	.focus-visible-only:not(:focus-visible) {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border-width: 0;
+	}
+
+	/* Transition utilities using design tokens */
+	.transition-fast {
+		transition-duration: 150ms;
+		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.transition-base {
+		transition-duration: 250ms;
+		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	.transition-slow {
+		transition-duration: 350ms;
+		transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * Mobile-First Responsive Utilities - L8 Principal Engineer
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile Container */
+	.container-mobile {
+		width: 100%;
+		padding-left: 1rem;
+		padding-right: 1rem;
+		margin-left: auto;
+		margin-right: auto;
+	}
+
+	@media (min-width: 640px) {
+		.container-mobile {
+			padding-left: 1.5rem;
+			padding-right: 1.5rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.container-mobile {
+			padding-left: 2rem;
+			padding-right: 2rem;
+		}
+	}
+
+	/* Mobile-friendly card stack */
+	.mobile-card-stack {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+	}
+
+	@media (min-width: 640px) {
+		.mobile-card-stack {
+			flex-direction: row;
+			flex-wrap: wrap;
+		}
+	}
+
+	/* Touch-friendly targets (minimum 44x44px) */
+	.touch-target {
+		min-height: 44px;
+		min-width: 44px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* Mobile-friendly scrollable table */
+	.table-mobile-scroll {
+		overflow-x: auto;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	/* Hide scrollbar on mobile but keep functionality */
+	.scrollbar-hide {
+		-ms-overflow-style: none;
+		scrollbar-width: none;
+	}
+
+	.scrollbar-hide::-webkit-scrollbar {
+		display: none;
+	}
+
+	/* Mobile-first typography scaling */
+	.text-responsive-sm {
+		font-size: 0.75rem;
+	}
+
+	.text-responsive-base {
+		font-size: 0.875rem;
+	}
+
+	.text-responsive-lg {
+		font-size: 1rem;
+	}
+
+	.text-responsive-xl {
+		font-size: 1.125rem;
+	}
+
+	.text-responsive-2xl {
+		font-size: 1.5rem;
+	}
+
+	@media (min-width: 640px) {
+		.text-responsive-sm {
+			font-size: 0.875rem;
+		}
+
+		.text-responsive-base {
+			font-size: 1rem;
+		}
+
+		.text-responsive-lg {
+			font-size: 1.125rem;
+		}
+
+		.text-responsive-xl {
+			font-size: 1.25rem;
+		}
+
+		.text-responsive-2xl {
+			font-size: 1.875rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.text-responsive-2xl {
+			font-size: 2.25rem;
+		}
+	}
+
+	/* Mobile-first spacing */
+	.p-mobile {
+		padding: 1rem;
+	}
+
+	@media (min-width: 640px) {
+		.p-mobile {
+			padding: 1.5rem;
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.p-mobile {
+			padding: 2rem;
+		}
+	}
+
+	/* Hide on mobile, show on larger screens */
+	.mobile-hidden {
+		display: none;
+	}
+
+	@media (min-width: 640px) {
+		.mobile-hidden {
+			display: block;
+		}
+	}
+
+	/* Show on mobile, hide on larger screens */
+	.mobile-only {
+		display: block;
+	}
+
+	@media (min-width: 640px) {
+		.mobile-only {
+			display: none;
+		}
+	}
+
+	/* Mobile drawer animation */
+	.drawer-mobile {
+		position: fixed;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		transform: translateX(-100%);
+		transition: transform 0.3s ease-in-out;
+		z-index: var(--z-modal);
+	}
+
+	.drawer-mobile.open {
+		transform: translateX(0);
+	}
+
+	/* Bottom sheet for mobile */
+	.bottom-sheet {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		transform: translateY(100%);
+		transition: transform 0.3s ease-in-out;
+		z-index: var(--z-modal);
+		border-top-left-radius: var(--radius-2xl);
+		border-top-right-radius: var(--radius-2xl);
+		max-height: 90vh;
+		overflow-y: auto;
+	}
+
+	.bottom-sheet.open {
+		transform: translateY(0);
+	}
+
+	/* Pull indicator for bottom sheet */
+	.bottom-sheet-handle {
+		width: 40px;
+		height: 4px;
+		background: rgb(156 163 175);
+		border-radius: var(--radius-full);
+		margin: 0.75rem auto;
+	}
+
+	/* Flex utilities for mobile */
+	.flex-mobile-col {
+		display: flex;
+		flex-direction: column;
+	}
+
+	@media (min-width: 640px) {
+		.flex-mobile-col {
+			flex-direction: row;
+		}
+	}
+
+	/* Mobile-friendly grid */
+	.grid-mobile-1 {
+		display: grid;
+		grid-template-columns: 1fr;
+		gap: 1rem;
+	}
+
+	@media (min-width: 640px) {
+		.grid-mobile-1 {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	@media (min-width: 1024px) {
+		.grid-mobile-1 {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	@media (min-width: 1280px) {
+		.grid-mobile-1 {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	/* Snap scrolling for mobile carousels */
+	.snap-x-mobile {
+		scroll-snap-type: x mandatory;
+		scroll-behavior: smooth;
+		-webkit-overflow-scrolling: touch;
+	}
+
+	.snap-x-mobile > * {
+		scroll-snap-align: start;
+		flex-shrink: 0;
+	}
+
+	/* Mobile navigation safe area */
+	.nav-safe-bottom {
+		padding-bottom: env(safe-area-inset-bottom, 0);
+	}
+
+	/* Sticky mobile header */
+	.sticky-header-mobile {
+		position: sticky;
+		top: 0;
+		z-index: var(--z-sticky);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+	}
+
+	/* Mobile action bar (fixed at bottom) */
+	.action-bar-mobile {
+		position: fixed;
+		left: 0;
+		right: 0;
+		bottom: 0;
+		padding: 1rem;
+		padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0));
+		background: linear-gradient(to top, rgb(15 23 42), transparent);
+		z-index: var(--z-sticky);
+	}
+
+	/* Swipe gesture area */
+	.swipe-area {
+		touch-action: pan-x;
+		-webkit-overflow-scrolling: touch;
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Print Styles - Optimized for documentation and reports
+ * ═══════════════════════════════════════════════════════════════════════════ */
+@media print {
+	@page {
+		margin: 2cm;
+		size: letter;
+	}
+
+	body {
+		font-size: 12pt;
+		line-height: 1.5;
+		color: #000;
+		background: #fff;
+	}
+
+	/* Hide non-essential elements */
+	nav,
+	aside,
+	.no-print,
+	button,
+	.btn {
+		display: none !important;
+	}
+
+	/* Ensure content flows properly */
+	main {
+		width: 100% !important;
+		margin: 0 !important;
+		padding: 0 !important;
+	}
+
+	/* Prevent page breaks inside important elements */
+	h1,
+	h2,
+	h3,
+	h4,
+	h5,
+	h6,
+	p,
+	li,
+	tr {
+		page-break-inside: avoid;
+	}
+
+	/* Add page breaks before major sections */
+	h1,
+	h2 {
+		page-break-before: always;
+	}
+
+	h1:first-child,
+	h2:first-child {
+		page-break-before: avoid;
+	}
+
+	/* Show link URLs in print */
+	a[href]:after {
+		content: ' (' attr(href) ')';
+		font-size: 90%;
+		color: #666;
+	}
+
+	a[href^='#']:after,
+	a[href^='javascript:']:after {
+		content: '';
+	}
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * PREMIUM ANIMATIONS - Apple/Netflix Principal Engineer Level
+ * Micro-interactions, hover effects, and smooth transitions
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+	from {
+		opacity: 0;
+	}
+	to {
+		opacity: 1;
+	}
+}
+
+@keyframes fadeInUp {
+	from {
+		opacity: 0;
+		transform: translateY(12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes fadeInDown {
+	from {
+		opacity: 0;
+		transform: translateY(-12px);
+	}
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+@keyframes scaleIn {
+	from {
+		opacity: 0;
+		transform: scale(0.95);
+	}
+	to {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+@keyframes slideInRight {
+	from {
+		opacity: 0;
+		transform: translateX(20px);
+	}
+	to {
+		opacity: 1;
+		transform: translateX(0);
+	}
+}
+
+@keyframes shimmer {
+	0% {
+		background-position: -200% 0;
+	}
+	100% {
+		background-position: 200% 0;
+	}
+}
+
+@keyframes pulse {
+	0%,
+	100% {
+		opacity: 1;
+	}
+	50% {
+		opacity: 0.5;
+	}
+}
+
+@keyframes bounce {
+	0%,
+	100% {
+		transform: translateY(0);
+	}
+	50% {
+		transform: translateY(-4px);
+	}
+}
+
+@keyframes spin {
+	from {
+		transform: rotate(0deg);
+	}
+	to {
+		transform: rotate(360deg);
+	}
+}
+
+@keyframes ripple {
+	0% {
+		transform: scale(0);
+		opacity: 0.5;
+	}
+	100% {
+		transform: scale(4);
+		opacity: 0;
+	}
+}
+
+/* Animation Utilities */
+.animate-fadeIn {
+	animation: fadeIn 0.3s ease-out forwards;
+}
+
+.animate-fadeInUp {
+	animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-fadeInDown {
+	animation: fadeInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scaleIn {
+	animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-slideInRight {
+	animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-pulse {
+	animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+.animate-bounce {
+	animation: bounce 1s ease-in-out infinite;
+}
+
+.animate-spin {
+	animation: spin 1s linear infinite;
+}
+
+/* Stagger Animation Delays */
+.stagger-1 {
+	animation-delay: 0.05s;
+}
+.stagger-2 {
+	animation-delay: 0.1s;
+}
+.stagger-3 {
+	animation-delay: 0.15s;
+}
+.stagger-4 {
+	animation-delay: 0.2s;
+}
+.stagger-5 {
+	animation-delay: 0.25s;
+}
+.stagger-6 {
+	animation-delay: 0.3s;
+}
+
+/* Loading Shimmer Effect */
+.skeleton {
+	background: linear-gradient(
+		90deg,
+		var(--color-rtp-surface) 0%,
+		var(--color-rtp-surface-elevated) 50%,
+		var(--color-rtp-surface) 100%
+	);
+	background-size: 200% 100%;
+	animation: shimmer 1.5s ease-in-out infinite;
+	border-radius: var(--radius-md);
+}
+
+/* Premium Button Interactions */
+.btn-premium {
+	position: relative;
+	overflow: hidden;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	transform: translateZ(0);
+	-webkit-backface-visibility: hidden;
+	backface-visibility: hidden;
+}
+
+.btn-premium:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn-premium:active {
+	transform: translateY(0) scale(0.98);
+	box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Ripple Effect */
+.btn-premium::after {
+	content: '';
+	position: absolute;
+	inset: 0;
+	background: radial-gradient(circle, rgba(255, 255, 255, 0.3) 0%, transparent 70%);
+	transform: scale(0);
+	opacity: 0;
+	transition:
+		transform 0.5s,
+		opacity 0.3s;
+	pointer-events: none;
+}
+
+.btn-premium:active::after {
+	transform: scale(2);
+	opacity: 1;
+	transition: 0s;
+}
+
+/* Premium Card Interactions */
+.card-premium {
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+	transform: translateZ(0);
+}
+
+.card-premium:hover {
+	transform: translateY(-4px);
+	box-shadow:
+		0 12px 40px rgba(0, 0, 0, 0.12),
+		0 0 0 1px rgba(99, 102, 241, 0.1);
+}
+
+/* Light theme card hover */
+html.light .card-premium:hover,
+body.light .card-premium:hover {
+	box-shadow:
+		0 12px 40px rgba(0, 0, 0, 0.08),
+		0 0 0 1px rgba(79, 70, 229, 0.15);
+}
+
+/* Interactive List Items */
+.list-item-interactive {
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	border-radius: var(--radius-md);
+}
+
+.list-item-interactive:hover {
+	background: var(--color-rtp-surface-elevated);
+	transform: translateX(4px);
+}
+
+/* Focus States - Premium Ring */
+.focus-ring {
+	outline: none;
+	transition: box-shadow 0.2s ease;
+}
+
+.focus-ring:focus-visible {
+	box-shadow:
+		0 0 0 2px var(--color-rtp-bg),
+		0 0 0 4px var(--color-rtp-primary);
+}
+
+/* Glass Morphism */
+.glass {
+	background: rgba(30, 41, 59, 0.8);
+	-webkit-backdrop-filter: blur(16px);
+	backdrop-filter: blur(16px);
+	border: 1px solid rgba(99, 102, 241, 0.1);
+}
+
+html.light .glass,
+body.light .glass {
+	background: rgba(255, 255, 255, 0.85);
+	border: 1px solid rgba(79, 70, 229, 0.1);
+}
+
+/* Premium Input Focus */
+.input-premium {
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	border: 1px solid var(--color-rtp-border);
+}
+
+.input-premium:focus {
+	border-color: var(--color-rtp-primary);
+	box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.15);
+	outline: none;
+}
+
+html.light .input-premium:focus,
+body.light .input-premium:focus {
+	box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+/* Hover Glow Effect */
+.hover-glow {
+	transition: all 0.3s ease;
+}
+
+.hover-glow:hover {
+	box-shadow: 0 0 20px rgba(99, 102, 241, 0.3);
+}
+
+html.light .hover-glow:hover,
+body.light .hover-glow:hover {
+	box-shadow: 0 0 20px rgba(79, 70, 229, 0.2);
+}
+
+/* Badge Pulse */
+.badge-pulse {
+	position: relative;
+}
+
+.badge-pulse::before {
+	content: '';
+	position: absolute;
+	inset: -2px;
+	border-radius: inherit;
+	background: inherit;
+	animation: pulse 2s ease-in-out infinite;
+	z-index: -1;
+}
+
+/* Progress Bar Animation */
+.progress-bar {
+	transition: width 0.6s cubic-bezier(0.16, 1, 0.3, 1);
+	position: relative;
+	overflow: hidden;
+}
+
+.progress-bar::after {
+	content: '';
+	position: absolute;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+	animation: shimmer 2s ease-in-out infinite;
+}
+
+/* Tab Indicator Animation */
+.tab-indicator {
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Dropdown Animation */
+.dropdown-menu {
+	transform-origin: top center;
+	animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Modal Animation */
+.modal-overlay {
+	animation: fadeIn 0.2s ease-out forwards;
+}
+
+.modal-content {
+	animation: scaleIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Toast Notifications */
+.toast {
+	animation: slideInRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast.exit {
+	animation: fadeIn 0.2s ease-out reverse forwards;
+}
+
+/* Checkbox/Toggle Animation */
+.toggle-switch {
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toggle-switch.active {
+	background: var(--color-rtp-primary);
+}
+
+.toggle-switch .toggle-knob {
+	transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.toggle-switch.active .toggle-knob {
+	transform: translateX(100%);
+}
+
+/* Icon Button Hover */
+.icon-btn {
+	transition: all 0.2s ease;
+	border-radius: var(--radius-md);
+}
+
+.icon-btn:hover {
+	background: var(--color-rtp-surface-elevated);
+	transform: scale(1.05);
+}
+
+.icon-btn:active {
+	transform: scale(0.95);
+}
+
+/* Link Underline Animation */
+.link-animated {
+	position: relative;
+	text-decoration: none;
+}
+
+.link-animated::after {
+	content: '';
+	position: absolute;
+	left: 0;
+	bottom: -2px;
+	width: 0;
+	height: 2px;
+	background: var(--color-rtp-primary);
+	transition: width 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.link-animated:hover::after {
+	width: 100%;
+}
+
+/* Smooth Page Transitions */
+.page-transition-enter {
+	opacity: 0;
+	transform: translateY(8px);
+}
+
+.page-transition-enter-active {
+	opacity: 1;
+	transform: translateY(0);
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.page-transition-exit {
+	opacity: 1;
+}
+
+.page-transition-exit-active {
+	opacity: 0;
+	transition: opacity 0.2s ease;
+}
+
+/* Number Counter Animation */
+.counter {
+	font-variant-numeric: tabular-nums;
+	transition: all 0.3s ease;
+}
+
+/* Notification Dot */
+.notification-dot {
+	width: 8px;
+	height: 8px;
+	background: var(--color-rtp-error);
+	border-radius: 50%;
+	animation: pulse 2s ease-in-out infinite;
+}
+
+/* Premium Status Indicator */
+.status-dot {
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	position: relative;
+}
+
+.status-dot.online::before {
+	content: '';
+	position: absolute;
+	inset: -3px;
+	border-radius: 50%;
+	background: var(--color-rtp-success);
+	animation: pulse 2s ease-in-out infinite;
+	z-index: -1;
+}
+
+/* Smooth Theme Transition */
+html,
+body {
+	transition:
+		background-color 0.3s ease,
+		color 0.3s ease;
+}
+
+/* Admin-specific premium styles */
+.admin-layout {
+	transition: background-color 0.3s ease;
+}
+
+.admin-sidebar {
+	transition:
+		background 0.3s ease,
+		border-color 0.3s ease,
+		transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-header {
+	transition:
+		background-color 0.3s ease,
+		border-color 0.3s ease,
+		box-shadow 0.3s ease;
+}
+
+.nav-item {
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.header-btn,
+.theme-toggle,
+.view-site-btn {
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Ensure smooth color transitions on all admin elements */
+.admin-layout *:not(.animate-spin):not(.animate-pulse):not(.animate-bounce) {
+	transition-property: background-color, border-color, color, box-shadow;
+	transition-duration: 0.2s;
+	transition-timing-function: ease;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * FINTECH ADMIN DASHBOARD THEME SYSTEM
+ * Apple ICT 7+ Principal Engineer - Professional Trading Platform Aesthetic
+ * Inspired by Bloomberg Terminal, Stripe Dashboard, and Robinhood Pro
+ *
+ * Typography: Montserrat (headings) + Roboto (body)
+ * Colors: Professional fintech palette with consistent token usage
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * RTP ADMIN THEME - GitHub-Inspired Professional Dashboard (Single Theme)
+ * Gold/Amber primary accent with Slate Blue secondary
+ * Optimized for data-heavy trading interfaces
+ * ───────────────────────────────────────────────────────────────────────────── */
+:root,
+html,
+body,
+html.light,
+body.light,
+html.dark,
+body.dark {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * ADMIN VARIABLES - Mapped to RTP Design System Tokens
+	 * See: src/lib/styles/tokens/colors.css for token definitions
+	 * ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* ═══ BACKGROUND SYSTEM ═══ */
+	--admin-bg: var(--bg-base);
+	--admin-bg-subtle: var(--bg-elevated);
+	--admin-bg-muted: var(--bg-surface);
+
+	/* Surface Colors */
+	--admin-surface: var(--bg-surface);
+	--admin-surface-raised: var(--bg-hover);
+	--admin-surface-sunken: var(--bg-base);
+	--admin-surface-overlay: rgba(22, 27, 34, 0.98);
+
+	/* Hover/Active States */
+	--admin-bg-hover: var(--bg-hover);
+	--admin-bg-active: var(--bg-active);
+
+	/* Sidebar */
+	--admin-sidebar-bg: linear-gradient(180deg, var(--sidebar-bg) 0%, var(--bg-base) 100%);
+	--admin-sidebar-border: var(--sidebar-border);
+	--admin-sidebar-text: var(--sidebar-text);
+	--admin-sidebar-text-muted: var(--sidebar-text-muted);
+	--admin-sidebar-hover: var(--sidebar-hover);
+	--admin-sidebar-active: var(--sidebar-active);
+
+	/* Header */
+	--admin-header-bg: rgba(13, 17, 23, 0.95);
+	--admin-header-border: var(--border-default);
+	--admin-header-shadow: var(--shadow-lg);
+
+	/* ═══ TEXT SYSTEM ═══ */
+	--admin-text-primary: var(--text-primary);
+	--admin-text-secondary: var(--text-secondary);
+	--admin-text-muted: var(--text-tertiary);
+	--admin-text-placeholder: var(--text-muted);
+	--admin-text-disabled: var(--text-muted);
+
+	/* ═══ PRIMARY - GOLD/AMBER (Brand Signature) ═══ */
+	--admin-accent-primary: var(--primary-500);
+	--admin-accent-primary-hover: var(--primary-400);
+	--admin-accent-primary-soft: rgba(230, 184, 0, 0.15);
+	--admin-accent-primary-muted: rgba(230, 184, 0, 0.25);
+
+	/* ═══ SECONDARY - SLATE BLUE ═══ */
+	--admin-accent-secondary: var(--secondary-500);
+	--admin-accent-secondary-hover: var(--secondary-300);
+
+	/* Tertiary - Gold variants */
+	--admin-accent-tertiary: var(--primary-400);
+	--admin-accent-tertiary-hover: var(--primary-300);
+
+	/* ═══ BORDER SYSTEM ═══ */
+	--admin-border: var(--border-default);
+	--admin-border-light: var(--border-muted);
+	--admin-border-focus: var(--primary-500);
+	--admin-border-interactive: rgba(230, 184, 0, 0.4);
+	--admin-border-emphasis: var(--border-emphasis);
+
+	/* ═══ BUTTON STYLES ═══ */
+	--admin-btn-bg: var(--bg-surface);
+	--admin-btn-bg-hover: var(--bg-hover);
+	--admin-btn-bg-active: var(--bg-active);
+	--admin-btn-border: var(--border-default);
+	--admin-btn-border-hover: var(--border-emphasis);
+	--admin-btn-text: var(--text-primary);
+	--admin-btn-text-hover: #ffffff;
+
+	/* Primary Button - Gold */
+	--admin-btn-primary-bg: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+	--admin-btn-primary-bg-hover: linear-gradient(
+		135deg,
+		var(--primary-400) 0%,
+		var(--primary-500) 100%
+	);
+	--admin-btn-primary-text: var(--bg-base);
+
+	/* ═══ KEYBOARD SHORTCUTS ═══ */
+	--admin-kbd-bg: var(--bg-hover);
+	--admin-kbd-border: var(--border-default);
+	--admin-kbd-text: var(--text-secondary);
+
+	/* ═══ NAVIGATION ═══ */
+	--admin-nav-text: var(--text-secondary);
+	--admin-nav-text-hover: var(--text-primary);
+	--admin-nav-text-active: var(--primary-400);
+	--admin-nav-bg-hover: var(--bg-hover);
+	--admin-nav-bg-active: rgba(230, 184, 0, 0.12);
+	--admin-nav-border-active: rgba(230, 184, 0, 0.4);
+	--admin-nav-section-title: var(--text-tertiary);
+
+	/* ═══ SEMANTIC COLORS ═══ */
+	/* Success */
+	--admin-success: var(--success-base);
+	--admin-success-bg: var(--success-soft);
+	--admin-success-border: rgba(46, 160, 67, 0.3);
+	--admin-success-text: var(--success-emphasis);
+
+	/* Warning */
+	--admin-warning: var(--warning-base);
+	--admin-warning-bg: var(--warning-soft);
+	--admin-warning-border: rgba(187, 128, 9, 0.3);
+	--admin-warning-text: var(--warning-emphasis);
+
+	/* Error */
+	--admin-error: var(--error-base);
+	--admin-error-bg: var(--error-soft);
+	--admin-error-border: rgba(218, 54, 51, 0.3);
+	--admin-error-text: var(--error-emphasis);
+
+	/* Info */
+	--admin-info: var(--info-base);
+	--admin-info-bg: var(--info-soft);
+	--admin-info-border: rgba(56, 139, 253, 0.3);
+	--admin-info-text: var(--info-emphasis);
+
+	/* ═══ FOCUS STATES ═══ */
+	--admin-focus-ring: 0 0 0 3px rgba(230, 184, 0, 0.35);
+
+	/* ═══ SHADOWS ═══ */
+	--admin-shadow-sm: var(--shadow-sm);
+	--admin-shadow-md: var(--shadow-md);
+	--admin-shadow-lg: var(--shadow-lg);
+	--admin-shadow-xl: var(--shadow-xl);
+
+	/* ═══ CARDS & WIDGETS ═══ */
+	--admin-card-bg: var(--bg-elevated);
+	--admin-card-border: var(--border-default);
+	--admin-card-shadow: var(--shadow-md);
+	--admin-card-shadow-hover: var(--shadow-lg);
+
+	/* ═══ WIDGET COLORS - Unified Palette ═══ */
+	/* Primary - Gold (main accent) */
+	--admin-widget-primary-bg: rgba(230, 184, 0, 0.15);
+	--admin-widget-primary-icon: #ffd11a;
+	--admin-widget-primary-border: rgba(230, 184, 0, 0.25);
+
+	/* Secondary - Slate Blue */
+	--admin-widget-secondary-bg: rgba(61, 90, 153, 0.2);
+	--admin-widget-secondary-icon: #7995ca;
+	--admin-widget-secondary-border: rgba(61, 90, 153, 0.3);
+
+	/* Revenue/Profit - Green */
+	--admin-widget-green-bg: rgba(46, 160, 67, 0.15);
+	--admin-widget-green-icon: #3fb950;
+	--admin-widget-green-border: rgba(46, 160, 67, 0.25);
+
+	/* Users/Growth - Blue (Info) */
+	--admin-widget-blue-bg: rgba(56, 139, 253, 0.15);
+	--admin-widget-blue-icon: #58a6ff;
+	--admin-widget-blue-border: rgba(56, 139, 253, 0.25);
+
+	/* Premium/Value - Gold */
+	--admin-widget-gold-bg: rgba(230, 184, 0, 0.15);
+	--admin-widget-gold-icon: #ffd11a;
+	--admin-widget-gold-border: rgba(230, 184, 0, 0.25);
+
+	/* Alerts/Attention - Warning Amber */
+	--admin-widget-orange-bg: rgba(187, 128, 9, 0.15);
+	--admin-widget-orange-icon: #d29922;
+	--admin-widget-orange-border: rgba(187, 128, 9, 0.25);
+
+	/* Critical/Loss - Red */
+	--admin-widget-red-bg: rgba(218, 54, 51, 0.15);
+	--admin-widget-red-icon: #f85149;
+	--admin-widget-red-border: rgba(218, 54, 51, 0.25);
+
+	/* Muted - Neutral */
+	--admin-widget-muted-bg: #252b33;
+	--admin-widget-muted-icon: #8b949e;
+	--admin-widget-muted-border: #30363d;
+
+	/* Legacy compatibility */
+	--admin-widget-purple-bg: rgba(139, 92, 246, 0.15);
+	--admin-widget-purple-icon: #a78bfa;
+	--admin-widget-cyan-bg: rgba(56, 139, 253, 0.15);
+	--admin-widget-cyan-icon: #58a6ff;
+
+	/* ═══ TABLE STYLES ═══ */
+	--admin-table-header-bg: #1c2128;
+	--admin-table-row-hover: #252b33;
+	--admin-table-row-stripe: rgba(48, 54, 61, 0.3);
+	--admin-table-border: #30363d;
+
+	/* ═══ INPUT STYLES ═══ */
+	--admin-input-bg: #0d1117;
+	--admin-input-border: #30363d;
+	--admin-input-border-focus: #e6b800;
+	--admin-input-placeholder: #6e7681;
+
+	/* ═══ CHARTS ═══ */
+	--admin-chart-grid: rgba(48, 54, 61, 0.5);
+	--admin-chart-text: #8b949e;
+	--admin-chart-axis: #30363d;
+	--admin-chart-positive: #3fb950;
+	--admin-chart-negative: #f85149;
+	--admin-chart-neutral: #58a6ff;
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Admin Premium Component Styles
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+/* Premium Admin Card */
+.admin-card {
+	background: var(--admin-card-bg);
+	border: 1px solid var(--admin-card-border);
+	border-radius: var(--radius-xl, 1rem);
+	box-shadow: var(--admin-card-shadow);
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-card:hover {
+	box-shadow: var(--admin-card-shadow-hover);
+	transform: translateY(-2px);
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Admin Typography System - Fintech Professional
+ *
+ * Montserrat: Headings, Navigation (500-600 weights only)
+ * Roboto: Body text, Labels, Buttons (400-500 weights only)
+ *
+ * Performance-friendly: Only load Montserrat 500,600 + Roboto 400,500
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Admin Page Headings - Montserrat */
+.admin-heading,
+.admin h1,
+.admin h2,
+.admin h3,
+.admin h4,
+.admin h5,
+.admin h6 {
+	font-family:
+		var(--font-heading),
+		'Montserrat',
+		-apple-system,
+		BlinkMacSystemFont,
+		sans-serif;
+	color: var(--admin-text-primary);
+	margin: 0;
+	line-height: 1.25;
+}
+
+/* H1 / Page title: 600 (SemiBold) - Strong anchor without landing page feel */
+.admin h1,
+.admin-heading-1 {
+	font-size: 1.75rem;
+	font-weight: 600;
+	letter-spacing: -0.01em;
+}
+
+/* H2 / Section title: 600 (SemiBold) - Consistent with H1, size does the work */
+.admin h2,
+.admin-heading-2 {
+	font-size: 1.375rem;
+	font-weight: 600;
+	letter-spacing: -0.005em;
+}
+
+/* H3 / Card title / Panel title: 600 or 500 - Dense UI needs clear separation */
+.admin h3,
+.admin-heading-3 {
+	font-size: 1.125rem;
+	font-weight: 600;
+}
+
+/* H4 / Field group label / Subsection: 500 (Medium) */
+.admin h4,
+.admin-heading-4 {
+	font-size: 1rem;
+	font-weight: 500;
+}
+
+/* H5 / Small headings: 500 (Medium) */
+.admin h5,
+.admin-heading-5 {
+	font-size: 0.9375rem;
+	font-weight: 500;
+}
+
+/* H6 / Overlines / Small headings: 600 (SemiBold) at small size for contrast */
+.admin h6,
+.admin-heading-6 {
+	font-size: 0.75rem;
+	font-weight: 600;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	color: var(--admin-text-muted);
+}
+
+/* Admin Body Text - Roboto 400 (Regular) */
+.admin-body,
+.admin p,
+.admin span:not(.admin-label),
+.admin li {
+	font-family:
+		var(--font-body),
+		'Roboto',
+		-apple-system,
+		BlinkMacSystemFont,
+		sans-serif;
+	font-weight: 400;
+	color: var(--admin-text-secondary);
+	line-height: 1.6;
+}
+
+.admin p {
+	margin: 0 0 1rem;
+	font-size: 0.9375rem;
+}
+
+/* Admin Labels - Roboto 500 (Medium) - Standard admin pattern */
+.admin-label,
+.admin label {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-size: 0.8125rem;
+	font-weight: 500;
+	color: var(--admin-text-secondary);
+	letter-spacing: 0.01em;
+	display: block;
+	margin-bottom: 0.5rem;
+}
+
+/* Admin Input Text - Roboto 400 */
+.admin input,
+.admin textarea,
+.admin select {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-size: 0.9375rem;
+	font-weight: 400;
+	color: var(--admin-text-primary);
+}
+
+/* Admin Placeholder Text - Roboto 400, color handles contrast */
+.admin input::placeholder,
+.admin textarea::placeholder {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 400;
+	color: var(--admin-text-placeholder);
+}
+
+/* Admin Navigation Text - Roboto 500 (Medium) */
+.admin-nav-text,
+.admin nav a,
+.admin .sidebar-link {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-size: 0.875rem;
+	font-weight: 500;
+	letter-spacing: 0.01em;
+}
+
+/* Admin Button Text - Roboto 500 (Medium) */
+.admin button,
+.admin .btn,
+.admin [role='button'] {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	letter-spacing: 0.02em;
+}
+
+/* Admin Meta/Caption Text - Roboto 400, color handles muted state */
+.admin-meta,
+.admin-caption,
+.admin small,
+.admin .text-muted {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-size: 0.8125rem;
+	font-weight: 400;
+	color: var(--admin-text-muted);
+	line-height: 1.5;
+}
+
+/* Inline emphasis - Roboto 500 (prefer over 700 for inline) */
+.admin strong,
+.admin b,
+.admin .text-emphasis {
+	font-weight: 500;
+}
+
+/* Admin Table Headers - Montserrat 600 (extra contrast for dense tables) */
+.admin-table th,
+.admin th {
+	font-family: var(--font-heading), 'Montserrat', sans-serif;
+	font-weight: 600;
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+/* Admin Table Cells - Roboto 400 */
+.admin-table td,
+.admin td {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 400;
+}
+
+/* Admin Chips/Tags/Metadata - Roboto 500 */
+.admin-chip,
+.admin-tag,
+.admin .badge {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.75rem;
+}
+
+/* Admin Tabs - Roboto 500 */
+.admin-tab,
+.admin [role='tab'] {
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+ * Admin Premium Buttons - RTP Gold Styling
+ * ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Premium Admin Button - Primary (Gold) */
+.admin-btn-primary {
+	background: var(--admin-btn-primary-bg, linear-gradient(135deg, #e6b800 0%, #b38f00 100%));
+	color: var(--admin-btn-primary-text, #0d1117);
+	border: none;
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	box-shadow: 0 2px 8px rgba(230, 184, 0, 0.25);
+}
+
+.admin-btn-primary:hover {
+	background: var(--admin-btn-primary-bg-hover, linear-gradient(135deg, #ffd11a 0%, #e6b800 100%));
+	transform: translateY(-1px);
+	box-shadow: 0 4px 16px rgba(230, 184, 0, 0.35);
+}
+
+.admin-btn-primary:active {
+	transform: translateY(0);
+	box-shadow: 0 2px 8px rgba(230, 184, 0, 0.25);
+}
+
+.admin-btn-primary:focus-visible {
+	outline: none;
+	box-shadow:
+		var(--admin-focus-ring),
+		0 2px 8px rgba(230, 184, 0, 0.25);
+}
+
+/* Admin Button - Secondary */
+.admin-btn-secondary {
+	background: var(--admin-btn-bg);
+	color: var(--admin-btn-text);
+	border: 1px solid var(--admin-btn-border);
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-btn-secondary:hover {
+	background: var(--admin-btn-bg-hover);
+	border-color: var(--admin-btn-border-hover);
+	color: var(--admin-btn-text-hover);
+}
+
+.admin-btn-secondary:focus-visible {
+	outline: none;
+	box-shadow: var(--admin-focus-ring);
+}
+
+/* Admin Button - Gold/Premium (same as primary for RTP) */
+.admin-btn-gold {
+	background: linear-gradient(135deg, #ffd11a 0%, #e6b800 100%);
+	color: #0d1117;
+	border: none;
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	box-shadow: 0 2px 8px rgba(230, 184, 0, 0.3);
+}
+
+.admin-btn-gold:hover {
+	transform: translateY(-1px);
+	box-shadow: 0 4px 16px rgba(230, 184, 0, 0.4);
+}
+
+/* Admin Button - Slate Blue (Secondary accent) */
+.admin-btn-slate {
+	background: linear-gradient(135deg, #3d5a99 0%, #233557 100%);
+	color: #f0f6fc;
+	border: none;
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+	box-shadow: 0 2px 8px rgba(61, 90, 153, 0.3);
+}
+
+.admin-btn-slate:hover {
+	background: linear-gradient(135deg, #7995ca 0%, #3d5a99 100%);
+	transform: translateY(-1px);
+	box-shadow: 0 4px 16px rgba(61, 90, 153, 0.4);
+}
+
+/* Admin Button - Danger/Destructive */
+.admin-btn-danger {
+	background: var(--admin-error);
+	color: white;
+	border: none;
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	letter-spacing: 0.01em;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-btn-danger:hover {
+	filter: brightness(1.1);
+}
+
+/* Admin Button - Ghost/Text */
+.admin-btn-ghost {
+	background: transparent;
+	color: var(--admin-text-secondary);
+	border: none;
+	padding: 0.625rem 1.25rem;
+	border-radius: var(--radius-md, 0.5rem);
+	font-family: var(--font-body), 'Roboto', sans-serif;
+	font-weight: 500;
+	font-size: 0.875rem;
+	cursor: pointer;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-btn-ghost:hover {
+	background: var(--admin-btn-bg-hover);
+	color: var(--admin-text-primary);
+}
+
+/* Premium Stats Widget */
+.admin-stat-widget {
+	background: var(--admin-card-bg);
+	border: 1px solid var(--admin-card-border);
+	border-radius: var(--radius-xl, 1rem);
+	padding: 1.5rem;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-stat-widget:hover {
+	border-color: var(--admin-border-interactive);
+	box-shadow: var(--admin-card-shadow-hover);
+}
+
+.admin-stat-widget__icon {
+	width: 56px;
+	height: 56px;
+	border-radius: var(--radius-lg, 0.75rem);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.admin-stat-widget__value {
+	font-size: 2rem;
+	font-weight: 700;
+	color: var(--admin-text-primary);
+	line-height: 1;
+}
+
+.admin-stat-widget__label {
+	font-size: 0.875rem;
+	color: var(--admin-text-muted);
+	margin-top: 0.25rem;
+}
+
+/* Glass Effect for Admin */
+.admin-glass {
+	background: var(--admin-surface-overlay);
+	-webkit-backdrop-filter: blur(20px);
+	backdrop-filter: blur(20px);
+	border: 1px solid var(--admin-border);
+}
+
+/* Premium Table Styles */
+.admin-table {
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0;
+}
+
+.admin-table th {
+	background: var(--admin-table-header-bg);
+	color: var(--admin-text-secondary);
+	font-weight: 600;
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+	padding: 1rem 1.25rem;
+	text-align: left;
+	border-bottom: 1px solid var(--admin-table-border);
+}
+
+.admin-table td {
+	padding: 1rem 1.25rem;
+	border-bottom: 1px solid var(--admin-table-border);
+	color: var(--admin-text-primary);
+}
+
+.admin-table tbody tr {
+	transition: background-color 0.15s ease;
+}
+
+.admin-table tbody tr:hover {
+	background: var(--admin-table-row-hover);
+}
+
+.admin-table tbody tr:nth-child(even) {
+	background: var(--admin-table-row-stripe);
+}
+
+.admin-table tbody tr:nth-child(even):hover {
+	background: var(--admin-table-row-hover);
+}
+
+/* Premium Input Styles */
+.admin-input {
+	width: 100%;
+	padding: 0.75rem 1rem;
+	background: var(--admin-input-bg);
+	border: 1px solid var(--admin-input-border);
+	border-radius: var(--radius-md, 0.5rem);
+	color: var(--admin-text-primary);
+	font-size: 0.9375rem;
+	transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.admin-input::placeholder {
+	color: var(--admin-input-placeholder);
+}
+
+.admin-input:focus {
+	outline: none;
+	border-color: var(--admin-input-border-focus);
+	box-shadow: var(--admin-focus-ring);
+}
+
+/* Premium Badge Styles */
+.admin-badge {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.25rem 0.75rem;
+	border-radius: var(--radius-full, 9999px);
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+.admin-badge--success {
+	background: var(--admin-success-bg);
+	color: var(--admin-success-text);
+	border: 1px solid var(--admin-success-border);
+}
+
+.admin-badge--warning {
+	background: var(--admin-warning-bg);
+	color: var(--admin-warning-text);
+	border: 1px solid var(--admin-warning-border);
+}
+
+.admin-badge--error {
+	background: var(--admin-error-bg);
+	color: var(--admin-error-text);
+	border: 1px solid var(--admin-error-border);
+}
+
+.admin-badge--info {
+	background: var(--admin-info-bg);
+	color: var(--admin-info-text);
+	border: 1px solid var(--admin-info-border);
 }
