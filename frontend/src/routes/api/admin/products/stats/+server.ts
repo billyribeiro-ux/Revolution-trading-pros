@@ -9,7 +9,7 @@ import { env } from '$env/dynamic/private';
 
 // Production fallback - Rust API on Fly.io
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
-const BACKEND_URL = env.BACKEND_URL || env.VITE_API_URL || PROD_BACKEND;
+const BACKEND_URL = env.BACKEND_URL || PROD_BACKEND;
 
 export const GET: RequestHandler = async ({ cookies, fetch }) => {
 	// ICT 7 FIX: Return mock data for all error cases to prevent console errors
