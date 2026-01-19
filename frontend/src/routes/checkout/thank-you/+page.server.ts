@@ -5,49 +5,20 @@
  * Fetches complete order details from API for display on thank-you page.
  * Handles both authenticated and unauthenticated states gracefully.
  *
+ * NOTE: This is a server-side load function (+page.server.ts) because it needs
+ * access to cookies for authentication. The data is passed to the client via PageData.
+ *
  * @version 2.0.0 - Complete Order Details Integration
  */
 import type { ServerLoad } from '@sveltejs/kit';
 import { API_BASE_URL } from '$lib/api/config';
+import type { OrderDetail } from './types';
 
 // Disable prerendering - this page requires dynamic URL parameters
 export const prerender = false;
 
 // Enable SSR for initial page load
 export const ssr = true;
-
-// Order detail types
-export interface OrderItem {
-	id: number;
-	product_id: number | null;
-	plan_id: number | null;
-	name: string;
-	quantity: number;
-	unit_price: number;
-	total: number;
-	product_type: string | null;
-	product_slug: string | null;
-	thumbnail: string | null;
-}
-
-export interface OrderDetail {
-	id: number;
-	order_number: string;
-	status: string;
-	subtotal: number;
-	discount: number;
-	tax: number;
-	total: number;
-	currency: string;
-	billing_name: string | null;
-	billing_email: string | null;
-	billing_address: Record<string, unknown> | null;
-	payment_provider: string | null;
-	coupon_code: string | null;
-	items: OrderItem[];
-	created_at: string;
-	completed_at: string | null;
-}
 
 export const load: ServerLoad = async ({ url, fetch, cookies }) => {
 	// Extract order details from URL parameters

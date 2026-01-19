@@ -13,7 +13,7 @@
 	 */
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import type { PageData } from './$types';
-	import type { OrderDetail, OrderItem } from './+page';
+	import type { OrderDetail, OrderItem } from './types';
 
 	// Receive data from load function using Svelte 5 $props()
 	interface Props {
