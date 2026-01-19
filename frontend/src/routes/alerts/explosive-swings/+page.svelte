@@ -228,7 +228,7 @@
 				<div
 					class="animate-fade-in-up delay-300 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center"
 				>
-					
+					<a
 						href="#pricing"
 						class="group relative w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-950 transition-all duration-200 bg-emerald-500 rounded-xl hover:bg-emerald-400 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-emerald-500 focus:ring-offset-slate-900 shadow-lg hover:shadow-emerald-500/25 hover:-translate-y-1"
 					>
@@ -247,7 +247,7 @@
 							/>
 						</svg>
 					</a>
-					
+					<a
 						href="#methodology"
 						class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 text-lg font-bold text-slate-200 transition-all duration-200 bg-slate-900 border border-slate-700 rounded-xl hover:bg-slate-800 hover:border-emerald-500/30"
 					>
