@@ -83,6 +83,71 @@
  * - All homepage sections are 100% independent
  * - Each section has its own scoped <style> block
  * 
+ * FRONTPAGE SECTION BREAKDOWN:
+ * ───────────────────────────────────────────────────────────────────────────
+ * Hero.svelte:
+ *   - 4 rotating slides with cinematic animations
+ *   - Slide 1: Live Trading Rooms
+ *   - Slide 2: SPX Profit Pulse alerts
+ *   - Slide 3: Trading Frameworks courses
+ *   - Slide 4: Pro Tools & Indicators
+ * 
+ * TradingRoomsSection.svelte:
+ *   - Cards for each trading room:
+ *     • Day Trading Room (momentum/scalping)
+ *     • Swing Trading Room (multi-day positions)
+ *     • Small Account Mentorship (position sizing)
+ *     • SPX Profit Pulse (SPX options)
+ *     • Explosive Swing (high-conviction swings)
+ * 
+ * AlertServicesSection.svelte:
+ *   - Cards for alert services:
+ *     • SPX Profit Pulse (intraday SPX alerts)
+ *     • Explosive Swings (swing trade alerts)
+ *   - Chart visualizations for each service
+ *   - Metrics cards (signals/day, win rate, avg return)
+ * 
+ * IndicatorsSection.svelte:
+ *   - Cards for trading indicators:
+ *     • Volume Max I
+ *     • Momentum indicators
+ *     • Volume profile tools
+ *     • Market internals
+ * 
+ * CoursesSection.svelte:
+ *   - Course cards with thumbnails
+ *   - Difficulty badges (Beginner, Intermediate, Advanced)
+ *   - Duration and lesson count
+ * 
+ * WhySection.svelte:
+ *   - Feature cards explaining platform benefits
+ *   - Institutional approach highlights
+ * 
+ * MentorshipSection.svelte:
+ *   - Mentorship program cards
+ *   - Pricing tiers
+ *   - Feature comparisons
+ * 
+ * TestimonialsSection.svelte:
+ *   - Testimonial cards with trader photos
+ *   - Ticker tape animation
+ *   - Star ratings
+ * 
+ * LatestBlogsSection.svelte:
+ *   - Blog post cards
+ *   - Category badges
+ *   - Read time indicators
+ * 
+ * CTASection.svelte:
+ *   - Call-to-action cards
+ *   - Signup prompts
+ *   - Trial offers
+ * 
+ * SocialMediaSection.svelte:
+ *   - Social platform cards
+ *   - Follow buttons
+ *   - Community stats
+ * 
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
