@@ -7,15 +7,14 @@
  * - CSS custom properties (theme variables)
  * - Gradient text effect (requires background-clip)
  * 
- * ANIMATIONS: Uses marketing-* animations from app.css
+ * ANIMATIONS: Uses marketing-* animations from app.css (loaded globally)
+ * TAILWIND: Loaded globally via app.css in root +layout.svelte
  * All layout/spacing handled by Tailwind classes in +page.svelte
  * 
- * @version 6.0.0 - Uses Global Marketing Animations
+ * @version 8.0.0 - Minimal page-specific styles only
  * @author Revolution Trading Pros
  * ═══════════════════════════════════════════════════════════════════════════
  */
-
-@import '../../../app.css';
 
 /* ═══════════════════════════════════════════════════════════════════════════
  * PAGE THEME VARIABLES
