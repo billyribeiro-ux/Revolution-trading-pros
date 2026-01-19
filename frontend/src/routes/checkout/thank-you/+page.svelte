@@ -132,7 +132,7 @@
 </nav>
 
 <!-- Main Thank You Content -->
-<main class="typ-page">
+<div class="typ-page">
 	<div class="container">
 		<!-- Success Header -->
 		<section class="typ-header">
@@ -412,7 +412,7 @@
 			</div>
 		</section>
 	</div>
-</main>
+</div>
 
 <style>
 	/* Breadcrumbs */

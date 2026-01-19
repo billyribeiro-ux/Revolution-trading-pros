@@ -113,7 +113,7 @@
 	]}
 />
 
-<main class="alerts-page">
+<div class="alerts-page">
 	<!-- Hero Section -->
 	<section class="hero">
 		<div class="hero-bg"></div>
@@ -298,7 +298,7 @@
 			</div>
 		</div>
 	</section>
-</main>
+</div>
 
 <style>
 	.alerts-page {

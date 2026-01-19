@@ -211,7 +211,7 @@
 	productAvailability="in stock"
 />
 
-<main
+<div
 	class="w-full bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
 >
 	<section class="relative min-h-[90vh] flex items-center py-20 lg:py-0">
@@ -1140,6 +1140,6 @@
 			</p>
 		</div>
 	</section>
-</main>
+</div>
 
 <!-- Footer is handled by MarketingFooter component in +layout.svelte -->

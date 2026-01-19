@@ -214,7 +214,7 @@
 	productAvailability="in stock"
 />
 
-<main
+<div
 	class="w-full overflow-x-hidden bg-rtp-bg text-rtp-text font-sans selection:bg-rtp-primary selection:text-white"
 >
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
@@ -989,4 +989,4 @@
 		</div>
 	</section>
 
-</main>
+</div>

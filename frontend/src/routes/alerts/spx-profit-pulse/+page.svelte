@@ -213,7 +213,7 @@
 	productAvailability="in stock"
 />
 
-<main
+<div
 	class="w-full overflow-x-hidden overflow-y-visible bg-slate-950 text-slate-200 font-sans selection:bg-indigo-600 selection:text-white"
 >
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
@@ -1258,6 +1258,6 @@
 			<p class="mt-8 text-sm text-white/60">30-Day Money Back Guarantee on Annual Plans</p>
 		</div>
 	</section>
-</main>
+</div>
 
 <!-- Footer is handled by MarketingFooter component in +layout.svelte -->

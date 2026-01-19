@@ -49,7 +49,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<main class="checkout-redirect">
+<div class="checkout-redirect">
 	{#if isLoading && product}
 		<div class="loading-container">
 			<div class="loading-spinner"></div>
@@ -67,7 +67,7 @@
 			</div>
 		</div>
 	{/if}
-</main>
+</div>
 
 <style>
 	.checkout-redirect {

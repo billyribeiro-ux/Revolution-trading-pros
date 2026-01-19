@@ -195,7 +195,7 @@
 	]}
 />
 
-<main class="indexes-page">
+<div class="indexes-page">
 	<!-- Hero Section -->
 	<section class="hero">
 		<div class="hero__bg">
@@ -419,7 +419,7 @@
 			</div>
 		</div>
 	</section>
-</main>
+</div>
 
 <style>
 	.indexes-page {

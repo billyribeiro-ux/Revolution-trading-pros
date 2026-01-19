@@ -102,7 +102,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<main class="checkout-page">
+<div class="checkout-page">
 	<div class="checkout-container">
 		<!-- Header -->
 		<header class="checkout-header">
@@ -276,7 +276,7 @@
 			</div>
 		</section>
 	</div>
-</main>
+</div>
 
 <style>
 	.checkout-page {
