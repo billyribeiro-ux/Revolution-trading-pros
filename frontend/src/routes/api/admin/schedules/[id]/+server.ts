@@ -10,7 +10,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+
 
 // ═══════════════════════════════════════════════════════════════════════════
 // SHARED MOCK DATA STORE (in real app, this would be a database)
@@ -49,7 +49,7 @@ function getOrInitMockData(): any[] {
 // ═══════════════════════════════════════════════════════════════════════════
 
 async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL;
+	const BACKEND_URL = PROD_BACKEND;
 	if (!BACKEND_URL) return null;
 
 	try {

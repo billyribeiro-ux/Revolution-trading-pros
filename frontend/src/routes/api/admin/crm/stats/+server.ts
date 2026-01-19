@@ -8,12 +8,12 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+
 
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
 export const GET: RequestHandler = async ({ request }) => {
-	const backendUrl = env.BACKEND_URL || PROD_BACKEND;
+	const backendUrl = PROD_BACKEND;
 	const authHeader = request.headers.get('Authorization') || '';
 
 	try {

@@ -9,7 +9,7 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+
 
 // Mock traders data
 const mockTraders = [
@@ -81,7 +81,7 @@ const mockTraders = [
 
 // Try to fetch from backend
 async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL;
+	const BACKEND_URL = PROD_BACKEND;
 	if (!BACKEND_URL) return null;
 
 	try {

@@ -5,10 +5,10 @@
 
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+
 
 const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
-const BACKEND_URL = env.BACKEND_URL || PROD_BACKEND;
+const BACKEND_URL = PROD_BACKEND;
 
 export const POST: RequestHandler = async ({ cookies, fetch, params }) => {
 	try {

@@ -8,7 +8,7 @@
 
 import { json, error } from '@sveltejs/kit';
 import type { RequestHandler } from '@sveltejs/kit';
-import { env } from '$env/dynamic/private';
+
 
 // Room slug to ID mapping
 const roomSlugToId: Record<string, number> = {
@@ -130,7 +130,7 @@ const mockVideos = [
 
 // Try to fetch from backend
 async function fetchFromBackend(endpoint: string, options?: RequestInit): Promise<any | null> {
-	const BACKEND_URL = env.BACKEND_URL;
+	const BACKEND_URL = PROD_BACKEND;
 	if (!BACKEND_URL) return null;
 
 	try {
