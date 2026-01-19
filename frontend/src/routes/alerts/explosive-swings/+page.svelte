@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { slide } from 'svelte/transition';
+	import { slide, fly, fade } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 
@@ -41,53 +41,6 @@
 	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
 	// --- Icon SVG ---
-
-	// --- Svelte 5 Scroll Reveal Action ---
-	// Best practice: CSS class toggle pattern (no inline styles, no will-change)
-	// CSS defined in app.css: .reveal and .reveal.is-visible
-
-	function reveal(node: HTMLElement, params: { delay?: number; once?: boolean } = {}) {
-		const { delay = 0, once = true } = params;
-
-		// Check reduced motion preference
-		if (
-			typeof window !== 'undefined' &&
-			window.matchMedia('(prefers-reduced-motion: reduce)').matches
-		) {
-			node.classList.add('is-visible');
-			return { destroy() {} };
-		}
-
-		// Add reveal class for initial hidden state
-		node.classList.add('reveal');
-
-		// Apply delay as CSS custom property
-		if (delay > 0) {
-			node.style.setProperty('--reveal-delay', `${delay}ms`);
-		}
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				entries.forEach((entry) => {
-					if (entry.isIntersecting) {
-						requestAnimationFrame(() => {
-							node.classList.add('is-visible');
-						});
-						if (once) observer.unobserve(node);
-					}
-				});
-			},
-			{ threshold: 0.1, rootMargin: '0px 0px -60px 0px' }
-		);
-
-		observer.observe(node);
-
-		return {
-			destroy() {
-				observer.disconnect();
-			}
-		};
-	}
 
 	// --- EXPANDED FAQ DATA FOR SEO & USER CLARITY ---
 	const faqData = [
@@ -232,7 +185,7 @@
 		>
 			<div class="text-center lg:text-left">
 				<div
-					use:reveal={{ delay: 0 }}
+					in:fly={{ y: 30, duration: 600, easing: cubicOut }}
 					class="inline-flex items-center gap-2 bg-slate-900 border border-emerald-500/30 px-4 py-1.5 rounded-full mb-8 shadow-lg shadow-emerald-500/10 backdrop-blur-md"
 				>
 					<span class="relative flex h-2.5 w-2.5">
@@ -247,7 +200,7 @@
 				</div>
 
 				<h1
-					use:reveal={{ delay: 100 }}
+					in:fly={{ y: 30, delay: 100, duration: 600, easing: cubicOut }}
 					class="text-5xl md:text-7xl font-heading font-extrabold mb-6 leading-tight tracking-tight text-white"
 				>
 					Catch the <br />
@@ -258,7 +211,7 @@
 				</h1>
 
 				<p
-					use:reveal={{ delay: 200 }}
+					in:fly={{ y: 30, delay: 200, duration: 600, easing: cubicOut }}
 					class="text-xl text-slate-400 mb-10 max-w-2xl mx-auto lg:mx-0 leading-relaxed"
 				>
 					Stop staring at the 1-minute chart. Get high-precision <strong
@@ -268,7 +221,7 @@
 				</p>
 
 				<div
-					use:reveal={{ delay: 300 }}
+					in:fly={{ y: 30, delay: 300, duration: 600, easing: cubicOut }}
 					class="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start items-center"
 				>
 					<a
@@ -298,7 +251,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 400 }}
+					in:fly={{ y: 30, delay: 400, duration: 600, easing: cubicOut }}
 					class="mt-10 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-sm font-medium text-slate-500"
 				>
 					<div class="flex items-center gap-2">
@@ -450,10 +403,10 @@
 	<section class="py-24 bg-slate-950 relative overflow-hidden">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
+				<h2 in:fly={{ y: 30, duration: 600, easing: cubicOut }} class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">
 					Choose Your Trading Lifestyle
 				</h2>
-				<p use:reveal={{ delay: 100 }} class="text-xl text-slate-400 max-w-2xl mx-auto">
+				<p in:fly={{ y: 30, delay: 100, duration: 600, easing: cubicOut }} class="text-xl text-slate-400 max-w-2xl mx-auto">
 					Most traders burn out trying to scalp 1-minute candles against high-frequency algorithms.
 					We play the bigger timeframe where institutions move money.
 				</p>
@@ -461,7 +414,7 @@
 
 			<div class="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
 				<div
-					use:reveal={{ delay: 0 }}
+					in:fly={{ y: 30, duration: 600, easing: cubicOut }}
 					class="bg-slate-900/50 border border-slate-800 rounded-3xl p-10 opacity-70 hover:opacity-100 transition-opacity"
 				>
 					<div class="flex items-center gap-4 mb-6">
@@ -492,7 +445,7 @@
 				</div>
 
 				<div
-					use:reveal={{ delay: 150 }}
+					in:fly={{ y: 30, delay: 150, duration: 600, easing: cubicOut }}
 					class="bg-slate-900 border-2 border-emerald-500 rounded-3xl p-10 shadow-2xl shadow-emerald-500/10 relative overflow-hidden"
 				>
 					<div
@@ -595,7 +548,7 @@
 			<div class="mb-16 md:text-center max-w-3xl mx-auto">
 				<span class="text-emerald-500 font-bold uppercase tracking-wider text-sm">The Strategy</span
 				>
-				<h2 use:reveal class="text-3xl md:text-5xl font-heading font-bold text-white mt-2 mb-6">
+				<h2 in:fly={{ y: 30, duration: 600, easing: cubicOut }} class="text-3xl md:text-5xl font-heading font-bold text-white mt-2 mb-6">
 					How We Find the "Whale's Wake"
 				</h2>
 				<p class="text-slate-400 text-lg">
@@ -606,7 +559,7 @@
 
 			<div class="grid md:grid-cols-3 gap-10">
 				<article
-					use:reveal={{ delay: 0 }}
+					in:fly={{ y: 30, duration: 600, easing: cubicOut }}
 					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-emerald-500/30 transition-colors"
 				>
 					<div
@@ -634,7 +587,7 @@
 				</article>
 
 				<article
-					use:reveal={{ delay: 100 }}
+					in:fly={{ y: 30, delay: 100, duration: 600, easing: cubicOut }}
 					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-blue-500/30 transition-colors"
 				>
 					<div
@@ -663,7 +616,7 @@
 				</article>
 
 				<article
-					use:reveal={{ delay: 200 }}
+					in:fly={{ y: 30, delay: 200, duration: 600, easing: cubicOut }}
 					class="group bg-slate-950 p-8 rounded-2xl border border-slate-800 hover:border-indigo-500/30 transition-colors"
 				>
 					<div
@@ -692,7 +645,7 @@
 			</div>
 
 			<div
-				use:reveal={{ delay: 300 }}
+				in:fly={{ y: 30, delay: 300, duration: 600, easing: cubicOut }}
 				class="mt-16 bg-slate-950 p-6 md:p-8 rounded-2xl border border-slate-700/50 flex flex-col md:flex-row items-center gap-6 justify-between"
 			>
 				<div>
