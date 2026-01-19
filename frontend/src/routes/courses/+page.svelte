@@ -368,9 +368,8 @@
 />
 
 <div
-	class="bg-black text-slate-200 min-h-screen font-sans selection:bg-blue-500/30 selection:text-white"
+	class="bg-black text-slate-200 font-sans selection:bg-blue-500/30 selection:text-white"
 	onmousemove={handleMouseMove}
-	role="main"
 >
 	<section class="relative min-h-[95vh] flex items-center justify-center overflow-hidden pt-20">
 		<div class="absolute inset-0 z-0 opacity-40">
