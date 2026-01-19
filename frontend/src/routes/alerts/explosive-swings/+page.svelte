@@ -216,7 +216,7 @@
 />
 
 <main
-	class="w-full overflow-x-hidden bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
+	class="w-full overflow-x-hidden overflow-y-visible bg-slate-950 text-slate-200 font-sans selection:bg-emerald-500/30 selection:text-emerald-200"
 >
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-20 lg:py-0">
 		<div class="absolute inset-0 z-0 pointer-events-none">
@@ -879,7 +879,7 @@
 		</div>
 	</section>
 
-	<section id="pricing" class="py-24 bg-slate-900 border-t border-slate-800">
+	<section id="pricing" class="py-24 bg-slate-900 border-t border-slate-800 overflow-hidden">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<h2 class="text-3xl md:text-5xl font-heading font-bold text-white mb-6">Simple Pricing</h2>
@@ -928,7 +928,7 @@
 				</div>
 			</div>
 
-			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+			<div class="grid md:grid-cols-3 gap-8 max-w-6xl mx-auto items-center overflow-visible">
 				<div
 					class="bg-slate-900 p-8 rounded-2xl border transition-all {selectedPlan === 'monthly'
 						? 'border-emerald-500 opacity-100 scale-105 shadow-xl shadow-emerald-500/10'

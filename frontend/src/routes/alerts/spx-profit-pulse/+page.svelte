@@ -214,7 +214,7 @@
 />
 
 <main
-	class="w-full overflow-x-hidden bg-slate-950 text-slate-200 font-sans selection:bg-indigo-600 selection:text-white"
+	class="w-full overflow-x-hidden overflow-y-visible bg-slate-950 text-slate-200 font-sans selection:bg-indigo-600 selection:text-white"
 >
 	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
 		<div class="absolute inset-0 bg-slate-950 z-0">
@@ -952,7 +952,7 @@
 		</div>
 	</section>
 
-	<section id="pricing" class="py-24 bg-slate-900 border-t border-slate-800">
+	<section id="pricing" class="py-24 bg-slate-900 border-t border-slate-800 overflow-hidden">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 			<div class="text-center mb-16">
 				<h2 class="text-3xl md:text-5xl font-heading font-bold text-slate-200 mb-4">
@@ -996,7 +996,7 @@
 				</div>
 			</div>
 
-			<div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-center">
+			<div class="grid lg:grid-cols-3 gap-8 max-w-6xl mx-auto items-center overflow-visible">
 				<div
 					class="order-2 lg:order-1 bg-slate-950 p-8 rounded-2xl border transition-all {selectedPlan ===
 					'monthly'
@@ -1259,21 +1259,5 @@
 		</div>
 	</section>
 </main>
-
-<style>
-	/* Force dark backgrounds - nuclear option */
-	:global(.spx-profit-pulse-page) {
-		background-color: #020617 !important;
-	}
-	:global(.spx-profit-pulse-page .bg-slate-900) {
-		background-color: #0f172a !important;
-	}
-	:global(.spx-profit-pulse-page .bg-slate-950) {
-		background-color: #020617 !important;
-	}
-	:global(.spx-profit-pulse-page section) {
-		background-color: inherit;
-	}
-</style>
 
 <!-- Footer is handled by MarketingFooter component in +layout.svelte -->
