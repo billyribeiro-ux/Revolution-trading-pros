@@ -102,7 +102,6 @@
 
 <style>
 	.seo-meta-page {
-		height: calc(100vh - 120px);
 		display: flex;
 		flex-direction: column;
 		background: #f8f9fa;

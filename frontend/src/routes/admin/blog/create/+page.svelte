@@ -631,7 +631,6 @@
 
 <style>
 	.post-editor {
-		min-height: 100vh;
 		background: #f8f9fa;
 	}
 
@@ -1171,7 +1170,6 @@
 		bottom: 0;
 		z-index: 1000;
 		border-radius: 0;
-		min-height: 100vh;
 	}
 
 	.editor-toolbar {

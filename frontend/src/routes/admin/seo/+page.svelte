@@ -519,7 +519,6 @@
 
 	.seo-dashboard {
 		position: relative;
-		min-height: 100vh;
 		padding: 2rem;
 		max-width: 1600px;
 		margin: 0 auto;

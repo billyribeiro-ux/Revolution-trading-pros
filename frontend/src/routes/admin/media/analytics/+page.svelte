@@ -685,7 +685,6 @@
      Base Layout
      ═══════════════════════════════════════════════════════════════════════════ */
 	.analytics-dashboard {
-		min-height: 100vh;
 		background: #f5f5f7;
 		font-family:
 			-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Segoe UI', Roboto, sans-serif;

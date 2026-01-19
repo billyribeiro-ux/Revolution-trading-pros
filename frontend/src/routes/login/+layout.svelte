@@ -16,7 +16,6 @@
 
 <style>
 	.auth-page {
-		min-height: 100vh;
 		background: var(--color-rtp-bg);
 	}
 

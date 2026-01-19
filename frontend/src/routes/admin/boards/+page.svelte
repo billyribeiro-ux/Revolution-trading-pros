@@ -219,7 +219,7 @@
 	<title>Project Boards | Admin</title>
 </svelte:head>
 
-<div class="admin-boards min-h-screen bg-gray-50 dark:bg-gray-900">
+<div class="admin-boards bg-gray-50 dark:bg-gray-900">
 	<!-- Animated Background -->
 	<div class="bg-effects">
 		<div class="bg-blob bg-blob-1"></div>

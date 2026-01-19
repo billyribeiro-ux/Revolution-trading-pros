@@ -1059,7 +1059,6 @@
 <style>
 	/* Root Container */
 	.admin-segments {
-		min-height: 100vh;
 		position: relative;
 		overflow-x: hidden;
 		background: linear-gradient(180deg, #0a0d14 0%, #0f1419 50%, #161c24 100%);
