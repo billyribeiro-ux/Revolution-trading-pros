@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
+	import { browser } from '$app/environment';
 	import {
 		IconBrandTwitter,
 		IconBrandInstagram,
@@ -7,11 +8,39 @@
 		IconBrandFacebook
 	} from '$lib/icons';
 
-	let currentYear = new Date().getFullYear();
+	let currentYear = $state(new Date().getFullYear());
+	let containerRef = $state<HTMLElement | null>(null);
+	let isVisible = $state(false);
 
 	onMount(() => {
 		// Ensures correct year even if the page is prerendered at build time.
 		currentYear = new Date().getFullYear();
+
+		if (!browser) {
+			isVisible = true;
+			return;
+		}
+
+		queueMicrotask(() => {
+			if (!containerRef) {
+				isVisible = true;
+				return;
+			}
+
+			const observer = new IntersectionObserver(
+				(entries) => {
+					if (entries[0]?.isIntersecting) {
+						isVisible = true;
+						observer?.disconnect();
+					}
+				},
+				{ threshold: 0.1, rootMargin: '50px' }
+			);
+
+			observer.observe(containerRef);
+
+			return () => observer?.disconnect();
+		});
 	});
 
 	const footerLinks = {
@@ -59,7 +88,7 @@
 	];
 </script>
 
-<footer class="marketing-footer">
+<footer bind:this={containerRef} class="marketing-footer">
 	<div class="footer-container">
 		<div class="footer-grid">
 			<div class="footer-brand">
@@ -80,6 +109,7 @@
 
 				<div class="social-links" aria-label="Social links">
 					{#each socialLinks as social}
+						{@const IconComponent = social.icon}
 						<a
 							href={social.href}
 							target="_blank"
@@ -88,7 +118,7 @@
 							aria-label={social.label}
 							title={social.label}
 						>
-							<svelte:component this={social.icon} size={20} />
+							<IconComponent size={20} />
 						</a>
 					{/each}
 				</div>
@@ -153,7 +183,6 @@
 		max-width: 100%;
 		min-width: 0;
 		flex-shrink: 0;
-		margin-top: auto; /* Ensures footer sticks to bottom when content is short */
 		overflow-x: clip; /* Prevents any horizontal overflow from breaking layout */
 		contain: paint; /* ICT7 Fix: Removed 'layout style' - causes flex recalculation issues at scroll bottom */
 	}
