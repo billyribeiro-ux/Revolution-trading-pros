@@ -124,7 +124,7 @@
 
 		<NavBar />
 
-		<main id="main-content" class="flex-1 min-h-0 min-w-0 overflow-x-clip">
+		<main id="main-content" class="flex-1 min-w-0 overflow-x-clip">
 			{@render children()}
 		</main>
 
