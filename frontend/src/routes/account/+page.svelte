@@ -49,8 +49,21 @@
 	<meta name="description" content="Manage your Revolution Trading Pros account" />
 </svelte:head>
 
-{#if $authStore.user}
-	<div class="min-h-[calc(100vh-120px)] bg-rtp-bg py-12 px-4">
+<!-- SSR-safe: Always render container to prevent hydration mismatch.
+     Show loading state until auth is initialized, then show content or redirect. -->
+{#if $authStore.isInitializing || $authStore.isLoading}
+	<!-- Loading skeleton for consistent SSR/CSR output -->
+	<div class="bg-rtp-bg py-12 px-4">
+		<div class="max-w-7xl mx-auto">
+			<div class="bg-rtp-surface rounded-2xl shadow-lg p-8 border border-rtp-border mb-8 animate-pulse">
+				<div class="h-8 bg-gray-200 rounded w-48 mb-4"></div>
+				<div class="h-4 bg-gray-200 rounded w-32"></div>
+			</div>
+		</div>
+	</div>
+{:else if $authStore.user}
+	<!-- ICT11+ Fix: Removed min-h-[calc(100vh-120px)] - let parent flex container handle height -->
+	<div class="bg-rtp-bg py-12 px-4">
 		<div class="max-w-7xl mx-auto">
 			<!-- Header -->
 			<div class="bg-rtp-surface rounded-2xl shadow-lg p-8 border border-rtp-border mb-8">

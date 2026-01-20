@@ -3,8 +3,8 @@ import { error } from '@sveltejs/kit';
 import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 import type { Post } from '$lib/types/post';
 
-export const prerender = false; // Disable prerendering for this page
-export const ssr = false; // Client-side rendering only
+export const prerender = false; // Disable prerendering - dynamic content
+// SSR enabled for SEO - blog content should be server-rendered
 
 export const load: Load = async ({ params }) => {
 	try {

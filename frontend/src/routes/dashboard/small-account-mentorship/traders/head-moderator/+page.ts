@@ -7,4 +7,4 @@
  * @version 1.0.0
  */
 
-export const ssr = false;
+// SSR inherited from dashboard layout (+layout.server.ts)
