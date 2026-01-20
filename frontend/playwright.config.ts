@@ -193,9 +193,10 @@ export default defineConfig({
 
 	// ========================================
 	// WEB SERVER CONFIGURATION
+	// ICT11+ Fix: Use preview in CI (faster, more reliable), dev locally
 	// ========================================
 	webServer: {
-		command: 'npm run dev',
+		command: CI ? 'npm run preview' : 'npm run dev',
 		url: BASE_URL,
 		reuseExistingServer: !CI,
 		timeout: TIMEOUTS.webServer,

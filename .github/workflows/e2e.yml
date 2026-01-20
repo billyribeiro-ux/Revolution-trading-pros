@@ -52,6 +52,7 @@ env:
 jobs:
   # ========================================
   # SMOKE TESTS - Fast feedback
+  # ICT11+ Fix: Build first, use preview server for reliable CI testing
   # ========================================
   smoke:
     name: Smoke Tests
@@ -72,6 +73,13 @@ jobs:
       - name: Install dependencies
         working-directory: frontend
         run: npm ci
+
+      - name: Build application
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ env.VITE_API_URL }}
+          PUBLIC_API_URL: ${{ env.PUBLIC_API_URL }}
 
       - name: Install Playwright browsers
         working-directory: frontend
@@ -101,6 +109,7 @@ jobs:
 
   # ========================================
   # FULL E2E - Main test suite
+  # ICT11+ Fix: Build first for reliable CI testing
   # ========================================
   e2e:
     name: E2E Tests (${{ matrix.browser }})
@@ -128,6 +137,13 @@ jobs:
       - name: Install dependencies
         working-directory: frontend
         run: npm ci
+
+      - name: Build application
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ env.VITE_API_URL }}
+          PUBLIC_API_URL: ${{ env.PUBLIC_API_URL }}
 
       - name: Install Playwright browsers
         working-directory: frontend
@@ -250,6 +266,7 @@ jobs:
 
   # ========================================
   # MOBILE TESTS
+  # ICT11+ Fix: Build first for reliable CI testing
   # ========================================
   mobile:
     name: Mobile Tests
@@ -272,6 +289,13 @@ jobs:
         working-directory: frontend
         run: npm ci
 
+      - name: Build application
+        working-directory: frontend
+        run: npm run build
+        env:
+          VITE_API_URL: ${{ env.VITE_API_URL }}
+          PUBLIC_API_URL: ${{ env.PUBLIC_API_URL }}
+
       - name: Install Playwright
         working-directory: frontend
         run: npx playwright install chromium webkit --with-deps
@@ -293,6 +317,7 @@ jobs:
 
   # ========================================
   # FINAL STATUS CHECK
+  # ICT11+ Fix: Handle skipped jobs properly
   # ========================================
   e2e-status:
     name: E2E Status
@@ -303,16 +328,29 @@ jobs:
     steps:
       - name: Check all jobs
         run: |
+          echo "Smoke: ${{ needs.smoke.result }}"
+          echo "E2E: ${{ needs.e2e.result }}"
+          echo "Mobile: ${{ needs.mobile.result }}"
+          
+          # Fail if smoke failed (this is the gate)
           if [[ "${{ needs.smoke.result }}" == "failure" ]]; then
-            echo "Smoke tests failed"
+            echo "❌ Smoke tests failed"
             exit 1
           fi
+          
+          # Only check e2e/mobile if they actually ran (not skipped due to smoke failure)
           if [[ "${{ needs.e2e.result }}" == "failure" ]]; then
-            echo "E2E tests failed"
+            echo "❌ E2E tests failed"
             exit 1
           fi
           if [[ "${{ needs.mobile.result }}" == "failure" ]]; then
-            echo "Mobile tests failed"
+            echo "❌ Mobile tests failed"
             exit 1
           fi
-          echo "All E2E tests passed!"
+          
+          # Success if smoke passed and downstream didn't fail
+          if [[ "${{ needs.smoke.result }}" == "success" ]]; then
+            echo "✅ All E2E tests passed!"
+          else
+            echo "⚠️ Some tests were skipped"
+          fi
