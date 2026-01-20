@@ -43,7 +43,7 @@ export { DataTable, StatCard, EmptyState, ErrorBoundary, PageHeader } from './pa
 // ═══════════════════════════════════════════════════════════════════════════
 // Layout Components
 // ═══════════════════════════════════════════════════════════════════════════
-export { MarketingFooter, AppSidebar, AdminSidebar, TradingRoomShell } from './layout';
+export { MarketingFooter, AppSidebar, AdminSidebar } from './layout';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // Chart Components

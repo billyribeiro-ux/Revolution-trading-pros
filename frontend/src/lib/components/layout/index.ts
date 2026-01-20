@@ -8,4 +8,3 @@
 export { default as MarketingFooter } from './MarketingFooter.svelte';
 export { default as AppSidebar } from './AppSidebar.svelte';
 export { default as AdminSidebar } from './AdminSidebar.svelte';
-export { default as TradingRoomShell } from './TradingRoomShell.svelte';
