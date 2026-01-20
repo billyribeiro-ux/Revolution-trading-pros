@@ -9,6 +9,7 @@
 	 * @author Revolution Trading Pros
 	 */
 
+	import { browser } from '$app/environment';
 	import { user } from '$lib/stores/auth.svelte';
 	import IconSettings from '@tabler/icons-svelte/icons/settings';
 	import IconMaximize from '@tabler/icons-svelte/icons/maximize';
@@ -60,7 +61,9 @@
 		rightPanelOpen = !rightPanelOpen;
 	}
 
+	// SSR-safe: Guard document access with browser check
 	async function toggleFullscreen() {
+		if (!browser) return;
 		if (!document.fullscreenElement) {
 			await document.documentElement.requestFullscreen();
 			isFullscreen = true;
@@ -70,7 +73,9 @@
 		}
 	}
 
+	// SSR-safe: Guard document access with browser check
 	function handleFullscreenChange() {
+		if (!browser) return;
 		isFullscreen = !!document.fullscreenElement;
 	}
 </script>
