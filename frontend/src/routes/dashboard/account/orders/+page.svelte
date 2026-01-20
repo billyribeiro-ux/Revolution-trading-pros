@@ -158,9 +158,9 @@
 	}
 
 	/* Dashboard Content Wrapper */
+	/* ICT11+ Fix: Removed min-height: calc(100vh - 60px) - let parent flex container handle height */
 	.dashboard__content {
 		background: #f5f5f5;
-		min-height: calc(100vh - 60px);
 		padding: 0;
 	}
 
