@@ -90,4 +90,4 @@
 <SocialMediaSection />
 
 <WeAreTheBest />
-<MarketingFooter />
+<!-- <MarketingFooter /> -->
