@@ -3,6 +3,7 @@
 	import { browser } from '$app/environment';
 	import { slide } from 'svelte/transition';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- ICONS (Inline for Zero-Dependency Safety) ---
 	const Icons = {
@@ -556,3 +557,5 @@
 		</section>
 	</div>
 </div>
+
+<MarketingFooter />

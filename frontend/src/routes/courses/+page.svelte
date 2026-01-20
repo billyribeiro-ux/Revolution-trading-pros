@@ -21,6 +21,7 @@
 
 	// Assumed existing component based on your snippet
 	import SEOHead from '$lib/components/SEOHead.svelte';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- TYPES ---
 
@@ -679,6 +680,8 @@
 		</div>
 	</section>
 </div>
+
+<MarketingFooter />
 
 <style>
 	/* Custom Tailwind-compatible utilities for specific animations */

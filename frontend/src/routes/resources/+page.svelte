@@ -4,6 +4,7 @@
 
 <script lang="ts">
 	import SEOHead from '$lib/components/SEOHead.svelte';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// Resources page structured data
 	const resourcesSchema = [
@@ -575,3 +576,5 @@
 		</a>
 	</div>
 </section>
+
+<MarketingFooter />

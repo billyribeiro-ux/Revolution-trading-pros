@@ -13,6 +13,7 @@
 	import { browser } from '$app/environment';
 	import { scanCookies, openPreferencesModal, consentStore, getVendorInfo } from '$lib/consent';
 	import { t, currentLanguage, getSupportedLanguages, setLanguage } from '$lib/consent/i18n';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import {
 		generateConsentReceipt,
 		downloadReceiptAsJSON,
@@ -391,6 +392,8 @@
 		</footer>
 	</div>
 </div>
+
+<MarketingFooter />
 
 <style>
 	.cookie-policy {

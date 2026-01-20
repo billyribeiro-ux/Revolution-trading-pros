@@ -16,6 +16,7 @@
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
 	import { sanitizeBlogContent } from '$lib/utils/sanitize';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import {
 		initReadingAnalytics,
 		calculateReadingTime,
@@ -425,6 +426,8 @@
 		{/if}
 	{/if}
 </div>
+
+<MarketingFooter />
 
 <style>
 	.blog-post-container {

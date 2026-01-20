@@ -7,6 +7,7 @@
 
 	import { onMount } from 'svelte';
 	import { CourseCard } from '$lib/components/courses';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	interface Course {
 		id: string;
@@ -133,6 +134,8 @@
 		</div>
 	{/if}
 </div>
+
+<MarketingFooter />
 
 <style>
 	.courses-page {

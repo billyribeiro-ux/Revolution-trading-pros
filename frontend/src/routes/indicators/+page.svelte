@@ -26,6 +26,7 @@
 	import IconChevronUp from '@tabler/icons-svelte/icons/chevron-up';
 	import IconClock from '@tabler/icons-svelte/icons/clock';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// --- Types ---
 	interface Indicator {
@@ -864,6 +865,8 @@
 		</div>
 	</section>
 </div>
+
+<MarketingFooter />
 
 <style>
 	/* * RESTORED CUSTOM CSS ARCHITECTURE 

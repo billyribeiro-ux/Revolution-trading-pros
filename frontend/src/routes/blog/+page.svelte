@@ -10,6 +10,7 @@
 	import BlurHashImage from '$lib/components/ui/BlurHashImage.svelte';
 	import { apiFetch, API_ENDPOINTS } from '$lib/api/config';
 	import type { Post } from '$lib/types/post';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// ============================================================================
 	// TypeScript Interfaces
@@ -439,6 +440,8 @@
 		{/if}
 	{/if}
 </div>
+
+<MarketingFooter />
 
 <style>
 	.blog-container {
