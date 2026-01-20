@@ -50,7 +50,7 @@
 	onMount(() => {
 		if (!browser) return;
 
-		let scrollTriggerCleanup: (() => void) | null = null;
+		let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
 		// Dynamically import GSAP to avoid SSR issues
 		(async () => {
@@ -58,18 +58,19 @@
 			const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
 			gsap.registerPlugin(ScrollTrigger);
 
-			scrollTriggerCleanup = () => ScrollTrigger.getAll().forEach((st) => st.kill());
-
-			// Parallax Effects
-			gsap.to('.parallax-layer', {
-				yPercent: -20,
-				ease: 'none',
-				scrollTrigger: {
-					trigger: '#about-content',
-					start: 'top top',
-					end: 'bottom top',
-					scrub: true
-				}
+			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
+			gsapContext = gsap.context(() => {
+				// Parallax Effects
+				gsap.to('.parallax-layer', {
+					yPercent: -20,
+					ease: 'none',
+					scrollTrigger: {
+						trigger: '#about-content',
+						start: 'top top',
+						end: 'bottom top',
+						scrub: true
+					}
+				});
 			});
 		})();
 
@@ -90,7 +91,7 @@
 
 		return () => {
 			window.removeEventListener('scroll', handleScroll);
-			if (scrollTriggerCleanup) scrollTriggerCleanup();
+			if (gsapContext) gsapContext.revert();
 		};
 	});
 

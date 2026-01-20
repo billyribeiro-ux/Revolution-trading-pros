@@ -57,39 +57,39 @@
 	onMount(() => {
 		// Respect reduced motion preference
 		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		
+
 		if (prefersReducedMotion) {
 			// Instantly show all elements without animation
 			gsap.set('[data-gsap]', { opacity: 1, y: 0 });
 			return;
 		}
 
-		// Set initial state for all animated elements
-		gsap.set('[data-gsap]', { opacity: 0, y: 30 });
+		// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
+		const ctx = gsap.context(() => {
+			// Set initial state for all animated elements
+			gsap.set('[data-gsap]', { opacity: 0, y: 30 });
 
-		// Create ScrollTrigger batch for optimal performance
-		ScrollTrigger.batch('[data-gsap]', {
-			onEnter: (batch) => {
-				gsap.to(batch, {
-					opacity: 1,
-					y: 0,
-					duration: 0.8,
-					ease: 'power3.out',
-					stagger: 0.1,
-					overwrite: true
-				});
-			},
-			start: 'top 85%',
-			once: true
+			// Create ScrollTrigger batch for optimal performance
+			ScrollTrigger.batch('[data-gsap]', {
+				onEnter: (batch) => {
+					gsap.to(batch, {
+						opacity: 1,
+						y: 0,
+						duration: 0.8,
+						ease: 'power3.out',
+						stagger: 0.1,
+						overwrite: true
+					});
+				},
+				start: 'top 85%',
+				once: true
+			});
+
+			// Refresh ScrollTrigger after layout settles
+			ScrollTrigger.refresh();
 		});
 
-		// Refresh ScrollTrigger after layout settles
-		ScrollTrigger.refresh();
-
-		return () => {
-			// Cleanup on unmount
-			ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-		};
+		return () => ctx.revert();
 	});
 
 	// --- EXPANDED FAQ DATA FOR SEO & USER CLARITY ---

@@ -271,7 +271,7 @@
 
 		let heroObserver: IntersectionObserver;
 		let cardObserver: IntersectionObserver;
-		let scrollTriggerCleanup: (() => void) | null = null;
+		let gsapContext: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
 		// Use IIFE for async operations
 		(async () => {
@@ -280,8 +280,8 @@
 			const ScrollTrigger = (await import('gsap/ScrollTrigger')).default;
 			gsap.registerPlugin(ScrollTrigger);
 
-			// Store cleanup reference
-			scrollTriggerCleanup = () => ScrollTrigger.getAll().forEach((st) => st.kill());
+			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
+			gsapContext = gsap.context(() => {
 
 			// --- Cinematic GSAP Animations ---
 
@@ -363,6 +363,7 @@
 				stagger: 0.1,
 				ease: 'power2.out'
 			});
+			}); // Close gsap.context()
 		})();
 
 		// --- Original Observer Logic (Preserved for compatibility) ---
@@ -400,7 +401,7 @@
 		return () => {
 			heroObserver.disconnect();
 			cardObserver.disconnect();
-			if (scrollTriggerCleanup) scrollTriggerCleanup();
+			if (gsapContext) gsapContext.revert();
 		};
 	});
 </script>
