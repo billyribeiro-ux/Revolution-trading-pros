@@ -1,6 +1,24 @@
 <script lang="ts">
+	/**
+	 * MarketingFooter - Apple Principal Engineer ICT Grade
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Svelte 5 / SvelteKit 2.x Best Practices (November/December 2025)
+	 *
+	 * PATTERNS IMPLEMENTED:
+	 * ✅ $state() for reactive variables
+	 * ✅ IntersectionObserver for viewport detection
+	 * ✅ Conditional rendering with {#if isVisible}
+	 * ✅ heavySlide transition matching MentorshipSection
+	 * ✅ cubicOut easing for smooth animations
+	 * ✅ Proper cleanup with observer.disconnect()
+	 * ✅ SSR-safe browser check
+	 *
+	 * @version 2.0.0 - Svelte 5 Runes + MentorshipSection Pattern
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
+	import { cubicOut } from 'svelte/easing';
 	import {
 		IconBrandTwitter,
 		IconBrandInstagram,
@@ -8,9 +26,26 @@
 		IconBrandFacebook
 	} from '$lib/icons';
 
+	// --- State (Svelte 5 Runes) ---
 	let currentYear = $state(new Date().getFullYear());
 	let containerRef = $state<HTMLElement | null>(null);
+	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
 	let isVisible = $state(false);
+
+	// --- Transition Function (matching MentorshipSection exactly) ---
+	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
+		return {
+			delay,
+			duration,
+			css: (t: number) => {
+				const eased = cubicOut(t);
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+			}
+		};
+	}
+
+	// --- Intersection Observer for Viewport Detection ---
+	let observer: IntersectionObserver | null = null;
 
 	onMount(() => {
 		// Ensures correct year even if the page is prerendered at build time.
@@ -27,7 +62,7 @@
 				return;
 			}
 
-			const observer = new IntersectionObserver(
+			observer = new IntersectionObserver(
 				(entries) => {
 					if (entries[0]?.isIntersecting) {
 						isVisible = true;
@@ -38,9 +73,9 @@
 			);
 
 			observer.observe(containerRef);
-
-			return () => observer?.disconnect();
 		});
+
+		return () => observer?.disconnect();
 	});
 
 	const footerLinks = {
@@ -88,10 +123,14 @@
 	];
 </script>
 
-<footer bind:this={containerRef} class="marketing-footer">
-	<div class="footer-container">
-		<div class="footer-grid">
-			<div class="footer-brand">
+<!-- Invisible sentinel element for IntersectionObserver - always in DOM -->
+<div bind:this={containerRef} class="footer-sentinel" aria-hidden="true"></div>
+
+{#if isVisible}
+	<footer in:heavySlide={{ delay: 0, duration: 800 }} class="marketing-footer">
+		<div class="footer-container">
+			<div class="footer-grid">
+				<div class="footer-brand">
 				<a href="/" class="footer-logo" aria-label="Revolution Trading Pros home">
 					<img
 						src="/revolution-trading-pros.png"
@@ -150,21 +189,22 @@
 					{/each}
 				</ul>
 			</nav>
-		</div>
+			</div>
 
-		<div class="risk-disclaimer">
-			<p>
-				<strong>Risk Disclaimer:</strong> Trading involves substantial risk of loss and is not suitable
-				for all investors. Past performance is not indicative of future results. The content provided
-				is for educational purposes only and should not be considered financial advice.
-			</p>
-		</div>
+			<div class="risk-disclaimer">
+				<p>
+					<strong>Risk Disclaimer:</strong> Trading involves substantial risk of loss and is not suitable
+					for all investors. Past performance is not indicative of future results. The content provided
+					is for educational purposes only and should not be considered financial advice.
+				</p>
+			</div>
 
-		<div class="footer-bottom">
-			<p>&copy; {currentYear} Revolution Trading Pros. All rights reserved.</p>
+			<div class="footer-bottom">
+				<p>&copy; {currentYear} Revolution Trading Pros. All rights reserved.</p>
+			</div>
 		</div>
-	</div>
-</footer>
+	</footer>
+{/if}
 
 <style>
 	/* Scoped box-sizing reset for footer */
@@ -173,6 +213,14 @@
 	.marketing-footer *::before,
 	.marketing-footer *::after {
 		box-sizing: border-box;
+	}
+
+	/* Invisible sentinel for IntersectionObserver - must be in DOM before conditional content */
+	.footer-sentinel {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		pointer-events: none;
 	}
 
 	.marketing-footer {
@@ -184,7 +232,7 @@
 		min-width: 0;
 		flex-shrink: 0;
 		overflow-x: clip; /* Prevents any horizontal overflow from breaking layout */
-		contain: paint; /* ICT7 Fix: Removed 'layout style' - causes flex recalculation issues at scroll bottom */
+		/* REMOVED: contain: paint - was causing rendering issues in flex contexts */
 	}
 
 	.footer-container {
