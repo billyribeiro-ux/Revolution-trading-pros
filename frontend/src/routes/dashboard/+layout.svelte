@@ -528,7 +528,9 @@
 	/>
 
 	<!-- Main Content Area - flex: 1 1 auto fills remaining space -->
-	<main id="main-content" class="dashboard__main" class:has-secondary-sidebar={isOnMembershipRoute}>
+	<!-- ICT11+ Fix: Changed from <main> to <div> to avoid duplicate <main> elements
+	     (root layout already has <main id="main-content">) - HTML5 allows only ONE <main> per document -->
+	<div class="dashboard__main" class:has-secondary-sidebar={isOnMembershipRoute} role="region" aria-label="Dashboard content">
 		{#if isLoadingData}
 			<div class="dashboard__loading-overlay">
 				<div class="dashboard__loading-spinner"></div>
@@ -541,7 +543,7 @@
 				{@render children()}
 			</div>
 		</div>
-	</main>
+	</div>
 </div>
 
 <style>
