@@ -21,34 +21,35 @@
 	// --- GSAP ScrollTrigger Animations ---
 	onMount(() => {
 		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-		
+
 		if (prefersReducedMotion) {
 			gsap.set('[data-gsap]', { opacity: 1, y: 0 });
 			return;
 		}
 
-		gsap.set('[data-gsap]', { opacity: 0, y: 30 });
+		// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
+		const ctx = gsap.context(() => {
+			gsap.set('[data-gsap]', { opacity: 0, y: 30 });
 
-		ScrollTrigger.batch('[data-gsap]', {
-			onEnter: (batch) => {
-				gsap.to(batch, {
-					opacity: 1,
-					y: 0,
-					duration: 0.8,
-					ease: 'power3.out',
-					stagger: 0.1,
-					overwrite: true
-				});
-			},
-			start: 'top 85%',
-			once: true
+			ScrollTrigger.batch('[data-gsap]', {
+				onEnter: (batch) => {
+					gsap.to(batch, {
+						opacity: 1,
+						y: 0,
+						duration: 0.8,
+						ease: 'power3.out',
+						stagger: 0.1,
+						overwrite: true
+					});
+				},
+				start: 'top 85%',
+				once: true
+			});
+
+			ScrollTrigger.refresh();
 		});
 
-		ScrollTrigger.refresh();
-
-		return () => {
-			ScrollTrigger.getAll().forEach(trigger => trigger.kill());
-		};
+		return () => ctx.revert();
 	});
 
 	// --- EXPANDED SEO DATA ---

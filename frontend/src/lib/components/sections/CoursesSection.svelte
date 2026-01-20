@@ -164,7 +164,21 @@
 		}
 
 		return () => {
-			if (scrollTriggerInstance) scrollTriggerInstance.killAll();
+			// ICT11+ Fix: Kill only ScrollTriggers scoped to this component
+			// Previously used killAll() which destroyed ALL ScrollTriggers globally,
+			// causing layout breaks when scrolling to bottom of page
+			if (scrollTriggerInstance && (cardsRef || sectionRef)) {
+				scrollTriggerInstance.getAll().forEach((st: any) => {
+					if (
+						st.trigger === cardsRef ||
+						st.trigger === sectionRef ||
+						cardsRef?.contains(st.trigger) ||
+						sectionRef?.contains(st.trigger)
+					) {
+						st.kill();
+					}
+				});
+			}
 		};
 	});
 

@@ -267,16 +267,12 @@
 		// Cleanup function - Svelte 5 pattern
 		return () => {
 			// Use GSAP context revert for clean cleanup (GSAP 3.12+)
+			// This only reverts animations created within this component's context
 			if (animationContext) {
 				animationContext.revert();
 			}
-			// Fallback cleanup
-			if (scrollTriggerInstance) {
-				scrollTriggerInstance.getAll().forEach((trigger) => trigger.kill());
-			}
-			if (gsapInstance) {
-				gsapInstance.killTweensOf('*');
-			}
+			// Note: Removed global fallback cleanup that was killing ALL ScrollTriggers
+			// gsap.context().revert() handles proper scoped cleanup
 		};
 	});
 </script>
