@@ -120,7 +120,8 @@
 <!-- Main Content -->
 <div id="page" class="hfeed site grid-parent">
 	<div id="content" class="site-content">
-		<main class="dashboard__main class-detail">
+		<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
+		<div class="dashboard__main class-detail">
 			<!-- Page Title -->
 			<h1>{classData.title}</h1>
 
@@ -150,7 +151,7 @@
 					<ClassDownloads courseSlug={slug} title="Class Downloads" />
 				</section>
 			</div>
-		</main>
+		</div>
 	</div>
 </div>
 

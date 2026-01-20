@@ -136,7 +136,8 @@
 			<!-- Sidebar content if needed -->
 		</aside>
 
-		<main class="dashboard__main">
+		<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
+		<div class="dashboard__main">
 			<!-- Page Header with dashboard__header wrapper (matches WordPress) -->
 			<header class="dashboard__header">
 				<div class="dashboard__header-left">
@@ -237,7 +238,7 @@
 					</div>
 				</div>
 			{/if}
-		</main>
+		</div>
 	</div>
 </div>
 

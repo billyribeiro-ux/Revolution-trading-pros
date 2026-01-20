@@ -193,7 +193,8 @@
 <div id="page" class="hfeed site grid-parent">
 	<div id="content" class="site-content">
 		<div class="indicators">
-			<main>
+			<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
+			<div class="indicator-content">
 				<!-- Indicator Header Component -->
 				<IndicatorHeader name={indicator.name} platforms={indicator.platforms} />
 
@@ -212,7 +213,7 @@
 
 				<!-- Support Documentation Component -->
 				<SupportDocsSection docs={indicator.supportDocs} />
-			</main>
+			</div>
 		</div>
 	</div>
 </div>

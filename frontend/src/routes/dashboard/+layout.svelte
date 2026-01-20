@@ -528,7 +528,8 @@
 	/>
 
 	<!-- Main Content Area - flex: 1 1 auto fills remaining space -->
-	<main id="main-content" class="dashboard__main" class:has-secondary-sidebar={isOnMembershipRoute}>
+	<!-- ICT11+ Fix: Changed from <main> to <div> - root +layout.svelte already provides <main id="main-content"> -->
+	<div class="dashboard__main" class:has-secondary-sidebar={isOnMembershipRoute}>
 		{#if isLoadingData}
 			<div class="dashboard__loading-overlay">
 				<div class="dashboard__loading-spinner"></div>
@@ -541,7 +542,7 @@
 				{@render children()}
 			</div>
 		</div>
-	</main>
+	</div>
 </div>
 
 <style>

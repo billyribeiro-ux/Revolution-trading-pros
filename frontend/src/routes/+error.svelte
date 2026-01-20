@@ -107,7 +107,8 @@
 	noindex
 />
 
-<main class="error-page">
+<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
+<div class="error-page">
 	<div class="error-container">
 		<!-- Error Icon -->
 		<div class="error-icon" aria-hidden="true">
@@ -154,7 +155,7 @@
 			<a href="/support">Contact Support</a>
 		</p>
 	</div>
-</main>
+</div>
 
 <style>
 	.error-page {
