@@ -5,6 +5,8 @@
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
+	import WeAreTheBest from '$lib/components/sections/WeAreTheBest.svelte';
 
 	// Register GSAP plugin
 	if (typeof window !== 'undefined') {
@@ -1154,5 +1156,6 @@
 	</section>
 </div>
 
-<!-- Footer is handled by MarketingFooter component in +layout.svelte -->
+<WeAreTheBest />
+<!-- <MarketingFooter /> -->
 
