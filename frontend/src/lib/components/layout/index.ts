@@ -5,6 +5,7 @@
  * @author Revolution Trading Pros
  */
 
-export { default as MarketingFooter } from '../sections/MarketingFooter.svelte';
+// MarketingFooter moved to sections - import directly from sections folder
+// export { default as MarketingFooter } from '../sections/MarketingFooter.svelte';
 export { default as AppSidebar } from './AppSidebar.svelte';
 export { default as AdminSidebar } from './AdminSidebar.svelte';
