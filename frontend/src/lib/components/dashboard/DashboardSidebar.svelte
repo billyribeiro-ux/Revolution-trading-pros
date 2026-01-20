@@ -625,7 +625,8 @@
 		width: 280px;
 		background-color: #0f2d41;
 		position: static;
-		min-height: 100vh;
+		/* ICT11+ Fix: Removed min-height: 100vh - sidebar should stretch with parent flex container */
+		align-self: stretch;
 		transition: all 0.3s ease-in-out;
 	}
 
@@ -1106,12 +1107,13 @@
 		/* ═══════════════════════════════════════════════════════════════════════
 		 * TABLET/DESKTOP FIRST (≥768px) - Static flex child
 		 * This is the DEFAULT state on desktop - NOT fixed positioning
+		 * ICT11+ Fix: Removed min-height: 100vh - use align-self: stretch instead
 		 * ═══════════════════════════════════════════════════════════════════════ */
 		display: block;
 		position: static;
 		width: 280px;
 		flex: 0 0 280px;
-		min-height: 100vh;
+		align-self: stretch;
 		padding-top: 30px;
 		opacity: 1;
 		visibility: visible;
@@ -1509,7 +1511,7 @@
 		.dashboard__sidebar {
 			position: static;
 			height: auto;
-			min-height: 100vh;
+			/* ICT11+ Fix: Removed min-height: 100vh - sidebar stretches via align-self: stretch */
 			opacity: 1;
 			visibility: visible;
 			overflow: visible;

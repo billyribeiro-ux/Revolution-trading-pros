@@ -283,7 +283,8 @@
 <style>
 	.player {
 		display: flex;
-		min-height: 100vh;
+		/* ICT11+ Fix: Removed min-height: 100vh - let parent flex container handle height */
+		flex: 1;
 		background: #0f172a;
 	}
 	.main {
