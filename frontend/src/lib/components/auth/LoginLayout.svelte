@@ -83,7 +83,8 @@
 	/* Main Layout - ICT11+ Animation-First Architecture */
 	.login-layout {
 		position: relative;
-		min-height: 100vh;
+		/* ICT11+ Fix: Removed min-height: 100vh - let flexbox parent handle height */
+		flex: 1;
 		display: grid;
 		grid-template-columns: 1fr;
 		/* ICT11+ Pattern: Allow spotlight glow to extend beyond bounds */

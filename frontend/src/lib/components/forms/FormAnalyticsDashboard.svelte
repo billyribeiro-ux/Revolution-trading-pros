@@ -438,7 +438,8 @@
 	.analytics-dashboard {
 		padding: 1.5rem;
 		background-color: #f9fafb;
-		min-height: 100vh;
+		/* ICT11+ Fix: Removed min-height: 100vh - let parent flex container handle height */
+		flex: 1;
 	}
 
 	.dashboard-header {

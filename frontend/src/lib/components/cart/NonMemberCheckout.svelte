@@ -518,7 +518,8 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
 	.checkout-nonmember {
-		min-height: 100vh;
+		/* ICT11+ Fix: Removed min-height: 100vh - let parent flex container handle height */
+		flex: 1;
 		background: var(--st-bg);
 		padding: 40px 0;
 		font-family:

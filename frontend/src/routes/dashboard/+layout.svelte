@@ -616,8 +616,9 @@
 	.dashboard {
 		display: flex;
 		flex-direction: row;
-		min-block-size: 100vh;
-		min-block-size: 100dvh; /* Dynamic viewport height for mobile */
+		/* ICT11+ Fix: Removed min-block-size: 100vh which was causing footer to be pushed below viewport
+		   when dashboard layout is nested inside root layout's shared chrome */
+		flex: 1; /* Allow dashboard to grow within parent flex container */
 		position: relative;
 		isolation: isolate; /* Create stacking context */
 	}
