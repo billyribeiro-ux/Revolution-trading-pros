@@ -155,7 +155,7 @@
 		flex-shrink: 0;
 		margin-top: auto; /* Ensures footer sticks to bottom when content is short */
 		overflow-x: clip; /* Prevents any horizontal overflow from breaking layout */
-		contain: layout style paint; /* CSS containment for rendering optimization */
+		contain: paint; /* ICT7 Fix: Removed 'layout style' - causes flex recalculation issues at scroll bottom */
 	}
 
 	.footer-container {
