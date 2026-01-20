@@ -15,7 +15,6 @@
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import ClassVideos from '$lib/components/ClassVideos.svelte';
 	import ClassDownloads from '$lib/components/ClassDownloads.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	interface Props {
 		data: {
@@ -155,8 +154,6 @@
 		</div>
 	</div>
 </div>
-
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

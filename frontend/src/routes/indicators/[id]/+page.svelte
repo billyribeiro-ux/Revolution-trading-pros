@@ -18,7 +18,6 @@
 	import { page } from '$app/state';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
 	import HaveQuestionsSection from '$lib/components/sections/HaveQuestionsSection.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 	import IndicatorHeader from '$lib/components/indicators/IndicatorHeader.svelte';
 	import TrainingVideosSection from '$lib/components/indicators/TrainingVideosSection.svelte';
 	import PlatformDownloads from '$lib/components/indicators/PlatformDownloads.svelte';
@@ -225,8 +224,6 @@
 	phone="8002668659"
 	phoneDisplay="(800) 266-8659"
 />
-
-<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════

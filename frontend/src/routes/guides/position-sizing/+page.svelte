@@ -1,6 +1,5 @@
 <script lang="ts">
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 </script>
 
 <svelte:head>
@@ -192,8 +191,6 @@
 		</section>
 	</div>
 </div>
-
-<MarketingFooter />
 
 <style>
 	.guide-page {
