@@ -514,7 +514,7 @@
 					{/if}
 				</div>
 			{/if}
-		</main>
+		</section>
 	</div>
 	<!-- End admin-page-container -->
 </div>

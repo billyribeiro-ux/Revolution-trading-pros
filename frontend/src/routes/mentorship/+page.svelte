@@ -148,7 +148,8 @@
 		style="background-image: linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px); background-size: 60px 60px;"
 	></div>
 
-	<main class="relative z-10">
+	<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
+	<div class="relative z-10">
 		<nav class="w-full border-b border-white/10 bg-[#020202]/80 backdrop-blur-sm fixed top-0 z-50">
 			<div class="max-w-[1600px] mx-auto px-6 h-16 flex justify-between items-center">
 				<div
@@ -553,5 +554,5 @@
 				</div>
 			</div>
 		</section>
-	</main>
+	</div>
 </div>

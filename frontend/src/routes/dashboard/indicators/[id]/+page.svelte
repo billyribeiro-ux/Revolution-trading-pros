@@ -173,7 +173,8 @@
 <div id="page" class="hfeed site grid-parent">
 	<div id="content" class="site-content">
 		<div class="indicators">
-			<main class="indicator-detail">
+			<!-- ICT11+ Fix: Changed from <main> to <div> - root layout provides <main> -->
+			<div class="indicator-detail">
 				<!-- Page Header -->
 				<header class="indicator-detail__header">
 					<h1>{indicator.name}</h1>
@@ -295,7 +296,7 @@
 						Back to My Indicators
 					</a>
 				</div>
-			</main>
+			</div>
 		</div>
 	</div>
 </div>

@@ -30,12 +30,7 @@
 	import { isAdminUser } from '$lib/stores/auth.svelte';
 	import { initializeAuth } from '$lib/api/auth';
 	import type { Snippet } from 'svelte';
-	import {
-		initializeConsent,
-		ConsentBanner,
-		ConsentPreferencesModal,
-		ConsentSettingsButton
-	} from '$lib/consent';
+	import { initializeConsent } from '$lib/consent';
 	import { trackPageView } from '$lib/consent/vendors/ga4';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -54,20 +49,22 @@
 	const pathname = $derived(page.url.pathname);
 	const isAdminArea = $derived(pathname.startsWith('/admin'));
 	const isEmbedArea = $derived(pathname.startsWith('/embed'));
-	const isDashboardArea = $derived(pathname.startsWith('/dashboard'));
 
 	// Svelte 5: Use .current for rune-based stores (NOT $ prefix)
-	const isAdmin = $derived(mounted && isAdminUser.current);
-
-	// Determine if page needs shared layout (NavBar + Footer)
-	const needsSharedLayout = $derived(!isAdminArea && !isEmbedArea);
+	// CRITICAL: Single unified condition for toolbar render AND padding
+	// Eliminates race condition between toolbar visibility and layout padding
+	const showAdminToolbar = $derived(mounted && isAdminUser.current);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// SIDE EFFECTS - SvelteKit Navigation Lifecycle
 	// ═══════════════════════════════════════════════════════════════════════════
 	afterNavigate(({ to }) => {
 		if (to?.url) {
-			trackPageView(to.url.href);
+			try {
+				trackPageView(to.url.href);
+			} catch (err) {
+				console.debug('[Layout] Page view tracking failed (non-critical):', err);
+			}
 		}
 	});
 
@@ -78,13 +75,28 @@
 		mounted = true;
 
 		// onMount ONLY runs in browser - no redundant check needed
+		// All initializers wrapped in try/catch to prevent render interruption
 		initializeAuth().catch((err) => {
 			console.debug('[Layout] Auth init failed (non-critical):', err);
 		});
 
-		registerServiceWorker();
-		initPerformanceMonitoring();
-		initializeConsent();
+		try {
+			registerServiceWorker();
+		} catch (err) {
+			console.debug('[Layout] Service worker registration failed (non-critical):', err);
+		}
+
+		try {
+			initPerformanceMonitoring();
+		} catch (err) {
+			console.debug('[Layout] Performance monitoring init failed (non-critical):', err);
+		}
+
+		try {
+			initializeConsent();
+		} catch (err) {
+			console.debug('[Layout] Consent init failed (non-critical):', err);
+		}
 	});
 </script>
 
@@ -104,9 +116,9 @@
 {:else}
 	<!-- Dashboard + Marketing: Shared layout with NavBar + Footer -->
 	<!-- Pages control their own backgrounds (no forced bg-white) -->
-	<div class="min-h-screen flex flex-col min-w-0" class:has-admin-toolbar={isAdmin}>
-		<!-- Hydration-safe: Admin toolbar only after client mount -->
-		{#if mounted}
+	<div class="min-h-screen flex flex-col min-w-0" class:has-admin-toolbar={showAdminToolbar}>
+		<!-- Hydration-safe: Admin toolbar render AND padding use same condition -->
+		{#if showAdminToolbar}
 			<AdminToolbar />
 		{/if}
 
@@ -118,12 +130,7 @@
 
 		<MarketingFooter />
 
-		<!-- Hydration-safe: Consent components only after client mount -->
-		<!-- {#if mounted}
-			<ConsentBanner />
-			<ConsentPreferencesModal />
-			<ConsentSettingsButton position="bottom-left" />
-		{/if} -->
+		<!-- Consent UI: Re-enable when consent system is ready -->
 	</div>
 {/if}
 
