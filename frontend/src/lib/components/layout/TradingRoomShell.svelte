@@ -1,313 +1,384 @@
 <script lang="ts">
-	/**
-	 * TradingRoomShell - Full-screen layout for live trading rooms
-	 *
-	 * Provides a full-screen, immersive layout for live trading room experiences
-	 * with support for video streams, chat panels, alerts, and trading tools.
-	 *
-	 * @version 1.0.0
-	 * @author Revolution Trading Pros
-	 */
+	import { onMount } from 'svelte';
+	import {
+		IconBrandTwitter,
+		IconBrandInstagram,
+		IconBrandYoutube,
+		IconBrandFacebook
+	} from '$lib/icons';
 
-	import { browser } from '$app/environment';
-	import { user } from '$lib/stores/auth.svelte';
-	import IconSettings from '@tabler/icons-svelte/icons/settings';
-	import IconMaximize from '@tabler/icons-svelte/icons/maximize';
-	import IconMinimize from '@tabler/icons-svelte/icons/minimize';
-	import IconLayoutSidebar from '@tabler/icons-svelte/icons/layout-sidebar';
-	import IconLayoutSidebarRight from '@tabler/icons-svelte/icons/layout-sidebar-right';
-	import type { Snippet } from 'svelte';
+	let currentYear = $state(new Date().getFullYear());
 
-	interface Props {
-		roomName?: string;
-		roomIcon?: string;
-		showSidebar?: boolean;
-		showRightPanel?: boolean;
-		header?: Snippet;
-		sidebar?: Snippet;
-		rightPanel?: Snippet;
-		children: Snippet;
-	}
-
-	let {
-		roomName = 'Live Trading Room',
-		roomIcon = '📊',
-		showSidebar = true,
-		showRightPanel = false,
-		header,
-		sidebar,
-		rightPanel,
-		children
-	}: Props = $props();
-
-	let sidebarOpen = $state(false);
-	let rightPanelOpen = $state(false);
-
-	// Sync with prop changes
-	$effect(() => {
-		sidebarOpen = showSidebar;
+	onMount(() => {
+		// Ensures correct year even if the page is prerendered at build time.
+		currentYear = new Date().getFullYear();
 	});
 
-	$effect(() => {
-		rightPanelOpen = showRightPanel;
-	});
-	let isFullscreen = $state(false);
+	const footerLinks = {
+		products: [
+			{ href: '/indicators', label: 'Indicators' },
+			{ href: '/classes', label: 'Classes' },
+			{ href: '/dashboard', label: 'Dashboard' },
+			{ href: '/pricing', label: 'Pricing' }
+		],
+		company: [
+			{ href: '/about', label: 'About Us' },
+			{ href: '/blog', label: 'Blog' },
+			{ href: '/contact', label: 'Contact' },
+			{ href: '/careers', label: 'Careers' }
+		],
+		legal: [
+			{ href: '/terms', label: 'Terms of Service' },
+			{ href: '/privacy', label: 'Privacy Policy' },
+			{ href: '/disclaimer', label: 'Risk Disclaimer' },
+			{ href: '/refund', label: 'Refund Policy' }
+		]
+	};
 
-	function toggleSidebar() {
-		sidebarOpen = !sidebarOpen;
-	}
-
-	function toggleRightPanel() {
-		rightPanelOpen = !rightPanelOpen;
-	}
-
-	// SSR-safe: Guard document access with browser check
-	async function toggleFullscreen() {
-		if (!browser) return;
-		if (!document.fullscreenElement) {
-			await document.documentElement.requestFullscreen();
-			isFullscreen = true;
-		} else {
-			await document.exitFullscreen();
-			isFullscreen = false;
+	const socialLinks = [
+		{
+			href: 'https://facebook.com/revolutiontradingpros',
+			icon: IconBrandFacebook,
+			label: 'Facebook'
+		},
+		{
+			href: 'https://twitter.com/revtradingpros',
+			icon: IconBrandTwitter,
+			label: 'X (Twitter)'
+		},
+		{
+			href: 'https://instagram.com/revolutiontradingpros',
+			icon: IconBrandInstagram,
+			label: 'Instagram'
+		},
+		{
+			href: 'https://youtube.com/@RevolutionTradingPros',
+			icon: IconBrandYoutube,
+			label: 'YouTube'
 		}
-	}
-
-	// SSR-safe: Guard document access with browser check
-	function handleFullscreenChange() {
-		if (!browser) return;
-		isFullscreen = !!document.fullscreenElement;
-	}
+	];
 </script>
 
-<svelte:document onfullscreenchange={handleFullscreenChange} />
+<footer class="marketing-footer">
+	<div class="footer-container">
+		<div class="footer-grid">
+			<div class="footer-brand">
+				<a href="/" class="footer-logo" aria-label="Revolution Trading Pros home">
+					<img
+						src="/revolution-trading-pros.png"
+						alt="Revolution Trading Pros"
+						width="160"
+						height="40"
+						loading="lazy"
+						decoding="async"
+					/>
+				</a>
 
-<div class="trading-room-shell" class:fullscreen={isFullscreen}>
-	<!-- Header Bar -->
-	<header class="shell-header">
-		<div class="header-left">
-			<button class="icon-btn" onclick={toggleSidebar} title="Toggle sidebar">
-				<IconLayoutSidebar size={20} />
-			</button>
-			<div class="room-info">
-				<span class="room-icon">{roomIcon}</span>
-				<span class="room-name">{roomName}</span>
-			</div>
-		</div>
+				<p class="footer-tagline">
+					Professional trading education and tools for disciplined traders.
+				</p>
 
-		{#if header}
-			<div class="header-center">
-				{@render header()}
-			</div>
-		{/if}
-
-		<div class="header-right">
-			{#if rightPanel}
-				<button class="icon-btn" onclick={toggleRightPanel} title="Toggle panel">
-					<IconLayoutSidebarRight size={20} />
-				</button>
-			{/if}
-			<button class="icon-btn" onclick={toggleFullscreen} title="Toggle fullscreen">
-				{#if isFullscreen}
-					<IconMinimize size={20} />
-				{:else}
-					<IconMaximize size={20} />
-				{/if}
-			</button>
-			<button class="icon-btn" title="Settings">
-				<IconSettings size={20} />
-			</button>
-			<div class="user-menu">
-				<div class="user-avatar">
-					{$user?.name?.[0]?.toUpperCase() || 'U'}
+				<div class="social-links" aria-label="Social links">
+					{#each socialLinks as social}
+						{@const Icon = social.icon}
+						<a
+							href={social.href}
+							target="_blank"
+							rel="noopener noreferrer"
+							class="social-link"
+							aria-label={social.label}
+							title={social.label}
+						>
+							<Icon size={20} />
+						</a>
+					{/each}
 				</div>
 			</div>
+
+			<nav class="footer-column" aria-labelledby="footer-products">
+				<h2 class="footer-heading" id="footer-products">Products</h2>
+				<ul class="footer-list">
+					{#each footerLinks.products as link}
+						<li><a href={link.href}>{link.label}</a></li>
+					{/each}
+				</ul>
+			</nav>
+
+			<nav class="footer-column" aria-labelledby="footer-company">
+				<h2 class="footer-heading" id="footer-company">Company</h2>
+				<ul class="footer-list">
+					{#each footerLinks.company as link}
+						<li><a href={link.href}>{link.label}</a></li>
+					{/each}
+				</ul>
+			</nav>
+
+			<nav class="footer-column" aria-labelledby="footer-legal">
+				<h2 class="footer-heading" id="footer-legal">Legal</h2>
+				<ul class="footer-list">
+					{#each footerLinks.legal as link}
+						<li><a href={link.href}>{link.label}</a></li>
+					{/each}
+				</ul>
+			</nav>
 		</div>
-	</header>
 
-	<!-- Main Layout -->
-	<div class="shell-body">
-		<!-- Left Sidebar -->
-		{#if sidebar && sidebarOpen}
-			<aside class="shell-sidebar">
-				{@render sidebar()}
-			</aside>
-		{/if}
+		<div class="risk-disclaimer">
+			<p>
+				<strong>Risk Disclaimer:</strong> Trading involves substantial risk of loss and is not suitable
+				for all investors. Past performance is not indicative of future results. The content provided
+				is for educational purposes only and should not be considered financial advice.
+			</p>
+		</div>
 
-		<!-- Main Content -->
-		<main class="shell-main">
-			{@render children()}
-		</main>
-
-		<!-- Right Panel -->
-		{#if rightPanel && rightPanelOpen}
-			<aside class="shell-right-panel">
-				{@render rightPanel()}
-			</aside>
-		{/if}
+		<div class="footer-bottom">
+			<p>&copy; {currentYear} Revolution Trading Pros. All rights reserved.</p>
+		</div>
 	</div>
-</div>
+</footer>
 
 <style>
-	.trading-room-shell {
-		display: flex;
-		flex-direction: column;
-		height: 100vh;
-		width: 100vw;
-		background: var(--color-rtp-bg, #0f172a);
-		color: var(--color-rtp-text, #e2e8f0);
-		overflow: hidden;
+	/* Scoped box-sizing reset for footer */
+	.marketing-footer,
+	.marketing-footer *,
+	.marketing-footer *::before,
+	.marketing-footer *::after {
+		box-sizing: border-box;
 	}
 
-	.trading-room-shell.fullscreen {
-		position: fixed;
-		top: 0;
-		left: 0;
-		z-index: 9999;
+	.marketing-footer {
+		background: linear-gradient(180deg, #1e293b 0%, #0f172a 100%);
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		padding: 4rem 0 2rem;
+		width: 100%;
+		max-width: 100%;
+		min-width: 0;
+		flex-shrink: 0;
+		margin-top: auto;
+		overflow-x: hidden;
+		/* REMOVED: contain: layout style paint; — This was breaking scroll calculations */
 	}
 
-	/* Header */
-	.shell-header {
+	.footer-container {
+		max-width: 1400px;
+		width: 100%;
+		margin: 0 auto;
+		padding: 0 1.5rem;
+		min-width: 0;
+	}
+
+	.footer-grid {
+		display: grid;
+		grid-template-columns: 2fr 1fr 1fr 1fr;
+		gap: 3rem;
+		margin-bottom: 3rem;
+		min-width: 0;
+	}
+
+	.footer-brand {
+		max-width: 320px;
+		min-width: 0;
+	}
+
+	.footer-logo {
+		display: inline-block;
+		line-height: 0;
+	}
+
+	.footer-logo img {
+		height: 40px;
+		width: auto;
+		max-width: 100%;
+		margin-bottom: 1rem;
+		display: block;
+		object-fit: contain;
+	}
+
+	.footer-tagline {
+		color: #64748b;
+		font-size: 0.9375rem;
+		line-height: 1.6;
+		margin: 0 0 1.5rem 0;
+		overflow-wrap: break-word;
+		word-wrap: break-word;
+	}
+
+	.social-links {
 		display: flex;
+		flex-direction: row;
+		flex-wrap: wrap;
+		gap: 0.75rem;
+	}
+
+	.social-link {
+		width: 40px;
+		height: 40px;
+		min-width: 40px;
+		display: inline-flex;
 		align-items: center;
-		justify-content: space-between;
-		height: 48px;
-		padding: 0 16px;
-		background: var(--color-rtp-surface, #1e293b);
-		border-bottom: 1px solid var(--color-rtp-border, #334155);
+		justify-content: center;
+		background: rgba(99, 102, 241, 0.1);
+		border: 1px solid rgba(99, 102, 241, 0.2);
+		border-radius: 0.5rem;
+		color: #94a3b8;
+		transition: all 0.2s ease;
+		text-decoration: none;
 		flex-shrink: 0;
 	}
 
-	.header-left,
-	.header-right {
-		display: flex;
-		align-items: center;
-		gap: 12px;
+	.social-link:hover {
+		background: rgba(99, 102, 241, 0.2);
+		color: #818cf8;
+		transform: translateY(-2px);
 	}
 
-	.header-center {
-		flex: 1;
-		display: flex;
-		justify-content: center;
+	.social-link:focus-visible {
+		outline: 2px solid rgba(129, 140, 248, 0.9);
+		outline-offset: 2px;
 	}
 
-	.room-info {
-		display: flex;
-		align-items: center;
-		gap: 8px;
+	/* Ensure icons don't overflow */
+	.social-link :global(svg) {
+		width: 20px;
+		height: 20px;
+		flex-shrink: 0;
 	}
 
-	.room-icon {
-		font-size: 20px;
+	.footer-column {
+		display: block;
+		min-width: 0;
 	}
 
-	.room-name {
+	.footer-heading {
+		color: #f1f5f9;
+		font-size: 0.875rem;
 		font-weight: 600;
-		font-size: 14px;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin: 0 0 1.25rem 0;
 	}
 
-	.icon-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
-		border: none;
-		background: transparent;
-		color: var(--color-rtp-text-muted, #94a3b8);
-		border-radius: 6px;
-		cursor: pointer;
-		transition: all 0.15s ease;
+	.footer-list {
+		list-style: none;
+		padding: 0;
+		margin: 0;
 	}
 
-	.icon-btn:hover {
-		background: var(--color-rtp-hover, rgba(255, 255, 255, 0.1));
-		color: var(--color-rtp-text, #e2e8f0);
+	.footer-list li {
+		margin-bottom: 0.75rem;
+		display: block;
 	}
 
-	.user-menu {
-		display: flex;
-		align-items: center;
+	.footer-list li:last-child {
+		margin-bottom: 0;
 	}
 
-	.user-avatar {
-		width: 28px;
-		height: 28px;
-		border-radius: 50%;
-		background: linear-gradient(
-			135deg,
-			var(--color-rtp-primary, #3b82f6) 0%,
-			var(--color-rtp-primary-dark, #2563eb) 100%
-		);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		font-size: 12px;
-		font-weight: 600;
-		color: white;
+	.footer-list a {
+		color: #94a3b8;
+		text-decoration: none;
+		font-size: 0.9375rem;
+		transition: color 0.2s ease;
+		display: inline-block;
 	}
 
-	/* Body Layout */
-	.shell-body {
-		display: flex;
-		flex: 1;
-		overflow: hidden;
+	.footer-list a:hover {
+		color: #f1f5f9;
 	}
 
-	.shell-sidebar {
-		width: 260px;
-		background: var(--color-rtp-surface, #1e293b);
-		border-right: 1px solid var(--color-rtp-border, #334155);
-		overflow-y: auto;
-		flex-shrink: 0;
+	.footer-list a:focus-visible {
+		outline: 2px solid rgba(129, 140, 248, 0.9);
+		outline-offset: 3px;
+		border-radius: 0.25rem;
 	}
 
-	.shell-main {
-		flex: 1;
-		overflow: auto;
-		display: flex;
-		flex-direction: column;
+	.risk-disclaimer {
+		padding: 1.5rem;
+		background: rgba(245, 158, 11, 0.05);
+		border: 1px solid rgba(245, 158, 11, 0.2);
+		border-radius: 0.75rem;
+		margin-bottom: 2rem;
 	}
 
-	.shell-right-panel {
-		width: 320px;
-		background: var(--color-rtp-surface, #1e293b);
-		border-left: 1px solid var(--color-rtp-border, #334155);
-		overflow-y: auto;
-		flex-shrink: 0;
+	.risk-disclaimer p {
+		color: #94a3b8;
+		font-size: 0.8125rem;
+		line-height: 1.6;
+		margin: 0;
 	}
 
-	/* Responsive */
+	.risk-disclaimer strong {
+		color: #fbbf24;
+	}
+
+	.footer-bottom {
+		padding-top: 2rem;
+		border-top: 1px solid rgba(99, 102, 241, 0.1);
+		text-align: center;
+	}
+
+	.footer-bottom p {
+		color: #64748b;
+		font-size: 0.875rem;
+		margin: 0;
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.social-link,
+		.footer-list a {
+			transition: none;
+		}
+
+		.social-link:hover {
+			transform: none;
+		}
+	}
+
+	/* Tablet breakpoint */
 	@media (max-width: 1024px) {
-		.shell-sidebar {
-			position: fixed;
-			top: 48px;
-			left: 0;
-			bottom: 0;
-			z-index: 100;
-			transform: translateX(0);
-			transition: transform 0.2s ease;
+		.marketing-footer {
+			padding: 3rem 0 1.5rem;
 		}
 
-		.shell-right-panel {
-			position: fixed;
-			top: 48px;
-			right: 0;
-			bottom: 0;
-			z-index: 100;
-			transform: translateX(0);
-			transition: transform 0.2s ease;
+		.footer-grid {
+			grid-template-columns: 1fr 1fr;
+			gap: 2rem;
+		}
+
+		.footer-brand {
+			grid-column: 1 / -1;
+			max-width: 100%;
+		}
+
+		.social-links {
+			justify-content: flex-start;
 		}
 	}
 
+	/* Mobile breakpoint */
 	@media (max-width: 640px) {
-		.room-name {
-			display: none;
+		.marketing-footer {
+			padding: 2.5rem 0 1.5rem;
 		}
 
-		.shell-sidebar,
-		.shell-right-panel {
-			width: 100%;
+		.footer-container {
+			padding: 0 1rem;
+		}
+
+		.footer-grid {
+			grid-template-columns: 1fr;
+			gap: 2rem;
+		}
+
+		.footer-brand {
+			grid-column: 1;
+		}
+
+		.risk-disclaimer {
+			padding: 1rem;
+		}
+
+		.risk-disclaimer p {
+			font-size: 0.75rem;
 		}
 	}
 </style>
