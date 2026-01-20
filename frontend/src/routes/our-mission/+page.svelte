@@ -1104,7 +1104,7 @@
 </div>
 
 <WeAreTheBest />
-<!-- <MarketingFooter /> -->
+<MarketingFooter />
 
 <style>
 	/* --- Custom Styles for Specific Effects --- */
