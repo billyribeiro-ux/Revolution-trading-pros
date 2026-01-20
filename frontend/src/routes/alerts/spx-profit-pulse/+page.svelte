@@ -29,7 +29,16 @@
 
 		// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
 		const ctx = gsap.context(() => {
-			gsap.set('[data-gsap]', { opacity: 0, y: 30 });
+			// Only set initial hidden state for elements NOT yet in viewport
+			// This prevents elements from being hidden if page is scrolled before JS loads
+			const elements = document.querySelectorAll('[data-gsap]');
+			elements.forEach((el) => {
+				const rect = el.getBoundingClientRect();
+				const isInViewport = rect.top < window.innerHeight * 0.85;
+				if (!isInViewport) {
+					gsap.set(el, { opacity: 0, y: 30 });
+				}
+			});
 
 			ScrollTrigger.batch('[data-gsap]', {
 				onEnter: (batch) => {
