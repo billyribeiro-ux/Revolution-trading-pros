@@ -24,6 +24,7 @@
 	import IconActivity from '@tabler/icons-svelte/icons/activity';
 
 	import SEOHead from '$lib/components/SEOHead.svelte';
+	import { MarketingFooter } from '$lib/components/layout';
 
 	// --- Animation Logic (Svelte 5 Runes) ---
 	let containerRef: HTMLElement | undefined = $state();
@@ -875,3 +876,5 @@
 		</section>
 	</section>
 </div>
+
+<MarketingFooter />

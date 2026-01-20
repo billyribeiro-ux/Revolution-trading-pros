@@ -5,6 +5,7 @@
 	import { gsap } from 'gsap';
 	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
 	import SEOHead from '$lib/components/SEOHead.svelte';
+	import { MarketingFooter } from '$lib/components/layout';
 
 	// Register GSAP plugin
 	if (typeof window !== 'undefined') {
@@ -1012,3 +1013,5 @@
 	</section>
 
 </div>
+
+<MarketingFooter />

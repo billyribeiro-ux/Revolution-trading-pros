@@ -21,7 +21,6 @@
 	import '../app.css';
 	import AdminToolbar from '$lib/components/AdminToolbar.svelte';
 	import { NavBar } from '$lib/components/nav';
-	import { MarketingFooter } from '$lib/components/layout';
 	import { onMount } from 'svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { page } from '$app/state';
@@ -114,8 +113,9 @@
 	<!-- Admin/Embed: Own layouts, no shared chrome -->
 	{@render children()}
 {:else}
-	<!-- Dashboard + Marketing: Shared layout with NavBar + Footer -->
+	<!-- Dashboard + Marketing: Shared layout with NavBar -->
 	<!-- Pages control their own backgrounds (no forced bg-white) -->
+	<!-- Footer moved to individual pages for better control -->
 	<div class="min-h-screen flex flex-col min-w-0" class:has-admin-toolbar={showAdminToolbar}>
 		<!-- Hydration-safe: Admin toolbar render AND padding use same condition -->
 		{#if showAdminToolbar}
@@ -127,8 +127,6 @@
 		<main id="main-content" class="flex-1 min-h-0 min-w-0 overflow-x-clip">
 			{@render children()}
 		</main>
-
-		<MarketingFooter />
 
 		<!-- Consent UI: Re-enable when consent system is ready -->
 	</div>
