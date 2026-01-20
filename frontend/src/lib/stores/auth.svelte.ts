@@ -634,32 +634,29 @@ export const authStore = new AuthStoreClass();
 // Components can import these directly for backward compatibility
 
 /**
- * Reactive user getter - use in components as: {user?.name}
- * In Svelte 5, access via authStore.user or this exported getter
+ * Reactive user getter - use in components as: {$user?.name}
+ * ICT11+ FIX: Properly delegates to authStore.subscribe() so updates propagate
  */
 export const user = {
 	get current() {
 		return authStore.user;
 	},
-	// For components that destructure or use directly
 	subscribe(fn: (value: User | null) => void) {
-		// Initial call
-		fn(authStore.user);
-		// Return unsubscribe (no-op since we use $state reactivity)
-		return () => {};
+		// Delegate to authStore and extract user field
+		return authStore.subscribe((snapshot) => fn(snapshot.user));
 	}
 };
 
 /**
- * Reactive auth status getter
+ * Reactive auth status getter - use as {$isAuthenticated}
+ * ICT11+ FIX: Properly delegates to authStore.subscribe() so updates propagate
  */
 export const isAuthenticated = {
 	get current() {
 		return authStore.isAuthenticated;
 	},
 	subscribe(fn: (value: boolean) => void) {
-		fn(authStore.isAuthenticated);
-		return () => {};
+		return authStore.subscribe((snapshot) => fn(snapshot.isAuthenticated));
 	}
 };
 
@@ -668,8 +665,7 @@ export const isLoading = {
 		return authStore.isLoading;
 	},
 	subscribe(fn: (value: boolean) => void) {
-		fn(authStore.isLoading);
-		return () => {};
+		return authStore.subscribe((snapshot) => fn(snapshot.isLoading));
 	}
 };
 
@@ -678,8 +674,7 @@ export const isInitializing = {
 		return authStore.isInitializing;
 	},
 	subscribe(fn: (value: boolean) => void) {
-		fn(authStore.isInitializing);
-		return () => {};
+		return authStore.subscribe((snapshot) => fn(snapshot.isInitializing));
 	}
 };
 
@@ -688,8 +683,7 @@ export const sessionId = {
 		return authStore.sessionId;
 	},
 	subscribe(fn: (value: string | null) => void) {
-		fn(authStore.sessionId);
-		return () => {};
+		return authStore.subscribe((snapshot) => fn(snapshot.sessionId));
 	}
 };
 
@@ -698,8 +692,7 @@ export const sessionInvalidated = {
 		return authStore.sessionInvalidated;
 	},
 	subscribe(fn: (value: boolean) => void) {
-		fn(authStore.sessionInvalidated);
-		return () => {};
+		return authStore.subscribe((snapshot) => fn(snapshot.sessionInvalidated));
 	}
 };
 
@@ -708,8 +701,7 @@ export const invalidationReason = {
 		return authStore.invalidationReason;
 	},
 	subscribe(fn: (value: string | null) => void) {
-		fn(authStore.invalidationReason);
-		return () => {};
+		return authStore.subscribe((snapshot) => fn(snapshot.invalidationReason));
 	}
 };
 
@@ -718,8 +710,8 @@ export const isSuperAdmin = {
 		return authStore.isSuperAdmin;
 	},
 	subscribe(fn: (value: boolean) => void) {
-		fn(authStore.isSuperAdmin);
-		return () => {};
+		// isSuperAdmin is derived, not in snapshot - compute from user
+		return authStore.subscribe((snapshot) => fn(isSuperadmin(getSafeUser(snapshot.user))));
 	}
 };
 
@@ -728,8 +720,8 @@ export const isAdminUser = {
 		return authStore.isAdminUser;
 	},
 	subscribe(fn: (value: boolean) => void) {
-		fn(authStore.isAdminUser);
-		return () => {};
+		// isAdminUser is derived, not in snapshot - compute from user
+		return authStore.subscribe((snapshot) => fn(checkIsAdmin(getSafeUser(snapshot.user))));
 	}
 };
 
@@ -738,8 +730,8 @@ export const userRole = {
 		return authStore.userRole;
 	},
 	subscribe(fn: (value: string | null) => void) {
-		fn(authStore.userRole);
-		return () => {};
+		// userRole is derived, not in snapshot - compute from user
+		return authStore.subscribe((snapshot) => fn(getHighestRole(getSafeUser(snapshot.user))));
 	}
 };
 
@@ -748,8 +740,8 @@ export const userPermissions = {
 		return authStore.userPermissions;
 	},
 	subscribe(fn: (value: string[]) => void) {
-		fn(authStore.userPermissions);
-		return () => {};
+		// userPermissions is derived, not in snapshot - compute from user
+		return authStore.subscribe((snapshot) => fn(getUserPermissions(getSafeUser(snapshot.user))));
 	}
 };
 
