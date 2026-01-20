@@ -21,7 +21,7 @@
 	import CTASection from '$lib/components/sections/CTASection.svelte';
 	import SocialMediaSection from '$lib/components/sections/SocialMediaSection.svelte';
 	import SEOHead from '$lib/components/SEOHead.svelte';
-	import { MarketingFooter } from '$lib/components/layout';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	// ICT 11+ CORB Fix: Use same-origin endpoints
 	const API_URL = '';
