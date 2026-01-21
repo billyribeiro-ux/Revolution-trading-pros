@@ -1416,32 +1416,7 @@
 		text-align: center;
 	}
 
-	.filter-pills {
-		display: flex;
-		gap: 8px;
-		flex-wrap: wrap;
-	}
-
-	.pill {
-		background: #f3f4f6;
-		border: none;
-		padding: 8px 16px;
-		border-radius: 20px;
-		font-size: 13px;
-		font-weight: 600;
-		color: #666;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.pill:hover {
-		background: #e5e7eb;
-	}
-
-	.pill.active {
-		background: #143e59;
-		color: #fff;
-	}
+	/* Legacy filter-pills CSS moved to AlertFilters.svelte */
 
 	@media (max-width: 640px) {
 		.section-header {
@@ -1454,20 +1429,6 @@
 		.section-header h2 {
 			font-size: 18px;
 			text-align: left;
-		}
-
-		.filter-pills {
-			width: 100%;
-			overflow-x: auto;
-			-webkit-overflow-scrolling: touch;
-			padding-bottom: 4px;
-		}
-
-		.pill {
-			padding: 7px 14px;
-			font-size: 12px;
-			white-space: nowrap;
-			flex-shrink: 0;
 		}
 	}
 
@@ -1940,46 +1901,5 @@
 		box-shadow: 0 4px 12px rgba(246, 149, 50, 0.4);
 	}
 
-	.admin-actions {
-		display: flex;
-		gap: 8px;
-		margin-top: 12px;
-		padding-top: 12px;
-		border-top: 1px solid #e5e7eb;
-	}
-
-	.admin-action-btn {
-		padding: 6px 14px;
-		border-radius: 6px;
-		font-size: 12px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-		border: none;
-	}
-
-	.admin-action-btn.edit {
-		background: #e0f2fe;
-		color: #0369a1;
-	}
-
-	.admin-action-btn.edit:hover {
-		background: #bae6fd;
-	}
-
-	.admin-action-btn.delete {
-		background: #fee2e2;
-		color: #991b1b;
-	}
-
-	.admin-action-btn.delete:hover {
-		background: #fecaca;
-	}
-
-	.tos-display {
-		background: #1a1a2e;
-		border-radius: 8px;
-		padding: 10px 14px;
-		margin-top: 12px;
-	}
+	/* Legacy admin-actions/tos-display CSS moved to AlertCard.svelte */
 </style>
