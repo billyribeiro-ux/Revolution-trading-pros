@@ -1,0 +1,217 @@
+<script lang="ts">
+	/**
+	 * ═══════════════════════════════════════════════════════════════════════════════
+	 * WeeklyVideoCard Component - Weekly Breakdown Video
+	 * ═══════════════════════════════════════════════════════════════════════════════
+	 *
+	 * @description Compact video card for the weekly breakdown in sidebar
+	 * @version 4.0.0 - January 2026 - Nuclear Build Specification
+	 * @standards Apple Principal Engineer ICT 7+ Standards
+	 */
+	import type { WeeklyVideo } from '../types';
+	import { formatDateTime } from '../utils/formatters';
+
+	interface Props {
+		video: WeeklyVideo;
+		isLoading?: boolean;
+		onPlay?: () => void;
+	}
+
+	const { video, isLoading = false, onPlay }: Props = $props();
+</script>
+
+<div class="weekly-video-card" role="region" aria-labelledby="weekly-video-heading">
+	<h3 id="weekly-video-heading" class="card-title">
+		<svg viewBox="0 0 20 20" fill="currentColor" class="title-icon">
+			<path d="M3.25 4A2.25 2.25 0 001 6.25v7.5A2.25 2.25 0 003.25 16h7.5A2.25 2.25 0 0013 13.75v-7.5A2.25 2.25 0 0010.75 4h-7.5zM19 4.75a.75.75 0 00-1.28-.53l-3 3a.75.75 0 00-.22.53v4.5c0 .199.079.39.22.53l3 3a.75.75 0 001.28-.53V4.75z" />
+		</svg>
+		Weekly Breakdown
+	</h3>
+
+	{#if isLoading}
+		<div class="skeleton-thumbnail"></div>
+		<div class="skeleton-text"></div>
+		<div class="skeleton-text short"></div>
+	{:else}
+		<div class="video-thumbnail-container">
+			<img
+				src={video.thumbnailUrl}
+				alt="Thumbnail for {video.title}"
+				class="video-thumbnail"
+				loading="lazy"
+			/>
+			<button
+				class="play-overlay"
+				onclick={onPlay}
+				aria-label="Play {video.title}"
+			>
+				<div class="play-button">
+					<svg viewBox="0 0 24 24" fill="currentColor" class="play-icon">
+						<path d="M8 5v14l11-7z" />
+					</svg>
+				</div>
+				<span class="duration-badge">{video.duration}</span>
+			</button>
+		</div>
+
+		<h4 class="video-title">{video.title}</h4>
+		<p class="video-date">Published {formatDateTime(video.publishedAt)}</p>
+
+		<a href={video.videoUrl} class="watch-full-link" target="_blank" rel="noopener">
+			Watch Full Video →
+		</a>
+	{/if}
+</div>
+
+<style>
+	.weekly-video-card {
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		padding: 20px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+	}
+
+	.card-title {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 12px;
+		font-weight: 600;
+		color: #64748b;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin: 0 0 16px 0;
+	}
+
+	.title-icon {
+		width: 16px;
+		height: 16px;
+	}
+
+	.video-thumbnail-container {
+		position: relative;
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		border-radius: 8px;
+		overflow: hidden;
+		margin-bottom: 12px;
+	}
+
+	.video-thumbnail {
+		width: 100%;
+		height: 100%;
+		object-fit: cover;
+	}
+
+	.play-overlay {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0, 0, 0, 0.3);
+		border: none;
+		cursor: pointer;
+		transition: background 0.2s;
+	}
+
+	.play-overlay:hover {
+		background: rgba(0, 0, 0, 0.4);
+	}
+
+	.play-button {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 56px;
+		height: 56px;
+		background: rgba(255, 255, 255, 0.95);
+		border-radius: 50%;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		transition: transform 0.2s;
+	}
+
+	.play-overlay:hover .play-button {
+		transform: scale(1.05);
+	}
+
+	.play-icon {
+		width: 24px;
+		height: 24px;
+		color: #0f172a;
+		margin-left: 3px;
+	}
+
+	.duration-badge {
+		position: absolute;
+		bottom: 8px;
+		right: 8px;
+		padding: 4px 8px;
+		background: rgba(0, 0, 0, 0.75);
+		color: #fff;
+		font-size: 12px;
+		font-weight: 600;
+		border-radius: 4px;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.video-title {
+		font-size: 14px;
+		font-weight: 600;
+		color: #0f172a;
+		margin: 0 0 4px 0;
+		line-height: 1.4;
+	}
+
+	.video-date {
+		font-size: 12px;
+		color: #64748b;
+		margin: 0 0 12px 0;
+	}
+
+	.watch-full-link {
+		display: block;
+		font-size: 14px;
+		font-weight: 600;
+		color: #143e59;
+		text-decoration: none;
+		transition: color 0.2s;
+	}
+
+	.watch-full-link:hover {
+		color: #0984ae;
+	}
+
+	.skeleton-thumbnail {
+		width: 100%;
+		aspect-ratio: 16 / 9;
+		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 8px;
+		margin-bottom: 12px;
+	}
+
+	.skeleton-text {
+		height: 16px;
+		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 4px;
+		margin-bottom: 8px;
+	}
+
+	.skeleton-text.short {
+		width: 60%;
+	}
+
+	@keyframes shimmer {
+		0% {
+			background-position: 200% 0;
+		}
+		100% {
+			background-position: -200% 0;
+		}
+	}
+</style>

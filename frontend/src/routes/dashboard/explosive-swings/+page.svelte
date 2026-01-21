@@ -21,12 +21,33 @@
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import TradeAlertModal from '$lib/components/dashboard/TradeAlertModal.svelte';
 	
-	// Extracted Components - Principal Engineer ICT 11 Standards
+	// Extracted Components - Nuclear Build Specification (ICT 7+ Standards)
+	// Global shared components
+	import Pagination from '$lib/components/dashboard/pagination/Pagination.svelte';
+	
+	// Legacy components still in use (will be replaced incrementally)
 	import AlertCard from '$lib/components/dashboard/alerts/AlertCard.svelte';
 	import AlertFilters from '$lib/components/dashboard/alerts/AlertFilters.svelte';
-	import Pagination from '$lib/components/dashboard/pagination/Pagination.svelte';
 	import StatsBar from '$lib/components/dashboard/stats/StatsBar.svelte';
-	import VideoCard from '$lib/components/dashboard/video/VideoCard.svelte';
+	
+	// Local page-specific components (Nuclear Build) - ready for integration
+	import PerformanceSummary from './components/PerformanceSummary.svelte';
+	import AlertsFeed from './components/AlertsFeed.svelte';
+	import SidebarComponent from './components/Sidebar.svelte';
+	import VideoGrid from './components/VideoGrid.svelte';
+	
+	// Types from local types.ts (Nuclear Build)
+	import type { 
+		ClosedTrade, 
+		ActivePosition, 
+		Alert as NuclearAlert,
+		WeeklyPerformance,
+		ThirtyDayPerformance,
+		WeeklyVideo,
+		Video
+	} from './types';
+	
+	// Legacy types for backward compatibility with existing API
 	import type { Alert, AlertFilter, QuickStats, VideoUpdate } from '$lib/components/dashboard/alerts/types';
 	import type {
 		TradePlanEntry as ApiTradePlanEntry,
@@ -248,6 +269,111 @@
 		activeTrades: 4,
 		closedThisWeek: 2
 	};
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// NUCLEAR BUILD DATA - Performance Summary Section
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	const weeklyPerformance: WeeklyPerformance = {
+		winRate: 82,
+		totalTrades: 7,
+		winningTrades: 6,
+		avgWinPercent: 5.7,
+		avgLossPercent: 2.1,
+		riskRewardRatio: 3.2
+	};
+
+	const closedTrades: ClosedTrade[] = [
+		{ id: '1', ticker: 'MSFT', percentageGain: 8.2, isWinner: true, closedAt: new Date('2026-01-12'), entryPrice: 425, exitPrice: 460 },
+		{ id: '2', ticker: 'AAPL', percentageGain: 5.1, isWinner: true, closedAt: new Date('2026-01-11'), entryPrice: 185, exitPrice: 194.4 },
+		{ id: '3', ticker: 'GOOGL', percentageGain: 4.8, isWinner: true, closedAt: new Date('2026-01-10'), entryPrice: 175, exitPrice: 183.4 },
+		{ id: '4', ticker: 'AMZN', percentageGain: 6.3, isWinner: true, closedAt: new Date('2026-01-10'), entryPrice: 185, exitPrice: 196.7 },
+		{ id: '5', ticker: 'AMD', percentageGain: 3.9, isWinner: true, closedAt: new Date('2026-01-09'), entryPrice: 125, exitPrice: 129.9 },
+		{ id: '6', ticker: 'NFLX', percentageGain: -2.1, isWinner: false, closedAt: new Date('2026-01-09'), entryPrice: 520, exitPrice: 509.1 }
+	];
+
+	const activePositions: ActivePosition[] = [
+		{
+			id: '1',
+			ticker: 'NVDA',
+			status: 'ENTRY',
+			entryPrice: 142.50,
+			currentPrice: 143.80,
+			unrealizedPercent: 0.9,
+			targets: [
+				{ price: 156, percentFromEntry: 9.5, label: 'Target 1' },
+				{ price: 168, percentFromEntry: 17.9, label: 'Target 2' }
+			],
+			stopLoss: { price: 136, percentFromEntry: -4.6 },
+			progressToTarget1: 9.6,
+			triggeredAt: new Date('2026-01-13T10:32:00')
+		},
+		{
+			id: '2',
+			ticker: 'TSLA',
+			status: 'WATCHING',
+			entryPrice: null,
+			entryZone: { low: 180, high: 185 },
+			currentPrice: 188.40,
+			unrealizedPercent: null,
+			targets: [{ price: 210, percentFromEntry: 13.5, label: 'Target' }],
+			stopLoss: { price: 172, percentFromEntry: -7.0 },
+			notes: 'Waiting for pullback to zone',
+			progressToTarget1: 0
+		},
+		{
+			id: '3',
+			ticker: 'META',
+			status: 'ACTIVE',
+			entryPrice: 585,
+			currentPrice: 597.30,
+			unrealizedPercent: 2.1,
+			targets: [
+				{ price: 620, percentFromEntry: 6.0, label: 'Target 1' },
+				{ price: 645, percentFromEntry: 10.3, label: 'Target 2' }
+			],
+			stopLoss: { price: 558, percentFromEntry: -4.6 },
+			progressToTarget1: 35,
+			triggeredAt: new Date('2026-01-11T11:20:00')
+		},
+		{
+			id: '4',
+			ticker: 'AMD',
+			status: 'ACTIVE',
+			entryPrice: 125,
+			currentPrice: 126.00,
+			unrealizedPercent: 0.8,
+			targets: [{ price: 138, percentFromEntry: 10.4, label: 'Target 1' }],
+			stopLoss: { price: 118, percentFromEntry: -5.6 },
+			progressToTarget1: 7.7,
+			triggeredAt: new Date('2026-01-10T14:30:00')
+		}
+	];
+
+	const thirtyDayPerformance: ThirtyDayPerformance = {
+		winRate: 82,
+		totalAlerts: 28,
+		profitableAlerts: 23,
+		avgWinPercent: 6.8,
+		avgLossPercent: 2.1
+	};
+
+	const weeklyVideo: WeeklyVideo = {
+		title: 'Top Swing Setups This Week',
+		thumbnailUrl: 'https://placehold.co/640x360/143E59/FFFFFF/png?text=Weekly+Breakdown',
+		videoUrl: '/dashboard/explosive-swings/video/weekly',
+		duration: '24:35',
+		publishedAt: new Date('2026-01-13T09:00:00')
+	};
+
+	const recentVideos: Video[] = [
+		{ id: '1', ticker: 'NVDA', type: 'ENTRY', title: 'NVDA Entry Alert - Opening Swing Position', thumbnailUrl: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=NVDA+ENTRY', videoUrl: '/dashboard/explosive-swings/updates/nvda-entry', duration: '8:45', publishedAt: new Date('2026-01-13'), isFeatured: true },
+		{ id: '2', ticker: 'MSFT', type: 'EXIT', title: 'MSFT Exit - Closing for +8.2% Profit', thumbnailUrl: 'https://placehold.co/640x360/3b82f6/FFFFFF/png?text=MSFT+EXIT', videoUrl: '/dashboard/explosive-swings/updates/msft-exit', duration: '6:20', publishedAt: new Date('2026-01-12') },
+		{ id: '3', ticker: 'META', type: 'ENTRY', title: 'META Entry - Momentum Play Setup', thumbnailUrl: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=META+ENTRY', videoUrl: '/dashboard/explosive-swings/updates/meta-entry', duration: '7:15', publishedAt: new Date('2026-01-11') },
+		{ id: '4', ticker: 'TSLA', type: 'UPDATE', title: 'TSLA Update - Approaching Entry Zone', thumbnailUrl: 'https://placehold.co/640x360/f59e0b/FFFFFF/png?text=TSLA+UPDATE', videoUrl: '/dashboard/explosive-swings/updates/tsla-update', duration: '5:30', publishedAt: new Date('2026-01-11') }
+	];
+
+	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Fallback video updates for latest content section
 	const fallbackVideoUpdates: VideoUpdate[] = [
@@ -781,12 +907,18 @@
 
 <div class="explosive-swings-page">
 	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     QUICK STATS - Using extracted StatsBar component
+	     PERFORMANCE SUMMARY - Nuclear Build Specification
+	     Replaces old StatsBar with ticker pills + active positions
 	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<StatsBar {stats} isLoading={isLoadingStats} />
+	<PerformanceSummary
+		performance={weeklyPerformance}
+		{closedTrades}
+		{activePositions}
+		isLoading={isLoadingStats}
+	/>
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     HERO: Collapsible Weekly Video Accordion
+	     HERO: Collapsible Weekly Video Accordion (Legacy - Will be removed)
 	     ═══════════════════════════════════════════════════════════════════════════ -->
 	<section class="hero" class:collapsed={isHeroCollapsed}>
 		<button class="hero-collapse-toggle" onclick={toggleHeroCollapse}>
@@ -1152,33 +1284,10 @@
 	</div>
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     LATEST UPDATES - Video Updates for Entries/Exits
+	     VIDEO GRID - Nuclear Build Specification
+	     Featured video + responsive grid of recent videos
 	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<section class="latest-updates">
-		<div class="updates-header">
-			<h2>Latest Updates</h2>
-			<p>Video breakdowns as we enter and exit trades</p>
-		</div>
-		<div class="updates-grid">
-			{#each latestUpdates as update}
-				<a href={update.href} class="update-card">
-					<div class="update-thumbnail" style="background-image: url('{update.image}')">
-						<div class="play-overlay">
-							<svg viewBox="0 0 24 24" fill="currentColor" width="48" height="48">
-								<path d="M8 5v14l11-7z" />
-							</svg>
-						</div>
-						<div class="update-duration">{update.duration}</div>
-					</div>
-					<div class="update-content">
-						<h3>{update.title}</h3>
-						<p class="update-date">{update.date}</p>
-						<p class="update-excerpt">{update.excerpt}</p>
-					</div>
-				</a>
-			{/each}
-		</div>
-	</section>
+	<VideoGrid videos={recentVideos} isLoading={isLoadingStats} />
 </div>
 
 <!-- Admin Modal for Creating/Editing Alerts -->
