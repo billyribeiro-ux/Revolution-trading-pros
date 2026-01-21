@@ -303,16 +303,17 @@ pub async fn update(
 }
 
 /// DELETE /admin/media/:id - Delete media item
+/// ICT 7+ ENHANCEMENT: Complete file deletion from R2 storage
 #[tracing::instrument(skip(state))]
 pub async fn destroy(
     State(state): State<AppState>,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, ApiError> {
-    // Get media info first (for file deletion if needed)
+    // Get media info first (for file deletion)
     let media: Option<Media> = sqlx::query_as(
         "SELECT id, filename, original_filename, mime_type, size, path, url,
                 title, alt_text, caption, description, collection, is_optimized,
-                width, height, created_at, updated_at 
+                width, height, created_at, updated_at
          FROM media WHERE id = $1",
     )
     .bind(id)
@@ -320,8 +321,21 @@ pub async fn destroy(
     .await
     .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
-    if media.is_none() {
-        return Err(ApiError::not_found("Media not found"));
+    let media = match media {
+        Some(m) => m,
+        None => return Err(ApiError::not_found("Media not found")),
+    };
+
+    // Delete file from R2 storage if path exists
+    if let Some(file_key) = &media.path {
+        let storage = &state.services.storage;
+        if let Err(e) = storage.delete(file_key).await {
+            tracing::warn!("Failed to delete file from R2 storage: {} - {}", file_key, e);
+            // Continue with database deletion even if R2 deletion fails
+            // The file might have already been deleted or the path is invalid
+        } else {
+            tracing::info!("Deleted file from R2 storage: {}", file_key);
+        }
     }
 
     // Delete from database
@@ -331,12 +345,14 @@ pub async fn destroy(
         .await
         .map_err(|e| ApiError::database_error(&e.to_string()))?;
 
-    // TODO: Delete actual file from S3/R2 storage
-    // This would require the storage service integration
-
     Ok(Json(serde_json::json!({
         "success": true,
-        "message": "Media deleted successfully"
+        "message": "Media deleted successfully",
+        "deleted": {
+            "id": media.id,
+            "filename": media.filename,
+            "path": media.path
+        }
     })))
 }
 
@@ -690,7 +706,157 @@ pub async fn direct_upload(
     })))
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// BULK OPERATIONS - ICT 7+ Principal Engineer
+// ═══════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, Deserialize)]
+pub struct BulkDeleteRequest {
+    pub ids: Vec<i64>,
+}
+
+/// POST /admin/media/bulk-delete - Delete multiple media items
+#[tracing::instrument(skip(state))]
+pub async fn bulk_delete(
+    State(state): State<AppState>,
+    Json(payload): Json<BulkDeleteRequest>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    if payload.ids.is_empty() {
+        return Err(ApiError::validation_error("No IDs provided"));
+    }
+
+    if payload.ids.len() > 100 {
+        return Err(ApiError::validation_error("Maximum 100 items per bulk delete"));
+    }
+
+    let storage = &state.services.storage;
+    let mut deleted_count = 0;
+    let mut failed_count = 0;
+    let mut errors: Vec<String> = Vec::new();
+
+    for id in &payload.ids {
+        // Get media info first
+        let media: Option<Media> = sqlx::query_as(
+            "SELECT id, filename, original_filename, mime_type, size, path, url,
+                    title, alt_text, caption, description, collection, is_optimized,
+                    width, height, created_at, updated_at
+             FROM media WHERE id = $1",
+        )
+        .bind(id)
+        .fetch_optional(state.db.pool())
+        .await
+        .map_err(|e| ApiError::database_error(&e.to_string()))?;
+
+        if let Some(media) = media {
+            // Delete from R2 if path exists
+            if let Some(file_key) = &media.path {
+                if let Err(e) = storage.delete(file_key).await {
+                    tracing::warn!("Failed to delete file from R2: {} - {}", file_key, e);
+                }
+            }
+
+            // Delete from database
+            match sqlx::query("DELETE FROM media WHERE id = $1")
+                .bind(id)
+                .execute(state.db.pool())
+                .await
+            {
+                Ok(_) => deleted_count += 1,
+                Err(e) => {
+                    failed_count += 1;
+                    errors.push(format!("ID {}: {}", id, e));
+                }
+            }
+        } else {
+            failed_count += 1;
+            errors.push(format!("ID {}: Not found", id));
+        }
+    }
+
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "data": {
+            "deleted": deleted_count,
+            "failed": failed_count,
+            "errors": errors
+        },
+        "message": format!("{} item(s) deleted, {} failed", deleted_count, failed_count)
+    })))
+}
+
+#[derive(Debug, Deserialize)]
+pub struct BulkUpdateRequest {
+    pub ids: Vec<i64>,
+    pub collection: Option<String>,
+    pub title: Option<String>,
+    pub alt_text: Option<String>,
+}
+
+/// POST /admin/media/bulk-update - Update multiple media items
+#[tracing::instrument(skip(state))]
+pub async fn bulk_update(
+    State(state): State<AppState>,
+    Json(payload): Json<BulkUpdateRequest>,
+) -> Result<Json<serde_json::Value>, ApiError> {
+    if payload.ids.is_empty() {
+        return Err(ApiError::validation_error("No IDs provided"));
+    }
+
+    if payload.ids.len() > 100 {
+        return Err(ApiError::validation_error("Maximum 100 items per bulk update"));
+    }
+
+    let mut updated_count = 0;
+
+    for id in &payload.ids {
+        let mut updates = Vec::new();
+
+        if payload.collection.is_some() {
+            updates.push("collection = $2");
+        }
+        if payload.title.is_some() {
+            updates.push("title = $3");
+        }
+        if payload.alt_text.is_some() {
+            updates.push("alt_text = $4");
+        }
+
+        if updates.is_empty() {
+            continue;
+        }
+
+        updates.push("updated_at = NOW()");
+
+        let query = format!("UPDATE media SET {} WHERE id = $1", updates.join(", "));
+
+        let mut q = sqlx::query(&query).bind(id);
+
+        if let Some(ref collection) = payload.collection {
+            q = q.bind(collection);
+        }
+        if let Some(ref title) = payload.title {
+            q = q.bind(title);
+        }
+        if let Some(ref alt_text) = payload.alt_text {
+            q = q.bind(alt_text);
+        }
+
+        if q.execute(state.db.pool()).await.is_ok() {
+            updated_count += 1;
+        }
+    }
+
+    Ok(Json(serde_json::json!({
+        "success": true,
+        "data": {
+            "updated": updated_count
+        },
+        "message": format!("{} item(s) updated", updated_count)
+    })))
+}
+
 /// Build the media admin router
+/// ICT 7+ Principal Engineer - Complete Media Management API
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/", get(index))
@@ -699,5 +865,7 @@ pub fn admin_router() -> Router<AppState> {
         .route("/presigned-upload", post(presigned_upload))
         .route("/confirm-upload", post(confirm_upload))
         .route("/statistics", get(statistics))
+        .route("/bulk-delete", post(bulk_delete))
+        .route("/bulk-update", post(bulk_update))
         .route("/:id", get(show).put(update).delete(destroy))
 }

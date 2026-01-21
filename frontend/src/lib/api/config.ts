@@ -193,7 +193,27 @@ export const API_ENDPOINTS = {
 		coupon: (id: number) => `/api/admin/coupons/${id}`,
 		validateCoupon: (code: string) => `/api/admin/coupons/validate/${code}`,
 		settings: '/api/admin/settings',
-		setting: (key: string) => `/api/admin/settings/${key}`
+		setting: (key: string) => `/api/admin/settings/${key}`,
+		// Media Library - ICT 7+ Principal Engineer
+		media: {
+			list: '/api/admin/media',
+			files: '/api/admin/media/files',
+			upload: '/api/admin/media/upload',
+			presignedUpload: '/api/admin/media/presigned-upload',
+			confirmUpload: '/api/admin/media/confirm-upload',
+			statistics: '/api/admin/media/statistics',
+			bulkDelete: '/api/admin/media/bulk-delete',
+			bulkUpdate: '/api/admin/media/bulk-update',
+			single: (id: number) => `/api/admin/media/${id}`,
+			update: (id: number) => `/api/admin/media/${id}`,
+			delete: (id: number) => `/api/admin/media/${id}`
+		},
+		// Bunny.net Video Uploads - ICT 7+ Principal Engineer
+		bunny: {
+			createVideo: '/api/admin/bunny/create-video',
+			videoStatus: (guid: string) => `/api/admin/bunny/video-status/${guid}`,
+			uploads: '/api/admin/bunny/uploads'
+		}
 	},
 
 	// Search - Rust API
