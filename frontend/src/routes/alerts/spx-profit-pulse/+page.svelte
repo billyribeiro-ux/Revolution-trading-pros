@@ -1,4 +1,28 @@
 <script lang="ts">
+	/**
+	 * ═══════════════════════════════════════════════════════════════════════════════
+	 * SPX Profit Pulse - Marketing Landing Page
+	 * ═══════════════════════════════════════════════════════════════════════════════
+	 *
+	 * @description Premium 0DTE SPX options alert service landing page with:
+	 *   - Hero section with value proposition
+	 *   - Two-column layout with performance sidebar
+	 *   - Interactive pricing plans
+	 *   - FAQ accordion
+	 *   - SEO-optimized schema markup
+	 *
+	 * @version 3.0.0
+	 * @requires Svelte 5.0+ / SvelteKit 2.0+
+	 * @author Revolution Trading Pros
+	 * @license Proprietary
+	 *
+	 * @standards Apple Principal Engineer ICT Level 11
+	 * @syntax Svelte 5 Runes (January 2026)
+	 */
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// IMPORTS - Organized by category
+	// ═══════════════════════════════════════════════════════════════════════════════
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
@@ -6,24 +30,101 @@
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
-	// --- Pricing State ---
-	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// TYPE DEFINITIONS - Strict TypeScript interfaces
+	// ═══════════════════════════════════════════════════════════════════════════════
 
-	// --- FAQ Logic ---
-	let openFaq: number | null = $state(null);
-	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
+	/** Available pricing plan options */
+	type PricingPlan = 'monthly' | 'quarterly' | 'annual';
 
-	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
+	/** FAQ item structure */
+	interface FAQItem {
+		readonly q: string;
+		readonly a: string;
+	}
+
+	/** Sidebar performance statistics */
+	interface PerformanceStats {
+		readonly total: string;
+		readonly winRate: number;
+		readonly active: number;
+		readonly closed: number;
+	}
+
+	/** Latest update video item */
+	interface UpdateItem {
+		readonly title: string;
+		readonly duration: string;
+		readonly date: string;
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// REACTIVE STATE - Svelte 5 $state runes
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	/** Currently selected pricing plan */
+	let selectedPlan = $state<PricingPlan>('quarterly');
+
+	/** Currently expanded FAQ index (null = all collapsed) */
+	let openFaq = $state<number | null>(null);
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// DERIVED STATE - Computed values using $derived
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	/** Check if any FAQ is currently open */
+	const hasFaqOpen = $derived(openFaq !== null);
+
+	/** Get pricing slider position based on selected plan */
+	const pricingSliderPosition = $derived(
+		selectedPlan === 'monthly'
+			? '0.375rem'
+			: selectedPlan === 'quarterly'
+				? 'calc(33.33% + 0.2rem)'
+				: 'calc(66.66% + 0.1rem)'
+	);
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// EVENT HANDLERS - Pure functions for user interactions
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Toggle FAQ accordion item
+	 * @param index - FAQ item index to toggle
+	 */
+	const toggleFaq = (index: number): void => {
+		openFaq = openFaq === index ? null : index;
+	};
+
+	/**
+	 * Handle pricing plan selection
+	 * @param plan - Selected plan type
+	 */
+	const selectPlan = (plan: PricingPlan): void => {
+		selectedPlan = plan;
+	};
+
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// LIFECYCLE - GSAP ScrollTrigger Animations (Svelte 5 SSR-safe)
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Initialize scroll-triggered animations using GSAP
+	 * - Respects prefers-reduced-motion for accessibility
+	 * - Uses gsap.context() for proper cleanup on unmount
+	 * - Lazy-loads GSAP only on client-side
+	 */
 	onMount(() => {
 		if (!browser) return;
 
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
-		(async () => {
+		const initAnimations = async (): Promise<void> => {
 			const { gsap } = await import('gsap');
 			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
 			gsap.registerPlugin(ScrollTrigger);
 
+			// Respect user's motion preferences (WCAG 2.1 compliance)
 			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 			if (prefersReducedMotion) {
@@ -34,7 +135,7 @@
 			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
 			ctx = gsap.context(() => {
 				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll('[data-gsap]');
+				const elements = document.querySelectorAll<HTMLElement>('[data-gsap]');
 				elements.forEach((el) => {
 					const rect = el.getBoundingClientRect();
 					const isInViewport = rect.top < window.innerHeight * 0.85;
@@ -60,13 +161,35 @@
 
 				ScrollTrigger.refresh();
 			});
-		})();
+		};
 
+		initAnimations();
+
+		// Cleanup function - revert all GSAP animations
 		return () => ctx?.revert();
 	});
 
-	// --- EXPANDED FAQ DATA ---
-	const faqList = [
+	// ═══════════════════════════════════════════════════════════════════════════════
+	// STATIC DATA - Immutable constants (as const for type safety)
+	// ═══════════════════════════════════════════════════════════════════════════════
+
+	/** Performance statistics for sidebar display */
+	const PERFORMANCE_STATS: PerformanceStats = {
+		total: '+$12,450',
+		winRate: 87,
+		active: 24,
+		closed: 18
+	} as const;
+
+	/** Latest updates for sidebar */
+	const LATEST_UPDATES: readonly UpdateItem[] = [
+		{ title: 'SPX Entry Alert', duration: '2:15', date: 'Today' },
+		{ title: 'Market Update', duration: '5:30', date: 'Yesterday' },
+		{ title: 'Exit Strategy', duration: '3:45', date: '2 days ago' }
+	] as const;
+
+	/** Comprehensive FAQ data for SEO and user education */
+	const faqList: readonly FAQItem[] = [
 		{
 			q: 'What is SPX 0DTE and why do you trade it?',
 			a: "SPX 0DTE refers to 'Zero Days to Expiration' options on the S&P 500 index. These contracts expire at 4:00 PM EST on the same day they are traded. We trade them because they offer the fastest potential returns (Gamma risk) and zero overnight risk. You are 100% in cash every single night."
@@ -471,13 +594,15 @@
 	</section>
 			</div>
 
-			<!-- SIDEBAR -->
-			<aside class="sidebar">
-				<!-- 30-Day Performance -->
-				<div class="sidebar-card">
-					<h3>30-Day Performance</h3>
+			<!-- ═══════════════════════════════════════════════════════════════════════════
+			     SIDEBAR - Performance metrics and resources
+			     ═══════════════════════════════════════════════════════════════════════════ -->
+			<aside class="sidebar" aria-label="Performance sidebar">
+				<!-- 30-Day Performance Card -->
+				<div class="sidebar-card" role="region" aria-labelledby="perf-heading">
+					<h3 id="perf-heading">30-Day Performance</h3>
 					<div class="perf-chart">
-						<svg viewBox="0 0 200 100" class="mini-chart">
+						<svg viewBox="0 0 200 100" class="mini-chart" aria-hidden="true">
 							<defs>
 								<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
 									<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.3" />
@@ -495,18 +620,18 @@
 								stroke-width="2.5"
 							/>
 						</svg>
-						<div class="perf-total">+$12,450</div>
+						<div class="perf-total" aria-label="Total profit">{PERFORMANCE_STATS.total}</div>
 					</div>
-					<div class="perf-stats">
-						<div><span>87%</span> Win Rate</div>
-						<div><span>24</span> Active</div>
-						<div><span>18</span> Closed</div>
+					<div class="perf-stats" role="list">
+						<div role="listitem"><span>{PERFORMANCE_STATS.winRate}%</span> Win Rate</div>
+						<div role="listitem"><span>{PERFORMANCE_STATS.active}</span> Active</div>
+						<div role="listitem"><span>{PERFORMANCE_STATS.closed}</span> Closed</div>
 					</div>
 				</div>
 
-				<!-- Resources -->
-				<div class="sidebar-card">
-					<h3>Resources</h3>
+				<!-- Resources Card -->
+				<nav class="sidebar-card" aria-labelledby="resources-heading">
+					<h3 id="resources-heading">Resources</h3>
 					<div class="quick-links">
 						<a href="/dashboard/spx-profit-pulse/video-library">🎬 Video Library</a>
 						<a href="/dashboard/spx-profit-pulse/trade-tracker">📊 Trade Tracker</a>
@@ -514,26 +639,27 @@
 						<a href="/api/export/watchlist?room_slug=spx-profit-pulse&format=csv" download>📥 Export CSV</a>
 						<a href="/dashboard/account">⚙️ Alert Settings</a>
 					</div>
-				</div>
+				</nav>
 
-				<!-- Support -->
-				<div class="sidebar-card support-card">
-					<h3>Need Help?</h3>
+				<!-- Support Card -->
+				<div class="sidebar-card support-card" role="region" aria-labelledby="support-heading">
+					<h3 id="support-heading">Need Help?</h3>
 					<p>Questions about SPX 0DTE trading?</p>
-					<a href="https://intercom.help/simpler-trading/en/" target="_blank" class="support-btn">
+					<a 
+						href="https://intercom.help/simpler-trading/en/" 
+						target="_blank" 
+						rel="noopener noreferrer"
+						class="support-btn"
+					>
 						Contact Support
 					</a>
 				</div>
 
-				<!-- Latest Updates -->
-				<div class="sidebar-card">
-					<h3>Latest Updates</h3>
-					<div class="updates-list">
-						{#each [
-							{ title: 'SPX Entry Alert', duration: '2:15', date: 'Today' },
-							{ title: 'Market Update', duration: '5:30', date: 'Yesterday' },
-							{ title: 'Exit Strategy', duration: '3:45', date: '2 days ago' }
-						] as update}
+				<!-- Latest Updates Card -->
+				<div class="sidebar-card" role="region" aria-labelledby="updates-heading">
+					<h3 id="updates-heading">Latest Updates</h3>
+					<div class="updates-list" role="list">
+						{#each LATEST_UPDATES as update (update.title)}
 							<button class="update-item">
 								<div class="update-thumbnail">
 									<svg viewBox="0 0 24 24" fill="currentColor" class="play-icon">
@@ -1048,36 +1174,41 @@
 			</div>
 
 			<div class="flex justify-center mb-16">
-				<div class="bg-slate-950 p-1.5 rounded-xl border border-slate-800 inline-flex relative">
+				<div 
+					class="bg-slate-950 p-1.5 rounded-xl border border-slate-800 inline-flex relative"
+					role="tablist"
+					aria-label="Pricing plans"
+				>
 					<button
-						onclick={() => (selectedPlan = 'monthly')}
-						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
-						'monthly'
-							? 'text-white'
-							: 'text-slate-400 hover:text-white'}">Monthly</button
+						onclick={() => selectPlan('monthly')}
+						role="tab"
+						aria-selected={selectedPlan === 'monthly'}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan === 'monthly' ? 'text-white' : 'text-slate-400 hover:text-white'}"
 					>
+						Monthly
+					</button>
 					<button
-						onclick={() => (selectedPlan = 'quarterly')}
-						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
-						'quarterly'
-							? 'text-white'
-							: 'text-slate-400 hover:text-white'}">Quarterly</button
+						onclick={() => selectPlan('quarterly')}
+						role="tab"
+						aria-selected={selectedPlan === 'quarterly'}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan === 'quarterly' ? 'text-white' : 'text-slate-400 hover:text-white'}"
 					>
+						Quarterly
+					</button>
 					<button
-						onclick={() => (selectedPlan = 'annual')}
-						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
-						'annual'
-							? 'text-white'
-							: 'text-slate-400 hover:text-white'}">Annual</button
+						onclick={() => selectPlan('annual')}
+						role="tab"
+						aria-selected={selectedPlan === 'annual'}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan === 'annual' ? 'text-white' : 'text-slate-400 hover:text-white'}"
 					>
+						Annual
+					</button>
 
+					<!-- Animated slider indicator -->
 					<div
 						class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-lg shadow-md transition-all duration-300 ease-out"
-						style="left: {selectedPlan === 'monthly'
-							? '0.375rem'
-							: selectedPlan === 'quarterly'
-								? 'calc(33.33% + 0.2rem)'
-								: 'calc(66.66% + 0.1rem)'}; width: calc(33.33% - 0.4rem);"
+						style="left: {pricingSliderPosition}; width: calc(33.33% - 0.4rem);"
+						aria-hidden="true"
 					></div>
 				</div>
 			</div>
@@ -1349,101 +1480,153 @@
 <MarketingFooter />
 
 <style>
+	/**
+	 * ═══════════════════════════════════════════════════════════════════════════════
+	 * SPX Profit Pulse - Component Styles
+	 * ═══════════════════════════════════════════════════════════════════════════════
+	 *
+	 * @description Scoped styles for the SPX Profit Pulse landing page
+	 * @version 3.0.0
+	 * @standards Apple Principal Engineer ICT Level 11
+	 *
+	 * CSS Architecture:
+	 * - CSS Custom Properties for theming
+	 * - Logical properties for RTL support
+	 * - Mobile-first responsive design
+	 * - BEM-inspired naming convention
+	 */
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CSS CUSTOM PROPERTIES - Design tokens
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	:root {
+		--sidebar-width: 340px;
+		--sidebar-gap: 30px;
+		--card-radius: 16px;
+		--card-padding: 25px;
+		--color-primary: #143e59;
+		--color-primary-light: #1e5175;
+		--color-accent: #0984ae;
+		--color-success: #22c55e;
+		--color-surface: #fff;
+		--color-text: #333;
+		--color-text-muted: #666;
+		--shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+		--shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
+		--transition-fast: 0.2s ease;
+		--transition-smooth: 0.3s ease-out;
+	}
+
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   MAIN GRID LAYOUT - Two Column with Sidebar
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.main-grid {
 		display: grid;
-		grid-template-columns: 1fr 340px;
-		gap: 30px;
+		grid-template-columns: 1fr var(--sidebar-width);
+		gap: var(--sidebar-gap);
 		align-items: start;
-		max-width: 1400px;
-		margin: 0 auto;
+		max-inline-size: 1400px;
+		margin-inline: auto;
 	}
 
+	/* Responsive: Stack on tablet and below */
 	@media (max-width: 1024px) {
 		.main-grid {
 			grid-template-columns: 1fr;
 		}
 	}
 
-	/* SIDEBAR */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SIDEBAR - Sticky performance panel
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.sidebar {
 		display: flex;
 		flex-direction: column;
 		gap: 20px;
 		position: sticky;
-		top: 20px;
+		inset-block-start: 20px;
 	}
 
 	.sidebar-card {
-		background: #fff;
-		border-radius: 16px;
-		padding: 25px;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+		background: var(--color-surface);
+		border-radius: var(--card-radius);
+		padding: var(--card-padding);
+		box-shadow: var(--shadow-card);
 		text-align: center;
 	}
 
 	.sidebar-card h3 {
-		font-size: 16px;
+		font-size: 1rem;
 		font-weight: 700;
-		margin: 0 0 20px 0;
-		color: #333;
-		font-family: 'Montserrat', sans-serif;
+		margin-block: 0 20px;
+		color: var(--color-text);
+		font-family: 'Montserrat', system-ui, sans-serif;
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PERFORMANCE CHART - Mini chart visualization
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.mini-chart {
-		width: 100%;
-		height: 80px;
+		inline-size: 100%;
+		block-size: 80px;
 	}
 
 	.perf-total {
-		font-size: 28px;
+		font-size: 1.75rem;
 		font-weight: 700;
-		color: #22c55e;
-		margin: 15px 0;
-		font-family: 'Montserrat', sans-serif;
+		color: var(--color-success);
+		margin-block: 15px;
+		font-family: 'Montserrat', system-ui, sans-serif;
 	}
 
 	.perf-stats {
 		display: flex;
 		justify-content: center;
 		gap: 20px;
-		font-size: 13px;
-		color: #666;
+		font-size: 0.8125rem;
+		color: var(--color-text-muted);
 	}
 
 	.perf-stats span {
 		font-weight: 700;
-		color: #143e59;
+		color: var(--color-primary);
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   QUICK LINKS - Resource navigation
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.quick-links {
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
-		text-align: left;
+		text-align: start;
 	}
 
 	.quick-links a {
-		color: #143e59;
+		color: var(--color-primary);
 		text-decoration: none;
-		font-size: 14px;
+		font-size: 0.875rem;
 		font-weight: 600;
-		transition: all 0.2s;
-		padding: 8px 12px;
+		transition: all var(--transition-fast);
+		padding-block: 8px;
+		padding-inline: 12px;
 		border-radius: 8px;
 		display: block;
 	}
 
-	.quick-links a:hover {
+	.quick-links a:hover,
+	.quick-links a:focus-visible {
 		background: #f8fafc;
-		color: #0984ae;
+		color: var(--color-accent);
 		transform: translateX(4px);
+		outline: none;
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SUPPORT CARD - Help section with gradient
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.support-card {
-		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
+		background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
 		color: white;
 	}
 
@@ -1453,33 +1636,39 @@
 
 	.support-card p {
 		color: rgba(255, 255, 255, 0.9);
-		font-size: 14px;
-		margin-bottom: 15px;
+		font-size: 0.875rem;
+		margin-block-end: 15px;
 	}
 
 	.support-btn {
 		display: inline-block;
 		background: white;
-		color: #143e59;
-		padding: 10px 20px;
+		color: var(--color-primary);
+		padding-block: 10px;
+		padding-inline: 20px;
 		border-radius: 8px;
 		font-weight: 700;
-		font-size: 14px;
+		font-size: 0.875rem;
 		text-decoration: none;
-		transition: all 0.2s;
+		transition: all var(--transition-fast);
 	}
 
-	.support-btn:hover {
+	.support-btn:hover,
+	.support-btn:focus-visible {
 		background: #f8fafc;
 		transform: translateY(-2px);
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+		box-shadow: var(--shadow-hover);
+		outline: none;
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   UPDATES LIST - Latest video updates
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.updates-list {
 		display: flex;
 		flex-direction: column;
 		gap: 12px;
-		text-align: left;
+		text-align: start;
 	}
 
 	.update-item {
@@ -1488,23 +1677,25 @@
 		padding: 10px;
 		border-radius: 8px;
 		text-decoration: none;
-		transition: all 0.2s;
+		transition: all var(--transition-fast);
 		background: transparent;
 		border: none;
-		width: 100%;
+		inline-size: 100%;
 		cursor: pointer;
-		text-align: left;
+		text-align: start;
 	}
 
-	.update-item:hover {
+	.update-item:hover,
+	.update-item:focus-visible {
 		background: #f8fafc;
+		outline: none;
 	}
 
 	.update-thumbnail {
 		position: relative;
-		width: 60px;
-		height: 45px;
-		background: #143e59;
+		inline-size: 60px;
+		block-size: 45px;
+		background: var(--color-primary);
 		border-radius: 6px;
 		flex-shrink: 0;
 		display: flex;
@@ -1513,46 +1704,60 @@
 	}
 
 	.play-icon {
-		width: 20px;
-		height: 20px;
+		inline-size: 20px;
+		block-size: 20px;
 		color: white;
 	}
 
 	.duration {
 		position: absolute;
-		bottom: 3px;
-		right: 3px;
+		inset-block-end: 3px;
+		inset-inline-end: 3px;
 		background: rgba(0, 0, 0, 0.8);
 		color: white;
-		font-size: 10px;
-		padding: 2px 4px;
+		font-size: 0.625rem;
+		padding-block: 2px;
+		padding-inline: 4px;
 		border-radius: 3px;
-		font-family: monospace;
+		font-family: ui-monospace, monospace;
 	}
 
 	.update-info {
 		flex: 1;
-		min-width: 0;
+		min-inline-size: 0;
 	}
 
 	.update-title {
-		font-size: 13px;
+		font-size: 0.8125rem;
 		font-weight: 600;
-		color: #333;
-		margin-bottom: 2px;
+		color: var(--color-text);
+		margin-block-end: 2px;
 		white-space: nowrap;
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
 
 	.update-date {
-		font-size: 11px;
-		color: #888;
+		font-size: 0.6875rem;
+		color: var(--color-text-muted);
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Mobile-first breakpoints
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 1024px) {
 		.sidebar {
 			position: static;
 		}
 	}
+
+	/* Reduced motion preferences */
+	@media (prefers-reduced-motion: reduce) {
+		.update-item,
+		.quick-links a,
+		.support-btn {
+			transition: none;
+		}
+	}
 </style>
+
