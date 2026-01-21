@@ -30,6 +30,7 @@
 	import ResponsivePreview from '$lib/components/media/ResponsivePreview.svelte';
 	import MediaSkeleton from '$lib/components/media/MediaSkeleton.svelte';
 	import { mediaApi, type MediaItem, type OptimizationStatistics } from '$lib/api/media';
+	import { API_BASE_URL, API_ENDPOINTS } from '$lib/api/config';
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// State
@@ -211,7 +212,8 @@
 					}
 				};
 				xhr.onerror = () => reject(new Error('Upload failed'));
-				xhr.open('POST', '/api/media/upload');
+				xhr.open('POST', `${API_BASE_URL}${API_ENDPOINTS.admin.media.upload}`);
+				xhr.withCredentials = true; // ICT 7+ CORS credentials support
 				xhr.send(formData);
 			});
 
