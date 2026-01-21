@@ -8,6 +8,13 @@
 	 * @version 4.1.0 - Visual Polish Pass
 	 * @requires Svelte 5.0+ (January 2026 syntax)
 	 * @standards Apple Principal Engineer ICT 7+ Standards
+	 *
+	 * SVELTE 5 EVIDENCE-BASED DECISION:
+	 * Per Svelte 5 docs, components are "building blocks" for self-contained units
+	 * with their own state and behavior. This section has:
+	 * - Own state: heroTab, isCollapsed, expandedTradeNotes
+	 * - Own behavior: tab switching, collapse/expand, notes toggle
+	 * - ~200 lines HTML + ~300 lines CSS = distinct UI block
 	 */
 
 	interface WeeklyContent {
@@ -46,6 +53,7 @@
 		sheetUrl = 'https://docs.google.com/spreadsheets/d/your-sheet-id'
 	}: Props = $props();
 
+	// Component-local state (Svelte 5 $state rune)
 	let heroTab = $state<'video' | 'entries'>('video');
 	let isCollapsed = $state(false);
 	let expandedTradeNotes = $state(new Set<string>());
@@ -113,6 +121,7 @@
 
 		<div class="hero-content">
 			{#if heroTab === 'video'}
+				<!-- VIDEO TAB -->
 				<div class="video-container-compact">
 					<div class="video-player-compact" style="background-image: url('{weeklyContent.thumbnail}')">
 						<div class="video-overlay">
@@ -136,6 +145,7 @@
 					</div>
 				</div>
 			{:else}
+				<!-- ENTRIES TAB - Trade Plan Sheet -->
 				<div class="entries-container">
 					<div class="entries-header">
 						<h2>This Week's Trade Plan</h2>
@@ -161,8 +171,12 @@
 							<tbody>
 								{#each tradePlan as trade (trade.ticker)}
 									<tr class:has-notes-open={expandedTradeNotes.has(trade.ticker)}>
-										<td class="ticker-cell"><strong>{trade.ticker}</strong></td>
-										<td><span class="bias bias--{trade.bias.toLowerCase()}">{trade.bias}</span></td>
+										<td class="ticker-cell">
+											<strong>{trade.ticker}</strong>
+										</td>
+										<td>
+											<span class="bias bias--{trade.bias.toLowerCase()}">{trade.bias}</span>
+										</td>
 										<td class="entry-cell">{trade.entry}</td>
 										<td class="target-cell">{trade.target1}</td>
 										<td class="target-cell">{trade.target2}</td>
@@ -178,7 +192,15 @@
 												onclick={() => toggleTradeNotes(trade.ticker)}
 												aria-label="Toggle notes for {trade.ticker}"
 											>
-												<svg class="chevron-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="18" height="18">
+												<svg
+													class="chevron-icon"
+													viewBox="0 0 24 24"
+													fill="none"
+													stroke="currentColor"
+													stroke-width="2.5"
+													width="18"
+													height="18"
+												>
 													<path d="M19 9l-7 7-7-7" />
 												</svg>
 											</button>
@@ -213,6 +235,9 @@
 </section>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   HERO SECTION - Collapsible Accordion
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.hero {
 		background: linear-gradient(135deg, #f69532 0%, #e8850d 50%, #d4790a 100%);
 		padding: 0;
@@ -311,6 +336,7 @@
 		padding: 40px;
 	}
 
+	/* VIDEO TAB - Compact Version */
 	.video-container-compact {
 		display: flex;
 		gap: 30px;
@@ -419,6 +445,7 @@
 		transform: translateY(-2px);
 	}
 
+	/* ENTRIES TAB - Trade Sheet */
 	.entries-container {
 		max-width: 1400px;
 		margin: 0 auto;
@@ -541,10 +568,12 @@
 
 	.notes-th {
 		width: 60px;
+		text-align: center;
 	}
 
 	.notes-toggle-cell {
 		text-align: center;
+		vertical-align: middle;
 	}
 
 	.table-notes-btn {
@@ -602,8 +631,14 @@
 	}
 
 	@keyframes notesSlide {
-		from { opacity: 0; transform: translateY(-8px); }
-		to { opacity: 1; transform: translateY(0); }
+		from {
+			opacity: 0;
+			transform: translateY(-8px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	.trade-notes-badge {
@@ -649,6 +684,10 @@
 		background: #0f2d42;
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE BREAKPOINTS (Repository Standard)
+	   sm: 640px, md: 768px, lg: 1024px, xl: 1280px
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 1023px) {
 		.video-container-compact {
 			flex-direction: column;
@@ -691,6 +730,19 @@
 		.hero-collapse-toggle {
 			padding: 14px 16px;
 		}
+
+		.video-info-compact h2 {
+			font-size: 20px;
+		}
+
+		.watch-btn {
+			padding: 14px 24px;
+			font-size: 14px;
+		}
+
+		.entries-header h2 {
+			font-size: 22px;
+		}
 	}
 
 	@media (max-width: 639px) {
@@ -700,6 +752,22 @@
 
 		.collapse-indicator span {
 			display: none;
+		}
+
+		.video-info-compact h2 {
+			font-size: 18px;
+		}
+
+		.video-info-compact p {
+			font-size: 12px;
+		}
+
+		.entries-header h2 {
+			font-size: 20px;
+		}
+
+		.entries-header p {
+			font-size: 13px;
 		}
 	}
 </style>
