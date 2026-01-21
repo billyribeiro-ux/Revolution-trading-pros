@@ -149,7 +149,12 @@
 			chartCtx.stroke();
 		}
 
-		if (visibleCandles === 0) return;
+		if (visibleCandles === 0) {
+			console.debug('[IndicatorsSection] No visible candles yet, chartProgress:', chartProgress);
+			return;
+		}
+		
+		console.debug('[IndicatorsSection] Drawing', visibleCandles, 'candles');
 
 		// Calculate price range
 		const visibleData = candleData.slice(0, visibleCandles);
@@ -337,6 +342,7 @@
 			const elapsed = now - start;
 			const progress = Math.min(elapsed / duration, 1);
 			chartProgress = cubicOut(progress);
+			console.debug('[IndicatorsSection] chartProgress:', chartProgress.toFixed(3));
 			if (progress < 1) requestAnimationFrame(step);
 		}
 		requestAnimationFrame(step);
