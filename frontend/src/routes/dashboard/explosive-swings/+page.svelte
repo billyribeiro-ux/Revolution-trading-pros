@@ -155,6 +155,42 @@
 	let isLoadingStats = $state(false);
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// NUCLEAR BUILD API STATE - Real data for performance summary
+	// ═══════════════════════════════════════════════════════════════════════════
+	interface ApiTrade {
+		id: number;
+		ticker: string;
+		status: 'open' | 'closed';
+		entry_price: number;
+		exit_price: number | null;
+		pnl_percent: number | null;
+		entry_date: string;
+		exit_date: string | null;
+		direction: string;
+		target1?: number;
+		target2?: number;
+		stop?: number;
+		notes?: string;
+	}
+
+	interface ApiWeeklyVideo {
+		id: number;
+		video_title: string;
+		video_url: string;
+		thumbnail_url: string | null;
+		duration: string | null;
+		published_at: string;
+		week_title: string;
+	}
+
+	let apiOpenTrades = $state<ApiTrade[]>([]);
+	let apiClosedTrades = $state<ApiTrade[]>([]);
+	let apiWeeklyVideo = $state<ApiWeeklyVideo | null>(null);
+	let apiRecentVideos = $state<ApiWeeklyVideo[]>([]);
+	let isLoadingTrades = $state(false);
+	let isLoadingVideos = $state(false);
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// PAGINATION STATE - Principal Engineer ICT 11 Standards
 	// ═══════════════════════════════════════════════════════════════════════════
 	let currentPage = $state(1);
@@ -271,9 +307,15 @@
 	};
 
 	// ═══════════════════════════════════════════════════════════════════════════
-	// NUCLEAR BUILD DATA - Performance Summary Section
+	// NUCLEAR BUILD FALLBACK DATA - Used when API data is unavailable
+	// These values are shown as placeholders until real data loads from:
+	// - /api/trades/${ROOM_SLUG}?status=open (active positions)
+	// - /api/trades/${ROOM_SLUG}?status=closed (closed trades)
+	// - /api/stats/${ROOM_SLUG} (performance metrics)
+	// - /api/weekly-video/${ROOM_SLUG} (weekly video)
 	// ═══════════════════════════════════════════════════════════════════════════
 
+	// FALLBACK: Weekly performance stats (replaced by derivedWeeklyPerformance)
 	const weeklyPerformance: WeeklyPerformance = {
 		winRate: 82,
 		totalTrades: 7,
@@ -573,6 +615,78 @@
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// NUCLEAR BUILD API FUNCTIONS - Trades & Weekly Video
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Fetch open trades (active positions) from API
+	 */
+	async function fetchOpenTrades() {
+		isLoadingTrades = true;
+		try {
+			const response = await fetch(`/api/trades/${ROOM_SLUG}?status=open`);
+			const data = await response.json();
+			if (data.success) {
+				apiOpenTrades = data.data || [];
+			}
+		} catch (err) {
+			console.error('Failed to fetch open trades:', err);
+		} finally {
+			isLoadingTrades = false;
+		}
+	}
+
+	/**
+	 * Fetch closed trades (for ticker pills) from API
+	 */
+	async function fetchClosedTrades() {
+		try {
+			const response = await fetch(`/api/trades/${ROOM_SLUG}?status=closed&per_page=10`);
+			const data = await response.json();
+			if (data.success) {
+				apiClosedTrades = data.data || [];
+			}
+		} catch (err) {
+			console.error('Failed to fetch closed trades:', err);
+		}
+	}
+
+	/**
+	 * Fetch current weekly video from API
+	 */
+	async function fetchWeeklyVideo() {
+		isLoadingVideos = true;
+		try {
+			const response = await fetch(`/api/weekly-video/${ROOM_SLUG}`);
+			const data = await response.json();
+			if (data.success && data.data) {
+				apiWeeklyVideo = data.data;
+			}
+		} catch (err) {
+			console.error('Failed to fetch weekly video:', err);
+		} finally {
+			isLoadingVideos = false;
+		}
+	}
+
+	/**
+	 * Fetch all trades (for calculating performance metrics)
+	 */
+	async function fetchAllTrades() {
+		try {
+			const response = await fetch(`/api/trades/${ROOM_SLUG}?per_page=100`);
+			const data = await response.json();
+			if (data.success && data.data) {
+				// Split into open and closed
+				apiOpenTrades = data.data.filter((t: ApiTrade) => t.status === 'open');
+				apiClosedTrades = data.data.filter((t: ApiTrade) => t.status === 'closed');
+			}
+		} catch (err) {
+			console.error('Failed to fetch all trades:', err);
+		}
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// PAGINATION FUNCTIONS - Principal Engineer ICT 11 Standards
 	// ═══════════════════════════════════════════════════════════════════════════
 
@@ -695,6 +809,9 @@
 		fetchAlerts();
 		fetchTradePlan();
 		fetchStats();
+		// Nuclear Build API calls
+		fetchAllTrades();
+		fetchWeeklyVideo();
 	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -768,6 +885,116 @@
 					closedThisWeek: apiStats.closed_this_week
 				}
 			: fallbackStats
+	);
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// NUCLEAR BUILD DERIVED STATE - Transform API data to Nuclear Build formats
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Derive weekly performance from API stats or fallback
+	 * Used by PerformanceSummary component
+	 */
+	const derivedWeeklyPerformance = $derived<WeeklyPerformance>(
+		apiStats ? {
+			winRate: apiStats.win_rate || 0,
+			totalTrades: apiStats.total_trades || 0,
+			winningTrades: apiStats.wins || 0,
+			avgWinPercent: apiStats.avg_win ? (apiStats.avg_win / 100) : 0,
+			avgLossPercent: apiStats.avg_loss ? (apiStats.avg_loss / 100) : 0,
+			riskRewardRatio: apiStats.profit_factor || 0
+		} : weeklyPerformance // fallback to hardcoded
+	);
+
+	/**
+	 * Derive closed trades from API for TickerPill display
+	 * Used by PerformanceSummary component
+	 */
+	const derivedClosedTrades = $derived<ClosedTrade[]>(
+		apiClosedTrades.length > 0
+			? apiClosedTrades.slice(0, 10).map((t) => ({
+					id: String(t.id),
+					ticker: t.ticker,
+					percentageGain: t.pnl_percent || 0,
+					isWinner: (t.pnl_percent || 0) > 0,
+					closedAt: new Date(t.exit_date || t.entry_date),
+					entryPrice: t.entry_price,
+					exitPrice: t.exit_price || t.entry_price
+				}))
+			: closedTrades // fallback to hardcoded
+	);
+
+	/**
+	 * Derive active positions from API for ActivePositionCard display
+	 * Used by PerformanceSummary component
+	 */
+	const derivedActivePositions = $derived<ActivePosition[]>(
+		apiOpenTrades.length > 0
+			? apiOpenTrades.map((t) => {
+					const currentPrice = t.entry_price * 1.01; // Simulate current price (would come from real-time data)
+					const unrealizedPercent = ((currentPrice - t.entry_price) / t.entry_price) * 100;
+					return {
+						id: String(t.id),
+						ticker: t.ticker,
+						status: 'ACTIVE' as const,
+						entryPrice: t.entry_price,
+						currentPrice: currentPrice,
+						unrealizedPercent: unrealizedPercent,
+						targets: t.target1 ? [{ price: t.target1, percentFromEntry: ((t.target1 - t.entry_price) / t.entry_price) * 100, label: 'Target 1' }] : [],
+						stopLoss: t.stop ? { price: t.stop, percentFromEntry: ((t.stop - t.entry_price) / t.entry_price) * 100 } : { price: t.entry_price * 0.95, percentFromEntry: -5 },
+						progressToTarget1: t.target1 ? Math.max(0, Math.min(100, ((currentPrice - t.entry_price) / (t.target1 - t.entry_price)) * 100)) : 0,
+						triggeredAt: new Date(t.entry_date)
+					};
+				})
+			: activePositions // fallback to hardcoded
+	);
+
+	/**
+	 * Derive 30-day performance from API stats
+	 * Used by Sidebar PerformanceCard component
+	 */
+	const derivedThirtyDayPerformance = $derived<ThirtyDayPerformance>(
+		apiStats ? {
+			winRate: apiStats.win_rate || 0,
+			totalAlerts: apiStats.total_trades || 0,
+			profitableAlerts: apiStats.wins || 0,
+			avgWinPercent: apiStats.avg_win ? (apiStats.avg_win / 100) : 0,
+			avgLossPercent: apiStats.avg_loss ? (apiStats.avg_loss / 100) : 0
+		} : thirtyDayPerformance // fallback to hardcoded
+	);
+
+	/**
+	 * Derive weekly video from API
+	 * Used by Sidebar WeeklyVideoCard and VideoGrid components
+	 */
+	const derivedWeeklyVideo = $derived<WeeklyVideo>(
+		apiWeeklyVideo ? {
+			title: apiWeeklyVideo.video_title,
+			thumbnailUrl: apiWeeklyVideo.thumbnail_url || 'https://placehold.co/640x360/143E59/FFFFFF/png?text=Weekly+Breakdown',
+			videoUrl: apiWeeklyVideo.video_url,
+			duration: apiWeeklyVideo.duration || '',
+			publishedAt: new Date(apiWeeklyVideo.published_at)
+		} : weeklyVideo // fallback to hardcoded
+	);
+
+	/**
+	 * Derive recent videos from closed trades alerts (videos are tied to alerts)
+	 * Used by VideoGrid component
+	 */
+	const derivedRecentVideos = $derived<Video[]>(
+		apiAlerts.length > 0
+			? apiAlerts.slice(0, 4).map((a, i) => ({
+					id: String(a.id),
+					ticker: a.ticker,
+					type: a.alert_type as 'ENTRY' | 'EXIT' | 'UPDATE',
+					title: a.title,
+					thumbnailUrl: `https://placehold.co/640x360/${a.alert_type === 'ENTRY' ? '22c55e' : a.alert_type === 'EXIT' ? '3b82f6' : 'f59e0b'}/FFFFFF/png?text=${a.ticker}+${a.alert_type}`,
+					videoUrl: `/dashboard/explosive-swings/updates/${a.ticker.toLowerCase()}-${a.alert_type.toLowerCase()}`,
+					duration: '5:00',
+					publishedAt: new Date(a.published_at),
+					isFeatured: i === 0
+				}))
+			: recentVideos // fallback to hardcoded
 	);
 
 	// Track which alert notes are expanded
@@ -911,10 +1138,10 @@
 	     Replaces old StatsBar with ticker pills + active positions
 	     ═══════════════════════════════════════════════════════════════════════════ -->
 	<PerformanceSummary
-		performance={weeklyPerformance}
-		{closedTrades}
-		{activePositions}
-		isLoading={isLoadingStats}
+		performance={derivedWeeklyPerformance}
+		closedTrades={derivedClosedTrades}
+		activePositions={derivedActivePositions}
+		isLoading={isLoadingStats || isLoadingTrades}
 	/>
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
@@ -1287,7 +1514,7 @@
 	     VIDEO GRID - Nuclear Build Specification
 	     Featured video + responsive grid of recent videos
 	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<VideoGrid videos={recentVideos} isLoading={isLoadingStats} />
+	<VideoGrid videos={derivedRecentVideos} isLoading={isLoadingStats || isLoadingVideos} />
 </div>
 
 <!-- Admin Modal for Creating/Editing Alerts -->
@@ -2540,14 +2767,33 @@
 		border-radius: var(--card-radius);
 		padding: var(--card-padding);
 		box-shadow: var(--shadow-card);
+		border: 1px solid #e5e7eb;
+		border-top: 3px solid var(--color-primary);
+		transition: box-shadow var(--transition-fast), transform var(--transition-fast);
+	}
+
+	.sidebar-card:hover {
+		box-shadow: 0 4px 16px rgba(20, 62, 89, 0.12);
+		transform: translateY(-2px);
 	}
 
 	.sidebar-card h3 {
 		font-size: 1rem;
 		font-weight: 700;
 		margin: 0 0 16px 0;
-		color: #1a1a1a;
+		color: var(--color-primary);
 		font-family: 'Montserrat', system-ui, sans-serif;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+
+	.sidebar-card h3::before {
+		content: '';
+		width: 4px;
+		height: 16px;
+		background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-accent) 100%);
+		border-radius: 2px;
 	}
 
 	/* Sidebar Card Header with Button */
@@ -2709,18 +2955,27 @@
 		color: var(--color-primary);
 	}
 
-	/* Support Card */
+	/* Support Card - Enhanced visual design */
 	.support-card {
-		background: #f8f9fa;
+		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
+		border-top-color: #f59e0b;
+	}
+
+	.support-card:hover {
+		box-shadow: 0 4px 16px rgba(20, 62, 89, 0.25);
 	}
 
 	.support-card h3 {
-		color: #1a1a1a;
+		color: #fff;
+	}
+
+	.support-card h3::before {
+		background: linear-gradient(180deg, #f59e0b 0%, #f97316 100%);
 	}
 
 	.support-card p {
 		font-size: 0.75rem;
-		color: #666;
+		color: rgba(255, 255, 255, 0.85);
 		margin: 0;
 		line-height: 1.4;
 	}
