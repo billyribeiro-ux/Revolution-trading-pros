@@ -103,6 +103,8 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	let heroTab = $state<HeroTab>('video');
 	let selectedFilter = $state<AlertFilter>('all');
+	let isHeroCollapsed = $state(false); // Collapsible hero section
+	let copiedAlertId = $state<number | null>(null); // Track which alert was just copied
 
 	// Admin state
 	let isAdmin = $state(false);
@@ -571,6 +573,31 @@
 		expandedNotes = newExpanded;
 	}
 
+	// Extract price from alert message (e.g., "$142.50" from message text)
+	function extractPrice(message: string): string | null {
+		const priceMatch = message.match(/\$[\d,]+\.?\d*/g);
+		return priceMatch ? priceMatch[0] : null;
+	}
+
+	// Copy trade details to clipboard
+	async function copyTradeDetails(alert: Alert) {
+		const tradeDetails = `${alert.ticker} ${alert.type}\n${alert.title}\n${alert.message}${alert.tosString ? '\nTOS: ' + alert.tosString : ''}`;
+		try {
+			await navigator.clipboard.writeText(tradeDetails);
+			copiedAlertId = alert.id;
+			setTimeout(() => {
+				copiedAlertId = null;
+			}, 2000);
+		} catch (err) {
+			console.error('Failed to copy:', err);
+		}
+	}
+
+	// Toggle hero section collapse
+	function toggleHeroCollapse() {
+		isHeroCollapsed = !isHeroCollapsed;
+	}
+
 	// Filter alerts
 	const filteredAlerts = $derived(
 		selectedFilter === 'all'
@@ -657,12 +684,55 @@
 
 <div class="dashboard">
 	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     HERO: This Week's Content with Tabs (Video | Entries)
+	     QUICK STATS - Moved to top for immediate status visibility
 	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<section class="hero">
-		<div class="hero-header">
-			<h1>{weeklyContent.title}</h1>
-			<div class="hero-tabs">
+	<section class="stats-bar">
+		<!-- Win Rate with Circular Progress Ring -->
+		<div class="stat stat-with-ring">
+			<div class="win-rate-ring">
+				<svg viewBox="0 0 36 36" class="circular-chart">
+					<path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+					<path class="circle" stroke-dasharray="{stats.winRate}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
+				</svg>
+				<span class="stat-value-ring">{stats.winRate}%</span>
+			</div>
+			<span class="stat-label">Win Rate</span>
+		</div>
+		<div class="stat">
+			<span class="stat-value green">{stats.weeklyProfit}</span>
+			<span class="stat-label">This Week</span>
+		</div>
+		<div class="stat">
+			<span class="stat-value">{stats.activeTrades}</span>
+			<span class="stat-label">Active Trades</span>
+		</div>
+		<div class="stat">
+			<span class="stat-value">{stats.closedThisWeek}</span>
+			<span class="stat-label">Closed This Week</span>
+		</div>
+	</section>
+
+	<!-- ═══════════════════════════════════════════════════════════════════════════
+	     HERO: Collapsible Weekly Video Accordion
+	     ═══════════════════════════════════════════════════════════════════════════ -->
+	<section class="hero" class:collapsed={isHeroCollapsed}>
+		<button class="hero-collapse-toggle" onclick={toggleHeroCollapse}>
+			<div class="hero-header-compact">
+				<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" class="video-icon">
+					<path d="M8 5v14l11-7z" />
+				</svg>
+				<h1>{weeklyContent.title} — Weekly Breakdown</h1>
+			</div>
+			<div class="collapse-indicator">
+				<span>{isHeroCollapsed ? 'Expand' : 'Collapse'}</span>
+				<svg class="collapse-chevron" class:rotated={!isHeroCollapsed} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20">
+					<path d="M19 9l-7 7-7-7" />
+				</svg>
+			</div>
+		</button>
+
+		{#if !isHeroCollapsed}
+			<div class="hero-tabs-bar">
 				<button
 					class="hero-tab"
 					class:active={heroTab === 'video'}
@@ -692,155 +762,133 @@
 					Trade Plan & Entries
 				</button>
 			</div>
-		</div>
 
-		<div class="hero-content">
-			{#if heroTab === 'video'}
-				<!-- VIDEO TAB -->
-				<div class="video-container">
-					<div class="video-player" style="background-image: url('{weeklyContent.thumbnail}')">
-						<div class="video-overlay">
-							<button class="play-btn" aria-label="Play video">
-								<svg viewBox="0 0 24 24" fill="currentColor">
-									<path d="M8 5v14l11-7z" />
-								</svg>
-							</button>
+			<div class="hero-content">
+				{#if heroTab === 'video'}
+					<!-- VIDEO TAB - Condensed -->
+					<div class="video-container-compact">
+						<div class="video-player-compact" style="background-image: url('{weeklyContent.thumbnail}')">
+							<div class="video-overlay">
+								<button class="play-btn" aria-label="Play video">
+									<svg viewBox="0 0 24 24" fill="currentColor">
+										<path d="M8 5v14l11-7z" />
+									</svg>
+								</button>
+							</div>
+							<div class="video-duration">{weeklyContent.duration}</div>
 						</div>
-						<div class="video-duration">{weeklyContent.duration}</div>
+						<div class="video-info-compact">
+							<h2>{weeklyContent.videoTitle}</h2>
+							<p>Published {weeklyContent.publishedDate}</p>
+							<a href="/dashboard/explosive-swings/video/weekly" class="watch-btn">
+								Watch Full Video
+								<svg
+									viewBox="0 0 24 24"
+									fill="none"
+									stroke="currentColor"
+									stroke-width="2"
+									width="18"
+									height="18"
+								>
+									<path d="M5 12h14M12 5l7 7-7 7" />
+								</svg>
+							</a>
+						</div>
 					</div>
-					<div class="video-info">
-						<h2>{weeklyContent.videoTitle}</h2>
-						<p>Published {weeklyContent.publishedDate}</p>
-						<a href="/dashboard/explosive-swings/video/weekly" class="watch-btn">
-							Watch Full Video
-							<svg
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								width="18"
-								height="18"
-							>
-								<path d="M5 12h14M12 5l7 7-7 7" />
-							</svg>
-						</a>
-					</div>
-				</div>
-			{:else}
-				<!-- ENTRIES TAB - Trade Plan Sheet -->
-				<div class="entries-container">
-					<div class="entries-header">
-						<h2>This Week's Trade Plan</h2>
-						<p>Complete breakdown with entries, targets, stops, and options plays</p>
-					</div>
-					<div class="trade-sheet-wrapper">
-						<table class="trade-sheet">
-							<thead>
-								<tr>
-									<th>Ticker</th>
-									<th>Bias</th>
-									<th>Entry</th>
-									<th>Target 1</th>
-									<th>Target 2</th>
-									<th>Target 3</th>
-									<th>Runner</th>
-									<th>Stop</th>
-									<th>Options</th>
-									<th>Exp</th>
-									<th class="notes-th">Notes</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each tradePlan as trade}
-									<tr class:has-notes-open={expandedTradeNotes.has(trade.ticker)}>
-										<td class="ticker-cell">
-											<strong>{trade.ticker}</strong>
-										</td>
-										<td>
-											<span class="bias bias--{trade.bias.toLowerCase()}">{trade.bias}</span>
-										</td>
-										<td class="entry-cell">{trade.entry}</td>
-										<td class="target-cell">{trade.target1}</td>
-										<td class="target-cell">{trade.target2}</td>
-										<td class="target-cell">{trade.target3}</td>
-										<td class="runner-cell">{trade.runner}</td>
-										<td class="stop-cell">{trade.stop}</td>
-										<td class="options-cell">{trade.optionsStrike}</td>
-										<td class="exp-cell">{trade.optionsExp}</td>
-										<td class="notes-toggle-cell">
-											<button
-												class="table-notes-btn"
-												class:expanded={expandedTradeNotes.has(trade.ticker)}
-												onclick={() => toggleTradeNotes(trade.ticker)}
-												aria-label="Toggle notes for {trade.ticker}"
-											>
-												<svg
-													class="chevron-icon"
-													viewBox="0 0 24 24"
-													fill="none"
-													stroke="currentColor"
-													stroke-width="2.5"
-													width="18"
-													height="18"
-												>
-													<path d="M19 9l-7 7-7-7" />
-												</svg>
-											</button>
-										</td>
+				{:else}
+					<!-- ENTRIES TAB - Trade Plan Sheet -->
+					<div class="entries-container">
+						<div class="entries-header">
+							<h2>This Week's Trade Plan</h2>
+							<p>Complete breakdown with entries, targets, stops, and options plays</p>
+						</div>
+						<div class="trade-sheet-wrapper">
+							<table class="trade-sheet">
+								<thead>
+									<tr>
+										<th>Ticker</th>
+										<th>Bias</th>
+										<th>Entry</th>
+										<th>Target 1</th>
+										<th>Target 2</th>
+										<th>Target 3</th>
+										<th>Runner</th>
+										<th>Stop</th>
+										<th>Options</th>
+										<th>Exp</th>
+										<th class="notes-th">Notes</th>
 									</tr>
-									{#if expandedTradeNotes.has(trade.ticker)}
-										<tr class="notes-row expanded">
-											<td colspan="11">
-												<div class="trade-notes-panel">
-													<div class="trade-notes-badge">{trade.ticker}</div>
-													<p>{trade.notes}</p>
-												</div>
+								</thead>
+								<tbody>
+									{#each tradePlan as trade}
+										<tr class:has-notes-open={expandedTradeNotes.has(trade.ticker)}>
+											<td class="ticker-cell">
+												<strong>{trade.ticker}</strong>
+											</td>
+											<td>
+												<span class="bias bias--{trade.bias.toLowerCase()}">{trade.bias}</span>
+											</td>
+											<td class="entry-cell">{trade.entry}</td>
+											<td class="target-cell">{trade.target1}</td>
+											<td class="target-cell">{trade.target2}</td>
+											<td class="target-cell">{trade.target3}</td>
+											<td class="runner-cell">{trade.runner}</td>
+											<td class="stop-cell">{trade.stop}</td>
+											<td class="options-cell">{trade.optionsStrike}</td>
+											<td class="exp-cell">{trade.optionsExp}</td>
+											<td class="notes-toggle-cell">
+												<button
+													class="table-notes-btn"
+													class:expanded={expandedTradeNotes.has(trade.ticker)}
+													onclick={() => toggleTradeNotes(trade.ticker)}
+													aria-label="Toggle notes for {trade.ticker}"
+												>
+													<svg
+														class="chevron-icon"
+														viewBox="0 0 24 24"
+														fill="none"
+														stroke="currentColor"
+														stroke-width="2.5"
+														width="18"
+														height="18"
+													>
+														<path d="M19 9l-7 7-7-7" />
+													</svg>
+												</button>
 											</td>
 										</tr>
-									{/if}
-								{/each}
-							</tbody>
-						</table>
+										{#if expandedTradeNotes.has(trade.ticker)}
+											<tr class="notes-row expanded">
+												<td colspan="11">
+													<div class="trade-notes-panel">
+														<div class="trade-notes-badge">{trade.ticker}</div>
+														<p>{trade.notes}</p>
+													</div>
+												</td>
+											</tr>
+										{/if}
+									{/each}
+								</tbody>
+							</table>
+						</div>
+						<div class="sheet-footer">
+							<a
+								href="https://docs.google.com/spreadsheets/d/your-sheet-id"
+								target="_blank"
+								class="google-sheet-link"
+							>
+								<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+									<path
+										d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 17h2v-7H7v7zm4 0h2V7h-2v10zm4 0h2v-4h-2v4z"
+									/>
+								</svg>
+								Open in Google Sheets
+							</a>
+						</div>
 					</div>
-					<div class="sheet-footer">
-						<a
-							href="https://docs.google.com/spreadsheets/d/your-sheet-id"
-							target="_blank"
-							class="google-sheet-link"
-						>
-							<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-								<path
-									d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 17h2v-7H7v7zm4 0h2V7h-2v10zm4 0h2v-4h-2v4z"
-								/>
-							</svg>
-							Open in Google Sheets
-						</a>
-					</div>
-				</div>
-			{/if}
-		</div>
-	</section>
-
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     QUICK STATS
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<section class="stats-bar">
-		<div class="stat">
-			<span class="stat-value">{stats.winRate}%</span>
-			<span class="stat-label">Win Rate</span>
-		</div>
-		<div class="stat">
-			<span class="stat-value green">{stats.weeklyProfit}</span>
-			<span class="stat-label">This Week</span>
-		</div>
-		<div class="stat">
-			<span class="stat-value">{stats.activeTrades}</span>
-			<span class="stat-label">Active Trades</span>
-		</div>
-		<div class="stat">
-			<span class="stat-value">{stats.closedThisWeek}</span>
-			<span class="stat-label">Closed This Week</span>
-		</div>
+				{/if}
+			</div>
+		{/if}
 	</section>
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
@@ -893,53 +941,122 @@
 			</div>
 
 			<div class="alerts-list">
-				{#each filteredAlerts as alert}
-					<div
-						class="alert-card"
-						class:is-new={alert.isNew}
-						class:has-notes-open={expandedNotes.has(alert.id)}
-					>
-						{#if alert.isNew}
-							<span class="new-badge">NEW</span>
-						{/if}
-
-						<!-- Alert Header Row with Inline Chevron -->
-						<div class="alert-row">
-							<div class="alert-info">
-								<span class="alert-type alert-type--{alert.type.toLowerCase()}">{alert.type}</span>
-								<span class="alert-ticker">{alert.ticker}</span>
-								<span class="alert-time">{alert.time}</span>
+				{#if isLoadingAlerts}
+					<!-- Skeleton Loading States -->
+					{#each [1, 2, 3] as _}
+						<div class="alert-card-skeleton">
+							<div class="skeleton-row">
+								<div class="skeleton-badge"></div>
+								<div class="skeleton-ticker"></div>
+								<div class="skeleton-time"></div>
 							</div>
-							<button
-								class="notes-chevron"
-								class:expanded={expandedNotes.has(alert.id)}
-								onclick={() => toggleNotes(alert.id)}
-								aria-label="Toggle trade notes"
-							>
-								<span class="notes-label">Notes</span>
-								<svg
-									class="chevron-icon"
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2.5"
-									width="18"
-									height="18"
-								>
-									<path d="M19 9l-7 7-7-7" />
-								</svg>
-							</button>
+							<div class="skeleton-title"></div>
+							<div class="skeleton-message"></div>
+							<div class="skeleton-message short"></div>
 						</div>
+					{/each}
+				{:else}
+					{#each filteredAlerts as alert, index}
+						<div
+							class="alert-card"
+							class:is-new={alert.isNew}
+							class:has-notes-open={expandedNotes.has(alert.id)}
+							style="animation-delay: {index * 50}ms"
+						>
+							{#if alert.isNew}
+								<span class="new-badge pulse">NEW</span>
+							{/if}
 
-						<h3>{alert.title}</h3>
-						<p class="alert-message">{alert.message}</p>
-
-						<!-- TOS String (if available) -->
-						{#if alert.tosString}
-							<div class="tos-display">
-								<code>{alert.tosString}</code>
+							<!-- Alert Header Row with Directional Icon -->
+							<div class="alert-row">
+								<div class="alert-info">
+									<!-- Directional Arrow Icon -->
+									{#if alert.type === 'ENTRY'}
+										<svg class="direction-icon direction-up" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+											<path d="M7 14l5-5 5 5H7z"/>
+										</svg>
+									{:else if alert.type === 'EXIT'}
+										<svg class="direction-icon direction-down" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+											<path d="M7 10l5 5 5-5H7z"/>
+										</svg>
+									{:else}
+										<svg class="direction-icon direction-neutral" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+											<circle cx="12" cy="12" r="4"/>
+										</svg>
+									{/if}
+									<span class="alert-type alert-type--{alert.type.toLowerCase()}">{alert.type}</span>
+									<span class="alert-ticker">{alert.ticker}</span>
+									<span class="alert-time">{alert.time}</span>
+								</div>
+								<!-- Price Display (Bold, Prominent) -->
+								{#if extractPrice(alert.message)}
+									<div class="alert-price">
+										<span class="price-value">{extractPrice(alert.message)}</span>
+									</div>
+								{/if}
 							</div>
-						{/if}
+
+							<h3>{alert.title}</h3>
+							<p class="alert-message">{alert.message}</p>
+
+							<!-- Action Buttons Row -->
+							<div class="alert-actions-row">
+								<button
+									class="copy-btn"
+									class:copied={copiedAlertId === alert.id}
+									onclick={() => copyTradeDetails(alert)}
+									aria-label="Copy trade details"
+								>
+									{#if copiedAlertId === alert.id}
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
+											<path d="M20 6L9 17l-5-5"/>
+										</svg>
+										<span>Copied!</span>
+									{:else}
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+											<rect x="9" y="9" width="13" height="13" rx="2"/>
+											<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+										</svg>
+										<span>Copy</span>
+									{/if}
+								</button>
+								<button
+									class="notes-chevron"
+									class:expanded={expandedNotes.has(alert.id)}
+									onclick={() => toggleNotes(alert.id)}
+									aria-label="Toggle trade notes"
+								>
+									<span class="notes-label">Notes</span>
+									<svg
+										class="chevron-icon"
+										viewBox="0 0 24 24"
+										fill="none"
+										stroke="currentColor"
+										stroke-width="2.5"
+										width="18"
+										height="18"
+									>
+										<path d="M19 9l-7 7-7-7" />
+									</svg>
+								</button>
+							</div>
+
+							<!-- TOS String (if available) -->
+							{#if alert.tosString}
+								<div class="tos-display">
+									<code>{alert.tosString}</code>
+									<button 
+										class="tos-copy-btn"
+										onclick={() => navigator.clipboard.writeText(alert.tosString || '')}
+										aria-label="Copy TOS string"
+									>
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+											<rect x="9" y="9" width="13" height="13" rx="2"/>
+											<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
+										</svg>
+									</button>
+								</div>
+							{/if}
 
 						<!-- Expandable Notes Panel -->
 						{#if expandedNotes.has(alert.id)}
@@ -973,6 +1090,7 @@
 						{/if}
 					</div>
 				{/each}
+				{/if}
 			</div>
 
 			<a href="/dashboard/explosive-swings/alerts" class="view-all-link"> View All Alerts → </a>
@@ -1087,31 +1205,182 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   HERO SECTION - The Main Event
+	   STATS BAR - Enhanced with Backdrop Blur & Circular Progress Ring
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	.hero {
-		background: linear-gradient(135deg, #f69532 0%, #e8850d 100%);
-		padding: 0;
+	.stats-bar {
+		display: flex;
+		justify-content: center;
+		gap: 60px;
+		padding: 24px 30px;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		border-bottom: 1px solid rgba(229, 231, 235, 0.8);
+		flex-wrap: wrap;
+		position: sticky;
+		top: 0;
+		z-index: 50;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 	}
 
-	.hero-header {
+	.stat {
+		text-align: center;
+	}
+
+	.stat-with-ring {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+	}
+
+	.win-rate-ring {
+		position: relative;
+		width: 70px;
+		height: 70px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.circular-chart {
+		position: absolute;
+		width: 100%;
+		height: 100%;
+		transform: rotate(-90deg);
+	}
+
+	.circle-bg {
+		fill: none;
+		stroke: #e5e7eb;
+		stroke-width: 3;
+	}
+
+	.circle {
+		fill: none;
+		stroke: #22c55e;
+		stroke-width: 3;
+		stroke-linecap: round;
+		transition: stroke-dasharray 0.6s ease;
+	}
+
+	.stat-value-ring {
+		font-size: 18px;
+		font-weight: 700;
+		color: #143e59;
+		font-family: 'Montserrat', sans-serif;
+		z-index: 1;
+	}
+
+	.stat-value {
+		display: block;
+		font-size: 32px;
+		font-weight: 700;
+		color: #143e59;
+		font-family: 'Montserrat', sans-serif;
+	}
+
+	.stat-value.green {
+		color: #22c55e;
+	}
+
+	.stat-label {
+		font-size: 12px;
+		color: #666;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+		margin-top: 4px;
+	}
+
+	@media (max-width: 640px) {
+		.stats-bar {
+			gap: 24px;
+			padding: 20px;
+		}
+
+		.stat-value {
+			font-size: 24px;
+		}
+
+		.win-rate-ring {
+			width: 56px;
+			height: 56px;
+		}
+
+		.stat-value-ring {
+			font-size: 14px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   HERO SECTION - Collapsible Accordion
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.hero {
+		background: linear-gradient(135deg, #f69532 0%, #e8850d 50%, #d4790a 100%);
+		padding: 0;
+		transition: all 0.3s ease;
+	}
+
+	.hero.collapsed {
+		background: linear-gradient(135deg, #f69532 0%, #e8850d 100%);
+	}
+
+	.hero-collapse-toggle {
+		width: 100%;
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 25px 40px;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.2);
-		flex-wrap: wrap;
-		gap: 20px;
+		padding: 18px 30px;
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		transition: background 0.2s;
 	}
 
-	.hero-header h1 {
+	.hero-collapse-toggle:hover {
+		background: rgba(255, 255, 255, 0.1);
+	}
+
+	.hero-header-compact {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.hero-header-compact h1 {
 		color: #fff;
-		font-size: 28px;
+		font-size: 18px;
 		font-weight: 700;
 		margin: 0;
 		font-family: 'Montserrat', sans-serif;
-		text-align: center;
-		flex: 1;
+	}
+
+	.video-icon {
+		color: #fff;
+		opacity: 0.9;
+	}
+
+	.collapse-indicator {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		color: rgba(255, 255, 255, 0.9);
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.collapse-chevron {
+		transition: transform 0.3s ease;
+	}
+
+	.collapse-chevron.rotated {
+		transform: rotate(180deg);
+	}
+
+	.hero-tabs-bar {
+		display: flex;
+		gap: 10px;
+		padding: 0 30px 20px;
+		justify-content: center;
 	}
 
 	.hero-tabs {
@@ -1148,24 +1417,24 @@
 		padding: 40px;
 	}
 
-	/* VIDEO TAB */
-	.video-container {
+	/* VIDEO TAB - Compact Version */
+	.video-container-compact {
 		display: flex;
-		gap: 40px;
+		gap: 30px;
 		align-items: center;
-		max-width: 1200px;
+		max-width: 1000px;
 		margin: 0 auto;
 	}
 
-	.video-player {
-		flex: 0 0 55%;
+	.video-player-compact {
+		flex: 0 0 50%;
 		position: relative;
-		padding-bottom: 31%;
+		padding-bottom: 28%;
 		background-size: cover;
 		background-position: center;
-		border-radius: 16px;
+		border-radius: 12px;
 		overflow: hidden;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
 	}
 
 	.video-overlay {
@@ -1178,13 +1447,13 @@
 		transition: background 0.3s;
 	}
 
-	.video-player:hover .video-overlay {
+	.video-player-compact:hover .video-overlay {
 		background: rgba(0, 0, 0, 0.4);
 	}
 
 	.play-btn {
-		width: 80px;
-		height: 80px;
+		width: 60px;
+		height: 60px;
 		background: #fff;
 		border: none;
 		border-radius: 50%;
@@ -1193,49 +1462,49 @@
 		justify-content: center;
 		cursor: pointer;
 		transition: transform 0.3s;
-		box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 	}
 
 	.play-btn svg {
-		width: 32px;
-		height: 32px;
+		width: 24px;
+		height: 24px;
 		color: #f69532;
-		margin-left: 4px;
+		margin-left: 3px;
 	}
 
-	.video-player:hover .play-btn {
+	.video-player-compact:hover .play-btn {
 		transform: scale(1.1);
 	}
 
 	.video-duration {
 		position: absolute;
-		bottom: 15px;
-		right: 15px;
+		bottom: 12px;
+		right: 12px;
 		background: rgba(0, 0, 0, 0.8);
 		color: #fff;
-		padding: 6px 12px;
-		border-radius: 6px;
-		font-size: 13px;
+		padding: 5px 10px;
+		border-radius: 5px;
+		font-size: 12px;
 		font-weight: 600;
 	}
 
-	.video-info {
+	.video-info-compact {
 		flex: 1;
 		color: #fff;
 		text-align: center;
 	}
 
-	.video-info h2 {
-		font-size: 32px;
+	.video-info-compact h2 {
+		font-size: 24px;
 		font-weight: 700;
-		margin: 0 0 10px 0;
+		margin: 0 0 8px 0;
 		font-family: 'Montserrat', sans-serif;
 	}
 
-	.video-info p {
-		font-size: 14px;
+	.video-info-compact p {
+		font-size: 13px;
 		opacity: 0.9;
-		margin: 0 0 30px 0;
+		margin: 0 0 20px 0;
 	}
 
 	.watch-btn {
@@ -1538,52 +1807,6 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   STATS BAR
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.stats-bar {
-		display: flex;
-		justify-content: center;
-		gap: 60px;
-		padding: 30px;
-		background: #fff;
-		border-bottom: 1px solid #e5e7eb;
-		flex-wrap: wrap;
-	}
-
-	.stat {
-		text-align: center;
-	}
-
-	.stat-value {
-		display: block;
-		font-size: 32px;
-		font-weight: 700;
-		color: #143e59;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.stat-value.green {
-		color: #22c55e;
-	}
-
-	.stat-label {
-		font-size: 13px;
-		color: #666;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	@media (max-width: 640px) {
-		.stats-bar {
-			gap: 30px;
-		}
-
-		.stat-value {
-			font-size: 24px;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
 	   MAIN GRID
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.main-grid {
@@ -1659,6 +1882,78 @@
 		gap: 15px;
 	}
 
+	/* Skeleton Loading for Alerts */
+	.alert-card-skeleton {
+		background: #f8fafc;
+		border: 1px solid #e5e7eb;
+		border-radius: 12px;
+		padding: 20px;
+	}
+
+	.skeleton-row {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		margin-bottom: 16px;
+	}
+
+	.skeleton-badge {
+		width: 60px;
+		height: 24px;
+		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 4px;
+	}
+
+	.skeleton-ticker {
+		width: 50px;
+		height: 20px;
+		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 4px;
+	}
+
+	.skeleton-time {
+		width: 80px;
+		height: 16px;
+		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 4px;
+	}
+
+	.skeleton-title {
+		width: 70%;
+		height: 20px;
+		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 4px;
+		margin-bottom: 12px;
+	}
+
+	.skeleton-message {
+		width: 100%;
+		height: 16px;
+		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+		background-size: 200% 100%;
+		animation: shimmer 1.5s infinite;
+		border-radius: 4px;
+		margin-bottom: 8px;
+	}
+
+	.skeleton-message.short {
+		width: 60%;
+	}
+
+	@keyframes shimmer {
+		0% { background-position: 200% 0; }
+		100% { background-position: -200% 0; }
+	}
+
+	/* Alert Card with Slide-in Animation */
 	.alert-card {
 		background: #f8fafc;
 		border: 1px solid #e5e7eb;
@@ -1666,7 +1961,19 @@
 		padding: 20px;
 		position: relative;
 		transition: all 0.2s;
-		text-align: center;
+		text-align: left;
+		animation: alertSlideIn 0.4s ease-out backwards;
+	}
+
+	@keyframes alertSlideIn {
+		from {
+			opacity: 0;
+			transform: translateY(-12px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
 	}
 
 	.alert-card:hover {
@@ -1678,6 +1985,7 @@
 	.alert-card.is-new {
 		background: #fffbf5;
 		border-color: #f69532;
+		box-shadow: 0 4px 15px rgba(246, 149, 50, 0.15);
 	}
 
 	.new-badge {
@@ -1690,6 +1998,122 @@
 		font-weight: 700;
 		padding: 4px 12px;
 		border-radius: 10px;
+	}
+
+	.new-badge.pulse {
+		animation: badgePulse 2s ease-in-out infinite;
+	}
+
+	@keyframes badgePulse {
+		0%, 100% { box-shadow: 0 0 0 0 rgba(246, 149, 50, 0.4); }
+		50% { box-shadow: 0 0 0 8px rgba(246, 149, 50, 0); }
+	}
+
+	/* Directional Icons */
+	.direction-icon {
+		flex-shrink: 0;
+	}
+
+	.direction-up {
+		color: #22c55e;
+	}
+
+	.direction-down {
+		color: #3b82f6;
+	}
+
+	.direction-neutral {
+		color: #f59e0b;
+	}
+
+	/* Price Display */
+	.alert-price {
+		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
+		padding: 8px 16px;
+		border-radius: 8px;
+		margin-left: auto;
+	}
+
+	.price-value {
+		color: #fff;
+		font-size: 16px;
+		font-weight: 700;
+		font-family: 'Montserrat', sans-serif;
+	}
+
+	/* Action Buttons Row */
+	.alert-actions-row {
+		display: flex;
+		align-items: center;
+		justify-content: flex-end;
+		gap: 10px;
+		margin-top: 12px;
+		padding-top: 12px;
+		border-top: 1px solid #e5e7eb;
+	}
+
+	/* Copy Button */
+	.copy-btn {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		background: #f1f5f9;
+		border: 1px solid #e2e8f0;
+		padding: 6px 12px;
+		border-radius: 6px;
+		font-size: 12px;
+		font-weight: 600;
+		color: #64748b;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.copy-btn:hover {
+		background: #e2e8f0;
+		color: #143e59;
+		border-color: #143e59;
+	}
+
+	.copy-btn.copied {
+		background: #dcfce7;
+		border-color: #22c55e;
+		color: #166534;
+	}
+
+	/* TOS Copy Button */
+	.tos-display {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		background: #1a1a2e;
+		border-radius: 8px;
+		padding: 10px 14px;
+		margin-top: 12px;
+	}
+
+	.tos-display code {
+		color: #22c55e;
+		font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.tos-copy-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(255, 255, 255, 0.1);
+		border: none;
+		padding: 6px;
+		border-radius: 4px;
+		color: #94a3b8;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.tos-copy-btn:hover {
+		background: rgba(255, 255, 255, 0.2);
+		color: #fff;
 	}
 
 	/* Alert Row - Inline Header with Chevron */
@@ -1925,11 +2349,6 @@
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 8px;
-	}
-
-	@keyframes shimmer {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
 	}
 
 	.quick-links {
