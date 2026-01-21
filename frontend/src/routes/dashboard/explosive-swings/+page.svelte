@@ -1,13 +1,21 @@
 <script lang="ts">
 	/**
-	 * Explosive Swings - ULTIMATE Dashboard v2
-	 * ═══════════════════════════════════════════════════════════════════════════
-	 * Member-first design - What do traders need?
-	 * 1. This week's video breakdown
-	 * 2. The exact trade plan (entries, targets, stops, options)
+	 * ═══════════════════════════════════════════════════════════════════════════════
+	 * Explosive Swings - Member Dashboard
+	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
-	 * @version 2.3.0
-	 * @requires Svelte 5.0+ / SvelteKit 2.0+
+	 * @description Member-first dashboard for swing trading alerts and analysis
+	 * @version 3.0.0 - January 2026 - ICT Level 11 Standards
+	 * @requires Svelte 5.0+ (January 2026 syntax)
+	 * @requires SvelteKit 2.0+
+	 * @standards Apple Principal Engineer ICT Level 11
+	 *
+	 * Features:
+	 * - Weekly video breakdown with collapsible hero
+	 * - Real-time trade plan with entry/exit targets
+	 * - Live alerts feed with admin CRUD capabilities
+	 * - Performance metrics sidebar with API integration
+	 * - WCAG 2.1 AA accessibility compliance
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
@@ -1096,16 +1104,18 @@
 			<a href="/dashboard/explosive-swings/alerts" class="view-all-link"> View All Alerts → </a>
 		</section>
 
-		<!-- SIDEBAR -->
-		<aside class="sidebar">
-			<!-- Performance - Now uses real stats from API -->
-			<div class="sidebar-card">
-				<h3>30-Day Performance</h3>
+		<!-- ═══════════════════════════════════════════════════════════════════════════
+		     SIDEBAR - Performance metrics and resources (ICT 11 Accessibility)
+		     ═══════════════════════════════════════════════════════════════════════════ -->
+		<aside class="sidebar" aria-label="Performance sidebar">
+			<!-- Performance Card - Real stats from API -->
+			<div class="sidebar-card" role="region" aria-labelledby="perf-heading">
+				<h3 id="perf-heading">30-Day Performance</h3>
 				{#if isLoadingStats}
-					<div class="loading-shimmer" style="height: 150px;"></div>
+					<div class="loading-shimmer" style="height: 150px;" aria-label="Loading performance data"></div>
 				{:else}
 					<div class="perf-chart">
-						<svg viewBox="0 0 200 100" class="mini-chart">
+						<svg viewBox="0 0 200 100" class="mini-chart" aria-hidden="true">
 							<defs>
 								<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
 									<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.3" />
@@ -1123,19 +1133,19 @@
 								stroke-width="2.5"
 							/>
 						</svg>
-						<div class="perf-total">{stats.weeklyProfit}</div>
+						<div class="perf-total" aria-label="Weekly profit">{stats.weeklyProfit}</div>
 					</div>
-					<div class="perf-stats">
-						<div><span>{stats.winRate}%</span> Win Rate</div>
-						<div><span>{stats.activeTrades}</span> Active</div>
-						<div><span>{stats.closedThisWeek}</span> Closed</div>
+					<div class="perf-stats" role="list">
+						<div role="listitem"><span>{stats.winRate}%</span> Win Rate</div>
+						<div role="listitem"><span>{stats.activeTrades}</span> Active</div>
+						<div role="listitem"><span>{stats.closedThisWeek}</span> Closed</div>
 					</div>
 				{/if}
 			</div>
 
-			<!-- Quick Links -->
-			<div class="sidebar-card">
-				<h3>Resources</h3>
+			<!-- Resources Card -->
+			<nav class="sidebar-card" aria-labelledby="resources-heading">
+				<h3 id="resources-heading">Resources</h3>
 				<div class="quick-links">
 					<a href="/dashboard/explosive-swings/video-library">🎬 Video Library</a>
 					<a href="/dashboard/explosive-swings/trade-tracker">📊 Trade Tracker</a>
@@ -1143,13 +1153,18 @@
 					<a href="/api/export/watchlist?room_slug=explosive-swings&format=csv" download>📥 Export CSV</a>
 					<a href="/dashboard/account">⚙️ Alert Settings</a>
 				</div>
-			</div>
+			</nav>
 
-			<!-- Support -->
-			<div class="sidebar-card support-card">
-				<h3>Need Help?</h3>
+			<!-- Support Card -->
+			<div class="sidebar-card support-card" role="region" aria-labelledby="support-heading">
+				<h3 id="support-heading">Need Help?</h3>
 				<p>Questions about a trade or setup?</p>
-				<a href="https://intercom.help/simpler-trading/en/" target="_blank" class="support-btn">
+				<a 
+					href="https://intercom.help/simpler-trading/en/" 
+					target="_blank" 
+					rel="noopener noreferrer"
+					class="support-btn"
+				>
 					Contact Support
 				</a>
 			</div>
@@ -2295,53 +2310,64 @@
 		color: #143e59;
 	}
 
-	/* SIDEBAR */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SIDEBAR - ICT 11 Standards with CSS Custom Properties
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.sidebar {
+		--sidebar-gap: 20px;
+		--card-radius: 16px;
+		--card-padding: 25px;
+		--color-primary: #143e59;
+		--color-accent: #0984ae;
+		--color-success: #22c55e;
+		--shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+		--transition-fast: 0.2s ease;
+
 		display: flex;
 		flex-direction: column;
-		gap: 20px;
+		gap: var(--sidebar-gap);
 	}
 
 	.sidebar-card {
 		background: #fff;
-		border-radius: 16px;
-		padding: 25px;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+		border-radius: var(--card-radius);
+		padding: var(--card-padding);
+		box-shadow: var(--shadow-card);
 		text-align: center;
 	}
 
 	.sidebar-card h3 {
-		font-size: 16px;
+		font-size: 1rem;
 		font-weight: 700;
-		margin: 0 0 20px 0;
+		margin-block: 0 20px;
 		color: #333;
-		font-family: 'Montserrat', sans-serif;
+		font-family: 'Montserrat', system-ui, sans-serif;
 	}
 
 	.mini-chart {
-		width: 100%;
-		height: 80px;
+		inline-size: 100%;
+		block-size: 80px;
 	}
 
 	.perf-total {
-		font-size: 28px;
+		font-size: 1.75rem;
 		font-weight: 700;
-		color: #22c55e;
-		margin: 15px 0;
-		font-family: 'Montserrat', sans-serif;
+		color: var(--color-success);
+		margin-block: 15px;
+		font-family: 'Montserrat', system-ui, sans-serif;
 	}
 
 	.perf-stats {
 		display: flex;
 		justify-content: center;
 		gap: 20px;
-		font-size: 13px;
+		font-size: 0.8125rem;
 		color: #666;
 	}
 
 	.perf-stats span {
 		font-weight: 700;
-		color: #143e59;
+		color: var(--color-primary);
 	}
 
 	.loading-shimmer {
@@ -2359,24 +2385,27 @@
 
 	.quick-links a {
 		display: block;
-		padding: 12px 15px;
+		padding-block: 12px;
+		padding-inline: 15px;
 		background: #f8fafc;
 		border-radius: 8px;
 		color: #333;
 		text-decoration: none;
-		font-size: 14px;
+		font-size: 0.875rem;
 		font-weight: 600;
-		transition: all 0.2s;
+		transition: all var(--transition-fast);
 		text-align: center;
 	}
 
-	.quick-links a:hover {
-		background: #143e59;
+	.quick-links a:hover,
+	.quick-links a:focus-visible {
+		background: var(--color-primary);
 		color: #fff;
+		outline: none;
 	}
 
 	.support-card {
-		background: linear-gradient(135deg, #143e59, #0984ae);
+		background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
 		color: #fff;
 	}
 
@@ -2385,25 +2414,28 @@
 	}
 
 	.support-card p {
-		font-size: 14px;
+		font-size: 0.875rem;
 		opacity: 0.9;
-		margin: 0 0 20px 0;
+		margin-block: 0 20px;
 	}
 
 	.support-btn {
 		display: inline-block;
 		background: #fff;
-		color: #143e59;
-		padding: 12px 24px;
+		color: var(--color-primary);
+		padding-block: 12px;
+		padding-inline: 24px;
 		border-radius: 8px;
 		font-weight: 700;
 		text-decoration: none;
-		transition: all 0.2s;
+		transition: all var(--transition-fast);
 	}
 
-	.support-btn:hover {
+	.support-btn:hover,
+	.support-btn:focus-visible {
 		transform: translateY(-2px);
 		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
+		outline: none;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
