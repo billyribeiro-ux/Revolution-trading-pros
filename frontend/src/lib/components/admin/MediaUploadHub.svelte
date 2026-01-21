@@ -20,7 +20,7 @@
 	 * @since January 2026
 	 */
 
-	import { fly, fade, scale } from 'svelte/transition';
+	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { cubicOut, elasticOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
 	import IconUpload from '@tabler/icons-svelte/icons/upload';

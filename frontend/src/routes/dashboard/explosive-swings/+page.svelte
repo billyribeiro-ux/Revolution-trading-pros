@@ -20,6 +20,14 @@
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
 	import TradeAlertModal from '$lib/components/dashboard/TradeAlertModal.svelte';
+	
+	// Extracted Components - Principal Engineer ICT 11 Standards
+	import AlertCard from '$lib/components/dashboard/alerts/AlertCard.svelte';
+	import AlertFilters from '$lib/components/dashboard/alerts/AlertFilters.svelte';
+	import Pagination from '$lib/components/dashboard/pagination/Pagination.svelte';
+	import StatsBar from '$lib/components/dashboard/stats/StatsBar.svelte';
+	import VideoCard from '$lib/components/dashboard/video/VideoCard.svelte';
+	import type { Alert, AlertFilter, QuickStats, VideoUpdate } from '$lib/components/dashboard/alerts/types';
 	import type {
 		TradePlanEntry as ApiTradePlanEntry,
 		RoomAlert,
@@ -773,33 +781,9 @@
 
 <div class="explosive-swings-page">
 	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     QUICK STATS - Moved to top for immediate status visibility
+	     QUICK STATS - Using extracted StatsBar component
 	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<section class="stats-bar">
-		<!-- Win Rate with Circular Progress Ring -->
-		<div class="stat stat-with-ring">
-			<div class="win-rate-ring">
-				<svg viewBox="0 0 36 36" class="circular-chart">
-					<path class="circle-bg" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-					<path class="circle" stroke-dasharray="{stats.winRate}, 100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" />
-				</svg>
-				<span class="stat-value-ring">{stats.winRate}%</span>
-			</div>
-			<span class="stat-label">Win Rate</span>
-		</div>
-		<div class="stat">
-			<span class="stat-value green">{stats.weeklyProfit}</span>
-			<span class="stat-label">This Week</span>
-		</div>
-		<div class="stat">
-			<span class="stat-value">{stats.activeTrades}</span>
-			<span class="stat-label">Active Trades</span>
-		</div>
-		<div class="stat">
-			<span class="stat-value">{stats.closedThisWeek}</span>
-			<span class="stat-label">Closed This Week</span>
-		</div>
-	</section>
+	<StatsBar {stats} isLoading={isLoadingStats} />
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
 	     HERO: Collapsible Weekly Video Accordion
@@ -1005,28 +989,10 @@
 						</button>
 					{/if}
 				</div>
-				<div class="filter-pills">
-					<button
-						class="pill"
-						class:active={selectedFilter === 'all'}
-						onclick={() => (selectedFilter = 'all')}>All</button
-					>
-					<button
-						class="pill"
-						class:active={selectedFilter === 'entry'}
-						onclick={() => (selectedFilter = 'entry')}>Entries</button
-					>
-					<button
-						class="pill"
-						class:active={selectedFilter === 'exit'}
-						onclick={() => (selectedFilter = 'exit')}>Exits</button
-					>
-					<button
-						class="pill"
-						class:active={selectedFilter === 'update'}
-						onclick={() => (selectedFilter = 'update')}>Updates</button
-					>
-				</div>
+				<AlertFilters 
+					selected={selectedFilter} 
+					onFilterChange={(filter) => (selectedFilter = filter)} 
+				/>
 			</div>
 
 			<div class="alerts-list">
@@ -1058,197 +1024,34 @@
 					</div>
 				{:else}
 					{#each filteredAlerts as alert, index}
-						<div
-							class="alert-card"
-							class:is-new={alert.isNew}
-							class:has-notes-open={expandedNotes.has(alert.id)}
-							style="animation-delay: {index * 50}ms"
-						>
-							{#if alert.isNew}
-								<span class="new-badge pulse">NEW</span>
-							{/if}
-
-							<!-- Alert Header Row with Directional Icon -->
-							<div class="alert-row">
-								<div class="alert-info">
-									<!-- Directional Arrow Icon -->
-									{#if alert.type === 'ENTRY'}
-										<svg class="direction-icon direction-up" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-											<path d="M7 14l5-5 5 5H7z"/>
-										</svg>
-									{:else if alert.type === 'EXIT'}
-										<svg class="direction-icon direction-down" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-											<path d="M7 10l5 5 5-5H7z"/>
-										</svg>
-									{:else}
-										<svg class="direction-icon direction-neutral" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
-											<circle cx="12" cy="12" r="4"/>
-										</svg>
-									{/if}
-									<span class="alert-type alert-type--{alert.type.toLowerCase()}">{alert.type}</span>
-									<span class="alert-ticker">{alert.ticker}</span>
-									<span class="alert-time">{alert.time}</span>
-								</div>
-								<!-- Price Display (Bold, Prominent) -->
-								{#if extractPrice(alert.message)}
-									<div class="alert-price">
-										<span class="price-value">{extractPrice(alert.message)}</span>
-									</div>
-								{/if}
-							</div>
-
-							<h3>{alert.title}</h3>
-							<p class="alert-message">{alert.message}</p>
-
-							<!-- Action Buttons Row -->
-							<div class="alert-actions-row">
-								<button
-									class="copy-btn"
-									class:copied={copiedAlertId === alert.id}
-									onclick={() => copyTradeDetails(alert)}
-									aria-label="Copy trade details"
-								>
-									{#if copiedAlertId === alert.id}
-										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="16" height="16">
-											<path d="M20 6L9 17l-5-5"/>
-										</svg>
-										<span>Copied!</span>
-									{:else}
-										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
-											<rect x="9" y="9" width="13" height="13" rx="2"/>
-											<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-										</svg>
-										<span>Copy</span>
-									{/if}
-								</button>
-								<button
-									class="notes-chevron"
-									class:expanded={expandedNotes.has(alert.id)}
-									onclick={() => toggleNotes(alert.id)}
-									aria-label="Toggle trade notes"
-								>
-									<span class="notes-label">Notes</span>
-									<svg
-										class="chevron-icon"
-										viewBox="0 0 24 24"
-										fill="none"
-										stroke="currentColor"
-										stroke-width="2.5"
-										width="18"
-										height="18"
-									>
-										<path d="M19 9l-7 7-7-7" />
-									</svg>
-								</button>
-							</div>
-
-							<!-- TOS String (if available) -->
-							{#if alert.tosString}
-								<div class="tos-display">
-									<code>{alert.tosString}</code>
-									<button 
-										class="tos-copy-btn"
-										onclick={() => navigator.clipboard.writeText(alert.tosString || '')}
-										aria-label="Copy TOS string"
-									>
-										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
-											<rect x="9" y="9" width="13" height="13" rx="2"/>
-											<path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/>
-										</svg>
-									</button>
-								</div>
-							{/if}
-
-						<!-- Expandable Notes Panel -->
-						{#if expandedNotes.has(alert.id)}
-							<div class="notes-panel">
-								<div class="notes-panel-header">
-									<div class="notes-ticker-badge">{alert.ticker}</div>
-									<span class="notes-title">Trade Analysis & Notes</span>
-								</div>
-								<div class="notes-panel-body">
-									<p>{alert.notes}</p>
-								</div>
-							</div>
-						{/if}
-
-						<!-- Admin Actions -->
-						{#if isAdmin}
-							<div class="admin-actions">
-								<button
-									class="admin-action-btn edit"
-									onclick={() => {
-										const apiAlert = apiAlerts.find((a) => a.id === alert.id);
-										if (apiAlert) openEditAlertModal(apiAlert);
-									}}
-								>
-									Edit
-								</button>
-								<button class="admin-action-btn delete" onclick={() => handleDeleteAlert(alert.id)}>
-									Delete
-								</button>
-							</div>
-						{/if}
-					</div>
-				{/each}
+						<AlertCard
+							{alert}
+							{index}
+							{isAdmin}
+							isNotesExpanded={expandedNotes.has(alert.id)}
+							isCopied={copiedAlertId === alert.id}
+							onToggleNotes={toggleNotes}
+							onCopy={copyTradeDetails}
+							onEdit={(a) => {
+								const apiAlert = apiAlerts.find((api) => api.id === a.id);
+								if (apiAlert) openEditAlertModal(apiAlert);
+							}}
+							onDelete={handleDeleteAlert}
+						/>
+					{/each}
 				{/if}
 			</div>
 
-			<!-- Pagination UI -->
+			<!-- Pagination UI - Using extracted Pagination component -->
 			{#if pagination.total > alertsPerPage && !isLoadingAlerts}
-				<nav class="pagination" aria-label="Alerts pagination">
-					<div class="pagination-controls">
-						<!-- Previous Button -->
-						<button
-							class="pagination-btn pagination-nav"
-							disabled={currentPage === 1}
-							onclick={() => goToPage(currentPage - 1)}
-							aria-label="Go to previous page"
-						>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-								<path d="M15 19l-7-7 7-7"/>
-							</svg>
-							<span>Previous</span>
-						</button>
-
-						<!-- Page Numbers -->
-						<div class="pagination-pages">
-							{#each visiblePages as page, idx}
-								{#if page === 'ellipsis'}
-									<span class="pagination-ellipsis" aria-hidden="true">…</span>
-								{:else}
-									<button
-										class="pagination-btn pagination-page"
-										class:active={currentPage === page}
-										onclick={() => goToPage(page)}
-										aria-label="Go to page {page}"
-										aria-current={currentPage === page ? 'page' : undefined}
-									>
-										{page}
-									</button>
-								{/if}
-							{/each}
-						</div>
-
-						<!-- Next Button -->
-						<button
-							class="pagination-btn pagination-nav"
-							disabled={currentPage === totalPages}
-							onclick={() => goToPage(currentPage + 1)}
-							aria-label="Go to next page"
-						>
-							<span>Next</span>
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-								<path d="M9 5l7 7-7 7"/>
-							</svg>
-						</button>
-					</div>
-
-					<!-- Results Count -->
-					<p class="pagination-info" aria-live="polite">
-						Showing {showingFrom}-{showingTo} of {pagination.total} alerts
-					</p>
-				</nav>
+				<Pagination
+					{currentPage}
+					{totalPages}
+					totalItems={pagination.total}
+					itemsPerPage={alertsPerPage}
+					onPageChange={goToPage}
+					itemLabel="alerts"
+				/>
 			{/if}
 
 			<a href="/dashboard/explosive-swings/alerts" class="view-all-link"> View All Alerts → </a>
