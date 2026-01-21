@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { cubicOut } from 'svelte/easing';
+	import { heavySlide, createVisibilityObserver } from '$lib/transitions';
 	import IconArrowRight from '@tabler/icons-svelte/icons/arrow-right';
 	import IconClock from '@tabler/icons-svelte/icons/clock';
 	import IconNews from '@tabler/icons-svelte/icons/news';
@@ -33,45 +33,12 @@
 		mouse.y = e.clientY - rect.top;
 	};
 
+	// Svelte 5 ICT7+ Pattern: Use centralized visibility observer
 	onMount(() => {
-		// Use queueMicrotask to ensure binding is complete
-		queueMicrotask(() => {
-			if (!containerRef) {
-				isVisible = true; // Fallback: show content
-				return;
-			}
-
-			// Check if already in viewport
-			const rect = containerRef.getBoundingClientRect();
-			const viewportHeight = window.innerHeight || document.documentElement.clientHeight;
-			if (rect.top < viewportHeight + 200) {
-				isVisible = true;
-				return;
-			}
-
-			const visibilityObserver = new IntersectionObserver(
-				(entries) => {
-					if (entries[0]?.isIntersecting) {
-						isVisible = true;
-						visibilityObserver.disconnect();
-					}
-				},
-				{ threshold: 0.1 }
-			);
-			visibilityObserver.observe(containerRef);
+		return createVisibilityObserver(containerRef, (visible) => {
+			isVisible = visible;
 		});
 	});
-
-	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
-		return {
-			delay,
-			duration,
-			css: (t: number) => {
-				const eased = cubicOut(t);
-				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
-			}
-		};
-	}
 
 	// Helper: Format relative time for the "Wire" feel
 	function getRelativeTime(dateString: string): string {
