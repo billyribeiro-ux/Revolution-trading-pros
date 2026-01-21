@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { heavySlide, createVisibilityObserver } from '$lib/transitions';
+	import { cubicOut } from 'svelte/easing';
 	import IconQuote from '@tabler/icons-svelte/icons/quote';
 	import IconCircleCheckFilled from '@tabler/icons-svelte/icons/circle-check-filled';
 	import IconTrendingUp from '@tabler/icons-svelte/icons/trending-up';
@@ -93,14 +93,41 @@
 		mouse.y = e.clientY - rect.top;
 	};
 
-	// Svelte 5 ICT7+ Pattern: Use centralized visibility observer
+	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
+		return {
+			delay,
+			duration,
+			css: (t: number) => {
+				const eased = cubicOut(t);
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 30}px);`;
+			}
+		};
+	}
+
+	// Trigger entrance animations when section scrolls into viewport
 	onMount(() => {
 		if (!browser) {
 			isVisible = true;
 			return;
 		}
-		return createVisibilityObserver(containerRef, (visible) => {
-			isVisible = visible;
+
+		queueMicrotask(() => {
+			if (!containerRef) {
+				isVisible = true;
+				return;
+			}
+
+			const visibilityObserver = new IntersectionObserver(
+				(entries) => {
+					if (entries[0]?.isIntersecting) {
+						isVisible = true;
+						visibilityObserver.disconnect();
+					}
+				},
+				{ threshold: 0.1, rootMargin: '50px' }
+			);
+
+			visibilityObserver.observe(containerRef);
 		});
 	});
 

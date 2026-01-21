@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { heavySlide, createVisibilityObserver } from '$lib/transitions';
+	import { cubicOut } from 'svelte/easing';
 	// Using the direct path imports as requested in your snippet
 	import IconSitemap from '@tabler/icons-svelte/icons/sitemap';
 	import IconShieldLock from '@tabler/icons-svelte/icons/shield-lock';
@@ -54,15 +54,46 @@
 		mouse.y = e.clientY - rect.top;
 	};
 
-	// Svelte 5 ICT7+ Pattern: Use centralized visibility observer
+	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
+		return {
+			delay,
+			duration,
+			css: (t: number) => {
+				const eased = cubicOut(t);
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+			}
+		};
+	}
+
+	// Trigger entrance animations when section scrolls into viewport
+	let observer: IntersectionObserver | null = null;
+
 	onMount(() => {
 		if (!browser) {
 			isVisible = true;
 			return;
 		}
-		return createVisibilityObserver(containerRef, (visible) => {
-			isVisible = visible;
+
+		queueMicrotask(() => {
+			if (!containerRef) {
+				isVisible = true;
+				return;
+			}
+
+			observer = new IntersectionObserver(
+				(entries) => {
+					if (entries[0]?.isIntersecting) {
+						isVisible = true;
+						observer?.disconnect();
+					}
+				},
+				{ threshold: 0.1, rootMargin: '50px' }
+			);
+
+			observer.observe(containerRef);
 		});
+
+		return () => observer?.disconnect();
 	});
 </script>
 

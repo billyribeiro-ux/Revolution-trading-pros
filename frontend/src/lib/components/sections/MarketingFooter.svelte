@@ -18,7 +18,7 @@
 	 */
 	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
-	import { heavySlide, createVisibilityObserver } from '$lib/transitions';
+	import { cubicOut } from 'svelte/easing';
 	import {
 		IconBrandTwitter,
 		IconBrandInstagram,
@@ -32,7 +32,21 @@
 	// ICT11+ Fix: Start false, set true in onMount to trigger in: transitions
 	let isVisible = $state(false);
 
-	// Svelte 5 ICT7+ Pattern: Use centralized visibility observer
+	// --- Transition Function (matching MentorshipSection exactly) ---
+	function heavySlide(_node: Element, { delay = 0, duration = 1000 }) {
+		return {
+			delay,
+			duration,
+			css: (t: number) => {
+				const eased = cubicOut(t);
+				return `opacity: ${eased}; transform: translateY(${(1 - eased) * 20}px);`;
+			}
+		};
+	}
+
+	// --- Intersection Observer for Viewport Detection ---
+	let observer: IntersectionObserver | null = null;
+
 	onMount(() => {
 		// Ensures correct year even if the page is prerendered at build time.
 		currentYear = new Date().getFullYear();
@@ -41,9 +55,27 @@
 			isVisible = true;
 			return;
 		}
-		return createVisibilityObserver(containerRef, (visible) => {
-			isVisible = visible;
+
+		queueMicrotask(() => {
+			if (!containerRef) {
+				isVisible = true;
+				return;
+			}
+
+			observer = new IntersectionObserver(
+				(entries) => {
+					if (entries[0]?.isIntersecting) {
+						isVisible = true;
+						observer?.disconnect();
+					}
+				},
+				{ threshold: 0.1, rootMargin: '50px' }
+			);
+
+			observer.observe(containerRef);
 		});
+
+		return () => observer?.disconnect();
 	});
 
 	const footerLinks = {
