@@ -36,6 +36,7 @@
 	} from '$lib/api/user-memberships';
 	import DashboardSidebar from '$lib/components/dashboard/DashboardSidebar.svelte';
 	import DashboardBreadcrumbs from '$lib/components/dashboard/DashboardBreadcrumbs.svelte';
+	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
 	import type { Snippet } from 'svelte'; // FIXED: Separate type import for clarity
 
@@ -544,6 +545,9 @@
 		</div>
 	</div>
 </div>
+
+<!-- Dashboard Footer - Consistent across all dashboard pages -->
+<MarketingFooter />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
