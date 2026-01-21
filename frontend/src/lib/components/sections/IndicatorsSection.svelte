@@ -116,14 +116,7 @@
 	// CHART RENDERING
 	// ============================================================================
 	function drawChart() {
-		if (!chartCtx || !canvasRef || !chartRef) {
-			console.debug('[IndicatorsSection] drawChart skipped - missing refs:', {
-				chartCtx: !!chartCtx,
-				canvasRef: !!canvasRef,
-				chartRef: !!chartRef
-			});
-			return;
-		}
+		if (!chartCtx || !canvasRef || !chartRef) return;
 
 		// Use CSS dimensions, not canvas dimensions (which are scaled by DPR)
 		const rect = chartRef.getBoundingClientRect();
@@ -149,12 +142,7 @@
 			chartCtx.stroke();
 		}
 
-		if (visibleCandles === 0) {
-			console.debug('[IndicatorsSection] No visible candles yet, chartProgress:', chartProgress);
-			return;
-		}
-		
-		console.debug('[IndicatorsSection] Drawing', visibleCandles, 'candles');
+		if (visibleCandles === 0) return;
 
 		// Calculate price range
 		const visibleData = candleData.slice(0, visibleCandles);
@@ -213,13 +201,8 @@
 	// ============================================================================
 	// ANIMATION LOOP
 	// ============================================================================
-	let frameCount = 0;
 	function animate() {
 		drawChart();
-		frameCount++;
-		if (frameCount % 60 === 0) {
-			console.debug('[IndicatorsSection] Animation loop running, frame:', frameCount, 'chartProgress:', chartProgress);
-		}
 		animationFrame = requestAnimationFrame(animate);
 	}
 
@@ -257,25 +240,19 @@
 		// Use double rAF to ensure layout is complete
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
-				console.debug('[IndicatorsSection] Initializing canvas setup...');
 				setupCanvas();
 				resizeObserver = new ResizeObserver(() => {
 					setupCanvas();
 				});
-				if (chartRef) {
-					resizeObserver.observe(chartRef);
-					console.debug('[IndicatorsSection] ResizeObserver attached');
-				}
+				if (chartRef) resizeObserver.observe(chartRef);
 			});
 		});
 
-		// Start chart animation immediately since LazySection handles visibility
+		// Start chart animation immediately
 		if (!prefersReducedMotion) {
-			console.debug('[IndicatorsSection] Starting chartProgress animation');
 			animatechartProgress();
 		} else {
 			chartProgress = 1;
-			console.debug('[IndicatorsSection] Reduced motion - chartProgress set to 1');
 		}
 
 		// Load GSAP asynchronously
@@ -284,7 +261,6 @@
 		}
 
 		// Start animation loop
-		console.debug('[IndicatorsSection] Starting animation loop');
 		animate();
 
 		// Auto-rotate indicators (slower on mobile for better UX)
@@ -303,20 +279,13 @@
 	});
 
 	function setupCanvas() {
-		if (!canvasRef || !chartRef) {
-			console.debug('[IndicatorsSection] setupCanvas skipped - missing refs:', {
-				canvasRef: !!canvasRef,
-				chartRef: !!chartRef
-			});
-			return;
-		}
+		if (!canvasRef || !chartRef) return;
 
 		const dpr = window.devicePixelRatio || 1;
 		const rect = chartRef.getBoundingClientRect();
 
 		// Ensure we have valid dimensions
 		if (rect.width === 0 || rect.height === 0) {
-			console.debug('[IndicatorsSection] Canvas has zero dimensions, retrying...');
 			// Retry after a short delay
 			setTimeout(() => setupCanvas(), 100);
 			return;
@@ -332,11 +301,6 @@
 			// Reset transform before scaling
 			chartCtx.setTransform(1, 0, 0, 1, 0, 0);
 			chartCtx.scale(dpr, dpr);
-			console.debug('[IndicatorsSection] Canvas setup complete:', rect.width, 'x', rect.height, 'chartCtx:', !!chartCtx);
-			// Trigger initial draw
-			drawChart();
-		} else {
-			console.error('[IndicatorsSection] Failed to get canvas context');
 		}
 	}
 
@@ -347,7 +311,6 @@
 			const elapsed = now - start;
 			const progress = Math.min(elapsed / duration, 1);
 			chartProgress = cubicOut(progress);
-			console.debug('[IndicatorsSection] chartProgress:', chartProgress.toFixed(3));
 			if (progress < 1) requestAnimationFrame(step);
 		}
 		requestAnimationFrame(step);
