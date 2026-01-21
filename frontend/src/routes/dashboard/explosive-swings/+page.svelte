@@ -35,6 +35,7 @@
 	import AlertsFeed from './components/AlertsFeed.svelte';
 	import SidebarComponent from './components/Sidebar.svelte';
 	import VideoGrid from './components/VideoGrid.svelte';
+	import WeeklyHero from './components/WeeklyHero.svelte';
 	
 	// Types from local types.ts (Nuclear Build)
 	import type { 
@@ -113,7 +114,6 @@
 		duration: string;
 	}
 
-	type HeroTab = 'video' | 'entries';
 	type AlertFilter = 'all' | 'entry' | 'exit' | 'update';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -138,9 +138,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 	// REACTIVE STATE - Svelte 5 $state runes
 	// ═══════════════════════════════════════════════════════════════════════════
-	let heroTab = $state<HeroTab>('video');
 	let selectedFilter = $state<AlertFilter>('all');
-	let isHeroCollapsed = $state(false); // Collapsible hero section
 	let copiedAlertId = $state<number | null>(null); // Track which alert was just copied
 
 	// Admin state
@@ -1000,19 +998,6 @@
 	// Track which alert notes are expanded
 	let expandedNotes = $state<Set<number>>(new Set());
 
-	// Track which trade plan notes are expanded
-	let expandedTradeNotes = $state<Set<string>>(new Set());
-
-	function toggleTradeNotes(ticker: string) {
-		const newExpanded = new Set(expandedTradeNotes);
-		if (newExpanded.has(ticker)) {
-			newExpanded.delete(ticker);
-		} else {
-			newExpanded.add(ticker);
-		}
-		expandedTradeNotes = newExpanded;
-	}
-
 	function toggleNotes(alertId: number) {
 		const newExpanded = new Set(expandedNotes);
 		if (newExpanded.has(alertId)) {
@@ -1041,11 +1026,6 @@
 		} catch (err) {
 			console.error('Failed to copy:', err);
 		}
-	}
-
-	// Toggle hero section collapse
-	function toggleHeroCollapse() {
-		isHeroCollapsed = !isHeroCollapsed;
 	}
 
 	// Filter alerts
@@ -1145,183 +1125,10 @@
 	/>
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     HERO: Collapsible Weekly Video Accordion (Legacy - Will be removed)
+	     HERO: Collapsible Weekly Video Accordion
+	     Extracted to WeeklyHero component per Svelte 5 best practices
 	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<section class="hero" class:collapsed={isHeroCollapsed}>
-		<button class="hero-collapse-toggle" onclick={toggleHeroCollapse}>
-			<div class="hero-header-compact">
-				<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" class="video-icon">
-					<path d="M8 5v14l11-7z" />
-				</svg>
-				<h1>{weeklyContent.title} — Weekly Breakdown</h1>
-			</div>
-			<div class="collapse-indicator">
-				<span>{isHeroCollapsed ? 'Expand' : 'Collapse'}</span>
-				<svg class="collapse-chevron" class:rotated={!isHeroCollapsed} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" width="20" height="20">
-					<path d="M19 9l-7 7-7-7" />
-				</svg>
-			</div>
-		</button>
-
-		{#if !isHeroCollapsed}
-			<div class="hero-tabs-bar">
-				<button
-					class="hero-tab"
-					class:active={heroTab === 'video'}
-					onclick={() => (heroTab = 'video')}
-				>
-					<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
-						<path d="M8 5v14l11-7z" />
-					</svg>
-					Video Breakdown
-				</button>
-				<button
-					class="hero-tab"
-					class:active={heroTab === 'entries'}
-					onclick={() => (heroTab = 'entries')}
-				>
-					<svg
-						viewBox="0 0 24 24"
-						fill="none"
-						stroke="currentColor"
-						stroke-width="2"
-						width="18"
-						height="18"
-					>
-						<rect x="3" y="3" width="18" height="18" rx="2" />
-						<path d="M3 9h18M9 21V9" />
-					</svg>
-					Trade Plan & Entries
-				</button>
-			</div>
-
-			<div class="hero-content">
-				{#if heroTab === 'video'}
-					<!-- VIDEO TAB - Condensed -->
-					<div class="video-container-compact">
-						<div class="video-player-compact" style="background-image: url('{weeklyContent.thumbnail}')">
-							<div class="video-overlay">
-								<button class="play-btn" aria-label="Play video">
-									<svg viewBox="0 0 24 24" fill="currentColor">
-										<path d="M8 5v14l11-7z" />
-									</svg>
-								</button>
-							</div>
-							<div class="video-duration">{weeklyContent.duration}</div>
-						</div>
-						<div class="video-info-compact">
-							<h2>{weeklyContent.videoTitle}</h2>
-							<p>Published {weeklyContent.publishedDate}</p>
-							<a href="/dashboard/explosive-swings/video/weekly" class="watch-btn">
-								Watch Full Video
-								<svg
-									viewBox="0 0 24 24"
-									fill="none"
-									stroke="currentColor"
-									stroke-width="2"
-									width="18"
-									height="18"
-								>
-									<path d="M5 12h14M12 5l7 7-7 7" />
-								</svg>
-							</a>
-						</div>
-					</div>
-				{:else}
-					<!-- ENTRIES TAB - Trade Plan Sheet -->
-					<div class="entries-container">
-						<div class="entries-header">
-							<h2>This Week's Trade Plan</h2>
-							<p>Complete breakdown with entries, targets, stops, and options plays</p>
-						</div>
-						<div class="trade-sheet-wrapper">
-							<table class="trade-sheet">
-								<thead>
-									<tr>
-										<th>Ticker</th>
-										<th>Bias</th>
-										<th>Entry</th>
-										<th>Target 1</th>
-										<th>Target 2</th>
-										<th>Target 3</th>
-										<th>Runner</th>
-										<th>Stop</th>
-										<th>Options</th>
-										<th>Exp</th>
-										<th class="notes-th">Notes</th>
-									</tr>
-								</thead>
-								<tbody>
-									{#each tradePlan as trade}
-										<tr class:has-notes-open={expandedTradeNotes.has(trade.ticker)}>
-											<td class="ticker-cell">
-												<strong>{trade.ticker}</strong>
-											</td>
-											<td>
-												<span class="bias bias--{trade.bias.toLowerCase()}">{trade.bias}</span>
-											</td>
-											<td class="entry-cell">{trade.entry}</td>
-											<td class="target-cell">{trade.target1}</td>
-											<td class="target-cell">{trade.target2}</td>
-											<td class="target-cell">{trade.target3}</td>
-											<td class="runner-cell">{trade.runner}</td>
-											<td class="stop-cell">{trade.stop}</td>
-											<td class="options-cell">{trade.optionsStrike}</td>
-											<td class="exp-cell">{trade.optionsExp}</td>
-											<td class="notes-toggle-cell">
-												<button
-													class="table-notes-btn"
-													class:expanded={expandedTradeNotes.has(trade.ticker)}
-													onclick={() => toggleTradeNotes(trade.ticker)}
-													aria-label="Toggle notes for {trade.ticker}"
-												>
-													<svg
-														class="chevron-icon"
-														viewBox="0 0 24 24"
-														fill="none"
-														stroke="currentColor"
-														stroke-width="2.5"
-														width="18"
-														height="18"
-													>
-														<path d="M19 9l-7 7-7-7" />
-													</svg>
-												</button>
-											</td>
-										</tr>
-										{#if expandedTradeNotes.has(trade.ticker)}
-											<tr class="notes-row expanded">
-												<td colspan="11">
-													<div class="trade-notes-panel">
-														<div class="trade-notes-badge">{trade.ticker}</div>
-														<p>{trade.notes}</p>
-													</div>
-												</td>
-											</tr>
-										{/if}
-									{/each}
-								</tbody>
-							</table>
-						</div>
-						<div class="sheet-footer">
-							<a
-								href="https://docs.google.com/spreadsheets/d/your-sheet-id"
-								target="_blank"
-								class="google-sheet-link"
-							>
-								<svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-									<path
-										d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V5h14v14zM7 17h2v-7H7v7zm4 0h2V7h-2v10zm4 0h2v-4h-2v4z"
-									/>
-								</svg>
-								Open in Google Sheets
-							</a>
-						</div>
-					</div>
-				{/if}
-			</div>
-		{/if}
-	</section>
+	<WeeklyHero {weeklyContent} {tradePlan} />
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
 	     MAIN CONTENT: Alerts + Sidebar
@@ -1644,111 +1451,7 @@
 		}
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   HERO SECTION - Collapsible Accordion
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.hero {
-		background: linear-gradient(135deg, #f69532 0%, #e8850d 50%, #d4790a 100%);
-		padding: 0;
-		transition: all 0.3s ease;
-	}
-
-	.hero.collapsed {
-		background: linear-gradient(135deg, #f69532 0%, #e8850d 100%);
-	}
-
-	.hero-collapse-toggle {
-		width: 100%;
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 18px 30px;
-		background: transparent;
-		border: none;
-		cursor: pointer;
-		transition: background 0.2s;
-	}
-
-	.hero-collapse-toggle:hover {
-		background: rgba(255, 255, 255, 0.1);
-	}
-
-	.hero-header-compact {
-		display: flex;
-		align-items: center;
-		gap: 12px;
-	}
-
-	.hero-header-compact h1 {
-		color: #fff;
-		font-size: 18px;
-		font-weight: 700;
-		margin: 0;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.video-icon {
-		color: #fff;
-		opacity: 0.9;
-	}
-
-	.collapse-indicator {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		color: rgba(255, 255, 255, 0.9);
-		font-size: 13px;
-		font-weight: 600;
-	}
-
-	.collapse-chevron {
-		transition: transform 0.3s ease;
-	}
-
-	.collapse-chevron.rotated {
-		transform: rotate(180deg);
-	}
-
-	.hero-tabs-bar {
-		display: flex;
-		gap: 10px;
-		padding: 0 30px 20px;
-		justify-content: center;
-	}
-
-	.hero-tabs {
-		display: flex;
-		gap: 10px;
-	}
-
-	.hero-tab {
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		background: rgba(255, 255, 255, 0.15);
-		border: 2px solid rgba(255, 255, 255, 0.3);
-		color: #fff;
-		padding: 12px 24px;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.hero-tab:hover {
-		background: rgba(255, 255, 255, 0.25);
-	}
-
-	.hero-tab.active {
-		background: #fff;
-		color: #f69532;
-		border-color: #fff;
-	}
-
-	.hero-content {
-		padding: 40px;
-	}
+	/* Hero CSS moved to WeeklyHero.svelte component */
 
 	/* VIDEO TAB - Compact Version */
 	.video-container-compact {
