@@ -116,7 +116,14 @@
 	// CHART RENDERING
 	// ============================================================================
 	function drawChart() {
-		if (!chartCtx || !canvasRef || !chartRef) return;
+		if (!chartCtx || !canvasRef || !chartRef) {
+			console.debug('[IndicatorsSection] drawChart skipped - missing refs:', {
+				chartCtx: !!chartCtx,
+				canvasRef: !!canvasRef,
+				chartRef: !!chartRef
+			});
+			return;
+		}
 
 		// Use CSS dimensions, not canvas dimensions (which are scaled by DPR)
 		const rect = chartRef.getBoundingClientRect();
@@ -240,20 +247,25 @@
 		// Use double rAF to ensure layout is complete
 		requestAnimationFrame(() => {
 			requestAnimationFrame(() => {
+				console.debug('[IndicatorsSection] Initializing canvas setup...');
 				setupCanvas();
 				resizeObserver = new ResizeObserver(() => {
 					setupCanvas();
-					drawChart(); // Redraw on resize
 				});
-				if (chartRef) resizeObserver.observe(chartRef);
+				if (chartRef) {
+					resizeObserver.observe(chartRef);
+					console.debug('[IndicatorsSection] ResizeObserver attached');
+				}
 			});
 		});
 
 		// Start chart animation immediately since LazySection handles visibility
 		if (!prefersReducedMotion) {
+			console.debug('[IndicatorsSection] Starting chartProgress animation');
 			animatechartProgress();
 		} else {
 			chartProgress = 1;
+			console.debug('[IndicatorsSection] Reduced motion - chartProgress set to 1');
 		}
 
 		// Load GSAP asynchronously
@@ -262,6 +274,7 @@
 		}
 
 		// Start animation loop
+		console.debug('[IndicatorsSection] Starting animation loop');
 		animate();
 
 		// Auto-rotate indicators (slower on mobile for better UX)
@@ -280,7 +293,13 @@
 	});
 
 	function setupCanvas() {
-		if (!canvasRef || !chartRef) return;
+		if (!canvasRef || !chartRef) {
+			console.debug('[IndicatorsSection] setupCanvas skipped - missing refs:', {
+				canvasRef: !!canvasRef,
+				chartRef: !!chartRef
+			});
+			return;
+		}
 
 		const dpr = window.devicePixelRatio || 1;
 		const rect = chartRef.getBoundingClientRect();
@@ -288,6 +307,8 @@
 		// Ensure we have valid dimensions
 		if (rect.width === 0 || rect.height === 0) {
 			console.debug('[IndicatorsSection] Canvas has zero dimensions, retrying...');
+			// Retry after a short delay
+			setTimeout(() => setupCanvas(), 100);
 			return;
 		}
 
@@ -301,7 +322,11 @@
 			// Reset transform before scaling
 			chartCtx.setTransform(1, 0, 0, 1, 0, 0);
 			chartCtx.scale(dpr, dpr);
-			console.debug('[IndicatorsSection] Canvas setup complete:', rect.width, 'x', rect.height);
+			console.debug('[IndicatorsSection] Canvas setup complete:', rect.width, 'x', rect.height, 'chartCtx:', !!chartCtx);
+			// Trigger initial draw
+			drawChart();
+		} else {
+			console.error('[IndicatorsSection] Failed to get canvas context');
 		}
 	}
 
