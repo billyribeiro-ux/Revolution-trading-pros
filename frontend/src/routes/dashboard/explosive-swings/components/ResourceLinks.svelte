@@ -5,7 +5,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Quick access links for common resources
-	 * @version 4.0.0 - January 2026 - Nuclear Build Specification
+	 * @version 4.1.0 - Visual Polish Pass
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 */
 
@@ -14,36 +14,85 @@
 		label: string;
 		href: string;
 		external?: boolean;
+		description?: string;
 	}
 
+	interface Props {
+		variant?: 'default' | 'compact' | 'card';
+	}
+
+	const { variant = 'default' }: Props = $props();
+
 	const resources: ResourceLink[] = [
-		{ icon: 'video', label: 'Video Library', href: '/dashboard/explosive-swings/video-library' },
-		{ icon: 'chart', label: 'Trade Tracker', href: '/dashboard/explosive-swings/trades' },
-		{ icon: 'star', label: 'My Favorites', href: '/dashboard/explosive-swings/favorites' },
-		{ icon: 'download', label: 'Export CSV', href: '/dashboard/explosive-swings/export' },
-		{ icon: 'settings', label: 'Alert Settings', href: '/dashboard/explosive-swings/settings' }
+		{ 
+			icon: 'video', 
+			label: 'Video Library', 
+			href: '/dashboard/explosive-swings/video-library',
+			description: 'All trade breakdowns'
+		},
+		{ 
+			icon: 'chart', 
+			label: 'Trade Tracker', 
+			href: '/dashboard/explosive-swings/trades',
+			description: 'Performance history'
+		},
+		{ 
+			icon: 'star', 
+			label: 'My Favorites', 
+			href: '/dashboard/explosive-swings/favorites',
+			description: 'Saved alerts & videos'
+		},
+		{ 
+			icon: 'download', 
+			label: 'Export CSV', 
+			href: '/dashboard/explosive-swings/export',
+			description: 'Download trade data'
+		},
+		{ 
+			icon: 'settings', 
+			label: 'Alert Settings', 
+			href: '/dashboard/explosive-swings/settings',
+			description: 'Notification preferences'
+		}
 	];
 </script>
 
-<div class="resource-links" role="navigation" aria-labelledby="resources-heading">
-	<h3 id="resources-heading" class="section-title">Resources</h3>
+<div 
+	class="resource-links" 
+	class:compact={variant === 'compact'}
+	class:card-style={variant === 'card'}
+	role="navigation" 
+	aria-labelledby="resources-heading"
+>
+	<div class="section-header">
+		<h3 id="resources-heading" class="section-title">
+			<span class="title-icon" aria-hidden="true">
+				<svg viewBox="0 0 20 20" fill="currentColor">
+					<path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
+					<path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z" />
+				</svg>
+			</span>
+			Resources
+		</h3>
+	</div>
 
 	<nav class="links-list">
-		{#each resources as resource}
+		{#each resources as resource, index}
 			<a
 				href={resource.href}
 				class="resource-link"
 				target={resource.external ? '_blank' : undefined}
 				rel={resource.external ? 'noopener noreferrer' : undefined}
+				style="animation-delay: {index * 0.05}s"
 			>
-				<span class="link-icon" aria-hidden="true">
+				<span class="link-icon-wrapper" aria-hidden="true">
 					{#if resource.icon === 'video'}
 						<svg viewBox="0 0 20 20" fill="currentColor">
 							<path d="M3.25 4A2.25 2.25 0 001 6.25v7.5A2.25 2.25 0 003.25 16h7.5A2.25 2.25 0 0013 13.75v-7.5A2.25 2.25 0 0010.75 4h-7.5zM19 4.75a.75.75 0 00-1.28-.53l-3 3a.75.75 0 00-.22.53v4.5c0 .199.079.39.22.53l3 3a.75.75 0 001.28-.53V4.75z" />
 						</svg>
 					{:else if resource.icon === 'chart'}
 						<svg viewBox="0 0 20 20" fill="currentColor">
-							<path fill-rule="evenodd" d="M1 2.75A.75.75 0 011.75 2h16.5a.75.75 0 010 1.5H18v8.75A2.75 2.75 0 0115.25 15h-1.072l.798 3.06a.75.75 0 01-1.452.38L12.69 15H7.31l-.834 3.44a.75.75 0 01-1.452-.38L5.822 15H4.75A2.75 2.75 0 012 12.25V3.5h-.25A.75.75 0 011 2.75zM7.373 13.5l-.426 1.75 6.106-.002-.426-1.748H7.373zM15 3.5H4v8.75c0 .69.56 1.25 1.25 1.25h9.5c.69 0 1.25-.56 1.25-1.25V3.5z" clip-rule="evenodd" />
+							<path fill-rule="evenodd" d="M4.25 2A2.25 2.25 0 002 4.25v11.5A2.25 2.25 0 004.25 18h11.5A2.25 2.25 0 0018 15.75V4.25A2.25 2.25 0 0015.75 2H4.25zM15 5.75a.75.75 0 00-1.5 0v8.5a.75.75 0 001.5 0v-8.5zm-8.5 6a.75.75 0 00-1.5 0v2.5a.75.75 0 001.5 0v-2.5zM8.584 9a.75.75 0 01.75.75v4.5a.75.75 0 01-1.5 0v-4.5a.75.75 0 01.75-.75zm3.58-1.25a.75.75 0 00-1.5 0v6.5a.75.75 0 001.5 0v-6.5z" clip-rule="evenodd" />
 						</svg>
 					{:else if resource.icon === 'star'}
 						<svg viewBox="0 0 20 20" fill="currentColor">
@@ -60,46 +109,125 @@
 						</svg>
 					{/if}
 				</span>
-				<span class="link-label">{resource.label}</span>
+				<div class="link-content">
+					<span class="link-label">{resource.label}</span>
+					{#if variant === 'card' && resource.description}
+						<span class="link-description">{resource.description}</span>
+					{/if}
+				</div>
+				<span class="link-arrow" aria-hidden="true">
+					<svg viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+					</svg>
+				</span>
 			</a>
 		{/each}
 	</nav>
 </div>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════
+	   CONTAINER
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.resource-links {
-		background: #fff;
+		background: #ffffff;
 		border: 1px solid #e2e8f0;
-		border-radius: 12px;
+		border-radius: 14px;
 		padding: 20px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+	}
+
+	.resource-links.compact {
+		padding: 16px;
+	}
+
+	.resource-links.card-style {
+		padding: 24px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   HEADER
+	   ═══════════════════════════════════════════════════════════════════════ */
+	.section-header {
+		margin-bottom: 16px;
 	}
 
 	.section-title {
-		font-size: 12px;
-		font-weight: 600;
-		color: #64748b;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		font-size: 13px;
+		font-weight: 700;
+		color: #475569;
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		margin: 0 0 12px 0;
+		letter-spacing: 0.06em;
+		margin: 0;
 	}
 
+	.title-icon {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 18px;
+		height: 18px;
+		color: #94a3b8;
+	}
+
+	.title-icon svg {
+		width: 100%;
+		height: 100%;
+	}
+
+	.compact .section-header {
+		margin-bottom: 12px;
+	}
+
+	.compact .section-title {
+		font-size: 11px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   LINKS LIST
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.links-list {
 		display: flex;
 		flex-direction: column;
+		gap: 2px;
 	}
 
+	.card-style .links-list {
+		gap: 8px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   RESOURCE LINK
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.resource-link {
 		display: flex;
 		align-items: center;
-		gap: 12px;
-		padding: 12px;
-		margin: 0 -12px;
+		gap: 14px;
+		padding: 12px 14px;
+		margin: 0 -14px;
 		color: #334155;
 		text-decoration: none;
-		border-radius: 8px;
-		transition: all 0.2s;
-		min-height: 44px;
+		border-radius: 10px;
+		transition: all 0.2s ease-out;
+		min-height: 48px;
+		position: relative;
+	}
+
+	.compact .resource-link {
+		padding: 10px 12px;
+		margin: 0 -12px;
+		gap: 12px;
+		min-height: 40px;
+	}
+
+	.card-style .resource-link {
+		margin: 0;
+		padding: 14px 16px;
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
 	}
 
 	.resource-link:hover {
@@ -107,27 +235,158 @@
 		color: #0f172a;
 	}
 
-	.link-icon {
+	.card-style .resource-link:hover {
+		background: #f1f5f9;
+		border-color: #cbd5e1;
+		transform: translateX(4px);
+	}
+
+	/* Icon Wrapper */
+	.link-icon-wrapper {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+		border-radius: 10px;
+		color: #64748b;
+		flex-shrink: 0;
+		transition: all 0.2s ease-out;
+	}
+
+	.compact .link-icon-wrapper {
+		width: 32px;
+		height: 32px;
+		border-radius: 8px;
+	}
+
+	.card-style .link-icon-wrapper {
+		width: 40px;
+		height: 40px;
+		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
+		color: #fff;
+	}
+
+	.link-icon-wrapper svg {
+		width: 18px;
+		height: 18px;
+	}
+
+	.compact .link-icon-wrapper svg {
+		width: 16px;
+		height: 16px;
+	}
+
+	.card-style .link-icon-wrapper svg {
+		width: 20px;
+		height: 20px;
+	}
+
+	.resource-link:hover .link-icon-wrapper {
+		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
+		color: #fff;
+		transform: scale(1.05);
+	}
+
+	.card-style .resource-link:hover .link-icon-wrapper {
+		transform: scale(1.08);
+		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.25);
+	}
+
+	/* Link Content */
+	.link-content {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+		flex: 1;
+		min-width: 0;
+	}
+
+	.link-label {
+		font-size: 14px;
+		font-weight: 600;
+		color: #334155;
+		line-height: 1.3;
+	}
+
+	.compact .link-label {
+		font-size: 13px;
+	}
+
+	.resource-link:hover .link-label {
+		color: #0f172a;
+	}
+
+	.link-description {
+		font-size: 12px;
+		color: #94a3b8;
+		line-height: 1.3;
+	}
+
+	.resource-link:hover .link-description {
+		color: #64748b;
+	}
+
+	/* Arrow */
+	.link-arrow {
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		width: 20px;
 		height: 20px;
-		color: #64748b;
+		color: #cbd5e1;
 		flex-shrink: 0;
+		opacity: 0;
+		transform: translateX(-8px);
+		transition: all 0.2s ease-out;
 	}
 
-	.link-icon svg {
-		width: 100%;
-		height: 100%;
+	.link-arrow svg {
+		width: 16px;
+		height: 16px;
 	}
 
-	.resource-link:hover .link-icon {
+	.resource-link:hover .link-arrow {
+		opacity: 1;
+		transform: translateX(0);
 		color: #143e59;
 	}
 
-	.link-label {
-		font-size: 14px;
-		font-weight: 500;
+	/* ═══════════════════════════════════════════════════════════════════════
+	   HOVER EFFECTS - STAR ICON SPECIAL
+	   ═══════════════════════════════════════════════════════════════════════ */
+	.resource-link:nth-child(3):hover .link-icon-wrapper {
+		background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   RESPONSIVE
+	   ═══════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 640px) {
+		.resource-links {
+			padding: 16px;
+		}
+
+		.resource-link {
+			padding: 10px 12px;
+			margin: 0 -12px;
+			gap: 12px;
+			min-height: 44px;
+		}
+
+		.link-icon-wrapper {
+			width: 32px;
+			height: 32px;
+		}
+
+		.link-icon-wrapper svg {
+			width: 16px;
+			height: 16px;
+		}
+
+		.link-label {
+			font-size: 13px;
+		}
 	}
 </style>

@@ -4,7 +4,7 @@
  * ═══════════════════════════════════════════════════════════════════════════════
  *
  * @description Formatting functions for the Explosive Swings dashboard
- * @version 4.0.0 - January 2026 - Nuclear Build Specification
+ * @version 4.1.0 - Visual Polish Pass
  * @standards Apple Principal Engineer ICT 7+ Standards
  */
 
@@ -26,7 +26,10 @@ export function formatPercent(value: number, decimals: number = 1): string {
  * @returns Formatted string like "$142.50"
  */
 export function formatPrice(value: number, decimals: number = 2): string {
-	return `$${value.toFixed(decimals)}`;
+	return `$${value.toLocaleString('en-US', { 
+		minimumFractionDigits: decimals, 
+		maximumFractionDigits: decimals 
+	})}`;
 }
 
 /**
@@ -47,9 +50,11 @@ export function formatRelativeTime(date: Date): string {
 	} else if (diffMinutes < 60) {
 		return `${diffMinutes} min ago`;
 	} else if (diffHours < 24) {
-		return `${diffHours} hour${diffHours === 1 ? '' : 's'} ago`;
+		return `${diffHours}h ago`;
+	} else if (diffDays === 1) {
+		return 'Yesterday';
 	} else if (diffDays < 7) {
-		return `${diffDays} day${diffDays === 1 ? '' : 's'} ago`;
+		return `${diffDays} days ago`;
 	} else {
 		return formatDate(date);
 	}
@@ -65,6 +70,18 @@ export function formatDate(date: Date): string {
 		month: 'long',
 		day: 'numeric',
 		year: 'numeric'
+	});
+}
+
+/**
+ * Format a date as short format
+ * @param date - The date to format
+ * @returns Formatted string like "Jan 13"
+ */
+export function formatDateShort(date: Date): string {
+	return date.toLocaleDateString('en-US', {
+		month: 'short',
+		day: 'numeric'
 	});
 }
 
@@ -120,4 +137,29 @@ export function truncateText(text: string, maxLength: number): string {
  */
 export function formatTicker(ticker: string): string {
 	return ticker.trim().toUpperCase();
+}
+
+/**
+ * Format a number with commas for thousands
+ * @param value - The number to format
+ * @returns Formatted string like "1,234,567"
+ */
+export function formatNumber(value: number): string {
+	return value.toLocaleString('en-US');
+}
+
+/**
+ * Format duration in seconds to mm:ss or hh:mm:ss
+ * @param seconds - Duration in seconds
+ * @returns Formatted duration string
+ */
+export function formatDuration(seconds: number): string {
+	const hrs = Math.floor(seconds / 3600);
+	const mins = Math.floor((seconds % 3600) / 60);
+	const secs = seconds % 60;
+	
+	if (hrs > 0) {
+		return `${hrs}:${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+	}
+	return `${mins}:${secs.toString().padStart(2, '0')}`;
 }

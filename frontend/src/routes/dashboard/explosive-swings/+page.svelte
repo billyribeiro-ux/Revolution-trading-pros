@@ -5,7 +5,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Member-first dashboard for swing trading alerts and analysis
-	 * @version 3.0.0 - January 2026 - ICT Level 11 Standards
+	 * @version 4.1.0 - Visual Polish Pass
 	 * @requires Svelte 5.0+ (January 2026 syntax)
 	 * @requires SvelteKit 2.0+
 	 * @standards Apple Principal Engineer ICT Level 11
@@ -2155,6 +2155,22 @@
 	@media (max-width: 1024px) {
 		.main-grid {
 			grid-template-columns: 1fr;
+			gap: 24px;
+			padding: 24px;
+		}
+	}
+
+	@media (max-width: 768px) {
+		.main-grid {
+			gap: 20px;
+			padding: 20px;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.main-grid {
+			gap: 16px;
+			padding: 16px;
 		}
 	}
 
@@ -2165,6 +2181,13 @@
 		padding: 25px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
 		contain: layout style;
+	}
+
+	@media (max-width: 640px) {
+		.alerts-section {
+			padding: 18px;
+			border-radius: 12px;
+		}
 	}
 
 	.section-header {
@@ -2188,6 +2211,7 @@
 	.filter-pills {
 		display: flex;
 		gap: 8px;
+		flex-wrap: wrap;
 	}
 
 	.pill {
@@ -2209,6 +2233,34 @@
 	.pill.active {
 		background: #143e59;
 		color: #fff;
+	}
+
+	@media (max-width: 640px) {
+		.section-header {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 12px;
+			margin-bottom: 20px;
+		}
+
+		.section-header h2 {
+			font-size: 18px;
+			text-align: left;
+		}
+
+		.filter-pills {
+			width: 100%;
+			overflow-x: auto;
+			-webkit-overflow-scrolling: touch;
+			padding-bottom: 4px;
+		}
+
+		.pill {
+			padding: 7px 14px;
+			font-size: 12px;
+			white-space: nowrap;
+			flex-shrink: 0;
+		}
 	}
 
 	.alerts-list {

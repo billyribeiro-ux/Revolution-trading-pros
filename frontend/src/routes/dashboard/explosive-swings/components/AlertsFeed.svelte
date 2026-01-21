@@ -5,7 +5,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Container for live alerts with filtering and pagination
-	 * @version 4.0.0 - January 2026 - Nuclear Build Specification
+	 * @version 4.1.0 - Visual Polish Pass
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 */
 	import type { Alert, AlertFilterType } from '../types';

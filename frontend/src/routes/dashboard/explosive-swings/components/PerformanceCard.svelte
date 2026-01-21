@@ -5,12 +5,12 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays 30-day performance metrics in a compact sidebar card
-	 * @version 4.0.0 - January 2026 - Nuclear Build Specification
+	 * @version 4.1.0 - Visual Polish Pass
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 */
 	import type { ThirtyDayPerformance } from '../types';
 	import { formatPercent, formatRiskReward } from '../utils/formatters';
-	import { calculateRiskReward } from '../utils/calculations';
+	import { calculateRiskRewardFromPercentages } from '../utils/calculations';
 
 	interface Props {
 		performance: ThirtyDayPerformance;
@@ -20,7 +20,7 @@
 	const { performance, isLoading = false }: Props = $props();
 
 	const riskReward = $derived(
-		calculateRiskReward(performance.avgWinPercent, performance.avgLossPercent)
+		calculateRiskRewardFromPercentages(performance.avgWinPercent, performance.avgLossPercent)
 	);
 </script>
 
@@ -74,20 +74,25 @@
 
 <style>
 	.performance-card {
-		background: #fff;
+		background: #ffffff;
 		border: 1px solid #e2e8f0;
-		border-radius: 12px;
-		padding: 20px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+		border-radius: 14px;
+		padding: 22px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+		transition: all 0.2s ease-out;
+	}
+
+	.performance-card:hover {
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 	}
 
 	.card-title {
-		font-size: 12px;
-		font-weight: 600;
-		color: #64748b;
+		font-size: 13px;
+		font-weight: 700;
+		color: #475569;
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		margin: 0 0 16px 0;
+		letter-spacing: 0.06em;
+		margin: 0 0 18px 0;
 	}
 
 	.card-content {
@@ -102,8 +107,8 @@
 	}
 
 	.win-rate-value {
-		font-size: 32px;
-		font-weight: 700;
+		font-size: 36px;
+		font-weight: 800;
 		color: #059669;
 		font-variant-numeric: tabular-nums;
 		line-height: 1;
@@ -123,7 +128,7 @@
 
 	.stats-divider {
 		height: 1px;
-		background: #e2e8f0;
+		background: linear-gradient(90deg, #e2e8f0 0%, transparent 100%);
 		margin-bottom: 16px;
 	}
 
@@ -160,16 +165,22 @@
 	}
 
 	.view-history-link {
-		display: block;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
 		font-size: 14px;
 		font-weight: 600;
 		color: #143e59;
 		text-decoration: none;
-		transition: color 0.2s;
+		padding: 8px 12px;
+		margin: 0 -12px;
+		border-radius: 8px;
+		transition: all 0.2s ease-out;
 	}
 
 	.view-history-link:hover {
-		color: #0984ae;
+		background: #f1f5f9;
+		color: #0f172a;
 	}
 
 	.skeleton-content {
@@ -201,6 +212,26 @@
 		}
 		100% {
 			background-position: -200% 0;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   RESPONSIVE
+	   ═══════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 640px) {
+		.performance-card {
+			padding: 18px;
+			border-radius: 12px;
+		}
+
+		.win-rate-value {
+			font-size: 28px;
+		}
+
+		.stat-row {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 4px;
 		}
 	}
 </style>

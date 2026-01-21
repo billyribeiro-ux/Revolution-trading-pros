@@ -5,7 +5,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays this week's performance with ticker pills and active positions
-	 * @version 4.0.0 - January 2026 - Nuclear Build Specification
+	 * @version 4.1.0 - Visual Polish Pass
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 */
 	import type { WeeklyPerformance, ClosedTrade, ActivePosition } from '../types';
@@ -21,42 +21,67 @@
 	}
 
 	const { performance, closedTrades, activePositions, isLoading = false }: Props = $props();
+
+	// Calculate risk/reward display
+	const rrDisplay = $derived(
+		performance.riskRewardRatio > 0 
+			? `${performance.riskRewardRatio.toFixed(1)}:1` 
+			: '—'
+	);
 </script>
 
 <section class="performance-summary" aria-labelledby="performance-heading">
-	<!-- Header Row -->
-	<div class="summary-header">
-		<h2 id="performance-heading" class="summary-title">This Week's Performance</h2>
-		<div class="win-rate-badge">
-			<span class="win-rate-value">{performance.winRate}%</span>
-			<span class="win-rate-label">Win Rate ({formatWinLossRatio(performance.winningTrades, performance.totalTrades)})</span>
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	     HEADER ROW - Title + Win Rate Badge
+	     ═══════════════════════════════════════════════════════════════════════ -->
+	<header class="summary-header">
+		<div class="header-left">
+			<h2 id="performance-heading" class="summary-title">This Week's Performance</h2>
+			<span class="summary-subtitle">Trade results and active positions</span>
 		</div>
-	</div>
+		
+		<div class="win-rate-container">
+			<div class="win-rate-badge">
+				<span class="win-rate-value">{performance.winRate}%</span>
+				<span class="win-rate-label">Win Rate</span>
+			</div>
+			<span class="win-rate-detail">
+				{formatWinLossRatio(performance.winningTrades, performance.totalTrades)} trades
+			</span>
+		</div>
+	</header>
 
-	<div class="summary-divider"></div>
-
-	<!-- Closed Trades Section -->
-	{#if closedTrades.length > 0}
-		<div class="closed-trades-section">
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	     CLOSED TRADES SECTION - Ticker Pills
+	     ═══════════════════════════════════════════════════════════════════════ -->
+	{#if closedTrades.length > 0 || isLoading}
+		<div class="closed-section">
 			<div class="section-header">
-				<h3 class="section-title">Closed This Week</h3>
-				<div class="avg-stats">
-					<span class="avg-stat">
-						<span class="avg-label">Avg Winner:</span>
-						<span class="avg-value positive">{formatPercent(performance.avgWinPercent)}</span>
-					</span>
-					<span class="stat-separator">|</span>
-					<span class="avg-stat">
-						<span class="avg-label">Avg Loser:</span>
-						<span class="avg-value negative">{formatPercent(-Math.abs(performance.avgLossPercent))}</span>
-					</span>
+				<h3 class="section-label">Closed This Week</h3>
+				<div class="avg-metrics">
+					<div class="metric">
+						<span class="metric-label">Avg Winner:</span>
+						<span class="metric-value positive">{formatPercent(performance.avgWinPercent)}</span>
+					</div>
+					<span class="metric-divider">|</span>
+					<div class="metric">
+						<span class="metric-label">Avg Loser:</span>
+						<span class="metric-value negative">{formatPercent(-Math.abs(performance.avgLossPercent))}</span>
+					</div>
+					{#if performance.riskRewardRatio > 0}
+						<span class="metric-divider">|</span>
+						<div class="metric">
+							<span class="metric-label">R/R:</span>
+							<span class="metric-value neutral">{rrDisplay}</span>
+						</div>
+					{/if}
 				</div>
 			</div>
 
-			<div class="ticker-pills-container" role="list" aria-label="Closed trades this week">
+			<div class="ticker-pills-scroll" role="list" aria-label="Closed trades this week">
 				{#if isLoading}
-					{#each Array(4) as _}
-						<div class="ticker-pill-skeleton"></div>
+					{#each Array(5) as _, i}
+						<div class="ticker-pill-skeleton" style="animation-delay: {i * 0.1}s"></div>
 					{/each}
 				{:else}
 					{#each closedTrades as trade (trade.id)}
@@ -67,15 +92,22 @@
 		</div>
 	{/if}
 
-	<!-- Active Positions Section -->
-	{#if activePositions.length > 0}
-		<div class="active-positions-section">
-			<h3 class="section-title">Active Positions ({activePositions.length})</h3>
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	     ACTIVE POSITIONS SECTION - Position Cards
+	     ═══════════════════════════════════════════════════════════════════════ -->
+	{#if activePositions.length > 0 || isLoading}
+		<div class="active-section">
+			<h3 class="section-label">
+				Active Positions 
+				{#if !isLoading}
+					<span class="position-count">({activePositions.length})</span>
+				{/if}
+			</h3>
 
 			<div class="positions-grid">
 				{#if isLoading}
-					{#each Array(2) as _}
-						<div class="position-card-skeleton"></div>
+					{#each Array(2) as _, i}
+						<div class="position-skeleton" style="animation-delay: {i * 0.15}s"></div>
 					{/each}
 				{:else}
 					{#each activePositions as position (position.id)}
@@ -86,66 +118,112 @@
 		</div>
 	{/if}
 
-	<!-- Empty State -->
+	<!-- ═══════════════════════════════════════════════════════════════════════
+	     EMPTY STATE
+	     ═══════════════════════════════════════════════════════════════════════ -->
 	{#if closedTrades.length === 0 && activePositions.length === 0 && !isLoading}
 		<div class="empty-state">
-			<p>No trades this week yet. Check back after the market opens!</p>
+			<div class="empty-icon">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+					<path stroke-linecap="round" stroke-linejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 013 19.875v-6.75zM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V8.625zM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 01-1.125-1.125V4.125z" />
+				</svg>
+			</div>
+			<h4 class="empty-title">No trades this week yet</h4>
+			<p class="empty-text">Check back after the market opens for live alerts and positions.</p>
 		</div>
 	{/if}
 </section>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════
+	   CONTAINER
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.performance-summary {
-		background: #fff;
+		background: #ffffff;
 		border: 1px solid #e2e8f0;
 		border-radius: 16px;
-		padding: 24px;
-		margin-bottom: 24px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+		padding: 28px;
+		margin: 24px 30px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════
+	   HEADER
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.summary-header {
 		display: flex;
-		align-items: center;
+		align-items: flex-start;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: 16px;
-		margin-bottom: 16px;
+		gap: 20px;
+		margin-bottom: 28px;
+		padding-bottom: 20px;
+		border-bottom: 1px solid #e2e8f0;
+	}
+
+	.header-left {
+		display: flex;
+		flex-direction: column;
+		gap: 4px;
 	}
 
 	.summary-title {
-		font-size: 18px;
-		font-weight: 600;
+		font-size: 22px;
+		font-weight: 700;
 		color: #0f172a;
 		margin: 0;
+		letter-spacing: -0.01em;
+	}
+
+	.summary-subtitle {
+		font-size: 14px;
+		color: #64748b;
+	}
+
+	/* Win Rate Badge */
+	.win-rate-container {
+		display: flex;
+		flex-direction: column;
+		align-items: flex-end;
+		gap: 4px;
 	}
 
 	.win-rate-badge {
 		display: flex;
 		align-items: baseline;
 		gap: 8px;
+		background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+		border: 1px solid #a7f3d0;
+		padding: 10px 18px;
+		border-radius: 10px;
 	}
 
 	.win-rate-value {
-		font-size: 28px;
-		font-weight: 700;
+		font-size: 32px;
+		font-weight: 800;
 		color: #059669;
 		font-variant-numeric: tabular-nums;
+		line-height: 1;
 	}
 
 	.win-rate-label {
-		font-size: 14px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #10b981;
+		text-transform: uppercase;
+		letter-spacing: 0.03em;
+	}
+
+	.win-rate-detail {
+		font-size: 13px;
 		color: #64748b;
 	}
 
-	.summary-divider {
-		height: 1px;
-		background: #e2e8f0;
-		margin-bottom: 20px;
-	}
-
-	.closed-trades-section {
-		margin-bottom: 28px;
+	/* ═══════════════════════════════════════════════════════════════════════
+	   CLOSED TRADES SECTION
+	   ═══════════════════════════════════════════════════════════════════════ */
+	.closed-section {
+		margin-bottom: 32px;
 	}
 
 	.section-header {
@@ -153,113 +231,181 @@
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: 12px;
-		margin-bottom: 16px;
+		gap: 16px;
+		margin-bottom: 18px;
 	}
 
-	.section-title {
-		font-size: 14px;
-		font-weight: 600;
+	.section-label {
+		font-size: 13px;
+		font-weight: 700;
 		color: #475569;
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.06em;
 		margin: 0;
 	}
 
-	.avg-stats {
-		display: flex;
-		align-items: center;
-		gap: 12px;
+	.position-count {
+		color: #94a3b8;
+		font-weight: 600;
 	}
 
-	.avg-stat {
+	/* Average Metrics */
+	.avg-metrics {
+		display: flex;
+		align-items: center;
+		gap: 14px;
+		flex-wrap: wrap;
+	}
+
+	.metric {
 		display: flex;
 		align-items: center;
 		gap: 6px;
 	}
 
-	.avg-label {
+	.metric-label {
 		font-size: 13px;
 		color: #64748b;
+		font-weight: 500;
 	}
 
-	.avg-value {
+	.metric-value {
 		font-size: 14px;
-		font-weight: 600;
+		font-weight: 700;
 		font-variant-numeric: tabular-nums;
 	}
 
-	.avg-value.positive {
+	.metric-value.positive {
 		color: #059669;
 	}
 
-	.avg-value.negative {
+	.metric-value.negative {
 		color: #dc2626;
 	}
 
-	.stat-separator {
-		color: #cbd5e1;
+	.metric-value.neutral {
+		color: #0f172a;
 	}
 
-	.ticker-pills-container {
+	.metric-divider {
+		color: #cbd5e1;
+		font-weight: 300;
+	}
+
+	/* Ticker Pills Container */
+	.ticker-pills-scroll {
 		display: flex;
-		gap: 12px;
+		gap: 14px;
 		overflow-x: auto;
-		padding-bottom: 8px;
+		padding: 8px 4px;
+		margin: -8px -4px;
 		scroll-snap-type: x mandatory;
 		-webkit-overflow-scrolling: touch;
+		scrollbar-width: thin;
+		scrollbar-color: #cbd5e1 #f1f5f9;
 	}
 
-	.ticker-pills-container::-webkit-scrollbar {
-		height: 6px;
+	.ticker-pills-scroll::-webkit-scrollbar {
+		height: 8px;
 	}
 
-	.ticker-pills-container::-webkit-scrollbar-track {
+	.ticker-pills-scroll::-webkit-scrollbar-track {
 		background: #f1f5f9;
-		border-radius: 3px;
+		border-radius: 4px;
 	}
 
-	.ticker-pills-container::-webkit-scrollbar-thumb {
+	.ticker-pills-scroll::-webkit-scrollbar-thumb {
 		background: #cbd5e1;
-		border-radius: 3px;
+		border-radius: 4px;
 	}
 
+	.ticker-pills-scroll::-webkit-scrollbar-thumb:hover {
+		background: #94a3b8;
+	}
+
+	/* Skeleton for Ticker Pills */
 	.ticker-pill-skeleton {
-		min-width: 80px;
-		height: 80px;
+		min-width: 88px;
+		height: 82px;
 		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
-		border-radius: 8px;
+		border-radius: 10px;
 		flex-shrink: 0;
 	}
 
-	.active-positions-section {
+	/* ═══════════════════════════════════════════════════════════════════════
+	   ACTIVE POSITIONS SECTION
+	   ═══════════════════════════════════════════════════════════════════════ */
+	.active-section {
 		margin-bottom: 8px;
+	}
+
+	.active-section .section-label {
+		margin-bottom: 18px;
 	}
 
 	.positions-grid {
 		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-		gap: 16px;
-		margin-top: 16px;
+		grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+		gap: 20px;
 	}
 
-	.position-card-skeleton {
-		height: 240px;
+	/* Skeleton for Position Cards */
+	.position-skeleton {
+		height: 260px;
 		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 12px;
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════
+	   EMPTY STATE
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.empty-state {
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 48px 24px;
 		text-align: center;
-		padding: 32px;
-		color: #64748b;
-		font-size: 14px;
 	}
 
+	.empty-icon {
+		width: 56px;
+		height: 56px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #f1f5f9;
+		border-radius: 12px;
+		margin-bottom: 16px;
+	}
+
+	.empty-icon svg {
+		width: 28px;
+		height: 28px;
+		color: #94a3b8;
+	}
+
+	.empty-title {
+		font-size: 16px;
+		font-weight: 600;
+		color: #334155;
+		margin: 0 0 6px 0;
+	}
+
+	.empty-text {
+		font-size: 14px;
+		color: #64748b;
+		margin: 0;
+		max-width: 280px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   ANIMATIONS
+	   ═══════════════════════════════════════════════════════════════════════ */
 	@keyframes shimmer {
 		0% {
 			background-position: 200% 0;
@@ -269,13 +415,22 @@
 		}
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════
+	   RESPONSIVE
+	   ═══════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 768px) {
 		.performance-summary {
-			padding: 16px;
+			padding: 20px;
+			margin: 16px;
+			border-radius: 12px;
 		}
 
 		.summary-header {
 			flex-direction: column;
+			align-items: flex-start;
+		}
+
+		.win-rate-container {
 			align-items: flex-start;
 		}
 
@@ -284,8 +439,26 @@
 			align-items: flex-start;
 		}
 
+		.avg-metrics {
+			flex-direction: column;
+			align-items: flex-start;
+			gap: 8px;
+		}
+
+		.metric-divider {
+			display: none;
+		}
+
 		.positions-grid {
 			grid-template-columns: 1fr;
+		}
+
+		.summary-title {
+			font-size: 18px;
+		}
+
+		.win-rate-value {
+			font-size: 26px;
 		}
 	}
 </style>

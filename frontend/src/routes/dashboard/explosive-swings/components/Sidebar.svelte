@@ -5,7 +5,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Sticky sidebar containing performance, video, and resources
-	 * @version 4.0.0 - January 2026 - Nuclear Build Specification
+	 * @version 4.1.0 - Visual Polish Pass
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 */
 	import type { ThirtyDayPerformance, WeeklyVideo } from '../types';
@@ -69,9 +69,15 @@
 	.help-card {
 		background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
 		border: 1px solid #e2e8f0;
-		border-radius: 12px;
-		padding: 20px;
+		border-radius: 14px;
+		padding: 22px;
 		text-align: center;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+		transition: all 0.2s ease-out;
+	}
+
+	.help-card:hover {
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 	}
 
 	.help-title {
@@ -89,28 +95,53 @@
 	}
 
 	.help-btn {
-		display: inline-block;
-		padding: 10px 20px;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		padding: 11px 22px;
 		font-size: 14px;
 		font-weight: 600;
 		color: #143e59;
 		background: #fff;
-		border: 1px solid #e2e8f0;
-		border-radius: 8px;
+		border: 1.5px solid #e2e8f0;
+		border-radius: 10px;
 		text-decoration: none;
-		transition: all 0.2s;
+		transition: all 0.2s ease-out;
 	}
 
 	.help-btn:hover {
-		background: #143e59;
+		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
 		color: #fff;
 		border-color: #143e59;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.25);
 	}
 
 	@media (max-width: 1024px) {
 		.sidebar {
 			position: static;
 			max-height: none;
+			overflow-y: visible;
+		}
+	}
+
+	@media (max-width: 640px) {
+		.sidebar {
+			gap: 16px;
+			padding-bottom: 16px;
+		}
+
+		.help-card {
+			padding: 18px;
+			border-radius: 12px;
+		}
+
+		.help-title {
+			font-size: 15px;
+		}
+
+		.help-text {
+			font-size: 13px;
 		}
 	}
 </style>

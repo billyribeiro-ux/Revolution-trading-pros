@@ -5,7 +5,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Compact video card for the weekly breakdown in sidebar
-	 * @version 4.0.0 - January 2026 - Nuclear Build Specification
+	 * @version 4.1.0 - Visual Polish Pass
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 */
 	import type { WeeklyVideo } from '../types';
@@ -65,23 +65,28 @@
 
 <style>
 	.weekly-video-card {
-		background: #fff;
+		background: #ffffff;
 		border: 1px solid #e2e8f0;
-		border-radius: 12px;
-		padding: 20px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+		border-radius: 14px;
+		padding: 22px;
+		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
+		transition: all 0.2s ease-out;
+	}
+
+	.weekly-video-card:hover {
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 	}
 
 	.card-title {
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		font-size: 12px;
-		font-weight: 600;
-		color: #64748b;
+		font-size: 13px;
+		font-weight: 700;
+		color: #475569;
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
-		margin: 0 0 16px 0;
+		letter-spacing: 0.06em;
+		margin: 0 0 18px 0;
 	}
 
 	.title-icon {
@@ -93,15 +98,21 @@
 		position: relative;
 		width: 100%;
 		aspect-ratio: 16 / 9;
-		border-radius: 8px;
+		border-radius: 10px;
 		overflow: hidden;
-		margin-bottom: 12px;
+		margin-bottom: 14px;
+		background: #1e293b;
 	}
 
 	.video-thumbnail {
 		width: 100%;
 		height: 100%;
 		object-fit: cover;
+		transition: transform 0.3s ease-out;
+	}
+
+	.weekly-video-card:hover .video-thumbnail {
+		transform: scale(1.03);
 	}
 
 	.play-overlay {
@@ -171,16 +182,22 @@
 	}
 
 	.watch-full-link {
-		display: block;
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
 		font-size: 14px;
 		font-weight: 600;
 		color: #143e59;
 		text-decoration: none;
-		transition: color 0.2s;
+		padding: 8px 12px;
+		margin: 0 -12px;
+		border-radius: 8px;
+		transition: all 0.2s ease-out;
 	}
 
 	.watch-full-link:hover {
-		color: #0984ae;
+		background: #f1f5f9;
+		color: #0f172a;
 	}
 
 	.skeleton-thumbnail {
@@ -212,6 +229,35 @@
 		}
 		100% {
 			background-position: -200% 0;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   RESPONSIVE
+	   ═══════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 640px) {
+		.weekly-video-card {
+			padding: 18px;
+			border-radius: 12px;
+		}
+
+		.card-title {
+			font-size: 12px;
+			margin-bottom: 14px;
+		}
+
+		.video-title {
+			font-size: 13px;
+		}
+
+		.play-button {
+			width: 48px;
+			height: 48px;
+		}
+
+		.play-icon {
+			width: 20px;
+			height: 20px;
 		}
 	}
 </style>

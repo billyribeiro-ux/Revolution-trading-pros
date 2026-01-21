@@ -1,21 +1,15 @@
 <script lang="ts">
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
-	 * AlertCard Component - Live Alert Display (Nuclear Build)
+	 * AlertCard Component - Individual Alert Display
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
-	 * @description Displays a single alert with visual differentiation by type
-	 * @version 4.0.0 - January 2026 - Nuclear Build Specification
+	 * @description Displays a single alert with type-specific styling and interactions
+	 * @version 4.1.0 - Visual Polish Pass
 	 * @standards Apple Principal Engineer ICT 7+ Standards
-	 *
-	 * Visual Hierarchy:
-	 * - ENTRY: Full-width, teal accent, prominent CTA
-	 * - UPDATE: Condensed, amber accent, collapsible
-	 * - EXIT: Compact, green/red based on result
 	 */
 	import type { Alert } from '../types';
-	import { alertColors } from '../types';
-	import { formatRelativeTime, formatPrice, formatPercent } from '../utils/formatters';
+	import { formatPercent, formatPrice, formatRelativeTime } from '../utils/formatters';
 
 	interface Props {
 		alert: Alert;
@@ -27,381 +21,527 @@
 
 	const { alert, isAdmin = false, onViewTradePlan, onEdit, onDelete }: Props = $props();
 
-	let isExpanded = $state(true);
+	let isNotesExpanded = $state(false);
+	let isCopied = $state(false);
 
-	const colors = $derived(() => {
-		if (alert.type === 'ENTRY') return alertColors.entry;
-		if (alert.type === 'UPDATE') return alertColors.update;
-		if (alert.type === 'EXIT') {
-			return (alert.resultPercent ?? 0) >= 0 ? alertColors.exitWin : alertColors.exitLoss;
+	// Get config based on alert type
+	const alertConfig = $derived(() => {
+		switch (alert.type) {
+			case 'ENTRY':
+				return {
+					borderColor: 'border-l-teal-500',
+					bgClass: alert.isNew ? 'bg-teal-50/60' : 'bg-white',
+					badgeClass: 'badge-entry',
+					badgeText: 'ENTRY',
+					icon: `<path fill-rule="evenodd" d="M12 3.75a.75.75 0 01.75.75v6.75h6.75a.75.75 0 010 1.5h-6.75v6.75a.75.75 0 01-1.5 0v-6.75H4.5a.75.75 0 010-1.5h6.75V4.5a.75.75 0 01.75-.75z" clip-rule="evenodd" />`
+				};
+			case 'UPDATE':
+				return {
+					borderColor: 'border-l-amber-500',
+					bgClass: alert.isNew ? 'bg-amber-50/60' : 'bg-white',
+					badgeClass: 'badge-update',
+					badgeText: 'UPDATE',
+					icon: `<path fill-rule="evenodd" d="M4.755 10.059a7.5 7.5 0 0112.548-3.364l1.903 1.903h-3.183a.75.75 0 100 1.5h4.992a.75.75 0 00.75-.75V4.356a.75.75 0 00-1.5 0v3.18l-1.9-1.9A9 9 0 003.306 9.67a.75.75 0 101.45.388zm15.408 3.352a.75.75 0 00-.919.53 7.5 7.5 0 01-12.548 3.364l-1.902-1.903h3.183a.75.75 0 000-1.5H2.984a.75.75 0 00-.75.75v4.992a.75.75 0 001.5 0v-3.18l1.9 1.9a9 9 0 0015.059-4.035.75.75 0 00-.53-.918z" clip-rule="evenodd" />`
+				};
+			case 'EXIT':
+				const isWin = alert.resultPercent !== undefined && alert.resultPercent >= 0;
+				return {
+					borderColor: isWin ? 'border-l-emerald-500' : 'border-l-red-500',
+					bgClass: isWin ? 'bg-emerald-50/40' : 'bg-red-50/40',
+					badgeClass: isWin ? 'badge-exit-win' : 'badge-exit-loss',
+					badgeText: 'EXIT',
+					icon: `<path fill-rule="evenodd" d="M16.5 4.478v.227a48.816 48.816 0 013.878.512.75.75 0 11-.256 1.478l-.209-.035-1.005 13.07a3 3 0 01-2.991 2.77H8.084a3 3 0 01-2.991-2.77L4.087 6.66l-.209.035a.75.75 0 01-.256-1.478A48.567 48.567 0 017.5 4.705v-.227c0-1.564 1.213-2.9 2.816-2.951a52.662 52.662 0 013.369 0c1.603.051 2.815 1.387 2.815 2.951zm-6.136-1.452a51.196 51.196 0 013.273 0C14.39 3.05 15 3.684 15 4.478v.113a49.488 49.488 0 00-6 0v-.113c0-.794.609-1.428 1.364-1.452zm-.355 5.945a.75.75 0 10-1.5.058l.347 9a.75.75 0 101.499-.058l-.346-9zm5.48.058a.75.75 0 10-1.498-.058l-.347 9a.75.75 0 001.5.058l.345-9z" clip-rule="evenodd" />`
+				};
+			default:
+				return {
+					borderColor: 'border-l-slate-400',
+					bgClass: 'bg-white',
+					badgeClass: 'badge-default',
+					badgeText: alert.type,
+					icon: ''
+				};
 		}
-		return alertColors.entry;
 	});
 
-	const borderClass = $derived(colors().border);
-	const bgClass = $derived(colors().bg);
-	const badgeClass = $derived(colors().badge);
+	function toggleNotes() {
+		isNotesExpanded = !isNotesExpanded;
+	}
 
-	function toggleExpanded() {
-		isExpanded = !isExpanded;
+	async function copyToClipboard() {
+		const text = `${alert.ticker} ${alert.type}\n${alert.title}\n${alert.description}${alert.tosString ? '\nTOS: ' + alert.tosString : ''}`;
+		try {
+			await navigator.clipboard.writeText(text);
+			isCopied = true;
+			setTimeout(() => {
+				isCopied = false;
+			}, 2000);
+		} catch (err) {
+			console.error('Failed to copy:', err);
+		}
 	}
 </script>
 
-<article
-	class="alert-card {borderClass} {bgClass}"
+<article 
+	class="alert-card {alertConfig().borderColor} {alertConfig().bgClass}"
 	class:is-new={alert.isNew}
-	aria-label="{alert.type} alert for {alert.ticker}"
+	class:has-notes-open={isNotesExpanded}
+	aria-label="{alert.ticker} {alert.type} alert"
 >
+	<!-- NEW Badge -->
+	{#if alert.isNew}
+		<div class="new-badge">
+			<span class="pulse-dot"></span>
+			NEW
+		</div>
+	{/if}
+
 	<!-- Header Row -->
 	<div class="alert-header">
-		<div class="alert-header-left">
-			<span class="alert-ticker">{alert.ticker}</span>
-			<span class="alert-badge {badgeClass}">{alert.type}</span>
-			{#if alert.isNew}
-				<span class="new-badge pulse-new">NEW</span>
-			{/if}
+		<div class="header-left">
+			<span class="type-badge {alertConfig().badgeClass}">
+				{alertConfig().badgeText}
+			</span>
+			<span class="ticker">{alert.ticker}</span>
+			<span class="timestamp">{formatRelativeTime(alert.timestamp)}</span>
 		</div>
-		<div class="alert-header-right">
-			<time class="alert-time" datetime={alert.timestamp.toISOString()}>
-				{formatRelativeTime(alert.timestamp)}
-			</time>
-			{#if alert.type === 'UPDATE'}
-				<button
-					class="expand-btn"
-					onclick={toggleExpanded}
-					aria-expanded={isExpanded}
-					aria-label={isExpanded ? 'Collapse details' : 'Expand details'}
-				>
-					<svg
-						viewBox="0 0 20 20"
-						fill="currentColor"
-						class="w-5 h-5 transition-transform"
-						class:rotate-180={isExpanded}
-					>
-						<path
-							fill-rule="evenodd"
-							d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z"
-							clip-rule="evenodd"
-						/>
-					</svg>
-				</button>
-			{/if}
-		</div>
+		
+		<button 
+			class="notes-toggle"
+			class:expanded={isNotesExpanded}
+			onclick={toggleNotes}
+			aria-expanded={isNotesExpanded}
+			aria-controls="notes-{alert.id}"
+		>
+			<span class="notes-label">Notes</span>
+			<svg class="chevron" viewBox="0 0 20 20" fill="currentColor">
+				<path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.168l3.71-3.938a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z" clip-rule="evenodd" />
+			</svg>
+		</button>
 	</div>
 
-	<!-- Alert Title -->
+	<!-- Title -->
 	<h3 class="alert-title">{alert.title}</h3>
 
-	<!-- Content (collapsible for UPDATE type) -->
-	{#if alert.type !== 'UPDATE' || isExpanded}
-		<div class="alert-content">
-			<!-- ENTRY Alert: Show entry/target/stop grid -->
-			{#if alert.type === 'ENTRY' && (alert.entryPrice || alert.targetPrice || alert.stopPrice)}
-				<div class="trade-details-grid">
-					{#if alert.entryPrice}
-						<div class="trade-detail">
-							<span class="detail-label">Entry</span>
-							<span class="detail-value">{formatPrice(alert.entryPrice)}</span>
-						</div>
-					{/if}
-					{#if alert.targetPrice && alert.entryPrice}
-						<div class="trade-detail">
-							<span class="detail-label">Target</span>
-							<span class="detail-value positive">
-								{formatPrice(alert.targetPrice)}
-								<span class="detail-percent">
-									({formatPercent(((alert.targetPrice - alert.entryPrice) / alert.entryPrice) * 100)})
-								</span>
-							</span>
-						</div>
-					{/if}
-					{#if alert.stopPrice && alert.entryPrice}
-						<div class="trade-detail">
-							<span class="detail-label">Stop</span>
-							<span class="detail-value negative">
-								{formatPrice(alert.stopPrice)}
-								<span class="detail-percent">
-									({formatPercent(((alert.stopPrice - alert.entryPrice) / alert.entryPrice) * 100)})
-								</span>
-							</span>
-						</div>
-					{/if}
+	<!-- Description -->
+	<p class="alert-description">{alert.description}</p>
+
+	<!-- Price Info (for ENTRY alerts) -->
+	{#if alert.type === 'ENTRY' && (alert.entryPrice || alert.targetPrice || alert.stopPrice)}
+		<div class="price-info">
+			{#if alert.entryPrice}
+				<div class="price-item">
+					<span class="price-label">Entry</span>
+					<span class="price-value">{formatPrice(alert.entryPrice)}</span>
 				</div>
 			{/if}
-
-			<!-- EXIT Alert: Show result prominently -->
-			{#if alert.type === 'EXIT' && alert.resultPercent !== undefined}
-				<div class="exit-result">
-					<span
-						class="result-value"
-						class:positive={alert.resultPercent >= 0}
-						class:negative={alert.resultPercent < 0}
-					>
-						{formatPercent(alert.resultPercent)}
-					</span>
+			{#if alert.targetPrice}
+				<div class="price-item">
+					<span class="price-label">Target</span>
+					<span class="price-value target">{formatPrice(alert.targetPrice)}</span>
 				</div>
 			{/if}
-
-			<!-- Description -->
-			<p class="alert-description">{alert.description}</p>
-
-			<!-- Notes -->
-			{#if alert.notes}
-				<p class="alert-notes">{alert.notes}</p>
+			{#if alert.stopPrice}
+				<div class="price-item">
+					<span class="price-label">Stop</span>
+					<span class="price-value stop">{formatPrice(alert.stopPrice)}</span>
+				</div>
 			{/if}
 		</div>
 	{/if}
 
+	<!-- Result (for EXIT alerts) -->
+	{#if alert.type === 'EXIT' && alert.resultPercent !== undefined}
+		<div class="exit-result" class:positive={alert.resultPercent >= 0} class:negative={alert.resultPercent < 0}>
+			<span class="result-value">{formatPercent(alert.resultPercent)}</span>
+			<span class="result-label">{alert.resultPercent >= 0 ? 'Profit' : 'Loss'}</span>
+		</div>
+	{/if}
+
+	<!-- TOS String -->
+	{#if alert.tosString}
+		<div class="tos-container">
+			<code class="tos-string">{alert.tosString}</code>
+			<button class="tos-copy" onclick={copyToClipboard} aria-label="Copy ThinkOrSwim string">
+				{#if isCopied}
+					<svg viewBox="0 0 20 20" fill="currentColor">
+						<path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+					</svg>
+				{:else}
+					<svg viewBox="0 0 20 20" fill="currentColor">
+						<path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
+						<path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z" />
+					</svg>
+				{/if}
+			</button>
+		</div>
+	{/if}
+
 	<!-- Actions Row -->
-	<div class="alert-actions">
+	<div class="actions-row">
+		<button class="action-btn copy-btn" class:copied={isCopied} onclick={copyToClipboard}>
+			{#if isCopied}
+				<svg viewBox="0 0 20 20" fill="currentColor">
+					<path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
+				</svg>
+				Copied!
+			{:else}
+				<svg viewBox="0 0 20 20" fill="currentColor">
+					<path d="M7 3.5A1.5 1.5 0 018.5 2h3.879a1.5 1.5 0 011.06.44l3.122 3.12A1.5 1.5 0 0117 6.622V12.5a1.5 1.5 0 01-1.5 1.5h-1v-3.379a3 3 0 00-.879-2.121L10.5 5.379A3 3 0 008.379 4.5H7v-1z" />
+					<path d="M4.5 6A1.5 1.5 0 003 7.5v9A1.5 1.5 0 004.5 18h7a1.5 1.5 0 001.5-1.5v-5.879a1.5 1.5 0 00-.44-1.06L9.44 6.439A1.5 1.5 0 008.378 6H4.5z" />
+				</svg>
+				Copy
+			{/if}
+		</button>
+
 		{#if alert.type === 'ENTRY' && onViewTradePlan}
 			<button class="action-btn primary" onclick={() => onViewTradePlan(alert)}>
 				View Trade Plan
+				<svg viewBox="0 0 20 20" fill="currentColor">
+					<path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+				</svg>
 			</button>
 		{/if}
-		{#if alert.hasVideo && alert.videoUrl}
-			<a href={alert.videoUrl} class="action-btn secondary" target="_blank" rel="noopener">
-				<svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-					<path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z" />
-				</svg>
-				Watch Video
-			</a>
-		{/if}
 
-		<!-- Admin Actions -->
 		{#if isAdmin}
 			<div class="admin-actions">
 				{#if onEdit}
-					<button class="admin-btn" onclick={() => onEdit(alert)} aria-label="Edit alert">
-						<svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-							<path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
-						</svg>
-					</button>
+					<button class="admin-btn edit" onclick={() => onEdit(alert)}>Edit</button>
 				{/if}
 				{#if onDelete}
-					<button class="admin-btn danger" onclick={() => onDelete(alert.id)} aria-label="Delete alert">
-						<svg viewBox="0 0 20 20" fill="currentColor" class="w-4 h-4">
-							<path fill-rule="evenodd" d="M8.75 1A2.75 2.75 0 006 3.75v.443c-.795.077-1.584.176-2.365.298a.75.75 0 10.23 1.482l.149-.022.841 10.518A2.75 2.75 0 007.596 19h4.807a2.75 2.75 0 002.742-2.53l.841-10.52.149.023a.75.75 0 00.23-1.482A41.03 41.03 0 0014 4.193V3.75A2.75 2.75 0 0011.25 1h-2.5z" clip-rule="evenodd" />
-						</svg>
-					</button>
+					<button class="admin-btn delete" onclick={() => onDelete(alert.id)}>Delete</button>
 				{/if}
 			</div>
 		{/if}
 	</div>
+
+	<!-- Expandable Notes Panel -->
+	{#if isNotesExpanded && alert.notes}
+		<div class="notes-panel" id="notes-{alert.id}">
+			<div class="notes-header">
+				<span class="notes-ticker">{alert.ticker}</span>
+				<span class="notes-title">Trade Notes</span>
+			</div>
+			<div class="notes-content">
+				<p>{alert.notes}</p>
+			</div>
+		</div>
+	{/if}
 </article>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════
+	   CARD BASE
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.alert-card {
 		position: relative;
-		border-left: 4px solid;
+		border: 1px solid #e2e8f0;
+		border-left-width: 4px;
 		border-radius: 12px;
 		padding: 20px;
 		margin-bottom: 16px;
 		transition: all 0.2s ease-out;
-		animation: slideInUp 0.3s ease-out;
 	}
 
 	.alert-card:hover {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+		border-color: #cbd5e1;
+		box-shadow: 0 4px 16px rgba(0, 0, 0, 0.06);
 	}
 
 	.alert-card.is-new {
-		box-shadow: 0 0 0 2px rgba(20, 184, 166, 0.3);
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
 	}
 
-	@keyframes slideInUp {
-		from {
-			opacity: 0;
-			transform: translateY(8px);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0);
-		}
+	.alert-card.has-notes-open {
+		border-color: #143e59;
+		box-shadow: 0 8px 30px rgba(20, 62, 89, 0.12);
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════
+	   NEW BADGE
+	   ═══════════════════════════════════════════════════════════════════════ */
+	.new-badge {
+		position: absolute;
+		top: -10px;
+		right: 16px;
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		background: linear-gradient(135deg, #f69532 0%, #e8860d 100%);
+		color: #fff;
+		font-size: 10px;
+		font-weight: 800;
+		padding: 5px 12px;
+		border-radius: 12px;
+		letter-spacing: 0.05em;
+		box-shadow: 0 2px 8px rgba(246, 149, 50, 0.4);
+	}
+
+	.pulse-dot {
+		width: 6px;
+		height: 6px;
+		background: #fff;
+		border-radius: 50%;
+		animation: pulse 2s ease-in-out infinite;
+	}
+
+	@keyframes pulse {
+		0%, 100% { opacity: 1; transform: scale(1); }
+		50% { opacity: 0.6; transform: scale(1.2); }
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   HEADER
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.alert-header {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
 		margin-bottom: 12px;
-	}
-
-	.alert-header-left {
-		display: flex;
-		align-items: center;
+		flex-wrap: wrap;
 		gap: 12px;
 	}
 
-	.alert-header-right {
+	.header-left {
 		display: flex;
 		align-items: center;
 		gap: 12px;
+		flex-wrap: wrap;
 	}
 
-	.alert-ticker {
-		font-size: 24px;
-		font-weight: 700;
-		color: #0f172a;
-		text-transform: uppercase;
-		letter-spacing: 0.025em;
-	}
-
-	.alert-badge {
-		font-size: 11px;
-		font-weight: 600;
-		padding: 4px 10px;
-		border-radius: 6px;
+	/* Type Badges */
+	.type-badge {
+		font-size: 10px;
+		font-weight: 800;
+		padding: 5px 10px;
+		border-radius: 5px;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 	}
 
-	.new-badge {
-		font-size: 10px;
-		font-weight: 700;
-		padding: 3px 8px;
-		border-radius: 4px;
-		background: #dc2626;
-		color: #fff;
-		text-transform: uppercase;
-		letter-spacing: 0.1em;
+	.badge-entry {
+		background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
+		color: #0f766e;
 	}
 
-	.pulse-new {
-		animation: pulse-subtle 2s ease-in-out infinite;
+	.badge-update {
+		background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+		color: #92400e;
 	}
 
-	@keyframes pulse-subtle {
-		0%,
-		100% {
-			opacity: 1;
-		}
-		50% {
-			opacity: 0.7;
-		}
+	.badge-exit-win {
+		background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
+		color: #166534;
 	}
 
-	.alert-time {
-		font-size: 13px;
-		color: #64748b;
+	.badge-exit-loss {
+		background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+		color: #991b1b;
 	}
 
-	.expand-btn {
+	.badge-default {
+		background: #f1f5f9;
+		color: #475569;
+	}
+
+	.ticker {
+		font-size: 17px;
+		font-weight: 800;
+		color: #0f172a;
+		letter-spacing: 0.02em;
+	}
+
+	.timestamp {
+		font-size: 12px;
+		color: #94a3b8;
+	}
+
+	/* Notes Toggle */
+	.notes-toggle {
 		display: flex;
 		align-items: center;
-		justify-content: center;
-		width: 28px;
-		height: 28px;
-		border: none;
-		background: rgba(0, 0, 0, 0.05);
-		border-radius: 6px;
+		gap: 6px;
+		padding: 8px 14px;
+		background: #f8fafc;
+		border: 1px solid #e2e8f0;
+		border-radius: 8px;
+		font-size: 12px;
+		font-weight: 600;
 		color: #64748b;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
-	.expand-btn:hover {
-		background: rgba(0, 0, 0, 0.1);
-		color: #0f172a;
+	.notes-toggle:hover {
+		background: #f1f5f9;
+		border-color: #cbd5e1;
+		color: #334155;
 	}
 
-	.rotate-180 {
+	.notes-toggle.expanded {
+		background: #143e59;
+		border-color: #143e59;
+		color: #fff;
+	}
+
+	.notes-toggle .chevron {
+		width: 16px;
+		height: 16px;
+		transition: transform 0.3s ease;
+	}
+
+	.notes-toggle.expanded .chevron {
 		transform: rotate(180deg);
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════
+	   CONTENT
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.alert-title {
 		font-size: 16px;
-		font-weight: 600;
-		color: #1e293b;
-		margin: 0 0 12px 0;
-		line-height: 1.4;
-	}
-
-	.alert-content {
-		margin-bottom: 16px;
-	}
-
-	.trade-details-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 16px;
-		padding: 16px;
-		background: rgba(255, 255, 255, 0.6);
-		border-radius: 8px;
-		margin-bottom: 12px;
-	}
-
-	.trade-detail {
-		display: flex;
-		flex-direction: column;
-		gap: 4px;
-	}
-
-	.detail-label {
-		font-size: 12px;
-		font-weight: 500;
-		color: #64748b;
-		text-transform: uppercase;
-		letter-spacing: 0.05em;
-	}
-
-	.detail-value {
-		font-size: 16px;
-		font-weight: 600;
-		color: #0f172a;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.detail-value.positive {
-		color: #059669;
-	}
-
-	.detail-value.negative {
-		color: #dc2626;
-	}
-
-	.detail-percent {
-		font-size: 13px;
-		font-weight: 500;
-	}
-
-	.exit-result {
-		margin-bottom: 12px;
-	}
-
-	.result-value {
-		font-size: 32px;
 		font-weight: 700;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.result-value.positive {
-		color: #059669;
-	}
-
-	.result-value.negative {
-		color: #dc2626;
+		color: #0f172a;
+		margin: 0 0 8px 0;
+		line-height: 1.4;
 	}
 
 	.alert-description {
 		font-size: 14px;
 		color: #475569;
+		margin: 0 0 16px 0;
 		line-height: 1.6;
-		margin: 0;
 	}
 
-	.alert-notes {
+	/* Price Info */
+	.price-info {
+		display: flex;
+		gap: 20px;
+		padding: 14px 16px;
+		background: #f8fafc;
+		border-radius: 10px;
+		margin-bottom: 16px;
+		flex-wrap: wrap;
+	}
+
+	.price-item {
+		display: flex;
+		flex-direction: column;
+		gap: 2px;
+	}
+
+	.price-label {
+		font-size: 11px;
+		font-weight: 600;
+		color: #94a3b8;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
+
+	.price-value {
+		font-size: 16px;
+		font-weight: 700;
+		color: #0f172a;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.price-value.target {
+		color: #059669;
+	}
+
+	.price-value.stop {
+		color: #dc2626;
+	}
+
+	/* Exit Result */
+	.exit-result {
+		display: flex;
+		align-items: baseline;
+		gap: 8px;
+		padding: 12px 16px;
+		border-radius: 10px;
+		margin-bottom: 16px;
+	}
+
+	.exit-result.positive {
+		background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
+	}
+
+	.exit-result.negative {
+		background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+	}
+
+	.result-value {
+		font-size: 24px;
+		font-weight: 800;
+		font-variant-numeric: tabular-nums;
+	}
+
+	.exit-result.positive .result-value {
+		color: #059669;
+	}
+
+	.exit-result.negative .result-value {
+		color: #dc2626;
+	}
+
+	.result-label {
 		font-size: 13px;
+		font-weight: 600;
 		color: #64748b;
-		font-style: italic;
-		margin: 8px 0 0 0;
-		line-height: 1.5;
 	}
 
-	.alert-actions {
+	/* TOS String */
+	.tos-container {
 		display: flex;
 		align-items: center;
+		justify-content: space-between;
 		gap: 12px;
+		background: #1e293b;
+		border-radius: 8px;
+		padding: 10px 14px;
+		margin-bottom: 16px;
+	}
+
+	.tos-string {
+		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+		font-size: 12px;
+		color: #94a3b8;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+
+	.tos-copy {
+		flex-shrink: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 32px;
+		height: 32px;
+		background: rgba(255, 255, 255, 0.1);
+		border: none;
+		border-radius: 6px;
+		color: #94a3b8;
+		cursor: pointer;
+		transition: all 0.2s;
+	}
+
+	.tos-copy:hover {
+		background: rgba(255, 255, 255, 0.2);
+		color: #fff;
+	}
+
+	.tos-copy svg {
+		width: 16px;
+		height: 16px;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   ACTIONS
+	   ═══════════════════════════════════════════════════════════════════════ */
+	.actions-row {
+		display: flex;
+		align-items: center;
+		gap: 10px;
 		flex-wrap: wrap;
 	}
 
@@ -409,35 +549,50 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 6px;
-		padding: 10px 18px;
-		font-size: 14px;
+		padding: 8px 14px;
+		font-size: 13px;
 		font-weight: 600;
 		border-radius: 8px;
-		border: none;
 		cursor: pointer;
 		transition: all 0.2s;
-		text-decoration: none;
+		border: 1px solid;
+	}
+
+	.action-btn svg {
+		width: 16px;
+		height: 16px;
+	}
+
+	.copy-btn {
+		background: #f8fafc;
+		border-color: #e2e8f0;
+		color: #64748b;
+	}
+
+	.copy-btn:hover {
+		background: #f1f5f9;
+		border-color: #cbd5e1;
+		color: #334155;
+	}
+
+	.copy-btn.copied {
+		background: #dcfce7;
+		border-color: #86efac;
+		color: #166534;
 	}
 
 	.action-btn.primary {
-		background: #0f766e;
+		background: #143e59;
+		border-color: #143e59;
 		color: #fff;
 	}
 
 	.action-btn.primary:hover {
-		background: #0d9488;
+		background: #1e5175;
+		border-color: #1e5175;
 	}
 
-	.action-btn.secondary {
-		background: rgba(0, 0, 0, 0.05);
-		color: #475569;
-	}
-
-	.action-btn.secondary:hover {
-		background: rgba(0, 0, 0, 0.1);
-		color: #0f172a;
-	}
-
+	/* Admin Actions */
 	.admin-actions {
 		display: flex;
 		gap: 8px;
@@ -445,45 +600,115 @@
 	}
 
 	.admin-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
-		border: 1px solid #e2e8f0;
-		background: #fff;
+		padding: 6px 12px;
+		font-size: 12px;
+		font-weight: 600;
 		border-radius: 6px;
-		color: #64748b;
+		border: none;
 		cursor: pointer;
 		transition: all 0.2s;
 	}
 
-	.admin-btn:hover {
-		border-color: #cbd5e1;
-		color: #0f172a;
+	.admin-btn.edit {
+		background: #e0f2fe;
+		color: #0369a1;
 	}
 
-	.admin-btn.danger:hover {
-		border-color: #fecaca;
-		background: #fef2f2;
-		color: #dc2626;
+	.admin-btn.edit:hover {
+		background: #bae6fd;
 	}
 
+	.admin-btn.delete {
+		background: #fee2e2;
+		color: #991b1b;
+	}
+
+	.admin-btn.delete:hover {
+		background: #fecaca;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   NOTES PANEL
+	   ═══════════════════════════════════════════════════════════════════════ */
+	.notes-panel {
+		margin-top: 16px;
+		border-radius: 12px;
+		overflow: hidden;
+		border: 1px solid #e2e8f0;
+		animation: slideDown 0.3s ease-out;
+	}
+
+	@keyframes slideDown {
+		from {
+			opacity: 0;
+			transform: translateY(-8px);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
+
+	.notes-header {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 14px 18px;
+		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
+	}
+
+	.notes-ticker {
+		background: #fff;
+		color: #143e59;
+		font-size: 11px;
+		font-weight: 800;
+		padding: 5px 12px;
+		border-radius: 6px;
+		letter-spacing: 0.05em;
+	}
+
+	.notes-title {
+		color: rgba(255, 255, 255, 0.9);
+		font-size: 13px;
+		font-weight: 600;
+	}
+
+	.notes-content {
+		padding: 18px 20px;
+		background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+	}
+
+	.notes-content p {
+		font-size: 14px;
+		color: #334155;
+		line-height: 1.7;
+		margin: 0;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   RESPONSIVE
+	   ═══════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 640px) {
 		.alert-card {
 			padding: 16px;
 		}
 
-		.alert-ticker {
-			font-size: 20px;
+		.alert-header {
+			flex-direction: column;
+			align-items: flex-start;
 		}
 
-		.trade-details-grid {
-			grid-template-columns: 1fr;
+		.notes-toggle {
+			align-self: flex-end;
+			margin-top: -32px;
+		}
+
+		.price-info {
+			flex-direction: column;
 			gap: 12px;
 		}
 
-		.alert-actions {
+		.actions-row {
 			flex-direction: column;
 			align-items: stretch;
 		}
