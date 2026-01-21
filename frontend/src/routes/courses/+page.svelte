@@ -2,7 +2,10 @@
 	import { onMount } from 'svelte';
 	import { cubicOut } from 'svelte/easing';
 	import { slide } from 'svelte/transition';
-	import gsap from 'gsap';
+	import { browser } from '$app/environment';
+
+	// GSAP loaded dynamically for SSR safety
+	let gsapInstance: typeof import('gsap').gsap | null = null;
 
 	// --- ICONS ---
 	import IconSchool from '@tabler/icons-svelte/icons/school';
@@ -243,8 +246,8 @@
 	function createCounter(target: number, duration: number = 2) {
 		let current = $state(0);
 		$effect(() => {
-			if (mounted) {
-				gsap.to((val: number) => (current = val), {
+			if (mounted && gsapInstance) {
+				gsapInstance.to({ val: 0 }, {
 					duration,
 					val: target,
 					ease: 'power2.out',
@@ -307,25 +310,33 @@
 	}
 
 	onMount(() => {
+		if (!browser) return;
+
 		mounted = true;
 		initCanvas();
 
-		// GSAP Entrance Timeline
-		const tl = gsap.timeline();
+		// Load GSAP dynamically for SSR safety
+		(async () => {
+			const { gsap } = await import('gsap');
+			gsapInstance = gsap;
 
-		tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
-			.from(
-				'.hero-title-line',
-				{ y: 50, opacity: 0, duration: 1, stagger: 0.15, ease: 'power4.out' },
-				'-=0.4'
-			)
-			.from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power2.out' }, '-=0.6')
-			.from(
-				'.hero-stats',
-				{ scale: 0.95, opacity: 0, duration: 0.8, ease: 'back.out(1.7)' },
-				'-=0.6'
-			)
-			.from('.ticker-bar', { opacity: 0, y: 100, duration: 1 }, '-=0.8');
+			// GSAP Entrance Timeline
+			const tl = gsap.timeline();
+
+			tl.from('.hero-badge', { y: 20, opacity: 0, duration: 0.8, ease: 'power3.out' })
+				.from(
+					'.hero-title-line',
+					{ y: 50, opacity: 0, duration: 1, stagger: 0.15, ease: 'power4.out' },
+					'-=0.4'
+				)
+				.from('.hero-desc', { y: 20, opacity: 0, duration: 0.8, ease: 'power2.out' }, '-=0.6')
+				.from(
+					'.hero-stats',
+					{ scale: 0.95, opacity: 0, duration: 0.8, ease: 'back.out(1.7)' },
+					'-=0.6'
+				)
+				.from('.ticker-bar', { opacity: 0, y: 100, duration: 1 }, '-=0.8');
+		})();
 
 		return () => {
 			// Cleanup handled by Svelte

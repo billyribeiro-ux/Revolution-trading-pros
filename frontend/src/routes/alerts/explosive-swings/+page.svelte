@@ -2,15 +2,9 @@
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
 	import { onMount } from 'svelte';
-	import { gsap } from 'gsap';
-	import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+	import { browser } from '$app/environment';
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
-
-	// Register GSAP plugin
-	if (typeof window !== 'undefined') {
-		gsap.registerPlugin(ScrollTrigger);
-	}
 
 	// --- Pricing State ---
 	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
@@ -52,53 +46,60 @@
 	// --- Icon SVG ---
 
 	/**
-	 * GSAP ScrollTrigger initialization
+	 * GSAP ScrollTrigger initialization (Svelte 5 SSR-safe pattern)
 	 * Apple-grade scroll animations with GPU acceleration
 	 */
 	onMount(() => {
-		// Respect reduced motion preference
-		const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+		if (!browser) return;
 
-		if (prefersReducedMotion) {
-			// Instantly show all elements without animation
-			gsap.set('[data-gsap]', { opacity: 1, y: 0 });
-			return;
-		}
+		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
-		// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
-		const ctx = gsap.context(() => {
-			// Only set initial hidden state for elements NOT yet in viewport
-			// This prevents elements from being hidden if page is scrolled before JS loads
-			const elements = document.querySelectorAll('[data-gsap]');
-			elements.forEach((el) => {
-				const rect = el.getBoundingClientRect();
-				const isInViewport = rect.top < window.innerHeight * 0.85;
-				if (!isInViewport) {
-					gsap.set(el, { opacity: 0, y: 30 });
-				}
+		(async () => {
+			const { gsap } = await import('gsap');
+			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
+			gsap.registerPlugin(ScrollTrigger);
+
+			// Respect reduced motion preference
+			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+			if (prefersReducedMotion) {
+				gsap.set('[data-gsap]', { opacity: 1, y: 0 });
+				return;
+			}
+
+			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
+			ctx = gsap.context(() => {
+				// Only set initial hidden state for elements NOT yet in viewport
+				const elements = document.querySelectorAll('[data-gsap]');
+				elements.forEach((el) => {
+					const rect = el.getBoundingClientRect();
+					const isInViewport = rect.top < window.innerHeight * 0.85;
+					if (!isInViewport) {
+						gsap.set(el, { opacity: 0, y: 30 });
+					}
+				});
+
+				// Create ScrollTrigger batch for optimal performance
+				ScrollTrigger.batch('[data-gsap]', {
+					onEnter: (batch) => {
+						gsap.to(batch, {
+							opacity: 1,
+							y: 0,
+							duration: 0.8,
+							ease: 'power3.out',
+							stagger: 0.1,
+							overwrite: true
+						});
+					},
+					start: 'top 85%',
+					once: true
+				});
+
+				ScrollTrigger.refresh();
 			});
+		})();
 
-			// Create ScrollTrigger batch for optimal performance
-			ScrollTrigger.batch('[data-gsap]', {
-				onEnter: (batch) => {
-					gsap.to(batch, {
-						opacity: 1,
-						y: 0,
-						duration: 0.8,
-						ease: 'power3.out',
-						stagger: 0.1,
-						overwrite: true
-					});
-				},
-				start: 'top 85%',
-				once: true
-			});
-
-			// Refresh ScrollTrigger after layout settles
-			ScrollTrigger.refresh();
-		});
-
-		return () => ctx.revert();
+		return () => ctx?.revert();
 	});
 
 	// --- EXPANDED FAQ DATA FOR SEO & USER CLARITY ---

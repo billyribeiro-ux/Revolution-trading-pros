@@ -243,25 +243,26 @@
 				setupCanvas();
 				resizeObserver = new ResizeObserver(() => {
 					setupCanvas();
+					drawChart(); // Redraw on resize
 				});
 				if (chartRef) resizeObserver.observe(chartRef);
-				
-				// Start animation loop AFTER canvas is ready
-				animate();
-				
-				// Start chart progress animation AFTER canvas is ready
-				if (!prefersReducedMotion) {
-					animatechartProgress();
-				} else {
-					chartProgress = 1;
-				}
 			});
 		});
+
+		// Start chart animation immediately since LazySection handles visibility
+		if (!prefersReducedMotion) {
+			animatechartProgress();
+		} else {
+			chartProgress = 1;
+		}
 
 		// Load GSAP asynchronously
 		if (!prefersReducedMotion) {
 			loadGSAP();
 		}
+
+		// Start animation loop
+		animate();
 
 		// Auto-rotate indicators (slower on mobile for better UX)
 		const isMobile = window.innerWidth < 768;
@@ -286,8 +287,7 @@
 
 		// Ensure we have valid dimensions
 		if (rect.width === 0 || rect.height === 0) {
-			// Retry after a short delay
-			setTimeout(() => setupCanvas(), 100);
+			console.debug('[IndicatorsSection] Canvas has zero dimensions, retrying...');
 			return;
 		}
 
@@ -301,6 +301,7 @@
 			// Reset transform before scaling
 			chartCtx.setTransform(1, 0, 0, 1, 0, 0);
 			chartCtx.scale(dpr, dpr);
+			console.debug('[IndicatorsSection] Canvas setup complete:', rect.width, 'x', rect.height);
 		}
 	}
 

@@ -106,7 +106,7 @@
 			label: 'Facebook'
 		},
 		{
-			href: 'https://x.com/revtradingpros',
+			href: 'https://twitter.com/revtradingpros',
 			icon: IconBrandTwitter,
 			label: 'X (Twitter)'
 		},
