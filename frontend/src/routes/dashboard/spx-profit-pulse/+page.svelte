@@ -50,11 +50,13 @@
 	{tradingRooms}
 />
 
-<!-- DASHBOARD CONTENT - Exact WordPress Structure -->
-<div class="dashboard__content">
-	<div class="dashboard__content-main">
-		<!-- MAIN CONTENT SECTION - Video + Featured Cards -->
-		<section class="dashboard__content-section-member">
+<!-- DASHBOARD CONTENT - Two Column Layout with Sidebar -->
+<div class="dashboard-wrapper">
+	<div class="main-grid">
+		<!-- MAIN CONTENT -->
+		<main class="main-content">
+			<!-- MAIN CONTENT SECTION - Video + Featured Cards -->
+			<section class="dashboard__content-section-member">
 			<!-- Welcome Video -->
 			<div class="video-container">
 				<video
@@ -121,23 +123,95 @@
 		<div class="dashboard__content-section u--background-color-white">
 			<WeeklyWatchlist />
 		</div>
+		</main>
+
+		<!-- SIDEBAR -->
+		<aside class="sidebar" aria-label="Performance sidebar">
+			<!-- 30-Day Performance -->
+			<div class="sidebar-card">
+				<h3>30-Day Performance</h3>
+				<div class="perf-chart">
+					<svg viewBox="0 0 200 100" class="mini-chart" aria-hidden="true">
+						<defs>
+							<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+								<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.3" />
+								<stop offset="100%" style="stop-color:#22c55e;stop-opacity:0" />
+							</linearGradient>
+						</defs>
+						<path
+							d="M0,80 L30,70 L60,55 L90,45 L120,50 L150,30 L180,20 L200,15 L200,100 L0,100 Z"
+							fill="url(#chartGrad)"
+						/>
+						<polyline
+							points="0,80 30,70 60,55 90,45 120,50 150,30 180,20 200,15"
+							fill="none"
+							stroke="#22c55e"
+							stroke-width="2.5"
+						/>
+					</svg>
+					<div class="perf-total">+$12,450</div>
+				</div>
+				<div class="perf-stats">
+					<div><span>87%</span> Win Rate</div>
+					<div><span>24</span> Active</div>
+					<div><span>18</span> Closed</div>
+				</div>
+			</div>
+
+			<!-- Resources -->
+			<div class="sidebar-card">
+				<h3>Resources</h3>
+				<div class="quick-links">
+					<a href="/dashboard/spx-profit-pulse/video-library">🎬 Video Library</a>
+					<a href="/dashboard/spx-profit-pulse/trade-tracker">📊 Trade Tracker</a>
+					<a href="/dashboard/spx-profit-pulse/favorites">⭐ My Favorites</a>
+					<a href="/api/export/watchlist?room_slug=spx-profit-pulse&format=csv" download>📥 Export CSV</a>
+					<a href="/dashboard/account">⚙️ Alert Settings</a>
+				</div>
+			</div>
+
+			<!-- Support -->
+			<div class="sidebar-card support-card">
+				<h3>Need Help?</h3>
+				<p>Questions about SPX 0DTE trading?</p>
+				<a href="https://intercom.help/simpler-trading/en/" target="_blank" rel="noopener noreferrer" class="support-btn">
+					Contact Support
+				</a>
+			</div>
+		</aside>
 	</div>
 </div>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SPX PROFIT PULSE - Pixel-Perfect WordPress Match
-	   Reference: Tr3ndy SPX Alerts Service Dashboard
+	   SPX PROFIT PULSE DASHBOARD - Two Column Layout with Sidebar
+	   Matching Explosive Swings Dashboard Structure
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	.dashboard__content {
-		display: block;
-		width: 100%;
+	.dashboard-wrapper {
+		background: #f5f7fa;
+		min-height: 100vh;
+		padding: 30px;
 	}
 
-	.dashboard__content-main {
+	/* Two-column grid layout */
+	.main-grid {
+		display: grid;
+		grid-template-columns: 1fr 340px;
+		gap: 30px;
+		max-width: 1400px;
+		margin: 0 auto;
+		align-items: start;
+	}
+
+	@media (max-width: 1024px) {
+		.main-grid {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.main-content {
 		width: 100%;
-		max-width: 100%;
 	}
 
 	/* Main Content Section */
@@ -342,21 +416,118 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   CRITICAL: Hide sidebar on SPX Profit Pulse page
+	   SIDEBAR - Matching Explosive Swings Dashboard
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	:global(.dashboard__content-sidebar) {
-		display: none !important;
+	.sidebar {
+		display: flex;
+		flex-direction: column;
+		gap: 20px;
+		position: sticky;
+		top: 20px;
 	}
 
-	/* Ensure main content takes full width without sidebar */
-	.dashboard__content {
-		display: block !important;
-		width: 100% !important;
+	.sidebar-card {
+		background: #fff;
+		border-radius: 16px;
+		padding: 25px;
+		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+		text-align: center;
 	}
 
-	.dashboard__content-main {
-		width: 100% !important;
-		max-width: 100% !important;
-		flex: none !important;
+	.sidebar-card h3 {
+		font-size: 16px;
+		font-weight: 700;
+		margin: 0 0 20px 0;
+		color: #333;
+		font-family: 'Montserrat', sans-serif;
+	}
+
+	.mini-chart {
+		width: 100%;
+		height: 80px;
+	}
+
+	.perf-total {
+		font-size: 28px;
+		font-weight: 700;
+		color: #22c55e;
+		margin: 15px 0;
+		font-family: 'Montserrat', sans-serif;
+	}
+
+	.perf-stats {
+		display: flex;
+		justify-content: center;
+		gap: 20px;
+		font-size: 13px;
+		color: #666;
+	}
+
+	.perf-stats span {
+		font-weight: 700;
+		color: #143e59;
+	}
+
+	.quick-links {
+		display: flex;
+		flex-direction: column;
+		gap: 12px;
+		text-align: left;
+	}
+
+	.quick-links a {
+		color: #143e59;
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 600;
+		transition: all 0.2s;
+		padding: 8px 12px;
+		border-radius: 8px;
+		display: block;
+	}
+
+	.quick-links a:hover {
+		background: #f8fafc;
+		color: #0984ae;
+		transform: translateX(4px);
+	}
+
+	.support-card {
+		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
+		color: white;
+	}
+
+	.support-card h3 {
+		color: white;
+	}
+
+	.support-card p {
+		color: rgba(255, 255, 255, 0.9);
+		font-size: 14px;
+		margin-bottom: 15px;
+	}
+
+	.support-btn {
+		display: inline-block;
+		background: white;
+		color: #143e59;
+		padding: 10px 20px;
+		border-radius: 8px;
+		font-weight: 700;
+		font-size: 14px;
+		text-decoration: none;
+		transition: all 0.2s;
+	}
+
+	.support-btn:hover {
+		background: #f8fafc;
+		transform: translateY(-2px);
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	}
+
+	@media (max-width: 1024px) {
+		.sidebar {
+			position: static;
+		}
 	}
 </style>

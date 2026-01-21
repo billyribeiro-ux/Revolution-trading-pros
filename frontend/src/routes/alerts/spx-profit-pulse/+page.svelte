@@ -1,28 +1,4 @@
 <script lang="ts">
-	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
-	 * SPX Profit Pulse - Marketing Landing Page
-	 * ═══════════════════════════════════════════════════════════════════════════════
-	 *
-	 * @description Premium 0DTE SPX options alert service landing page with:
-	 *   - Hero section with value proposition
-	 *   - Two-column layout with performance sidebar
-	 *   - Interactive pricing plans
-	 *   - FAQ accordion
-	 *   - SEO-optimized schema markup
-	 *
-	 * @version 3.0.0
-	 * @requires Svelte 5.0+ / SvelteKit 2.0+
-	 * @author Revolution Trading Pros
-	 * @license Proprietary
-	 *
-	 * @standards Apple Principal Engineer ICT Level 11
-	 * @syntax Svelte 5 Runes (January 2026)
-	 */
-
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// IMPORTS - Organized by category
-	// ═══════════════════════════════════════════════════════════════════════════════
 	import { onMount } from 'svelte';
 	import { slide } from 'svelte/transition';
 	import { cubicOut } from 'svelte/easing';
@@ -30,101 +6,24 @@
 	import SEOHead from '$lib/components/SEOHead.svelte';
 	import MarketingFooter from '$lib/components/sections/MarketingFooter.svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// TYPE DEFINITIONS - Strict TypeScript interfaces
-	// ═══════════════════════════════════════════════════════════════════════════════
+	// --- Pricing State ---
+	let selectedPlan: 'monthly' | 'quarterly' | 'annual' = $state('quarterly');
 
-	/** Available pricing plan options */
-	type PricingPlan = 'monthly' | 'quarterly' | 'annual';
+	// --- FAQ Logic ---
+	let openFaq: number | null = $state(null);
+	const toggleFaq = (index: number) => (openFaq = openFaq === index ? null : index);
 
-	/** FAQ item structure */
-	interface FAQItem {
-		readonly q: string;
-		readonly a: string;
-	}
-
-	/** Sidebar performance statistics */
-	interface PerformanceStats {
-		readonly total: string;
-		readonly winRate: number;
-		readonly active: number;
-		readonly closed: number;
-	}
-
-	/** Latest update video item */
-	interface UpdateItem {
-		readonly title: string;
-		readonly duration: string;
-		readonly date: string;
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// REACTIVE STATE - Svelte 5 $state runes
-	// ═══════════════════════════════════════════════════════════════════════════════
-
-	/** Currently selected pricing plan */
-	let selectedPlan = $state<PricingPlan>('quarterly');
-
-	/** Currently expanded FAQ index (null = all collapsed) */
-	let openFaq = $state<number | null>(null);
-
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// DERIVED STATE - Computed values using $derived
-	// ═══════════════════════════════════════════════════════════════════════════════
-
-	/** Check if any FAQ is currently open */
-	const hasFaqOpen = $derived(openFaq !== null);
-
-	/** Get pricing slider position based on selected plan */
-	const pricingSliderPosition = $derived(
-		selectedPlan === 'monthly'
-			? '0.375rem'
-			: selectedPlan === 'quarterly'
-				? 'calc(33.33% + 0.2rem)'
-				: 'calc(66.66% + 0.1rem)'
-	);
-
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// EVENT HANDLERS - Pure functions for user interactions
-	// ═══════════════════════════════════════════════════════════════════════════════
-
-	/**
-	 * Toggle FAQ accordion item
-	 * @param index - FAQ item index to toggle
-	 */
-	const toggleFaq = (index: number): void => {
-		openFaq = openFaq === index ? null : index;
-	};
-
-	/**
-	 * Handle pricing plan selection
-	 * @param plan - Selected plan type
-	 */
-	const selectPlan = (plan: PricingPlan): void => {
-		selectedPlan = plan;
-	};
-
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// LIFECYCLE - GSAP ScrollTrigger Animations (Svelte 5 SSR-safe)
-	// ═══════════════════════════════════════════════════════════════════════════════
-
-	/**
-	 * Initialize scroll-triggered animations using GSAP
-	 * - Respects prefers-reduced-motion for accessibility
-	 * - Uses gsap.context() for proper cleanup on unmount
-	 * - Lazy-loads GSAP only on client-side
-	 */
+	// --- GSAP ScrollTrigger Animations (Svelte 5 SSR-safe pattern) ---
 	onMount(() => {
 		if (!browser) return;
 
 		let ctx: ReturnType<typeof import('gsap').gsap.context> | null = null;
 
-		const initAnimations = async (): Promise<void> => {
+		(async () => {
 			const { gsap } = await import('gsap');
 			const { ScrollTrigger } = await import('gsap/ScrollTrigger');
 			gsap.registerPlugin(ScrollTrigger);
 
-			// Respect user's motion preferences (WCAG 2.1 compliance)
 			const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
 			if (prefersReducedMotion) {
@@ -135,7 +34,7 @@
 			// Use gsap.context() for scoped cleanup - prevents global ScrollTrigger destruction
 			ctx = gsap.context(() => {
 				// Only set initial hidden state for elements NOT yet in viewport
-				const elements = document.querySelectorAll<HTMLElement>('[data-gsap]');
+				const elements = document.querySelectorAll('[data-gsap]');
 				elements.forEach((el) => {
 					const rect = el.getBoundingClientRect();
 					const isInViewport = rect.top < window.innerHeight * 0.85;
@@ -161,35 +60,13 @@
 
 				ScrollTrigger.refresh();
 			});
-		};
+		})();
 
-		initAnimations();
-
-		// Cleanup function - revert all GSAP animations
 		return () => ctx?.revert();
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// STATIC DATA - Immutable constants (as const for type safety)
-	// ═══════════════════════════════════════════════════════════════════════════════
-
-	/** Performance statistics for sidebar display */
-	const PERFORMANCE_STATS: PerformanceStats = {
-		total: '+$12,450',
-		winRate: 87,
-		active: 24,
-		closed: 18
-	} as const;
-
-	/** Latest updates for sidebar */
-	const LATEST_UPDATES: readonly UpdateItem[] = [
-		{ title: 'SPX Entry Alert', duration: '2:15', date: 'Today' },
-		{ title: 'Market Update', duration: '5:30', date: 'Yesterday' },
-		{ title: 'Exit Strategy', duration: '3:45', date: '2 days ago' }
-	] as const;
-
-	/** Comprehensive FAQ data for SEO and user education */
-	const faqList: readonly FAQItem[] = [
+	// --- EXPANDED FAQ DATA ---
+	const faqList = [
 		{
 			q: 'What is SPX 0DTE and why do you trade it?',
 			a: "SPX 0DTE refers to 'Zero Days to Expiration' options on the S&P 500 index. These contracts expire at 4:00 PM EST on the same day they are traded. We trade them because they offer the fastest potential returns (Gamma risk) and zero overnight risk. You are 100% in cash every single night."
@@ -337,12 +214,7 @@
 <div
 	class="w-full bg-slate-950 text-slate-200 font-sans selection:bg-indigo-600 selection:text-white"
 >
-	<!-- Two-Column Layout: Main Content + Sidebar -->
-	<div class="main-grid-wrapper bg-slate-950">
-		<div class="main-grid max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-			<!-- MAIN CONTENT -->
-			<div class="main-content">
-				<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
+	<section class="relative min-h-[90vh] flex items-center overflow-hidden py-24 lg:py-0">
 		<div class="absolute inset-0 bg-slate-950 z-0">
 			<div
 				class="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:64px_64px] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)]"
@@ -592,92 +464,176 @@
 			</div>
 		</div>
 	</section>
-			</div>
 
-			<!-- ═══════════════════════════════════════════════════════════════════════════
-			     SIDEBAR - Performance metrics and resources
-			     ═══════════════════════════════════════════════════════════════════════════ -->
-			<aside class="sidebar" aria-label="Performance sidebar">
-				<!-- 30-Day Performance Card -->
-				<div class="sidebar-card" role="region" aria-labelledby="perf-heading">
-					<h3 id="perf-heading">30-Day Performance</h3>
-					<div class="perf-chart">
-						<svg viewBox="0 0 200 100" class="mini-chart" aria-hidden="true">
-							<defs>
-								<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-									<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.3" />
-									<stop offset="100%" style="stop-color:#22c55e;stop-opacity:0" />
-								</linearGradient>
-							</defs>
-							<path
-								d="M0,80 L30,70 L60,55 L90,45 L120,50 L150,30 L180,20 L200,15 L200,100 L0,100 Z"
-								fill="url(#chartGrad)"
-							/>
-							<polyline
-								points="0,80 30,70 60,55 90,45 120,50 150,30 180,20 200,15"
-								fill="none"
-								stroke="#22c55e"
-								stroke-width="2.5"
-							/>
-						</svg>
-						<div class="perf-total" aria-label="Total profit">{PERFORMANCE_STATS.total}</div>
+	<!-- ═══════════════════════════════════════════════════════════════════════════
+	     MEMBER DASHBOARD PREVIEW - Sidebar Layout
+	     ═══════════════════════════════════════════════════════════════════════════ -->
+	<section class="py-16 bg-slate-950">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="grid lg:grid-cols-[1fr_380px] gap-8">
+				<!-- Main Content Area -->
+				<div class="space-y-8">
+					<div class="text-center lg:text-left">
+						<span class="text-indigo-500 font-bold uppercase tracking-wider text-sm">Member Preview</span>
+						<h2 class="text-3xl md:text-4xl font-heading font-bold text-slate-200 mt-2 mb-4">
+							Your Trading Command Center
+						</h2>
+						<p class="text-slate-400 max-w-2xl">
+							Get instant access to weekly video breakdowns, real-time performance tracking, and all the resources you need to trade confidently.
+						</p>
 					</div>
-					<div class="perf-stats" role="list">
-						<div role="listitem"><span>{PERFORMANCE_STATS.winRate}%</span> Win Rate</div>
-						<div role="listitem"><span>{PERFORMANCE_STATS.active}</span> Active</div>
-						<div role="listitem"><span>{PERFORMANCE_STATS.closed}</span> Closed</div>
+					
+					<!-- Feature Cards Preview -->
+					<div class="grid sm:grid-cols-2 gap-6">
+						<div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
+							<div class="w-12 h-12 rounded-lg bg-indigo-600/10 flex items-center justify-center mb-4">
+								<svg class="w-6 h-6 text-indigo-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"/>
+								</svg>
+							</div>
+							<h3 class="text-lg font-bold text-white mb-2">Real-Time Alerts</h3>
+							<p class="text-slate-400 text-sm">Instant SMS & Discord notifications for every entry, update, and exit.</p>
+						</div>
+						<div class="bg-slate-900 p-6 rounded-xl border border-slate-800">
+							<div class="w-12 h-12 rounded-lg bg-emerald-600/10 flex items-center justify-center mb-4">
+								<svg class="w-6 h-6 text-emerald-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+									<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/>
+								</svg>
+							</div>
+							<h3 class="text-lg font-bold text-white mb-2">Performance Tracking</h3>
+							<p class="text-slate-400 text-sm">Transparent P&L tracking with detailed trade history.</p>
+						</div>
 					</div>
 				</div>
 
-				<!-- Resources Card -->
-				<nav class="sidebar-card" aria-labelledby="resources-heading">
-					<h3 id="resources-heading">Resources</h3>
-					<div class="quick-links">
-						<a href="/dashboard/spx-profit-pulse/video-library">🎬 Video Library</a>
-						<a href="/dashboard/spx-profit-pulse/trade-tracker">📊 Trade Tracker</a>
-						<a href="/dashboard/spx-profit-pulse/favorites">⭐ My Favorites</a>
-						<a href="/api/export/watchlist?room_slug=spx-profit-pulse&format=csv" download>📥 Export CSV</a>
-						<a href="/dashboard/account">⚙️ Alert Settings</a>
-					</div>
-				</nav>
-
-				<!-- Support Card -->
-				<div class="sidebar-card support-card" role="region" aria-labelledby="support-heading">
-					<h3 id="support-heading">Need Help?</h3>
-					<p>Questions about SPX 0DTE trading?</p>
-					<a 
-						href="https://intercom.help/simpler-trading/en/" 
-						target="_blank" 
-						rel="noopener noreferrer"
-						class="support-btn"
-					>
-						Contact Support
-					</a>
-				</div>
-
-				<!-- Latest Updates Card -->
-				<div class="sidebar-card" role="region" aria-labelledby="updates-heading">
-					<h3 id="updates-heading">Latest Updates</h3>
-					<div class="updates-list" role="list">
-						{#each LATEST_UPDATES as update (update.title)}
-							<button class="update-item">
-								<div class="update-thumbnail">
-									<svg viewBox="0 0 24 24" fill="currentColor" class="play-icon">
-										<path d="M8 5v14l11-7z" />
-									</svg>
-									<span class="duration">{update.duration}</span>
-								</div>
-								<div class="update-info">
-									<div class="update-title">{update.title}</div>
-									<div class="update-date">{update.date}</div>
-								</div>
+				<!-- RIGHT SIDEBAR -->
+				<aside class="space-y-6">
+					<!-- Weekly Breakdown -->
+					<div class="bg-white rounded-2xl shadow-xl overflow-hidden">
+						<div class="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+							<h3 class="font-bold text-slate-900 text-lg">Weekly Breakdown</h3>
+							<button class="text-sm font-semibold text-indigo-600 hover:text-indigo-700 transition-colors">
+								Watch Full Video
 							</button>
-						{/each}
+						</div>
+						<div class="p-4">
+							<div class="relative bg-slate-900 rounded-xl overflow-hidden aspect-video">
+								<div class="absolute inset-0 flex items-center justify-center">
+									<div class="text-center">
+										<div class="w-16 h-16 rounded-full bg-white/90 flex items-center justify-center mx-auto mb-3 shadow-lg cursor-pointer hover:scale-110 transition-transform">
+											<svg class="w-6 h-6 text-indigo-600 ml-1" fill="currentColor" viewBox="0 0 24 24">
+												<path d="M8 5v14l11-7z"/>
+											</svg>
+										</div>
+										<p class="text-white font-semibold text-sm">Weekly Swing Setup Video</p>
+									</div>
+								</div>
+								<div class="absolute bottom-3 left-3 flex items-center gap-2">
+									<button aria-label="Play video" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+										<svg class="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+									</button>
+									<button aria-label="Volume" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+										<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728"/></svg>
+									</button>
+									<span class="text-white text-xs font-mono">0:00 / 9:58</span>
+								</div>
+								<div class="absolute bottom-3 right-3 flex items-center gap-2">
+									<button aria-label="Settings" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+										<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/></svg>
+									</button>
+									<button aria-label="Fullscreen" class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center hover:bg-white/30 transition-colors">
+										<svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"/></svg>
+									</button>
+								</div>
+								<div class="absolute bottom-0 left-0 right-0 h-1 bg-white/20">
+									<div class="h-full w-[5%] bg-indigo-500"></div>
+								</div>
+							</div>
+						</div>
 					</div>
-				</div>
-			</aside>
+
+					<!-- 30-Day Performance -->
+					<div class="bg-white rounded-2xl shadow-xl p-5">
+						<h3 class="font-bold text-slate-900 text-lg mb-4">30-Day Performance</h3>
+						<div class="relative h-32">
+							<!-- Tooltip -->
+							<div class="absolute top-0 left-1/2 -translate-x-1/2 bg-white border border-slate-200 rounded-lg shadow-lg px-3 py-2 text-xs z-10">
+								<div class="text-slate-500">Mar 11, 2024</div>
+								<div class="flex items-center gap-1.5 font-bold text-slate-900">
+									<span class="w-2 h-2 rounded-full bg-indigo-500"></span>
+									$142.50 → 122.59
+								</div>
+							</div>
+							<!-- Chart Line -->
+							<svg class="w-full h-full" viewBox="0 0 300 100" preserveAspectRatio="none">
+								<defs>
+									<linearGradient id="spxChartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+										<stop offset="0%" style="stop-color:#6366f1;stop-opacity:0.3"/>
+										<stop offset="100%" style="stop-color:#6366f1;stop-opacity:0"/>
+									</linearGradient>
+								</defs>
+								<path d="M0,70 Q50,65 80,55 T150,45 T220,35 T300,50" fill="none" stroke="#6366f1" stroke-width="2"/>
+								<path d="M0,70 Q50,65 80,55 T150,45 T220,35 T300,50 L300,100 L0,100 Z" fill="url(#spxChartGrad)"/>
+								<circle cx="150" cy="45" r="5" fill="#fff" stroke="#6366f1" stroke-width="2"/>
+							</svg>
+						</div>
+					</div>
+
+					<!-- Resources + Need Help -->
+					<div class="grid grid-cols-2 gap-4">
+						<!-- Resources -->
+						<div class="bg-white rounded-2xl shadow-xl p-5">
+							<h3 class="font-bold text-slate-900 mb-3">Resources</h3>
+							<div class="space-y-2">
+								<a href="/resources" class="block text-indigo-600 hover:text-indigo-700 text-sm font-medium hover:underline">Resources</a>
+								<a href="/format-links" class="block text-indigo-600 hover:text-indigo-700 text-sm font-medium hover:underline">Format Links</a>
+								<a href="/support" class="block text-indigo-600 hover:text-indigo-700 text-sm font-medium hover:underline">Need Help</a>
+							</div>
+						</div>
+						<!-- Need Help -->
+						<div class="bg-slate-100 rounded-2xl p-5">
+							<h3 class="font-bold text-slate-900 mb-2">Need Help?</h3>
+							<p class="text-slate-600 text-xs leading-relaxed">
+								This repo view our sono true contact or need help help.
+							</p>
+						</div>
+					</div>
+
+					<!-- Latest Updates -->
+					<div class="bg-white rounded-2xl shadow-xl p-5">
+						<h3 class="font-bold text-slate-900 text-lg mb-4">Latest Updates</h3>
+						<div class="grid grid-cols-3 gap-3">
+							{#each [
+								{ title: 'NVDA Entry Alert...', duration: '0:58' },
+								{ title: 'MSFT Exit...', duration: '0:38' },
+								{ title: 'NVDA Entry Alert...', duration: '0:22' },
+								{ title: 'NVDA Entry Alert...', duration: '0:27' },
+								{ title: 'MSRT Entry Alert...', duration: '0:20' },
+								{ title: 'MSFT Exit...', duration: '0:55' }
+							] as update}
+								<button class="group text-left w-full">
+									<div class="relative bg-slate-900 rounded-lg overflow-hidden aspect-video mb-1.5">
+										<div class="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
+										<div class="absolute inset-0 flex items-center justify-center">
+											<div class="w-8 h-8 rounded-full bg-white/90 flex items-center justify-center group-hover:scale-110 transition-transform">
+												<svg class="w-3 h-3 text-slate-900 ml-0.5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+											</div>
+										</div>
+										<span class="absolute bottom-1 right-1 bg-black/70 text-white text-[10px] px-1.5 py-0.5 rounded font-mono">
+											{update.duration}
+										</span>
+									</div>
+									<p class="text-xs font-medium text-slate-700 truncate group-hover:text-indigo-600 transition-colors">
+										{update.title}
+									</p>
+								</button>
+							{/each}
+						</div>
+					</div>
+				</aside>
+			</div>
 		</div>
-	</div>
+	</section>
 
 	<section class="py-24 bg-slate-950 relative overflow-hidden">
 		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -1174,41 +1130,36 @@
 			</div>
 
 			<div class="flex justify-center mb-16">
-				<div 
-					class="bg-slate-950 p-1.5 rounded-xl border border-slate-800 inline-flex relative"
-					role="tablist"
-					aria-label="Pricing plans"
-				>
+				<div class="bg-slate-950 p-1.5 rounded-xl border border-slate-800 inline-flex relative">
 					<button
-						onclick={() => selectPlan('monthly')}
-						role="tab"
-						aria-selected={selectedPlan === 'monthly'}
-						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan === 'monthly' ? 'text-white' : 'text-slate-400 hover:text-white'}"
+						onclick={() => (selectedPlan = 'monthly')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
+						'monthly'
+							? 'text-white'
+							: 'text-slate-400 hover:text-white'}">Monthly</button
 					>
-						Monthly
-					</button>
 					<button
-						onclick={() => selectPlan('quarterly')}
-						role="tab"
-						aria-selected={selectedPlan === 'quarterly'}
-						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan === 'quarterly' ? 'text-white' : 'text-slate-400 hover:text-white'}"
+						onclick={() => (selectedPlan = 'quarterly')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
+						'quarterly'
+							? 'text-white'
+							: 'text-slate-400 hover:text-white'}">Quarterly</button
 					>
-						Quarterly
-					</button>
 					<button
-						onclick={() => selectPlan('annual')}
-						role="tab"
-						aria-selected={selectedPlan === 'annual'}
-						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan === 'annual' ? 'text-white' : 'text-slate-400 hover:text-white'}"
+						onclick={() => (selectedPlan = 'annual')}
+						class="relative z-10 px-6 py-2 rounded-lg font-bold text-sm transition-colors duration-200 {selectedPlan ===
+						'annual'
+							? 'text-white'
+							: 'text-slate-400 hover:text-white'}">Annual</button
 					>
-						Annual
-					</button>
 
-					<!-- Animated slider indicator -->
 					<div
 						class="absolute top-1.5 bottom-1.5 bg-indigo-600 rounded-lg shadow-md transition-all duration-300 ease-out"
-						style="left: {pricingSliderPosition}; width: calc(33.33% - 0.4rem);"
-						aria-hidden="true"
+						style="left: {selectedPlan === 'monthly'
+							? '0.375rem'
+							: selectedPlan === 'quarterly'
+								? 'calc(33.33% + 0.2rem)'
+								: 'calc(66.66% + 0.1rem)'}; width: calc(33.33% - 0.4rem);"
 					></div>
 				</div>
 			</div>
@@ -1478,286 +1429,3 @@
 </div>
 
 <MarketingFooter />
-
-<style>
-	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
-	 * SPX Profit Pulse - Component Styles
-	 * ═══════════════════════════════════════════════════════════════════════════════
-	 *
-	 * @description Scoped styles for the SPX Profit Pulse landing page
-	 * @version 3.0.0
-	 * @standards Apple Principal Engineer ICT Level 11
-	 *
-	 * CSS Architecture:
-	 * - CSS Custom Properties for theming
-	 * - Logical properties for RTL support
-	 * - Mobile-first responsive design
-	 * - BEM-inspired naming convention
-	 */
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   CSS CUSTOM PROPERTIES - Design tokens
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	:root {
-		--sidebar-width: 340px;
-		--sidebar-gap: 30px;
-		--card-radius: 16px;
-		--card-padding: 25px;
-		--color-primary: #143e59;
-		--color-primary-light: #1e5175;
-		--color-accent: #0984ae;
-		--color-success: #22c55e;
-		--color-surface: #fff;
-		--color-text: #333;
-		--color-text-muted: #666;
-		--shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
-		--shadow-hover: 0 4px 12px rgba(0, 0, 0, 0.15);
-		--transition-fast: 0.2s ease;
-		--transition-smooth: 0.3s ease-out;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   MAIN GRID LAYOUT - Two Column with Sidebar
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.main-grid {
-		display: grid;
-		grid-template-columns: 1fr var(--sidebar-width);
-		gap: var(--sidebar-gap);
-		align-items: start;
-		max-inline-size: 1400px;
-		margin-inline: auto;
-	}
-
-	/* Responsive: Stack on tablet and below */
-	@media (max-width: 1024px) {
-		.main-grid {
-			grid-template-columns: 1fr;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   SIDEBAR - Sticky performance panel
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.sidebar {
-		display: flex;
-		flex-direction: column;
-		gap: 20px;
-		position: sticky;
-		inset-block-start: 20px;
-	}
-
-	.sidebar-card {
-		background: var(--color-surface);
-		border-radius: var(--card-radius);
-		padding: var(--card-padding);
-		box-shadow: var(--shadow-card);
-		text-align: center;
-	}
-
-	.sidebar-card h3 {
-		font-size: 1rem;
-		font-weight: 700;
-		margin-block: 0 20px;
-		color: var(--color-text);
-		font-family: 'Montserrat', system-ui, sans-serif;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   PERFORMANCE CHART - Mini chart visualization
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.mini-chart {
-		inline-size: 100%;
-		block-size: 80px;
-	}
-
-	.perf-total {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: var(--color-success);
-		margin-block: 15px;
-		font-family: 'Montserrat', system-ui, sans-serif;
-	}
-
-	.perf-stats {
-		display: flex;
-		justify-content: center;
-		gap: 20px;
-		font-size: 0.8125rem;
-		color: var(--color-text-muted);
-	}
-
-	.perf-stats span {
-		font-weight: 700;
-		color: var(--color-primary);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   QUICK LINKS - Resource navigation
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.quick-links {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-		text-align: start;
-	}
-
-	.quick-links a {
-		color: var(--color-primary);
-		text-decoration: none;
-		font-size: 0.875rem;
-		font-weight: 600;
-		transition: all var(--transition-fast);
-		padding-block: 8px;
-		padding-inline: 12px;
-		border-radius: 8px;
-		display: block;
-	}
-
-	.quick-links a:hover,
-	.quick-links a:focus-visible {
-		background: #f8fafc;
-		color: var(--color-accent);
-		transform: translateX(4px);
-		outline: none;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   SUPPORT CARD - Help section with gradient
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.support-card {
-		background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
-		color: white;
-	}
-
-	.support-card h3 {
-		color: white;
-	}
-
-	.support-card p {
-		color: rgba(255, 255, 255, 0.9);
-		font-size: 0.875rem;
-		margin-block-end: 15px;
-	}
-
-	.support-btn {
-		display: inline-block;
-		background: white;
-		color: var(--color-primary);
-		padding-block: 10px;
-		padding-inline: 20px;
-		border-radius: 8px;
-		font-weight: 700;
-		font-size: 0.875rem;
-		text-decoration: none;
-		transition: all var(--transition-fast);
-	}
-
-	.support-btn:hover,
-	.support-btn:focus-visible {
-		background: #f8fafc;
-		transform: translateY(-2px);
-		box-shadow: var(--shadow-hover);
-		outline: none;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   UPDATES LIST - Latest video updates
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.updates-list {
-		display: flex;
-		flex-direction: column;
-		gap: 12px;
-		text-align: start;
-	}
-
-	.update-item {
-		display: flex;
-		gap: 12px;
-		padding: 10px;
-		border-radius: 8px;
-		text-decoration: none;
-		transition: all var(--transition-fast);
-		background: transparent;
-		border: none;
-		inline-size: 100%;
-		cursor: pointer;
-		text-align: start;
-	}
-
-	.update-item:hover,
-	.update-item:focus-visible {
-		background: #f8fafc;
-		outline: none;
-	}
-
-	.update-thumbnail {
-		position: relative;
-		inline-size: 60px;
-		block-size: 45px;
-		background: var(--color-primary);
-		border-radius: 6px;
-		flex-shrink: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-	}
-
-	.play-icon {
-		inline-size: 20px;
-		block-size: 20px;
-		color: white;
-	}
-
-	.duration {
-		position: absolute;
-		inset-block-end: 3px;
-		inset-inline-end: 3px;
-		background: rgba(0, 0, 0, 0.8);
-		color: white;
-		font-size: 0.625rem;
-		padding-block: 2px;
-		padding-inline: 4px;
-		border-radius: 3px;
-		font-family: ui-monospace, monospace;
-	}
-
-	.update-info {
-		flex: 1;
-		min-inline-size: 0;
-	}
-
-	.update-title {
-		font-size: 0.8125rem;
-		font-weight: 600;
-		color: var(--color-text);
-		margin-block-end: 2px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	.update-date {
-		font-size: 0.6875rem;
-		color: var(--color-text-muted);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE - Mobile-first breakpoints
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	@media (max-width: 1024px) {
-		.sidebar {
-			position: static;
-		}
-	}
-
-	/* Reduced motion preferences */
-	@media (prefers-reduced-motion: reduce) {
-		.update-item,
-		.quick-links a,
-		.support-btn {
-			transition: none;
-		}
-	}
-</style>
-
