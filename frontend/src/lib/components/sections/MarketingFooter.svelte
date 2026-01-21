@@ -74,7 +74,7 @@
 			label: 'Facebook'
 		},
 		{
-			href: 'https://twitter.com/revtradingpros',
+			href: 'https://x.com/revtradingpros',
 			icon: IconBrandTwitter,
 			label: 'X (Twitter)'
 		},
