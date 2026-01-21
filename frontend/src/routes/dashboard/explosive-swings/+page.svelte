@@ -1105,68 +1105,95 @@
 		</section>
 
 		<!-- ═══════════════════════════════════════════════════════════════════════════
-		     SIDEBAR - Performance metrics and resources (ICT 11 Accessibility)
+		     SIDEBAR - Weekly video, performance, resources, updates
 		     ═══════════════════════════════════════════════════════════════════════════ -->
-		<aside class="sidebar" aria-label="Performance sidebar">
-			<!-- Performance Card - Real stats from API -->
+		<aside class="sidebar" aria-label="Dashboard sidebar">
+			<!-- Weekly Breakdown Video -->
+			<div class="sidebar-card" role="region" aria-labelledby="weekly-video-heading">
+				<div class="sidebar-card-header">
+					<h3 id="weekly-video-heading">Weekly Breakdown</h3>
+					<a href="/dashboard/explosive-swings/video-library" class="watch-full-btn">Watch Full Video</a>
+				</div>
+				<div class="sidebar-video-container">
+					<div class="sidebar-video-wrapper">
+						<div class="sidebar-video-title">Weekly Swing Setup Video</div>
+						<div class="sidebar-video-player">
+							<button class="play-button" aria-label="Play video">
+								<svg viewBox="0 0 24 24" fill="currentColor" width="32" height="32">
+									<path d="M8 5v14l11-7z" />
+								</svg>
+							</button>
+						</div>
+						<div class="sidebar-video-controls">
+							<span class="video-time">0:00 / 9:58</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 30-Day Performance Chart -->
 			<div class="sidebar-card" role="region" aria-labelledby="perf-heading">
 				<h3 id="perf-heading">30-Day Performance</h3>
 				{#if isLoadingStats}
-					<div class="loading-shimmer" style="height: 150px;" aria-label="Loading performance data"></div>
+					<div class="loading-shimmer" style="height: 120px;" aria-label="Loading performance data"></div>
 				{:else}
-					<div class="perf-chart">
-						<svg viewBox="0 0 200 100" class="mini-chart" aria-hidden="true">
-							<defs>
-								<linearGradient id="chartGrad" x1="0%" y1="0%" x2="0%" y2="100%">
-									<stop offset="0%" style="stop-color:#22c55e;stop-opacity:0.3" />
-									<stop offset="100%" style="stop-color:#22c55e;stop-opacity:0" />
-								</linearGradient>
-							</defs>
-							<path
-								d="M0,80 L30,70 L60,55 L90,45 L120,50 L150,30 L180,20 L200,15 L200,100 L0,100 Z"
-								fill="url(#chartGrad)"
-							/>
+					<div class="perf-chart-interactive">
+						<!-- Tooltip -->
+						<div class="chart-tooltip">
+							<div class="tooltip-date">Mar 11, 2024</div>
+							<div class="tooltip-value">● $142.50 — 122.59</div>
+						</div>
+						<!-- Chart -->
+						<svg viewBox="0 0 300 100" class="performance-chart" aria-hidden="true">
 							<polyline
-								points="0,80 30,70 60,55 90,45 120,50 150,30 180,20 200,15"
+								points="0,70 30,65 60,60 90,55 120,50 150,45 180,55 210,40 240,35 270,30 300,25"
 								fill="none"
-								stroke="#22c55e"
-								stroke-width="2.5"
+								stroke="#3b82f6"
+								stroke-width="2"
 							/>
+							<circle cx="210" cy="40" r="6" fill="#fff" stroke="#3b82f6" stroke-width="2" />
 						</svg>
-						<div class="perf-total" aria-label="Weekly profit">{stats.weeklyProfit}</div>
-					</div>
-					<div class="perf-stats" role="list">
-						<div role="listitem"><span>{stats.winRate}%</span> Win Rate</div>
-						<div role="listitem"><span>{stats.activeTrades}</span> Active</div>
-						<div role="listitem"><span>{stats.closedThisWeek}</span> Closed</div>
 					</div>
 				{/if}
 			</div>
 
-			<!-- Resources Card -->
-			<nav class="sidebar-card" aria-labelledby="resources-heading">
-				<h3 id="resources-heading">Resources</h3>
-				<div class="quick-links">
-					<a href="/dashboard/explosive-swings/video-library">🎬 Video Library</a>
-					<a href="/dashboard/explosive-swings/trade-tracker">📊 Trade Tracker</a>
-					<a href="/dashboard/explosive-swings/favorites">⭐ My Favorites</a>
-					<a href="/api/export/watchlist?room_slug=explosive-swings&format=csv" download>📥 Export CSV</a>
-					<a href="/dashboard/account">⚙️ Alert Settings</a>
+			<!-- Resources & Need Help Row -->
+			<div class="sidebar-row">
+				<!-- Resources Links -->
+				<div class="sidebar-card sidebar-card-half" role="region" aria-labelledby="resources-heading">
+					<h3 id="resources-heading">Resources</h3>
+					<nav class="resource-links">
+						<a href="/dashboard/explosive-swings/video-library">Resources</a>
+						<a href="/dashboard/explosive-swings/format-links">Tormmat Links</a>
+						<a href="https://intercom.help/simpler-trading/en/" target="_blank" rel="noopener noreferrer">Need Help</a>
+					</nav>
 				</div>
-			</nav>
 
-			<!-- Support Card -->
-			<div class="sidebar-card support-card" role="region" aria-labelledby="support-heading">
-				<h3 id="support-heading">Need Help?</h3>
-				<p>Questions about a trade or setup?</p>
-				<a 
-					href="https://intercom.help/simpler-trading/en/" 
-					target="_blank" 
-					rel="noopener noreferrer"
-					class="support-btn"
-				>
-					Contact Support
-				</a>
+				<!-- Need Help Card -->
+				<div class="sidebar-card sidebar-card-half support-card" role="region" aria-labelledby="support-heading">
+					<h3 id="support-heading">Need Help?</h3>
+					<p>This represents/view our sonotrusie contact or need help help.</p>
+				</div>
+			</div>
+
+			<!-- Latest Updates Grid -->
+			<div class="sidebar-card" role="region" aria-labelledby="updates-heading">
+				<h3 id="updates-heading">Latest Updates</h3>
+				<div class="sidebar-updates-grid">
+					{#each latestUpdates.slice(0, 6) as update}
+						<a href={update.href} class="sidebar-update-item">
+							<div class="sidebar-update-thumb" style="background-image: url('{update.image}')">
+								<div class="sidebar-play-icon">
+									<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+										<path d="M8 5v14l11-7z" />
+									</svg>
+								</div>
+								<span class="sidebar-duration">{update.duration}</span>
+							</div>
+							<div class="sidebar-update-title">{update.title}</div>
+						</a>
+					{/each}
+				</div>
 			</div>
 		</aside>
 	</div>
@@ -2311,16 +2338,15 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   SIDEBAR - ICT 11 Standards with CSS Custom Properties
+	   SIDEBAR - Matching Screenshot Design (ICT 11 Standards)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.sidebar {
-		--sidebar-gap: 20px;
-		--card-radius: 16px;
-		--card-padding: 25px;
+		--sidebar-gap: 16px;
+		--card-radius: 12px;
+		--card-padding: 20px;
 		--color-primary: #143e59;
-		--color-accent: #0984ae;
-		--color-success: #22c55e;
-		--shadow-card: 0 4px 20px rgba(0, 0, 0, 0.06);
+		--color-accent: #3b82f6;
+		--shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
 		--transition-fast: 0.2s ease;
 
 		display: flex;
@@ -2333,41 +2359,252 @@
 		border-radius: var(--card-radius);
 		padding: var(--card-padding);
 		box-shadow: var(--shadow-card);
-		text-align: center;
 	}
 
 	.sidebar-card h3 {
 		font-size: 1rem;
 		font-weight: 700;
-		margin-block: 0 20px;
-		color: #333;
+		margin: 0 0 16px 0;
+		color: #1a1a1a;
 		font-family: 'Montserrat', system-ui, sans-serif;
 	}
 
-	.mini-chart {
-		inline-size: 100%;
-		block-size: 80px;
-	}
-
-	.perf-total {
-		font-size: 1.75rem;
-		font-weight: 700;
-		color: var(--color-success);
-		margin-block: 15px;
-		font-family: 'Montserrat', system-ui, sans-serif;
-	}
-
-	.perf-stats {
+	/* Sidebar Card Header with Button */
+	.sidebar-card-header {
 		display: flex;
-		justify-content: center;
-		gap: 20px;
-		font-size: 0.8125rem;
-		color: #666;
+		justify-content: space-between;
+		align-items: center;
+		margin-bottom: 12px;
 	}
 
-	.perf-stats span {
-		font-weight: 700;
+	.sidebar-card-header h3 {
+		margin: 0;
+	}
+
+	.watch-full-btn {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: #666;
+		text-decoration: none;
+		padding: 6px 12px;
+		border: 1px solid #e5e7eb;
+		border-radius: 6px;
+		transition: all var(--transition-fast);
+	}
+
+	.watch-full-btn:hover {
+		background: #f3f4f6;
+		color: #333;
+	}
+
+	/* Weekly Video Container */
+	.sidebar-video-container {
+		border-radius: 8px;
+		overflow: hidden;
+		background: #1a1a1a;
+	}
+
+	.sidebar-video-wrapper {
+		position: relative;
+	}
+
+	.sidebar-video-title {
+		padding: 12px 16px;
+		font-size: 0.875rem;
+		font-weight: 600;
+		color: #fff;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.sidebar-video-player {
+		aspect-ratio: 16 / 9;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #2a2a2a;
+	}
+
+	.play-button {
+		width: 56px;
+		height: 56px;
+		border-radius: 50%;
+		background: rgba(255, 255, 255, 0.9);
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		transition: transform var(--transition-fast);
+	}
+
+	.play-button:hover {
+		transform: scale(1.1);
+	}
+
+	.play-button svg {
+		color: #1a1a1a;
+		margin-left: 4px;
+	}
+
+	.sidebar-video-controls {
+		padding: 8px 16px;
+		background: #1a1a1a;
+	}
+
+	.video-time {
+		font-size: 0.75rem;
+		color: #999;
+		font-family: ui-monospace, monospace;
+	}
+
+	/* 30-Day Performance Chart */
+	.perf-chart-interactive {
+		position: relative;
+		padding-top: 50px;
+	}
+
+	.chart-tooltip {
+		position: absolute;
+		top: 0;
+		left: 50%;
+		transform: translateX(-50%);
+		background: #fff;
+		border: 1px solid #e5e7eb;
+		border-radius: 8px;
+		padding: 8px 12px;
+		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+		text-align: center;
+		z-index: 10;
+	}
+
+	.tooltip-date {
+		font-size: 0.75rem;
+		font-weight: 600;
+		color: #333;
+	}
+
+	.tooltip-value {
+		font-size: 0.75rem;
+		color: var(--color-accent);
+	}
+
+	.performance-chart {
+		width: 100%;
+		height: 80px;
+	}
+
+	/* Resources & Need Help Row */
+	.sidebar-row {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 12px;
+	}
+
+	.sidebar-card-half {
+		padding: 16px;
+	}
+
+	.sidebar-card-half h3 {
+		font-size: 0.875rem;
+		margin-bottom: 12px;
+	}
+
+	.resource-links {
+		display: flex;
+		flex-direction: column;
+		gap: 8px;
+	}
+
+	.resource-links a {
+		font-size: 0.8125rem;
+		color: var(--color-accent);
+		text-decoration: underline;
+		transition: color var(--transition-fast);
+	}
+
+	.resource-links a:hover {
 		color: var(--color-primary);
+	}
+
+	/* Support Card */
+	.support-card {
+		background: #f8f9fa;
+	}
+
+	.support-card h3 {
+		color: #1a1a1a;
+	}
+
+	.support-card p {
+		font-size: 0.75rem;
+		color: #666;
+		margin: 0;
+		line-height: 1.4;
+	}
+
+	/* Latest Updates Grid */
+	.sidebar-updates-grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 12px;
+	}
+
+	.sidebar-update-item {
+		text-decoration: none;
+		display: block;
+	}
+
+	.sidebar-update-thumb {
+		position: relative;
+		aspect-ratio: 1;
+		border-radius: 8px;
+		background-size: cover;
+		background-position: center;
+		background-color: #1a1a1a;
+		margin-bottom: 8px;
+	}
+
+	.sidebar-play-icon {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+		width: 32px;
+		height: 32px;
+		background: rgba(255, 255, 255, 0.9);
+		border-radius: 50%;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.sidebar-play-icon svg {
+		color: #1a1a1a;
+		margin-left: 2px;
+	}
+
+	.sidebar-duration {
+		position: absolute;
+		bottom: 4px;
+		right: 4px;
+		background: rgba(0, 0, 0, 0.8);
+		color: #fff;
+		font-size: 0.625rem;
+		padding: 2px 4px;
+		border-radius: 3px;
+		font-family: ui-monospace, monospace;
+	}
+
+	.sidebar-update-title {
+		font-size: 0.6875rem;
+		font-weight: 600;
+		color: #333;
+		line-height: 1.3;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
 	}
 
 	.loading-shimmer {
@@ -2375,67 +2612,6 @@
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 8px;
-	}
-
-	.quick-links {
-		display: flex;
-		flex-direction: column;
-		gap: 10px;
-	}
-
-	.quick-links a {
-		display: block;
-		padding-block: 12px;
-		padding-inline: 15px;
-		background: #f8fafc;
-		border-radius: 8px;
-		color: #333;
-		text-decoration: none;
-		font-size: 0.875rem;
-		font-weight: 600;
-		transition: all var(--transition-fast);
-		text-align: center;
-	}
-
-	.quick-links a:hover,
-	.quick-links a:focus-visible {
-		background: var(--color-primary);
-		color: #fff;
-		outline: none;
-	}
-
-	.support-card {
-		background: linear-gradient(135deg, var(--color-primary), var(--color-accent));
-		color: #fff;
-	}
-
-	.support-card h3 {
-		color: #fff;
-	}
-
-	.support-card p {
-		font-size: 0.875rem;
-		opacity: 0.9;
-		margin-block: 0 20px;
-	}
-
-	.support-btn {
-		display: inline-block;
-		background: #fff;
-		color: var(--color-primary);
-		padding-block: 12px;
-		padding-inline: 24px;
-		border-radius: 8px;
-		font-weight: 700;
-		text-decoration: none;
-		transition: all var(--transition-fast);
-	}
-
-	.support-btn:hover,
-	.support-btn:focus-visible {
-		transform: translateY(-2px);
-		box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-		outline: none;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
