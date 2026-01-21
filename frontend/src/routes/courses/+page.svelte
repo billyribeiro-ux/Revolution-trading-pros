@@ -368,6 +368,7 @@
 	schemaType="Course"
 />
 
+<!-- svelte-ignore a11y_no_static_element_interactions -->
 <div
 	class="bg-black text-slate-200 font-sans selection:bg-blue-500/30 selection:text-white"
 	onmousemove={handleMouseMove}

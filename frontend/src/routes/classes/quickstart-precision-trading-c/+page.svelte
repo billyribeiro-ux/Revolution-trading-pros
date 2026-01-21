@@ -208,54 +208,11 @@
 	}
 
 	/* ─────────────────────────────────────────────────────────────────────────────
-	 * PAGE WRAPPER (scoped styles - no global leaks)
+	 * ICT7+ FIX: NO :global(html/body) - causes CSS cascade pollution
+	 * All styles scoped to #page wrapper for isolation
 	 * ───────────────────────────────────────────────────────────────────────────── */
-	:global(html) {
-		font-size: 100%;
-		-webkit-text-size-adjust: 100%;
-		text-size-adjust: 100%;
-		scroll-behavior: smooth;
-	}
 
-	:global(html),
-	:global(body) {
-		background-color: #efefef !important;
-		color: #666666;
-		font-family:
-			'Open Sans',
-			-apple-system,
-			BlinkMacSystemFont,
-			'Segoe UI',
-			Roboto,
-			sans-serif;
-		font-size: 1rem;
-		line-height: 1.5;
-		min-height: 100dvh;
-		-webkit-font-smoothing: antialiased;
-		-moz-osx-font-smoothing: grayscale;
-	}
-
-	:global(a),
-	:global(a:visited) {
-		color: #1e73be;
-		text-decoration: none;
-		transition: color 150ms ease-out;
-	}
-
-	:global(a:hover),
-	:global(a:focus) {
-		color: #000000;
-	}
-
-	:global(#page a:focus-visible) {
-		outline: 2px solid #1e73be;
-		outline-offset: 2px;
-		border-radius: 4px;
-	}
-
-	/* ─────────────────────────────────────────────────────────────────────────────
-	 * PAGE WRAPPER
-	 * ───────────────────────────────────────────────────────────────────────────── */
+	/* PAGE WRAPPER - Full viewport coverage with scoped styles */
 	#page {
 		max-width: 100%;
 		margin: 0;

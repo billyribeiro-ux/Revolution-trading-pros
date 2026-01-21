@@ -231,27 +231,22 @@
 	 * Source: https://my.simplertrading.com/indicators/volume-max-i
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* 1. BODY BACKGROUND - White columns on sides */
-	:global(html),
-	:global(body) {
-		background-color: #ffffff !important;
-		color: #666666;
-		font-family: 'Open Sans', sans-serif;
-	}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	 * ICT7+ FIX: NO :global(html/body) - causes CSS cascade pollution
+	 * Instead, use scoped page wrapper with full-viewport coverage
+	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	:global(a),
-	:global(a:visited) {
+	/* Page-scoped link colors - :global() scoped to .indicators wrapper */
+	/* ICT7+: This ONLY affects links inside .indicators, not globally */
+	.indicators :global(a),
+	.indicators :global(a:visited) {
 		color: #1e73be;
 	}
 
-	:global(a:hover),
-	:global(a:focus),
-	:global(a:active) {
+	.indicators :global(a:hover),
+	.indicators :global(a:focus),
+	.indicators :global(a:active) {
 		color: #000000;
-	}
-
-	#content.site-content {
-		width: 100%;
 	}
 
 	/* 3. INDICATORS CONTAINER - Mobile-first */

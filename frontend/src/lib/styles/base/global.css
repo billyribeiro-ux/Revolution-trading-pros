@@ -1,20 +1,28 @@
 /**
  * RTP Admin Design System - Global Styles
  * ═══════════════════════════════════════════════════════════════════════════
- * Dark theme only
- * @version 1.0.0
+ * Dark theme only - SCOPED to admin/dashboard areas
+ * 
+ * ICT7+ FIX (Jan 2026): Removed global body styles that polluted CSS cascade
+ * across marketing pages. All dark theme styles now scoped to wrapper classes.
+ * 
+ * @version 1.1.0
  */
 
-:root {
-	font-family: var(--font-sans);
-	font-size: 16px;
-	color-scheme: dark;
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+ * ICT7+ SCOPED DARK THEME - Only applies within admin/dashboard wrappers
+ * NO global body/html styles to prevent cascade pollution
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
-body {
+/* Admin dark theme - scoped to admin layout wrappers only */
+/* NOTE: Dashboard uses LIGHT theme (#efefef) - not included here */
+.admin-layout,
+.admin-page-container {
+	font-family: var(--font-sans);
+	font-size: var(--text-base);
 	background-color: var(--bg-base);
 	color: var(--text-primary);
-	font-size: var(--text-base);
+	color-scheme: dark;
 }
 
 ::selection {

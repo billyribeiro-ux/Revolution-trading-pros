@@ -204,7 +204,7 @@
 		</div>
 	</div>
 {:else}
-	<div class="admin-page-builder">
+	<div class="admin-page-builder page-builder-wrapper">
 		<!-- Animated Background -->
 		<div class="bg-effects">
 			<div class="bg-blob bg-blob-1"></div>
@@ -338,8 +338,10 @@
 {/if}
 
 <style>
-	:global(body) {
-		margin: 0;
+	/* ICT7+ FIX: Use scoped wrapper instead of :global(body) to prevent cascade pollution */
+	.page-builder-wrapper {
+		position: fixed;
+		inset: 0;
 		overflow: hidden;
 	}
 
