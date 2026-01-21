@@ -213,8 +213,13 @@
 	// ============================================================================
 	// ANIMATION LOOP
 	// ============================================================================
+	let frameCount = 0;
 	function animate() {
 		drawChart();
+		frameCount++;
+		if (frameCount % 60 === 0) {
+			console.debug('[IndicatorsSection] Animation loop running, frame:', frameCount, 'chartProgress:', chartProgress);
+		}
 		animationFrame = requestAnimationFrame(animate);
 	}
 
