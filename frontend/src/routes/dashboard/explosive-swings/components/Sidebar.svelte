@@ -4,34 +4,54 @@
 	 * Sidebar Component - Dashboard Sidebar Container
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
-	 * @description Sticky sidebar containing performance, video, and resources
-	 * @version 4.1.0 - Visual Polish Pass
+	 * @description Sticky sidebar containing performance, video, resources, and updates
+	 * @version 4.2.0 - Svelte 5 January 2026 Refactor
+	 * @requires Svelte 5.0+ (January 2026 syntax)
 	 * @standards Apple Principal Engineer ICT 7+ Standards
+	 *
+	 * ARCHITECTURE:
+	 * - Each sidebar section is a self-contained component
+	 * - Sidebar orchestrates composition and spacing
+	 * - Props flow down, events bubble up via callbacks
+	 * - CSS containment for performance
 	 */
-	import type { ThirtyDayPerformance, WeeklyVideo } from '../types';
+	import type { ThirtyDayPerformance, WeeklyVideo, Video } from '../types';
 	import PerformanceCard from './PerformanceCard.svelte';
 	import WeeklyVideoCard from './WeeklyVideoCard.svelte';
 	import ResourceLinks from './ResourceLinks.svelte';
+	import LatestUpdatesCard from './LatestUpdatesCard.svelte';
 
 	interface Props {
 		thirtyDayPerformance: ThirtyDayPerformance;
 		weeklyVideo: WeeklyVideo;
+		latestUpdates?: Video[];
 		isLoading?: boolean;
 		onPlayVideo?: () => void;
 	}
 
-	const { thirtyDayPerformance, weeklyVideo, isLoading = false, onPlayVideo }: Props = $props();
+	const { 
+		thirtyDayPerformance, 
+		weeklyVideo, 
+		latestUpdates = [],
+		isLoading = false, 
+		onPlayVideo 
+	}: Props = $props();
 </script>
 
 <aside class="sidebar" aria-label="Dashboard sidebar">
-	<!-- 30-Day Performance -->
-	<PerformanceCard performance={thirtyDayPerformance} {isLoading} />
-
-	<!-- Weekly Video -->
+	<!-- Weekly Video - Primary content, first position -->
 	<WeeklyVideoCard video={weeklyVideo} {isLoading} onPlay={onPlayVideo} />
 
-	<!-- Quick Resources -->
-	<ResourceLinks />
+	<!-- 30-Day Performance - Key metric -->
+	<PerformanceCard performance={thirtyDayPerformance} {isLoading} />
+
+	<!-- Quick Resources - Navigation -->
+	<ResourceLinks variant="compact" />
+
+	<!-- Latest Updates - Compact 3-item grid -->
+	{#if latestUpdates.length > 0}
+		<LatestUpdatesCard updates={latestUpdates} {isLoading} maxItems={3} />
+	{/if}
 
 	<!-- Need Help Card -->
 	<div class="help-card">
