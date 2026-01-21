@@ -125,6 +125,18 @@
 	let isLoadingTradePlan = $state(false);
 	let isLoadingStats = $state(false);
 
+	// ═══════════════════════════════════════════════════════════════════════════
+	// PAGINATION STATE - Principal Engineer ICT 11 Standards
+	// ═══════════════════════════════════════════════════════════════════════════
+	let currentPage = $state(1);
+	let alertsPerPage = $state(10);
+	let pagination = $state({ total: 0, limit: 10, offset: 0 });
+
+	// Derived pagination values
+	const totalPages = $derived(Math.ceil(pagination.total / pagination.limit) || 1);
+	const showingFrom = $derived(pagination.total > 0 ? (currentPage - 1) * alertsPerPage + 1 : 0);
+	const showingTo = $derived(Math.min(currentPage * alertsPerPage, pagination.total));
+
 	const ROOM_SLUG = 'explosive-swings';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -366,10 +378,16 @@
 	async function fetchAlerts() {
 		isLoadingAlerts = true;
 		try {
-			const response = await fetch(`/api/alerts/${ROOM_SLUG}?limit=10`);
+			const offset = (currentPage - 1) * alertsPerPage;
+			const response = await fetch(`/api/alerts/${ROOM_SLUG}?limit=${alertsPerPage}&offset=${offset}`);
 			const data = await response.json();
 			if (data.success) {
 				apiAlerts = data.data;
+				pagination = {
+					total: data.total || data.data.length,
+					limit: alertsPerPage,
+					offset: offset
+				};
 			}
 		} catch (err) {
 			console.error('Failed to fetch alerts:', err);
@@ -419,6 +437,69 @@
 			isAdmin = false;
 		}
 	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
+	// PAGINATION FUNCTIONS - Principal Engineer ICT 11 Standards
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Navigate to a specific page and fetch alerts
+	 */
+	async function goToPage(page: number) {
+		if (page < 1 || page > totalPages || page === currentPage) return;
+		currentPage = page;
+		await fetchAlerts();
+		// Scroll to top of alerts section
+		const alertsSection = document.querySelector('.alerts-section');
+		if (alertsSection) {
+			alertsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+		}
+	}
+
+	/**
+	 * Generate visible page numbers with ellipsis for pagination UI
+	 */
+	function getVisiblePages(current: number, total: number): (number | 'ellipsis')[] {
+		if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+
+		const pages: (number | 'ellipsis')[] = [];
+
+		// Always show first page
+		pages.push(1);
+
+		// Calculate range around current
+		const rangeStart = Math.max(2, current - 1);
+		const rangeEnd = Math.min(total - 1, current + 1);
+
+		// Add ellipsis before range if needed
+		if (rangeStart > 2) pages.push('ellipsis');
+
+		// Add range
+		for (let i = rangeStart; i <= rangeEnd; i++) {
+			pages.push(i);
+		}
+
+		// Add ellipsis after range if needed
+		if (rangeEnd < total - 1) pages.push('ellipsis');
+
+		// Always show last page
+		if (total > 1) pages.push(total);
+
+		return pages;
+	}
+
+	// Derived visible pages for pagination UI
+	const visiblePages = $derived(getVisiblePages(currentPage, totalPages));
+
+	// Reset pagination when filter changes
+	let previousFilter = $state<AlertFilter>('all');
+	$effect(() => {
+		if (selectedFilter !== previousFilter) {
+			previousFilter = selectedFilter;
+			currentPage = 1;
+			fetchAlerts();
+		}
+	});
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// ADMIN HANDLERS
@@ -690,7 +771,7 @@
 	startHereUrl="/dashboard/explosive-swings/start-here"
 />
 
-<div class="dashboard">
+<div class="explosive-swings-page">
 	<!-- ═══════════════════════════════════════════════════════════════════════════
 	     QUICK STATS - Moved to top for immediate status visibility
 	     ═══════════════════════════════════════════════════════════════════════════ -->
@@ -963,6 +1044,18 @@
 							<div class="skeleton-message short"></div>
 						</div>
 					{/each}
+				{:else if filteredAlerts.length === 0}
+					<!-- Empty State -->
+					<div class="alerts-empty-state" role="status" aria-live="polite">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+							<path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
+						</svg>
+						<h4>No alerts found</h4>
+						<p>{selectedFilter === 'all' ? 'No alerts have been posted yet.' : `No ${selectedFilter} alerts match your filter.`}</p>
+						{#if selectedFilter !== 'all'}
+							<button class="reset-filter-btn" onclick={() => (selectedFilter = 'all')}>Show all alerts</button>
+						{/if}
+					</div>
 				{:else}
 					{#each filteredAlerts as alert, index}
 						<div
@@ -1100,6 +1193,63 @@
 				{/each}
 				{/if}
 			</div>
+
+			<!-- Pagination UI -->
+			{#if pagination.total > alertsPerPage && !isLoadingAlerts}
+				<nav class="pagination" aria-label="Alerts pagination">
+					<div class="pagination-controls">
+						<!-- Previous Button -->
+						<button
+							class="pagination-btn pagination-nav"
+							disabled={currentPage === 1}
+							onclick={() => goToPage(currentPage - 1)}
+							aria-label="Go to previous page"
+						>
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+								<path d="M15 19l-7-7 7-7"/>
+							</svg>
+							<span>Previous</span>
+						</button>
+
+						<!-- Page Numbers -->
+						<div class="pagination-pages">
+							{#each visiblePages as page, idx}
+								{#if page === 'ellipsis'}
+									<span class="pagination-ellipsis" aria-hidden="true">…</span>
+								{:else}
+									<button
+										class="pagination-btn pagination-page"
+										class:active={currentPage === page}
+										onclick={() => goToPage(page)}
+										aria-label="Go to page {page}"
+										aria-current={currentPage === page ? 'page' : undefined}
+									>
+										{page}
+									</button>
+								{/if}
+							{/each}
+						</div>
+
+						<!-- Next Button -->
+						<button
+							class="pagination-btn pagination-nav"
+							disabled={currentPage === totalPages}
+							onclick={() => goToPage(currentPage + 1)}
+							aria-label="Go to next page"
+						>
+							<span>Next</span>
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+								<path d="M9 5l7 7-7 7"/>
+							</svg>
+						</button>
+					</div>
+
+					<!-- Results Count -->
+					<p class="pagination-info" aria-live="polite">
+						Showing {showingFrom}-{showingTo} of {pagination.total} alerts
+					</p>
+				</nav>
+			{/if}
 
 			<a href="/dashboard/explosive-swings/alerts" class="view-all-link"> View All Alerts → </a>
 		</section>
@@ -1240,10 +1390,12 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   DASHBOARD BASE
+	   PAGE BASE - Renamed from .dashboard to avoid collision with parent layout
+	   CSS Containment added to prevent layout thrashing
 	   ═══════════════════════════════════════════════════════════════════════════ */
-	.dashboard {
+	.explosive-swings-page {
 		background: #f5f7fa;
+		contain: layout style;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1858,6 +2010,7 @@
 		padding: 30px;
 		max-width: 1400px;
 		margin: 0 auto;
+		contain: layout;
 	}
 
 	@media (max-width: 1024px) {
@@ -1872,6 +2025,7 @@
 		border-radius: 16px;
 		padding: 25px;
 		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+		contain: layout style;
 	}
 
 	.section-header {
@@ -1922,6 +2076,8 @@
 		display: flex;
 		flex-direction: column;
 		gap: 15px;
+		contain: layout style;
+		max-height: none; /* Pagination handles overflow */
 	}
 
 	/* Skeleton Loading for Alerts */
@@ -2335,6 +2491,156 @@
 
 	.view-all-link:hover {
 		color: #143e59;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PAGINATION - Principal Engineer ICT 11 Standards
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.pagination {
+		margin-top: 24px;
+		padding: 16px 24px;
+		background: #f8fafc;
+		border: 1px solid #e5e7eb;
+		border-radius: 12px;
+		box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+	}
+
+	.pagination-controls {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 8px;
+		flex-wrap: wrap;
+	}
+
+	.pagination-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 6px;
+		min-width: 40px;
+		min-height: 40px;
+		padding: 8px 12px;
+		background: transparent;
+		border: 1px solid transparent;
+		border-radius: 8px;
+		font-size: 14px;
+		font-weight: 600;
+		color: #666;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.pagination-btn:hover:not(:disabled) {
+		background: #e5e7eb;
+		color: #333;
+	}
+
+	.pagination-btn:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
+	}
+
+	.pagination-btn:disabled {
+		opacity: 0.4;
+		cursor: not-allowed;
+	}
+
+	.pagination-btn.active {
+		background: #143e59;
+		color: #fff;
+		font-weight: 700;
+	}
+
+	.pagination-nav {
+		padding: 8px 16px;
+	}
+
+	.pagination-pages {
+		display: flex;
+		align-items: center;
+		gap: 4px;
+	}
+
+	.pagination-ellipsis {
+		padding: 8px 4px;
+		color: #888;
+		font-size: 14px;
+	}
+
+	.pagination-info {
+		text-align: center;
+		margin: 12px 0 0 0;
+		font-size: 13px;
+		color: #666;
+	}
+
+	@media (max-width: 640px) {
+		.pagination-nav span {
+			display: none;
+		}
+
+		.pagination-nav {
+			padding: 8px;
+		}
+
+		.pagination-btn {
+			min-width: 36px;
+			min-height: 36px;
+			padding: 6px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   EMPTY STATE
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.alerts-empty-state {
+		text-align: center;
+		padding: 48px 24px;
+		background: #f8fafc;
+		border: 2px dashed #e5e7eb;
+		border-radius: 12px;
+	}
+
+	.alerts-empty-state svg {
+		color: #94a3b8;
+		margin-bottom: 16px;
+	}
+
+	.alerts-empty-state h4 {
+		margin: 0 0 8px 0;
+		font-size: 18px;
+		font-weight: 700;
+		color: #333;
+		font-family: 'Montserrat', sans-serif;
+	}
+
+	.alerts-empty-state p {
+		margin: 0 0 16px 0;
+		font-size: 14px;
+		color: #666;
+	}
+
+	.reset-filter-btn {
+		background: #143e59;
+		color: #fff;
+		border: none;
+		padding: 10px 20px;
+		border-radius: 8px;
+		font-size: 14px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.reset-filter-btn:hover {
+		background: #0f2d42;
+		transform: translateY(-1px);
+	}
+
+	.reset-filter-btn:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
