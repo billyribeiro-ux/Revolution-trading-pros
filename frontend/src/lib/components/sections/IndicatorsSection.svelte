@@ -245,23 +245,23 @@
 					setupCanvas();
 				});
 				if (chartRef) resizeObserver.observe(chartRef);
+				
+				// Start animation loop AFTER canvas is ready
+				animate();
+				
+				// Start chart progress animation AFTER canvas is ready
+				if (!prefersReducedMotion) {
+					animatechartProgress();
+				} else {
+					chartProgress = 1;
+				}
 			});
 		});
-
-		// Start chart animation immediately
-		if (!prefersReducedMotion) {
-			animatechartProgress();
-		} else {
-			chartProgress = 1;
-		}
 
 		// Load GSAP asynchronously
 		if (!prefersReducedMotion) {
 			loadGSAP();
 		}
-
-		// Start animation loop
-		animate();
 
 		// Auto-rotate indicators (slower on mobile for better UX)
 		const isMobile = window.innerWidth < 768;
