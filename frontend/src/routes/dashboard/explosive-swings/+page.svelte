@@ -2201,13 +2201,6 @@
 		margin-top: 12px;
 	}
 
-	.tos-display code {
-		color: #22c55e;
-		font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-		font-size: 13px;
-		font-weight: 600;
-	}
-
 	.tos-copy-btn {
 		display: flex;
 		align-items: center;
@@ -2276,10 +2269,6 @@
 		transition: transform 0.3s ease;
 	}
 
-	.notes-chevron.expanded .chevron-icon {
-		transform: rotate(180deg);
-	}
-
 	.alert-type {
 		font-size: 11px;
 		font-weight: 700;
@@ -2311,20 +2300,6 @@
 	.alert-time {
 		font-size: 12px;
 		color: #888;
-	}
-
-	.alert-card h3 {
-		font-size: 16px;
-		font-weight: 700;
-		margin: 0 0 8px 0;
-		color: #333;
-	}
-
-	.alert-card p.alert-message {
-		font-size: 14px;
-		color: #666;
-		line-height: 1.6;
-		margin: 0;
 	}
 
 	/* Card state when notes are open */
@@ -2382,14 +2357,6 @@
 
 	.notes-panel-body {
 		padding: 18px 20px;
-	}
-
-	.notes-panel-body p {
-		font-size: 14px;
-		color: #334155;
-		line-height: 1.75;
-		margin: 0;
-		font-weight: 500;
 	}
 
 	.view-all-link {
@@ -2488,10 +2455,6 @@
 	}
 
 	@media (max-width: 640px) {
-		.pagination-nav span {
-			display: none;
-		}
-
 		.pagination-nav {
 			padding: 8px;
 		}
@@ -2833,143 +2796,6 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   LATEST UPDATES SECTION
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.latest-updates {
-		background: #fff;
-		padding: 60px 30px;
-		border-top: 1px solid #e5e7eb;
-	}
-
-	.updates-header {
-		text-align: center;
-		max-width: 800px;
-		margin: 0 auto 50px;
-	}
-
-	.updates-header h2 {
-		font-size: 32px;
-		font-weight: 700;
-		margin: 0 0 12px 0;
-		color: #333;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.updates-header p {
-		font-size: 16px;
-		color: #666;
-		margin: 0;
-	}
-
-	.updates-grid {
-		display: grid;
-		grid-template-columns: repeat(1, 1fr);
-		gap: 30px;
-		max-width: 1400px;
-		margin: 0 auto;
-	}
-
-	@media (min-width: 640px) {
-		.updates-grid {
-			grid-template-columns: repeat(2, 1fr);
-		}
-	}
-
-	@media (min-width: 1024px) {
-		.updates-grid {
-			grid-template-columns: repeat(3, 1fr);
-		}
-	}
-
-	.update-card {
-		background: #fff;
-		border-radius: 16px;
-		overflow: hidden;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-		transition: all 0.3s ease;
-		text-decoration: none;
-		color: inherit;
-		display: block;
-	}
-
-	.update-card:hover {
-		transform: translateY(-8px);
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-	}
-
-	.update-thumbnail {
-		position: relative;
-		width: 100%;
-		padding-bottom: 56.25%;
-		background-size: cover;
-		background-position: center;
-		overflow: hidden;
-	}
-
-	.play-overlay {
-		position: absolute;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.4);
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		transition: background 0.3s;
-	}
-
-	.update-card:hover .play-overlay {
-		background: rgba(0, 0, 0, 0.6);
-	}
-
-	.play-overlay svg {
-		color: #fff;
-		opacity: 0.9;
-		transition: all 0.3s;
-	}
-
-	.update-card:hover .play-overlay svg {
-		opacity: 1;
-		transform: scale(1.1);
-	}
-
-	.update-duration {
-		position: absolute;
-		bottom: 12px;
-		right: 12px;
-		background: rgba(0, 0, 0, 0.85);
-		color: #fff;
-		padding: 5px 10px;
-		border-radius: 6px;
-		font-size: 12px;
-		font-weight: 600;
-	}
-
-	.update-content {
-		padding: 20px;
-		text-align: center;
-	}
-
-	.update-content h3 {
-		font-size: 16px;
-		font-weight: 700;
-		margin: 0 0 8px 0;
-		color: #333;
-		line-height: 1.4;
-	}
-
-	.update-date {
-		font-size: 12px;
-		color: #888;
-		margin: 0 0 12px 0;
-	}
-
-	.update-excerpt {
-		font-size: 14px;
-		color: #666;
-		line-height: 1.6;
-		margin: 0;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
 	   ADMIN STYLES
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.section-title-row {
@@ -3040,12 +2866,5 @@
 		border-radius: 8px;
 		padding: 10px 14px;
 		margin-top: 12px;
-	}
-
-	.tos-display code {
-		color: #22c55e;
-		font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace;
-		font-size: 13px;
-		font-weight: 600;
 	}
 </style>
