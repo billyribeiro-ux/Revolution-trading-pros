@@ -4,11 +4,16 @@
  * Apple HIG + Microsoft Fluent Design Principles
  * DARK THEME ONLY
  * 
- * @version 1.0.0
+ * ICT7+ FIX (Jan 2026): Scoped to .admin-layout wrapper only
+ * Previously used :root which polluted marketing pages after navigation
+ * 
+ * @version 1.1.0
  * @author Revolution Trading Pros
  */
 
-:root {
+/* SCOPED: Only applies within admin layout wrapper - prevents cascade pollution */
+.admin-layout,
+.admin-page-container {
 	/* ═══════════════════════════════════════════════════════════════════════════
      * BACKGROUND SCALE
      * ═══════════════════════════════════════════════════════════════════════════ */

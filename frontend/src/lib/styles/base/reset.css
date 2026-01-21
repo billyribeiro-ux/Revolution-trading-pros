@@ -1,71 +1,104 @@
 /**
  * RTP Admin Design System - CSS Reset
  * ═══════════════════════════════════════════════════════════════════════════
- * Minimal, modern CSS reset
- * @version 1.0.0
+ * ICT7+ FIX (Jan 2026): ALL styles scoped to admin wrapper
+ * Previously had global html/body/a/button resets that broke marketing pages
+ * 
+ * @version 1.1.0
  */
 
-*,
-*::before,
-*::after {
-	box-sizing: border-box;
-	margin: 0;
-	padding: 0;
-}
+/* ═══════════════════════════════════════════════════════════════════════════
+ * SCOPED RESET - Only applies within admin layout wrapper
+ * NO global element resets to prevent cascade pollution
+ * ═══════════════════════════════════════════════════════════════════════════ */
 
-html {
+.admin-layout,
+.admin-page-container {
+	/* Admin-specific font rendering */
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 	text-rendering: optimizeLegibility;
-}
-
-body {
 	line-height: var(--leading-normal);
 }
 
-img,
-picture,
-video,
-canvas,
-svg {
+/* Scoped box-sizing reset - only within admin areas */
+.admin-layout *,
+.admin-layout *::before,
+.admin-layout *::after,
+.admin-page-container *,
+.admin-page-container *::before,
+.admin-page-container *::after {
+	box-sizing: border-box;
+}
+
+/* Scoped element resets - only within admin areas */
+.admin-layout img,
+.admin-layout picture,
+.admin-layout video,
+.admin-layout canvas,
+.admin-layout svg,
+.admin-page-container img,
+.admin-page-container picture,
+.admin-page-container video,
+.admin-page-container canvas,
+.admin-page-container svg {
 	display: block;
 	max-width: 100%;
 }
 
-input,
-button,
-textarea,
-select {
+.admin-layout input,
+.admin-layout button,
+.admin-layout textarea,
+.admin-layout select,
+.admin-page-container input,
+.admin-page-container button,
+.admin-page-container textarea,
+.admin-page-container select {
 	font: inherit;
 	color: inherit;
 }
 
-button {
+.admin-layout button,
+.admin-page-container button {
 	cursor: pointer;
 	background: none;
 	border: none;
 }
 
-a {
+.admin-layout a,
+.admin-page-container a {
 	color: inherit;
 	text-decoration: none;
 }
 
-ul,
-ol {
+.admin-layout ul,
+.admin-layout ol,
+.admin-page-container ul,
+.admin-page-container ol {
 	list-style: none;
+	margin: 0;
+	padding: 0;
 }
 
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
+.admin-layout h1,
+.admin-layout h2,
+.admin-layout h3,
+.admin-layout h4,
+.admin-layout h5,
+.admin-layout h6,
+.admin-page-container h1,
+.admin-page-container h2,
+.admin-page-container h3,
+.admin-page-container h4,
+.admin-page-container h5,
+.admin-page-container h6 {
 	font-weight: var(--font-semibold);
 	line-height: var(--leading-tight);
+	margin: 0;
 }
 
-p {
+.admin-layout p,
+.admin-page-container p {
 	line-height: var(--leading-relaxed);
+	margin: 0;
 }

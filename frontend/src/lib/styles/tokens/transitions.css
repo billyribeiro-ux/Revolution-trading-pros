@@ -1,10 +1,13 @@
 /**
  * RTP Admin Design System - Transition Tokens
  * ═══════════════════════════════════════════════════════════════════════════
- * @version 1.0.0
+ * ICT7+ FIX (Jan 2026): Scoped to admin wrapper only
+ * @version 1.1.0
  */
 
-:root {
+/* SCOPED: Only applies within admin layout wrapper */
+.admin-layout,
+.admin-page-container {
 	/* Durations */
 	--duration-instant: 0ms;
 	--duration-fast: 100ms;
