@@ -257,3 +257,20 @@ export const performanceColors = {
 	negative: 'text-red-600',
 	neutral: 'text-slate-600'
 } as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// STANDARDIZED BREAKPOINTS - Repository-Wide System
+// ═══════════════════════════════════════════════════════════════════════════
+// 
+// These align with Tailwind defaults and are used across all components.
+// Import from '$lib/constants/breakpoints' for programmatic use.
+//
+// CSS Usage (max-width for desktop-first):
+//   @media (max-width: 639px)  → Mobile phones (< sm)
+//   @media (max-width: 767px)  → Small tablets (< md)
+//   @media (max-width: 1023px) → Tablets (< lg)
+//   @media (max-width: 1279px) → Small desktops (< xl)
+//
+// Standard values:
+//   sm: 640px, md: 768px, lg: 1024px, xl: 1280px, 2xl: 1536px
+// ═══════════════════════════════════════════════════════════════════════════

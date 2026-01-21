@@ -60,6 +60,33 @@
 }
 
 @theme {
+  /* ═══════════════════════════════════════════════════════════════════════════
+   * STANDARDIZED BREAKPOINTS - Repository-Wide System
+   * ═══════════════════════════════════════════════════════════════════════════
+   * 
+   * MOBILE FIRST APPROACH - Use min-width for progressive enhancement
+   * These values align with Tailwind defaults for consistency
+   *
+   * Usage in CSS:
+   *   @media (max-width: 639px)  → Mobile phones (< sm)
+   *   @media (max-width: 767px)  → Small tablets (< md)
+   *   @media (max-width: 1023px) → Tablets (< lg)
+   *   @media (max-width: 1279px) → Small desktops (< xl)
+   *   @media (max-width: 1535px) → Large desktops (< 2xl)
+   *
+   * Standard breakpoint values:
+   *   --breakpoint-sm: 640px   → Small devices (landscape phones)
+   *   --breakpoint-md: 768px   → Medium devices (tablets)
+   *   --breakpoint-lg: 1024px  → Large devices (desktops)
+   *   --breakpoint-xl: 1280px  → Extra large devices (large desktops)
+   *   --breakpoint-2xl: 1536px → 2X large devices (larger desktops)
+   * ═══════════════════════════════════════════════════════════════════════════ */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+  --breakpoint-2xl: 1536px;
+
   /* Background colors */
   --color-rtp-bg: #050505;
   --color-rtp-surface: #0a0a0a;
