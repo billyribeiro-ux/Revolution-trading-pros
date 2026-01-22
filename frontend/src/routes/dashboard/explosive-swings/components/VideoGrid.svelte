@@ -302,6 +302,7 @@
 		.grid-container {
 			grid-template-columns: repeat(2, 1fr);
 			gap: 20px;
+			padding: 0 20px;
 		}
 
 		.skeleton-grid {
@@ -317,6 +318,7 @@
 
 		.grid-container {
 			gap: 16px;
+			padding: 0 16px;
 		}
 	}
 
@@ -345,6 +347,7 @@
 		.grid-container {
 			grid-template-columns: 1fr;
 			gap: 14px;
+			padding: 0 14px;
 		}
 
 		.skeleton-grid {
