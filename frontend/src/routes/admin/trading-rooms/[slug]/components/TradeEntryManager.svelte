@@ -404,7 +404,7 @@
 <!-- Add/Edit Modal -->
 {#if showModal}
 	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={closeModal} onkeydown={(e) => e.key === 'Escape' && closeModal()}>
-		<div class="modal-content" onclick={(e) => e.stopPropagation()}>
+		<div class="modal-content" role="document" onmousedown={(e) => e.stopPropagation()}>
 			<div class="modal-header">
 				<h3>{editingEntry ? 'Edit Entry' : 'Add New Entry'}</h3>
 				<button class="modal-close" onclick={closeModal}>
