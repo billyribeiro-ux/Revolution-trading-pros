@@ -4,29 +4,47 @@
 	 * VideoGrid Component - Latest Video Updates Grid
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
-	 * @description Grid display for recent videos with featured video
-	 * @version 4.2.0 - Professional Polish Refinements
+	 * @description Grid display for recent videos with featured video + modal playback
+	 * @version 5.0.0 - Modal Video Playback + View More
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 */
 	import type { Video } from '../types';
 	import VideoCard from './VideoCard.svelte';
+	import VideoModal from './VideoModal.svelte';
 
 	interface Props {
 		videos: Video[];
 		isLoading?: boolean;
 		title?: string;
 		subtitle?: string;
+		roomSlug?: string;
 	}
 
 	const { 
 		videos, 
 		isLoading = false,
 		title = '',
-		subtitle = ''
+		subtitle = '',
+		roomSlug = 'explosive-swings'
 	}: Props = $props();
 
 	const featuredVideo = $derived(videos.find((v) => v.isFeatured) || videos[0]);
 	const gridVideos = $derived(videos.filter((v) => v !== featuredVideo).slice(0, 3));
+	const hasMoreVideos = $derived(videos.length > 4);
+
+	// Video Modal State
+	let selectedVideo = $state<Video | null>(null);
+	let isModalOpen = $state(false);
+
+	function openVideoModal(video: Video) {
+		selectedVideo = video;
+		isModalOpen = true;
+	}
+
+	function closeVideoModal() {
+		isModalOpen = false;
+		selectedVideo = null;
+	}
 </script>
 
 <div class="video-grid-container">
@@ -73,9 +91,9 @@
 						</svg>
 						<span>Featured</span>
 					</div>
-					<div class="featured-card-wrapper">
+					<button class="featured-card-wrapper" onclick={() => openVideoModal(featuredVideo)}>
 						<VideoCard video={featuredVideo} variant="featured" />
-					</div>
+					</button>
 				</div>
 			{/if}
 
@@ -83,13 +101,30 @@
 			{#if gridVideos.length > 0}
 				<div class="grid-container">
 					{#each gridVideos as video (video.id)}
-						<VideoCard {video} variant="default" />
+						<button class="video-card-btn" onclick={() => openVideoModal(video)}>
+							<VideoCard {video} variant="default" />
+						</button>
 					{/each}
+				</div>
+			{/if}
+
+			<!-- View More Button -->
+			{#if hasMoreVideos || videos.length > 0}
+				<div class="view-more-container">
+					<a href="/dashboard/{roomSlug}/video-library" class="view-more-btn">
+						<span>View All Videos</span>
+						<svg viewBox="0 0 20 20" fill="currentColor" class="view-more-icon">
+							<path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
+						</svg>
+					</a>
 				</div>
 			{/if}
 		</div>
 	{/if}
 </div>
+
+<!-- Video Modal -->
+<VideoModal video={selectedVideo} isOpen={isModalOpen} onClose={closeVideoModal} />
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════
@@ -156,6 +191,61 @@
 		gap: 24px;
 		padding: 0 24px;
 		margin-bottom: 8px;
+	}
+
+	/* Video Card Button Wrapper */
+	.video-card-btn,
+	.featured-card-wrapper {
+		all: unset;
+		display: block;
+		width: 100%;
+		cursor: pointer;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   VIEW MORE BUTTON
+	   ═══════════════════════════════════════════════════════════════════════ */
+	.view-more-container {
+		display: flex;
+		justify-content: center;
+		padding-top: 24px;
+	}
+
+	.view-more-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 10px;
+		padding: 14px 28px;
+		font-size: 14px;
+		font-weight: 600;
+		color: #fff;
+		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
+		border: none;
+		border-radius: 12px;
+		text-decoration: none;
+		cursor: pointer;
+		transition: all 0.25s ease-out;
+		box-shadow: 0 4px 14px rgba(20, 62, 89, 0.25);
+	}
+
+	.view-more-btn:hover {
+		transform: translateY(-2px);
+		box-shadow: 0 8px 24px rgba(20, 62, 89, 0.35);
+		background: linear-gradient(135deg, #1a4d6e 0%, #246089 100%);
+	}
+
+	.view-more-btn:active {
+		transform: translateY(0);
+	}
+
+	.view-more-icon {
+		width: 18px;
+		height: 18px;
+		transition: transform 0.2s ease-out;
+	}
+
+	.view-more-btn:hover .view-more-icon {
+		transform: translateX(4px);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════

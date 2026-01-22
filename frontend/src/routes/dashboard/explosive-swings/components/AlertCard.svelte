@@ -235,10 +235,10 @@
 	.alert-card {
 		position: relative;
 		border: 1px solid #e2e8f0;
-		border-left-width: 4px;
-		border-radius: 12px;
-		padding: 20px;
-		margin-bottom: 16px;
+		border-left-width: 3px;
+		border-radius: 10px;
+		padding: 14px 16px;
+		margin-bottom: 12px;
 		transition: all 0.2s ease-out;
 	}
 
@@ -261,24 +261,24 @@
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.new-badge {
 		position: absolute;
-		top: -10px;
-		right: 16px;
+		top: -8px;
+		right: 12px;
 		display: flex;
 		align-items: center;
-		gap: 6px;
+		gap: 4px;
 		background: linear-gradient(135deg, #f69532 0%, #e8860d 100%);
 		color: #fff;
-		font-size: 10px;
+		font-size: 9px;
 		font-weight: 800;
-		padding: 5px 12px;
-		border-radius: 12px;
+		padding: 3px 8px;
+		border-radius: 8px;
 		letter-spacing: 0.05em;
-		box-shadow: 0 2px 8px rgba(246, 149, 50, 0.4);
+		box-shadow: 0 2px 6px rgba(246, 149, 50, 0.35);
 	}
 
 	.pulse-dot {
-		width: 6px;
-		height: 6px;
+		width: 5px;
+		height: 5px;
 		background: #fff;
 		border-radius: 50%;
 		animation: pulse 2s ease-in-out infinite;
@@ -296,26 +296,26 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 12px;
+		margin-bottom: 8px;
 		flex-wrap: wrap;
-		gap: 12px;
+		gap: 8px;
 	}
 
 	.header-left {
 		display: flex;
 		align-items: center;
-		gap: 12px;
+		gap: 8px;
 		flex-wrap: wrap;
 	}
 
 	/* Type Badges */
 	.type-badge {
-		font-size: 10px;
+		font-size: 9px;
 		font-weight: 800;
-		padding: 5px 10px;
-		border-radius: 5px;
+		padding: 3px 7px;
+		border-radius: 4px;
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		letter-spacing: 0.04em;
 	}
 
 	.badge-entry {
@@ -344,14 +344,14 @@
 	}
 
 	.ticker {
-		font-size: 17px;
-		font-weight: 800;
+		font-size: 14px;
+		font-weight: 700;
 		color: #0f172a;
 		letter-spacing: 0.02em;
 	}
 
 	.timestamp {
-		font-size: 12px;
+		font-size: 11px;
 		color: #94a3b8;
 	}
 
@@ -359,12 +359,12 @@
 	.notes-toggle {
 		display: flex;
 		align-items: center;
-		gap: 6px;
-		padding: 8px 14px;
+		gap: 4px;
+		padding: 5px 10px;
 		background: #f8fafc;
 		border: 1px solid #e2e8f0;
-		border-radius: 8px;
-		font-size: 12px;
+		border-radius: 6px;
+		font-size: 11px;
 		font-weight: 600;
 		color: #64748b;
 		cursor: pointer;
@@ -384,8 +384,8 @@
 	}
 
 	.notes-toggle .chevron {
-		width: 16px;
-		height: 16px;
+		width: 14px;
+		height: 14px;
 		transition: transform 0.3s ease;
 	}
 
@@ -397,28 +397,28 @@
 	   CONTENT
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.alert-title {
-		font-size: 16px;
-		font-weight: 700;
+		font-size: 14px;
+		font-weight: 600;
 		color: #0f172a;
-		margin: 0 0 8px 0;
-		line-height: 1.4;
+		margin: 0 0 6px 0;
+		line-height: 1.35;
 	}
 
 	.alert-description {
-		font-size: 14px;
+		font-size: 13px;
 		color: #475569;
-		margin: 0 0 16px 0;
-		line-height: 1.6;
+		margin: 0 0 12px 0;
+		line-height: 1.5;
 	}
 
 	/* Price Info */
 	.price-info {
 		display: flex;
-		gap: 20px;
-		padding: 14px 16px;
+		gap: 16px;
+		padding: 10px 12px;
 		background: #f8fafc;
-		border-radius: 10px;
-		margin-bottom: 16px;
+		border-radius: 8px;
+		margin-bottom: 12px;
 		flex-wrap: wrap;
 	}
 
@@ -437,7 +437,7 @@
 	}
 
 	.price-value {
-		font-size: 16px;
+		font-size: 14px;
 		font-weight: 700;
 		color: #0f172a;
 		font-variant-numeric: tabular-nums;
@@ -455,10 +455,10 @@
 	.exit-result {
 		display: flex;
 		align-items: baseline;
-		gap: 8px;
-		padding: 12px 16px;
-		border-radius: 10px;
-		margin-bottom: 16px;
+		gap: 6px;
+		padding: 8px 12px;
+		border-radius: 8px;
+		margin-bottom: 12px;
 	}
 
 	.exit-result.positive {
@@ -470,8 +470,8 @@
 	}
 
 	.result-value {
-		font-size: 24px;
-		font-weight: 800;
+		font-size: 18px;
+		font-weight: 700;
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -484,7 +484,7 @@
 	}
 
 	.result-label {
-		font-size: 13px;
+		font-size: 12px;
 		font-weight: 600;
 		color: #64748b;
 	}
@@ -494,16 +494,16 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		gap: 12px;
+		gap: 8px;
 		background: #1e293b;
-		border-radius: 8px;
-		padding: 10px 14px;
-		margin-bottom: 16px;
+		border-radius: 6px;
+		padding: 8px 10px;
+		margin-bottom: 12px;
 	}
 
 	.tos-string {
 		font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-		font-size: 12px;
+		font-size: 11px;
 		color: #94a3b8;
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -515,11 +515,11 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 32px;
-		height: 32px;
+		width: 28px;
+		height: 28px;
 		background: rgba(255, 255, 255, 0.1);
 		border: none;
-		border-radius: 6px;
+		border-radius: 5px;
 		color: #94a3b8;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -531,8 +531,8 @@
 	}
 
 	.tos-copy svg {
-		width: 16px;
-		height: 16px;
+		width: 14px;
+		height: 14px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
@@ -541,26 +541,26 @@
 	.actions-row {
 		display: flex;
 		align-items: center;
-		gap: 10px;
+		gap: 8px;
 		flex-wrap: wrap;
 	}
 
 	.action-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: 6px;
-		padding: 8px 14px;
-		font-size: 13px;
+		gap: 5px;
+		padding: 6px 10px;
+		font-size: 12px;
 		font-weight: 600;
-		border-radius: 8px;
+		border-radius: 6px;
 		cursor: pointer;
 		transition: all 0.2s;
 		border: 1px solid;
 	}
 
 	.action-btn svg {
-		width: 16px;
-		height: 16px;
+		width: 14px;
+		height: 14px;
 	}
 
 	.copy-btn {
