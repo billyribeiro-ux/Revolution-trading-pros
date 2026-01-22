@@ -389,8 +389,8 @@
 
 <!-- Upload Modal -->
 {#if showUploadModal}
-	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={closeModal} onkeydown={(e) => e.key === 'Escape' && closeModal()}>
-		<div class="modal-content" role="document" onmousedown={(e) => e.stopPropagation()}>
+	<div class="modal-overlay" role="dialog" aria-modal="true" tabindex="-1" onclick={(e) => e.target === e.currentTarget && closeModal()} onkeydown={(e) => e.key === 'Escape' && closeModal()}>
+		<div class="modal-content">
 			<div class="modal-header">
 				<h3>Upload Weekly Breakdown Video</h3>
 				<button class="modal-close" onclick={closeModal}>
