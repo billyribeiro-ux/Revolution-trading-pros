@@ -36,6 +36,8 @@
 	import SidebarComponent from './components/Sidebar.svelte';
 	import VideoGrid from './components/VideoGrid.svelte';
 	import WeeklyHero from './components/WeeklyHero.svelte';
+	import TradeEntryModal from './components/TradeEntryModal.svelte';
+	import VideoUploadModal from './components/VideoUploadModal.svelte';
 	
 	// Types from local types.ts (Nuclear Build)
 	import type { 
@@ -145,6 +147,8 @@
 	let isAdmin = $state(false);
 	let isAlertModalOpen = $state(false);
 	let editingAlert = $state<RoomAlert | null>(null);
+	let isTradeEntryModalOpen = $state(false);
+	let isVideoUploadModalOpen = $state(false);
 	let apiAlerts = $state<RoomAlert[]>([]);
 	let apiTradePlan = $state<ApiTradePlanEntry[]>([]);
 	let apiStats = $state<RoomStats | null>(null);
@@ -798,6 +802,24 @@
 		}
 	}
 
+	// Trade Entry Admin Handlers
+	function openTradeEntryModal() {
+		isTradeEntryModalOpen = true;
+	}
+
+	function closeTradeEntryModal() {
+		isTradeEntryModalOpen = false;
+	}
+
+	// Video Upload Admin Handlers  
+	function openVideoUploadModal() {
+		isVideoUploadModalOpen = true;
+	}
+
+	function closeVideoUploadModal() {
+		isVideoUploadModalOpen = false;
+	}
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1128,7 +1150,14 @@
 	     HERO: Collapsible Weekly Video Accordion
 	     Extracted to WeeklyHero component per Svelte 5 best practices
 	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<WeeklyHero {weeklyContent} {tradePlan} />
+	<WeeklyHero 
+		{weeklyContent} 
+		{tradePlan} 
+		{isAdmin}
+		roomSlug={ROOM_SLUG}
+		onAddEntry={openTradeEntryModal}
+		onUploadVideo={openVideoUploadModal}
+	/>
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
 	     MAIN CONTENT: Alerts + Sidebar
@@ -1253,6 +1282,22 @@
 	entryAlerts={apiAlerts.filter((a) => a.alert_type === 'ENTRY')}
 	onClose={closeAlertModal}
 	onSave={handleSaveAlert}
+/>
+
+<!-- Admin Modal for Trade Plan Entries -->
+<TradeEntryModal
+	isOpen={isTradeEntryModalOpen}
+	roomSlug={ROOM_SLUG}
+	onClose={closeTradeEntryModal}
+	onSuccess={fetchTradePlan}
+/>
+
+<!-- Admin Modal for Weekly Video Upload -->
+<VideoUploadModal
+	isOpen={isVideoUploadModalOpen}
+	roomSlug={ROOM_SLUG}
+	onClose={closeVideoUploadModal}
+	onSuccess={fetchWeeklyVideo}
 />
 
 <style>

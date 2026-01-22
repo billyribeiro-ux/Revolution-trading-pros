@@ -44,13 +44,23 @@
 		tradePlan: TradePlanEntry[];
 		videoUrl?: string;
 		sheetUrl?: string;
+		isAdmin?: boolean;
+		roomSlug?: string;
+		onAddEntry?: () => void;
+		onEditEntry?: (entry: TradePlanEntry) => void;
+		onUploadVideo?: () => void;
 	}
 
 	const {
 		weeklyContent,
 		tradePlan,
 		videoUrl = '/dashboard/explosive-swings/video/weekly',
-		sheetUrl = 'https://docs.google.com/spreadsheets/d/your-sheet-id'
+		sheetUrl = 'https://docs.google.com/spreadsheets/d/your-sheet-id',
+		isAdmin = false,
+		roomSlug = 'explosive-swings',
+		onAddEntry,
+		onEditEntry,
+		onUploadVideo
 	}: Props = $props();
 
 	// Component-local state (Svelte 5 $state rune)
@@ -136,6 +146,14 @@
 					<div class="video-info-compact">
 						<h2>{weeklyContent.videoTitle}</h2>
 						<p>Published {weeklyContent.publishedDate}</p>
+						{#if isAdmin && onUploadVideo}
+							<button class="admin-upload-btn" onclick={onUploadVideo}>
+								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+									<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+								</svg>
+								Upload New Video
+							</button>
+						{/if}
 						<a href={videoUrl} class="watch-btn">
 							Watch Full Video
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
@@ -148,8 +166,20 @@
 				<!-- ENTRIES TAB - Trade Plan Sheet -->
 				<div class="entries-container">
 					<div class="entries-header">
-						<h2>This Week's Trade Plan</h2>
-						<p>Complete breakdown with entries, targets, stops, and options plays</p>
+						<div class="entries-title-row">
+							<div>
+								<h2>This Week's Trade Plan</h2>
+								<p>Complete breakdown with entries, targets, stops, and options plays</p>
+							</div>
+							{#if isAdmin && onAddEntry}
+								<button class="admin-add-btn" onclick={onAddEntry}>
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+										<path d="M12 5v14M5 12h14" />
+									</svg>
+									Add Entry
+								</button>
+							{/if}
+							</div>
 					</div>
 					<div class="trade-sheet-wrapper">
 						<table class="trade-sheet">
@@ -768,6 +798,57 @@
 
 		.entries-header p {
 			font-size: 13px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ADMIN CONTROLS - ICT 7 Principal Engineer Standards
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.entries-title-row {
+		display: flex;
+		justify-content: space-between;
+		align-items: flex-start;
+		gap: 16px;
+	}
+
+	.admin-add-btn,
+	.admin-upload-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: 6px;
+		padding: 10px 16px;
+		background: #143E59;
+		border: none;
+		border-radius: 8px;
+		font-size: 13px;
+		font-weight: 600;
+		color: white;
+		cursor: pointer;
+		transition: all 0.15s ease;
+		white-space: nowrap;
+	}
+
+	.admin-add-btn:hover,
+	.admin-upload-btn:hover {
+		background: #0f2d42;
+		transform: translateY(-1px);
+		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
+	}
+
+	.admin-upload-btn {
+		margin-bottom: 12px;
+	}
+
+	@media (max-width: 768px) {
+		.entries-title-row {
+			flex-direction: column;
+			gap: 12px;
+		}
+
+		.admin-add-btn,
+		.admin-upload-btn {
+			width: 100%;
+			justify-content: center;
 		}
 	}
 </style>
