@@ -606,11 +606,15 @@
 
 	async function checkAdminStatus() {
 		// Check if user has admin role from session/cookie
-		// For now, we'll check a simple flag - in production this comes from auth
 		try {
 			const response = await fetch('/api/auth/me');
+			if (!response.ok) {
+				isAdmin = false;
+				return;
+			}
 			const data = await response.json();
-			isAdmin = data.user?.role === 'admin' || data.user?.role === 'super_admin';
+			// Backend returns UserResponse directly with is_admin and role fields
+			isAdmin = data.is_admin === true || data.role === 'admin' || data.role === 'super_admin';
 		} catch {
 			isAdmin = false;
 		}
