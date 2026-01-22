@@ -51,7 +51,7 @@
 				<div class="skeleton-play"></div>
 			</div>
 			<div class="skeleton-grid">
-				{#each Array(3) as _, i}
+				{#each [1, 2, 3] as _, i}
 					<div class="skeleton-card" style="animation-delay: {i * 0.1}s">
 						<div class="skeleton-thumb"></div>
 						<div class="skeleton-info">
@@ -173,19 +173,20 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
-	   VIDEOS LAYOUT - Side-by-side featured + grid
+	   VIDEOS LAYOUT - Featured top, grid below in horizontal row
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.videos-layout {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 24px;
-		align-items: start;
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
 	}
 
-	/* Featured Video Wrapper */
+	/* Featured Video Wrapper - Centered, larger */
 	.featured-wrapper {
 		position: relative;
-		grid-column: 1;
+		max-width: 900px;
+		margin: 0 auto;
+		width: 100%;
 	}
 
 	.featured-label {
@@ -196,50 +197,49 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 5px;
-		padding: 6px 12px;
+		padding: 7px 14px;
 		background: linear-gradient(135deg, #f69532 0%, #e8860d 100%);
 		color: #fff;
-		font-size: 11px;
+		font-size: 12px;
 		font-weight: 700;
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
-		border-radius: 6px;
-		box-shadow: 0 2px 8px rgba(246, 149, 50, 0.4);
+		border-radius: 7px;
+		box-shadow: 0 3px 10px rgba(246, 149, 50, 0.45);
 	}
 
 	.star-icon {
-		width: 14px;
-		height: 14px;
+		width: 15px;
+		height: 15px;
 	}
 
-	/* Video Grid - Right side, stacked vertically */
+	/* Video Grid - Horizontal row below featured */
 	.grid-wrapper {
-		grid-column: 2;
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
 	   LOADING STATE
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.loading-container {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		gap: 24px;
-		align-items: start;
+		display: flex;
+		flex-direction: column;
+		gap: 32px;
 	}
 
 	.skeleton-featured {
 		position: relative;
 		width: 100%;
+		max-width: 900px;
+		margin: 0 auto;
 		aspect-ratio: 16 / 9;
 		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 16px;
 		overflow: hidden;
-		grid-column: 1;
 	}
 
 	.skeleton-play {
@@ -254,10 +254,9 @@
 	}
 
 	.skeleton-grid {
-		grid-column: 2;
-		display: flex;
-		flex-direction: column;
-		gap: 16px;
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: 20px;
 	}
 
 	.skeleton-card {
@@ -356,18 +355,11 @@
 	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 1024px) {
-		.videos-layout {
-			grid-template-columns: 1fr;
-			gap: 20px;
-		}
-
 		.featured-wrapper {
-			grid-column: 1;
+			max-width: 100%;
 		}
 
 		.grid-wrapper {
-			grid-column: 1;
-			display: grid;
 			grid-template-columns: repeat(2, 1fr);
 			gap: 16px;
 		}
@@ -392,6 +384,10 @@
 			font-size: 18px;
 		}
 
+		.videos-layout {
+			gap: 24px;
+		}
+
 		.grid-wrapper {
 			grid-template-columns: 1fr;
 			gap: 14px;
@@ -404,8 +400,8 @@
 		.featured-label {
 			top: -10px;
 			left: 14px;
-			font-size: 10px;
-			padding: 5px 10px;
+			font-size: 11px;
+			padding: 6px 11px;
 		}
 	}
 </style>
