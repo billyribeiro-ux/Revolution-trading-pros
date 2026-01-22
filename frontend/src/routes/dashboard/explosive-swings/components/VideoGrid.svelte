@@ -26,7 +26,7 @@
 	}: Props = $props();
 
 	const featuredVideo = $derived(videos.find((v) => v.isFeatured) || videos[0]);
-	const gridVideos = $derived(videos.filter((v) => v !== featuredVideo).slice(0, 5));
+	const gridVideos = $derived(videos.filter((v) => v !== featuredVideo).slice(0, 3));
 </script>
 
 <section class="video-grid-section" aria-labelledby="videos-heading">
@@ -173,17 +173,19 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
-	   VIDEOS LAYOUT
+	   VIDEOS LAYOUT - Side-by-side featured + grid
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.videos-layout {
-		display: flex;
-		flex-direction: column;
-		gap: 28px;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 24px;
+		align-items: start;
 	}
 
 	/* Featured Video Wrapper */
 	.featured-wrapper {
 		position: relative;
+		grid-column: 1;
 	}
 
 	.featured-label {
@@ -210,20 +212,22 @@
 		height: 14px;
 	}
 
-	/* Video Grid */
+	/* Video Grid - Right side, stacked vertically */
 	.grid-wrapper {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 24px;
+		grid-column: 2;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
 	   LOADING STATE
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.loading-container {
-		display: flex;
-		flex-direction: column;
-		gap: 28px;
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 24px;
+		align-items: start;
 	}
 
 	.skeleton-featured {
@@ -235,6 +239,7 @@
 		animation: shimmer 1.5s infinite;
 		border-radius: 16px;
 		overflow: hidden;
+		grid-column: 1;
 	}
 
 	.skeleton-play {
@@ -249,9 +254,10 @@
 	}
 
 	.skeleton-grid {
-		display: grid;
-		grid-template-columns: repeat(3, 1fr);
-		gap: 24px;
+		grid-column: 2;
+		display: flex;
+		flex-direction: column;
+		gap: 16px;
 	}
 
 	.skeleton-card {
@@ -350,8 +356,20 @@
 	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 1024px) {
+		.videos-layout {
+			grid-template-columns: 1fr;
+			gap: 20px;
+		}
+
+		.featured-wrapper {
+			grid-column: 1;
+		}
+
 		.grid-wrapper {
+			grid-column: 1;
+			display: grid;
 			grid-template-columns: repeat(2, 1fr);
+			gap: 16px;
 		}
 
 		.skeleton-grid {
@@ -376,7 +394,7 @@
 
 		.grid-wrapper {
 			grid-template-columns: 1fr;
-			gap: 16px;
+			gap: 14px;
 		}
 
 		.skeleton-grid {
