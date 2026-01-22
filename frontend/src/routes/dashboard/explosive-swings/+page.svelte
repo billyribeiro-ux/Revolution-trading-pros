@@ -1236,10 +1236,13 @@
 	</div>
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     VIDEO GRID - Nuclear Build Specification
+	     LATEST UPDATES SECTION - Matches other trading rooms structure
 	     Featured video + responsive grid of recent videos
 	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<VideoGrid videos={derivedRecentVideos} isLoading={isLoadingStats || isLoadingVideos} />
+	<section class="dashboard__content-section">
+		<h2 class="section-title">Latest Updates</h2>
+		<VideoGrid videos={derivedRecentVideos} isLoading={isLoadingStats || isLoadingVideos} />
+	</section>
 </div>
 
 <!-- Admin Modal for Creating/Editing Alerts -->

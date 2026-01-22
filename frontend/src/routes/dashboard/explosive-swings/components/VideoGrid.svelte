@@ -21,28 +21,15 @@
 	const { 
 		videos, 
 		isLoading = false,
-		title = 'Latest Updates',
-		subtitle = 'Video breakdowns as we enter and exit trades'
+		title = '',
+		subtitle = ''
 	}: Props = $props();
 
 	const featuredVideo = $derived(videos.find((v) => v.isFeatured) || videos[0]);
 	const gridVideos = $derived(videos.filter((v) => v !== featuredVideo).slice(0, 3));
 </script>
 
-<section class="video-grid-section" aria-labelledby="videos-heading">
-	<!-- Section Header -->
-	<header class="section-header">
-		<div class="header-content">
-			<h2 id="videos-heading" class="section-title">{title}</h2>
-			<p class="section-subtitle">{subtitle}</p>
-		</div>
-		<a href="/dashboard/explosive-swings/video-library" class="view-all-link">
-			<span>View All</span>
-			<svg viewBox="0 0 20 20" fill="currentColor" class="arrow-icon" aria-hidden="true">
-				<path fill-rule="evenodd" d="M3 10a.75.75 0 01.75-.75h10.638L10.23 5.29a.75.75 0 111.04-1.08l5.5 5.25a.75.75 0 010 1.08l-5.5 5.25a.75.75 0 11-1.04-1.08l4.158-3.96H3.75A.75.75 0 013 10z" clip-rule="evenodd" />
-			</svg>
-		</a>
-	</header>
+<div class="video-grid-container">
 
 	{#if isLoading}
 		<!-- Loading State -->
@@ -102,85 +89,14 @@
 			{/if}
 		</div>
 	{/if}
-</section>
+</div>
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════
-	   SECTION CONTAINER
+	   CONTAINER
 	   ═══════════════════════════════════════════════════════════════════════ */
-	.video-grid-section {
-		margin-top: 56px;
-		padding-top: 40px;
-		border-top: 1px solid rgba(226, 232, 240, 0.8);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════
-	   HEADER
-	   ═══════════════════════════════════════════════════════════════════════ */
-	.section-header {
-		display: flex;
-		align-items: flex-end;
-		justify-content: space-between;
-		margin-bottom: 32px;
-		gap: 20px;
-	}
-
-	.header-content {
-		display: flex;
-		flex-direction: column;
-		gap: 6px;
-	}
-
-	.section-title {
-		font-size: 24px;
-		font-weight: 700;
-		color: #0f172a;
-		margin: 0;
-		letter-spacing: -0.025em;
-		line-height: 1.2;
-	}
-
-	.section-subtitle {
-		font-size: 15px;
-		color: #475569;
-		margin: 0;
-		line-height: 1.5;
-	}
-
-	.view-all-link {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		font-size: 14px;
-		font-weight: 600;
-		color: #143e59;
-		text-decoration: none;
-		padding: 10px 18px;
-		border-radius: 10px;
-		background: transparent;
-		border: 1px solid transparent;
-		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-		flex-shrink: 0;
-	}
-
-	.view-all-link:hover {
-		background: rgba(20, 62, 89, 0.06);
-		border-color: rgba(20, 62, 89, 0.1);
-		color: #0c2a3d;
-	}
-
-	.view-all-link:active {
-		transform: scale(0.98);
-	}
-
-	.view-all-link .arrow-icon {
-		width: 16px;
-		height: 16px;
-		transition: transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-	}
-
-	.view-all-link:hover .arrow-icon {
-		transform: translateX(4px);
+	.video-grid-container {
+		width: 100%;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
@@ -392,23 +308,6 @@
 	}
 
 	@media (max-width: 768px) {
-		.video-grid-section {
-			margin-top: 40px;
-			padding-top: 32px;
-		}
-
-		.section-header {
-			margin-bottom: 28px;
-		}
-
-		.section-title {
-			font-size: 22px;
-		}
-
-		.section-subtitle {
-			font-size: 14px;
-		}
-
 		.videos-layout {
 			gap: 32px;
 		}
@@ -419,27 +318,6 @@
 	}
 
 	@media (max-width: 640px) {
-		.video-grid-section {
-			margin-top: 32px;
-			padding-top: 24px;
-		}
-
-		.section-header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 16px;
-			margin-bottom: 24px;
-		}
-
-		.section-title {
-			font-size: 20px;
-		}
-
-		.view-all-link {
-			padding: 8px 14px;
-			font-size: 13px;
-		}
-
 		.videos-layout {
 			gap: 28px;
 		}
