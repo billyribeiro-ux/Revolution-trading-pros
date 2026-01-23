@@ -258,7 +258,7 @@
 		margin: auto;
 	}
 
-	.indicators main {
+	.indicators .indicator-content {
 		max-width: 100%;
 		margin: 0;
 		padding: 0;

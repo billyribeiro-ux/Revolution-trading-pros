@@ -269,6 +269,8 @@
 				<div class="search-container">
 					<IconSearch size={18} />
 					<input
+						id="search-alerts"
+						name="search-alerts"
 						type="text"
 						placeholder="Search alerts..."
 						bind:value={searchQuery}

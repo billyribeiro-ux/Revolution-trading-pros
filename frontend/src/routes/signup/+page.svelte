@@ -192,6 +192,8 @@
 					<label class="flex items-start cursor-pointer p-2 -m-2 rounded-lg hover:bg-rtp-border/10">
 						<input
 							type="checkbox"
+							id="terms-agreement"
+							name="terms-agreement"
 							required
 							class="w-5 h-5 mt-0.5 text-rtp-primary border-rtp-border rounded focus:ring-rtp-primary min-w-[20px]"
 						/>
