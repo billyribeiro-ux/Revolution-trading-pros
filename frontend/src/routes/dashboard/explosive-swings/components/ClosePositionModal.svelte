@@ -305,18 +305,16 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-overlay {
 		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
+		inset: 0;
 		background: rgba(15, 23, 42, 0.75);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		z-index: 9999;
+		z-index: 99999;
 		padding: 16px;
 		backdrop-filter: blur(8px);
 		animation: overlayFadeIn 0.2s ease-out;
+		isolation: isolate;
 	}
 
 	@keyframes overlayFadeIn {

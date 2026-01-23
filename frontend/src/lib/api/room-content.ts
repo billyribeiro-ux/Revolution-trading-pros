@@ -33,6 +33,7 @@ export interface TradePlanEntry {
 	target2: string | null;
 	target3: string | null;
 	runner: string | null;
+	runner_stop: string | null;
 	stop: string | null;
 	options_strike: string | null;
 	options_exp: string | null;
@@ -165,6 +166,7 @@ export interface CreateTradePlanRequest {
 	target2?: string;
 	target3?: string;
 	runner?: string;
+	runner_stop?: string;
 	stop?: string;
 	options_strike?: string;
 	options_exp?: string;
@@ -180,6 +182,7 @@ export interface UpdateTradePlanRequest {
 	target2?: string;
 	target3?: string;
 	runner?: string;
+	runner_stop?: string;
 	stop?: string;
 	options_strike?: string;
 	options_exp?: string;
@@ -276,33 +279,82 @@ export interface CloseTradeRequest {
 export const tradePlanApi = {
 	/**
 	 * List trade plan entries for a room
+	 * Uses frontend proxy at /api/trade-plans/[slug] which handles auth
 	 */
-	list: (roomSlug: string, params?: ListParams): Promise<PaginatedResponse<TradePlanEntry>> =>
-		apiClient.get(`/room-content/rooms/${roomSlug}/trade-plan`, { params }),
+	list: async (roomSlug: string, params?: ListParams): Promise<PaginatedResponse<TradePlanEntry>> => {
+		const searchParams = new URLSearchParams();
+		if (params?.page) searchParams.set('page', String(params.page));
+		if (params?.per_page) searchParams.set('per_page', String(params.per_page));
+		const response = await fetch(`/api/trade-plans/${roomSlug}?${searchParams.toString()}`);
+		if (!response.ok) throw new Error('Failed to fetch trade plans');
+		return response.json();
+	},
 
 	/**
 	 * Create a new trade plan entry
+	 * Uses frontend proxy at /api/trade-plans/[slug] which handles auth
 	 */
-	create: (data: CreateTradePlanRequest): Promise<TradePlanEntry> =>
-		apiClient.post('/admin/room-content/trade-plan', data),
+	create: async (data: CreateTradePlanRequest): Promise<TradePlanEntry> => {
+		const response = await fetch(`/api/trade-plans/${data.room_slug}`, {
+			method: 'POST',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(data)
+		});
+		if (!response.ok) {
+			const error = await response.json().catch(() => ({ error: 'Failed to create trade plan' }));
+			throw new Error(error.error || 'Failed to create trade plan');
+		}
+		const result = await response.json();
+		return result.data || result;
+	},
 
 	/**
 	 * Update a trade plan entry
+	 * Uses frontend proxy at /api/trade-plans/[slug]/[id] which handles auth
 	 */
-	update: (id: number, data: UpdateTradePlanRequest): Promise<TradePlanEntry> =>
-		apiClient.put(`/admin/room-content/trade-plan/${id}`, data),
+	update: async (id: number, data: UpdateTradePlanRequest): Promise<TradePlanEntry> => {
+		// Need room_slug for the proxy route - get from data or use default
+		const roomSlug = (data as any).room_slug || 'explosive-swings';
+		const response = await fetch(`/api/trade-plans/${roomSlug}/${id}`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify(data)
+		});
+		if (!response.ok) {
+			const error = await response.json().catch(() => ({ error: 'Failed to update trade plan' }));
+			throw new Error(error.error || 'Failed to update trade plan');
+		}
+		const result = await response.json();
+		return result.data || result;
+	},
 
 	/**
 	 * Delete a trade plan entry
+	 * Uses frontend proxy at /api/trade-plans/[slug]/[id] which handles auth
 	 */
-	delete: (id: number): Promise<{ success: boolean; message: string }> =>
-		apiClient.delete(`/admin/room-content/trade-plan/${id}`),
+	delete: async (id: number, roomSlug: string = 'explosive-swings'): Promise<{ success: boolean; message: string }> => {
+		const response = await fetch(`/api/trade-plans/${roomSlug}/${id}`, {
+			method: 'DELETE'
+		});
+		if (!response.ok) {
+			const error = await response.json().catch(() => ({ error: 'Failed to delete trade plan' }));
+			throw new Error(error.error || 'Failed to delete trade plan');
+		}
+		return response.json();
+	},
 
 	/**
 	 * Reorder trade plan entries
 	 */
-	reorder: (roomSlug: string, items: ReorderRequest['items']): Promise<{ success: boolean }> =>
-		apiClient.put(`/admin/room-content/rooms/${roomSlug}/trade-plan/reorder`, { items })
+	reorder: async (roomSlug: string, items: ReorderRequest['items']): Promise<{ success: boolean }> => {
+		const response = await fetch(`/api/trade-plans/${roomSlug}/reorder`, {
+			method: 'PUT',
+			headers: { 'Content-Type': 'application/json' },
+			body: JSON.stringify({ items })
+		});
+		if (!response.ok) throw new Error('Failed to reorder trade plans');
+		return response.json();
+	}
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════

@@ -98,9 +98,11 @@
 		}
 	}
 
-	// Check status on mount
+	// Check status on mount - only if itemId is valid
 	$effect(() => {
-		checkFavoriteStatus();
+		if (itemId && typeof itemId === 'number' && !isNaN(itemId)) {
+			checkFavoriteStatus();
+		}
 	});
 
 	const sizeClasses = {

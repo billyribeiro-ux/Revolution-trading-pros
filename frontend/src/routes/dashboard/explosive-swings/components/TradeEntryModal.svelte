@@ -36,6 +36,7 @@
 		target2: '',
 		target3: '',
 		runner: '',
+		runner_stop: '',
 		stop: '',
 		options_strike: '',
 		options_exp: '',
@@ -58,6 +59,7 @@
 				target2: editEntry.target2 || '',
 				target3: editEntry.target3 || '',
 				runner: editEntry.runner || '',
+				runner_stop: (editEntry as any).runner_stop || '',
 				stop: editEntry.stop || '',
 				options_strike: editEntry.options_strike || '',
 				options_exp: editEntry.options_exp || '',
@@ -88,6 +90,7 @@
 			target2: '',
 			target3: '',
 			runner: '',
+			runner_stop: '',
 			stop: '',
 			options_strike: '',
 			options_exp: '',
@@ -113,11 +116,13 @@
 					target2: form.target2 || undefined,
 					target3: form.target3 || undefined,
 					runner: form.runner || undefined,
+					runner_stop: form.runner_stop || undefined,
 					stop: form.stop || undefined,
 					options_strike: form.options_strike || undefined,
 					options_exp: form.options_exp || undefined,
-					notes: form.notes || undefined
-				});
+					notes: form.notes || undefined,
+					room_slug: roomSlug
+				} as any);
 			} else {
 				// Create new entry
 				await tradePlanApi.create({
@@ -129,6 +134,7 @@
 					target2: form.target2 || undefined,
 					target3: form.target3 || undefined,
 					runner: form.runner || undefined,
+					runner_stop: form.runner_stop || undefined,
 					stop: form.stop || undefined,
 					options_strike: form.options_strike || undefined,
 					options_exp: form.options_exp || undefined,
@@ -429,18 +435,16 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-overlay {
 		position: fixed;
-		top: 0;
-		left: 0;
-		right: 0;
-		bottom: 0;
+		inset: 0;
 		background: rgba(15, 23, 42, 0.75);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		z-index: 9999;
+		z-index: 99999;
 		padding: 16px;
 		backdrop-filter: blur(8px);
 		animation: overlayFadeIn 0.2s ease-out;
+		isolation: isolate;
 	}
 
 	@keyframes overlayFadeIn {
