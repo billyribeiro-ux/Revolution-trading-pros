@@ -561,7 +561,9 @@
 		isLoadingAlerts = true;
 		try {
 			const offset = (currentPage - 1) * alertsPerPage;
-			const response = await fetch(`/api/alerts/${ROOM_SLUG}?limit=${alertsPerPage}&offset=${offset}`);
+			const response = await fetch(`/api/alerts/${ROOM_SLUG}?limit=${alertsPerPage}&offset=${offset}`, {
+				credentials: 'include'
+			});
 			const data = await response.json();
 			if (data.success) {
 				apiAlerts = data.data;
@@ -581,7 +583,9 @@
 	async function fetchTradePlan() {
 		isLoadingTradePlan = true;
 		try {
-			const response = await fetch(`/api/trade-plans/${ROOM_SLUG}`);
+			const response = await fetch(`/api/trade-plans/${ROOM_SLUG}`, {
+				credentials: 'include'
+			});
 			const data = await response.json();
 			if (data.success) {
 				apiTradePlan = data.data;
@@ -596,7 +600,9 @@
 	async function fetchStats() {
 		isLoadingStats = true;
 		try {
-			const response = await fetch(`/api/stats/${ROOM_SLUG}`);
+			const response = await fetch(`/api/stats/${ROOM_SLUG}`, {
+				credentials: 'include'
+			});
 			const data = await response.json();
 			if (data.success) {
 				apiStats = data.data;
@@ -634,7 +640,9 @@
 	async function fetchOpenTrades() {
 		isLoadingTrades = true;
 		try {
-			const response = await fetch(`/api/trades/${ROOM_SLUG}?status=open`);
+			const response = await fetch(`/api/trades/${ROOM_SLUG}?status=open`, {
+				credentials: 'include'
+			});
 			const data = await response.json();
 			if (data.success) {
 				apiOpenTrades = data.data || [];
@@ -651,7 +659,9 @@
 	 */
 	async function fetchClosedTrades() {
 		try {
-			const response = await fetch(`/api/trades/${ROOM_SLUG}?status=closed&per_page=10`);
+			const response = await fetch(`/api/trades/${ROOM_SLUG}?status=closed&per_page=10`, {
+				credentials: 'include'
+			});
 			const data = await response.json();
 			if (data.success) {
 				apiClosedTrades = data.data || [];
@@ -667,7 +677,9 @@
 	async function fetchWeeklyVideo() {
 		isLoadingVideos = true;
 		try {
-			const response = await fetch(`/api/weekly-video/${ROOM_SLUG}`);
+			const response = await fetch(`/api/weekly-video/${ROOM_SLUG}`, {
+				credentials: 'include'
+			});
 			const data = await response.json();
 			if (data.success && data.data) {
 				apiWeeklyVideo = data.data;
@@ -684,7 +696,9 @@
 	 */
 	async function fetchAllTrades() {
 		try {
-			const response = await fetch(`/api/trades/${ROOM_SLUG}?per_page=100`);
+			const response = await fetch(`/api/trades/${ROOM_SLUG}?per_page=100`, {
+				credentials: 'include'
+			});
 			const data = await response.json();
 			if (data.success && data.data) {
 				// Split into open and closed
@@ -802,7 +816,8 @@
 		if (!confirm('Are you sure you want to delete this alert?')) return;
 
 		const response = await fetch(`/api/alerts/${ROOM_SLUG}/${alertId}`, {
-			method: 'DELETE'
+			method: 'DELETE',
+			credentials: 'include'
 		});
 
 		if (response.ok) {
