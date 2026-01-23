@@ -1,8 +1,12 @@
 /**
- * Member Management API Proxy - List & Create
+ * Member Management API Proxy - Create Member Only
  * Routes requests to Rust API backend
  *
- * @version 1.0.0 - January 2026
+ * NOTE: This endpoint only supports POST (create member).
+ * For listing members, use /api/admin/members instead.
+ * For individual member operations, use /api/admin/member-management/[id]
+ *
+ * @version 1.1.0 - January 2026
  */
 
 import { json } from '@sveltejs/kit';
@@ -13,48 +17,17 @@ const PROD_BACKEND = 'https://revolution-trading-pros-api.fly.dev';
 
 /**
  * GET /api/admin/member-management
- * List members with pagination and filters
+ * NOT SUPPORTED - Backend doesn't have a list endpoint here.
+ * Use /api/admin/members for listing members.
  */
-export const GET: RequestHandler = async ({ url, request }) => {
-	const authHeader = request.headers.get('Authorization') || '';
-
-	if (!authHeader) {
-		return json({ error: 'Missing or invalid authorization header' }, { status: 401 });
-	}
-
-	try {
-		const queryParams = url.searchParams.toString();
-		const endpoint = queryParams
-			? `/api/admin/member-management?${queryParams}`
-			: '/api/admin/member-management';
-
-		const response = await fetch(`${PROD_BACKEND}${endpoint}`, {
-			method: 'GET',
-			headers: {
-				'Content-Type': 'application/json',
-				Accept: 'application/json',
-				Authorization: authHeader
-			}
-		});
-
-		const text = await response.text();
-		if (!text) {
-			return json(
-				{ error: 'Empty response from server' },
-				{ status: response.status || 500 }
-			);
-		}
-
-		try {
-			const data = JSON.parse(text);
-			return json(data, { status: response.status });
-		} catch {
-			return json({ error: 'Invalid response from server' }, { status: 500 });
-		}
-	} catch (error) {
-		console.error('[API] List members error:', error);
-		return json({ error: 'Failed to list members' }, { status: 500 });
-	}
+export const GET: RequestHandler = async () => {
+	return json(
+		{
+			error: 'Method not allowed. Use /api/admin/members for listing members.',
+			hint: 'GET /api/admin/member-management/:id is supported for individual members'
+		},
+		{ status: 405 }
+	);
 };
 
 /**
