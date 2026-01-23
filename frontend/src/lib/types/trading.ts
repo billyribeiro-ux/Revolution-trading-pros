@@ -27,6 +27,7 @@ export interface TradePlanEntry {
 	target2: string;
 	target3: string;
 	runner: string;
+	runner_stop: string | null;
 	stop: string;
 	options_strike: string | null;
 	options_exp: string | null;
@@ -234,6 +235,7 @@ export interface TradeUpdateInput {
 	exit_alert_id?: number;
 	exit_price?: number;
 	exit_date?: string;
+	exit_tos_string?: string;
 	status?: TradeStatus;
 	notes?: string;
 }
