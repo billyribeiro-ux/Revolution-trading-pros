@@ -335,33 +335,40 @@
 						<span class="section-dot target-dot"></span>
 						Price Targets
 					</div>
-					<div class="form-row targets">
-						<div class="form-group">
+					<div class="form-row targets-compact">
+						<div class="form-group compact">
 							<label for="target1">T1</label>
 							<div class="price-input-wrapper target-wrapper">
-								<span class="price-prefix">$</span>
-								<input id="target1" type="text" bind:value={form.target1} placeholder="148" class="form-input price-input target-input" />
+								<span class="price-prefix-sm">$</span>
+								<input id="target1" type="text" bind:value={form.target1} placeholder="148" class="form-input-sm price-input-sm target-input" />
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group compact">
 							<label for="target2">T2</label>
 							<div class="price-input-wrapper target-wrapper">
-								<span class="price-prefix">$</span>
-								<input id="target2" type="text" bind:value={form.target2} placeholder="155" class="form-input price-input target-input" />
+								<span class="price-prefix-sm">$</span>
+								<input id="target2" type="text" bind:value={form.target2} placeholder="155" class="form-input-sm price-input-sm target-input" />
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group compact">
 							<label for="target3">T3</label>
 							<div class="price-input-wrapper target-wrapper">
-								<span class="price-prefix">$</span>
-								<input id="target3" type="text" bind:value={form.target3} placeholder="162" class="form-input price-input target-input" />
+								<span class="price-prefix-sm">$</span>
+								<input id="target3" type="text" bind:value={form.target3} placeholder="162" class="form-input-sm price-input-sm target-input" />
 							</div>
 						</div>
-						<div class="form-group">
+						<div class="form-group compact">
 							<label for="runner">Runner</label>
 							<div class="price-input-wrapper runner-wrapper">
-								<span class="price-prefix">$</span>
-								<input id="runner" type="text" bind:value={form.runner} placeholder="170+" class="form-input price-input runner-input" />
+								<span class="price-prefix-sm">$</span>
+								<input id="runner" type="text" bind:value={form.runner} placeholder="170" class="form-input-sm price-input-sm runner-input" />
+							</div>
+						</div>
+						<div class="form-group compact">
+							<label for="runner_stop">Stop Out</label>
+							<div class="price-input-wrapper stop-out-wrapper">
+								<span class="price-prefix-sm">$</span>
+								<input id="runner_stop" type="text" bind:value={form.runner_stop} placeholder="165" class="form-input-sm price-input-sm stop-out-input" />
 							</div>
 						</div>
 					</div>
@@ -435,16 +442,20 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-overlay {
 		position: fixed;
-		inset: 0;
+		top: 0;
+		left: 0;
+		right: 0;
+		bottom: 0;
 		background: rgba(15, 23, 42, 0.75);
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		z-index: 99999;
-		padding: 16px;
+		padding: 60px 16px 16px;
 		backdrop-filter: blur(8px);
 		animation: overlayFadeIn 0.2s ease-out;
 		isolation: isolate;
+		overflow-y: auto;
 	}
 
 	@keyframes overlayFadeIn {
@@ -704,8 +715,19 @@
 		gap: 14px;
 	}
 
-	.form-row.targets {
-		grid-template-columns: repeat(4, 1fr);
+	.form-row.targets-compact {
+		grid-template-columns: repeat(5, 1fr);
+		gap: 8px;
+	}
+
+	.form-group.compact {
+		gap: 4px;
+	}
+
+	.form-group.compact label {
+		font-size: 10px;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
 	}
 
 	.form-group {
@@ -774,6 +796,50 @@
 		box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
 	}
 
+	.stop-out-input:focus {
+		border-color: #f97316;
+		box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1);
+	}
+
+	/* Compact inputs for targets row */
+	.form-input-sm {
+		padding: 8px 10px;
+		padding-left: 22px !important;
+		border: 2px solid #e2e8f0;
+		border-radius: 8px;
+		font-size: 13px;
+		font-weight: 600;
+		background: #f8fafc;
+		color: #1e293b;
+		transition: all 0.15s ease;
+		width: 100%;
+	}
+
+	.form-input-sm:hover {
+		border-color: #cbd5e1;
+	}
+
+	.form-input-sm:focus {
+		outline: none;
+		border-color: #143E59;
+		background: #fff;
+		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.1);
+	}
+
+	.price-prefix-sm {
+		position: absolute;
+		left: 10px;
+		font-size: 12px;
+		font-weight: 600;
+		color: #64748b;
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	.target-wrapper .price-prefix-sm { color: #10b981; }
+	.stop-out-wrapper .price-prefix-sm { color: #f97316; }
+	.runner-wrapper .price-prefix-sm { color: #8b5cf6; }
+
 	/* Price Input with $ Prefix */
 	.price-input-wrapper {
 		position: relative;
@@ -795,9 +861,7 @@
 		padding-left: 28px !important;
 	}
 
-	.target-wrapper .price-prefix { color: #10b981; }
 	.stop-wrapper .price-prefix { color: #dc2626; }
-	.runner-wrapper .price-prefix { color: #8b5cf6; }
 
 	.select-wrapper {
 		position: relative;
@@ -955,8 +1019,13 @@
 			grid-template-columns: 1fr;
 		}
 
-		.form-row.targets {
-			grid-template-columns: repeat(2, 1fr);
+		.form-row.targets-compact {
+			grid-template-columns: repeat(3, 1fr);
+			gap: 6px;
+		}
+
+		.form-group.compact label {
+			font-size: 9px;
 		}
 
 		.form-actions {

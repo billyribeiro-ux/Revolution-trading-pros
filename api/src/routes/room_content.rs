@@ -40,6 +40,7 @@ pub struct TradePlanEntry {
     pub target2: Option<String>,
     pub target3: Option<String>,
     pub runner: Option<String>,
+    pub runner_stop: Option<String>,
     pub stop: Option<String>,
     pub options_strike: Option<String>,
     pub options_exp: Option<NaiveDate>,
@@ -185,6 +186,7 @@ pub struct CreateTradePlanRequest {
     pub target2: Option<String>,
     pub target3: Option<String>,
     pub runner: Option<String>,
+    pub runner_stop: Option<String>,
     pub stop: Option<String>,
     pub options_strike: Option<String>,
     pub options_exp: Option<String>,
@@ -201,6 +203,7 @@ pub struct UpdateTradePlanRequest {
     pub target2: Option<String>,
     pub target3: Option<String>,
     pub runner: Option<String>,
+    pub runner_stop: Option<String>,
     pub stop: Option<String>,
     pub options_strike: Option<String>,
     pub options_exp: Option<String>,
@@ -413,14 +416,14 @@ async fn create_trade_plan(
 
     let entry: TradePlanEntry = sqlx::query_as(
         r#"INSERT INTO room_trade_plans 
-           (room_id, room_slug, week_of, ticker, bias, entry, target1, target2, target3, runner, stop, options_strike, options_exp, notes, sort_order)
+           (room_id, room_slug, week_of, ticker, bias, entry, target1, target2, target3, runner, runner_stop, stop, options_strike, options_exp, notes, sort_order)
            VALUES (
                COALESCE(
                    (SELECT id FROM trading_rooms WHERE slug = $1 LIMIT 1),
                    (SELECT id FROM membership_plans WHERE slug = $1 LIMIT 1),
                    0
                ),
-               $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
+               $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15
            )
            RETURNING *"#
     )
@@ -433,6 +436,7 @@ async fn create_trade_plan(
     .bind(&input.target2)
     .bind(&input.target3)
     .bind(&input.runner)
+    .bind(&input.runner_stop)
     .bind(&input.stop)
     .bind(&input.options_strike)
     .bind(options_exp)
@@ -472,12 +476,13 @@ async fn update_trade_plan(
            target2 = COALESCE($6, target2),
            target3 = COALESCE($7, target3),
            runner = COALESCE($8, runner),
-           stop = COALESCE($9, stop),
-           options_strike = COALESCE($10, options_strike),
-           options_exp = COALESCE($11, options_exp),
-           notes = COALESCE($12, notes),
-           sort_order = COALESCE($13, sort_order),
-           is_active = COALESCE($14, is_active)
+           runner_stop = COALESCE($9, runner_stop),
+           stop = COALESCE($10, stop),
+           options_strike = COALESCE($11, options_strike),
+           options_exp = COALESCE($12, options_exp),
+           notes = COALESCE($13, notes),
+           sort_order = COALESCE($14, sort_order),
+           is_active = COALESCE($15, is_active)
            WHERE id = $1 AND deleted_at IS NULL
            RETURNING *"#,
     )
@@ -489,6 +494,7 @@ async fn update_trade_plan(
     .bind(&input.target2)
     .bind(&input.target3)
     .bind(&input.runner)
+    .bind(&input.runner_stop)
     .bind(&input.stop)
     .bind(&input.options_strike)
     .bind(options_exp)
