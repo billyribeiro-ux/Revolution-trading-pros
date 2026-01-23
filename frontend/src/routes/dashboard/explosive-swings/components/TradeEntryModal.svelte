@@ -308,11 +308,17 @@
 					<div class="form-row">
 						<div class="form-group">
 							<label for="entry">Entry Price</label>
-							<input id="entry" type="text" bind:value={form.entry} placeholder="$142.50" class="form-input" />
+							<div class="price-input-wrapper">
+								<span class="price-prefix">$</span>
+								<input id="entry" type="text" bind:value={form.entry} placeholder="142.50" class="form-input price-input" />
+							</div>
 						</div>
 						<div class="form-group">
 							<label for="stop">Stop Loss</label>
-							<input id="stop" type="text" bind:value={form.stop} placeholder="$136.00" class="form-input stop-input" />
+							<div class="price-input-wrapper stop-wrapper">
+								<span class="price-prefix">$</span>
+								<input id="stop" type="text" bind:value={form.stop} placeholder="136.00" class="form-input price-input stop-input" />
+							</div>
 						</div>
 					</div>
 				</div>
@@ -326,19 +332,31 @@
 					<div class="form-row targets">
 						<div class="form-group">
 							<label for="target1">T1</label>
-							<input id="target1" type="text" bind:value={form.target1} placeholder="$148" class="form-input target-input" />
+							<div class="price-input-wrapper target-wrapper">
+								<span class="price-prefix">$</span>
+								<input id="target1" type="text" bind:value={form.target1} placeholder="148" class="form-input price-input target-input" />
+							</div>
 						</div>
 						<div class="form-group">
 							<label for="target2">T2</label>
-							<input id="target2" type="text" bind:value={form.target2} placeholder="$155" class="form-input target-input" />
+							<div class="price-input-wrapper target-wrapper">
+								<span class="price-prefix">$</span>
+								<input id="target2" type="text" bind:value={form.target2} placeholder="155" class="form-input price-input target-input" />
+							</div>
 						</div>
 						<div class="form-group">
 							<label for="target3">T3</label>
-							<input id="target3" type="text" bind:value={form.target3} placeholder="$162" class="form-input target-input" />
+							<div class="price-input-wrapper target-wrapper">
+								<span class="price-prefix">$</span>
+								<input id="target3" type="text" bind:value={form.target3} placeholder="162" class="form-input price-input target-input" />
+							</div>
 						</div>
 						<div class="form-group">
 							<label for="runner">Runner</label>
-							<input id="runner" type="text" bind:value={form.runner} placeholder="$170+" class="form-input runner-input" />
+							<div class="price-input-wrapper runner-wrapper">
+								<span class="price-prefix">$</span>
+								<input id="runner" type="text" bind:value={form.runner} placeholder="170+" class="form-input price-input runner-input" />
+							</div>
 						</div>
 					</div>
 				</div>
@@ -751,6 +769,31 @@
 		border-color: #8b5cf6;
 		box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1);
 	}
+
+	/* Price Input with $ Prefix */
+	.price-input-wrapper {
+		position: relative;
+		display: flex;
+		align-items: center;
+	}
+
+	.price-prefix {
+		position: absolute;
+		left: 14px;
+		font-size: 14px;
+		font-weight: 600;
+		color: #64748b;
+		pointer-events: none;
+		z-index: 1;
+	}
+
+	.price-input {
+		padding-left: 28px !important;
+	}
+
+	.target-wrapper .price-prefix { color: #10b981; }
+	.stop-wrapper .price-prefix { color: #dc2626; }
+	.runner-wrapper .price-prefix { color: #8b5cf6; }
 
 	.select-wrapper {
 		position: relative;

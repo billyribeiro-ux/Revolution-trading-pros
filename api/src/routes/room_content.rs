@@ -415,7 +415,11 @@ async fn create_trade_plan(
         r#"INSERT INTO room_trade_plans 
            (room_id, room_slug, week_of, ticker, bias, entry, target1, target2, target3, runner, stop, options_strike, options_exp, notes, sort_order)
            VALUES (
-               (SELECT id FROM membership_plans WHERE slug = $1 LIMIT 1),
+               COALESCE(
+                   (SELECT id FROM trading_rooms WHERE slug = $1 LIMIT 1),
+                   (SELECT id FROM membership_plans WHERE slug = $1 LIMIT 1),
+                   0
+               ),
                $1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14
            )
            RETURNING *"#
