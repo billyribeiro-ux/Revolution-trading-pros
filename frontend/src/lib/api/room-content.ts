@@ -285,7 +285,9 @@ export const tradePlanApi = {
 		const searchParams = new URLSearchParams();
 		if (params?.page) searchParams.set('page', String(params.page));
 		if (params?.per_page) searchParams.set('per_page', String(params.per_page));
-		const response = await fetch(`/api/trade-plans/${roomSlug}?${searchParams.toString()}`);
+		const response = await fetch(`/api/trade-plans/${roomSlug}?${searchParams.toString()}`, {
+			credentials: 'include'
+		});
 		if (!response.ok) throw new Error('Failed to fetch trade plans');
 		return response.json();
 	},
@@ -298,6 +300,7 @@ export const tradePlanApi = {
 		const response = await fetch(`/api/trade-plans/${data.room_slug}`, {
 			method: 'POST',
 			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
 			body: JSON.stringify(data)
 		});
 		if (!response.ok) {
@@ -318,6 +321,7 @@ export const tradePlanApi = {
 		const response = await fetch(`/api/trade-plans/${roomSlug}/${id}`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
 			body: JSON.stringify(data)
 		});
 		if (!response.ok) {
@@ -334,7 +338,8 @@ export const tradePlanApi = {
 	 */
 	delete: async (id: number, roomSlug: string = 'explosive-swings'): Promise<{ success: boolean; message: string }> => {
 		const response = await fetch(`/api/trade-plans/${roomSlug}/${id}`, {
-			method: 'DELETE'
+			method: 'DELETE',
+			credentials: 'include'
 		});
 		if (!response.ok) {
 			const error = await response.json().catch(() => ({ error: 'Failed to delete trade plan' }));
@@ -350,6 +355,7 @@ export const tradePlanApi = {
 		const response = await fetch(`/api/trade-plans/${roomSlug}/reorder`, {
 			method: 'PUT',
 			headers: { 'Content-Type': 'application/json' },
+			credentials: 'include',
 			body: JSON.stringify({ items })
 		});
 		if (!response.ok) throw new Error('Failed to reorder trade plans');

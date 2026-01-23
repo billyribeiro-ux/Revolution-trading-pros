@@ -69,6 +69,7 @@ const mockTradePlans: Record<string, TradePlanEntry[]> = {
 			target2: '$152.00',
 			target3: '$158.00',
 			runner: '$165.00+',
+			runner_stop: '$160.00',
 			stop: '$136.00',
 			options_strike: '$145 Call',
 			options_exp: '2026-01-24',
@@ -98,15 +99,15 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	const page = url.searchParams.get('page') || '1';
 	const perPage = url.searchParams.get('per_page') || '50';
 
-	// Get auth headers
+	// Get auth headers - check both Authorization header and access token cookie
 	const authHeader = request.headers.get('Authorization');
-	const sessionCookie = cookies.get('session');
+	const accessToken = cookies.get('rtp_access_token');
 	const headers: Record<string, string> = {};
 
 	if (authHeader) {
 		headers['Authorization'] = authHeader;
-	} else if (sessionCookie) {
-		headers['Cookie'] = `session=${sessionCookie}`;
+	} else if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
 	// Build backend query params
@@ -174,9 +175,9 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 	const authHeader = request.headers.get('Authorization');
-	const sessionCookie = cookies.get('session');
+	const accessToken = cookies.get('rtp_access_token');
 
-	if (!authHeader && !sessionCookie) {
+	if (!authHeader && !accessToken) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -186,17 +187,17 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 
 	const body: TradePlanCreateInput = await request.json();
 
-	// Validate required fields
-	if (!body.ticker || !body.bias || !body.entry || !body.stop) {
-		throw error(400, 'Ticker, bias, entry, and stop are required');
+	// Validate required fields - only ticker is truly required
+	if (!body.ticker) {
+		throw error(400, 'Ticker is required');
 	}
 
 	// Build headers
 	const headers: Record<string, string> = {};
 	if (authHeader) {
 		headers['Authorization'] = authHeader;
-	} else if (sessionCookie) {
-		headers['Cookie'] = `session=${sessionCookie}`;
+	} else if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
 	// Call backend at /api/admin/room-content/trade-plan
@@ -242,12 +243,13 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		week_of: body.week_of || new Date().toISOString().split('T')[0],
 		ticker: body.ticker.toUpperCase(),
 		bias: body.bias,
-		entry: body.entry,
+		entry: body.entry || '',
 		target1: body.target1 || '',
 		target2: body.target2 || '',
 		target3: body.target3 || '',
 		runner: body.runner || '',
-		stop: body.stop,
+		runner_stop: body.runner_stop || null,
+		stop: body.stop || '',
 		options_strike: body.options_strike || null,
 		options_exp: body.options_exp || null,
 		notes: body.notes || null,

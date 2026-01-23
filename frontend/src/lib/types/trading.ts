@@ -48,6 +48,7 @@ export interface TradePlanCreateInput {
 	target2: string;
 	target3: string;
 	runner: string;
+	runner_stop?: string;
 	stop: string;
 	options_strike?: string;
 	options_exp?: string;
@@ -63,6 +64,7 @@ export interface TradePlanUpdateInput {
 	target2?: string;
 	target3?: string;
 	runner?: string;
+	runner_stop?: string;
 	stop?: string;
 	options_strike?: string;
 	options_exp?: string;
