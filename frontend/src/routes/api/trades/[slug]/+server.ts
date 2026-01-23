@@ -135,15 +135,15 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	const page = url.searchParams.get('page') || '1';
 	const perPage = url.searchParams.get('per_page') || url.searchParams.get('limit') || '50';
 
-	// Get auth headers
+	// Get auth headers - use rtp_access_token cookie for Bearer auth
 	const authHeader = request.headers.get('Authorization');
-	const sessionCookie = cookies.get('session');
+	const accessToken = cookies.get('rtp_access_token');
 	const headers: Record<string, string> = {};
 
 	if (authHeader) {
 		headers['Authorization'] = authHeader;
-	} else if (sessionCookie) {
-		headers['Cookie'] = `session=${sessionCookie}`;
+	} else if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
 	// Build backend query params
@@ -217,9 +217,9 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 	const authHeader = request.headers.get('Authorization');
-	const sessionCookie = cookies.get('session');
+	const accessToken = cookies.get('rtp_access_token');
 
-	if (!authHeader && !sessionCookie) {
+	if (!authHeader && !accessToken) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -234,12 +234,12 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		throw error(400, 'Ticker, trade_type, direction, quantity, and entry_price are required');
 	}
 
-	// Build headers
+	// Build headers - use rtp_access_token cookie for Bearer auth
 	const headers: Record<string, string> = {};
 	if (authHeader) {
 		headers['Authorization'] = authHeader;
-	} else if (sessionCookie) {
-		headers['Cookie'] = `session=${sessionCookie}`;
+	} else if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
 	// Call backend at /api/admin/room-content/trades

@@ -181,14 +181,14 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 		throw error(400, 'Invalid trade ID');
 	}
 
-	// Try backend first
+	// Try backend first - use rtp_access_token cookie for Bearer auth
 	const authHeader = request.headers.get('Authorization');
-	const sessionCookie = cookies.get('session');
+	const accessToken = cookies.get('rtp_access_token');
 	const headers: Record<string, string> = {};
 	if (authHeader) {
 		headers['Authorization'] = authHeader;
-	} else if (sessionCookie) {
-		headers['Cookie'] = `session=${sessionCookie}`;
+	} else if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
 	const backendData = await fetchFromBackend(`/api/room-content/rooms/${slug}/trades/${id}`, { headers });
@@ -219,9 +219,9 @@ export const GET: RequestHandler = async ({ params, request, cookies }) => {
 export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug, id } = params;
 	const authHeader = request.headers.get('Authorization');
-	const sessionCookie = cookies.get('session');
+	const accessToken = cookies.get('rtp_access_token');
 
-	if (!authHeader && !sessionCookie) {
+	if (!authHeader && !accessToken) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -236,12 +236,12 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 
 	const body: TradeUpdateInput = await request.json();
 
-	// Build headers
+	// Build headers - use rtp_access_token cookie for Bearer auth
 	const headers: Record<string, string> = {};
 	if (authHeader) {
 		headers['Authorization'] = authHeader;
-	} else if (sessionCookie) {
-		headers['Cookie'] = `session=${sessionCookie}`;
+	} else if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
 	// Determine if this is a close action
@@ -352,9 +352,9 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug, id } = params;
 	const authHeader = request.headers.get('Authorization');
-	const sessionCookie = cookies.get('session');
+	const accessToken = cookies.get('rtp_access_token');
 
-	if (!authHeader && !sessionCookie) {
+	if (!authHeader && !accessToken) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -367,12 +367,12 @@ export const DELETE: RequestHandler = async ({ params, request, cookies }) => {
 		throw error(400, 'Invalid trade ID');
 	}
 
-	// Build headers
+	// Build headers - use rtp_access_token cookie for Bearer auth
 	const headers: Record<string, string> = {};
 	if (authHeader) {
 		headers['Authorization'] = authHeader;
-	} else if (sessionCookie) {
-		headers['Cookie'] = `session=${sessionCookie}`;
+	} else if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
 	// Try backend first

@@ -104,7 +104,9 @@
 		try {
 			// We need to find the trade ID from the position
 			// The position has a ticker, so we search for open trade with that ticker
-			const response = await fetch(`/api/trades/${roomSlug}?status=open&ticker=${position.ticker}`);
+			const response = await fetch(`/api/trades/${roomSlug}?status=open&ticker=${position.ticker}`, {
+				credentials: 'include'
+			});
 			const tradesData = await response.json();
 			
 			if (!tradesData.success || !tradesData.data?.length) {
@@ -118,6 +120,7 @@
 			const closeResponse = await fetch(`/api/trades/${roomSlug}/${trade.id}`, {
 				method: 'PUT',
 				headers: { 'Content-Type': 'application/json' },
+				credentials: 'include',
 				body: JSON.stringify({
 					exit_price: exitPrice,
 					exit_date: form.exit_date,

@@ -35,10 +35,6 @@
 		contract_type: undefined as ContractType | undefined,
 		entry_price: '',
 		entry_date: new Date().toISOString().split('T')[0],
-		target1: '',
-		target2: '',
-		target3: '',
-		stop: '',
 		setup: undefined as TradeSetup | undefined,
 		notes: ''
 	});
@@ -75,10 +71,6 @@
 			contract_type: undefined,
 			entry_price: '',
 			entry_date: new Date().toISOString().split('T')[0],
-			target1: '',
-			target2: '',
-			target3: '',
-			stop: '',
 			setup: undefined,
 			notes: ''
 		};
@@ -348,72 +340,6 @@
 					</div>
 				</div>
 
-				<!-- Targets & Stop Row -->
-				<div class="form-section">
-					<div class="section-label">
-						<span class="section-dot target-dot"></span>
-						Price Targets
-					</div>
-					<div class="form-row targets-compact">
-						<div class="form-group compact">
-							<label for="target1">T1</label>
-							<div class="price-input-wrapper target-wrapper">
-								<span class="price-prefix-sm">$</span>
-								<input
-									id="target1"
-									name="target1"
-									type="text"
-									bind:value={form.target1}
-									placeholder="148"
-									class="form-input-sm price-input-sm target-input"
-								/>
-							</div>
-						</div>
-						<div class="form-group compact">
-							<label for="target2">T2</label>
-							<div class="price-input-wrapper target-wrapper">
-								<span class="price-prefix-sm">$</span>
-								<input
-									id="target2"
-									name="target2"
-									type="text"
-									bind:value={form.target2}
-									placeholder="155"
-									class="form-input-sm price-input-sm target-input"
-								/>
-							</div>
-						</div>
-						<div class="form-group compact">
-							<label for="target3">T3</label>
-							<div class="price-input-wrapper target-wrapper">
-								<span class="price-prefix-sm">$</span>
-								<input
-									id="target3"
-									name="target3"
-									type="text"
-									bind:value={form.target3}
-									placeholder="162"
-									class="form-input-sm price-input-sm target-input"
-								/>
-							</div>
-						</div>
-						<div class="form-group compact">
-							<label for="stop">Stop</label>
-							<div class="price-input-wrapper stop-wrapper">
-								<span class="price-prefix-sm">$</span>
-								<input
-									id="stop"
-									name="stop"
-									type="text"
-									bind:value={form.stop}
-									placeholder="136"
-									class="form-input-sm price-input-sm stop-input"
-								/>
-							</div>
-						</div>
-					</div>
-				</div>
-
 				<!-- Setup & Notes -->
 				<div class="form-section">
 					<div class="section-label">
@@ -644,10 +570,6 @@
 		flex-shrink: 0;
 	}
 
-	.target-dot {
-		background: linear-gradient(135deg, #059669 0%, #047857 100%);
-	}
-
 	.options-dot {
 		background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
 	}
@@ -665,11 +587,6 @@
 		gap: 16px;
 	}
 
-	.form-row.targets-compact {
-		grid-template-columns: repeat(4, 1fr);
-		gap: 10px;
-	}
-
 	.form-group {
 		display: flex;
 		flex-direction: column;
@@ -678,12 +595,6 @@
 
 	.form-group.full-width {
 		grid-column: 1 / -1;
-	}
-
-	.form-group.compact label {
-		font-size: 11px;
-		font-weight: 700;
-		color: #64748b;
 	}
 
 	label {
@@ -750,47 +661,6 @@
 	.price-input {
 		padding-left: 30px;
 		font-variant-numeric: tabular-nums;
-	}
-
-	/* Compact Price Inputs */
-	.form-input-sm {
-		padding: 8px 10px;
-		font-size: 13px;
-		border-radius: 8px;
-	}
-
-	.price-prefix-sm {
-		position: absolute;
-		left: 10px;
-		font-size: 12px;
-		font-weight: 700;
-		color: #64748b;
-		pointer-events: none;
-	}
-
-	.price-input-sm {
-		padding-left: 22px;
-		font-variant-numeric: tabular-nums;
-	}
-
-	.target-input {
-		border-color: #d1fae5;
-		background: #f0fdf4;
-	}
-
-	.target-input:focus {
-		border-color: #059669;
-		box-shadow: 0 0 0 3px rgba(5, 150, 105, 0.1);
-	}
-
-	.stop-input {
-		border-color: #fee2e2;
-		background: #fef2f2;
-	}
-
-	.stop-input:focus {
-		border-color: #dc2626;
-		box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.1);
 	}
 
 	/* Select Wrapper */
@@ -891,10 +761,6 @@
 	@media (max-width: 640px) {
 		.form-row {
 			grid-template-columns: 1fr;
-		}
-
-		.form-row.targets-compact {
-			grid-template-columns: repeat(2, 1fr);
 		}
 
 		.modal-container {

@@ -175,9 +175,7 @@
 		entry_date: string;
 		exit_date: string | null;
 		direction: string;
-		target1?: number;
-		target2?: number;
-		stop?: number;
+		setup?: string;
 		notes?: string;
 	}
 
@@ -1044,6 +1042,10 @@
 			? apiOpenTrades.map((t) => {
 					const currentPrice = t.entry_price * 1.01; // Simulate current price (would come from real-time data)
 					const unrealizedPercent = ((currentPrice - t.entry_price) / t.entry_price) * 100;
+					// Note: targets and stop are managed in Trade Plan, not individual trades
+					// Using default values for display purposes
+					const defaultStopPercent = t.direction === 'long' ? -5 : 5;
+					const defaultStopPrice = t.entry_price * (1 + defaultStopPercent / 100);
 					return {
 						id: String(t.id),
 						ticker: t.ticker,
@@ -1051,10 +1053,11 @@
 						entryPrice: t.entry_price,
 						currentPrice: currentPrice,
 						unrealizedPercent: unrealizedPercent,
-						targets: t.target1 ? [{ price: t.target1, percentFromEntry: ((t.target1 - t.entry_price) / t.entry_price) * 100, label: 'Target 1' }] : [],
-						stopLoss: t.stop ? { price: t.stop, percentFromEntry: ((t.stop - t.entry_price) / t.entry_price) * 100 } : { price: t.entry_price * 0.95, percentFromEntry: -5 },
-						progressToTarget1: t.target1 ? Math.max(0, Math.min(100, ((currentPrice - t.entry_price) / (t.target1 - t.entry_price)) * 100)) : 0,
-						triggeredAt: new Date(t.entry_date)
+						targets: [], // Targets come from Trade Plan, not trades
+						stopLoss: { price: defaultStopPrice, percentFromEntry: defaultStopPercent },
+						progressToTarget1: 0, // No target tracking on trades
+						triggeredAt: new Date(t.entry_date),
+						notes: t.notes || t.setup || undefined
 					};
 				})
 			: activePositions // fallback to hardcoded
