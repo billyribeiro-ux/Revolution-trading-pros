@@ -201,41 +201,53 @@
 							<tbody>
 								{#each tradePlan as trade (trade.ticker)}
 									<tr class:has-notes-open={expandedTradeNotes.has(trade.ticker)}>
-										<td class="ticker-cell">
-											<strong>{trade.ticker}</strong>
-										</td>
-										<td>
-											<span class="bias bias--{trade.bias.toLowerCase()}">{trade.bias}</span>
-										</td>
-										<td class="entry-cell">{trade.entry}</td>
-										<td class="target-cell">{trade.target1}</td>
-										<td class="target-cell">{trade.target2}</td>
-										<td class="target-cell">{trade.target3}</td>
-										<td class="runner-cell">{trade.runner}</td>
-										<td class="stop-cell">{trade.stop}</td>
-										<td class="options-cell">{trade.optionsStrike}</td>
-										<td class="exp-cell">{trade.optionsExp}</td>
-										<td class="notes-toggle-cell">
-											<button
-												class="table-notes-btn"
-												class:expanded={expandedTradeNotes.has(trade.ticker)}
-												onclick={() => toggleTradeNotes(trade.ticker)}
-												aria-label="Toggle notes for {trade.ticker}"
+									<td class="ticker-cell">
+										<strong>{trade.ticker}</strong>
+										{#if isAdmin && onEditEntry}
+											<button 
+												class="edit-entry-btn"
+												onclick={() => onEditEntry(trade)}
+												aria-label="Edit {trade.ticker}"
 											>
-												<svg
-													class="chevron-icon"
-													viewBox="0 0 24 24"
-													fill="none"
-													stroke="currentColor"
-													stroke-width="2.5"
-													width="18"
-													height="18"
-												>
-													<path d="M19 9l-7 7-7-7" />
+												<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="14" height="14">
+													<path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7" />
+													<path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z" />
 												</svg>
 											</button>
-										</td>
-									</tr>
+										{/if}
+									</td>
+									<td>
+										<span class="bias bias--{trade.bias.toLowerCase()}">{trade.bias}</span>
+									</td>
+									<td class="entry-cell">{trade.entry}</td>
+									<td class="target-cell">{trade.target1}</td>
+									<td class="target-cell">{trade.target2}</td>
+									<td class="target-cell">{trade.target3}</td>
+									<td class="runner-cell">{trade.runner}</td>
+									<td class="stop-cell">{trade.stop}</td>
+									<td class="options-cell">{trade.optionsStrike}</td>
+									<td class="exp-cell">{trade.optionsExp}</td>
+									<td class="notes-toggle-cell">
+										<button
+											class="table-notes-btn"
+											class:expanded={expandedTradeNotes.has(trade.ticker)}
+											onclick={() => toggleTradeNotes(trade.ticker)}
+											aria-label="Toggle notes for {trade.ticker}"
+										>
+											<svg
+												class="chevron-icon"
+												viewBox="0 0 24 24"
+												fill="none"
+												stroke="currentColor"
+												stroke-width="2.5"
+												width="18"
+												height="18"
+											>
+												<path d="M19 9l-7 7-7-7" />
+											</svg>
+										</button>
+									</td>
+								</tr>
 									{#if expandedTradeNotes.has(trade.ticker)}
 										<tr class="notes-row expanded">
 											<td colspan="11">
@@ -538,9 +550,37 @@
 		border-bottom: 1px solid #e5e7eb;
 	}
 
+	.ticker-cell {
+		position: relative;
+	}
+
 	.ticker-cell strong {
 		font-size: 16px;
 		color: #143e59;
+	}
+
+	.edit-entry-btn {
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
+		width: 24px;
+		height: 24px;
+		margin-left: 8px;
+		padding: 0;
+		background: transparent;
+		border: 1px solid #e2e8f0;
+		border-radius: 6px;
+		color: #64748b;
+		cursor: pointer;
+		transition: all 0.15s ease;
+		vertical-align: middle;
+	}
+
+	.edit-entry-btn:hover {
+		background: #143E59;
+		border-color: #143E59;
+		color: #fff;
+		transform: scale(1.1);
 	}
 
 	.bias {

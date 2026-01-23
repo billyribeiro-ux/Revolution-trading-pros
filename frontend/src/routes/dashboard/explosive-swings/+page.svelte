@@ -148,6 +148,7 @@
 	let isAlertModalOpen = $state(false);
 	let editingAlert = $state<RoomAlert | null>(null);
 	let isTradeEntryModalOpen = $state(false);
+	let editingTradeEntry = $state<ApiTradePlanEntry | null>(null);
 	let isVideoUploadModalOpen = $state(false);
 	let apiAlerts = $state<RoomAlert[]>([]);
 	let apiTradePlan = $state<ApiTradePlanEntry[]>([]);
@@ -808,11 +809,46 @@
 
 	// Trade Entry Admin Handlers
 	function openTradeEntryModal() {
+		editingTradeEntry = null;
+		isTradeEntryModalOpen = true;
+	}
+
+	function openEditTradeEntryModal(entry: { ticker: string; bias: string; entry: string; target1: string; target2: string; target3: string; runner: string; stop: string; optionsStrike: string; optionsExp: string; notes: string }) {
+		// Find the actual API entry to get the real ID and full data
+		const apiEntry = apiTradePlan.find(e => e.ticker === entry.ticker);
+		if (apiEntry) {
+			editingTradeEntry = apiEntry;
+		} else {
+			// Fallback: Convert local TradePlanEntry to API format for the modal
+			editingTradeEntry = {
+				id: 0,
+				room_id: 0,
+				room_slug: ROOM_SLUG,
+				week_of: '',
+				ticker: entry.ticker,
+				bias: entry.bias,
+				entry: entry.entry,
+				target1: entry.target1,
+				target2: entry.target2,
+				target3: entry.target3,
+				runner: entry.runner,
+				stop: entry.stop,
+				options_strike: entry.optionsStrike,
+				options_exp: entry.optionsExp,
+				notes: entry.notes,
+				sort_order: 0,
+				is_active: true,
+				created_at: '',
+				updated_at: ''
+			} as ApiTradePlanEntry;
+		}
+		
 		isTradeEntryModalOpen = true;
 	}
 
 	function closeTradeEntryModal() {
 		isTradeEntryModalOpen = false;
+		editingTradeEntry = null;
 	}
 
 	// Video Upload Admin Handlers  
@@ -1160,6 +1196,7 @@
 		{isAdmin}
 		roomSlug={ROOM_SLUG}
 		onAddEntry={openTradeEntryModal}
+		onEditEntry={openEditTradeEntryModal}
 		onUploadVideo={openVideoUploadModal}
 	/>
 
@@ -1292,6 +1329,7 @@
 <TradeEntryModal
 	isOpen={isTradeEntryModalOpen}
 	roomSlug={ROOM_SLUG}
+	editEntry={editingTradeEntry}
 	onClose={closeTradeEntryModal}
 	onSuccess={fetchTradePlan}
 />
