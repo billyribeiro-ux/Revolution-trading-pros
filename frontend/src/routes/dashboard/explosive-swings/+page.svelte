@@ -38,6 +38,7 @@
 	import WeeklyHero from './components/WeeklyHero.svelte';
 	import TradeEntryModal from './components/TradeEntryModal.svelte';
 	import VideoUploadModal from './components/VideoUploadModal.svelte';
+	import ClosePositionModal from './components/ClosePositionModal.svelte';
 	
 	// Types from local types.ts (Nuclear Build)
 	import type { 
@@ -150,6 +151,8 @@
 	let isTradeEntryModalOpen = $state(false);
 	let editingTradeEntry = $state<ApiTradePlanEntry | null>(null);
 	let isVideoUploadModalOpen = $state(false);
+	let isClosePositionModalOpen = $state(false);
+	let closingPosition = $state<ActivePosition | null>(null);
 	let apiAlerts = $state<RoomAlert[]>([]);
 	let apiTradePlan = $state<ApiTradePlanEntry[]>([]);
 	let apiStats = $state<RoomStats | null>(null);
@@ -860,6 +863,23 @@
 		isVideoUploadModalOpen = false;
 	}
 
+	// Close Position Admin Handlers
+	function openClosePositionModal(position: ActivePosition) {
+		closingPosition = position;
+		isClosePositionModalOpen = true;
+	}
+
+	function closeClosePositionModal() {
+		isClosePositionModalOpen = false;
+		closingPosition = null;
+	}
+
+	async function handlePositionClosed() {
+		// Refresh trades and stats after closing a position
+		await fetchAllTrades();
+		await fetchStats();
+	}
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1184,6 +1204,8 @@
 		closedTrades={derivedClosedTrades}
 		activePositions={derivedActivePositions}
 		isLoading={isLoadingStats || isLoadingTrades}
+		{isAdmin}
+		onClosePosition={openClosePositionModal}
 	/>
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
@@ -1340,6 +1362,15 @@
 	roomSlug={ROOM_SLUG}
 	onClose={closeVideoUploadModal}
 	onSuccess={fetchWeeklyVideo}
+/>
+
+<!-- Admin Modal for Close Position -->
+<ClosePositionModal
+	isOpen={isClosePositionModalOpen}
+	position={closingPosition}
+	roomSlug={ROOM_SLUG}
+	onClose={closeClosePositionModal}
+	onSuccess={handlePositionClosed}
 />
 
 <style>

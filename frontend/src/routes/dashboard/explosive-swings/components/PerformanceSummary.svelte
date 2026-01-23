@@ -18,9 +18,11 @@
 		closedTrades: ClosedTrade[];
 		activePositions: ActivePosition[];
 		isLoading?: boolean;
+		isAdmin?: boolean;
+		onClosePosition?: (position: ActivePosition) => void;
 	}
 
-	const { performance, closedTrades, activePositions, isLoading = false }: Props = $props();
+	const { performance, closedTrades, activePositions, isLoading = false, isAdmin = false, onClosePosition }: Props = $props();
 
 	// Calculate risk/reward display
 	const rrDisplay = $derived(
@@ -111,7 +113,7 @@
 					{/each}
 				{:else}
 					{#each activePositions as position (position.id)}
-						<ActivePositionCard {position} />
+						<ActivePositionCard {position} {isAdmin} onClose={onClosePosition} />
 					{/each}
 				{/if}
 			</div>

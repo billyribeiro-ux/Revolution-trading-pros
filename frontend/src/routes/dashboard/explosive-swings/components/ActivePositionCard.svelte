@@ -5,17 +5,34 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays an active position with entry, targets, stop, and progress
-	 * @version 4.1.0 - Visual Polish Pass
-	 * @standards Apple Principal Engineer ICT 7+ Standards
+	 * @version 5.0.0 - Added close position click handler
+	 * @standards Apple Principal Engineer ICT 7+ Standards - Jan 2026
 	 */
 	import type { ActivePosition } from '../types';
 	import { formatPercent, formatPrice } from '../utils/formatters';
 
 	interface Props {
 		position: ActivePosition;
+		isAdmin?: boolean;
+		onClose?: (position: ActivePosition) => void;
 	}
 
-	const { position }: Props = $props();
+	const { position, isAdmin = false, onClose }: Props = $props();
+
+	function handleClick() {
+		if (isAdmin && onClose && position.status === 'ACTIVE') {
+			onClose(position);
+		}
+	}
+
+	function handleKeyDown(e: KeyboardEvent) {
+		if ((e.key === 'Enter' || e.key === ' ') && isAdmin && onClose && position.status === 'ACTIVE') {
+			e.preventDefault();
+			onClose(position);
+		}
+	}
+
+	const isClickable = $derived(isAdmin && onClose && position.status === 'ACTIVE');
 
 	// Determine card accent based on status and P&L
 	const statusConfig = $derived(() => {
@@ -77,9 +94,15 @@
 	);
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <article 
 	class="position-card {statusConfig().borderColor} {statusConfig().bgTint}"
-	aria-label="{position.ticker} position"
+	class:clickable={isClickable}
+	aria-label="{position.ticker} position{isClickable ? ' - Click to close' : ''}"
+	role={isClickable ? 'button' : undefined}
+	tabindex={isClickable ? 0 : -1}
+	onclick={handleClick}
+	onkeydown={handleKeyDown}
 >
 	<!-- Header Row -->
 	<div class="card-header">
@@ -180,6 +203,43 @@
 	.position-card:hover {
 		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
 		transform: translateY(-2px);
+	}
+
+	/* Clickable state for admin close */
+	.position-card.clickable {
+		cursor: pointer;
+		position: relative;
+	}
+
+	.position-card.clickable::after {
+		content: 'Click to Close Position';
+		position: absolute;
+		bottom: 8px;
+		right: 8px;
+		font-size: 10px;
+		font-weight: 600;
+		color: #fff;
+		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
+		padding: 4px 10px;
+		border-radius: 4px;
+		opacity: 0;
+		transform: translateY(4px);
+		transition: all 0.2s ease;
+	}
+
+	.position-card.clickable:hover::after {
+		opacity: 1;
+		transform: translateY(0);
+	}
+
+	.position-card.clickable:hover {
+		box-shadow: 0 10px 30px rgba(20, 62, 89, 0.2), 0 4px 10px rgba(0, 0, 0, 0.06);
+		border-color: #143E59;
+	}
+
+	.position-card.clickable:focus {
+		outline: 2px solid #143E59;
+		outline-offset: 2px;
 	}
 
 	/* Header */

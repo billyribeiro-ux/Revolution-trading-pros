@@ -244,15 +244,42 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		headers['Cookie'] = `session=${sessionCookie}`;
 	}
 
-	// Try backend first
-	const backendData = await fetchFromBackend(`/api/admin/room-content/trades/${id}`, {
-		method: 'PUT',
-		headers,
-		body: JSON.stringify(body)
-	});
+	// Determine if this is a close action
+	const isCloseRequest = body.status === 'closed' || 
+		(body.exit_price !== undefined && body.exit_price !== null);
 
-	if (backendData?.success) {
-		return json(backendData);
+	// Try backend first - use /close endpoint for closing trades
+	if (isCloseRequest) {
+		const backendData = await fetchFromBackend(`/api/admin/room-content/trades/${id}/close`, {
+			method: 'PUT',
+			headers,
+			body: JSON.stringify({
+				exit_price: body.exit_price,
+				exit_date: body.exit_date || new Date().toISOString().split('T')[0],
+				exit_tos_string: body.exit_tos_string,
+				notes: body.notes
+			})
+		});
+
+		if (backendData) {
+			return json({
+				success: true,
+				data: backendData,
+				message: 'Trade closed successfully',
+				_source: 'backend'
+			});
+		}
+	} else {
+		// Regular update (not close)
+		const backendData = await fetchFromBackend(`/api/admin/room-content/trades/${id}`, {
+			method: 'PUT',
+			headers,
+			body: JSON.stringify(body)
+		});
+
+		if (backendData?.success) {
+			return json(backendData);
+		}
 	}
 
 	// Fallback to mock update
