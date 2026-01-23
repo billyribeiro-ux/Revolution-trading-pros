@@ -15,7 +15,7 @@ use serde_json::json;
 use sqlx::FromRow;
 use tracing::{error, info};
 
-use crate::{middleware::auth::AuthUser, AppState};
+use crate::{models::User, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════════════
 // TYPE DEFINITIONS
@@ -67,7 +67,7 @@ pub struct CheckFavoriteQuery {
 /// List user's favorites
 async fn list_favorites(
     State(state): State<AppState>,
-    auth: AuthUser,
+    auth: User,
     Query(query): Query<ListFavoritesQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let page = query.page.unwrap_or(1).max(1);
@@ -82,7 +82,7 @@ async fn list_favorites(
                    ORDER BY created_at DESC
                    LIMIT $2 OFFSET $3"#,
             )
-            .bind(auth.user_id)
+            .bind(auth.id)
             .bind(per_page)
             .bind(offset)
             .bind(room)
@@ -97,7 +97,7 @@ async fn list_favorites(
                    ORDER BY created_at DESC
                    LIMIT $2 OFFSET $3"#,
             )
-            .bind(auth.user_id)
+            .bind(auth.id)
             .bind(per_page)
             .bind(offset)
             .bind(room)
@@ -111,7 +111,7 @@ async fn list_favorites(
                    ORDER BY created_at DESC
                    LIMIT $2 OFFSET $3"#,
             )
-            .bind(auth.user_id)
+            .bind(auth.id)
             .bind(per_page)
             .bind(offset)
             .bind(item_type)
@@ -125,7 +125,7 @@ async fn list_favorites(
                    ORDER BY created_at DESC
                    LIMIT $2 OFFSET $3"#,
             )
-            .bind(auth.user_id)
+            .bind(auth.id)
             .bind(per_page)
             .bind(offset)
             .fetch_all(&state.db.pool)
@@ -141,7 +141,7 @@ async fn list_favorites(
     })?;
 
     let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM user_favorites WHERE user_id = $1")
-        .bind(auth.user_id)
+        .bind(auth.id)
         .fetch_one(&state.db.pool)
         .await
         .map_err(|e| {
@@ -165,14 +165,14 @@ async fn list_favorites(
 /// Add item to favorites
 async fn add_favorite(
     State(state): State<AppState>,
-    auth: AuthUser,
+    auth: User,
     Json(input): Json<CreateFavoriteRequest>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     // Check if already favorited
     let existing: Option<UserFavorite> = sqlx::query_as(
         "SELECT * FROM user_favorites WHERE user_id = $1 AND item_type = $2 AND item_id = $3",
     )
-    .bind(auth.user_id)
+    .bind(auth.id)
     .bind(&input.item_type)
     .bind(input.item_id)
     .fetch_optional(&state.db.pool)
@@ -198,7 +198,7 @@ async fn add_favorite(
            VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
            RETURNING *"#,
     )
-    .bind(auth.user_id)
+    .bind(auth.id)
     .bind(&input.room_slug)
     .bind(&input.item_type)
     .bind(input.item_id)
@@ -218,7 +218,7 @@ async fn add_favorite(
 
     info!(
         "User {} added favorite: {} #{}",
-        auth.user_id, input.item_type, input.item_id
+        auth.id, input.item_type, input.item_id
     );
 
     Ok(Json(json!({
@@ -231,12 +231,12 @@ async fn add_favorite(
 /// Remove item from favorites
 async fn remove_favorite(
     State(state): State<AppState>,
-    auth: AuthUser,
+    auth: User,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let result = sqlx::query("DELETE FROM user_favorites WHERE id = $1 AND user_id = $2")
         .bind(id)
-        .bind(auth.user_id)
+        .bind(auth.id)
         .execute(&state.db.pool)
         .await
         .map_err(|e| {
@@ -253,7 +253,7 @@ async fn remove_favorite(
         ));
     }
 
-    info!("User {} removed favorite #{}", auth.user_id, id);
+    info!("User {} removed favorite #{}", auth.id, id);
 
     Ok(Json(json!({
         "success": true,
@@ -264,13 +264,13 @@ async fn remove_favorite(
 /// Remove favorite by item type and ID
 async fn remove_favorite_by_item(
     State(state): State<AppState>,
-    auth: AuthUser,
+    auth: User,
     Query(query): Query<CheckFavoriteQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let result = sqlx::query(
         "DELETE FROM user_favorites WHERE user_id = $1 AND item_type = $2 AND item_id = $3",
     )
-    .bind(auth.user_id)
+    .bind(auth.id)
     .bind(&query.item_type)
     .bind(query.item_id)
     .execute(&state.db.pool)
@@ -292,13 +292,13 @@ async fn remove_favorite_by_item(
 /// Check if item is favorited
 async fn check_favorite(
     State(state): State<AppState>,
-    auth: AuthUser,
+    auth: User,
     Query(query): Query<CheckFavoriteQuery>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let favorite: Option<UserFavorite> = sqlx::query_as(
         "SELECT * FROM user_favorites WHERE user_id = $1 AND item_type = $2 AND item_id = $3",
     )
-    .bind(auth.user_id)
+    .bind(auth.id)
     .bind(&query.item_type)
     .bind(query.item_id)
     .fetch_optional(&state.db.pool)
@@ -320,7 +320,7 @@ async fn check_favorite(
 /// Get favorites for a specific room
 async fn list_room_favorites(
     State(state): State<AppState>,
-    auth: AuthUser,
+    auth: User,
     Path(room_slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let favorites: Vec<UserFavorite> = sqlx::query_as(
@@ -328,7 +328,7 @@ async fn list_room_favorites(
            WHERE user_id = $1 AND room_slug = $2
            ORDER BY created_at DESC"#,
     )
-    .bind(auth.user_id)
+    .bind(auth.id)
     .bind(&room_slug)
     .fetch_all(&state.db.pool)
     .await

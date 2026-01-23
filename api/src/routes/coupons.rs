@@ -20,6 +20,7 @@ use serde::{Deserialize, Serialize};
 use serde_json::json;
 
 use rust_decimal::Decimal;
+use rust_decimal::prelude::ToPrimitive;
 
 use crate::{
     models::{order::Coupon, User},
@@ -179,16 +180,17 @@ async fn validate_coupon(
     }
 
     // Check minimum purchase - Laravel uses min_purchase_amount
-    if coupon.min_purchase_amount > 0.0 {
+    let min_purchase_f64 = coupon.min_purchase_amount.to_f64().unwrap_or(0.0);
+    if min_purchase_f64 > 0.0 {
         if let Some(subtotal) = input.subtotal {
-            if subtotal < coupon.min_purchase_amount {
+            if subtotal < min_purchase_f64 {
                 return Ok(Json(ValidateCouponResponse {
                     valid: false,
                     coupon: None,
                     discount_amount: None,
                     error: Some(format!(
                         "Minimum purchase of ${:.2} required",
-                        coupon.min_purchase_amount
+                        min_purchase_f64
                     )),
                 }));
             }
@@ -219,11 +221,12 @@ async fn validate_coupon(
     // Note: Laravel schema doesn't have applicable_plans column
 
     // Calculate discount - Laravel uses 'type' (percentage/fixed) and 'value'
+    let coupon_value_f64 = coupon.value.to_f64().unwrap_or(0.0);
     let discount_amount = if let Some(subtotal) = input.subtotal {
         let discount = if coupon.coupon_type == "percentage" {
-            subtotal * (coupon.value / 100.0)
+            subtotal * (coupon_value_f64 / 100.0)
         } else {
-            coupon.value
+            coupon_value_f64
         };
         Some(discount)
     } else {
@@ -236,8 +239,8 @@ async fn validate_coupon(
             id: coupon.id,
             code: coupon.code,
             coupon_type: coupon.coupon_type,
-            value: coupon.value,
-            min_purchase_amount: coupon.min_purchase_amount,
+            value: coupon_value_f64,
+            min_purchase_amount: min_purchase_f64,
             expiry_date: coupon.expiry_date.map(|d| d.to_string()),
         }),
         discount_amount,
