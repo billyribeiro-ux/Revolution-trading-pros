@@ -39,6 +39,7 @@
 	import TradeEntryModal from './components/TradeEntryModal.svelte';
 	import VideoUploadModal from './components/VideoUploadModal.svelte';
 	import ClosePositionModal from './components/ClosePositionModal.svelte';
+	import AddTradeModal from './components/AddTradeModal.svelte';
 	
 	// Types from local types.ts (Nuclear Build)
 	import type { 
@@ -153,6 +154,7 @@
 	let isVideoUploadModalOpen = $state(false);
 	let isClosePositionModalOpen = $state(false);
 	let closingPosition = $state<ActivePosition | null>(null);
+	let isAddTradeModalOpen = $state(false);
 	let apiAlerts = $state<RoomAlert[]>([]);
 	let apiTradePlan = $state<ApiTradePlanEntry[]>([]);
 	let apiStats = $state<RoomStats | null>(null);
@@ -895,6 +897,20 @@
 		await fetchStats();
 	}
 
+	// Add Trade Admin Handlers
+	function openAddTradeModal() {
+		isAddTradeModalOpen = true;
+	}
+
+	function closeAddTradeModal() {
+		isAddTradeModalOpen = false;
+	}
+
+	async function handleTradeAdded() {
+		await fetchOpenTrades();
+		await fetchStats();
+	}
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// LIFECYCLE
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -1221,6 +1237,7 @@
 		isLoading={isLoadingStats || isLoadingTrades}
 		{isAdmin}
 		onClosePosition={openClosePositionModal}
+		onAddTrade={openAddTradeModal}
 	/>
 
 	<!-- ═══════════════════════════════════════════════════════════════════════════
@@ -1385,7 +1402,18 @@
 	position={closingPosition}
 	roomSlug={ROOM_SLUG}
 	onClose={closeClosePositionModal}
-	onSuccess={handlePositionClosed}
+	onSuccess={async () => {
+		await fetchOpenTrades();
+		await fetchStats();
+	}}
+/>
+
+<!-- Admin Modal for Add Trade -->
+<AddTradeModal
+	isOpen={isAddTradeModalOpen}
+	roomSlug={ROOM_SLUG}
+	onClose={closeAddTradeModal}
+	onSuccess={handleTradeAdded}
 />
 
 <style>

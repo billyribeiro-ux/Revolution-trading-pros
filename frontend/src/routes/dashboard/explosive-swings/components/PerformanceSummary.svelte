@@ -20,9 +20,10 @@
 		isLoading?: boolean;
 		isAdmin?: boolean;
 		onClosePosition?: (position: ActivePosition) => void;
+		onAddTrade?: () => void;
 	}
 
-	const { performance, closedTrades, activePositions, isLoading = false, isAdmin = false, onClosePosition }: Props = $props();
+	const { performance, closedTrades, activePositions, isLoading = false, isAdmin = false, onClosePosition, onAddTrade }: Props = $props();
 
 	// Calculate risk/reward display
 	const rrDisplay = $derived(
@@ -97,20 +98,43 @@
 	<!-- ═══════════════════════════════════════════════════════════════════════
 	     ACTIVE POSITIONS SECTION - Position Cards
 	     ═══════════════════════════════════════════════════════════════════════ -->
-	{#if activePositions.length > 0 || isLoading}
+	{#if activePositions.length > 0 || isLoading || isAdmin}
 		<div class="active-section">
-			<h3 class="section-label">
-				Active Positions 
-				{#if !isLoading}
-					<span class="position-count">({activePositions.length})</span>
+			<div class="section-header-row">
+				<h3 class="section-label">
+					Active Positions 
+					{#if !isLoading}
+						<span class="position-count">({activePositions.length})</span>
+					{/if}
+				</h3>
+				{#if isAdmin && onAddTrade}
+					<button class="add-trade-btn" onclick={onAddTrade} aria-label="Add new trade">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+							<path d="M12 4v16m8-8H4" />
+						</svg>
+						Add Trade
+					</button>
 				{/if}
-			</h3>
+			</div>
 
 			<div class="positions-grid">
 				{#if isLoading}
 					{#each Array(2) as _, i}
 						<div class="position-skeleton" style="animation-delay: {i * 0.15}s"></div>
 					{/each}
+				{:else if activePositions.length === 0 && isAdmin}
+					<div class="empty-positions">
+						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
+							<path d="M12 20V10M18 20V4M6 20v-4" />
+						</svg>
+						<p>No active positions yet</p>
+						<button class="add-first-trade-btn" onclick={onAddTrade}>
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+								<path d="M12 4v16m8-8H4" />
+							</svg>
+							Add Your First Trade
+						</button>
+					</div>
 				{:else}
 					{#each activePositions as position (position.id)}
 						<ActivePositionCard {position} {isAdmin} onClose={onClosePosition} />
@@ -343,14 +367,91 @@
 		margin-bottom: 8px;
 	}
 
-	.active-section .section-label {
+	.section-header-row {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
 		margin-bottom: 18px;
+	}
+
+	.active-section .section-label {
+		margin-bottom: 0;
+	}
+
+	.add-trade-btn {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		padding: 10px 18px;
+		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
+		color: #ffffff;
+		border: none;
+		border-radius: 10px;
+		font-size: 13px;
+		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		box-shadow: 0 2px 8px rgba(20, 62, 89, 0.2);
+	}
+
+	.add-trade-btn:hover {
+		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
+		transform: translateY(-2px);
+	}
+
+	.add-trade-btn svg {
+		flex-shrink: 0;
 	}
 
 	.positions-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
 		gap: 20px;
+	}
+
+	.empty-positions {
+		grid-column: 1 / -1;
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
+		background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+		border-radius: 16px;
+		border: 2px dashed #cbd5e1;
+	}
+
+	.empty-positions svg {
+		color: #94a3b8;
+		margin-bottom: 16px;
+	}
+
+	.empty-positions p {
+		margin: 0 0 20px 0;
+		font-size: 15px;
+		font-weight: 600;
+		color: #64748b;
+	}
+
+	.add-first-trade-btn {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		padding: 14px 28px;
+		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
+		color: #ffffff;
+		border: none;
+		border-radius: 12px;
+		font-size: 14px;
+		font-weight: 700;
+		cursor: pointer;
+		transition: all 0.2s ease;
+		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.25);
+	}
+
+	.add-first-trade-btn:hover {
+		box-shadow: 0 6px 16px rgba(20, 62, 89, 0.35);
+		transform: translateY(-2px);
 	}
 
 	/* Skeleton for Position Cards */
