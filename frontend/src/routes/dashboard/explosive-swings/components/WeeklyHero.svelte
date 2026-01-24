@@ -22,6 +22,7 @@
 		thumbnail: string;
 		duration: string;
 		videoTitle: string;
+		videoUrl: string;
 		publishedDate: string;
 	}
 
@@ -54,7 +55,7 @@
 	const {
 		weeklyContent,
 		tradePlan,
-		videoUrl = '/dashboard/explosive-swings/video/weekly',
+		videoUrl = weeklyContent.videoUrl || '/dashboard/explosive-swings/video/weekly',
 		sheetUrl = 'https://docs.google.com/spreadsheets/d/your-sheet-id',
 		isAdmin = false,
 		roomSlug = 'explosive-swings',
