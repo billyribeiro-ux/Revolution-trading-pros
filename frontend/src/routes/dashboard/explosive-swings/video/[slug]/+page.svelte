@@ -64,17 +64,10 @@
 				}
 			}
 
-			// Fallback to mock data
-			video = {
-				id: 1,
-				title: 'No video uploaded yet',
-				description: 'Upload a weekly video through the admin panel.',
-				video_url: '',
-				video_platform: 'bunny',
-				thumbnail_url: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Upload+Video',
-				duration: '0:00',
-				published_at: new Date().toISOString()
-			};
+			// ICT 7 Standards: No fallback mock data
+			// If API returns no data, show proper error state in UI
+			video = null;
+			error = 'No video found for this week';
 		} catch (err) {
 			console.error('Failed to fetch video:', err);
 			error = 'Failed to load video';

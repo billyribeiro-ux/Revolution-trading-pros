@@ -74,28 +74,18 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
-// FALLBACK MOCK DATA
+// ═══════════════════════════════════════════════════════════════════════════
+// FALLBACK MOCK DATA - ICT 7 Standards
+// ═══════════════════════════════════════════════════════════════════════════
+// Purpose: Provide graceful degradation when backend is unavailable
+// Behavior: Returns null data to trigger frontend "no video" state
+// Security: Empty video_url prevents CSP violations from invalid URLs
 // ═══════════════════════════════════════════════════════════════════════════
 
-const mockWeeklyVideos: Record<string, WeeklyVideo> = {
-	'explosive-swings': {
-		id: 1,
-		room_id: 4,
-		room_slug: 'explosive-swings',
-		week_of: '2026-01-13',
-		week_title: 'Week of January 13, 2026',
-		video_title: 'No video uploaded yet',
-		video_url: '',
-		video_platform: 'bunny',
-		thumbnail_url: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Upload+Weekly+Video',
-		duration: '0:00',
-		description: "Complete breakdown of this week's top swing trade opportunities with technical analysis.",
-		is_current: true,
-		is_published: true,
-		published_at: new Date().toISOString(),
-		created_at: new Date().toISOString(),
-		updated_at: new Date().toISOString()
-	}
+const mockWeeklyVideos: Record<string, WeeklyVideo | null> = {
+	'explosive-swings': null, // No mock data - force frontend to show "no video" state
+	'spx-profit-pulse': null,
+	'weekly-watchlist': null
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
