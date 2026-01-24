@@ -21,9 +21,9 @@ const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.
 const ROOM_LIBRARY_IDS: Record<string, number> = {
 	'explosive-swings': 389539,
 	'spx-profit-pulse': 389539,
-	'all-star-options': 389539,
-	'power-profit-trades': 389539,
-	'profit-surge-trader': 389539
+	'day-trading-room': 389539,
+	'swing-trading-room': 389539,
+	'small-account-mentorship': 389539
 };
 
 // POST - Create video entry on Bunny.net for this room
