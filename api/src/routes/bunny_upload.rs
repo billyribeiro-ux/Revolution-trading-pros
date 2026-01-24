@@ -71,11 +71,11 @@ fn get_bunny_api_key() -> String {
 /// Format room slug into human-readable name for Bunny.net dashboard
 fn format_room_name(room_slug: &str) -> String {
     match room_slug {
-        "explosive-swings" => "Explosive Swings",
-        "spx-profit-pulse" => "SPX Profit Pulse",
-        "all-star-options" => "All Star Options",
-        "power-profit-trades" => "Power Profit Trades",
-        "profit-surge-trader" => "Profit Surge Trader",
+        "explosive-swings" => "Explosive Swings".to_string(),
+        "spx-profit-pulse" => "SPX Profit Pulse".to_string(),
+        "all-star-options" => "All Star Options".to_string(),
+        "power-profit-trades" => "Power Profit Trades".to_string(),
+        "profit-surge-trader" => "Profit Surge Trader".to_string(),
         _ => {
             // Fallback: capitalize each word
             room_slug
