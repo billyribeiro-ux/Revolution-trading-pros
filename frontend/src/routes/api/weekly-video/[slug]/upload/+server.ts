@@ -59,7 +59,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 				title: body.title,
 				library_id: libraryId,
 				collection_id: body.collection_id,
-				room_slug: slug
+				room_slug: slug  // Pass room_slug to backend for Bunny title prefix
 			})
 		});
 
