@@ -60,7 +60,13 @@ pub struct VideoStatusResponse {
 
 const BUNNY_API_BASE: &str = "https://video.bunnycdn.com";
 const BUNNY_STREAM_CDN: &str = "https://vz-2a93ec0c-6c4.b-cdn.net";
-const DEFAULT_LIBRARY_ID: i64 = 389539;
+
+fn get_default_library_id() -> i64 {
+    std::env::var("BUNNY_STREAM_LIBRARY_ID")
+        .ok()
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(577071)
+}
 
 fn get_bunny_api_key() -> String {
     std::env::var("BUNNY_STREAM_API_KEY")
@@ -111,7 +117,7 @@ async fn create_video(
         ));
     }
 
-    let library_id = input.library_id.unwrap_or(DEFAULT_LIBRARY_ID);
+    let library_id = input.library_id.unwrap_or_else(get_default_library_id);
 
     // Format title with room prefix for Bunny.net dashboard organization
     let bunny_title = if let Some(ref room_slug) = input.room_slug {
@@ -224,7 +230,7 @@ async fn get_video_status(
             .await
             .ok()
             .flatten()
-            .unwrap_or(DEFAULT_LIBRARY_ID);
+            .unwrap_or_else(get_default_library_id);
 
     // Get video status from Bunny.net
     let client = reqwest::Client::new();
@@ -377,7 +383,7 @@ async fn upload_video(
     let library_id: i64 = params
         .get("library_id")
         .and_then(|s| s.parse().ok())
-        .unwrap_or(DEFAULT_LIBRARY_ID);
+        .unwrap_or_else(get_default_library_id);
 
     if body.is_empty() {
         return Err((

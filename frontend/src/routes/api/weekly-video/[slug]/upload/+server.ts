@@ -17,14 +17,17 @@ import { env } from '$env/dynamic/private';
 
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
-// Room-specific Bunny library IDs (can be extended per room)
+// Default Bunny library ID - can be overridden by BUNNY_STREAM_LIBRARY_ID env var
+const DEFAULT_LIBRARY_ID = parseInt(env.BUNNY_STREAM_LIBRARY_ID || '577071', 10);
+
+// Room-specific Bunny library IDs (all use same library for now)
 const ROOM_LIBRARY_IDS: Record<string, number> = {
-	'explosive-swings': 389539,
-	'spx-profit-pulse': 389539,
-	'day-trading-room': 389539,
-	'swing-trading-room': 389539,
-	'small-account-mentorship': 389539,
-	'high-octane-scanner': 389539
+	'explosive-swings': DEFAULT_LIBRARY_ID,
+	'spx-profit-pulse': DEFAULT_LIBRARY_ID,
+	'day-trading-room': DEFAULT_LIBRARY_ID,
+	'swing-trading-room': DEFAULT_LIBRARY_ID,
+	'small-account-mentorship': DEFAULT_LIBRARY_ID,
+	'high-octane-scanner': DEFAULT_LIBRARY_ID
 };
 
 // POST - Create video entry on Bunny.net for this room
