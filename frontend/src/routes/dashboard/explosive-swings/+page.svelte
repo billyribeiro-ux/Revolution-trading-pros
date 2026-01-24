@@ -475,20 +475,17 @@
 			: fallbackVideoUpdates
 	);
 
-	// Reactive data derived from server props - use $derived for reactivity
-	// WatchlistResponse has entries[] and total - extract latest entry for weekly content
-	const latestWatchlistEntry = $derived(data.watchlist?.entries?.[0]);
+	// Reactive data derived from API weekly video - use $derived for reactivity
+	// Use apiWeeklyVideo from fetchWeeklyVideo() instead of watchlist data
 	const weeklyContent = $derived<WeeklyContent>(
-		latestWatchlistEntry
+		apiWeeklyVideo
 			? {
-					title: `Week of ${latestWatchlistEntry.weekOf}`,
-					videoTitle: latestWatchlistEntry.title,
-					videoUrl: latestWatchlistEntry.videoUrl,
-					thumbnail:
-						latestWatchlistEntry.poster ||
-						'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
-					duration: '',
-					publishedDate: latestWatchlistEntry.publishedAt || ''
+					title: apiWeeklyVideo.week_title || `Week of ${new Date(apiWeeklyVideo.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
+					videoTitle: apiWeeklyVideo.video_title,
+					videoUrl: apiWeeklyVideo.video_url,
+					thumbnail: apiWeeklyVideo.thumbnail_url || 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
+					duration: apiWeeklyVideo.duration || '',
+					publishedDate: new Date(apiWeeklyVideo.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' at ' + new Date(apiWeeklyVideo.published_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) + ' ET'
 				}
 			: fallbackWeeklyContent
 	);
