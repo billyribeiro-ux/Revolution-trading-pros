@@ -195,13 +195,12 @@
 		
 		try {
 			// Step 1: Create video entry on Bunny.net
-			const createResponse = await fetch('/api/admin/bunny/create-video', {
+			const createResponse = await fetch(`/api/weekly-video/${roomSlug}/upload`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
 				body: JSON.stringify({
-					title: form.video_title || videoFile.name.replace(/\.[^/.]+$/, ''),
-					library_id: 389539
+					title: form.video_title || videoFile.name.replace(/\.[^/.]+$/, '')
 				})
 			});
 			
@@ -274,8 +273,8 @@
 			xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
 			xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
 			
-			// Use our proxy endpoint which has the Bunny API key
-			const proxyUrl = `/api/admin/bunny/upload?video_guid=${videoGuid}&library_id=389539`;
+			// Use room-specific upload endpoint
+			const proxyUrl = `/api/weekly-video/${roomSlug}/upload?video_guid=${videoGuid}`;
 			xhr.open('PUT', proxyUrl, true);
 			xhr.setRequestHeader('Content-Type', file.type);
 			xhr.withCredentials = true;
@@ -288,7 +287,7 @@
 			await new Promise((resolve) => setTimeout(resolve, 2000));
 			
 			try {
-				const response = await fetch(`/api/admin/bunny/video-status/${videoGuid}`, {
+				const response = await fetch(`/api/weekly-video/${roomSlug}/upload/status/${videoGuid}`, {
 					credentials: 'include'
 				});
 				if (response.ok) {
