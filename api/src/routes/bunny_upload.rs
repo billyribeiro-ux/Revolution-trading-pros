@@ -31,6 +31,7 @@ pub struct CreateVideoRequest {
     pub title: String,
     pub library_id: Option<i64>,
     pub collection_id: Option<String>,
+    pub room_slug: Option<String>,
 }
 
 #[derive(Debug, Serialize)]
@@ -67,6 +68,31 @@ fn get_bunny_api_key() -> String {
         .unwrap_or_default()
 }
 
+/// Format room slug into human-readable name for Bunny.net dashboard
+fn format_room_name(room_slug: &str) -> String {
+    match room_slug {
+        "explosive-swings" => "Explosive Swings",
+        "spx-profit-pulse" => "SPX Profit Pulse",
+        "all-star-options" => "All Star Options",
+        "power-profit-trades" => "Power Profit Trades",
+        "profit-surge-trader" => "Profit Surge Trader",
+        _ => {
+            // Fallback: capitalize each word
+            room_slug
+                .split('-')
+                .map(|word| {
+                    let mut chars = word.chars();
+                    match chars.next() {
+                        None => String::new(),
+                        Some(first) => first.to_uppercase().collect::<String>() + chars.as_str(),
+                    }
+                })
+                .collect::<Vec<_>>()
+                .join(" ")
+        }
+    }
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════
@@ -86,12 +112,20 @@ async fn create_video(
 
     let library_id = input.library_id.unwrap_or(DEFAULT_LIBRARY_ID);
 
+    // Format title with room prefix for Bunny.net dashboard organization
+    let bunny_title = if let Some(ref room_slug) = input.room_slug {
+        let room_name = format_room_name(room_slug);
+        format!("[{}] {}", room_name, input.title)
+    } else {
+        input.title.clone()
+    };
+
     // Create video in Bunny.net
     let client = reqwest::Client::new();
     let create_url = format!("{}/library/{}/videos", BUNNY_API_BASE, library_id);
 
     let mut body = json!({
-        "title": input.title
+        "title": bunny_title
     });
 
     if let Some(ref collection_id) = input.collection_id {
@@ -140,19 +174,21 @@ async fn create_video(
         library_id, video_guid
     );
 
-    // Track upload in database
+    // Track upload in database with room_slug
     let _ = sqlx::query(
         r#"
-        INSERT INTO bunny_uploads (video_guid, library_id, title, status, upload_started_at)
-        VALUES ($1, $2, $3, 'uploading', NOW())
+        INSERT INTO bunny_uploads (video_guid, library_id, title, room_slug, status, upload_started_at)
+        VALUES ($1, $2, $3, $4, 'uploading', NOW())
         ON CONFLICT (video_guid) DO UPDATE SET
             status = 'uploading',
+            room_slug = EXCLUDED.room_slug,
             upload_started_at = NOW()
         "#,
     )
     .bind(video_guid)
     .bind(library_id)
     .bind(&input.title)
+    .bind(&input.room_slug)
     .execute(&state.db.pool)
     .await;
 
