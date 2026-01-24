@@ -28,9 +28,9 @@ impl BunnyClient {
     pub fn new() -> Self {
         Self {
             http: Client::new(),
-            stream_api_key: env::var("BUNNY_STREAM_API_KEY").unwrap_or_default(),
-            stream_library_id: env::var("BUNNY_STREAM_LIBRARY_ID").unwrap_or_default(),
-            storage_api_key: env::var("BUNNY_STORAGE_API_KEY").unwrap_or_default(),
+            stream_api_key: env::var("BUNNY_STREAM_API_KEY").map(|s| s.trim().to_string()).unwrap_or_default(),
+            stream_library_id: env::var("BUNNY_STREAM_LIBRARY_ID").map(|s| s.trim().to_string()).unwrap_or_default(),
+            storage_api_key: env::var("BUNNY_STORAGE_API_KEY").map(|s| s.trim().to_string()).unwrap_or_default(),
             storage_zone: env::var("BUNNY_STORAGE_ZONE")
                 .unwrap_or_else(|_| "revolution-trading-thumbnails".to_string()),
             storage_hostname: env::var("BUNNY_STORAGE_HOSTNAME")
