@@ -13,50 +13,23 @@ import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
 // In production, these should be extracted to a utils file and imported
 // ═══════════════════════════════════════════════════════════════════════════
 
-const VIDEO_EMBED_ORIGINS = [
-  'iframe.mediadelivery.net',
-  'player.vimeo.com',
-  'www.youtube.com',
-  'youtube.com',
-  'vimeo.com'
-] as const;
-
+// Bunny.net only validation (matches component implementation)
 function isValidVideoUrl(url: string): boolean {
   if (!url || typeof url !== 'string' || url.trim() === '') return false;
   try {
     const parsed = new URL(url);
-    if (parsed.protocol !== 'https:') return false;
-    return VIDEO_EMBED_ORIGINS.some(origin => 
-      parsed.hostname === origin || parsed.hostname.endsWith(`.${origin}`)
-    );
+    return parsed.protocol === 'https:' && parsed.hostname === 'iframe.mediadelivery.net';
   } catch {
     return false;
   }
 }
 
-function generateEmbedUrl(url: string): string {
+function getEmbedUrl(url: string): string {
   if (!isValidVideoUrl(url)) return '';
   try {
     const parsed = new URL(url);
-    if (parsed.hostname.includes('iframe.mediadelivery.net')) {
-      parsed.searchParams.set('autoplay', 'true');
-      return parsed.toString();
-    }
-    if (parsed.hostname.includes('vimeo.com') && !parsed.hostname.includes('player.')) {
-      const match = parsed.pathname.match(/\/(\d+)/);
-      if (match) return `https://player.vimeo.com/video/${match[1]}?autoplay=1`;
-    }
-    if (parsed.hostname.includes('youtube.com') || parsed.hostname.includes('youtu.be')) {
-      const videoId = parsed.hostname.includes('youtu.be') 
-        ? parsed.pathname.slice(1)
-        : parsed.searchParams.get('v');
-      if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-    }
-    if (parsed.pathname.includes('/embed/') || parsed.hostname.includes('player.')) {
-      parsed.searchParams.set('autoplay', '1');
-      return parsed.toString();
-    }
-    return '';
+    parsed.searchParams.set('autoplay', 'true');
+    return parsed.toString();
   } catch {
     return '';
   }
@@ -85,30 +58,24 @@ describe('isValidVideoUrl', () => {
     });
   });
 
-  describe('Vimeo URLs', () => {
-    it('accepts valid Vimeo URLs', () => {
-      const validUrls = [
+  describe('Non-Bunny URLs (Rejected)', () => {
+    it('rejects Vimeo URLs - Bunny.net only', () => {
+      const vimeoUrls = [
         'https://vimeo.com/123456789',
-        'https://player.vimeo.com/video/123456789',
-        'https://vimeo.com/123456789?h=abc123'
+        'https://player.vimeo.com/video/123456789'
       ];
-      
-      validUrls.forEach(url => {
-        expect(isValidVideoUrl(url)).toBe(true);
+      vimeoUrls.forEach(url => {
+        expect(isValidVideoUrl(url)).toBe(false);
       });
     });
-  });
 
-  describe('YouTube URLs', () => {
-    it('accepts valid YouTube URLs', () => {
-      const validUrls = [
+    it('rejects YouTube URLs - Bunny.net only', () => {
+      const youtubeUrls = [
         'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        'https://youtube.com/watch?v=dQw4w9WgXcQ',
         'https://www.youtube.com/embed/dQw4w9WgXcQ'
       ];
-      
-      validUrls.forEach(url => {
-        expect(isValidVideoUrl(url)).toBe(true);
+      youtubeUrls.forEach(url => {
+        expect(isValidVideoUrl(url)).toBe(false);
       });
     });
   });
@@ -205,11 +172,11 @@ describe('isValidVideoUrl', () => {
 // EMBED URL GENERATION TESTS
 // ═══════════════════════════════════════════════════════════════════════════
 
-describe('generateEmbedUrl', () => {
+describe('getEmbedUrl', () => {
   describe('Bunny.net MediaDelivery', () => {
     it('adds autoplay parameter to Bunny.net URLs', () => {
       const url = 'https://iframe.mediadelivery.net/embed/585929/abc123';
-      const result = generateEmbedUrl(url);
+      const result = getEmbedUrl(url);
       
       expect(result).toContain('iframe.mediadelivery.net');
       expect(result).toContain('autoplay=true');
@@ -217,44 +184,22 @@ describe('generateEmbedUrl', () => {
 
     it('preserves existing query parameters', () => {
       const url = 'https://iframe.mediadelivery.net/embed/585929/abc123?quality=720';
-      const result = generateEmbedUrl(url);
+      const result = getEmbedUrl(url);
       
       expect(result).toContain('quality=720');
       expect(result).toContain('autoplay=true');
     });
   });
 
-  describe('Vimeo', () => {
-    it('transforms Vimeo watch URLs to embed URLs', () => {
-      const url = 'https://vimeo.com/123456789';
-      const result = generateEmbedUrl(url);
-      
-      expect(result).toBe('https://player.vimeo.com/video/123456789?autoplay=1');
+  describe('Non-Bunny URLs return empty', () => {
+    it('returns empty for Vimeo URLs', () => {
+      expect(getEmbedUrl('https://vimeo.com/123456789')).toBe('');
+      expect(getEmbedUrl('https://player.vimeo.com/video/123456789')).toBe('');
     });
 
-    it('adds autoplay to existing Vimeo player URLs', () => {
-      const url = 'https://player.vimeo.com/video/123456789';
-      const result = generateEmbedUrl(url);
-      
-      expect(result).toContain('player.vimeo.com');
-      expect(result).toContain('autoplay=1');
-    });
-  });
-
-  describe('YouTube', () => {
-    it('transforms YouTube watch URLs to embed URLs', () => {
-      const url = 'https://www.youtube.com/watch?v=dQw4w9WgXcQ';
-      const result = generateEmbedUrl(url);
-      
-      expect(result).toBe('https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1');
-    });
-
-    it('adds autoplay to existing YouTube embed URLs', () => {
-      const url = 'https://www.youtube.com/embed/dQw4w9WgXcQ';
-      const result = generateEmbedUrl(url);
-      
-      expect(result).toContain('/embed/dQw4w9WgXcQ');
-      expect(result).toContain('autoplay=1');
+    it('returns empty for YouTube URLs', () => {
+      expect(getEmbedUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe('');
+      expect(getEmbedUrl('https://www.youtube.com/embed/dQw4w9WgXcQ')).toBe('');
     });
   });
 
@@ -268,7 +213,7 @@ describe('generateEmbedUrl', () => {
       ];
       
       invalidUrls.forEach(url => {
-        expect(generateEmbedUrl(url)).toBe('');
+        expect(getEmbedUrl(url)).toBe('');
       });
     });
   });

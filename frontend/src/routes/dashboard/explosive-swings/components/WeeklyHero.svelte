@@ -19,16 +19,6 @@
 
 	import { onMount } from 'svelte';
 
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// SECURITY: XSS-Safe Video URL Validation (P0)
-	// ═══════════════════════════════════════════════════════════════════════════════
-	const VIDEO_EMBED_ORIGINS = [
-		'iframe.mediadelivery.net',  // Bunny.net
-		'player.vimeo.com',
-		'www.youtube.com',
-		'youtube.com',
-		'vimeo.com'
-	] as const;
 
 	interface WeeklyContent {
 		title: string;
@@ -130,8 +120,7 @@
 				await document.exitFullscreen();
 				isVideoExpanded = false;
 			}
-		} catch (err) {
-			console.warn('[WeeklyHero] Fullscreen request failed:', err);
+		} catch {
 			isVideoExpanded = false;
 		}
 	}
@@ -145,49 +134,23 @@
 		videoLoadError = false;
 	}
 	
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// XSS-Safe URL Validation Functions (P0 Security)
-	// ═══════════════════════════════════════════════════════════════════════════════
+	// Bunny.net only validation
 	function isValidVideoUrl(url: string): boolean {
 		if (!url || typeof url !== 'string' || url.trim() === '') return false;
 		try {
 			const parsed = new URL(url);
-			if (parsed.protocol !== 'https:') return false;
-			return VIDEO_EMBED_ORIGINS.some(origin => 
-				parsed.hostname === origin || parsed.hostname.endsWith(`.${origin}`)
-			);
+			return parsed.protocol === 'https:' && parsed.hostname === 'iframe.mediadelivery.net';
 		} catch {
 			return false;
 		}
 	}
 
-	function generateEmbedUrl(url: string): string {
+	function getEmbedUrl(url: string): string {
 		if (!isValidVideoUrl(url)) return '';
 		try {
 			const parsed = new URL(url);
-			// Bunny.net - already an embed URL
-			if (parsed.hostname.includes('iframe.mediadelivery.net')) {
-				parsed.searchParams.set('autoplay', 'true');
-				return parsed.toString();
-			}
-			// Vimeo transform
-			if (parsed.hostname.includes('vimeo.com') && !parsed.hostname.includes('player.')) {
-				const match = parsed.pathname.match(/\/(\d+)/);
-				if (match) return `https://player.vimeo.com/video/${match[1]}?autoplay=1`;
-			}
-			// YouTube transform  
-			if (parsed.hostname.includes('youtube.com') || parsed.hostname.includes('youtu.be')) {
-				const videoId = parsed.hostname.includes('youtu.be') 
-					? parsed.pathname.slice(1)
-					: parsed.searchParams.get('v');
-				if (videoId) return `https://www.youtube.com/embed/${videoId}?autoplay=1`;
-			}
-			// Already embed URL
-			if (parsed.pathname.includes('/embed/') || parsed.hostname.includes('player.')) {
-				parsed.searchParams.set('autoplay', '1');
-				return parsed.toString();
-			}
-			return '';
+			parsed.searchParams.set('autoplay', 'true');
+			return parsed.toString();
 		} catch {
 			return '';
 		}
@@ -328,7 +291,7 @@
 					>
 						{#if isVideoPlaying && canPlayVideo}
 							<!-- Active Video Player -->
-							{@const safeEmbedUrl = generateEmbedUrl(videoUrl)}
+							{@const safeEmbedUrl = getEmbedUrl(videoUrl)}
 							<div class="video-backdrop-blur"></div>
 							<div class="video-frame-container">
 								{#if safeEmbedUrl && !videoLoadError}
