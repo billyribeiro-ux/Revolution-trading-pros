@@ -67,9 +67,65 @@
 	let heroTab = $state<'video' | 'entries'>('video');
 	let isCollapsed = $state(false);
 	let expandedTradeNotes = $state(new Set<string>());
+	
+	// Video player state - ICT 7 Enhancement
+	let isVideoPlaying = $state(false);
+	let isVideoExpanded = $state(false);
+	let videoPlayerRef = $state<HTMLDivElement | null>(null);
 
 	function toggleCollapse() {
 		isCollapsed = !isCollapsed;
+	}
+	
+	// Video player controls
+	function playVideo() {
+		isVideoPlaying = true;
+	}
+	
+	function closeVideo() {
+		isVideoPlaying = false;
+		isVideoExpanded = false;
+	}
+	
+	function toggleFullscreen() {
+		isVideoExpanded = !isVideoExpanded;
+		
+		// Native fullscreen API
+		if (isVideoExpanded && videoPlayerRef) {
+			if (videoPlayerRef.requestFullscreen) {
+				videoPlayerRef.requestFullscreen();
+			} else if ((videoPlayerRef as any).webkitRequestFullscreen) {
+				(videoPlayerRef as any).webkitRequestFullscreen();
+			}
+		} else if (document.fullscreenElement) {
+			document.exitFullscreen();
+		}
+	}
+	
+	// Keyboard handler for video player
+	function handleVideoKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape' && isVideoPlaying) {
+			closeVideo();
+		}
+	}
+	
+	// Generate embed URL from video URL prop
+	function getEmbedUrl(url: string): string {
+		// Bunny.net iframe URL
+		if (url.includes('iframe.mediadelivery.net') || url.includes('bunnycdn')) {
+			return url;
+		}
+		// Vimeo
+		if (url.includes('vimeo.com')) {
+			const match = url.match(/vimeo\.com\/(\d+)/);
+			if (match) return `https://player.vimeo.com/video/${match[1]}?autoplay=1`;
+		}
+		// YouTube
+		if (url.includes('youtube.com') || url.includes('youtu.be')) {
+			const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
+			if (match) return `https://www.youtube.com/embed/${match[1]}?autoplay=1`;
+		}
+		return url;
 	}
 
 	function toggleTradeNotes(ticker: string) {
@@ -131,19 +187,71 @@
 
 		<div class="hero-content">
 			{#if heroTab === 'video'}
-				<!-- VIDEO TAB -->
-				<div class="video-container-compact">
-					<div class="video-player-compact" style="background-image: url('{weeklyContent.thumbnail}')">
-						<div class="video-overlay">
-							<button class="play-btn" aria-label="Play video">
-								<svg viewBox="0 0 24 24" fill="currentColor">
-									<path d="M8 5v14l11-7z" />
-								</svg>
-							</button>
-						</div>
-						<div class="video-duration">{weeklyContent.duration}</div>
+				<!-- VIDEO TAB - Enhanced In-Place Player -->
+				<div class="video-container-compact" class:video-active={isVideoPlaying}>
+					<!-- Video Player with Blur Background -->
+					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+					<div 
+						bind:this={videoPlayerRef}
+						class="video-player-wrapper"
+						class:playing={isVideoPlaying}
+						class:expanded={isVideoExpanded}
+						onkeydown={handleVideoKeydown}
+						tabindex={isVideoPlaying ? 0 : -1}
+						role="application"
+						aria-label="Video player"
+					>
+						{#if isVideoPlaying}
+							<!-- Active Video Player -->
+							<div class="video-backdrop-blur"></div>
+							<div class="video-frame-container">
+								<iframe
+									src={getEmbedUrl(videoUrl)}
+									title={weeklyContent.videoTitle}
+									frameborder="0"
+									allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+									allowfullscreen
+								></iframe>
+								
+								<!-- Video Controls Overlay -->
+								<div class="video-controls-bar">
+									<button class="video-control-btn" onclick={closeVideo} aria-label="Close video">
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+											<path d="M18 6L6 18M6 6l12 12" />
+										</svg>
+									</button>
+									<span class="video-title-overlay">{weeklyContent.videoTitle}</span>
+									<button class="video-control-btn" onclick={toggleFullscreen} aria-label="Toggle fullscreen">
+										{#if isVideoExpanded}
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+												<path d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3" />
+											</svg>
+										{:else}
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+												<path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" />
+											</svg>
+										{/if}
+									</button>
+								</div>
+							</div>
+						{:else}
+							<!-- Thumbnail with Play Button -->
+							<div class="video-player-compact" style="background-image: url('{weeklyContent.thumbnail}')">
+								<div class="video-overlay">
+									<button class="play-btn" onclick={playVideo} aria-label="Play video">
+										<svg viewBox="0 0 24 24" fill="currentColor">
+											<path d="M8 5v14l11-7z" />
+										</svg>
+									</button>
+								</div>
+								<div class="video-duration">{weeklyContent.duration}</div>
+							</div>
+						{/if}
 					</div>
-					<div class="video-info-compact">
+					
+					<!-- Video Info -->
+					<div class="video-info-compact" class:hidden={isVideoPlaying && !isVideoExpanded}>
 						<h2>{weeklyContent.videoTitle}</h2>
 						<p>Published {weeklyContent.publishedDate}</p>
 						{#if isAdmin && onUploadVideo}
@@ -435,6 +543,134 @@
 
 	.video-player-compact:hover .play-btn {
 		transform: scale(1.1);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ENHANCED VIDEO PLAYER - ICT 7 In-Place Playback
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.video-player-wrapper {
+		flex: 0 0 50%;
+		position: relative;
+		border-radius: 12px;
+		overflow: hidden;
+		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.video-player-wrapper.playing {
+		flex: 0 0 65%;
+		box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+	}
+
+	.video-player-wrapper.expanded {
+		position: fixed;
+		inset: 0;
+		z-index: 99999;
+		flex: none;
+		border-radius: 0;
+	}
+
+	.video-backdrop-blur {
+		position: absolute;
+		inset: -50px;
+		background: linear-gradient(135deg, #f69532 0%, #e8850d 100%);
+		filter: blur(30px);
+		opacity: 0.3;
+		z-index: -1;
+	}
+
+	.video-frame-container {
+		position: relative;
+		width: 100%;
+		padding-bottom: 56.25%; /* 16:9 aspect ratio */
+		background: #000;
+		border-radius: 12px;
+		overflow: hidden;
+	}
+
+	.video-player-wrapper.expanded .video-frame-container {
+		height: 100%;
+		padding-bottom: 0;
+		border-radius: 0;
+	}
+
+	.video-frame-container iframe {
+		position: absolute;
+		top: 0;
+		left: 0;
+		width: 100%;
+		height: 100%;
+		border: none;
+	}
+
+	.video-controls-bar {
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 12px 16px;
+		background: linear-gradient(to bottom, rgba(0,0,0,0.7) 0%, transparent 100%);
+		z-index: 10;
+		opacity: 0;
+		transition: opacity 0.3s ease;
+	}
+
+	.video-frame-container:hover .video-controls-bar,
+	.video-player-wrapper.expanded .video-controls-bar {
+		opacity: 1;
+	}
+
+	.video-control-btn {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		width: 36px;
+		height: 36px;
+		background: rgba(255, 255, 255, 0.15);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
+		border: none;
+		border-radius: 8px;
+		color: #fff;
+		cursor: pointer;
+		transition: all 0.2s ease;
+	}
+
+	.video-control-btn:hover {
+		background: rgba(255, 255, 255, 0.25);
+		transform: scale(1.05);
+	}
+
+	.video-title-overlay {
+		flex: 1;
+		text-align: center;
+		color: #fff;
+		font-size: 14px;
+		font-weight: 600;
+		text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+		padding: 0 16px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+	}
+
+	/* Video Active State - Adjusts layout */
+	.video-container-compact.video-active {
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.video-container-compact.video-active .video-player-wrapper {
+		flex: none;
+		width: 100%;
+		max-width: 900px;
+		margin: 0 auto;
+	}
+
+	.video-info-compact.hidden {
+		display: none;
 	}
 
 	.video-duration {
