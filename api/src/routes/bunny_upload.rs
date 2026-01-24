@@ -137,7 +137,8 @@ async fn create_video(
     let create_url = format!("{}/library/{}/videos", BUNNY_API_BASE, library_id);
 
     let mut body = json!({
-        "title": bunny_title
+        "title": bunny_title,
+        "isPublic": true
     });
 
     if let Some(ref collection_id) = input.collection_id {
