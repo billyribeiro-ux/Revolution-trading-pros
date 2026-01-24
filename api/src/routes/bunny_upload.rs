@@ -76,6 +76,7 @@ fn format_room_name(room_slug: &str) -> String {
         "day-trading-room" => "Day Trading Room".to_string(),
         "swing-trading-room" => "Swing Trading Room".to_string(),
         "small-account-mentorship" => "Small Account Mentorship".to_string(),
+        "high-octane-scanner" => "High Octane Scanner".to_string(),
         _ => {
             // Fallback: capitalize each word
             room_slug

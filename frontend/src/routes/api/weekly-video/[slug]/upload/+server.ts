@@ -23,7 +23,8 @@ const ROOM_LIBRARY_IDS: Record<string, number> = {
 	'spx-profit-pulse': 389539,
 	'day-trading-room': 389539,
 	'swing-trading-room': 389539,
-	'small-account-mentorship': 389539
+	'small-account-mentorship': 389539,
+	'high-octane-scanner': 389539
 };
 
 // POST - Create video entry on Bunny.net for this room
