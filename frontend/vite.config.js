@@ -7,7 +7,7 @@ import devtoolsJson from 'vite-plugin-devtools-json';
 export default defineConfig({
 	// Vitest configuration
 	test: {
-		include: ['src/**/*.{test,spec}.{js,ts}'],
+		include: ['src/**/*.{test,spec}.{js,ts}', 'tests/unit/**/*.{test,spec}.{js,ts}'],
 		environment: 'node',
 		globals: true,
 		setupFiles: ['src/lib/observability/__tests__/setup.ts'],
