@@ -30,7 +30,7 @@
 	let {
 		onUploadComplete,
 		onError,
-		libraryId = 389539, // Default Bunny library ID
+		libraryId = 585929, // Default Bunny library ID (revolution-trading-courses)
 		apiBase = '/api/admin/bunny'
 	}: Props = $props();
 

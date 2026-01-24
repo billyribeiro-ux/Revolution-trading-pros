@@ -29,7 +29,7 @@ export const PUT: RequestHandler = async ({ request, cookies }) => {
 		// Get the video GUID and library ID from URL params
 		const url = new URL(request.url);
 		const videoGuid = url.searchParams.get('video_guid');
-		const libraryId = url.searchParams.get('library_id') || '389539';
+		const libraryId = url.searchParams.get('library_id') || '585929';
 
 		if (!videoGuid) {
 			throw error(400, 'video_guid is required');

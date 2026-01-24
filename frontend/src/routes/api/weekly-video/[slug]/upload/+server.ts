@@ -18,7 +18,7 @@ import { env } from '$env/dynamic/private';
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 // Default Bunny library ID - can be overridden by BUNNY_STREAM_LIBRARY_ID env var
-const DEFAULT_LIBRARY_ID = parseInt(env.BUNNY_STREAM_LIBRARY_ID || '577071', 10);
+const DEFAULT_LIBRARY_ID = parseInt(env.BUNNY_STREAM_LIBRARY_ID || '585929', 10);
 
 // Room-specific Bunny library IDs (all use same library for now)
 const ROOM_LIBRARY_IDS: Record<string, number> = {
@@ -43,7 +43,7 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		throw error(400, 'Room slug is required');
 	}
 
-	const libraryId = ROOM_LIBRARY_IDS[slug] || 389539;
+	const libraryId = ROOM_LIBRARY_IDS[slug] || DEFAULT_LIBRARY_ID;
 
 	const body = await request.json();
 
@@ -106,7 +106,7 @@ export const PUT: RequestHandler = async ({ params, request, cookies }) => {
 		throw error(400, 'Room slug is required');
 	}
 
-	const libraryId = ROOM_LIBRARY_IDS[slug] || 389539;
+	const libraryId = ROOM_LIBRARY_IDS[slug] || DEFAULT_LIBRARY_ID;
 
 	try {
 		const url = new URL(request.url);
