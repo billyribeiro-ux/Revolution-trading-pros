@@ -315,6 +315,97 @@ async fn list_uploads(
     })))
 }
 
+/// PUT /api/admin/bunny/upload - Upload video file to Bunny.net
+async fn upload_video(
+    State(_state): State<AppState>,
+    axum::extract::Query(params): axum::extract::Query<std::collections::HashMap<String, String>>,
+    headers: axum::http::HeaderMap,
+    body: axum::body::Bytes,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let api_key = get_bunny_api_key();
+    if api_key.is_empty() {
+        return Err((
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"success": false, "error": "Bunny API key not configured"})),
+        ));
+    }
+
+    let video_guid = params.get("video_guid").ok_or_else(|| {
+        (
+            StatusCode::BAD_REQUEST,
+            Json(json!({"success": false, "error": "video_guid is required"})),
+        )
+    })?;
+
+    let library_id: i64 = params
+        .get("library_id")
+        .and_then(|s| s.parse().ok())
+        .unwrap_or(DEFAULT_LIBRARY_ID);
+
+    if body.is_empty() {
+        return Err((
+            StatusCode::BAD_REQUEST,
+            Json(json!({"success": false, "error": "No file data provided"})),
+        ));
+    }
+
+    let content_type = headers
+        .get("content-type")
+        .and_then(|v| v.to_str().ok())
+        .unwrap_or("video/mp4");
+
+    tracing::info!(
+        "Uploading {} bytes to Bunny.net video {} in library {}",
+        body.len(),
+        video_guid,
+        library_id
+    );
+
+    // Upload to Bunny.net
+    let client = reqwest::Client::new();
+    let upload_url = format!(
+        "{}/library/{}/videos/{}",
+        BUNNY_API_BASE, library_id, video_guid
+    );
+
+    let response = client
+        .put(&upload_url)
+        .header("AccessKey", &api_key)
+        .header("Content-Type", content_type)
+        .body(body.to_vec())
+        .send()
+        .await
+        .map_err(|e| {
+            tracing::error!("Bunny upload error: {}", e);
+            (
+                StatusCode::BAD_GATEWAY,
+                Json(json!({"success": false, "error": format!("Bunny API error: {}", e)})),
+            )
+        })?;
+
+    if !response.status().is_success() {
+        let error_text = response.text().await.unwrap_or_default();
+        tracing::error!("Bunny upload failed: {}", error_text);
+        return Err((
+            StatusCode::BAD_GATEWAY,
+            Json(json!({"success": false, "error": format!("Upload failed: {}", error_text)})),
+        ));
+    }
+
+    let embed_url = format!(
+        "https://iframe.mediadelivery.net/embed/{}/{}",
+        library_id, video_guid
+    );
+    let video_url = format!("{}/{}/play_720p.mp4", BUNNY_STREAM_CDN, video_guid);
+
+    Ok(Json(json!({
+        "success": true,
+        "video_guid": video_guid,
+        "embed_url": embed_url,
+        "video_url": video_url
+    })))
+}
+
 // ═══════════════════════════════════════════════════════════════════════════
 // ROUTER
 // ═══════════════════════════════════════════════════════════════════════════
@@ -322,6 +413,7 @@ async fn list_uploads(
 pub fn admin_router() -> Router<AppState> {
     Router::new()
         .route("/create-video", post(create_video))
+        .route("/upload", axum::routing::put(upload_video))
         .route("/video-status/:guid", get(get_video_status))
         .route("/uploads", get(list_uploads))
 }

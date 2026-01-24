@@ -79,6 +79,11 @@
 	
 	// Video player controls
 	function playVideo() {
+		// Only play if we have a valid video URL
+		if (!canPlayVideo) {
+			console.warn('Cannot play video: Invalid or missing video URL');
+			return;
+		}
 		isVideoPlaying = true;
 	}
 	
@@ -111,9 +116,11 @@
 	
 	// Generate embed URL from video URL prop
 	function getEmbedUrl(url: string): string {
+		if (!url || url.trim() === '') return '';
+		
 		// Bunny.net iframe URL
 		if (url.includes('iframe.mediadelivery.net') || url.includes('bunnycdn')) {
-			return url;
+			return url.includes('?') ? url + '&autoplay=true' : url + '?autoplay=true';
 		}
 		// Vimeo
 		if (url.includes('vimeo.com')) {
@@ -125,8 +132,25 @@
 			const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
 			if (match) return `https://www.youtube.com/embed/${match[1]}?autoplay=1`;
 		}
-		return url;
+		// Return empty string for invalid URLs (prevents CSP errors)
+		return '';
 	}
+	
+	// Check if URL is a valid embeddable video URL
+	function isValidVideoUrl(url: string): boolean {
+		if (!url || url.trim() === '') return false;
+		// Only allow known video embed domains
+		return url.includes('iframe.mediadelivery.net') ||
+			url.includes('player.vimeo.com') ||
+			url.includes('youtube.com/embed') ||
+			url.includes('bunnycdn') ||
+			url.includes('vimeo.com') ||
+			url.includes('youtube.com/watch') ||
+			url.includes('youtu.be');
+	}
+	
+	// Derived: Can we play video inline?
+	const canPlayVideo = $derived(isValidVideoUrl(videoUrl));
 
 	function toggleTradeNotes(ticker: string) {
 		const newSet = new Set(expandedTradeNotes);
@@ -202,17 +226,24 @@
 						role="application"
 						aria-label="Video player"
 					>
-						{#if isVideoPlaying}
+						{#if isVideoPlaying && canPlayVideo}
 							<!-- Active Video Player -->
+							{@const safeEmbedUrl = getEmbedUrl(videoUrl)}
 							<div class="video-backdrop-blur"></div>
 							<div class="video-frame-container">
-								<iframe
-									src={getEmbedUrl(videoUrl)}
-									title={weeklyContent.videoTitle}
-									frameborder="0"
-									allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-									allowfullscreen
-								></iframe>
+								{#if safeEmbedUrl}
+									<iframe
+										src={safeEmbedUrl}
+										title={weeklyContent.videoTitle}
+										frameborder="0"
+										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+										allowfullscreen
+									></iframe>
+								{:else}
+									<div class="video-error">
+										<p>Video unavailable</p>
+									</div>
+								{/if}
 								
 								<!-- Video Controls Overlay -->
 								<div class="video-controls-bar">
@@ -661,6 +692,18 @@
 	/* Video Info hidden when playing inline */
 	.video-info-compact.hidden {
 		display: none;
+	}
+
+	/* Video Error State */
+	.video-error {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0, 0, 0, 0.8);
+		color: #fff;
+		font-size: 16px;
 	}
 
 	.video-duration {

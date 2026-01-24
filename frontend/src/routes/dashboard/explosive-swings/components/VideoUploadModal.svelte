@@ -89,6 +89,8 @@
 	}
 
 	function generateEmbedUrl(url: string, platform: string): string {
+		if (!url || url.trim() === '') return '';
+		
 		if (platform === 'vimeo') {
 			const match = url.match(/vimeo\.com\/(\d+)/);
 			if (match) return `https://player.vimeo.com/video/${match[1]}`;
@@ -97,7 +99,23 @@
 			const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
 			if (match) return `https://www.youtube.com/embed/${match[1]}`;
 		}
-		return url;
+		// Return URL only if it's a valid external embed URL
+		if (url.includes('iframe.mediadelivery.net') || 
+			url.includes('player.vimeo.com') || 
+			url.includes('youtube.com/embed') ||
+			url.includes('bunnycdn')) {
+			return url;
+		}
+		return '';
+	}
+	
+	// Check if URL is a valid embeddable video URL (not a relative path)
+	function isValidEmbedUrl(url: string): boolean {
+		if (!url || url.trim() === '') return false;
+		return url.startsWith('https://iframe.mediadelivery.net') ||
+			url.startsWith('https://player.vimeo.com') ||
+			url.startsWith('https://www.youtube.com/embed') ||
+			url.includes('bunnycdn');
 	}
 
 	const isFormValid = $derived(
@@ -109,6 +127,8 @@
 	const embedUrl = $derived(
 		form.video_url ? generateEmbedUrl(form.video_url, form.video_platform) : ''
 	);
+	
+	const canShowPreview = $derived(isValidEmbedUrl(embedUrl));
 
 	function resetForm() {
 		form = {
@@ -190,13 +210,19 @@
 				throw new Error(errorData.error || 'Failed to create video entry');
 			}
 			
-			const { video_guid, upload_url, video_url, embed_url } = await createResponse.json();
-			form.video_guid = video_guid;
-			form.video_url = embed_url || video_url;
+			const createData = await createResponse.json();
+			const { video_guid, embed_url, video_url } = createData;
 			
-			// Step 2: Upload file to Bunny.net
+			if (!video_guid) {
+				throw new Error('Failed to get video GUID from server');
+			}
+			
+			form.video_guid = video_guid;
+			form.video_url = embed_url || video_url || '';
+			
+			// Step 2: Upload file to Bunny.net via our proxy
 			uploadStatus = 'uploading';
-			await uploadFileToBunny(upload_url, videoFile);
+			await uploadFileToBunny(video_guid, videoFile);
 			
 			// Step 3: Wait for processing and get thumbnails
 			uploadStatus = 'processing';
@@ -227,7 +253,7 @@
 		}
 	}
 	
-	async function uploadFileToBunny(uploadUrl: string, file: File): Promise<void> {
+	async function uploadFileToBunny(videoGuid: string, file: File): Promise<void> {
 		return new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
 			
@@ -248,8 +274,11 @@
 			xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
 			xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
 			
-			xhr.open('PUT', uploadUrl, true);
+			// Use our proxy endpoint which has the Bunny API key
+			const proxyUrl = `/api/admin/bunny/upload?video_guid=${videoGuid}&library_id=389539`;
+			xhr.open('PUT', proxyUrl, true);
 			xhr.setRequestHeader('Content-Type', file.type);
+			xhr.withCredentials = true;
 			xhr.send(file);
 		});
 	}
@@ -600,7 +629,7 @@
 							ondragleave={handleDragLeave}
 							ondrop={handleDrop}
 						>
-							{#if form.video_url && embedUrl}
+							{#if canShowPreview && embedUrl}
 								<div class="video-preview">
 									<iframe
 										src={embedUrl}
