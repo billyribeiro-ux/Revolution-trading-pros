@@ -12,7 +12,7 @@
  * @version 1.0.0
  */
 use axum::{
-    extract::{Path, State},
+    extract::{DefaultBodyLimit, Path, State},
     http::StatusCode,
     routing::{get, post},
     Json, Router,
@@ -459,9 +459,15 @@ async fn upload_video(
 // ═══════════════════════════════════════════════════════════════════════════
 
 pub fn admin_router() -> Router<AppState> {
+    // ICT 7 FIX: Video uploads need 5GB limit (Axum default is 2MB)
+    // Apply layer only to upload route using nest
+    let upload_router = Router::new()
+        .route("/", axum::routing::put(upload_video))
+        .layer(DefaultBodyLimit::max(5 * 1024 * 1024 * 1024)); // 5GB
+
     Router::new()
         .route("/create-video", post(create_video))
-        .route("/upload", axum::routing::put(upload_video))
+        .nest("/upload", upload_router)
         .route("/video-status/:guid", get(get_video_status))
         .route("/uploads", get(list_uploads))
 }
