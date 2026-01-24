@@ -59,7 +59,7 @@ pub struct VideoStatusResponse {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const BUNNY_API_BASE: &str = "https://video.bunnycdn.com";
-const BUNNY_STREAM_CDN: &str = "https://vz-2a93ec0c-6c4.b-cdn.net";
+const BUNNY_STREAM_CDN: &str = "https://vz-857b2d40-8ae.b-cdn.net";
 
 fn get_default_library_id() -> i64 {
     std::env::var("BUNNY_STREAM_LIBRARY_ID")
