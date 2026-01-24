@@ -15,63 +15,69 @@ import { env } from '$env/dynamic/private';
 
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
-async function fetchFromBackend(
-	endpoint: string,
-	cookies?: { get: (name: string) => string | undefined }
-): Promise<any | null> {
-	try {
-		const headers: Record<string, string> = {
-			'Content-Type': 'application/json',
-			Accept: 'application/json'
-		};
-
-		if (cookies) {
-			const session = cookies.get('session');
-			if (session) {
-				headers['Cookie'] = `session=${session}`;
-			}
-		}
-
-		console.log(`[Bunny API] Fetching: ${BACKEND_URL}${endpoint}`);
-		const response = await fetch(`${BACKEND_URL}${endpoint}`, { headers });
-
-		if (!response.ok) {
-			console.error(`[Bunny API] Backend error: ${response.status}`);
-			return null;
-		}
-
-		return await response.json();
-	} catch (err) {
-		console.error('[Bunny API] Backend fetch failed:', err);
-		return null;
-	}
-}
-
 // GET - Check video processing status
 export const GET: RequestHandler = async ({ params, cookies }) => {
+	const accessToken = cookies.get('rtp_access_token');
 	const guid = (params as { guid: string }).guid;
 
 	if (!guid) {
 		throw error(400, 'Video GUID is required');
 	}
 
-	const backendData = await fetchFromBackend(
-		`/api/admin/bunny/video-status/${guid}`,
-		cookies
-	);
+	try {
+		const headers: Record<string, string> = {
+			'Content-Type': 'application/json',
+			'Accept': 'application/json'
+		};
 
-	if (backendData?.success) {
-		return json(backendData);
+		if (accessToken) {
+			headers['Authorization'] = `Bearer ${accessToken}`;
+		}
+
+		console.log(`[Bunny API] Fetching: ${BACKEND_URL}/api/admin/bunny/video-status/${guid}`);
+		const response = await fetch(`${BACKEND_URL}/api/admin/bunny/video-status/${guid}`, { headers });
+
+		if (!response.ok) {
+			console.error(`[Bunny API] Backend error: ${response.status}`);
+			// Return pending status if backend unavailable
+			return json({
+				success: true,
+				status: 'processing',
+				status_code: 3,
+				video_url: null,
+				embed_url: null,
+				thumbnail_url: null,
+				duration: null
+			});
+		}
+
+		const backendData = await response.json();
+
+		if (backendData?.success) {
+			return json(backendData);
+		}
+
+		// Return pending status if backend unavailable
+		return json({
+			success: true,
+			status: 'processing',
+			status_code: 3,
+			video_url: null,
+			embed_url: null,
+			thumbnail_url: null,
+			duration: null
+		});
+	} catch (err) {
+		console.error('[Bunny API] Error:', err);
+		// Return pending status on error
+		return json({
+			success: true,
+			status: 'processing',
+			status_code: 3,
+			video_url: null,
+			embed_url: null,
+			thumbnail_url: null,
+			duration: null
+		});
 	}
-
-	// Return pending status if backend unavailable
-	return json({
-		success: true,
-		status: 'processing',
-		status_code: 3,
-		video_url: null,
-		embed_url: null,
-		thumbnail_url: null,
-		duration: null
-	});
 };

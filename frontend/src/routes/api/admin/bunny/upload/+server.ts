@@ -17,11 +17,11 @@ import { env } from '$env/dynamic/private';
 
 const BACKEND_URL = env.BACKEND_URL || 'https://revolution-trading-pros-api.fly.dev';
 
-// POST - Upload video file to Bunny.net via backend
-export const POST: RequestHandler = async ({ request, cookies }) => {
-	const sessionCookie = cookies.get('session') || cookies.get('rtp_access_token');
+// PUT - Upload video file to Bunny.net via backend
+export const PUT: RequestHandler = async ({ request, cookies }) => {
+	const accessToken = cookies.get('rtp_access_token');
 
-	if (!sessionCookie) {
+	if (!accessToken) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -52,7 +52,7 @@ export const POST: RequestHandler = async ({ request, cookies }) => {
 			method: 'PUT',
 			headers: {
 				'Content-Type': contentType,
-				'Cookie': `session=${sessionCookie}`,
+				'Authorization': `Bearer ${accessToken}`,
 				'Content-Length': fileBuffer.byteLength.toString()
 			},
 			body: fileBuffer
