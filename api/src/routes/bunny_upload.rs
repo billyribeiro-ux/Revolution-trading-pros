@@ -59,13 +59,18 @@ pub struct VideoStatusResponse {
 // ═══════════════════════════════════════════════════════════════════════════
 
 const BUNNY_API_BASE: &str = "https://video.bunnycdn.com";
-const BUNNY_STREAM_CDN: &str = "https://vz-857b2d40-8ae.b-cdn.net";
+
+fn get_bunny_cdn_url() -> String {
+    std::env::var("BUNNY_CDN_URL")
+        .map(|s| s.trim().to_string())
+        .unwrap_or_else(|_| "https://vz-5a23b520-193.b-cdn.net".to_string())
+}
 
 fn get_default_library_id() -> i64 {
     std::env::var("BUNNY_STREAM_LIBRARY_ID")
         .ok()
-        .and_then(|s| s.parse().ok())
-        .unwrap_or(577071)
+        .and_then(|s| s.trim().parse().ok())
+        .unwrap_or(585929)
 }
 
 fn get_bunny_api_key() -> String {
@@ -175,7 +180,7 @@ async fn create_video(
         "{}/library/{}/videos/{}",
         BUNNY_API_BASE, library_id, video_guid
     );
-    let video_url = format!("{}/{}/play_720p.mp4", BUNNY_STREAM_CDN, video_guid);
+    let video_url = format!("{}/{}/play_720p.mp4", get_bunny_cdn_url(), video_guid);
     let embed_url = format!(
         "https://iframe.mediadelivery.net/embed/{}/{}",
         library_id, video_guid
@@ -280,7 +285,7 @@ async fn get_video_status(
     let duration = bunny_video["length"].as_i64().map(|l| l as i32);
     let thumbnail_url = bunny_video["thumbnailFileName"]
         .as_str()
-        .map(|t| format!("{}/{}/{}", BUNNY_STREAM_CDN, video_guid, t));
+        .map(|t| format!("{}/{}/{}", get_bunny_cdn_url(), video_guid, t));
 
     // Update database status
     if status == "ready" || status == "failed" {
@@ -302,7 +307,7 @@ async fn get_video_status(
         .await;
     }
 
-    let video_url = format!("{}/{}/play_720p.mp4", BUNNY_STREAM_CDN, video_guid);
+    let video_url = format!("{}/{}/play_720p.mp4", get_bunny_cdn_url(), video_guid);
     let embed_url = format!(
         "https://iframe.mediadelivery.net/embed/{}/{}",
         library_id, video_guid
@@ -439,7 +444,7 @@ async fn upload_video(
         "https://iframe.mediadelivery.net/embed/{}/{}",
         library_id, video_guid
     );
-    let video_url = format!("{}/{}/play_720p.mp4", BUNNY_STREAM_CDN, video_guid);
+    let video_url = format!("{}/{}/play_720p.mp4", get_bunny_cdn_url(), video_guid);
 
     Ok(Json(json!({
         "success": true,

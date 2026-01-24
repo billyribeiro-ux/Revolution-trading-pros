@@ -15,16 +15,18 @@
 
 ### 2. Bunny.net Stream (Video Hosting)
 - **Status**: ✅ Complete
-- **Library ID**: `577071`
-- **API Key**: `89cea32e-5686-4d7e-a0b6898d945f-68cc-4ae6`
-- **CDN**: `vz-857b2d40-8ae.b-cdn.net`
+- **Library Name**: `revolution-trading-courses`
+- **Library ID**: `585929`
+- **API Key**: `3982c5b8-6dea-4c37-b707db888834-cbb6-4a82`
+- **CDN**: `vz-5a23b520-193.b-cdn.net`
+- **Webhook**: `https://revolution-trading-pros-api.fly.dev/api/webhooks/bunny/video-status`
 
-### 3. Bunny.net Storage (File Downloads)
+### 3. Bunny.net Storage (File Downloads - Backup)
 - **Status**: ✅ Complete
-- **Storage Zone**: `revolution-downloads`
-- **API Key**: `d6516e26-cfb7-4d44-bd5fa5168dd5-5781-4f0c`
+- **Storage Zone**: `revolution-trading-downloads`
+- **API Key**: `a9fb06e7-4976-4ef5-bbf3d2a9f71d-2d1d-4a2d`
 - **Hostname**: `ny.storage.bunnycdn.com`
-- **CDN URL**: `https://revolution-downloads-cdn.b-cdn.net`
+- **Note**: Primary file storage is Cloudflare R2
 
 ### 4. PostgreSQL Database (Fly.io)
 - **Status**: ✅ Complete
