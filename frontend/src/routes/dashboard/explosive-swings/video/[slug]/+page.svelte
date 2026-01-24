@@ -67,12 +67,12 @@
 			// Fallback to mock data
 			video = {
 				id: 1,
-				title: 'Weekly Breakdown: Top Swing Setups',
-				description: "Complete breakdown of this week's top swing trade opportunities with technical analysis and entry/exit strategies.",
-				video_url: 'https://player.vimeo.com/video/123456789',
-				video_platform: 'vimeo',
-				thumbnail_url: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Breakdown',
-				duration: '24:35',
+				title: 'No video uploaded yet',
+				description: 'Upload a weekly video through the admin panel.',
+				video_url: '',
+				video_platform: 'bunny',
+				thumbnail_url: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Upload+Video',
+				duration: '0:00',
 				published_at: new Date().toISOString()
 			};
 		} catch (err) {

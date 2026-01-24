@@ -102,11 +102,11 @@
 	// Fallback data constants
 	const fallbackWeeklyContent: WeeklyContent = {
 		title: 'Week of January 13, 2026',
-		videoTitle: 'Weekly Breakdown: Top Swing Setups',
-		videoUrl: 'https://player.vimeo.com/video/123456789',
-		thumbnail: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video+Breakdown',
-		duration: '24:35',
-		publishedDate: 'January 13, 2026 at 9:00 AM ET'
+		videoTitle: 'No video uploaded yet',
+		videoUrl: '',
+		thumbnail: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Upload+Weekly+Video',
+		duration: '0:00',
+		publishedDate: 'Pending upload'
 	};
 
 	const fallbackTradePlan: TradePlanEntry[] = [
