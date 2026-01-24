@@ -108,11 +108,10 @@ const config = {
 				'img-src': ['self', 'data:', 'https:', 'blob:'],
 				'media-src': [
 					'self',
-					'https://s3.amazonaws.com',
-					'https://simpler-options.s3.amazonaws.com',
-					'https://simpler-cdn.s3.amazonaws.com',
-					'https://*.s3.amazonaws.com',
-					'https://cloud-streaming.s3.amazonaws.com',
+					'https://*.mediadelivery.net',
+					'https://vz-5a23b520-193.b-cdn.net',
+					'https://*.b-cdn.net',
+					'https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev',
 					'blob:'
 				],
 				'connect-src': [
@@ -123,16 +122,14 @@ const config = {
 					'https://revolution-trading-pros-api.fly.dev',
 					'https://revolution-trading-pros.pages.dev',
 					'https://www.googleapis.com',
-					'https://pendo-data-prod.box.com'
+					'https://*.mediadelivery.net',
+					'https://vz-5a23b520-193.b-cdn.net'
 				],
 				'frame-src': [
 					'self',
-					'https://simplertrading.app.box.com',
-					'https://*.box.com',
-					'https://www.youtube.com',
-					'https://player.vimeo.com',
 					'https://iframe.mediadelivery.net',
-					'https://*.mediadelivery.net'
+					'https://*.mediadelivery.net',
+					'https://www.youtube.com'
 				],
 				'frame-ancestors': ['none'],
 				'base-uri': ['self'],
