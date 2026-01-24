@@ -57,7 +57,7 @@ async fn list_watchlist(
 
     // Filter by room
     if let Some(room) = &query.room {
-        let room_filter = format!(" AND rooms @> '[\"{}\"]]'", room.replace('\'', "''"));
+        let room_filter = format!(" AND rooms @> '[\"{}\"]'", room.replace('\'', "''"));
         sql.push_str(&room_filter);
         count_sql.push_str(&room_filter);
     }
