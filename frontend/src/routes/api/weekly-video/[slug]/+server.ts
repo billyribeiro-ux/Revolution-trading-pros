@@ -74,18 +74,50 @@ async function fetchFromBackend(endpoint: string, options: RequestInit = {}): Pr
 }
 
 // ═══════════════════════════════════════════════════════════════════════════
+// FALLBACK MOCK DATA
 // ═══════════════════════════════════════════════════════════════════════════
-// FALLBACK MOCK DATA - ICT 7 Standards
-// ═══════════════════════════════════════════════════════════════════════════
-// Purpose: Provide graceful degradation when backend is unavailable
-// Behavior: Returns null data to trigger frontend "no video" state
-// Security: Empty video_url prevents CSP violations from invalid URLs
+// explosive-swings: null (has real upload flow)
+// Other rooms: Mock data until upload flow is implemented
 // ═══════════════════════════════════════════════════════════════════════════
 
 const mockWeeklyVideos: Record<string, WeeklyVideo | null> = {
-	'explosive-swings': null, // No mock data - force frontend to show "no video" state
-	'spx-profit-pulse': null,
-	'weekly-watchlist': null
+	'explosive-swings': null,
+	'spx-profit-pulse': {
+		id: 1,
+		room_id: 5,
+		room_slug: 'spx-profit-pulse',
+		week_of: '2026-01-20',
+		week_title: 'Week of January 20, 2026',
+		video_title: 'SPX Weekly Analysis',
+		video_url: 'https://iframe.mediadelivery.net/embed/585929/placeholder-spx',
+		video_platform: 'bunny',
+		thumbnail_url: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=SPX+Weekly+Video',
+		duration: '18:45',
+		description: 'Weekly SPX analysis and trade setups.',
+		is_current: true,
+		is_published: true,
+		published_at: new Date().toISOString(),
+		created_at: new Date().toISOString(),
+		updated_at: new Date().toISOString()
+	},
+	'weekly-watchlist': {
+		id: 2,
+		room_id: 6,
+		room_slug: 'weekly-watchlist',
+		week_of: '2026-01-20',
+		week_title: 'Week of January 20, 2026',
+		video_title: 'Weekly Watchlist Breakdown',
+		video_url: 'https://iframe.mediadelivery.net/embed/585929/placeholder-watchlist',
+		video_platform: 'bunny',
+		thumbnail_url: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Watchlist',
+		duration: '22:30',
+		description: 'This weeks top stocks to watch.',
+		is_current: true,
+		is_published: true,
+		published_at: new Date().toISOString(),
+		created_at: new Date().toISOString(),
+		updated_at: new Date().toISOString()
+	}
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
