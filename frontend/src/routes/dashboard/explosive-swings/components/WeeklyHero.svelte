@@ -551,13 +551,15 @@
 	.video-player-wrapper {
 		flex: 0 0 50%;
 		position: relative;
-		border-radius: 12px;
-		overflow: hidden;
 		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
+	.video-player-wrapper .video-player-compact {
+		flex: none;
+		padding-bottom: 56.25%;
+	}
+
 	.video-player-wrapper.playing {
-		flex: 0 0 65%;
 		box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
 	}
 
@@ -656,19 +658,7 @@
 		text-overflow: ellipsis;
 	}
 
-	/* Video Active State - Adjusts layout */
-	.video-container-compact.video-active {
-		flex-direction: column;
-		gap: 20px;
-	}
-
-	.video-container-compact.video-active .video-player-wrapper {
-		flex: none;
-		width: 100%;
-		max-width: 900px;
-		margin: 0 auto;
-	}
-
+	/* Video Info hidden when playing inline */
 	.video-info-compact.hidden {
 		display: none;
 	}
