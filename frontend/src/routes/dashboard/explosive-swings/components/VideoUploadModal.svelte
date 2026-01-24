@@ -1,13 +1,15 @@
 <!--
-	Video Upload Modal - ICT 7 Frontend Admin Component
+	VideoUploadModal - ICT 7 Grade
 	═══════════════════════════════════════════════════════════════════════════════════
-	Apple Principal Engineer ICT 7+ Grade - January 2026
+	Apple Principal Engineer ICT Level 7 - January 2026
 	
-	Drag & drop video upload modal for weekly breakdown videos.
-	Supports Bunny.net direct file upload AND URL pasting.
-	Auto-generates thumbnails with selection option.
+	Professional video upload modal for weekly watchlist videos.
+	- Clean separated UI: File Upload tab vs URL Input tab
+	- Native calendar date picker for week selection
+	- Auto-detect video duration from Bunny.net API
+	- Compact design, proper z-index above navbar
 	
-	@version 2.0.0 - Enterprise Rewrite with File Upload
+	@version 3.0.0 - ICT 7 Complete Rewrite
 -->
 <script lang="ts">
 	import { weeklyVideoApi } from '$lib/api/room-content';
@@ -21,7 +23,7 @@
 
 	const { isOpen, roomSlug, onClose, onSuccess }: Props = $props();
 
-	// Upload mode: 'file' for direct Bunny upload, 'url' for pasting existing URLs
+	// Upload mode
 	let uploadMode = $state<'file' | 'url'>('file');
 	
 	// Core states
@@ -34,6 +36,7 @@
 	let uploadProgress = $state(0);
 	let uploadStatus = $state<'idle' | 'preparing' | 'uploading' | 'processing' | 'complete'>('idle');
 	let fileInput = $state<HTMLInputElement | null>(null);
+	let dateInput = $state<HTMLInputElement | null>(null);
 	
 	// Thumbnail selection
 	let generatedThumbnails = $state<string[]>([]);
@@ -49,7 +52,7 @@
 		video_title: '',
 		video_url: '',
 		video_guid: '',
-		video_platform: 'bunny' as 'bunny' | 'vimeo' | 'youtube',
+		video_platform: 'bunny' as 'bunny',
 		thumbnail_url: '',
 		duration: '',
 		description: ''
@@ -76,46 +79,23 @@
 
 	function formatDate(dateStr: string): string {
 		return new Date(dateStr).toLocaleDateString('en-US', {
+			weekday: 'short',
 			month: 'short',
 			day: 'numeric',
 			year: 'numeric'
 		});
 	}
-
-	function detectPlatform(url: string): 'bunny' | 'vimeo' | 'youtube' {
-		if (url.includes('vimeo.com')) return 'vimeo';
-		if (url.includes('youtube.com') || url.includes('youtu.be')) return 'youtube';
-		return 'bunny';
-	}
-
-	function generateEmbedUrl(url: string, platform: string): string {
-		if (!url || url.trim() === '') return '';
-		
-		if (platform === 'vimeo') {
-			const match = url.match(/vimeo\.com\/(\d+)/);
-			if (match) return `https://player.vimeo.com/video/${match[1]}`;
-		}
-		if (platform === 'youtube') {
-			const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
-			if (match) return `https://www.youtube.com/embed/${match[1]}`;
-		}
-		// Return URL only if it's a valid external embed URL
-		if (url.includes('iframe.mediadelivery.net') || 
-			url.includes('player.vimeo.com') || 
-			url.includes('youtube.com/embed') ||
-			url.includes('bunnycdn')) {
-			return url;
-		}
-		return '';
+	
+	function formatDuration(seconds: number): string {
+		const mins = Math.floor(seconds / 60);
+		const secs = Math.floor(seconds % 60);
+		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	}
 	
-	// Check if URL is a valid embeddable video URL (not a relative path)
-	function isValidEmbedUrl(url: string): boolean {
+	// Bunny.net only - no platform detection needed
+	function isValidBunnyUrl(url: string): boolean {
 		if (!url || url.trim() === '') return false;
-		return url.startsWith('https://iframe.mediadelivery.net') ||
-			url.startsWith('https://player.vimeo.com') ||
-			url.startsWith('https://www.youtube.com/embed') ||
-			url.includes('bunnycdn');
+		return url.includes('iframe.mediadelivery.net');
 	}
 
 	const isFormValid = $derived(
@@ -123,12 +103,8 @@
 		form.video_title.trim() !== '' &&
 		form.week_of !== ''
 	);
-
-	const embedUrl = $derived(
-		form.video_url ? generateEmbedUrl(form.video_url, form.video_platform) : ''
-	);
 	
-	const canShowPreview = $derived(isValidEmbedUrl(embedUrl));
+	const canShowPreview = $derived(isValidBunnyUrl(form.video_url));
 
 	function resetForm() {
 		form = {
@@ -151,7 +127,6 @@
 		if (fileInput) fileInput.value = '';
 	}
 	
-	// File size formatter
 	function formatFileSize(bytes: number): string {
 		if (bytes < 1024) return bytes + ' B';
 		if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
@@ -159,31 +134,36 @@
 		return (bytes / (1024 * 1024 * 1024)).toFixed(2) + ' GB';
 	}
 	
-	// File selection handler
 	function handleFileSelect(file: File) {
 		errorMessage = '';
 		
 		if (!allowedTypes.includes(file.type)) {
-			errorMessage = 'Invalid file type. Please upload MP4, WebM, QuickTime, AVI, or MKV.';
+			errorMessage = 'Invalid file type. Upload MP4, WebM, QuickTime, AVI, or MKV.';
 			return;
 		}
 		
 		if (file.size > maxFileSize) {
-			errorMessage = 'File too large. Maximum size is 5GB.';
+			errorMessage = 'File too large. Maximum 5GB.';
 			return;
 		}
 		
 		videoFile = file;
-		// Auto-set video title from filename if empty
 		if (!form.video_title) {
 			form.video_title = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
 		}
+		
+		// Auto-start upload immediately
+		startBunnyUpload();
 	}
 	
 	function handleFileInputChange(e: Event) {
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
 		if (file) handleFileSelect(file);
+	}
+	
+	function openDatePicker() {
+		dateInput?.showPicker?.();
 	}
 	
 	// Bunny.net upload functions
@@ -371,7 +351,8 @@
 	}
 
 	function handleUrlChange() {
-		form.video_platform = detectPlatform(form.video_url);
+		// Bunny.net only - no platform detection needed
+		form.video_platform = 'bunny';
 	}
 
 	function handleDragOver(e: DragEvent) {
@@ -399,9 +380,8 @@
 		
 		// Check for URL in dropped data (url mode)
 		const url = e.dataTransfer?.getData('text/plain');
-		if (url && (url.startsWith('http://') || url.startsWith('https://'))) {
+		if (url && url.includes('iframe.mediadelivery.net')) {
 			form.video_url = url;
-			form.video_platform = detectPlatform(url);
 		}
 	}
 </script>
@@ -615,54 +595,30 @@
 							/>
 						{/if}
 					{:else}
-						<!-- URL MODE -->
-						<!-- Drag & Drop Zone for URL -->
-						<div 
-							class="drop-zone"
-							class:drag-over={isDragOver}
-							class:has-url={form.video_url}
-							role="button"
-							tabindex="0"
-							aria-label="Drop video URL here"
-							ondragover={handleDragOver}
-							ondragleave={handleDragLeave}
-							ondrop={handleDrop}
-						>
-							{#if canShowPreview && embedUrl}
-								<div class="video-preview">
-									<iframe
-										src={embedUrl}
-										title="Video Preview"
-										frameborder="0"
-										allow="autoplay; fullscreen"
-									></iframe>
-								</div>
-							{:else}
-								<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
-									<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
-									<path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
-								</svg>
-								<p class="drop-text">Drag & drop a video URL here</p>
-								<p class="drop-subtext">or paste URL below</p>
-							{/if}
+						<!-- URL MODE - Clean input for Bunny.net URLs -->
+						<div class="url-input-section">
+							<label for="video_url" class="input-label">Bunny.net Embed URL</label>
+							<input
+								id="video_url"
+								type="url"
+								bind:value={form.video_url}
+								placeholder="https://iframe.mediadelivery.net/embed/..."
+								class="form-input url-input"
+								required
+							/>
+							<p class="input-hint">Paste the embed URL from your Bunny.net video library</p>
 						</div>
-
-						<!-- URL Input -->
-						<div class="form-group url-group">
-							<label for="video_url">Video URL *</label>
-							<div class="url-input-wrapper">
-								<input
-									id="video_url"
-									type="url"
-									bind:value={form.video_url}
-									oninput={handleUrlChange}
-									placeholder="https://vimeo.com/123456789 or Bunny.net embed URL"
-									class="form-input"
-									required
-								/>
-								<span class="platform-badge">{form.video_platform}</span>
+						
+						{#if canShowPreview}
+							<div class="video-preview">
+								<iframe
+									src={form.video_url}
+									title="Video Preview"
+									frameborder="0"
+									allow="autoplay; fullscreen"
+								></iframe>
 							</div>
-						</div>
+						{/if}
 						
 						<!-- Manual Thumbnail/Duration for URL mode -->
 						<div class="form-row">
@@ -693,27 +649,39 @@
 					<div class="form-divider"></div>
 
 				<div class="form-row">
-					<div class="form-group">
-						<label for="week_of">Week Of *</label>
+				<div class="form-group">
+					<label for="week_of">Week Of *</label>
+					<div class="date-picker-wrapper">
 						<input
 							id="week_of"
 							type="date"
+							bind:this={dateInput}
 							bind:value={form.week_of}
-							class="form-input"
+							class="form-input date-input"
 							required
 						/>
+						<button type="button" class="calendar-btn" onclick={openDatePicker} aria-label="Open calendar">
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+								<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+								<line x1="16" y1="2" x2="16" y2="6"></line>
+								<line x1="8" y1="2" x2="8" y2="6"></line>
+								<line x1="3" y1="10" x2="21" y2="10"></line>
+							</svg>
+						</button>
 					</div>
-					<div class="form-group">
-						<label for="week_title">Week Title</label>
-						<input
-							id="week_title"
-							type="text"
-							bind:value={form.week_title}
-							placeholder="Week of Jan 27, 2026"
-							class="form-input"
-						/>
-					</div>
+					<span class="date-display">{formatDate(form.week_of)}</span>
 				</div>
+				<div class="form-group">
+					<label for="week_title">Week Title</label>
+					<input
+						id="week_title"
+						type="text"
+						bind:value={form.week_title}
+						placeholder="Auto-generated from date"
+						class="form-input"
+					/>
+				</div>
+			</div>
 
 				<div class="form-group">
 					<label for="video_title">Video Title *</label>
@@ -768,24 +736,24 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MODAL PORTAL - Top-level positioning (won't be cut off by parent containers)
+	   MODAL PORTAL - ICT 7 Grade z-index above ALL elements including navbar
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-portal {
 		position: fixed;
 		inset: 0;
-		z-index: 99999;
+		z-index: 2147483647; /* Max z-index - above navbar, above everything */
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 20px;
+		padding: 16px;
 	}
 
 	.modal-backdrop {
 		position: absolute;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.7);
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
+		background: rgba(0, 0, 0, 0.75);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
 		animation: backdropFade 0.2s ease-out;
 	}
 
@@ -795,24 +763,23 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MODAL CONTAINER - Proper viewport-safe sizing
+	   MODAL CONTAINER - Compact ICT 7 Grade design
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-container {
 		position: relative;
 		background: #ffffff;
-		border-radius: 20px;
+		border-radius: 16px;
 		width: 100%;
-		max-width: 640px;
-		max-height: calc(100vh - 40px);
-		max-height: calc(100dvh - 40px);
+		max-width: 480px; /* Thinner modal */
+		max-height: calc(100vh - 32px);
+		max-height: calc(100dvh - 32px);
 		overflow: hidden;
 		display: flex;
 		flex-direction: column;
 		box-shadow: 
-			0 0 0 1px rgba(0, 0, 0, 0.05),
-			0 25px 50px -12px rgba(0, 0, 0, 0.5),
-			0 0 100px -20px rgba(20, 62, 89, 0.4);
-		animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+			0 0 0 1px rgba(0, 0, 0, 0.08),
+			0 20px 40px -8px rgba(0, 0, 0, 0.4);
+		animation: modalSlideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	@keyframes modalSlideUp {
@@ -1270,16 +1237,16 @@
 	.modal-form {
 		flex: 1;
 		overflow-y: auto;
-		padding: 24px;
+		padding: 20px;
 	}
 
-	/* Drop Zone */
+	/* Drop Zone - ICT 7 Compact */
 	.drop-zone {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: 32px 24px;
+		padding: 24px 20px;
 		border: 2px dashed #cbd5e1;
 		border-radius: 16px;
 		background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
@@ -1301,13 +1268,6 @@
 		transform: scale(1.01);
 	}
 
-	.drop-zone.has-url {
-		padding: 0;
-		border-style: solid;
-		border-color: #143E59;
-		overflow: hidden;
-	}
-
 	.drop-text {
 		margin: 12px 0 4px;
 		font-size: 15px;
@@ -1315,17 +1275,13 @@
 		color: #334155;
 	}
 
-	.drop-subtext {
-		margin: 0;
-		font-size: 13px;
-		color: #94a3b8;
-	}
-
 	.video-preview {
 		width: 100%;
 		aspect-ratio: 16/9;
-		border-radius: 10px;
+		border-radius: 12px;
 		overflow: hidden;
+		margin-bottom: 16px;
+		border: 2px solid #143E59;
 	}
 
 	.video-preview iframe {
@@ -1333,31 +1289,68 @@
 		height: 100%;
 	}
 
-	/* URL Input */
-	.url-group {
-		margin-bottom: 16px;
+	/* URL Input Section - ICT 7 Grade */
+	.url-input-section {
+		margin-bottom: 20px;
 	}
 
-	.url-input-wrapper {
+	.input-label {
+		display: block;
+		font-size: 13px;
+		font-weight: 600;
+		color: #334155;
+		margin-bottom: 8px;
+	}
+
+	.url-input {
+		font-family: 'SF Mono', Monaco, monospace;
+		font-size: 13px;
+	}
+
+	.input-hint {
+		margin: 6px 0 0;
+		font-size: 12px;
+		color: #94a3b8;
+	}
+
+	/* Date Picker - ICT 7 Grade */
+	.date-picker-wrapper {
 		position: relative;
+		display: flex;
+		align-items: center;
 	}
 
-	.url-input-wrapper .form-input {
-		padding-right: 80px;
+	.date-input {
+		padding-right: 44px;
 	}
 
-	.platform-badge {
+	.calendar-btn {
 		position: absolute;
-		right: 8px;
+		right: 4px;
 		top: 50%;
 		transform: translateY(-50%);
-		padding: 4px 10px;
+		width: 36px;
+		height: 36px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 		background: #143E59;
-		border-radius: 4px;
-		font-size: 11px;
-		font-weight: 600;
-		text-transform: uppercase;
+		border: none;
+		border-radius: 8px;
 		color: white;
+		cursor: pointer;
+		transition: all 0.15s;
+	}
+
+	.calendar-btn:hover {
+		background: #0f2d42;
+	}
+
+	.date-display {
+		display: block;
+		margin-top: 6px;
+		font-size: 12px;
+		color: #64748b;
 	}
 
 	/* Form */
