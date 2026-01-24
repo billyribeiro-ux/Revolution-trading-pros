@@ -130,7 +130,9 @@ const config = {
 					'https://simplertrading.app.box.com',
 					'https://*.box.com',
 					'https://www.youtube.com',
-					'https://player.vimeo.com'
+					'https://player.vimeo.com',
+					'https://iframe.mediadelivery.net',
+					'https://*.mediadelivery.net'
 				],
 				'frame-ancestors': ['none'],
 				'base-uri': ['self'],
