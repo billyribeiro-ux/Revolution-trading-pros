@@ -1,5 +1,5 @@
 //! Health check routes
-//! ICT 11+ FIX: setup-db and run-migrations now require admin authentication
+//! ICT 7+ Principal Engineer: Comprehensive health checks with DB and Redis verification
 
 use axum::http::StatusCode;
 use axum::{
@@ -18,6 +18,30 @@ struct HealthResponse {
     environment: String,
 }
 
+/// ICT 7+: Detailed health response with service status
+#[derive(Serialize)]
+struct DetailedHealthResponse {
+    status: String,
+    version: String,
+    environment: String,
+    services: ServiceStatus,
+}
+
+#[derive(Serialize)]
+struct ServiceStatus {
+    database: ComponentStatus,
+    redis: ComponentStatus,
+    storage: ComponentStatus,
+}
+
+#[derive(Serialize)]
+struct ComponentStatus {
+    status: String,
+    latency_ms: Option<u64>,
+    #[serde(skip_serializing_if = "Option::is_none")]
+    error: Option<String>,
+}
+
 #[derive(Serialize)]
 struct SetupResponse {
     success: bool,
@@ -31,6 +55,79 @@ async fn health_check(
         status: "healthy".to_string(),
         version: env!("CARGO_PKG_VERSION").to_string(),
         environment: state.config.environment.clone(),
+    })
+}
+
+/// ICT 7+: Detailed health check with all service statuses
+/// GET /health/detailed - Returns status of DB, Redis, and Storage
+async fn detailed_health_check(
+    axum::extract::State(state): axum::extract::State<AppState>,
+) -> Json<DetailedHealthResponse> {
+    // Check database
+    let db_start = std::time::Instant::now();
+    let db_status = match sqlx::query("SELECT 1").execute(&state.db.pool).await {
+        Ok(_) => ComponentStatus {
+            status: "healthy".to_string(),
+            latency_ms: Some(db_start.elapsed().as_millis() as u64),
+            error: None,
+        },
+        Err(e) => ComponentStatus {
+            status: "unhealthy".to_string(),
+            latency_ms: Some(db_start.elapsed().as_millis() as u64),
+            error: Some(e.to_string()),
+        },
+    };
+
+    // Check Redis
+    let redis_status = if let Some(ref redis) = state.services.redis {
+        let redis_start = std::time::Instant::now();
+        match redis.get("health_check_ping").await {
+            Ok(_) => ComponentStatus {
+                status: "healthy".to_string(),
+                latency_ms: Some(redis_start.elapsed().as_millis() as u64),
+                error: None,
+            },
+            Err(e) => ComponentStatus {
+                status: "unhealthy".to_string(),
+                latency_ms: Some(redis_start.elapsed().as_millis() as u64),
+                error: Some(e.to_string()),
+            },
+        }
+    } else {
+        ComponentStatus {
+            status: "not_configured".to_string(),
+            latency_ms: None,
+            error: None,
+        }
+    };
+
+    // Storage is assumed healthy if we got this far (initialized at startup)
+    let storage_status = ComponentStatus {
+        status: "healthy".to_string(),
+        latency_ms: None,
+        error: None,
+    };
+
+    // Determine overall status
+    let overall_status = if db_status.status == "healthy" 
+        && (redis_status.status == "healthy" || redis_status.status == "not_configured") 
+    {
+        "healthy"
+    } else if db_status.status == "healthy" {
+        "degraded"
+    } else {
+        "unhealthy"
+    };
+
+    Json(DetailedHealthResponse {
+        status: overall_status.to_string(),
+        version: env!("CARGO_PKG_VERSION").to_string(),
+        environment: state.config.environment.clone(),
+        services: ServiceStatus {
+            database: db_status,
+            redis: redis_status,
+            storage: storage_status,
+        },
     })
 }
 
@@ -250,6 +347,7 @@ async fn init_db(
 pub fn router() -> Router<AppState> {
     Router::new()
         .route("/health", get(health_check))
+        .route("/health/detailed", get(detailed_health_check))
         .route("/ready", get(ready_check))
         .route("/setup-db", post(setup_db))
         .route("/run-migrations", post(run_migrations))
