@@ -139,7 +139,11 @@
 	}
 </script>
 
-<section class="hero" class:collapsed={isCollapsed}>
+<section class="hero" class:collapsed={isCollapsed} class:video-playing={isVideoPlaying}>
+	<!-- Background blur overlay when video is playing -->
+	{#if isVideoPlaying}
+		<div class="hero-backdrop-overlay" onclick={closeVideo} role="presentation"></div>
+	{/if}
 	<button class="hero-collapse-toggle" onclick={toggleCollapse}>
 		<div class="hero-header-compact">
 			<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" class="video-icon">
@@ -546,7 +550,26 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ENHANCED VIDEO PLAYER - ICT 7 In-Place Playback
+	   HERO BACKDROP OVERLAY - ICT 7 Video Playing State
+	   Creates blur effect behind video when playing
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	.hero-backdrop-overlay {
+		position: fixed;
+		inset: 0;
+		background: rgba(20, 62, 89, 0.85);
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+		z-index: 100;
+		animation: fadeIn 0.3s ease-out;
+	}
+
+	@keyframes fadeIn {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ENHANCED VIDEO PLAYER - ICT 7 In-Place Playback with Lift-Off Effect
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.video-player-wrapper {
 		flex: 0 0 55%;
@@ -565,26 +588,42 @@
 		flex: none;
 	}
 
+	/* Playing state - Lift-off effect with elevation */
 	.video-player-wrapper.playing {
-		flex: 0 0 55%;
-		box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
+		position: relative;
+		z-index: 200;
+		transform: scale(1.02) translateY(-8px);
+		box-shadow: 
+			0 30px 80px rgba(0, 0, 0, 0.5),
+			0 15px 40px rgba(0, 0, 0, 0.3);
+		border-radius: 16px;
 	}
 
+	/* Expanded/Fullscreen state */
 	.video-player-wrapper.expanded {
 		position: fixed;
 		inset: 0;
 		z-index: 99999;
 		flex: none;
 		border-radius: 0;
+		transform: none;
+		padding-bottom: 0;
 	}
 
+	/* Backdrop glow effect behind video */
 	.video-backdrop-blur {
 		position: absolute;
-		inset: -50px;
+		inset: -30px;
 		background: linear-gradient(135deg, #f69532 0%, #e8850d 100%);
-		filter: blur(30px);
-		opacity: 0.3;
+		filter: blur(40px);
+		opacity: 0.4;
 		z-index: -1;
+		animation: pulseGlow 3s ease-in-out infinite;
+	}
+
+	@keyframes pulseGlow {
+		0%, 100% { opacity: 0.4; transform: scale(1); }
+		50% { opacity: 0.6; transform: scale(1.05); }
 	}
 
 	.video-frame-container {
@@ -665,17 +704,21 @@
 		text-overflow: ellipsis;
 	}
 
-	/* Video Active State - Adjusts layout */
+	/* Video Active State - Adjusts layout with centered elevated player */
 	.video-container-compact.video-active {
 		flex-direction: column;
-		gap: 20px;
+		gap: 24px;
+		align-items: center;
+		position: relative;
+		z-index: 150;
 	}
 
 	.video-container-compact.video-active .video-player-wrapper {
 		flex: none;
-		width: 100%;
-		max-width: 900px;
+		width: 90%;
+		max-width: 1000px;
 		margin: 0 auto;
+		padding-bottom: 50.625%; /* 16:9 at 90% width */
 	}
 
 	.video-info-compact.hidden {
