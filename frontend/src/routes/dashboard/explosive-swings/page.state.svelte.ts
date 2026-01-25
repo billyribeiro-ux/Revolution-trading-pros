@@ -60,6 +60,8 @@ export function createPageState() {
 	let isClosePositionModalOpen = $state(false);
 	let closingPosition = $state<ActivePosition | null>(null);
 	let isAddTradeModalOpen = $state(false);
+	let isUpdatePositionModalOpen = $state(false);
+	let updatingPosition = $state<ActivePosition | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DATA STATE
@@ -400,6 +402,22 @@ export function createPageState() {
 		isAddTradeModalOpen = false;
 	}
 
+	function openUpdatePositionModal(position: ActivePosition) {
+		updatingPosition = position;
+		isUpdatePositionModalOpen = true;
+	}
+
+	function closeUpdatePositionModal() {
+		isUpdatePositionModalOpen = false;
+		updatingPosition = null;
+	}
+
+	function handlePositionUpdated() {
+		// Refresh positions data
+		fetchAllTrades();
+		fetchStats();
+	}
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// RETURN PUBLIC API
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -531,6 +549,12 @@ export function createPageState() {
 		get isAddTradeModalOpen() {
 			return isAddTradeModalOpen;
 		},
+		get isUpdatePositionModalOpen() {
+			return isUpdatePositionModalOpen;
+		},
+		get updatingPosition() {
+			return updatingPosition;
+		},
 
 		// Actions
 		initializeData,
@@ -555,6 +579,9 @@ export function createPageState() {
 		closeVideoUploadModal,
 		openAddTradeModal,
 		closeAddTradeModal,
+		openUpdatePositionModal,
+		closeUpdatePositionModal,
+		handlePositionUpdated,
 
 		// Constants
 		ROOM_SLUG

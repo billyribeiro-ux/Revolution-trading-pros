@@ -1,11 +1,7 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
-	 * ActivePositionCard Component - COMPACT Trading Position Display
-	 * ═══════════════════════════════════════════════════════════════════════════════
-	 *
-	 * @version 7.0.0 - High Density Refactor: 70px height, single-line data
-	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
+	 * ActivePositionCard - Compact Trading Dashboard Card
+	 * @version 8.0.0 - Professional admin controls with dropdown menu
 	 */
 	import type { ActivePosition } from '../types';
 	import { formatPercent, formatPrice } from '../utils/formatters';
@@ -14,183 +10,203 @@
 		position: ActivePosition;
 		isAdmin?: boolean;
 		onClose?: (position: ActivePosition) => void;
+		onUpdate?: (position: ActivePosition) => void;
 	}
 
-	const { position, isAdmin = false, onClose }: Props = $props();
+	const { position, isAdmin = false, onClose, onUpdate }: Props = $props();
 
-	function handleClosePosition(e: MouseEvent) {
+	let menuOpen = $state(false);
+
+	const isProfit = $derived(position.unrealizedPercent !== null && position.unrealizedPercent >= 0);
+	const statusClass = $derived(
+		position.status === 'WATCHING' ? 'watching' : 
+		position.status === 'ENTRY' ? 'entry' : 
+		isProfit ? 'profit' : 'loss'
+	);
+
+	function toggleMenu(e: MouseEvent) {
 		e.stopPropagation();
+		menuOpen = !menuOpen;
+	}
+
+	function handleClose(e: MouseEvent) {
+		e.stopPropagation();
+		menuOpen = false;
 		onClose?.(position);
 	}
 
-	// Compact status config
-	const statusConfig = $derived.by(() => {
-		switch (position.status) {
-			case 'ENTRY':
-				return { label: 'ENTRY', border: 'var(--color-entry)', bg: 'var(--color-entry-bg)' };
-			case 'WATCHING':
-				return { label: 'WATCH', border: 'var(--color-watching)', bg: 'var(--color-watching-bg)' };
-			case 'ACTIVE':
-				const isProfit = position.unrealizedPercent !== null && position.unrealizedPercent >= 0;
-				return isProfit
-					? { label: 'ACTIVE', border: 'var(--color-profit)', bg: 'var(--color-profit-bg-subtle)' }
-					: { label: 'ACTIVE', border: 'var(--color-loss)', bg: 'var(--color-loss-bg-subtle)' };
-			default:
-				return { label: position.status, border: 'var(--color-border-strong)', bg: 'var(--color-bg-card)' };
+	function handleUpdate(e: MouseEvent) {
+		e.stopPropagation();
+		menuOpen = false;
+		onUpdate?.(position);
+	}
+
+	function handleClickOutside(e: MouseEvent) {
+		if (menuOpen) {
+			menuOpen = false;
 		}
-	});
-
-	const pnlClass = $derived(
-		position.unrealizedPercent === null ? '' : position.unrealizedPercent >= 0 ? 'profit' : 'loss'
-	);
-
-	const progressGradient = $derived(
-		position.unrealizedPercent === null || position.unrealizedPercent < 0
-			? 'linear-gradient(to right, var(--color-loss-light), var(--color-loss))'
-			: 'linear-gradient(to right, var(--color-profit-light), var(--color-profit))'
-	);
-
-	// Format compact price line
-	const pricesLine = $derived.by(() => {
-		if (position.status === 'WATCHING' && position.entryZone) {
-			return `Zone:${formatPrice(position.entryZone.low)}-${formatPrice(position.entryZone.high)} | Now:${formatPrice(position.currentPrice)}`;
-		}
-		const parts = [`E:${formatPrice(position.entryPrice ?? 0)} → ${formatPrice(position.currentPrice)}`];
-		if (position.stopLoss) parts.push(`S:${formatPrice(position.stopLoss.price)}`);
-		if (position.targets[0]) parts.push(`T1:${formatPrice(position.targets[0].price)}`);
-		if (position.targets[1]) parts.push(`T2:${formatPrice(position.targets[1].price)}`);
-		return parts.join(' | ');
-	});
+	}
 </script>
 
-<article 
-	class="card"
-	style="--border: {statusConfig.border}; --bg: {statusConfig.bg};"
-	aria-label="{position.ticker} {position.status} position"
->
-	<!-- Main Row: Ticker + Status + P&L -->
+<svelte:window onclick={handleClickOutside} />
+
+<div class="card {statusClass}">
+	<!-- Row 1: Ticker + Status + P&L -->
 	<div class="row-main">
 		<span class="ticker">{position.ticker}</span>
-		<span class="status">{statusConfig.label}</span>
-		{#if position.unrealizedPercent !== null}
-			<span class="pnl {pnlClass}">{formatPercent(position.unrealizedPercent)}</span>
+		<span class="status">{position.status}</span>
+		<span class="pnl" class:profit={isProfit} class:loss={!isProfit && position.unrealizedPercent !== null}>
+			{position.unrealizedPercent !== null ? formatPercent(position.unrealizedPercent) : '—'}
+		</span>
+	</div>
+
+	<!-- Row 2: Entry → Current | Stop | T1 -->
+	<div class="row-prices">
+		{#if position.entryPrice}
+			<span>E:{formatPrice(position.entryPrice)} → {formatPrice(position.currentPrice)}</span>
+		{:else if position.entryZone}
+			<span>Zone:{formatPrice(position.entryZone.low)}-{formatPrice(position.entryZone.high)}</span>
+		{/if}
+		<span class="sep">|</span>
+		<span class="stop">S:{formatPrice(position.stopLoss.price)}</span>
+		{#if position.targets[0]}
+			<span class="sep">|</span>
+			<span class="target">T1:{formatPrice(position.targets[0].price)}</span>
 		{/if}
 	</div>
 
-	<!-- Prices Row: All on one line -->
-	<div class="row-prices">{pricesLine}</div>
-
-	<!-- Progress Row -->
+	<!-- Row 3: Progress bar -->
 	{#if position.status !== 'WATCHING' && position.targets.length > 0}
 		<div class="row-progress">
-			<div 
-				class="bar"
-				role="progressbar" 
-				aria-valuenow={position.progressToTarget1} 
-				aria-valuemin={0} 
-				aria-valuemax={100}
-				aria-label="{position.progressToTarget1.toFixed(0)}% to target 1"
-			>
-				<div class="fill" style="background: {progressGradient}; width: {Math.min(100, Math.max(0, position.progressToTarget1))}%;"></div>
+			<div class="bar">
+				<div class="fill" class:profit={isProfit} style="width:{Math.min(100, position.progressToTarget1)}%"></div>
 			</div>
 			<span class="pct">{position.progressToTarget1.toFixed(0)}%</span>
 		</div>
 	{/if}
 
-	<!-- Admin Close (hover only) -->
-	{#if isAdmin && onClose && position.status === 'ACTIVE'}
-		<button 
-			type="button"
-			class="close-btn"
-			onclick={handleClosePosition}
-			aria-label="Close {position.ticker}"
-			title="Close position"
-		>
-			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
-				<path d="M18 6L6 18M6 6l12 12" />
-			</svg>
-		</button>
+	<!-- Admin Menu -->
+	{#if isAdmin && (onClose || onUpdate)}
+		<div class="menu-container">
+			<button 
+				type="button" 
+				class="menu-trigger"
+				onclick={toggleMenu}
+				aria-label="Position actions"
+				aria-expanded={menuOpen}
+				aria-haspopup="menu"
+			>
+				<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+					<circle cx="12" cy="5" r="2"/>
+					<circle cx="12" cy="12" r="2"/>
+					<circle cx="12" cy="19" r="2"/>
+				</svg>
+			</button>
+
+			{#if menuOpen}
+				<div class="menu-dropdown" role="menu">
+					{#if onUpdate}
+						<button 
+							type="button" 
+							class="menu-item"
+							onclick={handleUpdate}
+							role="menuitem"
+						>
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+								<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+								<path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+							</svg>
+							Update Position
+						</button>
+					{/if}
+					{#if onClose && position.status === 'ACTIVE'}
+						<button 
+							type="button" 
+							class="menu-item danger"
+							onclick={handleClose}
+							role="menuitem"
+						>
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+								<circle cx="12" cy="12" r="10"/>
+								<path d="M15 9l-6 6M9 9l6 6"/>
+							</svg>
+							Close Position
+						</button>
+					{/if}
+				</div>
+			{/if}
+		</div>
 	{/if}
-</article>
+</div>
 
 <style>
-	/* COMPACT CARD - High Information Density */
 	.card {
 		position: relative;
-		background: var(--bg);
+		background: var(--color-bg-card);
 		border: 1px solid var(--color-border-default);
-		border-left: 3px solid var(--border);
-		border-radius: var(--radius-md);
-		padding: 8px 10px;
-		box-shadow: var(--shadow-sm);
-		transition: var(--transition-shadow);
+		border-left: 3px solid var(--color-border-strong);
+		border-radius: 8px;
+		padding: 12px 14px;
+		font-size: 13px;
 	}
+	.card.profit { border-left-color: var(--color-profit); }
+	.card.loss { border-left-color: var(--color-loss); }
+	.card.watching { border-left-color: var(--color-watching); }
+	.card.entry { border-left-color: var(--color-entry); }
 
-	.card:hover {
-		box-shadow: var(--shadow-md);
-	}
-
-	/* Main Row: Ticker + Status + P&L */
+	/* Row 1 */
 	.row-main {
 		display: flex;
 		align-items: center;
 		gap: 8px;
-		margin-bottom: 4px;
+		margin-bottom: 6px;
+		padding-right: 28px; /* Space for menu trigger */
 	}
-
 	.ticker {
-		font-size: 14px;
-		font-weight: var(--font-bold);
+		font-weight: 700;
+		font-size: 15px;
 		color: var(--color-text-primary);
-		text-transform: uppercase;
-		letter-spacing: 0.02em;
-		font-family: var(--font-display);
 	}
-
 	.status {
-		font-size: 9px;
-		font-weight: var(--font-bold);
-		padding: 2px 6px;
-		border-radius: var(--radius-sm);
+		font-size: 10px;
+		font-weight: 600;
 		text-transform: uppercase;
-		letter-spacing: 0.03em;
-		background: var(--color-bg-muted);
-		color: var(--color-text-secondary);
+		padding: 2px 6px;
+		border-radius: 4px;
+		background: var(--color-bg-subtle);
+		color: var(--color-text-tertiary);
 	}
-
 	.pnl {
 		margin-left: auto;
-		font-size: 13px;
-		font-weight: var(--font-bold);
+		font-weight: 700;
+		font-size: 14px;
 		font-variant-numeric: tabular-nums;
+		color: var(--color-text-muted);
 	}
+	.pnl.profit { color: var(--color-profit); }
+	.pnl.loss { color: var(--color-loss); }
 
-	.pnl.profit {
-		color: var(--color-profit);
-	}
-
-	.pnl.loss {
-		color: var(--color-loss);
-	}
-
-	/* Prices Row: Single line */
+	/* Row 2 */
 	.row-prices {
-		font-size: 11px;
-		color: var(--color-text-secondary);
-		font-variant-numeric: tabular-nums;
-		margin-bottom: 4px;
-		white-space: nowrap;
-		overflow: hidden;
-		text-overflow: ellipsis;
-	}
-
-	/* Progress Row */
-	.row-progress {
 		display: flex;
 		align-items: center;
 		gap: 6px;
+		font-size: 12px;
+		color: var(--color-text-secondary);
+		font-variant-numeric: tabular-nums;
+		margin-bottom: 2px;
 	}
+	.sep { color: var(--color-border-strong); }
+	.stop { color: var(--color-loss); }
+	.target { color: var(--color-profit); }
 
+	/* Row 3 */
+	.row-progress {
+		display: flex;
+		align-items: center;
+		gap: 8px;
+		margin-top: 8px;
+	}
 	.bar {
 		flex: 1;
 		height: 4px;
@@ -198,73 +214,104 @@
 		border-radius: 2px;
 		overflow: hidden;
 	}
-
 	.fill {
 		height: 100%;
+		background: var(--color-loss);
 		border-radius: 2px;
-		transition: width var(--duration-normal) var(--ease-out);
 	}
-
+	.fill.profit { background: var(--color-profit); }
 	.pct {
-		font-size: 10px;
-		color: var(--color-text-tertiary);
-		font-weight: var(--font-semibold);
-		font-variant-numeric: tabular-nums;
-		min-width: 32px;
+		font-size: 11px;
+		font-weight: 600;
+		color: var(--color-text-muted);
+		min-width: 28px;
 		text-align: right;
 	}
 
-	/* Admin Close Button - Hover Only */
-	.close-btn {
+	/* Menu */
+	.menu-container {
 		position: absolute;
-		top: 6px;
-		right: 6px;
-		width: 20px;
-		height: 20px;
-		padding: 0;
+		top: 10px;
+		right: 10px;
+	}
+
+	.menu-trigger {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: var(--color-bg-card);
-		border: 1px solid var(--color-loss);
-		color: var(--color-loss);
-		border-radius: var(--radius-sm);
+		width: 28px;
+		height: 28px;
+		padding: 0;
+		border: none;
+		background: transparent;
+		color: var(--color-text-muted);
 		cursor: pointer;
-		opacity: 0;
-		transition: var(--transition-colors), opacity var(--duration-fast) var(--ease-out);
+		border-radius: 6px;
+		transition: background 0.15s, color 0.15s;
 	}
-
-	.card:hover .close-btn {
-		opacity: 1;
+	.menu-trigger:hover {
+		background: var(--color-bg-subtle);
+		color: var(--color-text-secondary);
 	}
-
-	.close-btn:hover {
-		background: var(--color-loss);
-		color: white;
-	}
-
-	.close-btn:focus-visible {
-		opacity: 1;
-		outline: 2px solid var(--color-loss);
+	.menu-trigger:focus-visible {
+		outline: 2px solid var(--color-brand-primary);
 		outline-offset: 2px;
 	}
 
-	/* Responsive */
-	@media (max-width: 640px) {
-		.card {
-			padding: 6px 8px;
-		}
+	.menu-dropdown {
+		position: absolute;
+		top: calc(100% + 4px);
+		right: 0;
+		min-width: 160px;
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border-default);
+		border-radius: 8px;
+		box-shadow: var(--shadow-lg);
+		padding: 4px;
+		z-index: 50;
+		animation: menuFadeIn 0.15s ease-out;
+	}
 
-		.ticker {
-			font-size: 13px;
+	@keyframes menuFadeIn {
+		from {
+			opacity: 0;
+			transform: translateY(-4px);
 		}
+		to {
+			opacity: 1;
+			transform: translateY(0);
+		}
+	}
 
-		.pnl {
-			font-size: 12px;
-		}
-
-		.row-prices {
-			font-size: 10px;
-		}
+	.menu-item {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		width: 100%;
+		padding: 10px 12px;
+		border: none;
+		background: transparent;
+		color: var(--color-text-secondary);
+		font-size: 13px;
+		font-weight: 500;
+		text-align: left;
+		cursor: pointer;
+		border-radius: 6px;
+		transition: background 0.15s, color 0.15s;
+	}
+	.menu-item:hover {
+		background: var(--color-bg-subtle);
+		color: var(--color-text-primary);
+	}
+	.menu-item:focus-visible {
+		outline: 2px solid var(--color-brand-primary);
+		outline-offset: -2px;
+	}
+	.menu-item.danger {
+		color: var(--color-loss);
+	}
+	.menu-item.danger:hover {
+		background: var(--color-loss-bg);
+		color: var(--color-loss);
 	}
 </style>

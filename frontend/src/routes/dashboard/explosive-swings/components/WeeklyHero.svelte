@@ -1116,7 +1116,7 @@
 
 	.exp-cell {
 		font-size: 12px;
-		color: #666;
+		color: var(--color-text-tertiary);
 	}
 
 	.notes-th {
