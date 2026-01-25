@@ -9,7 +9,9 @@
 	 */
 	import { onMount } from 'svelte';
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
+	import ClosePositionModal from '../components/ClosePositionModal.svelte';
 	import type { Trade as ApiTrade } from '$lib/types/trading';
+	import type { ActivePosition } from '../types';
 
 	// TYPE DEFINITIONS
 	interface Trade {
@@ -55,19 +57,21 @@
 		profit_factor: number;
 	} | null>(null);
 	let isLoading = $state(false);
+	let errorMessage = $state('');
+	let successMessage = $state('');
+
+	/**
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * DEVELOPMENT MODE
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Set true to use mock data during implementation/testing
+	 */
+	const USE_MOCK_DATA = false;
 
 	// Admin state
 	let isAdmin = $state(false);
 	let showCloseTradeModal = $state(false);
 	let closingTrade = $state<Trade | null>(null);
-	let isClosingTrade = $state(false);
-	let closeTradeForm = $state({
-		exit_price: '',
-		exit_date: new Date().toISOString().split('T')[0],
-		notes: ''
-	});
-	let successMessage = $state('');
-	let errorMessage = $state('');
 
 	const ROOM_SLUG = 'explosive-swings';
 
@@ -86,15 +90,33 @@
 
 	// Fetch trades from API
 	async function fetchTrades() {
+		if (USE_MOCK_DATA) {
+			isLoading = false;
+			return;
+		}
+		
 		isLoading = true;
+		errorMessage = '';
+		
 		try {
-			const response = await fetch(`/api/trades/${ROOM_SLUG}?limit=100`);
+			const response = await fetch(`/api/trades/${ROOM_SLUG}?limit=100`, {
+				credentials: 'include'
+			});
+			
+			if (!response.ok) {
+				throw new Error(`HTTP ${response.status}`);
+			}
+			
 			const data = await response.json();
+			
 			if (data.success) {
 				apiTrades = data.data;
 				apiStats = data.stats;
+			} else {
+				throw new Error(data.error || 'Failed to load trades');
 			}
 		} catch (err) {
+			errorMessage = 'Failed to load trades. Please try again.';
 			console.error('Failed to fetch trades:', err);
 		} finally {
 			isLoading = false;
@@ -104,54 +126,25 @@
 	// Open close trade modal
 	function openCloseTrade(trade: Trade) {
 		closingTrade = trade;
-		closeTradeForm = {
-			exit_price: '',
-			exit_date: new Date().toISOString().split('T')[0],
-			notes: trade.notes || ''
-		};
 		showCloseTradeModal = true;
 	}
 
-	// Close trade handler
-	async function closeTrade() {
-		if (!closingTrade || !closeTradeForm.exit_price) {
-			errorMessage = 'Exit price is required';
-			return;
-		}
-
-		isClosingTrade = true;
-		errorMessage = '';
-
-		try {
-			// Use PUT to the trade endpoint with exit_price to close it
-			const response = await fetch(`/api/trades/${ROOM_SLUG}/${closingTrade.id}`, {
-				method: 'PUT',
-				headers: { 'Content-Type': 'application/json' },
-				body: JSON.stringify({
-					exit_price: parseFloat(closeTradeForm.exit_price),
-					exit_date: closeTradeForm.exit_date,
-					notes: closeTradeForm.notes,
-					status: 'closed'
-				})
-			});
-
-			const data = await response.json();
-
-			if (data.success) {
-				successMessage = `Trade closed: ${closingTrade.ticker} at $${closeTradeForm.exit_price}`;
-				showCloseTradeModal = false;
-				closingTrade = null;
-				await fetchTrades();
-			} else {
-				errorMessage = data.error || 'Failed to close trade';
-			}
-		} catch (err) {
-			errorMessage = 'Failed to close trade';
-			console.error(err);
-		} finally {
-			isClosingTrade = false;
-		}
-	}
+	// Transform Trade to ActivePosition for ClosePositionModal
+	const closingPosition = $derived.by((): ActivePosition | null => {
+		if (!closingTrade) return null;
+		return {
+			id: closingTrade.id,
+			ticker: closingTrade.ticker,
+			status: 'ACTIVE',
+			entryPrice: closingTrade.entryPrice,
+			currentPrice: closingTrade.entryPrice,
+			unrealizedPercent: null,
+			targets: [],
+			stopLoss: { price: 0, percentFromEntry: 0 },
+			progressToTarget1: 0,
+			notes: closingTrade.notes
+		};
+	});
 
 	onMount(() => {
 		checkAdminStatus();
@@ -297,26 +290,30 @@
 	];
 
 	// Transform API trades to display format or use fallback
-	const displayTrades = $derived<Trade[]>(
-		apiTrades.length > 0
-			? apiTrades.map((t) => ({
-					id: t.id,
-					ticker: t.ticker,
-					entryDate: formatDate(t.entry_date),
-					exitDate: t.exit_date ? formatDate(t.exit_date) : null,
-					entryPrice: t.entry_price,
-					exitPrice: t.exit_price,
-					shares: t.quantity,
-					profit: t.pnl || 0,
-					profitPercent: t.pnl_percent || 0,
-					duration: t.holding_days || 0,
-					setup: (t.setup || 'Breakout') as Trade['setup'],
-					result: t.status === 'open' ? 'ACTIVE' : (t.pnl || 0) >= 0 ? 'WIN' : 'LOSS',
-					notes: t.notes || '',
-					tradeType: t.trade_type
-				}))
-			: trades
-	);
+	const displayTrades = $derived.by((): Trade[] => {
+		// Development mode: use mock data
+		if (USE_MOCK_DATA) {
+			return trades;
+		}
+		
+		// Production: transform API data
+		return apiTrades.map((t) => ({
+			id: t.id,
+			ticker: t.ticker,
+			entryDate: formatDate(t.entry_date),
+			exitDate: t.exit_date ? formatDate(t.exit_date) : null,
+			entryPrice: t.entry_price,
+			exitPrice: t.exit_price,
+			shares: t.quantity,
+			profit: t.pnl || 0,
+			profitPercent: t.pnl_percent || 0,
+			duration: t.holding_days || 0,
+			setup: (t.setup || 'Breakout') as Trade['setup'],
+			result: t.status === 'open' ? 'ACTIVE' : (t.pnl || 0) >= 0 ? 'WIN' : 'LOSS',
+			notes: t.notes || '',
+			tradeType: t.trade_type
+		}));
+	});
 
 	const filteredTrades = $derived(
 		filterStatus === 'all'
@@ -428,6 +425,7 @@
 		<button
 			class="filter-btn"
 			class:active={filterStatus === 'all'}
+			aria-pressed={filterStatus === 'all'}
 			onclick={() => (filterStatus = 'all')}
 		>
 			All Trades
@@ -435,6 +433,7 @@
 		<button
 			class="filter-btn"
 			class:active={filterStatus === 'active'}
+			aria-pressed={filterStatus === 'active'}
 			onclick={() => (filterStatus = 'active')}
 		>
 			Active
@@ -442,6 +441,7 @@
 		<button
 			class="filter-btn"
 			class:active={filterStatus === 'win'}
+			aria-pressed={filterStatus === 'win'}
 			onclick={() => (filterStatus = 'win')}
 		>
 			Wins
@@ -449,6 +449,7 @@
 		<button
 			class="filter-btn"
 			class:active={filterStatus === 'loss'}
+			aria-pressed={filterStatus === 'loss'}
 			onclick={() => (filterStatus = 'loss')}
 		>
 			Losses
@@ -459,67 +460,81 @@
 	{#if successMessage}
 		<div class="message success-message">{successMessage}</div>
 	{/if}
-	{#if errorMessage}
-		<div class="message error-message">{errorMessage}</div>
-	{/if}
 
-	<!-- Trades Table -->
-	<div class="trades-container">
-		<div class="trades-table">
-			<div class="table-header" class:has-actions={isAdmin}>
-				<div>Ticker</div>
-				<div>Entry</div>
-				<div>Exit</div>
-				<div>Entry $</div>
-				<div>Exit $</div>
-				<div>Profit</div>
-				<div>%</div>
-				<div>Days</div>
-				<div>Setup</div>
-				<div>Result</div>
-				{#if isAdmin}<div>Actions</div>{/if}
+	<!-- Loading State -->
+	{#if isLoading}
+		<div class="trades-container">
+			<div class="loading-state">
+				<div class="spinner"></div>
+				<p>Loading trades...</p>
 			</div>
-			{#each filteredTrades as trade}
-				<div class="table-row" class:active={trade.result === 'ACTIVE'} class:has-actions={isAdmin}>
-					<div class="ticker-cell">{trade.ticker}</div>
-					<div>{trade.entryDate}</div>
-					<div>{trade.exitDate || 'Active'}</div>
-					<div>${(trade.entryPrice ?? 0).toFixed(2)}</div>
-					<div>{trade.exitPrice ? `$${trade.exitPrice.toFixed(2)}` : '-'}</div>
-					<div class:green={trade.profit > 0} class:red={trade.profit < 0}>
-						{trade.profit !== 0 ? `$${trade.profit.toLocaleString()}` : '-'}
-					</div>
-					<div class:green={trade.profitPercent > 0} class:red={trade.profitPercent < 0}>
-						{trade.profitPercent !== 0
-							? `${trade.profitPercent > 0 ? '+' : ''}${trade.profitPercent}%`
-							: '-'}
-					</div>
-					<div>{trade.duration || '-'}</div>
-					<div><span class="setup-badge">{trade.setup}</span></div>
-					<div>
-						<span class="result-badge result--{trade.result.toLowerCase()}">{trade.result}</span>
-					</div>
-					{#if isAdmin}
-						<div class="actions-cell">
-							{#if trade.result === 'ACTIVE'}
-								<button class="close-trade-btn" onclick={() => openCloseTrade(trade)}>
-									Close Trade
-								</button>
-							{:else}
-								<span class="closed-indicator">Closed</span>
-							{/if}
-						</div>
-					{/if}
-				</div>
-				<div class="notes-row">
-					<div class="notes-content">
-						<strong>Notes:</strong>
-						{trade.notes}
-					</div>
-				</div>
-			{/each}
 		</div>
-	</div>
+	{:else if errorMessage && !USE_MOCK_DATA}
+		<div class="trades-container">
+			<div class="error-state">
+				<p>{errorMessage}</p>
+				<button class="retry-btn" onclick={fetchTrades}>Try Again</button>
+			</div>
+		</div>
+	{:else}
+		<!-- Trades Table -->
+		<div class="trades-container">
+		<div class="trades-table" role="table" aria-label="Trade history">
+				<div class="table-header" class:has-actions={isAdmin} role="row">
+					<div role="columnheader">Ticker</div>
+					<div role="columnheader">Entry</div>
+					<div role="columnheader">Exit</div>
+					<div role="columnheader">Entry $</div>
+					<div role="columnheader">Exit $</div>
+					<div role="columnheader">Profit</div>
+					<div role="columnheader">%</div>
+					<div role="columnheader">Days</div>
+					<div role="columnheader">Setup</div>
+					<div role="columnheader">Result</div>
+					{#if isAdmin}<div role="columnheader">Actions</div>{/if}
+				</div>
+				{#each filteredTrades as trade (trade.id)}
+					<div class="table-row" class:active={trade.result === 'ACTIVE'} class:has-actions={isAdmin} role="row">
+					<div class="ticker-cell" role="cell">{trade.ticker}</div>
+						<div role="cell">{trade.entryDate}</div>
+						<div role="cell">{trade.exitDate || 'Active'}</div>
+						<div role="cell">${(trade.entryPrice ?? 0).toFixed(2)}</div>
+						<div role="cell">{trade.exitPrice ? `$${trade.exitPrice.toFixed(2)}` : '-'}</div>
+						<div role="cell" class:green={trade.profit > 0} class:red={trade.profit < 0}>
+							{trade.profit !== 0 ? `$${trade.profit.toLocaleString()}` : '-'}
+						</div>
+						<div role="cell" class:green={trade.profitPercent > 0} class:red={trade.profitPercent < 0}>
+							{trade.profitPercent !== 0
+								? `${trade.profitPercent > 0 ? '+' : ''}${trade.profitPercent}%`
+								: '-'}
+						</div>
+						<div role="cell">{trade.duration || '-'}</div>
+						<div role="cell"><span class="setup-badge">{trade.setup}</span></div>
+						<div role="cell">
+							<span class="result-badge result--{trade.result.toLowerCase()}">{trade.result}</span>
+						</div>
+					{#if isAdmin}
+							<div class="actions-cell" role="cell">
+								{#if trade.result === 'ACTIVE'}
+									<button class="close-trade-btn" onclick={() => openCloseTrade(trade)}>
+										Close Trade
+									</button>
+								{:else}
+									<span class="closed-indicator">Closed</span>
+								{/if}
+							</div>
+						{/if}
+					</div>
+					<div class="notes-row">
+						<div class="notes-content">
+							<strong>Notes:</strong>
+							{trade.notes}
+						</div>
+					</div>
+				{/each}
+			</div>
+		</div>
+	{/if}
 
 	<!-- Admin Link -->
 	{#if isAdmin}
@@ -536,97 +551,19 @@
 </div>
 
 <!-- Close Trade Modal -->
-{#if showCloseTradeModal && closingTrade}
-	<div 
-		class="modal-overlay" 
-		onclick={() => (showCloseTradeModal = false)}
-		onkeydown={(e) => e.key === 'Escape' && (showCloseTradeModal = false)}
-		role="dialog"
-		aria-modal="true"
-		aria-labelledby="close-trade-title"
-		tabindex="-1"
-	>
-		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-		<div 
-			class="modal" 
-			onclick={(e) => e.stopPropagation()}
-			onkeydown={(e) => e.stopPropagation()}
-			role="document"
-		>
-			<div class="modal-header">
-				<h2>Close Trade: {closingTrade.ticker}</h2>
-				<button class="modal-close" onclick={() => (showCloseTradeModal = false)}>&times;</button>
-			</div>
-
-			<div class="modal-body">
-				<div class="trade-summary">
-					<div class="summary-row">
-						<span>Entry Price:</span>
-						<strong>${closingTrade.entryPrice.toFixed(2)}</strong>
-					</div>
-					<div class="summary-row">
-						<span>Entry Date:</span>
-						<strong>{closingTrade.entryDate}</strong>
-					</div>
-					<div class="summary-row">
-						<span>Shares:</span>
-						<strong>{closingTrade.shares}</strong>
-					</div>
-				</div>
-
-				<div class="form-group">
-					<label for="exit_price">Exit Price *</label>
-					<input
-						type="number"
-						id="exit_price"
-						step="0.01"
-						placeholder="e.g., 155.00"
-						bind:value={closeTradeForm.exit_price}
-						required
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="exit_date">Exit Date</label>
-					<input
-						type="date"
-						id="exit_date"
-						bind:value={closeTradeForm.exit_date}
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="notes">Notes</label>
-					<textarea
-						id="notes"
-						rows="3"
-						placeholder="Exit notes..."
-						bind:value={closeTradeForm.notes}
-					></textarea>
-				</div>
-
-				{#if closeTradeForm.exit_price}
-					{@const exitPrice = parseFloat(closeTradeForm.exit_price)}
-					{@const pnl = (exitPrice - closingTrade.entryPrice) * closingTrade.shares}
-					{@const pnlPercent = ((exitPrice - closingTrade.entryPrice) / closingTrade.entryPrice) * 100}
-					<div class="pnl-preview" class:profit={pnl > 0} class:loss={pnl < 0}>
-						<span>Estimated P&L:</span>
-						<strong>{pnl > 0 ? '+' : ''}${pnl.toFixed(2)} ({pnlPercent > 0 ? '+' : ''}{pnlPercent.toFixed(2)}%)</strong>
-					</div>
-				{/if}
-			</div>
-
-			<div class="modal-footer">
-				<button class="btn-cancel" onclick={() => (showCloseTradeModal = false)}>
-					Cancel
-				</button>
-				<button class="btn-close-trade" onclick={closeTrade} disabled={isClosingTrade || !closeTradeForm.exit_price}>
-					{isClosingTrade ? 'Closing...' : 'Close Trade'}
-				</button>
-			</div>
-		</div>
-	</div>
-{/if}
+<ClosePositionModal
+	isOpen={showCloseTradeModal}
+	position={closingPosition}
+	roomSlug={ROOM_SLUG}
+	onClose={() => {
+		showCloseTradeModal = false;
+		closingTrade = null;
+	}}
+	onSuccess={() => {
+		successMessage = `Trade closed: ${closingTrade?.ticker}`;
+		fetchTrades();
+	}}
+/>
 
 <style>
 	.trade-tracker {
@@ -897,159 +834,81 @@
 		color: #143e59;
 	}
 
-	/* Modal */
-	.modal-overlay {
-		position: fixed;
-		inset: 0;
-		background: rgba(0, 0, 0, 0.6);
+	/* Loading State */
+	.loading-state {
 		display: flex;
+		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		z-index: 1000;
-		padding: 20px;
-	}
-
-	.modal {
-		background: white;
-		border-radius: 16px;
-		width: 100%;
-		max-width: 500px;
-		max-height: 90vh;
-		overflow-y: auto;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-	}
-
-	.modal-header {
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		padding: 20px 24px;
-		border-bottom: 1px solid #e5e7eb;
-	}
-
-	.modal-header h2 {
-		margin: 0;
-		font-size: 20px;
-		color: #143e59;
-	}
-
-	.modal-close {
-		background: none;
-		border: none;
-		font-size: 28px;
-		color: #999;
-		cursor: pointer;
-		line-height: 1;
-	}
-
-	.modal-close:hover {
-		color: #333;
-	}
-
-	.modal-body {
-		padding: 24px;
-	}
-
-	.trade-summary {
-		background: #f8fafc;
-		border-radius: 8px;
-		padding: 16px;
-		margin-bottom: 20px;
-	}
-
-	.summary-row {
-		display: flex;
-		justify-content: space-between;
-		padding: 6px 0;
-	}
-
-	.summary-row span {
+		padding: 60px 20px;
 		color: #666;
 	}
 
-	.form-group {
+	.loading-state .spinner {
+		width: 40px;
+		height: 40px;
+		border: 3px solid #e5e7eb;
+		border-top-color: #143e59;
+		border-radius: 50%;
+		animation: spin 0.8s linear infinite;
 		margin-bottom: 16px;
 	}
 
-	.form-group label {
-		display: block;
-		font-size: 13px;
-		font-weight: 600;
-		color: #666;
-		margin-bottom: 6px;
+	@keyframes spin {
+		to { transform: rotate(360deg); }
 	}
 
-	.form-group input,
-	.form-group textarea {
-		width: 100%;
-		padding: 12px;
-		border: 1px solid #e5e7eb;
-		border-radius: 8px;
+	.loading-state p {
+		margin: 0;
 		font-size: 14px;
 	}
 
-	.form-group input:focus,
-	.form-group textarea:focus {
-		outline: none;
-		border-color: #f69532;
-	}
-
-	.pnl-preview {
+	/* Error State */
+	.error-state {
 		display: flex;
-		justify-content: space-between;
-		padding: 16px;
-		border-radius: 8px;
-		margin-top: 16px;
+		flex-direction: column;
+		align-items: center;
+		justify-content: center;
+		padding: 60px 20px;
+		color: #dc2626;
 	}
 
-	.pnl-preview.profit {
-		background: #dcfce7;
-		color: #166534;
+	.error-state p {
+		margin: 0 0 16px;
+		font-size: 14px;
+		font-weight: 500;
 	}
 
-	.pnl-preview.loss {
-		background: #fee2e2;
-		color: #991b1b;
-	}
-
-	.modal-footer {
-		display: flex;
-		gap: 12px;
-		justify-content: flex-end;
-		padding: 20px 24px;
-		border-top: 1px solid #e5e7eb;
-	}
-
-	.btn-cancel {
-		padding: 12px 24px;
-		background: #e5e7eb;
-		border: none;
-		border-radius: 8px;
-		font-weight: 600;
-		cursor: pointer;
-	}
-
-	.btn-cancel:hover {
-		background: #d1d5db;
-	}
-
-	.btn-close-trade {
-		padding: 12px 24px;
-		background: #f69532;
+	.retry-btn {
+		padding: 10px 20px;
+		background: #dc2626;
 		color: white;
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
 		cursor: pointer;
+		transition: background 0.2s;
 	}
 
-	.btn-close-trade:hover:not(:disabled) {
-		background: #e8852d;
+	.retry-btn:hover {
+		background: #b91c1c;
 	}
 
-	.btn-close-trade:disabled {
-		opacity: 0.6;
-		cursor: not-allowed;
+	/* Focus Visible */
+	.filter-btn:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
+	}
+
+	.close-trade-btn:focus-visible,
+	.retry-btn:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
+	}
+
+	.admin-link a:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
 	}
 
 	.result--active {
