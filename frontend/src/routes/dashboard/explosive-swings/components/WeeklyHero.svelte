@@ -540,26 +540,8 @@
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
-		transition: transform 0.3s, box-shadow 0.3s;
+		transition: transform 0.3s;
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
-		position: relative;
-	}
-
-	.play-btn::before,
-	.play-btn::after {
-		content: '';
-		position: absolute;
-		inset: -8px;
-		border-radius: 50%;
-		border: 2px solid rgba(255, 255, 255, 0.5);
-		opacity: 0;
-		transition: opacity 0.3s ease;
-		pointer-events: none;
-	}
-
-	.play-btn::after {
-		inset: -16px;
-		border-color: rgba(255, 255, 255, 0.3);
 	}
 
 	.play-btn svg {
@@ -571,28 +553,6 @@
 
 	.video-player-compact:hover .play-btn {
 		transform: scale(1.1);
-		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
-	}
-
-	.video-player-compact:hover .play-btn::before {
-		opacity: 1;
-		animation: playPulse 1.5s ease-out infinite;
-	}
-
-	.video-player-compact:hover .play-btn::after {
-		opacity: 1;
-		animation: playPulse 1.5s ease-out infinite 0.3s;
-	}
-
-	@keyframes playPulse {
-		0% {
-			transform: scale(1);
-			opacity: 0.8;
-		}
-		100% {
-			transform: scale(1.5);
-			opacity: 0;
-		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
