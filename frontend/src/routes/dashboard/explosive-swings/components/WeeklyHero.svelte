@@ -111,21 +111,16 @@
 	
 	// Generate embed URL from video URL prop
 	function getEmbedUrl(url: string): string {
+		if (!url || url.startsWith('/')) return ''; // Block internal paths to prevent CSP errors
+		
 		// Bunny.net iframe URL
 		if (url.includes('iframe.mediadelivery.net') || url.includes('bunnycdn')) {
-			return url;
+			return url.includes('?') ? url + '&autoplay=true' : url + '?autoplay=true';
 		}
-		// Vimeo
-		if (url.includes('vimeo.com')) {
-			const match = url.match(/vimeo\.com\/(\d+)/);
-			if (match) return `https://player.vimeo.com/video/${match[1]}?autoplay=1`;
-		}
-		// YouTube
-		if (url.includes('youtube.com') || url.includes('youtu.be')) {
-			const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
-			if (match) return `https://www.youtube.com/embed/${match[1]}?autoplay=1`;
-		}
-		return url;
+		
+		
+		// Return empty for unknown URLs to prevent CSP errors
+		return '';
 	}
 
 	function toggleTradeNotes(ticker: string) {
@@ -202,15 +197,21 @@
 					>
 						{#if isVideoPlaying}
 							<!-- Active Video Player -->
+							{@const embedUrl = getEmbedUrl(videoUrl)}
 							<div class="video-backdrop-blur"></div>
 							<div class="video-frame-container">
-								<iframe
-									src={getEmbedUrl(videoUrl)}
-									title={weeklyContent.videoTitle}
-									frameborder="0"
-									allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-									allowfullscreen
-								></iframe>
+								{#if embedUrl}
+									<iframe
+										src={embedUrl}
+										title={weeklyContent.videoTitle}
+										frameborder="0"
+										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+									></iframe>
+								{:else}
+									<div class="video-error">
+										<p>Video unavailable</p>
+									</div>
+								{/if}
 								
 								<!-- Video Controls Overlay -->
 								<div class="video-controls-bar">
@@ -681,6 +682,21 @@
 		border-radius: 5px;
 		font-size: 12px;
 		font-weight: 600;
+	}
+
+	.video-error {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: rgba(0, 0, 0, 0.8);
+		color: #fff;
+		font-size: 16px;
+	}
+
+	.video-error p {
+		margin: 0;
 	}
 
 	.video-info-compact {
