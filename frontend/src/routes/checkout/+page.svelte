@@ -75,6 +75,7 @@
 	let couponError = $state('');
 	let applyingCoupon = $state(false);
 	let couponFormVisible = $state(false);
+	let checkoutError = $state('');
 
 	// Form validation
 	let billingErrors = $state<Partial<Record<keyof BillingDetails, string>>>({});
@@ -164,13 +165,21 @@
 	function goToPayment() {
 		if (validateBilling()) {
 			currentStep = 'payment';
+			checkoutError = '';
 			window.scrollTo({ top: 0, behavior: 'smooth' });
+			requestAnimationFrame(() => {
+				document.getElementById('payment_stripe')?.focus();
+			});
 		}
 	}
 
 	function goToBilling() {
 		currentStep = 'billing';
+		checkoutError = '';
 		window.scrollTo({ top: 0, behavior: 'smooth' });
+		requestAnimationFrame(() => {
+			document.getElementById('billing_first_name')?.focus();
+		});
 	}
 
 	async function applyCouponCode() {
@@ -224,12 +233,12 @@
 
 			// Redirect to payment processor
 			if (session.url) {
-				cartStore.clearCart();
+				// Cart cleared on /checkout/success after payment confirmed
 				window.location.href = session.url;
 			}
 		} catch (error) {
 			console.error('Checkout error:', error);
-			alert(error instanceof Error ? error.message : 'Failed to process order. Please try again.');
+			checkoutError = error instanceof Error ? error.message : 'Failed to process order. Please try again.';
 		} finally {
 			isProcessing = false;
 		}
@@ -267,10 +276,13 @@
 					class:active={currentStep === 'billing'}
 					class:completed={currentStep === 'payment'}
 				>
-					<span class="step-number">{currentStep === 'payment' ? '' : '2'}</span>
-					{#if currentStep === 'payment'}
-						<span class="step-number"><IconCheck size={16} /></span>
-					{/if}
+					<span class="step-number">
+						{#if currentStep === 'payment'}
+							<IconCheck size={16} />
+						{:else}
+							2
+						{/if}
+					</span>
 					<span class="step-label">Billing Info</span>
 				</li>
 				<li
@@ -457,6 +469,16 @@
 						<div class="card">
 							<div class="card-body">
 								<h3>Payment Method</h3>
+
+								{#if checkoutError}
+									<div class="checkout-error" role="alert">
+										<IconX size={18} />
+										<span>{checkoutError}</span>
+										<button type="button" onclick={() => checkoutError = ''} aria-label="Dismiss error">
+											<IconX size={14} />
+										</button>
+									</div>
+								{/if}
 
 								<div class="payment-methods">
 									<!-- Credit Card (Stripe) -->
@@ -676,7 +698,9 @@
 
 								{#if couponFormVisible}
 									<div class="checkout_coupon">
+										<label for="coupon_code" class="sr-only">Coupon code</label>
 										<input
+											id="coupon_code"
 											type="text"
 											placeholder="Coupon code"
 											bind:value={couponCode}
@@ -1507,5 +1531,74 @@
 		.page-title {
 			font-size: 24px;
 		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CHECKOUT ERROR
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.checkout-error {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		padding: 16px;
+		background: #fef2f2;
+		border: 1px solid #fecaca;
+		border-radius: 5px;
+		color: #dc2626;
+		margin-bottom: 20px;
+	}
+
+	.checkout-error span {
+		flex: 1;
+		font-size: 14px;
+		font-weight: 500;
+	}
+
+	.checkout-error button {
+		background: none;
+		border: none;
+		color: #dc2626;
+		cursor: pointer;
+		padding: 4px;
+		opacity: 0.7;
+	}
+
+	.checkout-error button:hover {
+		opacity: 1;
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCESSIBILITY
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	.btn:focus-visible {
+		outline: 2px solid var(--checkout-primary);
+		outline-offset: 2px;
+	}
+
+	.input-text:focus-visible {
+		outline: none; /* Already has box-shadow focus */
+	}
+
+	.payment-method:focus-within {
+		border-color: var(--checkout-primary);
+	}
+
+	.showcoupon:focus-visible {
+		outline: 2px solid var(--checkout-primary);
+		outline-offset: 2px;
 	}
 </style>
