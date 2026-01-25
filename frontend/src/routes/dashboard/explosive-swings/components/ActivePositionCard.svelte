@@ -1,11 +1,10 @@
 <script lang="ts">
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
-	 * ActivePositionCard Component - Active Position Display
+	 * ActivePositionCard Component - COMPACT Trading Position Display
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
-	 * @description Displays an active position with entry, targets, stop, and progress
-	 * @version 6.0.0 - Nuclear Refactor: Design Tokens + Accessibility
+	 * @version 7.0.0 - High Density Refactor: 70px height, single-line data
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import type { ActivePosition } from '../types';
@@ -24,64 +23,25 @@
 		onClose?.(position);
 	}
 
-	// Status configuration using design tokens
+	// Compact status config
 	const statusConfig = $derived.by(() => {
 		switch (position.status) {
 			case 'ENTRY':
-				return {
-					label: 'ENTRY',
-					borderColor: 'var(--color-entry)',
-					bgColor: 'var(--color-entry-bg)',
-					badgeBg: 'var(--color-entry-bg)',
-					badgeText: 'var(--color-entry-text)',
-					badgeBorder: 'var(--color-entry-border)'
-				};
+				return { label: 'ENTRY', border: 'var(--color-entry)', bg: 'var(--color-entry-bg)' };
 			case 'WATCHING':
-				return {
-					label: 'WATCHING',
-					borderColor: 'var(--color-watching)',
-					bgColor: 'var(--color-watching-bg)',
-					badgeBg: 'var(--color-watching-bg)',
-					badgeText: 'var(--color-watching-text)',
-					badgeBorder: 'var(--color-watching-border)'
-				};
+				return { label: 'WATCH', border: 'var(--color-watching)', bg: 'var(--color-watching-bg)' };
 			case 'ACTIVE':
 				const isProfit = position.unrealizedPercent !== null && position.unrealizedPercent >= 0;
 				return isProfit
-					? {
-							label: 'ACTIVE',
-							borderColor: 'var(--color-profit)',
-							bgColor: 'var(--color-profit-bg-subtle)',
-							badgeBg: 'var(--color-profit-bg)',
-							badgeText: 'var(--color-profit)',
-							badgeBorder: 'var(--color-profit-border)'
-						}
-					: {
-							label: 'ACTIVE',
-							borderColor: 'var(--color-loss)',
-							bgColor: 'var(--color-loss-bg-subtle)',
-							badgeBg: 'var(--color-loss-bg)',
-							badgeText: 'var(--color-loss)',
-							badgeBorder: 'var(--color-loss-border)'
-						};
+					? { label: 'ACTIVE', border: 'var(--color-profit)', bg: 'var(--color-profit-bg-subtle)' }
+					: { label: 'ACTIVE', border: 'var(--color-loss)', bg: 'var(--color-loss-bg-subtle)' };
 			default:
-				return {
-					label: position.status,
-					borderColor: 'var(--color-border-strong)',
-					bgColor: 'var(--color-bg-card)',
-					badgeBg: 'var(--color-bg-subtle)',
-					badgeText: 'var(--color-text-secondary)',
-					badgeBorder: 'var(--color-border-default)'
-				};
+				return { label: position.status, border: 'var(--color-border-strong)', bg: 'var(--color-bg-card)' };
 		}
 	});
 
-	const pnlColorVar = $derived(
-		position.unrealizedPercent === null
-			? 'var(--color-text-muted)'
-			: position.unrealizedPercent >= 0
-				? 'var(--color-profit)'
-				: 'var(--color-loss)'
+	const pnlClass = $derived(
+		position.unrealizedPercent === null ? '' : position.unrealizedPercent >= 0 ? 'profit' : 'loss'
 	);
 
 	const progressGradient = $derived(
@@ -89,415 +49,222 @@
 			? 'linear-gradient(to right, var(--color-loss-light), var(--color-loss))'
 			: 'linear-gradient(to right, var(--color-profit-light), var(--color-profit))'
 	);
+
+	// Format compact price line
+	const pricesLine = $derived.by(() => {
+		if (position.status === 'WATCHING' && position.entryZone) {
+			return `Zone:${formatPrice(position.entryZone.low)}-${formatPrice(position.entryZone.high)} | Now:${formatPrice(position.currentPrice)}`;
+		}
+		const parts = [`E:${formatPrice(position.entryPrice ?? 0)} → ${formatPrice(position.currentPrice)}`];
+		if (position.stopLoss) parts.push(`S:${formatPrice(position.stopLoss.price)}`);
+		if (position.targets[0]) parts.push(`T1:${formatPrice(position.targets[0].price)}`);
+		if (position.targets[1]) parts.push(`T2:${formatPrice(position.targets[1].price)}`);
+		return parts.join(' | ');
+	});
 </script>
 
-<!-- SEMANTIC HTML: <article> for grouping, explicit <button> for close action -->
 <article 
-	class="position-card"
-	style="
-		--card-border-color: {statusConfig.borderColor};
-		--card-bg-color: {statusConfig.bgColor};
-	"
-	aria-labelledby="position-{position.id}-title"
+	class="card"
+	style="--border: {statusConfig.border}; --bg: {statusConfig.bg};"
+	aria-label="{position.ticker} {position.status} position"
 >
-	<!-- Header Row -->
-	<header class="card-header">
-		<h3 id="position-{position.id}-title" class="ticker">{position.ticker}</h3>
-		<span 
-			class="status-badge"
-			style="
-				background: {statusConfig.badgeBg};
-				color: {statusConfig.badgeText};
-				border-color: {statusConfig.badgeBorder};
-			"
-		>
-			{statusConfig.label}
-		</span>
-	</header>
-
-	<div class="divider" aria-hidden="true"></div>
-
-	<!-- Price Information -->
-	<div class="price-section">
-		{#if position.status === 'WATCHING' && position.entryZone}
-			<dl class="price-grid">
-				<div class="price-item">
-					<dt>Entry Zone</dt>
-					<dd>{formatPrice(position.entryZone.low)} – {formatPrice(position.entryZone.high)}</dd>
-				</div>
-				<div class="price-item">
-					<dt>Current</dt>
-					<dd>{formatPrice(position.currentPrice)}</dd>
-				</div>
-			</dl>
-		{:else if position.entryPrice}
-			<dl class="price-grid inline">
-				<div class="price-item">
-					<dt>Entry</dt>
-					<dd>{formatPrice(position.entryPrice)}</dd>
-				</div>
-				<div class="price-item">
-					<dt>Now</dt>
-					<dd>{formatPrice(position.currentPrice)}</dd>
-				</div>
-			</dl>
+	<!-- Main Row: Ticker + Status + P&L -->
+	<div class="row-main">
+		<span class="ticker">{position.ticker}</span>
+		<span class="status">{statusConfig.label}</span>
+		{#if position.unrealizedPercent !== null}
+			<span class="pnl {pnlClass}">{formatPercent(position.unrealizedPercent)}</span>
 		{/if}
 	</div>
 
-	<!-- Unrealized P&L -->
-	{#if position.unrealizedPercent !== null}
-		<div class="unrealized-pnl">
-			<span class="unrealized-value" style="color: {pnlColorVar}">
-				{formatPercent(position.unrealizedPercent)}
-			</span>
-			<span class="unrealized-label">unrealized</span>
-		</div>
-	{/if}
+	<!-- Prices Row: All on one line -->
+	<div class="row-prices">{pricesLine}</div>
 
-	<!-- Notes -->
-	{#if position.notes}
-		<p class="position-notes">{position.notes}</p>
-	{/if}
-
-	<!-- Targets and Stop -->
-	<dl class="targets-list">
-		{#each position.targets as target}
-			<div class="target-row">
-				<dt>{target.label}</dt>
-				<dd>
-					<span class="target-price">{formatPrice(target.price)}</span>
-					<span class="target-percent profit">{formatPercent(target.percentFromEntry)}</span>
-				</dd>
-			</div>
-		{/each}
-		<div class="target-row stop-row">
-			<dt>Stop</dt>
-			<dd>
-				<span class="target-price stop">{formatPrice(position.stopLoss.price)}</span>
-				<span class="target-percent loss">{formatPercent(position.stopLoss.percentFromEntry)}</span>
-			</dd>
-		</div>
-	</dl>
-
-	<!-- Progress Bar -->
+	<!-- Progress Row -->
 	{#if position.status !== 'WATCHING' && position.targets.length > 0}
-		<div class="progress-container">
+		<div class="row-progress">
 			<div 
-				class="progress-track"
+				class="bar"
 				role="progressbar" 
 				aria-valuenow={position.progressToTarget1} 
 				aria-valuemin={0} 
 				aria-valuemax={100}
-				aria-label="Progress to Target 1: {position.progressToTarget1.toFixed(0)}%"
+				aria-label="{position.progressToTarget1.toFixed(0)}% to target 1"
 			>
-				<div 
-					class="progress-fill" 
-					style="
-						background: {progressGradient}; 
-						width: {Math.min(100, Math.max(0, position.progressToTarget1))}%;
-					"
-				></div>
+				<div class="fill" style="background: {progressGradient}; width: {Math.min(100, Math.max(0, position.progressToTarget1))}%;"></div>
 			</div>
-			<span class="progress-text" aria-hidden="true">
-				{position.progressToTarget1.toFixed(0)}% to T1
-			</span>
+			<span class="pct">{position.progressToTarget1.toFixed(0)}%</span>
 		</div>
 	{/if}
 
-	<!-- Admin Close Button - EXPLICIT, not hidden behind card click -->
+	<!-- Admin Close (hover only) -->
 	{#if isAdmin && onClose && position.status === 'ACTIVE'}
-		<div class="card-actions">
-			<button 
-				type="button"
-				class="close-position-btn"
-				onclick={handleClosePosition}
-				aria-label="Close {position.ticker} position"
-			>
-				<svg 
-					viewBox="0 0 24 24" 
-					fill="none" 
-					stroke="currentColor" 
-					stroke-width="2" 
-					width="16" 
-					height="16"
-					aria-hidden="true"
-				>
-					<path d="M18 6L6 18M6 6l12 12" />
-				</svg>
-				Close Position
-			</button>
-		</div>
+		<button 
+			type="button"
+			class="close-btn"
+			onclick={handleClosePosition}
+			aria-label="Close {position.ticker}"
+			title="Close position"
+		>
+			<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="12" height="12">
+				<path d="M18 6L6 18M6 6l12 12" />
+			</svg>
+		</button>
 	{/if}
 </article>
 
 <style>
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   POSITION CARD - Design Token Implementation
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.position-card {
-		background: var(--card-bg-color, var(--color-bg-card));
+	/* COMPACT CARD - High Information Density */
+	.card {
+		position: relative;
+		background: var(--bg);
 		border: 1px solid var(--color-border-default);
-		border-left: 4px solid var(--card-border-color, var(--color-border-strong));
-		border-radius: var(--radius-lg);
-		padding: var(--space-5);
+		border-left: 3px solid var(--border);
+		border-radius: var(--radius-md);
+		padding: 8px 10px;
 		box-shadow: var(--shadow-sm);
-		transition: var(--transition-shadow), var(--transition-transform);
-		contain: layout style;
+		transition: var(--transition-shadow);
 	}
 
-	.position-card:hover {
+	.card:hover {
 		box-shadow: var(--shadow-md);
-		transform: translateY(-2px);
 	}
 
-	/* Header */
-	.card-header {
+	/* Main Row: Ticker + Status + P&L */
+	.row-main {
 		display: flex;
 		align-items: center;
-		justify-content: space-between;
-		margin-bottom: var(--space-3);
+		gap: 8px;
+		margin-bottom: 4px;
 	}
 
 	.ticker {
-		font-size: var(--text-xl);
-		font-weight: var(--font-extrabold);
+		font-size: 14px;
+		font-weight: var(--font-bold);
 		color: var(--color-text-primary);
-		margin: 0;
 		text-transform: uppercase;
-		letter-spacing: var(--tracking-wide);
+		letter-spacing: 0.02em;
 		font-family: var(--font-display);
 	}
 
-	.status-badge {
-		font-size: var(--text-xs);
+	.status {
+		font-size: 9px;
 		font-weight: var(--font-bold);
-		padding: var(--space-1) var(--space-2);
+		padding: 2px 6px;
 		border-radius: var(--radius-sm);
 		text-transform: uppercase;
-		letter-spacing: var(--tracking-wider);
-		border: 1px solid;
-	}
-
-	.divider {
-		height: 1px;
-		background: linear-gradient(90deg, var(--color-border-default) 0%, transparent 100%);
-		margin-bottom: var(--space-3);
-	}
-
-	/* Price Grid - using <dl> for semantic markup */
-	.price-section {
-		margin-bottom: var(--space-2);
-	}
-
-	.price-grid {
-		display: flex;
-		gap: var(--space-4);
-		margin: 0 0 var(--space-2) 0;
-	}
-
-	.price-grid.inline {
-		flex-wrap: wrap;
-	}
-
-	.price-item {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-1);
-	}
-
-	.price-item dt {
-		font-size: var(--text-sm);
-		color: var(--color-text-tertiary);
-		font-weight: var(--font-medium);
-	}
-
-	.price-item dd {
-		font-size: var(--text-base);
-		font-weight: var(--font-bold);
-		color: var(--color-text-primary);
-		font-variant-numeric: tabular-nums;
-		margin: 0;
-	}
-
-	/* Unrealized P&L */
-	.unrealized-pnl {
-		display: flex;
-		align-items: baseline;
-		gap: var(--space-2);
-		margin-bottom: var(--space-3);
-	}
-
-	.unrealized-value {
-		font-size: var(--text-2xl);
-		font-weight: var(--font-extrabold);
-		font-variant-numeric: tabular-nums;
-		line-height: var(--leading-none);
-	}
-
-	.unrealized-label {
-		font-size: var(--text-sm);
-		color: var(--color-text-muted);
-		font-weight: var(--font-medium);
-	}
-
-	/* Notes */
-	.position-notes {
-		font-size: var(--text-sm);
-		color: var(--color-text-tertiary);
-		font-style: italic;
-		margin: 0 0 var(--space-3) 0;
-		line-height: var(--leading-normal);
-		padding: var(--space-2) var(--space-3);
-		background: var(--color-bg-subtle);
-		border-radius: var(--radius-md);
-		border-left: 3px solid var(--color-border-strong);
-	}
-
-	/* Targets List - using <dl> for semantic markup */
-	.targets-list {
-		display: flex;
-		flex-direction: column;
-		gap: var(--space-2);
-		margin: 0 0 var(--space-4) 0;
-	}
-
-	.target-row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-
-	.target-row dt {
-		font-size: var(--text-xs);
-		color: var(--color-text-tertiary);
-		font-weight: var(--font-medium);
-		min-width: 60px;
-	}
-
-	.target-row dd {
-		display: flex;
-		align-items: center;
-		gap: var(--space-2);
-		margin: 0;
-	}
-
-	.target-price {
-		font-size: var(--text-sm);
-		font-weight: var(--font-semibold);
+		letter-spacing: 0.03em;
+		background: var(--color-bg-muted);
 		color: var(--color-text-secondary);
+	}
+
+	.pnl {
+		margin-left: auto;
+		font-size: 13px;
+		font-weight: var(--font-bold);
 		font-variant-numeric: tabular-nums;
 	}
 
-	.target-percent {
-		font-size: var(--text-xs);
-		font-weight: var(--font-semibold);
-		font-variant-numeric: tabular-nums;
-	}
-
-	.target-percent.profit {
+	.pnl.profit {
 		color: var(--color-profit);
 	}
 
-	.target-percent.loss {
+	.pnl.loss {
 		color: var(--color-loss);
 	}
 
-	.stop-row dt {
-		color: var(--color-loss);
+	/* Prices Row: Single line */
+	.row-prices {
+		font-size: 11px;
+		color: var(--color-text-secondary);
+		font-variant-numeric: tabular-nums;
+		margin-bottom: 4px;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
 	}
 
-	.target-price.stop {
-		color: var(--color-loss);
-	}
-
-	/* Progress Bar */
-	.progress-container {
+	/* Progress Row */
+	.row-progress {
 		display: flex;
 		align-items: center;
-		gap: var(--space-3);
+		gap: 6px;
 	}
 
-	.progress-track {
+	.bar {
 		flex: 1;
-		height: 10px;
+		height: 4px;
 		background: var(--color-bg-muted);
-		border-radius: var(--radius-sm);
+		border-radius: 2px;
 		overflow: hidden;
-		box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
 	}
 
-	.progress-fill {
+	.fill {
 		height: 100%;
-		border-radius: var(--radius-sm);
-		transition: width var(--duration-slow) var(--ease-out);
-		position: relative;
+		border-radius: 2px;
+		transition: width var(--duration-normal) var(--ease-out);
 	}
 
-	.progress-fill::after {
-		content: '';
-		position: absolute;
-		top: 0;
-		left: 0;
-		right: 0;
-		height: 50%;
-		background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), transparent);
-		border-radius: var(--radius-sm) var(--radius-sm) 0 0;
-	}
-
-	.progress-text {
-		font-size: var(--text-xs);
+	.pct {
+		font-size: 10px;
 		color: var(--color-text-tertiary);
 		font-weight: var(--font-semibold);
 		font-variant-numeric: tabular-nums;
-		white-space: nowrap;
-		min-width: 70px;
+		min-width: 32px;
 		text-align: right;
 	}
 
-	/* Admin Actions */
-	.card-actions {
-		margin-top: var(--space-4);
-		padding-top: var(--space-3);
-		border-top: 1px solid var(--color-border-subtle);
-	}
-
-	.close-position-btn {
-		display: inline-flex;
+	/* Admin Close Button - Hover Only */
+	.close-btn {
+		position: absolute;
+		top: 6px;
+		right: 6px;
+		width: 20px;
+		height: 20px;
+		padding: 0;
+		display: flex;
 		align-items: center;
-		gap: var(--space-2);
-		padding: var(--space-2) var(--space-3);
-		background: transparent;
+		justify-content: center;
+		background: var(--color-bg-card);
 		border: 1px solid var(--color-loss);
 		color: var(--color-loss);
-		border-radius: var(--radius-md);
-		font-size: var(--text-sm);
-		font-weight: var(--font-semibold);
+		border-radius: var(--radius-sm);
 		cursor: pointer;
-		transition: var(--transition-colors);
+		opacity: 0;
+		transition: var(--transition-colors), opacity var(--duration-fast) var(--ease-out);
 	}
 
-	.close-position-btn:hover {
+	.card:hover .close-btn {
+		opacity: 1;
+	}
+
+	.close-btn:hover {
 		background: var(--color-loss);
 		color: white;
 	}
 
-	.close-position-btn:focus-visible {
+	.close-btn:focus-visible {
+		opacity: 1;
 		outline: 2px solid var(--color-loss);
 		outline-offset: 2px;
 	}
 
 	/* Responsive */
 	@media (max-width: 640px) {
-		.position-card {
-			padding: var(--space-4);
+		.card {
+			padding: 6px 8px;
 		}
 
 		.ticker {
-			font-size: var(--text-lg);
+			font-size: 13px;
 		}
 
-		.unrealized-value {
-			font-size: var(--text-xl);
+		.pnl {
+			font-size: 12px;
+		}
+
+		.row-prices {
+			font-size: 10px;
 		}
 	}
 </style>

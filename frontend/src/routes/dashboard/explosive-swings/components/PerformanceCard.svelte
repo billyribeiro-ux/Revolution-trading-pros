@@ -1,11 +1,10 @@
 <script lang="ts">
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
-	 * PerformanceCard Component - 30-Day Track Record
+	 * PerformanceCard Component - COMPACT 30-Day Track Record
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
-	 * @description Displays 30-day performance metrics in a compact sidebar card
-	 * @version 5.0.0 - Nuclear Refactor: Design Tokens
+	 * @version 6.0.0 - High Density Refactor: 100px height
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import type { ThirtyDayPerformance } from '../types';
@@ -24,224 +23,172 @@
 	);
 </script>
 
-<div class="performance-card" role="region" aria-labelledby="performance-card-heading">
-	<h3 id="performance-card-heading" class="card-title">30-Day Track Record</h3>
+<div class="card" role="region" aria-label="30-day performance">
+	<h3 class="title">30-Day Track Record</h3>
 
 	{#if isLoading}
-		<div class="skeleton-content">
-			<div class="skeleton-line large"></div>
-			<div class="skeleton-line medium"></div>
-			<div class="skeleton-line"></div>
-			<div class="skeleton-line"></div>
-			<div class="skeleton-line"></div>
+		<div class="skeleton">
+			<div class="skel-line lg"></div>
+			<div class="skel-line"></div>
+			<div class="skel-line"></div>
 		</div>
 	{:else}
-		<div class="card-content">
-			<!-- Win Rate - Primary Metric -->
-			<div class="win-rate-display">
-				<span class="win-rate-value">{performance.winRate}%</span>
-				<span class="win-rate-label">Win Rate</span>
-			</div>
-
-			<p class="win-count">
-				{performance.profitableAlerts} of {performance.totalAlerts} alerts profitable
-			</p>
-
-			<div class="stats-divider"></div>
-
-			<!-- Supporting Stats -->
-			<div class="stats-grid">
-				<div class="stat-row">
-					<span class="stat-label">Avg Win:</span>
-					<span class="stat-value positive">{formatPercent(performance.avgWinPercent)}</span>
-				</div>
-				<div class="stat-row">
-					<span class="stat-label">Avg Loss:</span>
-					<span class="stat-value negative">{formatPercent(-Math.abs(performance.avgLossPercent))}</span>
-				</div>
-				<div class="stat-row">
-					<span class="stat-label">R/R:</span>
-					<span class="stat-value">{formatRiskReward(riskReward)}</span>
-				</div>
-			</div>
+		<!-- Win Rate + Count -->
+		<div class="row-main">
+			<span class="win-rate">{performance.winRate}%</span>
+			<span class="win-label">Win Rate</span>
+			<span class="count">{performance.profitableAlerts}/{performance.totalAlerts}</span>
 		</div>
 
-		<a href="/dashboard/explosive-swings/performance" class="view-history-link">
-			View Full History →
-		</a>
+		<!-- Stats Row -->
+		<div class="row-stats">
+			<span>Avg Win: <strong class="profit">{formatPercent(performance.avgWinPercent)}</strong></span>
+			<span>Avg Loss: <strong class="loss">{formatPercent(-Math.abs(performance.avgLossPercent))}</strong></span>
+			<span>R/R: <strong>{formatRiskReward(riskReward)}</strong></span>
+		</div>
+
+		<a href="/dashboard/explosive-swings/performance" class="link">View Full History →</a>
 	{/if}
 </div>
 
 <style>
-	/* ═══════════════════════════════════════════════════════════════════════
-	   PERFORMANCE CARD - Design Token Implementation
-	   ═══════════════════════════════════════════════════════════════════════ */
-	.performance-card {
+	/* COMPACT PERFORMANCE CARD */
+	.card {
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border-default);
-		border-radius: var(--radius-lg);
-		padding: var(--space-5);
+		border-radius: var(--radius-md);
+		padding: 10px 12px;
 		box-shadow: var(--shadow-sm);
 		transition: var(--transition-shadow);
-		contain: layout style;
 	}
 
-	.performance-card:hover {
+	.card:hover {
 		box-shadow: var(--shadow-md);
 	}
 
-	.card-title {
-		font-size: var(--text-sm);
+	.title {
+		font-size: 10px;
 		font-weight: var(--font-bold);
-		color: var(--color-text-secondary);
+		color: var(--color-text-tertiary);
 		text-transform: uppercase;
-		letter-spacing: var(--tracking-wider);
-		margin: 0 0 var(--space-4) 0;
+		letter-spacing: 0.05em;
+		margin: 0 0 8px 0;
 	}
 
-	.card-content {
-		margin-bottom: var(--space-4);
-	}
-
-	.win-rate-display {
+	/* Main Row: Win Rate + Count */
+	.row-main {
 		display: flex;
 		align-items: baseline;
-		gap: var(--space-2);
-		margin-bottom: var(--space-1);
+		gap: 6px;
+		margin-bottom: 6px;
 	}
 
-	.win-rate-value {
-		font-size: var(--text-4xl);
+	.win-rate {
+		font-size: 24px;
 		font-weight: var(--font-extrabold);
 		color: var(--color-profit);
 		font-variant-numeric: tabular-nums;
-		line-height: var(--leading-none);
+		line-height: 1;
 	}
 
-	.win-rate-label {
-		font-size: var(--text-base);
+	.win-label {
+		font-size: 11px;
 		font-weight: var(--font-medium);
 		color: var(--color-text-tertiary);
 	}
 
-	.win-count {
-		font-size: var(--text-sm);
-		color: var(--color-text-tertiary);
-		margin: 0 0 var(--space-4) 0;
+	.count {
+		margin-left: auto;
+		font-size: 11px;
+		color: var(--color-text-secondary);
+		font-variant-numeric: tabular-nums;
 	}
 
-	.stats-divider {
-		height: 1px;
-		background: linear-gradient(90deg, var(--color-border-default) 0%, transparent 100%);
-		margin-bottom: var(--space-4);
-	}
-
-	.stats-grid {
+	/* Stats Row */
+	.row-stats {
 		display: flex;
-		flex-direction: column;
-		gap: var(--space-2);
-	}
-
-	.stat-row {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-
-	.stat-label {
-		font-size: var(--text-base);
+		gap: 10px;
+		font-size: 11px;
 		color: var(--color-text-tertiary);
+		margin-bottom: 8px;
+		flex-wrap: wrap;
 	}
 
-	.stat-value {
-		font-size: var(--text-base);
+	.row-stats strong {
 		font-weight: var(--font-semibold);
 		color: var(--color-text-primary);
 		font-variant-numeric: tabular-nums;
 	}
 
-	.stat-value.positive {
+	.row-stats .profit {
 		color: var(--color-profit);
 	}
 
-	.stat-value.negative {
+	.row-stats .loss {
 		color: var(--color-loss);
 	}
 
-	.view-history-link {
+	/* Link */
+	.link {
 		display: inline-flex;
 		align-items: center;
-		gap: var(--space-2);
-		font-size: var(--text-base);
+		font-size: 11px;
 		font-weight: var(--font-semibold);
 		color: var(--color-brand-primary);
 		text-decoration: none;
-		padding: var(--space-2) var(--space-3);
-		margin: 0 calc(-1 * var(--space-3));
-		border-radius: var(--radius-md);
+		padding: 4px 6px;
+		margin: 0 -6px;
+		border-radius: var(--radius-sm);
 		transition: var(--transition-colors);
 	}
 
-	.view-history-link:hover {
+	.link:hover {
 		background: var(--color-bg-subtle);
-		color: var(--color-text-primary);
 	}
 
-	.view-history-link:focus-visible {
+	.link:focus-visible {
 		outline: 2px solid var(--color-brand-primary);
 		outline-offset: 2px;
 	}
 
-	/* Skeleton Loading States */
-	.skeleton-content {
+	/* Skeleton */
+	.skeleton {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-3);
+		gap: 6px;
 	}
 
-	.skeleton-line {
-		height: 16px;
+	.skel-line {
+		height: 12px;
 		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: var(--radius-sm);
 	}
 
-	.skeleton-line.large {
-		height: 32px;
-		width: 60%;
-	}
-
-	.skeleton-line.medium {
-		width: 80%;
+	.skel-line.lg {
+		height: 24px;
+		width: 50%;
 	}
 
 	@keyframes shimmer {
-		0% {
-			background-position: 200% 0;
-		}
-		100% {
-			background-position: -200% 0;
-		}
+		0% { background-position: 200% 0; }
+		100% { background-position: -200% 0; }
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════
-	   RESPONSIVE
-	   ═══════════════════════════════════════════════════════════════════════ */
+	/* Responsive */
 	@media (max-width: 640px) {
-		.performance-card {
-			padding: var(--space-4);
-			border-radius: var(--radius-lg);
+		.card {
+			padding: 8px 10px;
 		}
 
-		.win-rate-value {
-			font-size: var(--text-2xl);
+		.win-rate {
+			font-size: 20px;
 		}
 
-		.stat-row {
+		.row-stats {
 			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--space-1);
+			gap: 4px;
 		}
 	}
 </style>
