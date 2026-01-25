@@ -65,7 +65,8 @@ export function formatRelativeTime(date: Date): string {
  * @param date - The date to format
  * @returns Formatted string like "January 13, 2026"
  */
-export function formatDate(date: Date): string {
+export function formatDate(date: Date | null | undefined): string {
+	if (!date || !(date instanceof Date) || isNaN(date.getTime())) return '';
 	return date.toLocaleDateString('en-US', {
 		month: 'long',
 		day: 'numeric',
@@ -78,7 +79,8 @@ export function formatDate(date: Date): string {
  * @param date - The date to format
  * @returns Formatted string like "Jan 13"
  */
-export function formatDateShort(date: Date): string {
+export function formatDateShort(date: Date | null | undefined): string {
+	if (!date || !(date instanceof Date) || isNaN(date.getTime())) return '';
 	return date.toLocaleDateString('en-US', {
 		month: 'short',
 		day: 'numeric'
@@ -90,7 +92,8 @@ export function formatDateShort(date: Date): string {
  * @param date - The date to format
  * @returns Formatted string like "January 13, 2026 at 9:00 AM ET"
  */
-export function formatDateTime(date: Date): string {
+export function formatDateTime(date: Date | null | undefined): string {
+	if (!date || !(date instanceof Date) || isNaN(date.getTime())) return '';
 	const dateStr = formatDate(date);
 	const timeStr = date.toLocaleTimeString('en-US', {
 		hour: 'numeric',

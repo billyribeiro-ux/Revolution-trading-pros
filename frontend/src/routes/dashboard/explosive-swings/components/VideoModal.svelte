@@ -129,11 +129,13 @@
 						{video.duration}
 					</span>
 					<span class="date">
-						{video.publishedAt.toLocaleDateString('en-US', { 
-							month: 'short', 
-							day: 'numeric', 
-							year: 'numeric' 
-						})}
+						{video.publishedAt instanceof Date 
+							? video.publishedAt.toLocaleDateString('en-US', { 
+								month: 'short', 
+								day: 'numeric', 
+								year: 'numeric' 
+							})
+							: ''}
 					</span>
 				</div>
 			</div>

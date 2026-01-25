@@ -187,13 +187,13 @@ export function createPageState() {
 	);
 
 	const weeklyContent = $derived<WeeklyContent>(
-		apiWeeklyVideo
+		apiWeeklyVideo && apiWeeklyVideo.published_at
 			? {
 					title:
 						apiWeeklyVideo.week_title ||
 						`Week of ${new Date(apiWeeklyVideo.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
-					videoTitle: apiWeeklyVideo.video_title,
-					videoUrl: apiWeeklyVideo.video_url,
+					videoTitle: apiWeeklyVideo.video_title ?? '',
+					videoUrl: apiWeeklyVideo.video_url ?? '',
 					thumbnail:
 						apiWeeklyVideo.thumbnail_url ?? fallbackData.weeklyContent.thumbnail,
 					duration: apiWeeklyVideo.duration ?? '',
