@@ -54,8 +54,18 @@
 	{:else}
 		<div class="updates-grid">
 			{#each displayUpdates as update (update.id)}
-				<a href={update.videoUrl} class="update-item" target="_blank" rel="noopener">
-					<div class="update-thumb" style="background-image: url('{update.thumbnailUrl}')">
+				<a 
+					href={update.videoUrl} 
+					class="update-item" 
+					target="_blank" 
+					rel="noopener noreferrer"
+					aria-label="{update.title} - {update.duration}"
+				>
+					<div 
+						class="update-thumb" 
+						class:no-thumb={!update.thumbnailUrl}
+						style={update.thumbnailUrl ? `background-image: url('${update.thumbnailUrl}')` : ''}
+					>
 						<div class="play-icon" aria-hidden="true">
 							<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
 								<path d="M8 5v14l11-7z" />
@@ -116,6 +126,12 @@
 		text-decoration: underline;
 	}
 
+	.view-all-link:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
+		border-radius: 2px;
+	}
+
 	.updates-grid {
 		display: grid;
 		grid-template-columns: repeat(3, 1fr);
@@ -134,6 +150,12 @@
 		transform: translateY(-2px);
 	}
 
+	.update-item:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 4px;
+		border-radius: 8px;
+	}
+
 	.update-thumb {
 		position: relative;
 		aspect-ratio: 16 / 9;
@@ -142,6 +164,23 @@
 		background-color: #1e293b;
 		border-radius: 8px;
 		overflow: hidden;
+	}
+
+	.update-thumb.no-thumb {
+		background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	.update-thumb.no-thumb::before {
+		content: '';
+		width: 24px;
+		height: 24px;
+		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%2364748b' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='m15.75 10.5 4.72-4.72a.75.75 0 0 1 1.28.53v11.38a.75.75 0 0 1-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 0 0 2.25-2.25v-9a2.25 2.25 0 0 0-2.25-2.25h-9A2.25 2.25 0 0 0 2.25 7.5v9a2.25 2.25 0 0 0 2.25 2.25Z' /%3E%3C/svg%3E");
+		background-size: contain;
+		background-repeat: no-repeat;
+		opacity: 0.5;
 	}
 
 	.play-icon {
@@ -165,7 +204,8 @@
 		margin-left: 2px;
 	}
 
-	.update-item:hover .play-icon {
+	.update-item:hover .play-icon,
+	.update-item:focus-visible .play-icon {
 		opacity: 1;
 	}
 
