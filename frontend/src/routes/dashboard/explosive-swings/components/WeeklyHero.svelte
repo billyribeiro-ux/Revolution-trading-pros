@@ -500,14 +500,10 @@
 	}
 
 	.video-player-compact {
-		flex: 0 0 55%;
-		position: relative;
-		padding-bottom: 31%;
 		background-size: cover;
 		background-position: center;
 		border-radius: 12px;
 		overflow: hidden;
-		box-shadow: 0 15px 40px rgba(0, 0, 0, 0.25);
 	}
 
 	.video-overlay {
@@ -564,7 +560,9 @@
 	.video-player-wrapper .video-player-compact {
 		position: absolute;
 		inset: 0;
-		padding-bottom: 0;
+		width: 100%;
+		height: 100%;
+		flex: none;
 	}
 
 	.video-player-wrapper.playing {
