@@ -47,6 +47,12 @@
   --color-watching-border: #fcd34d;
   --color-watching-text: #78350f;  /* WCAG AA compliant */
   
+  /* Active status (alias for watching - used in trade tracker) */
+  --color-active: #f59e0b;
+  --color-active-bg: #fef3c7;
+  --color-active-border: #fcd34d;
+  --color-active-text: #78350f;
+  
   --color-update: #3b82f6;
   --color-update-bg: #eff6ff;
   --color-update-border: #93c5fd;
