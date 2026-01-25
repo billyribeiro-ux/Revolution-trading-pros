@@ -159,6 +159,8 @@
 		border-bottom: 1px solid #dbdbdb;
 		border-right: 1px solid #dbdbdb;
 		padding: 20px;
+		margin: 0;
+		width: 100%;
 	}
 
 	@media (min-width: 1280px) {
