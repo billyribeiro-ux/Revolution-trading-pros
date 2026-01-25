@@ -233,12 +233,9 @@
 								<!-- Thumbnail with Play Button -->
 								<div class="video-thumbnail" style="background-image: url('{weeklyContent.thumbnail}')">
 									<button class="play-btn" onclick={playVideo} aria-label="Play video">
-										<span class="play-btn-glow"></span>
-										<span class="play-btn-inner">
-											<svg viewBox="0 0 24 24" fill="currentColor">
-												<path d="M8 5v14l11-7z" />
-											</svg>
-										</span>
+										<svg viewBox="0 0 24 24" fill="currentColor">
+											<path d="M8 5v14l11-7z" />
+										</svg>
 									</button>
 									<span class="duration-badge">{weeklyContent.duration}</span>
 								</div>
@@ -565,6 +562,7 @@
 		max-width: 100%;
 		height: 100%;
 		max-height: 100%;
+		aspect-ratio: unset;
 		transform: none;
 		border-radius: 0;
 		box-shadow: none;
@@ -594,77 +592,58 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PLAY BUTTON - Apple Vibrancy Effect
+	   PLAY BUTTON - Full Frosted Glass with Vibrancy Effect
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.play-btn {
 		position: relative;
-		width: 72px;
-		height: 72px;
+		width: 80px;
+		height: 80px;
 		border: none;
 		border-radius: 50%;
 		cursor: pointer;
-		background: transparent;
+		background: rgba(255, 255, 255, 0.25);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
+		box-shadow: 
+			0 8px 32px rgba(0, 0, 0, 0.2),
+			inset 0 1px 0 rgba(255, 255, 255, 0.4),
+			inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 		z-index: 2;
-		transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.play-btn:hover {
-		transform: scale(1.08);
+		transform: scale(1.1);
+		background: rgba(255, 255, 255, 0.45);
+		backdrop-filter: blur(24px);
+		-webkit-backdrop-filter: blur(24px);
+		box-shadow: 
+			0 12px 48px rgba(0, 0, 0, 0.25),
+			0 0 60px rgba(255, 255, 255, 0.3),
+			inset 0 1px 0 rgba(255, 255, 255, 0.6),
+			inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 	}
 
 	.play-btn:active {
 		transform: scale(0.95);
+		background: rgba(255, 255, 255, 0.5);
 	}
 
-	/* Glow layer - the vibrancy/blur effect */
-	.play-btn-glow {
-		position: absolute;
-		inset: -4px;
-		border-radius: 50%;
-		background: rgba(255, 255, 255, 0.4);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
-		opacity: 0.8;
-		transition: all 0.3s ease;
-	}
-
-	.play-btn:hover .play-btn-glow {
-		inset: -8px;
-		background: rgba(255, 255, 255, 0.6);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
-		opacity: 1;
-		box-shadow: 0 0 40px rgba(255, 255, 255, 0.4);
-	}
-
-	/* Inner button face */
-	.play-btn-inner {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: rgba(255, 255, 255, 0.95);
-		border-radius: 50%;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-		transition: all 0.3s ease;
-	}
-
-	.play-btn:hover .play-btn-inner {
-		background: #fff;
-		box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
-	}
-
-	.play-btn-inner svg {
-		width: 28px;
-		height: 28px;
-		color: #f69532;
+	.play-btn svg {
+		width: 32px;
+		height: 32px;
+		color: #fff;
 		margin-left: 4px;
-		transition: color 0.2s ease;
+		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+		transition: all 0.3s ease;
 	}
 
-	.play-btn:hover .play-btn-inner svg {
-		color: #e8850d;
+	.play-btn:hover svg {
+		transform: scale(1.1);
+		filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
 	}
 
 	/* Duration Badge */
@@ -722,37 +701,47 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 12px 16px;
-		background: linear-gradient(to bottom, rgba(0, 0, 0, 0.7) 0%, transparent 100%);
-		z-index: 10;
+		padding: 16px 20px;
+		background: linear-gradient(to bottom, rgba(0, 0, 0, 0.8) 0%, rgba(0, 0, 0, 0.4) 60%, transparent 100%);
+		z-index: 20;
 		opacity: 0;
 		transition: opacity 0.25s ease;
 	}
 
-	.video-player-container:hover .video-controls,
+	.video-player-container:hover .video-controls {
+		opacity: 1;
+	}
+
+	/* Always show controls in expanded mode */
 	.video-player-container.expanded .video-controls {
 		opacity: 1;
+		padding: 20px 24px;
 	}
 
 	.control-btn {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		width: 36px;
-		height: 36px;
-		background: rgba(255, 255, 255, 0.15);
+		width: 40px;
+		height: 40px;
+		background: rgba(255, 255, 255, 0.2);
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
-		border: none;
-		border-radius: 8px;
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 10px;
 		color: #fff;
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
 
 	.control-btn:hover {
-		background: rgba(255, 255, 255, 0.25);
+		background: rgba(255, 255, 255, 0.35);
 		transform: scale(1.05);
+		border-color: rgba(255, 255, 255, 0.2);
+	}
+
+	.control-btn:active {
+		transform: scale(0.95);
 	}
 
 	.video-title-bar {
@@ -1209,9 +1198,9 @@
 			height: 64px;
 		}
 
-		.play-btn-inner svg {
-			width: 24px;
-			height: 24px;
+		.play-btn svg {
+			width: 26px;
+			height: 26px;
 		}
 	}
 
