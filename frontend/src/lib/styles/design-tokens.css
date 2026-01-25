@@ -1,0 +1,251 @@
+/**
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * Revolution Trading Pros - Design Tokens
+ * ═══════════════════════════════════════════════════════════════════════════════
+ * 
+ * @description Global design system tokens for consistent UI
+ * @version 1.0.0
+ * @standards Apple HIG + Financial Platform Best Practices
+ * 
+ * USAGE: All components MUST use these variables. No hardcoded colors, sizes, or spacing.
+ * AUDIT: Run `grep -r "#[0-9a-fA-F]\{3,6\}" src/` to find violations.
+ */
+
+:root {
+  /* ═══════════════════════════════════════════════════════════════════════════
+     COLOR SYSTEM - Semantic Naming
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
+  /* Brand Colors */
+  --color-brand-primary: #143E59;
+  --color-brand-primary-hover: #0f2d42;
+  --color-brand-primary-light: #1a5276;
+  --color-brand-secondary: #F69532;
+  --color-brand-secondary-hover: #e8860d;
+  
+  /* Semantic - Profit/Loss (CRITICAL for trading platforms) */
+  --color-profit: #059669;
+  --color-profit-light: #10b981;
+  --color-profit-bg: #ecfdf5;
+  --color-profit-bg-subtle: #f0fdf4;
+  --color-profit-border: #a7f3d0;
+  
+  --color-loss: #dc2626;
+  --color-loss-light: #ef4444;
+  --color-loss-bg: #fef2f2;
+  --color-loss-bg-subtle: #fff5f5;
+  --color-loss-border: #fecaca;
+  
+  /* Semantic - Status Colors */
+  --color-entry: #14b8a6;
+  --color-entry-bg: #ccfbf1;
+  --color-entry-border: #5eead4;
+  --color-entry-text: #0f766e;
+  
+  --color-watching: #f59e0b;
+  --color-watching-bg: #fef3c7;
+  --color-watching-border: #fcd34d;
+  --color-watching-text: #78350f;  /* WCAG AA compliant */
+  
+  --color-update: #3b82f6;
+  --color-update-bg: #eff6ff;
+  --color-update-border: #93c5fd;
+  --color-update-text: #1e40af;
+  
+  /* Neutral Palette */
+  --color-text-primary: #0f172a;
+  --color-text-secondary: #334155;
+  --color-text-tertiary: #64748b;
+  --color-text-muted: #94a3b8;
+  --color-text-placeholder: #cbd5e1;
+  
+  /* Backgrounds */
+  --color-bg-page: #f5f7fa;
+  --color-bg-card: #ffffff;
+  --color-bg-card-hover: #f8fafc;
+  --color-bg-elevated: #ffffff;
+  --color-bg-subtle: #f1f5f9;
+  --color-bg-muted: #e2e8f0;
+  
+  /* Borders */
+  --color-border-default: #e2e8f0;
+  --color-border-subtle: #f1f5f9;
+  --color-border-strong: #cbd5e1;
+  --color-border-focus: #143E59;
+  
+  /* ═══════════════════════════════════════════════════════════════════════════
+     TYPOGRAPHY SCALE - Modular Scale (1.25 ratio)
+     Base: 15px | Scale: 12, 13, 15, 18, 22, 28, 35, 44
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
+  /* Font Families */
+  --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-display: 'Montserrat', var(--font-sans);
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+  
+  /* Font Sizes */
+  --text-xs: 0.75rem;     /* 12px - badges, fine print */
+  --text-sm: 0.8125rem;   /* 13px - labels, captions */
+  --text-base: 0.9375rem; /* 15px - body text */
+  --text-lg: 1.125rem;    /* 18px - subheadings */
+  --text-xl: 1.375rem;    /* 22px - section titles */
+  --text-2xl: 1.75rem;    /* 28px - card heroes */
+  --text-3xl: 2.1875rem;  /* 35px - page KPIs */
+  --text-4xl: 2.75rem;    /* 44px - dashboard hero */
+  
+  /* Font Weights */
+  --font-normal: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  --font-extrabold: 800;
+  
+  /* Line Heights */
+  --leading-none: 1;
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+  
+  /* Letter Spacing */
+  --tracking-tighter: -0.02em;
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.025em;
+  --tracking-wider: 0.05em;
+  --tracking-widest: 0.1em;
+  
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SPACING SCALE - 4px Base Unit
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
+  --space-0: 0;
+  --space-1: 0.25rem;   /* 4px */
+  --space-2: 0.5rem;    /* 8px */
+  --space-3: 0.75rem;   /* 12px */
+  --space-4: 1rem;      /* 16px */
+  --space-5: 1.25rem;   /* 20px */
+  --space-6: 1.5rem;    /* 24px */
+  --space-8: 2rem;      /* 32px */
+  --space-10: 2.5rem;   /* 40px */
+  --space-12: 3rem;     /* 48px */
+  --space-16: 4rem;     /* 64px */
+  
+  /* Component-specific spacing */
+  --space-card-padding: var(--space-6);
+  --space-card-padding-mobile: var(--space-4);
+  --space-section-gap: var(--space-8);
+  --space-grid-gap: var(--space-5);
+  
+  /* ═══════════════════════════════════════════════════════════════════════════
+     BORDER RADIUS - Consistent Curves
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
+  --radius-sm: 0.375rem;  /* 6px - badges, pills, small elements */
+  --radius-md: 0.625rem;  /* 10px - buttons, inputs, tags */
+  --radius-lg: 0.875rem;  /* 14px - cards, containers */
+  --radius-xl: 1.125rem;  /* 18px - modals, hero sections */
+  --radius-full: 9999px;  /* Fully rounded (pills) */
+  
+  /* ═══════════════════════════════════════════════════════════════════════════
+     SHADOWS - Elevation System
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
+  --shadow-xs: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.06), 0 1px 2px rgba(0, 0, 0, 0.04);
+  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08), 0 2px 4px rgba(0, 0, 0, 0.04);
+  --shadow-lg: 0 10px 25px rgba(0, 0, 0, 0.1), 0 4px 10px rgba(0, 0, 0, 0.05);
+  --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.12), 0 8px 16px rgba(0, 0, 0, 0.06);
+  
+  /* Colored shadows for interactive elements */
+  --shadow-brand: 0 4px 14px rgba(20, 62, 89, 0.25);
+  --shadow-brand-lg: 0 8px 24px rgba(20, 62, 89, 0.3);
+  --shadow-profit: 0 4px 14px rgba(5, 150, 105, 0.2);
+  --shadow-loss: 0 4px 14px rgba(220, 38, 38, 0.2);
+  
+  /* ═══════════════════════════════════════════════════════════════════════════
+     TRANSITIONS - Motion Design
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
+  --duration-instant: 50ms;
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 400ms;
+  --duration-slower: 600ms;
+  
+  --ease-default: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-bounce: cubic-bezier(0.34, 1.56, 0.64, 1);
+  
+  /* Common transitions */
+  --transition-colors: color var(--duration-fast) var(--ease-default),
+                       background-color var(--duration-fast) var(--ease-default),
+                       border-color var(--duration-fast) var(--ease-default);
+  --transition-transform: transform var(--duration-normal) var(--ease-out);
+  --transition-shadow: box-shadow var(--duration-normal) var(--ease-out);
+  --transition-all: all var(--duration-normal) var(--ease-default);
+  
+  /* ═══════════════════════════════════════════════════════════════════════════
+     Z-INDEX SCALE - Layering System
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
+  --z-base: 0;
+  --z-dropdown: 100;
+  --z-sticky: 200;
+  --z-overlay: 300;
+  --z-modal: 400;
+  --z-popover: 500;
+  --z-toast: 600;
+  --z-tooltip: 700;
+  
+  /* ═══════════════════════════════════════════════════════════════════════════
+     BREAKPOINTS (reference only - use in media queries)
+     ═══════════════════════════════════════════════════════════════════════════ */
+  
+  /* 
+   * --bp-sm: 640px    Mobile landscape
+   * --bp-md: 768px    Tablet portrait
+   * --bp-lg: 1024px   Tablet landscape / Small desktop
+   * --bp-xl: 1280px   Desktop
+   * --bp-2xl: 1440px  Large desktop
+   * --bp-3xl: 1920px  Ultra-wide
+   */
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   DARK MODE OVERRIDES (Future-proofing)
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* @media (prefers-color-scheme: dark) {
+  :root {
+    Dark mode tokens would go here
+    Currently not implemented - placeholder for future
+  }
+} */
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   UTILITY CLASSES - Common Patterns
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+.truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
+}

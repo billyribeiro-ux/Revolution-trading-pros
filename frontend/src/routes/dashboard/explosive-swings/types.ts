@@ -1,11 +1,14 @@
 /**
  * ═══════════════════════════════════════════════════════════════════════════════
- * Explosive Swings Dashboard - Type Definitions
+ * Explosive Swings - Type Definitions
  * ═══════════════════════════════════════════════════════════════════════════════
  *
- * @description TypeScript interfaces for the Explosive Swings member dashboard
- * @version 4.1.0 - Visual Polish Pass
- * @standards Apple Principal Engineer ICT 7+ Standards
+ * @description Centralized type definitions for the Explosive Swings dashboard
+ * @version 2.0.0 - Nuclear Refactor Consolidation
+ * @standards TypeScript Strict Mode Compliant | Apple Principal Engineer ICT 7+
+ *
+ * IMPORTANT: This is the SINGLE SOURCE OF TRUTH for all types used in this route.
+ * Never define types inline in components. Always import from here.
  *
  * CRITICAL: NO DOLLAR AMOUNTS in display types - percentages only
  * This prevents FOMO and encourages proper position sizing
@@ -257,6 +260,181 @@ export const performanceColors = {
 	negative: 'text-red-600',
 	neutral: 'text-slate-600'
 } as const;
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WEEKLY CONTENT - Hero Section Display
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface WeeklyContent {
+	/** Week title (e.g., "Week of January 13, 2026") */
+	title: string;
+	/** Video title */
+	videoTitle: string;
+	/** Video embed URL */
+	videoUrl: string;
+	/** Thumbnail image URL */
+	thumbnail: string;
+	/** Formatted duration (e.g., "24:35") */
+	duration: string;
+	/** Formatted publish date (e.g., "January 13, 2026 at 6:40 PM ET") */
+	publishedDate: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TRADE PLAN - Weekly Trade Plan Entries
+// ═══════════════════════════════════════════════════════════════════════════
+
+export type TradeBias = 'BULLISH' | 'BEARISH' | 'NEUTRAL';
+
+export interface TradePlanEntry {
+	/** Stock ticker symbol */
+	ticker: string;
+	/** Directional bias */
+	bias: TradeBias;
+	/** Entry price level */
+	entry: string;
+	/** First price target */
+	target1: string;
+	/** Second price target */
+	target2: string;
+	/** Third price target */
+	target3: string;
+	/** Runner target for letting profits run */
+	runner: string;
+	/** Stop loss level */
+	stop: string;
+	/** Options strike price */
+	optionsStrike: string;
+	/** Options expiration date */
+	optionsExp: string;
+	/** Trade notes/thesis */
+	notes: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// QUICK STATS - Dashboard KPIs
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface QuickStats {
+	/** Win rate as percentage (0-100) */
+	winRate: number;
+	/** Weekly profit display string (e.g., "+$4,850") */
+	weeklyProfit: string;
+	/** Number of currently active trades */
+	activeTrades: number;
+	/** Number of trades closed this week */
+	closedThisWeek: number;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// VIDEO UPDATES - Latest Content Grid
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface VideoUpdate {
+	/** Unique identifier */
+	id: number;
+	/** Video/content title */
+	title: string;
+	/** Formatted date string */
+	date: string;
+	/** Short description/excerpt */
+	excerpt: string;
+	/** Link to full content */
+	href: string;
+	/** Thumbnail image URL */
+	image: string;
+	/** Whether this is video content */
+	isVideo: boolean;
+	/** Formatted duration (e.g., "18:42") */
+	duration: string;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// FILTER TYPES - UI State
+// ═══════════════════════════════════════════════════════════════════════════
+
+export type AlertFilter = 'all' | 'entry' | 'exit' | 'update';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// API RESPONSE TYPES - Backend Data Shapes
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface ApiTrade {
+	id: number;
+	ticker: string;
+	status: 'open' | 'closed';
+	entry_price: number;
+	exit_price: number | null;
+	pnl_percent: number | null;
+	entry_date: string;
+	exit_date: string | null;
+	direction: string;
+	setup?: string;
+	notes?: string;
+}
+
+export interface ApiWeeklyVideo {
+	id: number;
+	video_title: string;
+	video_url: string;
+	thumbnail_url: string | null;
+	duration: string | null;
+	published_at: string;
+	week_title: string;
+}
+
+export interface PaginationState {
+	total: number;
+	limit: number;
+	offset: number;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// UTILITY TYPES - State Management
+// ═══════════════════════════════════════════════════════════════════════════
+
+export type LoadingState = 'idle' | 'loading' | 'success' | 'error';
+
+export interface ApiError {
+	message: string;
+	code?: string;
+	status?: number;
+}
+
+export interface AsyncState<T> {
+	data: T | null;
+	isLoading: boolean;
+	error: ApiError | null;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// COMPONENT PROP TYPES
+// ═══════════════════════════════════════════════════════════════════════════
+
+export interface PerformanceSummaryProps {
+	performance: WeeklyPerformance;
+	closedTrades: ClosedTrade[];
+	activePositions: ActivePosition[];
+	isLoading?: boolean;
+	isAdmin?: boolean;
+	onClosePosition?: (position: ActivePosition) => void;
+	onAddTrade?: () => void;
+}
+
+export interface ActivePositionCardProps {
+	position: ActivePosition;
+	isAdmin?: boolean;
+	onClose?: (position: ActivePosition) => void;
+}
+
+export interface PerformanceCardProps {
+	performance: ThirtyDayPerformance;
+	isLoading?: boolean;
+}
+
+export interface TickerPillProps {
+	trade: ClosedTrade;
+}
 
 // ═══════════════════════════════════════════════════════════════════════════
 // STANDARDIZED BREAKPOINTS - Repository-Wide System

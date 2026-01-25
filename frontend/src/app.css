@@ -5,6 +5,7 @@
  * ═══════════════════════════════════════════════════════════════════════════ */
 
 @import 'tailwindcss';
+@import '$lib/styles/design-tokens.css';
 
 /* Explicitly define source paths for Tailwind to scan */
 /* This prevents scanning node_modules which causes "Invalid declaration: Snippet" error from @threlte/core */
