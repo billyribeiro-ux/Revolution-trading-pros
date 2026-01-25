@@ -5,8 +5,8 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays 30-day performance metrics in a compact sidebar card
-	 * @version 4.1.0 - Visual Polish Pass
-	 * @standards Apple Principal Engineer ICT 7+ Standards
+	 * @version 5.0.0 - Nuclear Refactor: Design Tokens
+	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import type { ThirtyDayPerformance } from '../types';
 	import { formatPercent, formatRiskReward } from '../utils/formatters';
@@ -73,69 +73,73 @@
 </div>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════
+	   PERFORMANCE CARD - Design Token Implementation
+	   ═══════════════════════════════════════════════════════════════════════ */
 	.performance-card {
-		background: #ffffff;
-		border: 1px solid #e2e8f0;
-		border-radius: 14px;
-		padding: 22px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-		transition: all 0.2s ease-out;
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border-default);
+		border-radius: var(--radius-lg);
+		padding: var(--space-5);
+		box-shadow: var(--shadow-sm);
+		transition: var(--transition-shadow);
+		contain: layout style;
 	}
 
 	.performance-card:hover {
-		box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+		box-shadow: var(--shadow-md);
 	}
 
 	.card-title {
-		font-size: 13px;
-		font-weight: 700;
-		color: #475569;
+		font-size: var(--text-sm);
+		font-weight: var(--font-bold);
+		color: var(--color-text-secondary);
 		text-transform: uppercase;
-		letter-spacing: 0.06em;
-		margin: 0 0 18px 0;
+		letter-spacing: var(--tracking-wider);
+		margin: 0 0 var(--space-4) 0;
 	}
 
 	.card-content {
-		margin-bottom: 16px;
+		margin-bottom: var(--space-4);
 	}
 
 	.win-rate-display {
 		display: flex;
 		align-items: baseline;
-		gap: 8px;
-		margin-bottom: 4px;
+		gap: var(--space-2);
+		margin-bottom: var(--space-1);
 	}
 
 	.win-rate-value {
-		font-size: 36px;
-		font-weight: 800;
-		color: #059669;
+		font-size: var(--text-4xl);
+		font-weight: var(--font-extrabold);
+		color: var(--color-profit);
 		font-variant-numeric: tabular-nums;
-		line-height: 1;
+		line-height: var(--leading-none);
 	}
 
 	.win-rate-label {
-		font-size: 14px;
-		font-weight: 500;
-		color: #64748b;
+		font-size: var(--text-base);
+		font-weight: var(--font-medium);
+		color: var(--color-text-tertiary);
 	}
 
 	.win-count {
-		font-size: 13px;
-		color: #64748b;
-		margin: 0 0 16px 0;
+		font-size: var(--text-sm);
+		color: var(--color-text-tertiary);
+		margin: 0 0 var(--space-4) 0;
 	}
 
 	.stats-divider {
 		height: 1px;
-		background: linear-gradient(90deg, #e2e8f0 0%, transparent 100%);
-		margin-bottom: 16px;
+		background: linear-gradient(90deg, var(--color-border-default) 0%, transparent 100%);
+		margin-bottom: var(--space-4);
 	}
 
 	.stats-grid {
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
+		gap: var(--space-2);
 	}
 
 	.stat-row {
@@ -145,56 +149,62 @@
 	}
 
 	.stat-label {
-		font-size: 14px;
-		color: #64748b;
+		font-size: var(--text-base);
+		color: var(--color-text-tertiary);
 	}
 
 	.stat-value {
-		font-size: 14px;
-		font-weight: 600;
-		color: #0f172a;
+		font-size: var(--text-base);
+		font-weight: var(--font-semibold);
+		color: var(--color-text-primary);
 		font-variant-numeric: tabular-nums;
 	}
 
 	.stat-value.positive {
-		color: #059669;
+		color: var(--color-profit);
 	}
 
 	.stat-value.negative {
-		color: #dc2626;
+		color: var(--color-loss);
 	}
 
 	.view-history-link {
 		display: inline-flex;
 		align-items: center;
-		gap: 6px;
-		font-size: 14px;
-		font-weight: 600;
-		color: #143e59;
+		gap: var(--space-2);
+		font-size: var(--text-base);
+		font-weight: var(--font-semibold);
+		color: var(--color-brand-primary);
 		text-decoration: none;
-		padding: 8px 12px;
-		margin: 0 -12px;
-		border-radius: 8px;
-		transition: all 0.2s ease-out;
+		padding: var(--space-2) var(--space-3);
+		margin: 0 calc(-1 * var(--space-3));
+		border-radius: var(--radius-md);
+		transition: var(--transition-colors);
 	}
 
 	.view-history-link:hover {
-		background: #f1f5f9;
-		color: #0f172a;
+		background: var(--color-bg-subtle);
+		color: var(--color-text-primary);
 	}
 
+	.view-history-link:focus-visible {
+		outline: 2px solid var(--color-brand-primary);
+		outline-offset: 2px;
+	}
+
+	/* Skeleton Loading States */
 	.skeleton-content {
 		display: flex;
 		flex-direction: column;
-		gap: 12px;
+		gap: var(--space-3);
 	}
 
 	.skeleton-line {
 		height: 16px;
-		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
-		border-radius: 4px;
+		border-radius: var(--radius-sm);
 	}
 
 	.skeleton-line.large {
@@ -220,18 +230,18 @@
 	   ═══════════════════════════════════════════════════════════════════════ */
 	@media (max-width: 640px) {
 		.performance-card {
-			padding: 18px;
-			border-radius: 12px;
+			padding: var(--space-4);
+			border-radius: var(--radius-lg);
 		}
 
 		.win-rate-value {
-			font-size: 28px;
+			font-size: var(--text-2xl);
 		}
 
 		.stat-row {
 			flex-direction: column;
 			align-items: flex-start;
-			gap: 4px;
+			gap: var(--space-1);
 		}
 	}
 </style>
