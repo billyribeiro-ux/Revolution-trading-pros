@@ -64,7 +64,9 @@ const config = {
 			'state_referenced_locally',
 			// Svelte 5 specific warnings
 			'component_type_invalid',
-			'export_let_unused'
+			'export_let_unused',
+			// Modern CSS properties not yet recognized by parser
+			'css_unknown_property'
 		];
 		if (suppressedCodes.includes(warning.code)) return;
 		handler(warning);
