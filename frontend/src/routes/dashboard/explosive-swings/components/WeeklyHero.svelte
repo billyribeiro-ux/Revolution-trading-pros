@@ -190,6 +190,7 @@
 				<!-- VIDEO TAB - Enhanced In-Place Player -->
 				<div class="video-container-compact" class:video-active={isVideoPlaying}>
 					<!-- Video Player with Blur Background -->
+					<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 					<div 
 						bind:this={videoPlayerRef}
 						class="video-player-wrapper"
@@ -493,9 +494,9 @@
 	}
 
 	.video-player-compact {
-		flex: 0 0 50%;
+		flex: 0 0 55%;
 		position: relative;
-		padding-bottom: 28%;
+		padding-bottom: 31%;
 		background-size: cover;
 		background-position: center;
 		border-radius: 12px;
@@ -506,7 +507,7 @@
 	.video-overlay {
 		position: absolute;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.3);
+		background: rgba(0, 0, 0, 0.4);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -514,7 +515,7 @@
 	}
 
 	.video-player-compact:hover .video-overlay {
-		background: rgba(0, 0, 0, 0.4);
+		background: rgba(0, 0, 0, 0.2);
 	}
 
 	.play-btn {
