@@ -1,18 +1,19 @@
 <!--
-	VideoUploadModal - ICT 7 Grade
+	VideoUploadModal - ICT 7 Grade (Refactored)
 	═══════════════════════════════════════════════════════════════════════════════════
 	Apple Principal Engineer ICT Level 7 - January 2026
 	
 	Professional video upload modal for weekly watchlist videos.
-	- Clean separated UI: File Upload tab vs URL Input tab
-	- Native calendar date picker for week selection
-	- Auto-detect video duration from Bunny.net API
-	- Compact design, proper z-index above navbar
+	Uses extracted UI components for reusability.
 	
-	@version 3.1.0 - Fixed date picker
+	@version 4.0.0 - Component extraction refactor
 -->
 <script lang="ts">
 	import { weeklyVideoApi } from '$lib/api/room-content';
+	import DatePicker from '$lib/components/ui/DatePicker.svelte';
+	import FileDropZone from '$lib/components/ui/FileDropZone.svelte';
+	import UploadProgress from '$lib/components/ui/UploadProgress.svelte';
+	import ThumbnailSelector from '$lib/components/ui/ThumbnailSelector.svelte';
 
 	// Type definitions
 	interface BunnyProcessingResult {
@@ -39,8 +40,6 @@
 	] as const;
 	const PROCESSING_POLL_INTERVAL_MS = 2000;
 	const PROCESSING_MAX_ATTEMPTS = 30;
-	const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
-	const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] as const;
 
 	interface Props {
 		isOpen: boolean;
@@ -57,18 +56,11 @@
 	// Core states
 	let isSaving = $state(false);
 	let errorMessage = $state('');
-	let isDragOver = $state(false);
 	
 	// File upload states
 	let videoFile = $state<File | null>(null);
 	let uploadProgress = $state(0);
 	let uploadStatus = $state<'idle' | 'preparing' | 'uploading' | 'processing' | 'complete'>('idle');
-	let fileInput = $state<HTMLInputElement | null>(null);
-	
-	// Custom date picker state
-	let isCalendarOpen = $state(false);
-	let calendarViewDate = $state(new Date());
-	let calendarRef = $state<HTMLDivElement | null>(null);
 	
 	// Thumbnail selection
 	let generatedThumbnails = $state<string[]>([]);
@@ -93,9 +85,6 @@
 		description: ''
 	});
 	
-	// Calendar derived values
-	const calendarDays = $derived(getCalendarDays(calendarViewDate));
-	const calendarMonthYear = $derived(`${MONTHS[calendarViewDate.getMonth()]} ${calendarViewDate.getFullYear()}`);
 	
 	// Lock body scroll when modal is open
 	$effect(() => {
@@ -122,16 +111,6 @@
 		}
 	});
 	
-	// Close calendar when clicking outside
-	$effect(() => {
-		if (!isCalendarOpen) return;
-		
-		document.addEventListener('click', handleClickOutside);
-		return () => {
-			document.removeEventListener('click', handleClickOutside);
-		};
-	});
-
 	function getNextMonday(): string {
 		const today = new Date();
 		const dayOfWeek = today.getDay();
@@ -141,14 +120,6 @@
 		return nextMonday.toISOString().split('T')[0];
 	}
 
-	function formatDate(dateStr: string): string {
-		return new Date(dateStr).toLocaleDateString('en-US', {
-			weekday: 'short',
-			month: 'short',
-			day: 'numeric',
-			year: 'numeric'
-		});
-	}
 	
 	function formatDuration(seconds: number): string {
 		const mins = Math.floor(seconds / 60);
@@ -167,88 +138,6 @@
 		}
 	}
 	
-	// ═══════════════════════════════════════════════════════════════════════════
-	// CUSTOM CALENDAR FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
-	
-	function getCalendarDays(date: Date): (number | null)[] {
-		const year = date.getFullYear();
-		const month = date.getMonth();
-		const firstDay = new Date(year, month, 1).getDay();
-		const daysInMonth = new Date(year, month + 1, 0).getDate();
-		
-		const days: (number | null)[] = [];
-		
-		// Add empty slots for days before the first of the month
-		for (let i = 0; i < firstDay; i++) {
-			days.push(null);
-		}
-		
-		// Add the days of the month
-		for (let i = 1; i <= daysInMonth; i++) {
-			days.push(i);
-		}
-		
-		return days;
-	}
-	
-	function isSelectedDate(day: number | null): boolean {
-		if (!day) return false;
-		const selected = new Date(form.week_of);
-		return (
-			selected.getFullYear() === calendarViewDate.getFullYear() &&
-			selected.getMonth() === calendarViewDate.getMonth() &&
-			selected.getDate() === day
-		);
-	}
-	
-	function isToday(day: number | null): boolean {
-		if (!day) return false;
-		const today = new Date();
-		return (
-			today.getFullYear() === calendarViewDate.getFullYear() &&
-			today.getMonth() === calendarViewDate.getMonth() &&
-			today.getDate() === day
-		);
-	}
-	
-	function selectDate(day: number | null) {
-		if (!day) return;
-		const newDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth(), day);
-		form.week_of = newDate.toISOString().split('T')[0];
-		isCalendarOpen = false;
-	}
-	
-	function prevMonth() {
-		calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() - 1, 1);
-	}
-	
-	function nextMonth() {
-		calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() + 1, 1);
-	}
-	
-	function toggleCalendar() {
-		isCalendarOpen = !isCalendarOpen;
-		if (isCalendarOpen) {
-			// Sync calendar view to currently selected date
-			const selected = new Date(form.week_of);
-			calendarViewDate = new Date(selected.getFullYear(), selected.getMonth(), 1);
-		}
-	}
-	
-	function handleCalendarKeydown(e: KeyboardEvent) {
-		if (e.key === 'Escape') {
-			isCalendarOpen = false;
-		}
-	}
-	
-	// Close calendar when clicking outside
-	function handleClickOutside(e: MouseEvent) {
-		if (calendarRef && !calendarRef.contains(e.target as Node)) {
-			isCalendarOpen = false;
-		}
-	}
-
 	const isFormValid = $derived(
 		isValidBunnyUrl(form.video_url) && 
 		form.video_title.trim().length >= 3 &&
@@ -283,7 +172,6 @@
 		uploadStatus = 'idle';
 		generatedThumbnails = [];
 		selectedThumbnailIndex = 0;
-		if (fileInput) fileInput.value = '';
 		
 		// Reset abort flag for next upload cycle
 		processingAborted = false;
@@ -298,22 +186,6 @@
 	
 	function handleFileSelect(file: File) {
 		errorMessage = '';
-		
-		if (!ALLOWED_VIDEO_TYPES.includes(file.type as typeof ALLOWED_VIDEO_TYPES[number])) {
-			errorMessage = `Invalid file type. Upload ${ALLOWED_VIDEO_TYPES.map(t => t.split('/')[1].toUpperCase()).join(', ')}.`;
-			return;
-		}
-		
-		if (file.size > MAX_FILE_SIZE_BYTES) {
-			errorMessage = `File too large. Maximum ${MAX_FILE_SIZE_GB}GB.`;
-			return;
-		}
-		
-		if (file.size === 0) {
-			errorMessage = 'File is empty.';
-			return;
-		}
-		
 		videoFile = file;
 		if (!form.video_title) {
 			form.video_title = file.name
@@ -321,14 +193,11 @@
 				.replace(/[-_]/g, ' ')
 				.trim();
 		}
-		
 		startBunnyUpload();
 	}
 	
-	function handleFileInputChange(e: Event) {
-		const input = e.target as HTMLInputElement;
-		const file = input.files?.[0];
-		if (file) handleFileSelect(file);
+	function handleFileError(message: string) {
+		errorMessage = message;
 	}
 	
 	// Bunny.net upload functions
@@ -532,7 +401,6 @@
 		form.video_guid = '';
 		form.thumbnail_url = '';
 		form.duration = '';
-		if (fileInput) fileInput.value = '';
 		
 		// Reset for next upload
 		processingAborted = false;
@@ -557,7 +425,7 @@
 			await weeklyVideoApi.create({
 				room_slug: roomSlug,
 				week_of: form.week_of,
-				week_title: form.week_title || `Week of ${formatDate(form.week_of)}`,
+				week_title: form.week_title || `Week of ${form.week_of}`,
 				video_title: form.video_title,
 				video_url: form.video_url,
 				video_platform: form.video_platform,
@@ -592,34 +460,10 @@
 	function handleKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') handleClose();
 	}
-
-	function handleDragOver(e: DragEvent) {
-		e.preventDefault();
-		isDragOver = true;
-	}
-
-	function handleDragLeave() {
-		isDragOver = false;
-	}
-
-	function handleDrop(e: DragEvent) {
-		e.preventDefault();
-		e.stopPropagation();
-		isDragOver = false;
-		
-		if (uploadMode === 'file') {
-			const files = e.dataTransfer?.files;
-			if (files && files.length > 0) {
-				handleFileSelect(files[0]);
-				return;
-			}
-		}
-		
-		// URL mode — validate dropped URL
-		const url = e.dataTransfer?.getData('text/plain');
-		if (url && isValidBunnyUrl(url)) {
-			form.video_url = url.trim();
-		}
+	
+	function handleThumbnailSelect(index: number) {
+		selectedThumbnailIndex = index;
+		form.thumbnail_url = generatedThumbnails[index] || '';
 	}
 </script>
 
@@ -719,31 +563,12 @@
 								</button>
 							</div>
 							
-							<!-- Thumbnail Selection -->
-							{#if generatedThumbnails.length > 0}
-								<div class="thumbnail-section">
-									<span class="section-label">Select Thumbnail</span>
-									<div class="thumbnail-grid">
-										{#each generatedThumbnails as thumb, i}
-											<button
-												type="button"
-												class="thumbnail-option"
-												class:selected={selectedThumbnailIndex === i}
-												onclick={() => selectThumbnail(i)}
-											>
-												<img src={thumb} alt="Thumbnail option {i + 1}" loading="lazy" />
-												{#if selectedThumbnailIndex === i}
-													<div class="thumb-check">
-														<svg viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
-															<path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z" />
-														</svg>
-													</div>
-												{/if}
-											</button>
-										{/each}
-									</div>
-								</div>
-							{/if}
+							<!-- Thumbnail Selection - Extracted Component -->
+							<ThumbnailSelector
+								thumbnails={generatedThumbnails}
+								selected={selectedThumbnailIndex}
+								onselect={handleThumbnailSelect}
+							/>
 						{:else if videoFile}
 							<!-- File Selected State -->
 							<div class="file-selected">
@@ -769,16 +594,11 @@
 								</div>
 								
 								{#if uploadStatus !== 'idle'}
-									<div class="upload-progress">
-										<div class="progress-bar">
-											<div
-												class="progress-fill"
-												class:indeterminate={uploadStatus === 'preparing' || uploadStatus === 'processing'}
-												style="width: {uploadStatus === 'uploading' ? uploadProgress : 100}%"
-											></div>
-										</div>
-										<span class="progress-text">{getUploadStatusText()}</span>
-									</div>
+									<UploadProgress 
+										progress={uploadProgress}
+										status={uploadStatus}
+										statusText={getUploadStatusText()}
+									/>
 								{:else}
 									<button type="button" class="btn-upload-bunny" onclick={startBunnyUpload}>
 										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -791,48 +611,12 @@
 								{/if}
 							</div>
 						{:else}
-							<!-- Drag & Drop Zone for Files -->
-							<div
-								class="drop-zone"
-								class:drag-over={isDragOver}
-								role="region"
-								aria-label="Video upload area"
-								ondragover={handleDragOver}
-								ondragleave={handleDragLeave}
-								ondrop={handleDrop}
-							>
-								<div class="drop-zone-content">
-									<div class="upload-icon-large">
-										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
-											<path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-											<polyline points="17 8 12 3 7 8"></polyline>
-											<line x1="12" y1="3" x2="12" y2="15"></line>
-										</svg>
-									</div>
-									<p class="drop-text">Drag and drop video here</p>
-									<p class="drop-hint">or use the button below</p>
-									<span class="supported-formats">MP4, WebM, QuickTime, AVI, MKV (max {MAX_FILE_SIZE_GB}GB)</span>
-									
-									<!-- Browse Files Button -->
-									<button 
-										type="button" 
-										class="btn-browse-files"
-										onclick={() => fileInput?.click()}
-									>
-										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-											<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
-										</svg>
-										Browse Files & Folders
-									</button>
-								</div>
-							</div>
-							<!-- Hidden file input -->
-							<input
-								bind:this={fileInput}
-								type="file"
-								accept="video/mp4,video/webm,video/quicktime,video/x-msvideo,video/x-matroska"
-								hidden
-								onchange={handleFileInputChange}
+							<!-- File Drop Zone - Extracted Component -->
+							<FileDropZone
+								accept={[...ALLOWED_VIDEO_TYPES]}
+								maxSizeBytes={MAX_FILE_SIZE_BYTES}
+								onfile={handleFileSelect}
+								onerror={handleFileError}
 							/>
 						{/if}
 					{:else}
@@ -891,81 +675,13 @@
 
 					<div class="form-row">
 						<div class="form-group">
-							<label for="week_of">Week Of *</label>
-							<!-- Custom Date Picker -->
-							<div class="date-picker-wrapper" bind:this={calendarRef}>
-								<button 
-									type="button"
-									class="date-picker-trigger"
-									onclick={toggleCalendar}
-									aria-expanded={isCalendarOpen}
-									aria-haspopup="dialog"
-								>
-									<span class="date-picker-value">{formatDate(form.week_of)}</span>
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-										<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-										<line x1="16" y1="2" x2="16" y2="6"></line>
-										<line x1="8" y1="2" x2="8" y2="6"></line>
-										<line x1="3" y1="10" x2="21" y2="10"></line>
-									</svg>
-								</button>
-								
-								{#if isCalendarOpen}
-									<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-									<!-- svelte-ignore a11y_interactive_supports_focus -->
-									<div 
-										class="calendar-dropdown" 
-										role="dialog" 
-										aria-label="Choose date"
-										onkeydown={handleCalendarKeydown}
-									>
-										<div class="calendar-header">
-											<button type="button" class="calendar-nav-btn" onclick={prevMonth} aria-label="Previous month">
-												<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-													<path d="M15 18l-6-6 6-6" />
-												</svg>
-											</button>
-											<span class="calendar-month-year">{calendarMonthYear}</span>
-											<button type="button" class="calendar-nav-btn" onclick={nextMonth} aria-label="Next month">
-												<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-													<path d="M9 18l6-6-6-6" />
-												</svg>
-											</button>
-										</div>
-										
-										<div class="calendar-grid">
-											<div class="calendar-weekdays">
-												{#each DAYS_OF_WEEK as day}
-													<span class="weekday">{day}</span>
-												{/each}
-											</div>
-											<div class="calendar-days">
-												{#each calendarDays as day}
-													{#if day === null}
-														<span class="day-empty"></span>
-													{:else}
-														<button
-															type="button"
-															class="day-btn"
-															class:selected={isSelectedDate(day)}
-															class:today={isToday(day)}
-															onclick={() => selectDate(day)}
-														>
-															{day}
-														</button>
-													{/if}
-												{/each}
-											</div>
-										</div>
-										
-										<div class="calendar-footer">
-											<button type="button" class="calendar-today-btn" onclick={() => { form.week_of = new Date().toISOString().split('T')[0]; isCalendarOpen = false; }}>
-												Today
-											</button>
-										</div>
-									</div>
-								{/if}
-							</div>
+							<!-- Date Picker - Extracted Component -->
+							<DatePicker
+								value={form.week_of}
+								onchange={(date) => form.week_of = date}
+								label="Week Of"
+								required
+							/>
 						</div>
 						<div class="form-group">
 							<label for="week_title">Week Title</label>
@@ -1205,48 +921,7 @@
 		height: 16px;
 	}
 
-	.upload-progress {
-		margin-top: 1rem;
-	}
-
-	.progress-bar {
-		height: 8px;
-		background: rgba(0, 0, 0, 0.1);
-		border-radius: 4px;
-		overflow: hidden;
-	}
-
-	.progress-fill {
-		height: 100%;
-		background: linear-gradient(90deg, #143E59, #1a5a7e);
-		transition: width 0.3s;
-		border-radius: 4px;
-	}
-
-	.progress-fill.indeterminate {
-		width: 100% !important;
-		animation: indeterminate 1.5s infinite ease-in-out;
-		background: linear-gradient(
-			90deg,
-			rgba(20, 62, 89, 0.3) 0%,
-			#143E59 50%,
-			rgba(20, 62, 89, 0.3) 100%
-		);
-		background-size: 200% 100%;
-	}
-
-	@keyframes indeterminate {
-		0% { background-position: 200% 0; }
-		100% { background-position: -200% 0; }
-	}
-
-	.progress-text {
-		display: block;
-		text-align: center;
-		margin-top: 0.5rem;
-		font-size: 0.8125rem;
-		color: #64748b;
-	}
+	/* Progress bar styles moved to UploadProgress component */
 
 	.btn-upload-bunny {
 		display: flex;
@@ -1329,125 +1004,12 @@
 		color: #0f2d42;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   THUMBNAIL SELECTION
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.thumbnail-section {
-		margin-bottom: 20px;
-	}
-
-	.section-label {
-		display: block;
-		font-size: 12px;
-		font-weight: 600;
-		color: #475569;
-		margin-bottom: 10px;
-	}
-
-	.thumbnail-grid {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 10px;
-	}
-
-	.thumbnail-option {
-		position: relative;
-		aspect-ratio: 16/9;
-		border: 3px solid transparent;
-		border-radius: 8px;
-		overflow: hidden;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		padding: 0;
-		background: #f1f5f9;
-	}
-
-	.thumbnail-option img {
-		width: 100%;
-		height: 100%;
-		object-fit: cover;
-	}
-
-	.thumbnail-option:hover {
-		border-color: #cbd5e1;
-	}
-
-	.thumbnail-option.selected {
-		border-color: #143E59;
-		box-shadow: 0 0 0 2px rgba(20, 62, 89, 0.2);
-	}
-
-	.thumb-check {
-		position: absolute;
-		top: 4px;
-		right: 4px;
-		width: 24px;
-		height: 24px;
-		background: #143E59;
-		border-radius: 50%;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: white;
-	}
-
-	/* Drop Zone */
-	.upload-icon-large {
-		width: 56px;
-		height: 56px;
-		color: #143E59;
-		margin-bottom: 0.5rem;
-	}
-
-	.upload-icon-large svg {
-		width: 100%;
-		height: 100%;
-	}
-
-	.drop-zone-content {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		gap: 0.5rem;
-	}
-
-	.supported-formats {
-		font-size: 0.75rem;
-		color: #94a3b8;
-		margin-top: 0.5rem;
-	}
+	/* NOTE: Thumbnail, Drop Zone, Progress, and DatePicker styles moved to extracted components */
 	
 	.form-divider {
 		height: 1px;
 		background: #e2e8f0;
 		margin: 20px 0;
-	}
-
-	.btn-browse-files {
-		display: inline-flex;
-		align-items: center;
-		gap: 8px;
-		margin-top: 16px;
-		padding: 12px 24px;
-		background: linear-gradient(135deg, #143E59 0%, #1a5a7e 100%);
-		border: none;
-		border-radius: 10px;
-		font-size: 14px;
-		font-weight: 600;
-		color: #fff;
-		cursor: pointer;
-		transition: all 0.2s ease;
-		box-shadow: 0 2px 8px rgba(20, 62, 89, 0.3);
-	}
-
-	.btn-browse-files:hover {
-		transform: translateY(-2px);
-		box-shadow: 0 4px 16px rgba(20, 62, 89, 0.4);
-		background: linear-gradient(135deg, #0f2d42 0%, #143E59 100%);
-	}
-
-	.btn-browse-files:active {
-		transform: translateY(0);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1534,46 +1096,7 @@
 		padding: 20px;
 	}
 
-	/* Drop Zone */
-	.drop-zone {
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		padding: 24px 20px;
-		border: 2px dashed #cbd5e1;
-		border-radius: 16px;
-		background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-		margin-bottom: 20px;
-		transition: all 0.2s ease;
-		color: #64748b;
-		cursor: pointer;
-	}
-
-	.drop-zone:hover {
-		border-color: #94a3b8;
-		background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
-	}
-
-	.drop-zone.drag-over {
-		border-color: #143E59;
-		background: rgba(20, 62, 89, 0.08);
-		border-style: solid;
-		transform: scale(1.01);
-	}
-
-	.drop-text {
-		margin: 12px 0 4px;
-		font-size: 15px;
-		font-weight: 500;
-		color: #334155;
-	}
-
-	.drop-hint {
-		margin: 0;
-		font-size: 13px;
-		color: #94a3b8;
-	}
+	/* Drop zone styles moved to FileDropZone component */
 
 	.video-preview {
 		width: 100%;
@@ -1613,198 +1136,7 @@
 		color: #94a3b8;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   CUSTOM DATE PICKER - In-app calendar dropdown
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.date-picker-wrapper {
-		position: relative;
-	}
-
-	.date-picker-trigger {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		width: 100%;
-		padding: 12px 14px;
-		background: #f8fafc;
-		border: 2px solid #e2e8f0;
-		border-radius: 10px;
-		font-size: 14px;
-		font-weight: 500;
-		color: #1e293b;
-		cursor: pointer;
-		transition: all 0.15s ease;
-		text-align: left;
-	}
-
-	.date-picker-trigger:hover {
-		border-color: #cbd5e1;
-	}
-
-	.date-picker-trigger:focus {
-		outline: none;
-		border-color: #143E59;
-		background: #fff;
-		box-shadow: 0 0 0 4px rgba(20, 62, 89, 0.1);
-	}
-
-	.date-picker-value {
-		flex: 1;
-	}
-
-	.date-picker-trigger svg {
-		color: #64748b;
-		flex-shrink: 0;
-	}
-
-	.calendar-dropdown {
-		position: absolute;
-		top: calc(100% + 8px);
-		left: 0;
-		z-index: 1000;
-		width: 280px;
-		background: #fff;
-		border: 1px solid #e2e8f0;
-		border-radius: 12px;
-		box-shadow: 
-			0 10px 40px -8px rgba(0, 0, 0, 0.2),
-			0 4px 12px rgba(0, 0, 0, 0.08);
-		animation: calendarSlideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-		overflow: hidden;
-	}
-
-	@keyframes calendarSlideDown {
-		from {
-			opacity: 0;
-			transform: translateY(-8px) scale(0.96);
-		}
-		to {
-			opacity: 1;
-			transform: translateY(0) scale(1);
-		}
-	}
-
-	.calendar-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		padding: 14px 12px;
-		background: #143E59;
-		color: #fff;
-	}
-
-	.calendar-month-year {
-		font-size: 15px;
-		font-weight: 600;
-	}
-
-	.calendar-nav-btn {
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		width: 32px;
-		height: 32px;
-		background: rgba(255, 255, 255, 0.15);
-		border: none;
-		border-radius: 8px;
-		color: #fff;
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-
-	.calendar-nav-btn:hover {
-		background: rgba(255, 255, 255, 0.25);
-	}
-
-	.calendar-grid {
-		padding: 12px;
-	}
-
-	.calendar-weekdays {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		gap: 4px;
-		margin-bottom: 8px;
-	}
-
-	.weekday {
-		text-align: center;
-		font-size: 11px;
-		font-weight: 600;
-		color: #94a3b8;
-		text-transform: uppercase;
-		padding: 4px 0;
-	}
-
-	.calendar-days {
-		display: grid;
-		grid-template-columns: repeat(7, 1fr);
-		gap: 4px;
-	}
-
-	.day-empty {
-		aspect-ratio: 1;
-	}
-
-	.day-btn {
-		aspect-ratio: 1;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		background: transparent;
-		border: none;
-		border-radius: 8px;
-		font-size: 13px;
-		font-weight: 500;
-		color: #334155;
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-
-	.day-btn:hover {
-		background: #f1f5f9;
-		color: #0f172a;
-	}
-
-	.day-btn.today {
-		background: #e0f2fe;
-		color: #0369a1;
-		font-weight: 600;
-	}
-
-	.day-btn.selected {
-		background: #143E59;
-		color: #fff;
-		font-weight: 600;
-	}
-
-	.day-btn.selected:hover {
-		background: #0f2d42;
-	}
-
-	.calendar-footer {
-		display: flex;
-		justify-content: center;
-		padding: 12px;
-		border-top: 1px solid #f1f5f9;
-	}
-
-	.calendar-today-btn {
-		padding: 8px 20px;
-		background: #f1f5f9;
-		border: none;
-		border-radius: 8px;
-		font-size: 13px;
-		font-weight: 600;
-		color: #475569;
-		cursor: pointer;
-		transition: all 0.15s ease;
-	}
-
-	.calendar-today-btn:hover {
-		background: #e2e8f0;
-		color: #1e293b;
-	}
+	/* Date picker styles moved to DatePicker component */
 
 	/* Form Layout */
 	.form-row {

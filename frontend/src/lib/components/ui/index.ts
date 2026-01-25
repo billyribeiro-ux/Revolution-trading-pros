@@ -14,6 +14,12 @@ export { default as NotificationPanel } from './NotificationPanel.svelte';
 export { default as ExportButton } from './ExportButton.svelte';
 export { default as MobileResponsiveTable } from './MobileResponsiveTable.svelte';
 
+// Form Components - ICT 7 Grade (January 2026)
+export { default as DatePicker } from './DatePicker.svelte';
+export { default as FileDropZone } from './FileDropZone.svelte';
+export { default as UploadProgress } from './UploadProgress.svelte';
+export { default as ThumbnailSelector } from './ThumbnailSelector.svelte';
+
 // Enterprise Admin Components
 export { default as CommandPalette } from '../CommandPalette.svelte';
 export { default as NotificationCenter } from '../NotificationCenter.svelte';
