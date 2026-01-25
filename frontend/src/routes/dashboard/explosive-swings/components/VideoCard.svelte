@@ -18,20 +18,18 @@
 
 	const { video, variant = 'default' }: Props = $props();
 
-	const typeConfig = $derived(() => {
-		switch (video.type) {
-			case 'ENTRY':
-				return { bg: 'bg-teal-600', text: 'ENTRY' };
-			case 'EXIT':
-				return { bg: 'bg-emerald-600', text: 'EXIT' };
-			case 'UPDATE':
-				return { bg: 'bg-amber-500', text: 'UPDATE' };
-			case 'BREAKDOWN':
-				return { bg: 'bg-slate-600', text: 'BREAKDOWN' };
-			default:
-				return { bg: 'bg-slate-600', text: '' };
-		}
-	});
+	const TYPE_STYLES = {
+		ENTRY: 'type-entry',
+		EXIT: 'type-exit',
+		UPDATE: 'type-update',
+		BREAKDOWN: 'type-breakdown'
+	} as const;
+	
+	const typeClass = $derived(
+		video.type ? TYPE_STYLES[video.type] ?? 'type-default' : 'type-default'
+	);
+	
+	const typeText = $derived(video.type || '');
 </script>
 
 <a
@@ -45,6 +43,7 @@
 		<img
 			src={video.thumbnailUrl}
 			alt=""
+			role="presentation"
 			class="thumbnail"
 			loading="lazy"
 		/>
@@ -63,7 +62,7 @@
 
 		<!-- Ticker + Type Badge -->
 		{#if video.ticker || video.type}
-			<div class="ticker-badge {typeConfig().bg}">
+			<div class="ticker-badge {typeClass}">
 				{#if video.ticker}
 					<span class="badge-ticker">{video.ticker}</span>
 				{/if}
@@ -71,7 +70,7 @@
 					<span class="badge-divider">▶</span>
 				{/if}
 				{#if video.type}
-					<span class="badge-type">{typeConfig().text}</span>
+					<span class="badge-type">{typeText}</span>
 				{/if}
 			</div>
 		{/if}
@@ -266,6 +265,13 @@
 	.badge-type {
 		font-weight: 600;
 	}
+
+	/* Badge Type Colors */
+	.ticker-badge.type-entry { background: #0d9488; }
+	.ticker-badge.type-exit { background: #059669; }
+	.ticker-badge.type-update { background: #d97706; }
+	.ticker-badge.type-breakdown { background: #475569; }
+	.ticker-badge.type-default { background: #475569; }
 
 	.duration-badge {
 		position: absolute;
