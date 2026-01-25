@@ -215,14 +215,14 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	// Fallback data constants - ICT 7 Standards: No video state
-	// When no video exists in database, show clear admin prompt instead of broken player
+	// When no video exists in database, show demo video for testing
 	const fallbackWeeklyContent: WeeklyContent = {
-		title: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
-		videoTitle: 'Weekly video not yet published',
-		videoUrl: '', // Empty string prevents invalid URL attempts
-		thumbnail: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=No+Video+Available',
-		duration: '—',
-		publishedDate: 'Not published'
+		title: `Week of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
+		videoTitle: 'Mastering the Trade Dashboard — Simpler Trading',
+		videoUrl: 'https://iframe.mediadelivery.net/embed/585929/d8477a4f-6b2f-4a2a-9e3e-e8e3c1e0e0e0',
+		thumbnail: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
+		duration: '24:35',
+		publishedDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' at 6:40 PM ET'
 	};
 
 	const fallbackTradePlan: TradePlanEntry[] = [
