@@ -535,14 +535,16 @@
 	.play-btn {
 		width: 60px;
 		height: 60px;
-		background: #fff;
+		background: rgba(255, 255, 255, 0.95);
+		backdrop-filter: blur(10px);
+		-webkit-backdrop-filter: blur(10px);
 		border: none;
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
-		transition: transform 0.3s;
+		transition: transform 0.3s, background 0.3s, backdrop-filter 0.3s;
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
 	}
 
@@ -555,6 +557,9 @@
 
 	.video-player-compact:hover .play-btn {
 		transform: scale(1.1);
+		background: rgba(255, 255, 255, 1);
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
