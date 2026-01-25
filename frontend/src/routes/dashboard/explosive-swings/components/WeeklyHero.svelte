@@ -478,7 +478,10 @@
 	}
 
 	.hero-content {
+		position: relative;
 		padding: 40px;
+		min-height: 400px;
+		overflow: hidden;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -490,11 +493,22 @@
 		margin: 0 auto;
 	}
 
-	/* Blur backdrop when video is playing */
-	.video-backdrop {
-		position: fixed;
+	/* When expanded, video section fills the hero content area */
+	.video-section.video-expanded {
+		position: absolute;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.6);
+		max-width: none;
+		margin: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	/* Blur backdrop when video is playing - contained within hero */
+	.video-backdrop {
+		position: absolute;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.5);
 		backdrop-filter: blur(8px);
 		-webkit-backdrop-filter: blur(8px);
 		z-index: 100;
@@ -503,9 +517,9 @@
 	}
 
 	.video-backdrop.expanded {
-		background: rgba(0, 0, 0, 0.85);
-		backdrop-filter: blur(16px);
-		-webkit-backdrop-filter: blur(16px);
+		background: rgba(0, 0, 0, 0.7);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
 	}
 
 	@keyframes fadeIn {
@@ -526,13 +540,13 @@
 	}
 
 	.video-layout.expanded {
-		position: fixed;
+		position: absolute;
 		inset: 0;
 		z-index: 101;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		padding: 40px;
+		padding: 20px;
 	}
 
 	/* Video Player Container */
@@ -560,12 +574,11 @@
 	.video-player-container.expanded {
 		width: 100%;
 		max-width: 100%;
-		height: 100%;
-		max-height: 100%;
-		aspect-ratio: unset;
+		height: auto;
+		aspect-ratio: 16 / 9;
 		transform: none;
-		border-radius: 0;
-		box-shadow: none;
+		border-radius: 12px;
+		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 	}
 
 	/* Video Thumbnail */
@@ -1190,7 +1203,7 @@
 		}
 
 		.video-layout.expanded {
-			padding: 16px;
+			padding: 12px;
 		}
 
 		.play-btn {
