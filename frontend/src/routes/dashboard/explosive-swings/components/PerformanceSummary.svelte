@@ -5,8 +5,8 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays this week's performance with ticker pills and active positions
-	 * @version 4.1.0 - Visual Polish Pass
-	 * @standards Apple Principal Engineer ICT 7+ Standards
+	 * @version 5.0.0 - Nuclear Refactor: Design Tokens
+	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import type { WeeklyPerformance, ClosedTrade, ActivePosition } from '../types';
 	import { formatPercent, formatWinLossRatio } from '../utils/formatters';
@@ -162,15 +162,16 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════
-	   CONTAINER
+	   CONTAINER - Design Token Implementation
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.performance-summary {
-		background: #ffffff;
-		border: 1px solid #e2e8f0;
-		border-radius: 16px;
-		padding: 28px;
-		margin: 24px 30px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 4px 12px rgba(0, 0, 0, 0.03);
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border-default);
+		border-radius: var(--radius-xl);
+		padding: var(--space-6);
+		margin: var(--space-6) var(--space-8);
+		box-shadow: var(--shadow-sm);
+		contain: layout style;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
@@ -181,29 +182,30 @@
 		align-items: flex-start;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: 20px;
-		margin-bottom: 28px;
-		padding-bottom: 20px;
-		border-bottom: 1px solid #e2e8f0;
+		gap: var(--space-5);
+		margin-bottom: var(--space-6);
+		padding-bottom: var(--space-5);
+		border-bottom: 1px solid var(--color-border-default);
 	}
 
 	.header-left {
 		display: flex;
 		flex-direction: column;
-		gap: 4px;
+		gap: var(--space-1);
 	}
 
 	.summary-title {
-		font-size: 22px;
-		font-weight: 700;
-		color: #0f172a;
+		font-size: var(--text-xl);
+		font-weight: var(--font-bold);
+		color: var(--color-text-primary);
 		margin: 0;
-		letter-spacing: -0.01em;
+		letter-spacing: var(--tracking-tight);
+		font-family: var(--font-display);
 	}
 
 	.summary-subtitle {
-		font-size: 14px;
-		color: #64748b;
+		font-size: var(--text-base);
+		color: var(--color-text-tertiary);
 	}
 
 	/* Win Rate Badge */
@@ -211,45 +213,45 @@
 		display: flex;
 		flex-direction: column;
 		align-items: flex-end;
-		gap: 4px;
+		gap: var(--space-1);
 	}
 
 	.win-rate-badge {
 		display: flex;
 		align-items: baseline;
-		gap: 8px;
-		background: linear-gradient(135deg, #ecfdf5 0%, #d1fae5 100%);
-		border: 1px solid #a7f3d0;
-		padding: 10px 18px;
-		border-radius: 10px;
+		gap: var(--space-2);
+		background: var(--color-profit-bg);
+		border: 1px solid var(--color-profit-border);
+		padding: var(--space-2) var(--space-4);
+		border-radius: var(--radius-md);
 	}
 
 	.win-rate-value {
-		font-size: 32px;
-		font-weight: 800;
-		color: #059669;
+		font-size: var(--text-3xl);
+		font-weight: var(--font-extrabold);
+		color: var(--color-profit);
 		font-variant-numeric: tabular-nums;
-		line-height: 1;
+		line-height: var(--leading-none);
 	}
 
 	.win-rate-label {
-		font-size: 13px;
-		font-weight: 600;
-		color: #10b981;
+		font-size: var(--text-sm);
+		font-weight: var(--font-semibold);
+		color: var(--color-profit-light);
 		text-transform: uppercase;
-		letter-spacing: 0.03em;
+		letter-spacing: var(--tracking-wide);
 	}
 
 	.win-rate-detail {
-		font-size: 13px;
-		color: #64748b;
+		font-size: var(--text-sm);
+		color: var(--color-text-tertiary);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
 	   CLOSED TRADES SECTION
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.closed-section {
-		margin-bottom: 32px;
+		margin-bottom: var(--space-8);
 	}
 
 	.section-header {
@@ -257,78 +259,85 @@
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: 16px;
-		margin-bottom: 18px;
+		gap: var(--space-4);
+		margin-bottom: var(--space-4);
 	}
 
 	.section-label {
-		font-size: 13px;
-		font-weight: 700;
-		color: #475569;
+		font-size: var(--text-sm);
+		font-weight: var(--font-bold);
+		color: var(--color-text-secondary);
 		text-transform: uppercase;
-		letter-spacing: 0.06em;
+		letter-spacing: var(--tracking-wider);
 		margin: 0;
 	}
 
 	.position-count {
-		color: #94a3b8;
-		font-weight: 600;
+		color: var(--color-text-muted);
+		font-weight: var(--font-semibold);
 	}
 
 	/* Average Metrics */
 	.avg-metrics {
 		display: flex;
 		align-items: center;
-		gap: 14px;
+		gap: var(--space-3);
 		flex-wrap: wrap;
 	}
 
 	.metric {
 		display: flex;
 		align-items: center;
-		gap: 6px;
+		gap: var(--space-2);
 	}
 
 	.metric-label {
-		font-size: 13px;
-		color: #64748b;
-		font-weight: 500;
+		font-size: var(--text-sm);
+		color: var(--color-text-tertiary);
+		font-weight: var(--font-medium);
 	}
 
 	.metric-value {
-		font-size: 14px;
-		font-weight: 700;
+		font-size: var(--text-base);
+		font-weight: var(--font-bold);
 		font-variant-numeric: tabular-nums;
 	}
 
 	.metric-value.positive {
-		color: #059669;
+		color: var(--color-profit);
 	}
 
 	.metric-value.negative {
-		color: #dc2626;
+		color: var(--color-loss);
 	}
 
 	.metric-value.neutral {
-		color: #0f172a;
+		color: var(--color-text-primary);
 	}
 
 	.metric-divider {
-		color: #cbd5e1;
-		font-weight: 300;
+		color: var(--color-border-strong);
+		font-weight: var(--font-normal);
 	}
 
-	/* Ticker Pills Container */
+	/* Ticker Pills Container - with scroll shadow affordance */
 	.ticker-pills-scroll {
 		display: flex;
-		gap: 14px;
+		gap: var(--space-3);
 		overflow-x: auto;
-		padding: 8px 4px;
-		margin: -8px -4px;
+		padding: var(--space-2) var(--space-1);
+		margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-1));
 		scroll-snap-type: x mandatory;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: thin;
-		scrollbar-color: #cbd5e1 #f1f5f9;
+		scrollbar-color: var(--color-border-strong) var(--color-bg-subtle);
+		mask-image: linear-gradient(
+			to right,
+			transparent 0,
+			black var(--space-2),
+			black calc(100% - var(--space-8)),
+			transparent 100%
+		);
 	}
 
 	.ticker-pills-scroll::-webkit-scrollbar {
@@ -336,27 +345,27 @@
 	}
 
 	.ticker-pills-scroll::-webkit-scrollbar-track {
-		background: #f1f5f9;
-		border-radius: 4px;
+		background: var(--color-bg-subtle);
+		border-radius: var(--radius-sm);
 	}
 
 	.ticker-pills-scroll::-webkit-scrollbar-thumb {
-		background: #cbd5e1;
-		border-radius: 4px;
+		background: var(--color-border-strong);
+		border-radius: var(--radius-sm);
 	}
 
 	.ticker-pills-scroll::-webkit-scrollbar-thumb:hover {
-		background: #94a3b8;
+		background: var(--color-text-muted);
 	}
 
 	/* Skeleton for Ticker Pills */
 	.ticker-pill-skeleton {
 		min-width: 88px;
 		height: 82px;
-		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
-		border-radius: 10px;
+		border-radius: var(--radius-md);
 		flex-shrink: 0;
 	}
 
@@ -364,14 +373,14 @@
 	   ACTIVE POSITIONS SECTION
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.active-section {
-		margin-bottom: 8px;
+		margin-bottom: var(--space-2);
 	}
 
 	.section-header-row {
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 18px;
+		margin-bottom: var(--space-4);
 	}
 
 	.active-section .section-label {
@@ -381,22 +390,27 @@
 	.add-trade-btn {
 		display: flex;
 		align-items: center;
-		gap: 8px;
-		padding: 10px 18px;
-		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
-		color: #ffffff;
+		gap: var(--space-2);
+		padding: var(--space-2) var(--space-4);
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
+		color: white;
 		border: none;
-		border-radius: 10px;
-		font-size: 13px;
-		font-weight: 600;
+		border-radius: var(--radius-md);
+		font-size: var(--text-sm);
+		font-weight: var(--font-semibold);
 		cursor: pointer;
-		transition: all 0.2s ease;
-		box-shadow: 0 2px 8px rgba(20, 62, 89, 0.2);
+		transition: var(--transition-all);
+		box-shadow: var(--shadow-brand);
 	}
 
 	.add-trade-btn:hover {
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
+		box-shadow: var(--shadow-brand-lg);
 		transform: translateY(-2px);
+	}
+
+	.add-trade-btn:focus-visible {
+		outline: 2px solid var(--color-brand-primary);
+		outline-offset: 2px;
 	}
 
 	.add-trade-btn svg {
@@ -406,7 +420,7 @@
 	.positions-grid {
 		display: grid;
 		grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-		gap: 20px;
+		gap: var(--space-5);
 	}
 
 	.empty-positions {
@@ -415,52 +429,57 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: 60px 20px;
-		background: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
-		border-radius: 16px;
-		border: 2px dashed #cbd5e1;
+		padding: var(--space-16) var(--space-5);
+		background: linear-gradient(135deg, var(--color-bg-card-hover) 0%, var(--color-bg-subtle) 100%);
+		border-radius: var(--radius-xl);
+		border: 2px dashed var(--color-border-strong);
 	}
 
 	.empty-positions svg {
-		color: #94a3b8;
-		margin-bottom: 16px;
+		color: var(--color-text-muted);
+		margin-bottom: var(--space-4);
 	}
 
 	.empty-positions p {
-		margin: 0 0 20px 0;
-		font-size: 15px;
-		font-weight: 600;
-		color: #64748b;
+		margin: 0 0 var(--space-5) 0;
+		font-size: var(--text-base);
+		font-weight: var(--font-semibold);
+		color: var(--color-text-tertiary);
 	}
 
 	.add-first-trade-btn {
 		display: flex;
 		align-items: center;
-		gap: 10px;
-		padding: 14px 28px;
-		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
-		color: #ffffff;
+		gap: var(--space-2);
+		padding: var(--space-3) var(--space-6);
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
+		color: white;
 		border: none;
-		border-radius: 12px;
-		font-size: 14px;
-		font-weight: 700;
+		border-radius: var(--radius-lg);
+		font-size: var(--text-base);
+		font-weight: var(--font-bold);
 		cursor: pointer;
-		transition: all 0.2s ease;
-		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.25);
+		transition: var(--transition-all);
+		box-shadow: var(--shadow-brand);
 	}
 
 	.add-first-trade-btn:hover {
-		box-shadow: 0 6px 16px rgba(20, 62, 89, 0.35);
+		box-shadow: var(--shadow-brand-lg);
 		transform: translateY(-2px);
+	}
+
+	.add-first-trade-btn:focus-visible {
+		outline: 2px solid var(--color-brand-primary);
+		outline-offset: 2px;
 	}
 
 	/* Skeleton for Position Cards */
 	.position-skeleton {
 		height: 260px;
-		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
-		border-radius: 12px;
+		border-radius: var(--radius-lg);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
@@ -471,7 +490,7 @@
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: 48px 24px;
+		padding: var(--space-12) var(--space-6);
 		text-align: center;
 	}
 
@@ -481,27 +500,27 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #f1f5f9;
-		border-radius: 12px;
-		margin-bottom: 16px;
+		background: var(--color-bg-subtle);
+		border-radius: var(--radius-lg);
+		margin-bottom: var(--space-4);
 	}
 
 	.empty-icon svg {
 		width: 28px;
 		height: 28px;
-		color: #94a3b8;
+		color: var(--color-text-muted);
 	}
 
 	.empty-title {
-		font-size: 16px;
-		font-weight: 600;
-		color: #334155;
-		margin: 0 0 6px 0;
+		font-size: var(--text-lg);
+		font-weight: var(--font-semibold);
+		color: var(--color-text-secondary);
+		margin: 0 0 var(--space-2) 0;
 	}
 
 	.empty-text {
-		font-size: 14px;
-		color: #64748b;
+		font-size: var(--text-base);
+		color: var(--color-text-tertiary);
 		margin: 0;
 		max-width: 280px;
 	}
@@ -519,19 +538,19 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
-	   RESPONSIVE - Apple ICT 7 Standard Breakpoints
+	   RESPONSIVE
 	   ═══════════════════════════════════════════════════════════════════════ */
 
 	/* Large Desktop (1440px+) */
 	@media (min-width: 1440px) {
 		.performance-summary {
-			padding: 35px 40px;
-			margin: 30px 40px;
+			padding: var(--space-8) var(--space-10);
+			margin: var(--space-8) var(--space-10);
 		}
 
 		.positions-grid {
 			grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-			gap: 24px;
+			gap: var(--space-6);
 		}
 	}
 
@@ -539,8 +558,8 @@
 	@media (min-width: 1920px) {
 		.performance-summary {
 			max-width: 1700px;
-			margin: 35px auto;
-			padding: 40px 50px;
+			margin: var(--space-8) auto;
+			padding: var(--space-10) var(--space-12);
 		}
 
 		.positions-grid {
@@ -551,9 +570,9 @@
 	/* Tablet and below */
 	@media (max-width: 768px) {
 		.performance-summary {
-			padding: 20px;
-			margin: 16px;
-			border-radius: 12px;
+			padding: var(--space-5);
+			margin: var(--space-4);
+			border-radius: var(--radius-lg);
 		}
 
 		.summary-header {
@@ -573,7 +592,7 @@
 		.avg-metrics {
 			flex-direction: column;
 			align-items: flex-start;
-			gap: 8px;
+			gap: var(--space-2);
 		}
 
 		.metric-divider {
@@ -585,11 +604,11 @@
 		}
 
 		.summary-title {
-			font-size: 18px;
+			font-size: var(--text-lg);
 		}
 
 		.win-rate-value {
-			font-size: 26px;
+			font-size: var(--text-2xl);
 		}
 	}
 </style>
