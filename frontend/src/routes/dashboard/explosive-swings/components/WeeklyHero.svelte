@@ -133,7 +133,7 @@
 	}
 </script>
 
-<svelte:window on:keydown={handleVideoKeydown} />
+<svelte:window onkeydown={handleVideoKeydown} />
 
 <section class="hero" class:collapsed={isCollapsed}>
 	<button class="hero-collapse-toggle" onclick={toggleCollapse}>
