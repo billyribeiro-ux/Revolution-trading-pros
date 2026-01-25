@@ -322,8 +322,7 @@ export const fallbackData = {
 };
 
 // ═══════════════════════════════════════════════════════════════════════════
-// CONSTANTS
+// CONSTANTS - Re-exported from centralized constants (ICT 7: Single Source of Truth)
 // ═══════════════════════════════════════════════════════════════════════════
 
-export const ROOM_SLUG = 'explosive-swings';
-export const ALERTS_PER_PAGE = 10;
+export { ROOM_SLUG, ALERTS_PER_PAGE } from '../constants';

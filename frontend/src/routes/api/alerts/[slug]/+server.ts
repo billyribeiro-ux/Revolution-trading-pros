@@ -107,15 +107,15 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 	const alertType = url.searchParams.get('alert_type');
 	const ticker = url.searchParams.get('ticker');
 
-	// Get auth headers
+	// Get auth headers - ICT 7: Use rtp_access_token cookie for Bearer auth (consistent with auth store)
 	const authHeader = request.headers.get('Authorization');
-	const sessionCookie = cookies.get('session');
+	const accessToken = cookies.get('rtp_access_token');
 	const headers: Record<string, string> = {};
 
 	if (authHeader) {
 		headers['Authorization'] = authHeader;
-	} else if (sessionCookie) {
-		headers['Cookie'] = `session=${sessionCookie}`;
+	} else if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
 	// Build backend query params
@@ -195,9 +195,9 @@ export const GET: RequestHandler = async ({ params, url, request, cookies }) => 
 export const POST: RequestHandler = async ({ params, request, cookies }) => {
 	const { slug } = params;
 	const authHeader = request.headers.get('Authorization');
-	const sessionCookie = cookies.get('session');
+	const accessToken = cookies.get('rtp_access_token');
 
-	if (!authHeader && !sessionCookie) {
+	if (!authHeader && !accessToken) {
 		throw error(401, 'Authentication required');
 	}
 
@@ -236,12 +236,12 @@ export const POST: RequestHandler = async ({ params, request, cookies }) => {
 		tosString = buildTosString(tosParams);
 	}
 
-	// Build headers
+	// Build headers - ICT 7: Use rtp_access_token cookie for Bearer auth
 	const headers: Record<string, string> = {};
 	if (authHeader) {
 		headers['Authorization'] = authHeader;
-	} else if (sessionCookie) {
-		headers['Cookie'] = `session=${sessionCookie}`;
+	} else if (accessToken) {
+		headers['Authorization'] = `Bearer ${accessToken}`;
 	}
 
 	// Call backend at /api/admin/room-content/alerts
