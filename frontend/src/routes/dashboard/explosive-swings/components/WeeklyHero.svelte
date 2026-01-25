@@ -730,6 +730,11 @@
 	}
 
 	.video-info-compact.hidden {
+		display: none !important;
+	}
+	
+	/* Hide video info when video is playing */
+	.video-container-compact.video-active .video-info-compact {
 		display: none;
 	}
 
