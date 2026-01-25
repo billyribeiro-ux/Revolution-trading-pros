@@ -54,7 +54,11 @@ const config = {
 	compilerOptions: {
 		// Do NOT set runes globally - Svelte 5 auto-detects per file
 		// Optimize for modern browsers
-		dev: process.env.NODE_ENV !== 'production'
+		dev: process.env.NODE_ENV !== 'production',
+		// Svelte 5.48+ compatibility
+		compatibility: {
+			componentApi: 5
+		}
 	},
 	onwarn: (warning, handler) => {
 		const suppressedCodes = [
@@ -114,10 +118,7 @@ const config = {
 					'https://vz-5a23b520-193.b-cdn.net',
 					'https://*.b-cdn.net',
 					'https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev',
-					'https://simpler-options.s3.amazonaws.com',
-					'https://*.s3.amazonaws.com',
-					'blob:'
-				],
+							],
 				'connect-src': [
 					'self',
 					'ws:',
@@ -133,8 +134,7 @@ const config = {
 					'self',
 					'https://iframe.mediadelivery.net',
 					'https://*.mediadelivery.net',
-					'https://www.youtube.com'
-				],
+								],
 				'frame-ancestors': ['none'],
 				'base-uri': ['self'],
 				'form-action': ['self']

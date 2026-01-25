@@ -1,18 +1,23 @@
 <script lang="ts">
 	/**
+	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * ClassDownloads Component - Box.com Identical UI
-	 * Svelte 5 / SvelteKit - January 2026
+	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
-	 * Displays course files in a Box-like interface with:
-	 * - White background, grey alternating rows
-	 * - Sortable columns (Name, Size, Modified)
-	 * - Scrollbar for many files
-	 * - File type icons
-	 * - Download buttons
-	 * - Mobile-first responsive design
+	 * @description Displays course files in a Box-like interface with sortable columns,
+	 *              responsive design, and accessible download buttons.
+	 * @version 1.1.0 - ICT 7 compliance: $effect pattern, aria-sort, improved a11y
+	 * @requires Svelte 5.0+ (January 2026 syntax)
+	 * @standards Apple Principal Engineer ICT 7+ Standards
+	 *
+	 * @example
+	 * <ClassDownloads
+	 *   courseSlug="options-mastery"
+	 *   title="Course Materials"
+	 *   maxHeight="500px"
+	 * />
 	 */
 
-	import { onMount } from 'svelte';
 	import { browser } from '$app/environment';
 
 	interface Download {
@@ -34,7 +39,7 @@
 		maxHeight?: string;
 	}
 
-	let {
+	const {
 		courseId = '',
 		courseSlug = '',
 		title = 'Class Downloads',
@@ -52,7 +57,15 @@
 	const isMobile = $derived(viewportWidth > 0 && viewportWidth < 640);
 	const isTablet = $derived(viewportWidth >= 640 && viewportWidth < 1024);
 
-	onMount(() => {
+	// Computed aria-sort value for accessibility
+	const getAriaSort = (column: 'name' | 'size' | 'date'): 'ascending' | 'descending' | 'none' => {
+		if (sortColumn !== column) return 'none';
+		return sortDirection === 'asc' ? 'ascending' : 'descending';
+	};
+
+	// Initialize component and set up resize listener
+	$effect(() => {
+		// Fetch downloads on mount
 		fetchDownloads();
 
 		if (!browser) return;
@@ -182,47 +195,47 @@
 
 	<div class="downloads-container" style="max-height: {maxHeight}">
 		{#if loading}
-			<div class="loading-state">
-				<div class="spinner"></div>
+			<div class="loading-state" role="status" aria-live="polite">
+				<div class="spinner" aria-hidden="true"></div>
 				<span>Loading files...</span>
 			</div>
 		{:else if error}
-			<div class="error-state">
+			<div class="error-state" role="alert">
 				<span>⚠️ {error}</span>
 			</div>
 		{:else}
-			<table class="downloads-table">
+			<table class="downloads-table" aria-busy={loading}>
 				<thead>
 					<tr>
-						<th class="col-name">
+						<th class="col-name" aria-sort={getAriaSort('name')}>
 							<button type="button" class="sort-btn" onclick={() => toggleSort('name')}>
 								Name
 								{#if sortColumn === 'name'}
-									<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+									<span class="sort-indicator" aria-hidden="true">{sortDirection === 'asc' ? '▲' : '▼'}</span>
 								{/if}
 							</button>
 						</th>
 						{#if !isMobile}
-							<th class="col-size">
+							<th class="col-size" aria-sort={getAriaSort('size')}>
 								<button type="button" class="sort-btn" onclick={() => toggleSort('size')}>
 									Size
 									{#if sortColumn === 'size'}
-										<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+										<span class="sort-indicator" aria-hidden="true">{sortDirection === 'asc' ? '▲' : '▼'}</span>
 									{/if}
 								</button>
 							</th>
 						{/if}
 						{#if !isMobile && !isTablet}
-							<th class="col-date">
+							<th class="col-date" aria-sort={getAriaSort('date')}>
 								<button type="button" class="sort-btn" onclick={() => toggleSort('date')}>
 									Modified
 									{#if sortColumn === 'date'}
-										<span class="sort-indicator">{sortDirection === 'asc' ? '▲' : '▼'}</span>
+										<span class="sort-indicator" aria-hidden="true">{sortDirection === 'asc' ? '▲' : '▼'}</span>
 									{/if}
 								</button>
 							</th>
 						{/if}
-						<th class="col-action"></th>
+						<th class="col-action"><span class="sr-only">Actions</span></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -400,7 +413,7 @@
 
 	.sort-indicator {
 		margin-left: 4px;
-		font-size: 10px;
+		font-size: 11px;
 		color: #999999;
 	}
 
@@ -498,6 +511,11 @@
 		color: white;
 	}
 
+	.download-btn:focus-visible {
+		outline: 2px solid #0061d5;
+		outline-offset: 2px;
+	}
+
 	.download-btn:disabled {
 		opacity: 0.4;
 		cursor: not-allowed;
@@ -546,19 +564,33 @@
 		color: #999999;
 	}
 
+	/* Apple-style spinner */
 	.spinner {
 		width: 24px;
 		height: 24px;
-		border: 3px solid #e0e0e0;
+		border: 2.5px solid #e0e0e0;
 		border-top-color: #0061d5;
 		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
+		animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 	}
 
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
 		}
+	}
+
+	/* Screen reader only utility */
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 
 	.error-state {

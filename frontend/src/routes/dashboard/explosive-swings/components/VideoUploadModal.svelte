@@ -1,12 +1,21 @@
 <!--
-	VideoUploadModal - ICT 7 Grade (Refactored)
 	═══════════════════════════════════════════════════════════════════════════════════
-	Apple Principal Engineer ICT Level 7 - January 2026
+	VideoUploadModal Component
+	═══════════════════════════════════════════════════════════════════════════════════
 	
-	Professional video upload modal for weekly watchlist videos.
-	Uses extracted UI components for reusability.
+	@description Professional video upload modal for weekly watchlist videos with
+	             Bunny.net integration, drag-drop upload, and thumbnail selection.
+	@version 4.1.0 - ICT 7 compliance: improved error handling, a11y attributes
+	@requires Svelte 5.0+ (January 2026 syntax)
+	@standards Apple Principal Engineer ICT 7+ Standards
 	
-	@version 4.0.0 - Component extraction refactor
+	@example
+	<VideoUploadModal
+	  isOpen={showModal}
+	  roomSlug="explosive-swings"
+	  onClose={() => showModal = false}
+	  onSuccess={() => refreshVideos()}
+	/>
 -->
 <script lang="ts">
 	import { weeklyVideoApi } from '$lib/api/room-content';
@@ -506,8 +515,8 @@
 			</div>
 
 			{#if errorMessage}
-				<div class="error-banner">
-					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+				<div class="error-banner" role="alert" aria-live="assertive">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
 						<circle cx="12" cy="12" r="10"></circle>
 						<line x1="12" y1="8" x2="12" y2="12"></line>
 						<line x1="12" y1="16" x2="12.01" y2="16"></line>

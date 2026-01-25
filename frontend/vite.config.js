@@ -79,7 +79,7 @@ export default defineConfig({
 		// Disable source maps in production
 		sourcemap: false,
 		// Target modern browsers for smaller bundle
-		target: 'es2020',
+		target: 'es2022',
 		// Apple ICT 7 Principal Engineer Solution: Disable modulePreload entirely
 		// SvelteKit's native lazy loading is superior - no preload warnings
 		modulePreload: false,
@@ -115,8 +115,6 @@ export default defineConfig({
 			'apexcharts',
 			'd3'
 		],
-		// Force optimization
-		force: false,
 		// Optimize dependency discovery
 		entries: ['src/routes/**/*.svelte']
 	},

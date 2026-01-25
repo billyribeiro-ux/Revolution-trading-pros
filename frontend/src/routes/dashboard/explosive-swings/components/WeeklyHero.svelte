@@ -5,7 +5,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Hero section with video breakdown and trade plan tabs
-	 * @version 5.0.0 - Complete rebuild with proper layout, frosted glass play button
+	 * @version 5.1.0 - ICT 7 compliance: focus states, reduced-motion, a11y improvements
 	 * @requires Svelte 5.0+ (January 2026 syntax)
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 *
@@ -520,6 +520,11 @@
 		color: #f69532;
 	}
 
+	.hero-tab:focus-visible {
+		outline: 3px solid rgba(255, 255, 255, 0.8);
+		outline-offset: 2px;
+	}
+
 	.hero-content {
 		position: relative;
 		padding: 40px 48px;
@@ -827,6 +832,11 @@
 		transform: scale(0.95);
 	}
 
+	.control-btn:focus-visible {
+		outline: 2px solid #fff;
+		outline-offset: 2px;
+	}
+
 	.video-title-bar {
 		flex: 1;
 		text-align: center;
@@ -898,6 +908,11 @@
 		box-shadow: 0 8px 24px rgba(20, 62, 89, 0.4);
 	}
 
+	.watch-btn:focus-visible {
+		outline: 3px solid rgba(255, 255, 255, 0.8);
+		outline-offset: 3px;
+	}
+
 	/* Secondary Button - Upload (Admin Only) */
 	.admin-upload-btn {
 		display: inline-flex;
@@ -917,6 +932,11 @@
 	.admin-upload-btn:hover {
 		background: rgba(255, 255, 255, 0.1);
 		border-color: rgba(255, 255, 255, 0.6);
+	}
+
+	.admin-upload-btn:focus-visible {
+		outline: 3px solid rgba(255, 255, 255, 0.8);
+		outline-offset: 3px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1141,6 +1161,11 @@
 
 	.table-notes-btn.expanded .chevron-icon {
 		transform: rotate(180deg);
+	}
+
+	.table-notes-btn:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
 	}
 
 	tr.has-notes-open td {
@@ -1424,6 +1449,33 @@
 		.play-btn svg {
 			width: 24px;
 			height: 24px;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   REDUCED MOTION - Respect user preferences
+	   ═══════════════════════════════════════════════════════════════════════════ */
+	@media (prefers-reduced-motion: reduce) {
+		.hero,
+		.video-player-container,
+		.play-btn,
+		.control-btn,
+		.hero-tab,
+		.watch-btn,
+		.admin-upload-btn,
+		.table-notes-btn,
+		.collapse-chevron {
+			transition: none;
+		}
+
+		.video-backdrop,
+		.modal-container,
+		.trade-notes-panel {
+			animation: none;
+		}
+
+		.play-btn:hover {
+			transform: none;
 		}
 	}
 </style>
