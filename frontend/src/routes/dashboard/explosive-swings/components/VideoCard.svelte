@@ -102,14 +102,14 @@
 		color: inherit;
 		border-radius: 14px;
 		overflow: hidden;
-		background: #fff;
-		border: 1px solid #e2e8f0;
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border-default);
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
 		transition: all 0.25s ease-out;
 	}
 
 	.video-card:hover {
-		border-color: #cbd5e1;
+		border-color: var(--color-border-strong);
 		box-shadow: 0 12px 32px rgba(0, 0, 0, 0.12);
 		transform: translateY(-4px);
 	}
@@ -143,7 +143,7 @@
 		position: relative;
 		aspect-ratio: 16 / 9;
 		overflow: hidden;
-		background: #1e293b;
+		background: var(--color-text-primary);
 	}
 
 	.thumbnail {
@@ -203,7 +203,7 @@
 	.play-icon {
 		width: 26px;
 		height: 26px;
-		color: #0f172a;
+		color: var(--color-text-primary);
 		margin-left: 4px;
 	}
 
@@ -229,7 +229,7 @@
 		align-items: center;
 		gap: 5px;
 		padding: 7px 12px;
-		color: #fff;
+		color: var(--color-bg-card);
 		font-size: 11px;
 		font-weight: 700;
 		border-radius: 8px;
@@ -268,10 +268,10 @@
 
 	/* Badge Type Colors */
 	.ticker-badge.type-entry { background: #0d9488; }
-	.ticker-badge.type-exit { background: #059669; }
-	.ticker-badge.type-update { background: #d97706; }
-	.ticker-badge.type-breakdown { background: #475569; }
-	.ticker-badge.type-default { background: #475569; }
+	.ticker-badge.type-exit { background: var(--color-profit); }
+	.ticker-badge.type-update { background: var(--color-watching-hover); }
+	.ticker-badge.type-breakdown { background: var(--color-text-tertiary); }
+	.ticker-badge.type-default { background: var(--color-text-tertiary); }
 
 	.duration-badge {
 		position: absolute;
@@ -282,7 +282,7 @@
 		gap: 5px;
 		padding: 6px 10px;
 		background: rgba(0, 0, 0, 0.8);
-		color: #fff;
+		color: var(--color-bg-card);
 		font-size: 12px;
 		font-weight: 600;
 		border-radius: 6px;
@@ -333,7 +333,7 @@
 	.video-title {
 		font-size: 15px;
 		font-weight: 600;
-		color: #0f172a;
+		color: var(--color-text-primary);
 		margin: 0 0 6px 0;
 		line-height: 1.45;
 		display: -webkit-box;
@@ -358,7 +358,7 @@
 
 	.video-date {
 		font-size: 13px;
-		color: #64748b;
+		color: var(--color-text-muted);
 	}
 
 	.featured .video-date {

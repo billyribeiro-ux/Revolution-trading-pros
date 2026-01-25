@@ -65,8 +65,8 @@
 
 <style>
 	.weekly-video-card {
-		background: #ffffff;
-		border: 1px solid #e2e8f0;
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border-default);
 		border-radius: 14px;
 		padding: 22px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -83,7 +83,7 @@
 		gap: 8px;
 		font-size: 13px;
 		font-weight: 700;
-		color: #475569;
+		color: var(--color-text-tertiary);
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 		margin: 0 0 18px 0;
@@ -101,7 +101,7 @@
 		border-radius: 10px;
 		overflow: hidden;
 		margin-bottom: 14px;
-		background: #1e293b;
+		background: var(--color-text-primary);
 	}
 
 	.video-thumbnail {
@@ -150,7 +150,7 @@
 	.play-icon {
 		width: 24px;
 		height: 24px;
-		color: #0f172a;
+		color: var(--color-text-primary);
 		margin-left: 3px;
 	}
 
@@ -160,7 +160,7 @@
 		right: 8px;
 		padding: 4px 8px;
 		background: rgba(0, 0, 0, 0.75);
-		color: #fff;
+		color: var(--color-bg-card);
 		font-size: 12px;
 		font-weight: 600;
 		border-radius: 4px;
@@ -170,14 +170,14 @@
 	.video-title {
 		font-size: 14px;
 		font-weight: 600;
-		color: #0f172a;
+		color: var(--color-text-primary);
 		margin: 0 0 4px 0;
 		line-height: 1.4;
 	}
 
 	.video-date {
 		font-size: 12px;
-		color: #64748b;
+		color: var(--color-text-muted);
 		margin: 0 0 12px 0;
 	}
 
@@ -187,7 +187,7 @@
 		gap: 6px;
 		font-size: 14px;
 		font-weight: 600;
-		color: #143e59;
+		color: var(--color-brand-primary);
 		text-decoration: none;
 		padding: 8px 12px;
 		margin: 0 -12px;
@@ -196,14 +196,14 @@
 	}
 
 	.watch-full-link:hover {
-		background: #f1f5f9;
-		color: #0f172a;
+		background: var(--color-bg-subtle);
+		color: var(--color-text-primary);
 	}
 
 	.skeleton-thumbnail {
 		width: 100%;
 		aspect-ratio: 16 / 9;
-		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 8px;
@@ -212,7 +212,7 @@
 
 	.skeleton-text {
 		height: 16px;
-		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 4px;

@@ -73,7 +73,7 @@
 		padding-bottom: 20px;
 		contain: layout style;
 		scrollbar-width: thin;
-		scrollbar-color: #cbd5e1 transparent;
+		scrollbar-color: var(--color-border-strong) transparent;
 	}
 
 	.sidebar::-webkit-scrollbar {
@@ -85,14 +85,14 @@
 	}
 
 	.sidebar::-webkit-scrollbar-thumb {
-		background: #cbd5e1;
+		background: var(--color-border-strong);
 		border-radius: 3px;
 	}
 
 	.help-card {
-		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
-		border: 1px solid #e2e8f0;
-		border-top: 3px solid #f59e0b;
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-light) 100%);
+		border: 1px solid var(--color-border-default);
+		border-top: 3px solid var(--color-watching);
 		border-radius: 14px;
 		padding: 22px;
 		text-align: center;
@@ -108,7 +108,7 @@
 	.help-title {
 		font-size: 16px;
 		font-weight: 700;
-		color: #fff;
+		color: var(--color-bg-card);
 		margin: 0 0 8px 0;
 	}
 
@@ -126,8 +126,8 @@
 		padding: 11px 22px;
 		font-size: 14px;
 		font-weight: 600;
-		color: #143e59;
-		background: #fff;
+		color: var(--color-brand-primary);
+		background: var(--color-bg-card);
 		border: 1.5px solid rgba(255, 255, 255, 0.2);
 		border-radius: 10px;
 		text-decoration: none;
@@ -135,15 +135,15 @@
 	}
 
 	.help-btn:hover {
-		background: #f59e0b;
-		color: #fff;
-		border-color: #f59e0b;
+		background: var(--color-watching);
+		color: var(--color-bg-card);
+		border-color: var(--color-watching);
 		transform: translateY(-2px) scale(1.02);
 		box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
 	}
 
 	.help-btn:focus-visible {
-		outline: 2px solid #fff;
+		outline: 2px solid var(--color-bg-card);
 		outline-offset: 2px;
 	}
 

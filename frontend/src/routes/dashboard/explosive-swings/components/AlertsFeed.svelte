@@ -137,7 +137,7 @@
 	.feed-title {
 		font-size: 18px;
 		font-weight: 600;
-		color: #0f172a;
+		color: var(--color-text-primary);
 		margin: 0;
 	}
 
@@ -148,8 +148,8 @@
 		padding: 8px 16px;
 		font-size: 13px;
 		font-weight: 600;
-		background: #143e59;
-		color: #fff;
+		background: var(--color-brand-primary);
+		color: var(--color-bg-card);
 		border: none;
 		border-radius: 8px;
 		cursor: pointer;
@@ -157,14 +157,14 @@
 	}
 
 	.new-alert-btn:hover {
-		background: #1e5175;
+		background: var(--color-brand-primary-light);
 	}
 
 	.filter-tabs {
 		display: flex;
 		gap: 4px;
 		margin-bottom: 20px;
-		border-bottom: 1px solid #e2e8f0;
+		border-bottom: 1px solid var(--color-border-default);
 		padding-bottom: 0;
 	}
 
@@ -175,7 +175,7 @@
 		padding: 10px 16px;
 		font-size: 14px;
 		font-weight: 500;
-		color: #64748b;
+		color: var(--color-text-muted);
 		background: transparent;
 		border: none;
 		border-bottom: 2px solid transparent;
@@ -185,22 +185,22 @@
 	}
 
 	.filter-tab:hover {
-		color: #0f172a;
+		color: var(--color-text-primary);
 	}
 
 	.filter-tab.active {
-		color: #0f172a;
+		color: var(--color-text-primary);
 		font-weight: 600;
-		border-bottom-color: #143e59;
+		border-bottom-color: var(--color-brand-primary);
 	}
 
 	.filter-count {
 		font-size: 12px;
-		color: #94a3b8;
+		color: var(--color-text-muted);
 	}
 
 	.filter-tab.active .filter-count {
-		color: #64748b;
+		color: var(--color-text-muted);
 	}
 
 	.alerts-list {
@@ -211,7 +211,7 @@
 
 	.alert-skeleton {
 		height: 180px;
-		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 12px;
@@ -234,7 +234,7 @@
 		justify-content: center;
 		padding: 48px 24px;
 		text-align: center;
-		color: #64748b;
+		color: var(--color-text-muted);
 	}
 
 	.empty-icon {

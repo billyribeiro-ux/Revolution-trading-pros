@@ -4,7 +4,7 @@
 	Apple Principal Engineer ICT 7+ Grade - January 2026
 	
 	Modal for closing active positions with exit price, calculates P&L automatically.
-	Dark theme matching dashboard (#143E59).
+	Dark theme matching dashboard (var(--color-brand-primary)).
 	
 	@version 1.0.0
 -->
@@ -336,7 +336,7 @@
 	   MODAL CONTAINER
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-container {
-		background: #ffffff;
+		background: var(--color-bg-card);
 		border-radius: 20px;
 		width: 100%;
 		max-width: 480px;
@@ -362,7 +362,7 @@
 		align-items: center;
 		justify-content: space-between;
 		padding: 20px 24px;
-		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
 		border-bottom: 1px solid rgba(255,255,255,0.1);
 	}
 
@@ -380,14 +380,14 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #fff;
+		color: var(--color-bg-card);
 	}
 
 	.header-text h3 {
 		margin: 0;
 		font-size: 18px;
 		font-weight: 700;
-		color: #fff;
+		color: var(--color-bg-card);
 	}
 
 	.header-subtitle {
@@ -412,7 +412,7 @@
 
 	.modal-close:hover {
 		background: rgba(255,255,255,0.2);
-		color: #fff;
+		color: var(--color-bg-card);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -425,7 +425,7 @@
 	}
 
 	.position-summary {
-		background: #f8fafc;
+		background: var(--color-bg-subtle);
 		border-radius: 12px;
 		padding: 16px;
 		margin-bottom: 20px;
@@ -443,7 +443,7 @@
 	.summary-label {
 		font-size: 11px;
 		font-weight: 600;
-		color: #64748b;
+		color: var(--color-text-muted);
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
@@ -451,16 +451,16 @@
 	.summary-value {
 		font-size: 16px;
 		font-weight: 700;
-		color: #1e293b;
+		color: var(--color-text-primary);
 	}
 
 	.summary-value.ticker {
-		color: #143E59;
+		color: var(--color-brand-primary);
 		font-size: 18px;
 	}
 
-	.summary-value.profit { color: #10b981; }
-	.summary-value.loss { color: #ef4444; }
+	.summary-value.profit { color: var(--color-profit-light); }
+	.summary-value.loss { color: var(--color-loss); }
 
 	.form-section {
 		display: grid;
@@ -482,26 +482,26 @@
 	.form-group label {
 		font-size: 13px;
 		font-weight: 600;
-		color: #475569;
+		color: var(--color-text-tertiary);
 	}
 
 	.form-input,
 	.form-textarea {
 		padding: 12px 14px;
-		border: 2px solid #e2e8f0;
+		border: 2px solid var(--color-border-default);
 		border-radius: 10px;
 		font-size: 14px;
 		font-weight: 500;
-		background: #f8fafc;
-		color: #1e293b;
+		background: var(--color-bg-subtle);
+		color: var(--color-text-primary);
 		transition: all 0.15s ease;
 	}
 
 	.form-input:focus,
 	.form-textarea:focus {
 		outline: none;
-		border-color: #143E59;
-		background: #fff;
+		border-color: var(--color-brand-primary);
+		background: var(--color-bg-card);
 		box-shadow: 0 0 0 4px rgba(20, 62, 89, 0.1);
 	}
 
@@ -516,7 +516,7 @@
 		left: 14px;
 		font-size: 14px;
 		font-weight: 600;
-		color: #64748b;
+		color: var(--color-text-muted);
 		pointer-events: none;
 		z-index: 1;
 	}
@@ -544,13 +544,13 @@
 	}
 
 	.pnl-preview.profit {
-		background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-		border: 2px solid #86efac;
+		background: linear-gradient(135deg, var(--color-profit-bg) 0%, var(--color-profit-bg) 100%);
+		border: 2px solid var(--color-profit-border);
 	}
 
 	.pnl-preview.loss {
-		background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-		border: 2px solid #fca5a5;
+		background: linear-gradient(135deg, var(--color-loss-bg) 0%, var(--color-loss-bg) 100%);
+		border: 2px solid var(--color-loss-border);
 	}
 
 	.pnl-result {
@@ -560,8 +560,8 @@
 		letter-spacing: 0.1em;
 	}
 
-	.pnl-preview.profit .pnl-result { color: #166534; }
-	.pnl-preview.loss .pnl-result { color: #991b1b; }
+	.pnl-preview.profit .pnl-result { color: var(--color-profit-dark); }
+	.pnl-preview.loss .pnl-result { color: var(--color-loss-dark); }
 
 	.pnl-details {
 		text-align: right;
@@ -573,13 +573,13 @@
 		font-weight: 800;
 	}
 
-	.pnl-preview.profit .pnl-percent { color: #166534; }
-	.pnl-preview.loss .pnl-percent { color: #991b1b; }
+	.pnl-preview.profit .pnl-percent { color: var(--color-profit-dark); }
+	.pnl-preview.loss .pnl-percent { color: var(--color-loss-dark); }
 
 	.pnl-diff {
 		display: block;
 		font-size: 12px;
-		color: #64748b;
+		color: var(--color-text-muted);
 		margin-top: 2px;
 	}
 
@@ -591,10 +591,10 @@
 		align-items: center;
 		gap: 8px;
 		padding: 12px 16px;
-		background: #fef2f2;
-		border: 1px solid #fecaca;
+		background: var(--color-loss-bg);
+		border: 1px solid var(--color-loss-bg);
 		border-radius: 10px;
-		color: #dc2626;
+		color: var(--color-loss);
 		font-size: 13px;
 		font-weight: 500;
 		margin-bottom: 20px;
@@ -612,19 +612,19 @@
 	.btn-cancel {
 		flex: 1;
 		padding: 14px 20px;
-		background: #f1f5f9;
-		border: 2px solid #e2e8f0;
+		background: var(--color-bg-subtle);
+		border: 2px solid var(--color-border-default);
 		border-radius: 12px;
 		font-size: 14px;
 		font-weight: 600;
-		color: #475569;
+		color: var(--color-text-tertiary);
 		cursor: pointer;
 		transition: all 0.15s;
 	}
 
 	.btn-cancel:hover {
-		background: #e2e8f0;
-		border-color: #cbd5e1;
+		background: var(--color-border-default);
+		border-color: var(--color-border-strong);
 	}
 
 	.btn-close-position {
@@ -634,12 +634,12 @@
 		justify-content: center;
 		gap: 8px;
 		padding: 14px 24px;
-		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
 		border: none;
 		border-radius: 12px;
 		font-size: 14px;
 		font-weight: 700;
-		color: #fff;
+		color: var(--color-bg-card);
 		cursor: pointer;
 		transition: all 0.2s;
 	}
@@ -656,12 +656,12 @@
 
 	.btn-cancel:focus-visible,
 	.btn-close-position:focus-visible {
-		outline: 2px solid #143E59;
+		outline: 2px solid var(--color-brand-primary);
 		outline-offset: 2px;
 	}
 
 	.modal-close:focus-visible {
-		outline: 2px solid #fff;
+		outline: 2px solid var(--color-bg-card);
 		outline-offset: 2px;
 	}
 

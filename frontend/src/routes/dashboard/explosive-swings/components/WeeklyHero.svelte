@@ -426,13 +426,13 @@
 	   Apple ICT 7 Responsive Design - All Breakpoints
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.hero {
-		background: linear-gradient(135deg, #f69532 0%, #e8850d 50%, #d4790a 100%);
+		background: linear-gradient(135deg, var(--color-brand-secondary) 0%, #e8850d 50%, #d4790a 100%);
 		overflow: hidden;
 		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.hero.collapsed {
-		background: linear-gradient(135deg, #f69532 0%, #e8850d 100%);
+		background: linear-gradient(135deg, var(--color-brand-secondary) 0%, #e8850d 100%);
 	}
 
 	.hero-collapse-toggle {
@@ -461,12 +461,12 @@
 		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
 		font-size: 17px;
 		font-weight: 700;
-		color: #fff;
+		color: var(--color-bg-card);
 		margin: 0;
 	}
 
 	.video-icon {
-		color: #fff;
+		color: var(--color-bg-card);
 		opacity: 0.9;
 	}
 
@@ -502,7 +502,7 @@
 		background: rgba(255, 255, 255, 0.15);
 		border: 2px solid rgba(255, 255, 255, 0.25);
 		border-radius: 10px;
-		color: #fff;
+		color: var(--color-bg-card);
 		font-size: 14px;
 		font-weight: 600;
 		cursor: pointer;
@@ -515,9 +515,9 @@
 	}
 
 	.hero-tab.active {
-		background: #fff;
-		border-color: #fff;
-		color: #f69532;
+		background: var(--color-bg-card);
+		border-color: var(--color-bg-card);
+		color: var(--color-brand-secondary);
 	}
 
 	.hero-tab:focus-visible {
@@ -606,7 +606,7 @@
 		aspect-ratio: 16 / 9;
 		border-radius: 12px;
 		overflow: hidden;
-		background: #143E59;
+		background: var(--color-brand-primary);
 		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
@@ -637,7 +637,7 @@
 	.video-thumbnail {
 		position: absolute;
 		inset: 0;
-		background-color: #143E59;
+		background-color: var(--color-brand-primary);
 		background-size: cover;
 		background-position: center;
 		display: flex;
@@ -721,7 +721,7 @@
 	.play-btn svg {
 		width: 36px;
 		height: 36px;
-		color: #fff;
+		color: var(--color-bg-card);
 		margin-left: 4px; /* Optical center adjustment */
 		filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 		transition: all 0.3s ease;
@@ -747,7 +747,7 @@
 		font-size: 13px;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
-		color: #fff;
+		color: var(--color-bg-card);
 		z-index: 5;
 	}
 
@@ -817,7 +817,7 @@
 		-webkit-backdrop-filter: blur(8px);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 10px;
-		color: #fff;
+		color: var(--color-bg-card);
 		cursor: pointer;
 		transition: all 0.2s ease;
 	}
@@ -833,14 +833,14 @@
 	}
 
 	.control-btn:focus-visible {
-		outline: 2px solid #fff;
+		outline: 2px solid var(--color-bg-card);
 		outline-offset: 2px;
 	}
 
 	.video-title-bar {
 		flex: 1;
 		text-align: center;
-		color: #fff;
+		color: var(--color-bg-card);
 		font-size: 14px;
 		font-weight: 600;
 		padding: 0 16px;
@@ -856,7 +856,7 @@
 	.video-info {
 		flex: 1;
 		min-width: 280px;
-		color: #fff;
+		color: var(--color-bg-card);
 		text-align: center;
 	}
 
@@ -865,7 +865,7 @@
 		font-size: 28px;
 		font-weight: 700;
 		line-height: 1.2;
-		color: #fff;
+		color: var(--color-bg-card);
 		margin: 0 0 8px 0;
 		/* Modern text wrapping - balanced lines */
 		text-wrap: balance; /* stylelint-disable-line property-no-unknown */
@@ -891,9 +891,9 @@
 		align-items: center;
 		gap: 10px;
 		padding: 14px 28px;
-		background: #143E59;
-		color: #fff;
-		border: 2px solid #143E59;
+		background: var(--color-brand-primary);
+		color: var(--color-bg-card);
+		border: 2px solid var(--color-brand-primary);
 		border-radius: 10px;
 		font-size: 15px;
 		font-weight: 700;
@@ -902,8 +902,8 @@
 	}
 
 	.watch-btn:hover {
-		background: #0f2d42;
-		border-color: #0f2d42;
+		background: var(--color-brand-primary-hover);
+		border-color: var(--color-brand-primary-hover);
 		transform: translateY(-2px);
 		box-shadow: 0 8px 24px rgba(20, 62, 89, 0.4);
 	}
@@ -920,7 +920,7 @@
 		gap: 8px;
 		padding: 14px 24px;
 		background: transparent;
-		color: #fff;
+		color: var(--color-bg-card);
 		border: 2px solid rgba(255, 255, 255, 0.4);
 		border-radius: 10px;
 		font-size: 15px;
@@ -949,7 +949,7 @@
 
 	.entries-header {
 		text-align: center;
-		color: #fff;
+		color: var(--color-bg-card);
 		margin-bottom: 30px;
 	}
 
@@ -978,7 +978,7 @@
 		align-items: center;
 		gap: 6px;
 		padding: 10px 16px;
-		background: #143E59;
+		background: var(--color-brand-primary);
 		border: none;
 		border-radius: 8px;
 		font-size: 13px;
@@ -990,13 +990,13 @@
 	}
 
 	.admin-add-btn:hover {
-		background: #0f2d42;
+		background: var(--color-brand-primary-hover);
 		transform: translateY(-1px);
 		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
 	}
 
 	.trade-sheet-wrapper {
-		background: #fff;
+		background: var(--color-bg-card);
 		border-radius: 16px;
 		overflow: hidden;
 		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
@@ -1009,8 +1009,8 @@
 	}
 
 	.trade-sheet thead {
-		background: #143e59;
-		color: #fff;
+		background: var(--color-brand-primary);
+		color: var(--color-bg-card);
 	}
 
 	.trade-sheet th {
@@ -1024,13 +1024,13 @@
 
 	.trade-sheet tbody tr:nth-child(4n + 1),
 	.trade-sheet tbody tr:nth-child(4n + 2) {
-		background: #f8fafc;
+		background: var(--color-bg-subtle);
 	}
 
 	.trade-sheet td {
 		padding: 14px 12px;
 		text-align: center;
-		border-bottom: 1px solid #e5e7eb;
+		border-bottom: 1px solid var(--color-border-default);
 	}
 
 	.ticker-cell {
@@ -1039,7 +1039,7 @@
 
 	.ticker-cell strong {
 		font-size: 16px;
-		color: #143e59;
+		color: var(--color-brand-primary);
 	}
 
 	.edit-entry-btn {
@@ -1051,18 +1051,18 @@
 		margin-left: 8px;
 		padding: 0;
 		background: transparent;
-		border: 1px solid #e2e8f0;
+		border: 1px solid var(--color-border-default);
 		border-radius: 6px;
-		color: #64748b;
+		color: var(--color-text-muted);
 		cursor: pointer;
 		transition: all 0.15s ease;
 		vertical-align: middle;
 	}
 
 	.edit-entry-btn:hover {
-		background: #143E59;
-		border-color: #143E59;
-		color: #fff;
+		background: var(--color-brand-primary);
+		border-color: var(--color-brand-primary);
+		color: var(--color-bg-card);
 		transform: scale(1.1);
 	}
 
@@ -1075,27 +1075,27 @@
 	}
 
 	.bias--bullish {
-		background: #dcfce7;
-		color: #166534;
+		background: var(--color-profit-bg);
+		color: var(--color-profit-dark);
 	}
 
 	.bias--bearish {
-		background: #fee2e2;
-		color: #991b1b;
+		background: var(--color-loss-bg);
+		color: var(--color-loss-dark);
 	}
 
 	.bias--neutral {
-		background: #fef3c7;
-		color: #92400e;
+		background: var(--color-watching-bg);
+		color: var(--color-watching-dark);
 	}
 
 	.entry-cell {
 		font-weight: 700;
-		color: #143e59;
+		color: var(--color-brand-primary);
 	}
 
 	.target-cell {
-		color: #22c55e;
+		color: var(--color-profit);
 		font-weight: 600;
 	}
 
@@ -1105,13 +1105,13 @@
 	}
 
 	.stop-cell {
-		color: #ef4444;
+		color: var(--color-loss);
 		font-weight: 600;
 	}
 
 	.options-cell {
 		font-weight: 600;
-		color: #7c3aed;
+		color: var(--color-purple-dark);
 	}
 
 	.exp-cell {
@@ -1135,24 +1135,24 @@
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		background: #f1f5f9;
-		border: 1.5px solid #e2e8f0;
+		background: var(--color-bg-subtle);
+		border: 1.5px solid var(--color-border-default);
 		border-radius: 8px;
 		cursor: pointer;
 		transition: all 0.25s ease;
-		color: #64748b;
+		color: var(--color-text-muted);
 	}
 
 	.table-notes-btn:hover {
-		background: #e2e8f0;
-		border-color: #143e59;
-		color: #143e59;
+		background: var(--color-border-default);
+		border-color: var(--color-brand-primary);
+		color: var(--color-brand-primary);
 	}
 
 	.table-notes-btn.expanded {
-		background: #143e59;
-		border-color: #143e59;
-		color: #fff;
+		background: var(--color-brand-primary);
+		border-color: var(--color-brand-primary);
+		color: var(--color-bg-card);
 	}
 
 	.table-notes-btn .chevron-icon {
@@ -1164,7 +1164,7 @@
 	}
 
 	.table-notes-btn:focus-visible {
-		outline: 2px solid #143e59;
+		outline: 2px solid var(--color-brand-primary);
 		outline-offset: 2px;
 	}
 
@@ -1176,7 +1176,7 @@
 		text-align: left;
 		padding: 0;
 		background: transparent !important;
-		border-bottom: 2px solid #143e59;
+		border-bottom: 2px solid var(--color-brand-primary);
 	}
 
 	.trade-notes-panel {
@@ -1184,7 +1184,7 @@
 		align-items: flex-start;
 		gap: 16px;
 		padding: 18px 24px;
-		background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+		background: linear-gradient(135deg, #f0f9ff 0%, var(--color-info-bg) 100%);
 		animation: notesSlide 0.3s ease;
 	}
 
@@ -1201,8 +1201,8 @@
 
 	.trade-notes-badge {
 		flex-shrink: 0;
-		background: #143e59;
-		color: #fff;
+		background: var(--color-brand-primary);
+		color: var(--color-bg-card);
 		font-size: 12px;
 		font-weight: 800;
 		padding: 6px 14px;
@@ -1228,8 +1228,8 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 10px;
-		background: #143e59;
-		color: #fff;
+		background: var(--color-brand-primary);
+		color: var(--color-bg-card);
 		padding: 14px 28px;
 		border-radius: 10px;
 		font-size: 14px;
@@ -1239,7 +1239,7 @@
 	}
 
 	.google-sheet-link:hover {
-		background: #0f2d42;
+		background: var(--color-brand-primary-hover);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════

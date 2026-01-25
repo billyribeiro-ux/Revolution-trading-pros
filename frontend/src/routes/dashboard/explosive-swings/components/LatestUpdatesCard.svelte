@@ -82,8 +82,8 @@
 
 <style>
 	.updates-card {
-		background: #ffffff;
-		border: 1px solid #e2e8f0;
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border-default);
 		border-radius: 14px;
 		padding: 18px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -102,7 +102,7 @@
 		gap: 8px;
 		font-size: 13px;
 		font-weight: 700;
-		color: #475569;
+		color: var(--color-text-tertiary);
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 		margin: 0;
@@ -116,18 +116,18 @@
 	.view-all-link {
 		font-size: 12px;
 		font-weight: 600;
-		color: #143e59;
+		color: var(--color-brand-primary);
 		text-decoration: none;
 		transition: color 0.2s;
 	}
 
 	.view-all-link:hover {
-		color: #0984ae;
+		color: var(--color-brand-primary);
 		text-decoration: underline;
 	}
 
 	.view-all-link:focus-visible {
-		outline: 2px solid #143e59;
+		outline: 2px solid var(--color-brand-primary);
 		outline-offset: 2px;
 		border-radius: 2px;
 	}
@@ -151,7 +151,7 @@
 	}
 
 	.update-item:focus-visible {
-		outline: 2px solid #143e59;
+		outline: 2px solid var(--color-brand-primary);
 		outline-offset: 4px;
 		border-radius: 8px;
 	}
@@ -161,13 +161,13 @@
 		aspect-ratio: 16 / 9;
 		background-size: cover;
 		background-position: center;
-		background-color: #1e293b;
+		background-color: var(--color-text-primary);
 		border-radius: 8px;
 		overflow: hidden;
 	}
 
 	.update-thumb.no-thumb {
-		background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+		background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-text-secondary) 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -200,7 +200,7 @@
 	}
 
 	.play-icon svg {
-		color: #143e59;
+		color: var(--color-brand-primary);
 		margin-left: 2px;
 	}
 
@@ -214,7 +214,7 @@
 		bottom: 4px;
 		right: 4px;
 		background: rgba(0, 0, 0, 0.8);
-		color: #fff;
+		color: var(--color-bg-card);
 		font-size: 10px;
 		font-weight: 600;
 		padding: 2px 5px;
@@ -225,7 +225,7 @@
 	.update-title {
 		font-size: 11px;
 		font-weight: 500;
-		color: #334155;
+		color: var(--color-text-secondary);
 		line-height: 1.3;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
@@ -235,13 +235,13 @@
 	}
 
 	.update-item:hover .update-title {
-		color: #143e59;
+		color: var(--color-brand-primary);
 	}
 
 	.empty-state {
 		text-align: center;
 		padding: 20px;
-		color: #94a3b8;
+		color: var(--color-text-muted);
 		font-size: 13px;
 	}
 
@@ -254,7 +254,7 @@
 
 	.skeleton-thumb {
 		aspect-ratio: 16 / 9;
-		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+		background: linear-gradient(90deg, var(--color-border-default) 25%, var(--color-bg-muted) 50%, var(--color-border-default) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 8px;
@@ -262,7 +262,7 @@
 
 	.skeleton-title {
 		height: 12px;
-		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+		background: linear-gradient(90deg, var(--color-border-default) 25%, var(--color-bg-muted) 50%, var(--color-border-default) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: 4px;

@@ -130,8 +130,8 @@
 	   CONTAINER
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.resource-links {
-		background: #ffffff;
-		border: 1px solid #e2e8f0;
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border-default);
 		border-radius: 14px;
 		padding: 20px;
 		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
@@ -158,7 +158,7 @@
 		gap: 8px;
 		font-size: 13px;
 		font-weight: 700;
-		color: #475569;
+		color: var(--color-text-tertiary);
 		text-transform: uppercase;
 		letter-spacing: 0.06em;
 		margin: 0;
@@ -170,7 +170,7 @@
 		justify-content: center;
 		width: 18px;
 		height: 18px;
-		color: #94a3b8;
+		color: var(--color-text-muted);
 	}
 
 	.title-icon svg {
@@ -208,7 +208,7 @@
 		gap: 14px;
 		padding: 12px 14px;
 		margin: 0 -14px;
-		color: #334155;
+		color: var(--color-text-secondary);
 		text-decoration: none;
 		border-radius: 10px;
 		transition: all 0.2s ease-out;
@@ -226,18 +226,18 @@
 	.card-style .resource-link {
 		margin: 0;
 		padding: 14px 16px;
-		background: #f8fafc;
-		border: 1px solid #e2e8f0;
+		background: var(--color-bg-subtle);
+		border: 1px solid var(--color-border-default);
 	}
 
 	.resource-link:hover {
-		background: #f1f5f9;
-		color: #0f172a;
+		background: var(--color-bg-subtle);
+		color: var(--color-text-primary);
 	}
 
 	.card-style .resource-link:hover {
-		background: #f1f5f9;
-		border-color: #cbd5e1;
+		background: var(--color-bg-subtle);
+		border-color: var(--color-border-strong);
 		transform: translateX(4px);
 	}
 
@@ -248,9 +248,9 @@
 		justify-content: center;
 		width: 36px;
 		height: 36px;
-		background: linear-gradient(135deg, #f1f5f9 0%, #e2e8f0 100%);
+		background: linear-gradient(135deg, var(--color-bg-subtle) 0%, var(--color-border-default) 100%);
 		border-radius: 10px;
-		color: #64748b;
+		color: var(--color-text-muted);
 		flex-shrink: 0;
 		transition: all 0.2s ease-out;
 	}
@@ -264,8 +264,8 @@
 	.card-style .link-icon-wrapper {
 		width: 40px;
 		height: 40px;
-		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
-		color: #fff;
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-light) 100%);
+		color: var(--color-bg-card);
 	}
 
 	.link-icon-wrapper svg {
@@ -284,8 +284,8 @@
 	}
 
 	.resource-link:hover .link-icon-wrapper {
-		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
-		color: #fff;
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-light) 100%);
+		color: var(--color-bg-card);
 		transform: scale(1.05);
 	}
 
@@ -306,7 +306,7 @@
 	.link-label {
 		font-size: 14px;
 		font-weight: 600;
-		color: #334155;
+		color: var(--color-text-secondary);
 		line-height: 1.3;
 	}
 
@@ -315,17 +315,17 @@
 	}
 
 	.resource-link:hover .link-label {
-		color: #0f172a;
+		color: var(--color-text-primary);
 	}
 
 	.link-description {
 		font-size: 12px;
-		color: #94a3b8;
+		color: var(--color-text-muted);
 		line-height: 1.3;
 	}
 
 	.resource-link:hover .link-description {
-		color: #64748b;
+		color: var(--color-text-muted);
 	}
 
 	/* Arrow */
@@ -335,7 +335,7 @@
 		justify-content: center;
 		width: 20px;
 		height: 20px;
-		color: #cbd5e1;
+		color: var(--color-border-strong);
 		flex-shrink: 0;
 		opacity: 0;
 		transform: translateX(-8px);
@@ -350,14 +350,14 @@
 	.resource-link:hover .link-arrow {
 		opacity: 1;
 		transform: translateX(0);
-		color: #143e59;
+		color: var(--color-brand-primary);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
 	   HOVER EFFECTS - STAR ICON SPECIAL
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.resource-link:nth-child(3):hover .link-icon-wrapper {
-		background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+		background: linear-gradient(135deg, #fbbf24 0%, var(--color-watching) 100%);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════

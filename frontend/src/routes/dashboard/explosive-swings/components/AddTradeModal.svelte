@@ -4,7 +4,7 @@
 	Apple Principal Engineer ICT 7+ Grade - January 2026
 	
 	Full trade creation modal with all fields matching ActivePositionCard display.
-	Dark theme matching dashboard (#143E59).
+	Dark theme matching dashboard (var(--color-brand-primary)).
 	
 	@version 1.0.0
 -->
@@ -420,7 +420,7 @@
 	   MODAL CONTAINER - Proper viewport-safe sizing
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-container {
-		background: #ffffff;
+		background: var(--color-bg-card);
 		border-radius: 20px;
 		width: 100%;
 		max-width: 640px;
@@ -450,7 +450,7 @@
 	   MODAL HEADER - Dark theme with icon
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-header {
-		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
 		padding: 24px 28px;
 		display: flex;
 		align-items: center;
@@ -473,7 +473,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #ffffff;
+		color: var(--color-bg-card);
 		flex-shrink: 0;
 	}
 
@@ -481,7 +481,7 @@
 		margin: 0;
 		font-size: 20px;
 		font-weight: 700;
-		color: #ffffff;
+		color: var(--color-bg-card);
 		line-height: 1.2;
 	}
 
@@ -517,15 +517,15 @@
 	   ERROR BANNER
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.error-banner {
-		background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-		color: #991b1b;
+		background: linear-gradient(135deg, var(--color-loss-bg) 0%, var(--color-loss-bg) 100%);
+		color: var(--color-loss-dark);
 		padding: 14px 20px;
 		display: flex;
 		align-items: center;
 		gap: 12px;
 		font-size: 14px;
 		font-weight: 600;
-		border-bottom: 1px solid #fca5a5;
+		border-bottom: 1px solid var(--color-loss-border);
 		flex-shrink: 0;
 	}
 
@@ -556,7 +556,7 @@
 		gap: 10px;
 		font-size: 13px;
 		font-weight: 700;
-		color: #334155;
+		color: var(--color-text-secondary);
 		text-transform: uppercase;
 		letter-spacing: 0.05em;
 		margin-bottom: 4px;
@@ -566,16 +566,16 @@
 		width: 8px;
 		height: 8px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
 		flex-shrink: 0;
 	}
 
 	.options-dot {
-		background: linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%);
+		background: linear-gradient(135deg, var(--color-purple) 0%, var(--color-purple-dark) 100%);
 	}
 
 	.notes-dot {
-		background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+		background: linear-gradient(135deg, var(--color-watching) 0%, var(--color-watching-hover) 100%);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -600,7 +600,7 @@
 	label {
 		font-size: 13px;
 		font-weight: 600;
-		color: #475569;
+		color: var(--color-text-tertiary);
 		display: block;
 	}
 
@@ -612,12 +612,12 @@
 	.form-textarea {
 		width: 100%;
 		padding: 12px 14px;
-		border: 2px solid #e2e8f0;
+		border: 2px solid var(--color-border-default);
 		border-radius: 10px;
 		font-size: 14px;
 		font-weight: 500;
-		color: #0f172a;
-		background: #ffffff;
+		color: var(--color-text-primary);
+		background: var(--color-bg-card);
 		transition: all 0.2s ease;
 		font-family: inherit;
 	}
@@ -626,7 +626,7 @@
 	.form-select:focus,
 	.form-textarea:focus {
 		outline: none;
-		border-color: #143E59;
+		border-color: var(--color-brand-primary);
 		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.1);
 	}
 
@@ -654,7 +654,7 @@
 		left: 14px;
 		font-size: 14px;
 		font-weight: 700;
-		color: #64748b;
+		color: var(--color-text-muted);
 		pointer-events: none;
 	}
 
@@ -678,7 +678,7 @@
 		height: 0;
 		border-left: 5px solid transparent;
 		border-right: 5px solid transparent;
-		border-top: 6px solid #64748b;
+		border-top: 6px solid var(--color-text-muted);
 		pointer-events: none;
 	}
 
@@ -696,7 +696,7 @@
 		gap: 12px;
 		justify-content: flex-end;
 		padding-top: 8px;
-		border-top: 1px solid #f1f5f9;
+		border-top: 1px solid var(--color-bg-subtle);
 		flex-shrink: 0;
 	}
 
@@ -716,18 +716,18 @@
 	}
 
 	.btn-cancel {
-		background: #f1f5f9;
-		color: #475569;
+		background: var(--color-bg-subtle);
+		color: var(--color-text-tertiary);
 	}
 
 	.btn-cancel:hover {
-		background: #e2e8f0;
+		background: var(--color-border-default);
 		transform: translateY(-1px);
 	}
 
 	.btn-save {
-		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
-		color: #ffffff;
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
+		color: var(--color-bg-card);
 		box-shadow: 0 2px 8px rgba(20, 62, 89, 0.2);
 	}
 
@@ -746,7 +746,7 @@
 		width: 14px;
 		height: 14px;
 		border: 2px solid rgba(255, 255, 255, 0.3);
-		border-top-color: #ffffff;
+		border-top-color: var(--color-bg-card);
 		border-radius: 50%;
 		animation: spin 0.6s linear infinite;
 	}

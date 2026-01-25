@@ -1,1635 +1,367 @@
 <script lang="ts">
 	/**
-	 * ═══════════════════════════════════════════════════════════════════════════════
 	 * Explosive Swings - Member Dashboard
-	 * ═══════════════════════════════════════════════════════════════════════════════
-	 *
-	 * @description Member-first dashboard for swing trading alerts and analysis
-	 * @version 4.1.0 - Visual Polish Pass
-	 * @requires Svelte 5.0+ (January 2026 syntax)
-	 * @requires SvelteKit 2.0+
-	 * @standards Apple Principal Engineer ICT Level 11
-	 *
-	 * Features:
-	 * - Weekly video breakdown with collapsible hero
-	 * - Real-time trade plan with entry/exit targets
-	 * - Live alerts feed with admin CRUD capabilities
-	 * - Performance metrics sidebar with API integration
-	 * - WCAG 2.1 AA accessibility compliance
+	 * @version 5.0.0 - State Module Integration
+	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import { onMount } from 'svelte';
+	import { createPageState } from './page.state.svelte';
+
+	// Layout Components
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
-	import TradeAlertModal from '$lib/components/dashboard/TradeAlertModal.svelte';
-	
-	// Extracted Components - Nuclear Build Specification (ICT 7+ Standards)
-	// Global shared components
 	import Pagination from '$lib/components/dashboard/pagination/Pagination.svelte';
-	
-	// Legacy components still in use (will be replaced incrementally)
+
+	// Page Components
+	import PerformanceSummary from './components/PerformanceSummary.svelte';
+	import WeeklyHero from './components/WeeklyHero.svelte';
 	import AlertCard from '$lib/components/dashboard/alerts/AlertCard.svelte';
 	import AlertFilters from '$lib/components/dashboard/alerts/AlertFilters.svelte';
-	import StatsBar from '$lib/components/dashboard/stats/StatsBar.svelte';
-	
-	// Local page-specific components (Nuclear Build) - ready for integration
-	import PerformanceSummary from './components/PerformanceSummary.svelte';
-	import AlertsFeed from './components/AlertsFeed.svelte';
 	import SidebarComponent from './components/Sidebar.svelte';
-	import VideoGrid from './components/VideoGrid.svelte';
-	import WeeklyHero from './components/WeeklyHero.svelte';
+
+	// Modals
+	import TradeAlertModal from '$lib/components/dashboard/TradeAlertModal.svelte';
 	import TradeEntryModal from './components/TradeEntryModal.svelte';
 	import VideoUploadModal from './components/VideoUploadModal.svelte';
 	import ClosePositionModal from './components/ClosePositionModal.svelte';
 	import AddTradeModal from './components/AddTradeModal.svelte';
-	
-	// Types from local types.ts (Nuclear Build)
-	import type { 
-		ClosedTrade, 
-		ActivePosition, 
-		Alert as NuclearAlert,
-		WeeklyPerformance,
-		ThirtyDayPerformance,
-		WeeklyVideo,
-		Video
-	} from './types';
-	
-	// Legacy types for backward compatibility with existing API
-	import type { Alert, AlertFilter, QuickStats, VideoUpdate } from '$lib/components/dashboard/alerts/types';
-	import type {
-		TradePlanEntry as ApiTradePlanEntry,
-		RoomAlert,
-		RoomStats,
-		AlertCreateInput,
-		AlertUpdateInput
-	} from '$lib/types/trading';
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// TYPE DEFINITIONS - Principal Engineer ICT 11 Standards
-	// ═══════════════════════════════════════════════════════════════════════════
-	interface WeeklyContent {
-		title: string;
-		videoTitle: string;
-		videoUrl: string;
-		thumbnail: string;
-		duration: string;
-		publishedDate: string;
-	}
+	// Types
+	import type { AlertCreateInput, AlertUpdateInput } from '$lib/types/trading';
 
-	interface TradePlanEntry {
-		ticker: string;
-		bias: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
-		entry: string;
-		target1: string;
-		target2: string;
-		target3: string;
-		runner: string;
-		stop: string;
-		optionsStrike: string;
-		optionsExp: string;
-		notes: string;
-	}
-
-	interface Alert {
-		id: number;
-		type: 'ENTRY' | 'EXIT' | 'UPDATE';
-		ticker: string;
-		title: string;
-		time: string;
-		message: string;
-		isNew: boolean;
-		notes: string;
-		tosString?: string;
-	}
-
-	interface QuickStats {
-		winRate: number;
-		weeklyProfit: string;
-		activeTrades: number;
-		closedThisWeek: number;
-	}
-
-	interface VideoUpdate {
-		id: number;
-		title: string;
-		date: string;
-		excerpt: string;
-		href: string;
-		image: string;
-		isVideo: boolean;
-		duration: string;
-	}
-
-	type AlertFilter = 'all' | 'entry' | 'exit' | 'update';
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// COMPONENT PROPS - Server data with types
-	// ═══════════════════════════════════════════════════════════════════════════
-	import type { WatchlistResponse } from '$lib/types/watchlist';
-	import type { RoomResource } from '$lib/api/room-resources';
-	import BunnyVideoPlayer from '$lib/components/video/BunnyVideoPlayer.svelte';
-
-	// SvelteKit 2.0+ / Svelte 5: Props interface for type safety
+	// Props from +page.ts
 	interface PageData {
-		watchlist?: WatchlistResponse;
-		tutorialVideo?: RoomResource | null;
-		latestUpdates?: RoomResource[];
-		documents?: RoomResource[];
+		watchlist?: any;
+		tutorialVideo?: any;
+		latestUpdates?: any[];
+		documents?: any[];
 		roomId?: number;
 	}
-
-	// Svelte 5 $props() rune - the official way to receive page data
 	const { data }: { data: PageData } = $props();
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// REACTIVE STATE - Svelte 5 $state runes
-	// ═══════════════════════════════════════════════════════════════════════════
-	let selectedFilter = $state<AlertFilter>('all');
-	let copiedAlertId = $state<number | null>(null); // Track which alert was just copied
+	// Initialize state module (named 'ps' to avoid conflict with $state rune)
+	const ps = createPageState();
 
-	// Admin state
-	let isAdmin = $state(false);
-	let isAlertModalOpen = $state(false);
-	let editingAlert = $state<RoomAlert | null>(null);
-	let isTradeEntryModalOpen = $state(false);
-	let editingTradeEntry = $state<ApiTradePlanEntry | null>(null);
-	let isVideoUploadModalOpen = $state(false);
-	let isClosePositionModalOpen = $state(false);
-	let closingPosition = $state<ActivePosition | null>(null);
-	let isAddTradeModalOpen = $state(false);
-	let apiAlerts = $state<RoomAlert[]>([]);
-	let apiTradePlan = $state<ApiTradePlanEntry[]>([]);
-	let apiStats = $state<RoomStats | null>(null);
-	let isLoadingAlerts = $state(false);
-	let isLoadingTradePlan = $state(false);
-	let isLoadingStats = $state(false);
+	// Local modal state (bind: requires local variables)
+	let alertModalOpen = $state(false);
+	
+	// Expanded notes tracking (local UI state)
+	let expandedNotes = $state(new Set<number>());
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// NUCLEAR BUILD API STATE - Real data for performance summary
-	// ═══════════════════════════════════════════════════════════════════════════
-	interface ApiTrade {
-		id: number;
-		ticker: string;
-		status: 'open' | 'closed';
-		entry_price: number;
-		exit_price: number | null;
-		pnl_percent: number | null;
-		entry_date: string;
-		exit_date: string | null;
-		direction: string;
-		setup?: string;
-		notes?: string;
-	}
-
-	interface ApiWeeklyVideo {
-		id: number;
-		video_title: string;
-		video_url: string;
-		thumbnail_url: string | null;
-		duration: string | null;
-		published_at: string;
-		week_title: string;
-	}
-
-	let apiOpenTrades = $state<ApiTrade[]>([]);
-	let apiClosedTrades = $state<ApiTrade[]>([]);
-	let apiWeeklyVideo = $state<ApiWeeklyVideo | null>(null);
-	let apiRecentVideos = $state<ApiWeeklyVideo[]>([]);
-	let isLoadingTrades = $state(false);
-	let isLoadingVideos = $state(false);
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// PAGINATION STATE - Principal Engineer ICT 11 Standards
-	// ═══════════════════════════════════════════════════════════════════════════
-	let currentPage = $state(1);
-	let alertsPerPage = $state(10);
-	let pagination = $state({ total: 0, limit: 10, offset: 0 });
-
-	// Derived pagination values
-	const totalPages = $derived(Math.ceil(pagination.total / pagination.limit) || 1);
-	const showingFrom = $derived(pagination.total > 0 ? (currentPage - 1) * alertsPerPage + 1 : 0);
-	const showingTo = $derived(Math.min(currentPage * alertsPerPage, pagination.total));
-
-	const ROOM_SLUG = 'explosive-swings';
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// DATA - This Week's Content (fetched from API with fallback)
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	// Fallback data constants - ICT 7 Standards: No video state
-	// When no video exists in database, show demo video for testing
-	const fallbackWeeklyContent: WeeklyContent = {
-		title: `Week of ${new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}`,
-		videoTitle: 'Mastering the Trade Dashboard — Simpler Trading',
-		videoUrl: 'https://iframe.mediadelivery.net/embed/585929/d8477a4f-6b2f-4a2a-9e3e-e8e3c1e0e0e0',
-		thumbnail: 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
-		duration: '24:35',
-		publishedDate: new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' at 6:40 PM ET'
-	};
-
-	const fallbackTradePlan: TradePlanEntry[] = [
-		{
-			ticker: 'NVDA',
-			bias: 'BULLISH',
-			entry: '$142.50',
-			target1: '$148.00',
-			target2: '$152.00',
-			target3: '$158.00',
-			runner: '$165.00+',
-			stop: '$136.00',
-			optionsStrike: '$145 Call',
-			optionsExp: 'Jan 24, 2026',
-			notes: 'Breakout above consolidation. Wait for pullback to entry.'
-		},
-		{
-			ticker: 'TSLA',
-			bias: 'BULLISH',
-			entry: '$248.00',
-			target1: '$255.00',
-			target2: '$265.00',
-			target3: '$275.00',
-			runner: '$290.00+',
-			stop: '$235.00',
-			optionsStrike: '$250 Call',
-			optionsExp: 'Jan 31, 2026',
-			notes: 'Momentum building. Earnings catalyst ahead.'
-		},
-		{
-			ticker: 'AMZN',
-			bias: 'BULLISH',
-			entry: '$185.00',
-			target1: '$190.00',
-			target2: '$195.00',
-			target3: '$198.00',
-			runner: '$205.00+',
-			stop: '$178.00',
-			optionsStrike: '$185 Call',
-			optionsExp: 'Jan 24, 2026',
-			notes: 'Breaking resistance. Strong volume confirmation.'
-		},
-		{
-			ticker: 'GOOGL',
-			bias: 'NEUTRAL',
-			entry: '$175.50',
-			target1: '$180.00',
-			target2: '$185.00',
-			target3: '$188.00',
-			runner: '$195.00+',
-			stop: '$168.00',
-			optionsStrike: '$177.50 Call',
-			optionsExp: 'Feb 7, 2026',
-			notes: 'Watching for breakout. Not triggered yet.'
-		},
-		{
-			ticker: 'META',
-			bias: 'BULLISH',
-			entry: '$585.00',
-			target1: '$600.00',
-			target2: '$615.00',
-			target3: '$630.00',
-			runner: '$650.00+',
-			stop: '$565.00',
-			optionsStrike: '$590 Call',
-			optionsExp: 'Jan 24, 2026',
-			notes: 'Strong trend. Buy dips to support.'
-		},
-		{
-			ticker: 'AMD',
-			bias: 'BEARISH',
-			entry: '$125.00',
-			target1: '$120.00',
-			target2: '$115.00',
-			target3: '$110.00',
-			runner: '$100.00',
-			stop: '$132.00',
-			optionsStrike: '$122 Put',
-			optionsExp: 'Jan 31, 2026',
-			notes: 'Breakdown in progress. Short on bounces.'
-		}
-	];
-
-	const fallbackStats: QuickStats = {
-		winRate: 82,
-		weeklyProfit: '+$4,850',
-		activeTrades: 4,
-		closedThisWeek: 2
-	};
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// NUCLEAR BUILD FALLBACK DATA - Used when API data is unavailable
-	// These values are shown as placeholders until real data loads from:
-	// - /api/trades/${ROOM_SLUG}?status=open (active positions)
-	// - /api/trades/${ROOM_SLUG}?status=closed (closed trades)
-	// - /api/stats/${ROOM_SLUG} (performance metrics)
-	// - /api/weekly-video/${ROOM_SLUG} (weekly video)
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	// FALLBACK: Weekly performance stats (replaced by derivedWeeklyPerformance)
-	const weeklyPerformance: WeeklyPerformance = {
-		winRate: 82,
-		totalTrades: 7,
-		winningTrades: 6,
-		avgWinPercent: 5.7,
-		avgLossPercent: 2.1,
-		riskRewardRatio: 3.2
-	};
-
-	const closedTrades: ClosedTrade[] = [
-		{ id: '1', ticker: 'MSFT', percentageGain: 8.2, isWinner: true, closedAt: new Date('2026-01-12'), entryPrice: 425, exitPrice: 460 },
-		{ id: '2', ticker: 'AAPL', percentageGain: 5.1, isWinner: true, closedAt: new Date('2026-01-11'), entryPrice: 185, exitPrice: 194.4 },
-		{ id: '3', ticker: 'GOOGL', percentageGain: 4.8, isWinner: true, closedAt: new Date('2026-01-10'), entryPrice: 175, exitPrice: 183.4 },
-		{ id: '4', ticker: 'AMZN', percentageGain: 6.3, isWinner: true, closedAt: new Date('2026-01-10'), entryPrice: 185, exitPrice: 196.7 },
-		{ id: '5', ticker: 'AMD', percentageGain: 3.9, isWinner: true, closedAt: new Date('2026-01-09'), entryPrice: 125, exitPrice: 129.9 },
-		{ id: '6', ticker: 'NFLX', percentageGain: -2.1, isWinner: false, closedAt: new Date('2026-01-09'), entryPrice: 520, exitPrice: 509.1 }
-	];
-
-	const activePositions: ActivePosition[] = [
-		{
-			id: '1',
-			ticker: 'NVDA',
-			status: 'ENTRY',
-			entryPrice: 142.50,
-			currentPrice: 143.80,
-			unrealizedPercent: 0.9,
-			targets: [
-				{ price: 156, percentFromEntry: 9.5, label: 'Target 1' },
-				{ price: 168, percentFromEntry: 17.9, label: 'Target 2' }
-			],
-			stopLoss: { price: 136, percentFromEntry: -4.6 },
-			progressToTarget1: 9.6,
-			triggeredAt: new Date('2026-01-13T10:32:00')
-		},
-		{
-			id: '2',
-			ticker: 'TSLA',
-			status: 'WATCHING',
-			entryPrice: null,
-			entryZone: { low: 180, high: 185 },
-			currentPrice: 188.40,
-			unrealizedPercent: null,
-			targets: [{ price: 210, percentFromEntry: 13.5, label: 'Target' }],
-			stopLoss: { price: 172, percentFromEntry: -7.0 },
-			notes: 'Waiting for pullback to zone',
-			progressToTarget1: 0
-		},
-		{
-			id: '3',
-			ticker: 'META',
-			status: 'ACTIVE',
-			entryPrice: 585,
-			currentPrice: 597.30,
-			unrealizedPercent: 2.1,
-			targets: [
-				{ price: 620, percentFromEntry: 6.0, label: 'Target 1' },
-				{ price: 645, percentFromEntry: 10.3, label: 'Target 2' }
-			],
-			stopLoss: { price: 558, percentFromEntry: -4.6 },
-			progressToTarget1: 35,
-			triggeredAt: new Date('2026-01-11T11:20:00')
-		},
-		{
-			id: '4',
-			ticker: 'AMD',
-			status: 'ACTIVE',
-			entryPrice: 125,
-			currentPrice: 126.00,
-			unrealizedPercent: 0.8,
-			targets: [{ price: 138, percentFromEntry: 10.4, label: 'Target 1' }],
-			stopLoss: { price: 118, percentFromEntry: -5.6 },
-			progressToTarget1: 7.7,
-			triggeredAt: new Date('2026-01-10T14:30:00')
-		}
-	];
-
-	const thirtyDayPerformance: ThirtyDayPerformance = {
-		winRate: 82,
-		totalAlerts: 28,
-		profitableAlerts: 23,
-		avgWinPercent: 6.8,
-		avgLossPercent: 2.1
-	};
-
-	const weeklyVideo: WeeklyVideo = {
-		title: 'Top Swing Setups This Week',
-		thumbnailUrl: 'https://placehold.co/640x360/143E59/FFFFFF/png?text=Weekly+Breakdown',
-		videoUrl: '/dashboard/explosive-swings/video/weekly',
-		duration: '24:35',
-		publishedAt: new Date('2026-01-13T09:00:00')
-	};
-
-	const recentVideos: Video[] = [
-		{ id: '1', ticker: 'NVDA', type: 'ENTRY', title: 'NVDA Entry Alert - Opening Swing Position', thumbnailUrl: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=NVDA+ENTRY', videoUrl: '/dashboard/explosive-swings/updates/nvda-entry', duration: '8:45', publishedAt: new Date('2026-01-13'), isFeatured: true },
-		{ id: '2', ticker: 'MSFT', type: 'EXIT', title: 'MSFT Exit - Closing for +8.2% Profit', thumbnailUrl: 'https://placehold.co/640x360/3b82f6/FFFFFF/png?text=MSFT+EXIT', videoUrl: '/dashboard/explosive-swings/updates/msft-exit', duration: '6:20', publishedAt: new Date('2026-01-12') },
-		{ id: '3', ticker: 'META', type: 'ENTRY', title: 'META Entry - Momentum Play Setup', thumbnailUrl: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=META+ENTRY', videoUrl: '/dashboard/explosive-swings/updates/meta-entry', duration: '7:15', publishedAt: new Date('2026-01-11') },
-		{ id: '4', ticker: 'TSLA', type: 'UPDATE', title: 'TSLA Update - Approaching Entry Zone', thumbnailUrl: 'https://placehold.co/640x360/f59e0b/FFFFFF/png?text=TSLA+UPDATE', videoUrl: '/dashboard/explosive-swings/updates/tsla-update', duration: '5:30', publishedAt: new Date('2026-01-11') }
-	];
-
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	// Fallback video updates for latest content section
-	const fallbackVideoUpdates: VideoUpdate[] = [
-		{
-			id: 1,
-			title: 'Weekly Swing Setup Review',
-			date: 'January 13, 2026',
-			excerpt: 'Top setups for the week ahead',
-			href: '/daily/explosive-swings/weekly-review',
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: true,
-			duration: '18:42'
-		},
-		{
-			id: 2,
-			title: 'NVDA Breakout Analysis',
-			date: 'January 12, 2026',
-			excerpt: 'Breaking down the NVDA trade setup',
-			href: '/daily/explosive-swings/nvda-analysis',
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: true,
-			duration: '12:15'
-		},
-		{
-			id: 3,
-			title: 'Market Momentum Update',
-			date: 'January 10, 2026',
-			excerpt: 'Current market conditions and outlook',
-			href: '/daily/explosive-swings/market-update',
-			image: 'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-			isVideo: true,
-			duration: '15:30'
-		}
-	];
-
-	// Derive display items from API or fallback to static
-	const displayUpdates = $derived(
-		data.latestUpdates && data.latestUpdates.length > 0
-			? data.latestUpdates.map((r) => ({
-					id: r.id,
-					title: r.title,
-					date: r.formatted_date,
-					excerpt: r.description || '',
-					href: `/daily/explosive-swings/${r.slug}`,
-					image:
-						r.thumbnail_url ||
-						'https://cdn.simplertrading.com/2019/01/14105015/generic-video-card-min.jpg',
-					isVideo: r.resource_type === 'video',
-					duration: r.formatted_duration || ''
-				}))
-			: fallbackVideoUpdates
-	);
-
-	// Reactive data derived from API weekly video - use $derived for reactivity
-	// Use apiWeeklyVideo from fetchWeeklyVideo() instead of watchlist data
-	const weeklyContent = $derived<WeeklyContent>(
-		apiWeeklyVideo
-			? {
-					title: apiWeeklyVideo.week_title || `Week of ${new Date(apiWeeklyVideo.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
-					videoTitle: apiWeeklyVideo.video_title,
-					videoUrl: apiWeeklyVideo.video_url,
-					thumbnail: apiWeeklyVideo.thumbnail_url || 'https://placehold.co/1280x720/143E59/FFFFFF/png?text=Weekly+Video',
-					duration: apiWeeklyVideo.duration || '',
-					publishedDate: new Date(apiWeeklyVideo.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }) + ' at ' + new Date(apiWeeklyVideo.published_at).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit', hour12: true }) + ' ET'
-				}
-			: fallbackWeeklyContent
-	);
-
-	// Fallback alerts
-	const fallbackAlerts: Alert[] = [
-		{
-			id: 1,
-			type: 'ENTRY',
-			ticker: 'NVDA',
-			title: 'Opening NVDA Swing Position',
-			time: 'Today at 10:32 AM',
-			message:
-				'Entering NVDA at $142.50. First target $148, stop at $136. See trade plan for full details.',
-			isNew: true,
-			notes:
-				'Entry based on breakout above $142 resistance with strong volume confirmation. RSI at 62 showing momentum. Watch for pullback to $140 support if entry missed. Position size: 150 shares. Risk/reward: 2.8:1 to T2.'
-		},
-		{
-			id: 2,
-			type: 'UPDATE',
-			ticker: 'TSLA',
-			title: 'TSLA Approaching Entry Zone',
-			time: 'Today at 9:15 AM',
-			message: 'TSLA pulling back to our entry zone. Be ready. Will alert when triggered.',
-			isNew: true,
-			notes:
-				'Watching $248 entry level closely. Pullback is healthy after recent run. Volume declining on pullback (bullish). If entry triggers, will send immediate alert with exact entry price and position sizing.'
-		},
-		{
-			id: 3,
-			type: 'EXIT',
-			ticker: 'MSFT',
-			title: 'Closing MSFT for +8.2%',
-			time: 'Yesterday at 3:45 PM',
-			message: 'Taking profits on MSFT. Hit second target. +$2,450 on this trade.',
-			isNew: false,
-			notes:
-				'Excellent trade execution. Entered at $425, scaled out 1/3 at T1 ($435), another 1/3 at T2 ($445). Final exit at $460. Held for 5 days. Key lesson: Patience paid off - almost exited early on day 3 consolidation.'
-		},
-		{
-			id: 4,
-			type: 'ENTRY',
-			ticker: 'META',
-			title: 'META Entry Triggered',
-			time: 'Yesterday at 11:20 AM',
-			message: 'META hit our entry at $585. Position active. Targets in trade plan.',
-			isNew: false,
-			notes:
-				'Entry confirmed at $585 with volume spike. Stop placed at $565 (3.4% risk). Currently up 1.3% and holding well. Momentum strong with AI revenue narrative. Will trail stop after T1 hit.'
-		},
-		{
-			id: 5,
-			type: 'UPDATE',
-			ticker: 'AMD',
-			title: 'AMD Short Setup Active',
-			time: 'Jan 10 at 2:30 PM',
-			message: 'Bearish setup triggered on AMD. Short at $125 with stop at $132.',
-			isNew: false,
-			notes:
-				'Bearish breakdown confirmed. Entered short at $125, currently at $123.50 (-1.2%). Stop at $132 gives us 5.6% risk. First target $120, second target $115. Watch for bounce at $120 psychological level.'
-		}
-	];
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// API FUNCTIONS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	async function fetchAlerts() {
-		isLoadingAlerts = true;
-		try {
-			const offset = (currentPage - 1) * alertsPerPage;
-			const response = await fetch(`/api/alerts/${ROOM_SLUG}?limit=${alertsPerPage}&offset=${offset}`, {
-				credentials: 'include'
-			});
-			const data = await response.json();
-			if (data.success) {
-				apiAlerts = data.data;
-				pagination = {
-					total: data.total || data.data.length,
-					limit: alertsPerPage,
-					offset: offset
-				};
-			}
-		} catch (err) {
-			console.error('Failed to fetch alerts:', err);
-		} finally {
-			isLoadingAlerts = false;
-		}
-	}
-
-	async function fetchTradePlan() {
-		isLoadingTradePlan = true;
-		try {
-			const response = await fetch(`/api/trade-plans/${ROOM_SLUG}`, {
-				credentials: 'include'
-			});
-			const data = await response.json();
-			if (data.success) {
-				apiTradePlan = data.data;
-			}
-		} catch (err) {
-			console.error('Failed to fetch trade plan:', err);
-		} finally {
-			isLoadingTradePlan = false;
-		}
-	}
-
-	async function fetchStats() {
-		isLoadingStats = true;
-		try {
-			const response = await fetch(`/api/stats/${ROOM_SLUG}`, {
-				credentials: 'include'
-			});
-			const data = await response.json();
-			if (data.success) {
-				apiStats = data.data;
-			}
-		} catch (err) {
-			console.error('Failed to fetch stats:', err);
-		} finally {
-			isLoadingStats = false;
-		}
-	}
-
-	async function checkAdminStatus() {
-		// Check if user has admin role from session/cookie
-		try {
-			const response = await fetch('/api/auth/me');
-			if (!response.ok) {
-				isAdmin = false;
-				return;
-			}
-			const data = await response.json();
-			// Backend returns UserResponse directly with is_admin and role fields
-			isAdmin = data.is_admin === true || data.role === 'admin' || data.role === 'super_admin';
-		} catch {
-			isAdmin = false;
-		}
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// NUCLEAR BUILD API FUNCTIONS - Trades & Weekly Video
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	/**
-	 * Fetch open trades (active positions) from API
-	 */
-	async function fetchOpenTrades() {
-		isLoadingTrades = true;
-		try {
-			const response = await fetch(`/api/trades/${ROOM_SLUG}?status=open`, {
-				credentials: 'include'
-			});
-			const data = await response.json();
-			if (data.success) {
-				apiOpenTrades = data.data || [];
-			}
-		} catch (err) {
-			console.error('Failed to fetch open trades:', err);
-		} finally {
-			isLoadingTrades = false;
-		}
-	}
-
-	/**
-	 * Fetch closed trades (for ticker pills) from API
-	 */
-	async function fetchClosedTrades() {
-		try {
-			const response = await fetch(`/api/trades/${ROOM_SLUG}?status=closed&per_page=10`, {
-				credentials: 'include'
-			});
-			const data = await response.json();
-			if (data.success) {
-				apiClosedTrades = data.data || [];
-			}
-		} catch (err) {
-			console.error('Failed to fetch closed trades:', err);
-		}
-	}
-
-	/**
-	 * Fetch current weekly video from API
-	 */
-	async function fetchWeeklyVideo() {
-		isLoadingVideos = true;
-		try {
-			const response = await fetch(`/api/weekly-video/${ROOM_SLUG}`, {
-				credentials: 'include'
-			});
-			const data = await response.json();
-			if (data.success && data.data) {
-				apiWeeklyVideo = data.data;
-			}
-		} catch (err) {
-			console.error('Failed to fetch weekly video:', err);
-		} finally {
-			isLoadingVideos = false;
-		}
-	}
-
-	/**
-	 * Fetch all trades (for calculating performance metrics)
-	 */
-	async function fetchAllTrades() {
-		try {
-			const response = await fetch(`/api/trades/${ROOM_SLUG}?per_page=100`, {
-				credentials: 'include'
-			});
-			const data = await response.json();
-			if (data.success && data.data) {
-				// Split into open and closed
-				apiOpenTrades = data.data.filter((t: ApiTrade) => t.status === 'open');
-				apiClosedTrades = data.data.filter((t: ApiTrade) => t.status === 'closed');
-			}
-		} catch (err) {
-			console.error('Failed to fetch all trades:', err);
-		}
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// PAGINATION FUNCTIONS - Principal Engineer ICT 11 Standards
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	/**
-	 * Navigate to a specific page and fetch alerts
-	 */
-	async function goToPage(page: number) {
-		if (page < 1 || page > totalPages || page === currentPage) return;
-		currentPage = page;
-		await fetchAlerts();
-		// Scroll to top of alerts section
-		const alertsSection = document.querySelector('.alerts-section');
-		if (alertsSection) {
-			alertsSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-		}
-	}
-
-	/**
-	 * Generate visible page numbers with ellipsis for pagination UI
-	 */
-	function getVisiblePages(current: number, total: number): (number | 'ellipsis')[] {
-		if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
-
-		const pages: (number | 'ellipsis')[] = [];
-
-		// Always show first page
-		pages.push(1);
-
-		// Calculate range around current
-		const rangeStart = Math.max(2, current - 1);
-		const rangeEnd = Math.min(total - 1, current + 1);
-
-		// Add ellipsis before range if needed
-		if (rangeStart > 2) pages.push('ellipsis');
-
-		// Add range
-		for (let i = rangeStart; i <= rangeEnd; i++) {
-			pages.push(i);
-		}
-
-		// Add ellipsis after range if needed
-		if (rangeEnd < total - 1) pages.push('ellipsis');
-
-		// Always show last page
-		if (total > 1) pages.push(total);
-
-		return pages;
-	}
-
-	// Derived visible pages for pagination UI
-	const visiblePages = $derived(getVisiblePages(currentPage, totalPages));
-
-	// Reset pagination when filter changes
-	let previousFilter = $state<AlertFilter>('all');
+	// Sync modal state from state module
 	$effect(() => {
-		if (selectedFilter !== previousFilter) {
-			previousFilter = selectedFilter;
-			currentPage = 1;
-			fetchAlerts();
-		}
+		alertModalOpen = ps.isAlertModalOpen;
 	});
 
-	// ═══════════════════════════════════════════════════════════════════════════
-	// ADMIN HANDLERS
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	function openNewAlertModal() {
-		editingAlert = null;
-		isAlertModalOpen = true;
+	function toggleNotes(alertId: number) {
+		const newSet = new Set(expandedNotes);
+		if (newSet.has(alertId)) {
+			newSet.delete(alertId);
+		} else {
+			newSet.add(alertId);
+		}
+		expandedNotes = newSet;
 	}
 
-	function openEditAlertModal(alert: RoomAlert) {
-		editingAlert = alert;
-		isAlertModalOpen = true;
-	}
-
-	function closeAlertModal() {
-		isAlertModalOpen = false;
-		editingAlert = null;
-	}
-
+	// Alert handlers
 	async function handleSaveAlert(alertData: AlertCreateInput | AlertUpdateInput, isEdit: boolean) {
-		const url =
-			isEdit && editingAlert
-				? `/api/alerts/${ROOM_SLUG}/${editingAlert.id}`
-				: `/api/alerts/${ROOM_SLUG}`;
+		const url = isEdit && ps.editingAlert
+			? `/api/alerts/${ps.ROOM_SLUG}/${ps.editingAlert.id}`
+			: `/api/alerts/${ps.ROOM_SLUG}`;
 
 		const response = await fetch(url, {
-			method: isEdit ? 'PUT' : 'POST',
-			headers: { 'Content-Type': 'application/json' },
-			body: JSON.stringify(alertData)
-		});
+method: isEdit ? 'PUT' : 'POST',
+headers: { 'Content-Type': 'application/json' },
+body: JSON.stringify(alertData)
+});
 
-		if (!response.ok) {
-			throw new Error('Failed to save alert');
-		}
-
-		// Refresh alerts after save
-		await fetchAlerts();
+		if (!response.ok) throw new Error('Failed to save alert');
+		await ps.fetchAlerts();
 	}
 
 	async function handleDeleteAlert(alertId: number) {
 		if (!confirm('Are you sure you want to delete this alert?')) return;
-
-		const response = await fetch(`/api/alerts/${ROOM_SLUG}/${alertId}`, {
-			method: 'DELETE',
-			credentials: 'include'
-		});
-
-		if (response.ok) {
-			await fetchAlerts();
-		}
+		const response = await fetch(`/api/alerts/${ps.ROOM_SLUG}/${alertId}`, {
+method: 'DELETE',
+credentials: 'include'
+});
+		if (response.ok) await ps.fetchAlerts();
 	}
-
-	// Trade Entry Admin Handlers
-	function openTradeEntryModal() {
-		editingTradeEntry = null;
-		isTradeEntryModalOpen = true;
-	}
-
-	function openEditTradeEntryModal(entry: { ticker: string; bias: string; entry: string; target1: string; target2: string; target3: string; runner: string; stop: string; optionsStrike: string; optionsExp: string; notes: string }) {
-		// Find the actual API entry to get the real ID and full data
-		const apiEntry = apiTradePlan.find(e => e.ticker === entry.ticker);
-		if (apiEntry) {
-			editingTradeEntry = apiEntry;
-		} else {
-			// Fallback: Convert local TradePlanEntry to API format for the modal
-			editingTradeEntry = {
-				id: 0,
-				room_id: 0,
-				room_slug: ROOM_SLUG,
-				week_of: '',
-				ticker: entry.ticker,
-				bias: entry.bias,
-				entry: entry.entry,
-				target1: entry.target1,
-				target2: entry.target2,
-				target3: entry.target3,
-				runner: entry.runner,
-				stop: entry.stop,
-				options_strike: entry.optionsStrike,
-				options_exp: entry.optionsExp,
-				notes: entry.notes,
-				sort_order: 0,
-				is_active: true,
-				created_at: '',
-				updated_at: ''
-			} as ApiTradePlanEntry;
-		}
-		
-		isTradeEntryModalOpen = true;
-	}
-
-	function closeTradeEntryModal() {
-		isTradeEntryModalOpen = false;
-		editingTradeEntry = null;
-	}
-
-	// Video Upload Admin Handlers  
-	function openVideoUploadModal() {
-		isVideoUploadModalOpen = true;
-	}
-
-	function closeVideoUploadModal() {
-		isVideoUploadModalOpen = false;
-	}
-
-	// Close Position Admin Handlers
-	function openClosePositionModal(position: ActivePosition) {
-		closingPosition = position;
-		isClosePositionModalOpen = true;
-	}
-
-	function closeClosePositionModal() {
-		isClosePositionModalOpen = false;
-		closingPosition = null;
-	}
-
-	async function handlePositionClosed() {
-		// Refresh trades and stats after closing a position
-		await fetchAllTrades();
-		await fetchStats();
-	}
-
-	// Add Trade Admin Handlers
-	function openAddTradeModal() {
-		isAddTradeModalOpen = true;
-	}
-
-	function closeAddTradeModal() {
-		isAddTradeModalOpen = false;
-	}
-
-	async function handleTradeAdded() {
-		await fetchOpenTrades();
-		await fetchStats();
-	}
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// LIFECYCLE
-	// ═══════════════════════════════════════════════════════════════════════════
 
 	onMount(() => {
-		checkAdminStatus();
-		fetchAlerts();
-		fetchTradePlan();
-		fetchStats();
-		// Nuclear Build API calls
-		fetchAllTrades();
-		fetchWeeklyVideo();
+		ps.initializeData();
 	});
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// DERIVED STATE - Transform API data to display format
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	// Format time ago helper
-	function formatTimeAgo(dateString: string): string {
-		const date = new Date(dateString);
-		const now = new Date();
-		const diffMs = now.getTime() - date.getTime();
-		const diffMins = Math.floor(diffMs / 60000);
-		const diffHours = Math.floor(diffMs / 3600000);
-		const diffDays = Math.floor(diffMs / 86400000);
-
-		if (diffMins < 60) return `${diffMins} min ago`;
-		if (diffHours < 24) return `${diffHours}h ago`;
-		if (diffDays === 0)
-			return `Today at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-		if (diffDays === 1)
-			return `Yesterday at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`;
-		return (
-			date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) +
-			` at ${date.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}`
-		);
-	}
-
-	// Derive alerts from API or fallback
-	const alerts = $derived<Alert[]>(
-		apiAlerts.length > 0
-			? apiAlerts.map((a) => ({
-					id: a.id,
-					type: a.alert_type,
-					ticker: a.ticker,
-					title: a.title,
-					time: formatTimeAgo(a.published_at),
-					message: a.message,
-					isNew: a.is_new,
-					notes: a.notes || '',
-					tosString: a.tos_string || undefined
-				}))
-			: fallbackAlerts
-	);
-
-	// Derive trade plan from API or fallback
-	const tradePlan = $derived<TradePlanEntry[]>(
-		apiTradePlan.length > 0
-			? apiTradePlan.map((t) => ({
-					ticker: t.ticker,
-					bias: t.bias,
-					entry: t.entry,
-					target1: t.target1,
-					target2: t.target2,
-					target3: t.target3,
-					runner: t.runner,
-					stop: t.stop,
-					optionsStrike: t.options_strike || '-',
-					optionsExp: t.options_exp || '-',
-					notes: t.notes || ''
-				}))
-			: fallbackTradePlan
-	);
-
-	// Derive stats from API or fallback
-	const stats = $derived<QuickStats>(
-		apiStats
-			? {
-					winRate: apiStats.win_rate,
-					weeklyProfit: apiStats.weekly_profit,
-					activeTrades: apiStats.active_trades,
-					closedThisWeek: apiStats.closed_this_week
-				}
-			: fallbackStats
-	);
-
-	// ═══════════════════════════════════════════════════════════════════════════
-	// NUCLEAR BUILD DERIVED STATE - Transform API data to Nuclear Build formats
-	// ═══════════════════════════════════════════════════════════════════════════
-
-	/**
-	 * Derive weekly performance from API stats or fallback
-	 * Used by PerformanceSummary component
-	 */
-	const derivedWeeklyPerformance = $derived<WeeklyPerformance>(
-		apiStats ? {
-			winRate: apiStats.win_rate || 0,
-			totalTrades: apiStats.total_trades || 0,
-			winningTrades: apiStats.wins || 0,
-			avgWinPercent: apiStats.avg_win ? (apiStats.avg_win / 100) : 0,
-			avgLossPercent: apiStats.avg_loss ? (apiStats.avg_loss / 100) : 0,
-			riskRewardRatio: apiStats.profit_factor || 0
-		} : weeklyPerformance // fallback to hardcoded
-	);
-
-	/**
-	 * Derive closed trades from API for TickerPill display
-	 * Used by PerformanceSummary component
-	 */
-	const derivedClosedTrades = $derived<ClosedTrade[]>(
-		apiClosedTrades.length > 0
-			? apiClosedTrades.slice(0, 10).map((t) => ({
-					id: String(t.id),
-					ticker: t.ticker,
-					percentageGain: t.pnl_percent || 0,
-					isWinner: (t.pnl_percent || 0) > 0,
-					closedAt: new Date(t.exit_date || t.entry_date),
-					entryPrice: t.entry_price,
-					exitPrice: t.exit_price || t.entry_price
-				}))
-			: closedTrades // fallback to hardcoded
-	);
-
-	/**
-	 * Derive active positions from API for ActivePositionCard display
-	 * Used by PerformanceSummary component
-	 */
-	const derivedActivePositions = $derived<ActivePosition[]>(
-		apiOpenTrades.length > 0
-			? apiOpenTrades.map((t) => {
-					const currentPrice = t.entry_price * 1.01; // Simulate current price (would come from real-time data)
-					const unrealizedPercent = ((currentPrice - t.entry_price) / t.entry_price) * 100;
-					// Note: targets and stop are managed in Trade Plan, not individual trades
-					// Using default values for display purposes
-					const defaultStopPercent = t.direction === 'long' ? -5 : 5;
-					const defaultStopPrice = t.entry_price * (1 + defaultStopPercent / 100);
-					return {
-						id: String(t.id),
-						ticker: t.ticker,
-						status: 'ACTIVE' as const,
-						entryPrice: t.entry_price,
-						currentPrice: currentPrice,
-						unrealizedPercent: unrealizedPercent,
-						targets: [], // Targets come from Trade Plan, not trades
-						stopLoss: { price: defaultStopPrice, percentFromEntry: defaultStopPercent },
-						progressToTarget1: 0, // No target tracking on trades
-						triggeredAt: new Date(t.entry_date),
-						notes: t.notes || t.setup || undefined
-					};
-				})
-			: activePositions // fallback to hardcoded
-	);
-
-	/**
-	 * Derive 30-day performance from API stats
-	 * Used by Sidebar PerformanceCard component
-	 */
-	const derivedThirtyDayPerformance = $derived<ThirtyDayPerformance>(
-		apiStats ? {
-			winRate: apiStats.win_rate || 0,
-			totalAlerts: apiStats.total_trades || 0,
-			profitableAlerts: apiStats.wins || 0,
-			avgWinPercent: apiStats.avg_win ? (apiStats.avg_win / 100) : 0,
-			avgLossPercent: apiStats.avg_loss ? (apiStats.avg_loss / 100) : 0
-		} : thirtyDayPerformance // fallback to hardcoded
-	);
-
-	/**
-	 * Derive weekly video from API
-	 * Used by Sidebar WeeklyVideoCard and VideoGrid components
-	 */
-	const derivedWeeklyVideo = $derived<WeeklyVideo>(
-		apiWeeklyVideo ? {
-			title: apiWeeklyVideo.video_title,
-			thumbnailUrl: apiWeeklyVideo.thumbnail_url || 'https://placehold.co/640x360/143E59/FFFFFF/png?text=Weekly+Breakdown',
-			videoUrl: apiWeeklyVideo.video_url,
-			duration: apiWeeklyVideo.duration || '',
-			publishedAt: new Date(apiWeeklyVideo.published_at)
-		} : weeklyVideo // fallback to hardcoded
-	);
-
-	/**
-	 * Derive recent videos from closed trades alerts (videos are tied to alerts)
-	 * Used by VideoGrid component
-	 */
-	const derivedRecentVideos = $derived<Video[]>(
-		apiAlerts.length > 0
-			? apiAlerts.slice(0, 4).map((a, i) => ({
-					id: String(a.id),
-					ticker: a.ticker,
-					type: a.alert_type as 'ENTRY' | 'EXIT' | 'UPDATE',
-					title: a.title,
-					thumbnailUrl: `https://placehold.co/640x360/${a.alert_type === 'ENTRY' ? '22c55e' : a.alert_type === 'EXIT' ? '3b82f6' : 'f59e0b'}/FFFFFF/png?text=${a.ticker}+${a.alert_type}`,
-					videoUrl: `/dashboard/explosive-swings/updates/${a.ticker.toLowerCase()}-${a.alert_type.toLowerCase()}`,
-					duration: '5:00',
-					publishedAt: new Date(a.published_at),
-					isFeatured: i === 0
-				}))
-			: recentVideos // fallback to hardcoded
-	);
-
-	// Track which alert notes are expanded
-	let expandedNotes = $state<Set<number>>(new Set());
-
-	function toggleNotes(alertId: number) {
-		const newExpanded = new Set(expandedNotes);
-		if (newExpanded.has(alertId)) {
-			newExpanded.delete(alertId);
-		} else {
-			newExpanded.add(alertId);
-		}
-		expandedNotes = newExpanded;
-	}
-
-	// Extract price from alert message (e.g., "$142.50" from message text)
-	function extractPrice(message: string): string | null {
-		const priceMatch = message.match(/\$[\d,]+\.?\d*/g);
-		return priceMatch ? priceMatch[0] : null;
-	}
-
-	// Copy trade details to clipboard
-	async function copyTradeDetails(alert: Alert) {
-		const tradeDetails = `${alert.ticker} ${alert.type}\n${alert.title}\n${alert.message}${alert.tosString ? '\nTOS: ' + alert.tosString : ''}`;
-		try {
-			await navigator.clipboard.writeText(tradeDetails);
-			copiedAlertId = alert.id;
-			setTimeout(() => {
-				copiedAlertId = null;
-			}, 2000);
-		} catch (err) {
-			console.error('Failed to copy:', err);
-		}
-	}
-
-	// Filter alerts
-	const filteredAlerts = $derived(
-		selectedFilter === 'all'
-			? alerts
-			: alerts.filter((a) => a.type.toLowerCase() === selectedFilter)
-	);
-
-	const latestUpdates: VideoUpdate[] = [
-		{
-			id: 1,
-			title: 'NVDA Entry Alert - Opening Swing Position',
-			date: 'January 13, 2026 at 10:32 AM ET',
-			excerpt:
-				'Entering NVDA at $142.50. Watch this video breakdown for entry reasoning, targets, and risk management.',
-			href: '/dashboard/explosive-swings/updates/nvda-entry-011326',
-			image: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=NVDA+ENTRY',
-			isVideo: true,
-			duration: '8:45'
-		},
-		{
-			id: 2,
-			title: 'MSFT Exit - Closing for +8.2% Profit',
-			date: 'January 12, 2026 at 3:45 PM ET',
-			excerpt:
-				'Taking profits on MSFT swing trade. Hit second target. Watch the exit strategy breakdown and lessons learned.',
-			href: '/dashboard/explosive-swings/updates/msft-exit-011226',
-			image: 'https://placehold.co/640x360/3b82f6/FFFFFF/png?text=MSFT+EXIT',
-			isVideo: true,
-			duration: '6:20'
-		},
-		{
-			id: 3,
-			title: 'META Entry - Momentum Play Setup',
-			date: 'January 11, 2026 at 11:20 AM ET',
-			excerpt:
-				'META triggered our entry at $585. Full breakdown of the momentum setup and what to watch for.',
-			href: '/dashboard/explosive-swings/updates/meta-entry-011126',
-			image: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=META+ENTRY',
-			isVideo: true,
-			duration: '7:15'
-		},
-		{
-			id: 4,
-			title: 'TSLA Update - Approaching Entry Zone',
-			date: 'January 11, 2026 at 9:15 AM ET',
-			excerpt: 'TSLA pulling back to our entry zone. Technical analysis and what levels to watch.',
-			href: '/dashboard/explosive-swings/updates/tsla-update-011126',
-			image: 'https://placehold.co/640x360/f59e0b/FFFFFF/png?text=TSLA+UPDATE',
-			isVideo: true,
-			duration: '5:30'
-		},
-		{
-			id: 5,
-			title: 'AMD Short Setup - Bearish Breakdown',
-			date: 'January 10, 2026 at 2:30 PM ET',
-			excerpt:
-				'AMD short position triggered at $125. Breakdown of the bearish setup and downside targets.',
-			href: '/dashboard/explosive-swings/updates/amd-short-011026',
-			image: 'https://placehold.co/640x360/ef4444/FFFFFF/png?text=AMD+SHORT',
-			isVideo: true,
-			duration: '9:10'
-		},
-		{
-			id: 6,
-			title: 'AMZN Entry - Breakout Confirmation',
-			date: 'January 9, 2026 at 11:15 AM ET',
-			excerpt: 'AMZN breaking above key resistance. Entry at $185 with full technical breakdown.',
-			href: '/dashboard/explosive-swings/updates/amzn-entry-010926',
-			image: 'https://placehold.co/640x360/22c55e/FFFFFF/png?text=AMZN+ENTRY',
-			isVideo: true,
-			duration: '7:45'
-		}
-	];
 </script>
 
 <svelte:head>
 	<title>Explosive Swings Dashboard | Revolution Trading Pros</title>
 </svelte:head>
 
-<TradingRoomHeader
-	roomName="Explosive Swings"
-	startHereUrl="/dashboard/explosive-swings/start-here"
-/>
+<TradingRoomHeader roomName="Explosive Swings" startHereUrl="/dashboard/explosive-swings/start-here" />
 
-<div class="explosive-swings-page">
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     PERFORMANCE SUMMARY - Nuclear Build Specification
-	     Replaces old StatsBar with ticker pills + active positions
-	     ═══════════════════════════════════════════════════════════════════════════ -->
+<div class="page">
+	<!-- Performance Summary -->
 	<PerformanceSummary
-		performance={derivedWeeklyPerformance}
-		closedTrades={derivedClosedTrades}
-		activePositions={derivedActivePositions}
-		isLoading={isLoadingStats || isLoadingTrades}
-		{isAdmin}
-		onClosePosition={openClosePositionModal}
-		onAddTrade={openAddTradeModal}
+		performance={ps.weeklyPerformance}
+		closedTrades={ps.closedTrades}
+		activePositions={ps.activePositions}
+		isLoading={ps.isLoadingStats || ps.isLoadingTrades}
+		isAdmin={ps.isAdmin}
+		onClosePosition={ps.openClosePositionModal}
+		onAddTrade={ps.openAddTradeModal}
 	/>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     HERO: Collapsible Weekly Video Accordion
-	     Extracted to WeeklyHero component per Svelte 5 best practices
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<WeeklyHero 
-		{weeklyContent} 
-		{tradePlan} 
-		{isAdmin}
-		roomSlug={ROOM_SLUG}
-		fullVideoUrl={apiWeeklyVideo ? `/dashboard/${ROOM_SLUG}/video/${apiWeeklyVideo.id}` : undefined}
-		onAddEntry={openTradeEntryModal}
-		onEditEntry={openEditTradeEntryModal}
-		onUploadVideo={openVideoUploadModal}
+	<!-- Weekly Hero -->
+	<WeeklyHero
+		weeklyContent={ps.weeklyContent}
+		tradePlan={ps.tradePlan}
+		isAdmin={ps.isAdmin}
+		roomSlug={ps.ROOM_SLUG}
+		onAddEntry={() => ps.openTradeEntryModal()}
+		onEditEntry={(entry: any) => ps.openTradeEntryModal(entry)}
+		onUploadVideo={ps.openVideoUploadModal}
 	/>
 
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     MAIN CONTENT: Alerts + Sidebar
-	     ═══════════════════════════════════════════════════════════════════════════ -->
+	<!-- Main Grid -->
 	<div class="main-grid">
-		<!-- ALERTS FEED -->
+		<!-- Alerts Section -->
 		<section class="alerts-section">
 			<div class="section-header">
-				<div class="section-title-row">
-					<h2>Live Alerts</h2>
-					{#if isAdmin}
-						<button class="admin-btn" onclick={openNewAlertModal}>
-							<svg
-								viewBox="0 0 24 24"
-								fill="none"
-								stroke="currentColor"
-								stroke-width="2"
-								width="18"
-								height="18"
-							>
-								<path d="M12 5v14M5 12h14" />
-							</svg>
-							New Alert
-						</button>
-					{/if}
-				</div>
-				<AlertFilters 
-					selected={selectedFilter} 
-					onFilterChange={(filter) => (selectedFilter = filter)} 
-				/>
+				<h2>Live Alerts</h2>
+				{#if ps.isAdmin}
+					<button class="admin-btn" onclick={() => ps.openAlertModal()}>+ New Alert</button>
+				{/if}
 			</div>
 
+			<AlertFilters selected={ps.selectedFilter} onFilterChange={ps.setFilter} />
+
+			{#if ps.alertsError}
+				<div class="error-banner">
+					<p>{ps.alertsError}</p>
+					<button onclick={ps.fetchAlerts}>Retry</button>
+				</div>
+			{/if}
+
 			<div class="alerts-list">
-				{#if isLoadingAlerts}
-					<!-- Skeleton Loading States -->
-					{#each [1, 2, 3] as _}
-						<div class="alert-card-skeleton">
-							<div class="skeleton-row">
-								<div class="skeleton-badge"></div>
-								<div class="skeleton-ticker"></div>
-								<div class="skeleton-time"></div>
-							</div>
-							<div class="skeleton-title"></div>
-							<div class="skeleton-message"></div>
-							<div class="skeleton-message short"></div>
-						</div>
+				{#if ps.isLoadingAlerts}
+					{#each Array(3) as _}
+						<div class="alert-skeleton"></div>
 					{/each}
-				{:else if filteredAlerts.length === 0}
-					<!-- Empty State -->
-					<div class="alerts-empty-state" role="status" aria-live="polite">
-						<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" width="48" height="48">
-							<path d="M9.879 7.519c1.171-1.025 3.071-1.025 4.242 0 1.172 1.025 1.172 2.687 0 3.712-.203.179-.43.326-.67.442-.745.361-1.45.999-1.45 1.827v.75M21 12a9 9 0 11-18 0 9 9 0 0118 0zm-9 5.25h.008v.008H12v-.008z"/>
-						</svg>
-						<h4>No alerts found</h4>
-						<p>{selectedFilter === 'all' ? 'No alerts have been posted yet.' : `No ${selectedFilter} alerts match your filter.`}</p>
-						{#if selectedFilter !== 'all'}
-							<button class="reset-filter-btn" onclick={() => (selectedFilter = 'all')}>Show all alerts</button>
+				{:else if ps.filteredAlerts.length === 0}
+					<div class="empty-state">
+						<p>No alerts found</p>
+						{#if ps.selectedFilter !== 'all'}
+							<button onclick={() => ps.setFilter('all')}>Show all</button>
 						{/if}
 					</div>
 				{:else}
-					{#each filteredAlerts as alert, index}
+					{#each ps.filteredAlerts as alert, index (alert.id)}
 						<AlertCard
 							{alert}
 							{index}
-							{isAdmin}
+							isAdmin={ps.isAdmin}
 							isNotesExpanded={expandedNotes.has(alert.id)}
-							isCopied={copiedAlertId === alert.id}
+							isCopied={ps.copiedAlertId === alert.id}
 							onToggleNotes={toggleNotes}
-							onCopy={copyTradeDetails}
-							onEdit={(a) => {
-								const apiAlert = apiAlerts.find((api) => api.id === a.id);
-								if (apiAlert) openEditAlertModal(apiAlert);
-							}}
+							onCopy={(a: any) => ps.copyTradeDetails(a)}
+							onEdit={(a: any) => ps.openAlertModal(a)}
 							onDelete={handleDeleteAlert}
 						/>
 					{/each}
 				{/if}
 			</div>
 
-			<!-- Pagination UI - Using extracted Pagination component -->
-			{#if pagination.total > alertsPerPage && !isLoadingAlerts}
+			{#if ps.pagination.total > 10}
 				<Pagination
-					{currentPage}
-					{totalPages}
-					totalItems={pagination.total}
-					itemsPerPage={alertsPerPage}
-					onPageChange={goToPage}
+					currentPage={ps.currentPage}
+					totalPages={ps.totalPages}
+					totalItems={ps.pagination.total}
+					itemsPerPage={10}
+					onPageChange={ps.goToPage}
 					itemLabel="alerts"
 				/>
 			{/if}
 
-			<a href="/dashboard/explosive-swings/alerts" class="view-all-link"> View All Alerts → </a>
+			<a href="/dashboard/explosive-swings/alerts" class="view-all">View All Alerts →</a>
 		</section>
 
-		<!-- ═══════════════════════════════════════════════════════════════════════════
-		     SIDEBAR - Component-based architecture per Svelte 5 January 2026 best practices
-		     Contains: WeeklyVideoCard, PerformanceCard, ResourceLinks, LatestUpdatesCard
-		     ═══════════════════════════════════════════════════════════════════════════ -->
+		<!-- Sidebar -->
 		<SidebarComponent
-			{thirtyDayPerformance}
-			{weeklyVideo}
-			latestUpdates={derivedRecentVideos}
-			isLoading={isLoadingStats}
+			thirtyDayPerformance={{
+				winRate: ps.stats?.winRate ?? 75,
+				totalAlerts: ps.stats?.closedThisWeek ?? 0,
+				profitableAlerts: Math.round((ps.stats?.winRate ?? 75) / 100 * (ps.stats?.closedThisWeek ?? 0)),
+				avgWinPercent: 5.7,
+				avgLossPercent: 2.1
+			}}
+			weeklyVideo={ps.weeklyContent as any}
+			latestUpdates={[]}
+			isLoading={ps.isLoadingStats}
 		/>
 	</div>
-
-	<!-- ═══════════════════════════════════════════════════════════════════════════
-	     LATEST UPDATES SECTION - Matches other trading rooms structure
-	     Featured video + responsive grid of recent videos
-	     ═══════════════════════════════════════════════════════════════════════════ -->
-	<section class="dashboard__content-section">
-		<h2 class="section-title">Latest Updates</h2>
-		<VideoGrid videos={derivedRecentVideos} isLoading={isLoadingStats || isLoadingVideos} />
-	</section>
 </div>
 
-<!-- Admin Modal for Creating/Editing Alerts -->
+<!-- Modals -->
 <TradeAlertModal
-	bind:isOpen={isAlertModalOpen}
-	roomSlug={ROOM_SLUG}
-	editAlert={editingAlert}
-	entryAlerts={apiAlerts.filter((a) => a.alert_type === 'ENTRY')}
-	onClose={closeAlertModal}
+	bind:isOpen={alertModalOpen}
+	roomSlug={ps.ROOM_SLUG}
+	editAlert={ps.editingAlert as any}
+	entryAlerts={ps.alerts.filter(a => a.type === 'ENTRY') as any}
+	onClose={() => { alertModalOpen = false; ps.closeAlertModal(); }}
 	onSave={handleSaveAlert}
 />
 
-<!-- Admin Modal for Trade Plan Entries -->
 <TradeEntryModal
-	isOpen={isTradeEntryModalOpen}
-	roomSlug={ROOM_SLUG}
-	editEntry={editingTradeEntry}
-	onClose={closeTradeEntryModal}
-	onSuccess={fetchTradePlan}
+	isOpen={ps.isTradeEntryModalOpen}
+	roomSlug={ps.ROOM_SLUG}
+	editEntry={ps.editingTradeEntry}
+	onClose={ps.closeTradeEntryModal}
+	onSuccess={ps.fetchTradePlan}
 />
 
-<!-- Admin Modal for Weekly Video Upload -->
 <VideoUploadModal
-	isOpen={isVideoUploadModalOpen}
-	roomSlug={ROOM_SLUG}
-	onClose={closeVideoUploadModal}
-	onSuccess={fetchWeeklyVideo}
+	isOpen={ps.isVideoUploadModalOpen}
+	roomSlug={ps.ROOM_SLUG}
+	onClose={ps.closeVideoUploadModal}
+	onSuccess={ps.fetchWeeklyVideo}
 />
 
-<!-- Admin Modal for Close Position -->
 <ClosePositionModal
-	isOpen={isClosePositionModalOpen}
-	position={closingPosition}
-	roomSlug={ROOM_SLUG}
-	onClose={closeClosePositionModal}
-	onSuccess={async () => {
-		await fetchOpenTrades();
-		await fetchStats();
-	}}
+	isOpen={ps.isClosePositionModalOpen}
+	position={ps.closingPosition}
+	roomSlug={ps.ROOM_SLUG}
+	onClose={ps.closeClosePositionModal}
+	onSuccess={() => { ps.fetchAllTrades(); ps.fetchStats(); }}
 />
 
-<!-- Admin Modal for Add Trade -->
 <AddTradeModal
-	isOpen={isAddTradeModalOpen}
-	roomSlug={ROOM_SLUG}
-	onClose={closeAddTradeModal}
-	onSuccess={handleTradeAdded}
+	isOpen={ps.isAddTradeModalOpen}
+	roomSlug={ps.ROOM_SLUG}
+	onClose={ps.closeAddTradeModal}
+	onSuccess={() => { ps.fetchAllTrades(); ps.fetchStats(); }}
 />
 
 <style>
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   PAGE BASE - Renamed from .dashboard to avoid collision with parent layout
-	   CSS Containment added to prevent layout thrashing
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.explosive-swings-page {
-		background: #f5f7fa;
-		contain: layout style;
+	.page {
+		background: var(--color-bg-page);
+		min-height: 100vh;
 	}
 
-	/* Legacy stats-bar CSS removed - see CSS_TRACE_AUDIT.md
-	   Replaced by PerformanceSummary.svelte with TickerPill pattern */
-
-	/* Legacy video/trade-sheet CSS removed - see CSS_TRACE_AUDIT.md
-	   Moved to WeeklyHero.svelte - verified lines 340-771 */
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   MAIN GRID - Apple ICT 7 Responsive Design
-	   ═══════════════════════════════════════════════════════════════════════════ */
 	.main-grid {
 		display: grid;
 		grid-template-columns: 1fr 340px;
-		gap: 30px;
-		padding: 30px;
+		gap: 24px;
+		padding: 24px;
 		max-width: 1400px;
 		margin: 0 auto;
-		contain: layout;
 	}
 
-	/* Large Desktop (1440px+) */
-	@media (min-width: 1440px) {
-		.main-grid {
-			max-width: 1500px;
-			gap: 40px;
-			padding: 40px;
-			grid-template-columns: 1fr 360px;
-		}
-	}
-
-	/* Ultra-wide (1920px+) */
-	@media (min-width: 1920px) {
-		.main-grid {
-			max-width: 1700px;
-			gap: 50px;
-			padding: 50px;
-			grid-template-columns: 1fr 380px;
-		}
-	}
-
-	/* Desktop (1280px - 1439px) */
-	@media (min-width: 1280px) and (max-width: 1439px) {
-		.main-grid {
-			max-width: 1350px;
-			gap: 35px;
-			padding: 35px;
-		}
-	}
-
-	/* Tablet/Small Desktop (1024px - 1279px) */
-	@media (min-width: 1024px) and (max-width: 1279px) {
-		.main-grid {
-			grid-template-columns: 1fr 300px;
-			gap: 25px;
-			padding: 25px;
-		}
-	}
-
-	@media (max-width: 1023px) {
-		.main-grid {
-			grid-template-columns: 1fr;
-			gap: 24px;
-			padding: 24px;
-		}
-	}
-
-	@media (max-width: 768px) {
-		.main-grid {
-			gap: 20px;
-			padding: 20px;
-		}
-	}
-
-	@media (max-width: 640px) {
-		.main-grid {
-			gap: 16px;
-			padding: 16px;
-		}
-	}
-
-	/* ALERTS SECTION */
 	.alerts-section {
-		background: #fff;
-		border-radius: 16px;
-		padding: 25px;
-		box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
-		contain: layout style;
-	}
-
-	@media (max-width: 640px) {
-		.alerts-section {
-			padding: 18px;
-			border-radius: 12px;
-		}
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border-default);
+		border-radius: 12px;
+		padding: 20px;
+		box-shadow: var(--shadow-sm);
 	}
 
 	.section-header {
 		display: flex;
-		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 25px;
-		flex-wrap: wrap;
-		gap: 15px;
+		align-items: center;
+		margin-bottom: 16px;
 	}
 
 	.section-header h2 {
-		font-size: 20px;
+		font-size: 18px;
 		font-weight: 700;
 		margin: 0;
-		color: #333;
-		font-family: 'Montserrat', sans-serif;
-		text-align: center;
+		color: var(--color-text-primary);
 	}
 
-	/* Legacy filter-pills/pill CSS removed - see CSS_TRACE_AUDIT.md
-	   Moved to AlertFilters.svelte - verified lines 75-117 */
+	.admin-btn {
+		font-size: 13px;
+		font-weight: 600;
+		padding: 8px 14px;
+		background: var(--color-brand-secondary);
+		color: white;
+		border: none;
+		border-radius: 6px;
+		cursor: pointer;
+		transition: background 0.15s;
+	}
 
-	@media (max-width: 640px) {
-		.section-header {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: 12px;
-			margin-bottom: 20px;
-		}
-
-		.section-header h2 {
-			font-size: 18px;
-			text-align: left;
-		}
+	.admin-btn:hover {
+		background: var(--color-brand-secondary-hover);
 	}
 
 	.alerts-list {
 		display: flex;
 		flex-direction: column;
-		gap: 15px;
-		contain: layout style;
-		max-height: none; /* Pagination handles overflow */
-	}
-
-	/* Skeleton Loading for Alerts */
-	.alert-card-skeleton {
-		background: #f8fafc;
-		border: 1px solid #e5e7eb;
-		border-radius: 12px;
-		padding: 20px;
-	}
-
-	.skeleton-row {
-		display: flex;
-		align-items: center;
 		gap: 12px;
 		margin-bottom: 16px;
 	}
 
-	.skeleton-badge {
-		width: 60px;
-		height: 24px;
-		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+	.alert-skeleton {
+		height: 100px;
+		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
-		border-radius: 4px;
+		border-radius: 8px;
 	}
 
-	.skeleton-ticker {
-		width: 50px;
-		height: 20px;
-		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
-		background-size: 200% 100%;
-		animation: shimmer 1.5s infinite;
-		border-radius: 4px;
+	.empty-state {
+		text-align: center;
+		padding: 40px 20px;
+		color: var(--color-text-tertiary);
 	}
 
-	.skeleton-time {
-		width: 80px;
-		height: 16px;
-		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
-		background-size: 200% 100%;
-		animation: shimmer 1.5s infinite;
-		border-radius: 4px;
+	.empty-state button {
+		margin-top: 12px;
+		padding: 8px 16px;
+		background: var(--color-brand-primary);
+		color: white;
+		border: none;
+		border-radius: 6px;
+		cursor: pointer;
 	}
 
-	.skeleton-title {
-		width: 70%;
-		height: 20px;
-		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
-		background-size: 200% 100%;
-		animation: shimmer 1.5s infinite;
-		border-radius: 4px;
-		margin-bottom: 12px;
+	.error-banner {
+		background: var(--color-loss-bg);
+		border: 1px solid var(--color-loss-border);
+		border-radius: 8px;
+		padding: 12px 16px;
+		margin-bottom: 16px;
+		display: flex;
+		justify-content: space-between;
+		align-items: center;
 	}
 
-	.skeleton-message {
-		width: 100%;
-		height: 16px;
-		background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
-		background-size: 200% 100%;
-		animation: shimmer 1.5s infinite;
-		border-radius: 4px;
-		margin-bottom: 8px;
+	.error-banner p {
+		margin: 0;
+		color: var(--color-loss);
+		font-size: 14px;
 	}
 
-	.skeleton-message.short {
-		width: 60%;
+	.error-banner button {
+		padding: 6px 12px;
+		background: var(--color-loss);
+		color: white;
+		border: none;
+		border-radius: 4px;
+		cursor: pointer;
+		font-size: 13px;
+	}
+
+	.view-all {
+		display: block;
+		text-align: center;
+		padding: 12px;
+		color: var(--color-brand-primary);
+		font-weight: 600;
+		text-decoration: none;
+	}
+
+	.view-all:hover {
+		text-decoration: underline;
 	}
 
 	@keyframes shimmer {
@@ -1637,114 +369,19 @@
 		100% { background-position: -200% 0; }
 	}
 
-	/* Legacy alert-card CSS removed - see CSS_TRACE_AUDIT.md
-	   Moved to AlertCard.svelte - verified lines 189-552 */
-
-	/* Legacy pagination CSS removed - see CSS_TRACE_AUDIT.md
-	   Moved to Pagination.svelte component */
-
-	.view-all-link {
-		display: block;
-		text-align: center;
-		margin-top: 20px;
-		color: #0984ae;
-		font-weight: 600;
-		text-decoration: none;
+	@media (max-width: 1024px) {
+		.main-grid {
+			grid-template-columns: 1fr;
+		}
 	}
 
-	.view-all-link:hover {
-		color: #143e59;
+	@media (max-width: 768px) {
+		.main-grid {
+			padding: 16px;
+			gap: 16px;
+		}
+		.alerts-section {
+			padding: 16px;
+		}
 	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   EMPTY STATE
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.alerts-empty-state {
-		text-align: center;
-		padding: 48px 24px;
-		background: #f8fafc;
-		border: 2px dashed #e5e7eb;
-		border-radius: 12px;
-	}
-
-	.alerts-empty-state svg {
-		color: #94a3b8;
-		margin-bottom: 16px;
-	}
-
-	.alerts-empty-state h4 {
-		margin: 0 0 8px 0;
-		font-size: 18px;
-		font-weight: 700;
-		color: #333;
-		font-family: 'Montserrat', sans-serif;
-	}
-
-	.alerts-empty-state p {
-		margin: 0 0 16px 0;
-		font-size: 14px;
-		color: #666;
-	}
-
-	.reset-filter-btn {
-		background: #143e59;
-		color: #fff;
-		border: none;
-		padding: 10px 20px;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s ease;
-	}
-
-	.reset-filter-btn:hover {
-		background: #0f2d42;
-		transform: translateY(-1px);
-	}
-
-	.reset-filter-btn:focus-visible {
-		outline: 2px solid #143e59;
-		outline-offset: 2px;
-	}
-
-	/* Legacy sidebar CSS removed - see CSS_TRACE_AUDIT.md
-	   Moved to Sidebar.svelte and child components:
-	   - WeeklyVideoCard.svelte
-	   - PerformanceCard.svelte
-	   - ResourceLinks.svelte
-	   - LatestUpdatesCard.svelte */
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   ADMIN STYLES
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.section-title-row {
-		display: flex;
-		align-items: center;
-		gap: 16px;
-	}
-
-	.admin-btn {
-		display: flex;
-		align-items: center;
-		gap: 6px;
-		background: linear-gradient(135deg, #f69532 0%, #e8860d 100%);
-		color: #fff;
-		border: none;
-		padding: 8px 16px;
-		border-radius: 8px;
-		font-size: 13px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-		box-shadow: 0 2px 8px rgba(246, 149, 50, 0.3);
-	}
-
-	.admin-btn:hover {
-		transform: translateY(-1px);
-		box-shadow: 0 4px 12px rgba(246, 149, 50, 0.4);
-	}
-
-	/* Legacy admin-actions/tos-display CSS removed - see CSS_TRACE_AUDIT.md
-	   Moved to AlertCard.svelte - verified lines 518-552 */
 </style>

@@ -170,7 +170,7 @@
 		position: relative;
 		width: 100%;
 		max-width: 1100px;
-		background: #0f172a;
+		background: var(--color-text-primary);
 		border-radius: 16px;
 		overflow: hidden;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -204,7 +204,7 @@
 		background: rgba(255, 255, 255, 0.1);
 		border: none;
 		border-radius: 50%;
-		color: #fff;
+		color: var(--color-bg-card);
 		cursor: pointer;
 		transition: all 0.2s ease-out;
 	}
@@ -248,8 +248,8 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #0f172a;
-		color: #94a3b8;
+		background: var(--color-text-primary);
+		color: var(--color-text-muted);
 		font-size: 16px;
 	}
 
@@ -258,7 +258,7 @@
 	   ═══════════════════════════════════════════════════════════════════════ */
 	.video-info {
 		padding: 20px 24px;
-		background: linear-gradient(to bottom, #1e293b, #0f172a);
+		background: linear-gradient(to bottom, var(--color-text-primary), var(--color-text-primary));
 	}
 
 	.video-meta {
@@ -272,8 +272,8 @@
 		padding: 4px 10px;
 		font-size: 12px;
 		font-weight: 700;
-		color: #fff;
-		background: #143e59;
+		color: var(--color-bg-card);
+		background: var(--color-brand-primary);
 		border-radius: 6px;
 		letter-spacing: 0.5px;
 	}
@@ -282,21 +282,21 @@
 		padding: 4px 10px;
 		font-size: 11px;
 		font-weight: 600;
-		color: #fff;
+		color: var(--color-bg-card);
 		border-radius: 6px;
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
 
 	.type-badge.type-entry { background: #0d9488; }
-	.type-badge.type-exit { background: #059669; }
-	.type-badge.type-update { background: #d97706; }
-	.type-badge.type-breakdown { background: #475569; }
+	.type-badge.type-exit { background: var(--color-profit); }
+	.type-badge.type-update { background: var(--color-watching-hover); }
+	.type-badge.type-breakdown { background: var(--color-text-tertiary); }
 
 	.video-title {
 		font-size: 18px;
 		font-weight: 600;
-		color: #fff;
+		color: var(--color-bg-card);
 		margin: 0 0 12px 0;
 		line-height: 1.4;
 	}
@@ -305,7 +305,7 @@
 		display: flex;
 		align-items: center;
 		gap: 16px;
-		color: #94a3b8;
+		color: var(--color-text-muted);
 		font-size: 14px;
 	}
 

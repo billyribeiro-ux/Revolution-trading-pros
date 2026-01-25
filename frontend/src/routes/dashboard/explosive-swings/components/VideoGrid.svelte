@@ -162,8 +162,8 @@
 		align-items: center;
 		gap: 6px;
 		padding: 8px 14px;
-		background: linear-gradient(135deg, #f69532 0%, #e07d0a 100%);
-		color: #fff;
+		background: linear-gradient(135deg, var(--color-brand-secondary) 0%, #e07d0a 100%);
+		color: var(--color-bg-card);
 		font-size: 11px;
 		font-weight: 700;
 		text-transform: uppercase;
@@ -218,8 +218,8 @@
 		padding: 14px 28px;
 		font-size: 14px;
 		font-weight: 600;
-		color: #fff;
-		background: linear-gradient(135deg, #143e59 0%, #1e5175 100%);
+		color: var(--color-bg-card);
+		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-light) 100%);
 		border: none;
 		border-radius: 12px;
 		text-decoration: none;
@@ -263,7 +263,7 @@
 		max-width: 880px;
 		margin: 0 auto;
 		aspect-ratio: 16 / 9;
-		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite ease-in-out;
 		border-radius: 16px;
@@ -290,13 +290,13 @@
 	.skeleton-card {
 		border-radius: 14px;
 		overflow: hidden;
-		background: #fff;
-		border: 1px solid #e2e8f0;
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border-default);
 	}
 
 	.skeleton-thumb {
 		aspect-ratio: 16 / 9;
-		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite ease-in-out;
 	}
@@ -308,7 +308,7 @@
 	.skeleton-title {
 		height: 18px;
 		width: 85%;
-		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite ease-in-out;
 		border-radius: 6px;
@@ -318,7 +318,7 @@
 	.skeleton-date {
 		height: 14px;
 		width: 45%;
-		background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-border-default) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite ease-in-out;
 		border-radius: 4px;
@@ -343,8 +343,8 @@
 		justify-content: center;
 		padding: 72px 32px;
 		text-align: center;
-		background: linear-gradient(180deg, #f8fafc 0%, #f1f5f9 100%);
-		border: 1px solid #e2e8f0;
+		background: linear-gradient(180deg, var(--color-bg-subtle) 0%, var(--color-bg-subtle) 100%);
+		border: 1px solid var(--color-border-default);
 		border-radius: 20px;
 	}
 
@@ -354,7 +354,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #e2e8f0;
+		background: var(--color-border-default);
 		border-radius: 18px;
 		margin-bottom: 24px;
 	}
@@ -362,20 +362,20 @@
 	.empty-icon svg {
 		width: 36px;
 		height: 36px;
-		color: #94a3b8;
+		color: var(--color-text-muted);
 	}
 
 	.empty-title {
 		font-size: 18px;
 		font-weight: 600;
-		color: #334155;
+		color: var(--color-text-secondary);
 		margin: 0 0 8px 0;
 		letter-spacing: -0.01em;
 	}
 
 	.empty-text {
 		font-size: 15px;
-		color: #64748b;
+		color: var(--color-text-muted);
 		margin: 0;
 		max-width: 320px;
 		line-height: 1.5;
