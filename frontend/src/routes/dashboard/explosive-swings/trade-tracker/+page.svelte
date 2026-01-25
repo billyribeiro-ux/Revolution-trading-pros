@@ -133,7 +133,7 @@
 	const closingPosition = $derived.by((): ActivePosition | null => {
 		if (!closingTrade) return null;
 		return {
-			id: closingTrade.id,
+			id: String(closingTrade.id),
 			ticker: closingTrade.ticker,
 			status: 'ACTIVE',
 			entryPrice: closingTrade.entryPrice,
