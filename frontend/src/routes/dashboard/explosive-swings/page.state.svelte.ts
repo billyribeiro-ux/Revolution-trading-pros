@@ -186,33 +186,45 @@ export function createPageState() {
 			: fallbackData.activePositions
 	);
 
-	const weeklyContent = $derived<WeeklyContent>(
-		apiWeeklyVideo && apiWeeklyVideo.published_at
-			? {
-					title:
-						apiWeeklyVideo.week_title ||
-						`Week of ${new Date(apiWeeklyVideo.published_at).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
-					videoTitle: apiWeeklyVideo.video_title ?? '',
-					videoUrl: apiWeeklyVideo.video_url ?? '',
-					thumbnail:
-						apiWeeklyVideo.thumbnail_url ?? fallbackData.weeklyContent.thumbnail,
-					duration: apiWeeklyVideo.duration ?? '',
-					publishedDate:
-						new Date(apiWeeklyVideo.published_at).toLocaleDateString('en-US', {
-							month: 'long',
-							day: 'numeric',
-							year: 'numeric'
-						}) +
-						' at ' +
-						new Date(apiWeeklyVideo.published_at).toLocaleTimeString('en-US', {
-							hour: 'numeric',
-							minute: '2-digit',
-							hour12: true
-						}) +
-						' ET'
-				}
-			: fallbackData.weeklyContent
-	);
+	// Helper to safely validate dates before calling toLocaleDateString
+	function isValidDate(dateValue: any): boolean {
+		if (!dateValue) return false;
+		const date = new Date(dateValue);
+		return date instanceof Date && !isNaN(date.getTime());
+	}
+
+	const weeklyContent = $derived.by<WeeklyContent>(() => {
+		// Use fallback if no video or invalid published_at
+		if (!apiWeeklyVideo || !isValidDate(apiWeeklyVideo.published_at)) {
+			return fallbackData.weeklyContent;
+		}
+
+		const publishedDate = new Date(apiWeeklyVideo.published_at);
+		
+		return {
+			title:
+				apiWeeklyVideo.week_title ||
+				`Week of ${publishedDate.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}`,
+			videoTitle: apiWeeklyVideo.video_title ?? '',
+			videoUrl: apiWeeklyVideo.video_url ?? '',
+			thumbnail:
+				apiWeeklyVideo.thumbnail_url ?? fallbackData.weeklyContent.thumbnail,
+			duration: apiWeeklyVideo.duration ?? '',
+			publishedDate:
+				publishedDate.toLocaleDateString('en-US', {
+					month: 'long',
+					day: 'numeric',
+					year: 'numeric'
+				}) +
+				' at ' +
+				publishedDate.toLocaleTimeString('en-US', {
+					hour: 'numeric',
+					minute: '2-digit',
+					hour12: true
+				}) +
+				' ET'
+		};
+	});
 
 	const hasAnyError = $derived(
 		alertsError || tradePlanError || statsError || tradesError || videosError
