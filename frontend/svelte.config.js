@@ -112,6 +112,8 @@ const config = {
 					'https://vz-5a23b520-193.b-cdn.net',
 					'https://*.b-cdn.net',
 					'https://pub-2e5bd1b702b440bd888a0fc47f3493ae.r2.dev',
+					'https://simpler-options.s3.amazonaws.com',
+					'https://*.s3.amazonaws.com',
 					'blob:'
 				],
 				'connect-src': [
