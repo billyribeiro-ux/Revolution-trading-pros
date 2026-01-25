@@ -30,16 +30,9 @@
 		}
 	}
 
-	// Get embed URL for video
+	// Bunny.net embed URL only
 	const embedUrl = $derived(() => {
-		if (!video) return '';
-		// If video URL is already an embed URL, use it
-		if (video.videoUrl.includes('iframe.mediadelivery.net') || 
-			video.videoUrl.includes('player.vimeo.com') ||
-			video.videoUrl.includes('youtube.com/embed')) {
-			return video.videoUrl;
-		}
-		// Otherwise construct embed URL based on platform
+		if (!video?.videoUrl) return '';
 		return video.videoUrl;
 	});
 </script>
