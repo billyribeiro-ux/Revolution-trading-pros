@@ -68,6 +68,8 @@
 	// Derived values
 	const embedUrl = $derived(videoUrl || weeklyContent.videoUrl || '');
 	const watchFullUrl = $derived(fullVideoUrl || `/dashboard/${roomSlug}/video/weekly`);
+	// Safe embed URL for iframe (computed from embedUrl)
+	const safeEmbedUrl = $derived.by(() => getEmbedUrl(embedUrl));
 
 	// Component state (Svelte 5 $state rune)
 	let heroTab = $state<'video' | 'entries'>('video');
@@ -211,7 +213,6 @@
 						<div class="video-player-container" class:playing={isVideoPlaying} class:expanded={isVideoExpanded}>
 							{#if isVideoPlaying}
 								<!-- Active Video Player with iframe -->
-								{@const safeEmbedUrl = getEmbedUrl(embedUrl)}
 								<div class="video-frame">
 									{#if safeEmbedUrl}
 										<iframe
@@ -856,7 +857,8 @@
 		line-height: 1.2;
 		color: #fff;
 		margin: 0 0 8px 0;
-		text-wrap: balance;
+		/* Modern text wrapping - balanced lines */
+		text-wrap: balance; /* stylelint-disable-line property-no-unknown */
 	}
 
 	.video-info .published-date {
