@@ -9,7 +9,7 @@
 	- Auto-detect video duration from Bunny.net API
 	- Compact design, proper z-index above navbar
 	
-	@version 3.0.0 - ICT 7 Complete Rewrite
+	@version 3.1.0 - Fixed date picker
 -->
 <script lang="ts">
 	import { weeklyVideoApi } from '$lib/api/room-content';
@@ -39,6 +39,8 @@
 	] as const;
 	const PROCESSING_POLL_INTERVAL_MS = 2000;
 	const PROCESSING_MAX_ATTEMPTS = 30;
+	const DAYS_OF_WEEK = ['Su', 'Mo', 'Tu', 'We', 'Th', 'Fr', 'Sa'] as const;
+	const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'] as const;
 
 	interface Props {
 		isOpen: boolean;
@@ -62,7 +64,11 @@
 	let uploadProgress = $state(0);
 	let uploadStatus = $state<'idle' | 'preparing' | 'uploading' | 'processing' | 'complete'>('idle');
 	let fileInput = $state<HTMLInputElement | null>(null);
-	let dateInput = $state<HTMLInputElement | null>(null);
+	
+	// Custom date picker state
+	let isCalendarOpen = $state(false);
+	let calendarViewDate = $state(new Date());
+	let calendarRef = $state<HTMLDivElement | null>(null);
 	
 	// Thumbnail selection
 	let generatedThumbnails = $state<string[]>([]);
@@ -87,6 +93,10 @@
 		description: ''
 	});
 	
+	// Calendar derived values
+	const calendarDays = $derived(getCalendarDays(calendarViewDate));
+	const calendarMonthYear = $derived(`${MONTHS[calendarViewDate.getMonth()]} ${calendarViewDate.getFullYear()}`);
+	
 	// Lock body scroll when modal is open
 	$effect(() => {
 		if (!isOpen) return;
@@ -110,6 +120,16 @@
 		} else {
 			statusAnnouncement = '';
 		}
+	});
+	
+	// Close calendar when clicking outside
+	$effect(() => {
+		if (!isCalendarOpen) return;
+		
+		document.addEventListener('click', handleClickOutside);
+		return () => {
+			document.removeEventListener('click', handleClickOutside);
+		};
 	});
 
 	function getNextMonday(): string {
@@ -144,6 +164,88 @@
 			return parsed.protocol === 'https:' && parsed.hostname === 'iframe.mediadelivery.net';
 		} catch {
 			return false;
+		}
+	}
+	
+	// ═══════════════════════════════════════════════════════════════════════════
+	// CUSTOM CALENDAR FUNCTIONS
+	// ═══════════════════════════════════════════════════════════════════════════
+	
+	function getCalendarDays(date: Date): (number | null)[] {
+		const year = date.getFullYear();
+		const month = date.getMonth();
+		const firstDay = new Date(year, month, 1).getDay();
+		const daysInMonth = new Date(year, month + 1, 0).getDate();
+		
+		const days: (number | null)[] = [];
+		
+		// Add empty slots for days before the first of the month
+		for (let i = 0; i < firstDay; i++) {
+			days.push(null);
+		}
+		
+		// Add the days of the month
+		for (let i = 1; i <= daysInMonth; i++) {
+			days.push(i);
+		}
+		
+		return days;
+	}
+	
+	function isSelectedDate(day: number | null): boolean {
+		if (!day) return false;
+		const selected = new Date(form.week_of);
+		return (
+			selected.getFullYear() === calendarViewDate.getFullYear() &&
+			selected.getMonth() === calendarViewDate.getMonth() &&
+			selected.getDate() === day
+		);
+	}
+	
+	function isToday(day: number | null): boolean {
+		if (!day) return false;
+		const today = new Date();
+		return (
+			today.getFullYear() === calendarViewDate.getFullYear() &&
+			today.getMonth() === calendarViewDate.getMonth() &&
+			today.getDate() === day
+		);
+	}
+	
+	function selectDate(day: number | null) {
+		if (!day) return;
+		const newDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth(), day);
+		form.week_of = newDate.toISOString().split('T')[0];
+		isCalendarOpen = false;
+	}
+	
+	function prevMonth() {
+		calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() - 1, 1);
+	}
+	
+	function nextMonth() {
+		calendarViewDate = new Date(calendarViewDate.getFullYear(), calendarViewDate.getMonth() + 1, 1);
+	}
+	
+	function toggleCalendar() {
+		isCalendarOpen = !isCalendarOpen;
+		if (isCalendarOpen) {
+			// Sync calendar view to currently selected date
+			const selected = new Date(form.week_of);
+			calendarViewDate = new Date(selected.getFullYear(), selected.getMonth(), 1);
+		}
+	}
+	
+	function handleCalendarKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape') {
+			isCalendarOpen = false;
+		}
+	}
+	
+	// Close calendar when clicking outside
+	function handleClickOutside(e: MouseEvent) {
+		if (calendarRef && !calendarRef.contains(e.target as Node)) {
+			isCalendarOpen = false;
 		}
 	}
 
@@ -227,10 +329,6 @@
 		const input = e.target as HTMLInputElement;
 		const file = input.files?.[0];
 		if (file) handleFileSelect(file);
-	}
-	
-	function openDatePicker() {
-		dateInput?.showPicker?.();
 	}
 	
 	// Bunny.net upload functions
@@ -495,11 +593,6 @@
 		if (e.key === 'Escape') handleClose();
 	}
 
-	function handleUrlChange() {
-		// Bunny.net only - no platform detection needed
-		form.video_platform = 'bunny';
-	}
-
 	function handleDragOver(e: DragEvent) {
 		e.preventDefault();
 		isDragOver = true;
@@ -537,7 +630,6 @@
 	</div>
 	
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-	<!-- Portal-style modal - renders above everything with backdrop -->
 	<div 
 		class="modal-portal" 
 		role="dialog" 
@@ -734,7 +826,7 @@
 									</button>
 								</div>
 							</div>
-							<!-- Hidden file input with webkitdirectory support -->
+							<!-- Hidden file input -->
 							<input
 								bind:this={fileInput}
 								type="file"
@@ -744,7 +836,7 @@
 							/>
 						{/if}
 					{:else}
-						<!-- URL MODE - Clean input for Bunny.net URLs -->
+						<!-- URL MODE -->
 						<div class="url-input-section">
 							<label for="video_url" class="input-label">Bunny.net Embed URL</label>
 							<input
@@ -797,63 +889,118 @@
 					<!-- Common Form Fields Divider -->
 					<div class="form-divider"></div>
 
-				<div class="form-row">
-				<div class="form-group">
-					<label for="week_of">Week Of *</label>
-					<div class="date-picker-wrapper">
+					<div class="form-row">
+						<div class="form-group">
+							<label for="week_of">Week Of *</label>
+							<!-- Custom Date Picker -->
+							<div class="date-picker-wrapper" bind:this={calendarRef}>
+								<button 
+									type="button"
+									class="date-picker-trigger"
+									onclick={toggleCalendar}
+									aria-expanded={isCalendarOpen}
+									aria-haspopup="dialog"
+								>
+									<span class="date-picker-value">{formatDate(form.week_of)}</span>
+									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+										<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+										<line x1="16" y1="2" x2="16" y2="6"></line>
+										<line x1="8" y1="2" x2="8" y2="6"></line>
+										<line x1="3" y1="10" x2="21" y2="10"></line>
+									</svg>
+								</button>
+								
+								{#if isCalendarOpen}
+									<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+									<!-- svelte-ignore a11y_interactive_supports_focus -->
+									<div 
+										class="calendar-dropdown" 
+										role="dialog" 
+										aria-label="Choose date"
+										onkeydown={handleCalendarKeydown}
+									>
+										<div class="calendar-header">
+											<button type="button" class="calendar-nav-btn" onclick={prevMonth} aria-label="Previous month">
+												<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+													<path d="M15 18l-6-6 6-6" />
+												</svg>
+											</button>
+											<span class="calendar-month-year">{calendarMonthYear}</span>
+											<button type="button" class="calendar-nav-btn" onclick={nextMonth} aria-label="Next month">
+												<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+													<path d="M9 18l6-6-6-6" />
+												</svg>
+											</button>
+										</div>
+										
+										<div class="calendar-grid">
+											<div class="calendar-weekdays">
+												{#each DAYS_OF_WEEK as day}
+													<span class="weekday">{day}</span>
+												{/each}
+											</div>
+											<div class="calendar-days">
+												{#each calendarDays as day}
+													{#if day === null}
+														<span class="day-empty"></span>
+													{:else}
+														<button
+															type="button"
+															class="day-btn"
+															class:selected={isSelectedDate(day)}
+															class:today={isToday(day)}
+															onclick={() => selectDate(day)}
+														>
+															{day}
+														</button>
+													{/if}
+												{/each}
+											</div>
+										</div>
+										
+										<div class="calendar-footer">
+											<button type="button" class="calendar-today-btn" onclick={() => { form.week_of = new Date().toISOString().split('T')[0]; isCalendarOpen = false; }}>
+												Today
+											</button>
+										</div>
+									</div>
+								{/if}
+							</div>
+						</div>
+						<div class="form-group">
+							<label for="week_title">Week Title</label>
+							<input
+								id="week_title"
+								type="text"
+								bind:value={form.week_title}
+								placeholder="Auto-generated from date"
+								class="form-input"
+							/>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="video_title">Video Title *</label>
 						<input
-							id="week_of"
-							type="date"
-							bind:this={dateInput}
-							bind:value={form.week_of}
-							class="form-input date-input"
+							id="video_title"
+							type="text"
+							bind:value={form.video_title}
+							placeholder="Weekly Breakdown - Key Levels & Setups"
+							class="form-input"
 							required
 						/>
-						<button type="button" class="calendar-btn" onclick={openDatePicker} aria-label="Open calendar">
-							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-								<rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-								<line x1="16" y1="2" x2="16" y2="6"></line>
-								<line x1="8" y1="2" x2="8" y2="6"></line>
-								<line x1="3" y1="10" x2="21" y2="10"></line>
-							</svg>
-						</button>
 					</div>
-					<span class="date-display">{formatDate(form.week_of)}</span>
-				</div>
-				<div class="form-group">
-					<label for="week_title">Week Title</label>
-					<input
-						id="week_title"
-						type="text"
-						bind:value={form.week_title}
-						placeholder="Auto-generated from date"
-						class="form-input"
-					/>
-				</div>
-			</div>
 
-				<div class="form-group">
-					<label for="video_title">Video Title *</label>
-					<input
-						id="video_title"
-						type="text"
-						bind:value={form.video_title}
-						placeholder="Weekly Breakdown - Key Levels & Setups"
-						class="form-input"
-						required
-					/>
-				</div>
-
-				<div class="form-group">
-					<label for="description">Description</label>
-					<textarea
-						id="description"
-						bind:value={form.description}
-						placeholder="Brief overview of this week's content..."
-						class="form-textarea"
-						rows="3"
-					></textarea>
-				</div>
+					<div class="form-group">
+						<label for="description">Description</label>
+						<textarea
+							id="description"
+							bind:value={form.description}
+							placeholder="Brief overview of this week's content..."
+							class="form-textarea"
+							rows="3"
+						></textarea>
+					</div>
 
 					<div class="form-actions">
 						<div class="archive-notice">
@@ -885,12 +1032,12 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MODAL PORTAL - ICT 7 Grade z-index above ALL elements including navbar
+	   MODAL PORTAL - ICT 7 Grade z-index above ALL elements
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-portal {
 		position: fixed;
 		inset: 0;
-		z-index: 2147483647; /* Max z-index - above navbar, above everything */
+		z-index: 2147483647;
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -912,14 +1059,14 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MODAL CONTAINER - Compact ICT 7 Grade design
+	   MODAL CONTAINER
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-container {
 		position: relative;
 		background: #ffffff;
 		border-radius: 16px;
 		width: 100%;
-		max-width: 480px; /* Thinner modal */
+		max-width: 480px;
 		max-height: calc(100vh - 32px);
 		max-height: calc(100dvh - 32px);
 		overflow: hidden;
@@ -949,7 +1096,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MODE TABS - File Upload vs URL Paste
+	   MODE TABS
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.mode-tabs {
 		display: flex;
@@ -1244,7 +1391,7 @@
 		color: white;
 	}
 
-	/* Drop Zone Large Icon */
+	/* Drop Zone */
 	.upload-icon-large {
 		width: 56px;
 		height: 56px;
@@ -1270,14 +1417,12 @@
 		margin-top: 0.5rem;
 	}
 	
-	/* Form Divider */
 	.form-divider {
 		height: 1px;
 		background: #e2e8f0;
 		margin: 20px 0;
 	}
 
-	/* Browse Files Button */
 	.btn-browse-files {
 		display: inline-flex;
 		align-items: center;
@@ -1306,7 +1451,7 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   HEADER - Dark theme matching dashboard
+	   HEADER
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.modal-header {
 		display: flex;
@@ -1389,7 +1534,7 @@
 		padding: 20px;
 	}
 
-	/* Drop Zone - ICT 7 Compact */
+	/* Drop Zone */
 	.drop-zone {
 		display: flex;
 		flex-direction: column;
@@ -1424,6 +1569,12 @@
 		color: #334155;
 	}
 
+	.drop-hint {
+		margin: 0;
+		font-size: 13px;
+		color: #94a3b8;
+	}
+
 	.video-preview {
 		width: 100%;
 		aspect-ratio: 16/9;
@@ -1438,7 +1589,7 @@
 		height: 100%;
 	}
 
-	/* URL Input Section - ICT 7 Grade */
+	/* URL Input Section */
 	.url-input-section {
 		margin-bottom: 20px;
 	}
@@ -1462,47 +1613,200 @@
 		color: #94a3b8;
 	}
 
-	/* Date Picker - ICT 7 Grade */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   CUSTOM DATE PICKER - In-app calendar dropdown
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.date-picker-wrapper {
 		position: relative;
+	}
+
+	.date-picker-trigger {
 		display: flex;
 		align-items: center;
+		justify-content: space-between;
+		width: 100%;
+		padding: 12px 14px;
+		background: #f8fafc;
+		border: 2px solid #e2e8f0;
+		border-radius: 10px;
+		font-size: 14px;
+		font-weight: 500;
+		color: #1e293b;
+		cursor: pointer;
+		transition: all 0.15s ease;
+		text-align: left;
 	}
 
-	.date-input {
-		padding-right: 44px;
+	.date-picker-trigger:hover {
+		border-color: #cbd5e1;
 	}
 
-	.calendar-btn {
+	.date-picker-trigger:focus {
+		outline: none;
+		border-color: #143E59;
+		background: #fff;
+		box-shadow: 0 0 0 4px rgba(20, 62, 89, 0.1);
+	}
+
+	.date-picker-value {
+		flex: 1;
+	}
+
+	.date-picker-trigger svg {
+		color: #64748b;
+		flex-shrink: 0;
+	}
+
+	.calendar-dropdown {
 		position: absolute;
-		right: 4px;
-		top: 50%;
-		transform: translateY(-50%);
-		width: 36px;
-		height: 36px;
+		top: calc(100% + 8px);
+		left: 0;
+		z-index: 1000;
+		width: 280px;
+		background: #fff;
+		border: 1px solid #e2e8f0;
+		border-radius: 12px;
+		box-shadow: 
+			0 10px 40px -8px rgba(0, 0, 0, 0.2),
+			0 4px 12px rgba(0, 0, 0, 0.08);
+		animation: calendarSlideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		overflow: hidden;
+	}
+
+	@keyframes calendarSlideDown {
+		from {
+			opacity: 0;
+			transform: translateY(-8px) scale(0.96);
+		}
+		to {
+			opacity: 1;
+			transform: translateY(0) scale(1);
+		}
+	}
+
+	.calendar-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+		padding: 14px 12px;
+		background: #143E59;
+		color: #fff;
+	}
+
+	.calendar-month-year {
+		font-size: 15px;
+		font-weight: 600;
+	}
+
+	.calendar-nav-btn {
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #143E59;
+		width: 32px;
+		height: 32px;
+		background: rgba(255, 255, 255, 0.15);
 		border: none;
 		border-radius: 8px;
-		color: white;
+		color: #fff;
 		cursor: pointer;
-		transition: all 0.15s;
+		transition: all 0.15s ease;
 	}
 
-	.calendar-btn:hover {
+	.calendar-nav-btn:hover {
+		background: rgba(255, 255, 255, 0.25);
+	}
+
+	.calendar-grid {
+		padding: 12px;
+	}
+
+	.calendar-weekdays {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		gap: 4px;
+		margin-bottom: 8px;
+	}
+
+	.weekday {
+		text-align: center;
+		font-size: 11px;
+		font-weight: 600;
+		color: #94a3b8;
+		text-transform: uppercase;
+		padding: 4px 0;
+	}
+
+	.calendar-days {
+		display: grid;
+		grid-template-columns: repeat(7, 1fr);
+		gap: 4px;
+	}
+
+	.day-empty {
+		aspect-ratio: 1;
+	}
+
+	.day-btn {
+		aspect-ratio: 1;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: transparent;
+		border: none;
+		border-radius: 8px;
+		font-size: 13px;
+		font-weight: 500;
+		color: #334155;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.day-btn:hover {
+		background: #f1f5f9;
+		color: #0f172a;
+	}
+
+	.day-btn.today {
+		background: #e0f2fe;
+		color: #0369a1;
+		font-weight: 600;
+	}
+
+	.day-btn.selected {
+		background: #143E59;
+		color: #fff;
+		font-weight: 600;
+	}
+
+	.day-btn.selected:hover {
 		background: #0f2d42;
 	}
 
-	.date-display {
-		display: block;
-		margin-top: 6px;
-		font-size: 12px;
-		color: #64748b;
+	.calendar-footer {
+		display: flex;
+		justify-content: center;
+		padding: 12px;
+		border-top: 1px solid #f1f5f9;
 	}
 
-	/* Form */
+	.calendar-today-btn {
+		padding: 8px 20px;
+		background: #f1f5f9;
+		border: none;
+		border-radius: 8px;
+		font-size: 13px;
+		font-weight: 600;
+		color: #475569;
+		cursor: pointer;
+		transition: all 0.15s ease;
+	}
+
+	.calendar-today-btn:hover {
+		background: #e2e8f0;
+		color: #1e293b;
+	}
+
+	/* Form Layout */
 	.form-row {
 		display: grid;
 		grid-template-columns: repeat(2, 1fr);
