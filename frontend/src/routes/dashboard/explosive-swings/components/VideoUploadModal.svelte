@@ -14,6 +14,32 @@
 <script lang="ts">
 	import { weeklyVideoApi } from '$lib/api/room-content';
 
+	// Type definitions
+	interface BunnyProcessingResult {
+		status: 'ready' | 'failed' | number;
+		thumbnail_url?: string;
+		duration?: number;
+	}
+
+	interface BunnyCreateResponse {
+		video_guid: string;
+		embed_url?: string;
+		video_url?: string;
+	}
+
+	// Constants
+	const MAX_FILE_SIZE_GB = 5;
+	const MAX_FILE_SIZE_BYTES = MAX_FILE_SIZE_GB * 1024 * 1024 * 1024;
+	const ALLOWED_VIDEO_TYPES = [
+		'video/mp4',
+		'video/webm',
+		'video/quicktime',
+		'video/x-msvideo',
+		'video/x-matroska'
+	] as const;
+	const PROCESSING_POLL_INTERVAL_MS = 2000;
+	const PROCESSING_MAX_ATTEMPTS = 30;
+
 	interface Props {
 		isOpen: boolean;
 		roomSlug: string;
@@ -42,9 +68,12 @@
 	let generatedThumbnails = $state<string[]>([]);
 	let selectedThumbnailIndex = $state(0);
 	
-	// File validation
-	const allowedTypes = ['video/mp4', 'video/webm', 'video/quicktime', 'video/x-msvideo', 'video/x-matroska'];
-	const maxFileSize = 5 * 1024 * 1024 * 1024; // 5GB
+	// Abort control state
+	let activeXhr = $state<XMLHttpRequest | null>(null);
+	let processingAborted = $state(false);
+	
+	// A11y status announcements
+	let statusAnnouncement = $state('');
 
 	let form = $state({
 		week_of: getNextMonday(),
@@ -60,12 +89,27 @@
 	
 	// Lock body scroll when modal is open
 	$effect(() => {
-		if (isOpen) {
-			document.body.style.overflow = 'hidden';
+		if (!isOpen) return;
+		
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+		
+		return () => {
+			document.body.style.overflow = previousOverflow;
+		};
+	});
+	
+	// A11y: Announce upload status changes
+	$effect(() => {
+		if (uploadStatus === 'uploading') {
+			statusAnnouncement = `Uploading: ${uploadProgress}%`;
+		} else if (uploadStatus === 'processing') {
+			statusAnnouncement = 'Processing video on server...';
+		} else if (uploadStatus === 'complete') {
+			statusAnnouncement = 'Upload complete!';
 		} else {
-			document.body.style.overflow = '';
+			statusAnnouncement = '';
 		}
-		return () => { document.body.style.overflow = ''; };
 	});
 
 	function getNextMonday(): string {
@@ -92,21 +136,34 @@
 		return `${mins}:${secs.toString().padStart(2, '0')}`;
 	}
 	
-	// Bunny.net only - no platform detection needed
+	// Bunny.net only - strict URL validation
 	function isValidBunnyUrl(url: string): boolean {
-		if (!url || url.trim() === '') return false;
-		return url.includes('iframe.mediadelivery.net');
+		if (!url || typeof url !== 'string') return false;
+		try {
+			const parsed = new URL(url.trim());
+			return parsed.protocol === 'https:' && parsed.hostname === 'iframe.mediadelivery.net';
+		} catch {
+			return false;
+		}
 	}
 
 	const isFormValid = $derived(
-		form.video_url.trim() !== '' && 
-		form.video_title.trim() !== '' &&
+		isValidBunnyUrl(form.video_url) && 
+		form.video_title.trim().length >= 3 &&
 		form.week_of !== ''
 	);
 	
 	const canShowPreview = $derived(isValidBunnyUrl(form.video_url));
 
 	function resetForm() {
+		// Abort any active upload immediately
+		if (activeXhr) {
+			activeXhr.abort();
+			activeXhr = null;
+		}
+		processingAborted = true;
+		
+		// Reset form state
 		form = {
 			week_of: getNextMonday(),
 			week_title: '',
@@ -125,6 +182,9 @@
 		generatedThumbnails = [];
 		selectedThumbnailIndex = 0;
 		if (fileInput) fileInput.value = '';
+		
+		// Reset abort flag for next upload cycle
+		processingAborted = false;
 	}
 	
 	function formatFileSize(bytes: number): string {
@@ -137,22 +197,29 @@
 	function handleFileSelect(file: File) {
 		errorMessage = '';
 		
-		if (!allowedTypes.includes(file.type)) {
-			errorMessage = 'Invalid file type. Upload MP4, WebM, QuickTime, AVI, or MKV.';
+		if (!ALLOWED_VIDEO_TYPES.includes(file.type as typeof ALLOWED_VIDEO_TYPES[number])) {
+			errorMessage = `Invalid file type. Upload ${ALLOWED_VIDEO_TYPES.map(t => t.split('/')[1].toUpperCase()).join(', ')}.`;
 			return;
 		}
 		
-		if (file.size > maxFileSize) {
-			errorMessage = 'File too large. Maximum 5GB.';
+		if (file.size > MAX_FILE_SIZE_BYTES) {
+			errorMessage = `File too large. Maximum ${MAX_FILE_SIZE_GB}GB.`;
+			return;
+		}
+		
+		if (file.size === 0) {
+			errorMessage = 'File is empty.';
 			return;
 		}
 		
 		videoFile = file;
 		if (!form.video_title) {
-			form.video_title = file.name.replace(/\.[^/.]+$/, '').replace(/[-_]/g, ' ');
+			form.video_title = file.name
+				.replace(/\.[^/.]+$/, '')
+				.replace(/[-_]/g, ' ')
+				.trim();
 		}
 		
-		// Auto-start upload immediately
 		startBunnyUpload();
 	}
 	
@@ -172,6 +239,7 @@
 		
 		errorMessage = '';
 		uploadStatus = 'preparing';
+		processingAborted = false;
 		
 		try {
 			// Step 1: Create video entry on Bunny.net
@@ -186,55 +254,75 @@
 			
 			if (!createResponse.ok) {
 				const errorData = await createResponse.json().catch(() => ({}));
-				throw new Error(errorData.error || 'Failed to create video entry');
+				throw new Error(errorData.error || `Server error: ${createResponse.status}`);
 			}
 			
-			const createData = await createResponse.json();
-			const { video_guid, embed_url, video_url } = createData;
+			const createData: BunnyCreateResponse = await createResponse.json();
 			
-			if (!video_guid) {
-				throw new Error('Failed to get video GUID from server');
+			if (!createData.video_guid) {
+				throw new Error('Server did not return video GUID');
 			}
 			
-			form.video_guid = video_guid;
-			form.video_url = embed_url || video_url || '';
+			form.video_guid = createData.video_guid;
+			form.video_url = createData.embed_url || createData.video_url || '';
 			
-			// Step 2: Upload file to Bunny.net via our proxy
+			// Check if aborted during API call
+			if (processingAborted) {
+				throw new Error('Upload cancelled');
+			}
+			
+			// Step 2: Upload file to Bunny.net via proxy
 			uploadStatus = 'uploading';
-			await uploadFileToBunny(video_guid, videoFile);
+			await uploadFileToBunny(createData.video_guid, videoFile);
+			
+			// Check if aborted during upload
+			if (processingAborted) {
+				throw new Error('Upload cancelled');
+			}
 			
 			// Step 3: Wait for processing and get thumbnails
 			uploadStatus = 'processing';
-			const finalData = await waitForBunnyProcessing(video_guid);
+			const finalData = await waitForBunnyProcessing(createData.video_guid);
 			
-			// Set thumbnail and duration from processed video
+			// Set thumbnail from processed video
 			if (finalData.thumbnail_url) {
 				form.thumbnail_url = finalData.thumbnail_url;
-				// Bunny generates multiple thumbnails
-				generatedThumbnails = [
-					finalData.thumbnail_url,
-					finalData.thumbnail_url.replace('thumbnail.jpg', 'thumbnail_1.jpg'),
-					finalData.thumbnail_url.replace('thumbnail.jpg', 'thumbnail_2.jpg'),
-					finalData.thumbnail_url.replace('thumbnail.jpg', 'thumbnail_3.jpg')
-				];
+				
+				// Generate thumbnail variants if URL follows expected pattern
+				if (finalData.thumbnail_url.includes('thumbnail.jpg')) {
+					generatedThumbnails = [
+						finalData.thumbnail_url,
+						finalData.thumbnail_url.replace('thumbnail.jpg', 'thumbnail_1.jpg'),
+						finalData.thumbnail_url.replace('thumbnail.jpg', 'thumbnail_2.jpg'),
+						finalData.thumbnail_url.replace('thumbnail.jpg', 'thumbnail_3.jpg')
+					];
+				} else {
+					generatedThumbnails = [finalData.thumbnail_url];
+				}
 			}
 			
-			if (finalData.duration) {
-				const mins = Math.floor(finalData.duration / 60);
-				const secs = Math.floor(finalData.duration % 60);
-				form.duration = `${mins}:${secs.toString().padStart(2, '0')}`;
+			// Set duration from processed video
+			if (finalData.duration && finalData.duration > 0) {
+				form.duration = formatDuration(finalData.duration);
 			}
 			
 			uploadStatus = 'complete';
+			
 		} catch (err) {
-			errorMessage = err instanceof Error ? err.message : 'Upload failed';
-			uploadStatus = 'idle';
+			if (err instanceof Error && err.message.includes('cancelled')) {
+				// Silent abort — user closed modal
+				uploadStatus = 'idle';
+			} else {
+				errorMessage = err instanceof Error ? err.message : 'Upload failed. Please try again.';
+				uploadStatus = 'idle';
+			}
 		}
 	}
 	
 	async function uploadFileToBunny(videoGuid: string, file: File): Promise<void> {
 		return new Promise((resolve, reject) => {
 			const xhr = new XMLHttpRequest();
+			activeXhr = xhr;
 			
 			xhr.upload.addEventListener('progress', (event) => {
 				if (event.lengthComputable) {
@@ -246,44 +334,82 @@
 				if (xhr.status >= 200 && xhr.status < 300) {
 					resolve();
 				} else {
-					reject(new Error(`Upload failed with status ${xhr.status}`));
+					reject(new Error(`Upload failed: ${xhr.status} ${xhr.statusText}`));
 				}
 			});
 			
-			xhr.addEventListener('error', () => reject(new Error('Network error during upload')));
-			xhr.addEventListener('abort', () => reject(new Error('Upload aborted')));
+			xhr.addEventListener('error', () => {
+				reject(new Error('Network error during upload. Check your connection.'));
+			});
 			
-			// Use room-specific upload endpoint
-			const proxyUrl = `/api/weekly-video/${roomSlug}/upload?video_guid=${videoGuid}`;
+			xhr.addEventListener('abort', () => {
+				reject(new Error('Upload cancelled'));
+			});
+			
+			xhr.addEventListener('loadend', () => {
+				activeXhr = null;
+			});
+			
+			const proxyUrl = `/api/weekly-video/${roomSlug}/upload?video_guid=${encodeURIComponent(videoGuid)}`;
 			xhr.open('PUT', proxyUrl, true);
-			xhr.setRequestHeader('Content-Type', file.type);
+			xhr.setRequestHeader('Content-Type', file.type || 'application/octet-stream');
 			xhr.withCredentials = true;
 			xhr.send(file);
 		});
 	}
 	
-	async function waitForBunnyProcessing(videoGuid: string, maxAttempts = 30): Promise<any> {
-		for (let i = 0; i < maxAttempts; i++) {
-			await new Promise((resolve) => setTimeout(resolve, 2000));
+	async function waitForBunnyProcessing(videoGuid: string): Promise<BunnyProcessingResult> {
+		for (let attempt = 0; attempt < PROCESSING_MAX_ATTEMPTS; attempt++) {
+			// Check abort flag before each poll
+			if (processingAborted) {
+				throw new Error('Processing cancelled');
+			}
+			
+			await new Promise((resolve) => setTimeout(resolve, PROCESSING_POLL_INTERVAL_MS));
+			
+			// Check again after wait
+			if (processingAborted) {
+				throw new Error('Processing cancelled');
+			}
 			
 			try {
-				const response = await fetch(`/api/weekly-video/${roomSlug}/upload/status/${videoGuid}`, {
-					credentials: 'include'
-				});
-				if (response.ok) {
-					const data = await response.json();
-					if (data.status === 'ready' || data.status === 4) {
-						return data;
-					}
-					if (data.status === 'failed' || data.status === 5) {
-						throw new Error('Video processing failed');
+				const response = await fetch(
+					`/api/weekly-video/${roomSlug}/upload/status/${encodeURIComponent(videoGuid)}`,
+					{ credentials: 'include' }
+				);
+				
+				if (!response.ok) {
+					// Non-2xx status — continue polling, server might be busy
+					continue;
+				}
+				
+				const data: BunnyProcessingResult = await response.json();
+				
+				// Bunny.net status codes: 4 = ready, 5 = failed
+				if (data.status === 'ready' || data.status === 4) {
+					return data;
+				}
+				
+				if (data.status === 'failed' || data.status === 5) {
+					throw new Error('Video processing failed on Bunny.net. Try uploading again.');
+				}
+				
+				// Any other status — continue polling
+				
+			} catch (err) {
+				// Rethrow cancellation and explicit failures
+				if (err instanceof Error) {
+					if (err.message.includes('cancelled') || err.message.includes('failed')) {
+						throw err;
 					}
 				}
-			} catch (e) {
-				// Continue waiting
+				// Network errors — continue polling
 			}
 		}
-		return {};
+		
+		// Timeout after all attempts
+		const totalSeconds = (PROCESSING_MAX_ATTEMPTS * PROCESSING_POLL_INTERVAL_MS) / 1000;
+		throw new Error(`Video processing timed out after ${totalSeconds} seconds. Please try again.`);
 	}
 	
 	function selectThumbnail(index: number) {
@@ -292,14 +418,26 @@
 	}
 	
 	function clearFile() {
+		// Abort active upload if any
+		if (activeXhr) {
+			activeXhr.abort();
+			activeXhr = null;
+		}
+		processingAborted = true;
+		
 		videoFile = null;
 		uploadProgress = 0;
 		uploadStatus = 'idle';
 		generatedThumbnails = [];
+		selectedThumbnailIndex = 0;
 		form.video_url = '';
+		form.video_guid = '';
 		form.thumbnail_url = '';
 		form.duration = '';
 		if (fileInput) fileInput.value = '';
+		
+		// Reset for next upload
+		processingAborted = false;
 	}
 	
 	function getUploadStatusText(): string {
@@ -342,6 +480,13 @@
 	}
 
 	function handleClose() {
+		// Abort any in-progress operations
+		if (activeXhr) {
+			activeXhr.abort();
+			activeXhr = null;
+		}
+		processingAborted = true;
+		
 		resetForm();
 		onClose();
 	}
@@ -369,7 +514,6 @@
 		e.stopPropagation();
 		isDragOver = false;
 		
-		// Check for files first (file upload mode)
 		if (uploadMode === 'file') {
 			const files = e.dataTransfer?.files;
 			if (files && files.length > 0) {
@@ -378,15 +522,20 @@
 			}
 		}
 		
-		// Check for URL in dropped data (url mode)
+		// URL mode — validate dropped URL
 		const url = e.dataTransfer?.getData('text/plain');
-		if (url && url.includes('iframe.mediadelivery.net')) {
-			form.video_url = url;
+		if (url && isValidBunnyUrl(url)) {
+			form.video_url = url.trim();
 		}
 	}
 </script>
 
 {#if isOpen}
+	<!-- Screen reader status announcements -->
+	<div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
+		{statusAnnouncement}
+	</div>
+	
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<!-- Portal-style modal - renders above everything with backdrop -->
 	<div 
@@ -570,7 +719,7 @@
 									</div>
 									<p class="drop-text">Drag and drop video here</p>
 									<p class="drop-hint">or use the button below</p>
-									<span class="supported-formats">MP4, WebM, QuickTime, AVI, MKV (max 5GB)</span>
+									<span class="supported-formats">MP4, WebM, QuickTime, AVI, MKV (max {MAX_FILE_SIZE_GB}GB)</span>
 									
 									<!-- Browse Files Button -->
 									<button 
@@ -1555,5 +1704,18 @@
 			flex: 1;
 			justify-content: center;
 		}
+	}
+
+	/* Screen reader only */
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
 	}
 </style>
