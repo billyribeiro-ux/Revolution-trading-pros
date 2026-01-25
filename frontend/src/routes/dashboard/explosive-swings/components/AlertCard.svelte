@@ -5,27 +5,40 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays a single alert with type-specific styling and interactions
-	 * @version 4.1.0 - Visual Polish Pass
+	 * @version 5.0.0 - Fixed Svelte 5 syntax, Props interface aligned with +page.svelte
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 */
 	import type { Alert } from '../types';
-	import { formatPercent, formatPrice, formatRelativeTime } from '../utils/formatters';
+	import { formatPercent, formatPrice } from '../utils/formatters';
 
 	interface Props {
 		alert: Alert;
+		index?: number;
 		isAdmin?: boolean;
+		isNotesExpanded?: boolean;
+		isCopied?: boolean;
+		onToggleNotes?: (id: number) => void;
+		onCopy?: (alert: Alert) => void;
 		onViewTradePlan?: (alert: Alert) => void;
 		onEdit?: (alert: Alert) => void;
-		onDelete?: (alertId: string) => void;
+		onDelete?: (alertId: number) => void;
 	}
 
-	const { alert, isAdmin = false, onViewTradePlan, onEdit, onDelete }: Props = $props();
+	const {
+		alert,
+		index = 0,
+		isAdmin = false,
+		isNotesExpanded = false,
+		isCopied = false,
+		onToggleNotes,
+		onCopy,
+		onViewTradePlan,
+		onEdit,
+		onDelete
+	}: Props = $props();
 
-	let isNotesExpanded = $state(false);
-	let isCopied = $state(false);
-
-	// Get config based on alert type
-	const alertConfig = $derived(() => {
+	// Get config based on alert type - Svelte 5 $derived.by() for complex computations
+	const alertConfig = $derived.by(() => {
 		switch (alert.type) {
 			case 'ENTRY':
 				return {
@@ -63,26 +76,17 @@
 		}
 	});
 
-	function toggleNotes() {
-		isNotesExpanded = !isNotesExpanded;
+	function handleToggleNotes() {
+		onToggleNotes?.(alert.id);
 	}
 
-	async function copyToClipboard() {
-		const text = `${alert.ticker} ${alert.type}\n${alert.title}\n${alert.description}${alert.tosString ? '\nTOS: ' + alert.tosString : ''}`;
-		try {
-			await navigator.clipboard.writeText(text);
-			isCopied = true;
-			setTimeout(() => {
-				isCopied = false;
-			}, 2000);
-		} catch (err) {
-			console.error('Failed to copy:', err);
-		}
+	function handleCopy() {
+		onCopy?.(alert);
 	}
 </script>
 
-<article 
-	class="alert-card {alertConfig().borderColor} {alertConfig().bgClass}"
+<article
+	class="alert-card {alertConfig.borderColor} {alertConfig.bgClass}"
 	class:is-new={alert.isNew}
 	class:has-notes-open={isNotesExpanded}
 	aria-label="{alert.ticker} {alert.type} alert"
@@ -98,17 +102,17 @@
 	<!-- Header Row -->
 	<div class="alert-header">
 		<div class="header-left">
-			<span class="type-badge {alertConfig().badgeClass}">
-				{alertConfig().badgeText}
+			<span class="type-badge {alertConfig.badgeClass}">
+				{alertConfig.badgeText}
 			</span>
 			<span class="ticker">{alert.ticker}</span>
-			<span class="timestamp">{formatRelativeTime(alert.timestamp)}</span>
+			<span class="timestamp">{alert.time}</span>
 		</div>
 		
-		<button 
+		<button
 			class="notes-toggle"
 			class:expanded={isNotesExpanded}
-			onclick={toggleNotes}
+			onclick={handleToggleNotes}
 			aria-expanded={isNotesExpanded}
 			aria-controls="notes-{alert.id}"
 		>
@@ -123,7 +127,7 @@
 	<h3 class="alert-title">{alert.title}</h3>
 
 	<!-- Description -->
-	<p class="alert-description">{alert.description}</p>
+	<p class="alert-description">{alert.message}</p>
 
 	<!-- Price Info (for ENTRY alerts) -->
 	{#if alert.type === 'ENTRY' && (alert.entryPrice || alert.targetPrice || alert.stopPrice)}
@@ -161,7 +165,7 @@
 	{#if alert.tosString}
 		<div class="tos-container">
 			<code class="tos-string">{alert.tosString}</code>
-			<button class="tos-copy" onclick={copyToClipboard} aria-label="Copy ThinkOrSwim string">
+			<button class="tos-copy" onclick={handleCopy} aria-label="Copy ThinkOrSwim string">
 				{#if isCopied}
 					<svg viewBox="0 0 20 20" fill="currentColor">
 						<path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />
@@ -178,7 +182,7 @@
 
 	<!-- Actions Row -->
 	<div class="actions-row">
-		<button class="action-btn copy-btn" class:copied={isCopied} onclick={copyToClipboard}>
+		<button class="action-btn copy-btn" class:copied={isCopied} onclick={handleCopy}>
 			{#if isCopied}
 				<svg viewBox="0 0 20 20" fill="currentColor">
 					<path fill-rule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clip-rule="evenodd" />

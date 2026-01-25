@@ -84,20 +84,29 @@ export interface ActivePosition {
 export type AlertType = 'ENTRY' | 'UPDATE' | 'EXIT';
 
 export interface Alert {
-	/** Unique identifier */
-	id: string;
+	/** Unique identifier - number from API, supports both for compatibility */
+	id: number;
 	/** Stock ticker symbol (uppercase) */
 	ticker: string;
 	/** Alert type determines visual styling */
 	type: AlertType;
 	/** Alert title/headline */
 	title: string;
-	/** Detailed alert description */
-	description: string;
-	/** When the alert was published */
-	timestamp: Date;
+	/** Alert message (API format) */
+	message: string;
+	/** Formatted time string (API format) */
+	time: string;
 	/** True if < 30 minutes old (triggers pulse animation) */
 	isNew: boolean;
+	/** Additional notes or context */
+	notes?: string;
+	/** ThinkOrSwim share string */
+	tosString?: string;
+	// Legacy fields for backward compatibility:
+	/** @deprecated Use message instead */
+	description?: string;
+	/** @deprecated Use time instead */
+	timestamp?: Date;
 	/** Entry price for ENTRY alerts */
 	entryPrice?: number;
 	/** Target price for ENTRY alerts */
@@ -106,14 +115,10 @@ export interface Alert {
 	stopPrice?: number;
 	/** Result percentage for EXIT alerts */
 	resultPercent?: number;
-	/** Additional notes or context */
-	notes?: string;
 	/** Whether this alert has an associated video */
 	hasVideo?: boolean;
 	/** URL to the video explanation */
 	videoUrl?: string;
-	/** ThinkOrSwim share string */
-	tosString?: string;
 }
 
 export type AlertFilterType = 'all' | 'entries' | 'updates' | 'exits';

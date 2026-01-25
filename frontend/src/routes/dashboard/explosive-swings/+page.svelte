@@ -14,7 +14,7 @@
 	// Page Components
 	import PerformanceSummary from './components/PerformanceSummary.svelte';
 	import WeeklyHero from './components/WeeklyHero.svelte';
-	import AlertCard from '$lib/components/dashboard/alerts/AlertCard.svelte';
+	import AlertCard from './components/AlertCard.svelte';
 	import AlertFilters from '$lib/components/dashboard/alerts/AlertFilters.svelte';
 	import SidebarComponent from './components/Sidebar.svelte';
 
