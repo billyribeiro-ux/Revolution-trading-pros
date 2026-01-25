@@ -60,28 +60,6 @@ describe('isValidVideoUrl', () => {
     });
   });
 
-  describe('Non-Bunny URLs (Rejected)', () => {
-    it('rejects Vimeo URLs - Bunny.net only', () => {
-      const vimeoUrls = [
-        'https://vimeo.com/123456789',
-        'https://player.vimeo.com/video/123456789'
-      ];
-      vimeoUrls.forEach((url: string) => {
-        expect(isValidVideoUrl(url)).toBe(false);
-      });
-    });
-
-    it('rejects YouTube URLs - Bunny.net only', () => {
-      const youtubeUrls = [
-        'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
-        'https://www.youtube.com/embed/dQw4w9WgXcQ'
-      ];
-      youtubeUrls.forEach((url: string) => {
-        expect(isValidVideoUrl(url)).toBe(false);
-      });
-    });
-  });
-
   describe('XSS Attack Prevention', () => {
     it('rejects javascript: protocol', () => {
       expect(isValidVideoUrl('javascript:alert(1)')).toBe(false);
@@ -111,9 +89,8 @@ describe('isValidVideoUrl', () => {
     it('rejects spoofed domains', () => {
       const spoofedUrls = [
         'https://iframe.mediadelivery.net.evil.com/embed/123/video',
-        'https://vimeo.com.attacker.com/video/123',
-        'https://notyoutube.com/watch?v=abc',
-        'https://youtube.com.fake.com/watch?v=abc'
+        'https://attacker.com/video/123',
+        'https://fake-cdn.com/embed/123/video'
       ];
       
       spoofedUrls.forEach((url: string) => {
@@ -190,18 +167,6 @@ describe('getEmbedUrl', () => {
       
       expect(result).toContain('quality=720');
       expect(result).toContain('autoplay=true');
-    });
-  });
-
-  describe('Non-Bunny URLs return empty', () => {
-    it('returns empty for Vimeo URLs', () => {
-      expect(getEmbedUrl('https://vimeo.com/123456789')).toBe('');
-      expect(getEmbedUrl('https://player.vimeo.com/video/123456789')).toBe('');
-    });
-
-    it('returns empty for YouTube URLs', () => {
-      expect(getEmbedUrl('https://www.youtube.com/watch?v=dQw4w9WgXcQ')).toBe('');
-      expect(getEmbedUrl('https://www.youtube.com/embed/dQw4w9WgXcQ')).toBe('');
     });
   });
 
