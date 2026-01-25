@@ -33,7 +33,7 @@
 	});
 
 	// Calculate P&L preview
-	const pnlPreview = $derived(() => {
+	const pnlPreview = $derived.by(() => {
 		if (!position || !form.exit_price) return null;
 		const exitPrice = parseFloat(form.exit_price);
 		if (isNaN(exitPrice) || !position.entryPrice) return null;
@@ -42,31 +42,28 @@
 		const pnlPercent = (priceDiff / position.entryPrice) * 100;
 		const isProfit = priceDiff >= 0;
 		
-		return {
-			priceDiff,
-			pnlPercent,
-			isProfit,
-			result: isProfit ? 'WIN' : 'LOSS'
-		};
+		return { priceDiff, pnlPercent, isProfit, result: isProfit ? 'WIN' : 'LOSS' };
 	});
 
 	// Focus trap and body scroll lock
 	$effect(() => {
-		if (isOpen) {
-			document.body.style.overflow = 'hidden';
-			// Reset form when opening
-			form = {
-				exit_price: '',
-				exit_date: new Date().toISOString().split('T')[0],
-				notes: position?.notes || ''
-			};
-			errorMessage = '';
-			setTimeout(() => modalRef?.focus(), 50);
-		} else {
-			document.body.style.overflow = '';
-		}
+		if (!isOpen) return;
+		
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+		
+		// Reset form when opening
+		form = {
+			exit_price: '',
+			exit_date: new Date().toISOString().split('T')[0],
+			notes: position?.notes || ''
+		};
+		errorMessage = '';
+		
+		requestAnimationFrame(() => modalRef?.focus());
+		
 		return () => {
-			document.body.style.overflow = '';
+			document.body.style.overflow = previousOverflow;
 		};
 	});
 
@@ -114,7 +111,17 @@
 				return;
 			}
 
-			const trade = tradesData.data[0];
+			// Match on ticker AND entry price to avoid closing wrong position
+			const trade = tradesData.data.find((t: any) => 
+				t.ticker === position.ticker && 
+				position.entryPrice !== null &&
+				Math.abs(t.entry_price - position.entryPrice) < 0.01
+			) || tradesData.data[0];  // Fallback to first if no exact match
+			
+			if (!trade) {
+				errorMessage = 'Could not find matching trade to close';
+				return;
+			}
 			
 			// Close the trade
 			const closeResponse = await fetch(`/api/trades/${roomSlug}/${trade.id}`, {
@@ -240,8 +247,8 @@
 				</div>
 
 				<!-- P&L Preview -->
-				{#if pnlPreview()}
-					{@const preview = pnlPreview()!}
+				{#if pnlPreview}
+					{@const preview = pnlPreview}
 					<div class="pnl-preview" class:profit={preview.isProfit} class:loss={!preview.isProfit}>
 						<div class="pnl-result">{preview.result}</div>
 						<div class="pnl-details">
@@ -645,6 +652,17 @@
 	.btn-close-position:disabled {
 		opacity: 0.6;
 		cursor: not-allowed;
+	}
+
+	.btn-cancel:focus-visible,
+	.btn-close-position:focus-visible {
+		outline: 2px solid #143E59;
+		outline-offset: 2px;
+	}
+
+	.modal-close:focus-visible {
+		outline: 2px solid #fff;
+		outline-offset: 2px;
 	}
 
 	.spinner {
