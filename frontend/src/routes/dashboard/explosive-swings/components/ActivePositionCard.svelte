@@ -5,8 +5,8 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Displays an active position with entry, targets, stop, and progress
-	 * @version 5.0.0 - Added close position click handler
-	 * @standards Apple Principal Engineer ICT 7+ Standards - Jan 2026
+	 * @version 6.0.0 - Nuclear Refactor: Design Tokens + Accessibility
+	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import type { ActivePosition } from '../types';
 	import { formatPercent, formatPrice } from '../utils/formatters';
@@ -19,102 +19,135 @@
 
 	const { position, isAdmin = false, onClose }: Props = $props();
 
-	function handleClick() {
-		if (isAdmin && onClose && position.status === 'ACTIVE') {
-			onClose(position);
-		}
+	function handleClosePosition(e: MouseEvent) {
+		e.stopPropagation();
+		onClose?.(position);
 	}
 
-	function handleKeyDown(e: KeyboardEvent) {
-		if ((e.key === 'Enter' || e.key === ' ') && isAdmin && onClose && position.status === 'ACTIVE') {
-			e.preventDefault();
-			onClose(position);
-		}
-	}
-
-	const isClickable = $derived(isAdmin && onClose && position.status === 'ACTIVE');
-
-	// Determine card accent based on status and P&L
+	// Status configuration using design tokens
 	const statusConfig = $derived.by(() => {
 		switch (position.status) {
 			case 'ENTRY':
-				return { label: 'ENTRY', statusClass: 'status-entry', badgeClass: 'badge-entry' };
+				return {
+					label: 'ENTRY',
+					borderColor: 'var(--color-entry)',
+					bgColor: 'var(--color-entry-bg)',
+					badgeBg: 'var(--color-entry-bg)',
+					badgeText: 'var(--color-entry-text)',
+					badgeBorder: 'var(--color-entry-border)'
+				};
 			case 'WATCHING':
-				return { label: 'WATCHING', statusClass: 'status-watching', badgeClass: 'badge-watching' };
+				return {
+					label: 'WATCHING',
+					borderColor: 'var(--color-watching)',
+					bgColor: 'var(--color-watching-bg)',
+					badgeBg: 'var(--color-watching-bg)',
+					badgeText: 'var(--color-watching-text)',
+					badgeBorder: 'var(--color-watching-border)'
+				};
 			case 'ACTIVE':
-				if (position.unrealizedPercent !== null && position.unrealizedPercent >= 0) {
-					return { label: 'ACTIVE', statusClass: 'status-active-profit', badgeClass: 'badge-active-profit' };
-				} else {
-					return { label: 'ACTIVE', statusClass: 'status-active-loss', badgeClass: 'badge-active-loss' };
-				}
+				const isProfit = position.unrealizedPercent !== null && position.unrealizedPercent >= 0;
+				return isProfit
+					? {
+							label: 'ACTIVE',
+							borderColor: 'var(--color-profit)',
+							bgColor: 'var(--color-profit-bg-subtle)',
+							badgeBg: 'var(--color-profit-bg)',
+							badgeText: 'var(--color-profit)',
+							badgeBorder: 'var(--color-profit-border)'
+						}
+					: {
+							label: 'ACTIVE',
+							borderColor: 'var(--color-loss)',
+							bgColor: 'var(--color-loss-bg-subtle)',
+							badgeBg: 'var(--color-loss-bg)',
+							badgeText: 'var(--color-loss)',
+							badgeBorder: 'var(--color-loss-border)'
+						};
 			default:
-				return { label: position.status, statusClass: 'status-default', badgeClass: 'badge-default' };
+				return {
+					label: position.status,
+					borderColor: 'var(--color-border-strong)',
+					bgColor: 'var(--color-bg-card)',
+					badgeBg: 'var(--color-bg-subtle)',
+					badgeText: 'var(--color-text-secondary)',
+					badgeBorder: 'var(--color-border-default)'
+				};
 		}
 	});
 
-	const unrealizedColorClass = $derived(
+	const pnlColorVar = $derived(
 		position.unrealizedPercent === null
-			? 'text-slate-500'
+			? 'var(--color-text-muted)'
 			: position.unrealizedPercent >= 0
-				? 'text-emerald-600'
-				: 'text-red-600'
+				? 'var(--color-profit)'
+				: 'var(--color-loss)'
 	);
 
-	const progressBarStyle = $derived(
-		position.unrealizedPercent === null
-			? 'background: #cbd5e1'
-			: position.unrealizedPercent >= 0
-				? 'background: linear-gradient(to right, #34d399, #10b981)'
-				: 'background: linear-gradient(to right, #f87171, #ef4444)'
+	const progressGradient = $derived(
+		position.unrealizedPercent === null || position.unrealizedPercent < 0
+			? 'linear-gradient(to right, var(--color-loss-light), var(--color-loss))'
+			: 'linear-gradient(to right, var(--color-profit-light), var(--color-profit))'
 	);
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<!-- SEMANTIC HTML: <article> for grouping, explicit <button> for close action -->
 <article 
-	class="position-card {statusConfig.statusClass}"
-	class:clickable={isClickable}
-	aria-label="{position.ticker} position{isClickable ? ' - Click to close' : ''}"
-	role={isClickable ? 'button' : undefined}
-	tabindex={isClickable ? 0 : -1}
-	onclick={handleClick}
-	onkeydown={handleKeyDown}
+	class="position-card"
+	style="
+		--card-border-color: {statusConfig.borderColor};
+		--card-bg-color: {statusConfig.bgColor};
+	"
+	aria-labelledby="position-{position.id}-title"
 >
 	<!-- Header Row -->
-	<div class="card-header">
-		<h3 class="ticker">{position.ticker}</h3>
-		<span class="status-badge {statusConfig.badgeClass}">
+	<header class="card-header">
+		<h3 id="position-{position.id}-title" class="ticker">{position.ticker}</h3>
+		<span 
+			class="status-badge"
+			style="
+				background: {statusConfig.badgeBg};
+				color: {statusConfig.badgeText};
+				border-color: {statusConfig.badgeBorder};
+			"
+		>
 			{statusConfig.label}
 		</span>
-	</div>
+	</header>
 
-	<div class="divider"></div>
+	<div class="divider" aria-hidden="true"></div>
 
 	<!-- Price Information -->
 	<div class="price-section">
 		{#if position.status === 'WATCHING' && position.entryZone}
-			<div class="price-row">
-				<span class="price-label">Entry Zone:</span>
-				<span class="price-value">{formatPrice(position.entryZone.low)} - {formatPrice(position.entryZone.high)}</span>
-			</div>
-			<div class="price-row">
-				<span class="price-label">Current:</span>
-				<span class="price-value">{formatPrice(position.currentPrice)}</span>
-			</div>
+			<dl class="price-grid">
+				<div class="price-item">
+					<dt>Entry Zone</dt>
+					<dd>{formatPrice(position.entryZone.low)} – {formatPrice(position.entryZone.high)}</dd>
+				</div>
+				<div class="price-item">
+					<dt>Current</dt>
+					<dd>{formatPrice(position.currentPrice)}</dd>
+				</div>
+			</dl>
 		{:else if position.entryPrice}
-			<div class="price-row inline">
-				<span class="price-label">Entry:</span>
-				<span class="price-value">{formatPrice(position.entryPrice)}</span>
-				<span class="separator">|</span>
-				<span class="price-label">Now:</span>
-				<span class="price-value">{formatPrice(position.currentPrice)}</span>
-			</div>
+			<dl class="price-grid inline">
+				<div class="price-item">
+					<dt>Entry</dt>
+					<dd>{formatPrice(position.entryPrice)}</dd>
+				</div>
+				<div class="price-item">
+					<dt>Now</dt>
+					<dd>{formatPrice(position.currentPrice)}</dd>
+				</div>
+			</dl>
 		{/if}
 	</div>
 
 	<!-- Unrealized P&L -->
 	{#if position.unrealizedPercent !== null}
 		<div class="unrealized-pnl">
-			<span class="unrealized-value {unrealizedColorClass}">
+			<span class="unrealized-value" style="color: {pnlColorVar}">
 				{formatPercent(position.unrealizedPercent)}
 			</span>
 			<span class="unrealized-label">unrealized</span>
@@ -127,20 +160,24 @@
 	{/if}
 
 	<!-- Targets and Stop -->
-	<div class="targets-container">
+	<dl class="targets-list">
 		{#each position.targets as target}
 			<div class="target-row">
-				<span class="target-label">{target.label}:</span>
-				<span class="target-price">{formatPrice(target.price)}</span>
-				<span class="target-percent positive">({formatPercent(target.percentFromEntry)})</span>
+				<dt>{target.label}</dt>
+				<dd>
+					<span class="target-price">{formatPrice(target.price)}</span>
+					<span class="target-percent profit">{formatPercent(target.percentFromEntry)}</span>
+				</dd>
 			</div>
 		{/each}
-		<div class="target-row stop">
-			<span class="target-label">Stop:</span>
-			<span class="target-price stop-price">{formatPrice(position.stopLoss.price)}</span>
-			<span class="target-percent negative">({formatPercent(position.stopLoss.percentFromEntry)})</span>
+		<div class="target-row stop-row">
+			<dt>Stop</dt>
+			<dd>
+				<span class="target-price stop">{formatPrice(position.stopLoss.price)}</span>
+				<span class="target-percent loss">{formatPercent(position.stopLoss.percentFromEntry)}</span>
+			</dd>
 		</div>
-	</div>
+	</dl>
 
 	<!-- Progress Bar -->
 	{#if position.status !== 'WATCHING' && position.targets.length > 0}
@@ -151,95 +188,66 @@
 				aria-valuenow={position.progressToTarget1} 
 				aria-valuemin={0} 
 				aria-valuemax={100}
-				aria-label="Progress to Target 1"
+				aria-label="Progress to Target 1: {position.progressToTarget1.toFixed(0)}%"
 			>
 				<div 
 					class="progress-fill" 
-					style="{progressBarStyle}; width: {Math.min(100, Math.max(0, position.progressToTarget1))}%"
+					style="
+						background: {progressGradient}; 
+						width: {Math.min(100, Math.max(0, position.progressToTarget1))}%;
+					"
 				></div>
 			</div>
-			<span class="progress-text">{position.progressToTarget1.toFixed(0)}% to T1</span>
+			<span class="progress-text" aria-hidden="true">
+				{position.progressToTarget1.toFixed(0)}% to T1
+			</span>
+		</div>
+	{/if}
+
+	<!-- Admin Close Button - EXPLICIT, not hidden behind card click -->
+	{#if isAdmin && onClose && position.status === 'ACTIVE'}
+		<div class="card-actions">
+			<button 
+				type="button"
+				class="close-position-btn"
+				onclick={handleClosePosition}
+				aria-label="Close {position.ticker} position"
+			>
+				<svg 
+					viewBox="0 0 24 24" 
+					fill="none" 
+					stroke="currentColor" 
+					stroke-width="2" 
+					width="16" 
+					height="16"
+					aria-hidden="true"
+				>
+					<path d="M18 6L6 18M6 6l12 12" />
+				</svg>
+				Close Position
+			</button>
 		</div>
 	{/if}
 </article>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   POSITION CARD - Design Token Implementation
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.position-card {
-		background: #ffffff;
-		border: 1px solid #e2e8f0;
-		border-left-width: 4px;
-		border-radius: 12px;
-		padding: 20px;
-		min-width: 320px;
-		box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04), 0 1px 2px rgba(0, 0, 0, 0.06);
-		transition: all 0.2s ease-out;
+		background: var(--card-bg-color, var(--color-bg-card));
+		border: 1px solid var(--color-border-default);
+		border-left: 4px solid var(--card-border-color, var(--color-border-strong));
+		border-radius: var(--radius-lg);
+		padding: var(--space-5);
+		box-shadow: var(--shadow-sm);
+		transition: var(--transition-shadow), var(--transition-transform);
+		contain: layout style;
 	}
 
 	.position-card:hover {
-		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
+		box-shadow: var(--shadow-md);
 		transform: translateY(-2px);
-	}
-
-	/* Status-based border and background */
-	.position-card.status-entry {
-		border-left-color: #14b8a6;
-		background-color: rgba(204, 251, 241, 0.3);
-	}
-
-	.position-card.status-watching {
-		border-left-color: #f59e0b;
-		background-color: rgba(254, 243, 199, 0.3);
-	}
-
-	.position-card.status-active-profit {
-		border-left-color: #10b981;
-		background-color: rgba(220, 252, 231, 0.3);
-	}
-
-	.position-card.status-active-loss {
-		border-left-color: #ef4444;
-		background-color: rgba(254, 226, 226, 0.3);
-	}
-
-	.position-card.status-default {
-		border-left-color: #64748b;
-	}
-
-	/* Clickable state for admin close */
-	.position-card.clickable {
-		cursor: pointer;
-		position: relative;
-	}
-
-	.position-card.clickable::after {
-		content: 'Click to Close Position';
-		position: absolute;
-		bottom: 8px;
-		right: 8px;
-		font-size: 10px;
-		font-weight: 600;
-		color: #fff;
-		background: linear-gradient(135deg, #143E59 0%, #0f2d42 100%);
-		padding: 4px 10px;
-		border-radius: 4px;
-		opacity: 0;
-		transform: translateY(4px);
-		transition: all 0.2s ease;
-	}
-
-	.position-card.clickable:hover::after {
-		opacity: 1;
-		transform: translateY(0);
-	}
-
-	.position-card.clickable:hover {
-		box-shadow: 0 10px 30px rgba(20, 62, 89, 0.2), 0 4px 10px rgba(0, 0, 0, 0.06);
-		border-color: #143E59;
-	}
-
-	.position-card.clickable:focus-visible {
-		outline: 2px solid #143E59;
-		outline-offset: 2px;
 	}
 
 	/* Header */
@@ -247,213 +255,249 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: 12px;
+		margin-bottom: var(--space-3);
 	}
 
 	.ticker {
-		font-size: 22px;
-		font-weight: 800;
-		color: #0f172a;
+		font-size: var(--text-xl);
+		font-weight: var(--font-extrabold);
+		color: var(--color-text-primary);
 		margin: 0;
 		text-transform: uppercase;
-		letter-spacing: 0.02em;
+		letter-spacing: var(--tracking-wide);
+		font-family: var(--font-display);
 	}
 
-	/* Status Badges */
 	.status-badge {
-		font-size: 10px;
-		font-weight: 700;
-		padding: 5px 10px;
-		border-radius: 6px;
+		font-size: var(--text-xs);
+		font-weight: var(--font-bold);
+		padding: var(--space-1) var(--space-2);
+		border-radius: var(--radius-sm);
 		text-transform: uppercase;
-		letter-spacing: 0.05em;
+		letter-spacing: var(--tracking-wider);
 		border: 1px solid;
 	}
 
-	.badge-entry {
-		background: linear-gradient(135deg, #ccfbf1 0%, #99f6e4 100%);
-		color: #0f766e;
-		border-color: #5eead4;
-	}
-
-	.badge-watching {
-		background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
-		color: #92400e;
-		border-color: #fcd34d;
-	}
-
-	.badge-active-profit {
-		background: linear-gradient(135deg, #dcfce7 0%, #bbf7d0 100%);
-		color: #166534;
-		border-color: #86efac;
-	}
-
-	.badge-active-loss {
-		background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-		color: #991b1b;
-		border-color: #fca5a5;
-	}
-
-	.badge-default {
-		background: #f1f5f9;
-		color: #475569;
-		border-color: #cbd5e1;
-	}
-
-	/* Divider */
 	.divider {
 		height: 1px;
-		background: linear-gradient(90deg, #e2e8f0 0%, transparent 100%);
-		margin-bottom: 14px;
+		background: linear-gradient(90deg, var(--color-border-default) 0%, transparent 100%);
+		margin-bottom: var(--space-3);
 	}
 
-	/* Price Section */
+	/* Price Grid - using <dl> for semantic markup */
 	.price-section {
-		margin-bottom: 8px;
+		margin-bottom: var(--space-2);
 	}
 
-	.price-row {
+	.price-grid {
 		display: flex;
-		align-items: center;
-		gap: 6px;
-		margin-bottom: 4px;
+		gap: var(--space-4);
+		margin: 0 0 var(--space-2) 0;
 	}
 
-	.price-row.inline {
+	.price-grid.inline {
 		flex-wrap: wrap;
 	}
 
-	.price-label {
-		font-size: 13px;
-		color: #64748b;
-		font-weight: 500;
+	.price-item {
+		display: flex;
+		flex-direction: column;
+		gap: var(--space-1);
 	}
 
-	.price-value {
-		font-size: 14px;
-		font-weight: 700;
-		color: #0f172a;
+	.price-item dt {
+		font-size: var(--text-sm);
+		color: var(--color-text-tertiary);
+		font-weight: var(--font-medium);
+	}
+
+	.price-item dd {
+		font-size: var(--text-base);
+		font-weight: var(--font-bold);
+		color: var(--color-text-primary);
 		font-variant-numeric: tabular-nums;
-	}
-
-	.separator {
-		color: #cbd5e1;
-		margin: 0 4px;
-		font-weight: 300;
+		margin: 0;
 	}
 
 	/* Unrealized P&L */
 	.unrealized-pnl {
 		display: flex;
 		align-items: baseline;
-		gap: 6px;
-		margin-bottom: 12px;
+		gap: var(--space-2);
+		margin-bottom: var(--space-3);
 	}
 
 	.unrealized-value {
-		font-size: 24px;
-		font-weight: 800;
+		font-size: var(--text-2xl);
+		font-weight: var(--font-extrabold);
 		font-variant-numeric: tabular-nums;
-		line-height: 1;
+		line-height: var(--leading-none);
 	}
 
 	.unrealized-label {
-		font-size: 13px;
-		color: #94a3b8;
-		font-weight: 500;
+		font-size: var(--text-sm);
+		color: var(--color-text-muted);
+		font-weight: var(--font-medium);
 	}
 
 	/* Notes */
 	.position-notes {
-		font-size: 13px;
-		color: #64748b;
+		font-size: var(--text-sm);
+		color: var(--color-text-tertiary);
 		font-style: italic;
-		margin: 0 0 14px 0;
-		line-height: 1.5;
-		padding: 10px 12px;
-		background: #f8fafc;
-		border-radius: 8px;
-		border-left: 3px solid #cbd5e1;
+		margin: 0 0 var(--space-3) 0;
+		line-height: var(--leading-normal);
+		padding: var(--space-2) var(--space-3);
+		background: var(--color-bg-subtle);
+		border-radius: var(--radius-md);
+		border-left: 3px solid var(--color-border-strong);
 	}
 
-	/* Targets */
-	.targets-container {
+	/* Targets List - using <dl> for semantic markup */
+	.targets-list {
 		display: flex;
 		flex-direction: column;
-		gap: 6px;
-		margin-bottom: 16px;
+		gap: var(--space-2);
+		margin: 0 0 var(--space-4) 0;
 	}
 
 	.target-row {
 		display: flex;
 		align-items: center;
-		gap: 8px;
+		justify-content: space-between;
 	}
 
-	.target-label {
-		font-size: 12px;
-		color: #64748b;
-		min-width: 58px;
-		font-weight: 500;
+	.target-row dt {
+		font-size: var(--text-xs);
+		color: var(--color-text-tertiary);
+		font-weight: var(--font-medium);
+		min-width: 60px;
+	}
+
+	.target-row dd {
+		display: flex;
+		align-items: center;
+		gap: var(--space-2);
+		margin: 0;
 	}
 
 	.target-price {
-		font-size: 13px;
-		font-weight: 600;
-		color: #334155;
+		font-size: var(--text-sm);
+		font-weight: var(--font-semibold);
+		color: var(--color-text-secondary);
 		font-variant-numeric: tabular-nums;
 	}
 
 	.target-percent {
-		font-size: 12px;
-		font-weight: 600;
+		font-size: var(--text-xs);
+		font-weight: var(--font-semibold);
 		font-variant-numeric: tabular-nums;
 	}
 
-	.target-percent.positive {
-		color: #059669;
+	.target-percent.profit {
+		color: var(--color-profit);
 	}
 
-	.target-percent.negative {
-		color: #dc2626;
+	.target-percent.loss {
+		color: var(--color-loss);
 	}
 
-	.target-row.stop .target-label {
-		color: #b91c1c;
+	.stop-row dt {
+		color: var(--color-loss);
 	}
 
-	.stop-price {
-		color: #dc2626;
+	.target-price.stop {
+		color: var(--color-loss);
 	}
 
 	/* Progress Bar */
 	.progress-container {
 		display: flex;
 		align-items: center;
-		gap: 12px;
+		gap: var(--space-3);
 	}
 
 	.progress-track {
 		flex: 1;
-		height: 8px;
-		background: #e2e8f0;
-		border-radius: 4px;
+		height: 10px;
+		background: var(--color-bg-muted);
+		border-radius: var(--radius-sm);
 		overflow: hidden;
+		box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06);
 	}
 
 	.progress-fill {
 		height: 100%;
-		border-radius: 4px;
-		transition: width 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+		border-radius: var(--radius-sm);
+		transition: width var(--duration-slow) var(--ease-out);
+		position: relative;
+	}
+
+	.progress-fill::after {
+		content: '';
+		position: absolute;
+		top: 0;
+		left: 0;
+		right: 0;
+		height: 50%;
+		background: linear-gradient(to bottom, rgba(255, 255, 255, 0.25), transparent);
+		border-radius: var(--radius-sm) var(--radius-sm) 0 0;
 	}
 
 	.progress-text {
-		font-size: 12px;
-		color: #64748b;
-		font-weight: 600;
+		font-size: var(--text-xs);
+		color: var(--color-text-tertiary);
+		font-weight: var(--font-semibold);
 		font-variant-numeric: tabular-nums;
 		white-space: nowrap;
 		min-width: 70px;
 		text-align: right;
+	}
+
+	/* Admin Actions */
+	.card-actions {
+		margin-top: var(--space-4);
+		padding-top: var(--space-3);
+		border-top: 1px solid var(--color-border-subtle);
+	}
+
+	.close-position-btn {
+		display: inline-flex;
+		align-items: center;
+		gap: var(--space-2);
+		padding: var(--space-2) var(--space-3);
+		background: transparent;
+		border: 1px solid var(--color-loss);
+		color: var(--color-loss);
+		border-radius: var(--radius-md);
+		font-size: var(--text-sm);
+		font-weight: var(--font-semibold);
+		cursor: pointer;
+		transition: var(--transition-colors);
+	}
+
+	.close-position-btn:hover {
+		background: var(--color-loss);
+		color: white;
+	}
+
+	.close-position-btn:focus-visible {
+		outline: 2px solid var(--color-loss);
+		outline-offset: 2px;
+	}
+
+	/* Responsive */
+	@media (max-width: 640px) {
+		.position-card {
+			padding: var(--space-4);
+		}
+
+		.ticker {
+			font-size: var(--text-lg);
+		}
+
+		.unrealized-value {
+			font-size: var(--text-xl);
+		}
 	}
 </style>
