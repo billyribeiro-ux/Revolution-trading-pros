@@ -519,8 +519,36 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
-	   RESPONSIVE
+	   RESPONSIVE - Apple ICT 7 Standard Breakpoints
 	   ═══════════════════════════════════════════════════════════════════════ */
+
+	/* Large Desktop (1440px+) */
+	@media (min-width: 1440px) {
+		.performance-summary {
+			padding: 35px 40px;
+			margin: 30px 40px;
+		}
+
+		.positions-grid {
+			grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
+			gap: 24px;
+		}
+	}
+
+	/* Ultra-wide (1920px+) */
+	@media (min-width: 1920px) {
+		.performance-summary {
+			max-width: 1700px;
+			margin: 35px auto;
+			padding: 40px 50px;
+		}
+
+		.positions-grid {
+			grid-template-columns: repeat(4, 1fr);
+		}
+	}
+
+	/* Tablet and below */
 	@media (max-width: 768px) {
 		.performance-summary {
 			padding: 20px;

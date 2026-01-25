@@ -147,6 +147,24 @@
 		outline-offset: 2px;
 	}
 
+	/* Large Desktop (1440px+) */
+	@media (min-width: 1440px) {
+		.sidebar {
+			gap: 24px;
+		}
+
+		.help-card {
+			padding: 26px;
+		}
+	}
+
+	/* Ultra-wide (1920px+) */
+	@media (min-width: 1920px) {
+		.sidebar {
+			gap: 28px;
+		}
+	}
+
 	@media (max-width: 1024px) {
 		.sidebar {
 			position: static;

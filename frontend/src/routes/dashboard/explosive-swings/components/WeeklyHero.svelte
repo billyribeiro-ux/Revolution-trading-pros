@@ -382,11 +382,14 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   HERO SECTION - Collapsible Accordion
+	   Apple ICT 7 Responsive Design - All Breakpoints
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.hero {
 		background: linear-gradient(135deg, #f69532 0%, #e8850d 50%, #d4790a 100%);
 		padding: 0;
 		transition: all 0.3s ease;
+		max-width: 100%;
+		overflow: hidden;
 	}
 
 	.hero.collapsed {
@@ -482,6 +485,8 @@
 		padding: 40px;
 		min-height: 400px;
 		overflow: hidden;
+		max-width: 1400px;
+		margin: 0 auto;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -491,6 +496,7 @@
 		position: relative;
 		max-width: 1000px;
 		margin: 0 auto;
+		width: 100%;
 	}
 
 	/* When expanded, video section fills the hero content area */
@@ -1131,8 +1137,73 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE BREAKPOINTS
+	   RESPONSIVE BREAKPOINTS - Apple ICT 7 Standard
+	   xl: 1280px, 2xl: 1440px, 3xl: 1920px
 	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Extra Large Screens (1440px+) - Prevent over-stretching */
+	@media (min-width: 1440px) {
+		.hero-content {
+			padding: 50px 60px;
+		}
+
+		.video-section {
+			max-width: 1100px;
+		}
+
+		.video-player-container {
+			flex: 0 0 58%;
+		}
+
+		.entries-container {
+			max-width: 1500px;
+		}
+	}
+
+	/* Ultra-wide Screens (1920px+) - Max constraints */
+	@media (min-width: 1920px) {
+		.hero-content {
+			padding: 60px 80px;
+			max-width: 1600px;
+		}
+
+		.video-section {
+			max-width: 1200px;
+		}
+
+		.video-player-container {
+			flex: 0 0 55%;
+			max-width: 700px;
+		}
+
+		.video-info {
+			max-width: 400px;
+		}
+	}
+
+	/* Large Desktop (1280px - 1439px) */
+	@media (min-width: 1280px) and (max-width: 1439px) {
+		.hero-content {
+			padding: 45px 50px;
+		}
+
+		.video-section {
+			max-width: 1050px;
+		}
+	}
+
+	/* Tablet/Small Desktop (1024px - 1279px) */
+	@media (min-width: 1024px) and (max-width: 1279px) {
+		.video-player-container {
+			flex: 0 0 50%;
+		}
+
+		.video-info h2 {
+			font-size: 22px;
+		}
+	}
+
+	/* Tablet and below (max-width: 1023px) */
 	@media (max-width: 1023px) {
 		.video-layout {
 			flex-direction: column;

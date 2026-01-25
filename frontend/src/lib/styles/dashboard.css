@@ -25,6 +25,7 @@
 	background: var(--color-rtp-surface, #fff);
 	border-left: 1px solid var(--color-rtp-border, #e5e5e5);
 	padding: 0;
+	display: none; /* Hidden by default - individual pages manage their own sidebars */
 }
 
 /* Dashboard Header */
@@ -268,8 +269,79 @@
 	padding-bottom: 0.5rem;
 }
 
-/* Responsive - Hide sidebar on mobile */
-@media (max-width: 1024px) {
+/* ═══════════════════════════════════════════════════════════════════════════
+   RESPONSIVE BREAKPOINTS - Apple ICT 7 Standard
+   sm: 640px, md: 768px, lg: 1024px, xl: 1280px, 2xl: 1440px, 3xl: 1920px
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/* Large Desktop (1440px+) */
+@media (min-width: 1440px) {
+	.dashboard__header {
+		padding: 35px 50px;
+	}
+
+	.dashboard__content-section {
+		padding: 40px 50px;
+	}
+
+	.dashboard__content-section-member {
+		padding: 40px 50px;
+	}
+}
+
+/* Ultra-wide (1920px+) */
+@media (min-width: 1920px) {
+	.dashboard__header {
+		padding: 40px 60px;
+		max-width: 1800px;
+		margin: 0 auto;
+	}
+
+	.dashboard__content-section {
+		padding: 50px 60px;
+		max-width: 1800px;
+		margin: 0 auto;
+	}
+
+	.dashboard__content-section-member {
+		padding: 50px 60px;
+		max-width: 1800px;
+		margin: 0 auto;
+	}
+}
+
+/* Desktop (1280px - 1439px) */
+@media (min-width: 1280px) and (max-width: 1439px) {
+	.dashboard__header {
+		padding: 30px 40px;
+	}
+
+	.dashboard__content-section {
+		padding: 35px 40px;
+	}
+
+	.dashboard__content-section-member {
+		padding: 35px 40px;
+	}
+}
+
+/* Tablet/Small Desktop (1024px - 1279px) */
+@media (min-width: 1024px) and (max-width: 1279px) {
+	.dashboard__header {
+		padding: 25px 30px;
+	}
+
+	.dashboard__content-section {
+		padding: 30px;
+	}
+
+	.dashboard__content-section-member {
+		padding: 30px;
+	}
+}
+
+/* Tablet and below (max-width: 1023px) */
+@media (max-width: 1023px) {
 	.dashboard__content {
 		flex-direction: column;
 	}
@@ -282,30 +354,48 @@
 	}
 }
 
-@media (min-width: 1280px) {
+/* Mobile (max-width: 768px) */
+@media (max-width: 768px) {
 	.dashboard__header {
-		padding: 30px;
+		padding: 20px;
 	}
 
 	.dashboard__content-section {
-		padding: 30px;
+		padding: 20px;
 	}
 
 	.dashboard__content-section-member {
-		padding: 30px;
+		padding: 20px;
+	}
+
+	.dashboard__page-title {
+		font-size: 22px;
+	}
+
+	.section-title {
+		font-size: 22px;
 	}
 }
 
-@media (min-width: 1440px) {
+/* Small Mobile (max-width: 640px) */
+@media (max-width: 640px) {
 	.dashboard__header {
-		padding: 30px 40px;
+		padding: 16px;
 	}
 
 	.dashboard__content-section {
-		padding: 40px;
+		padding: 16px;
 	}
 
 	.dashboard__content-section-member {
-		padding: 40px;
+		padding: 16px;
+	}
+
+	.dashboard__page-title {
+		font-size: 20px;
+	}
+
+	.section-title {
+		font-size: 20px;
 	}
 }

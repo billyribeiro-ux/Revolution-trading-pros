@@ -1435,7 +1435,7 @@
 	   Moved to WeeklyHero.svelte - verified lines 340-771 */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   MAIN GRID
+	   MAIN GRID - Apple ICT 7 Responsive Design
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.main-grid {
 		display: grid;
@@ -1447,7 +1447,45 @@
 		contain: layout;
 	}
 
-	@media (max-width: 1024px) {
+	/* Large Desktop (1440px+) */
+	@media (min-width: 1440px) {
+		.main-grid {
+			max-width: 1500px;
+			gap: 40px;
+			padding: 40px;
+			grid-template-columns: 1fr 360px;
+		}
+	}
+
+	/* Ultra-wide (1920px+) */
+	@media (min-width: 1920px) {
+		.main-grid {
+			max-width: 1700px;
+			gap: 50px;
+			padding: 50px;
+			grid-template-columns: 1fr 380px;
+		}
+	}
+
+	/* Desktop (1280px - 1439px) */
+	@media (min-width: 1280px) and (max-width: 1439px) {
+		.main-grid {
+			max-width: 1350px;
+			gap: 35px;
+			padding: 35px;
+		}
+	}
+
+	/* Tablet/Small Desktop (1024px - 1279px) */
+	@media (min-width: 1024px) and (max-width: 1279px) {
+		.main-grid {
+			grid-template-columns: 1fr 300px;
+			gap: 25px;
+			padding: 25px;
+		}
+	}
+
+	@media (max-width: 1023px) {
 		.main-grid {
 			grid-template-columns: 1fr;
 			gap: 24px;
