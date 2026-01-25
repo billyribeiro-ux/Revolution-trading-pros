@@ -1,13 +1,19 @@
 <script lang="ts">
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
-	 * WeeklyHero Component - Collapsible Weekly Video Accordion
+	 * WeeklyHero Component - Apple Principal Engineer ICT Level 7
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Hero section with video breakdown and trade plan tabs
-	 * @version 4.2.0 - Fixed video player UX (play button vibrancy, lift-off, maximize)
+	 * @version 5.0.0 - Complete rebuild with proper layout, frosted glass play button
 	 * @requires Svelte 5.0+ (January 2026 syntax)
 	 * @standards Apple Principal Engineer ICT 7+ Standards
+	 *
+	 * Layout: 50/50 split on desktop, stacked on mobile
+	 * Play Button: 80px frosted glass with vibrancy effect
+	 * Typography: Montserrat headers, system UI body
+	 * Grid: 8pt spacing system (8, 16, 24, 32, 48, 64px)
+	 * Easing: cubic-bezier(0.16, 1, 0.3, 1) for all animations
 	 */
 
 	interface WeeklyContent {
@@ -21,7 +27,7 @@
 
 	interface TradePlanEntry {
 		ticker: string;
-		bias: string;
+		bias: 'Bullish' | 'Bearish' | 'Neutral' | string;
 		entry: string;
 		target1: string;
 		target2: string;
@@ -58,16 +64,16 @@
 		onEditEntry,
 		onUploadVideo
 	}: Props = $props();
-	
-	// Derived values after props are destructured
+
+	// Derived values
 	const embedUrl = $derived(videoUrl || weeklyContent.videoUrl || '');
 	const watchFullUrl = $derived(fullVideoUrl || `/dashboard/${roomSlug}/video/weekly`);
 
-	// Component-local state (Svelte 5 $state rune)
+	// Component state (Svelte 5 $state rune)
 	let heroTab = $state<'video' | 'entries'>('video');
 	let isCollapsed = $state(false);
 	let expandedTradeNotes = $state(new Set<string>());
-	
+
 	// Video player state
 	let isVideoPlaying = $state(false);
 	let isVideoExpanded = $state(false);
@@ -75,22 +81,21 @@
 	function toggleCollapse() {
 		isCollapsed = !isCollapsed;
 	}
-	
-	// Video player controls
+
 	function playVideo() {
 		isVideoPlaying = true;
 	}
-	
+
 	function closeVideo() {
 		isVideoPlaying = false;
 		isVideoExpanded = false;
 	}
-	
+
 	function toggleExpand() {
 		isVideoExpanded = !isVideoExpanded;
 	}
-	
-	// Keyboard handler for video player
+
+	// Keyboard handler - Escape closes video/expanded mode
 	function handleVideoKeydown(e: KeyboardEvent) {
 		if (e.key === 'Escape') {
 			if (isVideoExpanded) {
@@ -100,26 +105,23 @@
 			}
 		}
 	}
-	
-	// Generate embed URL from video URL prop with autoplay
+
+	// Bunny.net embed URL generator with strict validation
 	function getEmbedUrl(url: string): string {
 		if (!url || url.startsWith('/')) return '';
-		
-		// Bunny.net iframe URL - strict validation
-		if (url.includes('iframe.mediadelivery.net')) {
-			try {
-				const parsed = new URL(url);
-				if (parsed.hostname !== 'iframe.mediadelivery.net') return '';
-				// Apple ICT 7: Full autoplay params for immediate playback
-				parsed.searchParams.set('autoplay', 'true');
-				parsed.searchParams.set('preload', 'true');
-				parsed.searchParams.set('responsive', 'true');
-				return parsed.toString();
-			} catch {
-				return '';
-			}
+
+		try {
+			const parsed = new URL(url);
+			if (parsed.hostname !== 'iframe.mediadelivery.net') return '';
+
+			parsed.searchParams.set('autoplay', 'true');
+			parsed.searchParams.set('preload', 'true');
+			parsed.searchParams.set('responsive', 'true');
+
+			return parsed.toString();
+		} catch {
+			return '';
 		}
-		return '';
 	}
 
 	function toggleTradeNotes(ticker: string) {
@@ -136,9 +138,10 @@
 <svelte:window onkeydown={handleVideoKeydown} />
 
 <section class="hero" class:collapsed={isCollapsed}>
-	<button class="hero-collapse-toggle" onclick={toggleCollapse}>
+	<!-- Collapse Toggle Header -->
+	<button class="hero-collapse-toggle" onclick={toggleCollapse} type="button">
 		<div class="hero-header-compact">
-			<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" class="video-icon">
+			<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" class="video-icon" aria-hidden="true">
 				<path d="M8 5v14l11-7z" />
 			</svg>
 			<h1>{weeklyContent.title} — Weekly Breakdown</h1>
@@ -154,6 +157,7 @@
 				stroke-width="2.5"
 				width="20"
 				height="20"
+				aria-hidden="true"
 			>
 				<path d="M19 9l-7 7-7-7" />
 			</svg>
@@ -161,9 +165,16 @@
 	</button>
 
 	{#if !isCollapsed}
-		<div class="hero-tabs-bar">
-			<button class="hero-tab" class:active={heroTab === 'video'} onclick={() => (heroTab = 'video')}>
-				<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
+		<!-- Tab Navigation -->
+		<nav class="hero-tabs-bar" aria-label="Hero content tabs">
+			<button
+				class="hero-tab"
+				class:active={heroTab === 'video'}
+				onclick={() => (heroTab = 'video')}
+				type="button"
+				aria-pressed={heroTab === 'video'}
+			>
+				<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18" aria-hidden="true">
 					<path d="M8 5v14l11-7z" />
 				</svg>
 				Video Breakdown
@@ -172,30 +183,34 @@
 				class="hero-tab"
 				class:active={heroTab === 'entries'}
 				onclick={() => (heroTab = 'entries')}
+				type="button"
+				aria-pressed={heroTab === 'entries'}
 			>
-				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
 					<rect x="3" y="3" width="18" height="18" rx="2" />
 					<path d="M3 9h18M9 21V9" />
 				</svg>
 				Trade Plan & Entries
 			</button>
-		</div>
+		</nav>
 
+		<!-- Main Content Area -->
 		<div class="hero-content">
 			{#if heroTab === 'video'}
-				<!-- VIDEO TAB -->
-				<div class="video-section" class:video-active={isVideoPlaying} class:video-expanded={isVideoExpanded}>
-					
+				<!-- ════════════════════════════════════════════════════════════════
+				     VIDEO TAB - Player with Info Panel
+				     ════════════════════════════════════════════════════════════════ -->
+				<div class="video-section" class:video-expanded={isVideoExpanded}>
 					<!-- Blur backdrop when video is playing -->
 					{#if isVideoPlaying}
 						<div class="video-backdrop" class:expanded={isVideoExpanded}></div>
 					{/if}
-					
+
 					<div class="video-layout" class:playing={isVideoPlaying} class:expanded={isVideoExpanded}>
-						<!-- Video Player -->
+						<!-- Video Player Container -->
 						<div class="video-player-container" class:playing={isVideoPlaying} class:expanded={isVideoExpanded}>
 							{#if isVideoPlaying}
-								<!-- Active Video Player -->
+								<!-- Active Video Player with iframe -->
 								{@const safeEmbedUrl = getEmbedUrl(embedUrl)}
 								<div class="video-frame">
 									{#if safeEmbedUrl}
@@ -211,59 +226,81 @@
 										</div>
 									{/if}
 								</div>
-								
-								<!-- Video Controls -->
+
+								<!-- Video Controls Bar -->
 								<div class="video-controls">
-									<button class="control-btn close-btn" onclick={closeVideo} aria-label="Close video">
-										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+									<button
+										class="control-btn close-btn"
+										onclick={closeVideo}
+										type="button"
+										aria-label="Close video"
+									>
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" aria-hidden="true">
 											<path d="M18 6L6 18M6 6l12 12" />
 										</svg>
 									</button>
 									<span class="video-title-bar">{weeklyContent.videoTitle}</span>
-									<button class="control-btn expand-btn" onclick={toggleExpand} aria-label={isVideoExpanded ? 'Exit fullscreen' : 'Fullscreen'}>
+									<button
+										class="control-btn expand-btn"
+										onclick={toggleExpand}
+										type="button"
+										aria-label={isVideoExpanded ? 'Exit fullscreen' : 'Enter fullscreen'}
+									>
 										{#if isVideoExpanded}
-											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" aria-hidden="true">
 												<path d="M8 3v3a2 2 0 01-2 2H3m18 0h-3a2 2 0 01-2-2V3m0 18v-3a2 2 0 012-2h3M3 16h3a2 2 0 012 2v3" />
 											</svg>
 										{:else}
-											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" aria-hidden="true">
 												<path d="M8 3H5a2 2 0 00-2 2v3m18 0V5a2 2 0 00-2-2h-3m0 18h3a2 2 0 002-2v-3M3 16v3a2 2 0 002 2h3" />
 											</svg>
 										{/if}
 									</button>
 								</div>
 							{:else}
-								<!-- Thumbnail with Play Button -->
-								<div class="video-thumbnail" style="background-image: url('{weeklyContent.thumbnail}')">
-									<button class="play-btn" onclick={playVideo} aria-label="Play video">
-										<svg viewBox="0 0 24 24" fill="currentColor">
+								<!-- Thumbnail State with Play Button -->
+								<div
+									class="video-thumbnail"
+									style="background-image: url('{weeklyContent.thumbnail}')"
+								>
+									<button
+										class="play-btn"
+										onclick={playVideo}
+										type="button"
+										aria-label="Play video: {weeklyContent.videoTitle}"
+									>
+										<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
 											<path d="M8 5v14l11-7z" />
 										</svg>
 									</button>
-									<span class="duration-badge">{weeklyContent.duration}</span>
+									<span class="duration-badge" aria-label="Duration: {weeklyContent.duration}">
+										{weeklyContent.duration}
+									</span>
 								</div>
 							{/if}
 						</div>
-						
-						<!-- Video Info (hidden when playing) -->
+
+						<!-- Video Info Panel (hidden when playing) -->
 						{#if !isVideoPlaying}
 							<div class="video-info">
 								<h2>{weeklyContent.videoTitle}</h2>
-								<p>Published {weeklyContent.publishedDate}</p>
-								{#if isAdmin && onUploadVideo}
-									<button class="admin-upload-btn" onclick={onUploadVideo}>
-										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-											<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+								<p class="published-date">Published {weeklyContent.publishedDate}</p>
+								<div class="video-actions">
+									{#if isAdmin && onUploadVideo}
+										<button class="admin-upload-btn" onclick={onUploadVideo} type="button">
+											<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+												<path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M17 8l-5-5-5 5M12 3v12" />
+											</svg>
+											Upload New Video
+										</button>
+									{/if}
+									<a href={watchFullUrl} class="watch-btn">
+										Watch Full Video
+										<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18" aria-hidden="true">
+											<path d="M5 12h14M12 5l7 7-7 7" />
 										</svg>
-										Upload New Video
-									</button>
-								{/if}
-								<a href={watchFullUrl} class="watch-btn">
-									Watch Full Video
-									<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
-										<path d="M5 12h14M12 5l7 7-7 7" />
-									</svg>
-								</a>
+									</a>
+								</div>
 							</div>
 						{/if}
 					</div>
@@ -389,10 +426,8 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.hero {
 		background: linear-gradient(135deg, #f69532 0%, #e8850d 50%, #d4790a 100%);
-		padding: 0;
-		transition: all 0.3s ease;
-		max-width: 100%;
 		overflow: hidden;
+		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.hero.collapsed {
@@ -404,15 +439,15 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		padding: 18px 30px;
+		padding: 16px 24px;
 		background: transparent;
 		border: none;
 		cursor: pointer;
-		transition: background 0.2s;
+		transition: background 0.2s ease;
 	}
 
 	.hero-collapse-toggle:hover {
-		background: rgba(255, 255, 255, 0.1);
+		background: rgba(255, 255, 255, 0.08);
 	}
 
 	.hero-header-compact {
@@ -422,11 +457,11 @@
 	}
 
 	.hero-header-compact h1 {
-		color: #fff;
-		font-size: 18px;
+		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+		font-size: 17px;
 		font-weight: 700;
+		color: #fff;
 		margin: 0;
-		font-family: 'Montserrat', sans-serif;
 	}
 
 	.video-icon {
@@ -444,7 +479,7 @@
 	}
 
 	.collapse-chevron {
-		transition: transform 0.3s ease;
+		transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.collapse-chevron.rotated {
@@ -453,20 +488,20 @@
 
 	.hero-tabs-bar {
 		display: flex;
-		gap: 10px;
-		padding: 0 30px 20px;
+		gap: 12px;
 		justify-content: center;
+		padding: 0 24px 24px;
 	}
 
 	.hero-tab {
-		display: flex;
+		display: inline-flex;
 		align-items: center;
 		gap: 8px;
-		background: rgba(255, 255, 255, 0.15);
-		border: 2px solid rgba(255, 255, 255, 0.3);
-		color: #fff;
 		padding: 12px 24px;
-		border-radius: 8px;
+		background: rgba(255, 255, 255, 0.15);
+		border: 2px solid rgba(255, 255, 255, 0.25);
+		border-radius: 10px;
+		color: #fff;
 		font-size: 14px;
 		font-weight: 600;
 		cursor: pointer;
@@ -475,31 +510,31 @@
 
 	.hero-tab:hover {
 		background: rgba(255, 255, 255, 0.25);
+		border-color: rgba(255, 255, 255, 0.35);
 	}
 
 	.hero-tab.active {
 		background: #fff;
-		color: #f69532;
 		border-color: #fff;
+		color: #f69532;
 	}
 
 	.hero-content {
 		position: relative;
-		padding: 40px;
-		min-height: 400px;
+		padding: 40px 48px;
+		min-height: 360px;
 		overflow: hidden;
-		width: 100%;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEO SECTION - Lift-off Player with Vibrancy Effect
+	   VIDEO SECTION - Contained within max-width
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.video-section {
 		position: relative;
-		width: 100%;
+		max-width: 1200px;
+		margin: 0 auto;
 	}
 
-	/* When expanded, video section fills the hero content area */
 	.video-section.video-expanded {
 		position: absolute;
 		inset: 0;
@@ -510,35 +545,37 @@
 		justify-content: center;
 	}
 
-	/* Blur backdrop when video is playing - contained within hero */
+	/* Blur backdrop when video is playing */
 	.video-backdrop {
 		position: absolute;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.5);
-		backdrop-filter: blur(8px);
-		-webkit-backdrop-filter: blur(8px);
+		background: rgba(0, 0, 0, 0.6);
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
 		z-index: 100;
-		opacity: 0;
 		animation: fadeIn 0.3s ease forwards;
 	}
 
 	.video-backdrop.expanded {
-		background: rgba(0, 0, 0, 0.7);
-		backdrop-filter: blur(12px);
-		-webkit-backdrop-filter: blur(12px);
+		background: rgba(0, 0, 0, 0.85);
+		backdrop-filter: blur(16px);
+		-webkit-backdrop-filter: blur(16px);
 	}
 
 	@keyframes fadeIn {
+		from { opacity: 0; }
 		to { opacity: 1; }
 	}
 
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   VIDEO LAYOUT - 50/50 Split Desktop
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.video-layout {
 		display: flex;
-		gap: 40px;
+		gap: 48px;
 		align-items: center;
 		position: relative;
 		z-index: 1;
-		width: 100%;
 	}
 
 	.video-layout.playing {
@@ -550,48 +587,51 @@
 		position: absolute;
 		inset: 0;
 		z-index: 101;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		padding: 20px;
+		padding: 24px;
 	}
 
-	/* Video Player Container */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   VIDEO PLAYER CONTAINER - 50% width, max 640px
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.video-player-container {
 		position: relative;
-		flex: 0 0 55%;
+		flex: 0 0 50%;
+		max-width: 640px;
 		aspect-ratio: 16 / 9;
 		border-radius: 12px;
 		overflow: hidden;
-		background: #000;
+		background: #143E59;
 		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.video-player-container.playing {
 		flex: none;
-		width: 80%;
-		max-width: 1200px;
-		transform: translateY(-12px);
+		width: 85%;
+		max-width: 1000px;
+		transform: translateY(-8px);
 		box-shadow: 
-			0 25px 50px rgba(0, 0, 0, 0.4),
-			0 12px 24px rgba(0, 0, 0, 0.3);
+			0 32px 64px rgba(0, 0, 0, 0.5),
+			0 16px 32px rgba(0, 0, 0, 0.3);
 		border-radius: 16px;
 	}
 
 	.video-player-container.expanded {
 		width: 100%;
 		max-width: 100%;
-		height: auto;
-		aspect-ratio: 16 / 9;
+		height: 100%;
+		max-height: 100%;
+		aspect-ratio: unset;
 		transform: none;
 		border-radius: 12px;
-		box-shadow: 0 20px 60px rgba(0, 0, 0, 0.4);
 	}
 
-	/* Video Thumbnail */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   VIDEO THUMBNAIL - Navy fallback with gradient overlay
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.video-thumbnail {
 		position: absolute;
 		inset: 0;
+		background-color: #143E59;
 		background-size: cover;
 		background-position: center;
 		display: flex;
@@ -603,48 +643,63 @@
 		content: '';
 		position: absolute;
 		inset: 0;
-		background: rgba(0, 0, 0, 0.25);
+		background: linear-gradient(
+			135deg,
+			rgba(20, 62, 89, 0.4) 0%,
+			rgba(0, 0, 0, 0.5) 100%
+		);
 		transition: background 0.3s ease;
 	}
 
 	.video-player-container:hover .video-thumbnail::before {
-		background: rgba(0, 0, 0, 0.15);
+		background: linear-gradient(
+			135deg,
+			rgba(20, 62, 89, 0.3) 0%,
+			rgba(0, 0, 0, 0.4) 100%
+		);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   PLAY BUTTON - Full Frosted Glass with Vibrancy Effect
+	   PLAY BUTTON - Frosted Glass Vibrancy (CRITICAL - Must be visible)
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.play-btn {
 		position: relative;
+		z-index: 2;
 		width: 80px;
 		height: 80px;
-		border: none;
 		border-radius: 50%;
 		cursor: pointer;
+		
+		/* Frosted Glass Effect */
 		background: rgba(255, 255, 255, 0.25);
-		backdrop-filter: blur(16px);
-		-webkit-backdrop-filter: blur(16px);
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+		
+		/* Border for definition */
+		border: 2px solid rgba(255, 255, 255, 0.3);
+		
+		/* Shadow for depth */
 		box-shadow: 
-			0 8px 32px rgba(0, 0, 0, 0.2),
-			inset 0 1px 0 rgba(255, 255, 255, 0.4),
-			inset 0 -1px 0 rgba(0, 0, 0, 0.1);
-		z-index: 2;
-		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+			0 8px 32px rgba(0, 0, 0, 0.3),
+			0 0 0 1px rgba(255, 255, 255, 0.1) inset;
+		
+		/* Layout */
 		display: flex;
 		align-items: center;
 		justify-content: center;
+		
+		/* Transition */
+		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
 	.play-btn:hover {
 		transform: scale(1.1);
-		background: rgba(255, 255, 255, 0.45);
-		backdrop-filter: blur(24px);
-		-webkit-backdrop-filter: blur(24px);
+		background: rgba(255, 255, 255, 0.4);
+		border-color: rgba(255, 255, 255, 0.5);
 		box-shadow: 
-			0 12px 48px rgba(0, 0, 0, 0.25),
-			0 0 60px rgba(255, 255, 255, 0.3),
-			inset 0 1px 0 rgba(255, 255, 255, 0.6),
-			inset 0 -1px 0 rgba(0, 0, 0, 0.1);
+			0 12px 48px rgba(0, 0, 0, 0.4),
+			0 0 80px rgba(255, 255, 255, 0.2),
+			0 0 0 1px rgba(255, 255, 255, 0.2) inset;
 	}
 
 	.play-btn:active {
@@ -652,35 +707,42 @@
 		background: rgba(255, 255, 255, 0.5);
 	}
 
+	.play-btn:focus-visible {
+		outline: 3px solid rgba(255, 255, 255, 0.8);
+		outline-offset: 4px;
+	}
+
 	.play-btn svg {
-		width: 32px;
-		height: 32px;
+		width: 36px;
+		height: 36px;
 		color: #fff;
-		margin-left: 4px;
-		filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
+		margin-left: 4px; /* Optical center adjustment */
+		filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
 		transition: all 0.3s ease;
 	}
 
 	.play-btn:hover svg {
-		transform: scale(1.1);
-		filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
+		transform: scale(1.05);
+		filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.4));
 	}
 
-	/* Duration Badge */
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   DURATION BADGE
+	   ═══════════════════════════════════════════════════════════════════════════ */
 	.duration-badge {
 		position: absolute;
 		bottom: 12px;
 		right: 12px;
-		padding: 6px 10px;
-		background: rgba(0, 0, 0, 0.75);
-		backdrop-filter: blur(4px);
-		-webkit-backdrop-filter: blur(4px);
-		color: #fff;
-		font-size: 12px;
-		font-weight: 600;
+		padding: 6px 12px;
+		background: rgba(0, 0, 0, 0.8);
+		backdrop-filter: blur(8px);
+		-webkit-backdrop-filter: blur(8px);
 		border-radius: 6px;
+		font-size: 13px;
+		font-weight: 600;
 		font-variant-numeric: tabular-nums;
-		z-index: 2;
+		color: #fff;
+		z-index: 5;
 	}
 
 	/* Video Frame (iframe container) */
@@ -778,72 +840,89 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   VIDEO INFO PANEL
+	   VIDEO INFO PANEL - Typography & Buttons
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.video-info {
 		flex: 1;
+		min-width: 280px;
 		color: #fff;
 		text-align: center;
 	}
 
 	.video-info h2 {
-		font-size: 24px;
+		font-family: 'Montserrat', -apple-system, BlinkMacSystemFont, sans-serif;
+		font-size: 28px;
 		font-weight: 700;
+		line-height: 1.2;
+		color: #fff;
 		margin: 0 0 8px 0;
-		font-family: 'Montserrat', sans-serif;
+		text-wrap: balance;
 	}
 
-	.video-info p {
-		font-size: 13px;
-		opacity: 0.9;
-		margin: 0 0 20px 0;
+	.video-info .published-date {
+		font-size: 14px;
+		font-weight: 500;
+		color: rgba(255, 255, 255, 0.8);
+		margin: 0 0 24px 0;
 	}
 
+	.video-actions {
+		display: flex;
+		gap: 12px;
+		flex-wrap: wrap;
+		justify-content: center;
+	}
+
+	/* Primary Button - Watch Full Video */
 	.watch-btn {
 		display: inline-flex;
 		align-items: center;
 		gap: 10px;
-		background: #143e59;
+		padding: 14px 28px;
+		background: #143E59;
 		color: #fff;
-		padding: 16px 32px;
+		border: 2px solid #143E59;
 		border-radius: 10px;
-		font-size: 16px;
+		font-size: 15px;
 		font-weight: 700;
 		text-decoration: none;
-		transition: all 0.3s ease;
+		transition: all 0.2s ease;
 	}
 
 	.watch-btn:hover {
 		background: #0f2d42;
+		border-color: #0f2d42;
 		transform: translateY(-2px);
+		box-shadow: 0 8px 24px rgba(20, 62, 89, 0.4);
 	}
 
+	/* Secondary Button - Upload (Admin Only) */
 	.admin-upload-btn {
 		display: inline-flex;
 		align-items: center;
-		gap: 6px;
-		padding: 10px 16px;
-		margin-bottom: 12px;
-		background: #143E59;
-		border: none;
-		border-radius: 8px;
-		font-size: 13px;
+		gap: 8px;
+		padding: 14px 24px;
+		background: transparent;
+		color: #fff;
+		border: 2px solid rgba(255, 255, 255, 0.4);
+		border-radius: 10px;
+		font-size: 15px;
 		font-weight: 600;
-		color: white;
 		cursor: pointer;
-		transition: all 0.15s ease;
+		transition: all 0.2s ease;
 	}
 
 	.admin-upload-btn:hover {
-		background: #0f2d42;
-		transform: translateY(-1px);
+		background: rgba(255, 255, 255, 0.1);
+		border-color: rgba(255, 255, 255, 0.6);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	   ENTRIES TAB - Trade Sheet
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.entries-container {
-		width: 100%;
+		max-width: 1200px;
+		margin: 0 auto;
 	}
 
 	.entries-header {
@@ -1137,71 +1216,72 @@
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   RESPONSIVE BREAKPOINTS - Apple ICT 7 Standard
-	   xl: 1280px, 2xl: 1440px, 3xl: 1920px
+	   RESPONSIVE BREAKPOINTS - Apple ICT 7 Standard (8pt Grid)
 	   ═══════════════════════════════════════════════════════════════════════════ */
-
-	/* Extra Large Screens (1440px+) */
-	@media (min-width: 1440px) {
-		.hero-content {
-			padding: 50px 60px;
-		}
-
-		.video-player-container {
-			flex: 0 0 60%;
-		}
-
-		.video-info {
-			flex: 1;
-		}
-	}
 
 	/* Ultra-wide Screens (1920px+) */
 	@media (min-width: 1920px) {
 		.hero-content {
-			padding: 60px 80px;
+			padding: 64px 80px;
 		}
 
-		.video-player-container {
-			flex: 0 0 65%;
+		.video-section,
+		.entries-container {
+			max-width: 1400px;
 		}
 	}
 
-	/* Large Desktop (1280px - 1439px) */
+	/* Large Desktop (1440px+) */
+	@media (min-width: 1440px) and (max-width: 1919px) {
+		.hero-content {
+			padding: 56px 64px;
+		}
+	}
+
+	/* Desktop (1280px - 1439px) */
 	@media (min-width: 1280px) and (max-width: 1439px) {
 		.hero-content {
-			padding: 45px 50px;
-		}
-
-		.video-player-container {
-			flex: 0 0 58%;
+			padding: 48px 56px;
 		}
 	}
 
-	/* Tablet/Small Desktop (1024px - 1279px) */
+	/* Small Desktop (1024px - 1279px) */
 	@media (min-width: 1024px) and (max-width: 1279px) {
-		.video-player-container {
-			flex: 0 0 50%;
+		.hero-content {
+			padding: 40px 48px;
 		}
 
 		.video-info h2 {
-			font-size: 22px;
+			font-size: 24px;
 		}
 	}
 
-	/* Tablet and below (max-width: 1023px) */
-	@media (max-width: 1023px) {
+	/* Tablet (768px - 1023px) */
+	@media (min-width: 768px) and (max-width: 1023px) {
+		.hero-content {
+			padding: 32px 24px;
+		}
+
 		.video-layout {
 			flex-direction: column;
+			gap: 32px;
 		}
 
 		.video-player-container {
 			flex: none;
 			width: 100%;
+			max-width: 560px;
+			margin: 0 auto;
+		}
+
+		.video-info {
+			width: 100%;
+			text-align: center;
 		}
 
 		.video-player-container.playing {
 			width: 90%;
+			max-width: 800px;
 		}
 
 		.trade-sheet-wrapper {
@@ -1213,10 +1293,19 @@
 		}
 	}
 
+	/* Mobile (< 768px) */
 	@media (max-width: 767px) {
+		.hero-collapse-toggle {
+			padding: 14px 16px;
+		}
+
+		.hero-header-compact h1 {
+			font-size: 15px;
+		}
+
 		.hero-tabs-bar {
 			flex-direction: column;
-			padding: 0 20px 20px;
+			padding: 0 16px 16px;
 		}
 
 		.hero-tab {
@@ -1228,21 +1317,52 @@
 			padding: 24px 16px;
 		}
 
-		.hero-header-compact h1 {
-			font-size: 15px;
+		.video-layout {
+			flex-direction: column;
+			gap: 24px;
 		}
 
-		.hero-collapse-toggle {
-			padding: 14px 16px;
+		.video-player-container {
+			flex: none;
+			width: 100%;
+			max-width: none;
+		}
+
+		.video-info {
+			width: 100%;
+			text-align: center;
 		}
 
 		.video-info h2 {
-			font-size: 20px;
+			font-size: 22px;
 		}
 
-		.watch-btn {
-			padding: 14px 24px;
-			font-size: 14px;
+		.video-actions {
+			flex-direction: column;
+		}
+
+		.watch-btn,
+		.admin-upload-btn {
+			width: 100%;
+			justify-content: center;
+		}
+
+		.video-player-container.playing {
+			width: 95%;
+		}
+
+		.video-layout.expanded {
+			padding: 12px;
+		}
+
+		.play-btn {
+			width: 64px;
+			height: 64px;
+		}
+
+		.play-btn svg {
+			width: 28px;
+			height: 28px;
 		}
 
 		.entries-header h2 {
@@ -1259,22 +1379,17 @@
 			justify-content: center;
 		}
 
-		.video-layout.expanded {
-			padding: 12px;
+		.trade-sheet-wrapper {
+			overflow-x: auto;
 		}
 
-		.play-btn {
-			width: 64px;
-			height: 64px;
-		}
-
-		.play-btn svg {
-			width: 26px;
-			height: 26px;
+		.trade-sheet {
+			min-width: 900px;
 		}
 	}
 
-	@media (max-width: 639px) {
+	/* Small Mobile (< 480px) */
+	@media (max-width: 479px) {
 		.hero-header-compact h1 {
 			font-size: 14px;
 		}
@@ -1284,11 +1399,11 @@
 		}
 
 		.video-info h2 {
-			font-size: 18px;
+			font-size: 20px;
 		}
 
-		.video-info p {
-			font-size: 12px;
+		.video-info .published-date {
+			font-size: 13px;
 		}
 
 		.entries-header h2 {
@@ -1297,6 +1412,16 @@
 
 		.entries-header p {
 			font-size: 13px;
+		}
+
+		.play-btn {
+			width: 56px;
+			height: 56px;
+		}
+
+		.play-btn svg {
+			width: 24px;
+			height: 24px;
 		}
 	}
 </style>
