@@ -110,7 +110,10 @@
 			try {
 				const parsed = new URL(url);
 				if (parsed.hostname !== 'iframe.mediadelivery.net') return '';
+				// Apple ICT 7: Full autoplay params for immediate playback
 				parsed.searchParams.set('autoplay', 'true');
+				parsed.searchParams.set('preload', 'true');
+				parsed.searchParams.set('responsive', 'true');
 				return parsed.toString();
 			} catch {
 				return '';
@@ -485,8 +488,7 @@
 		padding: 40px;
 		min-height: 400px;
 		overflow: hidden;
-		max-width: 1400px;
-		margin: 0 auto;
+		width: 100%;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -494,8 +496,6 @@
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.video-section {
 		position: relative;
-		max-width: 1000px;
-		margin: 0 auto;
 		width: 100%;
 	}
 
@@ -534,10 +534,11 @@
 
 	.video-layout {
 		display: flex;
-		gap: 30px;
+		gap: 40px;
 		align-items: center;
 		position: relative;
 		z-index: 1;
+		width: 100%;
 	}
 
 	.video-layout.playing {
@@ -568,8 +569,8 @@
 
 	.video-player-container.playing {
 		flex: none;
-		width: 75%;
-		max-width: 900px;
+		width: 80%;
+		max-width: 1200px;
 		transform: translateY(-12px);
 		box-shadow: 
 			0 25px 50px rgba(0, 0, 0, 0.4),
@@ -842,8 +843,7 @@
 	   ENTRIES TAB - Trade Sheet
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.entries-container {
-		max-width: 1400px;
-		margin: 0 auto;
+		width: 100%;
 	}
 
 	.entries-header {
@@ -1141,43 +1141,29 @@
 	   xl: 1280px, 2xl: 1440px, 3xl: 1920px
 	   ═══════════════════════════════════════════════════════════════════════════ */
 
-	/* Extra Large Screens (1440px+) - Prevent over-stretching */
+	/* Extra Large Screens (1440px+) */
 	@media (min-width: 1440px) {
 		.hero-content {
 			padding: 50px 60px;
 		}
 
-		.video-section {
-			max-width: 1100px;
-		}
-
 		.video-player-container {
-			flex: 0 0 58%;
-		}
-
-		.entries-container {
-			max-width: 1500px;
-		}
-	}
-
-	/* Ultra-wide Screens (1920px+) - Max constraints */
-	@media (min-width: 1920px) {
-		.hero-content {
-			padding: 60px 80px;
-			max-width: 1600px;
-		}
-
-		.video-section {
-			max-width: 1200px;
-		}
-
-		.video-player-container {
-			flex: 0 0 55%;
-			max-width: 700px;
+			flex: 0 0 60%;
 		}
 
 		.video-info {
-			max-width: 400px;
+			flex: 1;
+		}
+	}
+
+	/* Ultra-wide Screens (1920px+) */
+	@media (min-width: 1920px) {
+		.hero-content {
+			padding: 60px 80px;
+		}
+
+		.video-player-container {
+			flex: 0 0 65%;
 		}
 	}
 
@@ -1187,8 +1173,8 @@
 			padding: 45px 50px;
 		}
 
-		.video-section {
-			max-width: 1050px;
+		.video-player-container {
+			flex: 0 0 58%;
 		}
 	}
 
