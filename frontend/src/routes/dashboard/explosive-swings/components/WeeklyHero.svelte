@@ -494,9 +494,9 @@
 	}
 
 	.video-player-compact {
-		flex: 0 0 50%;
+		flex: 0 0 55%;
 		position: relative;
-		padding-bottom: 28%;
+		padding-bottom: 31%;
 		background-size: cover;
 		background-position: center;
 		border-radius: 12px;
@@ -547,7 +547,7 @@
 	   ENHANCED VIDEO PLAYER - ICT 7 In-Place Playback
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.video-player-wrapper {
-		flex: 0 0 50%;
+		flex: 0 0 55%;
 		position: relative;
 		border-radius: 12px;
 		overflow: hidden;
@@ -555,7 +555,7 @@
 	}
 
 	.video-player-wrapper.playing {
-		flex: 0 0 65%;
+		flex: 0 0 55%;
 		box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
 	}
 
