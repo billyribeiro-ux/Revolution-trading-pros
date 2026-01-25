@@ -116,13 +116,19 @@
 		}
 	}
 	
-	// Generate embed URL from video URL prop
+	// Generate embed URL from video URL prop with autoplay
 	function getEmbedUrl(url: string): string {
 		if (!url || url.startsWith('/')) return ''; // Block internal paths to prevent CSP errors
 		
 		// Bunny.net iframe URL
 		if (url.includes('iframe.mediadelivery.net') || url.includes('bunnycdn')) {
-			return url.includes('?') ? url + '&autoplay=true' : url + '?autoplay=true';
+			// Check if autoplay is already present
+			if (url.includes('autoplay=')) {
+				return url;
+			}
+			// Add autoplay parameter
+			const separator = url.includes('?') ? '&' : '?';
+			return `${url}${separator}autoplay=1`;
 		}
 		// Return empty for unknown URLs to prevent CSP errors
 		return '';
