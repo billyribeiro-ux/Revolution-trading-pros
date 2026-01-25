@@ -151,6 +151,7 @@
 	 * DASHBOARD HEADER - WordPress Exact Match
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* ICT 7: FULL WIDTH - NO GAPS EVER */
 	.dashboard__header {
 		display: flex;
 		flex-wrap: wrap;
@@ -159,19 +160,36 @@
 		border-bottom: 1px solid #dbdbdb;
 		border-right: 1px solid #dbdbdb;
 		padding: 20px;
-		margin: 0;
-		width: 100%;
+		margin: 0 !important;
+		width: 100% !important;
+		max-width: none !important;
+		box-sizing: border-box;
 	}
 
 	@media (min-width: 1280px) {
 		.dashboard__header {
 			padding: 30px;
+			width: 100% !important;
+			max-width: none !important;
+			margin: 0 !important;
 		}
 	}
 
 	@media (min-width: 1440px) {
 		.dashboard__header {
 			padding: 30px 40px;
+			width: 100% !important;
+			max-width: none !important;
+			margin: 0 !important;
+		}
+	}
+
+	@media (min-width: 1920px) {
+		.dashboard__header {
+			padding: 40px 60px;
+			width: 100% !important;
+			max-width: none !important;
+			margin: 0 !important;
 		}
 	}
 

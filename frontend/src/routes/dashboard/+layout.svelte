@@ -633,36 +633,45 @@
 	 * Container query support for component-level responsiveness
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
+	/* ICT 7: Main container - FULL WIDTH NO GAPS */
 	.dashboard__main {
 		flex: 1 1 auto;
-		min-inline-size: 0; /* Prevent flex overflow */
+		min-inline-size: 0;
 		background-color: #efefef;
 		position: relative;
 		container-type: inline-size;
 		container-name: dashboard-main;
+		width: 100% !important;
+		max-width: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Content Wrapper - WordPress Exact Match
-	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md:427-432
-	 * WordPress CSS: display: flex; flex-flow: row nowrap;
+	 * Content Wrapper - ICT 7: FULL WIDTH NO GAPS
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content {
 		display: flex;
 		flex-flow: row nowrap;
+		width: 100% !important;
+		max-width: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
-	 * Content Main - WordPress Exact Match
-	 * Source: DASHBOARD_DESIGN_SPECIFICATIONS.md:434-440
-	 * WordPress CSS: flex: 1 1 auto; min-width: 0; border-right: 1px solid #dbdbdb;
+	 * Content Main - ICT 7: FULL WIDTH NO GAPS
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	.dashboard__content-main {
 		flex: 1 1 auto;
 		min-width: 0;
 		border-right: 1px solid #dbdbdb;
+		width: 100% !important;
+		max-width: none !important;
+		margin: 0 !important;
+		padding: 0 !important;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -727,21 +736,9 @@
 	/* Desktop: >= 1024px (MacBook Air 13"+, iMac, Studio Display) */
 	/* Sidebar is static in flex layout, main content fills remaining space */
 
-	/* Large Desktop: >= 1440px (MacBook Pro 16", iMac 27") */
-	@media (width >= 1440px) {
-		.dashboard__main {
-			/* Additional spacing for large screens */
-			max-inline-size: 1920px;
-			margin-inline: auto;
-		}
-	}
-
-	/* Ultra-wide: >= 1920px (Pro Display XDR, Studio Display) */
-	@media (width >= 1920px) {
-		.dashboard__main {
-			max-inline-size: 2560px;
-		}
-	}
+	/* Large Desktop: >= 1440px - ICT 7: NO max-width constraints - full-width NO GAPS */
+	/* Ultra-wide: >= 1920px - ICT 7: NO max-width constraints - full-width NO GAPS */
+	/* Intentionally no rules needed - default flex behavior fills available space */
 
 	/* ═══════════════════════════════════════════════════════════════════════════
 	 * ACCESSIBILITY & USER PREFERENCES

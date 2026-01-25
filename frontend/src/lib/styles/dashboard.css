@@ -6,17 +6,39 @@
  * ═══════════════════════════════════════════════════════════════════════════
  */
 
-/* Dashboard Content Layout - Main + Sidebar Grid */
+/* ═══════════════════════════════════════════════════════════════════════════
+ * ICT 7 GLOBAL OVERRIDE: ALL DASHBOARD HEADERS MUST BE FULL WIDTH - NO GAPS
+ * This rule has maximum specificity to override all scoped component styles
+ * ═══════════════════════════════════════════════════════════════════════════ */
+.dashboard__main .dashboard__header,
+.dashboard__main header.dashboard__header,
+.dashboard__content .dashboard__header,
+.dashboard__content-main .dashboard__header,
+header[class*="dashboard__header"] {
+	margin: 0 !important;
+	width: 100% !important;
+	max-width: none !important;
+	box-sizing: border-box !important;
+}
+
+/* Dashboard Content Layout - Main + Sidebar Grid - ICT 7: NO GAPS */
 .dashboard__content {
 	display: flex;
 	flex-direction: row;
 	gap: 0;
-	width: 100%;
+	width: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
 }
 
 .dashboard__content-main {
 	flex: 1 1 auto;
 	min-width: 0;
+	width: 100% !important;
+	max-width: none !important;
+	margin: 0 !important;
+	padding: 0 !important;
 }
 
 .dashboard__content-sidebar {
@@ -28,7 +50,7 @@
 	display: none; /* Hidden by default - individual pages manage their own sidebars */
 }
 
-/* Dashboard Header - Apple ICT 7 Full Width */
+/* Dashboard Header - Apple ICT 7 Full Width - NO GAPS EVER */
 .dashboard__header {
 	display: flex;
 	flex-wrap: wrap;
@@ -37,8 +59,10 @@
 	padding: 30px;
 	background: var(--color-rtp-surface, #fff);
 	border-bottom: 1px solid var(--color-rtp-border, #e5e5e5);
-	margin: 0;
-	width: 100%;
+	margin: 0 !important;
+	width: 100% !important;
+	max-width: none !important;
+	box-sizing: border-box;
 }
 
 .dashboard__header-left {
@@ -293,10 +317,12 @@
 
 /* Ultra-wide (1920px+) */
 @media (min-width: 1920px) {
+	/* ICT 7: Headers are ALWAYS full-width - NO max-width, NO margin auto */
 	.dashboard__header {
 		padding: 40px 60px;
-		max-width: 1800px;
-		margin: 0 auto;
+		width: 100%;
+		max-width: none;
+		margin: 0;
 	}
 
 	.dashboard__content-section {
