@@ -18,9 +18,10 @@
 import type { Handle } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
+import { env } from '$env/dynamic/private';
 
 // API URL for server-side token validation
-const API_BASE_URL = process.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
+const API_BASE_URL = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
 
 /**
  * Protected routes that require authentication
