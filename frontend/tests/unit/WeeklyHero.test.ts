@@ -1,3 +1,5 @@
+/// <reference lib="es2020" />
+/// <reference lib="dom" />
 /**
  * WeeklyHero Component Unit Tests
  * 
@@ -6,7 +8,7 @@
  * @standards Apple Principal Engineer ICT 7+
  */
 
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // URL VALIDATION FUNCTIONS (Copy from component for isolated testing)
@@ -48,7 +50,7 @@ describe('isValidVideoUrl', () => {
         'https://iframe.mediadelivery.net/embed/585929/video-id?autoplay=true'
       ];
       
-      validUrls.forEach(url => {
+      validUrls.forEach((url: string) => {
         expect(isValidVideoUrl(url)).toBe(true);
       });
     });
@@ -64,7 +66,7 @@ describe('isValidVideoUrl', () => {
         'https://vimeo.com/123456789',
         'https://player.vimeo.com/video/123456789'
       ];
-      vimeoUrls.forEach(url => {
+      vimeoUrls.forEach((url: string) => {
         expect(isValidVideoUrl(url)).toBe(false);
       });
     });
@@ -74,7 +76,7 @@ describe('isValidVideoUrl', () => {
         'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
         'https://www.youtube.com/embed/dQw4w9WgXcQ'
       ];
-      youtubeUrls.forEach(url => {
+      youtubeUrls.forEach((url: string) => {
         expect(isValidVideoUrl(url)).toBe(false);
       });
     });
@@ -96,7 +98,7 @@ describe('isValidVideoUrl', () => {
         'https://evil.com/redirect?to=iframe.mediadelivery.net'
       ];
       
-      xssUrls.forEach(url => {
+      xssUrls.forEach((url: string) => {
         // Either returns false or URL API sanitizes the injection
         const result = isValidVideoUrl(url);
         // The last one should definitely be false (wrong domain)
@@ -114,7 +116,7 @@ describe('isValidVideoUrl', () => {
         'https://youtube.com.fake.com/watch?v=abc'
       ];
       
-      spoofedUrls.forEach(url => {
+      spoofedUrls.forEach((url: string) => {
         expect(isValidVideoUrl(url)).toBe(false);
       });
     });
@@ -127,7 +129,7 @@ describe('isValidVideoUrl', () => {
         'https://evil-video-host.com/embed/123'
       ];
       
-      invalidDomains.forEach(url => {
+      invalidDomains.forEach((url: string) => {
         expect(isValidVideoUrl(url)).toBe(false);
       });
     });
@@ -161,7 +163,7 @@ describe('isValidVideoUrl', () => {
         'iframe.mediadelivery.net/embed/123/video'
       ];
       
-      malformedUrls.forEach(url => {
+      malformedUrls.forEach((url: string) => {
         expect(isValidVideoUrl(url)).toBe(false);
       });
     });
@@ -212,7 +214,7 @@ describe('getEmbedUrl', () => {
         'javascript:alert(1)'
       ];
       
-      invalidUrls.forEach(url => {
+      invalidUrls.forEach((url: string) => {
         expect(getEmbedUrl(url)).toBe('');
       });
     });
@@ -259,11 +261,11 @@ describe('WeeklyHero Component Logic', () => {
       const validTabs = ['video', 'entries'];
       const invalidTabs = ['invalid', '', null, undefined, 123];
       
-      validTabs.forEach(tab => {
+      validTabs.forEach((tab: string) => {
         expect(['video', 'entries'].includes(tab)).toBe(true);
       });
       
-      invalidTabs.forEach(tab => {
+      invalidTabs.forEach((tab: string | number | null | undefined) => {
         expect(['video', 'entries'].includes(tab as any)).toBe(false);
       });
     });
@@ -321,8 +323,8 @@ describe('Test Fixtures Validation', () => {
       'runner', 'stop', 'optionsStrike', 'optionsExp', 'notes'
     ];
     
-    mockTradePlan.forEach(entry => {
-      requiredFields.forEach(field => {
+    mockTradePlan.forEach((entry: typeof mockTradePlan[0]) => {
+      requiredFields.forEach((field: string) => {
         expect(entry).toHaveProperty(field);
       });
     });
