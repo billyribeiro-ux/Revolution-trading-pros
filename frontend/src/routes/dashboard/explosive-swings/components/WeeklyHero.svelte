@@ -146,10 +146,6 @@
 </script>
 
 <section class="hero" class:collapsed={isCollapsed} class:video-playing={isVideoPlaying}>
-	<!-- Background blur overlay when video is playing -->
-	{#if isVideoPlaying}
-		<div class="hero-backdrop-overlay" onclick={closeVideo} role="presentation"></div>
-	{/if}
 	<button class="hero-collapse-toggle" onclick={toggleCollapse}>
 		<div class="hero-header-compact">
 			<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" class="video-icon">
@@ -560,25 +556,6 @@
 		background: rgba(255, 255, 255, 1);
 		backdrop-filter: blur(20px);
 		-webkit-backdrop-filter: blur(20px);
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
-	   HERO BACKDROP OVERLAY - ICT 7 Video Playing State
-	   Creates blur effect behind video when playing
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.hero-backdrop-overlay {
-		position: fixed;
-		inset: 0;
-		background: rgba(20, 62, 89, 0.85);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
-		z-index: 100;
-		animation: fadeIn 0.3s ease-out;
-	}
-
-	@keyframes fadeIn {
-		from { opacity: 0; }
-		to { opacity: 1; }
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
