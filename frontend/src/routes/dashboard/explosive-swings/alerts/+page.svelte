@@ -8,14 +8,15 @@
 	 * @version 1.1.0
 	 * @svelte5 Fully compliant with Svelte 5 Nov/Dec 2025 best practices
 	 */
-	import { onMount } from 'svelte';
 	import { IconFilter, IconSearch } from '$lib/icons';
 	import type { RoomAlert } from '$lib/types/trading';
 
 	// Props interface for SSR data - Svelte 5 best practice
 	interface Props {
 		data: {
-			alerts?: any[];
+			alerts: RoomAlert[];
+			total: number;
+			error?: string;
 		};
 	}
 
@@ -24,40 +25,41 @@
 	// Svelte 5 $state for filter state
 	let selectedFilter = $state('all');
 	let searchQuery = $state('');
-	let apiAlerts = $state<RoomAlert[]>([]);
-	let isLoading = $state(false);
-	let pagination = $state({ total: 0, limit: 50, offset: 0 });
+	
+	// SSR error state (derived to stay reactive with props)
+	const errorMessage = $derived(data.error ?? '');
 
-	const ROOM_SLUG = 'explosive-swings';
+	// Pagination for future client-side navigation
+	const paginationTotal = $derived(data.total ?? 0);
+	let pagination = $state({ limit: 50, offset: 0 });
 
-	// Fetch alerts from API
-	async function fetchAlerts() {
-		isLoading = true;
-		try {
-			const params = new URLSearchParams({
-				limit: pagination.limit.toString(),
-				offset: pagination.offset.toString()
-			});
+	/**
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * DEVELOPMENT REFERENCE DATA
+	 * ═══════════════════════════════════════════════════════════════════════════
+	 * Mock alerts for development/testing only.
+	 * In production, data comes from SSR via +page.server.ts
+	 * 
+	 * To use: Set USE_MOCK_DATA = true below
+	 */
+	const USE_MOCK_DATA = false; // Set true for local dev without backend
 
-			const response = await fetch(`/api/alerts/${ROOM_SLUG}?${params}`);
-			const data = await response.json();
-			if (data.success) {
-				apiAlerts = data.data;
-				pagination.total = data.total;
-			}
-		} catch (err) {
-			console.error('Failed to fetch alerts:', err);
-		} finally {
-			isLoading = false;
-		}
+	// Display alert interface for type consistency
+	interface DisplayAlert {
+		id: number;
+		type: string;
+		alertType?: string;
+		title: string;
+		date: string;
+		excerpt: string;
+		status: string;
+		profitLoss: string | null;
+		href: string;
+		tosString?: string | null;
+		ticker?: string;
 	}
 
-	onMount(() => {
-		fetchAlerts();
-	});
-
-	// All alerts data
-	const allAlerts = [
+	const mockAlerts: DisplayAlert[] = [
 		{
 			id: 1,
 			type: 'Trade Alert',
@@ -163,24 +165,28 @@
 		);
 	}
 
-	// Derive display alerts from API or fallback
-	const displayAlerts = $derived(
-		apiAlerts.length > 0
-			? apiAlerts.map((a) => ({
-					id: a.id,
-					type: a.alert_type === 'UPDATE' ? 'Market Update' : 'Trade Alert',
-					alertType: a.alert_type,
-					title: a.title,
-					date: formatAlertDate(a.published_at),
-					excerpt: a.message,
-					status: a.alert_type === 'UPDATE' ? 'Info' : a.alert_type === 'EXIT' ? 'Closed' : 'Open',
-					profitLoss: null as string | null, // Would come from linked trade
-					href: `/dashboard/explosive-swings/alerts/${a.id}`,
-					tosString: a.tos_string,
-					ticker: a.ticker
-				}))
-			: allAlerts
-	);
+	// Derive display alerts from SSR data or mock
+	const displayAlerts = $derived.by((): DisplayAlert[] => {
+		// Development mode: use mock data
+		if (USE_MOCK_DATA) {
+			return mockAlerts;
+		}
+		
+		// Production: transform SSR data
+		return data.alerts.map((a): DisplayAlert => ({
+			id: a.id,
+			type: a.alert_type === 'UPDATE' ? 'Market Update' : 'Trade Alert',
+			alertType: a.alert_type,
+			title: a.title,
+			date: formatAlertDate(a.published_at),
+			excerpt: a.message,
+			status: a.alert_type === 'UPDATE' ? 'Info' : a.alert_type === 'EXIT' ? 'Closed' : 'Open',
+			profitLoss: null,
+			href: `/dashboard/explosive-swings/alerts/${a.id}`,
+			tosString: a.tos_string,
+			ticker: a.ticker
+		}));
+	});
 
 	// Filtered alerts based on selection and search
 	const filteredAlerts = $derived.by(() => {
@@ -246,6 +252,7 @@
 					<button
 						class="filter-btn"
 						class:active={selectedFilter === 'all'}
+						aria-pressed={selectedFilter === 'all'}
 						onclick={() => (selectedFilter = 'all')}
 					>
 						All Alerts
@@ -253,6 +260,7 @@
 					<button
 						class="filter-btn"
 						class:active={selectedFilter === 'trades'}
+						aria-pressed={selectedFilter === 'trades'}
 						onclick={() => (selectedFilter = 'trades')}
 					>
 						Trade Alerts
@@ -260,6 +268,7 @@
 					<button
 						class="filter-btn"
 						class:active={selectedFilter === 'updates'}
+						aria-pressed={selectedFilter === 'updates'}
 						onclick={() => (selectedFilter = 'updates')}
 					>
 						Market Updates
@@ -267,7 +276,8 @@
 				</div>
 
 				<div class="search-container">
-					<IconSearch size={18} />
+					<IconSearch size={18} aria-hidden="true" />
+					<label for="search-alerts" class="sr-only">Search alerts</label>
 					<input
 						id="search-alerts"
 						name="search-alerts"
@@ -278,6 +288,18 @@
 					/>
 				</div>
 			</div>
+
+			<!-- Error State -->
+			{#if errorMessage}
+				<div class="error-banner" role="alert">
+					<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20" aria-hidden="true">
+						<circle cx="12" cy="12" r="10" />
+						<path d="M12 8v4M12 16h.01" />
+					</svg>
+					<p>{errorMessage}</p>
+					<a href="/dashboard/explosive-swings/alerts" class="retry-link">Reload Page</a>
+				</div>
+			{/if}
 
 			<!-- Results Count -->
 			<div class="results-count">
@@ -637,5 +659,75 @@
 	.no-results p {
 		font-size: 16px;
 		margin: 0;
+	}
+
+	/* Screen reader only */
+	.sr-only {
+		position: absolute;
+		width: 1px;
+		height: 1px;
+		padding: 0;
+		margin: -1px;
+		overflow: hidden;
+		clip: rect(0, 0, 0, 0);
+		white-space: nowrap;
+		border: 0;
+	}
+
+	/* Error Banner */
+	.error-banner {
+		background: linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%);
+		border: 1px solid #fecaca;
+		border-radius: 8px;
+		padding: 16px 20px;
+		margin-bottom: 24px;
+		display: flex;
+		align-items: center;
+		gap: 12px;
+		color: #dc2626;
+	}
+
+	.error-banner svg {
+		flex-shrink: 0;
+	}
+
+	.error-banner p {
+		margin: 0;
+		font-weight: 500;
+		flex: 1;
+	}
+
+	.retry-link {
+		padding: 8px 16px;
+		background: #dc2626;
+		color: white;
+		border-radius: 6px;
+		font-weight: 600;
+		font-size: 13px;
+		text-decoration: none;
+		transition: background 0.2s;
+		white-space: nowrap;
+	}
+
+	.retry-link:hover {
+		background: #b91c1c;
+	}
+
+	/* Focus Visible */
+	.filter-btn:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
+	}
+
+	.search-container:focus-within {
+		border-color: #143e59;
+		box-shadow: 0 0 0 3px rgba(20, 62, 89, 0.1);
+	}
+
+	.alert-title a:focus-visible,
+	.alert-link:focus-visible,
+	.retry-link:focus-visible {
+		outline: 2px solid #143e59;
+		outline-offset: 2px;
 	}
 </style>
