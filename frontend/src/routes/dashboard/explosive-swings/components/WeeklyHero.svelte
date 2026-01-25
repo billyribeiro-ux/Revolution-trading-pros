@@ -22,6 +22,7 @@
 		thumbnail: string;
 		duration: string;
 		videoTitle: string;
+		videoUrl: string;
 		publishedDate: string;
 	}
 
@@ -43,6 +44,7 @@
 		weeklyContent: WeeklyContent;
 		tradePlan: TradePlanEntry[];
 		videoUrl?: string;
+		fullVideoUrl?: string;
 		sheetUrl?: string;
 		isAdmin?: boolean;
 		roomSlug?: string;
@@ -54,7 +56,8 @@
 	const {
 		weeklyContent,
 		tradePlan,
-		videoUrl = '/dashboard/explosive-swings/video/weekly',
+		videoUrl,
+		fullVideoUrl,
 		sheetUrl = 'https://docs.google.com/spreadsheets/d/your-sheet-id',
 		isAdmin = false,
 		roomSlug = 'explosive-swings',
@@ -62,6 +65,10 @@
 		onEditEntry,
 		onUploadVideo
 	}: Props = $props();
+	
+	// Derived values after props are destructured
+	const embedUrl = $derived(videoUrl || weeklyContent.videoUrl || '');
+	const watchFullUrl = $derived(fullVideoUrl || `/dashboard/${roomSlug}/video/weekly`);
 
 	// Component-local state (Svelte 5 $state rune)
 	let heroTab = $state<'video' | 'entries'>('video');
@@ -117,8 +124,6 @@
 		if (url.includes('iframe.mediadelivery.net') || url.includes('bunnycdn')) {
 			return url.includes('?') ? url + '&autoplay=true' : url + '?autoplay=true';
 		}
-		
-		
 		// Return empty for unknown URLs to prevent CSP errors
 		return '';
 	}
@@ -197,12 +202,12 @@
 					>
 						{#if isVideoPlaying}
 							<!-- Active Video Player -->
-							{@const embedUrl = getEmbedUrl(videoUrl)}
+							{@const safeEmbedUrl = getEmbedUrl(embedUrl)}
 							<div class="video-backdrop-blur"></div>
 							<div class="video-frame-container">
-								{#if embedUrl}
+								{#if safeEmbedUrl}
 									<iframe
-										src={embedUrl}
+										src={safeEmbedUrl}
 										title={weeklyContent.videoTitle}
 										frameborder="0"
 										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
@@ -261,7 +266,7 @@
 								Upload New Video
 							</button>
 						{/if}
-						<a href={videoUrl} class="watch-btn">
+						<a href={watchFullUrl} class="watch-btn">
 							Watch Full Video
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
 								<path d="M5 12h14M12 5l7 7-7 7" />
