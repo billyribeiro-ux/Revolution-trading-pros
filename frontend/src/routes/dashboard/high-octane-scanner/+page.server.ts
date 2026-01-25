@@ -27,7 +27,7 @@ export const load = (async ({ fetch }) => {
 	// Parallel fetch for optimal performance
 	const [watchlist, tutorialRes, updatesRes, documentsRes] = await Promise.all([
 		// Weekly watchlist
-		getLatestWatchlist('high-octane-scanner', fetch),
+		getLatestWatchlist('high-octane-scanner', fetch, baseUrl),
 
 		// Featured tutorial video
 		fetch(

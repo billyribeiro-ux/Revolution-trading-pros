@@ -10,9 +10,6 @@
  * @version 1.0.0
  */
 
-// ICT 11+ CORB Fix: Server-side code uses env variable
-const API_BASE = process.env.VITE_API_URL || 'https://revolution-trading-pros-api.fly.dev';
-
 export interface WatchlistData {
 	id: number;
 	slug: string;
@@ -36,11 +33,13 @@ export interface WatchlistResponse {
  * Fetch the latest published watchlist entry
  * @param roomSlug - Optional room filter (e.g., 'day-trading-room')
  * @param fetchFn - SvelteKit's fetch function from load context
+ * @param apiBaseUrl - API base URL (required for server-side)
  * @returns Watchlist data or null if not found
  */
 export async function getLatestWatchlist(
 	roomSlug?: string,
-	fetchFn: typeof fetch = fetch
+	fetchFn: typeof fetch = fetch,
+	apiBaseUrl: string = 'https://revolution-trading-pros-api.fly.dev'
 ): Promise<WatchlistData | null> {
 	try {
 		const params = new URLSearchParams({
@@ -52,7 +51,7 @@ export async function getLatestWatchlist(
 			params.set('room', roomSlug);
 		}
 
-		const response = await fetchFn(`${API_BASE}/api/watchlist?${params}`, {
+		const response = await fetchFn(`${apiBaseUrl}/api/watchlist?${params}`, {
 			headers: {
 				Accept: 'application/json',
 				'Content-Type': 'application/json'
@@ -81,14 +80,16 @@ export async function getLatestWatchlist(
  * Fetch watchlist by slug
  * @param slug - Watchlist entry slug
  * @param fetchFn - SvelteKit's fetch function from load context
+ * @param apiBaseUrl - API base URL (required for server-side)
  * @returns Watchlist data or null if not found
  */
 export async function getWatchlistBySlug(
 	slug: string,
-	fetchFn: typeof fetch = fetch
+	fetchFn: typeof fetch = fetch,
+	apiBaseUrl: string = 'https://revolution-trading-pros-api.fly.dev'
 ): Promise<WatchlistData | null> {
 	try {
-		const response = await fetchFn(`${API_BASE}/api/watchlist/${slug}`, {
+		const response = await fetchFn(`${apiBaseUrl}/api/watchlist/${slug}`, {
 			headers: {
 				Accept: 'application/json',
 				'Content-Type': 'application/json'
