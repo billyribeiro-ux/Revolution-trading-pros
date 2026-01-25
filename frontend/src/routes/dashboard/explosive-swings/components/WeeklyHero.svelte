@@ -5,7 +5,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
 	 * @description Hero section with video breakdown and trade plan tabs
-	 * @version 5.0.0 - ICT 7 Security & Accessibility Refactor
+	 * @version 4.1.0 - Visual Polish Pass
 	 * @requires Svelte 5.0+ (January 2026 syntax)
 	 * @standards Apple Principal Engineer ICT 7+ Standards
 	 *
@@ -17,15 +17,11 @@
 	 * - ~200 lines HTML + ~300 lines CSS = distinct UI block
 	 */
 
-	import { onMount } from 'svelte';
-
-
 	interface WeeklyContent {
 		title: string;
 		thumbnail: string;
 		duration: string;
 		videoTitle: string;
-		videoUrl: string;
 		publishedDate: string;
 	}
 
@@ -58,7 +54,7 @@
 	const {
 		weeklyContent,
 		tradePlan,
-		videoUrl = weeklyContent.videoUrl || '/dashboard/explosive-swings/video/weekly',
+		videoUrl = '/dashboard/explosive-swings/video/weekly',
 		sheetUrl = 'https://docs.google.com/spreadsheets/d/your-sheet-id',
 		isAdmin = false,
 		roomSlug = 'explosive-swings',
@@ -76,142 +72,75 @@
 	let isVideoPlaying = $state(false);
 	let isVideoExpanded = $state(false);
 	let videoPlayerRef = $state<HTMLDivElement | null>(null);
-	let videoLoadError = $state(false);
-	
-	// Accessibility: ARIA live region announcements
-	let announcement = $state('');
-	
-	function announce(message: string) {
-		announcement = message;
-		setTimeout(() => { announcement = ''; }, 1000);
-	}
 
 	function toggleCollapse() {
 		isCollapsed = !isCollapsed;
-		announce(isCollapsed ? 'Section collapsed' : 'Section expanded');
 	}
 	
 	// Video player controls
 	function playVideo() {
-		// Only play if we have a valid video URL
-		if (!canPlayVideo) {
-			console.warn('[WeeklyHero] Cannot play video: Invalid or missing video URL');
-			return;
-		}
-		videoLoadError = false;
 		isVideoPlaying = true;
-		announce('Video playing');
 	}
 	
 	function closeVideo() {
 		isVideoPlaying = false;
 		isVideoExpanded = false;
-		announce('Video closed');
 	}
 	
-	async function toggleFullscreen() {
-		try {
-			if (!isVideoExpanded && videoPlayerRef) {
-				await (videoPlayerRef.requestFullscreen?.() ?? 
-					(videoPlayerRef as any).webkitRequestFullscreen?.() ??
-					Promise.reject(new Error('Fullscreen not supported')));
-				isVideoExpanded = true;
-			} else if (document.fullscreenElement) {
-				await document.exitFullscreen();
-				isVideoExpanded = false;
+	function toggleFullscreen() {
+		isVideoExpanded = !isVideoExpanded;
+		
+		// Native fullscreen API
+		if (isVideoExpanded && videoPlayerRef) {
+			if (videoPlayerRef.requestFullscreen) {
+				videoPlayerRef.requestFullscreen();
+			} else if ((videoPlayerRef as any).webkitRequestFullscreen) {
+				(videoPlayerRef as any).webkitRequestFullscreen();
 			}
-		} catch {
-			isVideoExpanded = false;
+		} else if (document.fullscreenElement) {
+			document.exitFullscreen();
 		}
 	}
 	
-	function handleVideoError() {
-		videoLoadError = true;
-		console.error('[WeeklyHero] Video iframe failed to load');
-	}
-	
-	function handleVideoLoad() {
-		videoLoadError = false;
-	}
-	
-	// Bunny.net only validation
-	function isValidVideoUrl(url: string): boolean {
-		if (!url || typeof url !== 'string' || url.trim() === '') return false;
-		try {
-			const parsed = new URL(url);
-			return parsed.protocol === 'https:' && parsed.hostname === 'iframe.mediadelivery.net';
-		} catch {
-			return false;
+	// Keyboard handler for video player
+	function handleVideoKeydown(e: KeyboardEvent) {
+		if (e.key === 'Escape' && isVideoPlaying) {
+			closeVideo();
 		}
 	}
-
+	
+	// Generate embed URL from video URL prop
 	function getEmbedUrl(url: string): string {
-		if (!isValidVideoUrl(url)) return '';
-		try {
-			const parsed = new URL(url);
-			parsed.searchParams.set('autoplay', 'true');
-			return parsed.toString();
-		} catch {
-			return '';
+		// Bunny.net iframe URL
+		if (url.includes('iframe.mediadelivery.net') || url.includes('bunnycdn')) {
+			return url;
 		}
+		// Vimeo
+		if (url.includes('vimeo.com')) {
+			const match = url.match(/vimeo\.com\/(\d+)/);
+			if (match) return `https://player.vimeo.com/video/${match[1]}?autoplay=1`;
+		}
+		// YouTube
+		if (url.includes('youtube.com') || url.includes('youtu.be')) {
+			const match = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&]+)/);
+			if (match) return `https://www.youtube.com/embed/${match[1]}?autoplay=1`;
+		}
+		return url;
 	}
-	
-	// Derived: Can we play video inline?
-	const canPlayVideo = $derived(isValidVideoUrl(videoUrl));
 
 	function toggleTradeNotes(ticker: string) {
 		const newSet = new Set(expandedTradeNotes);
-		const expanded = newSet.has(ticker);
-		if (expanded) {
+		if (newSet.has(ticker)) {
 			newSet.delete(ticker);
 		} else {
 			newSet.add(ticker);
 		}
 		expandedTradeNotes = newSet;
-		announce(`Notes ${expanded ? 'collapsed' : 'expanded'} for ${ticker}`);
 	}
-
-	// ═══════════════════════════════════════════════════════════════════════════════
-	// Lifecycle: Event Cleanup (P0 Security)
-	// ═══════════════════════════════════════════════════════════════════════════════
-	onMount(() => {
-		const handleFullscreenChange = () => {
-			if (!document.fullscreenElement && isVideoExpanded) {
-				isVideoExpanded = false;
-			}
-		};
-		
-		const handleEscapeKey = (e: KeyboardEvent) => {
-			if (e.key === 'Escape' && isVideoPlaying) {
-				closeVideo();
-			}
-		};
-		
-		document.addEventListener('fullscreenchange', handleFullscreenChange);
-		document.addEventListener('keydown', handleEscapeKey);
-		
-		return () => {
-			document.removeEventListener('fullscreenchange', handleFullscreenChange);
-			document.removeEventListener('keydown', handleEscapeKey);
-			if (document.fullscreenElement) {
-				document.exitFullscreen().catch(() => {});
-			}
-		};
-	});
 </script>
 
-<!-- Accessibility: ARIA Live Region for Screen Readers -->
-<div class="sr-only" role="status" aria-live="polite" aria-atomic="true">
-	{announcement}
-</div>
-
-<section class="hero" class:collapsed={isCollapsed} id="hero-content-panel">
-	<button 
-		class="hero-collapse-toggle" 
-		onclick={toggleCollapse}
-		aria-expanded={!isCollapsed}
-		aria-controls="hero-content-panel"
-	>
+<section class="hero" class:collapsed={isCollapsed}>
+	<button class="hero-collapse-toggle" onclick={toggleCollapse}>
 		<div class="hero-header-compact">
 			<svg viewBox="0 0 24 24" fill="currentColor" width="20" height="20" class="video-icon">
 				<path d="M8 5v14l11-7z" />
@@ -236,16 +165,8 @@
 	</button>
 
 	{#if !isCollapsed}
-		<div class="hero-tabs-bar" role="tablist" aria-label="Content sections">
-			<button 
-				class="hero-tab" 
-				class:active={heroTab === 'video'} 
-				onclick={() => (heroTab = 'video')}
-				role="tab"
-				aria-selected={heroTab === 'video'}
-				aria-controls="tab-panel-video"
-				id="tab-video"
-			>
+		<div class="hero-tabs-bar">
+			<button class="hero-tab" class:active={heroTab === 'video'} onclick={() => (heroTab = 'video')}>
 				<svg viewBox="0 0 24 24" fill="currentColor" width="18" height="18">
 					<path d="M8 5v14l11-7z" />
 				</svg>
@@ -255,10 +176,6 @@
 				class="hero-tab"
 				class:active={heroTab === 'entries'}
 				onclick={() => (heroTab = 'entries')}
-				role="tab"
-				aria-selected={heroTab === 'entries'}
-				aria-controls="tab-panel-entries"
-				id="tab-entries"
 			>
 				<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
 					<rect x="3" y="3" width="18" height="18" rx="2" />
@@ -271,46 +188,28 @@
 		<div class="hero-content">
 			{#if heroTab === 'video'}
 				<!-- VIDEO TAB - Enhanced In-Place Player -->
-				<div 
-					class="video-container-compact" 
-					class:video-active={isVideoPlaying}
-					role="tabpanel"
-					id="tab-panel-video"
-					aria-labelledby="tab-video"
-				>
+				<div class="video-container-compact" class:video-active={isVideoPlaying}>
 					<!-- Video Player with Blur Background -->
-					<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 					<div 
 						bind:this={videoPlayerRef}
 						class="video-player-wrapper"
 						class:playing={isVideoPlaying}
 						class:expanded={isVideoExpanded}
-						tabindex={isVideoPlaying ? 0 : -1}
-						role="application"
+						onkeydown={handleVideoKeydown}
+						role="region"
 						aria-label="Video player"
 					>
-						{#if isVideoPlaying && canPlayVideo}
+						{#if isVideoPlaying}
 							<!-- Active Video Player -->
-							{@const safeEmbedUrl = getEmbedUrl(videoUrl)}
 							<div class="video-backdrop-blur"></div>
 							<div class="video-frame-container">
-								{#if safeEmbedUrl && !videoLoadError}
-									<iframe
-										src={safeEmbedUrl}
-										title={weeklyContent.videoTitle}
-										frameborder="0"
-										allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
-										allowfullscreen
-										onerror={handleVideoError}
-										onload={handleVideoLoad}
-									></iframe>
-								{/if}
-								{#if !safeEmbedUrl || videoLoadError}
-									<div class="video-error" role="alert">
-										<p>Video failed to load</p>
-										<button class="retry-btn" onclick={playVideo}>Retry</button>
-									</div>
-								{/if}
+								<iframe
+									src={getEmbedUrl(videoUrl)}
+									title={weeklyContent.videoTitle}
+									frameborder="0"
+									allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
+									allowfullscreen
+								></iframe>
 								
 								<!-- Video Controls Overlay -->
 								<div class="video-controls-bar">
@@ -370,12 +269,7 @@
 				</div>
 			{:else}
 				<!-- ENTRIES TAB - Trade Plan Sheet -->
-				<div 
-					class="entries-container"
-					role="tabpanel"
-					id="tab-panel-entries"
-					aria-labelledby="tab-entries"
-				>
+				<div class="entries-container">
 					<div class="entries-header">
 						<div class="entries-title-row">
 							<div>
@@ -443,9 +337,7 @@
 											class="table-notes-btn"
 											class:expanded={expandedTradeNotes.has(trade.ticker)}
 											onclick={() => toggleTradeNotes(trade.ticker)}
-											aria-expanded={expandedTradeNotes.has(trade.ticker)}
-											aria-controls="notes-{trade.ticker}"
-											aria-label="{expandedTradeNotes.has(trade.ticker) ? 'Hide' : 'Show'} notes for {trade.ticker}"
+											aria-label="Toggle notes for {trade.ticker}"
 										>
 											<svg
 												class="chevron-icon"
@@ -462,7 +354,7 @@
 									</td>
 								</tr>
 									{#if expandedTradeNotes.has(trade.ticker)}
-										<tr class="notes-row expanded" id="notes-{trade.ticker}">
+										<tr class="notes-row expanded">
 											<td colspan="11">
 												<div class="trade-notes-panel">
 													<div class="trade-notes-badge">{trade.ticker}</div>
@@ -491,43 +383,12 @@
 
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
-	   ACCESSIBILITY: Screen Reader Only Utility
-	   ═══════════════════════════════════════════════════════════════════════════ */
-	.sr-only {
-		position: absolute;
-		width: 1px;
-		height: 1px;
-		padding: 0;
-		margin: -1px;
-		overflow: hidden;
-		clip: rect(0, 0, 0, 0);
-		white-space: nowrap;
-		border: 0;
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════════
 	   HERO SECTION - Collapsible Accordion
-	   Design Tokens: Dashboard color scheme
 	   ═══════════════════════════════════════════════════════════════════════════ */
 	.hero {
-		/* Design Tokens */
-		--color-dashboard-accent: #143e59;
-		--color-dashboard-accent-dark: #0f2d42;
-		--color-dashboard-primary: #f69532;
-		--color-dashboard-primary-dark: #e8850d;
-		
-		/* Aspect Ratios */
-		--aspect-16-9: 56.25%;
-		--aspect-compact: 28%;
-		
-		/* Transitions */
-		--transition-fast: 0.15s ease;
-		--transition-normal: 0.2s ease;
-		--transition-slow: 0.3s ease;
-		
-		background: linear-gradient(135deg, var(--color-dashboard-primary) 0%, var(--color-dashboard-primary-dark) 50%, #d4790a 100%);
+		background: linear-gradient(135deg, #f69532 0%, #e8850d 50%, #d4790a 100%);
 		padding: 0;
-		transition: all var(--transition-slow);
+		transition: all 0.3s ease;
 	}
 
 	.hero.collapsed {
@@ -666,8 +527,26 @@
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
-		transition: transform 0.3s;
+		transition: transform 0.3s, box-shadow 0.3s;
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+		position: relative;
+	}
+
+	.play-btn::before,
+	.play-btn::after {
+		content: '';
+		position: absolute;
+		inset: -8px;
+		border-radius: 50%;
+		border: 2px solid rgba(255, 255, 255, 0.5);
+		opacity: 0;
+		transition: opacity 0.3s ease;
+		pointer-events: none;
+	}
+
+	.play-btn::after {
+		inset: -16px;
+		border-color: rgba(255, 255, 255, 0.3);
 	}
 
 	.play-btn svg {
@@ -679,6 +558,28 @@
 
 	.video-player-compact:hover .play-btn {
 		transform: scale(1.1);
+		box-shadow: 0 12px 40px rgba(0, 0, 0, 0.4);
+	}
+
+	.video-player-compact:hover .play-btn::before {
+		opacity: 1;
+		animation: playPulse 1.5s ease-out infinite;
+	}
+
+	.video-player-compact:hover .play-btn::after {
+		opacity: 1;
+		animation: playPulse 1.5s ease-out infinite 0.3s;
+	}
+
+	@keyframes playPulse {
+		0% {
+			transform: scale(1);
+			opacity: 0.8;
+		}
+		100% {
+			transform: scale(1.5);
+			opacity: 0;
+		}
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -687,15 +588,13 @@
 	.video-player-wrapper {
 		flex: 0 0 50%;
 		position: relative;
+		border-radius: 12px;
+		overflow: hidden;
 		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
-	.video-player-wrapper .video-player-compact {
-		flex: none;
-		padding-bottom: 56.25%;
-	}
-
 	.video-player-wrapper.playing {
+		flex: 0 0 65%;
 		box-shadow: 0 25px 60px rgba(0, 0, 0, 0.4);
 	}
 
@@ -794,47 +693,21 @@
 		text-overflow: ellipsis;
 	}
 
-	/* Video Info hidden when playing inline */
+	/* Video Active State - Adjusts layout */
+	.video-container-compact.video-active {
+		flex-direction: column;
+		gap: 20px;
+	}
+
+	.video-container-compact.video-active .video-player-wrapper {
+		flex: none;
+		width: 100%;
+		max-width: 900px;
+		margin: 0 auto;
+	}
+
 	.video-info-compact.hidden {
 		display: none;
-	}
-
-	/* Video Error State */
-	.video-error {
-		position: absolute;
-		inset: 0;
-		display: flex;
-		flex-direction: column;
-		align-items: center;
-		justify-content: center;
-		gap: 16px;
-		background: rgba(0, 0, 0, 0.8);
-		color: #fff;
-		font-size: 16px;
-	}
-
-	.video-error p {
-		margin: 0;
-	}
-
-	.retry-btn {
-		display: inline-flex;
-		align-items: center;
-		justify-content: center;
-		padding: 10px 20px;
-		background: var(--color-dashboard-accent, #143e59);
-		color: #fff;
-		border: none;
-		border-radius: 8px;
-		font-size: 14px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all var(--transition-normal, 0.2s ease);
-	}
-
-	.retry-btn:hover {
-		background: var(--color-dashboard-accent-dark, #0f2d42);
-		transform: scale(1.05);
 	}
 
 	.video-duration {
@@ -872,18 +745,18 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 10px;
-		background: var(--color-dashboard-accent, #143e59);
+		background: #143e59;
 		color: #fff;
 		padding: 16px 32px;
 		border-radius: 10px;
 		font-size: 16px;
 		font-weight: 700;
 		text-decoration: none;
-		transition: all var(--transition-slow, 0.3s ease);
+		transition: all 0.3s;
 	}
 
 	.watch-btn:hover {
-		background: var(--color-dashboard-accent-dark, #0f2d42);
+		background: #0f2d42;
 		transform: translateY(-2px);
 	}
 
@@ -926,7 +799,7 @@
 	}
 
 	.trade-sheet thead {
-		background: var(--color-dashboard-accent, #143e59);
+		background: #143e59;
 		color: #fff;
 	}
 
@@ -956,7 +829,7 @@
 
 	.ticker-cell strong {
 		font-size: 16px;
-		color: var(--color-dashboard-accent, #143e59);
+		color: #143e59;
 	}
 
 	.edit-entry-btn {
@@ -977,8 +850,8 @@
 	}
 
 	.edit-entry-btn:hover {
-		background: var(--color-dashboard-accent, #143e59);
-		border-color: var(--color-dashboard-accent, #143e59);
+		background: #143E59;
+		border-color: #143E59;
 		color: #fff;
 		transform: scale(1.1);
 	}
@@ -1008,7 +881,7 @@
 
 	.entry-cell {
 		font-weight: 700;
-		color: var(--color-dashboard-accent, #143e59);
+		color: #143e59;
 	}
 
 	.target-cell {
@@ -1062,13 +935,13 @@
 
 	.table-notes-btn:hover {
 		background: #e2e8f0;
-		border-color: var(--color-dashboard-accent, #143e59);
-		color: var(--color-dashboard-accent, #143e59);
+		border-color: #143e59;
+		color: #143e59;
 	}
 
 	.table-notes-btn.expanded {
-		background: var(--color-dashboard-accent, #143e59);
-		border-color: var(--color-dashboard-accent, #143e59);
+		background: #143e59;
+		border-color: #143e59;
 		color: #fff;
 	}
 
@@ -1088,7 +961,7 @@
 		text-align: left;
 		padding: 0;
 		background: transparent !important;
-		border-bottom: 2px solid var(--color-dashboard-accent, #143e59);
+		border-bottom: 2px solid #143e59;
 	}
 
 	.trade-notes-panel {
@@ -1113,7 +986,7 @@
 
 	.trade-notes-badge {
 		flex-shrink: 0;
-		background: var(--color-dashboard-accent, #143e59);
+		background: #143e59;
 		color: #fff;
 		font-size: 12px;
 		font-weight: 800;
@@ -1140,18 +1013,18 @@
 		display: inline-flex;
 		align-items: center;
 		gap: 10px;
-		background: var(--color-dashboard-accent, #143e59);
+		background: #143e59;
 		color: #fff;
 		padding: 14px 28px;
 		border-radius: 10px;
 		font-size: 14px;
 		font-weight: 700;
 		text-decoration: none;
-		transition: all var(--transition-slow, 0.3s ease);
+		transition: all 0.3s;
 	}
 
 	.google-sheet-link:hover {
-		background: var(--color-dashboard-accent-dark, #0f2d42);
+		background: #0f2d42;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1257,20 +1130,20 @@
 		align-items: center;
 		gap: 6px;
 		padding: 10px 16px;
-		background: var(--color-dashboard-accent, #143e59);
+		background: #143E59;
 		border: none;
 		border-radius: 8px;
 		font-size: 13px;
 		font-weight: 600;
 		color: white;
 		cursor: pointer;
-		transition: all var(--transition-fast, 0.15s ease);
+		transition: all 0.15s ease;
 		white-space: nowrap;
 	}
 
 	.admin-add-btn:hover,
 	.admin-upload-btn:hover {
-		background: var(--color-dashboard-accent-dark, #0f2d42);
+		background: #0f2d42;
 		transform: translateY(-1px);
 		box-shadow: 0 4px 12px rgba(20, 62, 89, 0.3);
 	}
