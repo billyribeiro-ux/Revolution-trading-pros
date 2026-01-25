@@ -523,11 +523,13 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		transition: background 0.3s;
+		transition: background 0.3s, backdrop-filter 0.3s;
+		backdrop-filter: blur(0px);
 	}
 
 	.video-player-compact:hover .video-overlay {
-		background: rgba(0, 0, 0, 0.4);
+		background: rgba(0, 0, 0, 0.2);
+		backdrop-filter: blur(4px);
 	}
 
 	.play-btn {
