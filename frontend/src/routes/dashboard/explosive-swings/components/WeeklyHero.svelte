@@ -529,8 +529,8 @@
 	}
 
 	.play-btn {
-		width: 60px;
-		height: 60px;
+		width: 70px;
+		height: 70px;
 		background: rgba(255, 255, 255, 0.95);
 		backdrop-filter: blur(10px);
 		-webkit-backdrop-filter: blur(10px);
@@ -540,22 +540,47 @@
 		align-items: center;
 		justify-content: center;
 		cursor: pointer;
-		transition: transform 0.3s, background 0.3s, backdrop-filter 0.3s;
+		transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
 		box-shadow: 0 8px 30px rgba(0, 0, 0, 0.3);
+		position: relative;
+	}
+
+	.play-btn::before {
+		content: '';
+		position: absolute;
+		inset: -8px;
+		background: radial-gradient(circle, rgba(246, 149, 50, 0.4) 0%, transparent 70%);
+		border-radius: 50%;
+		opacity: 0;
+		transition: opacity 0.3s ease;
+		filter: blur(12px);
 	}
 
 	.play-btn svg {
-		width: 24px;
-		height: 24px;
+		width: 28px;
+		height: 28px;
 		color: #f69532;
 		margin-left: 3px;
+		transition: all 0.3s ease;
 	}
 
 	.video-player-compact:hover .play-btn {
-		transform: scale(1.1);
+		transform: scale(1.15);
 		background: rgba(255, 255, 255, 1);
-		backdrop-filter: blur(20px);
-		-webkit-backdrop-filter: blur(20px);
+		backdrop-filter: blur(25px);
+		-webkit-backdrop-filter: blur(25px);
+		box-shadow: 
+			0 12px 40px rgba(246, 149, 50, 0.4),
+			0 8px 20px rgba(0, 0, 0, 0.3);
+	}
+
+	.video-player-compact:hover .play-btn::before {
+		opacity: 1;
+	}
+
+	.video-player-compact:hover .play-btn svg {
+		color: #e8850d;
+		transform: scale(1.1);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -578,42 +603,81 @@
 		flex: none;
 	}
 
-	/* Playing state - Lift-off effect with elevation */
+	/* Playing state - Lift-off effect with elevation and backdrop */
 	.video-player-wrapper.playing {
-		position: relative;
-		z-index: 200;
-		transform: scale(1.02) translateY(-8px);
+		position: fixed;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%) scale(1.05);
+		z-index: 10000;
+		width: 85vw;
+		max-width: 1400px;
+		padding-bottom: 0;
+		height: auto;
 		box-shadow: 
-			0 30px 80px rgba(0, 0, 0, 0.5),
-			0 15px 40px rgba(0, 0, 0, 0.3);
+			0 40px 100px rgba(0, 0, 0, 0.6),
+			0 20px 50px rgba(0, 0, 0, 0.4);
 		border-radius: 16px;
+		animation: videoLiftOff 0.4s cubic-bezier(0.16, 1, 0.3, 1);
 	}
 
-	/* Expanded/Fullscreen state */
+	@keyframes videoLiftOff {
+		from {
+			opacity: 0;
+			transform: translate(-50%, -50%) scale(0.95);
+		}
+		to {
+			opacity: 1;
+			transform: translate(-50%, -50%) scale(1.05);
+		}
+	}
+
+	/* Expanded/Fullscreen state - Takes entire viewport */
 	.video-player-wrapper.expanded {
 		position: fixed;
 		inset: 0;
 		z-index: 99999;
+		width: 100vw;
+		height: 100vh;
+		max-width: none;
 		flex: none;
 		border-radius: 0;
 		transform: none;
 		padding-bottom: 0;
+		animation: none;
 	}
 
-	/* Backdrop glow effect behind video */
+	/* Backdrop blur overlay when video is playing */
 	.video-backdrop-blur {
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.85);
+		backdrop-filter: blur(20px);
+		-webkit-backdrop-filter: blur(20px);
+		z-index: 9999;
+		animation: backdropFadeIn 0.3s ease-out;
+	}
+
+	@keyframes backdropFadeIn {
+		from { opacity: 0; }
+		to { opacity: 1; }
+	}
+
+	/* Glow effect behind video player */
+	.video-player-wrapper.playing::before {
+		content: '';
 		position: absolute;
-		inset: -30px;
+		inset: -40px;
 		background: linear-gradient(135deg, #f69532 0%, #e8850d 100%);
-		filter: blur(40px);
-		opacity: 0.4;
+		filter: blur(60px);
+		opacity: 0.5;
 		z-index: -1;
 		animation: pulseGlow 3s ease-in-out infinite;
 	}
 
 	@keyframes pulseGlow {
-		0%, 100% { opacity: 0.4; transform: scale(1); }
-		50% { opacity: 0.6; transform: scale(1.05); }
+		0%, 100% { opacity: 0.5; transform: scale(1); }
+		50% { opacity: 0.7; transform: scale(1.1); }
 	}
 
 	.video-frame-container {
@@ -623,6 +687,11 @@
 		background: #000;
 		border-radius: 12px;
 		overflow: hidden;
+	}
+
+	.video-player-wrapper.playing .video-frame-container {
+		padding-bottom: 56.25%;
+		border-radius: 16px;
 	}
 
 	.video-player-wrapper.expanded .video-frame-container {
@@ -694,21 +763,9 @@
 		text-overflow: ellipsis;
 	}
 
-	/* Video Active State - Adjusts layout with centered elevated player */
+	/* Video Active State - Player breaks out to fixed position */
 	.video-container-compact.video-active {
-		flex-direction: column;
-		gap: 24px;
-		align-items: center;
 		position: relative;
-		z-index: 150;
-	}
-
-	.video-container-compact.video-active .video-player-wrapper {
-		flex: none;
-		width: 90%;
-		max-width: 1000px;
-		margin: 0 auto;
-		padding-bottom: 50.625%; /* 16:9 at 90% width */
 	}
 
 	.video-info-compact.hidden {
