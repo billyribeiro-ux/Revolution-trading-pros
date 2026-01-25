@@ -1250,6 +1250,7 @@
 		{tradePlan} 
 		{isAdmin}
 		roomSlug={ROOM_SLUG}
+		fullVideoUrl={apiWeeklyVideo ? `/dashboard/${ROOM_SLUG}/video/${apiWeeklyVideo.id}` : undefined}
 		onAddEntry={openTradeEntryModal}
 		onEditEntry={openEditTradeEntryModal}
 		onUploadVideo={openVideoUploadModal}
