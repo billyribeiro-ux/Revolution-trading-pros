@@ -1,11 +1,10 @@
 <script lang="ts">
 	/**
 	 * ═══════════════════════════════════════════════════════════════════════════════
-	 * PerformanceSummary Component - Weekly Performance Display
+	 * PerformanceSummary Component - COMPACT Weekly Performance Display
 	 * ═══════════════════════════════════════════════════════════════════════════════
 	 *
-	 * @description Displays this week's performance with ticker pills and active positions
-	 * @version 5.0.0 - Nuclear Refactor: Design Tokens
+	 * @version 6.0.0 - High Density Refactor: Reduced spacing and padding
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
 	import type { WeeklyPerformance, ClosedTrade, ActivePosition } from '../types';
@@ -161,41 +160,36 @@
 </section>
 
 <style>
-	/* ═══════════════════════════════════════════════════════════════════════
-	   CONTAINER - Design Token Implementation
-	   ═══════════════════════════════════════════════════════════════════════ */
+	/* COMPACT CONTAINER */
 	.performance-summary {
 		background: var(--color-bg-card);
 		border: 1px solid var(--color-border-default);
-		border-radius: var(--radius-xl);
-		padding: var(--space-6);
-		margin: var(--space-6) var(--space-8);
+		border-radius: var(--radius-lg);
+		padding: var(--space-4);
+		margin: var(--space-4) var(--space-6);
 		box-shadow: var(--shadow-sm);
-		contain: layout style;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════
-	   HEADER
-	   ═══════════════════════════════════════════════════════════════════════ */
+	/* COMPACT HEADER */
 	.summary-header {
 		display: flex;
 		align-items: flex-start;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: var(--space-5);
-		margin-bottom: var(--space-6);
-		padding-bottom: var(--space-5);
+		gap: var(--space-3);
+		margin-bottom: var(--space-4);
+		padding-bottom: var(--space-3);
 		border-bottom: 1px solid var(--color-border-default);
 	}
 
 	.header-left {
 		display: flex;
 		flex-direction: column;
-		gap: var(--space-1);
+		gap: 2px;
 	}
 
 	.summary-title {
-		font-size: var(--text-xl);
+		font-size: var(--text-lg);
 		font-weight: var(--font-bold);
 		color: var(--color-text-primary);
 		margin: 0;
@@ -204,54 +198,52 @@
 	}
 
 	.summary-subtitle {
-		font-size: var(--text-base);
+		font-size: var(--text-sm);
 		color: var(--color-text-tertiary);
 	}
 
-	/* Win Rate Badge */
+	/* Win Rate Badge - Compact */
 	.win-rate-container {
 		display: flex;
 		flex-direction: column;
 		align-items: flex-end;
-		gap: var(--space-1);
+		gap: 2px;
 	}
 
 	.win-rate-badge {
 		display: flex;
 		align-items: baseline;
-		gap: var(--space-2);
+		gap: 6px;
 		background: var(--color-profit-bg);
 		border: 1px solid var(--color-profit-border);
-		padding: var(--space-2) var(--space-4);
+		padding: 6px 12px;
 		border-radius: var(--radius-md);
 	}
 
 	.win-rate-value {
-		font-size: var(--text-3xl);
+		font-size: 20px;
 		font-weight: var(--font-extrabold);
 		color: var(--color-profit);
 		font-variant-numeric: tabular-nums;
-		line-height: var(--leading-none);
+		line-height: 1;
 	}
 
 	.win-rate-label {
-		font-size: var(--text-sm);
+		font-size: 10px;
 		font-weight: var(--font-semibold);
 		color: var(--color-profit-light);
 		text-transform: uppercase;
-		letter-spacing: var(--tracking-wide);
+		letter-spacing: 0.05em;
 	}
 
 	.win-rate-detail {
-		font-size: var(--text-sm);
+		font-size: 11px;
 		color: var(--color-text-tertiary);
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════
-	   CLOSED TRADES SECTION
-	   ═══════════════════════════════════════════════════════════════════════ */
+	/* COMPACT SECTIONS */
 	.closed-section {
-		margin-bottom: var(--space-8);
+		margin-bottom: var(--space-5);
 	}
 
 	.section-header {
@@ -259,16 +251,16 @@
 		align-items: center;
 		justify-content: space-between;
 		flex-wrap: wrap;
-		gap: var(--space-4);
-		margin-bottom: var(--space-4);
+		gap: var(--space-3);
+		margin-bottom: var(--space-3);
 	}
 
 	.section-label {
-		font-size: var(--text-sm);
+		font-size: 10px;
 		font-weight: var(--font-bold);
 		color: var(--color-text-secondary);
 		text-transform: uppercase;
-		letter-spacing: var(--tracking-wider);
+		letter-spacing: 0.05em;
 		margin: 0;
 	}
 
@@ -277,29 +269,29 @@
 		font-weight: var(--font-semibold);
 	}
 
-	/* Average Metrics */
+	/* Average Metrics - Compact */
 	.avg-metrics {
 		display: flex;
 		align-items: center;
-		gap: var(--space-3);
+		gap: 8px;
 		flex-wrap: wrap;
 	}
 
 	.metric {
 		display: flex;
 		align-items: center;
-		gap: var(--space-2);
+		gap: 4px;
 	}
 
 	.metric-label {
-		font-size: var(--text-sm);
+		font-size: 11px;
 		color: var(--color-text-tertiary);
 		font-weight: var(--font-medium);
 	}
 
 	.metric-value {
-		font-size: var(--text-base);
-		font-weight: var(--font-bold);
+		font-size: 11px;
+		font-weight: var(--font-semibold);
 		font-variant-numeric: tabular-nums;
 	}
 
@@ -316,17 +308,17 @@
 	}
 
 	.metric-divider {
-		color: var(--color-border-strong);
-		font-weight: var(--font-normal);
+		color: var(--color-border-default);
+		font-size: 11px;
 	}
 
 	/* Ticker Pills Container - with scroll shadow affordance */
 	.ticker-pills-scroll {
 		display: flex;
-		gap: var(--space-3);
+		gap: var(--space-2);
 		overflow-x: auto;
-		padding: var(--space-2) var(--space-1);
-		margin: calc(-1 * var(--space-2)) calc(-1 * var(--space-1));
+		padding: var(--space-1) var(--space-1);
+		margin: calc(-1 * var(--space-1)) calc(-1 * var(--space-1));
 		scroll-snap-type: x mandatory;
 		-webkit-overflow-scrolling: touch;
 		scrollbar-width: thin;
@@ -334,8 +326,8 @@
 		mask-image: linear-gradient(
 			to right,
 			transparent 0,
-			black var(--space-2),
-			black calc(100% - var(--space-8)),
+			black var(--space-1),
+			black calc(100% - var(--space-4)),
 			transparent 100%
 		);
 	}
@@ -369,9 +361,7 @@
 		flex-shrink: 0;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════
-	   ACTIVE POSITIONS SECTION
-	   ═══════════════════════════════════════════════════════════════════════ */
+	/* ACTIVE POSITIONS - Compact Grid */
 	.active-section {
 		margin-bottom: var(--space-2);
 	}
@@ -380,11 +370,14 @@
 		display: flex;
 		align-items: center;
 		justify-content: space-between;
-		margin-bottom: var(--space-4);
+		gap: var(--space-2);
+		margin-bottom: var(--space-2);
 	}
 
-	.active-section .section-label {
-		margin-bottom: 0;
+	.positions-grid {
+		display: grid;
+		grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+		gap: var(--space-3);
 	}
 
 	.add-trade-btn {
@@ -417,19 +410,13 @@
 		flex-shrink: 0;
 	}
 
-	.positions-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
-		gap: var(--space-5);
-	}
-
 	.empty-positions {
 		grid-column: 1 / -1;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: var(--space-16) var(--space-5);
+		padding: var(--space-8) var(--space-4);
 		background: linear-gradient(135deg, var(--color-bg-card-hover) 0%, var(--color-bg-subtle) 100%);
 		border-radius: var(--radius-xl);
 		border: 2px dashed var(--color-border-strong);
@@ -437,11 +424,11 @@
 
 	.empty-positions svg {
 		color: var(--color-text-muted);
-		margin-bottom: var(--space-4);
+		margin-bottom: var(--space-2);
 	}
 
 	.empty-positions p {
-		margin: 0 0 var(--space-5) 0;
+		margin: 0 0 var(--space-2) 0;
 		font-size: var(--text-base);
 		font-weight: var(--font-semibold);
 		color: var(--color-text-tertiary);
@@ -451,7 +438,7 @@
 		display: flex;
 		align-items: center;
 		gap: var(--space-2);
-		padding: var(--space-3) var(--space-6);
+		padding: var(--space-2) var(--space-4);
 		background: linear-gradient(135deg, var(--color-brand-primary) 0%, var(--color-brand-primary-hover) 100%);
 		color: white;
 		border: none;
@@ -475,39 +462,37 @@
 
 	/* Skeleton for Position Cards */
 	.position-skeleton {
-		height: 260px;
+		height: 220px;
 		background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
 		background-size: 200% 100%;
 		animation: shimmer 1.5s infinite;
 		border-radius: var(--radius-lg);
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════
-	   EMPTY STATE
-	   ═══════════════════════════════════════════════════════════════════════ */
+	/* EMPTY STATE */
 	.empty-state {
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		justify-content: center;
-		padding: var(--space-12) var(--space-6);
+		padding: var(--space-8) var(--space-4);
 		text-align: center;
 	}
 
 	.empty-icon {
-		width: 56px;
-		height: 56px;
+		width: 48px;
+		height: 48px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
 		background: var(--color-bg-subtle);
 		border-radius: var(--radius-lg);
-		margin-bottom: var(--space-4);
+		margin-bottom: var(--space-2);
 	}
 
 	.empty-icon svg {
-		width: 28px;
-		height: 28px;
+		width: 24px;
+		height: 24px;
 		color: var(--color-text-muted);
 	}
 
@@ -515,69 +500,39 @@
 		font-size: var(--text-lg);
 		font-weight: var(--font-semibold);
 		color: var(--color-text-secondary);
-		margin: 0 0 var(--space-2) 0;
+		margin: 0 0 var(--space-1) 0;
 	}
 
 	.empty-text {
 		font-size: var(--text-base);
 		color: var(--color-text-tertiary);
 		margin: 0;
-		max-width: 280px;
+		max-width: 240px;
 	}
 
-	/* ═══════════════════════════════════════════════════════════════════════
-	   ANIMATIONS
-	   ═══════════════════════════════════════════════════════════════════════ */
-	@keyframes shimmer {
-		0% {
-			background-position: 200% 0;
-		}
-		100% {
-			background-position: -200% 0;
-		}
-	}
-
-	/* ═══════════════════════════════════════════════════════════════════════
-	   RESPONSIVE
-	   ═══════════════════════════════════════════════════════════════════════ */
-
-	/* Large Desktop (1440px+) */
-	@media (min-width: 1440px) {
+	/* RESPONSIVE */
+	@media (max-width: 1024px) {
 		.performance-summary {
-			padding: var(--space-8) var(--space-10);
-			margin: var(--space-8) var(--space-10);
+			margin: var(--space-2) var(--space-2);
+			padding: var(--space-2);
 		}
 
 		.positions-grid {
-			grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-			gap: var(--space-6);
+			grid-template-columns: 1fr;
 		}
 	}
 
-	/* Ultra-wide (1920px+) */
-	@media (min-width: 1920px) {
+	@media (max-width: 640px) {
 		.performance-summary {
-			max-width: 1700px;
-			margin: var(--space-8) auto;
-			padding: var(--space-10) var(--space-12);
-		}
-
-		.positions-grid {
-			grid-template-columns: repeat(4, 1fr);
-		}
-	}
-
-	/* Tablet and below */
-	@media (max-width: 768px) {
-		.performance-summary {
-			padding: var(--space-5);
-			margin: var(--space-4);
-			border-radius: var(--radius-lg);
+			margin: var(--space-1) var(--space-1);
+			padding: var(--space-2);
+			border-radius: var(--radius-md);
 		}
 
 		.summary-header {
 			flex-direction: column;
 			align-items: flex-start;
+			gap: var(--space-1);
 		}
 
 		.win-rate-container {
@@ -590,13 +545,7 @@
 		}
 
 		.avg-metrics {
-			flex-direction: column;
-			align-items: flex-start;
-			gap: var(--space-2);
-		}
-
-		.metric-divider {
-			display: none;
+			width: 100%;
 		}
 
 		.positions-grid {
