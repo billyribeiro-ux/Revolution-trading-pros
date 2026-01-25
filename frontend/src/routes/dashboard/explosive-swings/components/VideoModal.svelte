@@ -10,6 +10,17 @@
 	 */
 	import type { Video } from '../types';
 
+	// Bunny.net URL validation
+	function isValidBunnyUrl(url: string): boolean {
+		if (!url || typeof url !== 'string') return false;
+		try {
+			const parsed = new URL(url.trim());
+			return parsed.protocol === 'https:' && parsed.hostname === 'iframe.mediadelivery.net';
+		} catch {
+			return false;
+		}
+	}
+
 	interface Props {
 		video: Video | null;
 		isOpen: boolean;
@@ -17,6 +28,28 @@
 	}
 
 	const { video, isOpen, onClose }: Props = $props();
+	
+	// Modal ref for focus management
+	let modalRef = $state<HTMLDivElement | null>(null);
+	
+	// Body scroll lock
+	$effect(() => {
+		if (!isOpen) return;
+		
+		const previousOverflow = document.body.style.overflow;
+		document.body.style.overflow = 'hidden';
+		
+		return () => {
+			document.body.style.overflow = previousOverflow;
+		};
+	});
+	
+	// Focus modal when opened
+	$effect(() => {
+		if (isOpen && modalRef) {
+			modalRef.focus();
+		}
+	});
 
 	function handleBackdropClick(e: MouseEvent) {
 		if (e.target === e.currentTarget) {
@@ -31,10 +64,9 @@
 	}
 
 	// Bunny.net embed URL only
-	const embedUrl = $derived(() => {
-		if (!video?.videoUrl) return '';
-		return video.videoUrl;
-	});
+	const embedUrl = $derived(
+		video?.videoUrl && isValidBunnyUrl(video.videoUrl) ? video.videoUrl : ''
+	);
 </script>
 
 <svelte:window onkeydown={handleKeydown} />
@@ -42,9 +74,10 @@
 {#if isOpen && video}
 	<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 	<div 
+		bind:this={modalRef}
 		class="modal-backdrop" 
 		onclick={handleBackdropClick}
-		onkeydown={(e) => e.key === 'Escape' && onClose()}
+		onkeydown={handleKeydown}
 		role="dialog"
 		aria-modal="true"
 		aria-labelledby="video-modal-title"
@@ -61,13 +94,19 @@
 			<!-- Video Content -->
 			<div class="video-wrapper">
 				<div class="video-frame">
-					<iframe
-						src={embedUrl()}
-						title={video.title}
-						frameborder="0"
-						allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-						allowfullscreen
-					></iframe>
+					{#if embedUrl}
+						<iframe
+							src={embedUrl}
+							title={video.title}
+							frameborder="0"
+							allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+							allowfullscreen
+						></iframe>
+					{:else}
+						<div class="video-error">
+							<p>Video unavailable</p>
+						</div>
+					{/if}
 				</div>
 			</div>
 
@@ -201,6 +240,17 @@
 		width: 100%;
 		height: 100%;
 		border: none;
+	}
+
+	.video-error {
+		position: absolute;
+		inset: 0;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #0f172a;
+		color: #94a3b8;
+		font-size: 16px;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
