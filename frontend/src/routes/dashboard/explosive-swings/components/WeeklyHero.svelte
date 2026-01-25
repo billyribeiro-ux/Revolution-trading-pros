@@ -555,9 +555,16 @@
 	.video-player-wrapper {
 		flex: 0 0 55%;
 		position: relative;
+		padding-bottom: 31%;
 		border-radius: 12px;
 		overflow: hidden;
 		transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+	}
+
+	.video-player-wrapper .video-player-compact {
+		position: absolute;
+		inset: 0;
+		padding-bottom: 0;
 	}
 
 	.video-player-wrapper.playing {
