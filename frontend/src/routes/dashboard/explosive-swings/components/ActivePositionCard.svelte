@@ -35,45 +35,20 @@
 	const isClickable = $derived(isAdmin && onClose && position.status === 'ACTIVE');
 
 	// Determine card accent based on status and P&L
-	const statusConfig = $derived(() => {
+	const statusConfig = $derived.by(() => {
 		switch (position.status) {
 			case 'ENTRY':
-				return {
-					label: 'ENTRY',
-					borderColor: 'border-l-teal-500',
-					badgeClass: 'badge-entry',
-					bgTint: 'bg-teal-50/30'
-				};
+				return { label: 'ENTRY', statusClass: 'status-entry', badgeClass: 'badge-entry' };
 			case 'WATCHING':
-				return {
-					label: 'WATCHING',
-					borderColor: 'border-l-amber-500',
-					badgeClass: 'badge-watching',
-					bgTint: 'bg-amber-50/30'
-				};
+				return { label: 'WATCHING', statusClass: 'status-watching', badgeClass: 'badge-watching' };
 			case 'ACTIVE':
 				if (position.unrealizedPercent !== null && position.unrealizedPercent >= 0) {
-					return {
-						label: 'ACTIVE',
-						borderColor: 'border-l-emerald-500',
-						badgeClass: 'badge-active-profit',
-						bgTint: 'bg-emerald-50/30'
-					};
+					return { label: 'ACTIVE', statusClass: 'status-active-profit', badgeClass: 'badge-active-profit' };
 				} else {
-					return {
-						label: 'ACTIVE',
-						borderColor: 'border-l-red-500',
-						badgeClass: 'badge-active-loss',
-						bgTint: 'bg-red-50/30'
-					};
+					return { label: 'ACTIVE', statusClass: 'status-active-loss', badgeClass: 'badge-active-loss' };
 				}
 			default:
-				return {
-					label: position.status,
-					borderColor: 'border-l-slate-500',
-					badgeClass: 'badge-default',
-					bgTint: ''
-				};
+				return { label: position.status, statusClass: 'status-default', badgeClass: 'badge-default' };
 		}
 	});
 
@@ -85,18 +60,18 @@
 				: 'text-red-600'
 	);
 
-	const progressBarBg = $derived(
+	const progressBarStyle = $derived(
 		position.unrealizedPercent === null
-			? 'bg-slate-300'
+			? 'background: #cbd5e1'
 			: position.unrealizedPercent >= 0
-				? 'bg-gradient-to-r from-emerald-400 to-emerald-500'
-				: 'bg-gradient-to-r from-red-400 to-red-500'
+				? 'background: linear-gradient(to right, #34d399, #10b981)'
+				: 'background: linear-gradient(to right, #f87171, #ef4444)'
 	);
 </script>
 
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
 <article 
-	class="position-card {statusConfig().borderColor} {statusConfig().bgTint}"
+	class="position-card {statusConfig.statusClass}"
 	class:clickable={isClickable}
 	aria-label="{position.ticker} position{isClickable ? ' - Click to close' : ''}"
 	role={isClickable ? 'button' : undefined}
@@ -107,8 +82,8 @@
 	<!-- Header Row -->
 	<div class="card-header">
 		<h3 class="ticker">{position.ticker}</h3>
-		<span class="status-badge {statusConfig().badgeClass}">
-			{statusConfig().label}
+		<span class="status-badge {statusConfig.badgeClass}">
+			{statusConfig.label}
 		</span>
 	</div>
 
@@ -179,8 +154,8 @@
 				aria-label="Progress to Target 1"
 			>
 				<div 
-					class="progress-fill {progressBarBg}" 
-					style="width: {Math.min(100, Math.max(0, position.progressToTarget1))}%"
+					class="progress-fill" 
+					style="{progressBarStyle}; width: {Math.min(100, Math.max(0, position.progressToTarget1))}%"
 				></div>
 			</div>
 			<span class="progress-text">{position.progressToTarget1.toFixed(0)}% to T1</span>
@@ -203,6 +178,31 @@
 	.position-card:hover {
 		box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08), 0 4px 10px rgba(0, 0, 0, 0.04);
 		transform: translateY(-2px);
+	}
+
+	/* Status-based border and background */
+	.position-card.status-entry {
+		border-left-color: #14b8a6;
+		background-color: rgba(204, 251, 241, 0.3);
+	}
+
+	.position-card.status-watching {
+		border-left-color: #f59e0b;
+		background-color: rgba(254, 243, 199, 0.3);
+	}
+
+	.position-card.status-active-profit {
+		border-left-color: #10b981;
+		background-color: rgba(220, 252, 231, 0.3);
+	}
+
+	.position-card.status-active-loss {
+		border-left-color: #ef4444;
+		background-color: rgba(254, 226, 226, 0.3);
+	}
+
+	.position-card.status-default {
+		border-left-color: #64748b;
 	}
 
 	/* Clickable state for admin close */
@@ -237,7 +237,7 @@
 		border-color: #143E59;
 	}
 
-	.position-card.clickable:focus {
+	.position-card.clickable:focus-visible {
 		outline: 2px solid #143E59;
 		outline-offset: 2px;
 	}
