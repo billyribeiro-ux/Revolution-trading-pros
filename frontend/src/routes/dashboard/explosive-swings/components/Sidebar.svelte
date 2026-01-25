@@ -71,6 +71,9 @@
 		max-height: calc(100vh - 100px);
 		overflow-y: auto;
 		padding-bottom: 20px;
+		contain: layout style;
+		scrollbar-width: thin;
+		scrollbar-color: #cbd5e1 transparent;
 	}
 
 	.sidebar::-webkit-scrollbar {
@@ -137,6 +140,11 @@
 		border-color: #f59e0b;
 		transform: translateY(-2px) scale(1.02);
 		box-shadow: 0 4px 12px rgba(245, 158, 11, 0.4);
+	}
+
+	.help-btn:focus-visible {
+		outline: 2px solid #fff;
+		outline-offset: 2px;
 	}
 
 	@media (max-width: 1024px) {
