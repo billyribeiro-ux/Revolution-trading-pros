@@ -163,7 +163,7 @@
 				<h3>Resources</h3>
 				<div class="quick-links">
 					<a href="/dashboard/spx-profit-pulse/video-library">🎬 Video Library</a>
-					<a href="/dashboard/spx-profit-pulse/trade-tracker">📊 Trade Tracker</a>
+					<a href="/dashboard/spx-profit-pulse/trades">📊 Trade Tracker</a>
 					<a href="/dashboard/spx-profit-pulse/favorites">⭐ My Favorites</a>
 					<a href="/api/export/watchlist?room_slug=spx-profit-pulse&format=csv" download>📥 Export CSV</a>
 					<a href="/dashboard/account">⚙️ Alert Settings</a>

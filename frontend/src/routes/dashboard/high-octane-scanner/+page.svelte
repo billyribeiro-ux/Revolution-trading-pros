@@ -728,7 +728,7 @@
 				<h3>Resources</h3>
 				<div class="quick-links">
 					<a href="/dashboard/high-octane-scanner/video-library">🎬 Video Library</a>
-					<a href="/dashboard/high-octane-scanner/trade-tracker">📊 Trade Tracker</a>
+					<a href="/dashboard/high-octane-scanner/trades">📊 Trade Tracker</a>
 					<a href="/guides/options-scanning">📖 Scanner Guide</a>
 					<a href="/dashboard/account">⚙️ Alert Settings</a>
 				</div>
