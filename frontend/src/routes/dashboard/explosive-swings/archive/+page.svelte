@@ -37,7 +37,7 @@
 
     try {
       const response = await fetch(
-        `/api/weekly-video/${ROOM_SLUG}/archive?year=${selectedYear}`,
+        `/api/room-content/weekly-video/${ROOM_SLUG}/archive?year=${selectedYear}`,
         { credentials: 'include' }
       );
 
@@ -45,13 +45,14 @@
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const data = await response.json();
+      const result = await response.json();
 
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to load archive');
+      // API returns { success: true, data: [...] }
+      if (!result.success) {
+        throw new Error(result.error || 'Failed to load archive');
       }
 
-      weeks = data.data.map((w: any) => ({
+      weeks = (result.data || []).map((w: any) => ({
         id: w.id,
         weekOf: w.week_of,
         weekTitle: w.week_title,

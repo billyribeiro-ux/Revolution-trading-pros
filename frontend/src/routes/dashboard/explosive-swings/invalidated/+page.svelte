@@ -27,7 +27,7 @@
     error = null;
 
     try {
-      const response = await fetch(`/api/trades/${ROOM_SLUG}?status=invalidated`, {
+      const response = await fetch(`/api/room-content/rooms/${ROOM_SLUG}/trades?status=invalidated`, {
         credentials: 'include'
       });
 
@@ -35,13 +35,12 @@
         throw new Error(`HTTP ${response.status}`);
       }
 
-      const data = await response.json();
+      const result = await response.json();
       
-      if (!data.success) {
-        throw new Error(data.error || 'Failed to load trades');
-      }
+      // API returns { data: [...], meta: {...} }
+      const data = result.data || [];
 
-      trades = data.data.map((t: any) => ({
+      trades = data.map((t: any) => ({
         id: t.id,
         ticker: t.ticker,
         entryDate: t.entry_date,
