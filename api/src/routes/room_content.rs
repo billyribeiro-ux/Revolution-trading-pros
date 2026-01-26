@@ -160,6 +160,8 @@ pub struct RoomTrade {
     pub pnl_percent: Option<f64>,
     pub holding_days: Option<i32>,
     pub notes: Option<String>,
+    pub was_updated: Option<bool>,
+    pub invalidation_reason: Option<String>,
     pub created_at: chrono::DateTime<Utc>,
     pub updated_at: chrono::DateTime<Utc>,
 }
@@ -307,6 +309,21 @@ pub struct CloseTradeRequest {
     pub exit_price: f64,
     pub exit_date: Option<String>,
     pub exit_tos_string: Option<String>,
+    pub notes: Option<String>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct InvalidateTradeRequest {
+    pub reason: String,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct UpdateTradeRequest {
+    pub ticker: Option<String>,
+    pub entry_price: Option<f64>,
+    pub quantity: Option<i32>,
+    pub stop: Option<f64>,
+    pub target1: Option<f64>,
     pub notes: Option<String>,
 }
 
@@ -1209,6 +1226,74 @@ async fn close_trade(
     Ok(Json(trade))
 }
 
+/// Invalidate a trade (for setups that didn't trigger)
+async fn invalidate_trade(
+    State(state): State<AppState>,
+    _admin: AdminUser,
+    Path(id): Path<i64>,
+    Json(input): Json<InvalidateTradeRequest>,
+) -> Result<Json<RoomTrade>, (StatusCode, Json<serde_json::Value>)> {
+    let trade: RoomTrade = sqlx::query_as(
+        r#"UPDATE room_trades SET
+           status = 'invalidated',
+           invalidation_reason = $2,
+           updated_at = NOW()
+           WHERE id = $1 AND deleted_at IS NULL
+           RETURNING *"#,
+    )
+    .bind(id)
+    .bind(&input.reason)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to invalidate trade: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
+
+    info!("Invalidated trade {}: {} - {}", id, trade.ticker, input.reason);
+    Ok(Json(trade))
+}
+
+/// Update a trade (mark as updated)
+async fn update_trade(
+    State(state): State<AppState>,
+    _admin: AdminUser,
+    Path(id): Path<i64>,
+    Json(input): Json<UpdateTradeRequest>,
+) -> Result<Json<RoomTrade>, (StatusCode, Json<serde_json::Value>)> {
+    let trade: RoomTrade = sqlx::query_as(
+        r#"UPDATE room_trades SET
+           ticker = COALESCE($2, ticker),
+           entry_price = COALESCE($3, entry_price),
+           quantity = COALESCE($4, quantity),
+           notes = COALESCE($5, notes),
+           was_updated = true,
+           updated_at = NOW()
+           WHERE id = $1 AND deleted_at IS NULL
+           RETURNING *"#,
+    )
+    .bind(id)
+    .bind(input.ticker.map(|t| t.to_uppercase()))
+    .bind(input.entry_price)
+    .bind(input.quantity)
+    .bind(&input.notes)
+    .fetch_one(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to update trade: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
+
+    info!("Updated trade {}: {}", id, trade.ticker);
+    Ok(Json(trade))
+}
+
 /// Delete a trade (soft delete)
 async fn delete_trade(
     State(state): State<AppState>,
@@ -1272,7 +1357,9 @@ pub fn admin_router() -> Router<AppState> {
         // Trades CRUD (Trade Tracker)
         .route("/rooms/:room_slug/trades", get(list_trades))
         .route("/trades", post(create_trade))
+        .route("/trades/:id", put(update_trade))
         .route("/trades/:id/close", put(close_trade))
+        .route("/trades/:id/invalidate", post(invalidate_trade))
         .route("/trades/:id", delete(delete_trade))
         // Weekly Videos CRUD
         .route("/rooms/:room_slug/weekly-video", get(get_weekly_video))

@@ -444,7 +444,7 @@ export function createPageState() {
 
 	async function deletePosition(position: ActivePosition) {
 		try {
-			const response = await fetch(`/api/trading-rooms/${ROOM_SLUG}/positions/${position.id}`, {
+			const response = await fetch(`/api/admin/trades/${position.id}`, {
 				method: 'DELETE',
 				credentials: 'include'
 			});

@@ -69,7 +69,7 @@
 			: `${selectedReason}${customNotes ? ` - ${customNotes}` : ''}`;
 
 		try {
-			const response = await fetch(`/api/trading-rooms/${roomSlug}/positions/${position.id}/invalidate`, {
+			const response = await fetch(`/api/admin/trades/${position.id}/invalidate`, {
 				method: 'POST',
 				headers: { 'Content-Type': 'application/json' },
 				credentials: 'include',
