@@ -762,7 +762,7 @@
 	.modal-portal {
 		position: fixed;
 		inset: 0;
-		z-index: 2147483647;
+		z-index: 999999;
 		display: flex;
 		align-items: center;
 		justify-content: center;
