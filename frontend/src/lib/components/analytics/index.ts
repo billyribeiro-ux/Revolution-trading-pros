@@ -20,19 +20,10 @@ export { default as AttributionChart } from './AttributionChart.svelte';
 
 // Widget Components
 export { default as RealTimeWidget } from './RealTimeWidget.svelte';
-export { default as SegmentList } from './SegmentList.svelte';
+// SegmentList retired 2026-01-26 - zero imports found
 
 // Control Components
 export { default as PeriodSelector } from './PeriodSelector.svelte';
 
-// Advanced Components
-export { default as BehaviorHeatmap } from './BehaviorHeatmap.svelte';
-export { default as AIInsightsPanel } from './AIInsightsPanel.svelte';
-export { default as EventExplorer } from './EventExplorer.svelte';
-
-// Revenue Analytics
-export { default as RevenueBreakdown } from './RevenueBreakdown.svelte';
-
-// Journey & Retention
-export { default as UserJourneyMap } from './UserJourneyMap.svelte';
-export { default as RetentionCurve } from './RetentionCurve.svelte';
+// Advanced Components - retired 2026-01-26 (zero imports):
+// BehaviorHeatmap, AIInsightsPanel, EventExplorer, RevenueBreakdown, UserJourneyMap, RetentionCurve

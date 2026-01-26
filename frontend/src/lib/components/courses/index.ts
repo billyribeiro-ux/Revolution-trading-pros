@@ -4,7 +4,5 @@
  */
 
 export { default as CourseCard } from './CourseCard.svelte';
-export { default as CoursePlayer } from './CoursePlayer.svelte';
-export { default as CourseDownloads } from './CourseDownloads.svelte';
-export { default as LessonNav } from './LessonNav.svelte';
+// CoursePlayer, CourseDownloads, LessonNav retired 2026-01-26 - zero imports found
 export { default as VideoUploader } from './VideoUploader.svelte';

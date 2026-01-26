@@ -23,4 +23,4 @@ export { default as SocialLoginButtons } from './SocialLoginButtons.svelte';
 
 // Animation Components
 export { default as TypedHeadline } from './TypedHeadline.svelte';
-export { default as LottieSuccess } from './LottieSuccess.svelte';
+// LottieSuccess retired 2026-01-26 - zero imports found

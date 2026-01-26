@@ -26,7 +26,7 @@ export { default as BlockEditor } from './BlockEditor.svelte';
 // Sub-components
 export { default as BlockInserter } from './BlockInserter.svelte';
 export { default as BlockRenderer } from './BlockRenderer.svelte';
-export { default as BlockToolbar } from './BlockToolbar.svelte';
+// BlockToolbar retired 2026-01-26 - zero imports found
 export { default as BlockSettingsPanel } from './BlockSettingsPanel.svelte';
 
 // AI & Content
@@ -39,13 +39,13 @@ export { default as SEOAnalyzer } from './SEOAnalyzer.svelte';
 export { default as RevisionHistory } from './RevisionHistory.svelte';
 
 // Media Management
-export { default as MediaLibrary } from './MediaLibrary.svelte';
+// MediaLibrary retired 2026-01-26 - zero imports found
 
 // Keyboard & Accessibility
 export { default as KeyboardShortcuts } from './KeyboardShortcuts.svelte';
 
 // Collaboration
-export { default as CollaborationPanel } from './CollaborationPanel.svelte';
+// CollaborationPanel retired 2026-01-26 - zero imports found
 
 // Type Exports
 export type {

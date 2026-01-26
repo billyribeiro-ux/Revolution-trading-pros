@@ -14,17 +14,14 @@
  * - MediaSkeleton: Content-shaped skeleton loaders
  */
 
-// Original components
-export { default as MediaUpload } from './MediaUpload.svelte';
-export { default as MediaGrid } from './MediaGrid.svelte';
-export { default as MediaPreview } from './MediaPreview.svelte';
-export { default as MediaAnalytics } from './MediaAnalytics.svelte';
+// Original components - retired 2026-01-26 (zero imports):
+// MediaUpload, MediaGrid, MediaPreview, MediaAnalytics
 
 // New v2.0 components
 export { default as OptimizedImage } from './OptimizedImage.svelte';
 export { default as DropZone } from './DropZone.svelte';
 export { default as UploadProgress } from './UploadProgress.svelte';
-export { default as OptimizationStats } from './OptimizationStats.svelte';
+// OptimizationStats retired 2026-01-26 - zero imports found
 export { default as ImageCropModal } from './ImageCropModal.svelte';
 export { default as ResponsivePreview } from './ResponsivePreview.svelte';
 export { default as MediaSkeleton } from './MediaSkeleton.svelte';
