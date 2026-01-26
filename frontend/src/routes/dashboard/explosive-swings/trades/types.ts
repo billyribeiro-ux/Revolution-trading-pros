@@ -8,7 +8,7 @@
  */
 
 export type TradeSetup = 'Breakout' | 'Momentum' | 'Reversal' | 'Earnings' | 'Pullback';
-export type TradeResult = 'WIN' | 'LOSS' | 'ACTIVE';
+export type TradeResult = 'WIN' | 'LOSS' | 'ACTIVE' | 'INVALIDATED';
 export type TradeType = 'shares' | 'options';
 export type FilterStatus = 'all' | 'active' | 'win' | 'loss';
 
@@ -52,9 +52,11 @@ export interface ApiTradeResponse {
   pnl_percent: number | null;
   holding_days: number | null;
   setup: string | null;
-  status: 'open' | 'closed';
+  status: 'open' | 'closed' | 'invalidated';
   notes: string | null;
   trade_type?: TradeType;
+  was_updated?: boolean;
+  invalidation_reason?: string;
 }
 
 export interface ApiStatsResponse {

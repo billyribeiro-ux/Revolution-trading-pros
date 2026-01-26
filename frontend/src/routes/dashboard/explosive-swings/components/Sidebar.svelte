@@ -48,6 +48,14 @@
 	<!-- Quick Resources - Navigation -->
 	<ResourceLinks variant="compact" />
 
+	<!-- Archive Link -->
+	<a href="/dashboard/explosive-swings/archive" class="archive-link">
+		<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="18" height="18">
+			<path d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/>
+		</svg>
+		Weekly Archive
+	</a>
+
 	<!-- Latest Updates - Compact 3-item grid -->
 	{#if latestUpdates.length > 0}
 		<LatestUpdatesCard updates={latestUpdates} {isLoading} maxItems={3} />
@@ -144,6 +152,34 @@
 
 	.help-btn:focus-visible {
 		outline: 2px solid var(--color-bg-card);
+		outline-offset: 2px;
+	}
+
+	/* Archive Link */
+	.archive-link {
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		gap: 10px;
+		padding: 14px 20px;
+		background: var(--color-bg-card);
+		border: 1px solid var(--color-border-default);
+		border-radius: 12px;
+		color: var(--color-text-secondary);
+		text-decoration: none;
+		font-size: 14px;
+		font-weight: 600;
+		transition: all 0.2s ease-out;
+	}
+
+	.archive-link:hover {
+		background: var(--color-bg-subtle);
+		color: var(--color-brand-primary);
+		border-color: var(--color-brand-primary);
+	}
+
+	.archive-link:focus-visible {
+		outline: 2px solid var(--color-brand-primary);
 		outline-offset: 2px;
 	}
 

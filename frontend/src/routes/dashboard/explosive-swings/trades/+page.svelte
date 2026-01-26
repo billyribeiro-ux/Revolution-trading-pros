@@ -201,6 +201,17 @@
     {/if}
   </div>
 
+  <!-- Secondary Nav - Invalidated Trades Link -->
+  <nav class="secondary-nav" aria-label="Secondary navigation">
+    <a href="/dashboard/explosive-swings/invalidated">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M12 8v4m0 4h.01"/>
+      </svg>
+      View Invalidated Trades
+    </a>
+  </nav>
+
   <!-- Admin Link -->
   {#if isAdmin}
     <nav class="admin-nav" aria-label="Admin navigation">
@@ -295,10 +306,33 @@
     }
   }
 
+  /* Secondary Nav */
+  .secondary-nav {
+    max-width: 1400px;
+    margin: var(--space-4) auto 0;
+    text-align: center;
+  }
+
+  .secondary-nav a {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    color: var(--color-text-muted);
+    text-decoration: none;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--text-sm);
+    font-weight: var(--font-medium);
+    transition: color 0.15s;
+  }
+
+  .secondary-nav a:hover {
+    color: var(--color-text-secondary);
+  }
+
   /* Admin Nav */
   .admin-nav {
     max-width: 1400px;
-    margin: 0 auto;
+    margin: var(--space-4) auto 0;
     text-align: center;
   }
 

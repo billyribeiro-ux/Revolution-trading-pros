@@ -344,7 +344,7 @@
 		border-radius: 8px;
 		box-shadow: var(--shadow-lg);
 		padding: 4px;
-		z-index: 50;
+		z-index: 100;
 		animation: menuFadeIn 0.15s ease-out;
 	}
 

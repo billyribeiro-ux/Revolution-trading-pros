@@ -328,6 +328,13 @@
     border: 1px solid var(--color-active-border);
   }
 
+  .result--invalidated {
+    background: var(--color-bg-muted);
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border-default);
+    text-decoration: line-through;
+  }
+
   /* Actions */
   .actions-cell {
     white-space: nowrap;

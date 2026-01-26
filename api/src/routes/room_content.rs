@@ -14,7 +14,7 @@ use axum::{
     routing::{delete, get, post, put},
     Json, Router,
 };
-use chrono::{NaiveDate, Utc};
+use chrono::{Datelike, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
@@ -952,6 +952,114 @@ async fn create_weekly_video(
     Ok(Json(video))
 }
 
+/// Archive query parameters
+#[derive(Debug, Deserialize)]
+pub struct ArchiveQuery {
+    pub year: Option<i32>,
+}
+
+/// Archived week response with stats
+#[derive(Debug, Serialize)]
+pub struct ArchivedWeekResponse {
+    pub id: i64,
+    pub week_of: NaiveDate,
+    pub week_title: String,
+    pub video_title: String,
+    pub video_url: String,
+    pub thumbnail_url: Option<String>,
+    pub duration: Option<String>,
+    pub alert_count: i64,
+    pub trade_count: i64,
+    pub win_rate: Option<f64>,
+}
+
+/// List archived weekly videos for a room (past weeks only)
+async fn list_archived_videos(
+    State(state): State<AppState>,
+    Path(room_slug): Path<String>,
+    Query(query): Query<ArchiveQuery>,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let year = query.year.unwrap_or_else(|| Utc::now().year());
+
+    // Query archived videos with alert/trade counts
+    let videos: Vec<(i64, NaiveDate, String, String, String, Option<String>, Option<String>)> = sqlx::query_as(
+        r#"SELECT 
+            v.id,
+            v.week_of,
+            v.week_title,
+            v.video_title,
+            v.video_url,
+            v.thumbnail_url,
+            v.duration
+        FROM room_weekly_videos v
+        WHERE v.room_slug = $1
+        AND v.is_current = FALSE
+        AND EXTRACT(YEAR FROM v.week_of) = $2
+        ORDER BY v.week_of DESC"#,
+    )
+    .bind(&room_slug)
+    .bind(year)
+    .fetch_all(&state.db.pool)
+    .await
+    .map_err(|e| {
+        error!("Failed to fetch archived videos: {}", e);
+        (
+            StatusCode::INTERNAL_SERVER_ERROR,
+            Json(json!({"error": e.to_string()})),
+        )
+    })?;
+
+    // Build response with counts for each week
+    let mut response_data = Vec::new();
+    for (id, week_of, week_title, video_title, video_url, thumbnail_url, duration) in videos {
+        // Get alert count for this week
+        let alert_count: (i64,) = sqlx::query_as(
+            r#"SELECT COUNT(*) FROM room_alerts 
+               WHERE room_slug = $1 
+               AND DATE_TRUNC('week', published_at) = DATE_TRUNC('week', $2::date)"#
+        )
+        .bind(&room_slug)
+        .bind(week_of)
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0,));
+
+        // Get trade count and win rate for this week
+        let trade_stats: (i64, Option<f64>) = sqlx::query_as(
+            r#"SELECT 
+                COUNT(*),
+                ROUND(100.0 * COUNT(*) FILTER (WHERE result = 'WIN') / NULLIF(COUNT(*) FILTER (WHERE status = 'closed'), 0), 1)
+               FROM room_trades 
+               WHERE room_slug = $1 
+               AND DATE_TRUNC('week', entry_date) = DATE_TRUNC('week', $2::date)
+               AND deleted_at IS NULL"#
+        )
+        .bind(&room_slug)
+        .bind(week_of)
+        .fetch_one(&state.db.pool)
+        .await
+        .unwrap_or((0, None));
+
+        response_data.push(json!({
+            "id": id,
+            "week_of": week_of.format("%Y-%m-%d").to_string(),
+            "week_title": week_title,
+            "video_title": video_title,
+            "video_url": video_url,
+            "thumbnail_url": thumbnail_url,
+            "duration": duration,
+            "alert_count": alert_count.0,
+            "trade_count": trade_stats.0,
+            "win_rate": trade_stats.1
+        }));
+    }
+
+    Ok(Json(json!({
+        "success": true,
+        "data": response_data
+    })))
+}
+
 // ═══════════════════════════════════════════════════════════════════════════════════
 // STATS HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -1330,6 +1438,7 @@ pub fn public_router() -> Router<AppState> {
         // Weekly Video
         .route("/rooms/:room_slug/weekly-video", get(get_weekly_video))
         .route("/rooms/:room_slug/weekly-videos", get(list_weekly_videos))
+        .route("/weekly-video/:room_slug/archive", get(list_archived_videos))
         // Stats
         .route("/rooms/:room_slug/stats", get(get_room_stats))
 }

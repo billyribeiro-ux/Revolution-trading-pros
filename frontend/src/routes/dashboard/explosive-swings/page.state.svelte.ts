@@ -183,7 +183,9 @@ export function createPageState() {
 					stopLoss: { price: t.entry_price * 0.95, percentFromEntry: -5 },
 					progressToTarget1: 0,
 					triggeredAt: new Date(t.entry_date),
-					notes: t.notes
+					notes: t.notes,
+					wasUpdated: (t as any).was_updated ?? false,
+					updatedAt: (t as any).updated_at ? new Date((t as any).updated_at) : undefined
 				}))
 			: fallbackData.activePositions
 	);
