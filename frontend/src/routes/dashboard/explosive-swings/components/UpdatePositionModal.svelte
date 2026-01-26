@@ -255,7 +255,8 @@
 		align-items: center;
 		justify-content: center;
 		padding: 20px;
-		z-index: 999999;
+		z-index: 10000;
+		isolation: isolate;
 		animation: fadeIn 0.15s ease-out;
 	}
 

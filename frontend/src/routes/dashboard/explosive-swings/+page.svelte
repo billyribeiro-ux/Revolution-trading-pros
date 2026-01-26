@@ -25,6 +25,7 @@
 	import ClosePositionModal from './components/ClosePositionModal.svelte';
 	import AddTradeModal from './components/AddTradeModal.svelte';
 	import UpdatePositionModal from './components/UpdatePositionModal.svelte';
+	import InvalidatePositionModal from './components/InvalidatePositionModal.svelte';
 
 	// Types
 	import type { AlertCreateInput, AlertUpdateInput } from '$lib/types/trading';
@@ -109,6 +110,8 @@ credentials: 'include'
 		isAdmin={ps.isAdmin}
 		onClosePosition={ps.openClosePositionModal}
 		onUpdatePosition={ps.openUpdatePositionModal}
+		onInvalidatePosition={ps.openInvalidatePositionModal}
+		onDeletePosition={ps.deletePosition}
 		onAddTrade={ps.openAddTradeModal}
 	/>
 
@@ -248,6 +251,14 @@ credentials: 'include'
 	roomSlug={ps.ROOM_SLUG}
 	onClose={ps.closeUpdatePositionModal}
 	onSuccess={ps.handlePositionUpdated}
+/>
+
+<InvalidatePositionModal
+	isOpen={ps.isInvalidatePositionModalOpen}
+	position={ps.invalidatingPosition}
+	roomSlug={ps.ROOM_SLUG}
+	onClose={ps.closeInvalidatePositionModal}
+	onSuccess={() => { ps.fetchAllTrades(); ps.fetchStats(); }}
 />
 
 <style>

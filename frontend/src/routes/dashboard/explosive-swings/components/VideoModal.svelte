@@ -150,7 +150,8 @@
 	.modal-backdrop {
 		position: fixed;
 		inset: 0;
-		z-index: 999999;
+		z-index: 10000;
+		isolation: isolate;
 		display: flex;
 		align-items: center;
 		justify-content: center;

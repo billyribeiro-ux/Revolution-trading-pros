@@ -20,10 +20,12 @@
 		isAdmin?: boolean;
 		onClosePosition?: (position: ActivePosition) => void;
 		onUpdatePosition?: (position: ActivePosition) => void;
+		onInvalidatePosition?: (position: ActivePosition) => void;
+		onDeletePosition?: (position: ActivePosition) => void;
 		onAddTrade?: () => void;
 	}
 
-	const { performance, closedTrades, activePositions, isLoading = false, isAdmin = false, onClosePosition, onUpdatePosition, onAddTrade }: Props = $props();
+	const { performance, closedTrades, activePositions, isLoading = false, isAdmin = false, onClosePosition, onUpdatePosition, onInvalidatePosition, onDeletePosition, onAddTrade }: Props = $props();
 
 	// Calculate risk/reward display
 	const rrDisplay = $derived(
@@ -137,7 +139,14 @@
 					</div>
 				{:else}
 					{#each activePositions as position (position.id)}
-						<ActivePositionCard {position} {isAdmin} onClose={onClosePosition} onUpdate={onUpdatePosition} />
+						<ActivePositionCard 
+							{position} 
+							{isAdmin} 
+							onUpdate={onUpdatePosition}
+							onInvalidate={onInvalidatePosition}
+							onClose={onClosePosition}
+							onDelete={onDeletePosition}
+						/>
 					{/each}
 				{/if}
 			</div>

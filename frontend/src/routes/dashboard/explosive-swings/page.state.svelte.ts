@@ -62,6 +62,8 @@ export function createPageState() {
 	let isAddTradeModalOpen = $state(false);
 	let isUpdatePositionModalOpen = $state(false);
 	let updatingPosition = $state<ActivePosition | null>(null);
+	let isInvalidatePositionModalOpen = $state(false);
+	let invalidatingPosition = $state<ActivePosition | null>(null);
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// DATA STATE
@@ -430,6 +432,35 @@ export function createPageState() {
 		fetchStats();
 	}
 
+	function openInvalidatePositionModal(position: ActivePosition) {
+		invalidatingPosition = position;
+		isInvalidatePositionModalOpen = true;
+	}
+
+	function closeInvalidatePositionModal() {
+		isInvalidatePositionModalOpen = false;
+		invalidatingPosition = null;
+	}
+
+	async function deletePosition(position: ActivePosition) {
+		try {
+			const response = await fetch(`/api/trading-rooms/${ROOM_SLUG}/positions/${position.id}`, {
+				method: 'DELETE',
+				credentials: 'include'
+			});
+			
+			if (!response.ok) {
+				throw new Error('Failed to delete position');
+			}
+			
+			// Refresh data
+			fetchAllTrades();
+			fetchStats();
+		} catch (err) {
+			console.error('Failed to delete position:', err);
+		}
+	}
+
 	// ═══════════════════════════════════════════════════════════════════════════
 	// RETURN PUBLIC API
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -567,6 +598,12 @@ export function createPageState() {
 		get updatingPosition() {
 			return updatingPosition;
 		},
+		get isInvalidatePositionModalOpen() {
+			return isInvalidatePositionModalOpen;
+		},
+		get invalidatingPosition() {
+			return invalidatingPosition;
+		},
 
 		// Actions
 		initializeData,
@@ -594,6 +631,9 @@ export function createPageState() {
 		openUpdatePositionModal,
 		closeUpdatePositionModal,
 		handlePositionUpdated,
+		openInvalidatePositionModal,
+		closeInvalidatePositionModal,
+		deletePosition,
 
 		// Constants
 		ROOM_SLUG

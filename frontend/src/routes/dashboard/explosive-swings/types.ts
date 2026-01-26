@@ -75,6 +75,12 @@ export interface ActivePosition {
 	progressToTarget1: number;
 	/** When the position was triggered */
 	triggeredAt?: Date;
+	/** When the position was last updated */
+	updatedAt?: Date;
+	/** Whether this position was manually updated */
+	wasUpdated?: boolean;
+	/** Invalidation reason if invalidated */
+	invalidationReason?: string;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════

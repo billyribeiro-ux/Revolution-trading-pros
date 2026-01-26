@@ -1,7 +1,7 @@
 <script lang="ts">
 	/**
 	 * ActivePositionCard - Compact Trading Dashboard Card
-	 * @version 8.0.0 - Professional admin controls with dropdown menu
+	 * @version 9.0.0 - Full admin menu (Update, Invalidate, Close, Delete)
 	 */
 	import type { ActivePosition } from '../types';
 	import { formatPercent, formatPrice } from '../utils/formatters';
@@ -9,11 +9,13 @@
 	interface Props {
 		position: ActivePosition;
 		isAdmin?: boolean;
-		onClose?: (position: ActivePosition) => void;
 		onUpdate?: (position: ActivePosition) => void;
+		onInvalidate?: (position: ActivePosition) => void;
+		onClose?: (position: ActivePosition) => void;
+		onDelete?: (position: ActivePosition) => void;
 	}
 
-	const { position, isAdmin = false, onClose, onUpdate }: Props = $props();
+	const { position, isAdmin = false, onUpdate, onInvalidate, onClose, onDelete }: Props = $props();
 
 	let menuOpen = $state(false);
 
@@ -29,19 +31,33 @@
 		menuOpen = !menuOpen;
 	}
 
-	function handleClose(e: MouseEvent) {
-		e.stopPropagation();
-		menuOpen = false;
-		onClose?.(position);
-	}
-
 	function handleUpdate(e: MouseEvent) {
 		e.stopPropagation();
 		menuOpen = false;
 		onUpdate?.(position);
 	}
 
-	function handleClickOutside(e: MouseEvent) {
+	function handleInvalidate(e: MouseEvent) {
+		e.stopPropagation();
+		menuOpen = false;
+		onInvalidate?.(position);
+	}
+
+	function handleClose(e: MouseEvent) {
+		e.stopPropagation();
+		menuOpen = false;
+		onClose?.(position);
+	}
+
+	function handleDelete(e: MouseEvent) {
+		e.stopPropagation();
+		menuOpen = false;
+		if (confirm(`Are you sure you want to delete ${position.ticker}? This cannot be undone.`)) {
+			onDelete?.(position);
+		}
+	}
+
+	function handleClickOutside() {
 		if (menuOpen) {
 			menuOpen = false;
 		}
@@ -51,6 +67,11 @@
 <svelte:window onclick={handleClickOutside} />
 
 <div class="card {statusClass}">
+	<!-- Updated Badge -->
+	{#if position.wasUpdated}
+		<span class="updated-badge">UPDATED</span>
+	{/if}
+
 	<!-- Row 1: Ticker + Status + P&L -->
 	<div class="row-main">
 		<span class="ticker">{position.ticker}</span>
@@ -86,7 +107,7 @@
 	{/if}
 
 	<!-- Admin Menu -->
-	{#if isAdmin && (onClose || onUpdate)}
+	{#if isAdmin && (onUpdate || onInvalidate || onClose || onDelete)}
 		<div class="menu-container">
 			<button 
 				type="button" 
@@ -105,6 +126,7 @@
 
 			{#if menuOpen}
 				<div class="menu-dropdown" role="menu">
+					<!-- Update Position -->
 					{#if onUpdate}
 						<button 
 							type="button" 
@@ -119,18 +141,57 @@
 							Update Position
 						</button>
 					{/if}
-					{#if onClose}
+
+					<!-- Invalidate (for trades that didn't trigger) -->
+					{#if onInvalidate}
 						<button 
 							type="button" 
-							class="menu-item danger"
-							onclick={handleClose}
+							class="menu-item warning"
+							onclick={handleInvalidate}
 							role="menuitem"
 						>
 							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
 								<circle cx="12" cy="12" r="10"/>
-								<path d="M15 9l-6 6M9 9l6 6"/>
+								<path d="M12 8v4M12 16h.01"/>
 							</svg>
-							Close Position
+							Invalidate
+						</button>
+					{/if}
+
+					<!-- Close Trade -->
+					{#if onClose}
+						<button 
+							type="button" 
+							class="menu-item"
+							onclick={handleClose}
+							role="menuitem"
+						>
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+								<path d="M9 12l2 2 4-4"/>
+								<circle cx="12" cy="12" r="10"/>
+							</svg>
+							Close Trade
+						</button>
+					{/if}
+
+					<!-- Divider before dangerous action -->
+					{#if onDelete && (onUpdate || onInvalidate || onClose)}
+						<div class="menu-divider"></div>
+					{/if}
+
+					<!-- Delete (for mistakes) -->
+					{#if onDelete}
+						<button 
+							type="button" 
+							class="menu-item danger"
+							onclick={handleDelete}
+							role="menuitem"
+						>
+							<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="16" height="16">
+								<path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6h14z"/>
+								<path d="M10 11v6M14 11v6"/>
+							</svg>
+							Delete
 						</button>
 					{/if}
 				</div>
@@ -153,6 +214,21 @@
 	.card.loss { border-left-color: var(--color-loss); }
 	.card.watching { border-left-color: var(--color-watching); }
 	.card.entry { border-left-color: var(--color-entry); }
+
+	/* Updated Badge */
+	.updated-badge {
+		position: absolute;
+		top: -8px;
+		left: 12px;
+		background: var(--color-brand-primary);
+		color: white;
+		font-size: 9px;
+		font-weight: 700;
+		padding: 2px 6px;
+		border-radius: 4px;
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
+	}
 
 	/* Row 1 */
 	.row-main {
@@ -307,12 +383,29 @@
 		outline: 2px solid var(--color-brand-primary);
 		outline-offset: -2px;
 	}
+	/* Warning style (Invalidate) */
+	.menu-item.warning {
+		color: var(--color-warning, #f59e0b);
+	}
+	.menu-item.warning:hover {
+		background: rgba(245, 158, 11, 0.1);
+		color: var(--color-warning, #f59e0b);
+	}
+
+	/* Danger style (Delete) */
 	.menu-item.danger {
 		color: var(--color-loss);
 	}
 	.menu-item.danger:hover {
 		background: var(--color-loss-bg);
 		color: var(--color-loss);
+	}
+
+	/* Menu divider */
+	.menu-divider {
+		height: 1px;
+		background: var(--color-border-default);
+		margin: 4px 0;
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════
