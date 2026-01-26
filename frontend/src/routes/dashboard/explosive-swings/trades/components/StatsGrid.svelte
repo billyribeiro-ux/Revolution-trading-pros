@@ -74,18 +74,22 @@
   .stats-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-5);
+    gap: var(--space-4);
     max-width: 1400px;
     margin: 0 auto var(--space-10);
+    padding: 0 var(--space-4);
   }
 
+  /* 4 columns at 640px+ */
   @media (min-width: 640px) {
     .stats-grid {
       grid-template-columns: repeat(4, 1fr);
+      gap: var(--space-5);
     }
   }
 
-  @media (min-width: 1024px) {
+  /* 8 columns ONLY at 1280px+ (not 1024px) */
+  @media (min-width: 1280px) {
     .stats-grid {
       grid-template-columns: repeat(8, 1fr);
     }
@@ -94,11 +98,13 @@
   .stat-card {
     background: var(--color-bg-card);
     border-radius: var(--radius-lg);
-    padding: var(--space-5);
+    padding: var(--space-4) var(--space-3);
     text-align: center;
     box-shadow: var(--shadow-sm);
     border: 1px solid var(--color-border-subtle);
     transition: var(--transition-shadow);
+    min-width: 0; /* Allow flex shrink */
+    overflow: hidden;
   }
 
   .stat-card:hover {
@@ -106,12 +112,15 @@
   }
 
   .stat-value {
-    font-size: var(--text-2xl);
+    font-size: clamp(1.125rem, 2vw, 1.5rem); /* 18px to 24px, responsive */
     font-weight: var(--font-bold);
     color: var(--color-brand-primary);
     font-family: var(--font-display);
     margin-bottom: var(--space-1);
     font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   .stat-value.profit {
@@ -128,6 +137,9 @@
     text-transform: uppercase;
     letter-spacing: var(--tracking-wider);
     font-weight: var(--font-medium);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* Skeleton Loading */
@@ -136,7 +148,7 @@
   }
 
   .skeleton-value {
-    height: 28px;
+    height: 24px;
     width: 60%;
     margin: 0 auto var(--space-2);
     background: linear-gradient(90deg, var(--color-bg-subtle) 25%, var(--color-bg-muted) 50%, var(--color-bg-subtle) 75%);
@@ -158,5 +170,21 @@
   @keyframes shimmer {
     0% { background-position: 200% 0; }
     100% { background-position: -200% 0; }
+  }
+
+  /* Extra small screens - larger touch targets */
+  @media (max-width: 400px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-3);
+    }
+
+    .stat-card {
+      padding: var(--space-3) var(--space-2);
+    }
+
+    .stat-value {
+      font-size: 1rem;
+    }
   }
 </style>
