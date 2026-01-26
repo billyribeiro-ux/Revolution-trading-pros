@@ -48,7 +48,7 @@ interface WatchlistPageData {
  * @param {typeof fetch} context.fetch - SvelteKit fetch with credentials
  * @returns {Promise<WatchlistPageData>} Page data for client hydration
  */
-export const load: PageServerLoad = async ({ fetch }): Promise<WatchlistPageData> => {
+export const load: PageServerLoad = async ({ fetch }) => {
 	const baseUrl = env.API_BASE_URL || DEFAULT_API_URL;
 
 	try {

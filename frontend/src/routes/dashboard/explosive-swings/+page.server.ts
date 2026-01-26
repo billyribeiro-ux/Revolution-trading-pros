@@ -135,7 +135,7 @@ function buildResourceUrl(
  * @param {typeof fetch} context.fetch - SvelteKit fetch with credentials
  * @returns {Promise<ExplosiveSwingsPageData>} Page data for client hydration
  */
-export const load = (async ({ fetch }): Promise<ExplosiveSwingsPageData> => {
+export const load = (async ({ fetch }) => {
 	const baseUrl = env.API_BASE_URL || DEFAULT_API_URL;
 
 	try {
