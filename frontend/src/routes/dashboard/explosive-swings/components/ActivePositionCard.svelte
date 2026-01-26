@@ -119,7 +119,7 @@
 							Update Position
 						</button>
 					{/if}
-					{#if onClose && position.status === 'ACTIVE'}
+					{#if onClose}
 						<button 
 							type="button" 
 							class="menu-item danger"
@@ -313,5 +313,79 @@
 	.menu-item.danger:hover {
 		background: var(--color-loss-bg);
 		color: var(--color-loss);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Mobile font scaling
+	   ═══════════════════════════════════════════════════════════════════════ */
+	@media (max-width: 640px) {
+		.card {
+			padding: 10px 12px;
+			font-size: 12px;
+		}
+
+		.ticker {
+			font-size: 16px;
+		}
+
+		.status {
+			font-size: 9px;
+			padding: 2px 5px;
+		}
+
+		.pnl {
+			font-size: 15px;
+		}
+
+		.row-prices {
+			font-size: 13px;
+			flex-wrap: wrap;
+			gap: 4px;
+		}
+
+		.pct {
+			font-size: 12px;
+		}
+
+		.menu-trigger {
+			width: 32px;
+			height: 32px;
+		}
+
+		.menu-trigger svg {
+			width: 20px;
+			height: 20px;
+		}
+
+		.menu-dropdown {
+			min-width: 180px;
+		}
+
+		.menu-item {
+			padding: 12px 14px;
+			font-size: 14px;
+		}
+	}
+
+	@media (max-width: 400px) {
+		.card {
+			padding: 8px 10px;
+		}
+
+		.ticker {
+			font-size: 17px;
+		}
+
+		.pnl {
+			font-size: 16px;
+		}
+
+		.row-prices {
+			font-size: 14px;
+		}
+
+		.row-main {
+			gap: 6px;
+		}
 	}
 </style>
