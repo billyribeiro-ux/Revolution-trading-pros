@@ -1,97 +1,197 @@
 /**
+ * ═══════════════════════════════════════════════════════════════════════════════
  * Explosive Swings Dashboard - Server Load Function
- * ═══════════════════════════════════════════════════════════════════════════
+ * ═══════════════════════════════════════════════════════════════════════════════
  *
- * SvelteKit 2.0+ / Svelte 5 Best Practices - January 2026
+ * @description SSR pre-fetch for unified room resources with graceful degradation
+ * @version 5.0.0 - Apple Principal Engineer ICT Level 7 Grade
+ * @author Revolution Trading Pros Engineering
+ * @standards Apple ICT 7+ | SvelteKit 2.0+ | Svelte 5 (January 2026)
  *
- * SSR pre-fetch for unified room resources:
- * - Tutorial video (featured)
+ * @architecture
+ * ┌─────────────────────────────────────────────────────────────────────────────┐
+ * │ Server Load Function (SSR)                                                  │
+ * ├─────────────────────────────────────────────────────────────────────────────┤
+ * │ 1. Parallel fetch for optimal performance (Promise.all)                     │
+ * │ 2. Individual error handling per resource (graceful degradation)            │
+ * │ 3. Type-safe return with explicit null handling                             │
+ * │ 4. Fallback data on complete failure (never throws 500)                     │
+ * └─────────────────────────────────────────────────────────────────────────────┘
+ *
+ * @resources
+ * - Weekly watchlist (from $lib/server/watchlist)
+ * - Tutorial video (featured, room-resources API)
  * - Latest updates (daily videos with tags)
- * - Weekly watchlist
  * - PDFs/Documents
  *
- * @version 4.0.0 - SvelteKit 2.0+ satisfies pattern
+ * @security
+ * - Server-side only (no client exposure of API keys)
+ * - Environment variables via $env/dynamic/private
+ * - Credentials included via SvelteKit fetch
  */
 
 import { env } from '$env/dynamic/private';
-import { getLatestWatchlist } from '$lib/server/watchlist';
+import { getLatestWatchlist, type WatchlistData } from '$lib/server/watchlist';
 import type { PageServerLoad } from './$types';
 import type { RoomResource } from '$lib/api/room-resources';
 import { ROOM_RESOURCES_ID, ROOM_SLUG } from './constants';
 
-export const load = (async ({ fetch }) => {
-	try {
-		const baseUrl = env.API_BASE_URL || 'https://revolution-trading-pros-api.fly.dev';
-		
-		console.log('[explosive-swings] Loading page with baseUrl:', baseUrl);
-		console.log('[explosive-swings] ROOM_RESOURCES_ID:', ROOM_RESOURCES_ID);
+// ═══════════════════════════════════════════════════════════════════════════════
+// TYPES - ICT 7 Type Safety
+// ═══════════════════════════════════════════════════════════════════════════════
 
-		// Parallel fetch for optimal performance
+/** API response wrapper for room resources */
+interface RoomResourcesResponse {
+	success?: boolean;
+	data?: RoomResource[];
+	error?: string;
+}
+
+/** Page data returned to client */
+interface ExplosiveSwingsPageData {
+	watchlist: WatchlistData | null;
+	tutorialVideo: RoomResource | null;
+	latestUpdates: RoomResource[];
+	documents: RoomResource[];
+	roomId: number;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// CONSTANTS - ICT 7 Single Source of Truth
+// ═══════════════════════════════════════════════════════════════════════════════
+
+const LOG_PREFIX = '[explosive-swings]';
+const DEFAULT_API_URL = 'https://revolution-trading-pros-api.fly.dev';
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// HELPER FUNCTIONS - ICT 7 Clean Architecture
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Safely fetch room resources with error handling
+ * @param fetchFn - SvelteKit fetch function
+ * @param url - Full API URL
+ * @param resourceType - Resource type for logging
+ * @returns Promise<RoomResourcesResponse> - Always resolves, never throws
+ */
+async function fetchRoomResources(
+	fetchFn: typeof fetch,
+	url: string,
+	resourceType: string
+): Promise<RoomResourcesResponse> {
+	try {
+		const response = await fetchFn(url);
+		
+		if (!response.ok) {
+			console.warn(`${LOG_PREFIX} ${resourceType} fetch returned:`, response.status);
+			return { data: [] };
+		}
+		
+		return await response.json();
+	} catch (error) {
+		console.error(`${LOG_PREFIX} ${resourceType} fetch error:`, error);
+		return { data: [] };
+	}
+}
+
+/**
+ * Build room resources API URL
+ * @param baseUrl - API base URL
+ * @param params - Query parameters
+ * @returns Full URL string
+ */
+function buildResourceUrl(
+	baseUrl: string,
+	params: { resourceType: string; contentType?: string; isFeatured?: boolean; perPage?: number }
+): string {
+	const searchParams = new URLSearchParams({
+		room_id: String(ROOM_RESOURCES_ID),
+		resource_type: params.resourceType,
+		per_page: String(params.perPage ?? 10)
+	});
+	
+	if (params.contentType) {
+		searchParams.set('content_type', params.contentType);
+	}
+	
+	if (params.isFeatured) {
+		searchParams.set('is_featured', 'true');
+	}
+	
+	return `${baseUrl}/api/room-resources?${searchParams}`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// LOAD FUNCTION - ICT 7 Server-Side Rendering
+// ═══════════════════════════════════════════════════════════════════════════════
+
+/**
+ * Server load function for Explosive Swings dashboard
+ *
+ * @description Fetches all required resources in parallel with graceful degradation.
+ *              Never throws - returns fallback data on complete failure.
+ *
+ * @param {Object} context - SvelteKit load context
+ * @param {typeof fetch} context.fetch - SvelteKit fetch with credentials
+ * @returns {Promise<ExplosiveSwingsPageData>} Page data for client hydration
+ */
+export const load = (async ({ fetch }): Promise<ExplosiveSwingsPageData> => {
+	const baseUrl = env.API_BASE_URL || DEFAULT_API_URL;
+
+	try {
+		// ICT 7: Parallel fetch for optimal performance
 		const [watchlist, tutorialRes, updatesRes, documentsRes] = await Promise.all([
 			// Weekly watchlist
-			getLatestWatchlist(ROOM_SLUG, fetch, baseUrl).catch((err) => {
-				console.error('[explosive-swings] Watchlist fetch error:', err);
+			getLatestWatchlist(ROOM_SLUG, fetch, baseUrl).catch((err): null => {
+				console.error(`${LOG_PREFIX} Watchlist fetch error:`, err);
 				return null;
 			}),
 
 			// Featured tutorial video
-			fetch(
-				`${baseUrl}/api/room-resources?room_id=${ROOM_RESOURCES_ID}&resource_type=video&content_type=tutorial&is_featured=true&per_page=1`
-			)
-				.then((r: Response) => {
-					if (!r.ok) {
-						console.warn('[explosive-swings] Tutorial fetch returned:', r.status);
-					}
-					return r.ok ? r.json() : { data: [] };
-				})
-				.catch((err) => {
-					console.error('[explosive-swings] Tutorial fetch error:', err);
-					return { data: [] };
+			fetchRoomResources(
+				fetch,
+				buildResourceUrl(baseUrl, {
+					resourceType: 'video',
+					contentType: 'tutorial',
+					isFeatured: true,
+					perPage: 1
 				}),
+				'Tutorial'
+			),
 
-			// Latest daily videos with tags
-			fetch(
-				`${baseUrl}/api/room-resources?room_id=${ROOM_RESOURCES_ID}&resource_type=video&content_type=daily_video&per_page=6`
-			)
-				.then((r: Response) => {
-					if (!r.ok) {
-						console.warn('[explosive-swings] Updates fetch returned:', r.status);
-					}
-					return r.ok ? r.json() : { data: [] };
-				})
-				.catch((err) => {
-					console.error('[explosive-swings] Updates fetch error:', err);
-					return { data: [] };
+			// Latest daily videos
+			fetchRoomResources(
+				fetch,
+				buildResourceUrl(baseUrl, {
+					resourceType: 'video',
+					contentType: 'daily_video',
+					perPage: 6
 				}),
+				'Updates'
+			),
 
 			// PDFs and documents
-			fetch(
-				`${baseUrl}/api/room-resources?room_id=${ROOM_RESOURCES_ID}&resource_type=pdf&per_page=10`
+			fetchRoomResources(
+				fetch,
+				buildResourceUrl(baseUrl, {
+					resourceType: 'pdf',
+					perPage: 10
+				}),
+				'Documents'
 			)
-				.then((r: Response) => {
-					if (!r.ok) {
-						console.warn('[explosive-swings] Documents fetch returned:', r.status);
-					}
-					return r.ok ? r.json() : { data: [] };
-				})
-				.catch((err) => {
-					console.error('[explosive-swings] Documents fetch error:', err);
-					return { data: [] };
-				})
 		]);
-
-		console.log('[explosive-swings] All fetches completed successfully');
 
 		return {
 			watchlist: watchlist ?? null,
-			tutorialVideo: (tutorialRes?.data?.[0] || null) as RoomResource | null,
-			latestUpdates: (updatesRes?.data || []) as RoomResource[],
-			documents: (documentsRes?.data || []) as RoomResource[],
+			tutorialVideo: tutorialRes.data?.[0] ?? null,
+			latestUpdates: updatesRes.data ?? [],
+			documents: documentsRes.data ?? [],
 			roomId: ROOM_RESOURCES_ID
 		};
 	} catch (error) {
-		console.error('[explosive-swings] FATAL ERROR in load function:', error);
-		// Return safe fallback data to prevent 500 error
+		// ICT 7: Never throw 500 - graceful degradation with fallback data
+		console.error(`${LOG_PREFIX} FATAL ERROR in load function:`, error);
+		
 		return {
 			watchlist: null,
 			tutorialVideo: null,
