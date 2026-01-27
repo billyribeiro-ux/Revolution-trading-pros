@@ -226,6 +226,7 @@ import IconKeyboard from '@tabler/icons-svelte/icons/keyboard';
 // Language/Layout Icons
 import IconLanguage from '@tabler/icons-svelte/icons/language';
 import IconLayout2 from '@tabler/icons-svelte/icons/layout-2';
+import IconLayoutDashboard from '@tabler/icons-svelte/icons/layout-dashboard';
 import IconLayoutGrid from '@tabler/icons-svelte/icons/layout-grid';
 import IconLayoutGridAdd from '@tabler/icons-svelte/icons/layout-grid-add';
 import IconLayoutKanban from '@tabler/icons-svelte/icons/layout-kanban';
@@ -651,6 +652,7 @@ export {
 	// Language/Layout Icons
 	IconLanguage,
 	IconLayout2,
+	IconLayoutDashboard,
 	IconLayoutGrid,
 	IconLayoutGridAdd,
 	IconLayoutKanban,
