@@ -78,7 +78,7 @@
 
 	import type { Snippet } from 'svelte';
 
-	interface ChildRenderProps {
+	export interface ChildRenderProps {
 		block: Block;
 		isNested: boolean;
 		nestingLevel: number;
