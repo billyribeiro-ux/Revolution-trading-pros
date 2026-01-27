@@ -55,6 +55,7 @@
 
 	// Props
 	interface Props {
+		id?: string;
 		value?: string;
 		format?: 'html' | 'markdown' | 'raw';
 		placeholder?: string;
@@ -65,6 +66,7 @@
 	}
 
 	let {
+		id,
 		value = '',
 		format = 'html',
 		placeholder = 'Start writing your content...',

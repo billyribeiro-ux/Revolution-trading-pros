@@ -658,6 +658,7 @@
 			role="dialog"
 			aria-modal="true"
 			aria-labelledby="status-modal-title"
+			tabindex="-1"
 			onclick={(e) => e.stopPropagation()}
 			onkeydown={(e) => e.key === 'Escape' && (showStatusModal = false)}
 			in:scale={{ duration: 200 }}
