@@ -74,6 +74,8 @@
 	// Derived
 	let contentId = $derived($page.params.id);
 	let hasChanges = $derived(checkForChanges());
+	let statusIcon = $derived(content ? getStatusIcon(content.status) : IconClock);
+	let statusColor = $derived(content ? getStatusColor(content.status) : 'gray');
 
 	// ═══════════════════════════════════════════════════════════════════════════
 	// Lifecycle
@@ -299,12 +301,11 @@
 
 			<div class="header-actions">
 				<!-- Status Badge -->
-				{@const StatusIcon = getStatusIcon(content.status)}
 				<button
-					class="status-badge status-{getStatusColor(content.status)}"
+					class="status-badge status-{statusColor}"
 					onclick={() => (showStatusModal = true)}
 				>
-					<StatusIcon size={14} />
+					<svelte:component this={statusIcon} size={14} />
 					{content.status.replace('_', ' ')}
 				</button>
 
