@@ -340,7 +340,7 @@
 	}
 </script>
 
-<div class="multi-mode-editor" class:disabled onkeydown={handleKeyDown}>
+<div class="multi-mode-editor" class:disabled role="region" aria-label="Multi-mode content editor" onkeydown={handleKeyDown}>
 	<!-- Mode Selector -->
 	{#if showModeSelector}
 		<div class="mode-selector">
