@@ -159,10 +159,10 @@ export function createBuilderStore(initialLayout?: PageLayout) {
 	function updateBlockConfig(blockId: string, config: Partial<ComponentConfig>): void {
 		layout.blocks = layout.blocks.map((b) => {
 			if (b.id === blockId) {
-				return { ...b, config: { ...b.config, ...config } };
+				return { ...b, config: { ...b.config, ...config } } as PageBlock;
 			}
 			return b;
-		});
+		}) as PageBlock[];
 		hasUnsavedChanges = true;
 	}
 

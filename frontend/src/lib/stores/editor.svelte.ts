@@ -607,8 +607,9 @@ class EditorStoreClass {
 			this._lastSavedAt = new Date();
 
 			// Clear autosaved draft
-			if (browser && this._content.id) {
-				autosaveStore.clearDraft(this._content.id);
+			const contentId = this._content?.id;
+			if (browser && contentId) {
+				autosaveStore.clearDraft(contentId);
 			}
 
 			return true;
