@@ -23,6 +23,7 @@ pub mod analytics;
 pub mod checkout;
 pub mod cms;
 pub mod cms_delivery;
+pub mod cms_revisions;
 pub mod cms_v2;
 pub mod contacts;
 pub mod coupons;
@@ -58,6 +59,8 @@ pub mod subscriptions_admin;
 pub mod trading_rooms;
 pub mod watchlist; // ICT 7: Service connection status // ICT 7: Teams & Departments
 pub mod favorites; // ICT 7: User favorites persistence
+pub mod cms_ai_assist; // ICT 7+: AI-powered content assistance
+pub mod cms_reusable_blocks; // ICT 7+: Reusable content blocks library
 
 use crate::AppState;
 use axum::Router;
@@ -101,6 +104,8 @@ pub fn api_router() -> Router<AppState> {
         // CMS v2 - Custom CMS Implementation (surpasses Storyblok)
         .nest("/admin/cms-v2", cms_v2::admin_router())
         .nest("/cms", cms_v2::public_router())
+        // CMS Revisions - Revision comparison and restore - ICT 7+ Grade
+        .nest("/api/cms", cms_revisions::router())
         // CMS Delivery API - Public content delivery with search
         .nest("/delivery", cms_delivery::delivery_router())
         // Real-time updates - SSE
@@ -168,6 +173,14 @@ pub fn api_router() -> Router<AppState> {
         )
         // User Favorites - ICT 7 Grade
         .nest("/favorites", favorites::router())
+        // CMS AI Assist - ICT 7+ AI-powered content assistance
+        .nest("/cms/ai", cms_ai_assist::router())
+        // CMS Reusable Blocks - ICT 7+ Block library management
+        .nest("/cms/reusable-blocks", cms_reusable_blocks::admin_router())
+        .nest(
+            "/cms/reusable-blocks/public",
+            cms_reusable_blocks::public_router(),
+        )
         .merge(robots::router())
         .merge(sitemap::router())
         .merge(categories::router())
