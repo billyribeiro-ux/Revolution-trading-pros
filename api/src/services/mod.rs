@@ -4,6 +4,7 @@
 
 pub mod bunny;
 pub mod cms;
+pub mod cms_content;
 pub mod email;
 pub mod order_service;
 pub mod redis;

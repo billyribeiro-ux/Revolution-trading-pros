@@ -1,12 +1,17 @@
 /**
- * SEO Utilities Barrel Export
+ * CMS Components Barrel Export
  * ═══════════════════════════════════════════════════════════════════════════════
  *
- * Central export for all SEO-related utilities.
+ * Central export for all CMS editor components.
  *
  * @version 1.0.0
  * @author Revolution Trading Pros
  * @since January 2026
  */
 
-export * from './structured-data';
+// Editors
+export { default as RichTextEditor } from './RichTextEditor.svelte';
+export { default as MultiModeEditor } from './MultiModeEditor.svelte';
+
+// Utilities
+export * from './markdown-parser';
