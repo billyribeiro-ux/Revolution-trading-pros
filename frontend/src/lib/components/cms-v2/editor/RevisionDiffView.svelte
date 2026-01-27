@@ -121,18 +121,17 @@
 		return filtered;
 	});
 
-	let fieldDiffs = $derived<FieldDiff[]>(() => {
+	let fieldDiffs = $derived.by((): FieldDiff[] => {
 		if (!fromRevision?.data || !toRevision?.data) return [];
 		return computeFieldDiffs(fromRevision.data, toRevision.data);
 	});
 
-	let diffStats = $derived<DiffStats>(() => {
-		const diffs = fieldDiffs();
+	let diffStats = $derived.by((): DiffStats => {
 		return {
-			added: diffs.filter((d) => d.type === 'added').length,
-			removed: diffs.filter((d) => d.type === 'removed').length,
-			modified: diffs.filter((d) => d.type === 'modified').length,
-			unchanged: diffs.filter((d) => d.type === 'unchanged').length
+			added: fieldDiffs.filter((d: FieldDiff) => d.type === 'added').length,
+			removed: fieldDiffs.filter((d: FieldDiff) => d.type === 'removed').length,
+			modified: fieldDiffs.filter((d: FieldDiff) => d.type === 'modified').length,
+			unchanged: fieldDiffs.filter((d: FieldDiff) => d.type === 'unchanged').length
 		};
 	});
 
@@ -542,13 +541,13 @@
 				{#if fromRevision && toRevision}
 					<div class="flex items-center gap-3 rounded-lg bg-gray-50 px-3 py-1.5 text-xs font-medium">
 						<span class="flex items-center gap-1 text-green-600" title="Added fields">
-							<span class="text-base">+</span>{diffStats().added}
+							<span class="text-base">+</span>{diffStats.added}
 						</span>
 						<span class="flex items-center gap-1 text-red-600" title="Removed fields">
-							<span class="text-base">-</span>{diffStats().removed}
+							<span class="text-base">-</span>{diffStats.removed}
 						</span>
 						<span class="flex items-center gap-1 text-amber-600" title="Modified fields">
-							<span class="text-base">~</span>{diffStats().modified}
+							<span class="text-base">~</span>{diffStats.modified}
 						</span>
 					</div>
 				{/if}
@@ -770,7 +769,7 @@
 							bind:this={leftPaneRef}
 							onscroll={() => syncScroll('left')}
 						>
-							{#each fieldDiffs() as diff (diff.field)}
+							{#each fieldDiffs as diff (diff.field)}
 								<div class="mb-4 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
 									<div class="mb-2 flex items-center gap-2">
 										<span class="text-sm font-medium text-gray-700">{diff.label}</span>
@@ -861,7 +860,7 @@
 							bind:this={rightPaneRef}
 							onscroll={() => syncScroll('right')}
 						>
-							{#each fieldDiffs() as diff (diff.field)}
+							{#each fieldDiffs as diff (diff.field)}
 								<div class="mb-4 rounded-lg border border-gray-200 bg-white p-3 shadow-sm">
 									<div class="mb-2 flex items-center gap-2">
 										<span class="text-sm font-medium text-gray-700">{diff.label}</span>

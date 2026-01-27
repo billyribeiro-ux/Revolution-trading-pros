@@ -250,7 +250,6 @@
 
 <aside
 	class="flex h-full w-80 flex-col border-l border-gray-200 bg-white"
-	role="complementary"
 	aria-label="Comments sidebar"
 >
 	<!-- Header -->
@@ -329,6 +328,7 @@
 						<button
 							type="button"
 							role="option"
+							aria-selected="false"
 							onclick={() => insertMention(user, (v) => (newCommentBody = v), newCommentBody)}
 							class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm transition-colors hover:bg-gray-50"
 						>
@@ -550,6 +550,7 @@
 										<button
 											type="button"
 											role="option"
+											aria-selected="false"
 											onclick={() => insertMention(user, (v) => (replyBody = v), replyBody)}
 											class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50"
 										>

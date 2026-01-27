@@ -482,6 +482,7 @@
 		bind:this={menuRef}
 		class="slash-commands-menu"
 		role="listbox"
+		tabindex="0"
 		aria-label="Editor commands"
 		aria-activedescendant={flatCommands[selectedIndex]?.id}
 		style:left="{computedPosition.x}px"

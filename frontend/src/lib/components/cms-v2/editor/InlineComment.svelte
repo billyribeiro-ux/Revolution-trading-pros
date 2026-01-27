@@ -78,7 +78,7 @@
 	// Lifecycle
 	// ==========================================================================
 
-	let observer: MutationObserver | null = $state(null);
+	let observer = $state<MutationObserver | null>(null);
 
 	onMount(() => {
 		if (blockElement) {
