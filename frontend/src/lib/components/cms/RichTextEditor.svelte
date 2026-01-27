@@ -35,7 +35,6 @@
 		IconPhoto,
 		IconCode,
 		IconQuote,
-		IconSourceCode,
 		IconAlignLeft,
 		IconAlignCenter,
 		IconAlignRight

@@ -35,7 +35,6 @@
 		IconPhoto,
 		IconCode,
 		IconQuote,
-		IconSourceCode,
 		IconAlignLeft,
 		IconAlignCenter,
 		IconAlignRight,
@@ -246,11 +245,11 @@
 	}
 
 	// Markdown shortcuts
-	function insertMarkdown(syntax: string, wrap = true) {
-		if (mode !== 'markdown') return;
+	function insertMarkdown(syntax: string, wrap = true): boolean {
+		if (mode !== 'markdown') return false;
 
 		const textarea = document.querySelector('.markdown-textarea') as HTMLTextAreaElement;
-		if (!textarea) return;
+		if (!textarea) return false;
 
 		const start = textarea.selectionStart;
 		const end = textarea.selectionEnd;
@@ -280,6 +279,8 @@
 			textarea.focus();
 			textarea.setSelectionRange(newCursorPos, newCursorPos);
 		});
+
+		return true;
 	}
 
 	function insertMarkdownBlock(prefix: string) {
@@ -339,7 +340,7 @@
 	}
 </script>
 
-<div class="multi-mode-editor" class:disabled role="application" aria-label="Content editor" onkeydown={handleKeyDown}>
+<div class="multi-mode-editor" class:disabled role="application" aria-label="Content editor" tabindex="0" onkeydown={handleKeyDown}>
 	<!-- Mode Selector -->
 	{#if showModeSelector}
 		<div class="mode-selector">
