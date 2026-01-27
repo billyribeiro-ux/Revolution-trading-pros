@@ -155,16 +155,16 @@
 
 	// Listen for fullscreen changes
 	$effect(() => {
-		if (browser) {
-			const handleFullscreenChange = () => {
-				isFullscreen = !!document.fullscreenElement;
-			};
+		if (!browser) return;
 
-			document.addEventListener('fullscreenchange', handleFullscreenChange);
-			return () => {
-				document.removeEventListener('fullscreenchange', handleFullscreenChange);
-			};
-		}
+		const handleFullscreenChange = () => {
+			isFullscreen = !!document.fullscreenElement;
+		};
+
+		document.addEventListener('fullscreenchange', handleFullscreenChange);
+		return () => {
+			document.removeEventListener('fullscreenchange', handleFullscreenChange);
+		};
 	});
 
 	// ==========================================================================

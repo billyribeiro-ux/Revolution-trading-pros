@@ -240,23 +240,23 @@
 
 	// Handle click outside to close menu
 	$effect(() => {
-		if (visible && browser) {
-			const handleClickOutside = (e: MouseEvent) => {
-				if (menuRef && !menuRef.contains(e.target as Node)) {
-					onClose();
-				}
-			};
+		if (!visible || !browser) return;
 
-			// Delay to prevent immediate close
-			const timeoutId = setTimeout(() => {
-				document.addEventListener('mousedown', handleClickOutside);
-			}, 100);
+		const handleClickOutside = (e: MouseEvent) => {
+			if (menuRef && !menuRef.contains(e.target as Node)) {
+				onClose();
+			}
+		};
 
-			return () => {
-				clearTimeout(timeoutId);
-				document.removeEventListener('mousedown', handleClickOutside);
-			};
-		}
+		// Delay to prevent immediate close
+		const timeoutId = setTimeout(() => {
+			document.addEventListener('mousedown', handleClickOutside);
+		}, 100);
+
+		return () => {
+			clearTimeout(timeoutId);
+			document.removeEventListener('mousedown', handleClickOutside);
+		};
 	});
 
 	// ==========================================================================
@@ -646,7 +646,7 @@
 						>
 							<IconMoodSmile size={18} />
 							<span>Change Tone</span>
-							<IconChevronDown size={16} class="chevron" class:rotated={showToneDropdown} />
+							<IconChevronDown size={16} class={showToneDropdown ? 'chevron rotated' : 'chevron'} />
 						</button>
 
 						{#if showToneDropdown}

@@ -51,8 +51,6 @@
 	import IconArrowDown from '@tabler/icons-svelte/icons/arrow-down';
 	import IconCornerDownLeft from '@tabler/icons-svelte/icons/corner-down-left';
 
-	import type { Component } from 'svelte';
-
 	// ==========================================================================
 	// Types
 	// ==========================================================================
@@ -62,7 +60,8 @@
 		label: string;
 		description: string;
 		category: CommandCategory;
-		icon: Component;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		icon: any;
 		keywords: string[];
 		shortcut?: string;
 	}

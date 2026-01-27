@@ -78,7 +78,7 @@
 	// Lifecycle
 	// ==========================================================================
 
-	let observer: MutationObserver | null = null;
+	let observer: MutationObserver | null = $state(null);
 
 	onMount(() => {
 		if (blockElement) {
@@ -88,9 +88,7 @@
 	});
 
 	onDestroy(() => {
-		if (observer) {
-			observer.disconnect();
-		}
+		observer?.disconnect();
 		removeSelectionListener();
 	});
 
@@ -419,6 +417,7 @@
 		<button
 			type="button"
 			onclick={openCommentPopover}
+			aria-label="Add comment"
 			class="flex items-center justify-center rounded-lg bg-blue-600 p-2 text-white shadow-lg
 				transition-all hover:bg-blue-700 hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
 		>
@@ -514,6 +513,7 @@
 							<button
 								type="button"
 								role="option"
+								aria-selected="false"
 								onclick={() => insertMention(user)}
 								class="flex w-full items-center gap-2 px-3 py-2 text-left text-sm hover:bg-gray-50"
 							>
