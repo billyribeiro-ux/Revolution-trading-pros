@@ -326,7 +326,10 @@ pub fn router() -> Router<AppState> {
         .route("/audit-logs", get(get_audit_logs))
         // Workflow Management
         .route("/workflow/:content_id", get(get_workflow_status))
-        .route("/workflow/:content_id/transition", post(transition_workflow))
+        .route(
+            "/workflow/:content_id/transition",
+            post(transition_workflow),
+        )
         .route("/workflow/:content_id/assign", post(assign_for_review))
         .route("/workflow/:content_id/unassign", post(unassign_content))
         .route("/workflow/:content_id/history", get(get_workflow_history))

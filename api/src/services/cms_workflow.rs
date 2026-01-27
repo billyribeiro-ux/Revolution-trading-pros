@@ -111,7 +111,10 @@ pub async fn get_or_create_workflow_status(
 }
 
 /// Get workflow status for content
-pub async fn get_workflow_status(pool: &PgPool, content_id: Uuid) -> Result<Option<WorkflowStatus>> {
+pub async fn get_workflow_status(
+    pool: &PgPool,
+    content_id: Uuid,
+) -> Result<Option<WorkflowStatus>> {
     let workflow: Option<WorkflowStatus> = sqlx::query_as(
         r#"
         SELECT id, content_id, current_stage, previous_stage, assigned_to, assigned_by,
@@ -195,10 +198,7 @@ pub async fn assign_for_review(
 }
 
 /// Get all assignments for a user
-pub async fn get_user_assignments(
-    pool: &PgPool,
-    user_id: i64,
-) -> Result<Vec<WorkflowStatus>> {
+pub async fn get_user_assignments(pool: &PgPool, user_id: i64) -> Result<Vec<WorkflowStatus>> {
     let assignments: Vec<WorkflowStatus> = sqlx::query_as(
         r#"
         SELECT id, content_id, current_stage, previous_stage, assigned_to, assigned_by,
@@ -265,10 +265,7 @@ pub async fn get_pending_review_count(pool: &PgPool, user_id: i64) -> Result<i64
 }
 
 /// Get overdue assignments for user
-pub async fn get_overdue_assignments(
-    pool: &PgPool,
-    user_id: i64,
-) -> Result<Vec<WorkflowStatus>> {
+pub async fn get_overdue_assignments(pool: &PgPool, user_id: i64) -> Result<Vec<WorkflowStatus>> {
     let assignments: Vec<WorkflowStatus> = sqlx::query_as(
         r#"
         SELECT id, content_id, current_stage, previous_stage, assigned_to, assigned_by,
