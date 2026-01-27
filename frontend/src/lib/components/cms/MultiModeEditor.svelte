@@ -339,7 +339,7 @@
 	}
 </script>
 
-<div class="multi-mode-editor" class:disabled onkeydown={handleKeyDown}>
+<div class="multi-mode-editor" class:disabled role="application" aria-label="Content editor" onkeydown={handleKeyDown}>
 	<!-- Mode Selector -->
 	{#if showModeSelector}
 		<div class="mode-selector">
@@ -717,13 +717,15 @@
 					<button
 						type="button"
 						class="toolbar-btn"
-						onclick={() =>
-							insertMarkdown('\n```\n', false) ||
-							(markdownContent += '\n```')}
+						onclick={() => {
+							if (!insertMarkdown('\n```\n', false)) {
+								markdownContent += '\n```';
+							}
+						}}
 						title="Code Block"
 						{disabled}
 					>
-						<IconSourceCode size={16} />
+						<IconCode size={16} />
 					</button>
 				</div>
 
