@@ -22,6 +22,7 @@ pub mod admin;
 pub mod analytics;
 pub mod checkout;
 pub mod cms;
+pub mod cms_v2;
 pub mod contacts;
 pub mod coupons;
 pub mod courses_admin;
@@ -96,6 +97,9 @@ pub fn api_router() -> Router<AppState> {
         // CMS routes - ICT 11+ Advanced Features
         .nest("/admin/cms", cms::admin_router())
         .nest("/preview", cms::preview_router())
+        // CMS v2 - Custom CMS Implementation (surpasses Storyblok)
+        .nest("/admin/cms-v2", cms_v2::admin_router())
+        .nest("/cms", cms_v2::public_router())
         // Real-time updates - SSE
         .nest("/realtime", realtime::router())
         .nest("/popups", popups::router())
