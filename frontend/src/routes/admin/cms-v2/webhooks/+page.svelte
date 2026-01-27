@@ -494,16 +494,31 @@
 
 <!-- Create/Edit Modal -->
 {#if showCreateModal}
-	<div class="modal-backdrop" onclick={() => showCreateModal = false}>
-		<div class="modal" onclick={(e) => e.stopPropagation()} in:scale={{ duration: 200 }}>
+	<div
+		class="modal-backdrop"
+		role="presentation"
+		onclick={() => showCreateModal = false}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateModal = false)}
+	>
+		<div
+			class="modal"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="webhook-modal-title"
+			tabindex="-1"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			in:scale={{ duration: 200 }}
+		>
 			<div class="modal-header">
-				<h3>{isEditing ? 'Edit Webhook' : 'Create Webhook'}</h3>
+				<h3 id="webhook-modal-title">{isEditing ? 'Edit Webhook' : 'Create Webhook'}</h3>
 				<button class="btn-close" onclick={() => showCreateModal = false}>×</button>
 			</div>
 			<div class="modal-body">
 				<div class="field-group">
-					<label class="field-label required">Name</label>
+					<label for="webhook-name" class="field-label required">Name</label>
 					<input
+						id="webhook-name"
 						type="text"
 						bind:value={formName}
 						placeholder="My Webhook"
@@ -512,8 +527,9 @@
 				</div>
 
 				<div class="field-group">
-					<label class="field-label required">URL</label>
+					<label for="webhook-url" class="field-label required">URL</label>
 					<input
+						id="webhook-url"
 						type="url"
 						bind:value={formUrl}
 						placeholder="https://api.example.com/webhook"
@@ -522,8 +538,8 @@
 				</div>
 
 				<div class="field-group">
-					<label class="field-label required">Events</label>
-					<div class="event-options">
+					<span id="events-label" class="field-label required">Events</span>
+					<div class="event-options" role="group" aria-labelledby="events-label">
 						{#each eventOptions as option}
 							<button
 								type="button"
@@ -538,9 +554,10 @@
 				</div>
 
 				<div class="field-group">
-					<label class="field-label">Secret (for HMAC signing)</label>
+					<label for="webhook-secret" class="field-label">Secret (for HMAC signing)</label>
 					<div class="secret-input-group">
 						<input
+							id="webhook-secret"
 							type="text"
 							bind:value={formSecret}
 							placeholder="Leave empty for no signing"
@@ -554,8 +571,9 @@
 
 				<div class="field-row">
 					<div class="field-group">
-						<label class="field-label">Retry Count</label>
+						<label for="webhook-retry" class="field-label">Retry Count</label>
 						<input
+							id="webhook-retry"
 							type="number"
 							bind:value={formRetryCount}
 							min="0"
@@ -564,8 +582,9 @@
 						/>
 					</div>
 					<div class="field-group">
-						<label class="field-label">Timeout (seconds)</label>
+						<label for="webhook-timeout" class="field-label">Timeout (seconds)</label>
 						<input
+							id="webhook-timeout"
 							type="number"
 							bind:value={formTimeoutSeconds}
 							min="5"
@@ -596,10 +615,24 @@
 
 <!-- Deliveries Modal -->
 {#if showDeliveriesModal && selectedWebhook}
-	<div class="modal-backdrop" onclick={() => showDeliveriesModal = false}>
-		<div class="modal modal-large" onclick={(e) => e.stopPropagation()} in:scale={{ duration: 200 }}>
+	<div
+		class="modal-backdrop"
+		role="presentation"
+		onclick={() => showDeliveriesModal = false}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showDeliveriesModal = false)}
+	>
+		<div
+			class="modal modal-large"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="deliveries-modal-title"
+			tabindex="-1"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
+			in:scale={{ duration: 200 }}
+		>
 			<div class="modal-header">
-				<h3>Delivery History - {selectedWebhook.name}</h3>
+				<h3 id="deliveries-modal-title">Delivery History - {selectedWebhook.name}</h3>
 				<button class="btn-close" onclick={() => showDeliveriesModal = false}>×</button>
 			</div>
 			<div class="modal-body">

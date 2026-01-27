@@ -48,6 +48,21 @@
 	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// Svelte Actions (WCAG 2.1 AA Compliant)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * focusOnMount - Accessible alternative to autofocus attribute
+	 * Programmatically focuses element after mount, which is the WCAG-compliant way
+	 */
+	function focusOnMount(node: HTMLElement) {
+		// Use requestAnimationFrame to ensure DOM is ready
+		requestAnimationFrame(() => {
+			node.focus();
+		});
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// Types
 	// ═══════════════════════════════════════════════════════════════════════════
 
@@ -628,7 +643,7 @@
 										if (e.key === 'Enter') renameFolder(folder, e.currentTarget.value);
 										if (e.key === 'Escape') (editingFolder = null);
 									}}
-									autofocus
+									use:focusOnMount
 								/>
 							{:else}
 								<span class="folder-name">{folder.name}</span>
@@ -949,30 +964,30 @@
 				{/if}
 			</div>
 
-			<div class="details-info">
+			<dl class="details-info">
 				<div class="detail-row">
-					<label>Filename</label>
-					<span>{selectedAsset.filename}</span>
+					<dt>Filename</dt>
+					<dd>{selectedAsset.filename}</dd>
 				</div>
 				<div class="detail-row">
-					<label>Type</label>
-					<span>{selectedAsset.mime_type}</span>
+					<dt>Type</dt>
+					<dd>{selectedAsset.mime_type}</dd>
 				</div>
 				<div class="detail-row">
-					<label>Size</label>
-					<span>{formatFileSize(selectedAsset.file_size)}</span>
+					<dt>Size</dt>
+					<dd>{formatFileSize(selectedAsset.file_size)}</dd>
 				</div>
 				{#if selectedAsset.width && selectedAsset.height}
 					<div class="detail-row">
-						<label>Dimensions</label>
-						<span>{selectedAsset.width} x {selectedAsset.height}</span>
+						<dt>Dimensions</dt>
+						<dd>{selectedAsset.width} x {selectedAsset.height}</dd>
 					</div>
 				{/if}
 				<div class="detail-row">
-					<label>Uploaded</label>
-					<span>{formatDate(selectedAsset.created_at)}</span>
+					<dt>Uploaded</dt>
+					<dd>{formatDate(selectedAsset.created_at)}</dd>
 				</div>
-			</div>
+			</dl>
 
 			<div class="details-metadata">
 				<h4>Metadata</h4>
@@ -1117,14 +1132,24 @@
 
 <!-- Create Folder Modal -->
 {#if showCreateFolderModal}
-	<div class="modal-backdrop" onclick={() => (showCreateFolderModal = false)}>
+	<div
+		class="modal-backdrop"
+		role="presentation"
+		onclick={() => (showCreateFolderModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showCreateFolderModal = false)}
+	>
 		<div
 			class="modal"
-			onclick={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="create-folder-title"
+			tabindex="-1"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			in:scale={{ duration: 200, start: 0.95 }}
 		>
 			<div class="modal-header">
-				<h3>Create Folder</h3>
+				<h3 id="create-folder-title">Create Folder</h3>
 				<button class="btn-close" onclick={() => (showCreateFolderModal = false)}>
 					<IconX size={18} />
 				</button>
@@ -1137,8 +1162,8 @@
 						type="text"
 						bind:value={newFolderName}
 						placeholder="Enter folder name..."
-						autofocus
-						onkeydown={(e) => e.key === 'Enter' && createFolder()}
+						use:focusOnMount
+						onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && createFolder()}
 					/>
 				</div>
 				{#if currentFolder}
@@ -1161,14 +1186,24 @@
 
 <!-- Move to Folder Modal -->
 {#if showMoveFolderModal}
-	<div class="modal-backdrop" onclick={() => (showMoveFolderModal = false)}>
+	<div
+		class="modal-backdrop"
+		role="presentation"
+		onclick={() => (showMoveFolderModal = false)}
+		onkeydown={(e: KeyboardEvent) => e.key === 'Escape' && (showMoveFolderModal = false)}
+	>
 		<div
 			class="modal"
-			onclick={(e) => e.stopPropagation()}
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="move-folder-title"
+			tabindex="-1"
+			onclick={(e: MouseEvent) => e.stopPropagation()}
+			onkeydown={(e: KeyboardEvent) => e.stopPropagation()}
 			in:scale={{ duration: 200, start: 0.95 }}
 		>
 			<div class="modal-header">
-				<h3>Move {selectedIds.size} {selectedIds.size === 1 ? 'Asset' : 'Assets'}</h3>
+				<h3 id="move-folder-title">Move {selectedIds.size} {selectedIds.size === 1 ? 'Asset' : 'Assets'}</h3>
 				<button class="btn-close" onclick={() => (showMoveFolderModal = false)}>
 					<IconX size={18} />
 				</button>
@@ -1938,12 +1973,12 @@
 		padding: 0.5rem 0;
 	}
 
-	.detail-row label {
+	.detail-row dt {
 		font-size: 0.8125rem;
 		color: #64748b;
 	}
 
-	.detail-row span {
+	.detail-row dd {
 		font-size: 0.8125rem;
 		color: #f1f5f9;
 	}

@@ -942,6 +942,8 @@
 				<!-- Empty State -->
 				<div
 					class="flex flex-col items-center justify-center py-8 text-center"
+					role="region"
+					aria-label="Drop zone for blocks"
 					ondragover={(e) => {
 						e.preventDefault();
 						dropTargetIndex = 0;
@@ -1014,6 +1016,7 @@
 
 	/* Color input styling */
 	input[type='color'] {
+		appearance: none;
 		-webkit-appearance: none;
 		padding: 0;
 		border: none;

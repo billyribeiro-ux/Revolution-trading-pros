@@ -441,8 +441,16 @@
 				<div
 					class="table-row"
 					class:selected={isSelected}
-					onclick={(e) => selectContent(item.id, e)}
-					oncontextmenu={(e) => handleContextMenu(e, item.id)}
+					role="row"
+					tabindex="0"
+					onclick={(e: MouseEvent) => selectContent(item.id, e)}
+					onkeydown={(e: KeyboardEvent) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							selectContent(item.id);
+						}
+					}}
+					oncontextmenu={(e: MouseEvent) => handleContextMenu(e, item.id)}
 					in:fly={{ x: -10, duration: 200, delay: i * 20 }}
 				>
 					<div class="cell-checkbox">
