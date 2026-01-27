@@ -5,6 +5,9 @@
 pub mod bunny;
 pub mod cms;
 pub mod cms_content;
+pub mod cms_scheduler;
+pub mod cms_upload;
+pub mod cms_webhooks;
 pub mod email;
 pub mod order_service;
 pub mod redis;

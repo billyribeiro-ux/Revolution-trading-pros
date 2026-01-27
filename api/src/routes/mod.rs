@@ -22,6 +22,7 @@ pub mod admin;
 pub mod analytics;
 pub mod checkout;
 pub mod cms;
+pub mod cms_delivery;
 pub mod cms_v2;
 pub mod contacts;
 pub mod coupons;
@@ -100,6 +101,8 @@ pub fn api_router() -> Router<AppState> {
         // CMS v2 - Custom CMS Implementation (surpasses Storyblok)
         .nest("/admin/cms-v2", cms_v2::admin_router())
         .nest("/cms", cms_v2::public_router())
+        // CMS Delivery API - Public content delivery with search
+        .nest("/delivery", cms_delivery::delivery_router())
         // Real-time updates - SSE
         .nest("/realtime", realtime::router())
         .nest("/popups", popups::router())
