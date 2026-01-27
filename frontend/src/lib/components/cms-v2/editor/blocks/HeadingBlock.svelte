@@ -88,6 +88,7 @@
 		bind:this={inputRef}
 		class="heading-input heading-{level}"
 		contenteditable={!readonly}
+		tabindex={readonly ? -1 : 0}
 		oninput={handleInput}
 		onkeydown={handleKeyDown}
 		data-placeholder="Heading {level}"
