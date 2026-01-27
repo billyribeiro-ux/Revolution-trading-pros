@@ -229,7 +229,6 @@ async fn get_content_full(
             .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     content
-        .flatten()
         .map(Json)
         .ok_or_else(|| api_error(StatusCode::NOT_FOUND, "Content not found"))
 }
@@ -348,8 +347,7 @@ async fn get_menu_by_location(
     .await
     .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
-    menu.flatten()
-        .map(Json)
+    menu.map(Json)
         .ok_or_else(|| api_error(StatusCode::NOT_FOUND, "Menu not found"))
 }
 

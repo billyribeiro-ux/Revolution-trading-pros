@@ -42,7 +42,7 @@ pub enum ContentError {
 }
 
 /// Content status with transition logic (mirrors database enum)
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[serde(rename_all = "snake_case")]
 pub enum ContentStatus {
     Draft,

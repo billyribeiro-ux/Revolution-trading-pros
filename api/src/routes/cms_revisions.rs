@@ -366,7 +366,7 @@ async fn list_revisions(
     let offset = query.offset;
 
     // Get revisions with creator names
-    let revisions: Vec<(CmsRevisionExtended, Option<String>)> = sqlx::query_as(
+    let revisions: Vec<CmsRevisionWithCreator> = sqlx::query_as(
         r#"
         SELECT
             r.id, r.content_id, r.revision_number, r.is_current, r.data,
@@ -405,7 +405,7 @@ async fn list_revisions(
 
     let summaries: Vec<RevisionSummary> = revisions
         .into_iter()
-        .map(|(r, name)| RevisionSummary {
+        .map(|r| RevisionSummary {
             id: r.id,
             revision_number: r.revision_number,
             is_current: r.is_current,
@@ -413,7 +413,7 @@ async fn list_revisions(
             changed_fields: r.changed_fields,
             created_at: r.created_at,
             created_by: r.created_by,
-            created_by_name: name,
+            created_by_name: r.created_by_name,
             change_type: r.change_type,
             word_count: r.word_count,
         })
@@ -909,7 +909,7 @@ fn compute_block_diff(from: &JsonValue, to: &JsonValue) -> (i32, i32, i32, i32, 
 
         if let Some((new_pos, new_block)) = to_map.get(id) {
             // Block exists in both - check for modifications or reordering
-            if old_block != *new_block {
+            if *old_block != *new_block {
                 modified += 1;
                 let field_changes = compute_block_field_changes(old_block, new_block);
                 changes.push(BlockChange {

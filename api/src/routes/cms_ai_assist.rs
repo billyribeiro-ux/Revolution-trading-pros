@@ -745,12 +745,14 @@ async fn ai_assist_stream(
         let mut full_text = String::new();
         let mut input_tokens: u32 = 0;
         let mut output_tokens: u32 = 0;
-        let mut bytes_stream = response.bytes_stream();
 
         use futures::StreamExt;
+        use bytes::Bytes;
 
-        while let Some(chunk) = bytes_stream.next().await {
-            match chunk {
+        let mut bytes_stream = response.bytes_stream();
+
+        while let Some(chunk_result) = bytes_stream.next().await {
+            match chunk_result {
                 Ok(bytes) => {
                     let text = String::from_utf8_lossy(&bytes);
                     // Parse SSE format from Claude
