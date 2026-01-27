@@ -144,15 +144,15 @@
 	}
 </script>
 
-<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
 	bind:this={wrapperRef}
 	class="block-wrapper"
 	class:selected={isSelected}
 	class:hovered={isHovered}
-	role="group"
+	role="button"
 	tabindex={readonly ? -1 : 0}
 	aria-label="{blockTypeName} block"
+	aria-pressed={isSelected}
 	onclick={handleSelect}
 	onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSelect(); }}}
 	onmouseenter={() => !readonly && (isHovered = true)}
