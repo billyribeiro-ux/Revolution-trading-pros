@@ -104,6 +104,27 @@ pub struct CmsRevisionExtended {
     pub diff_stats: Option<JsonValue>,
 }
 
+/// Extended revision with creator name for diff queries
+#[derive(Debug, Clone, FromRow)]
+struct CmsRevisionWithCreator {
+    pub id: Uuid,
+    pub content_id: Uuid,
+    pub revision_number: i32,
+    pub is_current: bool,
+    pub data: JsonValue,
+    pub change_summary: Option<String>,
+    pub changed_fields: Option<Vec<String>>,
+    pub created_at: DateTime<Utc>,
+    pub created_by: Option<Uuid>,
+    #[sqlx(default)]
+    pub change_type: Option<String>,
+    #[sqlx(default)]
+    pub word_count: Option<i32>,
+    #[sqlx(default)]
+    pub diff_stats: Option<JsonValue>,
+    pub created_by_name: Option<String>,
+}
+
 /// Summary view of a revision for listings
 #[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
 pub struct RevisionSummary {
@@ -518,7 +539,7 @@ async fn compare_revisions(
     };
 
     // Fetch both revisions with creator info
-    let from_revision: Option<(CmsRevisionExtended, Option<String>)> = sqlx::query_as(
+    let from_revision: Option<CmsRevisionWithCreator> = sqlx::query_as(
         r#"
         SELECT
             r.id, r.content_id, r.revision_number, r.is_current, r.data,
@@ -536,7 +557,7 @@ async fn compare_revisions(
     .await
     .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
-    let to_revision: Option<(CmsRevisionExtended, Option<String>)> = sqlx::query_as(
+    let to_revision: Option<CmsRevisionWithCreator> = sqlx::query_as(
         r#"
         SELECT
             r.id, r.content_id, r.revision_number, r.is_current, r.data,
@@ -554,11 +575,14 @@ async fn compare_revisions(
     .await
     .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
-    let (from_rev, from_name) = from_revision
+    let from_rev = from_revision
         .ok_or_else(|| api_error(StatusCode::NOT_FOUND, &format!("Revision {} not found", v1)))?;
 
-    let (to_rev, to_name) = to_revision
+    let to_rev = to_revision
         .ok_or_else(|| api_error(StatusCode::NOT_FOUND, &format!("Revision {} not found", v2)))?;
+    
+    let from_name = from_rev.created_by_name.clone();
+    let to_name = to_rev.created_by_name.clone();
 
     // Compute the diff
     let diff = compute_diff(&from_rev.data, &to_rev.data, query.include_blocks);
