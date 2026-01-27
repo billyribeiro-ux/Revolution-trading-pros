@@ -747,16 +747,23 @@ async fn ai_assist_stream(
         let mut output_tokens: u32 = 0;
 
         use futures::StreamExt;
-        use bytes::Bytes;
 
-        let mut bytes_stream = response.bytes_stream();
+        let mut stream = response.bytes_stream();
 
-        while let Some(chunk_result) = bytes_stream.next().await {
-            match chunk_result {
-                Ok(bytes) => {
-                    let text = String::from_utf8_lossy(&bytes);
-                    // Parse SSE format from Claude
-                    for line in text.lines() {
+        while let Some(chunk_result) = stream.next().await {
+            let bytes = match chunk_result {
+                Ok(b) => b,
+                Err(e) => {
+                    yield Ok(Event::default()
+                        .event("error")
+                        .data(json!({ "error": format!("Stream error: {}", e) }).to_string()));
+                    break;
+                }
+            };
+
+            let text = String::from_utf8_lossy(&bytes);
+            // Parse SSE format from Claude
+            for line in text.lines() {
                         if line.starts_with("data: ") {
                             let data = &line[6..];
                             if data == "[DONE]" {
@@ -792,14 +799,6 @@ async fn ai_assist_stream(
                             }
                         }
                     }
-                }
-                Err(e) => {
-                    yield Ok(Event::default()
-                        .event("error")
-                        .data(json!({ "error": format!("Stream error: {}", e) }).to_string()));
-                    break;
-                }
-            }
         }
 
         let processing_time_ms = start_time.elapsed().as_millis() as u64;

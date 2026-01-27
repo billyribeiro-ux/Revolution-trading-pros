@@ -50,6 +50,7 @@ dotenvy = "0.15"
 libc = "0.2"  # ICT 7+: Secure terminal input for bootstrap-dev CLI
 thiserror = "1.0"
 anyhow = "1.0"
+bytes = "1.5"
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter", "json"] }
 slug = "0.1"
