@@ -164,12 +164,11 @@
 				slug: slug.trim(),
 				subtitle: subtitle.trim() || undefined,
 				excerpt: excerpt.trim() || undefined,
-				body: body.trim(),
-				body_format: bodyFormat,
-				meta_title: metaTitle.trim() || undefined,
-				meta_description: metaDescription.trim() || undefined,
-				canonical_url: canonicalUrl.trim() || undefined,
-				template: template || undefined
+				content: body.trim(),
+				contentFormat: bodyFormat,
+				metaTitle: metaTitle.trim() || undefined,
+				metaDescription: metaDescription.trim() || undefined,
+				canonicalUrl: canonicalUrl.trim() || undefined
 			};
 
 			content = await cmsApi.updateContent(contentId, request);
@@ -306,14 +305,16 @@
 
 			<div class="header-actions">
 				<!-- Status Badge -->
-				<button
-					class="status-badge status-{statusColor}"
-					onclick={() => (showStatusModal = true)}
-				>
+				{#if statusIcon}
 					{@const StatusIcon = statusIcon}
-					<StatusIcon size={14} />
-					{content.status.replace('_', ' ')}
-				</button>
+					<button
+						class="status-badge status-{statusColor}"
+						onclick={() => (showStatusModal = true)}
+					>
+						<StatusIcon size={14} />
+						{content.status.replace('_', ' ')}
+					</button>
+				{/if}
 
 				<button
 					class="btn-secondary"
