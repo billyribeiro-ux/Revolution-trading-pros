@@ -290,7 +290,7 @@
 	// Asset Operations
 	// ═══════════════════════════════════════════════════════════════════════════
 
-	function selectAsset(asset: CmsAsset, event?: MouseEvent) {
+	function selectAsset(asset: CmsAssetSummary, event?: MouseEvent) {
 		if (event?.shiftKey && selectedIds.size > 0) {
 			// Range select
 			const assetIndices = assets.map((a) => a.id);
@@ -513,7 +513,7 @@
 		}
 	}
 
-	function handleAssetContextMenu(e: MouseEvent, asset: CmsAsset) {
+	function handleAssetContextMenu(e: MouseEvent, asset: CmsAssetSummary) {
 		e.preventDefault();
 		if (!selectedIds.has(asset.id)) {
 			selectAsset(asset);
@@ -993,15 +993,6 @@
 						bind:value={selectedAsset.title}
 						placeholder="Asset title..."
 					/>
-				</div>
-				<div class="metadata-field">
-					<label for="description">Description</label>
-					<textarea
-						id="description"
-						bind:value={selectedAsset.description}
-						placeholder="Detailed description..."
-						rows="3"
-					></textarea>
 				</div>
 				<button class="btn-save" onclick={updateAssetMetadata}>
 					Save Metadata
