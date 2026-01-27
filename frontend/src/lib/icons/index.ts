@@ -276,6 +276,9 @@ import IconMoodSmile from '@tabler/icons-svelte/icons/mood-smile';
 import IconMoon from '@tabler/icons-svelte/icons/moon';
 import IconMouse from '@tabler/icons-svelte/icons/mouse';
 
+// Navigation Icons
+import IconNavigation from '@tabler/icons-svelte/icons/navigation';
+
 // Network/News Icons
 import IconNetwork from '@tabler/icons-svelte/icons/network';
 import IconNews from '@tabler/icons-svelte/icons/news';
@@ -697,6 +700,8 @@ export {
 	IconMoodSmile,
 	IconMoon,
 	IconMouse,
+	// Navigation Icons
+	IconNavigation,
 	// Network/News Icons
 	IconNetwork,
 	IconNews,

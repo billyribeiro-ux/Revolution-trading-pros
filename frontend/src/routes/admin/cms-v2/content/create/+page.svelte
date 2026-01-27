@@ -297,8 +297,10 @@
 
 					<!-- Content -->
 					<div class="field-group">
-						<label class="field-label">Content</label>
+						<span id="content-label" class="field-label">Content</span>
 						<MultiModeEditor
+							id="content-editor"
+							aria-labelledby="content-label"
 							value={content}
 							format={contentFormat}
 							onchange={(v, f) => {
@@ -408,8 +410,8 @@
 					</div>
 
 					<div class="field-group">
-						<label class="field-label">Featured Image</label>
-						<button type="button" class="btn-select-image">
+						<span id="featured-image-label" class="field-label">Featured Image</span>
+						<button type="button" class="btn-select-image" aria-labelledby="featured-image-label">
 							<IconPhoto size={20} />
 							<span>Select Image</span>
 						</button>

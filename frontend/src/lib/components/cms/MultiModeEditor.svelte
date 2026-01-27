@@ -62,6 +62,8 @@
 		disabled?: boolean;
 		showModeSelector?: boolean;
 		onchange?: (content: string, format: 'html' | 'markdown' | 'raw') => void;
+		'aria-labelledby'?: string;
+		'aria-label'?: string;
 	}
 
 	let {
@@ -72,7 +74,9 @@
 		minHeight = '400px',
 		disabled = false,
 		showModeSelector = true,
-		onchange
+		onchange,
+		'aria-labelledby': ariaLabelledby,
+		'aria-label': ariaLabel
 	}: Props = $props();
 
 	// State
@@ -340,7 +344,14 @@
 	}
 </script>
 
-<div class="multi-mode-editor" class:disabled>
+<div
+	class="multi-mode-editor"
+	class:disabled
+	{id}
+	aria-labelledby={ariaLabelledby}
+	aria-label={ariaLabel}
+	role="group"
+>
 	<!-- Mode Selector -->
 	{#if showModeSelector}
 		<div class="mode-selector">
@@ -601,6 +612,7 @@
 				style="min-height: {minHeight}"
 				role="textbox"
 				aria-multiline="true"
+				tabindex="0"
 			></div>
 		</div>
 	{/if}
