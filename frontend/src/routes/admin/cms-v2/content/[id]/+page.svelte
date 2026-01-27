@@ -26,7 +26,7 @@
 		type UpdateContentRequest
 	} from '$lib/api/cms-v2';
 	import type { CmsContentStatus } from '$lib/page-builder/types';
-	import RichTextEditor from '$lib/components/cms/RichTextEditor.svelte';
+	import MultiModeEditor from '$lib/components/cms/MultiModeEditor.svelte';
 	import {
 		IconArrowLeft,
 		IconDeviceFloppy,
@@ -56,6 +56,7 @@
 	let subtitle = $state('');
 	let excerpt = $state('');
 	let body = $state('');
+	let bodyFormat = $state<'html' | 'markdown' | 'raw'>('html');
 	let metaTitle = $state('');
 	let metaDescription = $state('');
 	let canonicalUrl = $state('');
@@ -115,6 +116,7 @@
 		subtitle = c.subtitle || '';
 		excerpt = c.excerpt || '';
 		body = c.content || '';
+		bodyFormat = (c.content_format as 'html' | 'markdown' | 'raw') || 'html';
 		metaTitle = c.meta_title || '';
 		metaDescription = c.meta_description || '';
 		canonicalUrl = c.canonical_url || '';
@@ -157,6 +159,7 @@
 				subtitle: subtitle.trim() || undefined,
 				excerpt: excerpt.trim() || undefined,
 				content: body || undefined,
+				contentFormat: bodyFormat,
 				metaTitle: metaTitle.trim() || undefined,
 				metaDescription: metaDescription.trim() || undefined,
 				canonicalUrl: canonicalUrl.trim() || undefined,
@@ -422,9 +425,13 @@
 
 						<div class="field-group">
 							<label class="field-label">Content</label>
-							<RichTextEditor
+							<MultiModeEditor
 								value={body}
-								onchange={(v) => (body = v)}
+								format={bodyFormat}
+								onchange={(v, f) => {
+									body = v;
+									bodyFormat = f;
+								}}
 								placeholder="Write your content..."
 								minHeight="400px"
 							/>

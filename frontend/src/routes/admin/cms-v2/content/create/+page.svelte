@@ -21,7 +21,7 @@
 	import { fly, scale } from 'svelte/transition';
 	import { cmsApi, type CreateContentRequest } from '$lib/api/cms-v2';
 	import type { CmsContentType, CmsContentStatus } from '$lib/page-builder/types';
-	import RichTextEditor from '$lib/components/cms/RichTextEditor.svelte';
+	import MultiModeEditor from '$lib/components/cms/MultiModeEditor.svelte';
 	import {
 		IconArrowLeft,
 		IconDeviceFloppy,
@@ -43,6 +43,7 @@
 	let subtitle = $state('');
 	let excerpt = $state('');
 	let content = $state('');
+	let contentFormat = $state<'html' | 'markdown' | 'raw'>('html');
 
 	// SEO
 	let metaTitle = $state('');
@@ -109,6 +110,7 @@
 				subtitle: subtitle.trim() || undefined,
 				excerpt: excerpt.trim() || undefined,
 				content: content || undefined,
+				contentFormat: contentFormat,
 				metaTitle: metaTitle.trim() || undefined,
 				metaDescription: metaDescription.trim() || undefined,
 				canonicalUrl: canonicalUrl.trim() || undefined,
@@ -296,9 +298,13 @@
 					<!-- Content -->
 					<div class="field-group">
 						<label class="field-label">Content</label>
-						<RichTextEditor
+						<MultiModeEditor
 							value={content}
-							onchange={(v) => (content = v)}
+							format={contentFormat}
+							onchange={(v, f) => {
+								content = v;
+								contentFormat = f;
+							}}
 							placeholder="Write your content..."
 							minHeight="400px"
 						/>

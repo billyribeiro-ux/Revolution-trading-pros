@@ -103,6 +103,7 @@ export interface CmsContent {
 	subtitle: string | null;
 	excerpt: string | null;
 	content: string | null;
+	content_format: 'html' | 'markdown' | 'raw' | null;
 	content_blocks: PageBlock[] | null;
 	featured_image_id: string | null;
 	og_image_id: string | null;
@@ -331,6 +332,7 @@ export interface CreateContentRequest {
 	subtitle?: string;
 	excerpt?: string;
 	content?: string;
+	contentFormat?: 'html' | 'markdown' | 'raw';
 	contentBlocks?: PageBlock[];
 	featuredImageId?: string;
 	ogImageId?: string;
@@ -349,6 +351,7 @@ export interface UpdateContentRequest {
 	subtitle?: string;
 	excerpt?: string;
 	content?: string;
+	contentFormat?: 'html' | 'markdown' | 'raw';
 	contentBlocks?: PageBlock[];
 	featuredImageId?: string;
 	ogImageId?: string;
