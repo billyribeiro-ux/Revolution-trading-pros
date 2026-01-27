@@ -340,7 +340,7 @@
 	}
 </script>
 
-<div class="multi-mode-editor" class:disabled role="region" aria-label="Multi-mode content editor" onkeydown={handleKeyDown}>
+<div class="multi-mode-editor" class:disabled>
 	<!-- Mode Selector -->
 	{#if showModeSelector}
 		<div class="mode-selector">
@@ -595,6 +595,7 @@
 				class="editor-content"
 				contenteditable={!disabled}
 				oninput={handleVisualInput}
+				onkeydown={handleKeyDown}
 				onfocus={() => saveToUndoStack()}
 				data-placeholder={placeholder}
 				style="min-height: {minHeight}"
@@ -755,6 +756,7 @@
 						class="markdown-textarea"
 						bind:value={markdownContent}
 						oninput={handleMarkdownInput}
+						onkeydown={handleKeyDown}
 						{placeholder}
 						{disabled}
 						style="min-height: {minHeight}"
@@ -795,6 +797,7 @@
 				class="html-textarea"
 				bind:value={htmlContent}
 				oninput={handleHtmlInput}
+				onkeydown={handleKeyDown}
 				placeholder="<p>Your HTML content here...</p>"
 				{disabled}
 				style="min-height: {minHeight}"
