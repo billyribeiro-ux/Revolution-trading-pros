@@ -20,7 +20,7 @@
 	import { browser } from '$app/environment';
 	import { fly, fade, scale, slide } from 'svelte/transition';
 	import { cubicOut, backOut } from 'svelte/easing';
-	import { cmsApi, type CmsAsset, type CmsAssetFolder, type AssetListQuery } from '$lib/api/cms-v2';
+	import { cmsApi, type CmsAsset, type CmsAssetSummary, type CmsAssetFolder, type AssetListQuery } from '$lib/api/cms-v2';
 	import DropZone from '$lib/components/media/DropZone.svelte';
 	import {
 		IconFolder,
@@ -68,8 +68,8 @@
 
 	// Data
 	let folders = $state<CmsAssetFolder[]>([]);
-	let assets = $state<CmsAsset[]>([]);
-	let selectedAsset = $state<CmsAsset | null>(null);
+	let assets = $state<CmsAssetSummary[]>([]);
+	let selectedAsset = $state<CmsAssetSummary | null>(null);
 	let selectedIds = $state(new Set<string>());
 
 	// Folder state
@@ -246,7 +246,7 @@
 		try {
 			await cmsApi.createAssetFolder({
 				name: newFolderName.trim(),
-				parent_id: currentFolderId ?? undefined
+				parentId: currentFolderId ?? undefined
 			});
 			newFolderName = '';
 			showCreateFolderModal = false;
@@ -366,7 +366,7 @@
 		try {
 			await Promise.all(
 				[...selectedIds].map((id) =>
-					cmsApi.updateAsset(id, { folder_id: targetFolderId ?? undefined })
+					cmsApi.updateAsset(id, { folderId: targetFolderId ?? undefined })
 				)
 			);
 			selectedIds.clear();
@@ -383,9 +383,8 @@
 
 		try {
 			await cmsApi.updateAsset(selectedAsset.id, {
-				alt_text: selectedAsset.alt_text ?? undefined,
-				title: selectedAsset.title ?? undefined,
-				description: selectedAsset.description ?? undefined
+				altText: selectedAsset.alt_text ?? undefined,
+				title: selectedAsset.title ?? undefined
 			});
 			await loadAssets();
 		} catch (e) {

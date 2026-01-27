@@ -62,7 +62,7 @@
 		try {
 			const [statsResponse, contentResponse] = await Promise.all([
 				cmsApi.getStats(),
-				cmsApi.listContent({ page: 1, per_page: 5 })
+				cmsApi.listContent({ limit: 5, offset: 0 })
 			]);
 
 			stats = statsResponse;

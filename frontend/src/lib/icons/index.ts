@@ -99,6 +99,7 @@ import IconCaretDown from '@tabler/icons-svelte/icons/caret-down';
 import IconCaretUp from '@tabler/icons-svelte/icons/caret-up';
 import IconCash from '@tabler/icons-svelte/icons/cash';
 import IconCashBanknote from '@tabler/icons-svelte/icons/cash-banknote';
+import IconCategory from '@tabler/icons-svelte/icons/category';
 import IconCertificate from '@tabler/icons-svelte/icons/certificate';
 
 // Chart Icons
@@ -540,6 +541,7 @@ export {
 	IconCaretUp,
 	IconCash,
 	IconCashBanknote,
+	IconCategory,
 	IconCertificate,
 	// Chart Icons
 	IconChartArcs,
