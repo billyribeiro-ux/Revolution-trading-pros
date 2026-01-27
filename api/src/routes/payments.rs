@@ -732,7 +732,9 @@ async fn handle_checkout_completed(
                         // ─────────────────────────────────────────────────────────
                         // 4. Handle indicator type products without indicator_id FK
                         // ─────────────────────────────────────────────────────────
-                        if info.product_type.as_deref() == Some("indicator") && info.indicator_id.is_none() {
+                        if info.product_type.as_deref() == Some("indicator")
+                            && info.indicator_id.is_none()
+                        {
                             // Try to find indicator by matching product name/slug
                             let indicator_id: Option<i64> = sqlx::query_scalar(
                                 r#"SELECT i.id FROM indicators i

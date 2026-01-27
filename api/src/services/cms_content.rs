@@ -24,7 +24,8 @@ use crate::models::cms::{
     CreateAssetRequest, CreateCommentRequest, CreateContentRequest, CreateNavigationMenuRequest,
     CreateRedirectRequest, CreateRelationRequest, CreateTagRequest, CreateWebhookRequest,
     PaginatedResponse, PaginationMeta, TransitionStatusRequest, UpdateAssetFolderRequest,
-    UpdateAssetRequest, UpdateContentRequest, UpdateNavigationMenuRequest, UpdateSiteSettingsRequest,
+    UpdateAssetRequest, UpdateContentRequest, UpdateNavigationMenuRequest,
+    UpdateSiteSettingsRequest,
 };
 
 // ═══════════════════════════════════════════════════════════════════════════════════════
@@ -326,7 +327,9 @@ pub async fn create_asset(
     created_by: Option<Uuid>,
 ) -> Result<CmsAsset> {
     let aspect_ratio = match (request.width, request.height) {
-        (Some(w), Some(h)) if h > 0 => Some(rust_decimal::Decimal::from(w) / rust_decimal::Decimal::from(h)),
+        (Some(w), Some(h)) if h > 0 => {
+            Some(rust_decimal::Decimal::from(w) / rust_decimal::Decimal::from(h))
+        }
         _ => None,
     };
 
@@ -621,7 +624,15 @@ pub async fn create_content(
     .await?;
 
     // Create initial revision
-    create_revision(pool, content.id, &content, created_by, Some("Initial creation"), None).await?;
+    create_revision(
+        pool,
+        content.id,
+        &content,
+        created_by,
+        Some("Initial creation"),
+        None,
+    )
+    .await?;
 
     // Log to audit
     log_cms_audit(
@@ -647,7 +658,9 @@ pub async fn update_content(
     updated_by: Option<Uuid>,
 ) -> Result<CmsContent> {
     // Get current content for revision
-    let old_content = get_content(pool, id).await?.ok_or_else(|| anyhow!("Content not found"))?;
+    let old_content = get_content(pool, id)
+        .await?
+        .ok_or_else(|| anyhow!("Content not found"))?;
 
     let content: CmsContent = sqlx::query_as(
         r#"
@@ -713,7 +726,15 @@ pub async fn update_content(
     .await?;
 
     // Create revision
-    create_revision(pool, content.id, &content, updated_by, Some("Content updated"), None).await?;
+    create_revision(
+        pool,
+        content.id,
+        &content,
+        updated_by,
+        Some("Content updated"),
+        None,
+    )
+    .await?;
 
     // Log to audit
     log_cms_audit(
@@ -738,13 +759,16 @@ pub async fn transition_content_status(
     request: TransitionStatusRequest,
     transitioned_by: Option<Uuid>,
 ) -> Result<CmsContent> {
-    let old_content = get_content(pool, id).await?.ok_or_else(|| anyhow!("Content not found"))?;
+    let old_content = get_content(pool, id)
+        .await?
+        .ok_or_else(|| anyhow!("Content not found"))?;
 
-    let published_at = if request.status == CmsContentStatus::Published && old_content.published_at.is_none() {
-        Some(Utc::now())
-    } else {
-        old_content.published_at
-    };
+    let published_at =
+        if request.status == CmsContentStatus::Published && old_content.published_at.is_none() {
+            Some(Utc::now())
+        } else {
+            old_content.published_at
+        };
 
     let content: CmsContent = sqlx::query_as(
         r#"
@@ -842,22 +866,24 @@ pub async fn create_revision(
 ) -> Result<Uuid> {
     let data = serde_json::to_value(content)?;
 
-    let revision_id: Uuid = sqlx::query_scalar(
-        "SELECT cms_create_revision($1, $2, $3, $4, $5)",
-    )
-    .bind(content_id)
-    .bind(&data)
-    .bind(created_by)
-    .bind(change_summary)
-    .bind(changed_fields.as_ref())
-    .fetch_one(pool)
-    .await?;
+    let revision_id: Uuid = sqlx::query_scalar("SELECT cms_create_revision($1, $2, $3, $4, $5)")
+        .bind(content_id)
+        .bind(&data)
+        .bind(created_by)
+        .bind(change_summary)
+        .bind(changed_fields.as_ref())
+        .fetch_one(pool)
+        .await?;
 
     Ok(revision_id)
 }
 
 /// Get revision history for content
-pub async fn get_revisions(pool: &PgPool, content_id: Uuid, limit: i64) -> Result<Vec<CmsRevision>> {
+pub async fn get_revisions(
+    pool: &PgPool,
+    content_id: Uuid,
+    limit: i64,
+) -> Result<Vec<CmsRevision>> {
     let revisions: Vec<CmsRevision> = sqlx::query_as(
         r#"
         SELECT id, content_id, revision_number, is_current, data, change_summary, changed_fields, created_at, created_by
@@ -1076,12 +1102,11 @@ pub async fn create_comment(
 ) -> Result<CmsComment> {
     let thread_id = if request.parent_id.is_some() {
         // Get thread_id from parent
-        let parent_thread: Option<Uuid> = sqlx::query_scalar(
-            "SELECT COALESCE(thread_id, id) FROM cms_comments WHERE id = $1",
-        )
-        .bind(request.parent_id)
-        .fetch_optional(pool)
-        .await?;
+        let parent_thread: Option<Uuid> =
+            sqlx::query_scalar("SELECT COALESCE(thread_id, id) FROM cms_comments WHERE id = $1")
+                .bind(request.parent_id)
+                .fetch_optional(pool)
+                .await?;
         parent_thread
     } else {
         None

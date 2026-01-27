@@ -1168,8 +1168,12 @@ async fn create_video_upload(
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
     let title = input["title"].as_str().unwrap_or("Untitled Video");
 
-    let library_id = std::env::var("BUNNY_STREAM_LIBRARY_ID").map(|s| s.trim().to_string()).unwrap_or_default();
-    let api_key = std::env::var("BUNNY_STREAM_API_KEY").map(|s| s.trim().to_string()).unwrap_or_default();
+    let library_id = std::env::var("BUNNY_STREAM_LIBRARY_ID")
+        .map(|s| s.trim().to_string())
+        .unwrap_or_default();
+    let api_key = std::env::var("BUNNY_STREAM_API_KEY")
+        .map(|s| s.trim().to_string())
+        .unwrap_or_default();
 
     if library_id.is_empty() || api_key.is_empty() {
         return Err((

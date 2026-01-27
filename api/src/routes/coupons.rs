@@ -19,8 +19,8 @@ use axum::{
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 
-use rust_decimal::Decimal;
 use rust_decimal::prelude::ToPrimitive;
+use rust_decimal::Decimal;
 
 use crate::{
     models::{order::Coupon, User},

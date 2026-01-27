@@ -90,7 +90,7 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
         webhook_id: i64,
         event_type: String,
         payload: serde_json::Value,
-        attempt_count: i32,  // Fixed: use actual column name
+        attempt_count: i32, // Fixed: use actual column name
     }
 
     #[derive(Debug, sqlx::FromRow)]
@@ -116,7 +116,8 @@ async fn process_webhook_deliveries(pool: &PgPool) -> Result<u32> {
         "#,
     )
     .fetch_all(pool)
-    .await {
+    .await
+    {
         Ok(d) => d,
         Err(e) => {
             tracing::debug!("Webhook deliveries table not ready: {}", e);
@@ -587,7 +588,8 @@ async fn process_next_job(db: &Database) -> anyhow::Result<Option<i64>> {
         "#,
     )
     .fetch_optional(&db.pool)
-    .await {
+    .await
+    {
         Ok(j) => j,
         Err(e) => {
             tracing::debug!("Jobs table not ready: {}", e);

@@ -35,8 +35,10 @@ pub struct UploadConfig {
 impl Default for UploadConfig {
     fn default() -> Self {
         Self {
-            bucket: std::env::var("R2_BUCKET").unwrap_or_else(|_| "revolution-trading-media".into()),
-            cdn_url: std::env::var("R2_PUBLIC_URL").unwrap_or_else(|_| "https://pub-xxx.r2.dev".into()),
+            bucket: std::env::var("R2_BUCKET")
+                .unwrap_or_else(|_| "revolution-trading-media".into()),
+            cdn_url: std::env::var("R2_PUBLIC_URL")
+                .unwrap_or_else(|_| "https://pub-xxx.r2.dev".into()),
             max_file_size: 50 * 1024 * 1024, // 50MB
             allowed_image_types: vec![
                 "image/jpeg".into(),
@@ -135,7 +137,9 @@ pub fn validate_upload(
     let is_allowed = match asset_type {
         AssetTypeClass::Image => config.allowed_image_types.contains(&mime_type.to_string()),
         AssetTypeClass::Video => config.allowed_video_types.contains(&mime_type.to_string()),
-        AssetTypeClass::Document => config.allowed_document_types.contains(&mime_type.to_string()),
+        AssetTypeClass::Document => config
+            .allowed_document_types
+            .contains(&mime_type.to_string()),
         AssetTypeClass::Audio => true, // Allow all audio types for now
     };
 

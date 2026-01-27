@@ -179,7 +179,10 @@ async fn get_room_plans(
     }
 
     // Get room info from first plan
-    let room_name = plans.first().and_then(|p| p.room_name.clone()).unwrap_or_default();
+    let room_name = plans
+        .first()
+        .and_then(|p| p.room_name.clone())
+        .unwrap_or_default();
 
     Ok(Json(json!({
         "room_slug": room_slug,

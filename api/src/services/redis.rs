@@ -409,7 +409,8 @@ impl RedisService {
     /// ICT 7+: Reduces database queries by 60-80% for authenticated requests
     pub async fn cache_user(&self, user_id: i64, user_json: &str) -> Result<()> {
         let key = format!("{}{}", USER_CACHE_PREFIX, user_id);
-        self.set(&key, user_json, Some(USER_CACHE_TTL_SECONDS)).await?;
+        self.set(&key, user_json, Some(USER_CACHE_TTL_SECONDS))
+            .await?;
         tracing::debug!(
             target: "performance",
             event = "user_cached",
