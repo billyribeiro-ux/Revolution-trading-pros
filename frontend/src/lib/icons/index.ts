@@ -190,6 +190,7 @@ import IconFocusCentered from '@tabler/icons-svelte/icons/focus-centered';
 import IconFingerprint from '@tabler/icons-svelte/icons/fingerprint';
 import IconFingerprintScan from '@tabler/icons-svelte/icons/fingerprint-scan';
 import IconFolder from '@tabler/icons-svelte/icons/folder';
+import IconFolderPlus from '@tabler/icons-svelte/icons/folder-plus';
 import IconForms from '@tabler/icons-svelte/icons/forms';
 
 // Gauge/Gift Icons
@@ -624,6 +625,7 @@ export {
 	IconFocus,
 	IconFocusCentered,
 	IconFolder,
+	IconFolderPlus,
 	IconForms,
 	// Gauge/Gift Icons
 	IconGauge,

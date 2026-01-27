@@ -38,13 +38,13 @@
 		IconEdit,
 		IconCopy,
 		IconDownload,
-		IconMove,
-		IconGrid,
+		IconLayoutGrid,
 		IconList,
 		IconDotsVertical,
 		IconCheck,
 		IconRefresh,
-		IconPlus
+		IconPlus,
+		IconArrowsLeftRight
 	} from '$lib/icons';
 
 	// ═══════════════════════════════════════════════════════════════════════════
@@ -722,7 +722,7 @@
 						onclick={() => (viewMode = 'grid')}
 						title="Grid view"
 					>
-						<IconGrid size={18} />
+						<IconLayoutGrid size={18} />
 					</button>
 					<button
 						class="toggle-btn"
@@ -743,7 +743,7 @@
 							onclick={() => (showMoveFolderModal = true)}
 							title="Move"
 						>
-							<IconMove size={16} />
+							<IconArrowsLeftRight size={16} />
 						</button>
 						<button class="btn-action danger" onclick={deleteSelected} title="Delete">
 							<IconTrash size={16} />
@@ -1055,7 +1055,7 @@
 				showContextMenu = null;
 			}}
 		>
-			<IconMove size={16} />
+			<IconArrowsLeftRight size={16} />
 			Move to Folder
 		</button>
 		<button
