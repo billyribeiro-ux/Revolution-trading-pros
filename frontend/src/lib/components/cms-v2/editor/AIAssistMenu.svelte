@@ -867,12 +867,13 @@
 		color: #6366f1;
 	}
 
-	.tone-trigger .chevron {
+	/* Icon rotation handled via class prop on component */
+	:global(.chevron) {
 		margin-left: auto;
 		transition: transform 0.2s ease;
 	}
 
-	.tone-trigger .chevron.rotated {
+	:global(.chevron.rotated) {
 		transform: rotate(180deg);
 	}
 
@@ -940,6 +941,7 @@
 		text-overflow: ellipsis;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 	}
 

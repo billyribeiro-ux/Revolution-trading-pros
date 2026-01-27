@@ -614,8 +614,10 @@
 								class:selected={isSelected}
 								class:hovered={isHovered}
 								role="option"
+								tabindex="0"
 								aria-selected={isSelected}
 								onclick={() => handleBlockClick(block)}
+								onkeydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleBlockClick(block); }}}
 								onmouseenter={() => handleBlockHover(block.id)}
 								onmouseleave={() => handleBlockHover(null)}
 								transition:scale={{ duration: 200, start: 0.95, easing: backOut }}
@@ -1230,6 +1232,7 @@
 		line-height: 1.4;
 		display: -webkit-box;
 		-webkit-line-clamp: 2;
+		line-clamp: 2;
 		-webkit-box-orient: vertical;
 		overflow: hidden;
 	}

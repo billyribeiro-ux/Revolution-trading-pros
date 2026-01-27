@@ -179,6 +179,9 @@
 		blockTypeOptions.find((opt) => opt.value === currentBlockType) || blockTypeOptions[0]
 	);
 
+	// Current block type icon - derived to avoid @const in invalid context
+	const CurrentBlockIcon = $derived(currentBlockTypeOption?.icon || IconTextCaption);
+
 	// ==========================================================================
 	// Event Handlers
 	// ==========================================================================
@@ -328,7 +331,7 @@
 					aria-expanded={showBlockTypeDropdown}
 					aria-label="Select block type"
 				>
-					<svelte:component this={currentBlockTypeOption?.icon || IconTextCaption} size={16} />
+					<CurrentBlockIcon size={16} />
 					<span class="block-type-label">{currentBlockTypeOption?.label || 'Paragraph'}</span>
 					<IconChevronDown size={14} class="dropdown-icon" />
 				</button>
@@ -336,6 +339,7 @@
 				{#if showBlockTypeDropdown}
 					<div class="block-type-dropdown" role="listbox" aria-label="Block types">
 						{#each blockTypeOptions as option (option.value)}
+							{@const OptionIcon = option.icon}
 							<button
 								type="button"
 								class="dropdown-item"
@@ -344,7 +348,7 @@
 								role="option"
 								aria-selected={currentBlockType === option.value}
 							>
-								<svelte:component this={option.icon} size={16} />
+								<OptionIcon size={16} />
 								<span>{option.label}</span>
 								{#if currentBlockType === option.value}
 									<IconCheck size={14} class="check-icon" />
