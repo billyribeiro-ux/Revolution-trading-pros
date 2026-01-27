@@ -19,6 +19,49 @@
  */
 -->
 
+<script context="module" lang="ts">
+	// ==========================================================================
+	// Module-level Type Exports (Svelte 5 requirement)
+	// ==========================================================================
+
+	export type LayoutType = 'stack' | 'columns';
+	export type PaddingSize = 'none' | 'sm' | 'md' | 'lg' | 'xl';
+	export type GapSize = 'none' | 'sm' | 'md' | 'lg' | 'xl';
+	export type BorderRadiusSize = 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
+
+	export interface GroupBlockData {
+		layout: LayoutType;
+		columns: 1 | 2 | 3 | 4 | 'auto';
+		gap: GapSize;
+		backgroundColor?: string;
+		backgroundImage?: string;
+		backgroundOverlay?: string;
+		padding: PaddingSize;
+		borderRadius: BorderRadiusSize;
+		[key: string]: unknown;
+	}
+
+	export interface Block {
+		id: string;
+		blockType: string;
+		data: Record<string, unknown>;
+		children?: Block[];
+	}
+
+	export interface GroupBlock extends Block {
+		blockType: 'group';
+		data: GroupBlockData;
+		children: Block[];
+	}
+
+	export interface ChildRenderProps {
+		block: Block;
+		isNested: boolean;
+		nestingLevel: number;
+		onUpdate: (updated: Block) => void;
+	}
+</script>
+
 <script lang="ts">
 	import { flip } from 'svelte/animate';
 	import { fade, scale } from 'svelte/transition';
@@ -38,52 +81,11 @@
 	import IconChevronDown from '@tabler/icons-svelte/icons/chevron-down';
 	import IconPhoto from '@tabler/icons-svelte/icons/photo';
 	import IconStack2 from '@tabler/icons-svelte/icons/stack-2';
-
-	// ==========================================================================
-	// Types
-	// ==========================================================================
-
-	export type LayoutType = 'stack' | 'columns';
-	export type PaddingSize = 'none' | 'sm' | 'md' | 'lg' | 'xl';
-	export type GapSize = 'none' | 'sm' | 'md' | 'lg' | 'xl';
-	export type BorderRadiusSize = 'none' | 'sm' | 'md' | 'lg' | 'xl' | 'full';
-
-	export interface GroupBlockData {
-		layout: LayoutType;
-		columns: 1 | 2 | 3 | 4 | 'auto';
-		gap: GapSize;
-		backgroundColor?: string;
-		backgroundImage?: string;
-		backgroundOverlay?: string;
-		padding: PaddingSize;
-		borderRadius: BorderRadiusSize;
-	}
-
-	export interface Block {
-		id: string;
-		blockType: string;
-		data: Record<string, unknown>;
-		children?: Block[];
-	}
-
-	export interface GroupBlock extends Block {
-		blockType: 'group';
-		data: GroupBlockData;
-		children: Block[];
-	}
+	import type { Snippet } from 'svelte';
 
 	// ==========================================================================
 	// Props
 	// ==========================================================================
-
-	import type { Snippet } from 'svelte';
-
-	export interface ChildRenderProps {
-		block: Block;
-		isNested: boolean;
-		nestingLevel: number;
-		onUpdate: (updated: Block) => void;
-	}
 
 	interface Props {
 		block: GroupBlock;

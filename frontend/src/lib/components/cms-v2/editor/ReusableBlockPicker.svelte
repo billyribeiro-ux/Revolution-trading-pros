@@ -44,8 +44,8 @@
 	import IconEye from '@tabler/icons-svelte/icons/eye';
 	import IconUsersGroup from '@tabler/icons-svelte/icons/users-group';
 
-	import type { Component } from 'svelte';
 	import type { PageBlock } from '$lib/page-builder/types';
+	import type { IconComponent } from '$lib/icons';
 
 	// ==========================================================================
 	// Types
@@ -71,7 +71,7 @@
 	interface CategoryMeta {
 		id: BlockCategory | 'all';
 		label: string;
-		icon: Component;
+		icon: IconComponent;
 		color: string;
 		bgColor: string;
 	}
