@@ -93,6 +93,7 @@
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	async function loadContent() {
+		if (!contentId) return;
 		isLoading = true;
 		try {
 			content = await cmsApi.getContent(contentId);
@@ -105,6 +106,7 @@
 	}
 
 	async function loadRevisions() {
+		if (!contentId) return;
 		try {
 			revisions = await cmsApi.getContentRevisions(contentId);
 		} catch (e) {
@@ -150,21 +152,23 @@
 			return;
 		}
 
+		if (!contentId) return;
+
 		error = null;
 		successMessage = null;
 		isSaving = true;
 
 		try {
 			const request: UpdateContentRequest = {
-				slug: slug.trim(),
 				title: title.trim(),
+				slug: slug.trim(),
 				subtitle: subtitle.trim() || undefined,
 				excerpt: excerpt.trim() || undefined,
-				content: body || undefined,
-				contentFormat: bodyFormat,
-				metaTitle: metaTitle.trim() || undefined,
-				metaDescription: metaDescription.trim() || undefined,
-				canonicalUrl: canonicalUrl.trim() || undefined,
+				body: body.trim(),
+				body_format: bodyFormat,
+				meta_title: metaTitle.trim() || undefined,
+				meta_description: metaDescription.trim() || undefined,
+				canonical_url: canonicalUrl.trim() || undefined,
 				template: template || undefined
 			};
 
@@ -180,6 +184,7 @@
 	}
 
 	async function changeStatus(newStatus: CmsContentStatus) {
+		if (!contentId) return;
 		try {
 			content = await cmsApi.transitionContentStatus(contentId, { status: newStatus });
 			showStatusModal = false;
@@ -192,7 +197,7 @@
 	}
 
 	async function restoreRevision(revisionNumber: number) {
-		if (!confirm('Restore this revision? Current changes will be lost.')) return;
+		if (!contentId || !confirm('Restore this revision? Current changes will be lost.')) return;
 
 		try {
 			content = await cmsApi.restoreRevision(contentId, revisionNumber);
@@ -206,7 +211,7 @@
 	}
 
 	async function deleteContent() {
-		if (!confirm('Delete this content? This cannot be undone.')) return;
+		if (!contentId || !confirm('Delete this content? This cannot be undone.')) return;
 
 		try {
 			await cmsApi.deleteContent(contentId);
@@ -305,7 +310,8 @@
 					class="status-badge status-{statusColor}"
 					onclick={() => (showStatusModal = true)}
 				>
-					<svelte:component this={statusIcon} size={14} />
+					{@const StatusIcon = statusIcon}
+					<StatusIcon size={14} />
 					{content.status.replace('_', ' ')}
 				</button>
 
