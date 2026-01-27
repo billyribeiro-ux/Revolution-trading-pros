@@ -45,7 +45,6 @@
 	import IconUsersGroup from '@tabler/icons-svelte/icons/users-group';
 
 	import type { PageBlock } from '$lib/page-builder/types';
-	import type { IconComponent } from '$lib/icons';
 
 	// ==========================================================================
 	// Types
@@ -71,7 +70,8 @@
 	interface CategoryMeta {
 		id: BlockCategory | 'all';
 		label: string;
-		icon: IconComponent;
+		// eslint-disable-next-line @typescript-eslint/no-explicit-any
+		icon: any;
 		color: string;
 		bgColor: string;
 	}
@@ -653,10 +653,11 @@
 
 									<!-- Category Badge -->
 									{#if categoryMeta}
+										{@const CategoryIcon = categoryMeta.icon}
 										<div
 											class="category-badge {categoryMeta.bgColor} {categoryMeta.color}"
 										>
-											<svelte:component this={categoryMeta.icon} size={12} />
+											<CategoryIcon size={12} />
 											<span>{categoryMeta.label}</span>
 										</div>
 									{/if}

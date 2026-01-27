@@ -250,6 +250,8 @@
 	});
 </script>
 
+<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div
 	bind:this={editorRef}
 	class="block-editor"
@@ -257,6 +259,7 @@
 	class:empty={isEmpty}
 	role="application"
 	aria-label="Block editor"
+	aria-roledescription="block editor"
 	tabindex={readonly ? -1 : 0}
 	onkeydown={handleKeyDown}
 	onclick={handleEditorClick}

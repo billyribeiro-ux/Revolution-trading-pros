@@ -77,8 +77,9 @@
 		{#if !readonly}
 			<div class="image-controls">
 				<div class="control-group">
-					<label class="control-label">Alt text</label>
+					<label class="control-label" for="img-alt-{block.id}">Alt text</label>
 					<input
+						id="img-alt-{block.id}"
 						type="text"
 						class="control-input"
 						value={data.alt ?? ''}
@@ -87,8 +88,9 @@
 					/>
 				</div>
 				<div class="control-group">
-					<label class="control-label">Caption</label>
+					<label class="control-label" for="img-caption-{block.id}">Caption</label>
 					<input
+						id="img-caption-{block.id}"
 						type="text"
 						class="control-input"
 						value={data.caption ?? ''}

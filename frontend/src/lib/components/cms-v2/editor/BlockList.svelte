@@ -14,9 +14,7 @@
 -->
 
 <script lang="ts">
-	import { flip } from 'svelte/animate';
 	import { fade } from 'svelte/transition';
-	import { quintOut } from 'svelte/easing';
 	import { getContext } from 'svelte';
 	import { editorStore, type ContentBlock } from '$lib/stores/editor.svelte';
 	import BlockWrapper from './BlockWrapper.svelte';
@@ -253,6 +251,8 @@
 			</div>
 		{/if}
 
+		<!-- svelte-ignore a11y_no_noninteractive_tabindex -->
+		<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 		<div
 			class="block-list-item"
 			class:dragging={isDraggedBlock}
@@ -266,7 +266,6 @@
 			ondragend={handleDragEnd}
 			onkeydown={(e) => handleKeyDown(e, block, index)}
 			tabindex={readonly ? -1 : 0}
-			animate:flip={{ duration: 250, easing: quintOut }}
 		>
 			<BlockWrapper {block} {readonly} />
 		</div>
