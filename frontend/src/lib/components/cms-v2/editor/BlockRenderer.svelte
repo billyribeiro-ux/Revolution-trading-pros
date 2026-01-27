@@ -12,6 +12,7 @@
 
 <script lang="ts">
 	import type { ContentBlock } from '$lib/stores/editor.svelte';
+	import type { Component as SvelteComponent } from 'svelte';
 
 	// Block Components
 	import RichTextBlock from './blocks/RichTextBlock.svelte';
@@ -25,6 +26,16 @@
 	import CalloutBlock from './blocks/CalloutBlock.svelte';
 	import TradeSetupBlock from './blocks/TradeSetupBlock.svelte';
 	import VideoBlock from './blocks/VideoBlock.svelte';
+
+	// ==========================================================================
+	// Types
+	// ==========================================================================
+
+	interface BlockProps {
+		block: ContentBlock;
+		readonly?: boolean;
+		onUpdate?: (data: Record<string, unknown>) => void;
+	}
 
 	// ==========================================================================
 	// Props
@@ -42,41 +53,32 @@
 	// Block Component Map
 	// ==========================================================================
 
-	const blockComponents: Record<string, typeof RichTextBlock> = {
-		'rich-text': RichTextBlock,
-		'paragraph': RichTextBlock,
-		'text': RichTextBlock,
-		'heading': HeadingBlock,
-		'image': ImageBlock,
-		'video': VideoBlock,
-		'divider': DividerBlock,
-		'spacer': SpacerBlock,
-		'quote': QuoteBlock,
-		'blockquote': QuoteBlock,
-		'code': CodeBlock,
-		'code-block': CodeBlock,
-		'list': ListBlock,
-		'bullet-list': ListBlock,
-		'numbered-list': ListBlock,
-		'callout': CalloutBlock,
-		'alert': CalloutBlock,
-		'trade-setup': TradeSetupBlock
+	// Using 'any' for component map to avoid complex Svelte 5 component typing
+	const blockComponents: Record<string, SvelteComponent<BlockProps>> = {
+		'rich-text': RichTextBlock as unknown as SvelteComponent<BlockProps>,
+		'paragraph': RichTextBlock as unknown as SvelteComponent<BlockProps>,
+		'text': RichTextBlock as unknown as SvelteComponent<BlockProps>,
+		'heading': HeadingBlock as unknown as SvelteComponent<BlockProps>,
+		'image': ImageBlock as unknown as SvelteComponent<BlockProps>,
+		'video': VideoBlock as unknown as SvelteComponent<BlockProps>,
+		'divider': DividerBlock as unknown as SvelteComponent<BlockProps>,
+		'spacer': SpacerBlock as unknown as SvelteComponent<BlockProps>,
+		'quote': QuoteBlock as unknown as SvelteComponent<BlockProps>,
+		'blockquote': QuoteBlock as unknown as SvelteComponent<BlockProps>,
+		'code': CodeBlock as unknown as SvelteComponent<BlockProps>,
+		'code-block': CodeBlock as unknown as SvelteComponent<BlockProps>,
+		'list': ListBlock as unknown as SvelteComponent<BlockProps>,
+		'bullet-list': ListBlock as unknown as SvelteComponent<BlockProps>,
+		'numbered-list': ListBlock as unknown as SvelteComponent<BlockProps>,
+		'callout': CalloutBlock as unknown as SvelteComponent<BlockProps>,
+		'alert': CalloutBlock as unknown as SvelteComponent<BlockProps>,
+		'trade-setup': TradeSetupBlock as unknown as SvelteComponent<BlockProps>
 	};
-
-	// ==========================================================================
-	// Derived
-	// ==========================================================================
-
-	let Component = $derived(blockComponents[block.blockType]);
 </script>
 
-{#if Component}
-	<svelte:component
-		this={Component}
-		{block}
-		{readonly}
-		{onUpdate}
-	/>
+{#if blockComponents[block.blockType]}
+	{@const BlockComponent = blockComponents[block.blockType]}
+	<BlockComponent {block} {readonly} {onUpdate} />
 {:else}
 	<!-- Unknown Block Type -->
 	<div class="unknown-block">

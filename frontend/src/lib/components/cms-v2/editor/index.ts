@@ -9,7 +9,18 @@
  * @since January 2026
  */
 
-// Components
+// Block Editor Components (Main)
+export { default as BlockEditor } from './BlockEditor.svelte';
+export { default as BlockList } from './BlockList.svelte';
+export { default as BlockWrapper } from './BlockWrapper.svelte';
+export { default as BlockRenderer } from './BlockRenderer.svelte';
+export { default as BlockToolbar } from './BlockToolbar.svelte';
+export { default as AddBlockButton } from './AddBlockButton.svelte';
+
+// Block Components
+export * from './blocks';
+
+// Legacy/Support Components
 export { default as AIAssistMenu } from './AIAssistMenu.svelte';
 export { default as SlashCommands } from './SlashCommands.svelte';
 export { default as FocusMode } from './FocusMode.svelte';
