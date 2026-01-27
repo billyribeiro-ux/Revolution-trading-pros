@@ -26,7 +26,11 @@
 
 	const { items = [], collapsed = false, header, footer, onToggle }: Props = $props();
 
-	let isCollapsed = $state(collapsed);
+	let isCollapsed = $state(false);
+	
+	$effect(() => {
+		isCollapsed = collapsed;
+	});
 
 	function toggleSidebar() {
 		isCollapsed = !isCollapsed;

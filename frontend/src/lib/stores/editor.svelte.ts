@@ -15,7 +15,7 @@
  */
 
 import { browser } from '$app/environment';
-import type { JsonValue } from '$lib/types/common';
+import type { JsonValue } from '../types/common';
 import { autosaveStore } from './autosave.svelte';
 
 // =============================================================================
