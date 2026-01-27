@@ -10,3 +10,7 @@
  */
 
 export * from './structured-data';
+export * from './image-seo';
+export * from './email-reports';
+export * from './store-locator';
+// Note: video-schema exports are already included in structured-data
