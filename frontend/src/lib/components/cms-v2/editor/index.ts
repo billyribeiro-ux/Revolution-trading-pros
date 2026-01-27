@@ -32,6 +32,7 @@ export type {
 	BorderRadiusSize,
 	GroupBlockData,
 	Block,
-	GroupBlock
+	GroupBlock,
+	ChildRenderProps
 } from './BlockGroup.svelte';
 export type { ContentData, ResolutionType } from './ConflictResolutionModal.svelte';
