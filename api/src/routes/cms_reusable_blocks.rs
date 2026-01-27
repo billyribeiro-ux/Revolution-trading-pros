@@ -244,8 +244,7 @@ fn require_cms_admin(user: &User) -> Result<(), ApiError> {
     if matches!(role, "admin" | "super-admin" | "super_admin" | "developer") {
         Ok(())
     } else {
-        Err(ApiError::new(StatusCode::FORBIDDEN, "Admin access required")
-            .with_code("FORBIDDEN"))
+        Err(ApiError::new(StatusCode::FORBIDDEN, "Admin access required").with_code("FORBIDDEN"))
     }
 }
 
@@ -258,8 +257,7 @@ fn require_cms_editor(user: &User) -> Result<(), ApiError> {
     ) {
         Ok(())
     } else {
-        Err(ApiError::new(StatusCode::FORBIDDEN, "Editor access required")
-            .with_code("FORBIDDEN"))
+        Err(ApiError::new(StatusCode::FORBIDDEN, "Editor access required").with_code("FORBIDDEN"))
     }
 }
 
@@ -283,39 +281,31 @@ async fn ensure_unique_slug(
 
     loop {
         let exists: bool = match exclude_id {
-            Some(id) => {
-                sqlx::query_scalar!(
-                    r#"
+            Some(id) => sqlx::query_scalar!(
+                r#"
                     SELECT EXISTS(
                         SELECT 1 FROM cms_reusable_blocks
                         WHERE slug = $1 AND id != $2 AND deleted_at IS NULL
                     ) as "exists!"
                     "#,
-                    slug,
-                    id
-                )
-                .fetch_one(pool)
-                .await
-                .map_err(|e| {
-                    ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-                })?
-            }
-            None => {
-                sqlx::query_scalar!(
-                    r#"
+                slug,
+                id
+            )
+            .fetch_one(pool)
+            .await
+            .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?,
+            None => sqlx::query_scalar!(
+                r#"
                     SELECT EXISTS(
                         SELECT 1 FROM cms_reusable_blocks
                         WHERE slug = $1 AND deleted_at IS NULL
                     ) as "exists!"
                     "#,
-                    slug
-                )
-                .fetch_one(pool)
-                .await
-                .map_err(|e| {
-                    ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-                })?
-            }
+                slug
+            )
+            .fetch_one(pool)
+            .await
+            .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?,
         };
 
         if !exists {
@@ -382,7 +372,7 @@ async fn list_reusable_blocks(
 
     if let Some(is_global) = query.is_global {
         conditions.push(format!("is_global = ${}", bind_index));
-        bind_index += 1;
+        let _ = bind_index; // Suppress unused warning - bind_index tracks placeholder position
     }
 
     // Sort configuration
@@ -551,9 +541,8 @@ async fn create_reusable_block(
 
     // Validate required fields
     if request.name.trim().is_empty() {
-        return Err(
-            ApiError::new(StatusCode::BAD_REQUEST, "Name is required").with_code("VALIDATION_ERROR")
-        );
+        return Err(ApiError::new(StatusCode::BAD_REQUEST, "Name is required")
+            .with_code("VALIDATION_ERROR"));
     }
 
     // Generate or validate slug
@@ -564,14 +553,12 @@ async fn create_reusable_block(
     let slug = ensure_unique_slug(&state.db.pool, &base_slug, None).await?;
 
     // Get CMS user ID from platform user
-    let cms_user_id: Option<Uuid> = sqlx::query_scalar!(
-        "SELECT id FROM cms_users WHERE user_id = $1",
-        user.id
-    )
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
-    .flatten();
+    let cms_user_id: Option<Uuid> =
+        sqlx::query_scalar!("SELECT id FROM cms_users WHERE user_id = $1", user.id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+            .flatten();
 
     let block = sqlx::query_as!(
         CmsReusableBlock,
@@ -601,11 +588,7 @@ async fn create_reusable_block(
     .await
     .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
-    tracing::info!(
-        "Reusable block created: {} ({})",
-        block.name,
-        block.id
-    );
+    tracing::info!("Reusable block created: {} ({})", block.name, block.id);
 
     Ok((StatusCode::CREATED, Json(block)))
 }
@@ -735,10 +718,11 @@ async fn delete_reusable_block(
     })?;
 
     if existing.is_locked {
-        return Err(
-            ApiError::new(StatusCode::LOCKED, "Cannot delete a locked block. Unlock it first.")
-                .with_code("BLOCK_LOCKED"),
-        );
+        return Err(ApiError::new(
+            StatusCode::LOCKED,
+            "Cannot delete a locked block. Unlock it first.",
+        )
+        .with_code("BLOCK_LOCKED"));
     }
 
     // Soft delete
@@ -804,14 +788,12 @@ async fn duplicate_reusable_block(
     let new_slug = ensure_unique_slug(&state.db.pool, &base_slug, None).await?;
 
     // Get CMS user ID
-    let cms_user_id: Option<Uuid> = sqlx::query_scalar!(
-        "SELECT id FROM cms_users WHERE user_id = $1",
-        user.id
-    )
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
-    .flatten();
+    let cms_user_id: Option<Uuid> =
+        sqlx::query_scalar!("SELECT id FROM cms_users WHERE user_id = $1", user.id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+            .flatten();
 
     let duplicated = sqlx::query_as!(
         CmsReusableBlock,
@@ -883,7 +865,7 @@ async fn get_block_usage(
 
     if !exists {
         return Err(
-            ApiError::new(StatusCode::NOT_FOUND, "Reusable block not found").with_code("NOT_FOUND")
+            ApiError::new(StatusCode::NOT_FOUND, "Reusable block not found").with_code("NOT_FOUND"),
         );
     }
 
@@ -952,7 +934,7 @@ async fn track_block_usage(
 
     if !block_exists {
         return Err(
-            ApiError::new(StatusCode::NOT_FOUND, "Reusable block not found").with_code("NOT_FOUND")
+            ApiError::new(StatusCode::NOT_FOUND, "Reusable block not found").with_code("NOT_FOUND"),
         );
     }
 
@@ -1113,14 +1095,12 @@ async fn detach_block_usage(
     }
 
     // Get CMS user ID
-    let cms_user_id: Option<Uuid> = sqlx::query_scalar!(
-        "SELECT id FROM cms_users WHERE user_id = $1",
-        user.id
-    )
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
-    .flatten();
+    let cms_user_id: Option<Uuid> =
+        sqlx::query_scalar!("SELECT id FROM cms_users WHERE user_id = $1", user.id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+            .flatten();
 
     // Detach the usage
     let usage = sqlx::query_as!(
@@ -1174,8 +1154,7 @@ pub fn admin_router() -> Router<AppState> {
 
 /// Public router for read-only block access (optional, for block previews)
 pub fn public_router() -> Router<AppState> {
-    Router::new()
-        .route("/slug/{slug}", get(get_reusable_block_by_slug_public))
+    Router::new().route("/slug/{slug}", get(get_reusable_block_by_slug_public))
 }
 
 /// Public endpoint to get a global block by slug (no auth required)
@@ -1183,8 +1162,7 @@ async fn get_reusable_block_by_slug_public(
     State(state): State<AppState>,
     Path(slug): Path<String>,
 ) -> ApiResult<CmsReusableBlock> {
-    let block = sqlx::query_as!(
-        CmsReusableBlock,
+    let block: CmsReusableBlock = sqlx::query_as(
         r#"
         SELECT id, name, slug, description, block_data, category, tags,
                thumbnail_url, usage_count, is_global, is_locked, version,
@@ -1192,11 +1170,11 @@ async fn get_reusable_block_by_slug_public(
         FROM cms_reusable_blocks
         WHERE slug = $1 AND deleted_at IS NULL AND is_global = true
         "#,
-        slug
     )
+    .bind(&slug)
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Reusable block not found").with_code("NOT_FOUND")
     })?;
@@ -1216,10 +1194,7 @@ mod tests {
     fn test_generate_slug() {
         assert_eq!(generate_slug("Hero Section"), "hero-section");
         assert_eq!(generate_slug("CTA Banner v2"), "cta-banner-v2");
-        assert_eq!(
-            generate_slug("  Multiple   Spaces  "),
-            "multiple-spaces"
-        );
+        assert_eq!(generate_slug("  Multiple   Spaces  "), "multiple-spaces");
     }
 
     #[test]

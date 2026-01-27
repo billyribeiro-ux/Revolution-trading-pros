@@ -63,17 +63,17 @@ pub struct RoomAlert {
     pub message: String,
     pub notes: Option<String>,
     // TOS Format Fields
-    pub trade_type: Option<String>,    // 'options' | 'shares'
-    pub action: Option<String>,        // 'BUY' | 'SELL'
+    pub trade_type: Option<String>, // 'options' | 'shares'
+    pub action: Option<String>,     // 'BUY' | 'SELL'
     pub quantity: Option<i32>,
-    pub option_type: Option<String>,   // 'CALL' | 'PUT'
+    pub option_type: Option<String>, // 'CALL' | 'PUT'
     pub strike: Option<f64>,
     pub expiration: Option<NaiveDate>,
     pub contract_type: Option<String>, // 'Weeklys' | 'Monthly' | 'LEAPS'
     pub order_type: Option<String>,    // 'MKT' | 'LMT'
     pub limit_price: Option<f64>,
     pub fill_price: Option<f64>,
-    pub tos_string: Option<String>,    // Full TOS format string
+    pub tos_string: Option<String>, // Full TOS format string
     // Linking
     pub entry_alert_id: Option<i64>,
     pub trade_plan_id: Option<i64>,
@@ -982,7 +982,15 @@ async fn list_archived_videos(
     let year = query.year.unwrap_or_else(|| Utc::now().year());
 
     // Query archived videos with alert/trade counts
-    let videos: Vec<(i64, NaiveDate, String, String, String, Option<String>, Option<String>)> = sqlx::query_as(
+    let videos: Vec<(
+        i64,
+        NaiveDate,
+        String,
+        String,
+        String,
+        Option<String>,
+        Option<String>,
+    )> = sqlx::query_as(
         r#"SELECT 
             v.id,
             v.week_of,
@@ -1016,7 +1024,7 @@ async fn list_archived_videos(
         let alert_count: (i64,) = sqlx::query_as(
             r#"SELECT COUNT(*) FROM room_alerts 
                WHERE room_slug = $1 
-               AND DATE_TRUNC('week', published_at) = DATE_TRUNC('week', $2::date)"#
+               AND DATE_TRUNC('week', published_at) = DATE_TRUNC('week', $2::date)"#,
         )
         .bind(&room_slug)
         .bind(week_of)
@@ -1269,19 +1277,18 @@ async fn close_trade(
         .unwrap_or_else(|| Utc::now().date_naive());
 
     // First get the trade to calculate P&L
-    let existing: RoomTrade = sqlx::query_as(
-        "SELECT * FROM room_trades WHERE id = $1 AND deleted_at IS NULL"
-    )
-    .bind(id)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| {
-        error!("Trade not found: {}", e);
-        (
-            StatusCode::NOT_FOUND,
-            Json(json!({"error": "Trade not found"})),
-        )
-    })?;
+    let existing: RoomTrade =
+        sqlx::query_as("SELECT * FROM room_trades WHERE id = $1 AND deleted_at IS NULL")
+            .bind(id)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| {
+                error!("Trade not found: {}", e);
+                (
+                    StatusCode::NOT_FOUND,
+                    Json(json!({"error": "Trade not found"})),
+                )
+            })?;
 
     // Calculate P&L
     let pnl = if existing.direction == "long" {
@@ -1330,7 +1337,10 @@ async fn close_trade(
         )
     })?;
 
-    info!("Closed trade {}: {} {} P&L: ${:.2}", id, trade.ticker, result, pnl);
+    info!(
+        "Closed trade {}: {} {} P&L: ${:.2}",
+        id, trade.ticker, result, pnl
+    );
     Ok(Json(trade))
 }
 
@@ -1361,7 +1371,10 @@ async fn invalidate_trade(
         )
     })?;
 
-    info!("Invalidated trade {}: {} - {}", id, trade.ticker, input.reason);
+    info!(
+        "Invalidated trade {}: {} - {}",
+        id, trade.ticker, input.reason
+    );
     Ok(Json(trade))
 }
 
@@ -1438,7 +1451,10 @@ pub fn public_router() -> Router<AppState> {
         // Weekly Video
         .route("/rooms/:room_slug/weekly-video", get(get_weekly_video))
         .route("/rooms/:room_slug/weekly-videos", get(list_weekly_videos))
-        .route("/weekly-video/:room_slug/archive", get(list_archived_videos))
+        .route(
+            "/weekly-video/:room_slug/archive",
+            get(list_archived_videos),
+        )
         // Stats
         .route("/rooms/:room_slug/stats", get(get_room_stats))
 }

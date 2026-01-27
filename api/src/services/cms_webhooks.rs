@@ -84,8 +84,8 @@ pub struct DeliveryResult {
 
 /// Generate HMAC-SHA256 signature for webhook payload
 pub fn generate_signature(payload: &str, secret: &str) -> String {
-    let mut mac = HmacSha256::new_from_slice(secret.as_bytes())
-        .expect("HMAC can take key of any size");
+    let mut mac =
+        HmacSha256::new_from_slice(secret.as_bytes()).expect("HMAC can take key of any size");
     mac.update(payload.as_bytes());
     let result = mac.finalize();
     hex::encode(result.into_bytes())
@@ -119,7 +119,13 @@ pub async fn deliver_webhook(
         .post(&config.url)
         .header("Content-Type", "application/json")
         .header("User-Agent", "RevolutionTradingPros-CMS/2.0")
-        .header("X-Webhook-Event", payload.get("event").and_then(|e| e.as_str()).unwrap_or("unknown"));
+        .header(
+            "X-Webhook-Event",
+            payload
+                .get("event")
+                .and_then(|e| e.as_str())
+                .unwrap_or("unknown"),
+        );
 
     // Add signature if secret is configured
     if let Some(secret) = &config.secret {
@@ -141,7 +147,9 @@ pub async fn deliver_webhook(
     }
 
     // Set timeout
-    request = request.timeout(std::time::Duration::from_secs(config.timeout_seconds as u64));
+    request = request.timeout(std::time::Duration::from_secs(
+        config.timeout_seconds as u64,
+    ));
 
     // Execute request
     match request.body(payload_str).send().await {
@@ -157,7 +165,11 @@ pub async fn deliver_webhook(
                 status_code: Some(status),
                 response_body: body,
                 response_time_ms: elapsed,
-                error: if success { None } else { Some(format!("HTTP {}", status)) },
+                error: if success {
+                    None
+                } else {
+                    Some(format!("HTTP {}", status))
+                },
             }
         }
         Err(e) => {
@@ -275,12 +287,10 @@ pub async fn process_pending_deliveries(
             .execute(pool)
             .await?;
         } else {
-            sqlx::query(
-                "UPDATE cms_webhooks SET failure_count = failure_count + 1 WHERE id = $1",
-            )
-            .bind(webhook_id)
-            .execute(pool)
-            .await?;
+            sqlx::query("UPDATE cms_webhooks SET failure_count = failure_count + 1 WHERE id = $1")
+                .bind(webhook_id)
+                .execute(pool)
+                .await?;
         }
 
         processed += 1;
@@ -299,14 +309,12 @@ pub async fn queue_webhook_event(
     let payload = create_webhook_payload(event_type, content_id, data);
 
     // Use database function to queue webhooks
-    let count: i32 = sqlx::query_scalar(
-        "SELECT cms_queue_webhook_delivery($1, $2, $3)",
-    )
-    .bind(event_type)
-    .bind(content_id)
-    .bind(&payload)
-    .fetch_one(pool)
-    .await?;
+    let count: i32 = sqlx::query_scalar("SELECT cms_queue_webhook_delivery($1, $2, $3)")
+        .bind(event_type)
+        .bind(content_id)
+        .bind(&payload)
+        .fetch_one(pool)
+        .await?;
 
     Ok(count)
 }

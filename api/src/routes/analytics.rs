@@ -157,7 +157,10 @@ async fn track_performance(
     .execute(&state.db.pool)
     .await
     .map_err(|e| {
-        tracing::debug!("Performance metrics not stored (table may not exist yet): {:?}", e);
+        tracing::debug!(
+            "Performance metrics not stored (table may not exist yet): {:?}",
+            e
+        );
     });
 
     // Always return success to prevent frontend errors

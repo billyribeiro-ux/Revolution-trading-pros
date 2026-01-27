@@ -127,138 +127,144 @@ impl WorkflowStateMachine {
         };
 
         // Define all valid transitions
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::Draft,
-            to_status: ContentStatus::InReview,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-                CmsUserRole::ContentEditor,
-                CmsUserRole::WeeklyEditor,
-            ],
-            requires_comment: false,
-        }, WorkflowAction::SubmitForReview);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::Draft,
+                to_status: ContentStatus::InReview,
+                required_roles: vec![
+                    CmsUserRole::SuperAdmin,
+                    CmsUserRole::MarketingManager,
+                    CmsUserRole::ContentEditor,
+                    CmsUserRole::WeeklyEditor,
+                ],
+                requires_comment: false,
+            },
+            WorkflowAction::SubmitForReview,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::Draft,
-            to_status: ContentStatus::Archived,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-            ],
-            requires_comment: false,
-        }, WorkflowAction::Archive);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::Draft,
+                to_status: ContentStatus::Archived,
+                required_roles: vec![CmsUserRole::SuperAdmin, CmsUserRole::MarketingManager],
+                requires_comment: false,
+            },
+            WorkflowAction::Archive,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::InReview,
-            to_status: ContentStatus::Approved,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-            ],
-            requires_comment: false,
-        }, WorkflowAction::Approve);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::InReview,
+                to_status: ContentStatus::Approved,
+                required_roles: vec![CmsUserRole::SuperAdmin, CmsUserRole::MarketingManager],
+                requires_comment: false,
+            },
+            WorkflowAction::Approve,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::InReview,
-            to_status: ContentStatus::Draft,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-            ],
-            requires_comment: true,
-        }, WorkflowAction::RequestChanges);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::InReview,
+                to_status: ContentStatus::Draft,
+                required_roles: vec![CmsUserRole::SuperAdmin, CmsUserRole::MarketingManager],
+                requires_comment: true,
+            },
+            WorkflowAction::RequestChanges,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::InReview,
-            to_status: ContentStatus::Draft,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-            ],
-            requires_comment: true,
-        }, WorkflowAction::Reject);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::InReview,
+                to_status: ContentStatus::Draft,
+                required_roles: vec![CmsUserRole::SuperAdmin, CmsUserRole::MarketingManager],
+                requires_comment: true,
+            },
+            WorkflowAction::Reject,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::Approved,
-            to_status: ContentStatus::Published,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-            ],
-            requires_comment: false,
-        }, WorkflowAction::Publish);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::Approved,
+                to_status: ContentStatus::Published,
+                required_roles: vec![CmsUserRole::SuperAdmin, CmsUserRole::MarketingManager],
+                requires_comment: false,
+            },
+            WorkflowAction::Publish,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::Approved,
-            to_status: ContentStatus::Scheduled,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-            ],
-            requires_comment: false,
-        }, WorkflowAction::Schedule);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::Approved,
+                to_status: ContentStatus::Scheduled,
+                required_roles: vec![CmsUserRole::SuperAdmin, CmsUserRole::MarketingManager],
+                requires_comment: false,
+            },
+            WorkflowAction::Schedule,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::Approved,
-            to_status: ContentStatus::InReview,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-            ],
-            requires_comment: true,
-        }, WorkflowAction::RequestChanges);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::Approved,
+                to_status: ContentStatus::InReview,
+                required_roles: vec![CmsUserRole::SuperAdmin, CmsUserRole::MarketingManager],
+                requires_comment: true,
+            },
+            WorkflowAction::RequestChanges,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::Scheduled,
-            to_status: ContentStatus::Published,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-            ],
-            requires_comment: false,
-        }, WorkflowAction::Publish);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::Scheduled,
+                to_status: ContentStatus::Published,
+                required_roles: vec![CmsUserRole::SuperAdmin, CmsUserRole::MarketingManager],
+                requires_comment: false,
+            },
+            WorkflowAction::Publish,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::Scheduled,
-            to_status: ContentStatus::Approved,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-            ],
-            requires_comment: false,
-        }, WorkflowAction::RequestChanges);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::Scheduled,
+                to_status: ContentStatus::Approved,
+                required_roles: vec![CmsUserRole::SuperAdmin, CmsUserRole::MarketingManager],
+                requires_comment: false,
+            },
+            WorkflowAction::RequestChanges,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::Published,
-            to_status: ContentStatus::Archived,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-            ],
-            requires_comment: false,
-        }, WorkflowAction::Unpublish);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::Published,
+                to_status: ContentStatus::Archived,
+                required_roles: vec![CmsUserRole::SuperAdmin, CmsUserRole::MarketingManager],
+                requires_comment: false,
+            },
+            WorkflowAction::Unpublish,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::Published,
-            to_status: ContentStatus::Archived,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-            ],
-            requires_comment: false,
-        }, WorkflowAction::Archive);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::Published,
+                to_status: ContentStatus::Archived,
+                required_roles: vec![CmsUserRole::SuperAdmin, CmsUserRole::MarketingManager],
+                requires_comment: false,
+            },
+            WorkflowAction::Archive,
+        );
 
-        machine.add_transition(TransitionDef {
-            from_status: ContentStatus::Archived,
-            to_status: ContentStatus::Draft,
-            required_roles: vec![
-                CmsUserRole::SuperAdmin,
-                CmsUserRole::MarketingManager,
-                CmsUserRole::ContentEditor,
-            ],
-            requires_comment: false,
-        }, WorkflowAction::Restore);
+        machine.add_transition(
+            TransitionDef {
+                from_status: ContentStatus::Archived,
+                to_status: ContentStatus::Draft,
+                required_roles: vec![
+                    CmsUserRole::SuperAdmin,
+                    CmsUserRole::MarketingManager,
+                    CmsUserRole::ContentEditor,
+                ],
+                requires_comment: false,
+            },
+            WorkflowAction::Restore,
+        );
 
         machine
     }
@@ -275,10 +281,13 @@ impl WorkflowStateMachine {
         user_role: &CmsUserRole,
     ) -> Result<(), WorkflowError> {
         let key = (current_status, action);
-        let transition = self.transitions.get(&key).ok_or(WorkflowError::ActionNotAllowed {
-            action,
-            status: current_status,
-        })?;
+        let transition = self
+            .transitions
+            .get(&key)
+            .ok_or(WorkflowError::ActionNotAllowed {
+                action,
+                status: current_status,
+            })?;
 
         if !transition.required_roles.contains(user_role) {
             return Err(WorkflowError::PermissionDenied {
@@ -311,8 +320,7 @@ impl WorkflowStateMachine {
 
         // Validate scheduled date for schedule action
         if action == WorkflowAction::Schedule {
-            let scheduled_at =
-                scheduled_at.ok_or(WorkflowError::ScheduledDateRequired)?;
+            let scheduled_at = scheduled_at.ok_or(WorkflowError::ScheduledDateRequired)?;
             if scheduled_at <= Utc::now() {
                 return Err(WorkflowError::ScheduledDateInPast);
             }
@@ -509,11 +517,13 @@ mod tests {
     fn test_available_actions() {
         let machine = WorkflowStateMachine::new();
 
-        let editor_actions = machine.available_actions(ContentStatus::Draft, &CmsUserRole::ContentEditor);
+        let editor_actions =
+            machine.available_actions(ContentStatus::Draft, &CmsUserRole::ContentEditor);
         assert!(editor_actions.contains(&WorkflowAction::SubmitForReview));
         assert!(!editor_actions.contains(&WorkflowAction::Archive));
 
-        let manager_actions = machine.available_actions(ContentStatus::Draft, &CmsUserRole::MarketingManager);
+        let manager_actions =
+            machine.available_actions(ContentStatus::Draft, &CmsUserRole::MarketingManager);
         assert!(manager_actions.contains(&WorkflowAction::SubmitForReview));
         assert!(manager_actions.contains(&WorkflowAction::Archive));
     }

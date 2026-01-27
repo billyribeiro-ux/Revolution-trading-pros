@@ -35,7 +35,10 @@ pub enum ContentError {
     VersionConflict { expected: i32, actual: i32 },
 
     #[error("Cannot {action} content in {status:?} status")]
-    InvalidStatusForAction { status: ContentStatus, action: String },
+    InvalidStatusForAction {
+        status: ContentStatus,
+        action: String,
+    },
 }
 
 /// Content status with transition logic (mirrors database enum)
@@ -363,7 +366,11 @@ impl Content {
                 "Slug cannot be empty".to_string(),
             ));
         }
-        if !self.slug.chars().all(|c| c.is_ascii_alphanumeric() || c == '-') {
+        if !self
+            .slug
+            .chars()
+            .all(|c| c.is_ascii_alphanumeric() || c == '-')
+        {
             return Err(ContentError::ValidationFailed(
                 "Slug can only contain alphanumeric characters and hyphens".to_string(),
             ));
@@ -701,10 +708,20 @@ mod tests {
 
     #[test]
     fn test_content_validation() {
-        let content = Content::new(ContentType::BlogPost, "test-post".to_string(), "Test Post".to_string(), None);
+        let content = Content::new(
+            ContentType::BlogPost,
+            "test-post".to_string(),
+            "Test Post".to_string(),
+            None,
+        );
         assert!(content.validate().is_ok());
 
-        let mut bad_content = Content::new(ContentType::BlogPost, "".to_string(), "Test".to_string(), None);
+        let mut bad_content = Content::new(
+            ContentType::BlogPost,
+            "".to_string(),
+            "Test".to_string(),
+            None,
+        );
         assert!(bad_content.validate().is_err());
 
         bad_content.slug = "test post".to_string(); // Invalid: contains space
@@ -713,14 +730,24 @@ mod tests {
 
     #[test]
     fn test_submit_for_review() {
-        let mut content = Content::new(ContentType::BlogPost, "test".to_string(), "Test".to_string(), None);
+        let mut content = Content::new(
+            ContentType::BlogPost,
+            "test".to_string(),
+            "Test".to_string(),
+            None,
+        );
         assert!(content.submit_for_review().is_ok());
         assert_eq!(content.status, ContentStatus::InReview);
     }
 
     #[test]
     fn test_approval_requires_permission() {
-        let mut content = Content::new(ContentType::BlogPost, "test".to_string(), "Test".to_string(), None);
+        let mut content = Content::new(
+            ContentType::BlogPost,
+            "test".to_string(),
+            "Test".to_string(),
+            None,
+        );
         content.status = ContentStatus::InReview;
 
         // Editor cannot approve
@@ -732,7 +759,12 @@ mod tests {
 
     #[test]
     fn test_version_increment() {
-        let mut content = Content::new(ContentType::BlogPost, "test".to_string(), "Test".to_string(), None);
+        let mut content = Content::new(
+            ContentType::BlogPost,
+            "test".to_string(),
+            "Test".to_string(),
+            None,
+        );
         let initial_version = content.version;
 
         content.submit_for_review().unwrap();

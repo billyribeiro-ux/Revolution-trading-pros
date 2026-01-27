@@ -44,9 +44,12 @@ pub mod admin_members; // ICT 7: Member segments, tags, and filters
 pub mod admin_page_layouts;
 pub mod admin_videos;
 pub mod bunny_upload; // ICT 7: Bunny.net video upload API
+pub mod cms_ai_assist; // ICT 7+: AI-powered content assistance
+pub mod cms_reusable_blocks;
 pub mod connections;
 pub mod crm; // ICT 7: CRM Admin Routes - FluentCRM Pro equivalent
 pub mod email_templates;
+pub mod favorites; // ICT 7: User favorites persistence
 pub mod forms;
 pub mod member_courses;
 pub mod member_indicators;
@@ -57,10 +60,7 @@ pub mod room_content;
 pub mod room_resources;
 pub mod subscriptions_admin;
 pub mod trading_rooms;
-pub mod watchlist; // ICT 7: Service connection status // ICT 7: Teams & Departments
-pub mod favorites; // ICT 7: User favorites persistence
-pub mod cms_ai_assist; // ICT 7+: AI-powered content assistance
-pub mod cms_reusable_blocks; // ICT 7+: Reusable content blocks library
+pub mod watchlist; // ICT 7: Service connection status // ICT 7: Teams & Departments // ICT 7+: Reusable content blocks library
 
 use crate::AppState;
 use axum::Router;

@@ -18,8 +18,8 @@ use uuid::Uuid;
 
 use super::entity::{Content, ContentError, ContentStatus, ContentType};
 use crate::models::cms::{
-    CmsContent, CmsContentStatus, CmsContentSummary, CmsContentType, CmsRevision,
-    ContentListQuery, PaginatedResponse, PaginationMeta,
+    CmsContent, CmsContentStatus, CmsContentSummary, CmsContentType, CmsRevision, ContentListQuery,
+    PaginatedResponse, PaginationMeta,
 };
 
 /// Repository trait for content operations
@@ -64,7 +64,11 @@ pub trait ContentRepository: Send + Sync {
     ) -> Result<Content>;
 
     /// Create revision
-    async fn create_revision(&self, content: &Content, user_id: Option<Uuid>) -> Result<CmsRevision>;
+    async fn create_revision(
+        &self,
+        content: &Content,
+        user_id: Option<Uuid>,
+    ) -> Result<CmsRevision>;
 
     /// List revisions for content
     async fn list_revisions(&self, content_id: Uuid) -> Result<Vec<CmsRevision>>;
@@ -73,13 +77,27 @@ pub trait ContentRepository: Send + Sync {
     async fn restore_revision(&self, content_id: Uuid, revision_id: Uuid) -> Result<Content>;
 
     /// Search content
-    async fn search(&self, query: &str, content_types: Option<Vec<ContentType>>, limit: i32) -> Result<Vec<CmsContentSummary>>;
+    async fn search(
+        &self,
+        query: &str,
+        content_types: Option<Vec<ContentType>>,
+        limit: i32,
+    ) -> Result<Vec<CmsContentSummary>>;
 
     /// Count content by type and status
-    async fn count(&self, content_type: Option<ContentType>, status: Option<ContentStatus>) -> Result<i64>;
+    async fn count(
+        &self,
+        content_type: Option<ContentType>,
+        status: Option<ContentStatus>,
+    ) -> Result<i64>;
 
     /// Check if slug exists
-    async fn slug_exists(&self, content_type: ContentType, slug: &str, exclude_id: Option<Uuid>) -> Result<bool>;
+    async fn slug_exists(
+        &self,
+        content_type: ContentType,
+        slug: &str,
+        exclude_id: Option<Uuid>,
+    ) -> Result<bool>;
 }
 
 /// PostgreSQL implementation of ContentRepository
@@ -181,8 +199,14 @@ impl ContentRepository for PgContentRepository {
     async fn list(&self, query: ContentListQuery) -> Result<PaginatedResponse<CmsContentSummary>> {
         let limit = query.limit.unwrap_or(20).min(100);
         let offset = query.offset.unwrap_or(0);
-        let sort_by = query.sort_by.clone().unwrap_or_else(|| "updated_at".to_string());
-        let sort_order = query.sort_order.clone().unwrap_or_else(|| "desc".to_string());
+        let sort_by = query
+            .sort_by
+            .clone()
+            .unwrap_or_else(|| "updated_at".to_string());
+        let sort_order = query
+            .sort_order
+            .clone()
+            .unwrap_or_else(|| "desc".to_string());
 
         let order_direction = if sort_order.to_lowercase() == "asc" {
             "ASC"
@@ -512,14 +536,17 @@ impl ContentRepository for PgContentRepository {
         }
     }
 
-    async fn create_revision(&self, content: &Content, user_id: Option<Uuid>) -> Result<CmsRevision> {
+    async fn create_revision(
+        &self,
+        content: &Content,
+        user_id: Option<Uuid>,
+    ) -> Result<CmsRevision> {
         // Get next revision number
-        let max_revision: Option<(i32,)> = sqlx::query_as(
-            "SELECT MAX(revision_number) FROM cms_revisions WHERE content_id = $1",
-        )
-        .bind(content.id)
-        .fetch_optional(&self.pool)
-        .await?;
+        let max_revision: Option<(i32,)> =
+            sqlx::query_as("SELECT MAX(revision_number) FROM cms_revisions WHERE content_id = $1")
+                .bind(content.id)
+                .fetch_optional(&self.pool)
+                .await?;
 
         let next_revision = max_revision.and_then(|r| r.0.into()).unwrap_or(0) + 1;
 
@@ -583,10 +610,14 @@ impl ContentRepository for PgContentRepository {
         self.update(&content, None).await
     }
 
-    async fn search(&self, query: &str, content_types: Option<Vec<ContentType>>, limit: i32) -> Result<Vec<CmsContentSummary>> {
-        let cms_types: Option<Vec<CmsContentType>> = content_types.map(|types| {
-            types.into_iter().map(|t| t.into()).collect()
-        });
+    async fn search(
+        &self,
+        query: &str,
+        content_types: Option<Vec<ContentType>>,
+        limit: i32,
+    ) -> Result<Vec<CmsContentSummary>> {
+        let cms_types: Option<Vec<CmsContentType>> =
+            content_types.map(|types| types.into_iter().map(|t| t.into()).collect());
 
         let results = sqlx::query_as::<_, CmsContentSummary>(
             r#"
@@ -619,7 +650,11 @@ impl ContentRepository for PgContentRepository {
         Ok(results)
     }
 
-    async fn count(&self, content_type: Option<ContentType>, status: Option<ContentStatus>) -> Result<i64> {
+    async fn count(
+        &self,
+        content_type: Option<ContentType>,
+        status: Option<ContentStatus>,
+    ) -> Result<i64> {
         let cms_type: Option<CmsContentType> = content_type.map(|t| t.into());
         let cms_status: Option<CmsContentStatus> = status.map(|s| s.into());
 
@@ -640,7 +675,12 @@ impl ContentRepository for PgContentRepository {
         Ok(result.0)
     }
 
-    async fn slug_exists(&self, content_type: ContentType, slug: &str, exclude_id: Option<Uuid>) -> Result<bool> {
+    async fn slug_exists(
+        &self,
+        content_type: ContentType,
+        slug: &str,
+        exclude_id: Option<Uuid>,
+    ) -> Result<bool> {
         let cms_type: CmsContentType = content_type.into();
 
         let result: (bool,) = sqlx::query_as(

@@ -367,13 +367,11 @@ async fn list_revisions(
     .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     // Get total count
-    let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM cms_revisions WHERE content_id = $1",
-    )
-    .bind(content_id)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM cms_revisions WHERE content_id = $1")
+        .bind(content_id)
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     // Get current revision number
     let current_revision: (i32,) = sqlx::query_as(
@@ -556,19 +554,11 @@ async fn compare_revisions(
     .await
     .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
-    let (from_rev, from_name) = from_revision.ok_or_else(|| {
-        api_error(
-            StatusCode::NOT_FOUND,
-            &format!("Revision {} not found", v1),
-        )
-    })?;
+    let (from_rev, from_name) = from_revision
+        .ok_or_else(|| api_error(StatusCode::NOT_FOUND, &format!("Revision {} not found", v1)))?;
 
-    let (to_rev, to_name) = to_revision.ok_or_else(|| {
-        api_error(
-            StatusCode::NOT_FOUND,
-            &format!("Revision {} not found", v2),
-        )
-    })?;
+    let (to_rev, to_name) = to_revision
+        .ok_or_else(|| api_error(StatusCode::NOT_FOUND, &format!("Revision {} not found", v2)))?;
 
     // Compute the diff
     let diff = compute_diff(&from_rev.data, &to_rev.data, query.include_blocks);
@@ -663,14 +653,10 @@ async fn restore_revision(
     })?;
 
     // Use the existing restore_revision function from cms_content service
-    let content = cms_content::restore_revision(
-        &state.db.pool,
-        content_id,
-        version,
-        cms_user.map(|u| u.id),
-    )
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let content =
+        cms_content::restore_revision(&state.db.pool, content_id, version, cms_user.map(|u| u.id))
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     // Get the new revision number (should be content.version)
     let new_revision_number: (i32,) = sqlx::query_as(
@@ -682,10 +668,7 @@ async fn restore_revision(
     .unwrap_or((content.version,));
 
     Ok(Json(RestoreResponse {
-        message: format!(
-            "Successfully restored content to revision {}",
-            version
-        ),
+        message: format!("Successfully restored content to revision {}", version),
         restored_from_revision: version,
         new_revision_number: new_revision_number.0,
         new_content_version: content.version,
@@ -798,35 +781,33 @@ fn compute_diff(from: &JsonValue, to: &JsonValue, include_blocks: bool) -> DiffS
     }
 
     // Compute block-level changes
-    let (blocks_added, blocks_removed, blocks_modified, blocks_reordered) =
-        if include_blocks {
-            let (added, removed, modified, reordered, changes) =
-                compute_block_diff(from, to);
-            block_changes = Some(changes);
-            (added, removed, modified, reordered)
-        } else {
-            // Quick check without detailed diff
-            let from_blocks = from.get("content_blocks").and_then(|v| v.as_array());
-            let to_blocks = to.get("content_blocks").and_then(|v| v.as_array());
+    let (blocks_added, blocks_removed, blocks_modified, blocks_reordered) = if include_blocks {
+        let (added, removed, modified, reordered, changes) = compute_block_diff(from, to);
+        block_changes = Some(changes);
+        (added, removed, modified, reordered)
+    } else {
+        // Quick check without detailed diff
+        let from_blocks = from.get("content_blocks").and_then(|v| v.as_array());
+        let to_blocks = to.get("content_blocks").and_then(|v| v.as_array());
 
-            match (from_blocks, to_blocks) {
-                (Some(f), Some(t)) if f != t => {
-                    content_changed = true;
-                    // Rough estimate
-                    let diff = (t.len() as i32 - f.len() as i32).abs();
-                    if t.len() > f.len() {
-                        (diff, 0, 0, 0)
-                    } else if t.len() < f.len() {
-                        (0, diff, 0, 0)
-                    } else {
-                        (0, 0, diff, 0)
-                    }
+        match (from_blocks, to_blocks) {
+            (Some(f), Some(t)) if f != t => {
+                content_changed = true;
+                // Rough estimate
+                let diff = (t.len() as i32 - f.len() as i32).abs();
+                if t.len() > f.len() {
+                    (diff, 0, 0, 0)
+                } else if t.len() < f.len() {
+                    (0, diff, 0, 0)
+                } else {
+                    (0, 0, diff, 0)
                 }
-                (None, Some(t)) => (t.len() as i32, 0, 0, 0),
-                (Some(f), None) => (0, f.len() as i32, 0, 0),
-                _ => (0, 0, 0, 0),
             }
-        };
+            (None, Some(t)) => (t.len() as i32, 0, 0, 0),
+            (Some(f), None) => (0, f.len() as i32, 0, 0),
+            _ => (0, 0, 0, 0),
+        }
+    };
 
     if blocks_added > 0 || blocks_removed > 0 || blocks_modified > 0 {
         content_changed = true;
@@ -854,10 +835,7 @@ fn compute_diff(from: &JsonValue, to: &JsonValue, include_blocks: bool) -> DiffS
 }
 
 /// Compute detailed block-level diff
-fn compute_block_diff(
-    from: &JsonValue,
-    to: &JsonValue,
-) -> (i32, i32, i32, i32, Vec<BlockChange>) {
+fn compute_block_diff(from: &JsonValue, to: &JsonValue) -> (i32, i32, i32, i32, Vec<BlockChange>) {
     let mut changes = Vec::new();
     let mut added = 0;
     let mut removed = 0;

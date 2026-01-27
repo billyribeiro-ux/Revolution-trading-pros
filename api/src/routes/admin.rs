@@ -482,7 +482,7 @@ async fn list_coupons(
             max_discount::FLOAT8 as max_discount,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, created_at, updated_at
-        FROM coupons ORDER BY created_at DESC"#
+        FROM coupons ORDER BY created_at DESC"#,
     )
     .fetch_all(&state.db.pool)
     .await
@@ -582,7 +582,7 @@ async fn validate_coupon(
             max_discount::FLOAT8 as max_discount,
             usage_limit, usage_count, is_active, starts_at, expires_at,
             applicable_products, applicable_plans, created_at, updated_at
-        FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true"#
+        FROM coupons WHERE UPPER(code) = UPPER($1) AND is_active = true"#,
     )
     .bind(&code)
     .fetch_optional(&state.db.pool)

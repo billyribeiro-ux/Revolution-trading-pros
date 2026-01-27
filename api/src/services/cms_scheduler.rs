@@ -43,7 +43,10 @@ impl Default for SchedulerConfig {
 /// Start the scheduler as a background task
 pub fn start_scheduler(pool: Arc<PgPool>, config: SchedulerConfig) {
     tokio::spawn(async move {
-        info!("CMS scheduler started with {}s poll interval", config.poll_interval_secs);
+        info!(
+            "CMS scheduler started with {}s poll interval",
+            config.poll_interval_secs
+        );
 
         let mut ticker = interval(Duration::from_secs(config.poll_interval_secs));
 
@@ -70,7 +73,12 @@ pub fn start_scheduler(pool: Arc<PgPool>, config: SchedulerConfig) {
                     .build()
                     .expect("Failed to create HTTP client");
 
-                match cms_webhooks::process_pending_deliveries(&pool, &http_client, config.batch_size).await
+                match cms_webhooks::process_pending_deliveries(
+                    &pool,
+                    &http_client,
+                    config.batch_size,
+                )
+                .await
                 {
                     Ok(count) if count > 0 => {
                         info!("Processed {} webhook deliveries", count);
@@ -150,22 +158,20 @@ async fn process_scheduled_unpublish(pool: &PgPool) -> Result<i32> {
 
 /// Get pending job count for monitoring
 pub async fn get_pending_job_count(pool: &PgPool) -> Result<i64> {
-    let count: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM cms_scheduled_jobs WHERE status = 'pending'"
-    )
-    .fetch_one(pool)
-    .await?;
+    let count: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM cms_scheduled_jobs WHERE status = 'pending'")
+            .fetch_one(pool)
+            .await?;
 
     Ok(count.0)
 }
 
 /// Get failed job count for monitoring
 pub async fn get_failed_job_count(pool: &PgPool) -> Result<i64> {
-    let count: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM cms_scheduled_jobs WHERE status = 'failed'"
-    )
-    .fetch_one(pool)
-    .await?;
+    let count: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM cms_scheduled_jobs WHERE status = 'failed'")
+            .fetch_one(pool)
+            .await?;
 
     Ok(count.0)
 }
@@ -173,7 +179,7 @@ pub async fn get_failed_job_count(pool: &PgPool) -> Result<i64> {
 /// Get pending webhook delivery count
 pub async fn get_pending_webhook_count(pool: &PgPool) -> Result<i64> {
     let count: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM cms_webhook_deliveries WHERE status IN ('pending', 'retrying')"
+        "SELECT COUNT(*) FROM cms_webhook_deliveries WHERE status IN ('pending', 'retrying')",
     )
     .fetch_one(pool)
     .await?;

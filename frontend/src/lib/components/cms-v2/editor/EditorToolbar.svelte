@@ -147,13 +147,13 @@
 
 	const readingTime = $derived(Math.max(1, Math.ceil(wordCount / 200)));
 
-	const saveStatus = $derived<SaveStatus>(() => {
+	const saveStatus = $derived.by((): SaveStatus => {
 		if (isSaving) return 'saving';
 		if (hasUnsavedChanges) return 'unsaved';
 		return 'saved';
 	});
 
-	const lastSavedText = $derived(() => {
+	const lastSavedText = $derived.by(() => {
 		if (!lastSaved) return 'Never saved';
 		const now = new Date();
 		const diff = now.getTime() - lastSaved.getTime();
@@ -595,17 +595,17 @@
 
 		<!-- Save Status -->
 		<div class="save-status" role="status" aria-live="polite">
-			{#if saveStatus() === 'saving'}
+			{#if saveStatus === 'saving'}
 				<span class="status-indicator status-saving">
 					<IconCloudUpload size={16} class="spin" />
 					<span>Saving...</span>
 				</span>
-			{:else if saveStatus() === 'saved'}
-				<span class="status-indicator status-saved" title="Last saved: {lastSavedText()}">
+			{:else if saveStatus === 'saved'}
+				<span class="status-indicator status-saved" title="Last saved: {lastSavedText}">
 					<IconCloud size={16} />
 					<span>Saved</span>
 				</span>
-			{:else if saveStatus() === 'unsaved'}
+			{:else if saveStatus === 'unsaved'}
 				<span class="status-indicator status-unsaved">
 					<IconAlertCircle size={16} />
 					<span>Unsaved changes</span>

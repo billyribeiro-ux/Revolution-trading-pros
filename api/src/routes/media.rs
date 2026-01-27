@@ -330,7 +330,11 @@ pub async fn destroy(
     if let Some(file_key) = &media.path {
         let storage = &state.services.storage;
         if let Err(e) = storage.delete(file_key).await {
-            tracing::warn!("Failed to delete file from R2 storage: {} - {}", file_key, e);
+            tracing::warn!(
+                "Failed to delete file from R2 storage: {} - {}",
+                file_key,
+                e
+            );
             // Continue with database deletion even if R2 deletion fails
             // The file might have already been deleted or the path is invalid
         } else {
@@ -726,7 +730,9 @@ pub async fn bulk_delete(
     }
 
     if payload.ids.len() > 100 {
-        return Err(ApiError::validation_error("Maximum 100 items per bulk delete"));
+        return Err(ApiError::validation_error(
+            "Maximum 100 items per bulk delete",
+        ));
     }
 
     let storage = &state.services.storage;
@@ -803,7 +809,9 @@ pub async fn bulk_update(
     }
 
     if payload.ids.len() > 100 {
-        return Err(ApiError::validation_error("Maximum 100 items per bulk update"));
+        return Err(ApiError::validation_error(
+            "Maximum 100 items per bulk update",
+        ));
     }
 
     let mut updated_count = 0;

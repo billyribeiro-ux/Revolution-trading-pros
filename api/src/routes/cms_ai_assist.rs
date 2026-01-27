@@ -903,36 +903,35 @@ async fn get_ai_history(
     sql.push_str(&(param_index + 1).to_string());
 
     // Execute query with dynamic binding
-    let records: Vec<AiAssistHistoryRecord> = if let (Some(action), Some(content_id)) =
-        (&query.action, query.content_id)
-    {
-        sqlx::query_as(&sql)
-            .bind(user.id)
-            .bind(action)
-            .bind(content_id)
-            .bind(limit)
-            .bind(offset)
-            .fetch_all(&state.db.pool)
-            .await
-    } else if let Some(action) = &query.action {
-        sqlx::query_as(&sql)
-            .bind(user.id)
-            .bind(action)
-            .bind(limit)
-            .bind(offset)
-            .fetch_all(&state.db.pool)
-            .await
-    } else if let Some(content_id) = query.content_id {
-        sqlx::query_as(&sql)
-            .bind(user.id)
-            .bind(content_id)
-            .bind(limit)
-            .bind(offset)
-            .fetch_all(&state.db.pool)
-            .await
-    } else {
-        sqlx::query_as(
-            r#"
+    let records: Vec<AiAssistHistoryRecord> =
+        if let (Some(action), Some(content_id)) = (&query.action, query.content_id) {
+            sqlx::query_as(&sql)
+                .bind(user.id)
+                .bind(action)
+                .bind(content_id)
+                .bind(limit)
+                .bind(offset)
+                .fetch_all(&state.db.pool)
+                .await
+        } else if let Some(action) = &query.action {
+            sqlx::query_as(&sql)
+                .bind(user.id)
+                .bind(action)
+                .bind(limit)
+                .bind(offset)
+                .fetch_all(&state.db.pool)
+                .await
+        } else if let Some(content_id) = query.content_id {
+            sqlx::query_as(&sql)
+                .bind(user.id)
+                .bind(content_id)
+                .bind(limit)
+                .bind(offset)
+                .fetch_all(&state.db.pool)
+                .await
+        } else {
+            sqlx::query_as(
+                r#"
             SELECT id, user_id, action, input_content, output_content, options,
                    content_id, block_id, model, input_tokens, output_tokens,
                    processing_time_ms, created_at
@@ -941,33 +940,28 @@ async fn get_ai_history(
             ORDER BY created_at DESC
             LIMIT $2 OFFSET $3
             "#,
-        )
-        .bind(user.id)
-        .bind(limit)
-        .bind(offset)
-        .fetch_all(&state.db.pool)
-        .await
-    }
-    .map_err(|e| {
-        tracing::error!(target: "ai_assist", error = %e, "Failed to fetch history");
-        api_error(
-            StatusCode::INTERNAL_SERVER_ERROR,
-            "Failed to fetch history",
-        )
-    })?;
+            )
+            .bind(user.id)
+            .bind(limit)
+            .bind(offset)
+            .fetch_all(&state.db.pool)
+            .await
+        }
+        .map_err(|e| {
+            tracing::error!(target: "ai_assist", error = %e, "Failed to fetch history");
+            api_error(StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch history")
+        })?;
 
     // Get total count
-    let total: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM cms_ai_assist_history WHERE user_id = $1")
-        .bind(user.id)
-        .fetch_one(&state.db.pool)
-        .await
-        .map_err(|e| {
-            tracing::error!(target: "ai_assist", error = %e, "Failed to count history");
-            api_error(
-                StatusCode::INTERNAL_SERVER_ERROR,
-                "Failed to fetch history",
-            )
-        })?;
+    let total: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM cms_ai_assist_history WHERE user_id = $1")
+            .bind(user.id)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| {
+                tracing::error!(target: "ai_assist", error = %e, "Failed to count history");
+                api_error(StatusCode::INTERNAL_SERVER_ERROR, "Failed to fetch history")
+            })?;
 
     Ok(Json(HistoryResponse {
         data: records,

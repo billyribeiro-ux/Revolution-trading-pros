@@ -60,7 +60,10 @@ fn require_cms_admin(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
 
 fn require_cms_editor(user: &User) -> Result<(), (StatusCode, Json<JsonValue>)> {
     let role = user.role.as_deref().unwrap_or("user");
-    if matches!(role, "admin" | "super-admin" | "super_admin" | "editor" | "marketing") {
+    if matches!(
+        role,
+        "admin" | "super-admin" | "super_admin" | "editor" | "marketing"
+    ) {
         Ok(())
     } else {
         Err(api_error(StatusCode::FORBIDDEN, "Editor access required"))
@@ -133,9 +136,10 @@ async fn update_asset_folder(
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
-    let folder = cms_content::update_asset_folder(&state.db.pool, id, request, cms_user.map(|u| u.id))
-        .await
-        .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let folder =
+        cms_content::update_asset_folder(&state.db.pool, id, request, cms_user.map(|u| u.id))
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(folder))
 }
@@ -373,14 +377,10 @@ async fn transition_content_status(
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
-    let content = cms_content::transition_content_status(
-        &state.db.pool,
-        id,
-        request,
-        cms_user.map(|u| u.id),
-    )
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let content =
+        cms_content::transition_content_status(&state.db.pool, id, request, cms_user.map(|u| u.id))
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(content))
 }
@@ -422,9 +422,10 @@ async fn get_content_revisions(
 ) -> ApiResult<Vec<CmsRevision>> {
     require_cms_editor(&user)?;
 
-    let revisions = cms_content::get_revisions(&state.db.pool, content_id, query.limit.unwrap_or(25))
-        .await
-        .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let revisions =
+        cms_content::get_revisions(&state.db.pool, content_id, query.limit.unwrap_or(25))
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(revisions))
 }
@@ -566,14 +567,10 @@ async fn create_comment(
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
-    let comment = cms_content::create_comment(
-        &state.db.pool,
-        content_id,
-        request,
-        cms_user.map(|u| u.id),
-    )
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let comment =
+        cms_content::create_comment(&state.db.pool, content_id, request, cms_user.map(|u| u.id))
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(comment))
 }
@@ -623,9 +620,10 @@ async fn update_site_settings(
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
-    let settings = cms_content::update_site_settings(&state.db.pool, request, cms_user.map(|u| u.id))
-        .await
-        .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let settings =
+        cms_content::update_site_settings(&state.db.pool, request, cms_user.map(|u| u.id))
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(settings))
 }
@@ -688,9 +686,10 @@ async fn update_navigation_menu(
         .await
         .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
-    let menu = cms_content::update_navigation_menu(&state.db.pool, id, request, cms_user.map(|u| u.id))
-        .await
-        .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let menu =
+        cms_content::update_navigation_menu(&state.db.pool, id, request, cms_user.map(|u| u.id))
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(menu))
 }
@@ -700,10 +699,7 @@ async fn update_navigation_menu(
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 /// List redirects
-async fn list_redirects(
-    State(state): State<AppState>,
-    user: User,
-) -> ApiResult<Vec<CmsRedirect>> {
+async fn list_redirects(State(state): State<AppState>, user: User) -> ApiResult<Vec<CmsRedirect>> {
     require_cms_admin(&user)?;
 
     let redirects = cms_content::list_redirects(&state.db.pool)
@@ -752,42 +748,41 @@ async fn delete_redirect(
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
 /// Get CMS overview statistics
-async fn get_cms_stats(
-    State(state): State<AppState>,
-    user: User,
-) -> ApiResultEmpty {
+async fn get_cms_stats(State(state): State<AppState>, user: User) -> ApiResultEmpty {
     require_cms_editor(&user)?;
 
-    let total_content: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM cms_content WHERE deleted_at IS NULL")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total_content: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM cms_content WHERE deleted_at IS NULL")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     let published_content: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM cms_content WHERE status = 'published' AND deleted_at IS NULL"
+        "SELECT COUNT(*) FROM cms_content WHERE status = 'published' AND deleted_at IS NULL",
     )
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     let draft_content: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM cms_content WHERE status = 'draft' AND deleted_at IS NULL"
+        "SELECT COUNT(*) FROM cms_content WHERE status = 'draft' AND deleted_at IS NULL",
     )
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
-    let total_assets: (i64,) = sqlx::query_as("SELECT COUNT(*) FROM cms_assets WHERE deleted_at IS NULL")
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    let total_assets: (i64,) =
+        sqlx::query_as("SELECT COUNT(*) FROM cms_assets WHERE deleted_at IS NULL")
+            .fetch_one(&state.db.pool)
+            .await
+            .unwrap_or((0,));
 
     let pending_review: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM cms_content WHERE status = 'in_review' AND deleted_at IS NULL"
+        "SELECT COUNT(*) FROM cms_content WHERE status = 'in_review' AND deleted_at IS NULL",
     )
-        .fetch_one(&state.db.pool)
-        .await
-        .unwrap_or((0,));
+    .fetch_one(&state.db.pool)
+    .await
+    .unwrap_or((0,));
 
     Ok(Json(json!({
         "content": {
@@ -835,7 +830,10 @@ pub fn admin_router() -> Router<AppState> {
         // Stats
         .route("/stats", get(get_cms_stats))
         // Asset Folders
-        .route("/folders", get(list_asset_folders).post(create_asset_folder))
+        .route(
+            "/folders",
+            get(list_asset_folders).post(create_asset_folder),
+        )
         .route(
             "/folders/:id",
             get(get_asset_folder)
@@ -873,7 +871,10 @@ pub fn admin_router() -> Router<AppState> {
         // Tags
         .route("/tags", get(list_tags).post(create_tag))
         // Site Settings
-        .route("/settings", get(get_site_settings).put(update_site_settings))
+        .route(
+            "/settings",
+            get(get_site_settings).put(update_site_settings),
+        )
         // Navigation Menus
         .route(
             "/menus",

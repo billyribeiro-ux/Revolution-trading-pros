@@ -32,7 +32,7 @@ pub struct Services {
 impl Services {
     pub async fn new(config: &Config) -> Result<Self> {
         let is_production = config.environment == "production";
-        
+
         let search =
             search::SearchService::new(&config.meilisearch_host, &config.meilisearch_api_key)?;
 

@@ -118,7 +118,10 @@ async fn search_content(
     let start = std::time::Instant::now();
 
     if query.q.trim().is_empty() {
-        return Err(api_error(StatusCode::BAD_REQUEST, "Search query is required"));
+        return Err(api_error(
+            StatusCode::BAD_REQUEST,
+            "Search query is required",
+        ));
     }
 
     let limit = query.limit.unwrap_or(20).min(100);
@@ -216,15 +219,14 @@ async fn get_content_full(
 ) -> ApiResult<JsonValue> {
     let locale = query.locale.as_deref().unwrap_or("en");
 
-    let content: Option<JsonValue> = sqlx::query_scalar(
-        "SELECT cms_get_content_full($1::cms_content_type, $2, $3, false)",
-    )
-    .bind(&content_type)
-    .bind(&slug)
-    .bind(locale)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let content: Option<JsonValue> =
+        sqlx::query_scalar("SELECT cms_get_content_full($1::cms_content_type, $2, $3, false)")
+            .bind(&content_type)
+            .bind(&slug)
+            .bind(locale)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     content
         .flatten()
@@ -242,16 +244,15 @@ async fn get_recent_content(
     let offset = query.offset.unwrap_or(0) as i32;
     let locale = query.locale.as_deref().unwrap_or("en");
 
-    let result: JsonValue = sqlx::query_scalar(
-        "SELECT cms_get_recent_content($1::cms_content_type, $2, $3, $4)",
-    )
-    .bind(&content_type)
-    .bind(limit)
-    .bind(offset)
-    .bind(locale)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    let result: JsonValue =
+        sqlx::query_scalar("SELECT cms_get_recent_content($1::cms_content_type, $2, $3, $4)")
+            .bind(&content_type)
+            .bind(limit)
+            .bind(offset)
+            .bind(locale)
+            .fetch_one(&state.db.pool)
+            .await
+            .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(result))
 }
@@ -427,11 +428,7 @@ async fn check_redirect(
             )
                 .into_response())
         }
-        None => Ok((
-            StatusCode::NOT_FOUND,
-            Json(json!({ "redirect": null })),
-        )
-            .into_response()),
+        None => Ok((StatusCode::NOT_FOUND, Json(json!({ "redirect": null }))).into_response()),
     }
 }
 

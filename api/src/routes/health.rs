@@ -109,8 +109,8 @@ async fn detailed_health_check(
     };
 
     // Determine overall status
-    let overall_status = if db_status.status == "healthy" 
-        && (redis_status.status == "healthy" || redis_status.status == "not_configured") 
+    let overall_status = if db_status.status == "healthy"
+        && (redis_status.status == "healthy" || redis_status.status == "not_configured")
     {
         "healthy"
     } else if db_status.status == "healthy" {
