@@ -24,7 +24,7 @@
 		IconSearch,
 		IconSettings,
 		IconTags,
-		IconNavigation,
+		IconMenu2,
 		IconLink,
 		IconHistory
 	} from '$lib/icons';
@@ -36,7 +36,7 @@
 		{ href: '/admin/cms-v2/content', label: 'Content', icon: IconFileText },
 		{ href: '/admin/cms-v2/assets', label: 'Assets', icon: IconPhoto },
 		{ href: '/admin/cms-v2/tags', label: 'Tags', icon: IconTags },
-		{ href: '/admin/cms-v2/menus', label: 'Menus', icon: IconNavigation },
+		{ href: '/admin/cms-v2/menus', label: 'Menus', icon: IconMenu2 },
 		{ href: '/admin/cms-v2/redirects', label: 'Redirects', icon: IconLink },
 		{ href: '/admin/cms-v2/revisions', label: 'Revisions', icon: IconHistory },
 		{ href: '/admin/cms-v2/seo', label: 'SEO', icon: IconSearch },
