@@ -76,6 +76,15 @@
 	// Props
 	// ==========================================================================
 
+	import type { Snippet } from 'svelte';
+
+	interface ChildRenderProps {
+		block: Block;
+		isNested: boolean;
+		nestingLevel: number;
+		onUpdate: (updated: Block) => void;
+	}
+
 	interface Props {
 		block: GroupBlock;
 		isSelected?: boolean;
@@ -86,7 +95,7 @@
 		onChildRemove?: (childId: string) => void;
 		onChildReorder?: (childIds: string[]) => void;
 		onAddChild?: () => void;
-		renderBlock?: (block: Block, props: Record<string, unknown>) => unknown;
+		children?: Snippet<[ChildRenderProps]>;
 	}
 
 	let {
@@ -99,7 +108,7 @@
 		onChildRemove,
 		onChildReorder,
 		onAddChild,
-		renderBlock
+		children: renderChild
 	}: Props = $props();
 
 	// ==========================================================================
@@ -118,7 +127,7 @@
 	// Derived Values
 	// ==========================================================================
 
-	const layoutClasses = $derived(() => {
+	const layoutClasses = $derived.by(() => {
 		const { layout, columns, gap } = block.data;
 		const classes: string[] = [];
 
@@ -171,7 +180,7 @@
 		return classes.join(' ');
 	});
 
-	const paddingClasses = $derived(() => {
+	const paddingClasses = $derived.by(() => {
 		switch (block.data.padding) {
 			case 'none':
 				return 'p-0';
@@ -188,7 +197,7 @@
 		}
 	});
 
-	const borderRadiusClasses = $derived(() => {
+	const borderRadiusClasses = $derived.by(() => {
 		switch (block.data.borderRadius) {
 			case 'none':
 				return 'rounded-none';
@@ -207,7 +216,7 @@
 		}
 	});
 
-	const containerStyles = $derived(() => {
+	const containerStyles = $derived.by(() => {
 		const styles: Record<string, string> = {};
 
 		if (block.data.backgroundColor) {
@@ -225,7 +234,7 @@
 			.join('; ');
 	});
 
-	const nestingColors = $derived(() => {
+	const nestingColors = $derived.by(() => {
 		const colors = [
 			'border-blue-400',
 			'border-purple-400',
@@ -236,7 +245,7 @@
 		return colors[nestingLevel % colors.length];
 	});
 
-	const nestingBgColors = $derived(() => {
+	const nestingBgColors = $derived.by(() => {
 		const colors = [
 			'bg-blue-50',
 			'bg-purple-50',
@@ -805,18 +814,18 @@
 
 	<!-- Group Content Container -->
 	<div
-		class="group-content relative {paddingClasses()} {borderRadiusClasses()} transition-all duration-200"
+		class="group-content relative {paddingClasses} {borderRadiusClasses} transition-all duration-200"
 		class:min-h-[100px]={!block.children?.length}
 		class:border-2={!isPreview}
 		class:border-dashed={!isPreview && !block.children?.length}
 		class:{nestingColors}={!isPreview}
 		class:{nestingBgColors}={!isPreview && !block.data.backgroundColor && !block.data.backgroundImage}
-		style={containerStyles()}
+		style={containerStyles}
 	>
 		<!-- Background Overlay (for images) -->
 		{#if block.data.backgroundImage && block.data.backgroundOverlay}
 			<div
-				class="absolute inset-0 {borderRadiusClasses()}"
+				class="absolute inset-0 {borderRadiusClasses}"
 				style="background-color: {block.data.backgroundOverlay}"
 				aria-hidden="true"
 			></div>
@@ -824,7 +833,7 @@
 
 		<!-- Children Container -->
 		<div
-			class="relative {layoutClasses()}"
+			class="relative {layoutClasses}"
 			role="list"
 			aria-label="Group children"
 		>
@@ -893,8 +902,9 @@
 							</span>
 
 							<!-- Render Child Block -->
-							{#if renderBlock}
-								{@render renderBlock(child, {
+							{#if renderChild}
+								{@render renderChild({
+									block: child,
 									isNested: true,
 									nestingLevel: nestingLevel + 1,
 									onUpdate: (updated: Block) => onChildUpdate?.(child.id, updated)
