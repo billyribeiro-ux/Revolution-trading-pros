@@ -580,7 +580,7 @@ async fn compare_revisions(
 
     let to_rev = to_revision
         .ok_or_else(|| api_error(StatusCode::NOT_FOUND, &format!("Revision {} not found", v2)))?;
-    
+
     let from_name = from_rev.created_by_name.clone();
     let to_name = to_rev.created_by_name.clone();
 
