@@ -48,6 +48,7 @@ declare module '$env/static/private' {
 declare module '$env/static/public' {
 	export const VITE_API_URL: string | undefined;
 	export const VITE_STRIPE_PUBLISHABLE_KEY: string | undefined;
+	export const PUBLIC_STRIPE_PUBLISHABLE_KEY: string | undefined;
 	export const VITE_POSTMARK_API_TOKEN: string | undefined;
 	export const VITE_GOOGLE_ANALYTICS_ID: string | undefined;
 	export const VITE_META_PIXEL_ID: string | undefined;

@@ -1,14 +1,19 @@
 <script lang="ts">
 	/**
-	 * StripePayment Component (FluentForms Pro 6.1.8)
+	 * StripePayment Component (FluentForms Pro 6.1.8 - Updated Jan 2026)
 	 *
-	 * Stripe payment integration with embedded checkout.
+	 * Stripe payment integration with embedded checkout using @stripe/stripe-js.
 	 * Supports:
 	 * - Card Element (Stripe.js)
 	 * - Payment Request Button (Apple Pay, Google Pay)
 	 * - 3D Secure (SCA) authentication
 	 * - Subscription payments
+	 *
+	 * @version 2.0.0 - Svelte 5 + @stripe/stripe-js
 	 */
+
+	import { loadStripe as loadStripeJS } from '@stripe/stripe-js';
+	import type { Stripe, StripeElements, StripeCardElement } from '@stripe/stripe-js';
 
 	interface Props {
 		publicKey: string;
@@ -53,9 +58,9 @@
 		onerror
 	}: Props = $props();
 
-	let stripe: any = null;
-	let elements: any = null;
-	let cardElement: any = null;
+	let stripe: Stripe | null = null;
+	let elements: StripeElements | null = null;
+	let cardElement: StripeCardElement | null = null;
 	let paymentRequestButton: any = null;
 	let loading = $state(true);
 	let processing = $state(false);
@@ -69,7 +74,7 @@
 
 	$effect(() => {
 		if (typeof window !== 'undefined' && !mounted) {
-			loadStripe();
+			initializeStripe();
 		}
 		return () => {
 			if (cardElement) {
@@ -78,21 +83,15 @@
 		};
 	});
 
-	async function loadStripe() {
+	async function initializeStripe() {
 		try {
-			// Load Stripe.js dynamically
-			if (!window.Stripe) {
-				const script = document.createElement('script');
-				script.src = 'https://js.stripe.com/v3/';
-				script.async = true;
-				await new Promise((resolve, reject) => {
-					script.onload = resolve;
-					script.onerror = reject;
-					document.head.appendChild(script);
-				});
+			// Load Stripe.js using the official package
+			stripe = await loadStripeJS(publicKey);
+			
+			if (!stripe) {
+				throw new Error('Failed to load Stripe');
 			}
 
-			stripe = window.Stripe(publicKey);
 			elements = stripe.elements();
 
 			// Create Card Element
@@ -121,14 +120,14 @@
 
 			// Mount card element after component is rendered
 			setTimeout(() => {
-				if (cardElementRef) {
+				if (cardElementRef && cardElement) {
 					cardElement.mount(cardElementRef);
 					mounted = true;
 				}
 			}, 0);
 
 			// Setup Payment Request Button (Apple Pay, Google Pay)
-			if (enablePaymentRequest) {
+			if (enablePaymentRequest && elements) {
 				const paymentRequest = stripe.paymentRequest({
 					country: 'US',
 					currency: currency.toLowerCase(),
@@ -141,7 +140,7 @@
 				});
 
 				paymentRequest.canMakePayment().then((result: any) => {
-					if (result) {
+					if (result && elements) {
 						paymentRequestAvailable = true;
 						paymentRequestButton = elements.create('paymentRequestButton', {
 							paymentRequest
@@ -198,9 +197,17 @@
 				}
 			});
 
-			if (error) {
-				cardError = error.message;
-				if (onerror) onerror(error.message);
+			if (error || !paymentMethod) {
+				const errorMsg = error?.message || 'Payment method creation failed';
+				cardError = errorMsg;
+				if (onerror) onerror(errorMsg);
+				return;
+			}
+
+			if (!paymentMethod.card) {
+				const errorMsg = 'Card information not available';
+				cardError = errorMsg;
+				if (onerror) onerror(errorMsg);
 				return;
 			}
 
