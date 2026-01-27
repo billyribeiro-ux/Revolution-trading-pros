@@ -4,10 +4,13 @@
 
 pub mod bunny;
 pub mod cms;
+pub mod cms_audit;
 pub mod cms_content;
+pub mod cms_preview;
 pub mod cms_scheduler;
 pub mod cms_upload;
 pub mod cms_webhooks;
+pub mod cms_workflow;
 pub mod email;
 pub mod order_service;
 pub mod redis;
