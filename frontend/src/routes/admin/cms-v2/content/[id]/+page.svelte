@@ -432,8 +432,9 @@
 						</div>
 
 						<div class="field-group">
-							<label class="field-label">Content</label>
+							<label for="content-editor" class="field-label">Content</label>
 							<MultiModeEditor
+								id="content-editor"
 								value={body}
 								format={bodyFormat}
 								onchange={(v, f) => {
@@ -517,7 +518,7 @@
 				{#if activeTab === 'settings'}
 					<div class="tab-content" in:fly={{ x: -10, duration: 200 }}>
 						<div class="field-group">
-							<label class="field-label">Content Type</label>
+							<span class="field-label">Content Type</span>
 							<div class="field-value">{content.content_type.replace('_', ' ')}</div>
 						</div>
 
@@ -532,8 +533,8 @@
 						</div>
 
 						<div class="field-group">
-							<label class="field-label">Featured Image</label>
-							<button type="button" class="btn-select-image">
+							<span class="field-label">Featured Image</span>
+							<button type="button" class="btn-select-image" aria-label="Select featured image">
 								<IconPhoto size={20} />
 								<span>Select Image</span>
 							</button>
@@ -646,10 +647,23 @@
 
 <!-- Status Modal -->
 {#if showStatusModal && content}
-	<div class="modal-backdrop" onclick={() => (showStatusModal = false)}>
-		<div class="modal" onclick={(e) => e.stopPropagation()} in:scale={{ duration: 200 }}>
+	<div
+		class="modal-backdrop"
+		role="presentation"
+		onclick={() => (showStatusModal = false)}
+		onkeydown={(e) => e.key === 'Escape' && (showStatusModal = false)}
+	>
+		<div
+			class="modal"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="status-modal-title"
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.key === 'Escape' && (showStatusModal = false)}
+			in:scale={{ duration: 200 }}
+		>
 			<div class="modal-header">
-				<h3>Change Status</h3>
+				<h3 id="status-modal-title">Change Status</h3>
 				<button class="btn-close" onclick={() => (showStatusModal = false)}>×</button>
 			</div>
 			<div class="modal-body">
