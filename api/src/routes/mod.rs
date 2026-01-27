@@ -25,6 +25,7 @@ pub mod cms;
 pub mod cms_delivery;
 pub mod cms_revisions;
 pub mod cms_v2;
+pub mod cms_v2_enterprise;
 pub mod contacts;
 pub mod coupons;
 pub mod courses_admin;
@@ -104,6 +105,9 @@ pub fn api_router() -> Router<AppState> {
         // CMS v2 - Custom CMS Implementation (surpasses Storyblok)
         .nest("/admin/cms-v2", cms_v2::admin_router())
         .nest("/cms", cms_v2::public_router())
+        // CMS v2 Enterprise - Audit, Workflow, Preview Tokens
+        .nest("/admin/cms-v2/enterprise", cms_v2_enterprise::router())
+        .merge(cms_v2_enterprise::public_router())
         // CMS Revisions - Revision comparison and restore - ICT 7+ Grade
         .nest("/api/cms", cms_revisions::router())
         // CMS Delivery API - Public content delivery with search
