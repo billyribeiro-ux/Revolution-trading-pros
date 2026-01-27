@@ -8,7 +8,7 @@
  * @version 1.0.0 - December 2025
  */
 
-import { apiClient } from '../client.svelte';
+import { apiClient } from './client.svelte';
 
 // ═══════════════════════════════════════════════════════════════════════════
 // TYPES
