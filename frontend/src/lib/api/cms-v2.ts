@@ -19,49 +19,51 @@ export interface CmsAssetFolder {
 	id: string;
 	name: string;
 	slug: string;
-	parentId: string | null;
+	parent_id: string | null;
 	path: string;
 	depth: number;
 	description: string | null;
 	color: string | null;
 	icon: string | null;
-	isPublic: boolean;
-	sortOrder: number;
-	createdAt: string;
-	updatedAt: string;
+	is_public: boolean;
+	sort_order: number;
+	asset_count: number;
+	created_at: string;
+	updated_at: string;
 }
 
 export interface CmsAsset {
 	id: string;
-	folderId: string | null;
+	folder_id: string | null;
 	filename: string;
-	originalFilename: string;
-	mimeType: string;
-	fileSize: number;
-	fileExtension: string;
-	storageProvider: string;
-	storageKey: string;
-	cdnUrl: string;
+	original_filename: string;
+	mime_type: string;
+	file_size: number;
+	file_extension: string;
+	storage_provider: string;
+	storage_key: string;
+	url: string;
+	cdn_url: string;
 	width: number | null;
 	height: number | null;
-	aspectRatio: number | null;
+	aspect_ratio: number | null;
 	blurhash: string | null;
-	dominantColor: string | null;
-	durationSeconds: number | null;
-	thumbnailUrl: string | null;
+	dominant_color: string | null;
+	duration_seconds: number | null;
+	thumbnail_url: string | null;
 	variants: AssetVariant[] | null;
 	title: string | null;
-	altText: string | null;
+	alt_text: string | null;
 	caption: string | null;
 	description: string | null;
 	credits: string | null;
-	seoTitle: string | null;
-	seoDescription: string | null;
+	seo_title: string | null;
+	seo_description: string | null;
 	tags: string[] | null;
-	usageCount: number;
-	lastUsedAt: string | null;
-	createdAt: string;
-	updatedAt: string;
+	usage_count: number;
+	last_used_at: string | null;
+	created_at: string;
+	updated_at: string;
 }
 
 export interface AssetVariant {
@@ -74,70 +76,71 @@ export interface AssetVariant {
 
 export interface CmsAssetSummary {
 	id: string;
-	folderId: string | null;
+	folder_id: string | null;
 	filename: string;
-	mimeType: string;
-	fileSize: number;
-	cdnUrl: string;
+	mime_type: string;
+	file_size: number;
+	url: string;
+	cdn_url: string;
 	width: number | null;
 	height: number | null;
 	blurhash: string | null;
-	thumbnailUrl: string | null;
+	thumbnail_url: string | null;
 	title: string | null;
-	altText: string | null;
-	usageCount: number;
-	createdAt: string;
+	alt_text: string | null;
+	usage_count: number;
+	created_at: string;
 }
 
 export interface CmsContent {
 	id: string;
-	contentType: CmsContentType;
+	content_type: CmsContentType;
 	slug: string;
 	locale: string;
-	isPrimaryLocale: boolean;
-	parentContentId: string | null;
+	is_primary_locale: boolean;
+	parent_content_id: string | null;
 	title: string;
 	subtitle: string | null;
 	excerpt: string | null;
 	content: string | null;
-	contentBlocks: PageBlock[] | null;
-	featuredImageId: string | null;
-	ogImageId: string | null;
-	galleryIds: string[] | null;
-	metaTitle: string | null;
-	metaDescription: string | null;
-	metaKeywords: string[] | null;
-	canonicalUrl: string | null;
-	robotsDirectives: string | null;
-	structuredData: Record<string, unknown> | null;
-	authorId: string | null;
+	content_blocks: PageBlock[] | null;
+	featured_image_id: string | null;
+	og_image_id: string | null;
+	gallery_ids: string[] | null;
+	meta_title: string | null;
+	meta_description: string | null;
+	meta_keywords: string[] | null;
+	canonical_url: string | null;
+	robots_directives: string | null;
+	structured_data: Record<string, unknown> | null;
+	author_id: string | null;
 	contributors: string[] | null;
 	status: CmsContentStatus;
-	publishedAt: string | null;
-	scheduledPublishAt: string | null;
-	scheduledUnpublishAt: string | null;
-	primaryCategoryId: string | null;
+	published_at: string | null;
+	scheduled_publish_at: string | null;
+	scheduled_unpublish_at: string | null;
+	primary_category_id: string | null;
 	categories: string[] | null;
-	customFields: Record<string, unknown> | null;
+	custom_fields: Record<string, unknown> | null;
 	template: string | null;
 	version: number;
-	createdAt: string;
-	updatedAt: string;
+	created_at: string;
+	updated_at: string;
 }
 
 export interface CmsContentSummary {
 	id: string;
-	contentType: CmsContentType;
+	content_type: CmsContentType;
 	slug: string;
 	locale: string;
 	title: string;
 	excerpt: string | null;
-	featuredImageId: string | null;
-	authorId: string | null;
+	featured_image_id: string | null;
+	author_id: string | null;
 	status: CmsContentStatus;
-	publishedAt: string | null;
-	createdAt: string;
-	updatedAt: string;
+	published_at: string | null;
+	created_at: string;
+	updated_at: string;
 }
 
 export interface CmsRevision {
@@ -252,24 +255,34 @@ export interface CmsRedirect {
 
 export interface PaginatedResponse<T> {
 	data: T[];
-	meta: {
+	meta?: {
 		total: number;
 		limit: number;
 		offset: number;
 		hasMore: boolean;
 	};
+	pagination: {
+		total: number;
+		page: number;
+		per_page: number;
+		total_pages: number;
+	};
 }
 
 export interface CmsStats {
-	content: {
-		total: number;
-		published: number;
-		draft: number;
-		pendingReview: number;
-	};
-	assets: {
-		total: number;
-	};
+	// Content counts
+	total_content: number;
+	published_content: number;
+	draft_content: number;
+	in_review_content: number;
+	scheduled_content: number;
+	// Asset counts
+	total_assets: number;
+	total_folders: number;
+	// Other counts
+	total_tags: number;
+	total_menus: number;
+	total_redirects: number;
 }
 
 // ═══════════════════════════════════════════════════════════════════════════════
@@ -292,11 +305,14 @@ export interface ContentListParams {
 }
 
 export interface AssetListParams {
-	folderId?: string;
-	mimeType?: string;
+	folder_id?: string;
+	mime_type?: string;
+	mime_type_filter?: string;
 	search?: string;
 	tags?: string[];
-	sortBy?: 'created_at' | 'filename' | 'file_size' | 'usage_count';
+	page?: number;
+	per_page?: number;
+	sort_by?: 'created_at' | 'filename' | 'file_size' | 'usage_count';
 	sortOrder?: 'ASC' | 'DESC';
 	limit?: number;
 	offset?: number;
@@ -828,3 +844,76 @@ export async function deleteRedirect(id: string): Promise<void> {
 		method: 'DELETE'
 	});
 }
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// ALIAS EXPORTS (for backward compatibility)
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export type AssetListQuery = AssetListParams;
+export type ContentListQuery = ContentListParams;
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// API OBJECT EXPORT
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export const cmsApi = {
+	// Stats
+	getStats: getCmsStats,
+
+	// Folders
+	listAssetFolders,
+	getAssetFolder,
+	createAssetFolder,
+	updateAssetFolder,
+	deleteAssetFolder,
+
+	// Assets
+	listAssets,
+	getAsset,
+	createAsset,
+	updateAsset,
+	deleteAsset,
+
+	// Content
+	listContent,
+	getContent,
+	getContentBySlug,
+	createContent,
+	updateContent,
+	transitionContentStatus,
+	deleteContent,
+
+	// Revisions
+	getContentRevisions,
+	restoreRevision,
+
+	// Tags
+	listTags,
+	createTag,
+	getContentTags,
+	addTagToContent,
+	removeTagFromContent,
+
+	// Comments
+	getContentComments,
+	createComment,
+	resolveComment,
+
+	// Settings
+	getSiteSettings,
+	updateSiteSettings,
+	getPublicSiteSettings,
+
+	// Menus
+	listNavigationMenus,
+	getNavigationMenu,
+	createNavigationMenu,
+	updateNavigationMenu,
+	getPublicNavigationMenus,
+	getPublicNavigationMenu,
+
+	// Redirects
+	listRedirects,
+	createRedirect,
+	deleteRedirect
+};
