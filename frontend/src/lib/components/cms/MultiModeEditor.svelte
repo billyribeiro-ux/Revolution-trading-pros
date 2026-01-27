@@ -340,7 +340,7 @@
 	}
 </script>
 
-<div class="multi-mode-editor" class:disabled role="application" aria-label="Content editor" tabindex="0" onkeydown={handleKeyDown}>
+<div class="multi-mode-editor" class:disabled onkeydown={handleKeyDown}>
 	<!-- Mode Selector -->
 	{#if showModeSelector}
 		<div class="mode-selector">
@@ -371,7 +371,7 @@
 				onclick={() => switchMode('html')}
 				{disabled}
 			>
-				<IconSourceCode size={16} />
+				<IconCode size={16} />
 				<span>HTML</span>
 			</button>
 
@@ -782,7 +782,7 @@
 		<div class="html-editor">
 			<div class="editor-toolbar">
 				<div class="toolbar-info">
-					<IconSourceCode size={16} />
+					<IconCode size={16} />
 					<span>HTML Source Code</span>
 				</div>
 				<div class="toolbar-spacer"></div>

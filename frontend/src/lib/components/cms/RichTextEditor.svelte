@@ -314,13 +314,13 @@
 		<div class="toolbar-spacer"></div>
 		<button
 			type="button"
-			class="toolbar-btn"
+			class="toolbar-btn view-toggle"
 			class:active={showHtml}
 			onclick={() => (showHtml = !showHtml)}
 			title="Toggle HTML View"
 			{disabled}
 		>
-			<IconSourceCode size={16} />
+			<IconCode size={16} />
 		</button>
 	</div>
 
