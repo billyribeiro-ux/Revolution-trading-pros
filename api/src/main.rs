@@ -10,6 +10,7 @@
 mod config;
 mod db;
 mod docs;
+mod domain;
 mod middleware;
 mod models;
 mod monitoring;
