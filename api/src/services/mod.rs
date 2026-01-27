@@ -3,7 +3,6 @@
 //! ICT 7+: Redis required in production for security (rate limiting, session management)
 
 pub mod bunny;
-pub mod cms;
 pub mod cms_audit;
 pub mod cms_content;
 pub mod cms_preview;
