@@ -1635,4 +1635,129 @@
 			background: #6b7280;
 		}
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE DESIGN - Mobile First (Apple ICT 7 Standards)
+	   Touch targets: 44x44px minimum on mobile
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile Base (< 640px) */
+	.picker-modal {
+		width: calc(100vw - 2rem);
+		max-width: 100%;
+		height: calc(100vh - 2rem);
+		max-height: calc(100vh - 2rem);
+		margin: 1rem;
+	}
+
+	.modal-header {
+		padding: 0.75rem 1rem;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.search-input {
+		min-height: 44px;
+		font-size: 1rem;
+	}
+
+	.category-tab {
+		min-height: 44px;
+		padding: 0.75rem 1rem;
+		font-size: 0.8125rem;
+	}
+
+	.blocks-grid {
+		grid-template-columns: 1fr;
+		gap: 0.75rem;
+		padding: 1rem;
+	}
+
+	.block-card {
+		min-height: 44px;
+	}
+
+	.insert-button,
+	.dropdown-toggle {
+		min-height: 44px;
+		padding: 0.75rem 1rem;
+	}
+
+	.modal-footer {
+		padding: 0.75rem 1rem;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.hint {
+		display: none;
+	}
+
+	/* Tablet (≥ 640px) */
+	@media (min-width: 640px) {
+		.picker-modal {
+			width: 90vw;
+			max-width: 600px;
+			height: auto;
+			max-height: 80vh;
+			margin: auto;
+		}
+
+		.blocks-grid {
+			grid-template-columns: repeat(2, 1fr);
+			gap: 1rem;
+		}
+
+		.category-tab {
+			min-height: auto;
+			padding: 0.5rem 0.875rem;
+		}
+
+		.search-input {
+			min-height: auto;
+		}
+
+		.insert-button,
+		.dropdown-toggle {
+			min-height: auto;
+			padding: 0.5rem 0.75rem;
+		}
+
+		.hint {
+			display: flex;
+		}
+	}
+
+	/* Desktop (≥ 768px) */
+	@media (min-width: 768px) {
+		.picker-modal {
+			max-width: 700px;
+		}
+
+		.modal-header {
+			padding: 1rem 1.25rem;
+		}
+
+		.modal-footer {
+			padding: 0.75rem 1.25rem;
+		}
+	}
+
+	/* Large Desktop (≥ 1024px) */
+	@media (min-width: 1024px) {
+		.picker-modal {
+			max-width: 800px;
+		}
+
+		.blocks-grid {
+			grid-template-columns: repeat(3, 1fr);
+		}
+	}
+
+	/* Extra Large (≥ 1280px) */
+	@media (min-width: 1280px) {
+		.picker-modal {
+			max-width: 900px;
+		}
+	}
 </style>

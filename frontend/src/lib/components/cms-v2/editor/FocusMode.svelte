@@ -1193,19 +1193,110 @@
 		}
 	}
 
-	/* Responsive adjustments */
-	@media (max-width: 640px) {
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE DESIGN - Mobile First (Apple ICT 7 Standards)
+	   Touch targets: 44x44px minimum on mobile
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile Base (< 640px) */
+	.stats-panel {
+		top: auto;
+		bottom: 1rem;
+		right: 1rem;
+		left: 1rem;
+		min-width: auto;
+		padding: 1rem;
+	}
+
+	.stat-item {
+		padding: 0.5rem;
+	}
+
+	.goal-preset-btn {
+		min-height: 44px;
+		padding: 0.75rem 1rem;
+	}
+
+	.fullscreen-btn {
+		min-width: 44px;
+		min-height: 44px;
+	}
+
+	.focus-toggle-btn {
+		min-height: 44px;
+		padding: 0.75rem 1.25rem;
+	}
+
+	.custom-goal-input {
+		min-height: 44px;
+	}
+
+	.custom-goal-submit {
+		min-width: 44px;
+		min-height: 44px;
+	}
+
+	.celebration-content {
+		margin: 1rem;
+		padding: 1.5rem;
+	}
+
+	.celebration-title {
+		font-size: clamp(1.5rem, 5vw, 2rem);
+	}
+
+	/* Tablet (≥ 640px) */
+	@media (min-width: 640px) {
 		.stats-panel {
-			top: auto;
-			bottom: 1rem;
+			top: 1rem;
+			bottom: auto;
 			right: 1rem;
-			left: 1rem;
+			left: auto;
+			min-width: 200px;
+			padding: 0.75rem;
+		}
+
+		.goal-preset-btn {
+			min-height: auto;
+			padding: 0.5rem 0.75rem;
+		}
+
+		.fullscreen-btn {
 			min-width: auto;
+			min-height: auto;
+		}
+
+		.focus-toggle-btn {
+			min-height: auto;
+			padding: 0.5rem 1rem;
+		}
+
+		.custom-goal-input,
+		.custom-goal-submit {
+			min-height: auto;
 		}
 
 		.celebration-content {
-			margin: 1rem;
-			padding: 2rem;
+			margin: auto;
+			padding: 2.5rem;
+		}
+	}
+
+	/* Desktop (≥ 768px) */
+	@media (min-width: 768px) {
+		.stats-panel {
+			min-width: 220px;
+		}
+
+		.celebration-content {
+			padding: 3rem;
+		}
+	}
+
+	/* Large Desktop (≥ 1024px) */
+	@media (min-width: 1024px) {
+		.stats-panel {
+			min-width: 240px;
 		}
 	}
 </style>

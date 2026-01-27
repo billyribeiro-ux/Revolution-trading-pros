@@ -397,4 +397,75 @@
 		background: rgba(51, 65, 85, 0.5);
 		margin: 0 0.125rem;
 	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE DESIGN - Mobile First (Apple ICT 7 Standards)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	/* Mobile Base (< 640px) */
+	.block-wrapper {
+		padding: 0.75rem 0.5rem 0.75rem 2rem;
+	}
+
+	.drag-handle {
+		width: 32px;
+		height: 32px;
+		left: 0.25rem;
+	}
+
+	.action-btn {
+		width: 36px;
+		height: 36px;
+		min-width: 44px;
+		min-height: 44px;
+	}
+
+	.block-actions {
+		gap: 0.25rem;
+		padding: 0.375rem;
+	}
+
+	.block-type-badge {
+		font-size: 0.5625rem;
+		padding: 0.125rem 0.375rem;
+	}
+
+	/* Tablet (≥ 640px) */
+	@media (min-width: 640px) {
+		.block-wrapper {
+			padding: 0.5rem 0.5rem 0.5rem 2.5rem;
+		}
+
+		.drag-handle {
+			width: 24px;
+			height: 24px;
+			left: 0.5rem;
+		}
+
+		.action-btn {
+			width: 28px;
+			height: 28px;
+			min-width: 28px;
+			min-height: 28px;
+		}
+
+		.block-type-badge {
+			font-size: 0.625rem;
+		}
+	}
+
+	/* Desktop (≥ 768px) */
+	@media (min-width: 768px) {
+		.action-btn {
+			width: 26px;
+			height: 26px;
+			min-width: 26px;
+			min-height: 26px;
+		}
+
+		.block-actions {
+			gap: 0.125rem;
+			padding: 0.25rem;
+		}
+	}
 </style>

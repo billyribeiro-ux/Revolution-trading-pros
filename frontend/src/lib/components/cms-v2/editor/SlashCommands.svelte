@@ -913,20 +913,87 @@
 		text-transform: lowercase;
 	}
 
-	/* Responsive */
-	@media (max-width: 480px) {
-		.slash-commands-menu {
-			width: calc(100vw - 32px);
-			max-width: 320px;
-			left: 16px !important;
-		}
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE DESIGN - Mobile First (Apple ICT 7 Standards)
+	   Base = Mobile, then scale up with min-width queries
+	   Touch targets: 44x44px minimum
+	   ═══════════════════════════════════════════════════════════════════════════ */
 
-		.slash-footer-hints {
-			gap: 0.75rem;
+	/* Mobile Base (< 640px) */
+	.slash-commands-menu {
+		width: calc(100vw - 2rem);
+		max-width: 320px;
+		left: 1rem !important;
+		right: 1rem !important;
+	}
+
+	.slash-command-item {
+		padding: 0.75rem;
+		min-height: 44px; /* Touch target */
+	}
+
+	.slash-command-icon {
+		width: 36px;
+		height: 36px;
+	}
+
+	.slash-footer-hints {
+		flex-wrap: wrap;
+		gap: 0.5rem;
+	}
+
+	.slash-hint span {
+		display: none;
+	}
+
+	.slash-command-shortcut {
+		display: none;
+	}
+
+	/* Tablet (≥ 640px) */
+	@media (min-width: 640px) {
+		.slash-commands-menu {
+			width: 340px;
+			max-width: 340px;
+			left: auto !important;
+			right: auto !important;
 		}
 
 		.slash-hint span {
-			display: none;
+			display: inline;
+		}
+
+		.slash-command-shortcut {
+			display: block;
+		}
+	}
+
+	/* Desktop (≥ 768px) */
+	@media (min-width: 768px) {
+		.slash-commands-menu {
+			width: 360px;
+			max-width: 360px;
+		}
+
+		.slash-command-item {
+			padding: 0.625rem 0.75rem;
+		}
+
+		.slash-command-icon {
+			width: 32px;
+			height: 32px;
+		}
+
+		.slash-footer-hints {
+			gap: 1rem;
+		}
+	}
+
+	/* Large Desktop (≥ 1024px) */
+	@media (min-width: 1024px) {
+		.slash-commands-menu {
+			width: 380px;
+			max-width: 380px;
 		}
 	}
 
