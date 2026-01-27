@@ -1971,8 +1971,7 @@
 		margin-bottom: 0.375rem;
 	}
 
-	.metadata-field input,
-	.metadata-field textarea {
+	.metadata-field input {
 		width: 100%;
 		padding: 0.5rem 0.75rem;
 		background: rgba(0, 0, 0, 0.2);
@@ -1983,14 +1982,9 @@
 		transition: border-color 0.15s;
 	}
 
-	.metadata-field input:focus,
-	.metadata-field textarea:focus {
+	.metadata-field input:focus {
 		outline: none;
 		border-color: #e6b800;
-	}
-
-	.metadata-field textarea {
-		resize: vertical;
 	}
 
 	.btn-save {
