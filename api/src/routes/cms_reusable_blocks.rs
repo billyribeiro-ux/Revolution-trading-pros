@@ -794,8 +794,7 @@ async fn duplicate_reusable_block(
             .await
             .map_err(|e: sqlx::Error| {
                 ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-            })?
-            .flatten();
+            })?;
 
     let duplicated = sqlx::query_as!(
         CmsReusableBlock,
@@ -1105,8 +1104,7 @@ async fn detach_block_usage(
             .await
             .map_err(|e: sqlx::Error| {
                 ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-            })?
-            .flatten();
+            })?;
 
     // Detach the usage
     let usage = sqlx::query_as!(
