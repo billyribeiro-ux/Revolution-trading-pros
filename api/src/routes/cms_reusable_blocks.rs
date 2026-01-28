@@ -930,7 +930,7 @@ async fn track_block_usage(
     )
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     if !block_exists {
         return Err(
@@ -945,7 +945,7 @@ async fn track_block_usage(
     )
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     if !content_exists {
         return Err(
@@ -1099,8 +1099,8 @@ async fn detach_block_usage(
         sqlx::query_scalar!("SELECT id FROM cms_users WHERE user_id = $1", user.id)
             .fetch_optional(&state.db.pool)
             .await
-            .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
-            .flatten();
+            .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+            .and_then(|v| v);
 
     // Detach the usage
     let usage = sqlx::query_as!(

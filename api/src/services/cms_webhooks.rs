@@ -323,8 +323,8 @@ pub async fn queue_webhook_event(
 pub async fn get_webhook_deliveries(
     pool: &PgPool,
     webhook_id: Uuid,
-    limit: i32,
-    offset: i32,
+    limit: i64,
+    offset: i64,
 ) -> Result<Vec<WebhookDelivery>> {
     let deliveries: Vec<WebhookDelivery> = sqlx::query_as!(
         WebhookDelivery,
