@@ -53,14 +53,14 @@
 			iconColor: 'var(--admin-error)',
 			iconBg: 'var(--admin-error-bg)',
 			buttonBg: 'var(--admin-error)',
-			buttonHoverBg: '#dc2626'
+			buttonHoverBg: 'var(--color-loss)'
 		},
 		warning: {
 			icon: IconAlertTriangle,
 			iconColor: 'var(--admin-warning)',
 			iconBg: 'var(--admin-warning-bg)',
 			buttonBg: 'var(--admin-warning)',
-			buttonHoverBg: '#d97706'
+			buttonHoverBg: 'var(--color-watching)'
 		},
 		info: {
 			icon: IconInfoCircle,
@@ -74,7 +74,7 @@
 			iconColor: 'var(--admin-success)',
 			iconBg: 'var(--admin-success-bg)',
 			buttonBg: 'var(--admin-success)',
-			buttonHoverBg: '#16a34a'
+			buttonHoverBg: 'var(--color-profit)'
 		}
 	};
 
@@ -193,9 +193,9 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		z-index: var(--z-modal, 1000);
-		padding: 1rem;
-		animation: fadeIn 0.2s ease;
+		z-index: var(--z-modal);
+		padding: var(--space-4);
+		animation: fadeIn var(--duration-fast) var(--ease-default);
 	}
 
 	@keyframes fadeIn {
@@ -211,16 +211,16 @@
 		position: relative;
 		background: var(--admin-surface-primary);
 		border: 1px solid var(--admin-border-subtle);
-		border-radius: var(--radius-xl, 1rem);
-		padding: 2rem;
+		border-radius: var(--radius-xl);
+		padding: var(--space-8);
 		max-width: 420px;
 		width: 100%;
 		display: flex;
 		flex-direction: column;
 		align-items: center;
 		text-align: center;
-		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-		animation: slideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+		box-shadow: var(--shadow-xl);
+		animation: slideUp var(--duration-normal) var(--ease-out);
 	}
 
 	@keyframes slideUp {
@@ -237,66 +237,64 @@
 	.modal-icon {
 		width: 60px;
 		height: 60px;
-		border-radius: 50%;
+		border-radius: var(--radius-full);
 		background: var(--icon-bg);
 		color: var(--icon-color);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		margin-bottom: 1.25rem;
+		margin-bottom: var(--space-5);
 	}
 
 	.modal-content {
-		margin-bottom: 1.5rem;
+		margin-bottom: var(--space-6);
 	}
 
 	.modal-title {
-		font-family: var(--font-heading), 'Montserrat', sans-serif;
-		font-size: 1.25rem;
-		font-weight: 600;
+		font-family: var(--font-display);
+		font-size: var(--text-lg);
+		font-weight: var(--font-semibold);
 		color: var(--admin-text-primary);
-		margin: 0 0 0.5rem;
+		margin: 0 0 var(--space-2);
 	}
 
 	.modal-message {
-		font-family: var(--font-body), 'Roboto', sans-serif;
-		font-size: 0.9375rem;
+		font-family: var(--font-sans);
+		font-size: var(--text-base);
 		color: var(--admin-text-secondary);
 		margin: 0;
-		line-height: 1.5;
+		line-height: var(--leading-normal);
 	}
 
 	.modal-input-group {
-		margin-top: 1rem;
+		margin-top: var(--space-4);
 		text-align: left;
 		width: 100%;
 	}
 
 	.modal-input-label {
 		display: block;
-		font-size: 0.875rem;
-		font-weight: 500;
+		font-size: var(--text-sm);
+		font-weight: var(--font-medium);
 		color: var(--admin-text-secondary);
-		margin-bottom: 0.5rem;
+		margin-bottom: var(--space-2);
 	}
 
 	.modal-input {
 		width: 100%;
-		padding: 0.75rem 1rem;
+		padding: var(--space-3) var(--space-4);
 		background: var(--admin-surface-sunken);
 		border: 1px solid var(--admin-border-subtle);
-		border-radius: var(--radius-md, 0.5rem);
+		border-radius: var(--radius-md);
 		color: var(--admin-text-primary);
-		font-size: 0.9375rem;
-		transition:
-			border-color 0.2s ease,
-			box-shadow 0.2s ease;
+		font-size: var(--text-base);
+		transition: var(--transition-colors), box-shadow var(--duration-fast) var(--ease-default);
 	}
 
 	.modal-input:focus {
 		outline: none;
 		border-color: var(--admin-accent-primary);
-		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.15);
+		box-shadow: var(--admin-focus-ring);
 	}
 
 	.modal-input::placeholder {
@@ -305,20 +303,21 @@
 
 	.modal-actions {
 		display: flex;
-		gap: 0.75rem;
+		gap: var(--space-3);
 		width: 100%;
 	}
 
 	.btn-cancel,
 	.btn-confirm {
 		flex: 1;
-		padding: 0.75rem 1.5rem;
-		border-radius: var(--radius-md, 0.5rem);
-		font-family: var(--font-body), 'Roboto', sans-serif;
-		font-size: 0.9375rem;
-		font-weight: 500;
+		padding: var(--space-3) var(--space-6);
+		border-radius: var(--radius-md);
+		font-family: var(--font-sans);
+		font-size: var(--text-base);
+		font-weight: var(--font-medium);
 		cursor: pointer;
-		transition: all 0.2s ease;
+		transition: var(--transition-all);
+		min-height: 44px;
 	}
 
 	.btn-cancel {
@@ -335,7 +334,7 @@
 	.btn-confirm {
 		background: var(--btn-bg);
 		border: none;
-		color: #0d1117;
+		color: var(--color-text-primary);
 	}
 
 	.btn-confirm:hover:not(:disabled) {
@@ -356,15 +355,20 @@
 
 	.btn-close {
 		position: absolute;
-		top: 1rem;
-		right: 1rem;
+		top: var(--space-4);
+		right: var(--space-4);
 		background: transparent;
 		border: none;
 		color: var(--admin-text-muted);
 		cursor: pointer;
-		padding: 0.25rem;
-		border-radius: var(--radius-sm, 0.25rem);
-		transition: all 0.2s ease;
+		padding: var(--space-1);
+		border-radius: var(--radius-sm);
+		transition: var(--transition-all);
+		min-width: 44px;
+		min-height: 44px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
 	}
 
 	.btn-close:hover:not(:disabled) {
@@ -378,14 +382,45 @@
 		height: 16px;
 		border: 2px solid transparent;
 		border-top-color: currentColor;
-		border-radius: 50%;
+		border-radius: var(--radius-full);
 		animation: spin 0.8s linear infinite;
-		margin-right: 0.5rem;
+		margin-right: var(--space-2);
 	}
 
 	@keyframes spin {
 		to {
 			transform: rotate(360deg);
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Mobile (< sm: 640px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+		.modal-container {
+			padding: var(--space-6);
+			max-width: 100%;
+		}
+
+		.modal-actions {
+			flex-direction: column;
+		}
+
+		.btn-cancel,
+		.btn-confirm {
+			width: 100%;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCESSIBILITY
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (prefers-reduced-motion: reduce) {
+		.modal-backdrop,
+		.modal-container {
+			animation: none;
 		}
 	}
 </style>
