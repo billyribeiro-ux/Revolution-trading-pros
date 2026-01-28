@@ -185,26 +185,28 @@
 		</div>
 
 		<!-- Summary Stats -->
-		<div class="summary-row">
+		{#if data.length > 0}
 			{@const positiveMonths = data.filter(m => m.pnl_percent > 0).length}
 			{@const negativeMonths = data.filter(m => m.pnl_percent < 0).length}
 			{@const avgReturn = data.reduce((acc, m) => acc + m.pnl_percent, 0) / data.length}
 
-			<div class="summary-stat">
-				<span class="stat-label">Profitable Months</span>
-				<span class="stat-value profit">{positiveMonths}</span>
+			<div class="summary-row">
+				<div class="summary-stat">
+					<span class="stat-label">Profitable Months</span>
+					<span class="stat-value profit">{positiveMonths}</span>
+				</div>
+				<div class="summary-stat">
+					<span class="stat-label">Losing Months</span>
+					<span class="stat-value loss">{negativeMonths}</span>
+				</div>
+				<div class="summary-stat">
+					<span class="stat-label">Avg Monthly</span>
+					<span class="stat-value" class:profit={avgReturn >= 0} class:loss={avgReturn < 0}>
+						{formatPercent(avgReturn)}
+					</span>
+				</div>
 			</div>
-			<div class="summary-stat">
-				<span class="stat-label">Losing Months</span>
-				<span class="stat-value loss">{negativeMonths}</span>
-			</div>
-			<div class="summary-stat">
-				<span class="stat-label">Avg Monthly</span>
-				<span class="stat-value" class:profit={avgReturn >= 0} class:loss={avgReturn < 0}>
-					{formatPercent(avgReturn)}
-				</span>
-			</div>
-		</div>
+		{/if}
 	{/if}
 </div>
 
