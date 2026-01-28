@@ -1,0 +1,102 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        SELECT id, webhook_id, event_type, content_id, payload,\n               status::text as \"status!\", attempts, response_status, response_body,\n               response_time_ms, error_message, created_at,\n               delivered_at, next_retry_at\n        FROM cms_webhook_deliveries\n        WHERE webhook_id = $1\n        ORDER BY created_at DESC\n        LIMIT $2 OFFSET $3\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "webhook_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "event_type",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 3,
+        "name": "content_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 4,
+        "name": "payload",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 5,
+        "name": "status!",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 6,
+        "name": "attempts",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "response_status",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 8,
+        "name": "response_body",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 9,
+        "name": "response_time_ms",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 10,
+        "name": "error_message",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 11,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 12,
+        "name": "delivered_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 13,
+        "name": "next_retry_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Int8",
+        "Int8"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      null,
+      false,
+      true,
+      true,
+      true,
+      true,
+      false,
+      true,
+      true
+    ]
+  },
+  "hash": "bcfea487a9944f331d2759e1f8c2f3302ae0e14506ecc896127682aeb2d19fb0"
+}

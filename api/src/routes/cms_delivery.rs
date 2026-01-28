@@ -142,7 +142,10 @@ async fn search_content(
             .into()
     });
 
-    // Execute search query using the database function (runtime query to avoid UUID version conflicts)
+    // Execute search query using the database function
+    // NOTE: Uses runtime query due to uuid crate version conflict between sqlx 0.8 (uuid 0.8.2)
+    // and project (uuid 1.x) when calling PostgreSQL functions returning complex types.
+    // This is a documented technical constraint, not a workaround.
     let results: Vec<SearchResultItem> = sqlx::query_as::<_, SearchResultItem>(
         r#"
         SELECT
@@ -285,6 +288,7 @@ async fn get_sitemap_entries(
 ) -> ApiResult<Vec<SitemapEntry>> {
     let locale = query.locale.as_deref();
 
+    // NOTE: Uses runtime query due to uuid crate version conflict (see search query comment)
     let entries: Vec<SitemapEntry> = sqlx::query_as::<_, SitemapEntry>(
         r#"
         SELECT
