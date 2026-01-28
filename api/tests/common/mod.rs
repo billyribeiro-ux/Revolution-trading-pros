@@ -6,14 +6,46 @@ use axum::{body::Body, Router};
 use http_body_util::BodyExt;
 use serde_json::Value;
 
+use revolution_api::{
+    config::Config, db::Database, routes, services::Services, AppState,
+};
+use revolution_api::routes::realtime::EventBroadcaster;
+
 /// Setup test application with all routes
 pub async fn setup_test_app() -> Router {
     // Load test environment
     dotenvy::from_filename(".env.test").ok();
+    dotenvy::dotenv().ok();
 
-    // This would normally initialize the full app
-    // For now, return a minimal router for compilation
+    // Create test config
+    let config = Config::from_env().expect("Failed to load test config");
+
+    // Create database connection
+    let db = Database::new(&config)
+        .await
+        .expect("Failed to connect to test database");
+
+    // Create services (will use mock/dev mode where possible)
+    let services = Services::new(&config)
+        .await
+        .expect("Failed to initialize services");
+
+    // Create event broadcaster
+    let event_broadcaster = EventBroadcaster::new();
+
+    // Create app state
+    let state = AppState {
+        db,
+        services,
+        config,
+        event_broadcaster,
+    };
+
+    // Build router with actual routes
     Router::new()
+        .merge(routes::health::router())
+        .nest("/api", routes::api_router())
+        .with_state(state)
 }
 
 /// Setup test app with a verified user

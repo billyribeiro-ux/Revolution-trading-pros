@@ -3,22 +3,6 @@
 //! High-performance Rust backend with Axum
 //! Stack: Fly.io PostgreSQL, Upstash Redis, Cloudflare R2
 
-#![allow(dead_code)]
-#![allow(unused_imports)]
-#![allow(unused_variables)]
-
-mod config;
-mod db;
-mod docs;
-mod domain;
-mod middleware;
-mod models;
-mod monitoring;
-mod queue;
-mod routes;
-mod services;
-mod utils;
-
 use axum::{
     http::{header, HeaderName, HeaderValue, Method},
     middleware as axum_middleware, Router,
@@ -30,19 +14,11 @@ use tower_http::{
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use crate::config::Config;
-use crate::db::Database;
-use crate::routes::realtime::EventBroadcaster;
-use crate::services::Services;
-
-/// Application state shared across all routes
-#[derive(Clone)]
-pub struct AppState {
-    pub db: Database,
-    pub services: Services,
-    pub config: Config,
-    pub event_broadcaster: EventBroadcaster,
-}
+use revolution_api::{
+    config::Config, db::Database, docs, middleware, monitoring, queue, routes,
+    services::Services, AppState,
+};
+use revolution_api::routes::realtime::EventBroadcaster;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
