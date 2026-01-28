@@ -21,7 +21,12 @@ CREATE TABLE IF NOT EXISTS trading_rooms (
     access_level VARCHAR(50) DEFAULT 'member',
     is_active BOOLEAN DEFAULT true,
     is_featured BOOLEAN DEFAULT false,
+    is_public BOOLEAN DEFAULT true,
     sort_order INTEGER DEFAULT 0,
+    available_sections JSONB DEFAULT '[]'::jsonb,
+    features JSONB DEFAULT '{}'::jsonb,
+    icon VARCHAR(50),
+    color VARCHAR(20),
     settings JSONB DEFAULT '{}'::jsonb,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW()
