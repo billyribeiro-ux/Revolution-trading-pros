@@ -1,0 +1,14 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "UPDATE cms_reusable_blocks SET usage_count = GREATEST(0, usage_count - 1) WHERE id = $1",
+  "describe": {
+    "columns": [],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": []
+  },
+  "hash": "26a7a17451e3e5a1e81af8de9794cb8be33612442a52f0271c0aa4944e8a2be3"
+}
