@@ -40,10 +40,11 @@ type ApiResultEmpty = Result<Json<JsonValue>, ApiError>;
 // ============================================================================
 
 /// Block category enum - maps directly to PostgreSQL cms_reusable_block_category
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, sqlx::Type, ToSchema)]
+#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, sqlx::Type, ToSchema)]
 #[sqlx(type_name = "cms_reusable_block_category", rename_all = "lowercase")]
 #[serde(rename_all = "lowercase")]
 pub enum CmsReusableBlockCategory {
+    #[default]
     General,
     Trading,
     Layout,
@@ -52,12 +53,6 @@ pub enum CmsReusableBlockCategory {
     Navigation,
     Media,
     Form,
-}
-
-impl Default for CmsReusableBlockCategory {
-    fn default() -> Self {
-        Self::General
-    }
 }
 
 /// Reusable content block stored in the block library
@@ -260,6 +255,7 @@ pub struct BlockUsageResponse {
 // ============================================================================
 
 /// Check if user has CMS admin privileges
+#[allow(clippy::result_large_err)]
 fn require_cms_admin(user: &User) -> Result<(), ApiError> {
     let role = user.role.as_deref().unwrap_or("user");
     if matches!(role, "admin" | "super-admin" | "super_admin" | "developer") {
@@ -270,6 +266,7 @@ fn require_cms_admin(user: &User) -> Result<(), ApiError> {
 }
 
 /// Check if user has CMS editor privileges
+#[allow(clippy::result_large_err)]
 fn require_cms_editor(user: &User) -> Result<(), ApiError> {
     let role = user.role.as_deref().unwrap_or("user");
     if matches!(

@@ -173,7 +173,7 @@ async fn search_content(
     .bind(&query.q)
     .bind(content_types.as_deref())
     .bind(tag_ids.as_deref())
-    .bind(&locale)
+    .bind(locale)
     .bind(limit)
     .bind(offset)
     .fetch_all(&state.db.pool)

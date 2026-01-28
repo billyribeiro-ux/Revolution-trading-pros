@@ -982,6 +982,7 @@ async fn list_archived_videos(
     let year = query.year.unwrap_or_else(|| Utc::now().year());
 
     // Query archived videos with alert/trade counts
+    #[allow(clippy::type_complexity)]
     let videos: Vec<(
         i64,
         NaiveDate,

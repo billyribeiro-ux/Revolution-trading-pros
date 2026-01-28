@@ -189,7 +189,7 @@ pub async fn update_asset_folder(
         "#,
     )
     .bind(&request.name)
-    .bind(request.name.as_ref().map(|n| slug::slugify(n)))
+    .bind(request.name.as_ref().map(slug::slugify))
     .bind(request.parent_id)
     .bind(&request.description)
     .bind(&request.color)
@@ -699,7 +699,7 @@ pub async fn update_content(
                   deleted_at, version, created_at, updated_at, created_by, updated_by
         "#,
     )
-    .bind(request.slug.as_ref().map(|s| slug::slugify(s)))
+    .bind(request.slug.as_ref().map(slug::slugify))
     .bind(&request.title)
     .bind(&request.subtitle)
     .bind(&request.excerpt)
@@ -1333,7 +1333,7 @@ pub async fn update_navigation_menu(
         "#,
     )
     .bind(&request.name)
-    .bind(request.name.as_ref().map(|n| slug::slugify(n)))
+    .bind(request.name.as_ref().map(slug::slugify))
     .bind(&request.location)
     .bind(&request.items)
     .bind(request.is_active)

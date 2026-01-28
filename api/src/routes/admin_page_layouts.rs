@@ -57,10 +57,10 @@ async fn list_layouts(
         )
     })?;
 
-    let count_query = if params.course_id.is_some() {
+    let count_query = if let Some(course_id) = params.course_id {
         format!(
             "SELECT COUNT(*) FROM page_layouts WHERE course_id = '{}'",
-            params.course_id.unwrap()
+            course_id
         )
     } else {
         "SELECT COUNT(*) FROM page_layouts".to_string()

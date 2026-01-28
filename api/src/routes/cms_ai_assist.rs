@@ -493,6 +493,7 @@ struct ClaudeResponse {
 // DATABASE OPERATIONS
 // ═══════════════════════════════════════════════════════════════════════════════════════
 
+#[allow(clippy::too_many_arguments)]
 async fn save_history(
     pool: &sqlx::PgPool,
     user_id: i64,
@@ -764,8 +765,7 @@ async fn ai_assist_stream(
             let text = String::from_utf8_lossy(&bytes);
             // Parse SSE format from Claude
             for line in text.lines() {
-                        if line.starts_with("data: ") {
-                            let data = &line[6..];
+                        if let Some(data) = line.strip_prefix("data: ") {
                             if data == "[DONE]" {
                                 continue;
                             }
