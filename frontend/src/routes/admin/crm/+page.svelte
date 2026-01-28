@@ -1021,13 +1021,13 @@
 	/* =====================================================
 	   Responsive
 	   ===================================================== */
-	@media (max-width: 1200px) {
+	@media (max-width: calc(var(--breakpoint-xl) - 80px)) {
 		.stats-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
 		.page {
 			padding: 1rem;
 		}
