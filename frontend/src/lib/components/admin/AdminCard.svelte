@@ -44,10 +44,10 @@
 	}: Props = $props();
 
 	const paddingClasses = {
-		none: '',
-		sm: 'p-3',
-		md: 'p-5',
-		lg: 'p-6'
+		none: 'p-none',
+		sm: 'p-sm',
+		md: 'p-md',
+		lg: 'p-lg'
 	};
 </script>
 
@@ -96,9 +96,26 @@
 	.admin-card {
 		background: var(--admin-card-bg);
 		border: 1px solid var(--admin-card-border);
-		border-radius: var(--radius-xl, 1rem);
+		border-radius: var(--radius-xl);
 		box-shadow: var(--admin-card-shadow);
-		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+		transition: var(--transition-all);
+	}
+
+	/* Padding Variants */
+	.p-none {
+		padding: 0;
+	}
+
+	.p-sm {
+		padding: var(--space-3);
+	}
+
+	.p-md {
+		padding: var(--space-5);
+	}
+
+	.p-lg {
+		padding: var(--space-6);
 	}
 
 	/* Variants */
@@ -140,9 +157,9 @@
 		display: flex;
 		align-items: flex-start;
 		justify-content: space-between;
-		gap: 1rem;
-		padding-bottom: 1rem;
-		margin-bottom: 1rem;
+		gap: var(--space-4);
+		padding-bottom: var(--space-4);
+		margin-bottom: var(--space-4);
 		border-bottom: 1px solid var(--admin-border-light);
 	}
 
@@ -152,18 +169,18 @@
 	}
 
 	.card-title {
-		font-size: 1.125rem;
-		font-weight: 600;
+		font-size: var(--text-lg);
+		font-weight: var(--font-semibold);
 		color: var(--admin-text-primary);
 		margin: 0;
-		line-height: 1.4;
+		line-height: var(--leading-snug);
 	}
 
 	.card-subtitle {
-		font-size: 0.875rem;
+		font-size: var(--text-sm);
 		color: var(--admin-text-muted);
-		margin: 0.25rem 0 0;
-		line-height: 1.5;
+		margin: var(--space-1) 0 0;
+		line-height: var(--leading-normal);
 	}
 
 	.card-header-action {
@@ -177,26 +194,68 @@
 
 	/* Card Footer */
 	.card-footer {
-		padding-top: 1rem;
-		margin-top: 1rem;
+		padding-top: var(--space-4);
+		margin-top: var(--space-4);
 		border-top: 1px solid var(--admin-border-light);
 	}
 
-	/* Remove padding adjustments for header when padding is none */
+	/* Padding adjustments for header/footer when card padding is none */
 	.p-none .card-header,
 	.p-none .card-footer {
-		padding: 1rem;
+		padding: var(--space-4);
 		margin: 0;
 	}
 
 	/* Small padding variant adjustments */
-	.p-3 .card-header {
-		padding-bottom: 0.75rem;
-		margin-bottom: 0.75rem;
+	.p-sm .card-header {
+		padding-bottom: var(--space-3);
+		margin-bottom: var(--space-3);
 	}
 
-	.p-3 .card-footer {
-		padding-top: 0.75rem;
-		margin-top: 0.75rem;
+	.p-sm .card-footer {
+		padding-top: var(--space-3);
+		margin-top: var(--space-3);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Mobile (< sm: 640px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+		.admin-card {
+			border-radius: var(--radius-lg);
+		}
+
+		.p-md {
+			padding: var(--space-4);
+		}
+
+		.p-lg {
+			padding: var(--space-5);
+		}
+
+		.card-header {
+			gap: var(--space-3);
+			flex-direction: column;
+			align-items: stretch;
+		}
+
+		.card-title {
+			font-size: var(--text-base);
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCESSIBILITY
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (prefers-reduced-motion: reduce) {
+		.admin-card {
+			transition: none;
+		}
+
+		.hoverable:hover {
+			transform: none;
+		}
 	}
 </style>
