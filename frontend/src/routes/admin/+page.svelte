@@ -1215,13 +1215,13 @@
 		gap: 1rem;
 	}
 
-	@media (max-width: 1400px) {
+	@media (max-width: calc(var(--breakpoint-2xl) - 136px)) {
 		.metrics-grid {
 			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
 		.metrics-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -1388,7 +1388,7 @@
 		margin-bottom: 1.5rem;
 	}
 
-	@media (max-width: 1100px) {
+	@media (max-width: calc(var(--breakpoint-lg) + 76px)) {
 		.dual-panel-row {
 			grid-template-columns: 1fr;
 		}
@@ -1401,7 +1401,7 @@
 		gap: 1rem;
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
 		.seo-metrics-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -1426,7 +1426,7 @@
 		border-color: rgba(230, 184, 0, 0.2);
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
 		.seo-metric-card.primary {
 			grid-column: span 2;
 		}
@@ -1601,13 +1601,13 @@
 		gap: 1rem;
 	}
 
-	@media (max-width: 1200px) {
+	@media (max-width: calc(var(--breakpoint-xl) - 1px)) {
 		.business-grid {
 			grid-template-columns: repeat(3, 1fr);
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
 		.business-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -1828,7 +1828,7 @@
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Small Mobile (< 480px) */
-	@media (max-width: 480px) {
+	@media (max-width: calc(var(--breakpoint-sm) - 160px)) {
 		.admin-page-container {
 			padding: 1rem;
 		}
@@ -1918,7 +1918,7 @@
 	}
 
 	/* Mobile Landscape / Large Mobile (481px - 640px) */
-	@media (min-width: 481px) and (max-width: 640px) {
+	@media (min-width: calc(var(--breakpoint-sm) - 159px)) and (max-width: calc(var(--breakpoint-sm) - 1px)) {
 		.metrics-grid,
 		.seo-metrics-grid {
 			grid-template-columns: repeat(2, 1fr);
@@ -1930,7 +1930,7 @@
 	}
 
 	/* Tablet Portrait (641px - 768px) */
-	@media (min-width: 641px) and (max-width: 768px) {
+	@media (min-width: var(--breakpoint-sm)) and (max-width: calc(var(--breakpoint-md) - 1px)) {
 		.metrics-grid {
 			grid-template-columns: repeat(2, 1fr);
 		}
@@ -1953,7 +1953,7 @@
 	}
 
 	/* Tablet Landscape (769px - 1024px) */
-	@media (min-width: 769px) and (max-width: 1024px) {
+	@media (min-width: var(--breakpoint-md)) and (max-width: calc(var(--breakpoint-lg) - 1px)) {
 		.metrics-grid {
 			grid-template-columns: repeat(3, 1fr);
 		}
