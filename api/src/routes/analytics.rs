@@ -1,16 +1,28 @@
 //! Analytics routes - Revolution Trading Pros
-//! Apple ICT 11+ Principal Engineer Grade - December 2025
+//! Apple ICT 11+ Principal Engineer Grade - January 2026
+//!
+//! Comprehensive analytics API for tracking and room performance analysis.
+//! Includes:
+//! - Event tracking (pageviews, interactions)
+//! - Room analytics (Explosive Swings, etc.)
+//! - Performance metrics with Sharpe ratio, profit factor, drawdown
+//! - Equity curves and P&L analysis
 
 use axum::{
-    extract::{Query, State},
+    extract::{Path, Query, State},
     http::StatusCode,
     routing::{get, post},
     Json, Router,
 };
+use chrono::NaiveDate;
 use serde::Deserialize;
 use serde_json::json;
 
-use crate::{models::User, AppState};
+use crate::{
+    models::User,
+    services::analytics::{AnalyticsService, DateRange},
+    AppState,
+};
 
 #[derive(Debug, Deserialize)]
 pub struct TrackRequest {
@@ -167,10 +179,178 @@ async fn track_performance(
     Ok(Json(json!({"status": "ok"})))
 }
 
+// ═══════════════════════════════════════════════════════════════════════════
+// ROOM ANALYTICS TYPES
+// ═══════════════════════════════════════════════════════════════════════════
+
+#[derive(Debug, Deserialize)]
+pub struct RoomAnalyticsQuery {
+    pub from: Option<String>,
+    pub to: Option<String>,
+}
+
+impl RoomAnalyticsQuery {
+    fn to_date_range(&self) -> DateRange {
+        DateRange {
+            from: self
+                .from
+                .as_ref()
+                .and_then(|s| NaiveDate::parse_from_str(s, "%Y-%m-%d").ok()),
+            to: self
+                .to
+                .as_ref()
+                .and_then(|s| NaiveDate::parse_from_str(s, "%Y-%m-%d").ok()),
+        }
+    }
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// ROOM ANALYTICS HANDLERS
+// ═══════════════════════════════════════════════════════════════════════════
+
+/// Get comprehensive analytics for a trading room
+/// GET /api/analytics/room/{room_slug}
+async fn get_room_analytics(
+    State(state): State<AppState>,
+    Path(room_slug): Path<String>,
+    Query(params): Query<RoomAnalyticsQuery>,
+    _user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let service = AnalyticsService::new(state.db.pool.clone());
+    let date_range = params.to_date_range();
+
+    match service.get_room_analytics(&room_slug, date_range).await {
+        Ok(analytics) => Ok(Json(json!({
+            "success": true,
+            "data": analytics
+        }))),
+        Err(e) => {
+            tracing::error!("Failed to get room analytics: {:?}", e);
+            Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({
+                    "success": false,
+                    "error": format!("Failed to get analytics: {}", e)
+                })),
+            ))
+        }
+    }
+}
+
+/// Get equity curve data for a trading room
+/// GET /api/analytics/room/{room_slug}/equity-curve
+async fn get_equity_curve(
+    State(state): State<AppState>,
+    Path(room_slug): Path<String>,
+    Query(params): Query<RoomAnalyticsQuery>,
+    _user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let service = AnalyticsService::new(state.db.pool.clone());
+    let date_range = params.to_date_range();
+
+    match service.get_equity_curve(&room_slug, date_range).await {
+        Ok(equity_curve) => Ok(Json(json!({
+            "success": true,
+            "data": equity_curve
+        }))),
+        Err(e) => {
+            tracing::error!("Failed to get equity curve: {:?}", e);
+            Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({
+                    "success": false,
+                    "error": format!("Failed to get equity curve: {}", e)
+                })),
+            ))
+        }
+    }
+}
+
+/// Get drawdown periods for a trading room
+/// GET /api/analytics/room/{room_slug}/drawdowns
+async fn get_drawdown_periods(
+    State(state): State<AppState>,
+    Path(room_slug): Path<String>,
+    Query(params): Query<RoomAnalyticsQuery>,
+    _user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let service = AnalyticsService::new(state.db.pool.clone());
+    let date_range = params.to_date_range();
+
+    match service.get_drawdown_periods(&room_slug, date_range).await {
+        Ok(drawdowns) => Ok(Json(json!({
+            "success": true,
+            "data": drawdowns
+        }))),
+        Err(e) => {
+            tracing::error!("Failed to get drawdown periods: {:?}", e);
+            Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({
+                    "success": false,
+                    "error": format!("Failed to get drawdown periods: {}", e)
+                })),
+            ))
+        }
+    }
+}
+
+/// Get ticker-specific analytics
+/// GET /api/analytics/room/{room_slug}/ticker/{ticker}
+async fn get_ticker_analytics(
+    State(state): State<AppState>,
+    Path((room_slug, ticker)): Path<(String, String)>,
+    Query(params): Query<RoomAnalyticsQuery>,
+    _user: User,
+) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    let service = AnalyticsService::new(state.db.pool.clone());
+    let date_range = params.to_date_range();
+
+    match service.get_room_analytics(&room_slug, date_range).await {
+        Ok(analytics) => {
+            // Find the specific ticker performance
+            let ticker_upper = ticker.to_uppercase();
+            let ticker_perf = analytics
+                .performance_by_ticker
+                .iter()
+                .find(|t| t.ticker == ticker_upper);
+
+            match ticker_perf {
+                Some(perf) => Ok(Json(json!({
+                    "success": true,
+                    "data": perf
+                }))),
+                None => Ok(Json(json!({
+                    "success": true,
+                    "data": null,
+                    "message": format!("No trades found for ticker {}", ticker_upper)
+                }))),
+            }
+        }
+        Err(e) => {
+            tracing::error!("Failed to get ticker analytics: {:?}", e);
+            Err((
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({
+                    "success": false,
+                    "error": format!("Failed to get ticker analytics: {}", e)
+                })),
+            ))
+        }
+    }
+}
+
 pub fn router() -> Router<AppState> {
     Router::new()
+        // Event tracking (public)
         .route("/track", post(track_event))
         .route("/reading", post(track_reading))
         .route("/performance", post(track_performance))
+        // Overview (admin)
         .route("/overview", get(get_overview))
+        // Room analytics (authenticated users)
+        .route("/room/:room_slug", get(get_room_analytics))
+        .route("/room/:room_slug/equity-curve", get(get_equity_curve))
+        .route("/room/:room_slug/drawdowns", get(get_drawdown_periods))
+        .route("/room/:room_slug/ticker/:ticker", get(get_ticker_analytics))
 }

@@ -2,6 +2,7 @@
 //! Apple ICT 7+ Principal Engineer - January 2026
 //! ICT 7+: Redis required in production for security (rate limiting, session management)
 
+pub mod analytics; // ICT 7+ Phase 4: Analytics Dashboard Service
 pub mod bunny;
 pub mod cms_audit;
 pub mod cms_content;
@@ -11,13 +12,18 @@ pub mod cms_upload;
 pub mod cms_webhooks;
 pub mod cms_workflow;
 pub mod email;
+pub mod event_broadcaster; // ICT 7+ Phase 3: Unified WebSocket + SSE event broadcasting
+pub mod export; // ICT 7+ Phase 4: Export Functionality
 pub mod order_service;
 pub mod redis;
+pub mod room_analytics; // ICT 11+ Phase 5: Room Performance Analytics Service
+pub mod room_search; // ICT 7+ Phase 4: Full-Text Search for Room Content
 pub mod search;
 pub mod storage;
 pub mod stripe;
 pub mod subscription_service;
 
+use crate::cache::{CacheInvalidator, CacheService};
 use crate::config::Config;
 use anyhow::{anyhow, Result};
 
@@ -29,6 +35,10 @@ pub struct Services {
     pub stripe: stripe::StripeService,
     pub search: search::SearchService,
     pub email: Option<email::EmailService>,
+    /// Cache service for Explosive Swings content caching
+    pub cache: CacheService,
+    /// Cache invalidation helper
+    pub cache_invalidator: CacheInvalidator,
 }
 
 impl Services {
@@ -113,12 +123,24 @@ impl Services {
             );
         }
 
+        // Initialize cache service with Redis (graceful degradation if unavailable)
+        let cache = CacheService::new(redis.clone(), None);
+        let cache_invalidator = CacheInvalidator::new(cache.clone());
+
+        tracing::info!(
+            target: "cache",
+            has_redis = %cache.has_redis(),
+            "Cache service initialized"
+        );
+
         Ok(Self {
             redis,
             storage: storage::StorageService::new(config).await?,
             stripe: stripe::StripeService::new(&config.stripe_secret_key),
             search,
             email,
+            cache,
+            cache_invalidator,
         })
     }
 }

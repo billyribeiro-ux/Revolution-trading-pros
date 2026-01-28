@@ -28,6 +28,13 @@ import * as api from './page.api';
 import type { FormattedAlert } from './page.api';
 import type { RoomAlert } from '$lib/types/trading';
 import type { TradePlanEntry as ApiTradePlanEntry } from '$lib/types/trading';
+import {
+	performanceMonitor,
+	analyticsTracker,
+	trackFilterApplied,
+	trackPagination,
+	trackModalOpened
+} from './monitoring';
 
 /**
  * Creates the reactive state store for the Explosive Swings dashboard.
@@ -245,12 +252,19 @@ export function createPageState() {
 		alertsError = null;
 
 		try {
-			const result = await api.fetchAlerts(ROOM_SLUG, currentPage, ALERTS_PER_PAGE);
+			const result = await performanceMonitor.measureAsync('fetch-alerts', () =>
+				api.fetchAlerts(ROOM_SLUG, currentPage, ALERTS_PER_PAGE)
+			);
 			apiAlerts = result.alerts;
 			pagination = result.pagination;
+
+			// Complete filter/pagination tracking if applicable
+			analyticsTracker.trackFilterCompleted();
+			analyticsTracker.trackPaginationCompleted();
 		} catch (err) {
 			alertsError = err instanceof Error ? err.message : 'Failed to load alerts';
 			console.error('Failed to fetch alerts:', err);
+			analyticsTracker.trackError('fetch_alerts', alertsError, { page: currentPage });
 		} finally {
 			isLoadingAlerts = false;
 		}
@@ -276,10 +290,13 @@ export function createPageState() {
 		statsError = null;
 
 		try {
-			apiStats = await api.fetchStats(ROOM_SLUG);
+			apiStats = await performanceMonitor.measureAsync('fetch-stats', () =>
+				api.fetchStats(ROOM_SLUG)
+			);
 		} catch (err) {
 			statsError = err instanceof Error ? err.message : 'Failed to load stats';
 			console.error('Failed to fetch stats:', err);
+			analyticsTracker.trackError('fetch_stats', statsError);
 		} finally {
 			isLoadingStats = false;
 		}
@@ -290,12 +307,15 @@ export function createPageState() {
 		tradesError = null;
 
 		try {
-			const trades = await api.fetchAllTrades(ROOM_SLUG);
+			const trades = await performanceMonitor.measureAsync('fetch-trades', () =>
+				api.fetchAllTrades(ROOM_SLUG)
+			);
 			apiOpenTrades = trades.filter((t) => t.status === 'open');
 			apiClosedTrades = trades.filter((t) => t.status === 'closed');
 		} catch (err) {
 			tradesError = err instanceof Error ? err.message : 'Failed to load trades';
 			console.error('Failed to fetch trades:', err);
+			analyticsTracker.trackError('fetch_trades', tradesError);
 		} finally {
 			isLoadingTrades = false;
 		}
@@ -325,6 +345,7 @@ export function createPageState() {
 
 	function setFilter(filter: AlertFilter) {
 		if (filter === selectedFilter) return;
+		trackFilterApplied('alert_type', filter);
 		selectedFilter = filter;
 		currentPage = 1;
 		fetchAlerts();
@@ -332,6 +353,7 @@ export function createPageState() {
 
 	async function goToPage(page: number) {
 		if (page < 1 || page > totalPages || page === currentPage) return;
+		trackPagination(page, totalPages);
 		currentPage = page;
 		await fetchAlerts();
 	}
@@ -360,6 +382,10 @@ export function createPageState() {
 	}
 
 	function initializeData() {
+		// Start page load performance tracking
+		performanceMonitor.startMark('page-load');
+		analyticsTracker.trackPageView();
+
 		checkAdminStatus();
 		fetchAlerts();
 		fetchTradePlan();
@@ -369,10 +395,95 @@ export function createPageState() {
 	}
 
 	// ═══════════════════════════════════════════════════════════════════════════
+	// REAL-TIME UPDATE METHODS (ICT 7+ Phase 3)
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Prepend a new alert to the top of the alerts list
+	 * Called by WebSocket real-time updates
+	 */
+	function prependAlert(alert: FormattedAlert) {
+		// Check if alert already exists (avoid duplicates)
+		if (apiAlerts.some(a => a.id === alert.id)) {
+			return;
+		}
+		apiAlerts = [alert, ...apiAlerts];
+
+		// Update pagination total
+		pagination = { ...pagination, total: pagination.total + 1 };
+
+		// Track the real-time update
+		analyticsTracker.trackEvent('realtime', 'alert_received', alert.type);
+	}
+
+	/**
+	 * Update an existing alert in the list
+	 * Called by WebSocket real-time updates
+	 */
+	function updateAlert(alert: FormattedAlert) {
+		const index = apiAlerts.findIndex(a => a.id === alert.id);
+		if (index !== -1) {
+			apiAlerts = [
+				...apiAlerts.slice(0, index),
+				alert,
+				...apiAlerts.slice(index + 1)
+			];
+		}
+	}
+
+	/**
+	 * Remove an alert from the list
+	 * Called by WebSocket real-time updates
+	 */
+	function removeAlert(alertId: number) {
+		const index = apiAlerts.findIndex(a => a.id === alertId);
+		if (index !== -1) {
+			apiAlerts = [
+				...apiAlerts.slice(0, index),
+				...apiAlerts.slice(index + 1)
+			];
+
+			// Update pagination total
+			pagination = { ...pagination, total: Math.max(0, pagination.total - 1) };
+		}
+	}
+
+	/**
+	 * Set stats directly from WebSocket update
+	 * Called by WebSocket real-time updates
+	 */
+	function setStats(newStats: QuickStats) {
+		apiStats = newStats;
+	}
+
+	/**
+	 * Get current performance metrics for the page
+	 */
+	function getPerformanceMetrics() {
+		return performanceMonitor.reportMetrics();
+	}
+
+	/**
+	 * Get session analytics metrics
+	 */
+	function getSessionMetrics() {
+		return analyticsTracker.getSessionMetrics();
+	}
+
+	/**
+	 * Track page unload for cleanup
+	 */
+	function onPageLeave() {
+		performanceMonitor.endMark('page-load');
+		analyticsTracker.trackPageLeave();
+	}
+
+	// ═══════════════════════════════════════════════════════════════════════════
 	// MODAL ACTIONS
 	// ═══════════════════════════════════════════════════════════════════════════
 
 	function openAlertModal(alert?: RoomAlert) {
+		trackModalOpened(alert ? 'edit_alert' : 'create_alert');
 		editingAlert = alert ?? null;
 		isAlertModalOpen = true;
 	}
@@ -383,6 +494,7 @@ export function createPageState() {
 	}
 
 	function openTradeEntryModal(entry?: ApiTradePlanEntry) {
+		trackModalOpened(entry ? 'edit_trade_entry' : 'create_trade_entry');
 		editingTradeEntry = entry ?? null;
 		isTradeEntryModalOpen = true;
 	}
@@ -393,6 +505,7 @@ export function createPageState() {
 	}
 
 	function openClosePositionModal(position: ActivePosition) {
+		trackModalOpened('close_position');
 		closingPosition = position;
 		isClosePositionModalOpen = true;
 	}
@@ -403,6 +516,7 @@ export function createPageState() {
 	}
 
 	function openVideoUploadModal() {
+		trackModalOpened('video_upload');
 		isVideoUploadModalOpen = true;
 	}
 
@@ -411,6 +525,7 @@ export function createPageState() {
 	}
 
 	function openAddTradeModal() {
+		trackModalOpened('add_trade');
 		isAddTradeModalOpen = true;
 	}
 
@@ -419,6 +534,7 @@ export function createPageState() {
 	}
 
 	function openUpdatePositionModal(position: ActivePosition) {
+		trackModalOpened('update_position');
 		updatingPosition = position;
 		isUpdatePositionModalOpen = true;
 	}
@@ -435,6 +551,7 @@ export function createPageState() {
 	}
 
 	function openInvalidatePositionModal(position: ActivePosition) {
+		trackModalOpened('invalidate_position');
 		invalidatingPosition = position;
 		isInvalidatePositionModalOpen = true;
 	}
@@ -619,6 +736,12 @@ export function createPageState() {
 		fetchAllTrades,
 		fetchWeeklyVideo,
 
+		// Real-time update methods (ICT 7+ Phase 3)
+		prependAlert,
+		updateAlert,
+		removeAlert,
+		setStats,
+
 		// Modal actions
 		openAlertModal,
 		closeAlertModal,
@@ -636,6 +759,11 @@ export function createPageState() {
 		openInvalidatePositionModal,
 		closeInvalidatePositionModal,
 		deletePosition,
+
+		// Performance monitoring
+		getPerformanceMetrics,
+		getSessionMetrics,
+		onPageLeave,
 
 		// Constants
 		ROOM_SLUG

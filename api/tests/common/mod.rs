@@ -21,10 +21,16 @@ fn init_test_env() {
 
         // Set required env vars with test defaults if not already set
         if std::env::var("JWT_SECRET").is_err() {
-            std::env::set_var("JWT_SECRET", "test-jwt-secret-minimum-32-characters-for-testing");
+            std::env::set_var(
+                "JWT_SECRET",
+                "test-jwt-secret-minimum-32-characters-for-testing",
+            );
         }
         if std::env::var("DATABASE_URL").is_err() {
-            std::env::set_var("DATABASE_URL", "postgres://test:test@localhost:5432/test_db");
+            std::env::set_var(
+                "DATABASE_URL",
+                "postgres://test:test@localhost:5432/test_db",
+            );
         }
         if std::env::var("REDIS_URL").is_err() {
             std::env::set_var("REDIS_URL", "redis://localhost:6379");

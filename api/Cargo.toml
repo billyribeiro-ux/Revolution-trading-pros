@@ -7,7 +7,7 @@ authors = ["Revolution Trading Pros"]
 
 [dependencies]
 # Web Framework
-axum = { version = "0.7", features = ["macros", "multipart"] }
+axum = { version = "0.7", features = ["macros", "multipart", "ws"] }
 axum-extra = { version = "0.9", features = ["typed-header", "cookie"] }
 tower = "0.4"
 tower-http = { version = "0.5", features = ["cors", "trace", "compression-gzip", "limit", "set-header"] }
@@ -42,6 +42,9 @@ sha2 = "0.10"
 hex = "0.4"
 subtle = "2.5"  # ICT L11+ Security: Constant-time comparison
 md5 = "0.7"  # For Bunny.net signature generation
+
+# CSV Export - ICT 7+ Phase 4 Export Functionality
+csv = "1.3"
 
 # Utilities
 uuid = { version = "1.6", features = ["v4", "serde"] }

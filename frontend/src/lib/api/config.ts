@@ -230,7 +230,14 @@ export const API_ENDPOINTS = {
 	},
 
 	// Health - Note: health endpoints are at root level, not under /api
-	health: '/health'
+	health: '/health',
+
+	// Export - ICT 7+ Phase 4: CSV/PDF exports for trading rooms
+	export: {
+		alertsCsv: (roomSlug: string) => `/api/export/${roomSlug}/alerts.csv`,
+		tradesCsv: (roomSlug: string) => `/api/export/${roomSlug}/trades.csv`,
+		performance: (roomSlug: string) => `/api/export/${roomSlug}/performance`
+	}
 } as const;
 
 /**

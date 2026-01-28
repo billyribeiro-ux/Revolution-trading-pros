@@ -46,6 +46,37 @@ export interface CartUpdatePayload {
 	}>;
 }
 
+// ═══════════════════════════════════════════════════════════════════════════════
+// Explosive Swings Real-time Payload Types
+// ═══════════════════════════════════════════════════════════════════════════════
+
+export interface RoomAlertPayload {
+	id: number;
+	room_slug: string;
+	alert_type: 'ENTRY' | 'EXIT' | 'UPDATE';
+	ticker: string;
+	title: string;
+	message?: string;
+	tos_string?: string;
+	published_at: string;
+}
+
+export interface TradeUpdatePayload {
+	id: number;
+	room_slug: string;
+	ticker: string;
+	status: 'open' | 'closed' | 'invalidated';
+	pnl?: number;
+	pnl_percent?: number;
+}
+
+export interface StatsUpdatePayload {
+	room_slug: string;
+	win_rate: number;
+	active_trades: number;
+	closed_this_week: number;
+}
+
 class WebSocketService {
 	private ws: WebSocket | null = null;
 	private reconnectAttempts = 0;
@@ -234,6 +265,106 @@ class WebSocketService {
 		};
 	}
 
+	// ═══════════════════════════════════════════════════════════════════════════
+	// Explosive Swings Subscription Methods
+	// ═══════════════════════════════════════════════════════════════════════════
+
+	/**
+	 * Subscribe to explosive swings room alerts
+	 */
+	subscribeToRoomAlerts(
+		roomSlug: string,
+		callback: (alert: RoomAlertPayload) => void
+	): () => void {
+		const channel = `room:${roomSlug}:alerts`;
+		const wsChannel = `room.${roomSlug}.alerts`;
+
+		if (!this.subscriptions.has(channel)) {
+			this.subscriptions.set(channel, new Set());
+		}
+
+		this.subscriptions.get(channel)!.add(callback);
+
+		this.send({
+			action: 'subscribe',
+			channel: wsChannel
+		});
+
+		return () => {
+			this.subscriptions.get(channel)?.delete(callback);
+			if (this.subscriptions.get(channel)?.size === 0) {
+				this.send({
+					action: 'unsubscribe',
+					channel: wsChannel
+				});
+			}
+		};
+	}
+
+	/**
+	 * Subscribe to explosive swings trade updates
+	 */
+	subscribeToTradeUpdates(
+		roomSlug: string,
+		callback: (trade: TradeUpdatePayload) => void
+	): () => void {
+		const channel = `room:${roomSlug}:trades`;
+		const wsChannel = `room.${roomSlug}.trades`;
+
+		if (!this.subscriptions.has(channel)) {
+			this.subscriptions.set(channel, new Set());
+		}
+
+		this.subscriptions.get(channel)!.add(callback);
+
+		this.send({
+			action: 'subscribe',
+			channel: wsChannel
+		});
+
+		return () => {
+			this.subscriptions.get(channel)?.delete(callback);
+			if (this.subscriptions.get(channel)?.size === 0) {
+				this.send({
+					action: 'unsubscribe',
+					channel: wsChannel
+				});
+			}
+		};
+	}
+
+	/**
+	 * Subscribe to explosive swings stats updates
+	 */
+	subscribeToStatsUpdates(
+		roomSlug: string,
+		callback: (stats: StatsUpdatePayload) => void
+	): () => void {
+		const channel = `room:${roomSlug}:stats`;
+		const wsChannel = `room.${roomSlug}.stats`;
+
+		if (!this.subscriptions.has(channel)) {
+			this.subscriptions.set(channel, new Set());
+		}
+
+		this.subscriptions.get(channel)!.add(callback);
+
+		this.send({
+			action: 'subscribe',
+			channel: wsChannel
+		});
+
+		return () => {
+			this.subscriptions.get(channel)?.delete(callback);
+			if (this.subscriptions.get(channel)?.size === 0) {
+				this.send({
+					action: 'unsubscribe',
+					channel: wsChannel
+				});
+			}
+		};
+	}
+
 	/**
 	 * Handle incoming message
 	 */
@@ -272,6 +403,28 @@ class WebSocketService {
 				const sessionChannel = `session:${data.session_id}:cart`;
 				this.subscriptions.get(sessionChannel)?.forEach((callback) => callback(data));
 			}
+		}
+
+		// ═══════════════════════════════════════════════════════════════════════════
+		// Handle Explosive Swings room events
+		// ═══════════════════════════════════════════════════════════════════════════
+
+		// Handle room alert created
+		if ((event === 'room:alert:created' || event === 'room:alert:updated') && data?.room_slug) {
+			const channel = `room:${data.room_slug}:alerts`;
+			this.subscriptions.get(channel)?.forEach((callback) => callback(data as RoomAlertPayload));
+		}
+
+		// Handle room trade opened/closed
+		if ((event === 'room:trade:opened' || event === 'room:trade:closed') && data?.room_slug) {
+			const channel = `room:${data.room_slug}:trades`;
+			this.subscriptions.get(channel)?.forEach((callback) => callback(data as TradeUpdatePayload));
+		}
+
+		// Handle room stats updated
+		if (event === 'room:stats:updated' && data?.room_slug) {
+			const channel = `room:${data.room_slug}:stats`;
+			this.subscriptions.get(channel)?.forEach((callback) => callback(data as StatsUpdatePayload));
 		}
 
 		if (event === 'system:notification') {

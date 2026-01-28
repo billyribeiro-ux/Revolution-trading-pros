@@ -401,6 +401,22 @@ impl RedisService {
         Ok(self.get(&key).await?.is_some())
     }
 
+    /// Delete all keys matching a pattern
+    /// ICT 7+ Phase 2: Used for cache invalidation
+    pub async fn delete_pattern(&self, pattern: &str) -> Result<usize> {
+        let mut conn = self.conn.clone();
+        let keys: Vec<String> = conn.keys(pattern).await?;
+        let count = keys.len();
+
+        if !keys.is_empty() {
+            for key in keys {
+                let _: () = conn.del(&key).await?;
+            }
+        }
+
+        Ok(count)
+    }
+
     // ═══════════════════════════════════════════════════════════════════════════
     // ICT 7+: USER CACHING FOR AUTH PERFORMANCE
     // ═══════════════════════════════════════════════════════════════════════════
