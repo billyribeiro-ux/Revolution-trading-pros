@@ -5,15 +5,37 @@ use axum::response::Response;
 use axum::{body::Body, Router};
 use http_body_util::BodyExt;
 use serde_json::Value;
+use std::sync::Once;
 
 use revolution_api::routes::realtime::EventBroadcaster;
 use revolution_api::{config::Config, db::Database, routes, services::Services, AppState};
 
+static INIT: Once = Once::new();
+
+/// Initialize test environment variables once
+fn init_test_env() {
+    INIT.call_once(|| {
+        // Load .env.test first, then .env as fallback
+        dotenvy::from_filename(".env.test").ok();
+        dotenvy::dotenv().ok();
+
+        // Set required env vars with test defaults if not already set
+        if std::env::var("JWT_SECRET").is_err() {
+            std::env::set_var("JWT_SECRET", "test-jwt-secret-minimum-32-characters-for-testing");
+        }
+        if std::env::var("DATABASE_URL").is_err() {
+            std::env::set_var("DATABASE_URL", "postgres://test:test@localhost:5432/test_db");
+        }
+        if std::env::var("REDIS_URL").is_err() {
+            std::env::set_var("REDIS_URL", "redis://localhost:6379");
+        }
+    });
+}
+
 /// Setup test application with all routes
 pub async fn setup_test_app() -> Router {
-    // Load test environment
-    dotenvy::from_filename(".env.test").ok();
-    dotenvy::dotenv().ok();
+    // Initialize test environment
+    init_test_env();
 
     // Create test config
     let config = Config::from_env().expect("Failed to load test config");
