@@ -1,0 +1,68 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n        INSERT INTO cms_reusable_block_usage (\n            id, reusable_block_id, content_id, block_instance_id, is_synced, created_at\n        )\n        VALUES ($1, $2, $3, $4, $5, NOW())\n        RETURNING id, reusable_block_id, content_id, block_instance_id, is_synced,\n                  detached_at, detached_by, created_at\n        ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "reusable_block_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 2,
+        "name": "content_id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 3,
+        "name": "block_instance_id",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "is_synced",
+        "type_info": "Bool"
+      },
+      {
+        "ordinal": 5,
+        "name": "detached_at",
+        "type_info": "Timestamptz"
+      },
+      {
+        "ordinal": 6,
+        "name": "detached_by",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 7,
+        "name": "created_at",
+        "type_info": "Timestamptz"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid",
+        "Uuid",
+        "Uuid",
+        "Varchar",
+        "Bool"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      false,
+      false,
+      true,
+      true,
+      false
+    ]
+  },
+  "hash": "8f3917f35d64fd48f6ef32a2aade90715a39def71b8bd5681df6a846cdc63f16"
+}

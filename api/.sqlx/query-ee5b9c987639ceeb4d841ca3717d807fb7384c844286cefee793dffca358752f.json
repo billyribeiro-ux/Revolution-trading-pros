@@ -1,0 +1,64 @@
+{
+  "db_name": "PostgreSQL",
+  "query": "\n            SELECT id, name, url, secret, events, headers, retry_count, timeout_seconds\n            FROM cms_webhooks\n            WHERE id = $1 AND is_active = true\n            ",
+  "describe": {
+    "columns": [
+      {
+        "ordinal": 0,
+        "name": "id",
+        "type_info": "Uuid"
+      },
+      {
+        "ordinal": 1,
+        "name": "name",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 2,
+        "name": "url",
+        "type_info": "Text"
+      },
+      {
+        "ordinal": 3,
+        "name": "secret",
+        "type_info": "Varchar"
+      },
+      {
+        "ordinal": 4,
+        "name": "events",
+        "type_info": "TextArray"
+      },
+      {
+        "ordinal": 5,
+        "name": "headers",
+        "type_info": "Jsonb"
+      },
+      {
+        "ordinal": 6,
+        "name": "retry_count",
+        "type_info": "Int4"
+      },
+      {
+        "ordinal": 7,
+        "name": "timeout_seconds",
+        "type_info": "Int4"
+      }
+    ],
+    "parameters": {
+      "Left": [
+        "Uuid"
+      ]
+    },
+    "nullable": [
+      false,
+      false,
+      false,
+      true,
+      false,
+      true,
+      false,
+      false
+    ]
+  },
+  "hash": "ee5b9c987639ceeb4d841ca3717d807fb7384c844286cefee793dffca358752f"
+}

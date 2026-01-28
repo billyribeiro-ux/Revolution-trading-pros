@@ -55,7 +55,7 @@ pub struct SearchQuery {
 }
 
 /// Search result item
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, sqlx::FromRow)]
 pub struct SearchResultItem {
     pub id: Uuid,
     pub content_type: String,
@@ -96,7 +96,7 @@ pub struct ContentListQuery {
 }
 
 /// Sitemap entry
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, sqlx::FromRow)]
 pub struct SitemapEntry {
     pub content_type: String,
     pub slug: String,
@@ -142,21 +142,20 @@ async fn search_content(
             .into()
     });
 
-    // Execute search query using the database function
-    let results: Vec<SearchResultItem> = sqlx::query_as!(
-        SearchResultItem,
+    // Execute search query using the database function (runtime query to avoid UUID version conflicts)
+    let results: Vec<SearchResultItem> = sqlx::query_as::<_, SearchResultItem>(
         r#"
         SELECT
             id,
-            content_type::text as "content_type!",
-            slug::varchar as "slug!",
-            title::varchar as "title!",
-            excerpt::text as "excerpt",
+            content_type::text as content_type,
+            slug::varchar as slug,
+            title::varchar as title,
+            excerpt::text as excerpt,
             featured_image_id,
             author_id,
             published_at,
-            rank::real as "rank!",
-            headline::text as "headline"
+            rank::real as rank,
+            headline::text as headline
         FROM cms_search_content(
             $1::text,
             $2::cms_content_type[],
@@ -167,16 +166,16 @@ async fn search_content(
             true
         )
         "#,
-        query.q,
-        content_types.as_deref() as Option<&[String]>,
-        tag_ids.as_deref() as Option<&[Uuid]>,
-        locale,
-        limit,
-        offset
     )
+    .bind(&query.q)
+    .bind(content_types.as_deref())
+    .bind(tag_ids.as_deref())
+    .bind(&locale)
+    .bind(limit)
+    .bind(offset)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    .map_err(|e: sqlx::Error| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     // Get total count for pagination
     let total: (i64,) = sqlx::query_as(
@@ -286,14 +285,13 @@ async fn get_sitemap_entries(
 ) -> ApiResult<Vec<SitemapEntry>> {
     let locale = query.locale.as_deref();
 
-    let entries: Vec<SitemapEntry> = sqlx::query_as!(
-        SitemapEntry,
+    let entries: Vec<SitemapEntry> = sqlx::query_as::<_, SitemapEntry>(
         r#"
         SELECT
-            content_type::text as "content_type!",
-            slug::varchar as "slug!",
-            locale::varchar as "locale!",
-            updated_at as "updated_at!",
+            content_type::text as content_type,
+            slug::varchar as slug,
+            locale::varchar as locale,
+            updated_at,
             CASE content_type
                 WHEN 'page' THEN 1.0
                 WHEN 'blog_post' THEN 0.8
@@ -301,20 +299,20 @@ async fn get_sitemap_entries(
                 WHEN 'trading_room' THEN 0.9
                 WHEN 'alert_service' THEN 0.9
                 ELSE 0.5
-            END::real as "priority!",
+            END::real as priority,
             CASE content_type
                 WHEN 'blog_post' THEN 'weekly'
                 WHEN 'weekly_watchlist' THEN 'weekly'
                 ELSE 'monthly'
-            END::varchar as "changefreq!"
+            END::varchar as changefreq
         FROM cms_get_all_slugs($1::cms_content_type, $2)
         "#,
-        None::<String>,
-        locale
     )
+    .bind(None::<String>)
+    .bind(locale)
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
+    .map_err(|e: sqlx::Error| api_error(StatusCode::INTERNAL_SERVER_ERROR, &e.to_string()))?;
 
     Ok(Json(entries))
 }

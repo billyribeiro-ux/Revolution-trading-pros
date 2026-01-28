@@ -563,8 +563,7 @@ async fn create_reusable_block(
             .await
             .map_err(|e: sqlx::Error| {
                 ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
-            })?
-            .flatten();
+            })?;
 
     let block = sqlx::query_as!(
         CmsReusableBlock,

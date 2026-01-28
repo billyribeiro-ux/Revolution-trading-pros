@@ -41,7 +41,7 @@ impl DeliveryStatus {
 }
 
 /// Webhook delivery record
-#[derive(Debug, Clone, Serialize, Deserialize)]
+#[derive(Debug, Clone, Serialize, Deserialize, sqlx::FromRow)]
 pub struct WebhookDelivery {
     pub id: Uuid,
     pub webhook_id: Uuid,
@@ -326,11 +326,10 @@ pub async fn get_webhook_deliveries(
     limit: i64,
     offset: i64,
 ) -> Result<Vec<WebhookDelivery>> {
-    let deliveries: Vec<WebhookDelivery> = sqlx::query_as!(
-        WebhookDelivery,
+    let deliveries: Vec<WebhookDelivery> = sqlx::query_as::<_, WebhookDelivery>(
         r#"
         SELECT id, webhook_id, event_type, content_id, payload,
-               status, attempts, response_status, response_body,
+               status::text as status, attempts, response_status, response_body,
                response_time_ms, error_message, created_at,
                delivered_at, next_retry_at
         FROM cms_webhook_deliveries
@@ -338,10 +337,10 @@ pub async fn get_webhook_deliveries(
         ORDER BY created_at DESC
         LIMIT $2 OFFSET $3
         "#,
-        webhook_id,
-        limit,
-        offset
     )
+    .bind(webhook_id)
+    .bind(limit)
+    .bind(offset)
     .fetch_all(pool)
     .await?;
 
