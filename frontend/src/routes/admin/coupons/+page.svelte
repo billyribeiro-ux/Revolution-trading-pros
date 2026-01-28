@@ -188,7 +188,7 @@
 			<div class="filters-bar">
 				<div class="search-box">
 					<IconSearch size={18} />
-					<input type="text" placeholder="Search by code or type..." bind:value={searchQuery} />
+					<input type="text" id="search-coupons" name="search" placeholder="Search by code or type..." bind:value={searchQuery} />
 				</div>
 				<div class="filter-tabs">
 					<button

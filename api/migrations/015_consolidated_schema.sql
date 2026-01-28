@@ -623,8 +623,9 @@ CREATE INDEX IF NOT EXISTS idx_room_resources_room ON room_resources(room_id, re
 
 CREATE TABLE IF NOT EXISTS room_stats_cache (
     id BIGSERIAL PRIMARY KEY,
-    room_id BIGINT NOT NULL UNIQUE,
+    room_id BIGINT UNIQUE,
     room_slug VARCHAR(100) NOT NULL UNIQUE,
+    -- Resource stats
     total_videos INTEGER DEFAULT 0,
     total_pdfs INTEGER DEFAULT 0,
     total_documents INTEGER DEFAULT 0,
@@ -632,6 +633,23 @@ CREATE TABLE IF NOT EXISTS room_stats_cache (
     total_resources INTEGER DEFAULT 0,
     last_video_at TIMESTAMPTZ,
     last_resource_at TIMESTAMPTZ,
+    -- Trading stats (used by migration 028)
+    win_rate DECIMAL(5,2),
+    weekly_profit VARCHAR(50),
+    monthly_profit VARCHAR(50),
+    active_trades INTEGER DEFAULT 0,
+    closed_this_week INTEGER DEFAULT 0,
+    total_trades INTEGER DEFAULT 0,
+    wins INTEGER DEFAULT 0,
+    losses INTEGER DEFAULT 0,
+    avg_win DECIMAL(12,2),
+    avg_loss DECIMAL(12,2),
+    profit_factor DECIMAL(6,2),
+    avg_holding_days DECIMAL(6,2),
+    largest_win DECIMAL(12,2),
+    largest_loss DECIMAL(12,2),
+    current_streak INTEGER DEFAULT 0,
+    daily_pnl_30d JSONB DEFAULT '[]',
     calculated_at TIMESTAMPTZ DEFAULT NOW()
 );
 

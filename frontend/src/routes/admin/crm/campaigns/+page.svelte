@@ -278,7 +278,7 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input type="text" placeholder="Search campaigns..." bind:value={searchQuery} />
+			<input type="text" id="search-campaigns" name="search" placeholder="Search campaigns..." bind:value={searchQuery} />
 		</div>
 		<select class="filter-select" bind:value={selectedStatus}>
 			{#each statusOptions as option}

@@ -225,7 +225,7 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input type="text" placeholder="Search companies..." bind:value={searchQuery} />
+			<input type="text" id="search-companies" name="search" placeholder="Search companies..." bind:value={searchQuery} />
 		</div>
 		<select class="filter-select" bind:value={selectedIndustry}>
 			{#each industryOptions as option}

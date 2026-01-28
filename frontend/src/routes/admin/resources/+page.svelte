@@ -783,7 +783,7 @@
 		<div class="filters-bar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input type="text" placeholder="Search resources..." bind:value={searchQuery} />
+				<input type="text" id="search-resources" name="search" placeholder="Search resources..." bind:value={searchQuery} />
 			</div>
 			<div class="filter-group">
 				<select bind:value={selectedResourceType}>

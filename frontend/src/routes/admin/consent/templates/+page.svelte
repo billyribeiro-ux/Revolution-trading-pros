@@ -253,7 +253,7 @@
 				<circle cx="11" cy="11" r="8" />
 				<path d="m21 21-4.3-4.3" />
 			</svg>
-			<input type="text" placeholder="Search templates..." bind:value={searchQuery} />
+			<input type="text" id="search-templates" name="search" placeholder="Search templates..." bind:value={searchQuery} />
 		</div>
 		<div class="category-tabs">
 			{#each categories as category}
