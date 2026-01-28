@@ -344,8 +344,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 	}
 
 	.btn-primary:hover:not(:disabled) {
@@ -421,7 +421,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(148, 163, 184, 0.1);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin: 0 auto 1rem;
@@ -530,7 +530,7 @@
 	}
 
 	.role-checkbox input[type='checkbox']:checked + .role-card {
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 		background: rgba(230, 184, 0, 0.1);
 	}
 
@@ -550,12 +550,12 @@
 
 	.role-icon.admin {
 		background: rgba(230, 184, 0, 0.2);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.role-icon.super-admin {
 		background: rgba(179, 143, 0, 0.2);
-		color: #b38f00;
+		color: var(--primary-600);
 	}
 
 	.role-info {

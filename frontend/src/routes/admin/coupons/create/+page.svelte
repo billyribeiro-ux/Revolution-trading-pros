@@ -891,8 +891,8 @@
 
 	.type-btn.active {
 		background: rgba(230, 184, 0, 0.1);
-		border-color: #e6b800;
-		color: #e6b800;
+		border-color: var(--primary-500);
+		color: var(--primary-500);
 	}
 
 	/* Value Input */
@@ -947,7 +947,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
-		color: #e6b800;
+		color: var(--primary-500);
 		font-size: 0.9rem;
 		text-align: center;
 	}
@@ -969,7 +969,7 @@
 	.checkbox-label input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 	}
 
 	/* Restriction Tabs */
@@ -997,8 +997,8 @@
 
 	.restriction-tab.active {
 		background: rgba(230, 184, 0, 0.1);
-		border-color: #e6b800;
-		color: #e6b800;
+		border-color: var(--primary-500);
+		color: var(--primary-500);
 	}
 
 	.restriction-content {
@@ -1082,7 +1082,7 @@
 	.item-checkbox input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 		flex-shrink: 0;
 	}
 
@@ -1122,7 +1122,7 @@
 		width: 32px;
 		height: 32px;
 		border: 3px solid rgba(148, 163, 184, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -1168,10 +1168,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.875rem 2rem;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		border: none;
 		border-radius: 8px;
-		color: #0d1117;
+		color: var(--bg-base);
 		font-weight: 700;
 		font-size: 1rem;
 		cursor: pointer;

@@ -311,7 +311,7 @@
 	input:focus,
 	select:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 		background: rgba(15, 23, 42, 0.7);
 	}
 
@@ -333,8 +333,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 	}
 
 	.btn-primary:hover:not(:disabled) {

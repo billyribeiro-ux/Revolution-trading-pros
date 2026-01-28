@@ -299,12 +299,12 @@
 	}
 
 	.action-card:hover {
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 		box-shadow: 0 4px 20px rgba(230, 184, 0, 0.2);
 	}
 
 	.action-card :global(svg) {
-		color: #e6b800;
+		color: var(--primary-500);
 		margin-bottom: 12px;
 	}
 

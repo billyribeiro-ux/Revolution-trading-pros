@@ -546,7 +546,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: linear-gradient(135deg, #e6b800, #d4a600);
+		background: linear-gradient(135deg, var(--primary-500), #d4a600);
 		border: none;
 		border-radius: 0.5rem;
 		color: #0f172a;
@@ -634,7 +634,7 @@
 
 	.tab-btn.active {
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.tab-content {
@@ -676,7 +676,7 @@
 	}
 
 	.auto-slug-toggle input {
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 	}
 
 	.field-input,
@@ -696,7 +696,7 @@
 	.field-textarea:focus,
 	.field-select:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 	}
 
 	.field-input:disabled {
@@ -760,7 +760,7 @@
 	}
 
 	.btn-select-image:hover {
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 		color: #f1f5f9;
 	}
 
@@ -868,7 +868,7 @@
 		background: rgba(230, 184, 0, 0.15);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 0.5rem;
-		color: #e6b800;
+		color: var(--primary-500);
 		font-weight: 500;
 		font-size: 0.875rem;
 		text-decoration: none;

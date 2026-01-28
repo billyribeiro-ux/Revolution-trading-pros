@@ -424,7 +424,7 @@
 
 	.btn-refresh:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.btn-refresh :global(.spinning) {
@@ -512,7 +512,7 @@
 	}
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.stat-content {
@@ -678,7 +678,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.customer-info {
@@ -762,7 +762,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.btn-icon.danger:hover {
@@ -801,7 +801,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

@@ -710,7 +710,7 @@
 		height: 48px;
 		background: linear-gradient(135deg, rgba(230, 184, 0, 0.2), rgba(230, 184, 0, 0.1));
 		border-radius: 0.75rem;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.page-title {
@@ -731,7 +731,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: linear-gradient(135deg, #e6b800, #d4a600);
+		background: linear-gradient(135deg, var(--primary-500), #d4a600);
 		border: none;
 		border-radius: 0.5rem;
 		color: #0f172a;
@@ -841,7 +841,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -891,7 +891,7 @@
 	}
 
 	.webhook-url:hover {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.status-toggle {
@@ -925,7 +925,7 @@
 		border-radius: 0.25rem;
 		font-size: 0.6875rem;
 		font-weight: 600;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.webhook-stats {
@@ -1090,7 +1090,7 @@
 
 	.field-input:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 	}
 
 	.field-row {
@@ -1144,7 +1144,7 @@
 	.event-option.selected {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.field-checkbox {
@@ -1159,7 +1159,7 @@
 	.field-checkbox input {
 		width: 1rem;
 		height: 1rem;
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 	}
 
 	/* Deliveries */

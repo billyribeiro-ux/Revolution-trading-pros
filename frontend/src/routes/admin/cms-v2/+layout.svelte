@@ -113,7 +113,7 @@
 		font-weight: 700;
 		text-transform: uppercase;
 		padding: 0.125rem 0.375rem;
-		background: linear-gradient(135deg, #e6b800, #d4a600);
+		background: linear-gradient(135deg, var(--primary-500), #d4a600);
 		color: #0f172a;
 		border-radius: 0.25rem;
 	}
@@ -153,8 +153,8 @@
 	}
 
 	.cms-nav-item.active {
-		color: #e6b800;
-		border-bottom-color: #e6b800;
+		color: var(--primary-500);
+		border-bottom-color: var(--primary-500);
 	}
 
 	.cms-content {

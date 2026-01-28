@@ -1319,7 +1319,7 @@
 	}
 
 	.expand-btn:hover {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.expand-spacer {
@@ -1349,7 +1349,7 @@
 
 	.folder-item.active {
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.folder-name {
@@ -1369,14 +1369,14 @@
 
 	.folder-item.active .folder-count {
 		background: rgba(230, 184, 0, 0.2);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.folder-rename-input {
 		flex: 1;
 		padding: 0.25rem 0.5rem;
 		background: rgba(0, 0, 0, 0.2);
-		border: 1px solid #e6b800;
+		border: 1px solid var(--primary-500);
 		border-radius: 0.25rem;
 		color: #f1f5f9;
 		font-size: 0.875rem;
@@ -1429,7 +1429,7 @@
 	}
 
 	.breadcrumb:last-child {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.breadcrumbs :global(.breadcrumb-sep) {
@@ -1502,7 +1502,7 @@
 
 	.toggle-btn.active {
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.bulk-actions {
@@ -1518,7 +1518,7 @@
 	.selection-count {
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.btn-action {
@@ -1549,7 +1549,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, #e6b800, #d4a600);
+		background: linear-gradient(135deg, var(--primary-500), #d4a600);
 		border: none;
 		border-radius: 0.5rem;
 		color: #0f172a;
@@ -1669,7 +1669,7 @@
 
 	.upload-progress-fill {
 		height: 100%;
-		background: #e6b800;
+		background: var(--primary-500);
 		transition: width 0.2s;
 	}
 
@@ -1714,7 +1714,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -1751,7 +1751,7 @@
 	}
 
 	.asset-grid .asset-item.selected {
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 		background: rgba(230, 184, 0, 0.1);
 	}
 
@@ -1799,7 +1799,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: #e6b800;
+		background: var(--primary-500);
 		border-radius: 50%;
 		color: #0f172a;
 	}
@@ -1876,7 +1876,7 @@
 		width: 4px;
 		height: 60%;
 		border-radius: 0 2px 2px 0;
-		background: #e6b800;
+		background: var(--primary-500);
 	}
 
 	.asset-list .selection-indicator :global(svg) {
@@ -2019,7 +2019,7 @@
 
 	.metadata-field input:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 	}
 
 	.btn-save {
@@ -2029,7 +2029,7 @@
 		background: rgba(230, 184, 0, 0.15);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 0.375rem;
-		color: #e6b800;
+		color: var(--primary-500);
 		font-weight: 500;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -2186,7 +2186,7 @@
 
 	.form-field input:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 	}
 
 	.folder-location {
@@ -2195,7 +2195,7 @@
 	}
 
 	.folder-location strong {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.move-folder-list {
@@ -2230,7 +2230,7 @@
 	.move-folder-item.selected {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.modal-footer {
@@ -2260,7 +2260,7 @@
 
 	.btn-primary {
 		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, #e6b800, #d4a600);
+		background: linear-gradient(135deg, var(--primary-500), #d4a600);
 		border: none;
 		border-radius: 0.5rem;
 		color: #0f172a;

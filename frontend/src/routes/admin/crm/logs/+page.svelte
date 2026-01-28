@@ -628,7 +628,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

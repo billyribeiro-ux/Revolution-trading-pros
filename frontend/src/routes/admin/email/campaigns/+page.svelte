@@ -766,7 +766,7 @@
 	}
 
 	.back-btn:hover {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.header-content {
@@ -785,12 +785,12 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: #0d1117;
+		color: var(--bg-base);
 	}
 
 	.header-title h1 {
@@ -839,7 +839,7 @@
 
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 	.stat-icon.emerald {
 		background: rgba(16, 185, 129, 0.15);
@@ -893,12 +893,12 @@
 	}
 
 	.tabs button:hover {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.tabs button.active {
-		color: #e6b800;
-		border-bottom-color: #e6b800;
+		color: var(--primary-500);
+		border-bottom-color: var(--primary-500);
 	}
 
 	/* Campaign List */
@@ -1061,7 +1061,7 @@
 
 	.variant-label {
 		font-weight: 600;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.variant-subject {
@@ -1105,8 +1105,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 	}
 
 	.btn-secondary {
@@ -1324,7 +1324,7 @@
 	.checkbox-label input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 	}
 
 	.checkbox-label span {
@@ -1342,7 +1342,7 @@
 
 	input[type='range'] {
 		width: 100%;
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 	}
 
 	@media (max-width: 768px) {

@@ -584,7 +584,7 @@
 		width: 36px;
 		height: 36px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -729,7 +729,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

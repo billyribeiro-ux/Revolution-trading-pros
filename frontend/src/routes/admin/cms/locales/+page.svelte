@@ -406,7 +406,7 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #e6b800;
+		color: var(--primary-500);
 		text-decoration: none;
 		margin-bottom: 1rem;
 	}
@@ -896,7 +896,7 @@
 		font-weight: 700;
 		padding: 0.2rem 0.4rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #b38f00;
+		color: var(--primary-600);
 		border-radius: 4px;
 	}
 </style>

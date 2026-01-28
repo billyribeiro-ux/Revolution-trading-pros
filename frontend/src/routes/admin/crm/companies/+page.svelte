@@ -419,8 +419,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -493,7 +493,7 @@
 	}
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 	.stat-icon.amber {
 		background: rgba(245, 158, 11, 0.15);
@@ -630,7 +630,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 10px;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -674,7 +674,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border-radius: 4px;
 		font-size: 0.75rem;
-		color: #ffd11a;
+		color: var(--primary-400);
 		text-transform: capitalize;
 	}
 
@@ -700,7 +700,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.btn-icon.danger:hover {
@@ -747,7 +747,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

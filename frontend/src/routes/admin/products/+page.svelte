@@ -362,9 +362,9 @@
 	}
 
 	.type-btn.active {
-		background: var(--admin-btn-primary-bg, linear-gradient(135deg, #e6b800 0%, #b38f00 100%));
+		background: var(--admin-btn-primary-bg, linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%));
 		border-color: transparent;
-		color: var(--admin-btn-primary-text, #0d1117);
+		color: var(--admin-btn-primary-text, var(--bg-base));
 	}
 
 	.count-badge {
@@ -566,7 +566,7 @@
 		border-radius: 6px;
 		font-size: 1rem;
 		font-weight: 700;
-		color: var(--admin-accent-primary, #e6b800);
+		color: var(--primary-500);
 	}
 
 	.original-price {

@@ -837,7 +837,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 	}
 
 	.header-content :global(.header-icon) {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.page-title {
@@ -858,7 +858,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: linear-gradient(135deg, #e6b800, #d4a600);
+		background: linear-gradient(135deg, var(--primary-500), #d4a600);
 		border: none;
 		border-radius: 0.5rem;
 		color: #0f172a;
@@ -945,7 +945,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 
 	.tab-btn.active {
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	/* Tab Content */
@@ -1036,7 +1036,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 	.field-textarea:focus,
 	.field-select:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 	}
 
 	.field-textarea {
@@ -1093,7 +1093,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 	.toggle input:checked + .toggle-slider::after,
 	.toggle-field input:checked + .toggle-slider::after {
 		transform: translateX(20px);
-		background: #e6b800;
+		background: var(--primary-500);
 	}
 
 	.toggle-label {
@@ -1130,7 +1130,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 		background: rgba(230, 184, 0, 0.15);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 0.5rem;
-		color: #e6b800;
+		color: var(--primary-500);
 		font-weight: 500;
 		font-size: 0.875rem;
 		cursor: pointer;
@@ -1216,7 +1216,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 		border-radius: 0.25rem;
 		font-size: 0.6875rem;
 		font-weight: 600;
-		color: #e6b800;
+		color: var(--primary-500);
 		text-transform: uppercase;
 		margin-bottom: 0.25rem;
 	}
@@ -1304,7 +1304,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 
 	.json-editor:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 	}
 
 	/* Sitemap */
@@ -1356,8 +1356,8 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 	}
 
 	.btn-add-path:hover {
-		border-color: #e6b800;
-		color: #e6b800;
+		border-color: var(--primary-500);
+		color: var(--primary-500);
 	}
 
 	.sitemap-preview,
@@ -1380,7 +1380,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 	.preview-url {
 		font-family: 'Fira Code', 'Monaco', monospace;
 		font-size: 0.8125rem;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.preview-content {
@@ -1409,7 +1409,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 
 	.robots-editor:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 	}
 
 	.robots-tips {
@@ -1443,7 +1443,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 		border-radius: 0.25rem;
 		font-family: 'Fira Code', 'Monaco', monospace;
 		font-size: 0.75rem;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	/* Social */

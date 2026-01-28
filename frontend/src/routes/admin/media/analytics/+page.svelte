@@ -984,8 +984,8 @@
 	}
 
 	.hero-card.eco {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 	}
 
 	.hero-icon {
@@ -1105,7 +1105,7 @@
 	}
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 	.stat-icon.orange {
 		background: #fef3c7;
@@ -1175,7 +1175,7 @@
 	}
 
 	.legend-item.original .dot {
-		background: #e6b800;
+		background: var(--primary-500);
 	}
 	.legend-item.optimized .dot {
 		background: #10b981;

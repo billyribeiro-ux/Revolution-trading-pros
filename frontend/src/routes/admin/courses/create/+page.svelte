@@ -2990,7 +2990,7 @@
 	}
 
 	.pricing-details h4 {
-		color: #e6b800;
+		color: var(--primary-500);
 		font-size: 1rem;
 		margin: 1.5rem 0 0.75rem;
 	}
@@ -3135,7 +3135,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #e6b800, #b38f00);
+		background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
 		transition: width 0.5s ease;
 	}
 
@@ -3238,7 +3238,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
-		color: #e6b800;
+		color: var(--primary-500);
 		font-size: 0.875rem;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -3475,7 +3475,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
-		color: #e6b800;
+		color: var(--primary-500);
 		cursor: pointer;
 		transition: all 0.2s;
 		display: inline-flex;
@@ -4481,7 +4481,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		color: white;
 	}
 

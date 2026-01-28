@@ -601,7 +601,7 @@ https://yourdomain.com/page-3"
 	}
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 	.stat-icon.yellow {
 		background: rgba(251, 191, 36, 0.15);
@@ -981,8 +981,8 @@ https://yourdomain.com/page-3"
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 	}
 
 	.btn-primary.bing {

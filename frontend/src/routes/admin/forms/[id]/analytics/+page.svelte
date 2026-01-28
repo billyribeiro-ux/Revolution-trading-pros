@@ -92,7 +92,7 @@
 	}
 
 	.btn-back:hover {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	h1 {
@@ -116,7 +116,7 @@
 	.btn-action {
 		padding: 0.875rem 1.5rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #e6b800;
+		color: var(--primary-500);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		font-weight: 600;

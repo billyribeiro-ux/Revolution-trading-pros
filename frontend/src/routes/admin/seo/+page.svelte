@@ -566,7 +566,7 @@
 	.blob-3 {
 		width: 350px;
 		height: 350px;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		top: 50%;
 		right: 10%;
 		animation-delay: -14s;
@@ -618,9 +618,9 @@
 		justify-content: center;
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border-radius: 16px;
-		color: #0d1117;
+		color: var(--bg-base);
 		box-shadow: 0 8px 24px rgba(230, 184, 0, 0.3);
 	}
 
@@ -661,7 +661,7 @@
 	.connection-badge.connected {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.refresh-btn {
@@ -719,7 +719,7 @@
 		width: 48px;
 		height: 48px;
 		border: 3px solid rgba(148, 163, 184, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
@@ -772,7 +772,7 @@
 	}
 
 	.visibility .stat-icon {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 	}
 
 	.keywords .stat-icon {
@@ -784,7 +784,7 @@
 	}
 
 	.technical .stat-icon {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 	}
 
 	.stat-label {
@@ -878,7 +878,7 @@
 	.connected-services h3 {
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #ffd11a;
+		color: var(--primary-400);
 		margin: 0;
 	}
 
@@ -897,7 +897,7 @@
 		background: rgba(230, 184, 0, 0.15);
 		border-radius: 8px;
 		font-size: 0.8125rem;
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.service-icon-small {
@@ -905,7 +905,7 @@
 	}
 
 	:global(.check-icon) {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.manage-connections-btn {
@@ -916,7 +916,7 @@
 		background: rgba(230, 184, 0, 0.2);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 8px;
-		color: #ffd11a;
+		color: var(--primary-400);
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;

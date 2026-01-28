@@ -441,7 +441,7 @@
 	}
 
 	.tab.active {
-		color: #ffd11a;
+		color: var(--primary-400);
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
 	}
@@ -549,7 +549,7 @@
 	}
 
 	.toggle-label input:checked + .toggle-switch {
-		background: #e6b800;
+		background: var(--primary-500);
 	}
 
 	.toggle-label input:checked + .toggle-switch::after {
@@ -573,7 +573,7 @@
 	.checkbox-label input {
 		width: 18px;
 		height: 18px;
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 	}
 
 	.form-actions {
@@ -587,8 +587,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -633,7 +633,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

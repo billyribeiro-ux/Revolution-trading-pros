@@ -1649,7 +1649,7 @@
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
 		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
-		color: #0d1117;
+		color: var(--bg-base);
 		border: none;
 		border-radius: 6px;
 		font-weight: 600;
@@ -1839,8 +1839,8 @@
 	}
 
 	.room-tab.active {
-		background: var(--room-color, #e6b800);
-		border-color: var(--room-color, #e6b800);
+		background: var(--room-color, var(--primary-500));
+		border-color: var(--room-color, var(--primary-500));
 		color: white;
 	}
 
@@ -2076,12 +2076,12 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 0.25rem 0.5rem;
-		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, var(--primary-500)) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, var(--primary-500)) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.7rem;
 		font-weight: 500;
-		color: var(--tag-color, #e6b800);
+		color: var(--tag-color, var(--primary-500));
 		white-space: nowrap;
 	}
 
@@ -2363,15 +2363,15 @@
 	}
 
 	.category-btn:hover {
-		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
-		border-color: color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
-		color: var(--tag-color, #e6b800);
+		background: color-mix(in srgb, var(--tag-color, var(--primary-500)) 15%, transparent);
+		border-color: color-mix(in srgb, var(--tag-color, var(--primary-500)) 30%, transparent);
+		color: var(--tag-color, var(--primary-500));
 	}
 
 	.category-btn.selected {
-		background: color-mix(in srgb, var(--tag-color, #e6b800) 20%, transparent);
-		border-color: var(--tag-color, #e6b800);
-		color: var(--tag-color, #e6b800);
+		background: color-mix(in srgb, var(--tag-color, var(--primary-500)) 20%, transparent);
+		border-color: var(--tag-color, var(--primary-500));
+		color: var(--tag-color, var(--primary-500));
 	}
 
 	.selected-categories {
@@ -2395,12 +2395,12 @@
 		align-items: center;
 		gap: 0.375rem;
 		padding: 0.375rem 0.625rem;
-		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, var(--primary-500)) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, var(--primary-500)) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 500;
-		color: var(--tag-color, #e6b800);
+		color: var(--tag-color, var(--primary-500));
 	}
 
 	.selected-tag button {

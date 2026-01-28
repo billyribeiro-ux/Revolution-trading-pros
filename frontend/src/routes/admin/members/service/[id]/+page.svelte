@@ -447,7 +447,7 @@
 	}
 
 	.back-btn:hover {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.header-content {
@@ -466,7 +466,7 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
@@ -515,7 +515,7 @@
 
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 	.stat-icon.emerald {
 		background: rgba(16, 185, 129, 0.15);
@@ -619,7 +619,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -692,7 +692,7 @@
 		width: 40px;
 		height: 40px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -721,7 +721,7 @@
 	}
 
 	.plan-name {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.revenue {
@@ -756,7 +756,7 @@
 	.action-btn:hover {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	/* Pagination */
@@ -796,7 +796,7 @@
 	.page-btn:hover:not(:disabled) {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.page-btn:disabled {
@@ -889,7 +889,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
-		color: #e6b800;
+		color: var(--primary-500);
 		font-size: 0.8125rem;
 		font-weight: 500;
 		cursor: pointer;
@@ -954,8 +954,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 	}
 
 	.btn-primary:disabled {

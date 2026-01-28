@@ -472,8 +472,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;
@@ -535,7 +535,7 @@
 	}
 	.stat-icon.gold {
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 	.stat-icon.amber {
 		background: rgba(245, 158, 11, 0.15);
@@ -685,7 +685,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border-radius: 4px;
 		font-size: 0.8rem;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.btn-copy {
@@ -704,7 +704,7 @@
 
 	.btn-copy:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.btn-copy.copied {
@@ -790,7 +790,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.btn-icon.danger:hover {
@@ -829,7 +829,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

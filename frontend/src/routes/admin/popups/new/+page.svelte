@@ -679,7 +679,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		color: white;
 		font-weight: 600;
 		border-radius: 6px;
@@ -773,7 +773,7 @@
 
 	/* Checkboxes */
 	:global(.page input[type='checkbox']) {
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 	}
 
 	/* Info boxes */

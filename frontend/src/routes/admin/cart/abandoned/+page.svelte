@@ -807,7 +807,7 @@
 	}
 
 	.back-btn:hover {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.header-content {
@@ -936,7 +936,7 @@
 	}
 	.metric-card.average .metric-icon {
 		background: rgba(230, 184, 0, 0.15);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.metric-label {
@@ -1031,7 +1031,7 @@
 	}
 	.stage-icon.clicked {
 		background: rgba(230, 184, 0, 0.15);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 	.stage-icon.recovered {
 		background: rgba(16, 185, 129, 0.15);
@@ -1077,7 +1077,7 @@
 		background: #38bdf8;
 	}
 	.stage-fill.clicked {
-		background: #ffd11a;
+		background: var(--primary-400);
 	}
 	.stage-fill.recovered {
 		background: #34d399;
@@ -1367,7 +1367,7 @@
 
 	.status-primary {
 		background: rgba(230, 184, 0, 0.15);
-		color: #ffd11a;
+		color: var(--primary-400);
 		border-color: rgba(230, 184, 0, 0.3);
 	}
 

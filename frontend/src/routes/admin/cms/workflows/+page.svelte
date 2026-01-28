@@ -432,7 +432,7 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #e6b800;
+		color: var(--primary-500);
 		text-decoration: none;
 		margin-bottom: 1rem;
 	}
@@ -492,7 +492,7 @@
 	}
 	.stat-pill.purple {
 		background: rgba(230, 184, 0, 0.1);
-		color: #b38f00;
+		color: var(--primary-600);
 	}
 	.stat-pill.emerald {
 		background: rgba(16, 185, 129, 0.1);
@@ -575,8 +575,8 @@
 		border-color: #d97706;
 	}
 	.stage-tab.active.purple {
-		background: #b38f00;
-		border-color: #b38f00;
+		background: var(--primary-600);
+		border-color: var(--primary-600);
 	}
 	.stage-tab.active.emerald {
 		background: #059669;
@@ -647,7 +647,7 @@
 	}
 	.stage-badge.purple {
 		background: rgba(230, 184, 0, 0.12);
-		color: #b38f00;
+		color: var(--primary-600);
 	}
 	.stage-badge.emerald {
 		background: rgba(16, 185, 129, 0.12);
@@ -811,7 +811,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #f1f5f9;
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -933,7 +933,7 @@
 	}
 
 	.stage-item.active .stage-dot {
-		background: #e6b800;
+		background: var(--primary-500);
 		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.2);
 	}
 
@@ -942,7 +942,7 @@
 	}
 
 	.stage-item.active .stage-name {
-		color: #e6b800;
+		color: var(--primary-500);
 		font-weight: 600;
 	}
 

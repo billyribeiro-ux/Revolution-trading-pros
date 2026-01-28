@@ -332,12 +332,12 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 	}
 
 	.btn-primary:hover {
-		background: linear-gradient(135deg, #ffd11a 0%, #e6b800 100%);
+		background: linear-gradient(135deg, var(--primary-400) 0%, var(--primary-500) 100%);
 	}
 
 	.btn-danger {
@@ -421,9 +421,9 @@
 	}
 
 	.filter-tab.active {
-		background: #e6b800;
-		color: #0d1117;
-		border-color: #e6b800;
+		background: var(--primary-500);
+		color: var(--bg-base);
+		border-color: var(--primary-500);
 	}
 
 	.redirects-table {
@@ -468,7 +468,7 @@
 		display: inline-block;
 		padding: 0.125rem 0.5rem;
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 		border-radius: 4px;
 		font-size: 0.75rem;
 		font-weight: 600;
@@ -507,7 +507,7 @@
 
 	.type-badge.type-308 {
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.type-badge.type-410 {

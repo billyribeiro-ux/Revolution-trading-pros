@@ -154,7 +154,7 @@
 	.btn-theme {
 		padding: 0.875rem 1.5rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #e6b800;
+		color: var(--primary-500);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 10px;
 		font-weight: 600;
@@ -170,7 +170,7 @@
 
 	.btn-embed {
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -205,7 +205,7 @@
 		margin-top: 1rem;
 		padding: 0.75rem 1.5rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #e6b800;
+		color: var(--primary-500);
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-weight: 600;

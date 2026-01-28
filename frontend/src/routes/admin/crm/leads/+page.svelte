@@ -1260,7 +1260,7 @@
 	}
 
 	.page-header h1 :global(svg) {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.subtitle {
@@ -1381,7 +1381,7 @@
 	}
 
 	.search-box:focus-within {
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 		box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 	}
 
@@ -1511,7 +1511,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		color: white;
 		border: none;
 		border-radius: 8px;
@@ -1571,7 +1571,7 @@
 
 	.filter-group select:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 	}
 
 	.btn-clear-filters {
@@ -1674,7 +1674,7 @@
 		width: 42px;
 		height: 42px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1767,7 +1767,7 @@
 
 	.score-fill {
 		height: 100%;
-		background: linear-gradient(90deg, #e6b800, #b38f00);
+		background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
 		border-radius: 3px;
 		transition: width 0.3s;
 	}
@@ -1901,7 +1901,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 16px;
@@ -1952,7 +1952,7 @@
 	}
 
 	.modal-header h3 :global(svg) {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.modal-close {
@@ -2019,7 +2019,7 @@
 	.form-group select:focus,
 	.form-group textarea:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 	}
 
 	.form-group textarea {

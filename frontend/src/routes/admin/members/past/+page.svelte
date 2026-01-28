@@ -904,8 +904,8 @@
 		--pm-text: #f1f5f9;
 		--pm-text-muted: #94a3b8;
 		--pm-text-dim: #64748b;
-		--pm-primary: #e6b800;
-		--pm-primary-light: #ffd11a;
+		--pm-primary: var(--primary-500);
+		--pm-primary-light: var(--primary-400);
 		--pm-success: #34d399;
 		--pm-warning: #fbbf24;
 		--pm-error: #f87171;
@@ -960,7 +960,7 @@
 	.title-icon {
 		width: 64px;
 		height: 64px;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border-radius: 20px;
 		display: flex;
 		align-items: center;
@@ -1186,7 +1186,7 @@
 
 	.stat-card.primary .stat-icon {
 		background: rgba(230, 184, 0, 0.15);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.stat-card.success .stat-icon {
@@ -1426,10 +1426,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border: none;
 		border-radius: 10px;
-		color: #0d1117;
+		color: var(--bg-base);
 		font-weight: 600;
 		cursor: pointer;
 		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
@@ -1887,10 +1887,10 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border: none;
 		border-radius: 12px;
-		color: #0d1117;
+		color: var(--bg-base);
 		font-weight: 600;
 		cursor: pointer;
 		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);

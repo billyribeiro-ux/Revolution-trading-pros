@@ -619,7 +619,7 @@
 	}
 
 	.back-btn:hover {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.header-content {
@@ -678,7 +678,7 @@
 
 	.btn-refresh:hover {
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	/* Campaign Actions */
@@ -1069,7 +1069,7 @@
 	}
 
 	.product-name {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.spending {
@@ -1128,7 +1128,7 @@
 	.action-btn:hover {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.action-btn.winback:hover {
@@ -1174,7 +1174,7 @@
 	.page-btn:hover:not(:disabled) {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.page-btn:disabled {

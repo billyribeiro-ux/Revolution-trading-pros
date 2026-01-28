@@ -311,7 +311,7 @@
 	   ═══════════════════════════════════════════════════════════════════════════════ */
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		color: white;
 		border: none;
 		padding: 0.625rem 1.25rem;

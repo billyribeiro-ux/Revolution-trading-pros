@@ -547,7 +547,7 @@
 		height: 600px;
 		top: -200px;
 		right: -200px;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		animation: float 20s ease-in-out infinite;
 	}
 
@@ -556,7 +556,7 @@
 		height: 500px;
 		bottom: -150px;
 		left: -150px;
-		background: linear-gradient(135deg, #3b82f6, #b38f00);
+		background: linear-gradient(135deg, #3b82f6, var(--primary-600));
 		animation: float 25s ease-in-out infinite reverse;
 	}
 
@@ -617,8 +617,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 		border: none;
 		border-radius: 10px;
 		font-size: 0.875rem;
@@ -687,8 +687,8 @@
 	}
 
 	.tab-btn.active {
-		color: #e6b800;
-		border-bottom-color: #e6b800;
+		color: var(--primary-500);
+		border-bottom-color: var(--primary-500);
 	}
 
 	.tab-icon {
@@ -718,7 +718,7 @@
 		width: 48px;
 		height: 48px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -773,7 +773,7 @@
 
 	.service-card:hover {
 		background: rgba(30, 41, 59, 0.8);
-		border-color: var(--service-color, #e6b800);
+		border-color: var(--service-color, var(--primary-500));
 		transform: translateY(-2px);
 	}
 
@@ -792,7 +792,7 @@
 	}
 
 	.service-card:hover :global(.service-arrow) {
-		color: var(--service-color, #e6b800);
+		color: var(--service-color, var(--primary-500));
 		transform: translateX(4px);
 	}
 

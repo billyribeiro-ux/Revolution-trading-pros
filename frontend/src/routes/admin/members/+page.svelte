@@ -1067,7 +1067,7 @@
 		height: 600px;
 		top: -200px;
 		right: -200px;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		animation: float 20s ease-in-out infinite;
 	}
 
@@ -1076,7 +1076,7 @@
 		height: 500px;
 		bottom: -150px;
 		left: -150px;
-		background: linear-gradient(135deg, #b38f00, #1e293b);
+		background: linear-gradient(135deg, var(--primary-600), #1e293b);
 		animation: float 25s ease-in-out infinite reverse;
 	}
 
@@ -1935,7 +1935,7 @@
 
 	.btn-primary {
 		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
-		color: #0d1117;
+		color: var(--bg-base);
 		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
 	}
 
@@ -2332,7 +2332,7 @@
 
 	.export-options button:hover:not(:disabled) {
 		background: var(--admin-surface-hover, rgba(230, 184, 0, 0.1));
-		color: var(--admin-accent-primary, #e6b800);
+		color: var(--primary-500);
 	}
 
 	.export-options button:disabled {
@@ -2359,11 +2359,11 @@
 	}
 
 	.member-info-btn:hover .member-name {
-		color: var(--admin-accent-primary, #e6b800);
+		color: var(--primary-500);
 	}
 
 	.member-info-btn:focus-visible {
-		outline: 2px solid var(--admin-accent-primary, #e6b800);
+		outline: 2px solid var(--primary-500);
 		outline-offset: 2px;
 	}
 

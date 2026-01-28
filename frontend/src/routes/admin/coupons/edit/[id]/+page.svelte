@@ -715,7 +715,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		color: white;
 	}
 
@@ -944,7 +944,7 @@
 	}
 
 	.toggle-checkbox:checked + .toggle-switch {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		border-color: transparent;
 	}
 

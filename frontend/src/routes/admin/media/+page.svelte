@@ -1814,7 +1814,7 @@
 	}
 	.stat-icon.gold {
 		background: #fff8e0;
-		color: #b38f00;
+		color: var(--primary-600);
 	}
 	.stat-icon.emerald {
 		background: #d1fae5;
@@ -1962,7 +1962,7 @@
 		width: 20px;
 		height: 20px;
 		border: 2px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}
@@ -1994,7 +1994,7 @@
 
 	.progress-fill {
 		height: 100%;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		transition: width 0.3s;
 	}
 
@@ -2107,7 +2107,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		color: white;
 		border: none;
 	}
@@ -2227,7 +2227,7 @@
 	}
 
 	.media-grid .media-item.selected {
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 		box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.3);
 	}
 
@@ -2319,7 +2319,7 @@
 		width: 18px;
 		height: 18px;
 		cursor: pointer;
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 	}
 
 	.item-info {
@@ -2757,7 +2757,7 @@
 	}
 
 	.toast-info svg {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -2819,7 +2819,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(99, 102, 241, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

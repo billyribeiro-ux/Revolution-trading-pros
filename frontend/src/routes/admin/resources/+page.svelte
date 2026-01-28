@@ -1246,8 +1246,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.25rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 		border: none;
 		border-radius: 10px;
 		font-weight: 600;
@@ -1320,7 +1320,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.2);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.btn-icon.danger:hover {
@@ -1365,8 +1365,8 @@
 	}
 
 	.room-tab.active {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 	}
 
 	/* Stats Bar */
@@ -1522,7 +1522,7 @@
 	}
 
 	.type-badge.video {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 	.type-badge.pdf {
 		color: #f87171;
@@ -1582,11 +1582,11 @@
 
 	.tag {
 		padding: 0.2rem 0.5rem;
-		background: color-mix(in srgb, var(--tag-color, #e6b800) 20%, transparent);
+		background: color-mix(in srgb, var(--tag-color, var(--primary-500)) 20%, transparent);
 		border-radius: 4px;
 		font-size: 0.7rem;
 		font-weight: 500;
-		color: var(--tag-color, #ffd11a);
+		color: var(--tag-color, var(--primary-400));
 	}
 
 	.resource-actions {
@@ -1618,7 +1618,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -1769,7 +1769,7 @@
 	.form-group textarea:focus,
 	.form-group select:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 	}
 
 	.form-group textarea {
@@ -1817,14 +1817,14 @@
 	}
 
 	.tag-btn:hover {
-		border-color: var(--tag-color, #e6b800);
-		color: var(--tag-color, #ffd11a);
+		border-color: var(--tag-color, var(--primary-500));
+		color: var(--tag-color, var(--primary-400));
 	}
 
 	.tag-btn.selected {
-		background: color-mix(in srgb, var(--tag-color, #e6b800) 20%, transparent);
-		border-color: var(--tag-color, #e6b800);
-		color: var(--tag-color, #ffd11a);
+		background: color-mix(in srgb, var(--tag-color, var(--primary-500)) 20%, transparent);
+		border-color: var(--tag-color, var(--primary-500));
+		color: var(--tag-color, var(--primary-400));
 	}
 
 	/* Form Options */
@@ -1846,7 +1846,7 @@
 	.checkbox-label input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 	}
 
 	/* Replace Modal */

@@ -619,7 +619,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: linear-gradient(135deg, #e6b800, #d4a600);
+		background: linear-gradient(135deg, var(--primary-500), #d4a600);
 		border: none;
 		border-radius: 0.5rem;
 		color: #0f172a;
@@ -708,7 +708,7 @@
 
 	.filter-badge {
 		padding: 0.125rem 0.375rem;
-		background: #e6b800;
+		background: var(--primary-500);
 		color: #0f172a;
 		border-radius: 0.25rem;
 		font-size: 0.6875rem;
@@ -759,7 +759,7 @@
 	.selection-count {
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.btn-action {
@@ -920,7 +920,7 @@
 		width: 16px;
 		height: 16px;
 		cursor: pointer;
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 	}
 
 	.content-link {
@@ -932,7 +932,7 @@
 	}
 
 	.content-link :global(.type-icon) {
-		color: #e6b800;
+		color: var(--primary-500);
 		flex-shrink: 0;
 	}
 
@@ -1044,7 +1044,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: linear-gradient(135deg, #e6b800, #d4a600);
+		background: linear-gradient(135deg, var(--primary-500), #d4a600);
 		border: none;
 		border-radius: 0.5rem;
 		color: #0f172a;
@@ -1057,7 +1057,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}

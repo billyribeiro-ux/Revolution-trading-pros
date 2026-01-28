@@ -1259,8 +1259,8 @@
 
 	.back-btn:hover {
 		background: #1e293b;
-		color: #e6b800;
-		border-color: #e6b800;
+		color: var(--primary-500);
+		border-color: var(--primary-500);
 	}
 
 	/* Header */
@@ -1287,7 +1287,7 @@
 		width: 80px;
 		height: 80px;
 		border-radius: 50%;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -1368,7 +1368,7 @@
 
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #e6b800;
+		color: var(--primary-500);
 		border-color: rgba(230, 184, 0, 0.3);
 	}
 
@@ -1383,7 +1383,7 @@
 		align-items: center;
 		gap: 8px;
 		padding: 10px 20px;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		color: white;
 		border: none;
 		border-radius: 10px;
@@ -1454,7 +1454,7 @@
 		color: #60a5fa;
 	}
 	.stat-box :global(.gold) {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 	.stat-box :global(.cyan) {
 		color: #22d3ee;
@@ -1518,7 +1518,7 @@
 	}
 
 	.tab-btn.active {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		color: white;
 	}
 
@@ -1552,7 +1552,7 @@
 	}
 
 	.info-card h3 :global(svg) {
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.card-header {
@@ -1574,7 +1574,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 1px solid rgba(230, 184, 0, 0.3);
 		border-radius: 6px;
-		color: #e6b800;
+		color: var(--primary-500);
 		font-size: 0.75rem;
 		font-weight: 600;
 		cursor: pointer;
@@ -1762,7 +1762,7 @@
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border-radius: 10px;
 		color: white;
 		flex-shrink: 0;
@@ -1886,7 +1886,7 @@
 		width: 12px;
 		height: 12px;
 		border-radius: 50%;
-		background: #e6b800;
+		background: var(--primary-500);
 		flex-shrink: 0;
 		margin-top: 4px;
 	}
@@ -1973,7 +1973,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 16px;
@@ -2000,7 +2000,7 @@
 	.error-state button {
 		margin-top: 16px;
 		padding: 10px 20px;
-		background: #e6b800;
+		background: var(--primary-500);
 		color: white;
 		border: none;
 		border-radius: 8px;
@@ -2093,7 +2093,7 @@
 	.list-option:hover {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.note-input {
@@ -2111,7 +2111,7 @@
 
 	.note-input:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 	}
 
 	/* Responsive */

@@ -1147,7 +1147,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.5rem;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		color: white;
 		border: none;
 		padding: 0.5rem 1rem;
@@ -1212,7 +1212,7 @@
 		width: 48px;
 		height: 48px;
 		border: 3px solid rgba(148, 163, 184, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;
@@ -1438,7 +1438,7 @@
 	}
 
 	.overview-card.database .card-icon {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 	}
 
 	.overview-card.server .card-icon {
@@ -1761,7 +1761,7 @@
 
 	.metric-progress {
 		height: 100%;
-		background: linear-gradient(90deg, #e6b800, #ffd11a);
+		background: linear-gradient(90deg, var(--primary-500), var(--primary-400));
 		border-radius: 3px;
 		transition: width 0.5s ease-out;
 	}
@@ -1841,7 +1841,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border: none;
 		border-radius: 6px;
 		color: white;

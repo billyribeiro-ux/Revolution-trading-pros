@@ -676,7 +676,7 @@
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
 		background: rgba(230, 184, 0, 0.1);
-		color: #e6b800;
+		color: var(--primary-500);
 		border-radius: 8px;
 		text-decoration: none;
 		font-size: 0.875rem;
@@ -721,8 +721,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 	}
 
 	.btn-primary:hover:not(:disabled) {
@@ -737,7 +737,7 @@
 
 	.btn-secondary {
 		background: rgba(230, 184, 0, 0.1);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.btn-secondary:hover {
@@ -783,8 +783,8 @@
 	}
 
 	.tab.active {
-		color: #e6b800;
-		border-bottom-color: #e6b800;
+		color: var(--primary-500);
+		border-bottom-color: var(--primary-500);
 		background: rgba(230, 184, 0, 0.05);
 	}
 
@@ -819,8 +819,8 @@
 
 	.btn-add {
 		padding: 0.5rem 1rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 		border: none;
 		border-radius: 8px;
 		font-weight: 600;

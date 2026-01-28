@@ -268,7 +268,7 @@
 	.schema-type {
 		font-size: 0.85rem;
 		font-weight: 600;
-		color: #b38f00;
+		color: var(--primary-600);
 		text-transform: uppercase;
 		letter-spacing: 0.5px;
 	}
@@ -384,7 +384,7 @@
 	}
 
 	.type-card:hover {
-		border-color: #b38f00;
+		border-color: var(--primary-600);
 		box-shadow: 0 2px 8px rgba(230, 184, 0, 0.1);
 	}
 
@@ -396,7 +396,7 @@
 
 	.use-template {
 		font-size: 0.85rem;
-		color: #b38f00;
+		color: var(--primary-600);
 		text-decoration: none;
 	}
 

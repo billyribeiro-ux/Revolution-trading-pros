@@ -591,7 +591,7 @@
 	}
 
 	.back-btn:hover {
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.header-content {
@@ -610,7 +610,7 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
@@ -671,8 +671,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 	}
 
 	.btn-secondary {
@@ -774,8 +774,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 		font-size: 0.875rem;
 		font-weight: 600;
 		border-radius: 10px;
@@ -877,7 +877,7 @@
 
 	.metric-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 	.metric-icon.emerald {
 		background: rgba(16, 185, 129, 0.15);
@@ -979,7 +979,7 @@
 	}
 
 	.legend-dot.purple {
-		background: #ffd11a;
+		background: var(--primary-400);
 	}
 	.legend-dot.emerald {
 		background: #34d399;
@@ -1024,7 +1024,7 @@
 
 	.bar-members {
 		width: 60%;
-		background: linear-gradient(180deg, #ffd11a, #e6b800);
+		background: linear-gradient(180deg, var(--primary-400), var(--primary-500));
 	}
 
 	.bar-mini-group {
@@ -1100,7 +1100,7 @@
 	.cohort-name {
 		text-align: left;
 		font-weight: 500;
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	/* Bottom Grid */

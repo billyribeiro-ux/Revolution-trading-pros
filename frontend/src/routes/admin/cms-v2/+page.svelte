@@ -471,7 +471,7 @@
 	.stat-card:hover .stat-arrow {
 		opacity: 1;
 		transform: translate(0, 0);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.skeleton {
@@ -517,7 +517,7 @@
 		display: flex;
 		align-items: center;
 		gap: 0.75rem;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.panel-title {
@@ -539,7 +539,7 @@
 		gap: 0.375rem;
 		font-size: 0.8125rem;
 		font-weight: 500;
-		color: #e6b800;
+		color: var(--primary-500);
 		text-decoration: none;
 		transition: opacity 0.15s;
 	}
@@ -585,7 +585,7 @@
 		justify-content: center;
 		background: rgba(230, 184, 0, 0.1);
 		border-radius: 0.375rem;
-		color: #e6b800;
+		color: var(--primary-500);
 		flex-shrink: 0;
 	}
 
@@ -670,7 +670,7 @@
 		justify-content: center;
 		background: rgba(230, 184, 0, 0.1);
 		border-radius: 0.5rem;
-		color: #e6b800;
+		color: var(--primary-500);
 		flex-shrink: 0;
 	}
 
@@ -720,7 +720,7 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.625rem 1rem;
-		background: linear-gradient(135deg, #e6b800, #d4a600);
+		background: linear-gradient(135deg, var(--primary-500), #d4a600);
 		border: none;
 		border-radius: 0.5rem;
 		color: #0f172a;

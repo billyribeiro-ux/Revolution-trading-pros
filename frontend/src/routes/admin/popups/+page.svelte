@@ -279,8 +279,8 @@
 		align-items: center;
 		gap: 0.5rem;
 		padding: 0.75rem 1.5rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 		font-weight: 600;
 		border-radius: 6px;
 		border: none;
@@ -319,8 +319,8 @@
 	}
 
 	.tab.active {
-		color: #e6b800;
-		border-bottom-color: #e6b800;
+		color: var(--primary-500);
+		border-bottom-color: var(--primary-500);
 	}
 
 	/* Popups Grid */
@@ -371,7 +371,7 @@
 		border: none;
 		border-radius: 8px;
 		padding: 0.5rem;
-		color: #e6b800;
+		color: var(--primary-500);
 		cursor: pointer;
 		transition: all 0.2s;
 		display: flex;
@@ -441,7 +441,7 @@
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 6px;
 		font-size: 0.75rem;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.card-actions {
@@ -491,7 +491,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(230, 184, 0, 0.1);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 		margin-bottom: 1rem;

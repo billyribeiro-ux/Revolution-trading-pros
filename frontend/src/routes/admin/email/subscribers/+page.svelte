@@ -579,7 +579,7 @@
 	.title-icon {
 		width: 56px;
 		height: 56px;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border-radius: 16px;
 		display: flex;
 		align-items: center;
@@ -761,7 +761,7 @@
 	.subscriber-avatar {
 		width: 36px;
 		height: 36px;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border-radius: 50%;
 		display: flex;
 		align-items: center;
@@ -798,7 +798,7 @@
 	.tag {
 		padding: 0.125rem 0.5rem;
 		background: rgba(230, 184, 0, 0.15);
-		color: #ffd11a;
+		color: var(--primary-400);
 		border-radius: 4px;
 		font-size: 0.6875rem;
 	}
@@ -829,7 +829,7 @@
 		top: 0;
 		height: 100%;
 		width: var(--width, 0%);
-		background: linear-gradient(90deg, #e6b800, #b38f00);
+		background: linear-gradient(90deg, var(--primary-500), var(--primary-600));
 		border-radius: 3px;
 	}
 
@@ -883,7 +883,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid rgba(148, 163, 184, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -911,8 +911,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 	}
 
 	.btn-secondary {

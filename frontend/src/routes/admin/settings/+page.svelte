@@ -1300,7 +1300,7 @@
 <style>
 	/* ═══════════════════════════════════════════════════════════════════════════
      * ADMIN SETTINGS - Apple ICT7 Principal Engineer Grade
-     * Color Hierarchy: RTP Gold (#e6b800, #b38f00) primary accent
+     * Color Hierarchy: RTP Gold (var(--primary-500), var(--primary-600)) primary accent
      * ═══════════════════════════════════════════════════════════════════════════ */
 
 	/* Main container - consistent with other admin pages */
@@ -1331,7 +1331,7 @@
 		height: 600px;
 		top: -200px;
 		right: -200px;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		animation: float 20s ease-in-out infinite;
 	}
 
@@ -1340,7 +1340,7 @@
 		height: 500px;
 		bottom: -150px;
 		left: -150px;
-		background: linear-gradient(135deg, #3b82f6, #b38f00);
+		background: linear-gradient(135deg, #3b82f6, var(--primary-600));
 		animation: float 25s ease-in-out infinite reverse;
 	}
 
@@ -1435,8 +1435,8 @@
 	}
 
 	.tab-btn.active {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		color: var(--bg-base);
 		font-weight: 600;
 		box-shadow: 0 4px 12px rgba(230, 184, 0, 0.3);
 	}
@@ -1689,8 +1689,8 @@
 	.btn-connect {
 		flex: 1;
 		padding: 0.625rem 1rem;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
+		color: var(--bg-base);
 		border: none;
 		border-radius: 12px;
 		font-size: 0.875rem;
@@ -1700,7 +1700,7 @@
 	}
 
 	.btn-connect:hover {
-		background: linear-gradient(135deg, #f5c800, #e6b800);
+		background: linear-gradient(135deg, #f5c800, var(--primary-500));
 		transform: translateY(-1px);
 	}
 
@@ -1837,9 +1837,9 @@
 	}
 
 	.filter-btn.active {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		border-color: transparent;
-		color: #0d1117;
+		color: var(--bg-base);
 	}
 
 	/* ═══════════════════════════════════════════════════════════════════════════
@@ -1859,7 +1859,7 @@
 		width: 48px;
 		height: 48px;
 		border: 4px solid rgba(230, 184, 0, 0.2);
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 	}

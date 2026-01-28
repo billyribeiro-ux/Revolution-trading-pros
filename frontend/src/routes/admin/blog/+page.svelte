@@ -1508,7 +1508,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		color: white;
 		box-shadow: 0 2px 8px rgba(99, 102, 241, 0.25);
 	}
@@ -1953,12 +1953,12 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 0.25rem 0.5rem;
-		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, var(--primary-500)) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, var(--primary-500)) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.7rem;
 		font-weight: 500;
-		color: var(--tag-color, #e6b800);
+		color: var(--tag-color, var(--primary-500));
 		white-space: nowrap;
 	}
 
@@ -2128,12 +2128,12 @@
 		display: inline-flex;
 		align-items: center;
 		padding: 0.125rem 0.5rem;
-		background: color-mix(in srgb, var(--tag-color, #e6b800) 15%, transparent);
-		border: 1px solid color-mix(in srgb, var(--tag-color, #e6b800) 30%, transparent);
+		background: color-mix(in srgb, var(--tag-color, var(--primary-500)) 15%, transparent);
+		border: 1px solid color-mix(in srgb, var(--tag-color, var(--primary-500)) 30%, transparent);
 		border-radius: 4px;
 		font-size: 0.7rem;
 		font-weight: 500;
-		color: var(--tag-color, #e6b800);
+		color: var(--tag-color, var(--primary-500));
 		white-space: nowrap;
 	}
 

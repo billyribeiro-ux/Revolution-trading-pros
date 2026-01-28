@@ -1085,7 +1085,7 @@
 		height: 600px;
 		top: -200px;
 		right: -200px;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		animation: float 20s ease-in-out infinite;
 	}
 
@@ -1094,7 +1094,7 @@
 		height: 500px;
 		bottom: -150px;
 		left: -150px;
-		background: linear-gradient(135deg, #b38f00, #1e293b);
+		background: linear-gradient(135deg, var(--primary-600), #1e293b);
 		animation: float 25s ease-in-out infinite reverse;
 	}
 
@@ -1104,7 +1104,7 @@
 		top: 50%;
 		left: 50%;
 		transform: translate(-50%, -50%);
-		background: linear-gradient(135deg, #e6b800, #0f172a);
+		background: linear-gradient(135deg, var(--primary-500), #0f172a);
 		animation: float 30s ease-in-out infinite;
 	}
 
@@ -1153,7 +1153,7 @@
 	}
 
 	.back-btn:hover {
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	/* Unused - keeping for future use
@@ -1233,12 +1233,12 @@
 
 	.tabs button:hover {
 		background: rgba(230, 184, 0, 0.1);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.tabs button.active {
 		background: rgba(230, 184, 0, 0.15);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	/* Segments Grid */
@@ -1305,7 +1305,7 @@
 	.system-badge {
 		padding: 0.25rem 0.5rem;
 		background: rgba(230, 184, 0, 0.2);
-		color: #ffd11a;
+		color: var(--primary-400);
 		font-size: 0.6875rem;
 		font-weight: 600;
 		border-radius: 6px;
@@ -1318,7 +1318,7 @@
 		gap: 0.375rem;
 		font-size: 0.875rem;
 		font-weight: 600;
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.segment-description {
@@ -1393,7 +1393,7 @@
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-size: 0.8125rem;
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	/* Tags Grid */
@@ -1491,7 +1491,7 @@
 		border: 1px solid rgba(230, 184, 0, 0.2);
 		border-radius: 8px;
 		font-size: 0.75rem;
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.filter-actions {
@@ -1515,8 +1515,8 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
-		color: #0d1117;
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
+		color: var(--bg-base);
 		box-shadow: 0 4px 14px rgba(230, 184, 0, 0.3);
 	}
 
@@ -1560,7 +1560,7 @@
 	.btn-icon:hover {
 		background: rgba(230, 184, 0, 0.15);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #ffd11a;
+		color: var(--primary-400);
 	}
 
 	.btn-icon.danger:hover {
@@ -1722,7 +1722,7 @@
 
 	.form-group input:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.15);
 	}
 

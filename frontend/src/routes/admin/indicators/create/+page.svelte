@@ -1129,7 +1129,7 @@
 	.bg-blob-1 {
 		width: 600px;
 		height: 600px;
-		background: #e6b800;
+		background: var(--primary-500);
 		top: -200px;
 		right: -200px;
 	}
@@ -1146,7 +1146,7 @@
 	.bg-blob-3 {
 		width: 300px;
 		height: 300px;
-		background: #e6b800;
+		background: var(--primary-500);
 		top: 50%;
 		left: 50%;
 		animation-delay: -14s;
@@ -1171,7 +1171,7 @@
 		width: 80px;
 		height: 80px;
 		margin: 0 auto 1rem;
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 		border-radius: 20px;
 		color: #fff;
 		box-shadow: 0 8px 32px rgba(230, 184, 0, 0.3);
@@ -1253,7 +1253,7 @@
 		height: 32px;
 		background: rgba(230, 184, 0, 0.15);
 		border-radius: 8px;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.title-icon svg {
@@ -1334,7 +1334,7 @@
 	select:focus,
 	textarea:focus {
 		outline: none;
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 		box-shadow: 0 0 0 3px rgba(230, 184, 0, 0.15);
 	}
 
@@ -1384,7 +1384,7 @@
 	}
 
 	.slug-value {
-		color: #e6b800;
+		color: var(--primary-500);
 		font-family: monospace;
 	}
 
@@ -1408,14 +1408,14 @@
 		background: rgba(230, 184, 0, 0.2);
 		border: 1px solid rgba(230, 184, 0, 0.4);
 		border-radius: 20px;
-		color: #ffd11a;
+		color: var(--primary-400);
 		font-size: 0.8125rem;
 	}
 
 	.tag-remove {
 		background: none;
 		border: none;
-		color: #ffd11a;
+		color: var(--primary-400);
 		cursor: pointer;
 		font-size: 1rem;
 		line-height: 1;
@@ -1487,7 +1487,7 @@
 	}
 
 	.platform-toggle input:checked + .toggle-slider {
-		background: linear-gradient(135deg, #e6b800, #b38f00);
+		background: linear-gradient(135deg, var(--primary-500), var(--primary-600));
 	}
 
 	.platform-toggle input:checked + .toggle-slider::after {
@@ -1557,7 +1557,7 @@
 
 	.drop-zone:hover,
 	.drop-zone.drag-over {
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 		background: rgba(230, 184, 0, 0.05);
 	}
 
@@ -1737,7 +1737,7 @@
 		background: rgba(230, 184, 0, 0.1);
 		border: 2px dashed rgba(230, 184, 0, 0.3);
 		border-radius: 10px;
-		color: #e6b800;
+		color: var(--primary-500);
 		font-weight: 500;
 		cursor: pointer;
 		transition: all 0.2s;
@@ -1756,7 +1756,7 @@
 	}
 
 	.price-input .currency {
-		color: #e6b800;
+		color: var(--primary-500);
 		font-weight: 600;
 		font-size: 1.25rem;
 	}
@@ -1797,7 +1797,7 @@
 	.toggle-row input[type='checkbox'] {
 		width: 18px;
 		height: 18px;
-		accent-color: #e6b800;
+		accent-color: var(--primary-500);
 		cursor: pointer;
 	}
 
@@ -1825,7 +1825,7 @@
 
 	.thumbnail-drop-zone:hover,
 	.thumbnail-drop-zone.drag-over {
-		border-color: #e6b800;
+		border-color: var(--primary-500);
 		background: rgba(230, 184, 0, 0.05);
 	}
 
@@ -1979,7 +1979,7 @@
 		padding: 0.125rem 0.375rem;
 		background: rgba(230, 184, 0, 0.2);
 		border-radius: 4px;
-		color: #e6b800;
+		color: var(--primary-500);
 		font-size: 0.75rem;
 	}
 
@@ -1994,7 +1994,7 @@
 	.preview-price {
 		font-size: 1.25rem;
 		font-weight: 700;
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.preview-version {
@@ -2065,7 +2065,7 @@
 	}
 
 	.btn-primary {
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		color: #0f172a;
 		min-width: 180px;
 	}

@@ -476,7 +476,7 @@
 	}
 	.stat-icon.purple {
 		background: rgba(230, 184, 0, 0.15);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 	.stat-icon.amber {
 		background: rgba(245, 158, 11, 0.15);

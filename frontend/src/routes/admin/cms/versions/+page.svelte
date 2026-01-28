@@ -297,14 +297,14 @@
 		gap: 0.5rem;
 		font-size: 0.85rem;
 		font-weight: 500;
-		color: #e6b800;
+		color: var(--primary-500);
 		text-decoration: none;
 		margin-bottom: 1rem;
 		transition: color 0.2s;
 	}
 
 	.back-link:hover {
-		color: #b38f00;
+		color: var(--primary-600);
 	}
 
 	.header-title {
@@ -321,7 +321,7 @@
 		align-items: center;
 		justify-content: center;
 		background: linear-gradient(135deg, rgba(230, 184, 0, 0.12) 0%, rgba(230, 184, 0, 0.06) 100%);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	.header-title h1 {
@@ -415,7 +415,7 @@
 	.filter-chip.active {
 		background: rgba(230, 184, 0, 0.1);
 		border-color: rgba(230, 184, 0, 0.3);
-		color: #e6b800;
+		color: var(--primary-500);
 	}
 
 	/* Versions Timeline */
@@ -489,7 +489,7 @@
 		color: rgba(59, 130, 246, 0.3);
 	}
 	.version-timeline-dot.purple {
-		background: #b38f00;
+		background: var(--primary-600);
 		color: rgba(230, 184, 0, 0.3);
 	}
 	.version-timeline-dot.amber {
@@ -534,7 +534,7 @@
 	}
 	.change-badge.purple {
 		background: rgba(230, 184, 0, 0.12);
-		color: #b38f00;
+		color: var(--primary-600);
 	}
 	.change-badge.amber {
 		background: rgba(245, 158, 11, 0.12);
@@ -615,7 +615,7 @@
 
 	.action-btn:hover {
 		background: #f8fafc;
-		color: #e6b800;
+		color: var(--primary-500);
 		border-color: rgba(230, 184, 0, 0.3);
 	}
 
@@ -639,7 +639,7 @@
 		width: 40px;
 		height: 40px;
 		border: 3px solid #f1f5f9;
-		border-top-color: #e6b800;
+		border-top-color: var(--primary-500);
 		border-radius: 50%;
 		animation: spin 1s linear infinite;
 	}
@@ -768,12 +768,12 @@
 		gap: 0.5rem;
 		width: 100%;
 		padding: 0.875rem 1.5rem;
-		background: linear-gradient(135deg, #e6b800 0%, #b38f00 100%);
+		background: linear-gradient(135deg, var(--primary-500) 0%, var(--primary-600) 100%);
 		border: none;
 		border-radius: 12px;
 		font-size: 0.9rem;
 		font-weight: 600;
-		color: #0d1117;
+		color: var(--bg-base);
 		cursor: pointer;
 		transition: all 0.25s;
 	}
