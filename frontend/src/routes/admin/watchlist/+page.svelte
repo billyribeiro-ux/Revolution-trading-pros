@@ -292,7 +292,7 @@
 		<div class="filters-bar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input type="text" id="search-watchlist" name="search" placeholder="Search watchlist items..." bind:value={searchQuery} />
+				<input type="text" id="search-watchlist" name="search-watchlist" placeholder="Search watchlist items..." bind:value={searchQuery} />
 			</div>
 
 			<div class="filter-group">
