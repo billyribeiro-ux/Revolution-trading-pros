@@ -499,7 +499,7 @@
 		<div class="filters-bar">
 			<div class="search-box">
 				<IconSearch size={18} />
-				<input type="text" placeholder="Search categories..." bind:value={searchQuery} />
+				<input type="text" id="search-categories" name="search" placeholder="Search categories..." bind:value={searchQuery} />
 			</div>
 			<select class="filter-select" bind:value={parentFilter}>
 				<option value={null}>All Categories</option>

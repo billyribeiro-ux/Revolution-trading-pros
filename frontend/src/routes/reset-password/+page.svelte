@@ -141,8 +141,8 @@
 			<!-- Reset password form -->
 			<form onsubmit={handleSubmit} class="space-y-5">
 				<!-- Email field (hidden, auto-filled from URL) -->
-				<input type="hidden" bind:value={email} />
-				<input type="hidden" bind:value={token} />
+				<input type="hidden" name="email" bind:value={email} />
+				<input type="hidden" name="token" bind:value={token} />
 
 				<!-- Email display (read-only) -->
 				<div class="form-group">

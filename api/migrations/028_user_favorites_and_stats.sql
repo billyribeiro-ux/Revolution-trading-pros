@@ -155,28 +155,38 @@ BEGIN
     WHERE grp = 1;
     
     -- Calculate 30-day daily P&L for chart
-    SELECT COALESCE(jsonb_agg(
-        jsonb_build_object(
-            'date', d.date::TEXT,
-            'pnl', COALESCE(t.daily_pnl, 0),
-            'cumulative', SUM(COALESCE(t.daily_pnl, 0)) OVER (ORDER BY d.date)
-        ) ORDER BY d.date
-    ), '[]'::jsonb)
-    INTO v_daily_pnl
-    FROM (
+    -- Fixed: compute cumulative in CTE first, then aggregate
+    WITH daily_dates AS (
         SELECT generate_series(
             CURRENT_DATE - INTERVAL '29 days',
             CURRENT_DATE,
             INTERVAL '1 day'
         )::DATE as date
-    ) d
-    LEFT JOIN (
+    ),
+    daily_trades AS (
         SELECT exit_date, SUM(pnl) as daily_pnl
         FROM room_trades
         WHERE room_slug = p_room_slug AND status = 'closed' AND deleted_at IS NULL
         AND exit_date >= CURRENT_DATE - INTERVAL '30 days'
         GROUP BY exit_date
-    ) t ON d.date = t.exit_date;
+    ),
+    daily_with_pnl AS (
+        SELECT 
+            d.date,
+            COALESCE(t.daily_pnl, 0) as pnl,
+            SUM(COALESCE(t.daily_pnl, 0)) OVER (ORDER BY d.date) as cumulative
+        FROM daily_dates d
+        LEFT JOIN daily_trades t ON d.date = t.exit_date
+    )
+    SELECT COALESCE(jsonb_agg(
+        jsonb_build_object(
+            'date', date::TEXT,
+            'pnl', pnl,
+            'cumulative', cumulative
+        ) ORDER BY date
+    ), '[]'::jsonb)
+    INTO v_daily_pnl
+    FROM daily_with_pnl;
     
     -- Upsert stats cache
     INSERT INTO room_stats_cache (
