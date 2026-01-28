@@ -559,17 +559,26 @@ CREATE TABLE IF NOT EXISTS room_weekly_videos (
     room_id BIGINT NOT NULL,
     room_slug VARCHAR(100) NOT NULL,
     week_of DATE NOT NULL,
+    week_title VARCHAR(255),
+    video_title VARCHAR(500),
     video_id BIGINT,
     title VARCHAR(500),
-    video_url VARCHAR(500),
+    video_url TEXT,
+    video_platform VARCHAR(50) DEFAULT 'bunny',
     bunny_video_guid VARCHAR(100),
-    thumbnail_url VARCHAR(500),
-    duration INTEGER,
+    bunny_library_id BIGINT,
+    thumbnail_url TEXT,
+    duration VARCHAR(20),
+    description TEXT,
+    is_current BOOLEAN DEFAULT true,
     is_featured BOOLEAN DEFAULT true,
+    is_published BOOLEAN DEFAULT true,
+    published_at TIMESTAMPTZ DEFAULT NOW(),
+    archived_at TIMESTAMPTZ,
     created_by BIGINT,
     created_at TIMESTAMPTZ DEFAULT NOW(),
     updated_at TIMESTAMPTZ DEFAULT NOW(),
-    UNIQUE(room_id, week_of)
+    UNIQUE(room_slug, week_of)
 );
 
 -- ═══════════════════════════════════════════════════════════════════════════════════
