@@ -59,16 +59,24 @@ jobs:
         working-directory: api
         run: cargo sqlx migrate run
 
+      - name: Verify database connection
+        run: |
+          psql $DATABASE_URL -c "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = 'public';"
+
       - name: Check formatting
         working-directory: api
         run: cargo fmt -- --check
 
       - name: Clippy
         working-directory: api
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
         run: cargo clippy -- -D warnings
 
       - name: Build
         working-directory: api
+        env:
+          DATABASE_URL: ${{ env.DATABASE_URL }}
         run: cargo build --release
 
   test:

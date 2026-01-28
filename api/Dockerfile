@@ -20,11 +20,13 @@ RUN mkdir -p src && echo "fn main() {}" > src/main.rs
 # Build dependencies (cached layer)
 RUN cargo build --release && rm -rf src
 
-# Copy source code
+# Copy source code and SQLx offline cache
 COPY src ./src
 COPY migrations ./migrations
+COPY .sqlx ./.sqlx
 
-# Build the actual application
+# Build the actual application with SQLx offline mode
+ENV SQLX_OFFLINE=true
 RUN touch src/main.rs && cargo build --release
 
 # Runtime stage - ICT 11+ Fix: Use Debian Trixie for GLIBC 2.38+ compatibility
