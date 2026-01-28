@@ -6,10 +6,8 @@ use axum::{body::Body, Router};
 use http_body_util::BodyExt;
 use serde_json::Value;
 
-use revolution_api::{
-    config::Config, db::Database, routes, services::Services, AppState,
-};
 use revolution_api::routes::realtime::EventBroadcaster;
+use revolution_api::{config::Config, db::Database, routes, services::Services, AppState};
 
 /// Setup test application with all routes
 pub async fn setup_test_app() -> Router {

@@ -14,11 +14,11 @@ use tower_http::{
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
-use revolution_api::{
-    config::Config, db::Database, docs, middleware, monitoring, queue, routes,
-    services::Services, AppState,
-};
 use revolution_api::routes::realtime::EventBroadcaster;
+use revolution_api::{
+    config::Config, db::Database, docs, middleware, monitoring, queue, routes, services::Services,
+    AppState,
+};
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
