@@ -49,6 +49,7 @@ pub mod cms_reusable_blocks;
 pub mod connections;
 pub mod crm; // ICT 7: CRM Admin Routes - FluentCRM Pro equivalent
 pub mod email_templates;
+pub mod export; // ICT 7+ Phase 4: Export Functionality (CSV/PDF)
 pub mod favorites; // ICT 7: User favorites persistence
 pub mod forms;
 pub mod member_courses;
@@ -56,11 +57,14 @@ pub mod member_indicators;
 pub mod migrate;
 pub mod organization;
 pub mod popups;
+pub mod room_analytics; // ICT 11+ Phase 5: Room Performance Analytics API
 pub mod room_content;
 pub mod room_resources;
+pub mod room_search; // ICT 7+ Phase 4: Full-Text Search for Room Content
 pub mod subscriptions_admin;
 pub mod trading_rooms;
 pub mod watchlist; // ICT 7: Service connection status // ICT 7: Teams & Departments // ICT 7+: Reusable content blocks library
+pub mod websocket; // ICT 7+: WebSocket real-time alerts (January 2026)
 
 use crate::AppState;
 use axum::Router;
@@ -110,6 +114,8 @@ pub fn api_router() -> Router<AppState> {
         .nest("/delivery", cms_delivery::delivery_router())
         // Real-time updates - SSE
         .nest("/realtime", realtime::router())
+        // Real-time updates - WebSocket (January 2026)
+        .nest("/ws", websocket::router())
         .nest("/popups", popups::router())
         .nest("/trading-rooms", trading_rooms::router())
         .nest("/admin/trading-rooms", trading_rooms::admin_router())
@@ -147,6 +153,10 @@ pub fn api_router() -> Router<AppState> {
         // Room Content Management - Trade Plans, Alerts, Weekly Videos
         .nest("/room-content", room_content::public_router())
         .nest("/admin/room-content", room_content::admin_router())
+        // Room Content Search - ICT 7+ Phase 4: Full-Text Search
+        .nest("/room-search", room_search::router())
+        // Room Analytics - ICT 11+ Phase 5: Performance Analytics API
+        .nest("/analytics", room_analytics::router())
         // Weekly Watchlist
         .nest("/watchlist", watchlist::router())
         // Room Resources - Unified content management (videos, PDFs, docs, images)
@@ -173,6 +183,8 @@ pub fn api_router() -> Router<AppState> {
         )
         // User Favorites - ICT 7 Grade
         .nest("/favorites", favorites::router())
+        // Export - ICT 7+ Phase 4: CSV/PDF exports for Explosive Swings
+        .nest("/export", export::router())
         // CMS AI Assist - ICT 7+ AI-powered content assistance
         .nest("/cms/ai", cms_ai_assist::router())
         // CMS Reusable Blocks - ICT 7+ Block library management

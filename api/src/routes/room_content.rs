@@ -7,6 +7,11 @@
 //! - Alerts (Entry/Exit/Update with expandable notes)
 //! - Weekly Videos (featured video per room with auto-archive)
 //! - Stats cache (auto-calculated performance metrics)
+//!
+//! ## Phase 2: Redis Caching (January 2026)
+//!
+//! All GET endpoints now use Redis caching with graceful degradation.
+//! Cache invalidation is triggered automatically on mutations.
 
 use axum::{
     extract::{Path, Query, State},
@@ -18,8 +23,12 @@ use chrono::{Datelike, NaiveDate, Utc};
 use serde::{Deserialize, Serialize};
 use serde_json::json;
 use sqlx::FromRow;
-use tracing::{error, info};
+use tracing::{debug, error, info};
 
+use crate::cache::{cache_keys, cache_ttl};
+use crate::services::event_broadcaster::{
+    AlertEventData, TradeEventData, TradePlanEventData, VideoEventData,
+};
 use crate::{middleware::admin::AdminUser, AppState};
 
 // ═══════════════════════════════════════════════════════════════════════════════════
@@ -27,7 +36,8 @@ use crate::{middleware::admin::AdminUser, AppState};
 // ═══════════════════════════════════════════════════════════════════════════════════
 
 /// Trade Plan Entry from database
-#[derive(Debug, Serialize, FromRow)]
+/// ICT 7+ Phase 2: Added Deserialize for Redis caching support
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct TradePlanEntry {
     pub id: i64,
     pub room_id: i64,
@@ -52,7 +62,8 @@ pub struct TradePlanEntry {
 }
 
 /// Alert from database - Full TOS (ThinkOrSwim) Format Support
-#[derive(Debug, Serialize, FromRow)]
+/// ICT 7+ Phase 2: Added Deserialize for Redis caching support
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct RoomAlert {
     pub id: i64,
     pub room_id: i64,
@@ -87,7 +98,8 @@ pub struct RoomAlert {
 }
 
 /// Weekly Video from database
-#[derive(Debug, Serialize, FromRow)]
+/// ICT 7+ Phase 2: Added Deserialize for Redis caching support
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct WeeklyVideo {
     pub id: i64,
     pub room_id: i64,
@@ -108,7 +120,8 @@ pub struct WeeklyVideo {
 }
 
 /// Room Stats from database - Enhanced metrics
-#[derive(Debug, Serialize, FromRow)]
+/// ICT 7+ Phase 2: Added Deserialize for Redis caching support
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct RoomStats {
     pub id: i64,
     pub room_id: i64,
@@ -132,7 +145,8 @@ pub struct RoomStats {
 }
 
 /// Trade from database - Trade Tracker
-#[derive(Debug, Serialize, FromRow)]
+/// ICT 7+ Phase 2: Added Deserialize for Redis caching support
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
 pub struct RoomTrade {
     pub id: i64,
     pub room_id: i64,
@@ -350,7 +364,24 @@ pub struct ReorderItem {
 // TRADE PLAN HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════════════
 
+/// Cached response for trade plans list
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct TradePlansResponse {
+    data: Vec<TradePlanEntry>,
+    meta: PaginationMeta,
+}
+
+/// Pagination metadata
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct PaginationMeta {
+    current_page: i64,
+    per_page: i64,
+    total: i64,
+    total_pages: i64,
+}
+
 /// List trade plan entries for a room
+/// ICT 7+ Phase 2: Redis cached with graceful degradation
 async fn list_trade_plans(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
@@ -361,62 +392,85 @@ async fn list_trade_plans(
     let offset = (page - 1) * per_page;
 
     // Parse week_of or use current date
-    let week_filter = query
-        .week_of
-        .and_then(|w| NaiveDate::parse_from_str(&w, "%Y-%m-%d").ok());
+    let week_filter = query.week_of.as_deref();
 
-    let entries: Vec<TradePlanEntry> = if let Some(week) = week_filter {
-        sqlx::query_as(
-            r#"SELECT * FROM room_trade_plans 
-               WHERE room_slug = $1 AND week_of = $2 AND deleted_at IS NULL AND is_active = true
-               ORDER BY sort_order ASC, created_at DESC
-               LIMIT $3 OFFSET $4"#
-        )
-        .bind(&room_slug)
-        .bind(week)
-        .bind(per_page)
-        .bind(offset)
-        .fetch_all(&state.db.pool)
-        .await
-    } else {
-        // Get current week's entries
-        sqlx::query_as(
-            r#"SELECT * FROM room_trade_plans 
-               WHERE room_slug = $1 AND deleted_at IS NULL AND is_active = true
-               AND week_of = (SELECT MAX(week_of) FROM room_trade_plans WHERE room_slug = $1 AND deleted_at IS NULL)
-               ORDER BY sort_order ASC, created_at DESC
-               LIMIT $2 OFFSET $3"#
-        )
-        .bind(&room_slug)
-        .bind(per_page)
-        .bind(offset)
-        .fetch_all(&state.db.pool)
-        .await
-    }.map_err(|e| {
-        error!("Failed to fetch trade plans: {}", e);
-        (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
-    })?;
+    // Generate cache key
+    let cache_key = cache_keys::trade_plans(&room_slug, week_filter, page, per_page);
 
-    let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM room_trade_plans WHERE room_slug = $1 AND deleted_at IS NULL AND is_active = true"
-    )
-    .bind(&room_slug)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()}))))?;
+    // Try to get from cache
+    let response = state
+        .services
+        .cache
+        .get_or_fetch(&cache_key, cache_ttl::TRADE_PLANS, || async {
+            let week_parsed = week_filter.and_then(|w| NaiveDate::parse_from_str(w, "%Y-%m-%d").ok());
+
+            let entries: Vec<TradePlanEntry> = if let Some(week) = week_parsed {
+                sqlx::query_as(
+                    r#"SELECT * FROM room_trade_plans
+                       WHERE room_slug = $1 AND week_of = $2 AND deleted_at IS NULL AND is_active = true
+                       ORDER BY sort_order ASC, created_at DESC
+                       LIMIT $3 OFFSET $4"#
+                )
+                .bind(&room_slug)
+                .bind(week)
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(&state.db.pool)
+                .await?
+            } else {
+                // Get current week's entries
+                sqlx::query_as(
+                    r#"SELECT * FROM room_trade_plans
+                       WHERE room_slug = $1 AND deleted_at IS NULL AND is_active = true
+                       AND week_of = (SELECT MAX(week_of) FROM room_trade_plans WHERE room_slug = $1 AND deleted_at IS NULL)
+                       ORDER BY sort_order ASC, created_at DESC
+                       LIMIT $2 OFFSET $3"#
+                )
+                .bind(&room_slug)
+                .bind(per_page)
+                .bind(offset)
+                .fetch_all(&state.db.pool)
+                .await?
+            };
+
+            let total: (i64,) = sqlx::query_as(
+                "SELECT COUNT(*) FROM room_trade_plans WHERE room_slug = $1 AND deleted_at IS NULL AND is_active = true"
+            )
+            .bind(&room_slug)
+            .fetch_one(&state.db.pool)
+            .await?;
+
+            Ok(TradePlansResponse {
+                data: entries,
+                meta: PaginationMeta {
+                    current_page: page,
+                    per_page,
+                    total: total.0,
+                    total_pages: (total.0 as f64 / per_page as f64).ceil() as i64,
+                },
+            })
+        })
+        .await
+        .map_err(|e| {
+            error!("Failed to fetch trade plans: {}", e);
+            (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
+        })?;
+
+    debug!(
+        target: "cache",
+        room_slug = %room_slug,
+        cache_key = %cache_key,
+        "Trade plans response served"
+    );
 
     Ok(Json(json!({
-        "data": entries,
-        "meta": {
-            "current_page": page,
-            "per_page": per_page,
-            "total": total.0,
-            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
-        }
+        "data": response.data,
+        "meta": response.meta
     })))
 }
 
 /// Create a new trade plan entry
+/// ICT 7+ Phase 2: Invalidates trade plans cache after creation
 async fn create_trade_plan(
     State(state): State<AppState>,
     _admin: AdminUser,
@@ -432,7 +486,7 @@ async fn create_trade_plan(
         .and_then(|e| NaiveDate::parse_from_str(&e, "%Y-%m-%d").ok());
 
     let entry: TradePlanEntry = sqlx::query_as(
-        r#"INSERT INTO room_trade_plans 
+        r#"INSERT INTO room_trade_plans
            (room_id, room_slug, week_of, ticker, bias, entry, target1, target2, target3, runner, runner_stop, stop, options_strike, options_exp, notes, sort_order)
            VALUES (
                COALESCE(
@@ -466,6 +520,36 @@ async fn create_trade_plan(
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;
 
+    // Invalidate trade plans cache
+    if let Err(e) = state
+        .services
+        .cache_invalidator
+        .on_trade_plan_change(&input.room_slug, Some(entry.id))
+        .await
+    {
+        error!("Failed to invalidate trade plans cache: {}", e);
+    }
+
+    // ICT 7+ Phase 3: Broadcast WebSocket event for real-time updates
+    state
+        .ws_manager
+        .broadcast_trade_plan_created(crate::routes::websocket::TradePlanPayload {
+            id: entry.id,
+            room_slug: entry.room_slug.clone(),
+            ticker: entry.ticker.clone(),
+            bias: entry.bias.clone(),
+            entry: entry.entry.clone(),
+            target1: entry.target1.clone(),
+            target2: entry.target2.clone(),
+            target3: entry.target3.clone(),
+            runner: entry.runner.clone(),
+            stop: entry.stop.clone(),
+            options_strike: entry.options_strike.clone(),
+            options_exp: entry.options_exp.map(|d| d.to_string()),
+            notes: entry.notes.clone(),
+        })
+        .await;
+
     info!(
         "Created trade plan entry: {} for {}",
         entry.ticker, input.room_slug
@@ -474,6 +558,7 @@ async fn create_trade_plan(
 }
 
 /// Update a trade plan entry
+/// ICT 7+ Phase 2: Invalidates trade plans cache after update
 async fn update_trade_plan(
     State(state): State<AppState>,
     _admin: AdminUser,
@@ -528,15 +613,59 @@ async fn update_trade_plan(
         )
     })?;
 
+    // Invalidate trade plans cache
+    if let Err(e) = state
+        .services
+        .cache_invalidator
+        .on_trade_plan_change(&entry.room_slug, Some(id))
+        .await
+    {
+        error!("Failed to invalidate trade plans cache: {}", e);
+    }
+
+    // ICT 7+ Phase 3: Broadcast WebSocket event for real-time updates
+    state
+        .ws_manager
+        .broadcast_trade_plan_updated(crate::routes::websocket::TradePlanPayload {
+            id: entry.id,
+            room_slug: entry.room_slug.clone(),
+            ticker: entry.ticker.clone(),
+            bias: entry.bias.clone(),
+            entry: entry.entry.clone(),
+            target1: entry.target1.clone(),
+            target2: entry.target2.clone(),
+            target3: entry.target3.clone(),
+            runner: entry.runner.clone(),
+            stop: entry.stop.clone(),
+            options_strike: entry.options_strike.clone(),
+            options_exp: entry.options_exp.map(|d| d.to_string()),
+            notes: entry.notes.clone(),
+        })
+        .await;
+
     Ok(Json(entry))
 }
 
 /// Delete a trade plan entry (soft delete)
+/// ICT 7+ Phase 2: Invalidates trade plans cache after deletion
 async fn delete_trade_plan(
     State(state): State<AppState>,
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Get room_slug before deletion for cache invalidation
+    let entry: Option<(String,)> =
+        sqlx::query_as("SELECT room_slug FROM room_trade_plans WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
+
     sqlx::query("UPDATE room_trade_plans SET deleted_at = NOW() WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -548,12 +677,31 @@ async fn delete_trade_plan(
             )
         })?;
 
+    // Invalidate trade plans cache and broadcast WebSocket event
+    if let Some((room_slug,)) = entry {
+        if let Err(e) = state
+            .services
+            .cache_invalidator
+            .on_trade_plan_change(&room_slug, Some(id))
+            .await
+        {
+            error!("Failed to invalidate trade plans cache: {}", e);
+        }
+
+        // ICT 7+ Phase 3: Broadcast WebSocket event for real-time updates
+        state
+            .ws_manager
+            .broadcast_trade_plan_deleted(&room_slug, id)
+            .await;
+    }
+
     Ok(Json(
         json!({"success": true, "message": "Trade plan entry deleted"}),
     ))
 }
 
 /// Reorder trade plan entries
+/// ICT 7+ Phase 2: Invalidates trade plans cache after reorder
 async fn reorder_trade_plans(
     State(state): State<AppState>,
     _admin: AdminUser,
@@ -575,6 +723,16 @@ async fn reorder_trade_plans(
             })?;
     }
 
+    // Invalidate trade plans cache
+    if let Err(e) = state
+        .services
+        .cache_invalidator
+        .invalidate_trade_plans(&room_slug)
+        .await
+    {
+        error!("Failed to invalidate trade plans cache: {}", e);
+    }
+
     Ok(Json(
         json!({"success": true, "message": "Trade plans reordered"}),
     ))
@@ -584,7 +742,15 @@ async fn reorder_trade_plans(
 // ALERTS HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════════════
 
+/// Cached response for alerts list
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct AlertsResponse {
+    data: Vec<RoomAlert>,
+    meta: PaginationMeta,
+}
+
 /// List alerts for a room
+/// ICT 7+ Phase 2: Redis cached with 60 second TTL for time-sensitive alerts
 async fn list_alerts(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
@@ -594,50 +760,67 @@ async fn list_alerts(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let alerts: Vec<RoomAlert> = sqlx::query_as(
-        r#"SELECT * FROM room_alerts 
-           WHERE room_slug = $1 AND deleted_at IS NULL AND is_published = true
-           ORDER BY is_pinned DESC, published_at DESC
-           LIMIT $2 OFFSET $3"#,
-    )
-    .bind(&room_slug)
-    .bind(per_page)
-    .bind(offset)
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(|e| {
-        error!("Failed to fetch alerts: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    // Generate cache key
+    let cache_key = cache_keys::alerts(&room_slug, page, per_page);
 
-    let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM room_alerts WHERE room_slug = $1 AND deleted_at IS NULL",
-    )
-    .bind(&room_slug)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    // Try to get from cache
+    let response = state
+        .services
+        .cache
+        .get_or_fetch(&cache_key, cache_ttl::ALERTS, || async {
+            let alerts: Vec<RoomAlert> = sqlx::query_as(
+                r#"SELECT * FROM room_alerts
+                   WHERE room_slug = $1 AND deleted_at IS NULL AND is_published = true
+                   ORDER BY is_pinned DESC, published_at DESC
+                   LIMIT $2 OFFSET $3"#,
+            )
+            .bind(&room_slug)
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(&state.db.pool)
+            .await?;
+
+            let total: (i64,) = sqlx::query_as(
+                "SELECT COUNT(*) FROM room_alerts WHERE room_slug = $1 AND deleted_at IS NULL",
+            )
+            .bind(&room_slug)
+            .fetch_one(&state.db.pool)
+            .await?;
+
+            Ok(AlertsResponse {
+                data: alerts,
+                meta: PaginationMeta {
+                    current_page: page,
+                    per_page,
+                    total: total.0,
+                    total_pages: (total.0 as f64 / per_page as f64).ceil() as i64,
+                },
+            })
+        })
+        .await
+        .map_err(|e| {
+            error!("Failed to fetch alerts: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
+
+    debug!(
+        target: "cache",
+        room_slug = %room_slug,
+        cache_key = %cache_key,
+        "Alerts response served"
+    );
 
     Ok(Json(json!({
-        "data": alerts,
-        "meta": {
-            "current_page": page,
-            "per_page": per_page,
-            "total": total.0,
-            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
-        }
+        "data": response.data,
+        "meta": response.meta
     })))
 }
 
 /// Create a new alert with full TOS support
+/// ICT 7+ Phase 2: Invalidates alerts cache after creation
 async fn create_alert(
     State(state): State<AppState>,
     _admin: AdminUser,
@@ -696,6 +879,35 @@ async fn create_alert(
         )
     })?;
 
+    // Invalidate alerts cache
+    if let Err(e) = state
+        .services
+        .cache_invalidator
+        .on_alert_change(&input.room_slug, Some(alert.id))
+        .await
+    {
+        error!("Failed to invalidate alerts cache: {}", e);
+    }
+
+    // ICT 7+ Phase 3: Broadcast WebSocket event for real-time updates
+    state
+        .ws_manager
+        .broadcast_alert_created(crate::routes::websocket::AlertPayload {
+            id: alert.id,
+            room_slug: alert.room_slug.clone(),
+            alert_type: alert.alert_type.clone(),
+            ticker: alert.ticker.clone(),
+            title: alert.title.clone(),
+            message: alert.message.clone(),
+            notes: alert.notes.clone(),
+            tos_string: alert.tos_string.clone(),
+            is_new: alert.is_new,
+            is_pinned: alert.is_pinned,
+            published_at: alert.published_at,
+            created_at: alert.created_at,
+        })
+        .await;
+
     info!(
         "Created alert: {} {} for {} (TOS: {:?})",
         alert.alert_type, alert.ticker, input.room_slug, alert.tos_string
@@ -704,6 +916,7 @@ async fn create_alert(
 }
 
 /// Update an alert with full TOS support
+/// ICT 7+ Phase 2: Invalidates alerts cache after update
 async fn update_alert(
     State(state): State<AppState>,
     _admin: AdminUser,
@@ -775,15 +988,58 @@ async fn update_alert(
         )
     })?;
 
+    // Invalidate alerts cache
+    if let Err(e) = state
+        .services
+        .cache_invalidator
+        .on_alert_change(&alert.room_slug, Some(id))
+        .await
+    {
+        error!("Failed to invalidate alerts cache: {}", e);
+    }
+
+    // ICT 7+ Phase 3: Broadcast WebSocket event for real-time updates
+    state
+        .ws_manager
+        .broadcast_alert_updated(crate::routes::websocket::AlertPayload {
+            id: alert.id,
+            room_slug: alert.room_slug.clone(),
+            alert_type: alert.alert_type.clone(),
+            ticker: alert.ticker.clone(),
+            title: alert.title.clone(),
+            message: alert.message.clone(),
+            notes: alert.notes.clone(),
+            tos_string: alert.tos_string.clone(),
+            is_new: alert.is_new,
+            is_pinned: alert.is_pinned,
+            published_at: alert.published_at,
+            created_at: alert.created_at,
+        })
+        .await;
+
     Ok(Json(alert))
 }
 
 /// Delete an alert (soft delete)
+/// ICT 7+ Phase 2: Invalidates alerts cache after deletion
 async fn delete_alert(
     State(state): State<AppState>,
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Get room_slug before deletion for cache invalidation
+    let entry: Option<(String,)> =
+        sqlx::query_as("SELECT room_slug FROM room_alerts WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
+
     sqlx::query("UPDATE room_alerts SET deleted_at = NOW() WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -794,6 +1050,24 @@ async fn delete_alert(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    // Invalidate alerts cache and broadcast WebSocket event
+    if let Some((room_slug,)) = entry {
+        if let Err(e) = state
+            .services
+            .cache_invalidator
+            .on_alert_change(&room_slug, Some(id))
+            .await
+        {
+            error!("Failed to invalidate alerts cache: {}", e);
+        }
+
+        // ICT 7+ Phase 3: Broadcast WebSocket event for real-time updates
+        state
+            .ws_manager
+            .broadcast_alert_deleted(&room_slug, id)
+            .await;
+    }
 
     Ok(Json(json!({"success": true, "message": "Alert deleted"})))
 }
@@ -821,32 +1095,58 @@ async fn mark_alert_read(
 // WEEKLY VIDEO HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════════════
 
+/// Cached response for weekly video
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct WeeklyVideoResponse {
+    data: Option<WeeklyVideo>,
+}
+
+/// Cached response for weekly videos list
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct WeeklyVideosResponse {
+    data: Vec<WeeklyVideo>,
+    meta: PaginationMeta,
+}
+
 /// Get current weekly video for a room
+/// ICT 7+ Phase 2: Redis cached with 1 hour TTL
 async fn get_weekly_video(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let video: Option<WeeklyVideo> = sqlx::query_as(
-        r#"SELECT * FROM room_weekly_videos 
-           WHERE room_slug = $1 AND is_current = true AND is_published = true
-           LIMIT 1"#,
-    )
-    .bind(&room_slug)
-    .fetch_optional(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    let cache_key = cache_keys::weekly_video(&room_slug);
+
+    let response = state
+        .services
+        .cache
+        .get_or_fetch(&cache_key, cache_ttl::WEEKLY_VIDEO, || async {
+            let video: Option<WeeklyVideo> = sqlx::query_as(
+                r#"SELECT * FROM room_weekly_videos
+                   WHERE room_slug = $1 AND is_current = true AND is_published = true
+                   LIMIT 1"#,
+            )
+            .bind(&room_slug)
+            .fetch_optional(&state.db.pool)
+            .await?;
+
+            Ok(WeeklyVideoResponse { data: video })
+        })
+        .await
+        .map_err(|e| {
+            error!("Failed to fetch weekly video: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({
-        "data": video
+        "data": response.data
     })))
 }
 
 /// List all weekly videos (including archived)
+/// ICT 7+ Phase 2: Redis cached with 1 hour TTL
 async fn list_weekly_videos(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
@@ -856,47 +1156,57 @@ async fn list_weekly_videos(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let videos: Vec<WeeklyVideo> = sqlx::query_as(
-        r#"SELECT * FROM room_weekly_videos 
-           WHERE room_slug = $1
-           ORDER BY week_of DESC
-           LIMIT $2 OFFSET $3"#,
-    )
-    .bind(&room_slug)
-    .bind(per_page)
-    .bind(offset)
-    .fetch_all(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    let cache_key = cache_keys::weekly_videos(&room_slug, page, per_page);
 
-    let total: (i64,) =
-        sqlx::query_as("SELECT COUNT(*) FROM room_weekly_videos WHERE room_slug = $1")
+    let response = state
+        .services
+        .cache
+        .get_or_fetch(&cache_key, cache_ttl::WEEKLY_VIDEOS, || async {
+            let videos: Vec<WeeklyVideo> = sqlx::query_as(
+                r#"SELECT * FROM room_weekly_videos
+                   WHERE room_slug = $1
+                   ORDER BY week_of DESC
+                   LIMIT $2 OFFSET $3"#,
+            )
             .bind(&room_slug)
-            .fetch_one(&state.db.pool)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": e.to_string()})),
-                )
-            })?;
+            .bind(per_page)
+            .bind(offset)
+            .fetch_all(&state.db.pool)
+            .await?;
+
+            let total: (i64,) =
+                sqlx::query_as("SELECT COUNT(*) FROM room_weekly_videos WHERE room_slug = $1")
+                    .bind(&room_slug)
+                    .fetch_one(&state.db.pool)
+                    .await?;
+
+            Ok(WeeklyVideosResponse {
+                data: videos,
+                meta: PaginationMeta {
+                    current_page: page,
+                    per_page,
+                    total: total.0,
+                    total_pages: (total.0 as f64 / per_page as f64).ceil() as i64,
+                },
+            })
+        })
+        .await
+        .map_err(|e| {
+            error!("Failed to fetch weekly videos: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({
-        "data": videos,
-        "meta": {
-            "current_page": page,
-            "per_page": per_page,
-            "total": total.0
-        }
+        "data": response.data,
+        "meta": response.meta
     })))
 }
 
 /// Create/publish a new weekly video (archives the previous one)
+/// ICT 7+ Phase 2: Invalidates weekly video cache after creation
 async fn create_weekly_video(
     State(state): State<AppState>,
     _admin: AdminUser,
@@ -921,7 +1231,7 @@ async fn create_weekly_video(
     // Create new current video
     // room_id references trading_rooms.id, NOT membership_plans.id
     let video: WeeklyVideo = sqlx::query_as(
-        r#"INSERT INTO room_weekly_videos 
+        r#"INSERT INTO room_weekly_videos
            (room_id, room_slug, week_of, week_title, video_title, video_url, video_platform, thumbnail_url, duration, description, is_current, is_published)
            VALUES (
                (SELECT id FROM trading_rooms WHERE slug = $1 LIMIT 1),
@@ -944,6 +1254,16 @@ async fn create_weekly_video(
         error!("Failed to create weekly video: {}", e);
         (StatusCode::INTERNAL_SERVER_ERROR, Json(json!({"error": e.to_string()})))
     })?;
+
+    // Invalidate weekly video cache
+    if let Err(e) = state
+        .services
+        .cache_invalidator
+        .on_weekly_video_change(&input.room_slug)
+        .await
+    {
+        error!("Failed to invalidate weekly video cache: {}", e);
+    }
 
     info!(
         "Created weekly video: {} for {}",
@@ -1073,25 +1393,43 @@ async fn list_archived_videos(
 // STATS HANDLERS
 // ═══════════════════════════════════════════════════════════════════════════════════
 
+/// Cached response for room stats
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct StatsResponse {
+    data: Option<RoomStats>,
+}
+
 /// Get room stats
+/// ICT 7+ Phase 2: Redis cached with 5 minute TTL
 async fn get_room_stats(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
-    let stats: Option<RoomStats> =
-        sqlx::query_as("SELECT * FROM room_stats_cache WHERE room_slug = $1")
-            .bind(&room_slug)
-            .fetch_optional(&state.db.pool)
-            .await
-            .map_err(|e| {
-                (
-                    StatusCode::INTERNAL_SERVER_ERROR,
-                    Json(json!({"error": e.to_string()})),
-                )
-            })?;
+    let cache_key = cache_keys::stats(&room_slug);
+
+    let response = state
+        .services
+        .cache
+        .get_or_fetch(&cache_key, cache_ttl::STATS, || async {
+            let stats: Option<RoomStats> =
+                sqlx::query_as("SELECT * FROM room_stats_cache WHERE room_slug = $1")
+                    .bind(&room_slug)
+                    .fetch_optional(&state.db.pool)
+                    .await?;
+
+            Ok(StatsResponse { data: stats })
+        })
+        .await
+        .map_err(|e| {
+            error!("Failed to fetch room stats: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({
-        "data": stats
+        "data": response.data
     })))
 }
 
@@ -1099,7 +1437,15 @@ async fn get_room_stats(
 // TRADES HANDLERS (Trade Tracker)
 // ═══════════════════════════════════════════════════════════════════════════════════
 
+/// Cached response for trades list
+#[derive(Debug, Clone, Serialize, Deserialize)]
+struct TradesResponse {
+    data: Vec<RoomTrade>,
+    meta: PaginationMeta,
+}
+
 /// List trades for a room
+/// ICT 7+ Phase 2: Redis cached with 5 minute TTL
 async fn list_trades(
     State(state): State<AppState>,
     Path(room_slug): Path<String>,
@@ -1109,97 +1455,145 @@ async fn list_trades(
     let per_page = query.per_page.unwrap_or(20).min(100);
     let offset = (page - 1) * per_page;
 
-    let trades: Vec<RoomTrade> = match (&query.status, &query.ticker) {
-        (Some(status), Some(ticker)) => {
-            sqlx::query_as(
-                r#"SELECT * FROM room_trades
-                   WHERE room_slug = $1 AND deleted_at IS NULL AND status = $4 AND ticker = $5
-                   ORDER BY entry_date DESC
-                   LIMIT $2 OFFSET $3"#,
-            )
-            .bind(&room_slug)
-            .bind(per_page)
-            .bind(offset)
-            .bind(status)
-            .bind(ticker.to_uppercase())
-            .fetch_all(&state.db.pool)
-            .await
-        }
-        (Some(status), None) => {
-            sqlx::query_as(
-                r#"SELECT * FROM room_trades
-                   WHERE room_slug = $1 AND deleted_at IS NULL AND status = $4
-                   ORDER BY entry_date DESC
-                   LIMIT $2 OFFSET $3"#,
-            )
-            .bind(&room_slug)
-            .bind(per_page)
-            .bind(offset)
-            .bind(status)
-            .fetch_all(&state.db.pool)
-            .await
-        }
-        (None, Some(ticker)) => {
-            sqlx::query_as(
-                r#"SELECT * FROM room_trades
-                   WHERE room_slug = $1 AND deleted_at IS NULL AND ticker = $4
-                   ORDER BY entry_date DESC
-                   LIMIT $2 OFFSET $3"#,
-            )
-            .bind(&room_slug)
-            .bind(per_page)
-            .bind(offset)
-            .bind(ticker.to_uppercase())
-            .fetch_all(&state.db.pool)
-            .await
-        }
-        (None, None) => {
-            sqlx::query_as(
-                r#"SELECT * FROM room_trades
-                   WHERE room_slug = $1 AND deleted_at IS NULL
-                   ORDER BY entry_date DESC
-                   LIMIT $2 OFFSET $3"#,
-            )
-            .bind(&room_slug)
-            .bind(per_page)
-            .bind(offset)
-            .fetch_all(&state.db.pool)
-            .await
-        }
-    }
-    .map_err(|e| {
-        error!("Failed to fetch trades: {}", e);
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
-        )
-    })?;
+    // Generate cache key (status filter included, ticker not cached due to dynamic nature)
+    let cache_key = cache_keys::trades(&room_slug, query.status.as_deref(), page, per_page);
 
-    let total: (i64,) = sqlx::query_as(
-        "SELECT COUNT(*) FROM room_trades WHERE room_slug = $1 AND deleted_at IS NULL",
-    )
-    .bind(&room_slug)
-    .fetch_one(&state.db.pool)
-    .await
-    .map_err(|e| {
-        (
-            StatusCode::INTERNAL_SERVER_ERROR,
-            Json(json!({"error": e.to_string()})),
+    // If ticker filter is used, bypass cache (rare use case)
+    if query.ticker.is_some() {
+        let ticker = query.ticker.as_ref().unwrap().to_uppercase();
+        let trades: Vec<RoomTrade> = match &query.status {
+            Some(status) => {
+                sqlx::query_as(
+                    r#"SELECT * FROM room_trades
+                       WHERE room_slug = $1 AND deleted_at IS NULL AND status = $4 AND ticker = $5
+                       ORDER BY entry_date DESC
+                       LIMIT $2 OFFSET $3"#,
+                )
+                .bind(&room_slug)
+                .bind(per_page)
+                .bind(offset)
+                .bind(status)
+                .bind(&ticker)
+                .fetch_all(&state.db.pool)
+                .await
+            }
+            None => {
+                sqlx::query_as(
+                    r#"SELECT * FROM room_trades
+                       WHERE room_slug = $1 AND deleted_at IS NULL AND ticker = $4
+                       ORDER BY entry_date DESC
+                       LIMIT $2 OFFSET $3"#,
+                )
+                .bind(&room_slug)
+                .bind(per_page)
+                .bind(offset)
+                .bind(&ticker)
+                .fetch_all(&state.db.pool)
+                .await
+            }
+        }
+        .map_err(|e| {
+            error!("Failed to fetch trades: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
+
+        let total: (i64,) = sqlx::query_as(
+            "SELECT COUNT(*) FROM room_trades WHERE room_slug = $1 AND deleted_at IS NULL",
         )
-    })?;
+        .bind(&room_slug)
+        .fetch_one(&state.db.pool)
+        .await
+        .map_err(|e| {
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
+
+        return Ok(Json(json!({
+            "data": trades,
+            "meta": {
+                "current_page": page,
+                "per_page": per_page,
+                "total": total.0,
+                "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
+            }
+        })));
+    }
+
+    // Use cache for non-ticker filtered queries
+    let status_filter = query.status.clone();
+    let response = state
+        .services
+        .cache
+        .get_or_fetch(&cache_key, cache_ttl::TRADES, || async {
+            let trades: Vec<RoomTrade> = match &status_filter {
+                Some(status) => {
+                    sqlx::query_as(
+                        r#"SELECT * FROM room_trades
+                           WHERE room_slug = $1 AND deleted_at IS NULL AND status = $4
+                           ORDER BY entry_date DESC
+                           LIMIT $2 OFFSET $3"#,
+                    )
+                    .bind(&room_slug)
+                    .bind(per_page)
+                    .bind(offset)
+                    .bind(status)
+                    .fetch_all(&state.db.pool)
+                    .await?
+                }
+                None => {
+                    sqlx::query_as(
+                        r#"SELECT * FROM room_trades
+                           WHERE room_slug = $1 AND deleted_at IS NULL
+                           ORDER BY entry_date DESC
+                           LIMIT $2 OFFSET $3"#,
+                    )
+                    .bind(&room_slug)
+                    .bind(per_page)
+                    .bind(offset)
+                    .fetch_all(&state.db.pool)
+                    .await?
+                }
+            };
+
+            let total: (i64,) = sqlx::query_as(
+                "SELECT COUNT(*) FROM room_trades WHERE room_slug = $1 AND deleted_at IS NULL",
+            )
+            .bind(&room_slug)
+            .fetch_one(&state.db.pool)
+            .await?;
+
+            Ok(TradesResponse {
+                data: trades,
+                meta: PaginationMeta {
+                    current_page: page,
+                    per_page,
+                    total: total.0,
+                    total_pages: (total.0 as f64 / per_page as f64).ceil() as i64,
+                },
+            })
+        })
+        .await
+        .map_err(|e| {
+            error!("Failed to fetch trades: {}", e);
+            (
+                StatusCode::INTERNAL_SERVER_ERROR,
+                Json(json!({"error": e.to_string()})),
+            )
+        })?;
 
     Ok(Json(json!({
-        "data": trades,
-        "meta": {
-            "current_page": page,
-            "per_page": per_page,
-            "total": total.0,
-            "total_pages": (total.0 as f64 / per_page as f64).ceil() as i64
-        }
+        "data": response.data,
+        "meta": response.meta
     })))
 }
 
 /// Create a new trade
+/// ICT 7+ Phase 2: Invalidates trades cache after creation
 async fn create_trade(
     State(state): State<AppState>,
     _admin: AdminUser,
@@ -1257,6 +1651,36 @@ async fn create_trade(
         )
     })?;
 
+    // Invalidate trades cache
+    if let Err(e) = state
+        .services
+        .cache_invalidator
+        .on_trade_change(&input.room_slug, Some(trade.id))
+        .await
+    {
+        error!("Failed to invalidate trades cache: {}", e);
+    }
+
+    // ICT 7+ Phase 3: Broadcast WebSocket event for real-time updates
+    state
+        .ws_manager
+        .broadcast_trade_created(crate::routes::websocket::TradePayload {
+            id: trade.id,
+            room_slug: trade.room_slug.clone(),
+            ticker: trade.ticker.clone(),
+            direction: trade.direction.clone(),
+            status: trade.status.clone(),
+            entry_price: trade.entry_price,
+            exit_price: trade.exit_price,
+            pnl_percent: trade.pnl_percent,
+            result: trade.result.clone(),
+            invalidation_reason: trade.invalidation_reason.clone(),
+            was_updated: trade.was_updated,
+            entry_date: trade.entry_date.to_string(),
+            exit_date: trade.exit_date.map(|d| d.to_string()),
+        })
+        .await;
+
     info!(
         "Created trade: {} {} for {}",
         trade.ticker, trade.direction, input.room_slug
@@ -1265,6 +1689,7 @@ async fn create_trade(
 }
 
 /// Close a trade
+/// ICT 7+ Phase 2: Invalidates trades cache after closing
 async fn close_trade(
     State(state): State<AppState>,
     _admin: AdminUser,
@@ -1338,6 +1763,36 @@ async fn close_trade(
         )
     })?;
 
+    // Invalidate trades cache (closing affects stats)
+    if let Err(e) = state
+        .services
+        .cache_invalidator
+        .on_trade_change(&trade.room_slug, Some(id))
+        .await
+    {
+        error!("Failed to invalidate trades cache: {}", e);
+    }
+
+    // ICT 7+ Phase 3: Broadcast WebSocket event for real-time updates
+    state
+        .ws_manager
+        .broadcast_trade_closed(crate::routes::websocket::TradePayload {
+            id: trade.id,
+            room_slug: trade.room_slug.clone(),
+            ticker: trade.ticker.clone(),
+            direction: trade.direction.clone(),
+            status: trade.status.clone(),
+            entry_price: trade.entry_price,
+            exit_price: trade.exit_price,
+            pnl_percent: trade.pnl_percent,
+            result: trade.result.clone(),
+            invalidation_reason: trade.invalidation_reason.clone(),
+            was_updated: trade.was_updated,
+            entry_date: trade.entry_date.to_string(),
+            exit_date: trade.exit_date.map(|d| d.to_string()),
+        })
+        .await;
+
     info!(
         "Closed trade {}: {} {} P&L: ${:.2}",
         id, trade.ticker, result, pnl
@@ -1346,6 +1801,7 @@ async fn close_trade(
 }
 
 /// Invalidate a trade (for setups that didn't trigger)
+/// ICT 7+ Phase 2: Invalidates trades cache after invalidation
 async fn invalidate_trade(
     State(state): State<AppState>,
     _admin: AdminUser,
@@ -1372,6 +1828,36 @@ async fn invalidate_trade(
         )
     })?;
 
+    // Invalidate trades cache
+    if let Err(e) = state
+        .services
+        .cache_invalidator
+        .on_trade_change(&trade.room_slug, Some(id))
+        .await
+    {
+        error!("Failed to invalidate trades cache: {}", e);
+    }
+
+    // ICT 7+ Phase 3: Broadcast WebSocket event for real-time updates
+    state
+        .ws_manager
+        .broadcast_trade_invalidated(crate::routes::websocket::TradePayload {
+            id: trade.id,
+            room_slug: trade.room_slug.clone(),
+            ticker: trade.ticker.clone(),
+            direction: trade.direction.clone(),
+            status: trade.status.clone(),
+            entry_price: trade.entry_price,
+            exit_price: trade.exit_price,
+            pnl_percent: trade.pnl_percent,
+            result: trade.result.clone(),
+            invalidation_reason: trade.invalidation_reason.clone(),
+            was_updated: trade.was_updated,
+            entry_date: trade.entry_date.to_string(),
+            exit_date: trade.exit_date.map(|d| d.to_string()),
+        })
+        .await;
+
     info!(
         "Invalidated trade {}: {} - {}",
         id, trade.ticker, input.reason
@@ -1380,6 +1866,7 @@ async fn invalidate_trade(
 }
 
 /// Update a trade (mark as updated)
+/// ICT 7+ Phase 2: Invalidates trades cache after update
 async fn update_trade(
     State(state): State<AppState>,
     _admin: AdminUser,
@@ -1412,16 +1899,60 @@ async fn update_trade(
         )
     })?;
 
+    // Invalidate trades cache
+    if let Err(e) = state
+        .services
+        .cache_invalidator
+        .on_trade_change(&trade.room_slug, Some(id))
+        .await
+    {
+        error!("Failed to invalidate trades cache: {}", e);
+    }
+
+    // ICT 7+ Phase 3: Broadcast WebSocket event for real-time updates
+    state
+        .ws_manager
+        .broadcast_trade_updated(crate::routes::websocket::TradePayload {
+            id: trade.id,
+            room_slug: trade.room_slug.clone(),
+            ticker: trade.ticker.clone(),
+            direction: trade.direction.clone(),
+            status: trade.status.clone(),
+            entry_price: trade.entry_price,
+            exit_price: trade.exit_price,
+            pnl_percent: trade.pnl_percent,
+            result: trade.result.clone(),
+            invalidation_reason: trade.invalidation_reason.clone(),
+            was_updated: trade.was_updated,
+            entry_date: trade.entry_date.to_string(),
+            exit_date: trade.exit_date.map(|d| d.to_string()),
+        })
+        .await;
+
     info!("Updated trade {}: {}", id, trade.ticker);
     Ok(Json(trade))
 }
 
 /// Delete a trade (soft delete)
+/// ICT 7+ Phase 2: Invalidates trades cache after deletion
 async fn delete_trade(
     State(state): State<AppState>,
     _admin: AdminUser,
     Path(id): Path<i64>,
 ) -> Result<Json<serde_json::Value>, (StatusCode, Json<serde_json::Value>)> {
+    // Get room_slug before deletion for cache invalidation
+    let entry: Option<(String,)> =
+        sqlx::query_as("SELECT room_slug FROM room_trades WHERE id = $1")
+            .bind(id)
+            .fetch_optional(&state.db.pool)
+            .await
+            .map_err(|e| {
+                (
+                    StatusCode::INTERNAL_SERVER_ERROR,
+                    Json(json!({"error": e.to_string()})),
+                )
+            })?;
+
     sqlx::query("UPDATE room_trades SET deleted_at = NOW() WHERE id = $1")
         .bind(id)
         .execute(&state.db.pool)
@@ -1432,6 +1963,18 @@ async fn delete_trade(
                 Json(json!({"error": e.to_string()})),
             )
         })?;
+
+    // Invalidate trades cache
+    if let Some((room_slug,)) = entry {
+        if let Err(e) = state
+            .services
+            .cache_invalidator
+            .on_trade_change(&room_slug, Some(id))
+            .await
+        {
+            error!("Failed to invalidate trades cache: {}", e);
+        }
+    }
 
     Ok(Json(json!({"success": true, "message": "Trade deleted"})))
 }

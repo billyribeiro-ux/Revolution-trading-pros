@@ -24,6 +24,7 @@
   import EmptyState from './components/EmptyState.svelte';
   import ErrorState from './components/ErrorState.svelte';
   import TableSkeleton from './components/TableSkeleton.svelte';
+  import ExportMenu from '../components/ExportMenu.svelte';
 
   // ═══════════════════════════════════════════════════════════════════════════
   // STATE
@@ -153,8 +154,24 @@
 <main class="trade-tracker">
   <!-- Page Header -->
   <header class="page-header">
-    <h1>Trade Tracker</h1>
-    <p>Complete history of all swing trades with performance metrics</p>
+    <div class="header-content">
+      <div class="header-text">
+        <h1>Trade Tracker</h1>
+        <p>Complete history of all swing trades with performance metrics</p>
+      </div>
+      <ExportMenu
+        roomSlug="explosive-swings"
+        size="md"
+        onexport={(detail) => {
+          if (detail.success) {
+            successMessage = `Export completed: ${detail.type}`;
+          }
+        }}
+        onerror={(err) => {
+          error = err.message;
+        }}
+      />
+    </div>
   </header>
 
   <!-- Stats Overview -->
@@ -243,12 +260,23 @@
   }
 
   .page-header {
-    text-align: center;
-    max-width: 800px;
+    max-width: 1400px;
     margin: 0 auto var(--space-10);
   }
 
-  .page-header h1 {
+  .header-content {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-6);
+  }
+
+  .header-text {
+    flex: 1;
+    text-align: center;
+  }
+
+  .header-text h1 {
     font-size: var(--text-3xl);
     font-weight: var(--font-bold);
     margin: 0 0 var(--space-3) 0;
@@ -257,7 +285,7 @@
     letter-spacing: var(--tracking-tight);
   }
 
-  .page-header p {
+  .header-text p {
     font-size: var(--text-base);
     color: var(--color-text-tertiary);
     margin: 0;
@@ -366,8 +394,23 @@
       padding: var(--space-6) var(--space-4);
     }
 
-    .page-header h1 {
+    .header-content {
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-4);
+    }
+
+    .header-text {
+      text-align: center;
+    }
+
+    .header-text h1 {
       font-size: var(--text-2xl);
+    }
+
+    /* Center the export button on mobile */
+    .header-content > :global(.export-menu) {
+      align-self: center;
     }
   }
 </style>

@@ -1,11 +1,12 @@
 <script lang="ts">
 	/**
 	 * Explosive Swings - Member Dashboard
-	 * @version 5.0.0 - State Module Integration
+	 * @version 6.0.0 - WebSocket Real-Time Alerts (Phase 3)
 	 * @standards Apple Principal Engineer ICT 7+ | WCAG 2.1 AA
 	 */
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import { createPageState } from './page.state.svelte';
+	import { createRealtimeState } from './realtime.svelte';
 
 	// Layout Components
 	import TradingRoomHeader from '$lib/components/dashboard/TradingRoomHeader.svelte';
@@ -17,6 +18,7 @@
 	import AlertCard from './components/AlertCard.svelte';
 	import AlertFilters from '$lib/components/dashboard/alerts/AlertFilters.svelte';
 	import SidebarComponent from './components/Sidebar.svelte';
+	import NewAlertPulse from './components/NewAlertPulse.svelte';
 
 	// Modals
 	import TradeAlertModal from '$lib/components/dashboard/TradeAlertModal.svelte';
@@ -42,6 +44,20 @@
 
 	// Initialize state module (named 'ps' to avoid conflict with $state rune)
 	const ps = createPageState();
+
+	// Initialize real-time state for WebSocket updates (ICT 7+ Phase 3)
+	const realtime = createRealtimeState('explosive-swings');
+
+	// Connect real-time updates to page state
+	realtime.setPageState({
+		prependAlert: ps.prependAlert,
+		updateAlert: ps.updateAlert,
+		removeAlert: ps.removeAlert,
+		fetchAllTrades: ps.fetchAllTrades,
+		fetchStats: ps.fetchStats,
+		fetchTradePlan: ps.fetchTradePlan,
+		setStats: ps.setStats
+	});
 
 	// Local modal state (bind: requires local variables)
 	let alertModalOpen = $state(false);
@@ -91,6 +107,14 @@ credentials: 'include'
 
 	onMount(() => {
 		ps.initializeData();
+
+		// ICT 7+ Phase 3: Connect to WebSocket for real-time alerts
+		realtime.connect();
+	});
+
+	onDestroy(() => {
+		// ICT 7+ Phase 3: Disconnect WebSocket when leaving page
+		realtime.disconnect();
 	});
 </script>
 
@@ -131,7 +155,25 @@ credentials: 'include'
 		<!-- Alerts Section -->
 		<section class="alerts-section">
 			<div class="section-header">
-				<h2>Live Alerts</h2>
+				<div class="header-left">
+					<h2>Live Alerts</h2>
+					<!-- ICT 7+ Phase 3: Real-time connection status -->
+					<div class="connection-status" class:connected={realtime.isConnected} class:reconnecting={realtime.isReconnecting}>
+						<span class="status-dot"></span>
+						<span class="status-text">
+							{#if realtime.isConnected}
+								Live
+							{:else if realtime.isReconnecting}
+								Reconnecting...
+							{:else}
+								Offline
+							{/if}
+						</span>
+					</div>
+					{#if realtime.unreadCount > 0}
+						<NewAlertPulse size="sm" variant="entry" active={true} label="{realtime.unreadCount} new" />
+					{/if}
+				</div>
 				{#if ps.isAdmin}
 					<button class="admin-btn" onclick={() => ps.openAlertModal()}>+ New Alert</button>
 				{/if}
@@ -296,6 +338,60 @@ credentials: 'include'
 		font-weight: 700;
 		margin: 0;
 		color: var(--color-text-primary);
+	}
+
+	/* ICT 7+ Phase 3: Header layout and connection status */
+	.header-left {
+		display: flex;
+		align-items: center;
+		gap: 12px;
+	}
+
+	.connection-status {
+		display: flex;
+		align-items: center;
+		gap: 6px;
+		font-size: 12px;
+		font-weight: 500;
+		color: var(--color-text-tertiary);
+		padding: 4px 10px;
+		background: var(--color-bg-subtle);
+		border-radius: 9999px;
+	}
+
+	.connection-status.connected {
+		color: var(--color-profit, #10b981);
+		background: var(--color-profit-bg, #d1fae5);
+	}
+
+	.connection-status.reconnecting {
+		color: var(--color-watching, #f59e0b);
+		background: var(--color-watching-bg, #fef3c7);
+	}
+
+	.status-dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+		background: currentColor;
+	}
+
+	.connection-status.connected .status-dot {
+		animation: pulse-dot 2s ease-in-out infinite;
+	}
+
+	@keyframes pulse-dot {
+		0%, 100% {
+			opacity: 1;
+		}
+		50% {
+			opacity: 0.5;
+		}
+	}
+
+	.status-text {
+		text-transform: uppercase;
+		letter-spacing: 0.05em;
 	}
 
 	.admin-btn {

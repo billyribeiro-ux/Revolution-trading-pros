@@ -14,7 +14,9 @@ use tower_http::{
 };
 use tracing_subscriber::{layer::SubscriberExt, util::SubscriberInitExt};
 
+use revolution_api::cache::{CacheInvalidator, CacheService};
 use revolution_api::routes::realtime::EventBroadcaster;
+use revolution_api::routes::websocket::WsConnectionManager;
 use revolution_api::{
     config::Config, db::Database, docs, middleware, monitoring, queue, routes, services::Services,
     AppState,
@@ -80,7 +82,21 @@ async fn main() -> anyhow::Result<()> {
 
     // Initialize real-time event broadcaster - ICT 11+ SSE Updates
     let event_broadcaster = EventBroadcaster::new();
-    tracing::info!("Real-time event broadcaster initialized");
+    tracing::info!("Real-time SSE event broadcaster initialized");
+
+    // Initialize WebSocket connection manager - ICT 7+ Phase 3 Real-time Alerts
+    let ws_manager = WsConnectionManager::new();
+    tracing::info!("WebSocket connection manager initialized");
+
+    // Initialize cache service for Explosive Swings room content
+    // Uses Redis L2 cache if available, falls back to L1 in-memory cache
+    let cache = CacheService::new(services.redis.clone(), Some(10_000));
+    let cache_invalidator = CacheInvalidator::new(cache.clone());
+    if cache.has_redis() {
+        tracing::info!("✅ Cache service initialized with Redis L2 backend");
+    } else {
+        tracing::warn!("⚠️ Cache service initialized with L1 in-memory only (no Redis)");
+    }
 
     // Create app state
     let state = AppState {
@@ -88,6 +104,9 @@ async fn main() -> anyhow::Result<()> {
         services,
         config: config.clone(),
         event_broadcaster,
+        ws_manager,
+        cache,
+        cache_invalidator,
     };
 
     // Build CORS layer - ICT 11+ CORB Fix: explicit headers required when using credentials

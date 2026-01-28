@@ -450,7 +450,7 @@ export interface TickerPillProps {
 // ═══════════════════════════════════════════════════════════════════════════
 // STANDARDIZED BREAKPOINTS - Repository-Wide System
 // ═══════════════════════════════════════════════════════════════════════════
-// 
+//
 // These align with Tailwind defaults and are used across all components.
 // Import from '$lib/constants/breakpoints' for programmatic use.
 //
@@ -463,3 +463,418 @@ export interface TickerPillProps {
 // Standard values:
 //   sm: 640px, md: 768px, lg: 1024px, xl: 1280px, 2xl: 1536px
 // ═══════════════════════════════════════════════════════════════════════════
+
+// ═══════════════════════════════════════════════════════════════════════════
+// TRADE ENUMS - Status and Type Definitions
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Current status of a trade in the system.
+ * @description Tracks the lifecycle of a trade from open to completion.
+ */
+export type TradeStatus = 'open' | 'closed' | 'invalidated' | 'partial';
+
+/**
+ * Type of trading instrument being used.
+ * @description Determines the instrument category for the trade.
+ */
+export type TradeType = 'stock' | 'option' | 'spread';
+
+/**
+ * Action being taken on a trade.
+ * @description Indicates whether entering or exiting a position.
+ */
+export type TradeAction = 'buy' | 'sell' | 'buy_to_open' | 'sell_to_close' | 'buy_to_close' | 'sell_to_open';
+
+/**
+ * Type of option contract.
+ * @description Specifies the option type for options trades.
+ */
+export type OptionType = 'call' | 'put';
+
+/**
+ * Order execution type.
+ * @description Determines how the order should be executed.
+ */
+export type OrderType = 'market' | 'limit' | 'stop' | 'stop_limit';
+
+// ═══════════════════════════════════════════════════════════════════════════
+// API Response Types
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Generic API response wrapper.
+ * @template T - The type of data contained in the response.
+ * @description Standardized response format for all API endpoints.
+ */
+export interface ApiResponse<T> {
+	/** Whether the API call was successful */
+	success: boolean;
+	/** The response data payload */
+	data: T;
+	/** Error message if success is false */
+	error?: string;
+	/** Pagination metadata for list responses */
+	pagination?: PaginationMeta;
+}
+
+/**
+ * Pagination metadata for paginated responses.
+ * @description Contains all information needed for pagination controls.
+ */
+export interface PaginationMeta {
+	/** Current page number (1-indexed) */
+	page: number;
+	/** Number of items per page */
+	per_page: number;
+	/** Total number of items across all pages */
+	total: number;
+	/** Total number of pages available */
+	total_pages: number;
+	/** Whether there is a next page */
+	has_next: boolean;
+	/** Whether there is a previous page */
+	has_prev: boolean;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Search Types
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Search filter parameters.
+ * @description Filters applied to search queries across the dashboard.
+ */
+export interface SearchFilters {
+	/** Content types to include in search results */
+	types: ('alerts' | 'trades' | 'trade_plans')[];
+	/** Filter by specific ticker symbol */
+	ticker?: string;
+	/** Start date for date range filter (ISO 8601) */
+	from?: string;
+	/** End date for date range filter (ISO 8601) */
+	to?: string;
+}
+
+/**
+ * Individual search result item.
+ * @description Represents a single match from a search query.
+ */
+export interface SearchResult {
+	/** Type of content that matched */
+	type: 'alert' | 'trade' | 'trade_plan';
+	/** Unique identifier of the matched item */
+	id: number;
+	/** Ticker symbol associated with the result */
+	ticker: string;
+	/** Title or name of the matched item */
+	title: string;
+	/** Relevance rank (lower is more relevant) */
+	rank: number;
+	/** Highlighted headline/excerpt showing match context */
+	headline: string;
+	/** When the item was created (ISO 8601) */
+	created_at: string;
+}
+
+/**
+ * Complete search response.
+ * @description Full response from a search query including metadata.
+ */
+export interface SearchResponse {
+	/** Array of matching results */
+	results: SearchResult[];
+	/** Total count of matches (may exceed results if paginated) */
+	total_count: number;
+	/** The original search query */
+	query: string;
+	/** Time taken to execute search in milliseconds */
+	took_ms: number;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Analytics Types
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Summary statistics for trading performance.
+ * @description Comprehensive metrics for evaluating trading performance.
+ */
+export interface AnalyticsSummary {
+	/** Total number of trades in the period */
+	total_trades: number;
+	/** Number of winning trades */
+	wins: number;
+	/** Number of losing trades */
+	losses: number;
+	/** Win rate as a decimal (0-1) */
+	win_rate: number;
+	/** Ratio of gross profits to gross losses */
+	profit_factor: number;
+	/** Average percentage gain on winning trades */
+	avg_win: number;
+	/** Average percentage loss on losing trades */
+	avg_loss: number;
+	/** Largest single winning trade percentage */
+	largest_win: number;
+	/** Largest single losing trade percentage */
+	largest_loss: number;
+	/** Maximum peak-to-trough decline percentage */
+	max_drawdown: number;
+	/** Average number of days positions are held */
+	avg_holding_days: number;
+	/** Current consecutive win/loss streak */
+	current_streak: number;
+	/** Type of current streak */
+	streak_type: 'win' | 'loss';
+}
+
+/**
+ * Performance metrics for a specific ticker.
+ * @description Breakdown of trading performance by individual stock symbol.
+ */
+export interface TickerPerformance {
+	/** Stock ticker symbol */
+	ticker: string;
+	/** Total trades on this ticker */
+	total_trades: number;
+	/** Winning trades on this ticker */
+	wins: number;
+	/** Losing trades on this ticker */
+	losses: number;
+	/** Win rate for this ticker (0-1) */
+	win_rate: number;
+	/** Total P&L percentage for this ticker */
+	total_pnl: number;
+	/** Average P&L per trade percentage */
+	avg_pnl: number;
+}
+
+/**
+ * Monthly return data point.
+ * @description Performance metrics aggregated by calendar month.
+ */
+export interface MonthlyReturn {
+	/** Month identifier (YYYY-MM format) */
+	month: string;
+	/** Total P&L percentage for the month */
+	pnl: number;
+	/** Number of trades closed in the month */
+	trades: number;
+	/** Win rate for the month (0-1) */
+	win_rate: number;
+}
+
+/**
+ * Point on the equity curve.
+ * @description Represents cumulative P&L at a specific point in time.
+ */
+export interface EquityPoint {
+	/** Date of the equity snapshot (ISO 8601) */
+	date: string;
+	/** Cumulative P&L percentage to date */
+	cumulative_pnl: number;
+	/** Trade ID that caused this equity change */
+	trade_id: number;
+}
+
+/**
+ * Drawdown period analysis.
+ * @description Tracks periods of declining equity and recovery.
+ */
+export interface DrawdownPeriod {
+	/** Start date of the drawdown (ISO 8601) */
+	start_date: string;
+	/** End date of the drawdown (ISO 8601) */
+	end_date: string;
+	/** Maximum drawdown percentage during this period */
+	max_drawdown: number;
+	/** Number of days to recover from drawdown */
+	recovery_days: number;
+}
+
+/**
+ * Complete analytics data for a trading room.
+ * @description All analytics data needed for the room analytics dashboard.
+ */
+export interface RoomAnalytics {
+	/** Summary performance statistics */
+	summary: AnalyticsSummary;
+	/** Performance breakdown by ticker */
+	ticker_performance: TickerPerformance[];
+	/** Monthly return history */
+	monthly_returns: MonthlyReturn[];
+	/** Equity curve data points */
+	equity_curve: EquityPoint[];
+	/** Historical drawdown periods */
+	drawdown_periods: DrawdownPeriod[];
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// WebSocket Event Types
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * All possible WebSocket event types.
+ * @description Union type of all events that can be received via WebSocket.
+ */
+export type WsEventType =
+	| 'alert:created'
+	| 'alert:updated'
+	| 'alert:deleted'
+	| 'trade:opened'
+	| 'trade:closed'
+	| 'trade:invalidated'
+	| 'stats:updated'
+	| 'heartbeat';
+
+/**
+ * Generic WebSocket message wrapper.
+ * @template T - The type of data contained in the message.
+ * @description Standardized format for all WebSocket messages.
+ */
+export interface WsMessage<T = unknown> {
+	/** Type of event being broadcast */
+	type: WsEventType;
+	/** Event-specific data payload */
+	data: T;
+	/** When the event occurred (ISO 8601) */
+	timestamp: string;
+}
+
+/**
+ * Event data for alert creation.
+ * @description Payload received when a new alert is published.
+ */
+export interface AlertCreatedEvent {
+	/** Unique identifier of the new alert */
+	id: number;
+	/** Slug of the room the alert belongs to */
+	room_slug: string;
+	/** Type of alert */
+	alert_type: AlertType;
+	/** Stock ticker symbol */
+	ticker: string;
+	/** Alert title/headline */
+	title: string;
+	/** ThinkOrSwim share string (optional) */
+	tos_string?: string;
+	/** When the alert was published (ISO 8601) */
+	published_at: string;
+}
+
+/**
+ * Event data for trade closure.
+ * @description Payload received when a trade is closed.
+ */
+export interface TradeClosedEvent {
+	/** Unique identifier of the closed trade */
+	id: number;
+	/** Slug of the room the trade belongs to */
+	room_slug: string;
+	/** Stock ticker symbol */
+	ticker: string;
+	/** Final status of the trade */
+	status: TradeStatus;
+	/** Profit/loss in dollars (optional) */
+	pnl?: number;
+	/** Profit/loss as percentage (optional) */
+	pnl_percent?: number;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Export Types
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Options for exporting trade data.
+ * @description Configuration for data export functionality.
+ */
+export interface ExportOptions {
+	/** Output format for the export */
+	format: 'csv' | 'pdf' | 'json';
+	/** Optional date range filter for export */
+	date_range?: {
+		/** Start date (ISO 8601) */
+		from: string;
+		/** End date (ISO 8601) */
+		to: string;
+	};
+	/** Include closed trades in export */
+	include_closed?: boolean;
+	/** Include open trades in export */
+	include_open?: boolean;
+}
+
+// ═══════════════════════════════════════════════════════════════════════════
+// Form Types (for modals)
+// ═══════════════════════════════════════════════════════════════════════════
+
+/**
+ * Form data for creating/editing alerts.
+ * @description Shape of data collected from alert creation forms.
+ */
+export interface AlertFormData {
+	/** Stock ticker symbol */
+	ticker: string;
+	/** Alert title/headline */
+	title: string;
+	/** Type of alert being created */
+	alert_type: AlertType;
+	/** Detailed message/notes */
+	message?: string;
+	/** Type of trade instrument */
+	trade_type?: TradeType;
+	/** Action being taken */
+	action?: TradeAction;
+	/** Number of shares/contracts */
+	quantity?: number;
+	/** Option type for options trades */
+	option_type?: OptionType;
+	/** Strike price for options */
+	strike?: number;
+	/** Expiration date for options (ISO 8601) */
+	expiration?: string;
+	/** Order execution type */
+	order_type?: OrderType;
+	/** Limit price for limit orders */
+	limit_price?: number;
+}
+
+/**
+ * Form data for creating/editing trades.
+ * @description Shape of data collected from trade entry forms.
+ */
+export interface TradeFormData {
+	/** Stock ticker symbol */
+	ticker: string;
+	/** Type of trade instrument */
+	trade_type: TradeType;
+	/** Trade direction */
+	direction: 'long' | 'short';
+	/** Entry price of the trade */
+	entry_price: number;
+	/** Entry date (ISO 8601) */
+	entry_date: string;
+	/** Number of shares/contracts */
+	quantity?: number;
+	/** Stop loss price */
+	stop?: number;
+	/** Target price */
+	target?: number;
+	/** Trade notes/thesis */
+	notes?: string;
+}
+
+/**
+ * Form data for closing a trade.
+ * @description Shape of data collected when closing a position.
+ */
+export interface CloseTradeFormData {
+	/** Exit price of the trade */
+	exit_price: number;
+	/** Exit date (ISO 8601) */
+	exit_date: string;
+	/** Notes about the exit */
+	notes?: string;
+}
