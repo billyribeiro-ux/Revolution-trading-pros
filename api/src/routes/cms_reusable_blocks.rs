@@ -116,7 +116,7 @@ pub struct CmsReusableBlockUsage {
 }
 
 /// Usage record with content metadata for display
-#[derive(Debug, Clone, Serialize, Deserialize, ToSchema)]
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow, ToSchema)]
 pub struct CmsReusableBlockUsageWithContent {
     pub id: Uuid,
     pub reusable_block_id: Uuid,
@@ -281,30 +281,30 @@ async fn ensure_unique_slug(
 
     loop {
         let exists: bool = match exclude_id {
-            Some(id) => sqlx::query_scalar!(
+            Some(id) => sqlx::query_scalar::<_, bool>(
                 r#"
                     SELECT EXISTS(
                         SELECT 1 FROM cms_reusable_blocks
                         WHERE slug = $1 AND id != $2 AND deleted_at IS NULL
-                    ) as "exists!"
-                    "#,
-                slug,
-                id
+                    )
+                "#,
             )
+            .bind(&slug)
+            .bind(id)
             .fetch_one(pool)
             .await
             .map_err(|e: sqlx::Error| {
                 ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
             })?,
-            None => sqlx::query_scalar!(
+            None => sqlx::query_scalar::<_, bool>(
                 r#"
                     SELECT EXISTS(
                         SELECT 1 FROM cms_reusable_blocks
                         WHERE slug = $1 AND deleted_at IS NULL
-                    ) as "exists!"
-                    "#,
-                slug
+                    )
+                "#,
             )
+            .bind(&slug)
             .fetch_one(pool)
             .await
             .map_err(|e: sqlx::Error| {
@@ -456,8 +456,7 @@ async fn get_reusable_block(
 ) -> ApiResult<CmsReusableBlock> {
     require_cms_editor(&user)?;
 
-    let block = sqlx::query_as!(
-        CmsReusableBlock,
+    let block = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
         SELECT id, name, slug, description, block_data, category, tags,
                thumbnail_url, usage_count, is_global, is_locked, version,
@@ -465,8 +464,8 @@ async fn get_reusable_block(
         FROM cms_reusable_blocks
         WHERE id = $1 AND deleted_at IS NULL
         "#,
-        id
     )
+    .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
@@ -500,8 +499,7 @@ async fn get_reusable_block_by_slug(
 ) -> ApiResult<CmsReusableBlock> {
     require_cms_editor(&user)?;
 
-    let block = sqlx::query_as!(
-        CmsReusableBlock,
+    let block = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
         SELECT id, name, slug, description, block_data, category, tags,
                thumbnail_url, usage_count, is_global, is_locked, version,
@@ -509,8 +507,8 @@ async fn get_reusable_block_by_slug(
         FROM cms_reusable_blocks
         WHERE slug = $1 AND deleted_at IS NULL
         "#,
-        slug
     )
+    .bind(&slug)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
@@ -558,15 +556,15 @@ async fn create_reusable_block(
 
     // Get CMS user ID from platform user
     let cms_user_id: Option<Uuid> =
-        sqlx::query_scalar!("SELECT id FROM cms_users WHERE user_id = $1", user.id)
+        sqlx::query_scalar::<_, Uuid>("SELECT id FROM cms_users WHERE user_id = $1")
+            .bind(user.id)
             .fetch_optional(&state.db.pool)
             .await
             .map_err(|e: sqlx::Error| {
                 ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
             })?;
 
-    let block = sqlx::query_as!(
-        CmsReusableBlock,
+    let block = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
         INSERT INTO cms_reusable_blocks (
             id, name, slug, description, block_data, category, tags,
@@ -578,17 +576,17 @@ async fn create_reusable_block(
                   thumbnail_url, usage_count, is_global, is_locked, version,
                   deleted_at, created_at, updated_at, created_by
         "#,
-        Uuid::new_v4(),
-        request.name.trim(),
-        slug,
-        request.description,
-        request.block_data,
-        request.category,
-        request.tags.as_deref(),
-        request.thumbnail_url,
-        request.is_global,
-        cms_user_id
     )
+    .bind(Uuid::new_v4())
+    .bind(request.name.trim())
+    .bind(&slug)
+    .bind(&request.description)
+    .bind(&request.block_data)
+    .bind(&request.category)
+    .bind(request.tags.as_deref())
+    .bind(&request.thumbnail_url)
+    .bind(request.is_global)
+    .bind(cms_user_id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -625,10 +623,12 @@ async fn update_reusable_block(
     require_cms_editor(&user)?;
 
     // Check if block exists and is not locked
-    let existing = sqlx::query!(
+    #[derive(sqlx::FromRow)]
+    struct ExistingBlock { is_locked: bool }
+    let existing = sqlx::query_as::<_, ExistingBlock>(
         "SELECT is_locked FROM cms_reusable_blocks WHERE id = $1 AND deleted_at IS NULL",
-        id
     )
+    .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
@@ -648,8 +648,7 @@ async fn update_reusable_block(
         None
     };
 
-    let block = sqlx::query_as!(
-        CmsReusableBlock,
+    let block = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
         UPDATE cms_reusable_blocks
         SET name = COALESCE($2, name),
@@ -668,17 +667,17 @@ async fn update_reusable_block(
                   thumbnail_url, usage_count, is_global, is_locked, version,
                   deleted_at, created_at, updated_at, created_by
         "#,
-        id,
-        request.name,
-        final_slug,
-        request.description,
-        request.block_data,
-        request.category,
-        request.tags.as_deref(),
-        request.thumbnail_url,
-        request.is_global,
-        request.is_locked
     )
+    .bind(id)
+    .bind(&request.name)
+    .bind(&final_slug)
+    .bind(&request.description)
+    .bind(&request.block_data)
+    .bind(&request.category)
+    .bind(request.tags.as_deref())
+    .bind(&request.thumbnail_url)
+    .bind(request.is_global)
+    .bind(request.is_locked)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -711,10 +710,12 @@ async fn delete_reusable_block(
     require_cms_admin(&user)?;
 
     // Check if block exists and is not locked
-    let existing = sqlx::query!(
+    #[derive(sqlx::FromRow)]
+    struct ExistingBlockDelete { is_locked: bool, name: String }
+    let existing = sqlx::query_as::<_, ExistingBlockDelete>(
         "SELECT is_locked, name FROM cms_reusable_blocks WHERE id = $1 AND deleted_at IS NULL",
-        id
     )
+    .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
@@ -731,10 +732,10 @@ async fn delete_reusable_block(
     }
 
     // Soft delete
-    sqlx::query!(
+    sqlx::query(
         "UPDATE cms_reusable_blocks SET deleted_at = NOW() WHERE id = $1",
-        id
     )
+    .bind(id)
     .execute(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -769,8 +770,7 @@ async fn duplicate_reusable_block(
     require_cms_editor(&user)?;
 
     // Fetch the original block
-    let original = sqlx::query_as!(
-        CmsReusableBlock,
+    let original = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
         SELECT id, name, slug, description, block_data, category, tags,
                thumbnail_url, usage_count, is_global, is_locked, version,
@@ -778,8 +778,8 @@ async fn duplicate_reusable_block(
         FROM cms_reusable_blocks
         WHERE id = $1 AND deleted_at IS NULL
         "#,
-        id
     )
+    .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
@@ -794,15 +794,15 @@ async fn duplicate_reusable_block(
 
     // Get CMS user ID
     let cms_user_id: Option<Uuid> =
-        sqlx::query_scalar!("SELECT id FROM cms_users WHERE user_id = $1", user.id)
+        sqlx::query_scalar::<_, Uuid>("SELECT id FROM cms_users WHERE user_id = $1")
+            .bind(user.id)
             .fetch_optional(&state.db.pool)
             .await
             .map_err(|e: sqlx::Error| {
                 ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
             })?;
 
-    let duplicated = sqlx::query_as!(
-        CmsReusableBlock,
+    let duplicated = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
         INSERT INTO cms_reusable_blocks (
             id, name, slug, description, block_data, category, tags,
@@ -814,17 +814,17 @@ async fn duplicate_reusable_block(
                   thumbnail_url, usage_count, is_global, is_locked, version,
                   deleted_at, created_at, updated_at, created_by
         "#,
-        Uuid::new_v4(),
-        new_name,
-        new_slug,
-        original.description,
-        original.block_data,
-        original.category,
-        original.tags.as_deref(),
-        original.thumbnail_url,
-        original.is_global,
-        cms_user_id
     )
+    .bind(Uuid::new_v4())
+    .bind(&new_name)
+    .bind(&new_slug)
+    .bind(&original.description)
+    .bind(&original.block_data)
+    .bind(&original.category)
+    .bind(original.tags.as_deref())
+    .bind(&original.thumbnail_url)
+    .bind(original.is_global)
+    .bind(cms_user_id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -861,10 +861,10 @@ async fn get_block_usage(
     require_cms_editor(&user)?;
 
     // Verify block exists
-    let exists = sqlx::query_scalar!(
-        "SELECT EXISTS(SELECT 1 FROM cms_reusable_blocks WHERE id = $1 AND deleted_at IS NULL) as \"exists!\"",
-        id
+    let exists: bool = sqlx::query_scalar::<_, bool>(
+        "SELECT EXISTS(SELECT 1 FROM cms_reusable_blocks WHERE id = $1 AND deleted_at IS NULL)",
     )
+    .bind(id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| {
@@ -878,15 +878,14 @@ async fn get_block_usage(
     }
 
     // Fetch usage with content metadata
-    let usages: Vec<CmsReusableBlockUsageWithContent> = sqlx::query_as!(
-        CmsReusableBlockUsageWithContent,
+    let usages: Vec<CmsReusableBlockUsageWithContent> = sqlx::query_as::<_, CmsReusableBlockUsageWithContent>(
         r#"
         SELECT
             u.id,
             u.reusable_block_id,
             u.content_id,
             c.title as content_title,
-            c.content_type::text as "content_type!",
+            c.content_type::text as content_type,
             c.slug as content_slug,
             u.block_instance_id,
             u.is_synced,
@@ -897,8 +896,8 @@ async fn get_block_usage(
         WHERE u.reusable_block_id = $1
         ORDER BY u.created_at DESC
         "#,
-        id
     )
+    .bind(id)
     .fetch_all(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -932,10 +931,10 @@ async fn track_block_usage(
     require_cms_editor(&user)?;
 
     // Verify block exists
-    let block_exists = sqlx::query_scalar!(
-        "SELECT EXISTS(SELECT 1 FROM cms_reusable_blocks WHERE id = $1 AND deleted_at IS NULL) as \"exists!\"",
-        request.reusable_block_id
+    let block_exists: bool = sqlx::query_scalar::<_, bool>(
+        "SELECT EXISTS(SELECT 1 FROM cms_reusable_blocks WHERE id = $1 AND deleted_at IS NULL)",
     )
+    .bind(request.reusable_block_id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -947,10 +946,10 @@ async fn track_block_usage(
     }
 
     // Verify content exists
-    let content_exists = sqlx::query_scalar!(
-        "SELECT EXISTS(SELECT 1 FROM cms_content WHERE id = $1 AND deleted_at IS NULL) as \"exists!\"",
-        request.content_id
+    let content_exists: bool = sqlx::query_scalar::<_, bool>(
+        "SELECT EXISTS(SELECT 1 FROM cms_content WHERE id = $1 AND deleted_at IS NULL)",
     )
+    .bind(request.content_id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -962,8 +961,7 @@ async fn track_block_usage(
     }
 
     // Create usage record
-    let usage = sqlx::query_as!(
-        CmsReusableBlockUsage,
+    let usage = sqlx::query_as::<_, CmsReusableBlockUsage>(
         r#"
         INSERT INTO cms_reusable_block_usage (
             id, reusable_block_id, content_id, block_instance_id, is_synced, created_at
@@ -972,21 +970,21 @@ async fn track_block_usage(
         RETURNING id, reusable_block_id, content_id, block_instance_id, is_synced,
                   detached_at, detached_by, created_at
         "#,
-        Uuid::new_v4(),
-        request.reusable_block_id,
-        request.content_id,
-        request.block_instance_id,
-        request.is_synced
     )
+    .bind(Uuid::new_v4())
+    .bind(request.reusable_block_id)
+    .bind(request.content_id)
+    .bind(&request.block_instance_id)
+    .bind(request.is_synced)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     // Increment usage count on the block
-    sqlx::query!(
+    sqlx::query(
         "UPDATE cms_reusable_blocks SET usage_count = usage_count + 1 WHERE id = $1",
-        request.reusable_block_id
     )
+    .bind(request.reusable_block_id)
     .execute(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -1023,10 +1021,12 @@ async fn remove_block_usage(
     require_cms_editor(&user)?;
 
     // Get usage record to find the block ID
-    let usage = sqlx::query!(
+    #[derive(sqlx::FromRow)]
+    struct UsageRecord { reusable_block_id: Uuid }
+    let usage = sqlx::query_as::<_, UsageRecord>(
         "SELECT reusable_block_id FROM cms_reusable_block_usage WHERE id = $1",
-        id
     )
+    .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
@@ -1035,7 +1035,8 @@ async fn remove_block_usage(
     })?;
 
     // Delete the usage record
-    sqlx::query!("DELETE FROM cms_reusable_block_usage WHERE id = $1", id)
+    sqlx::query("DELETE FROM cms_reusable_block_usage WHERE id = $1")
+        .bind(id)
         .execute(&state.db.pool)
         .await
         .map_err(|e: sqlx::Error| {
@@ -1043,10 +1044,10 @@ async fn remove_block_usage(
         })?;
 
     // Decrement usage count on the block
-    sqlx::query!(
+    sqlx::query(
         "UPDATE cms_reusable_blocks SET usage_count = GREATEST(0, usage_count - 1) WHERE id = $1",
-        usage.reusable_block_id
     )
+    .bind(usage.reusable_block_id)
     .execute(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -1086,10 +1087,12 @@ async fn detach_block_usage(
     require_cms_editor(&user)?;
 
     // Check if already detached
-    let existing = sqlx::query!(
+    #[derive(sqlx::FromRow)]
+    struct SyncStatus { is_synced: bool }
+    let existing = sqlx::query_as::<_, SyncStatus>(
         "SELECT is_synced FROM cms_reusable_block_usage WHERE id = $1",
-        id
     )
+    .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
@@ -1106,7 +1109,8 @@ async fn detach_block_usage(
 
     // Get CMS user ID
     let cms_user_id: Option<Uuid> =
-        sqlx::query_scalar!("SELECT id FROM cms_users WHERE user_id = $1", user.id)
+        sqlx::query_scalar::<_, Uuid>("SELECT id FROM cms_users WHERE user_id = $1")
+            .bind(user.id)
             .fetch_optional(&state.db.pool)
             .await
             .map_err(|e: sqlx::Error| {
@@ -1114,8 +1118,7 @@ async fn detach_block_usage(
             })?;
 
     // Detach the usage
-    let usage = sqlx::query_as!(
-        CmsReusableBlockUsage,
+    let usage = sqlx::query_as::<_, CmsReusableBlockUsage>(
         r#"
         UPDATE cms_reusable_block_usage
         SET is_synced = false, detached_at = NOW(), detached_by = $2
@@ -1123,9 +1126,9 @@ async fn detach_block_usage(
         RETURNING id, reusable_block_id, content_id, block_instance_id, is_synced,
                   detached_at, detached_by, created_at
         "#,
-        id,
-        cms_user_id
     )
+    .bind(id)
+    .bind(cms_user_id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
