@@ -119,6 +119,7 @@ export interface EquityPoint {
 	equity_percent: number;
 	drawdown: number;
 	drawdown_percent: number;
+	trade_count: number;
 }
 
 export interface DrawdownPeriod {

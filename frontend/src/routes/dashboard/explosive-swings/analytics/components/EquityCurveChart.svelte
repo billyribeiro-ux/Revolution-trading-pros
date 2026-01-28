@@ -273,7 +273,7 @@
 						{formatValue(point.equity_percent)}
 					</div>
 					<div class="tooltip-date">{formatDate(point.date)}</div>
-					<div class="tooltip-trades">{point.tradeCount} trades</div>
+					<div class="tooltip-trades">{point.trade_count} trades</div>
 				</div>
 			{/if}
 		</div>
