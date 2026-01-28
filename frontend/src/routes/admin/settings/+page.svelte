@@ -1991,13 +1991,13 @@
 	 * RESPONSIVE BREAKPOINTS
 	 * ═══════════════════════════════════════════════════════════════════════════ */
 
-	@media (max-width: 1280px) {
+	@media (max-width: calc(var(--breakpoint-xl) - 1px)) {
 		.services-grid-4 {
 			grid-template-columns: repeat(2, 1fr);
 		}
 	}
 
-	@media (max-width: 1024px) {
+	@media (max-width: calc(var(--breakpoint-lg) - 1px)) {
 		.admin-page-container {
 			padding: 1.5rem;
 		}
@@ -2006,7 +2006,7 @@
 		}
 	}
 
-	@media (max-width: 768px) {
+	@media (max-width: calc(var(--breakpoint-md) - 1px)) {
 		.page-header h1 {
 			font-size: 1.5rem;
 		}
@@ -2035,7 +2035,7 @@
 		}
 	}
 
-	@media (max-width: 640px) {
+	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
 		.admin-page-container {
 			padding: 1rem;
 		}
@@ -2070,7 +2070,7 @@
 		}
 	}
 
-	@media (max-width: 480px) {
+	@media (max-width: calc(var(--breakpoint-sm) - 160px)) {
 		.admin-page-container {
 			padding: 0.75rem;
 		}
