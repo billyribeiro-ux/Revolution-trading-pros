@@ -109,6 +109,8 @@
 							fill={slice.color}
 							opacity={hoveredSetup === null || hoveredSetup === slice.setup ? 1 : 0.5}
 							class="pie-slice"
+							role="img"
+							aria-label="{slice.setup}: {slice.percentage.toFixed(0)}% of trades"
 							onmouseenter={() => hoveredSetup = slice.setup}
 							onmouseleave={() => hoveredSetup = null}
 						/>
@@ -127,6 +129,9 @@
 					<div
 						class="legend-item"
 						class:hovered={hoveredSetup === setup.setup}
+						role="button"
+						tabindex="0"
+						aria-label="{setup.setup} trading setup details"
 						onmouseenter={() => hoveredSetup = setup.setup}
 						onmouseleave={() => hoveredSetup = null}
 					>

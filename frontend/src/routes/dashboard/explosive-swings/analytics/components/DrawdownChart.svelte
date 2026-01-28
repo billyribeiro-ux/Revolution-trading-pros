@@ -18,6 +18,8 @@
 
 	const { data, isLoading = false }: Props = $props();
 
+	// DOM reference for responsive width measurement (not reactive)
+	// svelte-ignore non_reactive_update
 	let containerEl: HTMLDivElement;
 	let width = $state(400);
 	let hoveredIndex: number | null = $state(null);
