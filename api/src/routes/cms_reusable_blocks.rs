@@ -293,7 +293,9 @@ async fn ensure_unique_slug(
             )
             .fetch_one(pool)
             .await
-            .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?,
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?,
             None => sqlx::query_scalar!(
                 r#"
                     SELECT EXISTS(
@@ -305,7 +307,9 @@ async fn ensure_unique_slug(
             )
             .fetch_one(pool)
             .await
-            .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?,
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?,
         };
 
         if !exists {
@@ -394,7 +398,7 @@ async fn list_reusable_blocks(
     ))
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     let total = count_result.0;
 
@@ -416,7 +420,7 @@ async fn list_reusable_blocks(
     ))
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     Ok(Json(PaginatedBlocksResponse {
         data: blocks,
@@ -465,7 +469,7 @@ async fn get_reusable_block(
     )
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Reusable block not found").with_code("NOT_FOUND")
     })?;
@@ -509,7 +513,7 @@ async fn get_reusable_block_by_slug(
     )
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Reusable block not found").with_code("NOT_FOUND")
     })?;
@@ -557,7 +561,9 @@ async fn create_reusable_block(
         sqlx::query_scalar!("SELECT id FROM cms_users WHERE user_id = $1", user.id)
             .fetch_optional(&state.db.pool)
             .await
-            .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?
             .flatten();
 
     let block = sqlx::query_as!(
@@ -586,7 +592,7 @@ async fn create_reusable_block(
     )
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     tracing::info!("Reusable block created: {} ({})", block.name, block.id);
 
@@ -626,7 +632,7 @@ async fn update_reusable_block(
     )
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Reusable block not found").with_code("NOT_FOUND")
     })?;
@@ -676,7 +682,7 @@ async fn update_reusable_block(
     )
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     tracing::info!("Reusable block updated: {} ({})", block.name, block.id);
 
@@ -712,7 +718,7 @@ async fn delete_reusable_block(
     )
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Reusable block not found").with_code("NOT_FOUND")
     })?;
@@ -732,7 +738,7 @@ async fn delete_reusable_block(
     )
     .execute(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     tracing::info!("Reusable block deleted: {} ({})", existing.name, id);
 
@@ -777,7 +783,7 @@ async fn duplicate_reusable_block(
     )
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Reusable block not found").with_code("NOT_FOUND")
     })?;
@@ -896,7 +902,7 @@ async fn get_block_usage(
     )
     .fetch_all(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     let total_count = usages.len() as i64;
 
@@ -975,7 +981,7 @@ async fn track_block_usage(
     )
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     // Increment usage count on the block
     sqlx::query!(
@@ -984,7 +990,7 @@ async fn track_block_usage(
     )
     .execute(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     tracing::info!(
         "Block usage tracked: block {} in content {} (instance {})",
@@ -1024,7 +1030,7 @@ async fn remove_block_usage(
     )
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Usage record not found").with_code("NOT_FOUND")
     })?;
@@ -1033,7 +1039,9 @@ async fn remove_block_usage(
     sqlx::query!("DELETE FROM cms_reusable_block_usage WHERE id = $1", id)
         .execute(&state.db.pool)
         .await
-        .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+        .map_err(|e: sqlx::Error| {
+            ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+        })?;
 
     // Decrement usage count on the block
     sqlx::query!(
@@ -1042,7 +1050,7 @@ async fn remove_block_usage(
     )
     .execute(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     tracing::info!(
         "Block usage removed: usage {} from block {}",
@@ -1085,7 +1093,7 @@ async fn detach_block_usage(
     )
     .fetch_optional(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
     .ok_or_else(|| {
         ApiError::new(StatusCode::NOT_FOUND, "Usage record not found").with_code("NOT_FOUND")
     })?;
@@ -1121,7 +1129,7 @@ async fn detach_block_usage(
     )
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     tracing::info!(
         "Block usage detached: {} from block {}",
