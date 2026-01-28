@@ -40,7 +40,9 @@ type ApiResultEmpty = Result<Json<JsonValue>, ApiError>;
 // ============================================================================
 
 /// Block category enum - maps directly to PostgreSQL cms_reusable_block_category
-#[derive(Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, sqlx::Type, ToSchema)]
+#[derive(
+    Debug, Clone, Copy, Default, PartialEq, Eq, Serialize, Deserialize, sqlx::Type, ToSchema,
+)]
 #[sqlx(type_name = "cms_reusable_block_category", rename_all = "lowercase")]
 #[serde(rename_all = "lowercase")]
 pub enum CmsReusableBlockCategory {
