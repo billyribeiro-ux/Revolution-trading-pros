@@ -25,8 +25,11 @@ pub use course::*;
 pub use job::*;
 #[allow(unused_imports)]
 pub use membership::*;
-pub use order::*;
-pub use order_service_types::*;
+pub use order::{
+    CheckoutSession, CreateOrder, CreateOrderItem, Order, OrderItem, OrderStatus,
+    OrderWithItems as LegacyOrderWithItems,
+};
+pub use order_service_types::{OrderItemData, OrderSummary, OrderWithItems};
 pub use product::*;
 pub use subscription::*;
 pub use user::*;
