@@ -792,7 +792,9 @@ async fn duplicate_reusable_block(
         sqlx::query_scalar!("SELECT id FROM cms_users WHERE user_id = $1", user.id)
             .fetch_optional(&state.db.pool)
             .await
-            .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
+            .map_err(|e: sqlx::Error| {
+                ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+            })?
             .flatten();
 
     let duplicated = sqlx::query_as!(
@@ -821,7 +823,7 @@ async fn duplicate_reusable_block(
     )
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
 
     tracing::info!(
         "Reusable block duplicated: {} -> {} ({})",
@@ -861,7 +863,9 @@ async fn get_block_usage(
     )
     .fetch_one(&state.db.pool)
     .await
-    .map_err(|e| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
+    .map_err(|e: sqlx::Error| {
+        ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
+    })?;
 
     if !exists {
         return Err(
@@ -1102,7 +1106,7 @@ async fn detach_block_usage(
             .map_err(|e: sqlx::Error| {
                 ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
             })?
-            .and_then(|v| v);
+            .flatten();
 
     // Detach the usage
     let usage = sqlx::query_as!(
