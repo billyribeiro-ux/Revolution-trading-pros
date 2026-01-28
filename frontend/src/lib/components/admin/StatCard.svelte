@@ -49,10 +49,10 @@
 	.stat-card {
 		background: var(--admin-card-bg);
 		border: 1px solid var(--admin-card-border);
-		border-radius: var(--radius-xl, 1rem);
-		padding: 1.25rem;
+		border-radius: var(--radius-xl);
+		padding: var(--space-5);
 		box-shadow: var(--admin-card-shadow);
-		transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+		transition: var(--transition-all);
 	}
 
 	.stat-card:hover {
@@ -65,31 +65,31 @@
 		display: flex;
 		align-items: flex-start;
 		justify-content: space-between;
-		gap: 1rem;
+		gap: var(--space-4);
 	}
 
 	.stat-title {
-		font-size: 0.875rem;
-		font-weight: 500;
+		font-size: var(--text-sm);
+		font-weight: var(--font-medium);
 		color: var(--admin-text-muted);
 		margin: 0;
 	}
 
 	.stat-value {
-		font-size: 1.875rem;
-		font-weight: 700;
+		font-size: var(--text-3xl);
+		font-weight: var(--font-bold);
 		color: var(--admin-text-primary);
-		margin: 0.5rem 0 0;
-		letter-spacing: -0.02em;
+		margin: var(--space-2) 0 0;
+		letter-spacing: var(--tracking-tighter);
 	}
 
 	.stat-trend {
-		font-size: 0.875rem;
-		font-weight: 500;
-		margin: 0.5rem 0 0;
+		font-size: var(--text-sm);
+		font-weight: var(--font-medium);
+		margin: var(--space-2) 0 0;
 		display: flex;
 		align-items: center;
-		gap: 0.25rem;
+		gap: var(--space-1);
 	}
 
 	.stat-trend.up {
@@ -101,14 +101,14 @@
 	}
 
 	.trend-arrow {
-		font-weight: 600;
+		font-weight: var(--font-semibold);
 	}
 
 	/* Icon Container */
 	.stat-icon {
 		width: 3rem;
 		height: 3rem;
-		border-radius: 0.75rem;
+		border-radius: var(--radius-lg);
 		display: flex;
 		align-items: center;
 		justify-content: center;
@@ -134,5 +134,38 @@
 	.stat-icon.amber {
 		background: var(--admin-widget-amber-bg);
 		color: var(--admin-widget-amber-icon);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Mobile (< sm: 640px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (max-width: calc(var(--breakpoint-sm) - 1px)) {
+		.stat-card {
+			padding: var(--space-4);
+		}
+
+		.stat-value {
+			font-size: var(--text-2xl);
+		}
+
+		.stat-icon {
+			width: 2.5rem;
+			height: 2.5rem;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCESSIBILITY
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (prefers-reduced-motion: reduce) {
+		.stat-card {
+			transition: none;
+		}
+
+		.stat-card:hover {
+			transform: none;
+		}
 	}
 </style>
