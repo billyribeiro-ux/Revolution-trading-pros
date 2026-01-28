@@ -2,7 +2,6 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { defineConfig } from 'vite';
 import tailwindcss from '@tailwindcss/vite';
 import viteCompression from 'vite-plugin-compression';
-import devtoolsJson from 'vite-plugin-devtools-json';
 
 export default defineConfig({
 	// Vitest configuration
@@ -22,8 +21,6 @@ export default defineConfig({
 	plugins: [
 		tailwindcss(),
 		sveltekit(),
-		// Chrome DevTools Workspaces integration (dev only)
-		devtoolsJson(),
 		// Brotli compression for production
 		viteCompression({
 			algorithm: 'brotliCompress',
