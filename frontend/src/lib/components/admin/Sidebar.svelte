@@ -13,6 +13,14 @@
 	import { authStore } from '$lib/stores/auth.svelte';
 	import { goto } from '$app/navigation';
 
+	// Props
+	interface Props {
+		isOpen: boolean;
+		onclose: () => void;
+	}
+
+	let { isOpen = false, onclose }: Props = $props();
+
 	interface NavItem {
 		label: string;
 		href: string;
@@ -60,9 +68,25 @@
 		}
 		return page.url.pathname.startsWith(href);
 	}
+
+	function handleNavClick() {
+		// Close sidebar on mobile after navigation
+		if (window.innerWidth < 1024) {
+			onclose();
+		}
+	}
 </script>
 
-<aside class="admin-sidebar">
+<!-- Backdrop for mobile -->
+{#if isOpen}
+	<button
+		class="sidebar-backdrop"
+		onclick={onclose}
+		aria-label="Close sidebar"
+	></button>
+{/if}
+
+<aside class="admin-sidebar" class:open={isOpen}>
 	<!-- Logo -->
 	<div class="sidebar-header">
 		<h1 class="sidebar-title">Revolution Admin</h1>
@@ -74,7 +98,12 @@
 		{#each navigation as item}
 			{@const IconComponent = item.icon}
 			<div class="nav-group">
-				<a href={item.href} class="nav-item" class:active={isActive(item.href)}>
+				<a
+					href={item.href}
+					class="nav-item"
+					class:active={isActive(item.href)}
+					onclick={handleNavClick}
+				>
 					<IconComponent size={20} />
 					<span class="nav-label">{item.label}</span>
 				</a>
@@ -86,6 +115,7 @@
 								href={child.href}
 								class="nav-child"
 								class:active={page.url.pathname === child.href}
+								onclick={handleNavClick}
 							>
 								{child.label}
 							</a>
@@ -117,42 +147,65 @@
 </aside>
 
 <style>
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   SIDEBAR - Fixed Desktop, Drawer Mobile
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
 	.admin-sidebar {
-		width: 16rem;
+		width: var(--admin-sidebar-width, 240px);
 		height: 100vh;
 		display: flex;
 		flex-direction: column;
 		background: var(--admin-sidebar-bg);
 		border-right: 1px solid var(--admin-sidebar-border);
 		color: var(--admin-text-primary);
+		position: fixed;
+		left: 0;
+		top: 0;
+		z-index: var(--z-modal);
+		transition: transform var(--duration-normal) var(--ease-out);
+	}
+
+	/* Backdrop for mobile */
+	.sidebar-backdrop {
+		display: none;
+		position: fixed;
+		inset: 0;
+		background: rgba(0, 0, 0, 0.5);
+		z-index: calc(var(--z-modal) - 1);
+		cursor: pointer;
+		border: none;
+		padding: 0;
 	}
 
 	/* Header */
 	.sidebar-header {
-		padding: 1.5rem;
+		padding: var(--space-6);
 		border-bottom: 1px solid var(--admin-border-light);
 	}
 
 	.sidebar-title {
-		font-size: 1.25rem;
-		font-weight: 700;
+		font-size: var(--text-lg);
+		font-weight: var(--font-bold);
 		color: var(--admin-text-primary);
+		margin: 0;
 	}
 
 	.sidebar-subtitle {
-		font-size: 0.75rem;
+		font-size: var(--text-xs);
 		color: var(--admin-text-muted);
-		margin-top: 0.25rem;
+		margin-top: var(--space-1);
+		margin-bottom: 0;
 	}
 
 	/* Navigation */
 	.sidebar-nav {
 		flex: 1;
 		overflow-y: auto;
-		padding: 1rem;
+		padding: var(--space-4);
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: var(--space-1);
 	}
 
 	.nav-group {
@@ -163,12 +216,13 @@
 	.nav-item {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
-		padding: 0.625rem 1rem;
-		border-radius: 0.5rem;
+		gap: var(--space-3);
+		padding: var(--space-3) var(--space-4);
+		border-radius: var(--radius-md);
 		color: var(--admin-nav-text);
 		text-decoration: none;
-		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		transition: var(--transition-all);
+		min-height: 44px;
 	}
 
 	.nav-item:hover {
@@ -182,28 +236,30 @@
 	}
 
 	.nav-label {
-		font-weight: 500;
+		font-weight: var(--font-medium);
+		font-size: var(--text-sm);
 	}
 
 	/* Child Navigation */
 	.nav-children {
-		margin-left: 2rem;
-		margin-top: 0.25rem;
+		margin-left: var(--space-8);
+		margin-top: var(--space-1);
 		display: flex;
 		flex-direction: column;
-		gap: 0.25rem;
+		gap: var(--space-1);
 	}
 
 	.nav-child {
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 0.75rem;
-		border-radius: 0.375rem;
-		font-size: 0.875rem;
+		gap: var(--space-2);
+		padding: var(--space-2) var(--space-3);
+		border-radius: var(--radius-sm);
+		font-size: var(--text-sm);
 		color: var(--admin-nav-text);
 		text-decoration: none;
-		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		transition: var(--transition-all);
+		min-height: 40px;
 	}
 
 	.nav-child:hover {
@@ -212,33 +268,34 @@
 
 	.nav-child.active {
 		color: var(--admin-accent-primary);
-		font-weight: 500;
+		font-weight: var(--font-medium);
 	}
 
 	/* Footer */
 	.sidebar-footer {
-		padding: 1rem;
+		padding: var(--space-4);
 		border-top: 1px solid var(--admin-border-light);
 	}
 
 	.user-info {
 		display: flex;
 		align-items: center;
-		gap: 0.75rem;
-		margin-bottom: 0.75rem;
+		gap: var(--space-3);
+		margin-bottom: var(--space-3);
 	}
 
 	.user-avatar {
 		width: 2.5rem;
 		height: 2.5rem;
-		border-radius: 9999px;
+		border-radius: var(--radius-full);
 		background: var(--admin-accent-primary);
 		display: flex;
 		align-items: center;
 		justify-content: center;
-		color: white;
-		font-size: 0.875rem;
-		font-weight: 600;
+		color: var(--color-bg-card);
+		font-size: var(--text-sm);
+		font-weight: var(--font-semibold);
+		flex-shrink: 0;
 	}
 
 	.user-details {
@@ -247,8 +304,8 @@
 	}
 
 	.user-name {
-		font-size: 0.875rem;
-		font-weight: 500;
+		font-size: var(--text-sm);
+		font-weight: var(--font-medium);
 		color: var(--admin-text-primary);
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -256,7 +313,7 @@
 	}
 
 	.user-email {
-		font-size: 0.75rem;
+		font-size: var(--text-xs);
 		color: var(--admin-text-muted);
 		overflow: hidden;
 		text-overflow: ellipsis;
@@ -267,19 +324,58 @@
 		width: 100%;
 		display: flex;
 		align-items: center;
-		gap: 0.5rem;
-		padding: 0.5rem 1rem;
-		font-size: 0.875rem;
+		gap: var(--space-2);
+		padding: var(--space-2) var(--space-4);
+		font-size: var(--text-sm);
 		color: var(--admin-text-muted);
 		background: transparent;
 		border: none;
-		border-radius: 0.5rem;
+		border-radius: var(--radius-md);
 		cursor: pointer;
-		transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+		transition: var(--transition-all);
+		min-height: 44px;
 	}
 
 	.logout-btn:hover {
 		color: var(--admin-text-primary);
 		background: var(--admin-nav-bg-hover);
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   RESPONSIVE - Mobile Drawer (< lg: 1024px)
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (max-width: calc(var(--breakpoint-lg) - 1px)) {
+		.admin-sidebar {
+			transform: translateX(-100%);
+		}
+
+		.admin-sidebar.open {
+			transform: translateX(0);
+		}
+
+		.sidebar-backdrop {
+			display: block;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   ACCESSIBILITY
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media (prefers-reduced-motion: reduce) {
+		.admin-sidebar {
+			transition: none;
+		}
+	}
+
+	/* ═══════════════════════════════════════════════════════════════════════════
+	   PRINT
+	   ═══════════════════════════════════════════════════════════════════════════ */
+
+	@media print {
+		.admin-sidebar {
+			display: none;
+		}
 	}
 </style>
