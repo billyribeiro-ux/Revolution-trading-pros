@@ -456,17 +456,18 @@ async fn get_reusable_block(
 ) -> ApiResult<CmsReusableBlock> {
     require_cms_editor(&user)?;
 
-    let block = sqlx::query_as!(
-        CmsReusableBlock,
+    // NOTE: Runtime query required - SQLx compile-time macros don't support
+    // PostgreSQL enum → text casting with Option<String> target type
+    let block = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
-        SELECT id, name, slug, description, block_data, category, tags,
+        SELECT id, name, slug, description, block_data, category::text as category, tags,
                thumbnail_url, usage_count, is_global, is_locked, version,
                deleted_at, created_at, updated_at, created_by
         FROM cms_reusable_blocks
         WHERE id = $1 AND deleted_at IS NULL
         "#,
-        id
     )
+    .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
@@ -500,17 +501,18 @@ async fn get_reusable_block_by_slug(
 ) -> ApiResult<CmsReusableBlock> {
     require_cms_editor(&user)?;
 
-    let block = sqlx::query_as!(
-        CmsReusableBlock,
+    // NOTE: Runtime query required - SQLx compile-time macros don't support
+    // PostgreSQL enum → text casting with Option<String> target type
+    let block = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
-        SELECT id, name, slug, description, block_data, category, tags,
+        SELECT id, name, slug, description, block_data, category::text as category, tags,
                thumbnail_url, usage_count, is_global, is_locked, version,
                deleted_at, created_at, updated_at, created_by
         FROM cms_reusable_blocks
         WHERE slug = $1 AND deleted_at IS NULL
         "#,
-        slug
     )
+    .bind(&slug)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
@@ -565,30 +567,32 @@ async fn create_reusable_block(
                 ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
             })?;
 
-    let block = sqlx::query_as!(
-        CmsReusableBlock,
+    // NOTE: Runtime query required - SQLx compile-time macros don't support
+    // PostgreSQL enum ↔ text casting with Option<String> target type
+    let new_id = Uuid::new_v4();
+    let block = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
         INSERT INTO cms_reusable_blocks (
             id, name, slug, description, block_data, category, tags,
             thumbnail_url, usage_count, is_global, is_locked, version,
             created_at, updated_at, created_by
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 0, $9, false, 1, NOW(), NOW(), $10)
-        RETURNING id, name, slug, description, block_data, category, tags,
+        VALUES ($1, $2, $3, $4, $5, $6::cms_reusable_block_category, $7, $8, 0, $9, false, 1, NOW(), NOW(), $10)
+        RETURNING id, name, slug, description, block_data, category::text as category, tags,
                   thumbnail_url, usage_count, is_global, is_locked, version,
                   deleted_at, created_at, updated_at, created_by
         "#,
-        Uuid::new_v4(),
-        request.name.trim(),
-        slug,
-        request.description,
-        request.block_data,
-        request.category,
-        request.tags.as_deref(),
-        request.thumbnail_url,
-        request.is_global,
-        cms_user_id
     )
+    .bind(new_id)
+    .bind(request.name.trim())
+    .bind(&slug)
+    .bind(&request.description)
+    .bind(&request.block_data)
+    .bind(&request.category)
+    .bind(request.tags.as_deref())
+    .bind(&request.thumbnail_url)
+    .bind(request.is_global)
+    .bind(cms_user_id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -648,15 +652,16 @@ async fn update_reusable_block(
         None
     };
 
-    let block = sqlx::query_as!(
-        CmsReusableBlock,
+    // NOTE: Runtime query required - SQLx compile-time macros don't support
+    // PostgreSQL enum ↔ text casting with Option<String> target type
+    let block = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
         UPDATE cms_reusable_blocks
         SET name = COALESCE($2, name),
             slug = COALESCE($3, slug),
             description = COALESCE($4, description),
             block_data = COALESCE($5, block_data),
-            category = COALESCE($6, category),
+            category = COALESCE($6::cms_reusable_block_category, category),
             tags = COALESCE($7, tags),
             thumbnail_url = COALESCE($8, thumbnail_url),
             is_global = COALESCE($9, is_global),
@@ -664,21 +669,21 @@ async fn update_reusable_block(
             version = version + 1,
             updated_at = NOW()
         WHERE id = $1 AND deleted_at IS NULL
-        RETURNING id, name, slug, description, block_data, category, tags,
+        RETURNING id, name, slug, description, block_data, category::text as category, tags,
                   thumbnail_url, usage_count, is_global, is_locked, version,
                   deleted_at, created_at, updated_at, created_by
         "#,
-        id,
-        request.name,
-        final_slug,
-        request.description,
-        request.block_data,
-        request.category,
-        request.tags.as_deref(),
-        request.thumbnail_url,
-        request.is_global,
-        request.is_locked
     )
+    .bind(id)
+    .bind(&request.name)
+    .bind(&final_slug)
+    .bind(&request.description)
+    .bind(&request.block_data)
+    .bind(&request.category)
+    .bind(request.tags.as_deref())
+    .bind(&request.thumbnail_url)
+    .bind(request.is_global)
+    .bind(request.is_locked)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
@@ -769,17 +774,18 @@ async fn duplicate_reusable_block(
     require_cms_editor(&user)?;
 
     // Fetch the original block
-    let original = sqlx::query_as!(
-        CmsReusableBlock,
+    // NOTE: Runtime query required - SQLx compile-time macros don't support
+    // PostgreSQL enum → text casting with Option<String> target type
+    let original = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
-        SELECT id, name, slug, description, block_data, category, tags,
+        SELECT id, name, slug, description, block_data, category::text as category, tags,
                thumbnail_url, usage_count, is_global, is_locked, version,
                deleted_at, created_at, updated_at, created_by
         FROM cms_reusable_blocks
         WHERE id = $1 AND deleted_at IS NULL
         "#,
-        id
     )
+    .bind(id)
     .fetch_optional(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?
@@ -801,30 +807,32 @@ async fn duplicate_reusable_block(
                 ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string())
             })?;
 
-    let duplicated = sqlx::query_as!(
-        CmsReusableBlock,
+    // NOTE: Runtime query required - SQLx compile-time macros don't support
+    // PostgreSQL enum ↔ text casting with Option<String> target type
+    let dup_id = Uuid::new_v4();
+    let duplicated = sqlx::query_as::<_, CmsReusableBlock>(
         r#"
         INSERT INTO cms_reusable_blocks (
             id, name, slug, description, block_data, category, tags,
             thumbnail_url, usage_count, is_global, is_locked, version,
             created_at, updated_at, created_by
         )
-        VALUES ($1, $2, $3, $4, $5, $6, $7, $8, 0, $9, false, 1, NOW(), NOW(), $10)
-        RETURNING id, name, slug, description, block_data, category, tags,
+        VALUES ($1, $2, $3, $4, $5, $6::cms_reusable_block_category, $7, $8, 0, $9, false, 1, NOW(), NOW(), $10)
+        RETURNING id, name, slug, description, block_data, category::text as category, tags,
                   thumbnail_url, usage_count, is_global, is_locked, version,
                   deleted_at, created_at, updated_at, created_by
         "#,
-        Uuid::new_v4(),
-        new_name,
-        new_slug,
-        original.description,
-        original.block_data,
-        original.category,
-        original.tags.as_deref(),
-        original.thumbnail_url,
-        original.is_global,
-        cms_user_id
     )
+    .bind(dup_id)
+    .bind(&new_name)
+    .bind(&new_slug)
+    .bind(&original.description)
+    .bind(&original.block_data)
+    .bind(&original.category)
+    .bind(original.tags.as_deref())
+    .bind(&original.thumbnail_url)
+    .bind(original.is_global)
+    .bind(cms_user_id)
     .fetch_one(&state.db.pool)
     .await
     .map_err(|e: sqlx::Error| ApiError::new(StatusCode::INTERNAL_SERVER_ERROR, e.to_string()))?;
