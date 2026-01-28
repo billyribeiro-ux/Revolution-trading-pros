@@ -142,6 +142,8 @@
 						rx="4"
 						class="bar"
 						class:hovered={hoveredIndex === index}
+						role="img"
+						aria-label="{month.month}: {formatPercent(month.pnl_percent)} ({month.pnl_percent >= 0 ? 'profit' : 'loss'})"
 						onmouseenter={() => hoveredIndex = index}
 						onmouseleave={() => hoveredIndex = null}
 					/>
