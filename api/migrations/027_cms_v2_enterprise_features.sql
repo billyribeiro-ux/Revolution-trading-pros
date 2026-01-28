@@ -309,16 +309,22 @@ END;
 $$ LANGUAGE plpgsql;
 
 -- ───────────────────────────────────────────────────────────────────────────────────────
--- 8. GRANT PERMISSIONS
+-- 8. GRANT PERMISSIONS (Optional - only if 'authenticated' role exists)
 -- ───────────────────────────────────────────────────────────────────────────────────────
 
--- Grant access to authenticated users (adjust as needed for your auth system)
-GRANT SELECT, INSERT, UPDATE ON cms_audit_logs TO authenticated;
-GRANT SELECT, INSERT, UPDATE ON cms_workflow_status TO authenticated;
-GRANT SELECT, INSERT ON cms_workflow_history TO authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON cms_preview_tokens TO authenticated;
-GRANT SELECT, INSERT, UPDATE, DELETE ON cms_webhooks TO authenticated;
-GRANT SELECT, INSERT, UPDATE ON cms_webhook_deliveries TO authenticated;
+-- Note: These GRANT statements are for Supabase-style deployments with 'authenticated' role
+-- They are wrapped in a DO block to gracefully skip if the role doesn't exist
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+        GRANT SELECT, INSERT, UPDATE ON cms_audit_logs TO authenticated;
+        GRANT SELECT, INSERT, UPDATE ON cms_workflow_status TO authenticated;
+        GRANT SELECT, INSERT ON cms_workflow_history TO authenticated;
+        GRANT SELECT, INSERT, UPDATE, DELETE ON cms_preview_tokens TO authenticated;
+        GRANT SELECT, INSERT, UPDATE, DELETE ON cms_webhooks TO authenticated;
+        GRANT SELECT, INSERT, UPDATE ON cms_webhook_deliveries TO authenticated;
+    END IF;
+END $$;
 
 -- ═══════════════════════════════════════════════════════════════════════════════════════
 -- MIGRATION COMPLETE
