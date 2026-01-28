@@ -126,9 +126,9 @@
 	{:else}
 		<div class="date-range-picker">
 			<IconCalendar size={20} />
-			<input type="date" bind:value={dateRange.start} onchange={loadData} />
+			<input id="date-start" name="date-start" type="date" bind:value={dateRange.start} onchange={loadData} />
 			<span>to</span>
-			<input type="date" bind:value={dateRange.end} onchange={loadData} />
+			<input id="date-end" name="date-end" type="date" bind:value={dateRange.end} onchange={loadData} />
 		</div>
 
 		{#if stats}

@@ -509,7 +509,7 @@
 				{/each}
 			</select>
 			<label class="checkbox-label">
-				<input type="checkbox" bind:checked={showHidden} />
+				<input id="show-hidden" name="show-hidden" type="checkbox" bind:checked={showHidden} />
 				<span>Show Hidden</span>
 			</label>
 		</div>
@@ -568,7 +568,7 @@
 						<thead>
 							<tr>
 								<th class="th-checkbox">
-									<input type="checkbox" checked={allSelected} onchange={toggleSelectAll} />
+									<input id="select-all-categories" name="select-all" type="checkbox" checked={allSelected} onchange={toggleSelectAll} />
 								</th>
 								<th class="th-drag"></th>
 								<th>Category</th>
@@ -587,6 +587,8 @@
 								>
 									<td>
 										<input
+											id={`category-${category.id}`}
+											name={`category-${category.id}`}
 											type="checkbox"
 											checked={selectedIds.has(category.id)}
 											onchange={() => toggleSelection(category.id)}
@@ -766,7 +768,7 @@
 
 					<div class="form-group">
 						<label class="checkbox-label-inline">
-							<input type="checkbox" bind:checked={categoryForm.is_visible} />
+							<input id="category-visible" name="is-visible" type="checkbox" bind:checked={categoryForm.is_visible} />
 							<span>Visible</span>
 						</label>
 						<p class="help-text">Hidden categories won't appear in public listings</p>

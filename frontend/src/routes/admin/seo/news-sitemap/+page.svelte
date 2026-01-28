@@ -120,7 +120,7 @@
 		<div class="settings-grid">
 			<div class="setting-group">
 				<label>
-					<input type="checkbox" bind:checked={settings.enabled} />
+					<input id="news-sitemap-enabled" name="news-sitemap-enabled" type="checkbox" bind:checked={settings.enabled} />
 					Enable News Sitemap
 				</label>
 			</div>
