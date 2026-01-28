@@ -451,7 +451,7 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input type="text" placeholder="Search deals..." bind:value={searchQuery} />
+			<input type="text" id="search-deals" name="search" placeholder="Search deals..." bind:value={searchQuery} />
 		</div>
 
 		{#if pipelines.length > 0}

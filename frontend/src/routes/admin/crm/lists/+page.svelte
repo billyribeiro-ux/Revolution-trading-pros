@@ -164,7 +164,7 @@
 	<div class="filters-bar">
 		<div class="search-box">
 			<IconSearch size={18} />
-			<input type="text" placeholder="Search lists..." bind:value={searchQuery} />
+			<input type="text" id="search-lists" name="search" placeholder="Search lists..." bind:value={searchQuery} />
 		</div>
 		<select class="filter-select" bind:value={filterPublic}>
 			<option value="all">All Lists</option>

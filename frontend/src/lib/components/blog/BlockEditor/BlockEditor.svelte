@@ -1080,7 +1080,7 @@
 					</div>
 					<div class="block-search">
 						<IconSearch size={16} />
-						<input type="text" placeholder="Search blocks..." bind:value={searchQuery} />
+						<input type="text" id="search-blocks" name="search" placeholder="Search blocks..." bind:value={searchQuery} />
 					</div>
 					<BlockInserter {searchQuery} oninsert={handleBlockInsert} />
 				{:else if editorState.sidebarTab === 'settings'}
