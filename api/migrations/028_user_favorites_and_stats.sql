@@ -133,6 +133,7 @@ BEGIN
     END IF;
     
     -- Calculate current streak (consecutive wins or losses)
+    -- Fixed: avoid nested window functions by using subquery
     WITH recent_trades AS (
         SELECT result, ROW_NUMBER() OVER (ORDER BY exit_date DESC, id DESC) as rn
         FROM room_trades 
@@ -140,14 +141,18 @@ BEGIN
         ORDER BY exit_date DESC, id DESC
         LIMIT 20
     ),
+    with_lag AS (
+        SELECT result, rn, LAG(result) OVER (ORDER BY rn) as prev_result
+        FROM recent_trades
+    ),
     streak_calc AS (
         SELECT result, rn,
-            SUM(CASE WHEN result != LAG(result) OVER (ORDER BY rn) THEN 1 ELSE 0 END) OVER (ORDER BY rn) as grp
-        FROM recent_trades
+            SUM(CASE WHEN result != prev_result OR prev_result IS NULL THEN 1 ELSE 0 END) OVER (ORDER BY rn) as grp
+        FROM with_lag
     )
     SELECT COUNT(*) INTO v_streak
     FROM streak_calc
-    WHERE grp = 0;
+    WHERE grp = 1;
     
     -- Calculate 30-day daily P&L for chart
     SELECT COALESCE(jsonb_agg(
@@ -236,9 +241,14 @@ SELECT calculate_room_stats('small-account-mentorship');
 SELECT calculate_room_stats('spx-profit-pulse');
 
 -- ═══════════════════════════════════════════════════════════════════════════════
--- GRANT PERMISSIONS
+-- GRANT PERMISSIONS (Optional - only if 'authenticated' role exists)
 -- ═══════════════════════════════════════════════════════════════════════════════
 
-GRANT SELECT, INSERT, UPDATE, DELETE ON user_favorites TO authenticated;
-GRANT SELECT ON room_stats_cache TO authenticated;
-GRANT USAGE, SELECT ON SEQUENCE user_favorites_id_seq TO authenticated;
+DO $$
+BEGIN
+    IF EXISTS (SELECT 1 FROM pg_roles WHERE rolname = 'authenticated') THEN
+        GRANT SELECT, INSERT, UPDATE, DELETE ON user_favorites TO authenticated;
+        GRANT SELECT ON room_stats_cache TO authenticated;
+        GRANT USAGE, SELECT ON SEQUENCE user_favorites_id_seq TO authenticated;
+    END IF;
+END $$;
