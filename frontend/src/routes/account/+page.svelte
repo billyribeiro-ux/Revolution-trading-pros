@@ -5,19 +5,18 @@
 	import { browser } from '$app/environment';
 	import apiClient, { type Membership, type Product } from '$lib/api/client.svelte';
 
-	// Only redirect on client-side - use replaceState to prevent history pollution
-	$effect(() => {
-		if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
-			goto('/login?redirect=/account', { replaceState: true });
-		}
-	});
-
 	let memberships = $state<Membership[]>([]);
 	let products = $state<Product[]>([]);
 	let loadingMemberships = $state(true);
 	let loadingProducts = $state(true);
 
 	onMount(async () => {
+		// Auth guard - redirect if not authenticated (user interaction: page load)
+		if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
+			goto('/login?redirect=/account', { replaceState: true });
+			return;
+		}
+
 		if ($authStore.user) {
 			try {
 				memberships = await apiClient.getMyMemberships();

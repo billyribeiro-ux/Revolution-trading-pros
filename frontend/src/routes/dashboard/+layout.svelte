@@ -472,8 +472,9 @@
 		})();
 	});
 
-	// Auth guard - redirect on logout (client-side logout detection)
-	$effect(() => {
+	// Auth guard - check on mount (user interaction: page load)
+	// Moved from $effect() to prevent non-interactive history manipulation
+	onMount(() => {
 		if (!browser) return;
 
 		// If user logs out while on dashboard (client-side action), redirect to login

@@ -18,13 +18,6 @@
 	} from '$lib/stores/auth.svelte';
 	import authService from '$lib/api/auth';
 
-	// Redirect if not authenticated - use replaceState to prevent history pollution
-	$effect(() => {
-		if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
-			goto('/login?redirect=/account/sessions', { replaceState: true });
-		}
-	});
-
 	let sessions = $state<UserSession[]>([]);
 	let loading = $state(true);
 	let error = $state<string | null>(null);
@@ -32,6 +25,11 @@
 	let revokingAll = $state(false);
 
 	onMount(async () => {
+		// Auth guard - redirect if not authenticated (user interaction: page load)
+		if (browser && !$isAuthenticated && !$authStore.isLoading && !$authStore.isInitializing) {
+			goto('/login?redirect=/account/sessions', { replaceState: true });
+			return;
+		}
 		await loadSessions();
 	});
 
