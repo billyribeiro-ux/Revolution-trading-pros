@@ -409,7 +409,7 @@
 							>Name</label
 						>
 						<input
-							id="funnel-name"
+							id="funnel-name" name="funnel-name"
 							type="text"
 							bind:value={newFunnel.name}
 							placeholder="e.g., Purchase Funnel"

@@ -118,7 +118,7 @@
 					</label>
 					<input
 						type="text"
-						id="name"
+						id="name" name="name"
 						bind:value={name}
 						required
 						disabled={isLoading}
@@ -137,7 +137,7 @@
 					</label>
 					<input
 						type="email"
-						id="email"
+						id="email" name="email" autocomplete="email"
 						bind:value={email}
 						required
 						disabled={isLoading}
@@ -156,7 +156,7 @@
 					</label>
 					<input
 						type="password"
-						id="password"
+						id="password" name="password" autocomplete="current-password"
 						bind:value={password}
 						required
 						minlength="8"
@@ -177,7 +177,7 @@
 					</label>
 					<input
 						type="password"
-						id="password_confirmation"
+						id="password_confirmation" name="password_confirmation" autocomplete="new-password"
 						bind:value={passwordConfirmation}
 						required
 						minlength="8"

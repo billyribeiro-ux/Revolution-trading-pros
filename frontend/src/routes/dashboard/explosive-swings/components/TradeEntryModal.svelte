@@ -366,7 +366,7 @@
 						<div class="form-group">
 							<label for="ticker">Ticker Symbol *</label>
 							<input
-								id="ticker"
+								id="ticker" name="ticker"
 								type="text"
 								bind:value={form.ticker}
 								placeholder="NVDA"
@@ -399,7 +399,7 @@
 							<div class="price-input-wrapper">
 								<span class="price-prefix">$</span>
 								<input
-									id="entry"
+									id="entry" name="entry"
 									type="text"
 									inputmode="decimal"
 									bind:value={form.entry}
@@ -413,7 +413,7 @@
 							<div class="price-input-wrapper stop-wrapper">
 								<span class="price-prefix">$</span>
 								<input
-									id="stop"
+									id="stop" name="stop"
 									type="text"
 									inputmode="decimal"
 									bind:value={form.stop}
@@ -437,7 +437,7 @@
 							<div class="price-input-wrapper target-wrapper">
 								<span class="price-prefix-sm">$</span>
 								<input
-									id="target1"
+									id="target1" name="target1"
 									type="text"
 									inputmode="decimal"
 									bind:value={form.target1}
@@ -451,7 +451,7 @@
 							<div class="price-input-wrapper target-wrapper">
 								<span class="price-prefix-sm">$</span>
 								<input
-									id="target2"
+									id="target2" name="target2"
 									type="text"
 									inputmode="decimal"
 									bind:value={form.target2}
@@ -465,7 +465,7 @@
 							<div class="price-input-wrapper target-wrapper">
 								<span class="price-prefix-sm">$</span>
 								<input
-									id="target3"
+									id="target3" name="target3"
 									type="text"
 									inputmode="decimal"
 									bind:value={form.target3}
@@ -479,7 +479,7 @@
 							<div class="price-input-wrapper runner-wrapper">
 								<span class="price-prefix-sm">$</span>
 								<input
-									id="runner"
+									id="runner" name="runner"
 									type="text"
 									inputmode="decimal"
 									bind:value={form.runner}
@@ -493,7 +493,7 @@
 							<div class="price-input-wrapper stop-out-wrapper">
 								<span class="price-prefix-sm">$</span>
 								<input
-									id="runner_stop"
+									id="runner_stop" name="runner_stop"
 									type="text"
 									inputmode="decimal"
 									bind:value={form.runner_stop}
@@ -515,7 +515,7 @@
 						<div class="form-group">
 							<label for="options_strike">Strike Price</label>
 							<input
-								id="options_strike"
+								id="options_strike" name="options_strike"
 								type="text"
 								bind:value={form.options_strike}
 								placeholder="$145C"
@@ -525,7 +525,7 @@
 						<div class="form-group">
 							<label for="options_exp">Expiration</label>
 							<input
-								id="options_exp"
+								id="options_exp" name="options_exp"
 								type="text"
 								bind:value={form.options_exp}
 								placeholder="Feb 21"

@@ -346,7 +346,7 @@
 						>
 						<input
 							type="text"
-							id="report-name"
+							id="report-name" name="report-name"
 							bind:value={newReport.name}
 							placeholder="e.g., Weekly Revenue Report"
 							class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
@@ -448,7 +448,7 @@
 									>Recipients (comma-separated)</label
 								>
 								<input
-									id="report-recipients"
+									id="report-recipients" name="report-recipients"
 									type="text"
 									bind:value={newReport.recipients}
 									placeholder="email@example.com, another@example.com"

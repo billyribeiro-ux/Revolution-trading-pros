@@ -62,27 +62,27 @@
 		<div class="form-row">
 			<div class="form-group">
 				<label for="first_name">First Name *</label>
-				<input type="text" id="first_name" bind:value={formData.first_name} required />
+				<input type="text" id="first_name" name="first_name" bind:value={formData.first_name} required />
 			</div>
 			<div class="form-group">
 				<label for="last_name">Last Name *</label>
-				<input type="text" id="last_name" bind:value={formData.last_name} required />
+				<input type="text" id="last_name" name="last_name" bind:value={formData.last_name} required />
 			</div>
 		</div>
 
 		<div class="form-group">
 			<label for="email">Email Address *</label>
-			<input type="email" id="email" bind:value={formData.email} required />
+			<input type="email" id="email" name="email" autocomplete="email" bind:value={formData.email} required />
 		</div>
 
 		<div class="form-group">
 			<label for="phone">Phone Number</label>
-			<input type="tel" id="phone" bind:value={formData.phone} />
+			<input type="tel" id="phone" name="phone" autocomplete="tel" bind:value={formData.phone} />
 		</div>
 
 		<div class="form-group">
 			<label for="job_title">Job Title</label>
-			<input type="text" id="job_title" bind:value={formData.job_title} />
+			<input type="text" id="job_title" name="job_title" bind:value={formData.job_title} />
 		</div>
 
 		<div class="form-actions">

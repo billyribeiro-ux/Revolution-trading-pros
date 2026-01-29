@@ -374,7 +374,7 @@
 
 			<div class="form-group">
 				<label for="name">Report Name *</label>
-				<input type="text" id="name" bind:value={formData.name} placeholder="Weekly SEO Report" />
+				<input type="text" id="name" name="name" bind:value={formData.name} placeholder="Weekly SEO Report" />
 			</div>
 
 			<div class="form-group">
@@ -400,18 +400,18 @@
 			{#if formData.frequency === 'monthly' || formData.frequency === 'quarterly'}
 				<div class="form-group">
 					<label for="dayOfMonth">Day of Month</label>
-					<input type="number" id="dayOfMonth" bind:value={formData.dayOfMonth} min="1" max="28" />
+					<input type="number" id="dayOfMonth" name="dayOfMonth" bind:value={formData.dayOfMonth} min="1" max="28" />
 				</div>
 			{/if}
 
 			<div class="form-row">
 				<div class="form-group">
 					<label for="hour">Hour</label>
-					<input type="number" id="hour" bind:value={formData.hour} min="0" max="23" />
+					<input type="number" id="hour" name="hour" bind:value={formData.hour} min="0" max="23" />
 				</div>
 				<div class="form-group">
 					<label for="minute">Minute</label>
-					<input type="number" id="minute" bind:value={formData.minute} min="0" max="59" />
+					<input type="number" id="minute" name="minute" bind:value={formData.minute} min="0" max="59" />
 				</div>
 			</div>
 
@@ -419,7 +419,7 @@
 				<label for="recipients">Recipients (comma-separated emails) *</label>
 				<input
 					type="text"
-					id="recipients"
+					id="recipients" name="recipients"
 					bind:value={formData.recipients}
 					placeholder="admin@example.com, team@example.com"
 				/>

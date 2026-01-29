@@ -225,7 +225,7 @@
 						<div class="form-group">
 							<label for="title">Title *</label>
 							<input
-								id="title"
+								id="title" name="title"
 								type="text"
 								bind:value={formData.title}
 								placeholder="Weekly Watchlist with TG Watkins"
@@ -236,7 +236,7 @@
 						<div class="form-group">
 							<label for="trader">Trader *</label>
 							<input
-								id="trader"
+								id="trader" name="trader"
 								type="text"
 								bind:value={formData.trader}
 								placeholder="TG Watkins"
@@ -246,7 +246,7 @@
 
 						<div class="form-group">
 							<label for="weekOf">Week Of *</label>
-							<input id="weekOf" type="date" bind:value={formData.weekOf} required />
+							<input id="weekOf" name="weekOf" type="date" bind:value={formData.weekOf} required />
 						</div>
 
 						<div class="form-group">
@@ -277,7 +277,7 @@
 						<div class="form-group full-width">
 							<label for="videoSrc">Video URL</label>
 							<input
-								id="videoSrc"
+								id="videoSrc" name="videoSrc"
 								type="url"
 								bind:value={formData.videoSrc}
 								placeholder="https://cloud-streaming.s3.amazonaws.com/..."
@@ -287,7 +287,7 @@
 						<div class="form-group">
 							<label for="videoPoster">Video Poster URL</label>
 							<input
-								id="videoPoster"
+								id="videoPoster" name="videoPoster"
 								type="url"
 								bind:value={formData.videoPoster}
 								placeholder="https://..."
@@ -297,7 +297,7 @@
 						<div class="form-group">
 							<label for="traderImage">Trader Image URL</label>
 							<input
-								id="traderImage"
+								id="traderImage" name="traderImage"
 								type="url"
 								bind:value={formData.traderImage}
 								placeholder="https://..."
@@ -307,7 +307,7 @@
 						<div class="form-group full-width">
 							<label for="spreadsheetSrc">Spreadsheet URL</label>
 							<input
-								id="spreadsheetSrc"
+								id="spreadsheetSrc" name="spreadsheetSrc"
 								type="url"
 								bind:value={formData.spreadsheetSrc}
 								placeholder="https://docs.google.com/spreadsheets/..."

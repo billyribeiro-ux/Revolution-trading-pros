@@ -687,7 +687,7 @@
 						<div class="url-input-section">
 							<label for="video_url" class="input-label">Bunny.net Embed URL</label>
 							<input
-								id="video_url"
+								id="video_url" name="video_url"
 								type="url"
 								bind:value={form.video_url}
 								placeholder="https://iframe.mediadelivery.net/embed/..."
@@ -713,7 +713,7 @@
 							<div class="form-group">
 								<label for="thumbnail_url_manual">Thumbnail URL</label>
 								<input
-									id="thumbnail_url_manual"
+									id="thumbnail_url_manual" name="thumbnail_url_manual"
 									type="url"
 									bind:value={form.thumbnail_url}
 									placeholder="https://..."
@@ -723,7 +723,7 @@
 							<div class="form-group">
 								<label for="duration_manual">Duration</label>
 								<input
-									id="duration_manual"
+									id="duration_manual" name="duration_manual"
 									type="text"
 									bind:value={form.duration}
 									placeholder="24:35"
@@ -749,7 +749,7 @@
 						<div class="form-group">
 							<label for="week_title">Week Title</label>
 							<input
-								id="week_title"
+								id="week_title" name="week_title"
 								type="text"
 								bind:value={form.week_title}
 								placeholder="Auto-generated from date"
@@ -761,7 +761,7 @@
 					<div class="form-group">
 						<label for="video_title">Video Title *</label>
 						<input
-							id="video_title"
+							id="video_title" name="video_title"
 							type="text"
 							bind:value={form.video_title}
 							placeholder="Weekly Breakdown - Key Levels & Setups"

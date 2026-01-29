@@ -394,11 +394,11 @@
 					<div class="form-grid">
 						<div class="form-group full">
 							<label for="title">Title</label>
-							<input id="title" type="text" bind:value={course.title} />
+							<input id="title" name="title" type="text" bind:value={course.title} />
 						</div>
 						<div class="form-group full">
 							<label for="slug">Slug</label>
-							<input id="slug" type="text" bind:value={course.slug} />
+							<input id="slug" name="slug" type="text" bind:value={course.slug} />
 						</div>
 						<div class="form-group full">
 							<label for="description">Description</label>
@@ -406,7 +406,7 @@
 						</div>
 						<div class="form-group full">
 							<label for="card_description">Card Description (short)</label>
-							<input id="card_description" type="text" bind:value={course.card_description} />
+							<input id="card_description" name="card_description" type="text" bind:value={course.card_description} />
 						</div>
 						<div class="form-group">
 							<label for="level">Level</label>
@@ -419,7 +419,7 @@
 						</div>
 						<div class="form-group">
 							<label for="price">Price (cents)</label>
-							<input id="price" type="number" bind:value={course.price_cents} />
+							<input id="price" name="price" type="number" bind:value={course.price_cents} />
 						</div>
 						<div class="form-group">
 							<label class="checkbox-label">
@@ -435,11 +435,11 @@
 					<div class="form-grid">
 						<div class="form-group">
 							<label for="instructor_name">Name</label>
-							<input id="instructor_name" type="text" bind:value={course.instructor_name} />
+							<input id="instructor_name" name="instructor_name" type="text" bind:value={course.instructor_name} />
 						</div>
 						<div class="form-group">
 							<label for="instructor_title">Title</label>
-							<input id="instructor_title" type="text" bind:value={course.instructor_title} />
+							<input id="instructor_title" name="instructor_title" type="text" bind:value={course.instructor_title} />
 						</div>
 						<div class="form-group full">
 							<label for="instructor_bio">Bio</label>
@@ -453,12 +453,12 @@
 					<div class="form-grid">
 						<div class="form-group full">
 							<label for="card_image">Card Image URL</label>
-							<input id="card_image" type="text" bind:value={course.card_image_url} />
+							<input id="card_image" name="card_image" type="text" bind:value={course.card_image_url} />
 						</div>
 						<div class="form-group">
 							<label for="badge">Badge Text</label>
 							<input
-								id="badge"
+								id="badge" name="badge"
 								type="text"
 								bind:value={course.card_badge}
 								placeholder="e.g., NEW"
@@ -466,7 +466,7 @@
 						</div>
 						<div class="form-group">
 							<label for="badge_color">Badge Color</label>
-							<input id="badge_color" type="color" bind:value={course.card_badge_color} />
+							<input id="badge_color" name="badge_color" type="color" bind:value={course.card_badge_color} />
 						</div>
 					</div>
 				</div>
@@ -709,7 +709,7 @@
 					<div class="form-grid">
 						<div class="form-group full">
 							<label for="meta_title">Meta Title</label>
-							<input id="meta_title" type="text" bind:value={course.meta_title} />
+							<input id="meta_title" name="meta_title" type="text" bind:value={course.meta_title} />
 						</div>
 						<div class="form-group full">
 							<label for="meta_desc">Meta Description</label>
@@ -723,7 +723,7 @@
 					<div class="form-grid">
 						<div class="form-group">
 							<label for="bunny_lib">Bunny.net Library ID</label>
-							<input id="bunny_lib" type="number" bind:value={course.bunny_library_id} />
+							<input id="bunny_lib" name="bunny_lib" type="number" bind:value={course.bunny_library_id} />
 						</div>
 					</div>
 				</div>

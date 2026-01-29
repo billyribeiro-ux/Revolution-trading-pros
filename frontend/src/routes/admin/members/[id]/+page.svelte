@@ -907,7 +907,7 @@
 				<div class="form-group">
 					<label for="email-subject-detail">Subject</label>
 					<input
-						id="email-subject-detail"
+						id="email-subject-detail" name="email-subject-detail"
 						type="text"
 						bind:value={emailSubject}
 						placeholder="Email subject..."
@@ -1090,7 +1090,7 @@
 						{/each}
 					</div>
 					<input
-						id="extend-days"
+						id="extend-days" name="extend-days"
 						type="number"
 						bind:value={extendDays}
 						min="1"
@@ -1164,7 +1164,7 @@
 				<div class="form-group">
 					<label for="grant-expires">Expiration Date (optional)</label>
 					<input
-						id="grant-expires"
+						id="grant-expires" name="grant-expires"
 						type="date"
 						bind:value={grantExpiresAt}
 						min={new Date().toISOString().split('T')[0]}

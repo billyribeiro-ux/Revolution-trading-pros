@@ -205,7 +205,7 @@
 							<label for="doi-subject">Confirmation Email Subject</label>
 							<input
 								type="text"
-								id="doi-subject"
+								id="doi-subject" name="doi-subject"
 								bind:value={doubleOptIn.email_subject}
 								placeholder="Please confirm your subscription"
 							/>
@@ -228,7 +228,7 @@
 							<label for="doi-redirect">Redirect URL After Confirmation</label>
 							<input
 								type="text"
-								id="doi-redirect"
+								id="doi-redirect" name="doi-redirect"
 								bind:value={doubleOptIn.redirect_url}
 								placeholder="https://example.com/thank-you"
 							/>
@@ -278,7 +278,7 @@
 							<label for="ep-title">Page Title</label>
 							<input
 								type="text"
-								id="ep-title"
+								id="ep-title" name="ep-title"
 								bind:value={emailPreferences.title}
 								placeholder="Email Preferences"
 							/>
@@ -335,7 +335,7 @@
 							<label for="ep-redirect">Redirect After Update</label>
 							<input
 								type="text"
-								id="ep-redirect"
+								id="ep-redirect" name="ep-redirect"
 								bind:value={emailPreferences.redirect_after_update}
 								placeholder="https://example.com/preferences-saved"
 							/>

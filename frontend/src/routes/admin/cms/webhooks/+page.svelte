@@ -321,7 +321,7 @@
 				<div class="form-group">
 					<label for="name">Name</label>
 					<input
-						id="name"
+						id="name" name="name"
 						type="text"
 						placeholder="My Webhook"
 						bind:value={formData.name}
@@ -332,7 +332,7 @@
 				<div class="form-group">
 					<label for="url">URL</label>
 					<input
-						id="url"
+						id="url" name="url"
 						type="url"
 						placeholder="https://example.com/webhook"
 						bind:value={formData.url}
@@ -348,7 +348,7 @@
 						{/if}
 					</label>
 					<input
-						id="secret"
+						id="secret" name="secret" autocomplete="current-password"
 						type="password"
 						placeholder="Enter secret key"
 						bind:value={formData.secret}

@@ -722,7 +722,7 @@
 							<label for="discount-percent">Discount Percentage</label>
 							<div class="discount-slider">
 								<input
-									id="discount-percent"
+									id="discount-percent" name="discount-percent"
 									type="range"
 									min="5"
 									max="30"
@@ -735,7 +735,7 @@
 						<div class="form-group">
 							<label for="discount-code">Discount Code</label>
 							<input
-								id="discount-code"
+								id="discount-code" name="discount-code"
 								type="text"
 								placeholder="e.g., COMEBACK15"
 								bind:value={discountCode}
@@ -749,7 +749,7 @@
 					<div class="form-group">
 						<label for="custom-subject">Subject Line</label>
 						<input
-							id="custom-subject"
+							id="custom-subject" name="custom-subject"
 							type="text"
 							placeholder="Enter email subject..."
 							bind:value={customSubject}

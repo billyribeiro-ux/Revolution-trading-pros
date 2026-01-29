@@ -769,7 +769,7 @@
 							{#if field.required}<span class="text-red-400 ml-1">*</span>{/if}
 						</label>
 						<input
-							id="field-{field.key}"
+							id="field-{field.key}" name="field-{field.key}"
 							type={field.type === 'password' ? 'password' : 'text'}
 							placeholder={field.placeholder}
 							bind:value={credentialValues[field.key]}

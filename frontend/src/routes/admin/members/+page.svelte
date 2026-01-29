@@ -573,7 +573,7 @@
 			<div class="search-box">
 				<IconSearch size={18} />
 				<input
-					id="search-members"
+					id="search-members" name="search-members"
 					type="text"
 					placeholder="Search members by name or email..."
 					bind:value={searchQuery}
@@ -840,7 +840,7 @@
 				<div class="form-group">
 					<label for="email-subject">Subject</label>
 					<input
-						id="email-subject"
+						id="email-subject" name="email-subject"
 						type="text"
 						bind:value={emailSubject}
 						placeholder="Email subject..."
@@ -924,7 +924,7 @@
 						{/if}
 					</label>
 					<input
-						id="import-file"
+						id="import-file" name="import-file"
 						type="file"
 						accept=".csv"
 						onchange={handleFileSelect}

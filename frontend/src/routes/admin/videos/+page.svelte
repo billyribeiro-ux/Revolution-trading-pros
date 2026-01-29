@@ -972,7 +972,7 @@
 				<label for="search-videos" class="sr-only">Search videos or categories</label>
 				<input
 					type="text"
-					id="search-videos"
+					id="search-videos" name="search-videos"
 					placeholder="Search videos, categories..."
 					bind:value={searchQuery}
 				/>
@@ -1195,7 +1195,7 @@
 					<label for="video-url">Video URL</label>
 					<input
 						type="url"
-						id="video-url"
+						id="video-url" name="video-url"
 						placeholder="https://vimeo.com/..."
 						bind:value={formData.video_url}
 					/>
@@ -1212,7 +1212,7 @@
 					<label for="video-title">Title</label>
 					<input
 						type="text"
-						id="video-title"
+						id="video-title" name="video-title"
 						placeholder="Risk Management Fundamentals"
 						bind:value={formData.title}
 					/>
@@ -1289,7 +1289,7 @@
 					</div>
 					<div class="form-group">
 						<label for="video-date">Video Date</label>
-						<input type="date" id="video-date" bind:value={formData.video_date} />
+						<input type="date" id="video-date" name="video-date" bind:value={formData.video_date} />
 					</div>
 				</div>
 
@@ -1298,7 +1298,7 @@
 					<label for="thumbnail-url">Thumbnail URL (optional)</label>
 					<input
 						type="url"
-						id="thumbnail-url"
+						id="thumbnail-url" name="thumbnail-url"
 						placeholder="https://..."
 						bind:value={formData.thumbnail_url}
 					/>
@@ -1391,7 +1391,7 @@
 					<label for="new-video-url">New Video URL</label>
 					<input
 						type="url"
-						id="new-video-url"
+						id="new-video-url" name="new-video-url"
 						placeholder="https://your-video-url.com/video.mp4"
 						bind:value={newVideoUrl}
 					/>

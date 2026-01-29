@@ -430,7 +430,7 @@
 									</label>
 									<input
 										type="number"
-										id="default-hourly-rate"
+										id="default-hourly-rate" name="default-hourly-rate"
 										bind:value={settings.default_hourly_rate}
 										min="0"
 										step="0.01"
@@ -448,7 +448,7 @@
 										</label>
 										<input
 											type="number"
-											id="working-hours"
+											id="working-hours" name="working-hours"
 											bind:value={settings.working_hours_per_day}
 											min="1"
 											max="24"
@@ -464,7 +464,7 @@
 										</label>
 										<input
 											type="number"
-											id="working-days"
+											id="working-days" name="working-days"
 											bind:value={settings.working_days_per_week}
 											min="1"
 											max="7"
@@ -512,7 +512,7 @@
 										</label>
 										<input
 											type="text"
-											id="bucket-name"
+											id="bucket-name" name="bucket-name"
 											bind:value={storageConfig.bucket}
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
@@ -527,7 +527,7 @@
 										</label>
 										<input
 											type="text"
-											id="region"
+											id="region" name="region"
 											bind:value={storageConfig.region}
 											placeholder="us-east-1"
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -543,7 +543,7 @@
 										</label>
 										<input
 											type="text"
-											id="endpoint"
+											id="endpoint" name="endpoint"
 											bind:value={storageConfig.endpoint}
 											placeholder="https://..."
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
@@ -559,7 +559,7 @@
 										</label>
 										<input
 											type="password"
-											id="access-key"
+											id="access-key" name="access-key" autocomplete="current-password"
 											bind:value={storageConfig.access_key}
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>
@@ -574,7 +574,7 @@
 										</label>
 										<input
 											type="password"
-											id="secret-key"
+											id="secret-key" name="secret-key" autocomplete="current-password"
 											bind:value={storageConfig.secret_key}
 											class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
 										/>

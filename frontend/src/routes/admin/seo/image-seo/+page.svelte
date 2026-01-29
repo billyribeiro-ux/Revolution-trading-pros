@@ -290,7 +290,7 @@
 					<label for="altFormat">Alt Text Format</label>
 					<input
 						type="text"
-						id="altFormat"
+						id="altFormat" name="altFormat"
 						bind:value={settings.altTextFormat}
 						placeholder="%filename%"
 					/>
@@ -307,11 +307,11 @@
 				<div class="setting-row inline">
 					<div>
 						<label for="altPrefix">Prefix</label>
-						<input type="text" id="altPrefix" bind:value={settings.altTextPrefix} />
+						<input type="text" id="altPrefix" name="altPrefix" bind:value={settings.altTextPrefix} />
 					</div>
 					<div>
 						<label for="altSuffix">Suffix</label>
-						<input type="text" id="altSuffix" bind:value={settings.altTextSuffix} />
+						<input type="text" id="altSuffix" name="altSuffix" bind:value={settings.altTextSuffix} />
 					</div>
 				</div>
 				<div class="setting-row">
@@ -355,7 +355,7 @@
 					<label for="titleFormat">Title Format</label>
 					<input
 						type="text"
-						id="titleFormat"
+						id="titleFormat" name="titleFormat"
 						bind:value={settings.titleFormat}
 						placeholder="%filename% %sep% %site%"
 					/>
@@ -374,11 +374,11 @@
 				<h3>General Settings</h3>
 				<div class="setting-row">
 					<label for="siteName">Site Name</label>
-					<input type="text" id="siteName" bind:value={settings.siteName} />
+					<input type="text" id="siteName" name="siteName" bind:value={settings.siteName} />
 				</div>
 				<div class="setting-row">
 					<label for="separator">Separator</label>
-					<input type="text" id="separator" bind:value={settings.separator} maxlength="5" />
+					<input type="text" id="separator" name="separator" bind:value={settings.separator} maxlength="5" />
 				</div>
 				<div class="setting-row">
 					<label class="checkbox-label">

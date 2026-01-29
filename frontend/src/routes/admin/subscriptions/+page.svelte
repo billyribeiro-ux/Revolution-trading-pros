@@ -506,7 +506,7 @@
 						<label for="search" class="block text-sm font-medium text-slate-400 mb-2">Search</label>
 						<input
 							type="text"
-							id="search"
+							id="search" name="search"
 							bind:value={searchQuery}
 							oninput={handleSearchInput}
 							placeholder="Search subscriptions..."

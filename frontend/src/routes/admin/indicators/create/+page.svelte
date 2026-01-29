@@ -654,7 +654,7 @@
 					<div class="form-group">
 						<label for="name">Indicator Name <span class="required">*</span></label>
 						<input
-							id="name"
+							id="name" name="name"
 							type="text"
 							bind:value={indicator.name}
 							placeholder="e.g., Volume Max Indicator"
@@ -671,7 +671,7 @@
 					<div class="form-group">
 						<label for="subtitle">Subtitle / Tagline</label>
 						<input
-							id="subtitle"
+							id="subtitle" name="subtitle"
 							type="text"
 							bind:value={indicator.subtitle}
 							placeholder="e.g., Advanced volume analysis for professional traders"
@@ -691,7 +691,7 @@
 
 						<div class="form-group">
 							<label for="version">Version</label>
-							<input id="version" type="text" bind:value={indicator.version} placeholder="1.0.0" />
+							<input id="version" name="version" type="text" bind:value={indicator.version} placeholder="1.0.0" />
 						</div>
 					</div>
 
@@ -726,7 +726,7 @@
 								</span>
 							{/each}
 							<input
-								id="tags-input"
+								id="tags-input" name="tags-input"
 								type="text"
 								class="tag-input"
 								bind:value={tagInput}
@@ -1013,7 +1013,7 @@
 							<div class="price-input">
 								<span class="currency">$</span>
 								<input
-									id="price"
+									id="price" name="price"
 									type="number"
 									bind:value={indicator.price_cents}
 									placeholder="9900"

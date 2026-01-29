@@ -396,7 +396,7 @@
 				<div class="form-group">
 					<label for="email-subject">Subject</label>
 					<input
-						id="email-subject"
+						id="email-subject" name="email-subject"
 						type="text"
 						bind:value={emailSubject}
 						placeholder="Email subject..."

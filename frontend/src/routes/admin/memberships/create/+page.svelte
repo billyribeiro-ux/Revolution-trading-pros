@@ -238,7 +238,7 @@
 				<div class="form-group">
 					<label for="name">Plan Name *</label>
 					<input
-						id="name"
+						id="name" name="name"
 						type="text"
 						bind:value={membership.name}
 						placeholder="e.g., Pro Membership"
@@ -248,7 +248,7 @@
 				<div class="form-group">
 					<label for="slug">URL Slug</label>
 					<input
-						id="slug"
+						id="slug" name="slug"
 						type="text"
 						bind:value={membership.slug}
 						oninput={handleSlugInput}
@@ -273,7 +273,7 @@
 						<div class="price-input">
 							<span class="currency">$</span>
 							<input
-								id="price"
+								id="price" name="price"
 								type="number"
 								bind:value={membership.price}
 								placeholder="29.99"

@@ -114,7 +114,7 @@
 			>
 				<IconSearch size={18} class="text-slate-500" />
 				<input
-					id="contact-search"
+					id="contact-search" name="contact-search"
 					class="w-full bg-transparent text-sm text-slate-100 outline-none placeholder:text-slate-500"
 					placeholder="Search by name, email, title"
 					bind:value={localSearch}

@@ -245,7 +245,7 @@
 					<div class="field-group">
 						<label for="title" class="field-label required">Title</label>
 						<input
-							id="title"
+							id="title" name="title"
 							type="text"
 							bind:value={title}
 							placeholder="Enter title..."
@@ -265,7 +265,7 @@
 						<div class="slug-input-group">
 							<span class="slug-prefix">/</span>
 							<input
-								id="slug"
+								id="slug" name="slug"
 								type="text"
 								bind:value={slug}
 								placeholder="url-friendly-slug"
@@ -279,7 +279,7 @@
 					<div class="field-group">
 						<label for="subtitle" class="field-label">Subtitle</label>
 						<input
-							id="subtitle"
+							id="subtitle" name="subtitle"
 							type="text"
 							bind:value={subtitle}
 							placeholder="Optional subtitle or tagline..."
@@ -339,7 +339,7 @@
 					<div class="field-group">
 						<label for="meta-title" class="field-label">Meta Title</label>
 						<input
-							id="meta-title"
+							id="meta-title" name="meta-title"
 							type="text"
 							bind:value={metaTitle}
 							placeholder={title || 'Leave blank to use page title'}
@@ -363,7 +363,7 @@
 					<div class="field-group">
 						<label for="canonical" class="field-label">Canonical URL</label>
 						<input
-							id="canonical"
+							id="canonical" name="canonical"
 							type="url"
 							bind:value={canonicalUrl}
 							placeholder="https://example.com/canonical-page"

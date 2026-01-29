@@ -270,7 +270,7 @@
 					<label for="url-to-submit" class="sr-only">URL to submit</label>
 					<input
 						type="url"
-						id="url-to-submit"
+						id="url-to-submit" name="url-to-submit"
 						bind:value={urlToSubmit}
 						placeholder="https://yourdomain.com/new-page"
 						onkeydown={(e: KeyboardEvent) => e.key === 'Enter' && handleSubmitUrl()}

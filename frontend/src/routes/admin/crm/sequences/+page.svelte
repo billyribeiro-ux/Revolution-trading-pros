@@ -593,7 +593,7 @@
 						<div class="form-group">
 							<label for="test-email">Email Address</label>
 							<input
-								id="test-email"
+								id="test-email" name="test-email" autocomplete="email"
 								type="email"
 								placeholder="Enter email address..."
 								bind:value={sendEmailForm.testEmail}

@@ -143,7 +143,7 @@
 				<div class="form-group">
 					<label for="host">SMTP Host</label>
 					<input
-						id="host"
+						id="host" name="host"
 						type="text"
 						bind:value={settings.host}
 						placeholder="smtp.gmail.com"
@@ -154,7 +154,7 @@
 				<!-- Port -->
 				<div class="form-group">
 					<label for="port">Port</label>
-					<input id="port" type="number" bind:value={settings.port} required />
+					<input id="port" name="port" type="number" bind:value={settings.port} required />
 				</div>
 
 				<!-- Encryption -->
@@ -171,7 +171,7 @@
 				<div class="form-group full-width">
 					<label for="username">Username</label>
 					<input
-						id="username"
+						id="username" name="username"
 						type="text"
 						bind:value={settings.username}
 						placeholder="your-email@gmail.com"
@@ -182,7 +182,7 @@
 				<div class="form-group full-width">
 					<label for="password">Password / App Password</label>
 					<input
-						id="password"
+						id="password" name="password" autocomplete="current-password"
 						type="password"
 						bind:value={settings.password}
 						placeholder="Enter password"
@@ -193,7 +193,7 @@
 				<div class="form-group">
 					<label for="from_address">From Email</label>
 					<input
-						id="from_address"
+						id="from_address" name="from_address" autocomplete="email"
 						type="email"
 						bind:value={settings.from_address}
 						placeholder="noreply@revolutiontradingpros.com"
@@ -205,7 +205,7 @@
 				<div class="form-group">
 					<label for="from_name">From Name</label>
 					<input
-						id="from_name"
+						id="from_name" name="from_name"
 						type="text"
 						bind:value={settings.from_name}
 						placeholder="Revolution Trading Pros"

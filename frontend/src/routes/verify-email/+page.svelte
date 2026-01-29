@@ -442,7 +442,7 @@
 							<div>
 								<label for="email" class="sr-only">Email address</label>
 								<input
-									id="email"
+									id="email" name="email" autocomplete="email"
 									type="email"
 									bind:value={userEmail}
 									placeholder="Enter your email address"

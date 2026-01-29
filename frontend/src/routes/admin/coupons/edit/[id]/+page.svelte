@@ -447,7 +447,7 @@
 					</label>
 					<input
 						type="text"
-						id="code"
+						id="code" name="code"
 						bind:value={formData.code}
 						placeholder="SUMMER2024"
 						class="input input-large"
@@ -477,7 +477,7 @@
 						<div class="input-with-suffix">
 							<input
 								type="number"
-								id="value"
+								id="value" name="value"
 								bind:value={formData.value}
 								min="0"
 								max={formData.type === 'percentage' ? 100 : undefined}
@@ -506,7 +506,7 @@
 						<label for="minimum_amount">Minimum Purchase ($)</label>
 						<input
 							type="number"
-							id="minimum_amount"
+							id="minimum_amount" name="minimum_amount"
 							bind:value={formData.minimum_amount}
 							min="0"
 							step="0.01"
@@ -519,7 +519,7 @@
 						<label for="usage_limit">Total Uses</label>
 						<input
 							type="number"
-							id="usage_limit"
+							id="usage_limit" name="usage_limit"
 							bind:value={formData.usage_limit}
 							min="1"
 							class="input"
@@ -541,7 +541,7 @@
 						<label for="valid_from">Start Date</label>
 						<input
 							type="datetime-local"
-							id="valid_from"
+							id="valid_from" name="valid_from"
 							bind:value={formData.valid_from}
 							class="input"
 						/>
@@ -551,7 +551,7 @@
 						<label for="valid_until">Expiration Date</label>
 						<input
 							type="datetime-local"
-							id="valid_until"
+							id="valid_until" name="valid_until"
 							bind:value={formData.valid_until}
 							class="input"
 							class:error={getFieldError('valid_until')}

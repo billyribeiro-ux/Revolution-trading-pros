@@ -248,7 +248,7 @@
 						<div class="price-input-wrapper">
 							<span class="price-prefix">$</span>
 							<input
-								id="exit_price"
+								id="exit_price" name="exit_price"
 								type="number"
 								step="0.01"
 								min="0"
@@ -262,7 +262,7 @@
 
 					<div class="form-group">
 						<label for="exit_date">Exit Date</label>
-						<input id="exit_date" type="date" bind:value={form.exit_date} class="form-input" />
+						<input id="exit_date" name="exit_date" type="date" bind:value={form.exit_date} class="form-input" />
 					</div>
 				</div>
 

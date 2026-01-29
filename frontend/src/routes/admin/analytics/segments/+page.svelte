@@ -537,7 +537,7 @@
 							>Name</label
 						>
 						<input
-							id="segment-name"
+							id="segment-name" name="segment-name"
 							type="text"
 							bind:value={newSegment.name}
 							placeholder="e.g., High-Value Customers"

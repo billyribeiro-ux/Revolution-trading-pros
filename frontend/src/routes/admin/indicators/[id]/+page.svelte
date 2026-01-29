@@ -189,29 +189,29 @@
 					<div class="form-grid">
 						<div class="form-group">
 							<label for="name">Name *</label>
-							<input type="text" id="name" bind:value={indicator.name} />
+							<input type="text" id="name" name="name" bind:value={indicator.name} />
 						</div>
 						<div class="form-group">
 							<label for="slug">Slug</label>
-							<input type="text" id="slug" bind:value={indicator.slug} />
+							<input type="text" id="slug" name="slug" bind:value={indicator.slug} />
 						</div>
 						<!-- ICT 7 FIX: Match backend fields -->
 						<div class="form-group">
 							<label for="price">Price (USD)</label>
-							<input type="number" id="price" step="0.01" bind:value={indicator.price} />
+							<input type="number" id="price" name="price" step="0.01" bind:value={indicator.price} />
 						</div>
 						<div class="form-group">
 							<label for="platform">Platform</label>
 							<input
 								type="text"
-								id="platform"
+								id="platform" name="platform"
 								bind:value={indicator.platform}
 								placeholder="thinkorswim, tradingview, etc."
 							/>
 						</div>
 						<div class="form-group">
 							<label for="version">Version</label>
-							<input type="text" id="version" bind:value={indicator.version} placeholder="1.0" />
+							<input type="text" id="version" name="version" bind:value={indicator.version} placeholder="1.0" />
 						</div>
 						<div class="form-group">
 							<label for="is_active">Status</label>
@@ -231,7 +231,7 @@
 							<label for="thumbnail">Thumbnail URL</label>
 							<input
 								type="url"
-								id="thumbnail"
+								id="thumbnail" name="thumbnail"
 								bind:value={indicator.thumbnail}
 								placeholder="https://..."
 							/>
@@ -240,7 +240,7 @@
 							<label for="download_url">Download URL</label>
 							<input
 								type="url"
-								id="download_url"
+								id="download_url" name="download_url"
 								bind:value={indicator.download_url}
 								placeholder="https://..."
 							/>
@@ -249,7 +249,7 @@
 							<label for="documentation_url">Documentation URL</label>
 							<input
 								type="url"
-								id="documentation_url"
+								id="documentation_url" name="documentation_url"
 								bind:value={indicator.documentation_url}
 								placeholder="https://..."
 							/>
@@ -353,7 +353,7 @@
 						<label for="meta_title">Meta Title</label>
 						<input
 							type="text"
-							id="meta_title"
+							id="meta_title" name="meta_title"
 							bind:value={indicator.meta_title}
 							placeholder="Page title for search engines"
 						/>

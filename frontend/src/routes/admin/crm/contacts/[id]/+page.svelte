@@ -1170,7 +1170,7 @@
 						Subject Line
 					</label>
 					<input
-						id="email-subject"
+						id="email-subject" name="email-subject"
 						type="text"
 						class="form-input"
 						placeholder="Enter email subject..."

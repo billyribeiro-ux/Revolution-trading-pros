@@ -384,7 +384,7 @@
 					<label for="search">Search</label>
 					<input
 						type="text"
-						id="search"
+						id="search" name="search"
 						bind:value={searchQuery}
 						placeholder="Search plans..."
 						class="filter-input"
@@ -545,7 +545,7 @@
 			<div class="modal-body">
 				<div class="form-group">
 					<label for="edit-name">Plan Name</label>
-					<input type="text" id="edit-name" bind:value={editingPlan.name} class="form-input" />
+					<input type="text" id="edit-name" name="edit-name" bind:value={editingPlan.name} class="form-input" />
 				</div>
 
 				<div class="form-row">
@@ -553,7 +553,7 @@
 						<label for="edit-price">Price ($)</label>
 						<input
 							type="number"
-							id="edit-price"
+							id="edit-price" name="edit-price"
 							bind:value={editingPlan.price}
 							step="0.01"
 							min="0"
@@ -578,7 +578,7 @@
 					</label>
 					<input
 						type="text"
-						id="edit-stripe"
+						id="edit-stripe" name="edit-stripe"
 						bind:value={editingPlan.stripe_price_id}
 						placeholder="price_1ABC123..."
 						class="form-input font-mono"
@@ -606,7 +606,7 @@
 					<label for="edit-trial">Trial Days</label>
 					<input
 						type="number"
-						id="edit-trial"
+						id="edit-trial" name="edit-trial"
 						bind:value={editingPlan.trial_days}
 						min="0"
 						class="form-input"

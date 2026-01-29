@@ -997,27 +997,27 @@
 				<div class="form-grid">
 					<div class="form-group">
 						<label for="first_name">First Name *</label>
-						<input id="first_name" type="text" bind:value={formData.first_name} required />
+						<input id="first_name" name="first_name" type="text" bind:value={formData.first_name} required />
 					</div>
 					<div class="form-group">
 						<label for="last_name">Last Name *</label>
-						<input id="last_name" type="text" bind:value={formData.last_name} required />
+						<input id="last_name" name="last_name" type="text" bind:value={formData.last_name} required />
 					</div>
 					<div class="form-group full-width">
 						<label for="email">Email *</label>
-						<input id="email" type="email" bind:value={formData.email} required />
+						<input id="email" name="email" autocomplete="email" type="email" bind:value={formData.email} required />
 					</div>
 					<div class="form-group">
 						<label for="phone">Phone</label>
-						<input id="phone" type="tel" bind:value={formData.phone} />
+						<input id="phone" name="phone" autocomplete="tel" type="tel" bind:value={formData.phone} />
 					</div>
 					<div class="form-group">
 						<label for="company">Company</label>
-						<input id="company" type="text" bind:value={formData.company_name} />
+						<input id="company" name="company" type="text" bind:value={formData.company_name} />
 					</div>
 					<div class="form-group">
 						<label for="job_title">Job Title</label>
-						<input id="job_title" type="text" bind:value={formData.job_title} />
+						<input id="job_title" name="job_title" type="text" bind:value={formData.job_title} />
 					</div>
 					<div class="form-group">
 						<label for="source">Lead Source</label>
@@ -1030,7 +1030,7 @@
 					<div class="form-group full-width">
 						<label for="estimated_value">Estimated Value ($)</label>
 						<input
-							id="estimated_value"
+							id="estimated_value" name="estimated_value"
 							type="number"
 							min="0"
 							bind:value={formData.estimated_value}
@@ -1095,27 +1095,27 @@
 				<div class="form-grid">
 					<div class="form-group">
 						<label for="edit_first_name">First Name *</label>
-						<input id="edit_first_name" type="text" bind:value={formData.first_name} required />
+						<input id="edit_first_name" name="edit_first_name" type="text" bind:value={formData.first_name} required />
 					</div>
 					<div class="form-group">
 						<label for="edit_last_name">Last Name *</label>
-						<input id="edit_last_name" type="text" bind:value={formData.last_name} required />
+						<input id="edit_last_name" name="edit_last_name" type="text" bind:value={formData.last_name} required />
 					</div>
 					<div class="form-group full-width">
 						<label for="edit_email">Email *</label>
-						<input id="edit_email" type="email" bind:value={formData.email} required />
+						<input id="edit_email" name="edit_email" autocomplete="email" type="email" bind:value={formData.email} required />
 					</div>
 					<div class="form-group">
 						<label for="edit_phone">Phone</label>
-						<input id="edit_phone" type="tel" bind:value={formData.phone} />
+						<input id="edit_phone" name="edit_phone" autocomplete="tel" type="tel" bind:value={formData.phone} />
 					</div>
 					<div class="form-group">
 						<label for="edit_company">Company</label>
-						<input id="edit_company" type="text" bind:value={formData.company_name} />
+						<input id="edit_company" name="edit_company" type="text" bind:value={formData.company_name} />
 					</div>
 					<div class="form-group">
 						<label for="edit_job_title">Job Title</label>
-						<input id="edit_job_title" type="text" bind:value={formData.job_title} />
+						<input id="edit_job_title" name="edit_job_title" type="text" bind:value={formData.job_title} />
 					</div>
 					<div class="form-group">
 						<label for="edit_source">Lead Source</label>
@@ -1128,7 +1128,7 @@
 					<div class="form-group full-width">
 						<label for="edit_estimated_value">Estimated Value ($)</label>
 						<input
-							id="edit_estimated_value"
+							id="edit_estimated_value" name="edit_estimated_value"
 							type="number"
 							min="0"
 							bind:value={formData.estimated_value}

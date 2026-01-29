@@ -295,7 +295,7 @@
 		<div class="search-box">
 			<IconSearch size={18} />
 			<input
-				id="search-churned-members"
+				id="search-churned-members" name="search-churned-members"
 				type="text"
 				placeholder="Search churned members..."
 				bind:value={searchQuery}
@@ -561,7 +561,7 @@
 				<div class="form-group">
 					<label for="email-subject">Subject Line</label>
 					<input
-						id="email-subject"
+						id="email-subject" name="email-subject"
 						type="text"
 						bind:value={emailSubject}
 						placeholder="Email subject..."

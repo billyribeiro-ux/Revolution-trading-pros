@@ -129,7 +129,7 @@
 							<IconMail size={20} />
 						</div>
 						<input
-							id="email"
+							id="email" name="email" autocomplete="email"
 							type="email"
 							bind:value={email}
 							required

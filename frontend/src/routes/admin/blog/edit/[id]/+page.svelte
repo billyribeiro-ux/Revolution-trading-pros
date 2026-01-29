@@ -426,7 +426,7 @@
 					<label for="slug">URL Slug</label>
 					<div class="slug-input">
 						<span class="slug-prefix">your-site.com/blog/</span>
-						<input id="slug" type="text" bind:value={post.slug} placeholder="post-url-slug" />
+						<input id="slug" name="slug" type="text" bind:value={post.slug} placeholder="post-url-slug" />
 						<button type="button" class="btn-regenerate" onclick={generateSlug}>Regenerate</button>
 					</div>
 				</div>
@@ -508,7 +508,7 @@
 							<IconCalendar size={16} />
 							Publish Date
 						</label>
-						<input id="publish-date" type="datetime-local" bind:value={post.published_at} />
+						<input id="publish-date" name="publish-date" type="datetime-local" bind:value={post.published_at} />
 					</div>
 
 					<div class="form-group">
@@ -539,7 +539,7 @@
 						<div class="form-group">
 							<label for="img-title">Image Title</label>
 							<input
-								id="img-title"
+								id="img-title" name="img-title"
 								type="text"
 								bind:value={post.featured_image_title}
 								placeholder="Image title for SEO"
@@ -549,7 +549,7 @@
 						<div class="form-group">
 							<label for="img-alt">Alt Text</label>
 							<input
-								id="img-alt"
+								id="img-alt" name="img-alt"
 								type="text"
 								bind:value={post.featured_image_alt}
 								placeholder="Describe the image for accessibility"
@@ -559,7 +559,7 @@
 						<div class="form-group">
 							<label for="img-caption">Caption</label>
 							<input
-								id="img-caption"
+								id="img-caption" name="img-caption"
 								type="text"
 								bind:value={post.featured_image_caption}
 								placeholder="Image caption displayed below image"

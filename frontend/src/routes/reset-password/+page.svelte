@@ -164,7 +164,7 @@
 							<IconLock size={20} />
 						</div>
 						<input
-							id="password"
+							id="password" name="password"
 							type={showPassword ? 'text' : 'password'}
 							bind:value={password}
 							required
@@ -207,7 +207,7 @@
 							<IconLock size={20} />
 						</div>
 						<input
-							id="password_confirmation"
+							id="password_confirmation" name="password_confirmation"
 							type={showConfirmPassword ? 'text' : 'password'}
 							bind:value={password_confirmation}
 							required

@@ -327,7 +327,7 @@
 										>
 										<input
 											type="text"
-											id="billing_first_name"
+											id="billing_first_name" name="billing_first_name"
 											bind:value={billing.firstName}
 											class="input-text"
 											class:error={billingErrors.firstName}
@@ -341,7 +341,7 @@
 										<label for="billing_last_name">Last name <abbr class="required">*</abbr></label>
 										<input
 											type="text"
-											id="billing_last_name"
+											id="billing_last_name" name="billing_last_name"
 											bind:value={billing.lastName}
 											class="input-text"
 											class:error={billingErrors.lastName}
@@ -355,7 +355,7 @@
 										<label for="billing_email">Email address <abbr class="required">*</abbr></label>
 										<input
 											type="email"
-											id="billing_email"
+											id="billing_email" name="billing_email" autocomplete="email"
 											bind:value={billing.email}
 											class="input-text"
 											class:error={billingErrors.email}
@@ -370,7 +370,7 @@
 										>
 										<input
 											type="tel"
-											id="billing_phone"
+											id="billing_phone" name="billing_phone" autocomplete="tel"
 											bind:value={billing.phone}
 											class="input-text"
 										/>
@@ -382,7 +382,7 @@
 										>
 										<input
 											type="text"
-											id="billing_address_1"
+											id="billing_address_1" name="billing_address_1"
 											bind:value={billing.address1}
 											placeholder="House number and street name"
 											class="input-text"
@@ -399,7 +399,7 @@
 										>
 										<input
 											type="text"
-											id="billing_address_2"
+											id="billing_address_2" name="billing_address_2"
 											bind:value={billing.address2}
 											placeholder="Apartment, suite, unit, etc. (optional)"
 											class="input-text"
@@ -410,7 +410,7 @@
 										<label for="billing_city">Town / City <abbr class="required">*</abbr></label>
 										<input
 											type="text"
-											id="billing_city"
+											id="billing_city" name="billing_city"
 											bind:value={billing.city}
 											class="input-text"
 											class:error={billingErrors.city}
@@ -424,7 +424,7 @@
 										<label for="billing_state">State <abbr class="required">*</abbr></label>
 										<input
 											type="text"
-											id="billing_state"
+											id="billing_state" name="billing_state"
 											bind:value={billing.state}
 											class="input-text"
 											class:error={billingErrors.state}
@@ -438,7 +438,7 @@
 										<label for="billing_postcode">ZIP Code <abbr class="required">*</abbr></label>
 										<input
 											type="text"
-											id="billing_postcode"
+											id="billing_postcode" name="billing_postcode"
 											bind:value={billing.postcode}
 											class="input-text"
 											class:error={billingErrors.postcode}
@@ -713,7 +713,7 @@
 									<div class="checkout_coupon">
 										<label for="coupon_code" class="sr-only">Coupon code</label>
 										<input
-											id="coupon_code"
+											id="coupon_code" name="coupon_code"
 											type="text"
 											placeholder="Coupon code"
 											bind:value={couponCode}

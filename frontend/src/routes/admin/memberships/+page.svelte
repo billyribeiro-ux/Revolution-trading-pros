@@ -722,11 +722,11 @@
 				<div class="form-grid">
 					<div class="form-group">
 						<label for="edit_name">Plan Name *</label>
-						<input id="edit_name" type="text" bind:value={formData.name} required />
+						<input id="edit_name" name="edit_name" type="text" bind:value={formData.name} required />
 					</div>
 					<div class="form-group">
 						<label for="edit_slug">URL Slug *</label>
-						<input id="edit_slug" type="text" bind:value={formData.slug} required />
+						<input id="edit_slug" name="edit_slug" type="text" bind:value={formData.slug} required />
 					</div>
 					<div class="form-group full-width">
 						<label for="edit_description">Description</label>
@@ -735,7 +735,7 @@
 					<div class="form-group">
 						<label for="edit_price">Price (USD) *</label>
 						<input
-							id="edit_price"
+							id="edit_price" name="edit_price"
 							type="number"
 							min="0"
 							step="0.01"

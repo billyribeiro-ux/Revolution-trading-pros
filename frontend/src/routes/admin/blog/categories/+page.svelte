@@ -641,7 +641,7 @@
 				<div class="form-group">
 					<label for="cat-name">Name *</label>
 					<input
-						id="cat-name"
+						id="cat-name" name="cat-name"
 						type="text"
 						bind:value={categoryForm.name}
 						placeholder="Category name"
@@ -652,7 +652,7 @@
 				<div class="form-group">
 					<label for="cat-slug">Slug *</label>
 					<input
-						id="cat-slug"
+						id="cat-slug" name="cat-slug"
 						type="text"
 						bind:value={categoryForm.slug}
 						placeholder="category-slug"
@@ -674,7 +674,7 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="cat-color">Color</label>
-						<input id="cat-color" type="color" bind:value={categoryForm.color} />
+						<input id="cat-color" name="cat-color" type="color" bind:value={categoryForm.color} />
 					</div>
 
 					<div class="form-group">
@@ -740,7 +740,7 @@
 				<div class="form-group">
 					<label for="tag-name">Name *</label>
 					<input
-						id="tag-name"
+						id="tag-name" name="tag-name"
 						type="text"
 						bind:value={tagForm.name}
 						placeholder="Tag name"
@@ -751,7 +751,7 @@
 				<div class="form-group">
 					<label for="tag-slug">Slug *</label>
 					<input
-						id="tag-slug"
+						id="tag-slug" name="tag-slug"
 						type="text"
 						bind:value={tagForm.slug}
 						placeholder="tag-slug"
@@ -763,7 +763,7 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="tag-color">Color</label>
-						<input id="tag-color" type="color" bind:value={tagForm.color} />
+						<input id="tag-color" name="tag-color" type="color" bind:value={tagForm.color} />
 					</div>
 
 					<div class="form-group">

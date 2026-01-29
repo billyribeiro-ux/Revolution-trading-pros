@@ -730,7 +730,7 @@
 					<div class="form-group full-width">
 						<label for="cat-name">Name *</label>
 						<input
-							id="cat-name"
+							id="cat-name" name="cat-name"
 							type="text"
 							bind:value={categoryForm.name}
 							placeholder="Category name"
@@ -741,7 +741,7 @@
 					<div class="form-group">
 						<label for="cat-slug">Slug *</label>
 						<input
-							id="cat-slug"
+							id="cat-slug" name="cat-slug"
 							type="text"
 							bind:value={categoryForm.slug}
 							placeholder="category-slug"
@@ -773,7 +773,7 @@
 					<div class="form-group">
 						<label for="cat-color">Color</label>
 						<div class="color-input-wrapper">
-							<input id="cat-color" type="color" bind:value={categoryForm.color} />
+							<input id="cat-color" name="cat-color" type="color" bind:value={categoryForm.color} />
 							<span class="color-value">{categoryForm.color}</span>
 						</div>
 					</div>
@@ -794,7 +794,7 @@
 					<div class="form-group full-width">
 						<label for="cat-meta-title">SEO Meta Title</label>
 						<input
-							id="cat-meta-title"
+							id="cat-meta-title" name="cat-meta-title"
 							type="text"
 							bind:value={categoryForm.meta_title}
 							placeholder="Custom page title for SEO"

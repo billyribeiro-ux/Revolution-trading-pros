@@ -400,7 +400,7 @@
 				<div class="form-group">
 					<label for="title">Automation Title <span class="required">*</span></label>
 					<input
-						id="title"
+						id="title" name="title"
 						type="text"
 						placeholder="e.g., Welcome New Subscribers"
 						bind:value={formData.title}
@@ -488,7 +488,7 @@
 					<div class="form-group">
 						<label for="form-id">Form ID</label>
 						<input
-							id="form-id"
+							id="form-id" name="form-id"
 							type="text"
 							placeholder="Enter form ID..."
 							bind:value={formData.trigger_settings.form_id}
@@ -498,7 +498,7 @@
 					<div class="form-group">
 						<label for="event-name">Event Name <span class="required">*</span></label>
 						<input
-							id="event-name"
+							id="event-name" name="event-name"
 							type="text"
 							placeholder="e.g., user_upgraded"
 							bind:value={formData.trigger_settings.event_name}

@@ -168,7 +168,7 @@
 							<label for="entryPrice">Entry Price</label>
 							<input
 								type="number"
-								id="entryPrice"
+								id="entryPrice" name="entryPrice"
 								bind:value={entryPrice}
 								step="0.01"
 								placeholder="0.00"
@@ -178,7 +178,7 @@
 							<label for="currentPrice">Current Price</label>
 							<input
 								type="number"
-								id="currentPrice"
+								id="currentPrice" name="currentPrice"
 								bind:value={currentPrice}
 								step="0.01"
 								placeholder="0.00"
@@ -191,7 +191,7 @@
 						<label for="stopLoss">Stop Loss</label>
 						<input
 							type="number"
-							id="stopLoss"
+							id="stopLoss" name="stopLoss"
 							bind:value={stopLoss}
 							step="0.01"
 							placeholder="0.00"
@@ -204,7 +204,7 @@
 							<label for="target1">Target 1</label>
 							<input
 								type="number"
-								id="target1"
+								id="target1" name="target1"
 								bind:value={target1}
 								step="0.01"
 								placeholder="0.00"
@@ -214,7 +214,7 @@
 							<label for="target2">Target 2</label>
 							<input
 								type="number"
-								id="target2"
+								id="target2" name="target2"
 								bind:value={target2}
 								step="0.01"
 								placeholder="0.00"
@@ -224,7 +224,7 @@
 							<label for="target3">Target 3</label>
 							<input
 								type="number"
-								id="target3"
+								id="target3" name="target3"
 								bind:value={target3}
 								step="0.01"
 								placeholder="0.00"

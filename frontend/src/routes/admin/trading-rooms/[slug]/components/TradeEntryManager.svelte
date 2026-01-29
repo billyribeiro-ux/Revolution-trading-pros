@@ -420,7 +420,7 @@
 					<div class="form-group">
 						<label for="ticker">Ticker *</label>
 						<input
-							id="ticker"
+							id="ticker" name="ticker"
 							type="text"
 							bind:value={form.ticker}
 							placeholder="NVDA"
@@ -442,7 +442,7 @@
 					<div class="form-group">
 						<label for="entry">Entry Price</label>
 						<input
-							id="entry"
+							id="entry" name="entry"
 							type="text"
 							bind:value={form.entry}
 							placeholder="$142.50"
@@ -452,7 +452,7 @@
 					<div class="form-group">
 						<label for="stop">Stop Loss</label>
 						<input
-							id="stop"
+							id="stop" name="stop"
 							type="text"
 							bind:value={form.stop}
 							placeholder="$136.00"
@@ -465,7 +465,7 @@
 					<div class="form-group">
 						<label for="target1">Target 1</label>
 						<input
-							id="target1"
+							id="target1" name="target1"
 							type="text"
 							bind:value={form.target1}
 							placeholder="$148"
@@ -475,7 +475,7 @@
 					<div class="form-group">
 						<label for="target2">Target 2</label>
 						<input
-							id="target2"
+							id="target2" name="target2"
 							type="text"
 							bind:value={form.target2}
 							placeholder="$155"
@@ -485,7 +485,7 @@
 					<div class="form-group">
 						<label for="target3">Target 3</label>
 						<input
-							id="target3"
+							id="target3" name="target3"
 							type="text"
 							bind:value={form.target3}
 							placeholder="$162"
@@ -495,7 +495,7 @@
 					<div class="form-group">
 						<label for="runner">Runner</label>
 						<input
-							id="runner"
+							id="runner" name="runner"
 							type="text"
 							bind:value={form.runner}
 							placeholder="$170+"
@@ -508,7 +508,7 @@
 					<div class="form-group">
 						<label for="options_strike">Options Strike</label>
 						<input
-							id="options_strike"
+							id="options_strike" name="options_strike"
 							type="text"
 							bind:value={form.options_strike}
 							placeholder="$145C"
@@ -518,7 +518,7 @@
 					<div class="form-group">
 						<label for="options_exp">Expiration</label>
 						<input
-							id="options_exp"
+							id="options_exp" name="options_exp"
 							type="text"
 							bind:value={form.options_exp}
 							placeholder="Feb 21"

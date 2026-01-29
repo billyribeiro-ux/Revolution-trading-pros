@@ -158,7 +158,7 @@
 							<label for="name">Popup Name (Internal)</label>
 							<input
 								type="text"
-								id="name"
+								id="name" name="name"
 								bind:value={popup.name}
 								placeholder="e.g., Summer Sale 2024"
 								class="form-input"
@@ -169,7 +169,7 @@
 							<label for="title">Popup Title (Visible)</label>
 							<input
 								type="text"
-								id="title"
+								id="title" name="title"
 								bind:value={popup.title}
 								placeholder="e.g., Limited Time Offer!"
 								class="form-input"
@@ -227,13 +227,13 @@
 						<div class="form-row">
 							<div class="form-group">
 								<label for="width">Width</label>
-								<input type="text" id="width" bind:value={popup.design.width} class="form-input" />
+								<input type="text" id="width" name="width" bind:value={popup.design.width} class="form-input" />
 							</div>
 							<div class="form-group">
 								<label for="max-width">Max Width</label>
 								<input
 									type="text"
-									id="max-width"
+									id="max-width" name="max-width"
 									bind:value={popup.design.maxWidth}
 									class="form-input"
 								/>
@@ -244,7 +244,7 @@
 							<label for="padding">Padding</label>
 							<input
 								type="text"
-								id="padding"
+								id="padding" name="padding"
 								bind:value={popup.design.padding}
 								class="form-input"
 							/>
@@ -256,7 +256,7 @@
 							<label for="bg-color">Background Color</label>
 							<input
 								type="color"
-								id="bg-color"
+								id="bg-color" name="bg-color"
 								bind:value={popup.design.backgroundColor}
 								class="form-color"
 							/>
@@ -266,7 +266,7 @@
 							<label for="text-color">Text Color</label>
 							<input
 								type="color"
-								id="text-color"
+								id="text-color" name="text-color"
 								bind:value={popup.design.textColor}
 								class="form-color"
 							/>
@@ -276,7 +276,7 @@
 							<label for="border-color">Border Color</label>
 							<input
 								type="color"
-								id="border-color"
+								id="border-color" name="border-color"
 								bind:value={popup.design.borderColor}
 								class="form-color"
 							/>
@@ -288,7 +288,7 @@
 							<label for="border-radius">Border Radius</label>
 							<input
 								type="text"
-								id="border-radius"
+								id="border-radius" name="border-radius"
 								bind:value={popup.design.borderRadius}
 								class="form-input"
 							/>
@@ -298,7 +298,7 @@
 							<label for="box-shadow">Box Shadow</label>
 							<input
 								type="text"
-								id="box-shadow"
+								id="box-shadow" name="box-shadow"
 								bind:value={popup.design.boxShadow}
 								class="form-input"
 							/>
@@ -308,7 +308,7 @@
 							<label for="backdrop-blur">Backdrop Blur</label>
 							<input
 								type="text"
-								id="backdrop-blur"
+								id="backdrop-blur" name="backdrop-blur"
 								bind:value={popup.design.backdropBlur}
 								class="form-input"
 							/>
@@ -349,7 +349,7 @@
 							<label for="anim-duration">Duration (ms)</label>
 							<input
 								type="number"
-								id="anim-duration"
+								id="anim-duration" name="anim-duration"
 								bind:value={popup.animation.duration}
 								class="form-input"
 							/>
@@ -366,7 +366,7 @@
 							<label for="delay">Delay (seconds)</label>
 							<input
 								type="number"
-								id="delay"
+								id="delay" name="delay"
 								bind:value={popup.displayRules.delaySeconds}
 								class="form-input"
 								min="0"
@@ -385,7 +385,7 @@
 								<label for="scroll-pct">Scroll Percentage</label>
 								<input
 									type="number"
-									id="scroll-pct"
+									id="scroll-pct" name="scroll-pct"
 									bind:value={popup.displayRules.scrollPercentage}
 									class="form-input"
 									min="0"
@@ -536,7 +536,7 @@
 							<label for="form-action">Form Action URL</label>
 							<input
 								type="text"
-								id="form-action"
+								id="form-action" name="form-action"
 								bind:value={popup.formAction}
 								class="form-input"
 								placeholder="/api/form-submit"

@@ -1854,7 +1854,7 @@
 								</button>
 							</label>
 							<input
-								id="name"
+								id="name" name="name"
 								type="text"
 								bind:value={course.name}
 								onblur={generateSlug}
@@ -1872,7 +1872,7 @@
 								<div class="input-group">
 									<span class="input-prefix">/courses/</span>
 									<input
-										id="slug"
+										id="slug" name="slug"
 										type="text"
 										bind:value={course.slug}
 										placeholder="master-technical-analysis"
@@ -1894,7 +1894,7 @@
 						<div class="form-group">
 							<label for="short-desc"> Short Description (Tagline) </label>
 							<input
-								id="short-desc"
+								id="short-desc" name="short-desc"
 								type="text"
 								bind:value={course.short_description}
 								placeholder="Learn professional trading strategies used by Wall Street traders"
@@ -1950,12 +1950,12 @@
 							<div class="form-row">
 								<div class="form-group">
 									<label for="start-date">Start Date</label>
-									<input id="start-date" type="date" bind:value={course.start_date} />
+									<input id="start-date" name="start-date" type="date" bind:value={course.start_date} />
 								</div>
 
 								<div class="form-group">
 									<label for="end-date">End Date</label>
-									<input id="end-date" type="date" bind:value={course.end_date} />
+									<input id="end-date" name="end-date" type="date" bind:value={course.end_date} />
 								</div>
 							</div>
 						{/if}
@@ -2316,7 +2316,7 @@
 									<div class="price-input">
 										<span class="currency">$</span>
 										<input
-											id="price"
+											id="price" name="price"
 											type="number"
 											bind:value={course.price}
 											placeholder="199.00"
@@ -2344,7 +2344,7 @@
 									<div class="form-group">
 										<label for="installments">Number of Installments</label>
 										<input
-											id="installments"
+											id="installments" name="installments"
 											type="number"
 											bind:value={course.payment_installments}
 											min="2"
@@ -2373,7 +2373,7 @@
 									<div class="form-group">
 										<label for="early-bird-discount">Discount %</label>
 										<input
-											id="early-bird-discount"
+											id="early-bird-discount" name="early-bird-discount"
 											type="number"
 											bind:value={course.early_bird.discount}
 											min="5"
@@ -2389,7 +2389,7 @@
 									<div class="form-group">
 										<label for="early-bird-expires">Expires On</label>
 										<input
-											id="early-bird-expires"
+											id="early-bird-expires" name="early-bird-expires"
 											type="datetime-local"
 											bind:value={course.early_bird.expires}
 										/>
@@ -2478,7 +2478,7 @@
 							<div class="form-group">
 								<label for="affiliate-commission">Commission Rate (%)</label>
 								<input
-									id="affiliate-commission"
+									id="affiliate-commission" name="affiliate-commission"
 									type="number"
 									bind:value={course.affiliate_commission}
 									min="10"
@@ -2640,7 +2640,7 @@
 						<div class="form-group">
 							<label for="meta-title">Meta Title</label>
 							<input
-								id="meta-title"
+								id="meta-title" name="meta-title"
 								type="text"
 								bind:value={course.meta_title}
 								placeholder="{course.name || 'Course Title'} | Learn Trading"
@@ -2673,7 +2673,7 @@
 									</span>
 								{/each}
 								<input
-									id="keywords-input"
+									id="keywords-input" name="keywords-input"
 									type="text"
 									placeholder="Add keyword and press Enter..."
 									onkeydown={addKeyword}
@@ -2740,7 +2740,7 @@
 								<div class="form-group">
 									<label for="utm-source">Source</label>
 									<input
-										id="utm-source"
+										id="utm-source" name="utm-source"
 										type="text"
 										bind:value={course.utm_source}
 										placeholder="facebook"
@@ -2749,7 +2749,7 @@
 								<div class="form-group">
 									<label for="utm-medium">Medium</label>
 									<input
-										id="utm-medium"
+										id="utm-medium" name="utm-medium"
 										type="text"
 										bind:value={course.utm_medium}
 										placeholder="social"
@@ -2758,7 +2758,7 @@
 								<div class="form-group">
 									<label for="utm-campaign">Campaign</label>
 									<input
-										id="utm-campaign"
+										id="utm-campaign" name="utm-campaign"
 										type="text"
 										bind:value={course.utm_campaign}
 										placeholder="summer-sale"
@@ -2852,7 +2852,7 @@
 							<div class="form-group">
 								<label for="enrollment-limit">Enrollment Limit</label>
 								<input
-									id="enrollment-limit"
+									id="enrollment-limit" name="enrollment-limit"
 									type="number"
 									bind:value={course.enrollment_limit}
 									placeholder="Unlimited"
@@ -2864,7 +2864,7 @@
 							<div class="form-group">
 								<label for="completion-threshold">Completion Threshold (%)</label>
 								<input
-									id="completion-threshold"
+									id="completion-threshold" name="completion-threshold"
 									type="number"
 									bind:value={course.completion_threshold}
 									min="50"
@@ -2879,7 +2879,7 @@
 							<div class="form-group">
 								<label for="max-attempts">Max Quiz Attempts</label>
 								<input
-									id="max-attempts"
+									id="max-attempts" name="max-attempts"
 									type="number"
 									bind:value={course.max_attempts}
 									min="1"
@@ -2890,7 +2890,7 @@
 							<div class="form-group">
 								<label for="passing-score">Passing Score (%)</label>
 								<input
-									id="passing-score"
+									id="passing-score" name="passing-score"
 									type="number"
 									bind:value={course.passing_score}
 									min="50"

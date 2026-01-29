@@ -513,7 +513,7 @@
 				<div class="form-group">
 					<label for="email">Email Address *</label>
 					<input
-						id="email"
+						id="email" name="email" autocomplete="email"
 						type="email"
 						bind:value={newSubscriber.email}
 						placeholder="subscriber@example.com"
@@ -523,18 +523,18 @@
 				<div class="form-row">
 					<div class="form-group">
 						<label for="first_name">First Name</label>
-						<input id="first_name" type="text" bind:value={newSubscriber.first_name} />
+						<input id="first_name" name="first_name" type="text" bind:value={newSubscriber.first_name} />
 					</div>
 					<div class="form-group">
 						<label for="last_name">Last Name</label>
-						<input id="last_name" type="text" bind:value={newSubscriber.last_name} />
+						<input id="last_name" name="last_name" type="text" bind:value={newSubscriber.last_name} />
 					</div>
 				</div>
 
 				<div class="form-group">
 					<label for="tags">Tags (comma-separated)</label>
 					<input
-						id="tags"
+						id="tags" name="tags"
 						type="text"
 						bind:value={newSubscriber.tags}
 						placeholder="newsletter, vip"

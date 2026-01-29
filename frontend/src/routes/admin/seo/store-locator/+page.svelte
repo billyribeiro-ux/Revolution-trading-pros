@@ -362,7 +362,7 @@
 			<div class="form-grid">
 				<div class="form-group full-width">
 					<label for="name">Location Name *</label>
-					<input type="text" id="name" bind:value={formData.name} required />
+					<input type="text" id="name" name="name" bind:value={formData.name} required />
 				</div>
 
 				<div class="form-group">
@@ -376,42 +376,42 @@
 
 				<div class="form-group">
 					<label for="phone">Phone</label>
-					<input type="tel" id="phone" bind:value={formData.phone} />
+					<input type="tel" id="phone" name="phone" autocomplete="tel" bind:value={formData.phone} />
 				</div>
 
 				<div class="form-group full-width">
 					<label for="streetAddress">Street Address *</label>
-					<input type="text" id="streetAddress" bind:value={formData.streetAddress} required />
+					<input type="text" id="streetAddress" name="streetAddress" bind:value={formData.streetAddress} required />
 				</div>
 
 				<div class="form-group">
 					<label for="city">City *</label>
-					<input type="text" id="city" bind:value={formData.city} required />
+					<input type="text" id="city" name="city" bind:value={formData.city} required />
 				</div>
 
 				<div class="form-group">
 					<label for="state">State/Province *</label>
-					<input type="text" id="state" bind:value={formData.state} required />
+					<input type="text" id="state" name="state" bind:value={formData.state} required />
 				</div>
 
 				<div class="form-group">
 					<label for="postalCode">Postal Code *</label>
-					<input type="text" id="postalCode" bind:value={formData.postalCode} required />
+					<input type="text" id="postalCode" name="postalCode" bind:value={formData.postalCode} required />
 				</div>
 
 				<div class="form-group">
 					<label for="country">Country</label>
-					<input type="text" id="country" bind:value={formData.country} />
+					<input type="text" id="country" name="country" bind:value={formData.country} />
 				</div>
 
 				<div class="form-group full-width">
 					<label for="email">Email</label>
-					<input type="email" id="email" bind:value={formData.email} />
+					<input type="email" id="email" name="email" autocomplete="email" bind:value={formData.email} />
 				</div>
 
 				<div class="form-group full-width">
 					<label for="website">Website</label>
-					<input type="url" id="website" bind:value={formData.website} placeholder="https://" />
+					<input type="url" id="website" name="website" bind:value={formData.website} placeholder="https://" />
 				</div>
 			</div>
 

@@ -758,7 +758,7 @@
 						<label for="discount-percent">Discount Percentage</label>
 						<div class="discount-slider">
 							<input
-								id="discount-percent"
+								id="discount-percent" name="discount-percent"
 								type="range"
 								min="10"
 								max="50"
@@ -774,7 +774,7 @@
 				<div class="form-group">
 					<label for="offer-code">Offer Code (Optional)</label>
 					<input
-						id="offer-code"
+						id="offer-code" name="offer-code"
 						type="text"
 						placeholder="e.g., COMEBACK20"
 						bind:value={offerCode}
@@ -786,7 +786,7 @@
 					<div class="form-group">
 						<label for="custom-subject">Subject Line</label>
 						<input
-							id="custom-subject"
+							id="custom-subject" name="custom-subject"
 							type="text"
 							placeholder="Enter email subject..."
 							bind:value={customSubject}
@@ -866,7 +866,7 @@
 				<div class="form-group">
 					<label for="survey-incentive">Incentive (Optional)</label>
 					<input
-						id="survey-incentive"
+						id="survey-incentive" name="survey-incentive"
 						type="text"
 						placeholder="e.g., Complete the survey for 10% off your next month"
 						bind:value={surveyIncentive}

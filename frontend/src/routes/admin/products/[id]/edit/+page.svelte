@@ -354,7 +354,7 @@
 					<div class="form-group" class:has-error={getFieldError('name')}>
 						<label for="name">Product Name *</label>
 						<input
-							id="name"
+							id="name" name="name"
 							type="text"
 							bind:value={formData.name}
 							placeholder="e.g., Advanced Trading Course"
@@ -370,7 +370,7 @@
 						<div class="slug-input">
 							<span class="slug-prefix">/products/</span>
 							<input
-								id="slug"
+								id="slug" name="slug"
 								type="text"
 								bind:value={formData.slug}
 								placeholder="advanced-trading-course"
@@ -410,7 +410,7 @@
 							<div class="price-input">
 								<span class="currency">$</span>
 								<input
-									id="price"
+									id="price" name="price"
 									type="number"
 									bind:value={formData.price}
 									placeholder="99.00"
@@ -428,7 +428,7 @@
 							<div class="price-input">
 								<span class="currency">$</span>
 								<input
-									id="sale_price"
+									id="sale_price" name="sale_price"
 									type="number"
 									bind:value={formData.sale_price}
 									placeholder="79.00"
@@ -446,7 +446,7 @@
 							Thumbnail URL
 						</label>
 						<input
-							id="thumbnail"
+							id="thumbnail" name="thumbnail"
 							type="url"
 							bind:value={formData.thumbnail}
 							placeholder="https://example.com/image.jpg"
@@ -516,7 +516,7 @@
 							<div class="form-group">
 								<label for="meta_title">Meta Title</label>
 								<input
-									id="meta_title"
+									id="meta_title" name="meta_title"
 									type="text"
 									bind:value={formData.meta_title}
 									placeholder="SEO title for search engines"
@@ -548,7 +548,7 @@
 							<div class="form-group">
 								<label for="canonical_url">Canonical URL</label>
 								<input
-									id="canonical_url"
+									id="canonical_url" name="canonical_url"
 									type="url"
 									bind:value={formData.canonical_url}
 									placeholder="https://example.com/canonical-page"

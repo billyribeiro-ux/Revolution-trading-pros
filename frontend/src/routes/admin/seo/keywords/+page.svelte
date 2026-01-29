@@ -121,7 +121,7 @@
 			<label for="search-keywords" class="sr-only">Search keywords</label>
 			<input
 				type="text"
-				id="search-keywords"
+				id="search-keywords" name="search-keywords"
 				bind:value={searchQuery}
 				placeholder="Search keywords..."
 			/>

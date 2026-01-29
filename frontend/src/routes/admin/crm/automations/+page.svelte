@@ -784,7 +784,7 @@
 						<label for="import-file">Upload JSON File</label>
 						<div class="file-upload">
 							<input
-								id="import-file"
+								id="import-file" name="import-file"
 								type="file"
 								accept=".json"
 								onchange={handleFileUpload}

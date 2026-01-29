@@ -353,7 +353,7 @@
 						<div class="flex items-center gap-2">
 							<input
 								type="checkbox"
-								id="cta_new_tab"
+								id="cta_new_tab" name="cta_new_tab"
 								bind:checked={formData.cta_new_tab}
 								class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 							/>
@@ -476,7 +476,7 @@
 							<div class="flex items-center gap-2">
 								<input
 									type="checkbox"
-									id="show_close_button"
+									id="show_close_button" name="show_close_button"
 									bind:checked={formData.show_close_button}
 									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 								/>
@@ -488,7 +488,7 @@
 							<div class="flex items-center gap-2">
 								<input
 									type="checkbox"
-									id="close_on_overlay_click"
+									id="close_on_overlay_click" name="close_on_overlay_click"
 									bind:checked={formData.close_on_overlay_click}
 									class="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
 								/>

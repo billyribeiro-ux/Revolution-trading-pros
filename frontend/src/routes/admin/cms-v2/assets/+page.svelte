@@ -981,7 +981,7 @@
 				<div class="metadata-field">
 					<label for="alt-text">Alt Text</label>
 					<input
-						id="alt-text"
+						id="alt-text" name="alt-text"
 						type="text"
 						bind:value={selectedAsset.alt_text}
 						placeholder="Describe the image..."
@@ -990,7 +990,7 @@
 				<div class="metadata-field">
 					<label for="title">Title</label>
 					<input
-						id="title"
+						id="title" name="title"
 						type="text"
 						bind:value={selectedAsset.title}
 						placeholder="Asset title..."
@@ -1143,7 +1143,7 @@
 				<div class="form-field">
 					<label for="folder-name">Folder Name</label>
 					<input
-						id="folder-name"
+						id="folder-name" name="folder-name"
 						type="text"
 						bind:value={newFolderName}
 						placeholder="Enter folder name..."

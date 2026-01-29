@@ -604,7 +604,7 @@
 				<div class="form-group">
 					<label for="course-title">Course Title <span class="required">*</span></label>
 					<input
-						id="course-title"
+						id="course-title" name="course-title"
 						type="text"
 						placeholder="e.g., Options Trading Mastery"
 						bind:value={quickCreateTitle}
@@ -618,7 +618,7 @@
 					<div class="slug-preview">
 						<span class="slug-prefix">/classes/</span>
 						<input
-							id="course-slug"
+							id="course-slug" name="course-slug"
 							type="text"
 							placeholder="options-trading-mastery"
 							bind:value={quickCreateSlug}

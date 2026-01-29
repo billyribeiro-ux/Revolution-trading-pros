@@ -339,7 +339,7 @@
 					<label for="tag-title">Title <span class="required">*</span></label>
 					<input
 						type="text"
-						id="tag-title"
+						id="tag-title" name="tag-title"
 						bind:value={formData.title}
 						placeholder="Enter tag title"
 						disabled={isSaving}

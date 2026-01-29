@@ -376,7 +376,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 					<div class="field-group">
 						<label for="site-name" class="field-label">Site Name</label>
 						<input
-							id="site-name"
+							id="site-name" name="site-name"
 							type="text"
 							bind:value={settings.siteName}
 							class="field-input"
@@ -398,7 +398,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 					<div class="field-group">
 						<label for="default-title" class="field-label">Default Title</label>
 						<input
-							id="default-title"
+							id="default-title" name="default-title"
 							type="text"
 							bind:value={settings.defaultTitle}
 							class="field-input"
@@ -454,7 +454,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 							Google Site Verification
 						</label>
 						<input
-							id="google-verify"
+							id="google-verify" name="google-verify"
 							type="text"
 							bind:value={settings.googleSiteVerification}
 							class="field-input"
@@ -465,7 +465,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 					<div class="field-group">
 						<label for="bing-verify" class="field-label">Bing Site Verification</label>
 						<input
-							id="bing-verify"
+							id="bing-verify" name="bing-verify"
 							type="text"
 							bind:value={settings.bingSiteVerification}
 							class="field-input"
@@ -579,7 +579,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 							<div class="field-group">
 								<label for="priority" class="field-label">Default Priority</label>
 								<input
-									id="priority"
+									id="priority" name="priority"
 									type="number"
 									min="0"
 									max="1"
@@ -693,7 +693,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 						<label for="og-image" class="field-label">Default OG Image</label>
 						<div class="image-upload">
 							<input
-								id="og-image"
+								id="og-image" name="og-image"
 								type="text"
 								bind:value={settings.defaultOgImage}
 								class="field-input"
@@ -706,7 +706,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 					<div class="field-group">
 						<label for="fb-app-id" class="field-label">Facebook App ID</label>
 						<input
-							id="fb-app-id"
+							id="fb-app-id" name="fb-app-id"
 							type="text"
 							bind:value={settings.facebookAppId}
 							class="field-input"
@@ -742,7 +742,7 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 					<div class="field-group">
 						<label for="twitter-handle" class="field-label">Twitter Handle</label>
 						<input
-							id="twitter-handle"
+							id="twitter-handle" name="twitter-handle"
 							type="text"
 							bind:value={settings.twitterHandle}
 							class="field-input"
@@ -777,12 +777,12 @@ Sitemap: https://revolutiontradingpros.com/sitemap.xml
 
 					<div class="field-group">
 						<label for="ga-id" class="field-label">Google Analytics ID</label>
-						<input id="ga-id" type="text" class="field-input" placeholder="G-XXXXXXXXXX" />
+						<input id="ga-id" name="ga-id" type="text" class="field-input" placeholder="G-XXXXXXXXXX" />
 					</div>
 
 					<div class="field-group">
 						<label for="gtm-id" class="field-label">Google Tag Manager ID</label>
-						<input id="gtm-id" type="text" class="field-input" placeholder="GTM-XXXXXXX" />
+						<input id="gtm-id" name="gtm-id" type="text" class="field-input" placeholder="GTM-XXXXXXX" />
 					</div>
 
 					<div class="analytics-note">

@@ -792,7 +792,7 @@
 						>
 						<input
 							type="text"
-							id="board-title"
+							id="board-title" name="board-title"
 							bind:value={newBoard.title}
 							placeholder="Enter board title..."
 							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
@@ -880,7 +880,7 @@
 						>
 						<input
 							type="text"
-							id="folder-name"
+							id="folder-name" name="folder-name"
 							bind:value={newFolder.title}
 							placeholder="Enter folder name..."
 							class="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-white focus:ring-2 focus:ring-[#E6B800]"
@@ -893,7 +893,7 @@
 						>
 						<input
 							type="color"
-							id="folder-color"
+							id="folder-color" name="folder-color"
 							bind:value={newFolder.color}
 							class="w-full h-10 rounded-lg cursor-pointer"
 						/>

@@ -320,7 +320,7 @@
 					</label>
 					<input
 						type="text"
-						id="name"
+						id="name" name="name"
 						bind:value={name}
 						placeholder="e.g., Slack Notifications, Zapier Integration"
 						class:error={fieldErrors.name}
@@ -336,7 +336,7 @@
 					</label>
 					<input
 						type="url"
-						id="url"
+						id="url" name="url"
 						bind:value={url}
 						placeholder="https://api.example.com/webhook"
 						class:error={fieldErrors.url}
@@ -354,7 +354,7 @@
 					<div class="input-with-action">
 						<input
 							type="text"
-							id="secret"
+							id="secret" name="secret"
 							bind:value={secret}
 							placeholder="Used to sign webhook payloads"
 						/>

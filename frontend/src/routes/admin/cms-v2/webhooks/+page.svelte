@@ -527,7 +527,7 @@
 				<div class="field-group">
 					<label for="webhook-name" class="field-label required">Name</label>
 					<input
-						id="webhook-name"
+						id="webhook-name" name="webhook-name"
 						type="text"
 						bind:value={formName}
 						placeholder="My Webhook"
@@ -538,7 +538,7 @@
 				<div class="field-group">
 					<label for="webhook-url" class="field-label required">URL</label>
 					<input
-						id="webhook-url"
+						id="webhook-url" name="webhook-url"
 						type="url"
 						bind:value={formUrl}
 						placeholder="https://api.example.com/webhook"
@@ -566,7 +566,7 @@
 					<label for="webhook-secret" class="field-label">Secret (for HMAC signing)</label>
 					<div class="secret-input-group">
 						<input
-							id="webhook-secret"
+							id="webhook-secret" name="webhook-secret"
 							type="text"
 							bind:value={formSecret}
 							placeholder="Leave empty for no signing"
@@ -580,7 +580,7 @@
 					<div class="field-group">
 						<label for="webhook-retry" class="field-label">Retry Count</label>
 						<input
-							id="webhook-retry"
+							id="webhook-retry" name="webhook-retry"
 							type="number"
 							bind:value={formRetryCount}
 							min="0"
@@ -591,7 +591,7 @@
 					<div class="field-group">
 						<label for="webhook-timeout" class="field-label">Timeout (seconds)</label>
 						<input
-							id="webhook-timeout"
+							id="webhook-timeout" name="webhook-timeout"
 							type="number"
 							bind:value={formTimeoutSeconds}
 							min="5"

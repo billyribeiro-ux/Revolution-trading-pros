@@ -976,7 +976,7 @@
 					<label for="title">Title *</label>
 					<input
 						type="text"
-						id="title"
+						id="title" name="title"
 						bind:value={formData.title}
 						placeholder="Resource title"
 						required
@@ -1030,7 +1030,7 @@
 					<label for="file-url">File/Video URL *</label>
 					<input
 						type="url"
-						id="file-url"
+						id="file-url" name="file-url"
 						bind:value={formData.file_url}
 						placeholder="https://..."
 						required
@@ -1071,14 +1071,14 @@
 						<label for="thumbnail-url">Thumbnail URL</label>
 						<input
 							type="url"
-							id="thumbnail-url"
+							id="thumbnail-url" name="thumbnail-url"
 							bind:value={formData.thumbnail_url}
 							placeholder="https://..."
 						/>
 					</div>
 					<div class="form-group">
 						<label for="resource-date">Date</label>
-						<input type="date" id="resource-date" bind:value={formData.resource_date} />
+						<input type="date" id="resource-date" name="resource-date" bind:value={formData.resource_date} />
 					</div>
 				</div>
 
@@ -1184,7 +1184,7 @@
 					<!-- svelte-ignore a11y_autofocus -->
 					<input
 						type="url"
-						id="new-file-url"
+						id="new-file-url" name="new-file-url"
 						bind:value={newFileUrl}
 						placeholder="https://..."
 						autofocus

@@ -234,11 +234,11 @@
 					<div class="form-grid">
 						<div class="form-group full">
 							<label for="title">Title</label>
-							<input id="title" type="text" bind:value={lesson.title} />
+							<input id="title" name="title" type="text" bind:value={lesson.title} />
 						</div>
 						<div class="form-group full">
 							<label for="slug">Slug</label>
-							<input id="slug" type="text" bind:value={lesson.slug} />
+							<input id="slug" name="slug" type="text" bind:value={lesson.slug} />
 						</div>
 						<div class="form-group full">
 							<label for="description">Description</label>
@@ -255,16 +255,16 @@
 						</div>
 						<div class="form-group">
 							<label for="duration">Duration (minutes)</label>
-							<input id="duration" type="number" bind:value={lesson.duration_minutes} />
+							<input id="duration" name="duration" type="number" bind:value={lesson.duration_minutes} />
 						</div>
 						<div class="form-group">
 							<label for="sort">Sort Order</label>
-							<input id="sort" type="number" bind:value={lesson.sort_order} />
+							<input id="sort" name="sort" type="number" bind:value={lesson.sort_order} />
 						</div>
 						<div class="form-group">
 							<label for="drip">Drip Days</label>
 							<input
-								id="drip"
+								id="drip" name="drip"
 								type="number"
 								bind:value={lesson.drip_days}
 								placeholder="0 = immediate"
